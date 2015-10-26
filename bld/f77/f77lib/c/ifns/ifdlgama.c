@@ -39,8 +39,8 @@
 
 #include "ftnstd.h"
 #include "ifenv.h"
-#include "fgamma.h"
 
+extern  extended          __lgamma(extended,const extended __FAR *);
 
 static  const extended __FAR  xinf  = { DBL_MAX };
 static  const double __FAR  big   = { 1.28118e305 };

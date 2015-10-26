@@ -37,9 +37,6 @@
 #include "bool.h"
 #include "dbgioctl.h"
 #include "trperr.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
-#include "parlink.h"
 
 
 static HANDLE   PortHdl = INVALID_HANDLE_VALUE;
@@ -53,7 +50,7 @@ static unsigned PortsFound = 0;
 /* Forward declarations */
 void FiniSys( void );
 
-bool TRAPENTRY TrapTellTerminate( void )
+bool Terminate( void )
 {
         FiniSys();
         return( TRUE );

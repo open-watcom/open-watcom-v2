@@ -50,6 +50,7 @@ typedef struct {
 } dlg_init;
 
 extern  bool            GUIMDI;
+extern  gui_window      *GUICurrWnd;
 
 static gui_menu_struct MDISecondSepMenu[] = {
     { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }

@@ -41,7 +41,6 @@
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
-#include "int32std.h"
 #include "dosextx.h"
 #include "dosfile.h"
 

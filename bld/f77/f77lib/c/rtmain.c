@@ -35,7 +35,6 @@
 #include "rtenv.h"
 #include "rundat.h"
 #include "errcod.h"
-#include "spawn.h"
 
 // FORTRAN 77 run-time system must be initialized before we call
 // user's program. Part of the run-time initialization includes
@@ -44,12 +43,14 @@
 // If a FORTRAN 77 subprogram is called by a C or C++ mainline, an
 // explicit call to RTSysInit() must be made by the caller.
 
-#include "fmain.h"
-
 #if defined( __WINDOWS__ )
 
 #include "fapptype.h"
 
+#include <win386.h>
+
+extern  int     PASCAL  DefaultWinMain(HINSTANCE,HINSTANCE,LPSTR,int,int(*)(int,char**));
+extern  void            FMAIN(void);
 extern  int             main(int,char **);
 
 extern  char            __FAppType;
@@ -74,6 +75,8 @@ int     main( int argc, char *argv[] ) {
 }
 
 #else
+
+extern  void            FMAIN(void);
 
 
 int     main( int argc, char *argv[] ) {

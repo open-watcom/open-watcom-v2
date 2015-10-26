@@ -41,14 +41,14 @@
 #include "format.h"
 #include "global.h"
 #include "fmttab.h"
-#include "cfmttab.h"
-#include "fmtemit.h"
-#include "fmtinit.h"
-#include "fcodes.h"
-#include "gflow.h"
-#include "cgformat.h"
 
+extern  void            GFEmEnd(void);
+extern  void            GFEmNum(int);
+extern  void            FmtError(int);
+extern  void            GStmtLabel(sym_id);
 extern  void            R_FDoSpec(void);
+extern  void            StartFmt(cs_label);
+extern  void            EndFmt(void);
 
 extern  const FmtElements CFmtStruct;
 

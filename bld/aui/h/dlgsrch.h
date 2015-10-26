@@ -41,7 +41,3 @@
 #define CTL_SRCH_CANCEL 102
 #define CTL_SRCH_EDIT 103
 #define CTL_SRCH_LIST 104
-
-
-extern int  DlgSearch( a_window *wnd, void *history );
-extern bool DlgSearchAll( char **expr, void *history );

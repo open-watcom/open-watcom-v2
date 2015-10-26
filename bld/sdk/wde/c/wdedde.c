@@ -43,7 +43,6 @@
 #include "wdesvres.h"
 #include "wdemain.h"
 #include "wderesin.h"
-#include "wdedde.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -352,7 +351,7 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
     return( hdata );
 }
 
-static WdeResDlgItem *WdeGetDlgItem( void )
+WdeResDlgItem *WdeGetDlgItem( void )
 {
     WdeResInfo          *rinfo;
     WdeResDlgItem       *ditem;

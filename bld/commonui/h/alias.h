@@ -58,6 +58,4 @@ char    *LookupAlias( AliasHdl hdl, unsigned long id );
 void    Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title );
 void    EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ), void *userdata );
 
-WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
 #endif /* _ALIAS_H_INCLUDED */

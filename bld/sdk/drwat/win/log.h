@@ -45,5 +45,3 @@
 #define LOG_DISASM_LINES  824
 #define LOG_DISASM_BACKUP 825
 #define LOG_BROWSE        102
-
-WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

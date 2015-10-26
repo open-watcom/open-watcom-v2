@@ -42,7 +42,6 @@
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"
-#include "trpimpxx.h"
 
 #if defined( __WATCOMC__ ) && defined( __NT__ )
 #pragma library("wsock32")
@@ -62,7 +61,7 @@ static char                     ServerName[128];
 /* The _SWAPINT is because NT swaps the bytes on us again */
 #define DBG_SAP_ID      SVCID_NETWARE( _SWAPINT( DBG_SERVER_TYPE ) )
 
-bool TRAPENTRY TrapTellTerminate( void )
+bool Terminate( void )
 {
     // a sideways dive to terminate the link (with failure)
     return( FALSE );

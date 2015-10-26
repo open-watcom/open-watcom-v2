@@ -325,7 +325,6 @@ extern int          DelOneLib( struct link_map * );
 extern void         AddProcess( void );
 extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
-extern char         *StrCopy( const char *src, char *dst );
 
 /* Utility functions shared with execution sampler */
 extern unsigned     ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size );

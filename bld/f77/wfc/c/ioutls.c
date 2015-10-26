@@ -38,11 +38,9 @@
 #include "iodefs.h"
 #include "iortncon.h"
 #include "global.h"
-#include "ioperm.h"
-#include "ioutls.h"
-#include "fcodes.h"
-#include "rtconst.h"
-#include "gio.h"
+
+extern  void            GSetIOCB(void);
+extern  bool            Already(int);
 
 
 void    InitIO(void) {

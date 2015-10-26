@@ -61,7 +61,6 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
-#include "dllmain.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -1054,7 +1053,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
     }
 }
 
-static bool WQueryClearRes( WStringEditInfo *einfo )
+bool WQueryClearRes( WStringEditInfo *einfo )
 {
     int         ret;
     UINT        style;

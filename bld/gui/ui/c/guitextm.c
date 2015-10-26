@@ -51,7 +51,6 @@ void GUIGetDlgTextMetrics( gui_text_metrics * metrics )
     GUIGetTextMetrics( NULL, metrics );
 }
 
-#if 0
 void GUIGetMaxDialogSize( gui_coord * size )
 {
     gui_rect rect;
@@ -62,4 +61,3 @@ void GUIGetMaxDialogSize( gui_coord * size )
         size->y = rect.height;
     }
 }
-#endif

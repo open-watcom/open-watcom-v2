@@ -36,7 +36,6 @@
 
 #include "ftnstd.h"
 #include "ftnio.h"
-#include "ioinit.h"
 
 #include <stdlib.h>
 

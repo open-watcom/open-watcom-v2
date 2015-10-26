@@ -38,6 +38,4 @@ bool    RegisterSnapClass( HANDLE instance );
 HWND    DisplayDesktop( HWND hparent );
 void    SetDeskTopHook( deskNThook );
 
-WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
 #endif /* _DESKNT_H_INCLUDED */

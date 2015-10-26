@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include "wrglbl.h"
 #include "wresall.h"
-#include "wrnamoor.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -58,7 +57,7 @@
 /****************************************************************************/
 
 // UNICODE strings are always compacted
-static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
+ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
 {
     ResNameOrOrdinal    *new;
     uint_16             *data16;
@@ -87,7 +86,7 @@ static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
     return( new );
 }
 
-static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
+ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
 {
     ResNameOrOrdinal    *new;
     uint_8              *data8;
@@ -126,7 +125,7 @@ static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
     return( new );
 }
 
-static int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
+int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     size_t      len;
     size_t      stringlen;
@@ -159,7 +158,7 @@ static int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size 
     return( TRUE );
 }
 
-static int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
+int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     uint_16     *data16;
     char        *uni_str;

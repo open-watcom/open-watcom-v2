@@ -55,7 +55,7 @@
 
 #define TARGET_INT_MAX          32767
 #define TARGET_INT_MIN          (-32767-1)
-#define TARGET_UINT_MAX         0xFFFFU
+#define TARGET_UINT_MAX         0xFFFF
 
 #define TARGET_PACKING          2
 #define TARGET_MAX_PACKING      8

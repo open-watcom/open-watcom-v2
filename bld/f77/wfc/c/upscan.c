@@ -46,23 +46,74 @@
 #include "insert.h"
 #include "utility.h"
 #include "convert.h"
-#include "arutls.h"
-#include "detach.h"
-#include "ifused.h"
-#include "parmcode.h"
-#include "rstconst.h"
-#include "rstlit.h"
-#include "rststruc.h"
-#include "upscan.h"
-#include "usother.h"
-#include "exprutil.h"
-#include "galloc.h"
-#include "gcnvt.h"
-#include "gsubprog.h"
-#include "ifdump.h"
-#include "upcat.h"
-#include "proclist.h"
 
+extern  void            DetSubList(void);
+extern  void            DetCallList(void);
+extern  void            DetSStr(void);
+extern  void            MarkIFUsed(IFF);
+extern  void            GMakeCplx(void);
+extern  void            GMakeDCplx(void);
+extern  void            GMakeXCplx(void);
+extern  void            GArg(void);
+extern  void            GILCnvTo(TYPE,uint);
+extern  void            UpdateNode(itnode *,itnode *);
+extern  void            BackTrack(void);
+extern  void            MoveDown(void);
+extern  void            KillOpnOpr(void);
+extern  void            AdvError(int);
+extern  void            EndExpr(void);
+extern  sym_id          STConst(void *,TYPE,uint);
+extern  sym_id          STLit(byte *,int);
+extern  PCODE           ParmCode(itnode *);
+extern  void            FiniCat(void);
+extern  void            CatBack(void);
+extern  void            CatAxeParens(void);
+extern  void            CatOpn(void);
+extern  void            ChkCatOpn(void);
+extern  void            CatParen(void);
+extern  void            ParenCat(void);
+extern  void            ProcList(itnode *);
+extern  void            GIChar(void);
+extern  void            GModulus(void);
+extern  void            GCharLen(void);
+extern  void            GImag(void);
+extern  void            GMax(int);
+extern  void            GMin(int);
+extern  void            GConjg(void);
+extern  void            GDProd(void);
+extern  void            GXProd(void);
+extern  void            GSign(void);
+extern  void            GBitTest(void);
+extern  void            GBitSet(void);
+extern  void            GBitClear(void);
+extern  void            GBitOr(void);
+extern  void            GBitAnd(void);
+extern  void            GBitNot(void);
+extern  void            GBitExclOr(void);
+extern  void            GBitChange(void);
+extern  void            GBitLShift(void);
+extern  void            GBitRShift(void);
+extern  void            GMod(void);
+extern  void            GAbs(void);
+extern  void            GASin(void);
+extern  void            GACos(void);
+extern  void            GATan(void);
+extern  void            GATan2(void);
+extern  void            GLog(void);
+extern  void            GLog10(void);
+extern  void            GCos(void);
+extern  void            GSin(void);
+extern  void            GTan(void);
+extern  void            GSinh(void);
+extern  void            GCosh(void);
+extern  void            GTanh(void);
+extern  void            GSqrt(void);
+extern  void            GExp(void);
+extern  void            GVolatile(void);
+extern  void            GLoc(void);
+extern  void            GAllocated(void);
+extern  sym_id          FindStruct(char *,int);
+extern  void            SetDefinedStatus(void);
 
 extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);
 extern  void            (* const __FAR ConstTable[])(TYPE, TYPE, OPTR);
@@ -75,6 +126,9 @@ static  void    FixList( void );
 static  void    PrepArg( void );
 static  void    LowColon( void );
 static  void    AddSS( int number );
+
+void    AddConst( itnode *node );
+
 
 
 static const OPTR __FAR OprNum[] = {

@@ -33,7 +33,6 @@
 #include <dos.h>
 #include "miniproc.h"
 #include "nwtypes.h"
-#include "parlink.h"
 
 extern struct ResourceTagStructure      *TimerTag;
 

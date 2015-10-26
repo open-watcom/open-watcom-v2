@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "fio.h"
-#include "external.h"
 
 extern  void            IOOk(b_file *);
 extern  unsigned_32     FGetVarRecLen(b_file *);

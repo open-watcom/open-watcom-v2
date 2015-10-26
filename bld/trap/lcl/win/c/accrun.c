@@ -39,8 +39,6 @@
 #include "cpuglob.h"
 #include "stdwin.h"
 #include "wdebug.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
 
 
 /*
@@ -83,7 +81,7 @@ static trap_elen runProg( bool single_step )
     IntResult.EFlags &= ~TRACE_BIT;
     dowatch = FALSE;
     watch386 = FALSE;
-    TrapUnLockInput();
+    UnLockInput();
 
     if( single_step ) {
         SingleStepMode();

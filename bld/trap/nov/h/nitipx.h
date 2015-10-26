@@ -41,11 +41,6 @@
     #endif
 #endif
 
-#ifdef __WINDOWS__
-#define ESRFUNC __export __far __pascal
-#else
-#define ESRFUNC
-#endif
 
 typedef struct NetworkAddress
 {
@@ -165,10 +160,6 @@ extern void _SPXSendSequencedPacket(WORD,ECB*);
 extern void _SPXTerminateConnection(WORD,ECB*);
 extern void _SPXAbortConnection(WORD);
 extern int _SPXGetConnectionStatus(WORD,CSB*);
-
-extern void ESRFUNC SAPWait( void );
-extern void ESRFUNC SAPBroad( void );
-extern void ESRFUNC ServResp( void );
 
 #ifndef __WINDOWS__
     #define IPXSPXDeinit()

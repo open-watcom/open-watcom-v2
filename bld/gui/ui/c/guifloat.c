@@ -37,7 +37,6 @@
 #include "guisysme.h"
 #include "guixloop.h"
 #include "guixutil.h"
-#include "guifloat.h"
 #include <ctype.h>
 #include <string.h>
 

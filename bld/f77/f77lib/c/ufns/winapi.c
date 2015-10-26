@@ -37,13 +37,14 @@
 #include "ftnstd.h"
 
 #include <stddef.h>
-#include "winapi.h"
 
 #define GMEM_MOVEABLE   0x0002
 #define LMEM_MOVEABLE   0x0002
 
 #define DWORD           unsigned long
 #define WORD            unsigned int
+
+typedef WORD            HANDLE;
 
 extern  HANDLE          __far __pascal GlobalReAlloc(HANDLE,DWORD,WORD);
 extern  HANDLE          __far __pascal LocalReAlloc(HANDLE,WORD,WORD);

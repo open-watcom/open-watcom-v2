@@ -97,10 +97,8 @@ _WMRTLINK double __log2( double x );
 _WMRTLINK long _IF_ipow( long base, long power );
 _WMRTLINK extern float _IF_powi( float, long );
 _WMRTLINK extern double _IF_dpowi( double, long );
-_WMRTLINK double _IF_PowRI( double base, intstar4 power );
-_WMRTLINK intstar4 _IF_powii( intstar4 base, intstar4 power );
-_WMRTLINK double _IF_PowRR( double base, double power );
-_WMRTLINK extended _IF_PowXI( extended base, intstar4 power );
+//_WMRTLINK double _IF_PowRI( double base, intstar4 power );
+//_WMRTLINK intstar4 _IF_powii( intstar4 base, intstar4 power );
 
 #if defined(_M_IX86)
   #pragma aux (if_rtn) _IF_acos "IF@ACOS";

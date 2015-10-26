@@ -237,6 +237,6 @@ int InternalError( const char *file, unsigned line ) {
 
     PrtFmt( "Internal error in %s(%u)\n", file, line );
     exit( EXIT_FAILURE );
-        return( 0 );
+	return( 0 );
 }
 #endif

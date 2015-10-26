@@ -5,7 +5,6 @@
 #include "strings.h"
 #include "misc.h"
 #include "pcdbug.h"
-#include "sock_dbu.h"
 
 void sock_debugdump (const sock_type *s)
 {

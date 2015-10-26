@@ -32,9 +32,9 @@
 
 #include <windows.h>
 #include "clibint.h"
-#include "dllmain.h"
+#include "wlibdll.h"
 
-BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID ptr )
+BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
 {
     hinst = hinst; dw = dw; ptr = ptr;
     return( TRUE );

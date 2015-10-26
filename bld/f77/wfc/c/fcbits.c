@@ -41,8 +41,10 @@
 #include "cgprotos.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "fcjmptab.h"
-#include "fcstack.h"
+
+extern  void            XPush(cg_name);
+extern  cg_name         XPopValue(cg_type);
+extern  cg_name         XPop(void);
 
 
 static  cg_name BitPosition( unsigned_16 typ_info ) {

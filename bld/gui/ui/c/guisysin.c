@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include "swap.h"
 #include "guigmous.h"
-#include "guisysin.h"
 
 int GUISysInit( int param )
 {

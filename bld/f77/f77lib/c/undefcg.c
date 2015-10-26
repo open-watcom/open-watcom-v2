@@ -40,16 +40,16 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "ftextfun.h"
-#include "chrutils.h"
 
 extern  void            R_FmtLog(uint);
 extern  void            SetMaxPrec(int);
 extern  void            F_SendData(char *,uint);
 extern  void            R_F2F(extended,char *,int,int,bool,int);
 extern  void            R_F2E(extended,char *,int,int,bool,int,int,char);
+extern  bool            ToFFormat(extended);
+extern  char            *JmpBlanks(char *);
 extern  bool            GetReal(extended *);
-extern  void            SendStr(char PGM *,uint);
+extern  void            SendStr(char PGM *,int);
 
 
 static  void    FmtFloat( char *buff, extended value, int digits, char ch ) {
@@ -80,7 +80,7 @@ void OutIntCG( void ) {
 }
 
 
-static void FmtRealCG( char *buffer, single *value ) {
+void FmtRealCG( char *buffer, single *value ) {
 //=============================================
 
     SetMaxPrec( MAX_SP );
@@ -88,7 +88,7 @@ static void FmtRealCG( char *buffer, single *value ) {
 }
 
 
-static void FmtDoubleCG( char *buffer, double *value ) {
+void FmtDoubleCG( char *buffer, double *value ) {
 //===============================================
 
     SetMaxPrec( MAX_DP );
@@ -96,7 +96,7 @@ static void FmtDoubleCG( char *buffer, double *value ) {
 }
 
 
-static void FmtExtendedCG( char *buffer, extended *value ) {
+void FmtExtendedCG( char *buffer, extended *value ) {
 //===================================================
 
     SetMaxPrec( MAX_XP );
@@ -104,7 +104,7 @@ static void FmtExtendedCG( char *buffer, extended *value ) {
 }
 
 
-static bool UndefRealCG( single *value ) {
+bool UndefRealCG( single *value ) {
 //=================================
 
     value = value;
@@ -112,7 +112,7 @@ static bool UndefRealCG( single *value ) {
 }
 
 
-static bool UndefDoubleCG( double *value ) {
+bool UndefDoubleCG( double *value ) {
 //===================================
 
     value = value;
@@ -120,7 +120,7 @@ static bool UndefDoubleCG( double *value ) {
 }
 
 
-static bool UndefExtendedCG( extended *value ) {
+bool UndefExtendedCG( extended *value ) {
 //=======================================
 
     value = value;
@@ -128,14 +128,14 @@ static bool UndefExtendedCG( extended *value ) {
 }
 
 
-static bool UndefLogCG( void ) {
+bool UndefLogCG( void ) {
 //=================
 
     return( 0 );
 }
 
 
-static bool UndefIntCG( uint width ) {
+bool UndefIntCG( uint width ) {
 //=============================
 
     width = width;
@@ -143,7 +143,7 @@ static bool UndefIntCG( uint width ) {
 }
 
 
-static bool GetRealCG( extended *value, uint width ) {
+bool GetRealCG( extended *value, uint width ) {
 //=============================================
 
     width = width;
@@ -156,7 +156,7 @@ static bool GetRealCG( extended *value, uint width ) {
 void    (*FmtRealRtn)(char *,single *)          = FmtRealCG;
 void    (*FmtDoubleRtn)(char *,double *)        = FmtDoubleCG;
 void    (*FmtExtendedRtn)(char *,extended *)    = FmtExtendedCG;
-void    (*SendStrRtn)(char PGM *,uint)          = SendStr;
+void    (*SendStrRtn)(char PGM *,int)           = SendStr;
 bool    (*UndefRealRtn)(single *)               = UndefRealCG;
 bool    (*UndefDoubleRtn)(double *)             = UndefDoubleCG;
 bool    (*UndefExtendedRtn)(extended *)         = UndefExtendedCG;

@@ -37,11 +37,17 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "global.h"
-#include "proctbl.h"
-#include "csutls.h"
-#include "cgmagic.h"
-#include "fcodes.h"
-#include "gflow.h"
+
+extern  void            AddCSNode(byte);
+extern  void            DelCSNode(void);
+extern  void            BlockLabel(void);
+extern  void            CSNoMore(void);
+extern  void            CSExtn(void);
+extern  void            Match(void);
+extern  void            GLabel(label_id);
+extern  void            GBranch(label_id);
+extern  label_id        NextLabel(void);
+extern  void            FreeLabel(label_id);
 
 
 void    CpGuess(void) {

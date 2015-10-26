@@ -39,16 +39,16 @@
 #include "fio.h"
 #include "posio.h"
 #include "units.h"
-#include "ftextfun.h"
 
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "external.h"
 
+extern  b_file          *_AllocFile(int,f_attrs,long int);
+extern  void            _AllocBuffer(ftnfile *);
 extern  int             _FileAttrs(ftnfile *);
-extern  int             Errorf(b_file *);
-extern  void            Closef(b_file *);
+extern  int             Errorf(a_file *);
+extern  void            Closef(a_file *);
 
 
 intstar2        __fortran SYSHANDLE( intstar4 *unit ) {

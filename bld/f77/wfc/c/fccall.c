@@ -34,7 +34,6 @@
 #include "wf77defs.h"
 #include "wf77aux.h"
 #include "wf77cg.h"
-#include "auxlook.h"
 #include "tmpdefs.h"
 #include "cpopt.h"
 #include "fcgbls.h"
@@ -44,27 +43,47 @@
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "argchk.h"
-#include "fcflow.h"
-#include "fcstring.h"
-#include "fcsubscr.h"
-#include "fcsyms.h"
-#include "fctemp.h"
-#include "fccmplx.h"
-#include "fcjmptab.h"
-#include "fccall.h"
-#include "forcstat.h"
-#include "rstmgr.h"
-#include "fcrtns.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
 
+extern  void            GenLocalSyms(void);
+extern  void            GenLocalDbgInfo(void);
+extern  void            FreeLocalBacks(bool);
+extern  void            FreeGlobalBacks(void);
+extern  void            XPush(cg_name);
+extern  cg_name         XPop(void);
+extern  void            XPopCmplx(cg_cmplx *,cg_type);
+extern  cg_name         GetTypedValue(void);
+extern  label_handle    GetLabel(label_id);
+extern  label_handle    GetStmtLabel(sym_id);
+extern  void            MakeSCB(sym_id,cg_name);
 extern  void            SubCodeSeg(void);
+extern  void            FiniLabels(int);
+extern  void            DefineEntryPoint(entry_pt *);
+extern  bool            InArgList(entry_pt *,sym_id);
+extern  void            SplitCmplx(cg_name,cg_type);
+extern  tmp_handle      AllocTmp(cg_type);
+extern  tmp_handle      MkTmp(cg_name,cg_type);
+extern  cg_name         TmpPtr(tmp_handle,cg_type);
+extern  void            RefStmtLabel(sym_id);
+extern  void            DoneLabel(label_id);
+extern  cg_name         CmplxAddr(cg_name,cg_name);
+extern  aux_info        *AuxLookup(sym_id);
+extern  cg_name         SCBPointer(cg_name);
+extern  cg_name         SCBPtrAddr(cg_name);
+extern  cg_name         SCBLength(cg_name);
+extern  cg_name         SCBLenAddr(cg_name);
+extern  cg_name         ArrayEltSize(sym_id);
 extern  cg_name         FieldArrayEltSize(sym_id);
+extern  call_handle     InitCall(RTCODE);
 extern  bool            IntType(PTYPE);
+extern  void            FiniTmps(void);
+extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
+extern  sym_id          FindArgShadow(sym_id);
+extern  bool            ForceStatic(unsigned_16);
+extern  bool            SCBRequired(sym_id);
 
 extern  aux_info        FortranInfo;
 extern  back_handle     TraceEntry;
@@ -79,7 +98,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called );
 
 
 
-static cg_type SPType( sym_id sym ) {
+cg_type SPType( sym_id sym ) {
 //============================
 
 // Return subprogram cg type.
@@ -753,7 +772,7 @@ void    FCCall( void ) {
 }
 
 
-void    FCEvalArg( void ) {
+void        FCEvalArg( void ) {
 //=======================
 
 // Force evaluation of an argument.

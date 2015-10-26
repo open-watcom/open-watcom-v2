@@ -38,7 +38,6 @@
 #include "winserv.h"
 #include "servname.h"
 #include "trperr.h"
-#include "parlink.h"
 
 extern unsigned NumPrinters( void );
 

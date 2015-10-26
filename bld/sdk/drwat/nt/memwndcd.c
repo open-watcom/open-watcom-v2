@@ -36,8 +36,8 @@
  * capabilities in DR NT
  *========================================================================*/
 
+#include <windows.h>
 #include "bool.h"
-#include "commonui.h"
 #include "memwnd.h"
 
 void DumpMemAsm( MemWndInfo *info, int hdl ) {

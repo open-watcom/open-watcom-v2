@@ -36,8 +36,6 @@
 #include "srvcdbg.h"
 #include "stdnt.h"
 #include "trperr.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
 
 
 typedef enum {
@@ -79,7 +77,7 @@ static void CantDoIt( void )
             Terminate();
         }
     } else if( MessageBox( 0, TRP_WIN_wanna_interrupt, TRP_The_WATCOM_Debugger, MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
-        Interrupt();
+        InterruptProgram();
     }
 }
 
@@ -180,7 +178,7 @@ static void ControlReq( ctl_request req )
                 switch( msg.message ) {
                 case WM_KEYDOWN:
                     if( msg.wParam == VK_CANCEL ) {
-                        Interrupt();
+                        InterruptProgram();
                     }
                     break;
                 case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger

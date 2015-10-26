@@ -43,7 +43,6 @@ typedef struct {
     char        *text;
 }MsgBoxInfo;
 
-#if 0
 /*
  * MsgBoxMain
  */
@@ -74,7 +73,6 @@ void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
     strcpy( info->title, title );
     _beginthread( MsgBoxMain, 0, info );
 }
-#endif
 
 /*
  * sendDebugEvent
@@ -153,7 +151,7 @@ static BOOL addRunningProcess( DWORD pid ) {
 /*
  * DebuggerMain - thread that acts as the debugger for attatched processes
  */
-static void DebuggerMain( void *_info ) {
+void DebuggerMain( void *_info ) {
 
     ProcAttatchInfo            *info = _info;
     STARTUPINFO                 startup;

@@ -42,7 +42,6 @@
 #include "recog.h"
 #include "ferror.h"
 #include "utility.h"
-#include "arutls.h"
 
 
 void    ScanExpr(void) {

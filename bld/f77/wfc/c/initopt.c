@@ -38,9 +38,8 @@
 #include "cpopt.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "lang.h"
-#include "initopt.h"
 
+extern  void            __UseEnglishCharSet(void);
 
 #define INITIAL_OPTS    (OPT_WARN | OPT_ERRFILE | OPT_TERM | OPT_DFLT_LIB | \
                          OPT_REFERENCE | OPT_DESCRIPTOR | OPT_DEPENDENCY)

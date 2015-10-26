@@ -36,8 +36,6 @@
 #include "ftextfun.h"
 #include "rundat.h"
 #include "rmemmgr.h"
-#include "runmain.h"
-#include "spawn.h"
 #include "thread.h"
 
 static  bool    __IsUnit6CC = { FALSE };
@@ -90,7 +88,7 @@ static  void    DoCloseFile( void ) {
     CloseFile( Files );
 }
 
-static void    CloseAllFiles( void ) {
+void    CloseAllFiles( void ) {
 //=======================
 
     while( Files != NULL ) {

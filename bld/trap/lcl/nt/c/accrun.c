@@ -33,10 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include <windows.h>
 #include "madregs.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
 #include "stdnt.h"
 
 typedef enum {
@@ -133,7 +130,7 @@ static void setTBitInAllThreads( set_t set )
     }
 }
 
-void Interrupt( void )
+void InterruptProgram( void )
 {
     setTBitInAllThreads( T_ON_CURR );
     // a trick to make app execute long enough to hit a breakpoint
@@ -155,16 +152,6 @@ bool Terminate( void )
     }
 }
 
-void TRAPENTRY TrapTellInterrupt( void )
-{
-    Interrupt();
-}
-
-bool TRAPENTRY TrapTellTerminate( void )
-{
-    return( Terminate() );
-}
-
 /*
  * consoleHandler - handle console ctrl c
  */
@@ -181,7 +168,7 @@ static BOOL WINAPI consoleHandler( DWORD type )
          * just running the mouse over the window will cause the app to
          * run and then trace-trap
          */
-        TrapTellInterrupt();
+        InterruptProgram();
         return( TRUE );
     } else {
         return( FALSE );
@@ -345,7 +332,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     int         cond;
     char        *p;
     char        *q;
-    BOOL        rc;
+    bool        rc;
 #ifdef WOW
 #if !defined( MD_x64 )
     thread_info *ti;

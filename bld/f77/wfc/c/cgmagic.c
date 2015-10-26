@@ -33,7 +33,6 @@
 #include "fcgbls.h"
 #include "global.h"
 #include "fmemmgr.h"
-#include "cgmagic.h"
 
 
 label_id        NextLabel( void ) {

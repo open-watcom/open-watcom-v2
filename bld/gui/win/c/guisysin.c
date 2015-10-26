@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include "guisysin.h"
 
 int GUISysInit( int param )
 {

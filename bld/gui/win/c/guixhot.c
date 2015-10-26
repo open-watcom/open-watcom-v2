@@ -46,6 +46,9 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 static PFNLI    pfnLoadImage;
 #endif
 
+extern  WPI_INST        GUIMainHInst;
+extern  WPI_INST        GUIResHInst;
+
 extern  int             GUINumHotSpots;
         hotspot_info    *GUIHotSpots;
 

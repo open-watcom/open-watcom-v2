@@ -38,11 +38,14 @@
 #include <signal.h>
 #include <stddef.h>
 #include <float.h>
-#include "fptraps.h"
-#include "external.h"
+
+#if defined( _M_IX86 )
+  #pragma aux fsignal "^"
+#endif
 
 extern  void                    __MaskDefaultFPE(void);
 
+typedef void (*fsig_func)( intstar4 );
 
 fsig_func   fsignal( intstar4 xcpt, fsig_func handler ) {
 //===========================================================

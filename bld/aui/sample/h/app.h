@@ -131,5 +131,3 @@ extern WNDOPEN W5Open;
 extern WNDOPEN W6Open;
 extern WNDOPEN W7Open;
 extern WNDOPEN W8Open;
-
-extern void    Password( const char *title, char *buff, unsigned buff_len );

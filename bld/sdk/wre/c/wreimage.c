@@ -119,7 +119,6 @@ uint_16 WREFindUnusedImageId( WREResInfo *info, uint_16 start )
     return( start );
 }
 
-#if 0
 bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id )
 {
     RESICONHEADER       *ih;
@@ -155,7 +154,6 @@ bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id 
 
     return( ok );
 }
-#endif
 
 bool WREFindImageId( WRECurrentResInfo *image, uint_16 type, uint_16 id,
                      WResLangType *ltype )
@@ -191,7 +189,7 @@ bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type )
     return( ok );
 }
 
-static bool WREAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
+bool WREAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
 {
     if( d1 == NULL || d1size == NULL || d2 == NULL || d2size == 0 ) {
         return( FALSE );
@@ -208,7 +206,7 @@ static bool WREAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d
     return( TRUE );
 }
 
-static bool WREAddCursorImageToData( WRECurrentResInfo *image, BYTE **data,
+bool WREAddCursorImageToData( WRECurrentResInfo *image, BYTE **data,
                               uint_32 *size, CURSORHOTSPOT *hotspot )
 {
     size_t      hs_size; // size of hotspot info
@@ -234,7 +232,7 @@ static bool WREAddCursorImageToData( WRECurrentResInfo *image, BYTE **data,
     return( ok );
 }
 
-static bool WREAddIconImageToData( WRECurrentResInfo *image, BYTE **data, uint_32 *size )
+bool WREAddIconImageToData( WRECurrentResInfo *image, BYTE **data, uint_32 *size )
 {
     bool        ok;
 
@@ -624,7 +622,6 @@ bool WRECreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
     return( ok );
 }
 
-#if 0
 // This function assumes that the data represents icon data WITHOUT
 // an icon directory
 WORD WRECountIconImages( BYTE *data, uint_32 size )
@@ -647,7 +644,6 @@ WORD WRECountIconImages( BYTE *data, uint_32 size )
 
     return( count );
 }
-#endif
 
 bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type )
 {
@@ -711,7 +707,6 @@ bool WREAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
     return( TRUE );
 }
 
-#if 0
 bool WREStripCursorHotspot( BYTE **cursor, uint_32 *size )
 {
     int hs_size;
@@ -725,9 +720,7 @@ bool WREStripCursorHotspot( BYTE **cursor, uint_32 *size )
 
     return( FALSE );
 }
-#endif
 
-#if 0
 bool WREStripCursorDirectory( BYTE **cursor, uint_32 *size )
 {
     CURSORHEADER        *ch;
@@ -745,7 +738,6 @@ bool WREStripCursorDirectory( BYTE **cursor, uint_32 *size )
 
     return( TRUE );
 }
-#endif
 
 bool WREAddBitmapFileHeader( BYTE **data, uint_32 *size )
 {

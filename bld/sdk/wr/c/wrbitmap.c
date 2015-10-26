@@ -298,7 +298,7 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
     return( bitmap_handle );
 }
 
-static void WRGetBitmapInfoHeader( BITMAPINFOHEADER *bmih, BITMAP *bm )
+void WRGetBitmapInfoHeader( BITMAPINFOHEADER *bmih, BITMAP *bm )
 {
     bmih->biSize = sizeof( BITMAPINFOHEADER );
     bmih->biWidth = bm->bmWidth;
@@ -313,7 +313,7 @@ static void WRGetBitmapInfoHeader( BITMAPINFOHEADER *bmih, BITMAP *bm )
     bmih->biClrImportant = 0;
 }
 
-static int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
+int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
 {
     int                 i;
     PALETTEENTRY        *pe;
@@ -347,7 +347,7 @@ static int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
     return( TRUE );
 }
 
-static int WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
+int WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
 {
     RGBQUAD     *rgb_quad;
     int         ret;
@@ -372,7 +372,7 @@ static int WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
     return( ret );
 }
 
-static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
+BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
 {
     long        size;
     BITMAPINFO  *bmi;
@@ -394,7 +394,7 @@ static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     return( bmi );
 }
 
-static int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
+int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
                              HBITMAP hbitmap )
 {
     HDC         hdc;

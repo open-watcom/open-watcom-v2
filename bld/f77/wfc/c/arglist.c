@@ -36,11 +36,12 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 #include "insert.h"
-#include "arglist.h"
-#include "impltab.h"
-#include "gsubprog.h"
-#include "rstmgr.h"
 
+extern  TYPE            ImplType(char);
+extern  uint            ImplSize(char);
+extern  void            GArgList(entry_pt *,uint,PTYPE);
+extern  void            GArgInfo(sym_id,PTYPE,PTYPE);
+extern  sym_id          FindShadow(sym_id);
 
 
 static  void    GetImplType( sym_id sym ) {

@@ -43,8 +43,8 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-#include "proctbl.h"
-#include "symtab.h"
+
+extern  sym_id          LkSym(void);
 
 
 void    CpExternal(void) {

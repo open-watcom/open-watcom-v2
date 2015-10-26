@@ -38,7 +38,6 @@
 #include <stdlib.h>
 #include "xfflags.h"
 #include "rundat.h"
-#include "external.h"
 
 
 void    __fortran FEXIT( intstar4 *rc ) {

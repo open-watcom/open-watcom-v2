@@ -39,7 +39,6 @@
 #include "fio.h"
 
 #include <stddef.h>
-#include "external.h"
 
 extern  int             SysSeek(b_file *,long int,int);
 extern  long int        FGetFilePos(b_file *);

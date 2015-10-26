@@ -39,7 +39,6 @@
 #include "currobj.def"
 #include "scroll.def"
 #include "grid.def"
-#include "eatom.def"
 
 #include "eatom.h"
 

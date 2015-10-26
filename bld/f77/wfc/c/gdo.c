@@ -44,9 +44,8 @@
 #include "emitobj.h"
 #include "types.h"
 #include "utility.h"
-#include "cgmagic.h"
-#include "gdo.h"
 
+extern  sym_id  StaticAlloc(uint,TYPE);
 
 /* Forward declarations */
 static  void    DataDo( TYPE do_type );

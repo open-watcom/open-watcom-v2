@@ -7,7 +7,6 @@
 #include "strings.h"
 #include "pctcp.h"
 #include "wdpmi.h"
-#include "netback.h"
 
 #define TIMER_INTR 8
 #define STK_SIZE   1024

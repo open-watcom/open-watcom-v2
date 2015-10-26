@@ -39,6 +39,8 @@
 #include "ieicodat.h"
 #include "iemem.h"
 
+extern void WriteIconLoadedText( char *filename, int num );
+
 /*
  * readIconFromData - read the icon file and set up structures
  */

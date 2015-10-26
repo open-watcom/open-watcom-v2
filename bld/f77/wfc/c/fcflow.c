@@ -45,21 +45,28 @@
 #include "errcod.h"
 #include "ferror.h"
 #include "fctypes.h"
-#include "tcmplx.h"
-#include "rststmt.h"
-#include "fcjmptab.h"
-#include "fcflow.h"
-#include "fcsel.h"
-#include "fcstring.h"
-#include "fctemp.h"
-#include "fccmplx.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
+extern  cg_name         XPopValue(cg_type);
+extern  cg_name         XPop(void);
+extern  void            XPush(cg_name);
+extern  cg_name         SymAddr(sym_id);
+extern  cg_name         ImagPtr(cg_name,cg_type);
+extern  cg_name         Concat(uint,cg_name);
+extern  bool            TypeCmplx(TYPE);
+extern  void            DoSelect(FCODE);
+extern  unsigned_32     GetStmtNum(sym_id);
+extern  void            XPopCmplx(cg_cmplx *,cg_type);
+extern  cg_type         CmplxBaseType(cg_type);
 extern  bool            IntType(PTYPE);
 extern  void            FCodeSequence(void);
+extern  void            SplitCmplx(cg_name,cg_type);
+extern  tmp_handle      MkTmp(cg_name,cg_type);
+extern  cg_name         TmpPtr(tmp_handle,cg_type);
+extern  cg_name         TmpVal(tmp_handle,cg_type);
+extern  cg_type         CmplxBaseType(cg_type);
 
 extern  cgflags_t       CGFlags;
 
@@ -69,6 +76,8 @@ static  obj_ptr         WarpReturn;
 /* Forward declarations */
 static  void    RBReferenced( sym_id rb );
 static  void    RefStmtFunc( sym_id sf );
+void    RefStmtLabel( sym_id sn );
+void    DoneLabel( label_id label );
 
 
 void    InitLabels( void ) {

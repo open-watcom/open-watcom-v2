@@ -42,7 +42,6 @@
 #include "wde_rc.h"
 #include "wderibbn.h"
 #include "wde_rc.h"
-#include "wdedde.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

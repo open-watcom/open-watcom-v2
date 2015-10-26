@@ -35,8 +35,8 @@
 //
 
 #include "rtinit.h"
-#include "lang.h"
 
+extern void     __UseEnglishCharSet( void );
 
 AXI( __UseEnglishCharSet, INIT_PRIORITY_LIBRARY );
 

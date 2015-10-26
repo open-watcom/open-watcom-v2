@@ -48,7 +48,6 @@
 #include "wrewait.h"
 #include "wrtmpfil.h"
 #include "rcstr.gh"
-#include "wresym.h"
 #include "preproc.h"
 
 /****************************************************************************/

@@ -3,7 +3,6 @@
 
 #include "wattcp.h"       /* target, config.h */
 #include "../inc/tcp.h"   /* WATTCP_MAJOR_VER, WATTCP_MINOR_VER */
-#include "version.h"
 
 const char *wattcpCopyright = "See COPYRIGHT.H for details";
 

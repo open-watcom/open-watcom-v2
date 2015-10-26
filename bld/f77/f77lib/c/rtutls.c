@@ -36,7 +36,6 @@
 #include "errcod.h"
 #include "rmemmgr.h"
 #include "deffname.h"
-#include "spawn.h"
 
 #include <string.h>
 

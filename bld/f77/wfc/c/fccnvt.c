@@ -39,13 +39,15 @@
 #include "wf77cg.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "fcjmptab.h"
-#include "fcstring.h"
-#include "fccmplx.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
+
+extern  void            XPush(cg_name);
+extern  cg_name         XPopValue(cg_type);
+extern  void            XPopCmplx(cg_cmplx *,cg_type);
+extern  cg_name         SCBPointer(cg_name);
+extern  cg_name         XPop(void);
 
 
 void    FCIChar( void ) {

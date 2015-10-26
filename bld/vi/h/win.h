@@ -212,10 +212,10 @@ extern void     SetGadgetString( char *str );
 extern void     UpdateRepeatString( char *str );
 
 /* win/clipbrd.c */
-extern int      AddLineToClipboard( char *data, int scol, int ecol );
-extern int      AddFcbsToClipboard( fcb_list *fcbs );
-extern int      GetClipboardSavebuf( savebuf *clip );
-extern bool     IsClipboardEmpty( void );
+extern int  	AddLineToClipboard( char *data, int scol, int ecol );
+extern int  	AddFcbsToClipboard( fcb_list *fcbs );
+extern int  	GetClipboardSavebuf( savebuf *clip );
+extern bool 	IsClipboardEmpty( void );
 
 #else
 

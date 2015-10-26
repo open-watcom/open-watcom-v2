@@ -38,7 +38,6 @@
 #include "global.h"
 #include "fcodes.h"
 #include "emitobj.h"
-#include "gdbginfo.h"
 
 
 void    GSetDbugLine( void ) {

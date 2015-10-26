@@ -31,7 +31,6 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
-#include "blderr.h"
 
 char                    __FAR *PGrpCodes = GrpCodes;
 

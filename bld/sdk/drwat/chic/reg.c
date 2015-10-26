@@ -43,7 +43,7 @@
 /*
  * getName
  */
-static void getName( DWORD proc_id, DWORD mod_id, char **name )
+void getName( DWORD proc_id, DWORD mod_id, char **name )
 {
     HANDLE              hdl;
     BOOL                noerror;

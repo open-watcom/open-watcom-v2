@@ -40,7 +40,6 @@
 #include "trperr.h"
 #include "dosequip.h"
 #include "serial.h"
-#include "serlink.h"
 #include "tinyio.h"
 
 #define I8259  0x20 /* 8259 control register address */
@@ -88,6 +87,7 @@ unsigned Ticks;
 
 extern void ClearBuffer( void );
 extern int GetBufferByte( void );
+extern void Wait( int );
 extern void InitInts( void );
 extern void FiniInts( void );
 
@@ -191,7 +191,7 @@ void ClearCom( void )
     ClearBuffer();
 }
 
-#if 0
+
 void SendABreak( void )
 {
     int lcr_value;             /* storing line control register value */
@@ -215,7 +215,6 @@ bool TestForBreak( void )
     _enable();
     return( FALSE );
 }
-#endif
 
 
 int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };

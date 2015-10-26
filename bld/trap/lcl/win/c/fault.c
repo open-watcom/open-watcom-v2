@@ -37,8 +37,6 @@
 #include "mad.h"
 #include "madregs.h"
 #include "miscx87.h"
-#include "fault.h"
-#include "int32std.h"
 
 /*
  * How we get our registers:
@@ -63,6 +61,43 @@
  *         - the specified routine then does a breakpoint, which then
  *           causes us to end up in IntHandler.
  */
+
+/*
+ * this is the crap that was on the stack before IntHandler (in int.asm)
+ * pushed its registers
+ */
+typedef struct {
+    DWORD oldEBP;       // pushed at start of IntHandler
+    WORD retIP;         // far call into
+    WORD retCS;         //        IntHandler
+    WORD AX;            // set by Windows for us (since AX is trashed)
+    WORD intnumber;     // set by Windows for us
+    WORD handle;        // set by Windows for us
+    WORD IP;            // this
+    WORD CS;            //   is the
+    WORD FLAGS;         //     interrupt frame
+} int_frame;
+
+/*
+ * this is everything that is on the stack that we need to know about
+ * (all of our registers, plus "int_frame" above).
+ */
+typedef struct {
+    WORD SS;
+    WORD GS;
+    WORD FS;
+    WORD ES;
+    WORD DS;
+    DWORD EDI;
+    DWORD ESI;
+    DWORD EBP;
+    DWORD ESP;
+    DWORD EBX;
+    DWORD EDX;
+    DWORD ECX;
+    DWORD oldEAX;
+    int_frame intf;
+} fault_frame;
 
 // nyi - put in header or something!
 #define SIG_OFF         0

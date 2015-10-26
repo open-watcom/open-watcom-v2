@@ -38,7 +38,6 @@
 #include "wdemain.h"
 #include "wdeactn.h"
 #include "wdefdiag.h"
-#include "wdeclear.h"
 
 static bool WdeQueryClearRes( void )
 {

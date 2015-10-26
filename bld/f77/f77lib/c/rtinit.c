@@ -46,7 +46,6 @@
 #include "errrtns.h"
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 #include "thread.h"
-#include "rttraps.h"
 
 #if defined( __WINDOWS__ )
   #if defined( __386__ )
@@ -97,7 +96,7 @@ static  void    __InitRTData( void ) {
 }
 
 
-static void    RTSysFini( void ) {
+void    RTSysFini( void ) {
 //===================
 
     _ExceptionFini();

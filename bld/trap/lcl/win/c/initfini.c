@@ -37,10 +37,6 @@
 #include "stdwin.h"
 #include "trperr.h"
 #include "winctrl.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
-#include "initfini.h"
-#include "int32std.h"
 
 extern  WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
@@ -160,7 +156,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         unsigned    bit;
         char        c;
         ++parms;
-        while( (c = *parms) != '\0' ) {
+        while( (c = *parms != '\0' ) {
             ++parms;
             if( c == ']' )
                 break;
@@ -235,22 +231,22 @@ void TRAPENTRY TrapFini( void )
 }
 
 /*
- * TrapTellHWND - inform trap file of gui debugger being used
+ * InfoFunction - inform trap file of gui debugger being used
  */
-void TRAPENTRY TrapTellHWND( HWND hwnd )
+void TRAPENTRY InfoFunction( HWND hwnd )
 {
 
     DebuggerWindow = hwnd;
     Out(( OUT_INIT,"DebuggerWindow = %04x", DebuggerWindow ));
     if( hwnd == NULL ) {
-        TrapUnLockInput();
+        UnLockInput();
     }
 }
 
 /*
  * GetHwndFunc - inform trap file of gui debugger being used
  */
-HWND TRAPENTRY TrapGetHWND( void )
+HWND TRAPENTRY GetHwndFunc( void )
 {
     return( DebuggerWindow );
 }
@@ -258,7 +254,7 @@ HWND TRAPENTRY TrapGetHWND( void )
 /*
  * set input hook routine
  */
-void TRAPENTRY TrapInputHook( LPVOID ptr )
+void TRAPENTRY InputHook( LPVOID ptr )
 {
     HookRtn = ptr;
 }
@@ -266,7 +262,7 @@ void TRAPENTRY TrapInputHook( LPVOID ptr )
 /*
  * HardModeCheck - obsolete
  */
-BOOL TRAPENTRY TrapHardModeCheck( void )
+BOOL TRAPENTRY HardModeCheck( void )
 {
     return( HardModeRequired );
 }
@@ -274,7 +270,7 @@ BOOL TRAPENTRY TrapHardModeCheck( void )
 /*
  * SetHardMode - force hard mode
  */
-void TRAPENTRY TrapTellHardMode( char force )
+void TRAPENTRY SetHardMode( char force )
 {
     ForceHardMode = force;
 }
@@ -282,7 +278,7 @@ void TRAPENTRY TrapTellHardMode( char force )
 /*
  * UnLockInput - unlock input from the debugger
  */
-void TRAPENTRY TrapUnLockInput( void )
+void TRAPENTRY UnLockInput( void )
 {
     if( DebuggerWindow != NULL && InputLocked ) {
         Out((OUT_SOFT,"Unlocking input from debugger"));

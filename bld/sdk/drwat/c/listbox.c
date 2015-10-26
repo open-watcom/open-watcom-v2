@@ -146,7 +146,7 @@ LBoxHdl *CreateListBox( HWND parent ) {
 /*
  * doLBPrintf - printf to a list box
  */
-static DWORD doLBPrintf( LBoxHdl *lb, char *str, va_list al )
+DWORD doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 {
     char        tmp[256];
     HDC         dc;

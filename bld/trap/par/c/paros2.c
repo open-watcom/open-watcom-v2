@@ -34,7 +34,6 @@
 #define INCL_DOSINFOSEG
 #include <os2.h>
 #include "i86.h"
-#include "parlink.h"
 
 
 extern unsigned __far output_port( unsigned, unsigned );

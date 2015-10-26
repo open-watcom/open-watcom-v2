@@ -31,7 +31,6 @@
 
 #include "auipvt.h"
 #include "guidlg.h"
-#include "wnddlg.h"
 
 #define MAX_DLG_NESTS   5
 static gui_window       *Parents[MAX_DLG_NESTS];

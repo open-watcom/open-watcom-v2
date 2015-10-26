@@ -84,13 +84,13 @@ void    ChopFile( b_file *io ) {
 
 #endif
 
-#if 0
+
 void    PutRec( char *b, int len ) {
 // Put a record to standard output device.
 
     FPutRec( FStdOut, b, len );
 }
-#endif
+
 
 static  void    PutTextRec( b_file *io, char *b, int len ) {
 // Put a record to a file with "text" records.
@@ -101,7 +101,7 @@ static  void    PutTextRec( b_file *io, char *b, int len ) {
 
     cc_len = 0;
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( (a_file *)io, *b, &cc );
+        cc_len = FSetCC( io, *b, &cc );
         b++;    // skip carriage control character
         len--;  // ...
     }

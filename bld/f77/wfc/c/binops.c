@@ -37,8 +37,11 @@
 #include "types.h"
 #include "emitobj.h"
 #include "types.h"
-#include "tcmplx.h"
-#include "binops.h"
+
+extern  bool            TypeCmplx(TYPE);
+
+/* Forward declarations */
+void    BinOp( TYPE typ1, TYPE typ2, OPTR opr );
 
 
 static bool UnaryMul( TYPE typ1, TYPE typ2 ) {

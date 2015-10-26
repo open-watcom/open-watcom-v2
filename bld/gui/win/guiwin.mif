@@ -37,6 +37,7 @@ sysobjs = guixscal.obj &
           guisys.obj   &
           guisysin.obj &
           guisysfi.obj &
+          guisystr.obj &
           guitimer.obj &
           guixwind.obj &
           guixmain.obj &
@@ -90,10 +91,6 @@ sysobjs = guixscal.obj &
 !ifeq host_os os2
 sysobjs +=             &
           os2mem.obj
-!else ifeq host_os nt
-sysobjs +=             &
-          guisystr.obj &
-          windlg.obj
 !else
 sysobjs +=             &
           windlg.obj

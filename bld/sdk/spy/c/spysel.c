@@ -50,7 +50,7 @@ void ClearSelectedWindows( void )
 
 } /* ClearSelectedWindows */
 
-static HWND *doAddSelectedWindow( HWND hwnd, HWND *list, WORD *cnt )
+HWND *doAddSelectedWindow( HWND hwnd, HWND *list, WORD *cnt )
 {
     HWND        *ret;
 

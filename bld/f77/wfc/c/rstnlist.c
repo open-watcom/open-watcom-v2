@@ -32,12 +32,11 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fmemmgr.h"
-#include "rstutils.h"
-#include "rstnlist.h"
-#include "cgmagic.h"
 
 #include <string.h>
 
+extern  uint                    AllocName(uint);
+extern  label_id                NextLabel(void);
 
 
 static  sym_id  AddNameList( char *name, int length ) {

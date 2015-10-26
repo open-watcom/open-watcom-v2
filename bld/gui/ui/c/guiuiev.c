@@ -32,7 +32,7 @@
 
 #include "guiwind.h"
 #include <string.h>
-#include "guiuiev.h"
+#include "stdui.h"
 
 
 EVENT GUIUIProcessEvent( EVENT ev )

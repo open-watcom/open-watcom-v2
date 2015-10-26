@@ -42,11 +42,12 @@
 #include "usfold.h"
 #include "errcod.h"
 #include "ferror.h"
-#include "upscan.h"
-#include "usconst.h"
 
 #include <string.h>
 
+extern  void            AddConst(itnode *);
+extern  void            GenExp(TYPE);
+extern  void            ExpI(byte,ftn_type *,intstar4);
 
 #define UAR_TAB_ROWS    9
 #define UAR_TAB_COLS    2

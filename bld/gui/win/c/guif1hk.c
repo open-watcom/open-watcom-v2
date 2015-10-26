@@ -33,8 +33,8 @@
 #include "guiwind.h"
 #include "guixutil.h"
 #include "guicontr.h"
-#include "guirdlg.h"
 
+extern  WPI_INST        GUIMainHInst;
 
 static  unsigned        F1Hooked = 0;
 static  WPI_PROC        F1ProcInst;
@@ -70,9 +70,9 @@ static gui_window *getFirstGUIParent( HWND hwnd )
 }
 
 #ifdef __OS2_PM__
-extern int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs )
+int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs )
 #else
-extern LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
+LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
 {
     WPI_MSG             message;

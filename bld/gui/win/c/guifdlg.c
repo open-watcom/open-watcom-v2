@@ -50,11 +50,14 @@
 #include "guifdlg.h"
 #include "guixutil.h"
 #include "guistr.h"
+//#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "wprocmap.h"
 
 #include "clibext.h"
 
+
+extern  WPI_INST        GUIMainHInst;
 
 #ifndef __OS2_PM__
 static  char    *LastPath; // this is set in NT for the sake of viper
@@ -66,8 +69,6 @@ static  bool    hookFileDlg = false;
 #else
 static  bool    hookFileDlg = true;
 #endif
-
-extern UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 void GUIHookFileDlg( bool hook )
 {
@@ -223,7 +224,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 #else
 
 #if defined(__NT__)
-static char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
+char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
 {
     char    *cp;
     LRESULT text_length;

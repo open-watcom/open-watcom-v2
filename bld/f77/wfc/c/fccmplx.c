@@ -43,21 +43,26 @@
 #include "global.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "cnvd2s.h"
-#include "fcjmptab.h"
-#include "fccmplx.h"
-#include "fcstruct.h"
-#include "fctemp.h"
-#include "wf77aux.h"
-#include "fcrtns.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
+extern  void            XPush(cg_name);
+extern  cg_name         XPopValue(cg_type);
+extern  cg_name         XPop(void);
+extern  call_handle     InitCall(RTCODE);
+extern  cg_name         SymAddr(sym_id);
+extern  void            CnvS2S(float *,char *);
+extern  void            CnvD2S(double *,char *);
+extern  void            CnvX2S(extended *,char *);
+extern  cg_name         StructRef(cg_name,int);
+extern  tmp_handle      AllocTmp(cg_type);
+extern  cg_name         TmpPtr(tmp_handle,cg_type);
+extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
+
 /* Forward declarations */
-static void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar );
-static void    InLineMulCC( unsigned_16 typ_info );
+void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar );
+void    InLineMulCC( unsigned_16 typ_info );
 
 
 cg_name ImagPtr( cg_name dest, cg_type typ ) {
@@ -97,7 +102,7 @@ void    SplitCmplx( cg_name cmplx_addr, cg_type typ ) {
 }
 
 
-static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) {
+void    DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) {
 //===========================================================================
 
 // Do a complex operation.
@@ -143,7 +148,7 @@ void            XPopCmplx( cg_cmplx *z, cg_type typ ) {
 }
 
 
-static void XCmplxOp( RTCODE rtn_id ) {
+void    XCmplxOp( RTCODE rtn_id ) {
 //=================================
 
 // F-Code processor for binary complex number operations involving
@@ -184,7 +189,7 @@ static  void    XCmplx( int op ) {
 }
 
 
-static void XMixed( int op, bool cmplx_scalar ) {
+void    XMixed( int op, bool cmplx_scalar ) {
 //===========================================
 
 // Binary F-Code processor for cmplx-scalar addition & subtraction.
@@ -223,7 +228,7 @@ static void XMixed( int op, bool cmplx_scalar ) {
 }
 
 
-static void XMulDivMix( int op, bool cmplx_scalar, unsigned_16 typ_info ) {
+void    XMulDivMix( int op, bool cmplx_scalar, unsigned_16 typ_info ) {
 //=====================================================================
 
 // Binary F-Code processor for mixed multiplication and division.
@@ -451,7 +456,7 @@ void    FCMulCmplx( void ) {
 }
 
 
-static void InLineMulCC( unsigned_16 typ_info ) {
+void    InLineMulCC( unsigned_16 typ_info ) {
 //===========================================
 
 // Do complex multiplication in-line.
@@ -538,7 +543,7 @@ static cg_type PromoteIntType( cg_type typ ) {
 }
 
 
-static void DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s ) {
+void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s ) {
 //=========================================================================
 
 // Do a complex operation.
@@ -565,7 +570,7 @@ static void DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s ) {
 }
 
 
-static void XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar ) {
+void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar ) {
 //=======================================================
 
 // F-Code processor for binary complex number operations involving
@@ -626,7 +631,7 @@ static  void    CCCmp( cg_op op, cg_name a, cg_name b, cg_name c, cg_name d ) {
 }
 
 
-static void CCCompare( int op ) {
+void    CCCompare( int op ) {
 //===========================
 
 // Complex/Complex compare.
@@ -642,7 +647,7 @@ static void CCCompare( int op ) {
 }
 
 
-static void XCCompare( int op ) {
+void    XCCompare( int op ) {
 //===========================
 
 // Scalar/Complex compare.

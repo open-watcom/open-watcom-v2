@@ -38,7 +38,6 @@
 #include "optflags.h"
 #include "cpopt.h"
 #include "inout.h"
-#include "ftextfun.h"
 
 #include <string.h>
 

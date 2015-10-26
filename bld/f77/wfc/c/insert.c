@@ -38,11 +38,12 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-#include "rstutils.h"
-#include "rststruc.h"
 
 #include <stdarg.h>
 
+extern  char            *STGetName(sym_id,char *);
+extern  char            *STStructName(sym_id,char *);
+extern  char            *STFieldName(sym_id,char *);
 extern  void            MsgBuffer(uint,char *,...);
 
 extern  char            *StmtKeywords[];

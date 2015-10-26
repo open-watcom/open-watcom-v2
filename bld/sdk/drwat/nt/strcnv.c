@@ -33,7 +33,6 @@
 #include "i64.h"
 #include "ctype.h"
 #include <windows.h>
-#include "strcnv.h"
 
 static char * eatSpace( char *str )
 {

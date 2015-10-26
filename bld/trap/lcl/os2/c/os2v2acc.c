@@ -42,7 +42,6 @@
 #include <os2dbg.h>
 #include <string.h>
 #include "trpimp.h"
-#include "trpimpxx.h"
 #include "dosdebug.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
@@ -58,13 +57,13 @@
 #include "x86cpu.h"
 #include "cpuglob.h"
 #include "os2extx.h"
-#include "dbgthrd.h"
 
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
 static BOOL             stopOnSecond;
 USHORT                  TaskFS;
 extern char             SetHardMode( char );
+extern VOID             InitDebugThread(VOID);
 
 #ifdef DEBUG_OUT
 
@@ -1521,12 +1520,12 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-void TRAPENTRY TrapTellHandles( HAB hab, HWND hwnd )
+void TRAPENTRY TellHandles( HAB hab, HWND hwnd )
 {
     TellSoftModeHandles( hab, hwnd );
 }
 
-char TRAPENTRY TrapTellHardMode( char hard )
+char TRAPENTRY TellHardMode( char hard )
 {
     return( SetHardMode( hard ) );
 }

@@ -152,7 +152,7 @@ static void addItems( void )
 /*
  * FunctionBarHelpProc
  */
-static void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -166,7 +166,7 @@ static void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
 /*
  * FunctionBarProc - hook function which intercepts messages to the toolbar
  */
-static bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;

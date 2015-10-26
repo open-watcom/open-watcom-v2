@@ -53,8 +53,8 @@
 #define INC_PENDING     0x04    //  c$include pending
 #define CONC_PENDING    0x08    //  conclude pending
 
-typedef struct source_t {
-    struct source_t     *link;
+typedef struct source {
+    struct source       *link;
     file_handle         fileptr;
     int                 rec;
     ftnoption           options;

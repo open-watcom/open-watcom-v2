@@ -164,7 +164,6 @@ static BOOL SetRegSelectFlag(HWND hwnd,BOOL setting)
     }
     return ( FALSE );
 }
-
 void GetChildPos( HWND parent, HWND child, RECT *c_rect )
 {
     LONG            style;

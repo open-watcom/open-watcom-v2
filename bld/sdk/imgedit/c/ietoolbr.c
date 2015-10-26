@@ -57,7 +57,7 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 /*
  * ToolBarHelpProc
  */
-static void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {

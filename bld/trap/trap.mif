@@ -50,12 +50,12 @@ sys_x86_win  = sys windows_dll &
             export TRAPINIT.2 &
             export TRAPFINI.3 &
             export TRAPREQUEST.4 &
-            export TRAPINPUTHOOK.5 &
-            export TRAPTELLHWND.6 &
-            export TRAPHARDMODECHECK.7 &
-            export TRAPGETHWND.8 &
-            export TRAPTELLHARDMODE.12 &
-            export TRAPUNLOCKINPUT.13 &
+            export INPUTHOOK.5 &
+            export INFOFUNCTION.6 &
+            export HARDMODECHECK.7 &
+            export GETHWNDFUNC.8 &
+            export SETHARDMODE.12 &
+            export UNLOCKINPUT.13 &
             op modname=$^& &
 #            option rwr &
             option description $(description)
@@ -64,9 +64,9 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
             export TrapFini_.2 &
             export TrapRequest_.3 &
 !ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
-            export TrapTellHWND_.4 &
-            export TrapTellInterrupt_.5 &
-            export TrapTellTerminate_.6 &
+            export InfoFunction_.4 &
+            export InterruptProgram_.5 &
+            export Terminate_.6 &
 # remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
 !endif
@@ -99,9 +99,9 @@ sys_axp_nt   = sys ntaxp_dll initinstance &
             export TrapInit.1 &
             export TrapFini.2 &
             export TrapRequest.3 &
-            export TrapTellHWND.4 &
-            export TrapTellInterrupt.5 &
-            export TrapTellTerminate.6 &
+            export InfoFunction.4 &
+            export InterruptProgram.5 &
+            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -109,9 +109,9 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             export TrapInit.1 &
             export TrapFini.2 &
             export TrapRequest.3 &
-            export TrapTellHWND.4 &
-            export TrapTellInterrupt.5 &
-            export TrapTellTerminate.6 &
+            export InfoFunction.4 &
+            export InterruptProgram.5 &
+            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -120,9 +120,9 @@ sys_jvm_nt   = sys nt_dll initinstance opt dosseg &
             export TrapFini_.2 &
             export TrapRequest_.3 &
 !ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
-            export TrapTellHWND_.4 &
-            export TrapTellInterrupt_.5 &
-            export TrapTellTerminate_.6 &
+            export InfoFunction_.4 &
+            export InterruptProgram_.5 &
+            export Terminate_.6 &
 # remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
 !endif

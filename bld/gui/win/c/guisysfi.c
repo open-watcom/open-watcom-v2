@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include "guisysfi.h"
 
 void GUISysFini( void  )
 {

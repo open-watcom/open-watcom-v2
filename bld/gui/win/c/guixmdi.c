@@ -57,6 +57,7 @@ static  char            Buffer[MAX_LENGTH];
 static  bool            DoneMDIInit             = false;
 static  bool            DoingMaxRestore         = false;
 static  bool            ArrangeIcons            = false;
+extern  WPI_INST        GUIMainHInst;
 
 static void StartMaxRestore( HWND hwnd )
 {
@@ -144,7 +145,7 @@ static bool IsMaximized( gui_window *wnd )
         if( GUIIsMDIChildWindow( wnd ) ) {
             return( MDIIsWndMaximized( hwnd ) );
         } else {
-            return( _wpi_iszoomed( hwnd ) != 0 );
+            return( _wpi_iszoomed( hwnd ) );
         }
     } else {
         return( false );
@@ -204,7 +205,7 @@ bool XInitMDI( gui_window *wnd )
     }
 }
 
-static void GUIMDIBringToFront( gui_window *wnd )
+void GUIMDIBringToFront( gui_window *wnd )
 {
     if( wnd != NULL ) {
         if( MDIIsMaximized() && GUIIsMinimized( wnd ) ) {

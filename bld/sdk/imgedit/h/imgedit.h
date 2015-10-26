@@ -291,7 +291,6 @@ void    OpenFileOnStart( char *fname );
 BOOL    ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode );
 BOOL    ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode  );
 BOOL    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode );
-void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */
 BOOL    SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size );

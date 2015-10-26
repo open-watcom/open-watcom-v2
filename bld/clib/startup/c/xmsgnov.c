@@ -33,7 +33,6 @@
 #include <string.h>
 #include <io.h>
 #include "exitwmsg.h"
-#include "xmsgnov.h"
 
 #if defined (_NETWARE_CLIB)
 extern void             ExitThread( int,int );

@@ -37,9 +37,7 @@
 #define INCL_DOSERRORS
 #define INCL_DOSMISC
 #include <os2.h>
-#include "bool.h"
 #include "serial.h"
-#include "serlink.h"
 #include "trpimp.h"
 #include "trperr.h"
 
@@ -152,7 +150,7 @@ void StopBlockTrans( void )
     }
 }
 
-static void _System Reader(ULONG arg)
+void _System Reader(ULONG arg)
 {
     int        data;
     ULONG      read;

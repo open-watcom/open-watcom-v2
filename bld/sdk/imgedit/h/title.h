@@ -30,6 +30,4 @@
 ****************************************************************************/
 
 
-WINEXPORT BOOL CALLBACK wTitle( HWND, UINT, WPARAM, LPARAM );
-
 extern void DisplayTitleScreen( HINSTANCE, HWND, UINT, char * );

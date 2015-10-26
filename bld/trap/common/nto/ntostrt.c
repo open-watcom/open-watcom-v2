@@ -31,7 +31,7 @@
 
 #include <stdlib.h>
 #include "trpimp.h"
-#include "trptypxx.h"
+#include "trpuximp.h"
 #include "ntostrt.h"
 
 

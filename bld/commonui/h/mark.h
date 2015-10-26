@@ -45,6 +45,4 @@
 
 void    ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) );
 
-WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
 #endif /* _MARK_H_INCLUDED */

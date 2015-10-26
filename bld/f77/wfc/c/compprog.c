@@ -40,28 +40,39 @@
 #include "frl.h"
 #include "comio.h"
 #include "inout.h"
-#include "arglist.h"
-#include "compprog.h"
-#include "compstmt.h"
-#include "cpsubpgm.h"
-#include "csutls.h"
-#include "ifused.h"
-#include "rstdump.h"
-#include "stmtno.h"
-#include "stresolv.h"
-#include "symtab.h"
-#include "cptraps.h"
-#include "gsubprog.h"
-#include "tdinit.h"
-#include "rstmgr.h"
 
 extern  void    BIInit( void );
 extern  void    BIEnd( void );
 extern  void    BIStartSubProg( void );
 extern  void    BIResolveUndefTypes( void );
 extern  void    BIEndSubProg( void );
+extern  void    FTrapInit( void );
+extern  void    FTrapFini( void );
+extern  void    CompStatement( void );
+extern  void    InitCSList( void );
+extern  bool    CheckCSList( byte );
+extern  void    CSPurge( void );
+extern  void    InitStNumbers( void );
+extern  void    ClearRem( void );
+extern  void    OpenSymTab( void );
+extern  void    STInit( void );
+extern  void    STResolve( void );
+extern  void    STDump( void );
+extern  void    DumpEntries( void );
+extern  void    EnPurge( void );
+extern  void    IFInit( void );
+extern  void    TDProgInit( void );
+extern  void    TDProgFini( void );
+extern  void    TDSubInit( void );
+extern  void    TDSubFini( void );
+extern  void    Epilogue( void );
+extern  void    GReturn( void );
 extern  bool    TBreak( void );
+extern  void    GEndBlockData( void );
 
+/*forward declarations */
+void    InitSubProg( void );
+void    FiniSubProg( void );
 
 static bool CompSProg( void )
 {

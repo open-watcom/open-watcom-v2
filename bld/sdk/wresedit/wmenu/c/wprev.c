@@ -39,7 +39,6 @@
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "w_menu.h"
-#include "wprev.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

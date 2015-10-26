@@ -42,12 +42,12 @@
 #include "fmtdat.h"
 #include "cpopt.h"
 #include "emitobj.h"
-#include "cfmttab.h"
-#include "fmtemit.h"
+
+extern  void            FmtError(int);
 
 
-void    GFEmEnd( void ) {
-//=======================
+void    GFEmEnd() {
+//=================
 
     OutByte( END_FORMAT );
     OutInt( ObjOffset( Fmt_revert.cp ) );

@@ -30,16 +30,9 @@
 
 
 #ifdef __NETWARE__
-
-#include "widechar.h"
-#include "variety.h"
-#include "initarg.h"
-
-void __Init_Argv( void ) { }
-void __Fini_Argv( void ) { }
-
+    void __Init_Argv( void ) { }
+    void __Fini_Argv( void ) { }
 #else
-
 #include "dll.h"        // needs to be first
 #include "widechar.h"
 #include "variety.h"
@@ -49,10 +42,10 @@ void __Fini_Argv( void ) { }
 #include <io.h>
 #include "liballoc.h"
 #include "initarg.h"
-#include "nomem.h"
 #include "rtdata.h"
 
 extern  int         __historical_splitparms;
+extern  void        _Not_Enough_Memory( void );             /* 25-jul-89 */
 static  unsigned    _SplitParms(int, CHAR_TYPE *, CHAR_TYPE **, CHAR_TYPE ** );
 _WCRTDATA static CHAR_TYPE  *__F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
 
@@ -230,5 +223,4 @@ void __F_NAME(__Fini_Argv,__wFini_Argv)( void )
         lib_free( __F_NAME(__CmdLine,__wCmdLine) );
     }
 }
-
 #endif

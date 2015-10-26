@@ -42,23 +42,28 @@
 #include "inout.h"
 #include "cle.h"
 #include "utility.h"
-#include "sdcio.h"
-#include "csutls.h"
-#include "proctbl.h"
-#include "equiv.h"
-#include "rstalloc.h"
-#include "docle.h"
-#include "tdinit.h"
-#include "gsegs.h"
-#include "fmacros.h"
-#include "option.h"
-#include "rstmgr.h"
 
 #include <time.h>
 
+extern  void            DoCompile( void );
+extern  void            StatProg( void );
+extern  void            VSTInit( void );
+extern  void            STPurge( void );
+extern  void            CSPurge( void );
 extern  void            EnPurge( void );
+extern  void            EqPurge( void );
+extern  void            TDPurge( void );
+extern  void            OpenSymTab( void );
+extern  void            InitMacros( void );
+extern  void            FiniMacros( void );
+extern  void            FiniMacroProcessor( void );
 extern  void            InitAuxInfo( void );
 extern  void            FiniAuxInfo( void );
+extern  void            InitGlobalSegs( void );
+extern  void            FreeGlobalSegs( void );
+extern  void            SDRewind(file_handle);
+extern  void            TOutBanner( void );
+extern  void            PrtOptions(void);
 
 unsigned_32     CompTime;
 

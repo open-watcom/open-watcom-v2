@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "wddespy.h"
 #include <io.h>
 #include <time.h>

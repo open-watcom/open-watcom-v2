@@ -43,19 +43,31 @@
 #include "insert.h"
 #include "utility.h"
 #include "fcodes.h"
-#include "arutls.h"
-#include "csgoto.h"
-#include "fmtinit.h"
-#include "ioperm.h"
-#include "ioprockw.h"
-#include "kwlook.h"
-#include "stmtno.h"
-#include "symtab.h"
-#include "upscan.h"
-#include "cgmagic.h"
-#include "gio.h"
-#include "gflow.h"
 
+extern  IOKW            RecIOKW(void);
+extern  bool            Permission(IOKW);
+extern  void            CheckList(void);
+extern  void            KWRememb(int);
+extern  sym_id          LkUpStmtNo(void);
+extern  sym_id          LkUpFormat(void);
+extern  void            GFmtVarSet(void);
+extern  void            GFmtArrSet(void);
+extern  void            GFmtExprSet(void);
+extern  void            GPassStmtNo(sym_id,FCODE);
+extern  void            GPassValue(FCODE);
+extern  void            GPassAddr(FCODE);
+extern  void            GPassLabel(label_id,RTCODE);
+extern  void            GArrIntlSet(void);
+extern  void            GIntlSet(void);
+extern  sym_id          CkAssignOk(void);
+extern  void            AddConst(itnode *);
+extern  label_id        NextLabel(void);
+extern  void            FScan(int,char *,cs_label);
+extern  void            ScanExpr(void);
+extern  void            FreeLabel(label_id);
+extern  sym_id          NameListFind(void);
+extern  void            GSetNameList(FCODE);
+extern  void            CkVarRef(void);
 extern  void            BIOutNameList(sym_id);
 
 

@@ -251,8 +251,6 @@ cmain086_opts =$($(processor)_sub_opts)
 cmain386_opts =$($(processor)_sub_opts)
 cmainosi_opts =$($(processor)_sub_opts)
 cmainqnx_opts =$($(processor)_sub_opts)
-dmaincwd_opts =-I"$(clib_dir)/process/h"
-exit_opts     =-I"$(clib_dir)/process/h"
 imthread_opts =-I"$(clib_dir)/mthread/h"
 initargv_opts =$($(processor)_sub_opts)
 initrtns_opts =$($(processor)_ac_opts)
@@ -260,10 +258,6 @@ ioexit_opts   =-I"$(clib_dir)/streamio/h"
 libcstrt_opts =-I"$(clib_dir)/mthread/h"
 main2wnt_opts =$($(processor)_xd_opts)
 main4wnt_opts =$($(processor)_xd_opts)
-mainlnx_opts =-I"$(clib_dir)/mthread/h"
-maino32_opts =-I"$(clib_dir)/mthread/h"
-mainrdu_opts =-I"$(clib_dir)/mthread/h"
-mainwnt_opts =-I"$(clib_dir)/mthread/h"
 
 # these options override C lib standard options
 ################################################

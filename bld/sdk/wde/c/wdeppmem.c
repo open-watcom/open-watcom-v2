@@ -33,7 +33,6 @@
 #include "wrdll.h"
 #include "wdestken.h"
 #include "wdedebug.h"
-#include "preproc.h"
 
 static jmp_buf Env;
 

@@ -32,8 +32,6 @@
 
 #include "global.h"
 #include "rccore.h"
-#include "semsingl.h"
-#include "exelxobj.h"
 
 
 void SemOS2WriteFontDir( void )

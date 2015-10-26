@@ -8,7 +8,6 @@
  */
 
 #include "socket.h"
-#include "stream.h"
 
 #if defined(USE_BSD_FUNC)
 

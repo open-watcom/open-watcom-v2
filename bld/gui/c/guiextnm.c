@@ -31,11 +31,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#if defined( __WATCOMC__ ) && defined( __UNIX__ ) && defined( GUI_EXT_RES )
-    #include <process.h>
-#endif
 #include "bool.h"
-#include "guiextnm.h"
 
 #include "clibext.h"
 

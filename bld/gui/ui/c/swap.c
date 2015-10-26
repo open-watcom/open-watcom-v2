@@ -34,7 +34,6 @@
 #include <dos.h>
 #include "dpmi.h"
 #include "swap.h"
-#include "swapline.h"
 
 
 enum {
@@ -306,6 +305,8 @@ static HDC              screenMemDC;
 
 static int              oldCursorCount;
 static POINT            oldCursorPos;
+
+extern int              SwapScrnLines( void );
 
 static void doAnInt10( void )
 {

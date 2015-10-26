@@ -92,6 +92,15 @@ typedef struct toolbar {
 HBITMAP TB_CreateTransparentBitmap( HBITMAP, int, int );
 #endif
 
+WINEXPORT WPI_MRESULT CALLBACK    ToolBarWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+#ifdef __NT__
+WINEXPORT LRESULT CALLBACK    WinToolWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK    ToolContainerWndProc( HWND, UINT, WPARAM, LPARAM );
+#endif
+#ifdef __OS2__
+WINEXPORT WPI_MRESULT CALLBACK FrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+#endif
+
 static char     *className = "WTool";
 #ifdef __NT__
 static char     *containerClassName = "WToolContainer";

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "lexcmp.h"
+#include "rtenv.h"
 
 static  int     ChkBlanks( char PGM *ptr, uint len ) {
 //====================================================

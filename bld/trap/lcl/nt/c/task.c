@@ -33,10 +33,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
-#include "trpimp.h"
-#include "trpimpxx.h"
-#include "globals.h"
-#include "task.h"
 
 // for old header files
 #ifndef VER_PLATFORM_WIN32_WINDOWS
@@ -112,9 +108,9 @@ void TRAPENTRY TrapFini( void )
 }
 
 /*
- * TrapTellHWND - inform trap file of gui debugger being used
+ * InfoFunction - inform trap file of gui debugger being used
  */
-void TRAPENTRY TrapTellHWND( HWND hwnd )
+void TRAPENTRY InfoFunction( HWND hwnd )
 {
     DebuggerWindow = hwnd;
 }

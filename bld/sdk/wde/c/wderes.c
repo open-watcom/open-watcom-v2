@@ -556,7 +556,7 @@ WdeResInfo *WdeResInfoFromWin( HWND win )
     return( NULL );
 }
 
-static void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPARAM lParam )
+void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo  *info;
     OBJPTR      current_obj;
@@ -1209,7 +1209,7 @@ OBJPTR WdeGetCurrentDialog( void )
     return( curr_obj );
 }
 
-static OBJPTR WdeIsDialogInList( LIST *l )
+OBJPTR WdeIsDialogInList( LIST *l )
 {
     OBJ_ID  oid;
     OBJPTR  obj;
@@ -1224,7 +1224,7 @@ static OBJPTR WdeIsDialogInList( LIST *l )
     return( NULL );
 }
 
-static bool WdeMouseRtnCreate( HWND win, RECT *r )
+bool WdeMouseRtnCreate( HWND win, RECT *r )
 {
     RECT            *ncp;
     RECT            rect;
@@ -1299,7 +1299,7 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
     return( TRUE );
 }
 
-static bool WdeMouseRtnResize( HWND win, RECT *r )
+bool WdeMouseRtnResize( HWND win, RECT *r )
 {
     POINT           pt;
     LIST            *l;

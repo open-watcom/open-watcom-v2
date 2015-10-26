@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include "guimin.h"
 #include "guiscale.h"
-#include "guiev.h"
 
 void GUIStartEventProcessing( void )
 {

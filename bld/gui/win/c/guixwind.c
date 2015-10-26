@@ -57,8 +57,8 @@
 #include "guistyle.h"
 #include "guifront.h"
 #include "guiwinlp.h"
-#include "guisystr.h"
 
+extern bool     GUIMainTouched;
 
 #if !defined(__NT__)
 #define WM_PAINTICON            0x0026
@@ -86,6 +86,14 @@ typedef struct wmcreate_info {
 
 WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
+/* Changes added to enable use of the system tray */
+// Mmessage sent when system tray is accessed
+#define WM_TRAYCALLBACK WM_USER + 666
+// Function called to process system tray messages. - include in app
+extern void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+// Function to allow use of system tray when objects are minimized - include in app
+extern void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+
 #ifdef __NT__
 #if !defined(WM_MOUSEWHEEL)
 #define WM_MOUSEWHEEL (WM_MOUSELAST + 1)
@@ -94,6 +102,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PA
 
 gui_window      *GUICurrWnd     = NULL;
 WPI_INST        GUIMainHInst;
+extern WPI_INST GUIResHInst;
 
 #define GUI_CLASSNAME_MAX       64
 
@@ -124,7 +133,7 @@ static void GUISetWindowClassName( void )
     char        *class_name;
 
     class_name = GUIGetWindowClassName();
-    if( class_name == NULL || *class_name == '\0' ) {
+    if( !class_name || !*class_name ) {
         class_name = GUIDefaultClassName;
     }
     strncpy( GUIClass, class_name, GUI_CLASSNAME_MAX - 1 );
@@ -716,8 +725,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     }
 }
 
-#ifndef __OS2_PM__
-static bool SetFocusToParent( void )
+bool SetFocusToParent( void )
 {
     HWND        curr_hwnd;
 
@@ -738,7 +746,6 @@ static bool SetFocusToParent( void )
     }
     return( false );
 }
-#endif
 
 void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
 {
@@ -1160,10 +1167,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 }
             }
         }
-#ifdef __NT__
         //Call back to tell about resizing so system tray can be used
         WndSizeChange( hwnd, wparam, lparam );
-#endif
         break;
     case WM_MOUSEMOVE:
         currentpoint.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
@@ -1339,12 +1344,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         return( 0L );
 
-#ifdef __NT__
     // Message to deal with tray icons (Win 95 and NT 4.0 ).
     case WM_TRAYCALLBACK :
         TrayCallBack( hwnd, wparam, lparam );
         return( 0L );
-#endif
 
     case WM_DESTROY :
         wnd->flags |= DOING_DESTROY;

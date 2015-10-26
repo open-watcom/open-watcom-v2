@@ -41,13 +41,11 @@
 
 static BOOL doLog;
 
-WINEXPORT BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WORD __cdecl FAR FaultHandler( fault_frame ff );
-
 /*
  * IntDialog - handles input from user when a fault is received
  */
-WINEXPORT BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam )
 {
     char        buff[256];
     WORD        tmp;

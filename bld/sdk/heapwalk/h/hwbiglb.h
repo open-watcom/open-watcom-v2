@@ -42,4 +42,3 @@ void SetBoxCnt( TextBoxHdl hdl, unsigned cnt );
 HWND GetTextBoxHWND( TextBoxHdl hdl );
 void SetBoxFont( TextBoxHdl hwnd, HFONT font );
 void SetListBoxForAdd( TextBoxHdl hwnd, BOOL add );
-BOOL __export FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam, LONG lparam );

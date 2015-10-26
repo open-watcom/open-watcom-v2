@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include "guisystr.h"
 
 void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
 {

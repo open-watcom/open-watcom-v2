@@ -31,11 +31,11 @@
 
 #if defined( __OS2__ )
 
-extern void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, thread_data *ptr,
+    extern void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
                     unsigned hmod, char *env, char *cmd );
 
 #elif defined( __NT__ )
 
-extern void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata );
+    extern void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata );
 
 #endif

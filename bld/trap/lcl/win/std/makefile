@@ -57,7 +57,7 @@ extra_linker = &
 
 !include $(commonui_dir)/windbg.mif
 
-inc_dirs = -I"$(trap_dir)/lcl/win/h" $(windbg_inc_dirs)
+inc_dirs = $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
 !include $(trap_dir)/lcl/win/win.mif

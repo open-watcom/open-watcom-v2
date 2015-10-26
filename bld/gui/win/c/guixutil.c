@@ -46,12 +46,13 @@
 #include "guixhook.h"
 #include "guipaint.h"
 #include "guizlist.h"
-#include "guirdlg.h"
-
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
 
+extern  gui_window      *GUICurrWnd;
 extern  WPI_TEXTMETRIC  GUItm;
+extern  WPI_INST        GUIMainHInst;
+extern  WPI_INST        GUIResHInst;
 
 static void MaxChild( gui_window *wnd, void *param )
 {
@@ -275,7 +276,7 @@ gui_window *GUIFindFirstChild( gui_window *parent )
     return( NULL );
 }
 
-static gui_window *GUIFindFirstPopupWithNoParent( void )
+gui_window *GUIFindFirstPopupWithNoParent( void )
 {
     gui_window *wnd;
 

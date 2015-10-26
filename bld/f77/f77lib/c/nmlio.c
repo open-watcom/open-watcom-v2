@@ -38,9 +38,6 @@
 #include "iotype.h"
 #include "lgadv.h"
 #include "nmlinfo.h"
-#include "nmlio.h"
-#include "chrutils.h"
-#include "spawn.h"
 
 #include <stdarg.h>
 #include <string.h>
@@ -55,7 +52,7 @@ static  void    NmlIn( void );
 static  void    NmlOut( void );
 
 
-static char            *Scanner( void ) {
+char            *Scanner( void ) {
 //==========================
 
 // Point to where we are currently scanning.
@@ -67,7 +64,7 @@ static char            *Scanner( void ) {
 }
 
 
-static bool            ScanChar( char chr ) {
+bool            ScanChar( char chr ) {
 //====================================
 
 // Scan a character.
@@ -80,7 +77,7 @@ static bool            ScanChar( char chr ) {
 }
 
 
-static bool            ScanEOL( void ) {
+bool            ScanEOL( void ) {
 //=========================
 
 // Check for end-of-line.
@@ -89,7 +86,7 @@ static bool            ScanEOL( void ) {
 }
 
 
-static char            *ScanName( uint *len ) {
+char            *ScanName( uint *len ) {
 //======================================
 
 // Scan a name.
@@ -112,7 +109,7 @@ static char            *ScanName( uint *len ) {
 }
 
 
-static bool            ScanSNum( signed_32 PGM *num ) {
+bool            ScanSNum( signed_32 PGM *num ) {
 //==============================================
 
 // Scan a signed number.

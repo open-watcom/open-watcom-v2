@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "wddespy.h"
 
 typedef struct ddetoolinfo {
@@ -100,7 +101,7 @@ static void resizeForTB( RECT *area, HWND hwnd )
 /*
  * MyToolBarProc - hook message handler for the toolbar
  */
-static bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MINMAXINFO  *minmax;
 //  HWND        toolhwnd;

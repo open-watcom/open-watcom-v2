@@ -248,7 +248,6 @@ WResID *WdeCopyWResID( WResID *src )
     return( dest );
 }
 
-#if 0
 WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
 {
     WResHelpID  *dest;
@@ -272,7 +271,6 @@ WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
 
     return( dest );
 }
-#endif
 
 ResNameOrOrdinal *WdeCopyResNameOr( ResNameOrOrdinal *src )
 {

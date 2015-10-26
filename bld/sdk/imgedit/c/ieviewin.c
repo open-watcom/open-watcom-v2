@@ -33,9 +33,6 @@
 #include "imgedit.h"
 #include "ieprofil.h"
 
-WINEXPORT BOOL CALLBACK ViewEnumProc( HWND hwnd, LONG lparam );
-WINEXPORT BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam );
-
 static int              showState = SW_SHOWNORMAL;
 static COLORREF         bkgroundColor = BK_WHITE;
 static HWND             hViewWindow;
@@ -276,7 +273,7 @@ static void redrawViewWnd( HWND hwnd )
  * ViewEnumProc - enumerate the child windows and show the view window
  *                for each window
  */
-WINEXPORT BOOL CALLBACK ViewEnumProc( HWND hwnd, LONG lparam )
+BOOL CALLBACK ViewEnumProc( HWND hwnd, LONG lparam )
 {
     lparam = lparam;
 
@@ -412,7 +409,7 @@ COLORREF GetViewBkColor( void )
 /*
  * BkColorEnumProc - used to change the background color of all MDI children
  */
-WINEXPORT BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam )
+BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam )
 {
     img_node    *node;
 

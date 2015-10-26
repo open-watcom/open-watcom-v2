@@ -41,7 +41,6 @@
 #include "fmtdat.h"
 #include "global.h"
 #include "ferror.h"
-#include "cfmttab.h"
 
 
 static  unsigned_16     SetCaret(void) {

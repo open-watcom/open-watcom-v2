@@ -39,7 +39,6 @@
 #include "xfloat.h"
 #include "farsupp.h"
 #include "rtcntrl.h"
-#include "efgsupp.h"
 
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */

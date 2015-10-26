@@ -62,7 +62,6 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
-#include "dllmain.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -1216,7 +1215,7 @@ void WHandleRename( WMenuEditInfo *einfo )
     }
 }
 
-static bool WQueryClearRes( WMenuEditInfo *einfo )
+bool WQueryClearRes( WMenuEditInfo *einfo )
 {
     int         ret;
     UINT        style;

@@ -39,13 +39,13 @@
 #include "fmthdr.h"
 #include "cg.h"
 #include "emitobj.h"
-#include "fcformat.h"
-#include "fcflow.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 //=========================================================================
+
+extern  back_handle     GetFmtLabel(label_id);
 
 
 void    DumpFormats( void ) {

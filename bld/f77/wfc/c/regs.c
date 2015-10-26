@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include "global.h"
 #include "wf77aux.h"
 
 hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };

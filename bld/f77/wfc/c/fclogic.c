@@ -39,10 +39,14 @@
 #include "cg.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "fcjmptab.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+
+
+extern  cg_name         XPop(void);
+extern  cg_name         XPopValue(cg_type);
+extern  cg_name         GetTypedValue(void);
+extern  void            XPush(cg_name);
 
 
 static  void    Equivalent( cg_op op_code ) {

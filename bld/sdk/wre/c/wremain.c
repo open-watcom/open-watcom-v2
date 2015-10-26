@@ -233,6 +233,8 @@ static void startEditors( void )
     }
 }
 
+bool WREIsResInfoWinMsg( LPMSG pmsg );
+
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {

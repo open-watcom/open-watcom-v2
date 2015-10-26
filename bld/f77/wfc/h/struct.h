@@ -24,9 +24,50 @@
 *
 *  ========================================================================
 *
-* Description:  STRUCTURE/RECORD statement processor.
+* Description:  Define FORTRAN 77 structures.
 *
 ****************************************************************************/
 
 
-extern void    StructResolve( void );
+typedef struct fstruct {
+    sym_id              link;                   // next structure definition
+    union {
+        struct field    *fields;                // fields of structure
+        sym_id          sym_fields;             // sym_id type pointer
+    } fl;
+    intstar4            size;                   // size of structure
+    unsigned short      cg_typ;                 // type for code generator
+    unsigned short      dbi;                    // for debugging information
+    unsigned_32         dbh;                    // browsing info handle
+    byte                name_len;               // length of structure name
+    char                name[STD_SYMLEN];       // structure name
+} fstruct;
+
+// Note: the fields of "fmap" must match the fields in "fstruct".
+
+typedef struct fmap {
+    sym_id              link;                   // next map definition
+    struct field        *fields;                // fields of map
+    intstar4            size;                   // size of map
+} fmap;
+
+typedef struct field {
+    sym_id              link;                   // next field
+    byte                typ;                    // type of field
+    union {
+        uint            size;                   // size of field
+        struct fstruct  *record;                // pointer to structure
+        sym_id          sym_record;             // sym_id type pointer
+    } xt;
+    struct act_dim_list *dim_ext;               // dimension information
+    byte                name_len;               // length of name of field
+    char                name[STD_SYMLEN];       // name of field
+} field;
+
+// Note: the fields of "funion" must match the fields in "field".
+
+typedef struct funion {
+    sym_id              link;                   // next field
+    byte                typ;                    // type of field
+    struct fmap         *record;                // pointer to map
+} funion;

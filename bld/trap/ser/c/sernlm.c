@@ -30,12 +30,10 @@
 
 
 #include <dos.h>
-#include "bool.h"
 #include "miniproc.h"
 #include "debugme.h"
 #include "nwtypes.h"
 #include "serial.h"
-#include "serlink.h"
 #include "aio.h"
 #include "trpimp.h"
 #include "trperr.h"

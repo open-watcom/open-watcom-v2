@@ -33,6 +33,8 @@
 #include "guiwind.h"
 #include "guiextnm.h"
 
+extern  WPI_INST        GUIMainHInst;
+extern  WPI_INST        GUIResHInst;
 
 static  bool            GUIMsgInitFlag = false;
 

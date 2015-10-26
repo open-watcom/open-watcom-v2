@@ -35,7 +35,6 @@
 #define INCL_DOSMISC
 #include <os2.h>
 #include "i86.h"
-#include "parlink.h"
 
 
 APIRET16 APIENTRY16 DosPortAccess(USHORT,USHORT,USHORT,USHORT);
@@ -68,13 +67,13 @@ int NumPrinters( void )
     return num_printers;
 }
 
-unsigned AccessPorts(unsigned first, unsigned last)
+USHORT AccessPorts(USHORT first, USHORT last)
 {
     DosPortAccess(0, 0, first, last);
     return 1;
 }
 
-void FreePorts(unsigned first, unsigned last)
+void FreePorts(USHORT first, USHORT last)
 {
     DosPortAccess(0, 1, first, last);
 }
@@ -117,7 +116,7 @@ ULONG Ticks( void )
 }
 
 
-unsigned PrnAddress(int printer)
+USHORT PrnAddress(int printer)
 {
     return PortAddress[printer];
 }

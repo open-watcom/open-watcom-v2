@@ -31,5 +31,3 @@
 
 
 #define LOG_TEXT                    103
-
-WINEXPORT BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

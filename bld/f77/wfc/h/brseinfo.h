@@ -49,8 +49,4 @@ extern void     BIStartRBorEP( sym_id ste_ptr );
 extern void     BIEndRBorEP( void );
 extern void     BIStartComBlock( sym_id ste_ptr );
 extern void     BIEndComBlock( void );
-extern void     BIStartBlockData( sym_id ste_ptr );
-extern void     BIEndBlockData( void );
-extern void     BIOutNameList( sym_id ste_ptr );
-
 #endif

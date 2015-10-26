@@ -36,7 +36,6 @@
 #include <direct.h>
 #include <malloc.h>
 #include <tchar.h>
-#include "nomem.h"
 
 #ifdef _UNICODE
     #define __F_NAME(n1,n2) n2
@@ -62,13 +61,14 @@
     #define __FINI_ARGV __Fini_Argv
 #endif
 
-#include "initarg.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "initarg.h"
+
 extern  int     __historical_splitparms;
+extern  void    _Not_Enough_Memory( void );
 
 #ifdef __cplusplus
 };

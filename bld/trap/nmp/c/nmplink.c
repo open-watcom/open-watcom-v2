@@ -96,7 +96,7 @@ static const char *OpenRequest( void )
 }
 
 
-static void DoOpen( bhandle *phdl, char *suff )
+void DoOpen( bhandle *phdl, char *suff )
 {
     strcpy( NameEnd, suff );
     dbg( "DoOpen " );
@@ -112,7 +112,7 @@ static void DoOpen( bhandle *phdl, char *suff )
 }
 
 
-static const char *ValidName( const char *name )
+const char *ValidName( const char *name )
 {
     int         len;
 

@@ -36,7 +36,6 @@
 
 #include "ftnstd.h"
 #include "pgmacc.h"
-#include "ifile.h"
 
 #define _Normalize( ptr, offset ) ((char PGM *)((char HPGM *)ptr + offset))
 

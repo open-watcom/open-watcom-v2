@@ -225,7 +225,7 @@ static void reverseAndBits( int width, int height, BYTE *bits )
 
 } /* reverseAndBits */
 
-static void dropBitmapPadding(an_img *img, BITMAPINFOHEADER *h, WORD org_and_sz, WORD org_xor_sz)
+void dropBitmapPadding(an_img *img, BITMAPINFOHEADER *h, WORD org_and_sz, WORD org_xor_sz)
 {
     if( h->biWidth == 16 && h->biHeight == 16 ) {
         int ii, jj;

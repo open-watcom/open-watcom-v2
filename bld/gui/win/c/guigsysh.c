@@ -34,6 +34,7 @@
 #include "guixutil.h"
 #include "guiwin.h"
 
+extern  WPI_INST        GUIMainHInst;
 
 HWND GUIGetSysHandle( gui_window *wnd )
 {

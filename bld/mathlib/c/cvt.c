@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "xfloat.h"
-#include "mathlib.h"
 
 
 char *__cvt( double value,

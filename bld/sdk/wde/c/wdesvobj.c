@@ -41,7 +41,6 @@
 #include "wdesdup.h"
 #include "wdesvdlg.h"
 #include "wdesvobj.h"
-#include "wdesvres.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */

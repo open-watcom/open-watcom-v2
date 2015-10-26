@@ -33,7 +33,7 @@
 #include "trapdbg.h"
 
 #include <string.h>
-#include "trpcore.h"
+#include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
 

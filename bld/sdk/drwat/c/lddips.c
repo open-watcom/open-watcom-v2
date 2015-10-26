@@ -54,7 +54,7 @@ static unsigned         dipCnt;
 extern HINSTANCE        DIPLastHandle;
 #endif
 
-static void initDipMsgs( void ) {
+void initDipMsgs( void ) {
     char        *ptr;
 
     ptr = DIPDefaults;
@@ -66,7 +66,8 @@ static void initDipMsgs( void ) {
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-WINEXPORT BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                  LPARAM lparam )
 {
     WORD        cmd;
     WORD        i;

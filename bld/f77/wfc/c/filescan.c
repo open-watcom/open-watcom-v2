@@ -35,7 +35,6 @@
 //
 
 #include "ftnstd.h"
-#include "filescan.h"
 
 extern  char            ForExtn[];
 

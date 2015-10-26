@@ -237,6 +237,4 @@ extern struct pkt_info *_pkt_inf;
                              } while (0)
 #endif
 
-extern void _pkt_end( void );
-
 #endif

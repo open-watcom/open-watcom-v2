@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "trpimp.h"
-#include "trptypxx.h"
+#include "trpuximp.h"
 #include "qnxstrt.h"
 
 void                            *_slib_func[2];

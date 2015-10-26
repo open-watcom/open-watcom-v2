@@ -426,7 +426,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     return( ok );
 }
 
-static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
     bool                ok;
 
@@ -445,7 +445,7 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, ui
     return( ok );
 }
 
-static bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
     WRECurrentResInfo   curr;
     bool                ok;
@@ -470,7 +470,7 @@ static bool WRESetCursorSessionResData( WREImageSession *session, void *data, ui
     return( ok );
 }
 
-static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
     WRECurrentResInfo   curr;
     bool                ok;

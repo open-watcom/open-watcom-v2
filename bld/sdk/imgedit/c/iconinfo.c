@@ -260,7 +260,7 @@ static short getIconIndex( int icon_type )
 /*
  * SelNonExistingProc - select an icon that does not exist (i.e. for ADD or NEW)
  */
-WINEXPORT WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
+WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
                                            WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         index;
@@ -334,7 +334,7 @@ WINEXPORT WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
 /*
  * SelExistingProc - select an existing icon (i.e. for edit or delete)
  */
-WINEXPORT WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg,
+WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg,
                                         WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_MRESULT mresult;

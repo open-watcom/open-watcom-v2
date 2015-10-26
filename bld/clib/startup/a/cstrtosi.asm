@@ -56,10 +56,10 @@ ENDM
         extrn   _edata          : byte          ; end of DATA (start of BSS)
         extrn   _end            : byte          ; end of BSS (start of STACK)
 
-        extrn   __InitRtns      : proc
-        extrn   __FiniRtns      : proc
-        extrn   "C",exit        : proc
-        extrn   __CMain         : proc
+        extrn   __InitRtns      : near
+        extrn   __FiniRtns      : near
+        extrn   exit_           : near
+        extrn   __CMain         : near
 
 ; this guarantees that no function pointer will equal NULL
 ; (WLINK will keep segment 'BEGTEXT' in front)
@@ -247,10 +247,9 @@ _cstart_ proc  far
 
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
         call    __CMain
-        jmp     exit                    ; exit
 
+        jmp     exit_                   ; exit
         dd      ___begtext              ; make sure dead code elimination
-
 _cstart_ endp
 
 

@@ -39,12 +39,12 @@
 #include "errcod.h"
 #include "pgmacc.h"
 #include "iotype.h"
-#include "ftextfun.h"
 
 #include <string.h>
 
 extern  void                    IOErr(int,...);
 extern  void                    NextRec(void);
+extern  bool                    IsFixed(void);
 extern  bool                    CheckLogicalRecord(ftnfile *);
 
 /* Forward declarations */
@@ -68,7 +68,7 @@ void    UnFmtIn( void ) {
 }
 
 
-static void    NextUnFmtRec( void ) {
+void    NextUnFmtRec( void ) {
 //======================
 
     if( _LogicalRecordOrganization( IOCB->fileinfo ) ) {

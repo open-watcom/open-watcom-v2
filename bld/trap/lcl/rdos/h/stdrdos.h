@@ -42,3 +42,4 @@
 
 #define WORD  unsigned short int
 #define DWORD unsigned int
+#define TRPGLOBAL	extern

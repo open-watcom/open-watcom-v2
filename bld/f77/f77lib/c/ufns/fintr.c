@@ -38,7 +38,6 @@
 
 #include <stddef.h>
 #include <dos.h>
-#include "external.h"
 
 
 #if defined( __386__ ) && !defined( __WINDOWS__ )

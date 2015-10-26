@@ -36,13 +36,14 @@
 #include "types.h"
 #include "ferror.h"
 #include "insert.h"
-#include "rstutils.h"
-#include "ifused.h"
-#include "kwlookup.h"
-#include "rstsrch.h"
 
 #include <string.h>
 
+extern  int             KwLookUp(char **,int,char *,int,bool);
+extern  void            MarkIFUsed(IFF);
+extern  sym_id          STSearch(char *,int,sym_id);
+extern  sym_id          STNameSearch(char *,int);
+extern  sym_id          STAdd(char *,int);
 
 typedef struct iff_data {
     IFF     next;

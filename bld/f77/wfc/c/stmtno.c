@@ -42,13 +42,12 @@
 #include "cpopt.h"
 #include "ferror.h"
 #include "insert.h"
-#include "rststmt.h"
-#include "stmtno.h"
-#include "fcodes.h"
-#include "gflow.h"
-#include "cgmagic.h"
 
+extern  label_id        NextLabel(void);
+extern  void            GStmtLabel(sym_id);
 extern  bool            RecNumber(void);
+extern  sym_id          STStmtNo(unsigned_32);
+extern  unsigned_32     GetStmtNum(sym_id);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 
 //  NOTE : These modules will check for errors and give any error
@@ -75,7 +74,7 @@ extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 //
 
 
-static intstar4        GetStmtNo( void ) {
+intstar4        GetStmtNo( void ) {
 //===========================
 
 // Create statement number from operand field of CITNode must be before
@@ -101,7 +100,7 @@ static intstar4        GetStmtNo( void ) {
 }
 
 
-static sym_id  LookUp( unsigned_32 num ) {
+sym_id  LookUp( unsigned_32 num ) {
 //=================================
 
     sym_id      sym_ptr;
@@ -117,7 +116,7 @@ static sym_id  LookUp( unsigned_32 num ) {
 }
 
 
-static void    Err( int errcod, sym_id sym_ptr ) {
+void    Err( int errcod, sym_id sym_ptr ) {
 //=========================================
 
     Error( errcod, GetStmtNum( sym_ptr ), sym_ptr->u.st.line );

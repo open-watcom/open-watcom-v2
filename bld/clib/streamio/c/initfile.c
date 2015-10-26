@@ -36,7 +36,6 @@
 #include "liballoc.h"
 #include "rtdata.h"
 #include "exitwmsg.h"
-#include "ioctrl.h"
 
 
 void __InitFiles( void )

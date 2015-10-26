@@ -41,13 +41,13 @@
 #include "insert.h"
 #include "utility.h"
 #include "convert.h"
-#include "rstutils.h"
-#include "proctbl.h"
-#include "rstconst.h"
-#include "rstlit.h"
-#include "symtab.h"
 
 #include <string.h>
+
+extern  sym_id          LkSym(void);
+extern  sym_id          STLit(byte *,int);
+extern  sym_id          STConst(void *,TYPE,uint);
+extern  void            CkSymDeclared(sym_id);
 
 
 void    CpParameter( void ) {

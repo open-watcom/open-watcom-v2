@@ -32,7 +32,6 @@
 #include "variety.h"
 #include <i86.h>
 #include "rtinit.h"
-#include "cgsuppr.h"
 
 static unsigned short __saved_ds;
 
@@ -43,7 +42,7 @@ void __GETDS( void )
 {
     __load_ds();
 }
-//#pragma aux __GETDS "*";
+#pragma aux __GETDS "*";
 
 static void __save_ds( void )
 {

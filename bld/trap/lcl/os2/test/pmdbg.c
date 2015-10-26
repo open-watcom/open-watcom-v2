@@ -38,8 +38,6 @@
 #include <os2.h>                        /* PM header file               */
 #include <string.h>                     /* C/2 string functions         */
 #include "pmdbg.h"                     /* Resource symbolic identifiers*/
-#include "trpimp.h"
-
 extern InitIt( char *trp, HAB, HWND );
 extern int LoadIt();
 extern int RunIt();

@@ -44,7 +44,6 @@
 #include "comio.h"
 #include "inout.h"
 #include "utility.h"
-#include "proctbl.h"
 
 
 void    CpInclude(void) {

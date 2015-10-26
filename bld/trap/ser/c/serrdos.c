@@ -33,10 +33,8 @@
 
 #include <stdio.h>
 #include "trpimp.h"
-#include "trpimpxx.h"
 #include "trperr.h"
 #include "serial.h"
-#include "serlink.h"
 
 static int currentBaudRateIndex;
 
@@ -87,13 +85,11 @@ void ResetSys( void )
     }
 }
 
-#if 0
-bool TRAPENTRY TrapTellTerminate( void )
+bool Terminate( void )
 {
     ResetSys();
     return( TRUE );
 }
-#endif
 
 void SendByte( int value )
 {
@@ -140,7 +136,7 @@ void ClearCom( void )
     RdosFlushCom( hSerial );
 }
 
-#if 0
+
 void SendABreak( void )
 {
 }
@@ -149,7 +145,7 @@ bool TestForBreak( void )
 {
     return( FALSE );
 }
-#endif
+
 
 int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 

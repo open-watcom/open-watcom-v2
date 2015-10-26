@@ -35,7 +35,6 @@
 #include "pctcp.h"
 #include "bsdname.h"
 #include "udp_dom.h"
-#include "gethost.h"
 
 typedef struct {
         struct dhead h;

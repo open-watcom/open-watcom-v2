@@ -40,11 +40,8 @@
 #elif defined(__OS2__)
     #define INCL_DOSFILEMGR
     #include <wos2.h>
-#elif defined(__WINDOWS_386__)
+#elif defined(__WINDOWS_386__) || defined(__NT__)
     #include <windows.h>
-#elif defined(__NT__)
-    #include <windows.h>
-#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 #endif
 #include "cominit.h"
 

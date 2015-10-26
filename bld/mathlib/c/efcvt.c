@@ -37,8 +37,8 @@
 #include <string.h>
 #include <math.h>
 #include "cvtbuf.h"
-#include "mathlib.h"
 
+extern  char *__cvt( double, int, int *, int *, int, char * );
 
 #define MAX_PRECISION __FPCVT_BUFFERLEN
 

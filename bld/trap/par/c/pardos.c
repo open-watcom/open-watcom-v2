@@ -31,8 +31,8 @@
 
 
 #include <dos.h>
+
 #include "dosequip.h"
-#include "parlink.h"
 
 static  unsigned long __far *BiosTime;
 

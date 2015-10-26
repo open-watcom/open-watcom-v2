@@ -41,8 +41,6 @@
 #include "wrselft.h"
 #include "iemem.h"
 
-WINEXPORT BOOL CALLBACK SaveHook( HWND, UINT, WPARAM, LPARAM );
-
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
@@ -216,7 +214,7 @@ static void checkForPalExt( char *filename )
 /*
  * SaveHook - hook used called by common dialog for 3D controls
  */
-WINEXPORT BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;

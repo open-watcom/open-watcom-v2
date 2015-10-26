@@ -37,3 +37,4 @@ char *GUIGetWindowClassName( void )
 {
     return( NULL );
 }
+

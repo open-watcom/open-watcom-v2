@@ -37,9 +37,7 @@
 
 #include <os2.h>                        /* PM header file               */
 #include <string.h>                     /* C/2 string functions         */
-#include "pmdbg.h"                      /* Resource symbolic identifiers*/
-#include "trpimp.h"
-
+#include "pmdbg.h"                     /* Resource symbolic identifiers*/
 extern InitIt( char *trp, HAB, HWND );
 extern int LoadIt();
 extern int RunIt();
@@ -47,7 +45,6 @@ extern KillIt();
 extern FiniIt();
 extern char TellHardMode( char );
 extern BOOL APIENTRY WinLockInput( HWND, USHORT );
-
 enum {
     RUNNING,
     LOADED,

@@ -13,7 +13,6 @@
 #include "strings.h"
 #include "gettod.h"
 #include "misc.h"
-#include "timer.h"
 
 int has_8254  = 0; /* Do we have a working 8254 timer chip? */
 int has_rdtsc = 0; /* Do we have a CPU with RDTSC instruction? */

@@ -855,7 +855,7 @@ bool GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw )
     return( ok );
 }
 
-static bool AddMenuItemToPopup( gui_window *wnd, gui_ctl_id id, int offset,
+bool AddMenuItemToPopup( gui_window *wnd, gui_ctl_id id, int offset,
                          gui_menu_struct *info, bool floating )
 {
     bool        vbar;

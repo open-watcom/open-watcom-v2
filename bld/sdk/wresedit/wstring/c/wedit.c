@@ -241,7 +241,6 @@ bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
     return( ok );
 }
 
-#if 0
 bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
                                 uint_16 string_id )
 {
@@ -306,7 +305,6 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
 
     return( ok );
 }
-#endif
 
 bool WSetEditWindowText( HWND dlg, char *text )
 {

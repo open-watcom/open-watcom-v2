@@ -38,7 +38,7 @@
 #include "jdlg.h"
 #define BUF_SIZE        100
 
-WINEXPORT BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     int         linecnt;

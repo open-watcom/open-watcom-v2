@@ -39,7 +39,6 @@
 #include "fcodes.h"
 #include "types.h"
 #include "emitobj.h"
-#include "gcnvt.h"
 
 
 static  void    GCnvTo( TYPE typ, uint size ) {

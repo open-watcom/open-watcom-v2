@@ -40,7 +40,6 @@
 
 #include "ftnstd.h"
 #include <pgmacc.h>
-#include "external.h"
 
 
 intstar4        __fortran FSYSTEM( string PGM *command ) {

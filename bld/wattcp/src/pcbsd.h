@@ -32,7 +32,4 @@ extern void  InitEthersFile  (const char *fname);
 extern void  ReadEthersFile  (void);
 #endif
 
-extern DWORD _gethostid (void);
-extern DWORD _sethostid (DWORD ip);
-
 #endif

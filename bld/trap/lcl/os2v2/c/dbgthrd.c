@@ -44,7 +44,6 @@
 #include "dosdebug.h"
 #include "softmode.h"
 #include "trperr.h"
-#include "dbgthrd.h"
 
 static uDB_t            *DebugReqBuff;
 static uDB_t            StopBuff;
@@ -191,7 +190,7 @@ ULONG CallDosDebug(uDB_t *buff)
     return DebugReqResult;
 }
 
-static VOID APIENTRY DoDebugRequests(ULONG arg)
+VOID APIENTRY DoDebugRequests(ULONG arg)
 {
     ULONG   ulCount;
 
@@ -209,7 +208,7 @@ static VOID APIENTRY DoDebugRequests(ULONG arg)
     }
 }
 
-VOID InitDebugThread( VOID )
+VOID InitDebugThread(VOID)
 {
     TID                 tid;
     ULONG               ulCount;

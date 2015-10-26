@@ -15,7 +15,6 @@
 #include "misc.h"
 #include "pcconfig.h"
 #include "pcbsd.h"
-#include "getprot.h"
 
 #if defined(USE_BSD_FUNC)
 

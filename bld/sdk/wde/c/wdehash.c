@@ -132,13 +132,13 @@ void WdeFreeHashTable( WdeHashTable *table )
 {
     WRFreeHashTable( table );
 }
-#if 0
+
 bool WdeMergeHashTables( WdeHashTable **dest, WdeHashTable *src )
 {
     WdeTouchHashTable( *dest );
     return( WRMergeHashTable( dest, src ) != 0 );
 }
-#endif
+
 bool WdeCopyHashTable( WdeHashTable **dest, WdeHashTable *src )
 {
     WdeTouchHashTable( *dest );
@@ -221,13 +221,13 @@ WdeHashValue WdeLookupName( WdeHashTable *table, const char *name, bool *found )
 
     return( val );
 }
-#if 0
+
 bool WdeModifyName( WdeHashTable *table, const char *name, WdeHashValue value )
 {
     WdeTouchHashTable( table );
     return( WRModifyName( table, name, value, false ) != 0 );
 }
-#endif
+
 char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
 {
     return( WRResolveValue( table, value ) );

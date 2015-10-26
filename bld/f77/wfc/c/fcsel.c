@@ -40,13 +40,16 @@
 #include "cg.h"
 #include "fcodes.h"
 #include "emitobj.h"
-#include "fcflow.h"
-#include "fcjmptab.h"
-#include "fcsel.h"
-#include "fcstring.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+
+
+extern  label_handle    GetLabel(label_id);
+extern  label_handle    GetStmtLabel(sym_id);
+extern  void            RefStmtLabel(sym_id);
+extern  cg_name         SymValue(sym_id);
+extern  cg_name         SymAddr(sym_id);
+extern  cg_name         SCBPointer(cg_name);
 
 
 void    DoSelect( FCODE kind ) {

@@ -36,8 +36,6 @@
 #include "guitimer.h"
 
 #if defined(__NT__)
-extern GUITIMERPROC GUITimerProc;
-
 VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
 {
     gui_window      *wnd;

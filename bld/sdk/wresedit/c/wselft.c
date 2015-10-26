@@ -34,7 +34,7 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wrdll.h"
-#include "wselft.h"
+#include "wrselft.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

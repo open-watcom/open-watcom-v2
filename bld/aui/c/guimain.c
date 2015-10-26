@@ -349,8 +349,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         break;
     case GUI_CLICKED:
         GUI_GETID( parm, id );
-        if( WndClickHook != NULL && WndClickHook( wnd, id ) )
-            break;
+        if( WndClickHook != NULL && WndClickHook( wnd, id ) ) break;
         cursor = WndHourGlass( NULL );
         WndClick( wnd, id );
         WndHourGlass( cursor );
@@ -554,7 +553,7 @@ void *WndArrowCursor( void )
     }
 }
 
-static void *WndSetCursor( void *to )
+void *WndSetCursor( void *to )
 {
     if( GUIIsGUI() ) {
         wndCursorType = GUI_ARROW_CURSOR;

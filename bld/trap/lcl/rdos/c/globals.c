@@ -28,8 +28,9 @@
 *
 ****************************************************************************/
 
-
 #include <stdio.h>
 #include <stdlib.h>
+#define TRPGLOBAL
 #define TRPGLOBINIT( x ) = { x }
 #include "globals.h"
+

@@ -49,7 +49,7 @@ BOOL    Quiet;
 REMARKS:
 Installs the driver
 ****************************************************************************/
-static BOOL InstallDriver(
+BOOL InstallDriver(
         IN SC_HANDLE  SchSCManager,
         IN LPCTSTR    DriverName,
         IN LPCTSTR    ServiceExe)
@@ -96,7 +96,7 @@ static BOOL InstallDriver(
 REMARKS:
 Removes the driver
 ****************************************************************************/
-static BOOL RemoveDriver(
+BOOL RemoveDriver(
         IN SC_HANDLE  SchSCManager,
         IN LPCTSTR    DriverName)
 {
@@ -123,7 +123,7 @@ static BOOL RemoveDriver(
 REMARKS:
 Starts the driver
 ****************************************************************************/
-static BOOL StartDriver(
+BOOL StartDriver(
         IN SC_HANDLE  SchSCManager,
         IN LPCTSTR    DriverName)
 {
@@ -160,7 +160,7 @@ static BOOL StartDriver(
 REMARKS:
 Stops the driver
 ****************************************************************************/
-static BOOL StopDriver(
+BOOL StopDriver(
         IN SC_HANDLE  SchSCManager,
         IN LPCTSTR    DriverName)
 {
@@ -190,7 +190,7 @@ static BOOL StopDriver(
 REMARKS:
 Opens the device driver
 ****************************************************************************/
-static BOOL OpenDevice(
+BOOL OpenDevice(
         IN LPCTSTR    test_file)
 {
     char     completeDeviceName[64];
@@ -215,7 +215,7 @@ static BOOL OpenDevice(
 REMARKS:
 Print usage information for the driver
 ****************************************************************************/
-static void Usage(void)
+void Usage(void)
 {
     printf( "drvinst [options] <driver_name> <driver_image>\n" );
     printf( "    options:\n" );

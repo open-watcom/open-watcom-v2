@@ -50,8 +50,6 @@
 #endif
 #endif
 
-WINEXPORT BOOL CALLBACK OpenHook( HWND, UINT, WPARAM, LPARAM );
-
 static signed short     imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
 
@@ -441,7 +439,7 @@ BOOL ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
 /*
  * doReadCursor
  */
-static BOOL doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
+BOOL doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
                    WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;
@@ -547,7 +545,7 @@ BOOL ReadCursorFromData( void *data, char *fname, WRInfo *info,
 /*
  * OpenHook - hook used called by common dialog for 3D controls
  */
-WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;

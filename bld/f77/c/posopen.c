@@ -38,7 +38,6 @@
 
 
 #if defined( __RT__ )
-#include "runmain.h"
 #include "rmemmgr.h"
 
 #define MEM_ALLOC       RMemAlloc
@@ -206,7 +205,7 @@ void    Closef( b_file *io ) {
     char        *cc;
 
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( (a_file *)io, ' ', &cc );
+        cc_len = FSetCC( io, ' ', &cc );
         if( SysWrite( io, cc, cc_len ) == -1 ) return;
     }
     if( FlushBuffer( io ) < 0 ) return;

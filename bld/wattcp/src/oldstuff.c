@@ -12,7 +12,6 @@
 #include "pc_cbrk.h"
 #include "pctcp.h"
 #include "misc.h"
-#include "oldstuff.h"
 
 /*
  * Actually simply a macro in <tcp.h>

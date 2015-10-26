@@ -48,8 +48,8 @@
   #include <wdefwin.h>
   #undef __SW_BW
 #endif
-#include "external.h"
 
+intstar2        __fortran SYSHANDLE( intstar4 *unit );
 
 
 intstar4        __fortran DWFSETAPPTITLE( string PGM *title ) {

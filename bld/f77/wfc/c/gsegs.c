@@ -37,7 +37,6 @@
 #include "wf77segs.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
-#include "gsegs.h"
 
 global_seg              *GlobalSeg;
 

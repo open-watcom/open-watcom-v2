@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "hexcnv.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -40,7 +39,7 @@ static const char __FAR HexDigits[ 16 ] = {
 };
 
 
-char    Hex( char data ) {
+byte    Hex( byte data ) {
 //========================
 
     if( isdigit( data ) == 0 ) {
@@ -51,7 +50,7 @@ char    Hex( char data ) {
 }
 
 
-uint    HSToB( char *src, uint src_len, char *dst ) {
+uint    HSToB( char *src, uint src_len, byte *dst ) {
 //===================================================
 
     uint        length;
@@ -81,19 +80,19 @@ uint    HSToB( char *src, uint src_len, char *dst ) {
 }
 
 
-char    *BToHS( char *mem, int length, char *fmt_buf ) {
+char    *BToHS( byte *mem, int length, char *fmt_buf ) {
 //==============================================================
 
-    char        data;
+    byte        data;
 
     for(;;) {
         if( --length < 0 ) break;
         data = *mem;
         ++mem;
-        *fmt_buf = HexDigits[( data >> 4 ) & 0x0f];
+        *fmt_buf = HexDigits[ ( data >> 4 ) & 0x0f ];
         ++fmt_buf;
         if( --length < 0 ) break;
-        *fmt_buf = HexDigits[data & 0x0f];
+        *fmt_buf = HexDigits[ data & 0x0f ];
         ++fmt_buf;
     }
     *fmt_buf = NULLCHAR;

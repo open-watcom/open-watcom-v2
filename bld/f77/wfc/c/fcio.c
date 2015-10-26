@@ -39,19 +39,34 @@
 #include "types.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "chain.h"
-#include "fcjmptab.h"
-#include "fcflow.h"
-#include "fcstring.h"
-#include "fcsubscr.h"
-#include "fctemp.h"
-#include "fccmplx.h"
-#include "wf77aux.h"
-#include "fcrtns.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
+
+extern  call_handle     InitCall(RTCODE);
+extern  cg_name         XPop(void);
+extern  cg_name         XPopValue(cg_type);
+extern  void            XPopCmplx(cg_cmplx *,cg_type);
+extern  cg_name         GetTypedValue(void);
+extern  void            XPush(cg_name);
+extern  cg_name         SymAddr(sym_id);
+extern  cg_type         SymPtrType(sym_id);
+extern  cg_name         ImagPtr(cg_name,cg_type);
+extern  back_handle     GetFmtLabel(label_id);
+extern  cg_name         ArrayEltSize(sym_id);
+extern  cg_name         ArrayNumElts(sym_id);
+extern  cg_name         FieldArrayNumElts(sym_id);
+extern  label_handle    GetLabel(label_id);
+extern  cg_name         SCBLenAddr(cg_name);
+extern  cg_name         SCBPtrAddr(cg_name);
+extern  label_handle    GetStmtLabel(sym_id);
+extern  void            RefStmtLabel(sym_id);
+extern  cg_type         CmplxBaseType(cg_type);
+extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
+extern  tmp_handle      MkTmp(cg_name,cg_type);
+extern  cg_name         TmpPtr(tmp_handle,cg_type);
+extern  cg_name         TmpVal(tmp_handle,cg_type);
+extern  void            ReverseList(void *);
 
 static  void            StructIOArrayStruct( sym_id arr );
 static  void            StructIOItem( sym_id fd );
@@ -783,13 +798,13 @@ void    FCSetNml( void ) {
     NmlSpecified = TRUE;
     handle = InitCall( RT_SET_NML );
     nl = GetPtr();
-    ReverseList( (void **)&nl->u.nl.group_list );
+    ReverseList( &nl->u.nl.group_list );
     ge = nl->u.nl.group_list;
     while( ge != NULL ) {
         CGAddParm( handle, SymAddr( ge->sym ), TY_POINTER );
         ge = ge->link;
     }
-    ReverseList( (void **)&nl->u.nl.group_list );
+    ReverseList( &nl->u.nl.group_list );
     CGAddParm( handle, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );
     CGDone( CGCall( handle ) );
 }
@@ -837,7 +852,7 @@ void    FCFmtAssign( void ) {
 }
 
 
-static void ArrayIO( RTCODE num_array, RTCODE chr_array ) {
+void    ArrayIO( RTCODE num_array, RTCODE chr_array ) {
 //=====================================================
 
 // Output an array.

@@ -41,7 +41,6 @@
 #include "fltcnv.h"
 #include "fmath.h"
 #include "rmemmgr.h"
-#include "hexcnv.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -161,7 +160,7 @@ void    R_ChkRecLen( void ) {
 }
 
 
-static uint    GetLen( void ) {
+uint    GetLen( void ) {
 //================
 
     uint        len;
@@ -175,7 +174,7 @@ static uint    GetLen( void ) {
 }
 
 
-static void    FOString( uint width ) {
+void    FOString( uint width ) {
 //==============================
 
     ftnfile     *fcb;
@@ -512,7 +511,7 @@ void    R_FOE( int exp, char ch ) {
 }
 
 
-static bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
+bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
 //==========================================================================
 
     char        ch1;
@@ -617,7 +616,7 @@ void    R_FIHex( void ) {
 }
 
 
-static void    FOHex( uint width ) {
+void    FOHex( uint width ) {
 //===========================
 
     uint        len;

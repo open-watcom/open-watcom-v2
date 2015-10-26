@@ -233,14 +233,14 @@ _WCRTLINK int execve( path, argv, envp )
     unsigned            envpara;
     size_t              cmdline_len;
     char                cmdline[128];   /* Command line build up here */
-    char                buffer[_MAX_PATH]; /* file name */
+    char                buffer[80];     /* file name */
     int                 isexe;
     extern unsigned     __exec_para;
     unsigned            para;
     const char          **argvv;
     int                 i;
 
-    strcpy( buffer, path );
+    strncpy( buffer, path, 75 );
     name = strrchr( buffer, '\\' );
     if( strchr( name == NULL ? buffer : name, '.' ) ) {
         file = open( buffer, O_BINARY|O_RDONLY, 0 );

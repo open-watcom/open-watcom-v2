@@ -51,10 +51,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/* includes from guixmain.c */
+extern  gui_window      *GUICurrWnd;
 
 /* statics */
-static  ORD             OldCol          = (ORD)-1;      /* old column of mouse */
-static  ORD             OldRow          = (ORD)-1;      /* old row of mouse    */
+static  ORD             OldCol          = -1;      /* old column of mouse */
+static  ORD             OldRow          = -1;      /* old row of mouse    */
 
 static  gui_window *GUIMouseWnd      = NULL;
 
@@ -88,7 +90,8 @@ static  gui_window      *ButtonDownSent = NULL;
  * SendPointEvent -- send mouse event to use with the point it occured at
  */
 
-static void SendPointEvent( gui_window *wnd, gui_event gui_ev, gui_point *point )
+static void SendPointEvent( gui_window *wnd, gui_event gui_ev,
+                            gui_coord *point )
 {
     gui_point   pt;
     bool        down_sent;
@@ -144,9 +147,10 @@ static bool ValidMin( gui_window *wnd, ORD wnd_row, ORD wnd_col )
  *                            Also use in the case of drag.
  */
 
-static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD col )
+static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row,
+                                     ORD col )
 {
-    gui_point   point;
+    gui_coord   point;
     ORD         wnd_row;
     ORD         wnd_col;
 
@@ -191,8 +195,8 @@ static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD co
         break;
     default :
         if( GUIMouseWnd != NULL ) {
-            point.x = col;
-            point.y = row;
+            point.x = (gui_ord)col;
+            point.y = (gui_ord)row;
             SendPointEvent( GUIMouseWnd, gui_ev, &point );
         }
     }
@@ -208,20 +212,20 @@ static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD co
 
 static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wnd )
 {
-    gui_point   point;
+    gui_coord    point;
 
     OldCol = col;
     OldRow = row;
     if( wnd == NULL ) {
         return( false );
     }
-    point.x = col;
-    point.y = row;
+    point.x = (gui_ord)col;
+    point.y = (gui_ord)row;
     SendPointEvent( wnd, gui_ev, &point );
     return( true );
 }
 
-EVENT GUICreatePopup( gui_window *wnd, gui_point *point )
+EVENT GUICreatePopup( gui_window *wnd, gui_coord *point )
 {
     EVENT       ev;
 
@@ -239,7 +243,7 @@ EVENT GUICreatePopup( gui_window *wnd, gui_point *point )
 
 static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
 {
-    gui_point point;
+    gui_coord point;
 
     switch( ev ) {
     case EV_MOUSE_PRESS :
@@ -258,8 +262,8 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
             MouseState = MOUSE_FREE;
         }
         if( !MinimizedMoved ) {
-            point.x = col;
-            point.y = row;
+            point.x = (gui_ord)col;
+            point.y = (gui_ord)row;
             if( GUICreatePopup( GUICurrWnd, &point ) == EV_MOUSE_DCLICK ) {
                 GUIZoomWnd( GUICurrWnd, GUI_NONE );
             }
@@ -278,14 +282,14 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
 static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col,
                                bool new_curr_wnd )
 {
-    gui_point   point;
+    gui_coord   point;
     ORD         wnd_row;
     ORD         wnd_col;
     resize_dir  dir;
     bool        use_gadgets;
 
-    point.x = col;
-    point.y = row;
+    point.x = (gui_ord)col;
+    point.y = (gui_ord)row;
     OldCol = col;
     OldRow = row;
     if( GUICurrWnd == NULL ) {

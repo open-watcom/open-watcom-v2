@@ -44,11 +44,18 @@
 #include "emitobj.h"
 #include "insert.h"
 #include "utility.h"
-#include "arutls.h"
-#include "upscan.h"
-#include "gstring.h"
-#include "upcat.h"
-#include "usconst.h"
+
+extern  void            BackTrack(void);
+extern  void            AddConst(itnode *);
+extern  void            ConstCat(int);
+extern  sym_id          GStartCat(int,int);
+extern  void            GStopCat(int,sym_id);
+extern  void            GCatArg(itnode *);
+extern  void            MoveDown(void);
+extern  void            KillOpnOpr(void);
+
+/* Forward declarations */
+void            CatArgs( int num );
 
 
 static  void    FoldCatSequence( itnode *cit ) {

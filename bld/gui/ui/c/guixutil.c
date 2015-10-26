@@ -38,9 +38,6 @@
 #include "guiutil.h"
 #include "guixdlg.h"
 #include "guisize.h"
-#include "guimenu.h"
-#include "guigadgt.h"
-#include "guiwnclr.h"
 #include <string.h>
 
 #define VALIDWINDOW( area, check_min )          \
@@ -280,7 +277,7 @@ void GUIRedrawTitle( gui_window *wnd )
     GUIWndUpdate( wnd );
 }
 
-void GUIMakeRelative( gui_window *wnd, gui_point *point, gui_point *pt )
+void GUIMakeRelative( gui_window *wnd, gui_coord *point, gui_point *pt )
 {
     SAREA       area;
     SAREA       use;
@@ -394,65 +391,3 @@ void GUIUnHookF1( void )
 {
 }
 
-/*
- * GUISetupStruct - sets up the gui_window structure
- */
-
-static bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
-{
-    wnd->style = dlg_info->style;
-    if( !dialog ) {
-        if( !GUICreateMenus( wnd, dlg_info ) ) {
-            return( false );
-        }
-    }
-    return( true );
-}
-
-static bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
-{
-    if( !GUIJustSetWindowText( wnd, dlg_info->title ) ) {
-        return( false );
-    }
-    if( !GUISetArea( &wnd->screen.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {
-        return( false );
-    }
-    GUISetUseWnd( wnd );
-    if( dlg_info->scroll & GUI_VSCROLL ) {
-        if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
-                           wnd->use.height, &wnd->vgadget, dlg_info->scroll ) ) {
-            return( false );
-        }
-    }
-    if( dlg_info->scroll & GUI_HSCROLL ) {
-        if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
-                           wnd->use.width, &wnd->hgadget, dlg_info->scroll ) ) {
-            return( false );
-        }
-    }
-    if( wnd->style & GUI_CURSOR ) {
-        wnd->screen.cursor = C_NORMAL;
-        GUISetCursor( wnd );
-    }
-    if( !GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) ) {
-        return( false );
-    }
-    return( true );
-}
-
-bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
-{
-    if( !GUISetupStruct1( wnd, dlg_info, dialog ) ) {
-        return( false );
-    }
-    if( !dialog ) {
-        if( wnd->vbarmenu != NULL ) {
-            uimenubar( wnd->vbarmenu );
-            GUISetScreen( XMIN, YMIN, XMAX-XMIN, YMAX-YMIN );
-        }
-    }
-    if( !GUISetupStruct2( wnd, dlg_info, dialog ) ) {
-        return( false );
-    }
-    return( true );
-}

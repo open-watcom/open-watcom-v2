@@ -32,7 +32,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "frtdata.h"
-#include "rtenv.h"
+#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "ftextfun.h"
@@ -40,6 +40,7 @@
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
+#include "rtenv.h"
 #include "thread.h"
 
 

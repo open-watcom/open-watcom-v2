@@ -36,12 +36,14 @@
 #include "stmtsw.h"
 #include "fhash.h"
 #include "types.h"
-#include "rstutils.h"
-#include "rstsrch.h"
-#include "cgmagic.h"
-#include "rstmgr.h"
 
 #include <string.h>
+
+extern  sym_id          STSearch(char *,int,sym_id);
+extern  sym_id          STNameSearch(char *,int);
+extern  sym_id          TmpVar(TYPE,uint);
+extern  sym_id          StaticAlloc(uint,TYPE);
+extern  sym_id          STAdd(char *,int);
 
 
 static  void    InitHashTable( hash_entry *hash_table, int size ) {

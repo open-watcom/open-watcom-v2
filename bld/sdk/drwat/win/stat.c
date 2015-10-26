@@ -277,7 +277,8 @@ static void GetStatRegisters( HWND hwnd )
 } /* GetStatRegisters */
 
 #ifndef __NT__
-BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, UINT wparam,
+                                    DWORD lparam )
 {
     char        buff[128];
     WORD        i;
@@ -335,7 +336,8 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /*
  * StatDialog - show task status
  */
-BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, UINT wparam,
+                                    DWORD lparam )
 {
     WORD        cmd;
     FARPROC     fp;

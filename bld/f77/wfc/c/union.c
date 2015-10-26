@@ -41,11 +41,10 @@
 #include "recog.h"
 #include "insert.h"
 #include "utility.h"
-#include "csutls.h"
-#include "rststruc.h"
-#include "proctbl.h"
-#include "union.h"
 
+extern  void            STUnion(void);
+extern  void            STMap(void);
+extern  void            CSExtn(void);
 
 extern  char            *StmtKeywords[];
 

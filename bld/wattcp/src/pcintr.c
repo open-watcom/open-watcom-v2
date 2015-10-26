@@ -21,7 +21,6 @@
 #include "misc.h"
 #include "pctcp.h"
 #include "wdpmi.h"
-#include "pcintr.h"
 
 #if (DOSX & PHARLAP)
 #include <mw/exc.h>  /* _dx_alloc_rmode_wrapper_iret() */

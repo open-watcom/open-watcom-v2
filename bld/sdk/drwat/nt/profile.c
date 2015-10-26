@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 
+#include <windows.h>
 #include "bool.h"
-#include "drwatcom.h"
 #include "font.h"
+#include "drwatcom.h"
 #include "intdlg.h"
 #include "inipath.h"
 #include "watini.h"
@@ -75,7 +76,7 @@ static void writeProfileInt( int val, char *item ) {
 /*
  * SetDefProfile
  */
-static void SetDefProfile( void ) {
+void SetDefProfile( void ) {
 
     strcpy( LogData.logname, DEF_LOGNAME );
     if( GetSystemMetrics( SM_DBCSENABLED ) ) {

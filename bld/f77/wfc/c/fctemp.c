@@ -38,10 +38,10 @@
 #include "model.h"
 #include "cgprotos.h"
 #include "fmemmgr.h"
-#include "chain.h"
-#include "fctemp.h"
 
 //=========================================================================
+
+extern  void            FreeChain( void * );
 
 static  tmp_handle      TmpList;
 

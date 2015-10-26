@@ -35,7 +35,6 @@
 //
 
 #include <dos.h>
-#include "dosvect.h"
 
 extern unsigned long _getrealvect(char);
 #pragma aux _getrealvect = \

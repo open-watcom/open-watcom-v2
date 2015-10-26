@@ -36,6 +36,7 @@
 #include "guizlist.h"
 #include "guifront.h"
 
+extern  gui_window      *GUICurrWnd;
 
 void ActivateNC( gui_window *wnd, bool activate )
 {

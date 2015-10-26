@@ -37,7 +37,6 @@
 #ifdef SERVER
 #include "servio.h"
 #endif
-#include "serlink.h"
 
 static int BaudCounter;                 /* baud rate counter */
 static int LastResponse = SDATA_NAK;    /* last response holder */
@@ -63,7 +62,24 @@ baud_entry BaudTable[] = {
         "0", 1, 0,
 };
 
-static void SyncPoint( unsigned tick )
+extern char     *ParsePortSpec( const char ** );
+extern char     *InitSys( void );
+extern void     ResetSys( void );
+extern bool     Baud( int );
+extern void     ClearCom( void );
+extern int      GetByte( void );
+extern void     SendByte( int );
+extern void     DonePort( void );
+extern bool     CheckPendingError( void );
+extern void     ClearLastChar( void );
+extern void     ZeroWaitCount( void );
+extern unsigned WaitCount( void );
+extern int      WaitByte( unsigned );
+extern void     Wait( unsigned );
+extern void     StartBlockTrans( void );
+extern void     StopBlockTrans( void );
+
+void SyncPoint( unsigned tick )
 {
     Wait( tick - WaitCount() );
 }
@@ -243,7 +259,7 @@ static int SetBaud( int baud_index, int *sync_point_p )
 /*========================================================================*/
 
 
-static bool MarchToTheSameDrummer( void )
+bool MarchToTheSameDrummer( void )
 {
     int got;
 
@@ -267,7 +283,7 @@ static bool MarchToTheSameDrummer( void )
 }
 
 
-static bool SetSyncTime( void )
+bool SetSyncTime( void )
 {
     if( MaxBaud != MIN_BAUD ) {
         if( !Baud( LOW_BAUD ) ) return( FAIL );
@@ -629,7 +645,7 @@ static int StrEq( char *s1, char *s2 )
 
 /* Routine used by RemoteLink() to set maximum baud rate */
 
-static char *SetMaxBaud( char *str )
+char *SetMaxBaud( char *str )
 {
     int i;              /* loop index */
 

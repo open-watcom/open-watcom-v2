@@ -31,8 +31,7 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
-#include "scaninc.h"
-#include "lang.h"
+#include "scan.h"
 
 // Double-byte characters are represented as follows:
 //

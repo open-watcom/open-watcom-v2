@@ -34,12 +34,12 @@
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
-#include "ftextfun.h"
-#include "blderr.h"
-
 
 extern  void            Suicide(void);
+extern  void            ErrHandler(int,va_list);
+extern  void            WriteErr(int,va_list);
 extern  void            GetIOErrMsg(ftnfile *,char *);
+extern  int             ErrCodOrg(uint);
 
 
 static  void    SysIOErr( int errcode, ... ) {

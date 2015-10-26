@@ -99,7 +99,7 @@ int             _nothread;
 /* End of static data - used in OS/2 DLL to find beginning of near heap */
 extern char     end;
 
-static void _WCI86FAR  __null_FPE_handler( int fpe_type )
+_WCRTLINK void _WCI86FAR  __null_FPE_handler( int fpe_type )
 {
     fpe_type = fpe_type;
 }

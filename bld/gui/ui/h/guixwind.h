@@ -32,12 +32,6 @@
 
 #ifndef _GUIXWIND_H_
 #define _GUIXWIND_H_
-
-extern EVENT GUIAllEvents[];
-extern bool GUIMainTouched;
-
 extern void GUIDestroyDialog( gui_window *wnd );
 extern bool GUICloseWnd( gui_window *wnd );
-extern int  GUIXMain( int argc, char * argv[] );
-
 #endif // _GUIXWIND_H_

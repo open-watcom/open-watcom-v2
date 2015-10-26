@@ -52,7 +52,7 @@ extern bool WREEditResourceSymbols( WREResInfo *info );
 extern bool WRELoadResourceSymbols( WREResInfo *info );
 extern bool WREResourceSaveSymbols( WREResInfo *info );
 extern bool WREDeleteDLGInclude( WResDir dir );
-extern bool WRECreateDLGInclude( WResDir *dir, const char *include );
+extern bool WRECreateDLGInclude( WResDir *dir, char *include );
 extern bool WREFindAndLoadSymbols( WREResInfo *rinfo );
 extern char *WRECreateSymName( char *fname );
 

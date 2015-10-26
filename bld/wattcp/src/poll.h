@@ -22,6 +22,4 @@
 
 #endif /* HAVE_SYS_POLL_H */
 
-extern int poll (struct pollfd *p, int num, int timeout);
-
 #endif /* __POLL_H */

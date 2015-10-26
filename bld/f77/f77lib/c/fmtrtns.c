@@ -33,7 +33,6 @@
 #include "target.h"
 #include "xfloat.h"
 #include <string.h>
-#include "ftextfun.h"
 
 
 void    R_F2E( extended val, char *buff, int fld_width, int digs, bool plus,

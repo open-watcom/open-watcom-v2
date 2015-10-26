@@ -64,4 +64,3 @@ extern  void    LFEndSrc( void );
 extern  void    LFNewPage( void );
 extern  void    LFSkip( void );
 extern  void    ChkErrFile( void );
-extern  void    TOutBanner( void );

@@ -10,7 +10,6 @@
 
 #include "wattcp.h"
 #include "pctcp.h"
-#include "wattcpd.h"
 
 #define MAX_DAEMONS  50
 

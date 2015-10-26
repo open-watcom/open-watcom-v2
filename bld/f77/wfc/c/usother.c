@@ -38,12 +38,12 @@
 #include "astype.h"
 #include "opn.h"
 #include "global.h"
-#include "stmtfunc.h"
-#include "upscan.h"
-#include "usother.h"
-#include "exprutil.h"
-#include "gsubprog.h"
 
+extern  void            SFEpilogue(void);
+extern  void            GCallNoArgs(void);
+extern  void            GCallWithArgs(void);
+extern  void            AddConst(itnode *);
+extern  void            EmExprDone(void);
 
 
 void    EndExpr( void ) {

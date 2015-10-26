@@ -73,27 +73,27 @@ static LPFN_Ctl3dWinIniChange   cvrCtl3dWinIniChange    = NULL;
 
  #if defined( __WINDOWS_386__ )
 
-static BOOL _DLLFAR _CB_Ctl3dUnregister( HANDLE h )
+BOOL _DLLFAR _CB_Ctl3dUnregister( HANDLE h )
 {
     return( Ctl3dUnregister( h ) );
 }
 
-static BOOL _DLLFAR _CB_Ctl3dSubclassDlg( HWND h, WORD w )
+BOOL _DLLFAR _CB_Ctl3dSubclassDlg( HWND h, WORD w )
 {
     return( Ctl3dSubclassDlg( h, w ) );
 }
 
-static BOOL _DLLFAR _CB_Ctl3dColorChange( void )
+BOOL _DLLFAR _CB_Ctl3dColorChange( void )
 {
     return( Ctl3dColorChange() );
 }
 
-static BOOL _DLLFAR _CB_Ctl3dSubclassCtl( HWND h )
+BOOL _DLLFAR _CB_Ctl3dSubclassCtl( HWND h )
 {
     return( Ctl3dSubclassCtl( h ) );
 }
 
-static HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
+HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
 {
   #if 0
     return( Ctl3dCtlColorEx( wm, wp, lp ) );

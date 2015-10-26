@@ -42,7 +42,6 @@
 #include "cg.h"
 #include "fmthdr.h"
 #include "emitobj.h"
-#include "cgformat.h"
 
 
 void    StartFmt( cs_label fmt_label ) {

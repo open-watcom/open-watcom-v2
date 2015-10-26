@@ -32,7 +32,6 @@
 #include "variety.h"
 #include "rtinit.h"
 #include "rtcntrl.h"
-#include "setefgfm.h"
 
 #ifdef _M_I86
 unsigned _fltused_ = 1;
@@ -46,6 +45,7 @@ unsigned _fltused_ = 0;
 
 #pragma alias ( "_fltused_80bit_" , "_fltused_" )
 
+extern void __setEFGfmt( void );
 extern void _SetLD80bit( void );
 
 AXI( _SetLD80bit, INIT_PRIORITY_LIBRARY )

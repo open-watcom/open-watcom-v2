@@ -35,7 +35,6 @@
 #include "guixutil.h"
 #include "guiscrol.h"
 #include "guipaint.h"
-#include "guidoscr.h"
 
 static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end,
                       bool chars )

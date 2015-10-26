@@ -38,7 +38,6 @@
 #include "global.h"
 #include "astype.h"
 #include "emitobj.h"
-#include "exprutil.h"
 
 
 void    EmExprDone( void ) {

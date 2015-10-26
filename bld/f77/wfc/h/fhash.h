@@ -37,7 +37,7 @@ typedef struct hash_entry {
 } hash_entry;
 
 extern unsigned     CalcHash( char *, unsigned );
-extern void         HashInsert( hash_entry *hash_table, unsigned hash_value, sym_id *list, sym_id sym );
+extern void         HashInsert( hash_entry *, unsigned, sym_id *, sym_id );
   
 extern unsigned     HashValue;
 extern hash_entry   HashTable[];

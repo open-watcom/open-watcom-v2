@@ -658,7 +658,7 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * AddRunningErrMsg
  */
-static void AddRunningErrMsg( void *_info ) {
+void AddRunningErrMsg( void *_info ) {
 
     ProcAttatchInfo   *info = _info;
     char        buf[100];

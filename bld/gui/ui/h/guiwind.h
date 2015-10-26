@@ -194,6 +194,4 @@ enum {
 #define EV2ID(x)        (x - GUI_FIRST_USER_EVENT)
 #define ID2EV(x)        (x + GUI_FIRST_USER_EVENT)
 
-extern gui_window       *GUICurrWnd;
-
 #endif // _GUIWIND_H_

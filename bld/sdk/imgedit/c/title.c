@@ -48,7 +48,7 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 /*
  * wTitle - callback function for the displaying of the title screen
  */
-WINEXPORT BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     UINT         msecs, timer, start;
     HDC          dc, tdc;

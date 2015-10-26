@@ -31,21 +31,14 @@
 
 
 #include <string.h>
-#if defined( __NT__ )
-#include <windows.h>
-#endif
 #include "vdm.h"
 #include "bool.h"
-#ifdef __NT__
-#include "trptypes.h"
-#include "trpimpxx.h"
 
-bool TRAPENTRY TrapTellTerminate( void )
+bool Terminate( void )
 {
     // a sideways dive to terminate the link (with failure)
     return( FALSE );
 }
-#endif
 
 int ValidName( const char *name ) {
 

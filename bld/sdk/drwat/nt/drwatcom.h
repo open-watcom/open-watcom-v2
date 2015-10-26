@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
 #include <stdlib.h>
+#include <windows.h>
 #include "listbox.h"
 #include "font.h"
 #include "procctl.h"
@@ -160,10 +160,9 @@ extern system_config    SysConfig;
 extern HANDLE           ProcessHdl;
 
 /* drproc.c */
-LONG CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
+LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void ClearAlert( void );
 void Alert( void );
-BOOL CALLBACK QueryEndDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* handler.c */
 DWORD DebugEventHandler( DEBUG_EVENT *dbinfo );
@@ -194,8 +193,6 @@ void RemoveModule( DWORD procid, DWORD base );
 ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr );
 ModuleNode *GetFirstModule( ProcNode *procinfo );
 ModuleNode *GetNextModule( ModuleNode *modinfo );
-BOOL CALLBACK ProcPriorityDlg( HWND, UINT, WPARAM, LPARAM );
-BOOL CALLBACK ProcListProc( HWND, UINT, WPARAM, LPARAM );
 
 /* autoget.c */
 void InitAutoAttatch( void );
@@ -208,13 +205,11 @@ void PutProfileInfo( void );
 ExceptDlgInfo * FaultGetExceptDlgInfo( HWND fault );
 int HandleException( DEBUG_EVENT *dbinfo );
 void FormatException( char *buf, DWORD code );
-BOOL CALLBACK ExceptionProc( HWND, UINT, WPARAM, LPARAM );
 
 /* stat.c */
 mad_registers * StatGetMadRegisters( HWND stat );
 void SetProcessInfo( HANDLE hdl, DWORD procid );
 int DoStatDialog( HWND hwnd );
-BOOL CALLBACK StatDialog( HWND, UINT, WPARAM, LPARAM );
 
 /* disasm.c */
 void SetDisasmInfo( HANDLE hdl, ModuleNode *mod );
@@ -230,18 +225,14 @@ void ViewLog( void );
 void MakeLog( ExceptDlgInfo *faultinfo );
 void SetLogOptions( HWND hwnd );
 void CheckLogSize( void );
-BOOL CALLBACK MemDmpDlgProc( HWND, UINT, WPARAM, LPARAM );
-BOOL CALLBACK LogOptsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* lognote.c */
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );
-BOOL CALLBACK NoteLogDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* thrdctl.c */
-BOOL CALLBACK ThreadCtlProc( HWND, UINT, WPARAM, LPARAM );
+BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 BOOL GetRetCode( HWND parent, RetCodeTypes type, DWORD id, DWORD *rc );
 BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val );
-BOOL CALLBACK RetCodeDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* reg.c */
 BOOL RefreshInfo( void );
@@ -270,7 +261,6 @@ void UnloadDbgInfo( ModuleNode *mod );
 #ifndef CHICAGO
 void DoMemDlg( HWND hwnd, DWORD procid );
 #endif
-BOOL CALLBACK MemInfoDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /* memview.c */
 BOOL RegisterMemWalker( void );
@@ -278,7 +268,6 @@ void WalkMemory( HWND parent, HANDLE hdl, DWORD procid );
 void FormatMemListEntry( char *buf, MemListItem *item );
 void RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist );
 void FreeMemList( MemListData *info );
-LONG CALLBACK MemWalkerProc( HWND, UINT, WPARAM, LPARAM );
 
 /* pefile.c */
 BOOL GetSegmentList( ModuleNode *node );
@@ -293,4 +282,3 @@ RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );
 void ShowDIPStatus( HWND hwnd );
 BOOL LoadTheDips( void );
 void FiniDipMsgs( void );
-BOOL CALLBACK ShowDipStatDlgProc( HWND, UINT, WPARAM, LPARAM );

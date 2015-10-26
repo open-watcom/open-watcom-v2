@@ -33,7 +33,6 @@
 #include <signal.h>
 #include <float.h>
 #include "sigfunc.h"
-#include "sigfpe.h"
 
 /* defined in sigtab.c */
 extern __sig_func _HUGEDATA _SignalTable[];

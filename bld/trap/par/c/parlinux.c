@@ -35,7 +35,6 @@
 #include <time.h>
 #include <conio.h>
 #include <unistd.h>
-#include "parlink.h"
 
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))

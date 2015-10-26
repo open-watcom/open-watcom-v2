@@ -135,7 +135,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 /*
  * GetWindowID - get window ID from mouse coordinates
  */
-static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
+void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
 {
     POINT       p;
     HWND        child;

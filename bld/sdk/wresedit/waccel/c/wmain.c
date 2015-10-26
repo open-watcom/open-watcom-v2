@@ -68,7 +68,6 @@
 #include "watini.h"
 #include "inipath.h"
 #include "aboutdlg.h"
-#include "dllmain.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -674,7 +673,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
 
-static void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
+void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
     WORD flags;
 
@@ -1088,7 +1087,7 @@ void WHandleRename( WAccelEditInfo *einfo )
     }
 }
 
-static bool WQueryClearRes( WAccelEditInfo *einfo )
+bool WQueryClearRes( WAccelEditInfo *einfo )
 {
     int         ret;
     UINT        style;

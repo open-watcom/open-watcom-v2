@@ -46,7 +46,6 @@
 #include "os2err.h"
 #include "doserr.h"
 #include "os2extx.h"
-#include "os2v2acc.h"
 
 /*
  * globals
@@ -60,8 +59,8 @@ HFILE           SaveStdIn;
 HFILE           SaveStdOut;
 bool            CanExecTask;
 HMODULE         *ModHandles = NULL;
-int             NumModHandles = 0;
-int             CurrModHandle = 0;
+unsigned        NumModHandles = 0;
+unsigned        CurrModHandle = 0;
 ULONG           ExceptNum;
 HMODULE         ThisDLLModHandle;
 scrtype         Screen;

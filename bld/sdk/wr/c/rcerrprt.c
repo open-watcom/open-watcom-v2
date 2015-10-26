@@ -34,10 +34,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "bool.h"
 #include "wrmaini.h"
 #include "wrmsg.h"
-#include "rcldstr.h"
 #include "errprt.h"
 
 #define ERRPRT_BUFFER 512
@@ -105,13 +103,13 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     return( p - buf );
 }
 
-bool GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+int GetRcMsg( int resid, char *buff, unsigned buff_len )
 {
     if( LoadString( WRGetInstance(), resid, buff, buff_len ) != 0 ) {
         buff[0] = '\0';
-        return( false );
+        return( 0 );
     }
-    return( true );
+    return( 1 );
 }
 
 void InitOutPutInfo( OutPutInfo *info )

@@ -38,7 +38,6 @@
 #include <assert.h>
 #include "weditcw.h"
 #include "wedit.h"
-#include "dllmain.h"
 
 static  HCONV       hConv = 0;
 static  DWORD       idInstance = 0L;

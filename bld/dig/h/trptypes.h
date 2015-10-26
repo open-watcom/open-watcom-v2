@@ -43,8 +43,6 @@
     #define     TRAPENTRY   DIGFAR
 #endif
 
-#define     TRAPLOAD
-
 #define TRAP_MAJOR_VERSION      17
 #define TRAP_MINOR_VERSION      1
 #define OLD_TRAP_MINOR_VERSION  0

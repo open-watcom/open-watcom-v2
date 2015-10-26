@@ -39,7 +39,6 @@
 #include "posio.h"
 #include "fapptype.h"
 #include "rmemmgr.h"
-#include "chrutils.h"
 
 #include <string.h>
 #include <ctype.h>

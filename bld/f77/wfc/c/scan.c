@@ -38,7 +38,6 @@
 #include "cpopt.h"
 #include "ferror.h"
 #include "comio.h"
-#include "scan.h"
 
 #include <string.h>
 #include <stdlib.h>

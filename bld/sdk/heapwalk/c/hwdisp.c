@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include "heapwalk.h"
+#include <windows.h>
 #include "jdlg.h"
 
 

@@ -319,7 +319,8 @@ void DoDump( HWND hwnd )
 /*
  * DumpDialog - get dump info
  */
-WINEXPORT BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
+                                    DWORD lparam )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -449,7 +450,8 @@ static void FillTaskList( HWND hwnd )
 /*
  * DebuggerOptDlg - manage the dialog to get debugger options
  */
-WINEXPORT BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, WORD msg, WORD wparam,
+                                    DWORD lparam )
 {
     char        str[128];
 
@@ -481,7 +483,8 @@ WINEXPORT BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LP
 /*
  * DumpAnyDialog - select a task to dump
  */
-WINEXPORT BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, WORD msg, WORD wparam,
+                                    DWORD lparam )
 {
     char        str[128];
     int         i,j;

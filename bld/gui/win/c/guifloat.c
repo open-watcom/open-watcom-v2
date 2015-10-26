@@ -37,8 +37,8 @@
 #include "guifloat.h"
 #include "guistr.h"
 
-
 extern  HMENU           GUIHFloatingPopup;
+extern  WPI_INST        GUIMainHInst;
 
 static  gui_ctl_id      CurrItem        = NO_SELECT;
 static  bool            InitComplete    = false;

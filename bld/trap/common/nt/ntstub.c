@@ -32,14 +32,12 @@
 
 #include <windows.h>
 #include "trpimp.h"
-#include "trpimpxx.h"
 
-void TRAPENTRY TrapTellHWND( HWND hwnd )
+void TRAPENTRY InfoFunction( HWND hwnd )
 {
 
     hwnd = hwnd;
 }
-
-void TRAPENTRY TrapTellInterrupt( void )
+void InterruptProgram( void )
 {
 }

@@ -82,7 +82,8 @@ static BOOL getNewLogName( HWND parent ) {
 /*
  * LogDialog - show task status
  */
-WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL __export FAR PASCAL LogDialog( HWND hwnd, WORD msg, WORD wparam,
+                                    DWORD lparam )
 {
     int         i;
 
@@ -293,7 +294,7 @@ static void rcLogPrint( DWORD msgid, ... )
     FreeRCString( str );
 }
 
-static void logComment( char *str ) {
+void logComment( char *str ) {
 
     if( !notesAdded ) {
         rcLogPrint( STR_USER_NOTES_ULINE );
@@ -616,7 +617,7 @@ static BOOL     hasTitle;
 /*
  * formatModuleSeg - format a segment for a module entry
  */
-static void formatModuleSeg( int index, WORD sel )
+void formatModuleSeg( int index, WORD sel )
 {
     if( !hasTitle ) {
         hasTitle = TRUE;

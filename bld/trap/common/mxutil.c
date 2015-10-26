@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "trptypes.h"
+#include "trpimp.h"
 
 trap_elen       In_Mx_Num;
 trap_elen       Out_Mx_Num;

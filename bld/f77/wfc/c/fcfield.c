@@ -40,16 +40,16 @@
 #include "cg.h"
 #include "emitobj.h"
 #include "fctypes.h"
-#include "fcsubscr.h"
-#include "tmpdefs.h"
-#include "fctemp.h"
-#include "fcjmptab.h"
-#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
-extern  cg_name         FieldArrayEltSize(sym_id);
+extern  void            XPush(cg_name);
+extern  cg_name         XPopValue(cg_type);
+extern  cg_name         XPop(void);
+extern  cg_name         ConstArrayOffset(act_dim_list *);
+extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
+extern  cg_type         SymPtrType(sym_id);
 
 
 void            FCFieldOp( void ) {

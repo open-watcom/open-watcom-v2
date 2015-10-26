@@ -195,7 +195,7 @@ void GUISetDialogColours( gui_colour_set *colours )
     GUIResetDialColours();
 }
 
-static gui_colour GetColour( ATTR attr )
+gui_colour GetColour( ATTR attr )
 {
     gui_colour i;
 

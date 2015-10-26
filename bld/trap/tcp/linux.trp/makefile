@@ -8,4 +8,6 @@ cpu = x86
 which = TRAP
 remote_link = 1
 
+extra_objs = qtcpsupp.obj
+
 !include $(trap_dir)/master.mif

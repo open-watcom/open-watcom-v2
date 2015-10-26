@@ -39,7 +39,7 @@ enum {
     PROB_P5_DIV = 0x0001
 };
 
-void __verify_pentium_fdiv_bug( void )
+_WCRTLINK void __verify_pentium_fdiv_bug( void )
 {
     /*
         Verify we have got the Pentium FDIV problem.

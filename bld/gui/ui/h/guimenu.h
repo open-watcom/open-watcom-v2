@@ -32,7 +32,6 @@
 
 #ifndef _GUIMENU_H_
 #define _GUIMENU_H_
-
 extern bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info );
 extern void GUIFreeMenus( gui_window *wnd );
 extern void GUIFreeMenuItems( MENUITEM *menus );
@@ -44,5 +43,4 @@ extern bool GUIAllocVBarMenu( VBARMENU **pmenu );
 extern MENUITEM *GUIAllocMenuItems( int num_menus );
 extern bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id );
 extern bool GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw );
-
 #endif // _GUIMENU_H_

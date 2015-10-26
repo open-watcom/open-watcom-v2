@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <windows.h>
-#include "crtinit.h"
 
 #if defined( __MAKE_DLL_CLIB ) || defined( __MAKE_DLL_WRTLIB )
 __declspec(dllexport)

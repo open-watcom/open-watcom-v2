@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <float.h>
-#include "xfloat.h"
 
 /* This routine is called from the C++ istream float extractor */
 

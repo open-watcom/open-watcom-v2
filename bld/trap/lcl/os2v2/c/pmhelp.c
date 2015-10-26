@@ -79,7 +79,7 @@ static TID             TidDebugee;
 #endif
 
 
-static VOID AbortLocker(HWND hwndFrame, HWND hwndClient)
+VOID AbortLocker(HWND hwndFrame, HWND hwndClient)
 {
     PERRINFO     pErrInfoBlk;
     PSZ          pszOffSet;
@@ -108,7 +108,7 @@ static VOID AbortLocker(HWND hwndFrame, HWND hwndClient)
 
 /* This bit is very, very tricky. If we lock the PM and the user switches  */
 /* to PM, there's a good chance he/she will be stranded with no way back!  */
-static void UnLockIt( void )
+void UnLockIt( void )
 {
     if (Locked) {
         WinThreadAssocQueue(Hab, Hmq);
@@ -118,13 +118,13 @@ static void UnLockIt( void )
     }
 }
 
-static VOID APIENTRY CleanUp( void )
+VOID APIENTRY CleanUp( void )
 {
     UnLockIt();
     DosExitList(EXLST_EXIT, (PFNEXITLIST)CleanUp);
 }
 
-static void LockIt( void )
+void LockIt( void )
 {
     if (!Locked) {
         WinThreadAssocQueue(Hab, Hmq);
@@ -144,7 +144,7 @@ static void SwitchBack( void )
 }
 
 
-static VOID APIENTRY ServiceRequests(VOID)
+VOID APIENTRY ServiceRequests(VOID)
 {
     ULONG               len;
     pmhelp_packet       data;
@@ -193,7 +193,7 @@ static VOID APIENTRY ServiceRequests(VOID)
 #endif
 }
 
-static MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2)
+MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2)
 {
     HPS    hps;
     RECTL  rc;

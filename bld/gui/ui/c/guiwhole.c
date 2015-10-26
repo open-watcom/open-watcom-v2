@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include "guiwhole.h"
 
 /*
  * GUIWholeWndDirty -- contents and frame are dirty

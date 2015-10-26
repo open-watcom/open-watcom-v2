@@ -167,7 +167,7 @@ static void logStrPrintf( char *str, ... ) {
 /*
  * NotePrint
  */
-static void NotePrint( char *str ) {
+void NotePrint( char *str ) {
     if( !notesAdded ) {
         logPrintf( STR_USER_NOTES );
         notesAdded = TRUE;

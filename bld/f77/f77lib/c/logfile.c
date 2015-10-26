@@ -38,13 +38,13 @@
 #include "rundat.h"
 #include "rtflags.h"
 #include "units.h"
-#include "ftextfun.h"
-#include "hexcnv.h"
 
 extern  void                    SwapIOCBs(void);
+extern  void                    SendInt(intstar4);
 extern  void                    Drop(char);
+extern  void                    BToHS(char *,int,char *);
 extern  void                    SendWSLStr(char *);
-extern  void                    SendStr(char PGM *,uint);
+extern  void                    SendStr(char PGM *,int);
 extern  void                    SendEOR(void);
 
 

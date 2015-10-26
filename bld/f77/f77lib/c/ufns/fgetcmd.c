@@ -42,7 +42,6 @@
 #include <string.h>
 #include <process.h>
 #include <pgmacc.h>
-#include "external.h"
 
 
 intstar4        __fortran FGETCMD( string PGM *args ) {

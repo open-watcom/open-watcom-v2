@@ -33,9 +33,8 @@
 #include <windows.h>
 #include "nmp.h"
 #include "bool.h"
-#include "trpimpxx.h"
 
-bool TRAPENTRY TrapTellTerminate( void )
+bool Terminate( void )
 {
     // a sideways dive to terminate the link (with failure)
     return( FALSE );

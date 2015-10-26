@@ -47,7 +47,7 @@
 /*
  * MarkPrint - call back function for processing marks
  */
-static void MarkPrint( char *str ) {
+void MarkPrint( char *str ) {
     LBStrPrintf( ListBox, str );
 }
 
@@ -73,7 +73,7 @@ static BOOL HandleDialogs( WORD wparam )
 /*
  * SaveExtra - save extra to file
  */
-static void SaveExtra( FILE *f )
+void SaveExtra( FILE *f )
 {
     time_t      tod;
 

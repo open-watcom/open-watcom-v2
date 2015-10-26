@@ -31,7 +31,6 @@
 
 #include "ftnstd.h"
 #include "symtypes.h"
-#include "tcmplx.h"
 
 
 bool    TypeCmplx( TYPE typ ) {

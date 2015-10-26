@@ -37,6 +37,7 @@
 #include "guixutil.h"
 #include "guimkey.h"
 
+extern  gui_window      *GUICurrWnd;
 extern  bool            EditControlHasFocus;
 extern  gui_keystate    KeyState;
 #ifndef __OS2_PM__

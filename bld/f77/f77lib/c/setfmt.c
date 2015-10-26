@@ -43,11 +43,11 @@ extern  void            R_FExec(void);
 extern  void            (*FmtRoutine)( void );
 
 
-void            SetFmt( char PGM *ptr ) {
+void            SetFmt( void PGM *ptr ) {
 //=======================================
 
     _SetIOCB();
-    IOCB->fmtptr = (void PGM *)ptr;
+    IOCB->fmtptr = ptr;
     IOCB->set_flags |= SET_FMTPTR;
     FmtRoutine = &R_FExec;
 }

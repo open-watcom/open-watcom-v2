@@ -32,7 +32,6 @@
 
 #include "variety.h"
 #include "mathlib.h"
-#include "ifprag.h"
 #include "pdiv.h"
 
 

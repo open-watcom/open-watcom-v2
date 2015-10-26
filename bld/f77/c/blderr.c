@@ -30,7 +30,6 @@
 
 #include "ftnstd.h"
 #include "ftextfun.h"
-#include "blderr.h"
 
 #include <stdlib.h>
 #include <stdio.h>

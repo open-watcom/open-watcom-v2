@@ -144,7 +144,7 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
 /*
  * SaveExtra - save extra to file
  */
-static void SaveExtra( FILE *f )
+void SaveExtra( FILE *f )
 {
     SpyLogTitle( f );
 
@@ -163,7 +163,7 @@ static void SaveExtra( FILE *f )
  *                to make it so long that the pause is too obvious to the
  *                user
  */
-static void setUpForPick( HWND hwnd, WORD cmdid ) {
+void setUpForPick( HWND hwnd, WORD cmdid ) {
 
 #ifdef __WINDOWS__
     SendMessage( hwnd, WM_TIMER, cmdid, 0 );
@@ -212,7 +212,7 @@ static void showHintBar( HWND hwnd ) {
     }
 }
 
-static void markCallback( char *res )
+void markCallback( char *res )
 {
     SpyOut( res, NULL );
 }

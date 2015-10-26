@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include <string.h>
 #include <stdio.h>
 #include "wddespy.h"
@@ -312,7 +313,7 @@ static void updateAlias( DWORD id, char *newalias, char *oldalias, void *_info )
 /*
  * refreshAnAlias
  */
-static void refreshAnAlias( DWORD id, char *text, void *info )
+void refreshAnAlias( DWORD id, char *text, void *info )
 {
     char        *ptr;
     size_t      prefix;
