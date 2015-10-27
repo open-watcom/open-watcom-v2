@@ -300,11 +300,12 @@ void WndFirstMenuItem( a_window *wnd, int row, int piece )
     WndRowPopUp( wnd, &wnd->popupmenu[ 0 ], row, piece );
 }
 
-
+#if 0
 wnd_row WndNoRow( a_window *wnd )
 {
     return( WndVirtualRow( wnd, WND_NO_ROW ) );
 }
+#endif
 
 void    WndModify( a_window *wnd, int row, int piece )
 {

@@ -24,22 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI dialog window.
 *
 ****************************************************************************/
 
 
-#define DLG_OPTIONS 4001
-
-#define CTL_OPT_AUTO 103
-#define CTL_OPT_BELL 104
-#define CTL_OPT_IMPLICIT 105
-#define CTL_OPT_RECURSE 106
-#define CTL_OPT_FLIP 107
-#define CTL_OPT_CASE 108
-#define CTL_OPT_OK 100
-#define CTL_OPT_DEFAULTS 102
-#define CTL_OPT_CANCEL 101
-
-extern bool    DlgOptions( void );
+extern gui_window *DlgGetParent( void );
+extern void DlgOpen( const char *title, int rows, int cols, gui_control_info *ctl, int num_controls, GUICALLBACK *rtn, void *extra );
+extern void ResDlgOpen( GUICALLBACK *rtn, void *extra, res_name_or_id dlg_id );

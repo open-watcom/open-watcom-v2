@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 
-gui_ctl_id CalcMaxId( gui_menu_struct *curr, int num_menus )
+static gui_ctl_id CalcMaxId( gui_menu_struct *curr, int num_menus )
 {
     int         i;
     gui_ctl_id  submax;
@@ -321,7 +321,7 @@ extern  void    WndMenuRespectAll( a_window *wnd )
 }
 
 
-void DoMenuBitOn( gui_menu_struct *menu, int num_popups, gui_ctl_id id, bool on, int bit )
+static void DoMenuBitOn( gui_menu_struct *menu, int num_popups, gui_ctl_id id, bool on, int bit )
 {
     int         i;
 

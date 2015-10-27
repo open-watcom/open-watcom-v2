@@ -32,11 +32,10 @@
 #include "auipvt.h"
 #include <stdlib.h>
 #include <string.h>
+#include "wnddlg.h"
 
 #include "clibext.h"
 
-
-extern gui_window *DlgGetParent( void );
 
 extern int DlgGetFileName( open_file_name *ofn )
 {
@@ -45,12 +44,12 @@ extern int DlgGetFileName( open_file_name *ofn )
 
     wnd = WndFindActive();
     rc = GUIGetFileName( DlgGetParent(), ofn );
-    if( wnd != NULL ) WndToFront( wnd );
+    if( wnd != NULL )
+        WndToFront( wnd );
     return( rc );
 }
 
-bool DlgFileBrowse( char *title, char *filter,
-                    char *path, unsigned len, fn_flags flags )
+bool DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags )
 {
     open_file_name      ofn;
     char                buff[_MAX_PATH2];

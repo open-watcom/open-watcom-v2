@@ -316,8 +316,7 @@ extern bool             DlgNew( const char *title, char *buff, unsigned buff_len
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, res_name_or_id dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
-extern bool             DlgFileBrowse( char *title, char *filter, char *path,
-                                       unsigned len, fn_flags flags );
+extern bool             DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
 
 extern a_window         **WndFindOwner( a_window * );
 extern a_window         *WndFirst( void );
