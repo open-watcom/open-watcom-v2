@@ -225,7 +225,7 @@ bool WndShutDownHook( void )
 
 
 #define OFN_FLAGS( writing ) \
-    ( writing ? (FN_HIDEREADONLY+FN_ISSAVE+FN_OVERWRITEPROMPT) : 0 )
+    ( writing ? (FN_HIDEREADONLY|FN_ISSAVE|FN_OVERWRITEPROMPT) : 0 )
 
 bool ConfigSave( bool writing )
 {
@@ -245,8 +245,7 @@ bool ConfigSave( bool writing )
 
 bool BreakSave( bool writing )
 {
-    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter,
-                      OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
         if( writing ) {
             SaveBreaksToFile( TxtBuff );
         } else {

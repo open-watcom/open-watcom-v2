@@ -50,6 +50,7 @@
 #include "guigmous.h"
 #include "guiwin.h"
 #include "wndsys.h"
+#include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
 

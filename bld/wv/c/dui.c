@@ -106,6 +106,7 @@ extern unsigned         ConfigScreen( void );
 
 #if defined( __NT__ ) && defined( __GUI__ )
 
+#include <windows.h>
 #include "guitimer.h"
 
 #define TIMER_ID        200
