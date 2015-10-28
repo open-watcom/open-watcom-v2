@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <jctype.h>
 
-_WCRTDATA const char _HUGEDATA  _IsKTable[257] = {
+_WCRTDATA const char _HUGEDATA  _IsKTable[256] = {
 
 #define ___0__ 0
 #define ___K__ _K
@@ -40,7 +40,6 @@ _WCRTDATA const char _HUGEDATA  _IsKTable[257] = {
 #define ___J1_ _J1
 #define ___J2_ _J2
 
-/* -1,EOF */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|___0__,
 /* 00,NUL */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|___0__,
 /* 01,SOH */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|___0__,
 /* 02,STX */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|___0__,

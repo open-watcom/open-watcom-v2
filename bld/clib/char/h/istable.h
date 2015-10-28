@@ -36,7 +36,7 @@
 extern int IsWhat( int );
 #pragma aux IsWhat = \
         "and eax,0xff" \
-        "mov al,_IsTable+0x1[eax]" \
+        "mov al,_IsTable[eax]" \
         parm loadds [eax]
 #elif defined(_M_I86HM)
 extern int IsWhat( int );
@@ -46,7 +46,7 @@ extern int IsWhat( int );
         "mov ds,bx" \
         "and ax,0xff" \
         "mov bx,ax" \
-        "mov al,_IsTable+0x1[bx]" \
+        "mov al,_IsTable[bx]" \
         "pop bx" \
         parm [ax] modify [ds]
 #elif defined(__I86__)
@@ -55,13 +55,13 @@ extern int IsWhat( int );
         "push bx" \
         "and ax,0xff" \
         "mov bx,ax" \
-        "mov al,_IsTable+0x1[bx]" \
+        "mov al,_IsTable[bx]" \
         "pop bx" \
         parm loadds [ax]
 #else
 static int IsWhat( int c )
 {
-    return( _IsTable[TO_ASCII( c )+1] );
+    return( _IsTable[ (unsigned char) c ] );
 }
 #endif
 

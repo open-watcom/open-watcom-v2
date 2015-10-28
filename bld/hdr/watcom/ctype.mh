@@ -110,22 +110,22 @@ _WCRTLINK extern int    __iscsym(int);
 #if (defined(__SW_BR) || defined(_RTDLL))
  #define _IsTable _IsTable_br
 #endif
-_WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
+_WCRTDATA extern const unsigned char _WCDATA _IsTable[256];
 
 #if !defined(__FUNCTION_DATA_ACCESS)
 :: Eliminate macros from cctype. These can be put back later as in-lines.
 :segment !CNAME
-#define isalnum(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER|_DIGIT))
-#define isalpha(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER))
-#define iscntrl(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _CNTRL)
-#define isdigit(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _DIGIT)
-#define isgraph(__c) (((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_PRINT|_SPACE))==_PRINT)
-#define islower(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _LOWER)
-#define isprint(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PRINT)
-#define ispunct(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PUNCT)
-#define isspace(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _SPACE)
-#define isupper(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _UPPER)
-#define isxdigit(__c) ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _XDIGT)
+#define isalnum(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & (_LOWER|_UPPER|_DIGIT))
+#define isalpha(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & (_LOWER|_UPPER))
+#define iscntrl(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _CNTRL)
+#define isdigit(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _DIGIT)
+#define isgraph(__c) (((unsigned char)(_IsTable[((unsigned char)(__c))]) & (_PRINT|_SPACE))==_PRINT)
+#define islower(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _LOWER)
+#define isprint(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _PRINT)
+#define ispunct(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _PUNCT)
+#define isspace(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _SPACE)
+#define isupper(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _UPPER)
+#define isxdigit(__c) ((unsigned char)(_IsTable[((unsigned char)(__c))]) & _XDIGT)
 
 :include extc99.sp
 #define isblank(__c)  (((__c)==' ')||((__c)=='\t'))

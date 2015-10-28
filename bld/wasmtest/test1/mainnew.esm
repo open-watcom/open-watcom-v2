@@ -197,7 +197,6 @@ L$47:
     mov         word ptr -12H[bp],dx 
     lds         bx,dword ptr -14H[bp] 
     mov         bl,byte ptr [bx] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],20H 
     je          L$48 
@@ -247,7 +246,6 @@ L$58:
     jmp         L$60 
 L$59:
     mov         bl,byte ptr -0aH[bp] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],20H 
     je          L$61 
@@ -255,7 +253,6 @@ L$60:
     jmp         L$62 
 L$61:
     mov         bl,byte ptr -0aH[bp] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],80H 
     je          L$63 
@@ -1445,7 +1442,6 @@ L$145:
     je          L$146 
     lds         bx,dword ptr -10H[bp] 
     mov         bl,byte ptr [bx] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],2 
     je          L$148 
@@ -2406,7 +2402,6 @@ L$278:
 L$279:
     lds         bx,dword ptr -0cH[bp] 
     mov         bl,byte ptr 1[bx] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],20H 
     je          L$280 
@@ -2428,7 +2423,6 @@ L$281:
 L$282:
     lds         bx,dword ptr -0cH[bp] 
     mov         bl,byte ptr 1[bx] 
-    inc         bl 
     xor         bh,bh 
     test        byte ptr ss:__IsTable[bx],20H 
     je          L$283 

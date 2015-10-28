@@ -64,7 +64,6 @@ isvalidident_:  push    ebp
                 mov     dword ptr [ebp]-24H,eax
                 mov     eax,dword ptr [ebp]-24H
                 mov     al,byte ptr [eax]
-                inc     al
                 and     eax,000000ffH
                 test    byte ptr __IsTable[eax],20H
                 je      short L1
@@ -99,13 +98,11 @@ L10:            cmp     byte ptr [ebp]-18H,3fH
                 jne     short L12
 L11:            jmp     short L13
 L12:            mov     al,byte ptr [ebp]-18H
-                inc     al
                 and     eax,000000ffH
                 test    byte ptr __IsTable[eax],20H
                 je      short L14
 L13:            jmp     short L15
 L14:            mov     al,byte ptr [ebp]-18H
-                inc     al
                 and     eax,000000ffH
                 test    byte ptr __IsTable[eax],80H
                 je      short L16

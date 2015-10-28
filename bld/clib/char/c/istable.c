@@ -32,11 +32,10 @@
 #include "variety.h"
 #include <ctype.h>
 
-_WCRTDATA const unsigned char _HUGEDATA  _IsTable[257] = {
+_WCRTDATA const unsigned char _HUGEDATA  _IsTable[256] = {
 
 #define ___0__ 0
 
-/* -1,EOF */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|___0__,
 /* 00,NUL */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|_CNTRL,
 /* 01,SOH */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|_CNTRL,
 /* 02,STX */  ___0__|___0__|___0__|___0__|___0__|___0__|___0__|_CNTRL,

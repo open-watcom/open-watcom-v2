@@ -51,22 +51,22 @@ _WCRTLINK extern int    iskanji2(int);
 #if defined(__SW_BR) || defined(_RTDLL)
  #define _IsKTable _IsKTable_br
 #endif
-_WCRTDATA extern const char _WCDATA _IsKTable[257];
+_WCRTDATA extern const char _WCDATA _IsKTable[256];
 
 :include cplusepi.sp
 
 #if !defined(__FUNCTION_DATA_ACCESS)
-#define iskana(__c)     (_IsKTable[(unsigned char)(__c)+1] & (_K|_KP))
-#define iskpun(__c)     (_IsKTable[(unsigned char)(__c)+1] & _KP)
-#define iskmoji(__c)    (_IsKTable[(unsigned char)(__c)+1] & _K)
+#define iskana(__c)     (_IsKTable[(unsigned char)(__c)] & (_K|_KP))
+#define iskpun(__c)     (_IsKTable[(unsigned char)(__c)] & _KP)
+#define iskmoji(__c)    (_IsKTable[(unsigned char)(__c)] & _K)
 #define isalkana(__c)   (isalpha(__c) || iskmoji(__c))
 #define ispnkana(__c)   (ispunct(__c) || iskpun(__c))
 #define isalnmkana(__c) (isalnum(__c) || iskmoji(__c))
 #define isprkana(__c)   (isprint(__c) || iskana(__c))
 #define isgrkana(__c)   (isgraph(__c) || iskana(__c))
 
-#define iskanji(__c)    (_IsKTable[(unsigned char)(__c)+1] & _J1)
-#define iskanji2(__c)   (_IsKTable[(unsigned char)(__c)+1] & _J2)
+#define iskanji(__c)    (_IsKTable[(unsigned char)(__c)] & _J1)
+#define iskanji2(__c)   (_IsKTable[(unsigned char)(__c)] & _J2)
 #endif
 
 #endif

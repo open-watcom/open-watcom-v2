@@ -43,7 +43,7 @@ typedef wchar_t wctype_t;
    extern wint_t        towupper(wint_t);
     extern int  isascii(int);
     extern int  __isascii(int);
-    extern const char  __near  _IsTable[257];
+    extern const char  __near  _IsTable[256];
 };
 extern "C" {
 typedef unsigned size_t;
@@ -2152,7 +2152,7 @@ struct  string_char_baggage {
     static  int
     is_del (char_type c)
     {
-        return  (_IsTable[(unsigned char)((c)+1)] & 0x02) ;
+        return  (_IsTable[ (unsigned char)c ] & 0x02) ;
     }
     static int
     compare (const char_type* s1, const char_type* s2, size_t n)
@@ -2222,7 +2222,7 @@ struct string_char_baggage<char> {
     static  int
     is_del (char_type c)
     {
-        return  (_IsTable[(unsigned char)((c)+1)] & 0x02) ;
+        return  (_IsTable[(unsigned char)c] & 0x02) ;
     }
     static int
     compare (const char_type* s1, const char_type* s2, size_t n)

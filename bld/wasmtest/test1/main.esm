@@ -76,7 +76,6 @@ L$1:
     mov         dword ptr -24H[ebp],eax
     mov         eax,dword ptr -24H[ebp]
     mov         al,byte ptr [eax]
-    inc         al
     and         eax,0ffH
     test        byte ptr DGROUP:__IsTable[eax],20H
     je          L$2
@@ -123,7 +122,6 @@ L$12:
     jmp         L$14
 L$13:
     mov         al,byte ptr -18H[ebp]
-    inc         al
     and         eax,0ffH
     test        byte ptr DGROUP:__IsTable[eax],20H
     je          L$15
@@ -131,7 +129,6 @@ L$14:
     jmp         L$16
 L$15:
     mov         al,byte ptr -18H[ebp]
-    inc         al
     and         eax,0ffH
     test        byte ptr DGROUP:__IsTable[eax],80H
     je          L$17

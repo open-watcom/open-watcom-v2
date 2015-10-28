@@ -395,13 +395,11 @@ L33:            mov     dx,word ptr -14H[bp]
                 jmp     short L32
 L34:            lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],0c0H
                 jne     short L35
                 lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],20H
                 je      short L36
@@ -432,13 +430,11 @@ L43:            mov     cx,word ptr -14H[bp]
 L44:            jmp     short L33
 L45:            lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 je      short L48
 L46:            lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 je      short L47
@@ -478,13 +474,11 @@ L52:            mov     dx,word ptr -14H[bp]
                 jmp     short L51
 L53:            lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],0c0H
                 jne     short L54
                 lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],20H
                 je      short L55
@@ -507,7 +501,6 @@ L61:            lds     bx,dword ptr -14H[bp]
 L62:            jmp     short L52
 L63:            lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 jne     short L64
@@ -613,7 +606,6 @@ L74:            lds     bx,dword ptr -10H[bp]
                 lds     bx,dword ptr -10H[bp]
                 add     bx,word ptr -8H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 je      short L76
@@ -1063,7 +1055,6 @@ L109:           mov     ax,word ptr -1cH[bp]
                 mov     word ptr -132H[bp],ax
 L110:           lds     bx,dword ptr -134H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 je      short L111
@@ -1081,7 +1072,6 @@ L111:           mov     cx,word ptr -134H[bp]
                 je      short L113
 L112:           lds     bx,dword ptr -134H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 je      short L114
@@ -1100,7 +1090,6 @@ L115:           mov     cx,word ptr -134H[bp]
                 je      short L117
 L116:           lds     bx,dword ptr -134H[bp]
                 mov     bl,byte ptr [bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],02H
                 jne     short L118
@@ -1198,14 +1187,12 @@ L126:           lds     bx,dword ptr -14H[bp]
                 jne     short L127
                 lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr +1H[bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],20H
                 jne     short L128
 L127:           jmp     short L129
 L128:           lds     bx,dword ptr -14H[bp]
                 mov     bl,byte ptr +2H[bx]
-                inc     bl
                 xor     bh,bh
                 test    byte ptr ss:__IsTable[bx],20H
                 jne     short L130
