@@ -45,11 +45,11 @@ extern "C" {
 
 #define WMaxFiles       32      // for multi-select file dialogs
 
-#define WFOpenNew       OFN_HIDEREADONLY | OFN_PATHMUSTEXIST
-#define WFOpenNewAll    OFN_HIDEREADONLY
-#define WFOpenExisting  OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | \
-                        OFN_FILEMUSTEXIST
-#define WFSaveDefault   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT
+#define WFOpenNew       FN_HIDEREADONLY | FN_PATHMUSTEXIST
+#define WFOpenNewAll    FN_HIDEREADONLY
+#define WFOpenExisting  FN_HIDEREADONLY | FN_PATHMUSTEXIST | \
+                        FN_FILEMUSTEXIST
+#define WFSaveDefault   FN_HIDEREADONLY | FN_OVERWRITEPROMPT
 
 WCLASS WFileDialog  : public WDialog {
     public:
