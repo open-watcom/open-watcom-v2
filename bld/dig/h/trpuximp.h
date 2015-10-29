@@ -37,7 +37,7 @@ typedef struct {
 
 typedef struct {
     unsigned long       len;
-    char                ***environ;
+    char                ***environp;
     void                **_slib_func;
     void                *(*malloc)( size_t );
     void                *(*realloc)( void *, size_t );

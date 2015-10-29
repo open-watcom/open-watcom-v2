@@ -48,7 +48,7 @@ const trap_requests *TRAPLOAD( trap_callbacks *client )
 {
     Client = client;
     if( Client->len <= offsetof(trap_callbacks,signal) ) return( NULL );
-    dbg_environ = *Client->environ;
+    dbg_environ = *Client->environp;
     _slib_func[0] = Client->_slib_func[0];
     _slib_func[1] = Client->_slib_func[1];
     return( &ImpInterface );
