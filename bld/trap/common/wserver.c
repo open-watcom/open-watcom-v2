@@ -42,12 +42,9 @@
 #include "tcerr.h"
 #include "nothing.h"
 #include "options.h"
+#include "trpsys.h"
 
 extern trap_version TrapVersion;
-
-#ifdef __NT__
-extern void         TellHWND( HWND );
-#endif
 
 char            ServParms[PARMS_MAXLEN];
 
@@ -171,7 +168,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
     if( !hwndMain ) return( FALSE );
 
 #ifdef __NT__
-    TellHWND( hwndMain );
+    TrapTellHWND( hwndMain );
 #endif
 
     /*

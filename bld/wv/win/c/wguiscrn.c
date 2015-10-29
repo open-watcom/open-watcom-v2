@@ -46,29 +46,24 @@
 
 extern a_window         *WndMain;
 extern volatile bool    BrkPending;
-#ifdef __GUI__
-extern void  (__pascal *SetHardMode)( char );
-extern void  (__pascal *UnLockInput)( void );
-#endif
 
 unsigned        ScrnLines = 50;
 unsigned        FlipMech;
 unsigned        ScrnMode;
 HWND            DebuggerHwnd;
 bool            WantFast;
-int             ForceHardMode;
+int             TrapForceHardMode;
 static HWND     FocusWnd;
 
 #if 0
 ToggleHardMode( void )
 {
-    ForceHardMode = !ForceHardMode;
-    #ifdef __GUI__
-        SetHardMode( ForceHardMode );
-        GUICheckMenuItem( WndGui( WndMain ),
-                      MENU_MAIN_WINDOW_HARD_MODE, ForceHardMode );
-    #endif
-    GUISetModalDlgs( ForceHardMode || HardModeRequired );
+    TrapForceHardMode = !TrapForceHardMode;
+#ifdef __GUI__
+    TrapSetHardMode( TrapForceHardMode );
+    GUICheckMenuItem( WndGui( WndMain ), MENU_MAIN_WINDOW_HARD_MODE, TrapForceHardMode );
+#endif
+    GUISetModalDlgs( TrapForceHardMode || TrapHardModeRequired );
 }
 #endif
 
@@ -78,7 +73,7 @@ void InitHookFunc( void )
 
 void FiniHookFunc( void )
 {
-    UnLockInput();
+    TrapUnLockInput();
 }
 
 void Ring_Bell( void )
@@ -135,10 +130,11 @@ void UnknownScreen( void )
 
 bool DebugScreen( void )
 {
-    if( ScreenState == DEBUG_SCREEN ) return( FALSE );
+    if( ScreenState == DEBUG_SCREEN )
+        return( FALSE );
     if( WndMain ) {
         ScreenState = DEBUG_SCREEN;
-        GUISetModalDlgs( ForceHardMode || HardModeRequired );
+        GUISetModalDlgs( TrapForceHardMode || TrapHardModeRequired );
         SetFocus( GUIGetSysHandle( WndGui( WndMain ) ) );
     }
     return( FALSE );
@@ -151,10 +147,11 @@ bool DebugScreenRecover( void )
 
 bool UserScreen( void )
 {
-    if( ScreenState == USER_SCREEN ) return( FALSE );
+    if( ScreenState == USER_SCREEN )
+        return( FALSE );
     if( WndMain ) {
         ScreenState = USER_SCREEN;
-        UnLockInput();
+        TrapUnLockInput();
     }
     return( FALSE );
 }

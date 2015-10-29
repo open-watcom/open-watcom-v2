@@ -99,6 +99,10 @@ typedef struct {
 } in_mx_entry;
 #include "digunpck.h"
 
+#if defined( __WINDOWS__ )
+typedef void __far hook_fn(unsigned, unsigned);
+#endif
+
 typedef mx_entry        DIGFAR *mx_entry_p;
 typedef in_mx_entry     DIGFAR *in_mx_entry_p;
 

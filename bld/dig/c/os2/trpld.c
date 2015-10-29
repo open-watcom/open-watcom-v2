@@ -52,7 +52,7 @@ bool IsTrapFilePumpingMessageQueue( void )
     return( InfoFunc != NULL );
 }
 
-void TellHandles( void __far *hab, void __far *hwnd )
+void TrapTellHandles( void __far *hab, void __far *hwnd )
 {
     if( InfoFunc != NULL ) {
         InfoFunc( hab, hwnd );
@@ -60,7 +60,7 @@ void TellHandles( void __far *hab, void __far *hwnd )
 }
 
 
-char TellHardMode( char hard )
+char TrapTellHardMode( char hard )
 {
     if( HardFunc == NULL )
         return( 0 );

@@ -62,7 +62,7 @@ extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
-int                     ForceHardMode;
+int                     TrapForceHardMode;
 bool                    ToldWinHandle = FALSE;
 ULONG                   PumpMessageSem;
 ULONG                   PumpMessageDoneSem;
@@ -79,7 +79,7 @@ void WndInitWndMain( wnd_create_struct *info )
 void TellWinHandle( void )
 {
     if( !ToldWinHandle ) {
-        TellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
+        TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
         ToldWinHandle = TRUE;
     }
 }
