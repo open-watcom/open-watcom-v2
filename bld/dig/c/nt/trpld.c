@@ -46,7 +46,7 @@ static trap_fini_func   *FiniFunc = NULL;
 
 static void (TRAPENTRY *InfoFunction)( HWND );
 
-void TellHWND( HWND hwnd )
+void TrapTellHWND( HWND hwnd )
 {
     if( InfoFunction != NULL ) {
         InfoFunction( hwnd );

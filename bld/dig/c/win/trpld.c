@@ -40,20 +40,18 @@
 #include "trpld.h"
 #include "trpsys.h"
 
-void                    (TRAPENTRY*HookFunc)(LPVOID);
-void                    (TRAPENTRY*InfoFunction)(HWND);
-void                    (TRAPENTRY*UnLockInput)(void);
-void                    (TRAPENTRY*SetHardMode)(char);
+int TrapHardModeRequired;
 
+static void             (TRAPENTRY*HookFunc)(LPVOID);
+static void             (TRAPENTRY*InfoFunction)(HWND);
+static void             (TRAPENTRY*UnLockInput)(void);
+static void             (TRAPENTRY*SetHardMode)(char);
 static int              (TRAPENTRY*HardModeCheck)(void);
 static int              (TRAPENTRY*GetHwndFunc)(void);
 
-int HardModeRequired;
-
 static trap_fini_func   *FiniFunc = NULL;
 static HINSTANCE        TrapFile = 0;
-
-static HINSTANCE toolhelp = 0;
+static HINSTANCE        toolhelp = 0;
 
 void KillTrap( void )
 {
@@ -158,7 +156,27 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     return( buff );
 }
 
-void DoHardModeCheck( void )
+void TrapHardModeCheck( void )
 {
-    HardModeRequired = HardModeCheck();
+    TrapHardModeRequired = HardModeCheck();
+}
+
+void TrapTellHWND( HWND hwnd )
+{
+    InfoFunction( hwnd );
+}
+
+void TrapInputHook( hook_fn *hookfn )
+{
+    HookFunc( hookfn );
+}
+
+void TrapUnLockInput( void )
+{
+    UnLockInput();
+}
+
+void  TrapSetHardMode( char state )
+{
+    SetHardMode( state );
 }

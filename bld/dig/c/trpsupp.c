@@ -32,15 +32,16 @@
 #include "madregs.h"
 #include "trpimp.h"
 #include "trpld.h"
-
-#ifdef ENABLE_TRAP_LOGGING
+#if defined( __WINDOWS__ ) && !defined(SERVER)
+#include <windows.h>
+#include "trpsys.h"
+#elif defined( ENABLE_TRAP_LOGGING )
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 #include <winbase.h>    /* For GetSystemTime */
 #endif
 
-extern void     DoHardModeCheck(void);
 
 trap_version    TrapVer;
 trap_req_func   *ReqFunc;
@@ -194,10 +195,8 @@ unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_m
         Failure();
     }
     Access();
-#if !defined(SERVER)
-#if defined(__WINDOWS__) && defined( _M_I86 )
-    DoHardModeCheck();
-#endif
+#if defined(__WINDOWS__) && !defined(SERVER)
+    TrapHardModeCheck();
 #endif
     if( result == REQUEST_FAILED )
         return( (unsigned)-1 );

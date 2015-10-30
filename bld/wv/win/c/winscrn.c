@@ -45,9 +45,9 @@
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
+#include "trptypes.h"
+#include "trpsys.h"
 
-
-extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
 
 extern unsigned char    NECBIOSGetMode(void);
 #pragma aux NECBIOSGetMode =                                    \
@@ -74,7 +74,7 @@ static display_configuration    HWDisplay;
 
 void InitHookFunc( void )
 {
-    HookFunc( win_uihookrtn );
+    TrapInputHook( win_uihookrtn );
 }
 
 void FiniHookFunc( void )

@@ -51,17 +51,15 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#include "trptypes.h"
+#include "trpsys.h"
 
 #include "clibint.h"
 
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
-static BOOL     PASCAL GetCommandData( HWND );
 extern void     InitHookFunc(void);
 extern void     FiniHookFunc(void);
-#ifndef __NT__
-extern void  (WINAPI *InfoFunction)(HWND);
-#endif
 
 extern HWND     MainHwnd = NULL;
 extern a_window *WndMain;
@@ -69,12 +67,14 @@ extern a_window *WndMain;
 volatile bool   BrkPending;
 bool            ToldWinHandle = FALSE;
 
+static BOOL     PASCAL GetCommandData( HWND );
+
 static char     *CmdData;
 
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle && InfoFunction != NULL ) {
-        InfoFunction( GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( !ToldWinHandle ) {
+        TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
         ToldWinHandle = TRUE;
     }
 }
@@ -109,13 +109,14 @@ void GUISysFini( void  )
 
 void WndCleanUp( void )
 {
-    InfoFunction( (HWND)0 );
+    TrapTellHWND( (HWND)0 );
     FiniHookFunc();
 }
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 
@@ -137,8 +138,8 @@ void KillDebugger( int ret_code )
 
 void GrabHandlers( void )
 {
-    if( !ToldWinHandle && InfoFunction != NULL ) {
-        InfoFunction( (HWND)0 );
+    if( !ToldWinHandle ) {
+        TrapTellHWND( (HWND)0 );
     }
 }
 

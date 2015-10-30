@@ -40,8 +40,8 @@
 #include "guiwin.h"
 #include "dbgmain.h"
 #include "wndsys.h"
+#include "trpsys.h"
 
-extern void     TellHWND( HWND );
 
 extern a_window *WndMain;
 
@@ -53,8 +53,9 @@ static HWND     FirstForeWnd = NULL;
 
 void TellWinHandle( void )
 {
-    if( _IsOn( SW_POWERBUILDER ) ) return;
-    TellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( _IsOn( SW_POWERBUILDER ) )
+        return;
+    TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
 }
 
 void Ring_Bell( void )

@@ -30,8 +30,7 @@
 
 
 #include <stdlib.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
 #include "ntostrt.h"
 
 
@@ -45,7 +44,7 @@ const trap_requests *TrapLoad( trap_callbacks *client )
     if( Client->len <= offsetof(trap_callbacks,signal) ) {
         return( NULL );
     }
-    dbg_environ = *Client->environ;
+    dbg_environ = *Client->environp;
     return( &ImpInterface );
 }
 

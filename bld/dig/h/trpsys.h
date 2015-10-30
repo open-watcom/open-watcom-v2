@@ -30,35 +30,38 @@
 
 
 #if defined( __OS2__ )
-extern bool     IsTrapFilePumpingMessageQueue( void );
-extern char     TellHardMode( char hard );
-  #if defined( _M_I86 )
-extern void     TellHandles( void __far *hab, void __far *hwnd );
-  #else
-extern void     TellHandles( HAB hab, HWND hwnd );
-  #endif
-#elif defined( __DOS__ )
-  #if defined( _M_I86 )
-  #else
-extern unsigned char    DPMICheck;
 
+extern bool     IsTrapFilePumpingMessageQueue( void );
+extern char     TrapTellHardMode( char hard );
+
+  #if defined( _M_I86 )
+extern void     TrapTellHandles( void __far *hab, void __far *hwnd );
+  #else
+extern void     TrapTellHandles( HAB hab, HWND hwnd );
+  #endif
+
+#elif defined( __DOS__ )
+  #if !defined( _M_I86 )
+
+extern unsigned char    DPMICheck;
 extern void     SaveOrigVectors( void );
 extern void     RestoreOrigVectors( void );
+
   #endif
 #elif defined( __NT__ )
-extern void     TellHWND( HWND hwnd );
+
+extern void     TrapTellHWND( HWND hwnd );
 extern void     TellInterrupt( void );
 extern bool     TellTerminate( void );
+
 #elif defined( __WINDOWS__ )
-extern int      HardModeRequired;
 
-extern void     (TRAPENTRY*HookFunc)(LPVOID);
-extern void     (TRAPENTRY*InfoFunction)(HWND);
-extern void     (TRAPENTRY*UnLockInput)(void);
-extern void     (TRAPENTRY*SetHardMode)(char);
-
-extern void     TellHWND( HWND hwnd );
-extern void     DoHardModeCheck( void );
+extern int      TrapHardModeRequired;
+extern void     TrapTellHWND( HWND hwnd );
+extern void     TrapSetHardMode( char mode );
+extern void     TrapHardModeCheck( void );
+extern void     TrapInputHook( hook_fn * );
+extern void     TrapUnLockInput( void );
 extern bool     TellTerminate( void );
-#else
+
 #endif
