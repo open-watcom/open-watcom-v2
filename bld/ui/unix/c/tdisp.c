@@ -234,10 +234,11 @@ static bool TI_FillColourSet= FALSE;
 
 #define TI_RESTORE_COLOUR()                     \
 {                                               \
-    if( _capable_of( orig_colors ) ) {          \
-        __putp( orig_colors );                  \
-    } else if( _capable_of( orig_pair ) ) {     \
+    if( _capable_of( orig_pair ) ) {            \
         __putp( orig_pair );                    \
+    }                                           \
+    else if( _capable_of( orig_colors ) ) {     \
+        __putp( orig_colors );                  \
     }                                           \
 }
 
