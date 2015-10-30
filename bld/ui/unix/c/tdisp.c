@@ -816,9 +816,10 @@ static EVENT td_sizeevent( void )
     SAREA           area;
 
     if (!SizePending) return (EV_NO_EVENT);
+    SizePending = 0;
+
     if (!uiinlist(EV_BACKGROUND_RESIZE)) return (EV_NO_EVENT);
     if (!setupscrnbuff(0,0)) return (EV_NO_EVENT);
-    SizePending = 0;
     area.row = 0;
     area.col = 0;
     area.height = UIData->height;
