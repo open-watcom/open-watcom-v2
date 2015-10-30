@@ -24,44 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Basic trap interface functions.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "trptypes.h"
-#include "trpld.h"
-#include "trpcomm.h"
-#include "tcerr.h"
+extern trap_init_func   TrapInit;
+extern trap_req_func    TrapRequest;
+extern trap_fini_func   TrapFini;
 
+extern trap_elen        In_Mx_Num;
+extern trap_elen        Out_Mx_Num;
+extern in_mx_entry_p    In_Mx_Ptr;
+extern mx_entry_p       Out_Mx_Ptr;
 
-void KillTrap( void )
-{
-    TrapFini();
-}
-
-char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
-{
-    const char  *ptr;
-
-    if( parms == NULL || *parms == '\0' )
-        parms = "std";
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
-        ;
-    parms =ptr;
-    if( *parms != '\0' )
-        ++parms;
-    *trap_ver = TrapInit( parms, buff, trap_ver->remote );
-    if( buff[0] == '\0' ) {
-        if( TrapVersionOK( *trap_ver ) ) {
-            TrapVer = *trap_ver;
-            ReqFunc = TrapRequest;
-            return( NULL );
-        }
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    }
-    KillTrap();
-    return( buff );
-}
+extern void             *GetInPtr( trap_elen );
+extern void             *GetOutPtr( trap_elen );
+extern trap_elen        GetTotalSize( void );

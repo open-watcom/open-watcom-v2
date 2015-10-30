@@ -49,6 +49,7 @@ extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
 extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
 extern void             KillTrap(void);
+extern const trap_requests *TrapLoad( const trap_callbacks *client );
 
 /* Client support routines */
 extern void             TrapSetFailCallBack( void (*func)(void) );

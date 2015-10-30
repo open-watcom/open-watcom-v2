@@ -131,26 +131,4 @@ typedef struct {
     void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
 } trap_callbacks;
 
-/* Client interface routines */
-extern char             *LoadDumbTrap( trap_version * );
-extern char             *LoadTrap( const char *, char *, trap_version * );
-extern void             TrapSetFailCallBack( void (*func)(void) );
-extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
-extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
-extern void             KillTrap(void);
-extern const trap_requests *TrapLoad( const trap_callbacks *client );
-
-extern trap_init_func   TrapInit;
-extern trap_req_func    TrapRequest;
-extern trap_fini_func   TrapFini;
-
-extern trap_elen        In_Mx_Num;
-extern trap_elen        Out_Mx_Num;
-extern in_mx_entry_p    In_Mx_Ptr;
-extern mx_entry_p       Out_Mx_Ptr;
-
-extern void             *GetInPtr( trap_elen );
-extern void             *GetOutPtr( trap_elen );
-extern trap_elen        GetTotalSize( void );
-
 #endif

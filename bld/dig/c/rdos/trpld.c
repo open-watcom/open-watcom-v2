@@ -34,9 +34,10 @@
 #include <dos.h>
 #include <string.h>
 #include <stdlib.h>
-#include "trpimp.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "tcerr.h"
+
 
 static int              TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
