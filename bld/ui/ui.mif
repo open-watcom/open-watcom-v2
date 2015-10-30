@@ -119,5 +119,5 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
     wlink @sample.lnk
 !else
 sample.exe : sample.obj sampdial.obj $(name).lib
-    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(name).lib}
+    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(name).lib ncurses.lib}
 !endif
