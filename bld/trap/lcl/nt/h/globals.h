@@ -29,6 +29,13 @@
 ****************************************************************************/
 
 
+#ifdef TRPGLOBINIT
+#define TRPGLOBAL
+#else
+#define TRPGLOBAL extern
+#define TRPGLOBINIT(x)
+#endif
+
 TRPGLOBAL DWORD                 DebugeePid;
 TRPGLOBAL DWORD                 DebugeeTid;
 TRPGLOBAL process_info          ProcessInfo;
@@ -73,22 +80,19 @@ typedef void    (WINAPI *DEBUGEVENTPROC)();
 typedef BOOL    (WINAPI *PROCESSENUMPROC)( DWORD, DWORD, LPARAM );
 #endif
 
-TRPGLOBAL
-HANDLE
+TRPGLOBAL HANDLE
 (WINAPI*pOpenThread)(
     DWORD
 );
 
-TRPGLOBAL
-DWORD
+TRPGLOBAL DWORD
 (WINAPI *pQueryDosDevice)(
     LPCTSTR         lpDeviceName,
     LPTSTR          lpTargetPath,
     DWORD           ucchMax
 );
 
-TRPGLOBAL
-DWORD 
+TRPGLOBAL DWORD 
 (WINAPI *pGetMappedFileName)(
     HANDLE          hProcess,
     LPVOID          lpv,
@@ -96,30 +100,26 @@ DWORD
     DWORD           nSize
 );
 
-TRPGLOBAL
-HANDLE 
+TRPGLOBAL HANDLE 
 (WINAPI *pCreateToolhelp32Snapshot)(
     DWORD           dwFlags,
     DWORD           th32ProcessID
 );
 
-TRPGLOBAL
-BOOL 
+TRPGLOBAL BOOL 
 (WINAPI *pModule32First)(
     HANDLE          hSnapshot,
     LPMODULEENTRY32 lpme
 );
 
-TRPGLOBAL
-BOOL 
+TRPGLOBAL BOOL 
 (WINAPI *pModule32Next)(
     HANDLE          hSnapshot,
     LPMODULEENTRY32 lpme
 );
 
 #if !defined( MD_x64 ) && defined( WOW )
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMModuleFirst)(
     HANDLE          hProcess,
     HANDLE          hThread,
@@ -128,8 +128,7 @@ BOOL
     LPVOID          lpData
 );
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMModuleNext)(
     HANDLE          hProcess,
     HANDLE          hThread,
@@ -138,22 +137,19 @@ BOOL
     LPVOID          lpData
 );
 
-TRPGLOBAL
-INT
+TRPGLOBAL INT
 (WINAPI*pVDMEnumProcessWOW)(
     PROCESSENUMPROC fp,
     LPARAM          lparam
 );
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMProcessException)(
     LPDEBUG_EVENT   lpDebugEvent
     );
 
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMGetModuleSelector)(
     HANDLE          hProcess,
     HANDLE          hThread,
@@ -163,22 +159,19 @@ BOOL
 );
 
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMGetThreadContext)(
     LPDEBUG_EVENT   lpDebugEvent,
     LPVDMCONTEXT    lpVDMContext
 );
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMSetThreadContext)(
     LPDEBUG_EVENT   lpDebugEvent,
     LPVDMCONTEXT    lpVDMContext
 );
 
-TRPGLOBAL
-BOOL
+TRPGLOBAL BOOL
 (WINAPI*pVDMGetThreadSelectorEntry)(
     HANDLE          hProcess,
     HANDLE          hThread,

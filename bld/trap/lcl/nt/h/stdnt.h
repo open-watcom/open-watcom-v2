@@ -39,10 +39,6 @@
 #include "exepe.h"
 #include "exeos2.h"
 #include "exedos.h"
-
-#ifndef STATUS_SEGMENT_NOTIFICATION
-#define STATUS_SEGMENT_NOTIFICATION 0x40000005
-#endif
 #if defined( MD_x86 ) && defined( WOW )
 #include "vdmdbg.h"
 #endif
@@ -168,8 +164,6 @@ struct msg_list {
  * global variables
  */
 
-#define TRPGLOBAL extern
-#define TRPGLOBINIT( x )
 #include "globals.h"
 
 /*
@@ -204,7 +198,6 @@ void AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
 int DebugExecute( DWORD state, int *tsc, bool );
-void InterruptProgram( void );
 void InterruptProgram( void );
 bool Terminate( void );
 

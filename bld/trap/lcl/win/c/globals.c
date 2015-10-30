@@ -32,6 +32,7 @@
 
 #include "wdebug.h"
 #include "stdwin.h"
+
 BYTE                    DLLLoadSaveByte;
 WORD                    DLLLoadIP;
 WORD                    DLLLoadCS;
