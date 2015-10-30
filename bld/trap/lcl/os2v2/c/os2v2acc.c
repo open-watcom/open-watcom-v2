@@ -42,6 +42,7 @@
 #include "cpuglob.h"
 #include "dosdebug.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
 #include "bsexcpt.h"

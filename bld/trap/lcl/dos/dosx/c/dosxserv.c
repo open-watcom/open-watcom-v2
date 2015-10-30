@@ -39,6 +39,7 @@
 #include <process.h>
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "servio.h"
 #include "dosxlink.h"

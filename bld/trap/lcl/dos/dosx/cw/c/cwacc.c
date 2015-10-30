@@ -37,6 +37,7 @@
 #include <stdarg.h>
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "madregs.h"

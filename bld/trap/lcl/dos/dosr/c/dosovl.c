@@ -32,6 +32,7 @@
 #include <string.h>
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "ovldbg.h"
 #include "doscomm.h"
 #include "dosovl.h"

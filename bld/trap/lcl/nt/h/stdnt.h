@@ -35,6 +35,7 @@
 #include <tlhelp32.h>
 #include "cpuglob.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "exepe.h"
 #include "exeos2.h"

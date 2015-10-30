@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "exepe.h"
 #include "dbg386.h"

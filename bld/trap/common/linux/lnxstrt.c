@@ -31,7 +31,9 @@
 
 #include <stdlib.h>
 #include "trptypes.h"
+#include "trpcomm.h"
 #include "lnxstrt.h"
+
 
 char                            **dbg_environ;  /* pointer to parent's environment table */
 const trap_callbacks            *Client;

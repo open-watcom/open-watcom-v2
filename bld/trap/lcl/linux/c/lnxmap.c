@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <sys/ptrace.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "mad.h"
 #include "exeelf.h"
 #include "lnxcomm.h"

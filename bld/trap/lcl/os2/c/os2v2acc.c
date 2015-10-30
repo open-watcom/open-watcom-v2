@@ -42,6 +42,7 @@
 #include <os2dbg.h>
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "dosdebug.h"
 #include "os2trap.h"
 #include "os2v2acc.h"

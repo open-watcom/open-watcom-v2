@@ -31,6 +31,7 @@
 
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 
 extern int GtKey( void );
 extern unsigned KeyWaiting( void );

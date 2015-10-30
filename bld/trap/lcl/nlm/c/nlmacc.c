@@ -44,12 +44,10 @@
 #endif
 #include "debugapi.h"
 
-#undef TRUE
-#undef FALSE
-
 #include "cpuglob.h"
 #include "dbg386.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
 #include "exenov.h"

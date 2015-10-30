@@ -32,6 +32,8 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
+
 
 typedef trap_retval service_func( void );
 

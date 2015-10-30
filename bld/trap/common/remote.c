@@ -34,6 +34,7 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
 
