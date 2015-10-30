@@ -755,7 +755,9 @@ static bool setupscrnbuff( int rows, int cols )
 /*********************************************/
 {
     PIXEL               *scrn;
+    PIXEL               *shdw;
     static PIXEL        blank = {' ', 7};
+    static PIXEL        zero  = { 0,  0};
     int                 num;
     int                 i;
     struct winsize      size;
@@ -776,27 +778,38 @@ static bool setupscrnbuff( int rows, int cols )
             }
         }
     }
+    if (cols < 80) cols = 80;
+    if (rows < 24) rows = 24;
 
-    UIData->width = cols;
-    UIData->height = rows;
-    UIData->cursor_type = C_NORMAL;
+    num = cols * rows * sizeof(PIXEL);
+    shdw = uimalloc(num);
+    if (shdw == 0)
+        return FALSE;
 
-    num = UIData->width * UIData->height * sizeof(PIXEL);
-    scrn = UIData->screen.origin;
-    scrn = uirealloc(scrn, num);
-
-    if (scrn == NULL) return (FALSE);
-    if ((shadow=uirealloc(shadow, num)) == 0) {
-        uifree(scrn);
+    scrn = uimalloc(num);
+    if (scrn == 0) {
+        uifree(shdw);
         return FALSE;
     }
-    save_cursor_type = -1; /* C_NORMAL; */
+
     num /= sizeof(PIXEL);
     for (i = 0; i < num; ++i) {
-        scrn[i] = blank;/* a space with normal attributes */
+        scrn[i] = blank; /* a space with normal attributes */
+        scrn[i] = zero; /* a space with normal attributes */
     }
+
+    save_cursor_type = -1; /* C_NORMAL;  */
+    UIData->cursor_type = C_NORMAL;
+    UIData->height = rows;
+    UIData->width = cols;
+    UIData->screen.increment = cols;
+
+    if (UIData->screen.origin) uifree(UIData->screen.origin);
     UIData->screen.origin = scrn;
-    UIData->screen.increment = UIData->width;
+
+    if (shadow) uifree(shadow);
+    shadow = shdw;
+
     return (TRUE);
 }
 
