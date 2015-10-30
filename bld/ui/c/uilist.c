@@ -104,11 +104,13 @@ bool UIAPI uiinlist( EVENT ev )
         return( TRUE );
     }
     found = FALSE;
-    for( index = UIData->events->num_lists-1; index >= 0; --index ) {
-        if( UIData->events->events[ index ] == NULL ) break;
-        found = uichecklist( ev, UIData->events->events[ index ] );
-        if( found ) {
-            break;
+    if( UIData->events) {
+        for( index = UIData->events->num_lists-1; index >= 0; --index ) {
+            if( UIData->events->events[ index ] == NULL ) break;
+            found = uichecklist( ev, UIData->events->events[ index ] );
+            if( found ) {
+                break;
+            }
         }
     }
     return( found );
