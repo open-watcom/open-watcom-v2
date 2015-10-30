@@ -113,6 +113,24 @@ typedef trap_version    TRAPENTRY trap_init_func( const char *, char *, bool );
 typedef trap_retval     TRAPENTRY trap_req_func( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
 typedef void            TRAPENTRY trap_fini_func( void );
 
+/* UNIX specific trap implementation stuff */
+typedef struct {
+    trap_init_func      *init_func;
+    trap_req_func       *req_func;
+    trap_fini_func      *fini_func;
+} trap_requests;
+
+typedef struct {
+    unsigned long       len;
+    char                ***environp;
+    void                **_slib_func;
+    void                *(*malloc)( size_t );
+    void                *(*realloc)( void *, size_t );
+    void                (*free)( void * );
+    char                *(*getenv)( const char * );
+    void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
+} trap_callbacks;
+
 /* Client interface routines */
 extern char             *LoadDumbTrap( trap_version * );
 extern char             *LoadTrap( const char *, char *, trap_version * );
@@ -120,6 +138,7 @@ extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
 extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
 extern void             KillTrap(void);
+extern const trap_requests *TrapLoad( const trap_callbacks *client );
 
 extern trap_init_func   TrapInit;
 extern trap_req_func    TrapRequest;

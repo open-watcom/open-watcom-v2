@@ -35,16 +35,11 @@
 #include <dlfcn.h>
 #include "trpimp.h"
 #include "tcerr.h"
-#include "trpuximp.h"
 #include "trpld.h"
 #include "digio.h"
 
 #include "clibext.h"
 
-
-#if defined( BUILTIN_TRAP_FILE )
-extern const trap_requests *TrapLoad( const trap_callbacks *client );
-#endif
 
 #ifndef __WATCOMC__
 extern char             **environ;

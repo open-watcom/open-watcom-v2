@@ -30,15 +30,14 @@
 
 
 #include <stdlib.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
 #include "lnxstrt.h"
 
 char                            **dbg_environ;  /* pointer to parent's environment table */
 const trap_callbacks            *Client;
 extern const trap_requests      ImpInterface;
 
-const trap_requests *TrapLoad( trap_callbacks *client )
+const trap_requests *TrapLoad( const trap_callbacks *client )
 {
     Client = client;
     if( Client->len <= offsetof(trap_callbacks,signal) ) return( NULL );

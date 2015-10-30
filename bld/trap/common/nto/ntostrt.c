@@ -30,8 +30,7 @@
 
 
 #include <stdlib.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
 #include "ntostrt.h"
 
 

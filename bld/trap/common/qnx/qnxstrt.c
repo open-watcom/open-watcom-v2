@@ -31,8 +31,7 @@
 
 #include <stdlib.h>
 #include <malloc.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
 #include "qnxstrt.h"
 
 void                            *_slib_func[2];
