@@ -33,7 +33,7 @@
 #include "dipwat.h"
 #include "watloc.h"
 
-extern byte             *GetAddress( imp_image_handle *, byte *, address *, int );
+extern const char   *GetAddress( imp_image_handle *, const char *, address *, int );
 
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {
@@ -108,20 +108,20 @@ void LocationTrunc( location_list *ll, unsigned bits )
 }
 
 
-static unsigned SizeLocation( loc_expr e )
+static unsigned SizeLocation( const char *e )
 {
     unsigned    subclass;
 
-    if( *e & LOC_EXPR_IND ) {
-        return( *e & ~LOC_EXPR_IND );
+    if( GETU8( e ) & LOC_EXPR_IND ) {
+        return( GETU8( e ) & ~LOC_EXPR_IND );
     }
-    subclass = *e & SUBCLASS_MASK;
-    switch( *e & CLASS_MASK ) {
+    subclass = GETU8( e ) & SUBCLASS_MASK;
+    switch( GETU8( e ) & CLASS_MASK ) {
     case NOLOCATION:
     case REG:
         return( 1 );
     case BP_OFFSET:
-        subclass += (INT_1-BP_OFF_BYTE);
+        subclass += (INT_1 - BP_OFF_BYTE);
         /* fall through */
     case CONSTANT:
         switch( subclass ) {
@@ -161,31 +161,31 @@ static unsigned SizeLocation( loc_expr e )
 }
 
 
-byte *SkipLocation( loc_expr e )
+const char *SkipLocation( const char *e )
 {
     return( e + SizeLocation( e ) );
 }
 
 
-location_info InfoLocation( loc_expr e )
+location_info InfoLocation( const char *e )
 {
     static signed char OpNeed[] = { 1, 1, 1, 1, 1, 1,  2,  1, 1,  2, 1, 0 };
     static signed char OpAdj[]  = { 0, 0, 0, 0, 0, 0, -1, -1, 0, -1, 1, 0 };
-    unsigned    size;
-    unsigned    item;
+    unsigned        size;
+    unsigned        item;
     int         depth;
     location_info       info;
     unsigned    subclass;
 
     size = SizeLocation( e );
-    if( *e & LOC_EXPR_IND ) {
+    if( GETU8( e ) & LOC_EXPR_IND ) {
         --size;
         ++e;
     }
     info = NEED_NOTHING | EMPTY_EXPR;
     depth = 0;
     while( size != 0 ) {
-        switch( *e & CLASS_MASK ) {
+        switch( GETU8( e ) & CLASS_MASK ) {
         case BP_OFFSET:
         case MULTI_REG:
         case REG:
@@ -197,10 +197,12 @@ location_info InfoLocation( loc_expr e )
             ++depth;
             break;
         case OPERATOR:
-            subclass = *e & SUBCLASS_MASK;
-            if( subclass != LOP_NOP ) info &= ~EMPTY_EXPR;
-            if( depth < OpNeed[ subclass ] ) info |= NEED_BASE;
-            depth += OpAdj[ subclass & SUBCLASS_MASK ];
+            subclass = GETU8( e ) & SUBCLASS_MASK;
+            if( subclass != LOP_NOP )
+                info &= ~EMPTY_EXPR;
+            if( depth < OpNeed[subclass] )
+                info |= NEED_BASE;
+            depth += OpAdj[subclass & SUBCLASS_MASK];
             break;
         }
         item = SizeLocation( e );
@@ -211,26 +213,26 @@ location_info InfoLocation( loc_expr e )
 }
 
 
-static byte *ParseLocEntry( imp_image_handle *ii, byte *ptr,
+static const char *ParseLocEntry( imp_image_handle *ii, const char *ptr,
                         loc_entry *location )
 {
     unsigned int    numregs;
 
-    location->bp_offset.class = *ptr++;
+    location->bp_offset.class = GETU8( ptr++ );
     switch( location->bp_offset.class & CLASS_MASK ) {
     case BP_OFFSET :
         switch( location->bp_offset.class ) {
         case BP_OFFSET + BP_OFF_BYTE:
-            location->bp_offset.offset = *((signed char *) ptr);
-            ptr += sizeof( signed char );
+            location->bp_offset.offset = GETS8( ptr );
+            ptr += 1;
             break;
         case BP_OFFSET + BP_OFF_WORD:
-            location->bp_offset.offset = *((signed short *) ptr);
-            ptr += sizeof( signed short );
+            location->bp_offset.offset = GETS16( ptr );
+            ptr += 2;
             break;
         case BP_OFFSET + BP_OFF_DWORD:
-            location->bp_offset.offset = *((signed long *) ptr);
-            ptr += sizeof( signed long );
+            location->bp_offset.offset = GETS32( ptr );
+            ptr += 4;
             break;
         }
         location->bp_offset.class = BP_OFFSET;
@@ -245,18 +247,18 @@ static byte *ParseLocEntry( imp_image_handle *ii, byte *ptr,
             location->constant.class = CONSTANT + ADDR386;
             break;
         case CONSTANT + INT_1:
-            location->constant.val = *((signed_8 *) ptr);
-            ptr += sizeof( signed_8 );
+            location->constant.val = GETS8( ptr );
+            ptr += 1;
             location->constant.class = CONSTANT + INT_4;
             break;
         case CONSTANT + INT_2:
-            location->constant.val = *((signed_16 *) ptr);
-            ptr += sizeof( signed_16 );
+            location->constant.val = GETS16( ptr );
+            ptr += 2;
             location->constant.class = CONSTANT + INT_4;
             break;
         case CONSTANT + INT_4:
-            location->constant.val = *((signed_32 *) ptr);
-            ptr += sizeof( signed_32 );
+            location->constant.val = GETS32( ptr );
+            ptr += 4;
             location->constant.class = CONSTANT + INT_4;
             break;
         }
@@ -266,8 +268,7 @@ static byte *ParseLocEntry( imp_image_handle *ii, byte *ptr,
         location->multi_reg.class &= CLASS_MASK;
         location->multi_reg.numregs = numregs;
         do {
-            location->multi_reg.regs[ location->multi_reg.numregs - numregs ]
-                                = *ptr++;
+            location->multi_reg.regs[ location->multi_reg.numregs - numregs ] = GETU8( ptr++ );
         } while( --numregs != 0 );
         break;
     case REG :
@@ -279,18 +280,18 @@ static byte *ParseLocEntry( imp_image_handle *ii, byte *ptr,
         switch( location->ind_reg_far.class & SUBCLASS_MASK ) {
         case IR_CALLOC_NEAR:
         case IR_RALLOC_NEAR:
-            location->ind_reg_near.off_reg = *ptr++;
+            location->ind_reg_near.off_reg = GETU8( ptr++ );
             break;
         default:
-            location->ind_reg_far.off_reg = *ptr++;
-            location->ind_reg_far.seg_reg = *ptr++;
+            location->ind_reg_far.off_reg = GETU8( ptr++ );
+            location->ind_reg_far.seg_reg = GETU8( ptr++ );
             break;
         }
         break;
     case OPERATOR:
         switch( location->op.class ) {
         case OPERATOR+LOP_XCHG:
-            location->op.stk = *ptr++;
+            location->op.stk = GETU8( ptr++ );
             break;
         }
         break;
@@ -378,10 +379,10 @@ void PushBaseLocation( location_list *ll )
 }
 
 
-dip_status EvalLocation( imp_image_handle *ii, location_context *lc, loc_expr e,
+dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char *e,
                         location_list *ll )
 {
-    byte                        *end;
+    const char                  *end;
     struct loc_stack_entry      *sp, *op1, *start;
     int                         i;
     int                         j;
@@ -404,7 +405,7 @@ dip_status EvalLocation( imp_image_handle *ii, location_context *lc, loc_expr e,
     dip_status                  ok;
 
     end = SkipLocation( e );
-    if( *e & LOC_EXPR_IND ) {
+    if( (unsigned char)*e & LOC_EXPR_IND ) {
         ++e;
     }
     ok = DS_OK;
@@ -557,7 +558,7 @@ do_ind:
                 } else {
                     tmp.num = op1->u.num;
                 }
-                LocationAdd( &sp->u.ll, tmp.num*8 );
+                LocationAdd( &sp->u.ll, tmp.num * 8 );
                 sp->type = LS_ADDR;
             } else {
                 sp->u.num += op1->u.num;

@@ -36,9 +36,9 @@ typedef struct {
     unsigned char       class;
     unsigned char       namelen;
     unsigned            type_index;
-    char                *name;
+    const char          *name;
     /* stuff that we don't have to parse until we know we want the lcl */
-    byte                *unparsed;
+    const char          *unparsed;
 } lcl_info;
 
 /* variable, class = 1x */
@@ -113,12 +113,12 @@ extern void             *InfoLoad( imp_image_handle *ii, imp_mod_handle im,
 extern void             InfoClear( imp_image_handle *ii );
 extern void             InfoUnlock( void );
 extern dip_status       InfoRelease( void );
-extern void             InfoSpecUnlock(void *);
-extern void             InfoSpecLock(void *);
+extern void             InfoSpecUnlock(const char *);
+extern void             InfoSpecLock(const char *);
 extern dip_status       InitDemand( imp_image_handle *ii );
 extern void             FiniDemand( void );
-extern byte             *GetIndex( byte *ptr, unsigned *value );
-extern byte             *GetAddress( imp_image_handle *ii, byte *ptr,
+extern const char       *GetIndex( const char *ptr, unsigned *value );
+extern const char       *GetAddress( imp_image_handle *ii, const char *ptr,
                                 address *addr, int is32 );
 extern void             KillLclLoadStack( void );
 extern search_result    SearchLclMod( imp_image_handle *ii, imp_mod_handle im,

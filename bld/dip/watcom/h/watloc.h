@@ -149,16 +149,16 @@ typedef union {
 
 #pragma pack( pop )
 
-typedef byte            *loc_expr;
+typedef char            *loc_expr;
 
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern void             LocationAdd( location_list *ll, long sbits );
 extern void             LocationTrunc( location_list *ll, unsigned bits );
-extern byte             *SkipLocation( loc_expr e );
-extern location_info    InfoLocation( loc_expr e );
+extern const char       *SkipLocation( const char * );
+extern location_info    InfoLocation( const char *e );
 extern unsigned         RegSize( unsigned idx );
 extern void             PushBaseLocation( location_list *ll );
 extern dip_status       EvalLocation( imp_image_handle *ii, location_context *lc,
-                                loc_expr e, location_list *ll );
+                                const char *e, location_list *ll );
 
 #endif

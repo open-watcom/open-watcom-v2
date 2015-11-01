@@ -120,7 +120,6 @@
 #define SCLR_VOID       0x30
 #define SCLR_COMPLEX    0x40
 
-
 extern void             KillTypeLoadStack( void );
 extern void             ClearTypeCache( imp_image_handle *ii );
 extern dip_status       FindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
@@ -153,8 +152,8 @@ extern search_result    SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                                 lookup_item *li, void *d );
 extern walk_result      WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
                                 IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
-extern void             *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im,
-                                void **base );
+extern const char       *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im,
+                                const char **base );
 
 
 extern walk_result DIGENTRY     DIPImpWalkTypeList( imp_image_handle *ii,

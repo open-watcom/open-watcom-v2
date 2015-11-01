@@ -138,7 +138,8 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             }
             STUFF_IT( curr );
         }
-        if( buff_size > 0 ) *ep++ = '\0';
+        if( buff_size > 0 )
+            *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
         len = ImpInterface.sym_name( ii, is, lc, SN_OBJECT, NULL, 0 );
@@ -184,7 +185,7 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 
-static void CollectSymHdl( byte *ep, imp_sym_handle *is )
+static void CollectSymHdl( const char *ep, imp_sym_handle *is )
 {
     byte        *sp;
     byte        curr;
@@ -194,9 +195,9 @@ static void CollectSymHdl( byte *ep, imp_sym_handle *is )
     sp = (byte *)is;
     ++is;
     while( sp < (byte *)is ) {
-        curr = *ep++;
+        curr = GETU8( ep++ );
         if( curr == SH_ESCAPE )
-            curr = escapes[ *ep++ - 1 ];
+            curr = escapes[GETU8( ep++ ) - 1];
         *sp++ = curr;
     }
 }
@@ -235,8 +236,8 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     imp_sym_handle      *scope_is;
 
     lc = lc;
-    if( *li->name.start == (char)SH_ESCAPE ) {
-        CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
+    if( GETU8( li->name.start ) == SH_ESCAPE ) {
+        CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }
     if( li->type == ST_NAMESPACE ) return( SR_NONE );
@@ -259,7 +260,8 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         buff = __alloca( len + 20 );
         dst = buff;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+            	break;
             if( src == sym_li.source.start ) {
                 op_len = __mangle_operator( src, sym_li.source.len, buff );
                 if( op_len == 0 ) {

@@ -104,10 +104,10 @@ static unsigned GblNameHash( const char *name, size_t name_len )
     unsigned    rtrn;
 
     rtrn = name_len;
-    rtrn += toupper( name[ 0 ] );
-    rtrn += toupper( name[ name_len / 2 ] );
-    rtrn += toupper( name[ name_len - 1 ] );
-    return( rtrn & (SYM_TAB_SIZE-1) );
+    rtrn += toupper( GETU8( name ) );
+    rtrn += toupper( GETU8( name + name_len / 2 ) );
+    rtrn += toupper( GETU8( name + name_len - 1 ) );
+    return( rtrn & (SYM_TAB_SIZE - 1) );
 }
 
 static void GblCreate( imp_sym_handle *is, gbl_info *gbl )
@@ -276,12 +276,18 @@ search_result SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
 static int MachAddrComp( addr_ptr a, imp_mod_handle ima,
                          addr_ptr b, imp_mod_handle imb )
 {
-    if( a.segment < b.segment ) return( -1 );
-    if( a.segment > b.segment ) return( 1 );
-    if( a.offset < b.offset ) return( -1 );
-    if( a.offset > b.offset ) return( 1 );
-    if( ima < imb ) return( -1 );
-    if( ima > imb ) return( 1 );
+    if( a.segment < b.segment )
+        return( -1 );
+    if( a.segment > b.segment )
+        return( 1 );
+    if( a.offset < b.offset )
+        return( -1 );
+    if( a.offset > b.offset )
+        return( 1 );
+    if( ima < imb )
+        return( -1 );
+    if( ima > imb )
+        return( 1 );
     return( 0 );
 }
 
@@ -553,7 +559,7 @@ unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
 
     ii = ii;
     gbl = (const char *)is->u.gbl + is->name_off;
-    len = *(unsigned char *)gbl++;
+    len = GETU8( gbl++ );
     __unmangled_name( gbl, len, &gbl, &len );
     if( buff_size > 0 ) {
         --buff_size;
@@ -573,7 +579,7 @@ unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
 
     ii = ii;
     gbl = (const char *)is->u.gbl + is->name_off;
-    len = *(unsigned char *)gbl++;
+    len = GETU8( gbl++ );
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )

@@ -87,7 +87,8 @@ unsigned InfoSize( imp_image_handle *ii, imp_mod_handle im,
     section_info        *inf;
 
     dmnd = &ModPointer( ii, im )->di[item];
-    if( entry >= dmnd->u.entries ) return( 0 );
+    if( entry >= dmnd->u.entries )
+        return( 0 );
     entry += dmnd->info_off;
     inf = FindInfo( ii, im );
     return( DMND_SIZE( inf, entry ) );
@@ -113,8 +114,10 @@ static walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
         i = 0;
         for( ;; ) {
             size = InfoSize( ii, im, dmnd, i );
-            if( size == 0 ) break;
-            if( size > wdd->max_size ) wdd->max_size = size;
+            if( size == 0 )
+                break;
+            if( size > wdd->max_size )
+                wdd->max_size = size;
             ++i;
         }
     }
@@ -125,7 +128,8 @@ static void Unload( demand_ctrl *section )
 {
     demand_ctrl **owner;
 
-    if( section->owner == NULL ) return;
+    if( section->owner == NULL )
+        return;
     if( section == LastDemand ) {
         if( section->clear != NULL ) {
             section->clear( section->buff, section->buff + section->size );
@@ -155,7 +159,8 @@ dip_status InitDemand( imp_image_handle *ii )
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
-    if( d.max_size <= LastDmndSize ) return( DS_OK );
+    if( d.max_size <= LastDmndSize )
+        return( DS_OK );
     if( LastDemand != NULL ) {
         Unload( LastDemand );
         DCFree( LastDemand );
@@ -247,7 +252,8 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
         }
     }
     info = &ModPointer( ii, im )->di[ item ];
-    if( entry >= info->u.entries ) return( NULL );
+    if( entry >= info->u.entries )
+        return( NULL );
     entry += info->info_off;
     sect = FindInfo( ii, im );
     lnk = &GET_LINK( sect, entry );
@@ -265,7 +271,8 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
             /* allocate some memory */
             section = DCAlloc( _demand_size( size ) );
             if( section == NULL ) {
-                if( LastDemand->locks != 0 ) return( NULL );
+                if( LastDemand->locks != 0 )
+                    return( NULL );
                 /* no memory, use last chance */
                 section = LastDemand;
                 Unload( LastDemand );
@@ -273,7 +280,8 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
         }
         tmpoff = MK_DMND_OFFSET( *lnk );
         if( InfoRead( sect, tmpoff, size, section->buff ) != DS_OK ) {
-            if( section != LastDemand ) DCFree( section );
+            if( section != LastDemand )
+                DCFree( section );
             return( NULL );
         }
         section->size = size;
@@ -293,18 +301,18 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
 }
 
 
-static void AdjustLockCount( void *p, int adjust )
+static void AdjustLockCount( const char *p, int adjust )
 {
     demand_ctrl *section;
 
-    section = (demand_ctrl *)((byte *)p - offsetof( demand_ctrl, buff ));
+    section = (demand_ctrl *)( p - offsetof( demand_ctrl, buff ) );
     section->locks += adjust;
 }
 
 /*
  * Increment the lock count for a specific demand load section
  */
-void InfoSpecLock( void *p )
+void InfoSpecLock( const char *p )
 {
     AdjustLockCount( p, 1 );
 }
@@ -313,7 +321,7 @@ void InfoSpecLock( void *p )
 /*
  * Decrement the lock count for a specific demand load section
  */
-void InfoSpecUnlock( void *p )
+void InfoSpecUnlock( const char *p )
 {
     AdjustLockCount( p, -1 );
 }
@@ -337,14 +345,16 @@ static dip_status ReleaseFromList( void )
             release = curr;
         }
     }
-    if( release == NULL ) return( DS_FAIL );
+    if( release == NULL )
+        return( DS_FAIL );
     Unload( release );
     return( DS_OK );
 }
 
 dip_status InfoRelease( void )
 {
-    if( ReleaseFromList() == DS_OK ) return( DS_OK );
+    if( ReleaseFromList() == DS_OK )
+        return( DS_OK );
     if( LastDemand != NULL && LastDemand->locks == 0 && LastDemand->clear != NULL ) {
         /* let's hope the clear routine frees up some memory */
         Unload( LastDemand );

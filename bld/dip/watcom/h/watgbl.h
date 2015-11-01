@@ -30,6 +30,14 @@
 ****************************************************************************/
 
 
+#define GETU8(x)        *(unsigned_8 *)(x)
+#define GETU16(x)       *(unsigned_16 *)(x)
+#define GETU32(x)       *(unsigned_32 *)(x)
+
+#define GETS8(x)        *(signed_8 *)(x)
+#define GETS16(x)       *(signed_16 *)(x)
+#define GETS32(x)       *(signed_32 *)(x)
+
 extern void             GblSymFini( section_info *inf );
 extern void             AdjustSyms( section_info *inf );
 extern dip_status       MakeGblLst( section_info *inf );
