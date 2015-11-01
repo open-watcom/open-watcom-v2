@@ -147,7 +147,7 @@ window_info statusw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 69, 24, 79, 24 };
 window_info repcntw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 28, 20, 43, 32 };
-window_info editw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
+window_info editw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 24 };
 window_info extraw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 51, 18 };
