@@ -87,9 +87,6 @@
  *
  */
 
-/* these are often part of comdlg.h - no need to
-   define twice */
-
 enum {
     FN_RC_FAILED_TO_INITIALIZE,
     FN_RC_NO_FILE_SELECTED,

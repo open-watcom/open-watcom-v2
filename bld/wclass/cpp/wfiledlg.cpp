@@ -123,13 +123,14 @@ void WFileDialog::init( const char *fn, const char *title ) {
 
 const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
                                                    const char *title,
-                                                   unsigned style ) {
+                                                   fn_flags style ) {
 /*******************************************************************/
 
     init( fn, title );
-    _ofn.flags = (fn_flags)style;
 #if defined( __NT__ )
-    // _ofn.flags |= FN_WANT_LAST_PATH; // FIXME
+    _ofn.flags = (fn_flags)( style | FN_WANT_LAST_PATH );
+#else
+    _ofn.flags = style;
 #endif
     if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
 #if defined( __NT__ )
@@ -150,11 +151,11 @@ const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
 bool WEXPORT WFileDialog::getOpenFileName( WFileNameList &flist,
                                            const char *fn,
                                            const char *title,
-                                           unsigned style ) {
+                                           fn_flags style ) {
 /***********************************************************/
 
     init( fn, title );
-    _ofn.flags = (fn_flags)(style | FN_ALLOWMULTISELECT);
+    _ofn.flags = (fn_flags)( style | FN_ALLOWMULTISELECT );
     if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
         flist.parseIn( _fileName );
 #if defined( __WINDOWS__ ) || defined( __NT__ )
@@ -175,10 +176,10 @@ bool WEXPORT WFileDialog::getOpenFileName( WFileNameList &flist,
 
 const char * WEXPORT WFileDialog::getSaveFileName( const char *fn,
                                                    const char *title,
-                                                   unsigned style ) {
+                                                   fn_flags style ) {
 /*******************************************************************/
 
-    _ofn.flags = (fn_flags)(style | FN_ISSAVE);
+    _ofn.flags = (fn_flags)( style | FN_ISSAVE );
     init( fn, title );
     if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
         return( _fileName );

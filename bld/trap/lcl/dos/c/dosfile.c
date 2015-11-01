@@ -34,6 +34,7 @@
 #include "tinyio.h"
 #include "dosver.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "doscomm.h"
 #include "dosenv.h"
 #include "doschk.h"

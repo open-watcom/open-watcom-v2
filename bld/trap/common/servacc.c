@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "trpimp.h"
+#include "trpcomm.h"
+#include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
 #include "tcerr.h"

@@ -34,6 +34,7 @@
 #include <windows.h>
 #include <toolhelp.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
 

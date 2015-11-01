@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 
 
 trap_retval ReqFile_get_config( void )

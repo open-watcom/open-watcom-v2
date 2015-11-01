@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "exepe.h"
 #include "dbg386.h"
@@ -42,4 +43,3 @@
 
 #define WORD  unsigned short int
 #define DWORD unsigned int
-#define TRPGLOBAL	extern

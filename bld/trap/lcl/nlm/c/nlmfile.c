@@ -44,6 +44,7 @@
 #undef FALSE
 
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 
 #include "nlmport.h"

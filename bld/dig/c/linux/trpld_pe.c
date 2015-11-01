@@ -32,11 +32,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "tcerr.h"
 #include "peloader.h"
-#include "trpld.h"
 #include "digio.h"
+
 
 #ifndef __WATCOMC__
 extern char **environ;

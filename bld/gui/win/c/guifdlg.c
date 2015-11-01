@@ -284,7 +284,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     int                 rc;
     unsigned            drive;
 #if defined(HAVE_DRIVES)
-    unsigned            old_drive;
+    unsigned            old_drive = 0;
     unsigned            drives;
 #endif
 

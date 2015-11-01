@@ -34,11 +34,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "tcerr.h"
 #include "dipcli.h"
 #include "trpqimp.h"
-#include "trpld.h"
 #include "digio.h"
 
 #include "../dsx/ldimp.h"

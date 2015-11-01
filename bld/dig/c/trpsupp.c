@@ -30,7 +30,7 @@
 
 
 #include "madregs.h"
-#include "trpimp.h"
+#include "trptypes.h"
 #include "trpld.h"
 #if defined( __WINDOWS__ ) && !defined(SERVER)
 #include <windows.h>

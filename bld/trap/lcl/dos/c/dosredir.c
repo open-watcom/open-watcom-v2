@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #if defined( ACAD ) || defined( PHARLAP )
 #include <fcntl.h>
 #include <io.h>

@@ -36,9 +36,9 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "exedos.h"
-#include "trpimp.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "tcerr.h"
 #include "digio.h"
 
 #define TRAP_SIGNATURE          0xDEAF

@@ -346,8 +346,7 @@ void VCompDialog::browseButton( WWindow* )
 //    if( _browseDialog->getOpenFileName( fn_list, "", "Enter target filename", WFOpenNew ) ) {
 //      WFileName fn( fn_list.cString( 0, -1 ) );
     WFileName fn;
-    fn = _browseDialog->getOpenFileName( NULL, "Enter target filename",
-                                         WFOpenNew );
+    fn = _browseDialog->getOpenFileName( NULL, "Enter target filename", WFOpenNew );
         if( fn.size() > 0 ) {
             WFileName cwd; cwd.getCWD( true );
             size_t len = cwd.size();

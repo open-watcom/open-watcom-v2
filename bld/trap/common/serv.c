@@ -41,6 +41,7 @@
 #endif
 #include "banner.h"
 #include "trpimp.h"
+#include "trpld.h"
 #include "trperr.h"
 #include "packet.h"
 #include "servname.h"

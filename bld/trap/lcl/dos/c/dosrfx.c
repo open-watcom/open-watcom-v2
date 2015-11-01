@@ -35,6 +35,7 @@
 #include "tinyio.h"
 #include "dosver.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 
 trap_retval ReqRfx_rename( void )
 {

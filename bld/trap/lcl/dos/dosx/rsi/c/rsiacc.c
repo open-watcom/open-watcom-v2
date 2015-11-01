@@ -40,6 +40,7 @@
 #include <dos.h>
 #include <fcntl.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "wdebug.h"

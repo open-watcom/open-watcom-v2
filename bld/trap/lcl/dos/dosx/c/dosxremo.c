@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "packet.h"

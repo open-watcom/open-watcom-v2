@@ -43,6 +43,7 @@
 #include "trperr.h"
 #include "doserr.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "ioports.h"
 #include "winchk.h"
 #include "madregs.h"

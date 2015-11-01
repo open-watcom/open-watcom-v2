@@ -33,9 +33,9 @@
 #include <stdio.h>
 #include <signal.h>
 #include <dlfcn.h>
-#include "trpimp.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "tcerr.h"
 #include "digio.h"
 
 #include "clibext.h"

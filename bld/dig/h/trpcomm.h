@@ -24,63 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  DOS debugger screen flip support.
+* Description:  Basic trap interface functions.
 *
 ****************************************************************************/
 
 
-#include <i86.h>
-#include "trpimp.h"
-#include "trpcomm.h"
+extern trap_init_func   TrapInit;
+extern trap_req_func    TrapRequest;
+extern trap_fini_func   TrapFini;
 
-extern int GtKey( void );
-extern unsigned KeyWaiting( void );
+extern trap_elen        In_Mx_Num;
+extern trap_elen        Out_Mx_Num;
+extern in_mx_entry_p    In_Mx_Ptr;
+extern mx_entry_p       Out_Mx_Ptr;
 
-#pragma aux GtKey =             \
-    "xor AH,AH"                 \
-    "int 16h"                   \
-    parm caller [ax];
-
-#pragma aux KeyWaiting =        \
-    "mov AH,01h"                \
-    "int 16h"                   \
-    "lahf"                      \
-    "and AX,4000h"              \
-    parm caller [ax];
-
-
-trap_retval ReqRead_user_keyboard( void )
-{
-    read_user_keyboard_req      *acc;
-    read_user_keyboard_ret      *ret;
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-    ret->key = 0;
-    if( acc->wait != 0 ) {
-        unsigned long   end_time;
-        unsigned long   *cur_time;
-
-        cur_time = MK_FP( 0x40, 0x6c ); /* set up pointer to the BIOS clock */
-        end_time = *cur_time + ( acc->wait * 18 );
-        for( ;; ) {
-            if( KeyWaiting() == 0 ) {
-                break;
-            } else  if( end_time <= *cur_time ) {
-                return( sizeof( *ret ) );
-            }
-        }
-    }
-    ret->key = GtKey();
-    return( sizeof( *ret ) );
-}
-
-trap_retval ReqSet_user_screen( void )
-{
-    return( 0 );
-}
-
-trap_retval ReqSet_debug_screen( void )
-{
-    return( 0 );
-}
+extern void             *GetInPtr( trap_elen );
+extern void             *GetOutPtr( trap_elen );
+extern trap_elen        GetTotalSize( void );

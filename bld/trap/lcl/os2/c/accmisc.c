@@ -39,6 +39,7 @@
 #include <os2.h>
 #include <os2dbg.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "dosdebug.h"
 #include "softmode.h"
 #include "os2trap.h"

@@ -28,7 +28,5 @@
 *
 ****************************************************************************/
 
-#include "debug.h"
 
-#undef TRPGLOBAL
-#undef TRPGLOBINIT
+#include "debug.h"

@@ -31,9 +31,11 @@
 
 
 #include <string.h>
-#include "trpimp.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "trpcomm.h"
+#include "tcerr.h"
+
 
 void KillTrap( void )
 {

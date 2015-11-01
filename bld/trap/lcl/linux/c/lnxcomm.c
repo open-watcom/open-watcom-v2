@@ -39,6 +39,7 @@
 #include "exeelf.h"
 #include "lnxcomm.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 
 void print_msg( const char *format, ... )
 {
