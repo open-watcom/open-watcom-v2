@@ -39,7 +39,6 @@
 #include "mad.h"
 #include "madregs.h"
 #include "dbg386.h"
-#include "exeelf.h"
 #include "lnxcomm.h"
 #include "x86cpu.h"
 

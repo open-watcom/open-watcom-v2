@@ -37,7 +37,6 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "mad.h"
-#include "exeelf.h"
 #include "lnxcomm.h"
 
 typedef struct lli {
@@ -55,7 +54,7 @@ static int              ModuleTop;
 /*
  * FindLib - find a shared lib entry in the list
  */
-lib_load_info *FindLib( addr_off dynsection )
+static lib_load_info *FindLib( addr_off dynsection )
 {
     unsigned    i;
 
@@ -66,7 +65,7 @@ lib_load_info *FindLib( addr_off dynsection )
     return( NULL );
 }
 
-struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off dyn_base )
+static struct link_map *FindLibInLinkMap( struct link_map *first_lmap, addr_off dyn_base )
 {
     struct link_map     lmap;
     struct link_map     *dbg_lmap;
@@ -101,7 +100,7 @@ void AddProcess( void )
 /*
  * AddLib - a new library has loaded
  */
-void AddLib( struct link_map *lmap )
+static void AddLib( struct link_map *lmap )
 {
     lib_load_info       *lli;
 
@@ -130,7 +129,7 @@ void AddLib( struct link_map *lmap )
     Out( "\n" );
 }
 
-void DelLib( addr_off dynsection )
+static void DelLib( addr_off dynsection )
 {
     unsigned    i;
 
@@ -311,7 +310,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_ret    *ret;
     char                *name;
     unsigned            i;
-    trap_elen           ret_len = sizeof( *ret );
+    trap_elen           ret_len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->handle );
@@ -319,22 +318,22 @@ trap_retval ReqGet_lib_name( void )
     name = GetOutPtr( sizeof( *ret ) );
 
     ret->handle = 0;
-    name[0] = '\0';
+    ret_len = sizeof( *ret );
 
     for( i = 0; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             Out( "(newly unloaded) " );
             ret->handle = i;
-            name[0] = '\0';
+            *name = '\0';
             moduleInfo[i].newly_unloaded = FALSE;
-            ret_len = sizeof( *ret );
+            ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
             Out( "(newly loaded) " );
             ret->handle = i;
             strcpy( name, moduleInfo[i].filename );
             moduleInfo[i].newly_loaded = FALSE;
-            ret_len = sizeof( *ret ) + strlen( name ) + 1;
+            ret_len += strlen( name ) + 1;
             break;
         }
     }

@@ -37,7 +37,6 @@
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
-#include "exeelf.h"
 #include "lnxcomm.h"
 
 /* Implementation notes:

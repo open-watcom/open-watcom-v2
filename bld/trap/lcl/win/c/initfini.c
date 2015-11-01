@@ -37,6 +37,18 @@
 #include "stdwin.h"
 #include "trperr.h"
 #include "winctrl.h"
+#include "trpimp.h"
+#include "trpld.h"
+#include "initfini.h"
+#include "int32std.h"
+
+
+extern TRAPENTRY_FUNC( InfoFunction );
+extern TRAPENTRY_FUNC( GetHwndFunc );
+extern TRAPENTRY_FUNC( InputHook );
+extern TRAPENTRY_FUNC( HardModeCheck );
+extern TRAPENTRY_FUNC( SetHardMode );
+extern TRAPENTRY_FUNC( UnLockInput );
 
 extern  WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
@@ -156,7 +168,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         unsigned    bit;
         char        c;
         ++parms;
-        while( (c = *parms != '\0' ) {
+        while( (c = *parms) != '\0' ) {
             ++parms;
             if( c == ']' )
                 break;
@@ -254,7 +266,7 @@ HWND TRAPENTRY GetHwndFunc( void )
 /*
  * set input hook routine
  */
-void TRAPENTRY InputHook( LPVOID ptr )
+void TRAPENTRY InputHook( hook_fn *ptr )
 {
     HookRtn = ptr;
 }
@@ -262,7 +274,7 @@ void TRAPENTRY InputHook( LPVOID ptr )
 /*
  * HardModeCheck - obsolete
  */
-BOOL TRAPENTRY HardModeCheck( void )
+bool TRAPENTRY HardModeCheck( void )
 {
     return( HardModeRequired );
 }
@@ -270,7 +282,7 @@ BOOL TRAPENTRY HardModeCheck( void )
 /*
  * SetHardMode - force hard mode
  */
-void TRAPENTRY SetHardMode( char force )
+void TRAPENTRY SetHardMode( bool force )
 {
     ForceHardMode = force;
 }

@@ -264,8 +264,7 @@ trap_retval ReqGet_lib_name( void )
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
         ret->handle = 0;
-        *(char *)GetOutPtr( sizeof( *ret ) ) = '\0';
-        return( sizeof( *ret ) + 1 );
+        return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }

@@ -37,6 +37,8 @@
 #include "bool.h"
 #include "dbgioctl.h"
 #include "trperr.h"
+#include "trpimp.h"
+#include "parlink.h"
 
 
 static HANDLE   PortHdl = INVALID_HANDLE_VALUE;
@@ -47,6 +49,7 @@ static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
 static unsigned short PortAddress[NUM_ELTS( PortTest )];
 static unsigned PortsFound = 0;
 
+#if 0
 /* Forward declarations */
 void FiniSys( void );
 
@@ -55,6 +58,7 @@ bool Terminate( void )
         FiniSys();
         return( TRUE );
 }
+#endif
 
 int NumPrinters( void )
 {

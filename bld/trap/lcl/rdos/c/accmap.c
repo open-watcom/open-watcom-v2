@@ -132,27 +132,22 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
-
-    ret->handle = 0;
 
     obj = GetCurrentDebug();
-
-    if (obj) {
+    if( obj != NULL ) {
         ret->handle = GetNextModule( obj, acc->handle );
-
-        if( ret->handle ) {
+        if( ret->handle != 0 ) {
+            name = GetOutPtr( sizeof( *ret ) );
             mod = LockModule( obj, ret->handle );
-            if( mod )
+            if( mod != NULL ) {
                 strcpy( name, mod->ModuleName );
-            else
-                name[0] = 0;
+            } else {
+                *name = '\0';
+            }
             UnlockModule( obj );
+            return( sizeof( *ret ) + strlen( name ) + 1 );
         }
     }
-
-    if( mod )
-        return( sizeof( *ret ) + strlen( name ) + 1 );
-    else
-        return( sizeof( *ret ) );
+    ret->handle = 0;
+    return( sizeof( *ret ) );
 }

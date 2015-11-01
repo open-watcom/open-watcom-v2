@@ -1289,8 +1289,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     sigset_t        sig_set;
 
-    parms = parms;
-    remote = remote;
+    parms = parms; remote = remote;
 
     /* We use SIGUSR1 to gain control after blocking wait for a process. */
     sigemptyset( &sig_set );

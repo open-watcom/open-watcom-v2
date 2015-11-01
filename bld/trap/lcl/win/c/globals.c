@@ -32,6 +32,7 @@
 
 #include "wdebug.h"
 #include "stdwin.h"
+#include "trpsys.h"
 
 BYTE                    DLLLoadSaveByte;
 WORD                    DLLLoadIP;
@@ -54,20 +55,15 @@ int                     SaveStdIn=NIL_HANDLE;
 int                     SaveStdOut=NIL_HANDLE;
 BOOL                    WDebug386;
 HMODULE                 DebugeeModule;
-void                    (FAR PASCAL *DoneWithInterrupt)( LPVOID );
-int                     (FAR PASCAL *GetDebugInterruptData)( LPVOID );
-void                    (FAR PASCAL *ResetDebugInterrupts32)( void );
-int                     (FAR PASCAL *SetDebugInterrupts32)( void );
-void                    (FAR PASCAL *DebuggerIsExecuting)( int );
 BOOL                    DebugDebugeeOnly;
 HTASK                   TaskAtFault;
 BOOL                    InSoftMode;
 WORD                    CSAlias;
 WORD                    SegmentToAccess;
 BOOL                    PendingTrap;
-LPVOID                  HookRtn;
-WORD                    HardModeRequired;
-WORD                    ForceHardMode;
+hook_fn                 *HookRtn;
+bool                    HardModeRequired;
+bool                    ForceHardMode;
 BOOL                    InputLocked;
 char                    OutBuff[MAX_STR];
 int                     OutPos;

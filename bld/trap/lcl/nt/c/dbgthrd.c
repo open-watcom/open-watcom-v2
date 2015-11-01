@@ -36,6 +36,7 @@
 #include "srvcdbg.h"
 #include "stdnt.h"
 #include "trperr.h"
+#include "trpimp.h"
 
 
 typedef enum {

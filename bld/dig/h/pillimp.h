@@ -37,11 +37,6 @@
 #include "piltypes.h"
 #include "digpck.h"
 
-#ifdef SERVER
-    #undef  DIGENTRY
-    #define DIGENTRY DIGREGISTER
-#endif
-
 #define PILL_VERSION    0
 
 struct pill_imp_routines {

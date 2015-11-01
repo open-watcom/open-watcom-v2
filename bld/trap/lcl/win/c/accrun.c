@@ -39,7 +39,11 @@
 #include "cpuglob.h"
 #include "stdwin.h"
 #include "wdebug.h"
+#include "trpimp.h"
+#include "trpld.h"
 
+
+extern TRAPENTRY_FUNC( UnLockInput );
 
 /*
  * SingleStepMode - allow single stepping

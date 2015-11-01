@@ -128,7 +128,6 @@ extra_c_flags += -s $(extra_cflags)
 extra_c_flags += -zlf
 !endif
 
-
 !ifeq host_os nov
 extra_c_flags_386 += -3s
 !else ifeq os ads
@@ -143,8 +142,6 @@ extra_c_flags_win += -bd
 !endif
 !endif
 !endif
-
-#extra_c_flags_lnxstrt = -pcl -fo=.i
 
 # aflags stuff
 ###############

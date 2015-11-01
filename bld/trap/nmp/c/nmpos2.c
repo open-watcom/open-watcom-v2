@@ -77,7 +77,7 @@ void myclose( bhandle handle )
     DosClose( handle );
 }
 
-int myread( bhandle handle, void *buff, int len )
+int myread( bhandle handle, void FAR *buff, int len )
 {
     USHORT      rc;
     USHORT      bytes_read;
@@ -88,7 +88,7 @@ int myread( bhandle handle, void *buff, int len )
 }
 
 
-int mywrite( bhandle handle, void *buff, int len )
+int mywrite( bhandle handle, void FAR *buff, int len )
 {
     USHORT      rc;
     USHORT      bytes_written;

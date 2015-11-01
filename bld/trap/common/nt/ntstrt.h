@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr );
+extern BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID ptr );

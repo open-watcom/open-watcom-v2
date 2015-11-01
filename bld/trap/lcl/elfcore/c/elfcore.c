@@ -36,9 +36,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "exeelf.h"
 #include "mad.h"
 #include "madregs.h"
+#include "coremisc.h"
 #include "elfcore.h"
 
 
@@ -62,8 +64,6 @@ static plat_drv_t   *drivers[] = {
     &Drv_Neutrino,
     NULL
 };
-
-extern unsigned FindFilePath( int exe, const char *name, char *result );
 
 enum {
     MH_NONE,
@@ -92,7 +92,7 @@ struct {
 
 
 /* Read ELF header and check if it's roughly what we're expecting */
-int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
+static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 {
     int     result = FALSE;
 
@@ -130,7 +130,7 @@ int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 }
 
 /* Read ELF program headers */
-int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
+static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
 {
     Elf32_Phdr      *e_phdr;
     int             i;
@@ -252,7 +252,7 @@ trap_retval ReqChecksum_mem( void )
 
 /* Read data with given virtual address from an ELF executable */
 
-size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
+static size_t read_from_elf( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr,
                       void *buf, addr_off va, size_t len )
 {
     int         i;
@@ -724,9 +724,8 @@ trap_retval ReqGet_lib_name( void )
         strcpy( name, "/boot/sys/Proc32" );
         break;
     default:
-        ret->handle = MH_NONE;
-        name[0] = '\0';
-        break;
+        ret->handle = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + 1 + strlen( name ) );
 }

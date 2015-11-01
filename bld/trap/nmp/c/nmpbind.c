@@ -71,7 +71,7 @@ typedef struct threadinfo {
     a_pipe      *him;
 } threadinfo;
 
-APIRET PipeOpen( char *name, HPIPE *hdl )
+static APIRET PipeOpen( char *name, HPIPE *hdl )
 {
     return( DosMakeNmPipe( name, hdl,
             NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
@@ -99,7 +99,7 @@ static int DoOpen( char *buff, char *end, char *suff, HPIPE *phdl )
     return( TRUE );
 }
 
-int WrBuff( HPIPE hdl, char *data, int length )
+static int WrBuff( HPIPE hdl, char FAR *data, int length )
 {
     USHORT      bytes_written;
 
@@ -110,7 +110,7 @@ int WrBuff( HPIPE hdl, char *data, int length )
 }
 
 
-void Nack( HPIPE hdl )
+static void Nack( HPIPE hdl )
 {
     char        ch;
 
@@ -118,7 +118,7 @@ void Nack( HPIPE hdl )
     WrBuff( hdl, &ch, 1 );
 }
 
-void Ack( HPIPE hdl )
+static void Ack( HPIPE hdl )
 {
     char        ch;
 
@@ -128,7 +128,7 @@ void Ack( HPIPE hdl )
 
 #define STACK_SIZE      8*1024
 
-static void StartThread( void (*rtn)(void FAR *), a_link *link, a_pipe *me, a_pipe *him )
+static void StartThread( void (FAR *rtn)(void FAR *), a_link *link, a_pipe *me, a_pipe *him )
 {
     void        *stack;
     threadinfo  *thread;
@@ -141,7 +141,7 @@ static void StartThread( void (*rtn)(void FAR *), a_link *link, a_pipe *me, a_pi
     _beginthread( rtn, stack, STACK_SIZE, thread );
 }
 
-void JoinPipeThread( void FAR * _thread )
+static void FAR JoinPipeThread( void FAR * _thread )
 {
     threadinfo  *thread = (threadinfo *)_thread;
     char        buff[BUFF_LEN];
@@ -185,7 +185,7 @@ static void FreeLink( a_link *junk )
 }
 
 
-void ConnectThread( void FAR * _thread )
+static void FAR ConnectThread( void FAR * _thread )
 {
     threadinfo  *thread = (threadinfo *)_thread;
     char        buff[BUFF_LEN];
@@ -279,7 +279,7 @@ static a_link *FindLink( char *buff )
 }
 
 
-void ProcessRequest( HPIPE hdl, char *buff )
+static void ProcessRequest( HPIPE hdl, char *buff )
 {
     a_link      *link;
     char        *end;
@@ -346,7 +346,7 @@ static void CheckForTraffic( HPIPE hdl )
     DosDisConnectNmPipe( hdl );
 }
 
-void Error( char *msg )
+static void Error( char *msg )
 {
     mywrite( BHANDLE_STDERR, msg, strlen( msg ) );
     mywrite( BHANDLE_STDERR, "\r\n", 2 );

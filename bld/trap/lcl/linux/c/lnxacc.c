@@ -50,7 +50,6 @@
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
-#include "exeelf.h"
 #include "lnxcomm.h"
 #include "cpuglob.h"
 
@@ -676,8 +675,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
-    parms = parms;
-    remote = remote;
+    parms = parms; remote = remote;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

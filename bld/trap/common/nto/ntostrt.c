@@ -31,12 +31,15 @@
 
 #include <stdlib.h>
 #include "trptypes.h"
+#include "trpld.h"
+#include "trpcomm.h"
+#include "ntocomm.h"
 #include "ntostrt.h"
 
 
-char                            **dbg_environ;  /* pointer to parent's environment table */
-const trap_callbacks            *Client;
-extern const trap_requests      ImpInterface;
+char                        **dbg_environ;  /* pointer to parent's environment table */
+static const trap_callbacks *Client;
+static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 const trap_requests *TrapLoad( trap_callbacks *client )
 {
@@ -47,8 +50,6 @@ const trap_requests *TrapLoad( trap_callbacks *client )
     dbg_environ = *Client->environp;
     return( &ImpInterface );
 }
-
-const trap_requests ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 #if !defined( BUILTIN_TRAP_FILE )
 

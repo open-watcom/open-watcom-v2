@@ -178,14 +178,12 @@ ECB             RespECB;
 char            ServDummy;
 
 typedef void    (__far *ESRAddr)();
+
 #ifdef __WINDOWS__
-#define ESRFUNC __export __far __pascal
 DWORD           IPXTaskID;
 typedef int     (WINAPI *NOVWINAPI)();
 NOVWINAPI       IPXFuncs[ IPX_MAX_FUNCS ];
 extern          void SetLinkName( char* );
-#else
-#define ESRFUNC
 #endif
 
 ESRAddr         SAPBroadESRAddr;

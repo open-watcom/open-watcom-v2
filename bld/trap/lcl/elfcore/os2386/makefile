@@ -16,11 +16,13 @@ extra_cflags = -bd
 
 extra_objs = &
         elfcore.obj &
-	core_fbsd.obj &
-	core_nto.obj &
-	coremisc.obj &
+        core_fbsd.obj &
+        core_nto.obj &
+        coremisc.obj &
         supp.obj &
         core.obj
-	
+        
+inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"
+
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

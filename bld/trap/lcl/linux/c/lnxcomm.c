@@ -36,7 +36,6 @@
 #include <termios.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include "exeelf.h"
 #include "lnxcomm.h"
 #include "trpimp.h"
 #include "trpcomm.h"

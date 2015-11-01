@@ -33,11 +33,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "globals.h"
 
-// for old header files
-#ifndef VER_PLATFORM_WIN32_WINDOWS
-#define VER_PLATFORM_WIN32_WINDOWS 1
-#endif
+
+extern TRAPENTRY_FUNC( InfoFunction );
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {

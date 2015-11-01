@@ -914,15 +914,16 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->handle = 0;
+    handle = acc->handle + 1;
+    if( handle >= NumModHandles ) {
+        ret->handle = 0;
+        return( sizeof( *ret ) );
+    }
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
-    handle = acc->handle + 1;
-    if( handle < NumModHandles ) {
-        if( ModHandles[ handle ].loaded )
-            strcpy( name, ModHandles[ handle ].epsp->FileName );
-        ret->handle = handle;
-    }
+    if( ModHandles[handle].loaded )
+        strcpy( name, ModHandles[handle].epsp->FileName );
+    ret->handle = handle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

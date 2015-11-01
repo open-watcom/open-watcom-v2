@@ -31,14 +31,13 @@
 
 
 #include <string.h>
+#if defined( __NT__ )
+#include <windows.h>
+#endif
 #include "vdm.h"
 #include "bool.h"
+#include "trptypes.h"
 
-bool Terminate( void )
-{
-    // a sideways dive to terminate the link (with failure)
-    return( FALSE );
-}
 
 int ValidName( const char *name ) {
 

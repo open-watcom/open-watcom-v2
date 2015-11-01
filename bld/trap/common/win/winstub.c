@@ -31,22 +31,28 @@
 
 
 #include <windows.h>
-#include "trpimp.h"
+#include "trptypes.h"
+
+extern TRAPENTRY_FUNC( InputHook );
+extern TRAPENTRY_FUNC( InfoFunction );
+extern TRAPENTRY_FUNC( UnLockInput );
+extern TRAPENTRY_FUNC( SetHardMode );
+extern TRAPENTRY_FUNC( HardModeCheck );
+extern TRAPENTRY_FUNC( GetHwndFunc );
 
 void TRAPENTRY InfoFunction( HWND hwnd )
 {
-
     hwnd = hwnd;
 }
 
-void TRAPENTRY InputHook( LPVOID ptr )
+void TRAPENTRY InputHook( hook_fn *ptr )
 {
     ptr = ptr;
 }
 
-BOOL TRAPENTRY HardModeCheck( void )
+bool TRAPENTRY HardModeCheck( void )
 {
-    return( FALSE );
+    return( false );
 }
 /*
  * GetHwndFunc - inform trap file of gui debugger being used
@@ -60,7 +66,7 @@ HWND TRAPENTRY GetHwndFunc( void )
 /*
  * SetHardMode - force hard mode
  */
-void TRAPENTRY SetHardMode( char force )
+void TRAPENTRY SetHardMode( bool force )
 {
     force=force;
 }
@@ -68,6 +74,6 @@ void TRAPENTRY SetHardMode( char force )
 /*
  * UnLockInput - unlock input from the debugger
  */
-void TRAPENTRY UnLockInput()
+void TRAPENTRY UnLockInput( void )
 {
 }

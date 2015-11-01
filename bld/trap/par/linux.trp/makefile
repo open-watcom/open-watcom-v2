@@ -10,4 +10,6 @@ remote_link = 1
 
 extra_objs = parlinux.obj
 
+inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
+
 !include $(trap_dir)/master.mif

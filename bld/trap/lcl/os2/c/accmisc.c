@@ -47,6 +47,7 @@
 #include "os2err.h"
 #include "doserr.h"
 #include "os2extx.h"
+#include "os2v2acc.h"
 
 /*
  * globals
@@ -536,7 +537,7 @@ trap_retval ReqFile_run_cmd( void )
 }
 
 
-long TryPath( const char *name, char *end, const char *ext_list )
+static long TryPath( const char *name, char *end, const char *ext_list )
 {
     long        rc;
     char        *p;

@@ -32,6 +32,7 @@
 
 #include <dos.h>
 #include <dosequip.h>
+#include "parlink.h"
 
 int NumPrinters()
 {

@@ -65,9 +65,7 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
             export TrapRequest_.3 &
 !ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
             export InfoFunction_.4 &
-            export InterruptProgram_.5 &
-            export Terminate_.6 &
-# remove reference to run-time code
+#           remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
 !endif
             op modname=$^& &
@@ -79,10 +77,10 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 sys_x86_dos  = sys dos
 
 sys_x86_rdos = sys rdos_dll &
-               export TrapInit_ &
-               export TrapFini_ &
-               export TrapRequest_ &
-               $($(proj_name)_dllbase_rdos_386_$(name))
+            export TrapInit_ &
+            export TrapFini_ &
+            export TrapRequest_ &
+            $($(proj_name)_dllbase_rdos_386_$(name))
 
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
@@ -100,8 +98,6 @@ sys_axp_nt   = sys ntaxp_dll initinstance &
             export TrapFini.2 &
             export TrapRequest.3 &
             export InfoFunction.4 &
-            export InterruptProgram.5 &
-            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -110,8 +106,6 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             export TrapFini.2 &
             export TrapRequest.3 &
             export InfoFunction.4 &
-            export InterruptProgram.5 &
-            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -119,13 +113,11 @@ sys_jvm_nt   = sys nt_dll initinstance opt dosseg &
             export TrapInit_.1 &
             export TrapFini_.2 &
             export TrapRequest_.3 &
-!ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
             export InfoFunction_.4 &
             export InterruptProgram_.5 &
             export Terminate_.6 &
 # remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
-!endif
             op modname=$^& &
             option description $(description) &
 !ifneq release 0

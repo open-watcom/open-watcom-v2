@@ -1576,7 +1576,6 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
     p = NULL;
     switch( acc->handle ) {
     case MH_NONE:
@@ -1597,7 +1596,9 @@ trap_retval ReqGet_lib_name( void )
                 }
                 qnx_vc_detach( vid );
             }
-            if( p == NULL ) p = "sys/Slib32";
+            if( p == NULL ) {
+                p = "sys/Slib32";
+            }
         } else {
             p = "sys/Slib16";
         }
@@ -1614,11 +1615,12 @@ trap_retval ReqGet_lib_name( void )
             p = "sys/Proc16";
         }
     default:
-        ret->handle = MH_NONE;
-        break;
+        ret->handle = 0;
+        return( sizeof( *ret ) );
     }
+    name = GetOutPtr( sizeof( *ret ) );
     if( p == NULL ) {
-        name[0] = '\0';
+        *name = '\0';
     } else if( p[0] == '/' ) {
         if( p[1] == '/' ) {
             for( p += 2; *p >= '0' && *p <= '9'; p++ );

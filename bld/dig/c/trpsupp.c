@@ -32,7 +32,7 @@
 #include "madregs.h"
 #include "trptypes.h"
 #include "trpld.h"
-#if defined( __WINDOWS__ ) && !defined(SERVER)
+#if defined( __WINDOWS__ ) && !defined( SERVER )
 #include <windows.h>
 #include "trpsys.h"
 #elif defined( ENABLE_TRAP_LOGGING )
@@ -195,7 +195,7 @@ unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_m
         Failure();
     }
     Access();
-#if defined(__WINDOWS__) && !defined(SERVER)
+#if defined( __WINDOWS__ ) && !defined( SERVER )
     TrapHardModeCheck();
 #endif
     if( result == REQUEST_FAILED )

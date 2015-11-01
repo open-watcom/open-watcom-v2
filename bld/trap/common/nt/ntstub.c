@@ -31,13 +31,12 @@
 
 
 #include <windows.h>
-#include "trpimp.h"
+#include "trptypes.h"
+
+
+extern TRAPENTRY_FUNC( InfoFunction );
 
 void TRAPENTRY InfoFunction( HWND hwnd )
 {
-
     hwnd = hwnd;
-}
-void InterruptProgram( void )
-{
 }

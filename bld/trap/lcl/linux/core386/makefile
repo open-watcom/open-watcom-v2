@@ -17,6 +17,8 @@ extra_objs = &
         lnxfile.obj &
         supp.obj &
         core.obj
-	
+        
+inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
+
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

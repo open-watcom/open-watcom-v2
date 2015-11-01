@@ -45,6 +45,7 @@
 #include "miscx87.h"
 #include "cpuglob.h"
 #include "os2extx.h"
+#include "os2v2acc.h"
 
 typedef void (*excfn)();
 

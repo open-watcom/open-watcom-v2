@@ -34,7 +34,7 @@
 #include "trapdbg.h"
 
 #include <string.h>
-#include "trpimp.h"
+#include "trptypes.h"
 #include "packet.h"
 
 static char         PackBuff[0x400];

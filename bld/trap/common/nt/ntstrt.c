@@ -39,7 +39,7 @@
 #pragma library("advapi32")
 #endif
 
-BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
+BOOL WINAPI DllMain( HINSTANCE hinst, DWORD dw, LPVOID ptr )
 {
     hinst=hinst,dw=dw;ptr=ptr;
     return( TRUE );

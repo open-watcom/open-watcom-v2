@@ -43,6 +43,7 @@
 #include "dosdebug.h"
 #include "trpimp.h"
 #include "trpcomm.h"
+#include "trpld.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
 #include "bsexcpt.h"
@@ -56,6 +57,7 @@
 #include "exeflat.h"
 #include "x86cpu.h"
 #include "os2extx.h"
+#include "dbgthrd.h"
 
 uDB_t                   Buff;
 static BOOL             stopOnSecond;
@@ -64,7 +66,6 @@ USHORT                  TaskFS;
 static byte             saved_opcode;
 static BOOL             splice_bp_set;
 static ULONG            splice_bp_lin_addr;
-extern VOID             InitDebugThread( VOID );
 
 #ifdef DEBUG_OUT
 
@@ -121,9 +122,11 @@ static unsigned_16      lastSS;
 static unsigned_32      lastEIP;
 static unsigned_32      lastESP;
 
-
 bool        ExpectingAFault;
 const char  OS2ExtList[] = OS2EXTLIST;
+
+extern TRAPENTRY_FUNC( TellHandles );
+extern TRAPENTRY_FUNC( TellHardMode );
 
 static bool Is32BitSeg( unsigned seg )
 {
@@ -438,12 +441,12 @@ void ReadRegs( uDB_t *buff )
     CallDosDebug( buff );
 }
 
-void ReadXMMRegs( struct x86_xmm *xmm_regs )
+static void ReadXMMRegs( struct x86_xmm *xmm_regs )
 {
     TaskReadXMMRegs( xmm_regs );
 }
 
-void WriteXMMRegs( struct x86_xmm *xmm_regs )
+static void WriteXMMRegs( struct x86_xmm *xmm_regs )
 {
     TaskWriteXMMRegs( xmm_regs );
 }
@@ -1418,7 +1421,7 @@ static void watchSingleStep(void)
    Note: Ctrl-C doesn't seem to be sending signals for some reason, but
    Ctrl-Break is working so it doesn't really matter.
 */
-ULONG _System BreakHandler( PEXCEPTIONREPORTRECORD       pExRec,
+static ULONG _System BreakHandler( PEXCEPTIONREPORTRECORD       pExRec,
                             PEXCEPTIONREGISTRATIONRECORD pRegRec,
                             PCONTEXTRECORD               pCtxRec,
                             PVOID                        args )

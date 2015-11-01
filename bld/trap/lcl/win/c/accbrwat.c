@@ -106,7 +106,7 @@ void ResetBreakpoints( WORD sel )
 
 } /* ResetBreakpoints */
 
-break_point __far * findBrkEntry( void )
+static break_point __far * findBrkEntry( void )
 {
     int         i;
     int         old_num;

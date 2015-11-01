@@ -43,6 +43,7 @@
 #include <string.h>
 #include "trpimp.h"
 #include "trpcomm.h"
+#include "trpld.h"
 #include "dosdebug.h"
 #include "os2trap.h"
 #include "os2v2acc.h"
@@ -58,13 +59,15 @@
 #include "x86cpu.h"
 #include "cpuglob.h"
 #include "os2extx.h"
+#include "dbgthrd.h"
 
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
 static BOOL             stopOnSecond;
 USHORT                  TaskFS;
-extern char             SetHardMode( char );
-extern VOID             InitDebugThread(VOID);
+
+extern TRAPENTRY_FUNC( TellHandles );
+extern TRAPENTRY_FUNC( TellHardMode );
 
 #ifdef DEBUG_OUT
 
@@ -93,35 +96,37 @@ ptr = numbuff+NSIZE;
 }
 #endif
 
-#define EXE_NE  0x454e
-#define EXE_LE  0x454c
-#define EXE_LX  0x584c
+#define EXE_NE              0x454e
+#define EXE_LE              0x454c
+#define EXE_LX              0x584c
 
-#define OBJECT_IS_CODE  0x0004L
-#define OBJECT_IS_BIG   0x2000L
+#define OBJECT_IS_CODE      0x0004L
+#define OBJECT_IS_BIG       0x2000L
 
-#define EXE_IS_FULLSCREEN       0x0100
-#define EXE_IS_PMC              0x0200
-#define EXE_IS_PM               0x0300
+#define EXE_IS_FULLSCREEN   0x0100
+#define EXE_IS_PMC          0x0200
+#define EXE_IS_PM           0x0300
 
-static ULONG    ExceptLinear;
-static UCHAR    TypeProcess;
-static BOOL     Is32Bit;
-static watch    WatchPoints[ MAX_WP ];
-static short    WatchCount = 0;
-static short    DebugRegsNeeded = 0;
-static unsigned_16      lastCS;
-static unsigned_16      lastSS;
-static unsigned_32      lastEIP;
-static unsigned_32      lastESP;
+static ULONG        ExceptLinear;
+static UCHAR        TypeProcess;
+static BOOL         Is32Bit;
+static watch        WatchPoints[ MAX_WP ];
+static short        WatchCount = 0;
+static short        DebugRegsNeeded = 0;
+static unsigned_16  lastCS;
+static unsigned_16  lastSS;
+static unsigned_32  lastEIP;
+static unsigned_32  lastESP;
 
 bool        ExpectingAFault;
 const char  OS2ExtList[] = OS2EXTLIST;
 
 static bool Is32BitSeg( unsigned seg )
 {
-    if( IsFlatSeg( seg ) ) return( TRUE );
-    if( IsUnknownGDTSeg( seg ) ) return( TRUE );
+    if( IsFlatSeg( seg ) )
+        return( TRUE );
+    if( IsUnknownGDTSeg( seg ) )
+        return( TRUE );
     return( FALSE );
 }
 
@@ -185,12 +190,14 @@ static BOOL FindNewHeader( char *name, HFILE *hdl,
         if( !SeekRead( h, 0x00, &data, sizeof( data ) ) ) {
             break;
         }
-        if( data != 0x5a4d ) break;   /* MZ */
+        if( data != 0x5a4d )    /* MZ */
+            break;
 
         if( !SeekRead( h, 0x18, &data, sizeof( data ) ) ) {
             break;
         }
-        if( data < 0x40 ) break;      /* offset of relocation header */
+        if( data < 0x40 )       /* offset of relocation header */
+            break;
 
         if( !SeekRead( h, 0x3c, new_head, sizeof( ULONG ) ) ) {
             break;
@@ -286,7 +293,8 @@ bool DebugExecute( dos_debug *buff, ULONG cmd, bool stop_on_module_load )
         switch( buff->Cmd ) {
         case DBG_N_ModuleLoad:
             RecordModHandle( buff->Value );
-            if( stop_on_module_load ) return( TRUE );
+            if( stop_on_module_load )
+                return( TRUE );
             break;
         case DBG_N_ModuleFree:
             break;
@@ -827,7 +835,7 @@ trap_retval ReqGet_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
-    char             *name;
+    char                *name;
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
@@ -838,7 +846,7 @@ trap_retval ReqGet_lib_name( void )
         ret->handle = 0;
         return( sizeof( *ret ) );
     }
-    name = GetOutPtr( sizeof(*ret) );
+    name = GetOutPtr( sizeof( *ret ) );
     Buff.Value = ModHandles[ CurrModHandle ];
     DosGetModName( ModHandles[ CurrModHandle ], 128, name );
     ret->handle = CurrModHandle;

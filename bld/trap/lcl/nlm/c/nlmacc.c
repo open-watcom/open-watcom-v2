@@ -1785,14 +1785,14 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 
 trap_retval ReqGet_lib_name( void )
 {
-    int             len;
+    int                 len;
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
-    char            *name;
+    char                *name;
     nlm_entry           *curr;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
 
     if( acc->handle == 0 ) {
         curr = NLMList;
@@ -1804,8 +1804,8 @@ trap_retval ReqGet_lib_name( void )
         ret->handle = 0;
         return( sizeof( *ret ) );
     }
+    name = GetOutPtr( sizeof( *ret ) );
     ret->handle = (unsigned long)curr;
-    name = GetOutPtr(sizeof(*ret));
     len = curr->ld.LDFileName[0];
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';
@@ -1814,7 +1814,7 @@ trap_retval ReqGet_lib_name( void )
         return( sizeof( *ret ) + len + 1 );
     } else {
         _DBG_MISC(("UnLoaded NLM %s\r\n", name));
-        name[0] = '\0';
+        *name = '\0';
         return( sizeof( *ret ) + 1 );
     }
 }

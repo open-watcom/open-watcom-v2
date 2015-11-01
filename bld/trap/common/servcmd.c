@@ -34,11 +34,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "trpimp.h"
-#include "trperr.h"
-#include "packet.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "packet.h"
+#include "trperr.h"
+#include "tcerr.h"
 #include "servio.h"
 
 extern trap_version     TrapVersion;

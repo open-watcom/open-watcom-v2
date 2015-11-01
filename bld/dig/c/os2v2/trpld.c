@@ -37,45 +37,47 @@
 #include <string.h>
 #include <stdlib.h>
 #include "trptypes.h"
-#include "tcerr.h"
 #include "trpld.h"
 #include "trpsys.h"
+#include "tcerr.h"
+
 
 static trap_fini_func   *FiniFunc = NULL;
 static HMODULE          TrapFile = 0;
 
-static unsigned_16      (TRAPENTRY *InfoFunc)( HAB, HWND );
-static char             (TRAPENTRY *HardFunc)( char );
+static TRAPENTRY_FUNC_PTR( TellHandles );
+static TRAPENTRY_FUNC_PTR( TellHardMode );
 
 bool IsTrapFilePumpingMessageQueue( void )
 {
-    return( InfoFunc != NULL );
+    return( TRAPENTRY_PTR_NAME( TellHandles ) != NULL );
 }
 
-void TrapTellHandles( HAB hab, HWND hwnd )
+bool TrapTellHandles( HAB hab, HWND hwnd )
 {
-    if( InfoFunc != NULL ) {
-        InfoFunc( hab, hwnd );
-    }
+    if( TRAPENTRY_PTR_NAME( TellHandles ) == NULL )
+        return( false );
+    TRAPENTRY_PTR_NAME( TellHandles )( hab, hwnd );
+    return( true );
 }
 
 char TrapTellHardMode( char hard )
 {
-    if( HardFunc == NULL )
+    if( TRAPENTRY_PTR_NAME( TellHardMode ) == NULL )
         return( 0 );
 
-    return( HardFunc( hard ) );
+    return( TRAPENTRY_PTR_NAME( TellHardMode )( hard ) );
 }
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
+    TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
+    TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
     }
-    InfoFunc = NULL;
-    HardFunc = NULL;
     if( TrapFile != 0 ) {
         DosFreeModule( TrapFile );
         TrapFile = 0;
@@ -119,11 +121,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( DosQueryProcAddr( TrapFile, 1, NULL, (PFN*)&init_func ) == 0
       && DosQueryProcAddr( TrapFile, 2, NULL, (PFN*)&FiniFunc ) == 0
       && DosQueryProcAddr( TrapFile, 3, NULL, (PFN*)&ReqFunc ) == 0 ) {
-        if( DosQueryProcAddr( TrapFile, 4, NULL, (PFN*)&InfoFunc ) != 0 ) {
-            InfoFunc = NULL;
+        if( DosQueryProcAddr( TrapFile, 4, NULL, (PFN*)&TRAPENTRY_PTR_NAME( TellHandles ) ) != 0 ) {
+            TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
         }
-        if( DosQueryProcAddr( TrapFile, 5, NULL, (PFN*)&HardFunc ) != 0 ) {
-            HardFunc = NULL;
+        if( DosQueryProcAddr( TrapFile, 5, NULL, (PFN*)&TRAPENTRY_PTR_NAME( TellHardMode ) ) != 0 ) {
+            TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
         }
         parms = ptr;
         if( *parms != '\0' )

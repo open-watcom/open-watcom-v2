@@ -40,6 +40,8 @@
 #define INCL_DOSMODULEMGR
 #include <os2.h>
 #include "trpimp.h"
+#include "trpcomm.h"
+#include "coremisc.h"
 
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
@@ -59,7 +61,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-long TryPath( const char *name, char *end, const char *ext_list )
+static long TryPath( const char *name, char *end, const char *ext_list )
 {
     long         rc;
     char         *p;
@@ -85,17 +87,17 @@ long TryPath( const char *name, char *end, const char *ext_list )
 
 long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
 {
-    char    *p;
-    char    *p2;
-    char    *p3;
-    APIRET  rc;
-    int     have_ext;
-    int     have_path;
+    const char  *p;
+    char        *p2;
+    const char  *p3;
+    APIRET      rc;
+    int         have_ext;
+    int         have_path;
 
     have_ext = 0;
     have_path = 0;
-    for (p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2) {
-        switch (*p) {
+    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
+        switch( *p ) {
         case '\\':
         case '/':
         case ':':
@@ -107,33 +109,31 @@ long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
             break;
         }
     }
-    if (have_ext)
+    if( have_ext )
         ext_list = "";
-    rc = TryPath(buffer, p2, ext_list);
-    if (rc == 0 || have_path)
+    rc = TryPath( buffer, p2, ext_list );
+    if( rc == 0 || have_path )
         return rc;
-    if (DosScanEnv("PATH", &p) != 0)
-        return(rc);
-    for ( ; ; ) {
-        if (*p == '\0')
-            break;
+    if( DosScanEnv( "PATH", &p2 ) != 0 )
+        return( rc );
+    for( p = p2; *p != '\0'; ++p ) {
         p2 = buffer;
-        while (*p) {
-            if (*p == ';')
+        while( *p != '\0' ) {
+            if( *p == ';' )
                 break;
             *p2++ = *p++;
         }
-        if (p2[-1] != '\\' && p2[-1] != '/') {
+        if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for (p3 = pgm; *p2 = *p3; ++p2, ++p3)
+        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
             ;
-        rc = TryPath(buffer, p2, ext_list);
-        if (rc == 0)
+        rc = TryPath( buffer, p2, ext_list );
+        if( rc == 0 )
             break;
-        if (*p == '\0')
+        if( *p == '\0' ) {
             break;
-        ++p;
+        }
     }
     return rc;
 }
@@ -249,7 +249,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, &ret->pos );
+    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, (PULONG)&ret->pos );
     return( sizeof( *ret ) );
 }
 

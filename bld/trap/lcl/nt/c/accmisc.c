@@ -480,7 +480,7 @@ int FindFilePath( const char *pgm, char *buffer, const char *ext_list )
         return( 0 );
     }
     if( have_path ) {
-        return( TRUE );
+        return( 1 );
     }
     envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
     if( envlen == 0 )

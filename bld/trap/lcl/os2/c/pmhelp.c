@@ -84,7 +84,7 @@ TID             TidDebugee;
     #define Say( x )
 #endif
 
-void UnLockIt( void )
+static void UnLockIt( void )
 {
     if( Locked ) {
         WinThreadAssocQueue( Hab, Hmq );
@@ -94,13 +94,13 @@ void UnLockIt( void )
     }
 }
 
-VOID APIENTRY CleanUp( void )
+static VOID APIENTRY CleanUp( void )
 {
     UnLockIt();
     DosExitList( EXLST_EXIT, (PFNEXITLIST)CleanUp );
 }
 
-void LockIt( void )
+static void LockIt( void )
 {
     if( !Locked ) {
         WinThreadAssocQueue( Hab, Hmq );
@@ -119,7 +119,7 @@ static void SwitchBack( void )
 }
 
 
-VOID APIENTRY ServiceRequests( VOID )
+static VOID APIENTRY ServiceRequests( VOID )
 {
     USHORT              len;
     pmhelp_packet       data;
@@ -148,7 +148,7 @@ VOID APIENTRY ServiceRequests( VOID )
     Say( "Read Failed" );
 }
 
-MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
+static MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 {
     HPS    hps;
     RECTL  rc;
@@ -219,7 +219,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 }
 
 
-VOID AbortLocker( HWND hwndFrame, HWND hwndClient )
+static VOID AbortLocker( HWND hwndFrame, HWND hwndClient )
 {
    PERRINFO     pErrInfoBlk;
    PSZ          pszOffSet;

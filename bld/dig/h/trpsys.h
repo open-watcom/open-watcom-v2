@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  TRAP file OS extension global variable/function declaration
+* Description:  TRAP file loader global function/variable OS specific declaration
 *
 ****************************************************************************/
 
@@ -35,15 +35,15 @@ extern bool     IsTrapFilePumpingMessageQueue( void );
 extern char     TrapTellHardMode( char hard );
 
   #if defined( _M_I86 )
-extern void     TrapTellHandles( void __far *hab, void __far *hwnd );
+extern bool     TrapTellHandles( void __far *hab, void __far *hwnd );
   #else
-extern void     TrapTellHandles( HAB hab, HWND hwnd );
+extern bool     TrapTellHandles( HAB hab, HWND hwnd );
   #endif
 
 #elif defined( __DOS__ )
   #if !defined( _M_I86 )
 
-extern unsigned char    DPMICheck;
+extern char     DPMICheck;
 extern void     SaveOrigVectors( void );
 extern void     RestoreOrigVectors( void );
 
@@ -51,17 +51,14 @@ extern void     RestoreOrigVectors( void );
 #elif defined( __NT__ )
 
 extern void     TrapTellHWND( HWND hwnd );
-extern void     TellInterrupt( void );
-extern bool     TellTerminate( void );
 
 #elif defined( __WINDOWS__ )
 
-extern int      TrapHardModeRequired;
+extern bool     TrapHardModeRequired;
 extern void     TrapTellHWND( HWND hwnd );
-extern void     TrapSetHardMode( char mode );
+extern void     TrapSetHardMode( bool mode );
 extern void     TrapHardModeCheck( void );
 extern void     TrapInputHook( hook_fn * );
 extern void     TrapUnLockInput( void );
-extern bool     TellTerminate( void );
 
 #endif

@@ -162,7 +162,7 @@ struct msg_list {
 
 
 /*
- * global variables
+ * global variables prototypes
  */
 
 #include "globals.h"

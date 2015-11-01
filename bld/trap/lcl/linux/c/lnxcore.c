@@ -36,13 +36,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "exeelf.h"
-//#include "lnxcomm.h"
+#include "coremisc.h"
 //#include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
 
-extern unsigned FindFilePath( int exe, const char *name, char *result );
+//extern unsigned FindFilePath( int exe, const char *name, char *result );
 
 #ifdef __BIG_ENDIAN__
     #define SWAP_16     CONV_LE_16
@@ -132,7 +133,7 @@ static void OutNum( unsigned i )
  */
 
 /* Read ELF header and check if it's roughly what we're expecting */
-int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
+static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 {
 //    Elf32_Phdr  phdr;
 //    size_t      i;
@@ -172,7 +173,7 @@ int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 }
 
 /* Read ELF program headers */
-int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
+static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
 {
     Elf32_Phdr      *e_phdr;
     int             i;
@@ -658,9 +659,8 @@ trap_retval ReqGet_lib_name( void )
         strcpy( name, "/boot/sys/Proc32" );
         break;
     default:
-        ret->handle = MH_NONE;
-        name[0] = '\0';
-        break;
+        ret->handle = 0;
+        return( sizeof( *ret ) );
     }
     return( sizeof( *ret ) + 1 + strlen( name ) );
 }

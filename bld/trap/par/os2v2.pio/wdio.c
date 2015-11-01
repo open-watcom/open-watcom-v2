@@ -34,6 +34,7 @@
 #define __INLINE_FUNCTIONS__
 #endif
 #include <conio.h>
+#include "wdio.h"
 
 unsigned __far __pascal outport( unsigned port, unsigned value )
 {

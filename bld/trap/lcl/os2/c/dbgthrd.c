@@ -48,6 +48,7 @@
 #include "softmode.h"
 #include "trptypes.h"
 #include "trperr.h"
+#include "dbgthrd.h"
 
 dos_debug __far         *DebugReqBuff;
 unsigned int            DebugReqResult;
@@ -76,7 +77,7 @@ extern void SetBrkPending( void );
 
 static dos_debug StopBuff;
 
-VOID StopApplication( VOID )
+VOID APIENTRY StopApplication( VOID )
 {
     StopBuff.Cmd = DBG_C_Stop;
     Call32BitDosDebug( &StopBuff );
@@ -146,7 +147,7 @@ unsigned int CallDosDebug( dos_debug __far *buff )
                 if( ( SHORT1FROMMP( qmsg.mp1 ) & KC_VIRTUALKEY ) &&
                     ( SHORT2FROMMP( qmsg.mp2 ) == VK_BREAK ) ) {
                     SetBrkPending();
-                    DosCreateThread( (PFNTHREAD)StopApplication, &tid, stack2 + STACK_SIZE );
+                    DosCreateThread( StopApplication, &tid, stack2 + STACK_SIZE );
                     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid );
                     WakeThreads( StopBuff.Pid );
                     DosSemWait( &StopDoneSem, SEM_INDEFINITE_WAIT );
@@ -205,7 +206,7 @@ unsigned int CallDosDebug( dos_debug __far *buff )
     return( DebugReqResult );
 }
 
-VOID DoDebugRequests( VOID )
+static VOID APIRET DoDebugRequests( VOID )
 {
     for( ;; ) {
         DosSemWait( &DebugReqSem, SEM_INDEFINITE_WAIT );
@@ -227,6 +228,6 @@ VOID InitDebugThread( VOID )
 
     DosSemSet( &StopDoneSem );
     DosSemSet( &DebugReqSem );
-    DosCreateThread( (PFNTHREAD)DoDebugRequests, &tid, stack + STACK_SIZE );
+    DosCreateThread( DoDebugRequests, &tid, stack + STACK_SIZE );
     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }

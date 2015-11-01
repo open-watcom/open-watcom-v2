@@ -43,13 +43,14 @@
 #include "dbgdefn.h"
 #include "dbgio.h"
 #include "dsxutil.h"
+#include "trptypes.h"
 #include "trpcore.h"
+#include "trpld.h"
+#include "trpsys.h"
 #include "tinyio.h"
 #include "tcerr.h"
 #include "digio.h"
-#include "trpld.h"
 #include "envlkup.h"
-#include "trpsys.h"
 
 
 #define DOS4G_COMM_VECTOR       0x15
@@ -92,7 +93,7 @@ static dos_memory       TrapMem;
 
 static void             __far *RawPMtoRMSwitchAddr;
 
-unsigned char           DPMICheck = 0;
+char                    DPMICheck = 0;
 
 //#define FULL_SAVE
 
