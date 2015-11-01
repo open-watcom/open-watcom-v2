@@ -217,7 +217,7 @@ cdsay .
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
-[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
 # Build help viewer
 [ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 # Build help compilers
