@@ -53,10 +53,12 @@
 #include "addarith.h"
 #include "dlgscan.h"
 #include "dlgexpr.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmem.h"
 
 
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
-extern a_window         *WndAsmInspect(address addr);
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );

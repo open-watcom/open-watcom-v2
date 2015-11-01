@@ -30,14 +30,6 @@
 ****************************************************************************/
 
 
-#ifndef RC
-    typedef struct dlg_var_expand {
-        long    start;
-        long    end;
-        bool    cancel;
-    } dlg_var_expand;
-#endif
-
 #define DIALOG_VARX 3008
 
 #define CTL_VARX_START 104
@@ -45,3 +37,13 @@
 #define CTL_VARX_OK 100
 #define CTL_VARX_DEFAULTS 102
 #define CTL_VARX_CANCEL 103
+
+#ifndef RC
+typedef struct dlg_var_expand {
+    long    start;
+    long    end;
+    bool    cancel;
+} dlg_var_expand;
+
+extern bool     DlgVarExpand( dlg_var_expand * );
+#endif

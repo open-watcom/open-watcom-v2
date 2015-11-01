@@ -46,10 +46,9 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgreg.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
 
-
-extern  a_window        *WndSrcInspect( address addr );
-extern  a_window        *WndAsmInspect( address addr );
 
 enum {
     PIECE_ADDRESS,

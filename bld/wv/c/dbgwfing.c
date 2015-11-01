@@ -38,6 +38,7 @@
 #include "strutil.h"
 #include "wndsys.h"
 #include "dbgwfing.h"
+#include "fingmsg.h"
 
 
 extern int WndNumColours;
@@ -49,8 +50,6 @@ extern a_window *WndMain;
 #define _EXPIRY_DAY     1
 #endif
 
-extern int      FingMessageSize;
-extern char     *AboutMessage[];
 static gui_coord BitmapSize;
 static gui_ord  Width;
 static gui_ord  Height;

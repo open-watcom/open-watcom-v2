@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+extern gui_resource     WndGadgetArray[];
+
 extern bool     DbgWndSearch( a_window * wnd, bool from_top, int direction );
 extern void     ProcPUINYI( a_window *wnd );
 extern void     ProcWndSearch( a_window *wnd );

@@ -43,6 +43,8 @@
 #include "trprfx.h"
 #endif
 #include "local.h"
+#include "rfx.h"
+
 
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )
 {

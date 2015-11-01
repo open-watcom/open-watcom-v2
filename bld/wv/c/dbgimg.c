@@ -41,10 +41,6 @@
 
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
-extern void             WndGblFuncInspect( mod_handle mod );
-extern void             WndGblVarInspect( mod_handle mod );
-extern void             WndModListInspect( mod_handle mod );
-
 
 char *ImgSymName( image_entry *img, bool always )
 {

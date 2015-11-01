@@ -218,14 +218,14 @@ $(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
     %create $^&.lnk
+!ifdef ovl_dos
     @%append $^&.lnk option verbose,nocache
+!endif
     @for %i in ($(libs))    do @%append $^&.lnk library %i
     @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
     @%append $^&.lnk file fingmsg.obj
-!ifeq host_os dos
 !ifdef ovl_dos
     @%append $^&.lnk begin autosection
-!endif
 !endif
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)

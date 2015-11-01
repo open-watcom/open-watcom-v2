@@ -42,3 +42,4 @@ extern void ConfigFont( void );
 extern void FontChange( void );
 extern void ProcDisplay( void );
 extern void ConfigDisp( void );
+extern wnd_class ReqWndName( void );

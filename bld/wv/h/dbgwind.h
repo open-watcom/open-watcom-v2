@@ -111,5 +111,3 @@ extern wnd_macro    *WndMacroList;
 extern char         *WndClipItem;
 
 extern void         WndUpdate(update_list );
-
-extern bool         ChkFlags( wnd_update_list flags );

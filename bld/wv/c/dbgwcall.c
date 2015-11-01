@@ -44,12 +44,12 @@
 #include "dbgmisc.h"
 #include "dbgreg.h"
 #include "addarith.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dlgbreak.h"
 
 
-extern a_window         *WndSrcInspect( address );
-extern a_window         *WndAsmInspect( address );
 extern address          FindLclBlock( address addr );
-extern bool             DlgBreak( address );
 extern unsigned         LineNumLkup( address );
 
 #include "menudef.h"

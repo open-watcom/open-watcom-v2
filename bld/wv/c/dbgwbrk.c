@@ -38,11 +38,11 @@
 #include "wndsys.h"
 #include "addarith.h"
 #include "dbgwfil.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dlgbreak.h"
 
 
-extern a_window         *WndAsmInspect(address);
-extern a_window         *WndSrcInspect(address);
-extern bool             DlgBreak(address);
 extern char             *AddrLineNum( address *addr, char *buff );
 
 enum {

@@ -40,3 +40,17 @@ extern bool     DebugScreen( void );
 extern bool     DebugScreenRecover( void );
 extern bool     UserScreen( void );
 extern void     FiniScreen( void );
+extern void     SetNumLines( int num );
+extern void     SetNumColumns( int num );
+extern bool     ScreenOption( const char *start, unsigned len, int pass );
+extern void     ScreenOptInit( void );
+#ifdef __UNIX__
+extern void     ScrnSpawnStart( void );
+extern void     ScrnSpawnEnd( void );
+#endif
+#ifdef __GUI__
+extern void     ToggleHardMode( void );
+//extern void     ScrnSpawnEnd( void );
+#endif
+extern int      SwapScrnLines( void );
+extern void     UnknownScreen( void );

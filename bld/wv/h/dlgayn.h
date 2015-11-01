@@ -37,9 +37,5 @@
 #define CTL_AYN_NO 101
 
 #ifndef RC
-    typedef struct {
-        bool            as_a_fruitcake;
-        unsigned long   mult;
-    } dlg_ayn;
+extern bool DlgAreYouNuts( unsigned long mult );
 #endif
-

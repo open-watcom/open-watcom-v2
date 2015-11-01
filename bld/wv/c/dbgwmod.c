@@ -41,12 +41,11 @@
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "dbgwfil.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmod.h"
 
 
-extern void             WndFuncInspect( mod_handle mod );
-extern a_window         *WndSrcInspect(address);
-extern void             WndFileInspect( char *file, bool binary );
-extern a_window         *WndAsmInspect(address);
 extern  bool            ModHasSourceInfo( mod_handle handle );
 
 #include "menudef.h"
@@ -341,7 +340,6 @@ extern a_window *DoWndModOpen( mod_handle handle )
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }
 
-extern WNDOPEN WndModOpen;
 extern a_window *WndModOpen( void )
 {
     return( DoWndModOpen( NO_MOD ) );

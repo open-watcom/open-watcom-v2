@@ -62,6 +62,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgdot.h"
+#include "dlgcmd.h"
 
 
 extern void             *WndAsmInspect( address addr );
@@ -687,12 +688,12 @@ extern void SearchConf( void )
     // stub for old UI
 }
 
-extern void FingClose( void )
+extern void DUIFingClose( void )
 {
     // close the splash page
 }
 
-extern void FingOpen( void )
+extern void DUIFingOpen( void )
 {
     // open a splash page
 }

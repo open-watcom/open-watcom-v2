@@ -54,14 +54,13 @@
 #include "dbgprog.h"
 #include "addarith.h"
 #include "dlgexpr.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwvar.h"
+#include "dlgnewws.h"
 
 
-extern bool             DlgVarExpand( dlg_var_expand * );
-extern WNDOPEN          WndVarOpen;
 extern void             WndVarNewWindow( char * );
-extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             WndInspectExprSP( const char *item );
-
 
 extern stack_entry      *ExprSP;
 

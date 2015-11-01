@@ -198,8 +198,8 @@ static void MemTrackFini( void )
 
 #ifdef __386__
 #define __fmemneed __nmemneed
-extern int __saveregs __fmemneed( size_t size );
 #endif
+extern int __saveregs __fmemneed( size_t size );
 
 int __saveregs __fmemneed( size_t size )
 {

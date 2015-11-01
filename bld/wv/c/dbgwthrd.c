@@ -39,6 +39,7 @@
 #include "dbgmisc.h"
 #include "remthrd.h"
 #include "dbgupdt.h"
+#include "dbgwglob.h"
 
 
 #include "menudef.h"

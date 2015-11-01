@@ -46,11 +46,11 @@
 #include "dbginvk.h"
 #include "dbgshow.h"
 #include "wndsys.h"
+#include "dbgwglob.h"
+#include "dbgwmac.h"
+#include "dbgwset.h"
+#include "wndmenu.h"
 
-extern char             *KeyName( unsigned key );
-extern wnd_macro        *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds );
-extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
-extern void             FiniMacros( void );
 
 extern const char       MainTab[];
 extern wnd_info         *WndInfoTab[];
@@ -620,7 +620,6 @@ wnd_info MacInfo = {
     DefPopUp( MacMenu )
 };
 
-extern WNDOPEN WndMacOpen;
 extern a_window *WndMacOpen( void )
 {
     mac_window  *wndmac;

@@ -58,22 +58,14 @@
 #include "dbgdot.h"
 #include "dbgwass.h"
 #include "dbgwfil.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
 
 
-extern a_window         *WndFileInspect( char *file, bool binary );
-extern void             WndFuncInspect( mod_handle mod );
-extern bool             DlgBreak( address );
-extern void             WndInspect( const char * );
-extern a_window         *WndAsmInspect( address );
 extern int              DlgSearch( a_window *, void * );
-extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             WndVarInspect( const char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern void             WndSrcInspect( address addr );
-extern void             WndModInspect( mod_handle mod );
 extern unsigned         ExprSize( stack_entry * );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
-extern a_window         *WndNewSrcInspect( address addr );
 
 extern stack_entry      *ExprSP;
 

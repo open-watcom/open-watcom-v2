@@ -38,6 +38,8 @@
 #include "dbgmisc.h"
 #include "remrtrd.h"
 #include "dbgupdt.h"
+#include "dbgwglob.h"
+#include "dbgwrtrd.h"
 
 
 #include "menudef.h"

@@ -34,6 +34,7 @@
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dlgnew.h"
+#include "dlgnewws.h"
 
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 extern void             ModComplete( gui_window *gui, gui_ctl_id id );

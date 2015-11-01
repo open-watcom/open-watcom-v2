@@ -283,7 +283,8 @@ void InitScreen( void )
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );
     }
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIInitMouse( 1 );
     DebugScreen();
 }
 

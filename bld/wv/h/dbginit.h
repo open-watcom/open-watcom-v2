@@ -43,3 +43,8 @@ extern void             KillDebugger( int rc );
 extern void             GrabHandlers( void );
 extern void             RestoreHandlers( void );
 extern void             PopErrBox( const char *buff );
+extern long             _fork( const char *cmd, size_t len );
+#ifdef __GUI__
+extern void             TellWinHandle( void );
+extern unsigned         GetSystemDir( char *, unsigned );
+#endif

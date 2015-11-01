@@ -57,6 +57,14 @@
 #include "dbgwdisp.h"
 #include "dbgwfil.h"
 #include "dbgwfing.h"
+#include "dbgwmac.h"
+#include "dbgwmem.h"
+#include "dbgwset.h"
+#include "dbgwsrch.h"
+#include "wnddump.h"
+#include "wndmenu.h"
+#include "dbgwpain.h"
+#include "dbginit.h"
 
 
 extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
@@ -69,18 +77,9 @@ extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
-extern gui_colour_set   *GetWndColours( wnd_class wndcls );
-extern a_window         *WndSrchOpen( const char * );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
-extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
-extern char             LookUpCtrlKey( unsigned key );
-extern bool             MacKeyHit( a_window *wnd, unsigned key );
 extern void             SetUpdateFlags( update_list );
-extern void             ScrnSpawnStart( void );
-extern void             ScrnSpawnEnd( void );
 
-extern void             WndDumpFile( a_window * );
-extern void             WndDumpLog( a_window * );
 extern void             XDumpMenus( void );
 static void             WndBadCmd( a_window * );
 
@@ -646,8 +645,6 @@ extern void WndRXError( int num )
 }
 
 #if defined(__GUI__)
-extern unsigned GetSystemDir( char *, unsigned );
-
 static bool GetInitName( char *name, char *buff, unsigned buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );

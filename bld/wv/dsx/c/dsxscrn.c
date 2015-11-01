@@ -46,6 +46,7 @@
 #include "dbgcmdln.h"
 #include "dbglkup.h"
 #include "dbgerr.h"
+#include "dsxscrn.h"
 
 
 #define _64K                    (64UL*1024)
@@ -1063,7 +1064,9 @@ void InitScreen( void )
         UserScreen();
         StartupErr( LIT_DUI( Unable_to_init_ui ) );
     }
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 2 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 2 );
+    }
 }
 
 /* UsrScrnMode -- setup the user screen mode */

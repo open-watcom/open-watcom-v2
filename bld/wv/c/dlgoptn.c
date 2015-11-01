@@ -41,6 +41,10 @@
 #include "dlgexpr.h"
 
 
+typedef struct dlg_window_set {
+    unsigned        cancel : 1;
+} dlg_window_set;
+
 static void GetDlgStatus( gui_window *gui )
 {
     long        tmp;
@@ -124,7 +128,7 @@ OVL_EXTERN bool OptSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  bool    DlgOptSet( void )
+bool    DlgOptSet( void )
 {
     dlg_window_set      optset;
 

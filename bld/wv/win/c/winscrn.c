@@ -46,7 +46,10 @@
 #include "dbgcmdln.h"
 #include "dbglkup.h"
 #include "trptypes.h"
+#include "trpld.h"
 #include "trpsys.h"
+#include "dbginit.h"
+#include "wininit.h"
 
 
 extern unsigned char    NECBIOSGetMode(void);
@@ -97,12 +100,14 @@ unsigned ConfigScreen( void )
         switch( HWDisplay.active ) {
         case DISP_VGA_MONO:
         case DISP_VGA_COLOUR:
-            if( ScrnLines > 25 ) ScrnLines = 50;
+            if( ScrnLines > 25 )
+                ScrnLines = 50;
             win_uisetcolor( M_VGA );
             break;
         case DISP_EGA_COLOUR:
         case DISP_EGA_MONO:
-            if( ScrnLines > 25 ) ScrnLines = 43;
+            if( ScrnLines > 25 )
+                ScrnLines = 43;
             // fall thru
         default:
             win_uisetcolor( M_EGA );
@@ -123,7 +128,6 @@ bool UsrScrnMode( void )
     if( UIData->height != ScrnLines ) {
         UIData->height = ScrnLines;
         if( _IsOn( SW_USE_MOUSE ) ) {
-            extern int  initmouse( int );
             /*
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
@@ -197,7 +201,9 @@ void InitScreen( void )
     }
     uistart();
     UIData->height = ScrnLines;
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 1 );
+    }
 }
 
 static bool ChkCntrlr( int port )

@@ -37,6 +37,7 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "strutil.h"
+#include "wndhelp.h"
 
 extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 

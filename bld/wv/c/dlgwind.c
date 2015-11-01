@@ -38,15 +38,16 @@
 #include "dbgscan.h"
 #include "dlgexpr.h"
 #include "dbgwass.h"
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwmod.h"
+#include "dbgwset.h"
+#include "dbgwvar.h"
 
 
-extern int              TabIntervalGet( void );
-extern void             TabIntervalSet( int );
-extern void             VarChangeOptions( void );
-extern void             GlobChangeOptions( void );
-extern void             ModChangeOptions( void );
-extern void             FuncChangeOptions( void );
-
+typedef struct dlg_window_set {
+    unsigned        cancel : 1;
+} dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )
 {
@@ -135,7 +136,7 @@ OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  bool    DlgWndSet( void )
+bool    DlgWndSet( void )
 {
     dlg_window_set      wndset;
 

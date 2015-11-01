@@ -43,16 +43,14 @@
 #include "wndsys.h"
 #include "dbgreg.h"
 #include "dlgexpr.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmadr.h"
+#include "dbgwtogl.h"
 
 
 extern address          AddrRegIP( machine_state *regs );
 extern unsigned         GetInsSize( address addr );
-extern void             WndInspect( const char *item );
-extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
-                                   gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
-extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-extern void             WndInspectExprSP( const char *item );
-
 
 #include "menudef.h"
 static gui_menu_struct RegMenu[] = {

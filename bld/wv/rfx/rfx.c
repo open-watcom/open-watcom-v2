@@ -48,6 +48,8 @@
 #include "filermt.h"
 #include "remfile.h"
 #include "dbginit.h"
+#include "rfxacc.h"
+#include "rfx.h"
 
 char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 
@@ -320,7 +322,7 @@ void GrabHandlers( void )
 {
 }
 
-void CheckError( void )
+static void CheckError( void )
 {
     char    *p;
     char    buff[ 256 ];
@@ -334,32 +336,32 @@ void CheckError( void )
     }
 }
 
-void *DbgAlloc( size_t size )
+static void *DbgAlloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-void DbgFree( void * chunk )
+static void DbgFree( void * chunk )
 {
     free( chunk );
 }
-
-void FreeRing( void )
+#if 0
+static void FreeRing( void )
 {
 }
-
-error_idx TransSetErr( error_idx err )
+#endif
+static error_idx TransSetErr( error_idx err )
 {
     ErrorStatus = err;
     return( err );
 }
 
-error_idx SysSetErr( sys_error err )
+static error_idx SysSetErr( sys_error err )
 {
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
 }
 
-char *MyStrDup( const char *str ) {
+static char *MyStrDup( const char *str ) {
 
     char *new;
 
@@ -368,7 +370,7 @@ char *MyStrDup( const char *str ) {
     return( new );
 }
 
-char *Copy( const void *s, void *d, unsigned len ) {
+static char *Copy( const void *s, void *d, unsigned len ) {
 
     char        *dst = d;
     const char  *src = s;
@@ -379,7 +381,7 @@ char *Copy( const void *s, void *d, unsigned len ) {
     return( dst );
 }
 
-char *Fill( void *d, int len, char filler ) {
+static char *Fill( void *d, int len, char filler ) {
 
     char *dst = d;
     while( len-- ) {
@@ -388,7 +390,7 @@ char *Fill( void *d, int len, char filler ) {
     return( dst );
 }
 
-char *CopyStr( const char *src, char *dst )
+static char *CopyStr( const char *src, char *dst )
 {
     while( (*dst = *src) != '\0' ) {
         ++src;
@@ -397,7 +399,7 @@ char *CopyStr( const char *src, char *dst )
     return( dst );
 }
 
-void DItoD( long s, char *d ) {
+static void DItoD( long s, char *d ) {
 
     if( s == 0 ) {
         *d = '0';
@@ -409,7 +411,7 @@ void DItoD( long s, char *d ) {
     }
 }
 
-void ItoD( unsigned int i, char *b ) {
+static void ItoD( unsigned int i, char *b ) {
 
     b[ 1 ] = i % 10 + '0';
     i /= 10;
@@ -421,7 +423,7 @@ void ItoD( unsigned int i, char *b ) {
 /* ACTUAL OS CALLS                                                        */
 /**************************************************************************/
 
-char GetDrv( int loc )
+static char GetDrv( int loc )
 /********************/
 {
     if( loc == 1 ) {
@@ -431,7 +433,7 @@ char GetDrv( int loc )
     }
 }
 
-void SetDrv( int drive, int loc )
+static void SetDrv( int drive, int loc )
 /*******************************/
 {
     drive = toupper( drive );
@@ -445,7 +447,7 @@ void SetDrv( int drive, int loc )
     }
 }
 
-error_idx RemoveDir( const char *name, int loc )
+static error_idx RemoveDir( const char *name, int loc )
 /**********************************************/
 {
     if( loc == 1 ) {
@@ -455,7 +457,7 @@ error_idx RemoveDir( const char *name, int loc )
     }
 }
 
-error_idx SetDir( const char *name, int loc )
+static error_idx SetDir( const char *name, int loc )
 /*******************************************/
 {
     if( loc == 1 ) {
@@ -465,7 +467,7 @@ error_idx SetDir( const char *name, int loc )
     }
 }
 
-error_idx GetDir( int drive, char *name, int loc )
+static error_idx GetDir( int drive, char *name, int loc )
 /************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
@@ -476,13 +478,13 @@ error_idx GetDir( int drive, char *name, int loc )
     }
 }
 
-error_idx Erase( const char *name, int loc )
+static error_idx Erase( const char *name, int loc )
 /******************************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
-error_idx MakeDir( const char *name, int loc )
+static error_idx MakeDir( const char *name, int loc )
 /********************************************/
 {
     if( loc == 1 ) {
@@ -493,7 +495,7 @@ error_idx MakeDir( const char *name, int loc )
 }
 
 
-long GetAttrs( const char *fn, int loc )
+static long GetAttrs( const char *fn, int loc )
 /**************************************/
 {
     if( loc == 1 ) {
@@ -503,7 +505,7 @@ long GetAttrs( const char *fn, int loc )
     }
 }
 
-int IsDevice( const char *fn, int loc )
+static int IsDevice( const char *fn, int loc )
 /*************************************/
 {
     unsigned h;
@@ -518,7 +520,7 @@ int IsDevice( const char *fn, int loc )
 }
 
 
-error_idx FindFirst( const char *name, int loc, int attr )
+static error_idx FindFirst( const char *name, int loc, int attr )
 /********************************************************/
 {
     if( loc == 1 ) {
@@ -528,7 +530,7 @@ error_idx FindFirst( const char *name, int loc, int attr )
     }
 }
 
-int FindNext( int loc )
+static int FindNext( int loc )
 /*********************/
 {
     if( loc == 1 ) {
@@ -538,7 +540,7 @@ int FindNext( int loc )
     }
 }
 
-error_idx Rename( const char *f1, const char *f2, int loc )
+static error_idx Rename( const char *f1, const char *f2, int loc )
 /*********************************************************/
 {
     if( loc == 1 ) {
@@ -558,7 +560,7 @@ long FreeSpace( char drive, int loc )
     }
 }
 
-void SameDate( handle src, int src_loc, handle dst, int dst_loc )
+static void SameDate( handle src, int src_loc, handle dst, int dst_loc )
 /***************************************************************/
 {
     int     time, date;
@@ -587,7 +589,7 @@ static void OutName( void )
     WriteStream( STD_ERR, Name, sizeof( Name ) - 1 );
 }
 
-void Prompt( void )
+static void Prompt( void )
 {
     char        *prompt;
     char        drv;
@@ -740,7 +742,7 @@ int main( int argc, char **argv )
     return( 0 );
 }
 
-int Option( const char * str, char opt )
+static int Option( const char * str, char opt )
 {
     if( *str == '/' || *str == '-' ) {
         if( tolower( str[1] ) == opt ) {
@@ -754,7 +756,7 @@ int Option( const char * str, char opt )
 /* PROCESS COMMANDS                                                       */
 /**************************************************************************/
 
-void CopyCmd( const char *src, char *dst )
+static void CopyCmd( const char *src, char *dst )
 {
     for( ;; ) {
         if( *src == '/' ) {
@@ -836,7 +838,7 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
 /* RENAME                                                                 */
 /**************************************************************************/
 
-error_idx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
+static error_idx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
 {
     error_idx   retc;
     error_idx   err;
@@ -935,7 +937,7 @@ void ProcRename( int argc, char **argv )
 /* COPY                                                                   */
 /**************************************************************************/
 
-void AddCopySpec( const char *src, const char *dst, int src_loc, int dst_loc )
+static void AddCopySpec( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     COPYPTR     new;
 
@@ -984,7 +986,7 @@ static int IsDir( const char *src, int src_loc )
 }
 
 
-void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc )
+static void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     int         len;
 
@@ -1018,7 +1020,7 @@ void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc )
     }
 }
 
-void FiniCopy( handle in, const char *src_name, int src_loc,
+static void FiniCopy( handle in, const char *src_name, int src_loc,
                handle out, const char *dst_name, int dst_loc )
 {
     SameDate( in, src_loc, out, dst_loc );
@@ -1031,7 +1033,7 @@ void FiniCopy( handle in, const char *src_name, int src_loc,
 }
 
 
-error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
+static error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
 {
     handle      in, out;
     unsigned    len;
@@ -1077,7 +1079,7 @@ error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
     return( StashErrCode( IO_OK, OP_LOCAL ) );
 }
 
-void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
+static void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
 {
     error_idx   retc;
     long        retl;
@@ -1126,7 +1128,7 @@ void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
     }
 }
 
-error_idx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
+static error_idx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
 {
     error_idx   retc;
     char        *endptr;
@@ -1322,7 +1324,7 @@ static  void    DirClosef( dir_handle *h )
     DbgFree( h );
 }
 
-dir_handle      *DirOpenf( const char *fspec, int fnloc )
+static dir_handle      *DirOpenf( const char *fspec, int fnloc )
 {
     dir_handle  *h;
     error_idx   retc;
@@ -1383,7 +1385,7 @@ dir_handle      *DirOpenf( const char *fspec, int fnloc )
 }
 
 
-void    DirReadf( dir_handle *h, char *buff, bool wide )
+static void    DirReadf( dir_handle *h, char *buff, bool wide )
 {
     if( h->status == RFX_EOF ) {
         *buff = '\0';
@@ -1623,7 +1625,7 @@ void ProcMakeDir( int argc, char **argv )
 /* ERASE/DELETE                                                           */
 /**************************************************************************/
 
-error_idx   Scratchf( const char *fn, int fnloc )
+static error_idx   Scratchf( const char *fn, int fnloc )
 {
     error_idx   retc;
     char        *endptr;
@@ -1655,7 +1657,7 @@ error_idx   Scratchf( const char *fn, int fnloc )
     return( retc );
 }
 
-void BuildDFSList( void )
+static void BuildDFSList( void )
 {
     COPYPTR next_last, last, curr;
 
@@ -1795,7 +1797,7 @@ int ProcDrive( int argc, char **argv )
 /* FILE NAME PARSING                                                      */
 /**************************************************************************/
 
-char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
+static char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
 {
     while( src_len > 0 && buff_len > 0 ) {
         *buff++ = *src++;

@@ -47,13 +47,13 @@
 #include "dbgprog.h"
 #include "dbglkup.h"
 #include "dbginit.h"
+#include "dlgcmd.h"
 
 
 extern int              ScanSavePtr;
 
 extern void             CmdError( void );
 extern void             CaptureError( void );
-extern void             DlgCmd( void );
 extern void             Suicide( void );
 
 /*

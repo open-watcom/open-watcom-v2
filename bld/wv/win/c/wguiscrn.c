@@ -42,6 +42,8 @@
 #include "wndsys.h"
 #include "trpsys.h"
 #include "dbglkup.h"
+#include "dbginit.h"
+#include "wininit.h"
 
 
 extern a_window         *WndMain;
@@ -52,7 +54,7 @@ unsigned        FlipMech;
 unsigned        ScrnMode;
 HWND            DebuggerHwnd;
 bool            WantFast;
-int             TrapForceHardMode;
+bool            TrapForceHardMode = false;
 static HWND     FocusWnd;
 
 #if 0
@@ -91,7 +93,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
 {
     buff[ 0 ] = '\0';
     GetWindowsDirectory( buff, buff_len );
-    return( strlen( buff ) );
+    return( (unsigned)strlen( buff ) );
 }
 
 void InitScreen( void )
@@ -110,7 +112,7 @@ void FiniScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void DbgScrnMode( void )
@@ -131,36 +133,36 @@ void UnknownScreen( void )
 bool DebugScreen( void )
 {
     if( ScreenState == DEBUG_SCREEN )
-        return( FALSE );
+        return( false );
     if( WndMain ) {
         ScreenState = DEBUG_SCREEN;
         GUISetModalDlgs( TrapForceHardMode || TrapHardModeRequired );
         SetFocus( GUIGetSysHandle( WndGui( WndMain ) ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
 {
     if( ScreenState == USER_SCREEN )
-        return( FALSE );
+        return( false );
     if( WndMain ) {
         ScreenState = USER_SCREEN;
         TrapUnLockInput();
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
 {
     SaveMainScreen( "WDWIN" );
 }
-
+#if 0
 void *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
@@ -170,10 +172,10 @@ void uifarfree( void *ptr )
 {
     ExtraFree( ptr );
 }
-
+#endif
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 char *GUIGetWindowClassName( void )
@@ -279,9 +281,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

@@ -39,6 +39,7 @@
 #include "remote.h"
 #include "trapglbl.h"
 #include "trpld.h"
+#include "rfxacc.h"
 
 extern char *TxtBuff;
 

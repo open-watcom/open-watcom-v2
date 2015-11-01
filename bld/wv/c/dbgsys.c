@@ -43,9 +43,8 @@
 #include "dbgsys.h"
 #include "remfile.h"
 #include "dbgchk.h"
+#include "dbginit.h"
 
-
-extern long         _fork( const char *, size_t );
 
 static const char SystemOps[] = { "Remote\0Local\0" };
 

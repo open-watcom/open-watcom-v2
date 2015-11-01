@@ -126,12 +126,12 @@ bool SysGUI( void )
 {
     return( FALSE );
 }
-
+#if 0
 int mygetlasterr( void )
 {
     return( 0 );
 }
-
+#endif
 void PopErrBox( const char *buff )
 {
     RdosWriteString( buff );

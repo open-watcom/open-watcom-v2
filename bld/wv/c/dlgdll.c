@@ -35,6 +35,7 @@
 #include "guidlg.h"
 #include "dlglist.h"
 #include "dbgdll.h"
+#include "dlgdll.h"
 
 
 void DlgBreakDLL( void )

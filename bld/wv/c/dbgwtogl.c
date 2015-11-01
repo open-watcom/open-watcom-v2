@@ -37,6 +37,7 @@
 #include "mad.h"
 #include "madcli.h"
 #include "strutil.h"
+#include "dbgwtogl.h"
 
 
 gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,

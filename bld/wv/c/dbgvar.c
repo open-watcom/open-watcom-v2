@@ -66,6 +66,9 @@ extern void             WndVarInspect( const char *);
 
 extern stack_entry      *ExprSP;
 
+extern void             VarSaveWndToScope( void *wnd );
+extern void             VarRestoreWndFromScope( void *wnd );
+
 static int              TargRow;
 static long             ExprStackTimeStamp;
 static int              CurrRow;

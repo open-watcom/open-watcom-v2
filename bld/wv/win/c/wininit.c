@@ -53,24 +53,22 @@
 #include "dbgcmdln.h"
 #include "trptypes.h"
 #include "trpsys.h"
+#include "wininit.h"
 
 #include "clibint.h"
 
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
-extern void     InitHookFunc(void);
-extern void     FiniHookFunc(void);
-
+static BOOL     PASCAL GetCommandData( HWND );
 extern HWND     MainHwnd = NULL;
 extern a_window *WndMain;
 
 volatile bool   BrkPending;
 bool            ToldWinHandle = FALSE;
 
-static BOOL     PASCAL GetCommandData( HWND );
-
 static char     *CmdData;
 
+#if defined( __GUI__ )
 void TellWinHandle( void )
 {
     if( !ToldWinHandle ) {
@@ -78,6 +76,7 @@ void TellWinHandle( void )
         ToldWinHandle = TRUE;
     }
 }
+#endif
 
 void GUImain( void )
 {

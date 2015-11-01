@@ -43,11 +43,8 @@
 #include "dbgparse.h"
 #include "dbgwdlg.h"
 #include "dbgwdisp.h"
+#include "dbgwtool.h"
 
-
-extern wnd_class        ReqWndName( void );
-extern void             WndToolOpen( gui_ord, bool );
-extern void             WndToolClose( void );
 
 extern a_window         *WndMain;
 extern gui_coord        WndScreen;
@@ -560,4 +557,14 @@ void ConfigDisp( void )
         }
         wnd = scan;
     }
+}
+
+wnd_class ReqWndName( void )
+{
+    int     cmd;
+    
+    cmd = ScanCmd( WndNameTab );
+    if( cmd < 0 )
+        Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
+    return( (wnd_class)cmd );
 }

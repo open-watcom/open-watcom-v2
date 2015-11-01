@@ -44,14 +44,13 @@
 #include "dbgparse.h"
 #include "dlgscan.h"
 #include "dlgexpr.h"
+#include "dlgnewws.h"
 
 
 typedef bool rtn_func(const char *,void *);
 typedef bool dlg_func(const char *,char *,unsigned);
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
-extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
 extern char             *StrDouble(xreal*,char*);
 
 extern stack_entry      *ExprSP;

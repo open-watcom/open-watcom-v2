@@ -184,8 +184,6 @@ extern bool             VarDeleteAScope(var_info *i,void*);
 extern bool             VarUnMap(var_info *i, void *);
 extern bool             VarDeleteAllScopes(var_info *i,void*);
 extern bool             VarReMap(var_info *i, void *);
-extern void             VarUnMapScopes( image_entry *image );
-extern void             VarReMapScopes( image_entry *image );
 
 extern int              VarRowTotal(var_info *i);
 extern void             VarAllNodesInvalid(var_info *i);
@@ -228,8 +226,6 @@ extern var_node         *VarFirstNode(var_info *i);
 extern void             VarInitInfo(var_info *i);
 extern bool             VarInfoRefresh(var_type vtype,var_info *i,address *addr,void *wnd_handle);
 extern void             VarSetValue( var_node *v, const char *value );
-extern void             VarSaveWndToScope( void *wnd );
-extern void             VarRestoreWndFromScope( void *wnd );
 
 extern void             VarDisplaySetHex(var_node*v);
 extern void             VarDisplaySetArrayHex(var_node*v);

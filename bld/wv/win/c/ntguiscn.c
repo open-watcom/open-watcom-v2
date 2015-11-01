@@ -41,7 +41,7 @@
 #include "dbgmain.h"
 #include "wndsys.h"
 #include "trpsys.h"
-
+#include "dbginit.h"
 
 extern a_window *WndMain;
 
@@ -72,7 +72,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
 {
     buff[ 0 ] = '\0';
     GetWindowsDirectory( buff, buff_len );
-    return( strlen( buff ) );
+    return( (unsigned)strlen( buff ) );
 }
 
 void InitScreen( void )

@@ -100,6 +100,8 @@ Done:
 #include "dipinter.h"
 #include "dbginsty.h"
 #include "dbgdot.h"
+#include "ntdbgpb.h"
+#include "dlgcmd.h"
 
 
 enum {
@@ -112,7 +114,6 @@ enum {
 
 /* External Functions Used */
 extern void             CallResults( void );
-extern void             DlgCmd( void );
 extern void             ProcCall( void );
 extern void             ShowCalls( void );
 extern void             ShowVarDisplay( void );
@@ -1710,11 +1711,11 @@ extern void SearchConf( void )
 {
     // stub for old UI
 }
-extern void FingClose( void )
+extern void DUIFingClose( void )
 {
     // open a splash page
 }
-extern void FingOpen( void )
+extern void DUIFingOpen( void )
 {
     // close the splash page
 }

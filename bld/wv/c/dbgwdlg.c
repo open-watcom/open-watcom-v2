@@ -38,12 +38,13 @@
 #include "dbgwdlg.h"
 #include "wndsys.h"
 #include "dbgupdt.h"
+#include "dbgwglob.h"
+#include "wndmenu.h"
 
 
 #define MAX_DLG_LINES 30000U
 
 extern int              PageSize( int );
-extern void             SetLogMenuItems( bool active );
 
 typedef struct dlg_entry {
     struct dlg_entry        *prev;

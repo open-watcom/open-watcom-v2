@@ -53,6 +53,13 @@
 #include "dbglkup.h"
 #include "dbgwass.h"
 #include "dbgwfil.h"
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwio.h"
+#include "dbgwmem.h"
+#include "dbgwmod.h"
+#include "dbgwvar.h"
 
 #include "clibext.h"
 
@@ -60,21 +67,7 @@ search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             WndVarAdd( a_window *, const char *, unsigned, bool );
-extern WNDOPEN          WndVarOpen;
-extern a_window         *DoWndMemOpen( address, mad_type_handle );
-extern a_window         *DoWndIOOpen( address*, mad_type_handle );
-extern a_window         *DoWndFuncOpen( bool is_global, mod_handle mod );
-extern void             DoWndBinOpen( const char *title, handle );
-extern a_window         *DoWndModOpen( mod_handle handle );
-extern a_window         *DoWndGlobOpen( mod_handle handle );
-extern void             MemSetLength( a_window *wnd, unsigned size );
-extern void             MemSetFollow( a_window *wnd, char *follow );
-extern void             FuncNewMod( a_window *wnd, mod_handle mod );
-extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             MemNewAddr( a_window *wnd, address addr );
-extern void             IONewAddr( a_window *wnd, address *addr, int type );
-extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 
 extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];

@@ -34,8 +34,6 @@
 #define CTL_ASYNC_STOP  101
 
 #ifndef RC
-    typedef struct dlg_async {
-        unsigned cond;
-    } dlg_async;
+extern void     AsyncNotify( void );
+extern unsigned DlgAsyncRun( void );
 #endif
-

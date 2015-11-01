@@ -52,6 +52,13 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "dbgwass.h"
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwmod.h"
+#include "dbgwset.h"
+#include "dbgwvar.h"
+#include "dbgwdisp.h"
+#include "wndmenu.h"
 
 #include "clibext.h"
 
@@ -60,13 +67,6 @@ extern void             WndUserAdd( char *, unsigned int );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             WndRestoreToFront( a_window* );
-extern wnd_class        ReqWndName( void );
-extern gui_menu_struct  *AddMenuAccel( const char *, const char *, wnd_class, bool * );
-extern void             VarChangeOptions( void );
-extern void             FuncChangeOptions( void );
-extern void             GlobChangeOptions( void );
-extern void             ModChangeOptions( void );
-extern void             WndMenuSetHotKey( gui_menu_struct *, bool, const char * );
 
 extern const char       WndNameTab[];
 extern margins          SrcMar;

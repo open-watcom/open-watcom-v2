@@ -35,16 +35,15 @@
 #include "dbgwind.h"
 #include "dbgitem.h"
 #include "dbgmad.h"
+#include "dbgwmadr.h"
+#include "dbgwmmx.h"
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon );
-extern void MadRegChangeOptions( a_window *wnd );
 
 void MMXChangeOptions( void )
 {
     WndForAllClass( WND_MMX, MadRegChangeOptions );
 }
 
-extern WNDOPEN WndMMXOpen;
 extern a_window *WndMMXOpen( void )
 {
     const mad_reg_set_data      *rsd;

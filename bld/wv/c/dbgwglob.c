@@ -39,12 +39,11 @@
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "dbgmisc.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
 
 
 extern int              HasLinInfo( address );
-extern void             WndVarInspect( const char *);
-extern void             WndAddrInspect(address);
-
 
 #include "menudef.h"
 gui_menu_struct GlobMenu[] = {
@@ -75,7 +74,7 @@ static  void    GlobInit( a_window *wnd )
     WndSetKey( wnd, PIECE_NAME );
 }
 
-extern void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -110,15 +109,12 @@ extern void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-extern WNDNUMROWS GlobNumRows;
-extern int GlobNumRows( a_window *wnd )
+int GlobNumRows( a_window *wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-extern WNDGETLINE GlobGetLine;
-extern  bool    GlobGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -143,7 +139,6 @@ void GlobNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-extern WNDREFRESH GlobRefresh;
 void    GlobRefresh( a_window *wnd )
 {
     if( UpdateFlags & UP_SYM_CHANGE ) {
@@ -159,7 +154,6 @@ static void GlobSetOptions( a_window *wnd )
     GlobInit( wnd );
 }
 
-extern WNDCALLBACK GlobEventProc;
 bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
@@ -200,7 +194,7 @@ wnd_info GlobInfo = {
     DefPopUp( GlobMenu )
 };
 
-extern a_window *DoWndGlobOpen( mod_handle mod )
+a_window *DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
@@ -209,8 +203,7 @@ extern a_window *DoWndGlobOpen( mod_handle mod )
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }
 
-extern WNDOPEN WndGlobOpen;
-extern a_window *WndGlobOpen( void )
+a_window *WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
 }

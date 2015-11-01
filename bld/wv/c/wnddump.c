@@ -38,11 +38,9 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgwdlg.h"
-
-
-extern char             *GetDmpName( void );
-
-extern gui_resource     WndGadgetArray[];
+#include "dlgfile.h"
+#include "wndsys.h"
+#include "wnddump.h"
 
 
 typedef void WRITERTN( handle, const char * );

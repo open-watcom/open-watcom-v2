@@ -45,10 +45,9 @@
 #include "dbgbrk.h"
 #include "remcore.h"
 #include "dbgevent.h"
-
-
-extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             FiniHelp( void );
+#include "dbgwinsp.h"
+#include "dlgfile.h"
+#include "wndhelp.h"
 
 
 #if defined(__UNIX__)

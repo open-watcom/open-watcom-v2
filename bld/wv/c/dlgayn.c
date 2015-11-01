@@ -39,6 +39,11 @@
 #include "strutil.h"
 
 
+typedef struct {
+    bool            as_a_fruitcake;
+    unsigned long   mult;
+} dlg_ayn;
+
 OVL_EXTERN bool AynEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;

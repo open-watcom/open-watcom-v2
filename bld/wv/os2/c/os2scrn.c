@@ -80,7 +80,9 @@ void InitScreen( void )
         VioSetMode( &new, 0 );
     }
     uistart();
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 1 );
+    }
 }
 
 

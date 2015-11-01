@@ -57,10 +57,11 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbgdot.h"
+#include "ntdbgpb.h"
+#include "dlgcmd.h"
 
 
 extern void             *WndAsmInspect(address addr);
-extern void             DlgCmd( void );
 
 volatile bool           BrkPending;
 
@@ -563,11 +564,11 @@ extern void SearchConf( void )
 {
     // stub for old UI
 }
-extern void FingClose( void )
+extern void DUIFingClose( void )
 {
     // open a splash page
 }
-extern void FingOpen( void )
+extern void DUIFingOpen( void )
 {
     // close the splash page
 }

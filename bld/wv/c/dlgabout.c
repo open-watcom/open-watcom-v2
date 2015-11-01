@@ -35,11 +35,11 @@
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "strutil.h"
+#include "fingmsg.h"
+#include "dlgabout.h"
 
-extern int      AboutSize;
-extern char     *AboutMessage[];
 
-extern  void    DlgAbout( void )
+void    DlgAbout( void )
 {
     int         i;
     char        *p;

@@ -59,8 +59,8 @@ extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
-int                     TrapForceHardMode;
-bool                    ToldWinHandle = FALSE;
+bool                    TrapForceHardMode = false;
+bool                    ToldWinHandle = false;
 //TODO: see if these two event sems could be replaced by single mutex
 HEV                     PumpMessageSem = NULLHANDLE;
 HEV                     PumpMessageDoneSem = NULLHANDLE;
@@ -75,8 +75,7 @@ void WndInitWndMain( wnd_create_struct *info )
 
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle ) {
-        TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
         ToldWinHandle = TRUE;
     }
 }
@@ -132,14 +131,14 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
         }
     }
     buff[i] = '\0';
-    return( strlen( buff ) );
+    return( (unsigned)strlen( buff ) );
 } /* _wpi_getinidirectory */
 
 /*
  * InitScreen
  */
 
-VOID PumpMessageQueue( VOID )
+static VOID PumpMessageQueue( VOID )
 {
     char        class_name[80];
     QMSG        qmsg;
@@ -183,7 +182,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -201,7 +200,7 @@ static HWND FocusWnd, ActiveWnd;
 bool DebugScreen( void )
 {
     if( !WndMain )
-        return FALSE;
+        return( false );
     if( FocusWnd && WinIsWindow( GUIGetHAB(), FocusWnd ) &&
         FocusWnd != WinQueryFocus( HWND_DESKTOP ) ) {
         WinSetFocus(HWND_DESKTOP, FocusWnd);
@@ -210,13 +209,13 @@ bool DebugScreen( void )
         ActiveWnd != WinQueryActiveWindow( HWND_DESKTOP ) ) {
         WinSetActiveWindow( HWND_DESKTOP, ActiveWnd );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -227,10 +226,10 @@ bool DebugScreenRecover( void )
 bool UserScreen( void )
 {
     if( !WndMain )
-        return( FALSE );
+        return( false );
     FocusWnd = WinQueryFocus( HWND_DESKTOP );
     ActiveWnd = WinQueryActiveWindow( HWND_DESKTOP );
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -250,7 +249,7 @@ void FiniScreen( void )
  *            Replacement routines for User Interface library                *
  *                                                                           *
 \*****************************************************************************/
-
+#if 0
 void *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
@@ -260,10 +259,10 @@ void uifarfree( void *ptr )
 {
     ExtraFree( ptr );
 }
-
+#endif
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void PopErrBox( const char *buff )

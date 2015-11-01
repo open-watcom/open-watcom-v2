@@ -42,6 +42,10 @@
 #include "remasync.h"
 
 
+typedef struct dlg_async {
+    unsigned cond;
+} dlg_async;
+
 static gui_window   *AsyncWnd = 0;
 static dlg_async    dlg;
 

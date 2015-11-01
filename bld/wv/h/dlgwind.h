@@ -51,8 +51,5 @@
 #define CTL_WIND_CANCEL 101
 
 #ifndef RC
-    typedef struct dlg_window_set {
-        unsigned        cancel : 1;
-    } dlg_window_set;
+extern bool     DlgWndSet( void );
 #endif
-

@@ -45,11 +45,10 @@
 #include "dipinter.h"
 #include "dbgdot.h"
 #include "dbgwfil.h"
-
-
-extern a_window         *WndAsmInspect( address );
-extern a_window         *WndSrcInspect( address );
-extern bool             DlgBreak( address );
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dlgbreak.h"
 
 #include "menudef.h"
 static gui_menu_struct FuncMenu[] = {
@@ -328,13 +327,11 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
     return( DbgWndCreate( title, &FuncInfo, wndcls, func, &FuncIcon ) );
 }
 
-extern WNDOPEN WndFuncOpen;
 extern a_window *WndFuncOpen( void )
 {
     return( DoWndFuncOpen( FALSE, NO_MOD ) );
 }
 
-extern WNDOPEN WndGblFuncOpen;
 extern a_window *WndGblFuncOpen( void )
 {
     return( DoWndFuncOpen( TRUE, NO_MOD ) );

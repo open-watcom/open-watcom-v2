@@ -61,21 +61,15 @@
 #include "dlgexpr.h"
 #include "dbgwass.h"
 #include "dbgwfil.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwtogl.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             WndInspectExprSP( const char *item );
-extern bool             DlgBreak(address);
-extern void             WndFuncInspect( mod_handle mod );
-extern a_window         *WndAsmInspect( address addr );
-extern void             WndVarInspect( const char * );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
-extern gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *pnum_toggles,
-                                   gui_menu_struct *old, unsigned num_old, gui_ctl_id id );
-extern void             WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_toggles );
-
 
 #include "menudef.h"
 

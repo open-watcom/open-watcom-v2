@@ -37,9 +37,14 @@
 #include "dlgnewp.h"
 #include "dbgpend.h"
 #include "dbgprog.h"
+#include "dlgfile.h"
 
 
-extern bool             ExeBrowse( void );
+typedef struct dlg_new_prog {
+    char    *prog;
+    char    *args;
+    bool    cancel;
+} dlg_new_prog;
 
 static char             prog[UTIL_LEN];
 static char             args[UTIL_LEN];
@@ -97,7 +102,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     ResDlgOpen( &ProgEvent, pdlg, GUI_MAKEINTRESOURCE( DIALOG_NEW_PROG ) );
 }
 
-extern  void    DlgNewProg( void )
+void    DlgNewProg( void )
 {
     dlg_new_prog        dlg;
 

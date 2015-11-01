@@ -88,3 +88,5 @@ extern bool     DUIScreenOption( const char *start, unsigned len, int pass );
 extern unsigned DUIConfigScreen( void );
 extern void     DUIProcWindow( void );
 extern bool     DUIDlgGivenAddr( const char *title, address *value );
+extern void     DUIFingOpen( void );
+extern void     DUIFingClose( void );

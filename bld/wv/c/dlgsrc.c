@@ -37,6 +37,7 @@
 #include "diptypes.h"
 #include "dbgsrc.h"
 #include "dbgupdt.h"
+#include "dlgsrc.h"
 
 
 void DlgSource( void )

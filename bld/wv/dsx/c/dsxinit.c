@@ -39,6 +39,8 @@
 #include "dbglit.h"
 #include "dbgcmdln.h"
 #include "dbgmain.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
 #include "dbgio.h"

@@ -43,11 +43,4 @@
 #ifndef RC
     extern void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
                                char_ring *(*next)(char_ring *), char *(*name)(char_ring *) );
-    typedef struct dlg_list {
-        void (*clear)(void);
-        void (*add)(const char *,unsigned);
-        char_ring *(*next)(char_ring *);
-        char *(*name)(char_ring *);
-        char *title;
-    } dlg_list;
 #endif

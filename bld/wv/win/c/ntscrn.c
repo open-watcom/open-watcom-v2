@@ -39,6 +39,7 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbginit.h"
 
 
 static unsigned ScrnLines = 50;
@@ -65,7 +66,9 @@ void InitScreen( void )
     GetConsoleTitle( OldTitle, sizeof( OldTitle ) );
     SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger ) );
     if( uistart() ) {
-        if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+        if( _IsOn( SW_USE_MOUSE ) ) {
+            GUIInitMouse( 1 );
+        }
     }
 }
 
@@ -128,12 +131,12 @@ bool SysGUI( void )
 {
     return( FALSE );
 }
-
+#if 0
 int mygetlasterr( void )
 {
     return( GetLastError() );
 }
-
+#endif
 void SetNumLines( int num )
 {
     ScrnLines = num;

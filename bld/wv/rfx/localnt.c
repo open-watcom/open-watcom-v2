@@ -42,6 +42,7 @@
 #include "dbgio.h"
 #include "trprfx.h"
 #include "local.h"
+#include "rfx.h"
 
 #include "clibext.h"
 

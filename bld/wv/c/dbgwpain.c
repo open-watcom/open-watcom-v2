@@ -39,9 +39,8 @@
 #include "dbgshow.h"
 #include "dbgwdlg.h"
 #include "dbgwdisp.h"
+#include "dbgwpain.h"
 
-
-extern wnd_class        ReqWndName( void );
 
 extern const char       WndNameTab[];
 

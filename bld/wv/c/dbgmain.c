@@ -69,34 +69,17 @@
 #include "dbginit.h"
 #include "dbglkup.h"
 #include "dbgio.h"
-#include "dbgwfing.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern void             FingFront( void );
-extern void             FiniAboutMessage( void );
-extern void             FiniBrowse( void );
-extern void             FiniIOWindow( void );
 extern void             FiniMacros( void );
-extern void             FiniMemWindow( void );
-extern void             FiniMenus( void );
-extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
 extern void             GrabHandlers( void );
-extern void             InitAboutMessage( void );
-extern void             InitBrowse( void );
-extern void             InitHelp( void );
-extern void             InitIOWindow( void );
-extern void             InitMemWindow( void );
-extern void             InitMenus( void );
-extern void             InitPaint( void );
 extern void             InitToolBar( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
 extern void             ProcCapture( void );
-extern void             ProcHelp( void );
-extern void             ProcPaint( void );
 extern void             RestoreHandlers( void );
 extern void             Suicide( void );
 extern void             WndMemInit( void );
@@ -329,7 +312,7 @@ void DebugMain( void )
     ProcCmd();
 
     Spawn( DebugInit );
-    FingOpen();
+    DUIFingOpen();
     DUIFreshAll();
 
     LoadProg();
@@ -341,7 +324,7 @@ void DebugMain( void )
     _SwitchOff( SW_RUNNING_PROFILE );
     PushInitCmdList();
     DUIStopRefresh( save );
-    FingClose();
+    DUIFingClose();
     DUIShow();
 }
 

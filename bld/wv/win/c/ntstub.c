@@ -32,6 +32,8 @@
 
 #include "dbgdefn.h"
 #include "dbginit.h"
+#include "dbgscrn.h"
+#include "ntdbgpb.h"
 
 #if 0
 #pragma library( "nt" )

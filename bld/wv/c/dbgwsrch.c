@@ -42,13 +42,14 @@
 #include "dbgsrc.h"
 #include "wndsys.h"
 #include "modlist.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwsrch.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             WndFuncInspect( mod_handle mod );
-extern a_window         *WndModInspect(mod_handle);
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 extern bool             DlgSearchAll(char**,void*);
 

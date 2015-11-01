@@ -45,7 +45,19 @@
 #include "dbgevent.h"
 #include "dbgupdt.h"
 #include "dlgexpr.h"
+#include "dlgbreak.h"
 
+
+typedef struct {
+    brkp            *bp;
+    brkp            tmpbp;
+    gui_ctl_id      last_edit;
+    unsigned        brand_new       : 1;
+    unsigned        cancel          : 1;
+    unsigned        clear           : 1;
+    unsigned        cmd_error       : 1;
+    unsigned        cond_error      : 1;
+} dlg_brk;
 
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 

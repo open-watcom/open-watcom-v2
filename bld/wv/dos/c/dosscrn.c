@@ -48,7 +48,7 @@
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
-extern void WndDirty(void);
+extern void WndDirty( void );
 
 flip_types              FlipMech;
 mode_types              ScrnMode;
@@ -881,7 +881,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    char user_mode;
+    char    user_mode;
     bool    usr_vis;
 
     if( (StrtAttr != 0) && (DbgBiosMode == StrtMode) ) {
@@ -908,7 +908,6 @@ bool UsrScrnMode( void )
     if( DbgRows != UIData->height ) {
         UIData->height = DbgRows;
         if( _IsOn( SW_USE_MOUSE ) ) {
-            extern int  initmouse( int );
             /*
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.

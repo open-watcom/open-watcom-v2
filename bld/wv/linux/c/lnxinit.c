@@ -67,9 +67,12 @@ static char             *cmdStart;
 static volatile bool    BrkPending;
 static unsigned         NumArgs;
 
+extern  void    (*__abort)( void );
+extern  void    __sigabort( void );
+
 /* following are to stop the C library from hauling in stuff we don't want */
-void (*__abort)();
-void __sigabort() {}
+void (*__abort)(void);
+void __sigabort( void ) {}
 
 static void BrkHandler( int signo )
 {

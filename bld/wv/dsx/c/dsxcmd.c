@@ -45,7 +45,7 @@
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
 
-extern unsigned_8       DPMICheck;
+extern char             DPMICheck;
 extern addr_seg         _psp;
 
 static char             *cmdStart;

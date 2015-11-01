@@ -40,7 +40,7 @@
 
 #include "clibext.h"
 
-char *copy_char_to_buff( char *ptr, char c, char **end )
+static char *copy_char_to_buff( char *ptr, char c, char **end )
 {
     if( *end == NULL )
         return( ptr + 1 );
@@ -51,7 +51,7 @@ char *copy_char_to_buff( char *ptr, char c, char **end )
     return( ptr );
 }
 
-char *copy_str_to_buff( char *ptr, const char *str, char **end )
+static char *copy_str_to_buff( char *ptr, const char *str, char **end )
 {
     int len;
 

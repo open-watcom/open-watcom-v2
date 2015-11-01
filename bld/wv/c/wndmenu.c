@@ -52,35 +52,24 @@
 #include "dlgexpr.h"
 #include "dbgdot.h"
 #include "dbgwdisp.h"
-
-
-extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             DlgSource( void );
-extern void             DlgOptSet( void );
-extern void             DlgCmd( void );
-extern void             DlgNewProg( void );
-extern bool             DlgBreak( address );
-extern void             BreakSave( bool );
-extern void             ReplaySave( bool );
-extern void             ConfigSave( bool );
-extern wnd_class        ReqWndName( void );
-extern void             FileBrowse( void );
-extern void             WndAsmInspect( address );
-extern void             WndSrcInspect( address );
-extern void             DlgAbout( void );
-extern void             ToggleHardMode( void );
-extern void             WndDumpPrompt( a_window * );
-extern void             WndDumpLog( a_window * );
-extern void             DlgWndSet( void );
-extern bool             VarInfoRelease( void );
-extern void             FuncNewMod( a_window *wnd, mod_handle mod );
-extern void             GlobNewMod( a_window *wnd, mod_handle mod );
-extern void             ModNewHandle( a_window *wnd, mod_handle mod );
-extern void             DoProcHelp( gui_help_actions );
-extern void             DlgBreakDLL( void );
-extern bool             DebugScreen( void );
-extern void             UnknownScreen( void );
-extern void             WndAddrInspect( address addr );
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmod.h"
+#include "dbgwvar.h"
+#include "dlgbreak.h"
+#include "dlgdll.h"
+#include "dlgfile.h"
+#include "dlgsrc.h"
+#include "wnddump.h"
+#include "wndhelp.h"
+#include "wndmenu.h"
+#include "dlgabout.h"
+#include "dbgscrn.h"
+#include "dbgwfunc.h"
+#include "dlgoptn.h"
+#include "dlgnewp.h"
+#include "dlgcmd.h"
+#include "dlgwind.h"
 
 
 #include "menudef.h"

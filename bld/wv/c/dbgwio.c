@@ -45,6 +45,8 @@
 #include "dbgmemor.h"
 #include "wndsys.h"
 #include "dlgexpr.h"
+#include "dbgwglob.h"
+#include "dbgwio.h"
 
 
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
@@ -364,7 +366,6 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
     return( DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
 }
 
-extern WNDOPEN WndIOOpen;
 extern a_window *WndIOOpen( void )
 {
     io_window   *io;
