@@ -141,7 +141,7 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
     for( ;; ) {
         if( !DlgFileBrowse( LIT( Convert_File_Name ), cnvtFilterList,
                             convertPath, sizeof( convertPath ),
-                            OFN_HIDEREADONLY ) ) break;
+                            FN_HIDEREADONLY ) ) break;
         if( dlgOpenFmtFile() ) {
             fclose( ConvertFile );
             remove( convertPath );
