@@ -45,11 +45,10 @@ extern "C" {
 
 #define WMaxFiles       32      // for multi-select file dialogs
 
-#define WFOpenNew       FN_HIDEREADONLY | FN_PATHMUSTEXIST
-#define WFOpenNewAll    FN_HIDEREADONLY
-#define WFOpenExisting  FN_HIDEREADONLY | FN_PATHMUSTEXIST | \
-                        FN_FILEMUSTEXIST
-#define WFSaveDefault   FN_HIDEREADONLY | FN_OVERWRITEPROMPT
+#define WFOpenNew       (fn_flags)(FN_HIDEREADONLY | FN_PATHMUSTEXIST)
+#define WFOpenNewAll    (fn_flags)FN_HIDEREADONLY
+#define WFOpenExisting  (fn_flags)(FN_HIDEREADONLY | FN_PATHMUSTEXIST | FN_FILEMUSTEXIST)
+#define WFSaveDefault   (fn_flags)(FN_HIDEREADONLY | FN_OVERWRITEPROMPT)
 
 WCLASS WFileDialog  : public WDialog {
     public:
@@ -58,14 +57,14 @@ WCLASS WFileDialog  : public WDialog {
         WEXPORT ~WFileDialog();
         const char * WEXPORT getOpenFileName( const char *fn=NULL,
                                               const char *title=NULL,
-                                              unsigned style=WFOpenExisting );
+                                              fn_flags style=WFOpenExisting );
         bool WEXPORT getOpenFileName( WFileNameList &flist,
                                       const char *fn=NULL,
                                       const char *title=NULL,
-                                      unsigned style=WFOpenExisting );
+                                      fn_flags style=WFOpenExisting );
         const char * WEXPORT getSaveFileName( const char *fn=NULL,
                                               const char *title=NULL,
-                                              unsigned style=WFSaveDefault );
+                                              fn_flags style=WFSaveDefault );
     private:
         open_file_name  _ofn;
         WWindow         *_parent;
