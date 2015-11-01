@@ -45,14 +45,14 @@ static bool getNextPos( int ch, int *opos )
 
     if( ch < ' ' || ch > 127 ) {
         if( ch == '\t' ) {
-#ifndef __WIN__
+#ifdef __WIN__
+            pos += Tab( pos + 1, EditVars.HardTab );
+#else
             if( EditFlags.RealTabs ) {
                 pos += Tab( pos + 1, EditVars.HardTab );
             } else {
                 pos++;
             }
-#else
-            pos += Tab( pos + 1, EditVars.HardTab );
 #endif
         } else if ( ch == 0 ) {
             return( false );

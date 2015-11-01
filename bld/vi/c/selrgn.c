@@ -233,17 +233,7 @@ void UpdateDrag( window_id id, int win_x, int win_y )
         nx = RealColumnOnCurrentLine( win_x );
         GoToColumnOnCurrentLine( nx );
     } else {
-#ifndef __WIN__
-        if( MouseRow >= WindowAuxInfo( CurrentWindow, WIND_INFO_Y2 ) ) {
-            GoToLineRelCurs( LeftTopPos.line + height );
-        } else if( MouseRow <= WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) ) {
-            GoToLineRelCurs( LeftTopPos.line - 1 );
-        } else if( MouseCol <= WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) ) {
-            GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
-        } else if( MouseCol >= WindowAuxInfo( CurrentWindow, WIND_INFO_X2 ) ) {
-            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ));
-        }
-#else
+#ifdef __WIN__
         {
             RECT            rect;
 
@@ -273,6 +263,16 @@ void UpdateDrag( window_id id, int win_x, int win_y )
                         WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS ) );
                 }
             }
+        }
+#else
+        if( MouseRow >= WindowAuxInfo( CurrentWindow, WIND_INFO_Y2 ) ) {
+            GoToLineRelCurs( LeftTopPos.line + height );
+        } else if( MouseRow <= WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) ) {
+            GoToLineRelCurs( LeftTopPos.line - 1 );
+        } else if( MouseCol <= WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) ) {
+            GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
+        } else if( MouseCol >= WindowAuxInfo( CurrentWindow, WIND_INFO_X2 ) ) {
+            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ));
         }
 #endif
     }

@@ -500,10 +500,10 @@ long GetRepeatCount( void )
 
 } /* GetRepeatCount */
 
-#ifndef __WIN__
-#define UpdateRepeatString( str ) DisplayLineInWindow( repeatWindow, 1, str )
-#else
+#ifdef __WIN__
 extern void UpdateRepeatString( char *str );
+#else
+#define UpdateRepeatString( str ) DisplayLineInWindow( repeatWindow, 1, str )
 #endif
 
 /*

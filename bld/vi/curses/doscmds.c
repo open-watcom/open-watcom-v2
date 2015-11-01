@@ -67,5 +67,5 @@ char _NEAR * _NEAR InternalCommands[] = {
 };
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char _NEAR * );
 
-char _NEAR * _NEAR ExeExtensions[] = {".bat", ".com",".exe" };
+char _NEAR * _NEAR ExeExtensions[] = {".bat", ".com", ".exe" };
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );

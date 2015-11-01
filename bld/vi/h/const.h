@@ -32,10 +32,10 @@
 #ifndef _CONST_INCLUDED
 #define _CONST_INCLUDED
 
-#ifndef __WIN__
-    #define CFG_NAME    "ed.cfg"
-#else
+#ifdef __WIN__
     #define CFG_NAME    "weditor.ini"
+#else
+    #define CFG_NAME    "ed.cfg"
 #endif
 
 #define VI_2F_ID        0xfc

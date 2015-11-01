@@ -32,17 +32,24 @@
 #include "vi.h"
 #include <malloc.h>
 #include <dos.h>
+#include "wio.h"
 #include "fcbmem.h"
+#if defined( _M_I86 )
+    #include "pragmas.h"
+    #include "tinyio.h"
+#endif
+
+#define SPAWN_FILE_NAME    "spXXXXXX"
 
 void ResetSpawnScreen( void )
 {
 }
 
 #if defined( _M_I86 )
+
 static long minMemoryLeft;
 static int  chkSwapSize;
 
-#include "tinyio.h"
 static char *fullName;
 
 typedef enum {
@@ -61,26 +68,23 @@ typedef struct {
 typedef char _fcb[16];
 
 /* Mis-aligned struct! */
-#pragma pack( push, 1 )
-
+#include "pushpck1.h"
 typedef struct {
     char        chain;  /* 'M' memory block, 'Z' is last in chain */
     unsigned    owner;  /* 0x0000 ==> free, otherwise psp address */
     unsigned    size;   /* in paragraphs, not including header  */
 } dos_mem_block;
-
-#pragma pack( pop )
+#include "poppck.h"
 
 #define MEMORY_BLOCK 'M'
 #define END_OF_CHAIN 'Z'
 #define NEXT_BLOCK( curr )  MK_FP( (FP_SEG( curr ) + (curr)->size + 1), 0 )
-#define PUT_ITEM( item ) (TinyWrite( hdl, &(item), sizeof( item ) ) == sizeof( item ))
 
 static dos_mem_block saveMem;
 static dos_mem_block *savePtrMem;
 static dos_mem_block *savePtrChk;
 
-static unsigned long    fileHandle;
+static int              fileHandle;
 static unsigned short   *xSize;
 static long             *xHandle;
 static unsigned short   currMem;
@@ -96,8 +100,7 @@ static void memGiveBack( void (*rtn)( long ) )
 
 } /* memGiveBack */
 
-static void memBlockWrite( void (*rtn)( long, void*, unsigned ),
-                           char *buff, unsigned *size )
+static void memBlockWrite( void (*rtn)(long, void*, unsigned), char *buff, unsigned *size )
 {
     unsigned    bytes;
 
@@ -111,7 +114,7 @@ static void memBlockWrite( void (*rtn)( long, void*, unsigned ),
 
 } /* memBlockWrite */
 
-static bool memBlockRead( void (*rtn)( long, void*, unsigned ), void **buff )
+static bool memBlockRead( void (*rtn)(long, void*, unsigned), void **buff )
 {
     rtn( xHandle[currMem], *buff, xSize[currMem] );
     *buff = MK_FP( FP_SEG( *buff ) + 0x200, 0 );
@@ -172,17 +175,15 @@ static bool chkWrite( void *buff, unsigned *size )
         return( true );
 #endif
     }
-    return( false ); // to quiet the compiler
+    return( false );
 
 } /* chkWrite */
 
 /*
  * chkRead - read checkpoint "file"
  */
-static bool chkRead( void *buf )
+static bool chkRead( void **buff )
 {
-    void    **buff = buf;
-
     switch( isWhere ) {
     case ON_DISK:
         if( TinyRead( fileHandle, *buff, 0x8000 ) == 0x8000 ) {
@@ -199,24 +200,24 @@ static bool chkRead( void *buf )
         return( memBlockRead( XMSBlockRead, buff ) );
 #endif
     }
-    return( false ); // to quiet the compiler
+    return( false );
 
 } /* chkRead */
 
 /*
  * chkOpen - re-open a checkpoint file
  */
-static bool chkOpen( void )
+static bool chkOpen( open_attr attr )
 {
     tiny_ret_t  ret;
 
     switch( isWhere ) {
     case ON_DISK:
-        ret = TinyOpen( fullName, TIO_READ );
-        if( ret < 0 ) {
+        ret = TinyOpen( fullName, attr );
+        if( TINY_ERROR( ret ) ) {
             return( false );
         }
-        fileHandle = ret;
+        fileHandle = TINY_INFO( ret );
         break;
 #ifndef NOEMS
     case IN_EMS:
@@ -296,6 +297,10 @@ static bool checkPointMem( unsigned max )
     memcpy( &saveMem, mem, sizeof( dos_mem_block ) );
     savePtrChk = chk;
 
+    if( !chkOpen( TIO_WRITE ) ) {
+        cleanUp();
+        return( false );
+    }
     next = chk;
     while( FP_SEG( next ) < FP_SEG( end ) ) {
         size = FP_SEG( end ) - FP_SEG( next );
@@ -318,7 +323,7 @@ static void checkPointRestore( void )
 {
     dos_mem_block       *chk;
 
-    if( !chkOpen() ) {
+    if( !chkOpen( TIO_READ ) ) {
         return;
     }
 
@@ -326,7 +331,7 @@ static void checkPointRestore( void )
     memcpy( chk, &saveMem, sizeof( dos_mem_block ) );
     chk = savePtrChk;
 
-    while( chkRead( &chk ) );
+    while( chkRead( (void **)&chk ) );
     cleanUp();
 }
 
@@ -338,9 +343,7 @@ long MySpawn( const char *cmd )
     _fcb        fcb1, fcb2;
     cmd_struct  cmds;
     char        path[_MAX_PATH], file[_MAX_PATH];
-    tiny_ret_t  ret;
     int         i;
-    char        chkfname[L_tmpnam];
 
     minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
     chkSwapSize = 1 + (unsigned short)
@@ -358,7 +361,6 @@ long MySpawn( const char *cmd )
             EMSGetBlock( &xHandle[i] );
         }
         isWhere = IN_EMS;
-        currMem = 0;
         goto evil_goto;
     }
 #endif
@@ -370,19 +372,17 @@ long MySpawn( const char *cmd )
             XMSGetBlock( &xHandle[i] );
         }
         isWhere = IN_XMS;
-        currMem = 0;
         goto evil_goto;
     }
 #endif
-    file[0] = 0;
-    tmpnam( chkfname );
-    StrMerge( 3, file, EditVars.TmpDir, FILE_SEP_STR, chkfname );
-    fullName = file;
-    ret = TinyCreate( fullName, TIO_NORMAL );
-    if( ret < 0 ) {
+    MakeTmpPath( file, SPAWN_FILE_NAME );
+    fileHandle = mkstemp( file );
+    if( fileHandle == -1 ) {
         return( 0 );
     }
-    fileHandle = ret;
+    close( fileHandle );
+    fileHandle = -1;
+    fullName = file;
     isWhere = ON_DISK;
 
     /*

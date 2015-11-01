@@ -202,7 +202,13 @@ vi_rc InvokeColSelHook( int sc, int ec )
     int         has_bord;
 #endif
 
-#ifndef __WIN__
+#ifdef __WIN__
+    if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
+    } else {
+        lne = MouseY;
+    }
+#else
     has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
     x1 = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 );
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
@@ -212,12 +218,6 @@ vi_rc InvokeColSelHook( int sc, int ec )
         }
     } else {
         lne = MouseRow;
-    }
-#else
-    if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
-        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
-    } else {
-        lne = MouseY;
     }
 #endif
 
@@ -229,18 +229,18 @@ vi_rc InvokeColSelHook( int sc, int ec )
         wordbuff[j++] = CurrentLine->data[i];
     }
     wordbuff[j] = 0;
-#ifndef __WIN__
+#ifdef __WIN__
+    sc = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+        &CurrentLine->data[0], sc );
+    ec = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+        &CurrentLine->data[0], ec );
+#else
     sc = x1 + VirtualColumnOnCurrentLine( sc ) - LeftTopPos.column;
     ec = x1 + VirtualColumnOnCurrentLine( ec ) - LeftTopPos.column;
     if( !has_bord ) {
         sc--;
         ec--;
     }
-#else
-    sc = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
-        &CurrentLine->data[0], sc );
-    ec = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
-        &CurrentLine->data[0], ec );
 #endif
     MySprintf( data, "\"%s\" %d %d %d %d", wordbuff, lne, sc, ec, ec - sc + 1 );
     return( SourceHookData( SRC_HOOK_MOUSE_CHARSEL, data ) );
@@ -259,7 +259,16 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     int         has_bord;
 #endif
 
-#ifndef __WIN__
+#ifdef __WIN__
+    if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
+        /* assume we're not in insert mode *ouch* */
+        col = PixelFromColumnOnCurrentLine( CurrentPos.column );
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
+    } else {
+        col = MouseX;
+        lne = MouseY;
+    }
+#else
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
         has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
         lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
@@ -274,15 +283,6 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     } else {
         col = MouseCol;
         lne = MouseRow;
-    }
-#else
-    if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
-        /* assume we're not in insert mode *ouch* */
-        col = PixelFromColumnOnCurrentLine( CurrentPos.column );
-        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
-    } else {
-        col = MouseX;
-        lne = MouseY;
     }
 #endif
     MySprintf( tmp, "%d %d %l %l", lne, col, s, e );

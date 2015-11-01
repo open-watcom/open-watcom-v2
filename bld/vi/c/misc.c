@@ -423,9 +423,7 @@ bool PromptFilesForSave( void )
  */
 bool PromptThisFileForSave( const char *filename )
 {
-#ifndef __WIN__
-    filename = filename;
-#else
+#ifdef __WIN__
     info        *cinfo;
     HWND        hwnd_old = 0;
 
@@ -452,6 +450,8 @@ bool PromptThisFileForSave( const char *filename )
         SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
+#else
+    filename = filename;
 #endif
     return( true );
 

@@ -140,81 +140,45 @@ undo_stack      *UndoUndoStack;
 /*
  * windows data
  */
-#ifndef __WIN__
-window_info cmdlinew_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 24, 79, 24 };
-window_info statusw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 69, 24, 79, 24 };
-window_info repcntw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 28, 20, 43, 32 };
-window_info editw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 24 };
-window_info extraw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 51, 18 };
-window_info filecw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 4, 8, 75, 17 };
-window_info linenumw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
-window_info dirw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
-window_info filelistw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
-window_info setw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 12, 2, 40, 21 };
-window_info setvalw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 43, 6, 70, 9 };
-window_info messagew_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 24, 79, 24 };
-window_info menuw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 0, 0 };
-window_info menubarw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 0 };
-window_info defaultw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 79, 22 };
-window_info activemenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
-window_info greyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
-window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
-#else
+#ifdef __WIN__
 /* the ONE TRUE configuration - do not change this or nothing will work */
-window_info cmdlinew_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 23, 69, 25 };
-window_info statusw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 69, 24, 79, 24 };
-window_info repcntw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 28, 20, 43, 32 };
-window_info editw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 23 };
-window_info extraw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 51, 18 };
-window_info filecw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 4, 8, 75, 17 };
-window_info linenumw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
-window_info dirw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
-window_info filelistw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
-window_info setw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 12, 2, 40, 21 };
-window_info setvalw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 43, 6, 70, 9 };
-window_info messagew_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 25, 69, 25 };
-window_info menuw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 0, 0 };
-window_info menubarw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 0 };
-window_info defaultw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 79, 22 };
-window_info activemenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
-window_info greyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
-window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+window_info cmdlinew_info =         { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 23, 69, 25 };
+window_info statusw_info =          { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 69, 24, 79, 24 };
+window_info repcntw_info =          { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 28, 20, 43, 32 };
+window_info editw_info =            { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 23 };
+window_info extraw_info =           { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 51, 18 };
+window_info filecw_info =           { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 4, 8, 75, 17 };
+window_info linenumw_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
+window_info dirw_info =             { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
+window_info filelistw_info =        { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
+window_info setw_info =             { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 12, 2, 40, 21 };
+window_info setvalw_info =          { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 43, 6, 70, 9 };
+window_info messagew_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 25, 69, 25 };
+window_info menuw_info =            { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 0, 0 };
+window_info menubarw_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 0 };
+window_info defaultw_info =         { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 79, 22 };
+window_info activemenu_info =       { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+window_info greyedmenu_info =       { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+#else
+window_info cmdlinew_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 24, 79, 24 };
+window_info statusw_info =          { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 69, 24, 79, 24 };
+window_info repcntw_info =          { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 28, 20, 43, 32 };
+window_info editw_info =            { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 24 };
+window_info extraw_info =           { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 51, 18 };
+window_info filecw_info =           { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 4, 8, 75, 17 };
+window_info linenumw_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
+window_info dirw_info =             { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
+window_info filelistw_info =        { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
+window_info setw_info =             { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 12, 2, 40, 21 };
+window_info setvalw_info =          { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 43, 6, 70, 9 };
+window_info messagew_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 24, 79, 24 };
+window_info menuw_info =            { 1, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 0, 0 };
+window_info menubarw_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 79, 0 };
+window_info defaultw_info =         { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 1, 79, 22 };
+window_info activemenu_info =       { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+window_info greyedmenu_info =       { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
+window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 }, { BRIGHT_WHITE, BLACK, 0 }, 0, 0, 0, 0 };
 #endif
 
 /*

@@ -453,20 +453,18 @@ vi_rc RunCommandLine( const char *cmdl )
         }
 
     case PCL_T_GENCONFIG:
-#ifndef __WIN__
+#ifdef __WIN__
+        test1 = EditFlags.SaveConfig;
+        EditFlags.SaveConfig = true;
+        WriteProfile();
+        EditFlags.SaveConfig = test1;
+        rc = ERR_NO_ERR;
+#else
         data = GetNextWord1( data,st );
         if( *st != '\0' ) {
             rc = GenerateConfiguration( st, true );
         } else {
             rc = GenerateConfiguration( NULL, true );
-        }
-#else
-        {
-            bool temp = EditFlags.SaveConfig;
-            EditFlags.SaveConfig = true;
-            WriteProfile();
-            EditFlags.SaveConfig = temp;
-            rc = ERR_NO_ERR;
         }
 #endif
         break;

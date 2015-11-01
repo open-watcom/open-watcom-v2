@@ -274,13 +274,13 @@ static void doInitializeEditor( int argc, char *argv[] )
     SetWindowSizes();
     EditFlags.ClockActive = false;
     SetInterrupts();
-#ifndef __WIN__
-    InitColors();
-#else
+#ifdef __WIN__
     InitClrPick();
     InitFtPick();
     SubclassGenericInit();
     CursorOp( COP_INIT );
+#else
+    InitColors();
 #endif
     InitSavebufs();
     InitKeyMaps();

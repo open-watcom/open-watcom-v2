@@ -218,9 +218,9 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     }
     MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", 
 #if defined( __WIN__ )
-        banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
+    banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
 #else
-        banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
+    banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
 #endif
     if( is_cmdline ) {
         GetDateTimeString( token );

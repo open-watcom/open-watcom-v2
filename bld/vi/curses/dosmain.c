@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS editor mainline.
 *
 ****************************************************************************/
 
@@ -34,9 +33,10 @@
 #include <malloc.h>
 #include "stack.h"
 
-
 void main( int argc, char *argv[] )
 {
+    InitMem();
+
     argc = argc;
     EXEName = argv[0];
     InitialStack();
@@ -45,5 +45,7 @@ void main( int argc, char *argv[] )
     InitializeEditor();
     FinalStack();
     EditMain();
+    
+    FiniMem();
 
 } /* main */

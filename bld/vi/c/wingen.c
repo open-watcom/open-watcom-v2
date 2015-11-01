@@ -183,10 +183,7 @@ void SetWindowCursorForReal( void )
         HideCursor();
         return;
     }
-#ifndef __WIN__
-    SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
-                            VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
-#else
+#ifdef __WIN__
     // for windows assume tabs to be of lenght 1
     if( !EditFlags.RealTabs ){
         SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
@@ -196,6 +193,9 @@ void SetWindowCursorForReal( void )
         SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) );
     }
+#else
+    SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+                            VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
 #endif
 
     cursorNeedsDisplay = false;

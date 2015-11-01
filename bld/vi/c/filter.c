@@ -34,6 +34,7 @@
 #include "win.h"
 #include "wio.h"
 
+#define FILTER_FILE_NAME    "vfXXXXXX"
 
 /*
  * DoGenericFilter - filter some crap
@@ -63,7 +64,7 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     /*
      * get file
      */
-    MakeTmpPath( filtin, "vfXXXXXX" );
+    MakeTmpPath( filtin, FILTER_FILE_NAME );
     fh = mkstemp( filtin );
     if( fh == -1 )
         return( ERR_FILE_OPEN );
@@ -86,7 +87,7 @@ vi_rc DoGenericFilter( linenum s, linenum e, const char *cmd )
     }
     close( fh );
 
-    MakeTmpPath( filtout, "vfXXXXXX" );
+    MakeTmpPath( filtout, FILTER_FILE_NAME );
     fh = mkstemp( filtout );
     if( fh == -1 ) {
         remove( filtin );
