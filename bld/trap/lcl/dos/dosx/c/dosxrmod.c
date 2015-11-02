@@ -88,7 +88,7 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
     int         i;
     short       real;
     short       offset;
-        SELECTOR    pm_sel;
+    SELECTOR    pm_sel;
 
     real = ( linear_addr >> 4 ) & 0xF000;
     offset = linear_addr;

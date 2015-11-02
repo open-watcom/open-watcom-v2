@@ -79,7 +79,7 @@ trap_retval ReqOvl_state_size( void )
     ovl_state_size_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->size = OvlRequest( OVLDBG_GET_STATE_SIZE, 0 );
+    ret->size = OvlRequest( OVLDBG_GET_STATE_SIZE, NULL );
     OvlStateSize = ret->size;
     return( sizeof( *ret ) );
 }
@@ -101,7 +101,7 @@ trap_retval ReqOvl_write_state( void )
 }
 
 trap_retval ReqOvl_trans_vect_addr( void )
-/*************************************/
+/****************************************/
 {
     ovl_trans_vect_addr_req     *acc;
     ovl_trans_vect_addr_ret     *ret;
