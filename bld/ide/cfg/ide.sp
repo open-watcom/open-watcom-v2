@@ -1482,14 +1482,6 @@ Rule ESQLOBJP, ESQLP, ?????
   Command " $<#ESQL>"
   Command " *$<#ESQLWPP>"
 
-rem Change the next rule when wrc.exe is mature
-Rule ORESC, ORC, o???o
-  Source *.rc
-  Target *.res
-  Autodepend
-  Command " *$<#> -r $*.rc $&.res"
-rem  Command " *$<#> -r -fo=$&.res"
-
 Rule ORESC, WRC, o????
   Source *.rc
   Target *.res
@@ -1534,34 +1526,11 @@ Rule SBROWSEABLE
     Hint "Invoke the program browser on the source file"
 
 rem --OS/2 Executables--
-rem Change the next two when wrc.exe is mature
 Tool OS2LINK "OS/2 Linking"
-  IncludeTool WLINK
-  IncludeTool ORC2
-
-Rule OEXE, OS2LINK, o??eo
-  Target *.exe
-  Autodepend
-  Symbol FIL, *.obj
-  Symbol LIBR, *.lib
-  Symbol DLL, *.dll
-  Symbol RES, *.res
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
-  Command "!ifneq BLANK \"$<DLL!>\""
-  Command " *wlib -q -n -b $*.imp $<DLL!>"
-  Command " @%append $*.lk1 LIBR $'.imp"
-  Command "!endif"
-  Command " *$<#WLINK> @$'.lk1"
-  Command "!ifneq BLANK \"$<RES!>\""
-  Command " $<#ORC2> $<RES!> $@"
-  Command "!endif"
-
-Tool OS2LINK2 "OS/2 Linking"
   IncludeTool WLINK
   IncludeTool WRC2
 
-Rule OEXE, OS2LINK2, o??e?
+Rule OEXE, OS2LINK, o??e?
   Target *.exe
   Autodepend
   Symbol FIL, *.obj
@@ -1576,7 +1545,7 @@ Rule OEXE, OS2LINK2, o??e?
   Command "!endif"
   Command " *$<#WLINK> @$'.lk1"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " $<#WRC2> $<RES!> $@"
+  Command " *$<#WRC2> $<RES!> $@"
   Command "!endif"
 
 Rule OHLP, OIPF, o??h?
@@ -1846,28 +1815,9 @@ Rule WDLL, WLINK, w??d?
   Command "!else",                                                                  ??2??
   Command " wbind $* -q -d -s \"$(%watcom)/binw/w386dll.ext\" -n",                  ??2??
   Command "!endif"
-  Command " wlib -q -n -b $*.lib +$*.dll",                                          ??6??
+  Command " *wlib -q -n -b $*.lib +$*.dll",                                          ??6??
 
 rem Change this when wrc is mature
-Rule ODLL, WLINK, o??do
-  Target *.dll
-  Autodepend
-  Symbol FIL, *.obj
-  Symbol LIBR, *.lib
-  Symbol RES, *.res
-  Symbol DLL, *.dll
-  Command " @%write $*.lk1 $<FIL,>"
-  Command " @%append $*.lk1 $<LIBR,>"
-  Command "!ifneq BLANK \"$<DLL!>\""
-  Command " *wlib -q -n -b $*.imp $<DLL!>"
-  Command " @%append $*.lk1 LIBR $'.imp"
-  Command "!endif"
-  Command " *$<#> @$'.lk1"
-  Command "!ifneq BLANK \"$<RES!>\""
-  Command " $<#ORC2> $<RES!> $@"
-  Command "!endif"
-  Command " wlib -q -n -b $*.lib +$*.dll"
-
 Rule ODLL, WLINK, o??d?
   Target *.dll
   Autodepend
@@ -1883,9 +1833,9 @@ Rule ODLL, WLINK, o??d?
   Command "!endif"
   Command " *$<#> @$'.lk1"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " $<#WRC2> $<RES!> $@"
+  Command " *$<#WRC2> $<RES!> $@"
   Command "!endif"
-  Command " wlib -q -n -b $*.lib +$*.dll"
+  Command " *wlib -q -n -b $*.lib +$*.dll"
 
 Rule NDLL, WLINK, n??d?
   Target *.dll
@@ -1904,7 +1854,7 @@ Rule NDLL, WLINK, n??d?
   Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#> @$'.lk1"
-  Command " wlib -q -n -b $*.lib +$*.dll"
+  Command " *wlib -q -n -b $*.lib +$*.dll"
 
 Rule RDLL, WLINK, rp?d?
   Target *.dll
@@ -1928,7 +1878,7 @@ Rule RDLL, WLINK, rp?d?
   Command "!endif"
   Command " *$<#> @$'.lk1"
   Command "!ifneq BLANK \"$<FIL!>\""
-  Command " wlib -q -n -b $*.lib +$*.dll"
+  Command " *wlib -q -n -b $*.lib +$*.dll"
   Command "!endif"
 
 Rule REFI, WLINK, ru?d?
