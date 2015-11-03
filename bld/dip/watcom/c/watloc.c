@@ -32,6 +32,7 @@
 
 #include "dipwat.h"
 #include "watloc.h"
+#include "watgbl.h"
 
 extern const char   *GetAddress( imp_image_handle *, const char *, address *, int );
 
