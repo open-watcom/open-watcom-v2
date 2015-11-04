@@ -34,6 +34,8 @@
 #include <fcntl.h>
 #include "fcbmem.h"
 
+#include "clibext.h"
+
 #define SWAP_FILE_NAME  "swXXXXXX"
 
 static vi_rc    swapFileOpen( void );

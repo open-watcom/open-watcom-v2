@@ -34,6 +34,8 @@
 #include "win.h"
 #include "wio.h"
 
+#include "clibext.h"
+
 #define FILTER_FILE_NAME    "vfXXXXXX"
 
 /*
