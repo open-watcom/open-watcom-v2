@@ -42,7 +42,7 @@ static type_style errStyle = { 7, 0, 0 };
 #endif
 
 #if defined( __WATCOMC__ ) && !defined( NDEBUG )
-void HeapMsg( int msg )
+static void HeapMsg( int msg )
 {
     switch( msg ) {
     case _HEAPOK:
