@@ -80,7 +80,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
     const char          *ptr;
-    const trap_requests *(*ld_func)( const trap_callbacks * );
+    trap_load_func      *ld_func;
     char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
 
@@ -101,7 +101,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    ld_func = PE_getProcAddress( TrapFile, "TrapLoad_" );
+    ld_func = (trap_load_func *)PE_getProcAddress( TrapFile, "TrapLoad_" );
     if( ld_func != NULL ) {
 #else
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );

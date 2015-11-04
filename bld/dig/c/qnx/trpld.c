@@ -80,7 +80,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
     const char          *ptr;
-    const trap_requests *(*ld_func)( const trap_callbacks * );
+    trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
 
     if( parms == NULL || *parms == '\0' )
@@ -100,7 +100,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( TrapCode->sig == TRAPSIG ) {
 #endif
             strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-            ld_func = (void *)TrapCode->init_rtn;
+            ld_func = (trap_load_func *)TrapCode->init_rtn;
             trap_funcs = ld_func( &TrapCallbacks );
             if( trap_funcs != NULL ) {
                 parms = ptr;

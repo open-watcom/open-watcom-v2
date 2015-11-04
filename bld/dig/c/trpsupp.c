@@ -104,7 +104,7 @@ void TrapSetAccessCallBack( void (*func)(void) )
     pAccess = func;
 }
 
-void TrapFailAllRequests()
+void TrapFailAllRequests( void )
 {
     ReqFunc = NULL;
 }

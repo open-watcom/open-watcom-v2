@@ -142,6 +142,8 @@ typedef struct {
     void                (*(*signal)( int __sig, void (*__func)(int) ))(int);
 } trap_callbacks;
 
+typedef const trap_requests *trap_load_func( const trap_callbacks *client );
+
 /*
  * Trap OS specific interface functions prototype macros
  */
