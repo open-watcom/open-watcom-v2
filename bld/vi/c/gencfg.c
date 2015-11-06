@@ -255,7 +255,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
             break;
         case SETVAR_T_GADGETSTRING:
             if( !IsGadgetStringChanged( res ) )
-                 break;
+                break;
             // fall through
         default:
             MyFprintf( f, "set %s = %s\n", token, res );
