@@ -579,15 +579,6 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         }
 #endif /* VICOMP */
         value = SkipLeadingSpaces( value );
-#ifndef VICOMP
-        if( !EditFlags.ScriptIsCompiled ) {
-#endif
-            if( *value == '=' ) {
-                value = SkipLeadingSpaces( value + 1 );
-            }
-#ifndef VICOMP
-        }
-#endif
         if( *value == '"' ) {
             value = GetNextWord( value, fn, SingleQuote );
             if( *value == '"' ) {
