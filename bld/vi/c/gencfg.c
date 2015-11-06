@@ -31,6 +31,7 @@
 
 
 #include "vi.h"
+#include "win.h"
 #include "menu.h"
 #include "parsecl.h"
 #include "sstyle.h"
@@ -201,7 +202,6 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     char        *buff;
     int         num;
     rgb         c;
-    char        *fmt;
     char        *res;
 
     if( fname == NULL ) {
@@ -245,13 +245,22 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
             continue;
         }
         res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, true ) );
-        if( i == SETVAR_T_STATUSSTRING || i == SETVAR_T_FILEENDSTRING ||
-            i == SETVAR_T_HISTORYFILE || i == SETVAR_T_TMPDIR ) {    /* strings with possible spaces */
-            fmt = "set %s = \"%s\"\n";
-        } else {
-            fmt = "set %s = %s\n";
+        switch( i ) {
+        case SETVAR_T_STATUSSTRING:
+        case SETVAR_T_FILEENDSTRING:
+        case SETVAR_T_HISTORYFILE:
+        case SETVAR_T_TMPDIR:
+            /* strings with possible spaces */
+            MyFprintf( f, "set %s = \"%s\"\n", token, res );
+            break;
+        case SETVAR_T_GADGETSTRING:
+            if( !IsGadgetStringChanged( res ) )
+                 break;
+            // fall through
+        default:
+            MyFprintf( f, "set %s = %s\n", token, res );
+            break;
         }
-        MyFprintf( f, fmt, token, res );
     }
 
     writeTitle( f, "Boolean Settings" );

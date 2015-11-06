@@ -207,6 +207,7 @@ extern void     StartWindows( void );
 
 /* win/utils.c */
 extern void     SetGadgetString( char *str );
+extern bool     IsGadgetStringChanged( char *str );
 
 /* win/repcnt.c */
 extern void     UpdateRepeatString( char *str );
@@ -234,6 +235,7 @@ extern void     DrawBorder( window_id );
 extern void     SetBorderGadgets( window_id, bool );
 extern void     WindowBorderData( window_id, const char *, int );
 extern void     SetGadgetString( char *str );
+extern bool     IsGadgetStringChanged( char *str );
 
 /* windisp.c */
 extern vi_rc    DisplayLineInWindowWithColor( window_id, int, char *, type_style *, int );

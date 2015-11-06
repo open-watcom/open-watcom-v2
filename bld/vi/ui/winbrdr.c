@@ -63,7 +63,7 @@ void SetGadgetString( char *str )
 {
     int     i;
 
-    if( str != NULL ) {
+    if( str != NULL && *str != '\0' ) {
         i = strlen( str );
         if( i > GADGET_SIZE ) {
             i = GADGET_SIZE;
@@ -77,6 +77,11 @@ void SetGadgetString( char *str )
     } else {
         ReplaceString( &EditVars.GadgetString, WindowBordersG );
     }
+}
+
+bool IsGadgetStringChanged( char *str )
+{
+    return( strcmp( str, WindowBordersG ) != 0 );
 }
 
 /*
