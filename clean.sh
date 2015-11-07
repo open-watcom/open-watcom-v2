@@ -1,4 +1,8 @@
 #!/bin/sh
+
+if [ -z "$OWROOT" ]; then
+    source ./setvars.sh
+fi
 if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run boot.sh?
 else
