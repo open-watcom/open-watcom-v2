@@ -45,12 +45,9 @@ static int      recurseDepth;
  */
 static bool addChar( char ch )
 {
-    bPtr[bPos] = ch;
-    bPos++;
-    if( bPos >= MAX_SRC_LINE - 1 ) {
-        bPtr[bPos] = 0;
+    if( bPos >= MAX_SRC_LINE - 1 )
         return( false );
-    }
+    bPtr[bPos++] = ch;
     return( true );
 
 } /* addChar */
@@ -67,7 +64,6 @@ char *Expand( char *odata, const char *data, vlist *vl )
     char        ch;
     bool        done;
     bool        has_var;
-    bool        need_closebracket;
     vars        *v;
     char        *obptr;
     int         obpos;
@@ -83,25 +79,25 @@ char *Expand( char *odata, const char *data, vlist *vl )
         bPos = 0;
         bPtr = result;
 
-        for( ;; ) {
-            ch = *data++;
+        for( ; (ch = *data++) != '\0'; ) {
             if( ch == '%' ) {
-                if( *data == '%' ) {
-                    if( !addChar( '%' ) ) {
+                ch = *data++;
+                if( ch == '\0' )
+                    break;
+                if( ch == '%' ) {
+                    if( !addChar( '%' ) )
                         break;
-                    }
-                    data++;
                     continue;
                 }
                 has_var = false;
-                if( *data != '(' ) {
-                    varname[0] = *data++;
-                    varname[1] = 0;
+                if( ch != '(' ) {
+                    varname[0] = ch;
+                    varname[1] = '\0';
                 } else {
-                    data++;
                     paren_level = 1;
                     ptr = varname;
-                    while( (ch = *data++) != '\0' ) {
+                    while( (ch = *data) != '\0' ) {
+                        data++;
                         if( ch == '%' ) {
                             has_var = true;
                         } else if( ch == '(' ) {
@@ -114,61 +110,60 @@ char *Expand( char *odata, const char *data, vlist *vl )
                         }
                         *ptr++ = ch;
                     }
-                    *ptr = 0;
-                }
-                if( has_var ) {
-                    Expand( varname, varname, vl );
+                    *ptr = '\0';
+                    if( has_var ) {
+                        Expand( varname, varname, vl );
+                    }
                 }
 
                 v = VarFind( varname, vl );
-                if( v != NULL ) {
+                done = false;
+                if( v != NULL && ( !EditFlags.CompileScript || EditFlags.CompileAssignmentsDammit || varname[0] < 'A' || varname[0] > 'Z') ) {
+                    // output variable value
                     ptr = v->value;
-                    if( EditFlags.CompileScript && !EditFlags.CompileAssignmentsDammit ) {
-                        if( varname[0] >= 'A' && varname[0] <= 'Z' ) {
-                            ptr = varname;
+                    while( (ch = *ptr++) != '\0' ) {
+                        if( !addChar( ch ) ) {
+                            done = true;
+                            break;
                         }
+                    }
+                    if( done ) {
+                        break;
                     }
                 } else {
+                    // output variable name
+                    if( !addChar( '%' ) )
+                        break;
                     ptr = varname;
-                }
-                done = false;
-                need_closebracket = false;
-                if( ptr == varname ) {
-                    if( !addChar( '%' ) ) {
-                        done = true;
-                    } else if( varname[1] != 0 ) {
-                        if( !addChar( '(' ) ) {
-                            done = true;
-                        } else {
-                            need_closebracket = true;
+                    if( ptr[1] == '\0' ) {
+                        // single character variable name
+                        if( !addChar( *ptr ) ) {
+                            break;
                         }
-                    }
-                }
-
-                while( !done && (ch = *ptr++) != '\0' ) {
-                    if( !addChar( ch ) ) {
-                        done = true;
-                        break;
-                    }
-                }
-                if( done ) {
-                    break;
-                }
-                if( need_closebracket ) {
-                    if( !addChar( ')' ) ) {
-                        done = true;
-                        break;
+                    } else {
+                        if( !addChar( '(' ) )
+                            break;
+                        while( (ch = *ptr++) != '\0' ) {
+                            if( !addChar( ch ) ) {
+                                done = true;
+                                break;
+                            }
+                        }
+                        if( done ) {
+                            break;
+                        }
+                        if( !addChar( ')' ) ) {
+                            break;
+                        }
                     }
                 }
             } else {
                 if( !addChar( ch ) ) {
                     break;
                 }
-                if( ch == 0 ) {
-                    break;
-                }
             }
         }
+        bPtr[bPos++] = '\0';
         memcpy( odata, result, bPos );
         recurseDepth--;
         bPos = obpos;
