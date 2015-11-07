@@ -91,7 +91,6 @@ static bool setupscrnbuff( void )
     LP_PIXEL            scrn;
     size_t              num;
     int                 i;
-    static PIXEL        blank = { ' ', 7 };
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( FALSE );
@@ -118,7 +117,8 @@ static bool setupscrnbuff( void )
 #endif
     num /= 2;
     for( i = 0; i < num; ++i ) {
-        scrn[i] = blank;       /* a space with normal attributes */
+        scrn[i].ch = ' ';       /* a space with normal attributes */
+        scrn[i].attr = 7;       /* a space with normal attributes */
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;

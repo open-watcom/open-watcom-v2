@@ -729,7 +729,6 @@ static  int         save_cursor_type;
 static bool setupscrnbuff( int srows, int scols )
 /***********************************************/
 {
-    static const PIXEL  blank = {' ', 7};
     LP_PIXEL    scrn;
     int         num;
     int         i;
@@ -795,7 +794,8 @@ static bool setupscrnbuff( int srows, int scols )
     save_cursor_type = -1; /* C_NORMAL; */
     num /= 2;
     for (i = 0; i < num; ++i) {
-        scrn[i] = blank;/* a space with normal attributes */
+        scrn[i].ch = ' ';       /* a space with normal attributes */
+        scrn[i].attr = 7;       /* a space with normal attributes */
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;

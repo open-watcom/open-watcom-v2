@@ -754,7 +754,6 @@ static bool setupscrnbuff( int rows, int cols )
 /*********************************************/
 {
     PIXEL               *scrn;
-    static PIXEL        blank = {' ', 7};
     int                 num;
     int                 i;
     struct winsize      size;
@@ -792,7 +791,8 @@ static bool setupscrnbuff( int rows, int cols )
     save_cursor_type = -1; /* C_NORMAL; */
     num /= sizeof(PIXEL);
     for (i = 0; i < num; ++i) {
-        scrn[i] = blank;/* a space with normal attributes */
+        scrn[i].ch = ' ';       /* a space with normal attributes */
+        scrn[i].attr = 7;       /* a space with normal attributes */
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;
