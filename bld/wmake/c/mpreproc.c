@@ -1408,8 +1408,8 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index
                 if( *probe != PAREN_RIGHT ) {
                     current->type = OP_ERROR;
                 } else {
-    	            if( is == existFile ) {
-        	            FixName( current->data.string );
+                    if( is == existFile ) {
+                        FixName( current->data.string );
                     }
                     current->type          = OP_INTEGER;
                     current->data.number   = is( current->data.string );
