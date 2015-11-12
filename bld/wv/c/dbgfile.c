@@ -620,10 +620,10 @@ void PathFini( void )
 }
 
 /*
- * EnvParse -- parse environment string into separate pieces
+ * parsePathList -- parse environment string into separate pieces
  */
 
-static void EnvParse( char_ring **owner, char *src )
+static void parsePathList( char_ring **owner, char *src )
 {
     char       *start, *end;
     unsigned   len;
@@ -667,7 +667,7 @@ void PathInit( void )
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
         if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
-            EnvParse( &LclPath, buff );
+            parsePathList( &LclPath, buff );
         }
         _Free( buff );
     }
