@@ -65,14 +65,6 @@ syshdir = ../h
 sysadir = ../asm
 !endif
 
-# exe_name
-###########
-!ifeq release 0
-exe_name = dv.exe
-!else
-exe_name = wv.exe
-!endif
-
 # cflags
 #########
 !ifeq sys_windowed 1
@@ -201,10 +193,11 @@ version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
 !ifeq sys_windowed 1
-verrc_exe = wdw
+name = wdw
 !else
-verrc_exe = wd
+name = wd
 !endif
+verrc_exe = $(name)
 !include verrc.mif
 
 !ifndef __WATCOM__
@@ -213,7 +206,7 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-$(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
