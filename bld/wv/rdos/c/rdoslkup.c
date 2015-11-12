@@ -42,9 +42,13 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
     int handle;
     int size;
 
-    handle = RdosOpenProcessEnv();
-    size = RdosFindEnvVar( handle, name, buff );
-    RdosCloseEnv( handle );
+    if( buff_len != 0 && buff != NULL ) {
+        handle = RdosOpenProcessEnv();
+        size = RdosFindEnvVar( handle, name, buff );
+        RdosCloseEnv( handle );
+    } else {
+        size = 2048 - 1;    // reserve 1 byte for '\0'
+    }
 
     return( size );     
 }

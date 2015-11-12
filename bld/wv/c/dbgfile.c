@@ -659,19 +659,18 @@ void PathInit( void )
     char        *buff;
     unsigned    size;
 
-  #if defined( __RDOS__ )
-    size = 2048;
-  #else
-    size = DUIEnvLkup( "PATH", NULL, 0 ) + 1;
-  #endif
-    _Alloc( buff, size );   /* allocate enough room for a very long PATH */
-    if( buff == NULL ) {
-        StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+    size = DUIEnvLkup( "PATH", NULL, 0 );
+    if( size > 0 ) {
+        ++size;
+        _Alloc( buff, size );   /* allocate enough room for a very long PATH */
+        if( buff == NULL ) {
+            StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+        }
+        if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
+            EnvParse( &LclPath, buff );
+        }
+        _Free( buff );
     }
-    if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
-        EnvParse( &LclPath, buff );
-    }
-    _Free( buff );
 #endif
 }
 
