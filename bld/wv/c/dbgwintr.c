@@ -44,6 +44,7 @@
 #include "dbgshow.h"
 #include "dbgparse.h"
 #include "dbgwdlg.h"
+#include "namelist.h"
 #include "symcomp.h"
 
 
