@@ -53,6 +53,7 @@
 *.stb
 *.sym
 *.sys
+*.tbl
 *.tmp
 *.trk
 *.trp
