@@ -67,15 +67,17 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
 {
     const char  __far *env;
     unsigned    len;
-    int         output = 0;
+    bool        output;
     char        c;
 
     env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
+
+    output = false;
     if( buff_len != 0 && buff != NULL ) {
         --buff_len;
-        output = 1;
+        output = true;
     }
     for( len = 0; (c = *env++) != '\0'; ++len ) {
         if( output ) {
