@@ -862,13 +862,6 @@ void DUIDirty( void )
 }
 
 
-void StartupErr( const char *err )
-/**************************/
-{
-    printf( "Fatal error: %s", err );
-    exit( 1 );
-}
-
 void DUISrcOrAsmInspect( address addr )
 {
 }
