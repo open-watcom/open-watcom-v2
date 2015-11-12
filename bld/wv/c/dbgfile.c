@@ -29,6 +29,10 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#include <process.h>
+#endif
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"
@@ -47,6 +51,8 @@
 #include "dbgsrc.h"
 #include "remfile.h"
 #include "dbgerr.h"
+
+#include "clibext.h"
 
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
@@ -625,7 +631,8 @@ void PathFini( void )
 }
 
 /*
- * parsePathList -- parse environment string into separate pieces
+ * parsePathList -- parse string with list of path into separate pieces
+ *                  and add it into local path ring
  */
 
 static void parsePathList( char_ring **owner, char *src )
@@ -634,6 +641,10 @@ static void parsePathList( char_ring **owner, char *src )
     unsigned   len;
     char_ring  *new;
 
+    // find end of list
+    while( *owner != NULL )
+        owner = &(*owner)->next;
+    // add items to the end of list
     for( start = end = src;; ++end ) {
         if( *end == LclPathSep || *end == '\0' ) {
             while( *start == ' ' ) {
@@ -644,15 +655,36 @@ static void parsePathList( char_ring **owner, char *src )
                 --len;
             }
             _Alloc( new, sizeof( char_ring ) + len );
-            if( new == NULL ) break;
+            if( new == NULL )
+                break;
             *owner = new;
             owner = &new->next;
             new->next = NULL;
             memcpy( new->name, start, len );
             new->name[len] = NULLCHAR;
-            if( *end == NULLCHAR ) return;
+            if( *end == NULLCHAR )
+                return;
             start = end + 1;
         }
+    }
+}
+
+static void parseEnvVar( char_ring **owner, const char *name )
+{
+    char        *buff;
+    unsigned    size;
+
+    size = DUIEnvLkup( name, NULL, 0 );
+    if( size > 0 ) {
+        ++size;
+        _Alloc( buff, size );   /* allocate enough room for a very long PATH */
+        if( buff == NULL ) {
+            StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+        }
+        if( DUIEnvLkup( name, buff, size ) != 0 ) {
+            parsePathList( owner, buff );
+        }
+        _Free( buff );
     }
 }
 
@@ -661,21 +693,31 @@ static void parsePathList( char_ring **owner, char *src )
 void PathInit( void )
 {
 #if !defined( BUILD_RFX )
-    char        *buff;
-    unsigned    size;
+    char        cmd[_MAX_PATH];
+    char        *p;
 
-    size = DUIEnvLkup( "PATH", NULL, 0 );
-    if( size > 0 ) {
-        ++size;
-        _Alloc( buff, size );   /* allocate enough room for a very long PATH */
-        if( buff == NULL ) {
-            StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+//    parsePathList( &LclPath, "." );
+    parseEnvVar( &LclPath, "WD_PATH" );
+    parseEnvVar( &LclPath, "HOME" );
+    if( _cmdname( cmd ) != NULL ) {
+        p = strrchr( cmd, LclFile.path_separator[0] );
+        if( p != NULL ) {
+            *p = NULLCHAR;
+            /* look in the executable's directory */
+            parsePathList( &LclPath, cmd );
+            p = strrchr( cmd, LclFile.path_separator[0] );
+            if( p != NULL ) {
+                /* look in a sibling directory of where the executable is */
+                memcpy( p + 1, "wd", 3 );
+                parsePathList( &LclPath, cmd );
+            }
         }
-        if( DUIEnvLkup( "PATH", buff, size ) != 0 ) {
-            parsePathList( &LclPath, buff );
-        }
-        _Free( buff );
     }
+  #if defined( __UNIX__ )
+    /* look in "/opt/watcom/wd" */
+    parsePathList( &LclPath, "/opt/watcom/wd" );
+  #endif
+    parseEnvVar( &LclPath, "PATH" );
 #endif
 }
 
