@@ -439,16 +439,21 @@ handle LclStringToFullName( const char *name, unsigned len, char *full )
     handle      hndl;
     unsigned    plen;
 
+    // check open file in current directory or in full path
     MakeNameWithPath( OP_LOCAL, NULL, 0, name, len, full );
-    curr = LclPath;
-    for( ;; ) {
-        hndl = FileOpen( full, OP_READ );
-        if( hndl != NIL_HANDLE ) return( hndl );
-        if( curr == NULL ) return( NIL_HANDLE );
+    hndl = FileOpen( full, OP_READ );
+    if( hndl != NIL_HANDLE )
+        return( hndl );
+    // check open file in debugger directory list
+    for( curr = LclPath; curr != NULL; curr = curr->next ) {
         plen = strlen( curr->name );
         MakeNameWithPath( OP_LOCAL, curr->name, plen, name, len, full );
-        curr = curr->next;
+        hndl = FileOpen( full, OP_READ );
+        if( hndl != NIL_HANDLE ) {
+            return( hndl );
+        }
     }
+    return( NIL_HANDLE );
 }
 
 
