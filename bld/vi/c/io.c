@@ -34,6 +34,9 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+#include <fnmatch.h>
+#endif
 
 #include "clibext.h"
 
@@ -305,40 +308,11 @@ void FileLower( char *str )
  */
 bool FileTemplateMatch( const char *name, const char *template )
 {
-    bool    inExtension = false;
-
-    for( ;; ) {
-        if( *template == '*' ) {
-            if( !inExtension ) {
-                while( name[1] != '\0' && name[1] != '.' ) {
-                    name++;
-                }
-                inExtension = true;
-            } else {
-                return( true );
-            }
-#ifndef __UNIX__
-        } else if( *template != '?' && tolower( *template ) != tolower( *name ) ) {
+#ifdef __UNIX__
+    return( fnmatch( template, name, FNM_NOESCAPE ) == 0 );
 #else
-        } else if( *template != '?' && *template != *name ) {
+    return( fnmatch( template, name, FNM_NOESCAPE | FNM_IGNORECASE ) == 0 );
 #endif
-            return( false );
-        }
-        name++;
-        template++;
-        if( *template == '\0' || *name == '\0' ) {
-            break;
-        }
-    }
-
-#ifndef __UNIX__
-    if( tolower( *template ) == tolower( *name ) ) {
-#else
-    if( *template == *name ) {
-#endif
-        return( true );
-    }
-    return( false );
 
 } /* FileTemplateMatch */
 
