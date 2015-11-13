@@ -110,7 +110,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     static long         filemask = 1;
     bool                is_chicago = false;
 
-#ifdef __NT__
+#if defined( __NT__ ) && !defined( _WIN64 )
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
@@ -180,7 +180,7 @@ vi_rc SelectFileSave( char *result )
     of.nMaxFile = FILENAME_MAX;
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = CurrentFile->home;
-#ifdef __NT__
+#if defined( __NT__ ) && !defined( _WIN64 )
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 )
         is_chicago = true;
 #endif

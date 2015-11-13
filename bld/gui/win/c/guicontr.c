@@ -589,15 +589,13 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
     }
 
 #if defined(__NT__)
-    #if !defined(WS_EX_CLIENTEDGE)
-    #define WS_EX_CLIENTEDGE    0x00000200L
-    #endif
-
     xstyle = 0L;
     // We do this crud to get 3d edges on edit controls, listboxes, and
     // comboboxes -rnk 07/07/95
 
+  #if !defined( _WIN64 )
     if( LOBYTE(LOWORD(GetVersion())) >= 4) {
+  #endif
         /* In W95 and later we don't want this crud any more... RR 2003.12.8 */
 
         classname = GUIControls[ctl_info->control_class].classname;
@@ -606,7 +604,9 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
             lstrcmpi( classname, "Combobox" ) == 0 ) {
             xstyle = WS_EX_CLIENTEDGE;
         }
+  #if !defined( _WIN64 )
     }
+  #endif
 
     hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
         new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
@@ -620,14 +620,18 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
         /* about cleaning it up later (no DeleteObject() necessary) */
         HFONT setFont;
 
+  #if !defined( _WIN64 )
         if( LOBYTE(LOWORD(GetVersion())) >= 4 ) {
+  #endif
             /* New shell active, Win95 or later */
             setFont = (HFONT) GetStockObject( DEFAULT_GUI_FONT );
+  #if !defined( _WIN64 )
         } else {
             /* MSDN on net tells SYSTEM_FONT should be Tahoma on W2K    */
             /* and later. Does not appear to be correct (tested XP SP1) */
-            setFont = (HFONT) GetStockObject( SYSTEM_FONT );
+            setFont = (HFONT)GetStockObject( SYSTEM_FONT );
         }
+  #endif
 
         SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, (LPARAM)0 );
     }

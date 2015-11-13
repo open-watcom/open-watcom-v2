@@ -569,27 +569,35 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
 #else
     of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc;
 #endif
-#ifdef __NT__
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+#if defined( __NT__ )
+  #if !defined( _WIN64 )
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+        of.lpTemplateName = "ADD_SRC_DLG";
+    } else {
+  #endif
         of.lpTemplateName = "ADD_SRC_DLG_95";
         of.Flags |= OFN_EXPLORER;
         of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc95;
-    } else {
-#endif
-        of.lpTemplateName = "ADD_SRC_DLG";
-#ifdef __NT__
+  #if !defined( _WIN64 )
     }
+  #endif
+#else
+    of.lpTemplateName = "ADD_SRC_DLG";
 #endif
     of.lCustData = (DWORD)info;
     of.lpstrInitialDir = newpath;
     rc = GetOpenFileName( &of );
     last_filter_index = of.nFilterIndex;
 #ifdef __NT__
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
-        return( info->ret_code );
+  #if !defined( _WIN64 )
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+        return( rc );
     }
-#endif
+  #endif
+    return( info->ret_code );
+#else
     return( rc );
+#endif
 }
 
 int GetNewFiles( WWindow *parent, WString *results, const char *caption,
