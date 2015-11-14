@@ -46,6 +46,7 @@
 #include "tixparse.h"
 #include "trie.h"
 
+
 /***************************************************************************
 ****************************************************************************
 *****                                                                   ****
@@ -55,8 +56,7 @@
 ****************************************************************************
 ***************************************************************************/
 
-extern char ui_tix_path[];
-extern int ui_tix_missing( const char *name );
+#define TC_ERROR    ((unsigned)-1)
 
 typedef enum {
     TT_CODE,
@@ -64,10 +64,14 @@ typedef enum {
     TT_EOF,
 } tix_token;
 
-static FILE     *in_file= NULL;
+extern char     ui_tix_path[];
+
+extern int      ui_tix_missing( const char *name );
 
 char            ti_char_map[256];
 unsigned char   _ti_alt_map[32];
+
+static FILE     *in_file= NULL;
 
 static void tix_error( const char *str )
 {
@@ -115,8 +119,8 @@ static FILE *ti_fopen( const char *fnam )
         strcat( fpath, "/" );
         strcat( fpath, fnam );
 
-        res= fopen( fpath, "r" );
-        if( res!=NULL ) {
+        res = fopen( fpath, "r" );
+        if( res != NULL ) {
             return( res );
         }
     }
@@ -170,16 +174,22 @@ static tix_token get_tix_token( char *buff )
 
     for( ;; ) {
         c = getc( in_file );
-        if( c == EOF ) return( TT_EOF );
+        if( c == EOF )
+            return( TT_EOF );
         if( c == '#' ) {
             /* eat a comment */
             for( ;; ) {
                 c = getc( in_file );
-                if( c == EOF ) return( TT_EOF );
-                if( c == '\n' ) break;
+                if( c == EOF )
+                    return( TT_EOF );
+                if( c == '\n' ) {
+                    break;
+                }
             }
         }
-        if( !isspace( c ) ) break;
+        if( !isspace( c ) ) {
+            break;
+        }
     }
     p = buff;
     if( c == '\'' || c == '\"' ) {
@@ -187,13 +197,18 @@ static tix_token get_tix_token( char *buff )
         endc = c;
         for( ;; ) {
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( c == '\r' ) break;
-            if( c == '\n' ) break;
-            if( c == endc ) break;
+            if( c == EOF )
+                break;
+            if( c == '\r' )
+                break;
+            if( c == '\n' )
+                break;
+            if( c == endc )
+                break;
             if( c == '\\' ) {
                 c = getc( in_file );
-                if( c == EOF ) break;
+                if( c == EOF )
+                    break;
                 switch( c ) {
                 case 'a':
                     c = '\a';
@@ -223,7 +238,8 @@ static tix_token get_tix_token( char *buff )
                     num = 0;
                     for( ;; ) {
                         c = getc( in_file );
-                        if( c == EOF ) break;
+                        if( c == EOF )
+                            break;
                         if( isdigit( c ) ) {
                             c = c - '0';
                         } else if( c >= 'A' && c <= 'F' ) {
@@ -248,8 +264,10 @@ static tix_token get_tix_token( char *buff )
         for( ;; ) {
             *p++ = c;
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( isspace( c ) ) break;
+            if( c == EOF )
+                break;
+            if( isspace( c ) )
+                break;
             if( c == '#' ) {
                 ungetc( c, in_file );
                 break;
@@ -257,20 +275,21 @@ static tix_token get_tix_token( char *buff )
         }
         *p = '\0';
         num = strtoul( buff, &end, 0 );
-        if( end != p ) return( TT_STRING );
+        if( end != p )
+            return( TT_STRING );
         buff[0] = num & 0xff;
         buff[1] = num >> 8;
         return( TT_CODE );
     }
 }
 
-static int get_tix_code( char *buff )
+static unsigned get_tix_code( char *buff )
 {
     if( get_tix_token( buff ) != TT_CODE ) {
         tix_error( "expecting code" );
-        return( -1 );
+        return( TC_ERROR );
     }
-    return( buff[0] + (buff[1] << 8) );
+    return( *(unsigned char *)buff + ( *(unsigned char *)( buff + 1 ) << 8 ) );
 }
 
 static const char acs_default[] =
@@ -278,11 +297,12 @@ static const char acs_default[] =
 
 static char find_acs_map( char c, const char *acs )
 {
-    for( ;; ) {
-        if( acs[0] == '\0' ) break;
-        if( acs[0] == c ) return( acs[1] );
+    while( acs[0] != '\0' ) {
+        if( acs[0] == c )
+            return( acs[1] );
         ++acs;
-        if( acs[0] == '\0' ) break;
+        if( acs[0] == '\0' )
+            break;
         ++acs;
     }
     return( '\0' );
@@ -293,7 +313,7 @@ static tix_status do_parse( void )
     char        buff[80];
     char        input[80];
     tix_token   tok;
-    int         code;
+    unsigned    code;
     char        c;
 
     tok = get_tix_token( buff );
@@ -304,7 +324,7 @@ static tix_status do_parse( void )
         }
         if( stricmp( buff, "display" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 )
+            if( code == TC_ERROR )
                 return( TIX_FAIL );
             tok = get_tix_token( buff );
             if( tok == TT_EOF )
@@ -333,11 +353,11 @@ static tix_status do_parse( void )
                 tix_error( "expecting display code" );
                 return( TIX_FAIL );
             }
-            ti_char_map[ code ] = buff[0];
+            ti_char_map[code] = buff[0];
             tok = get_tix_token( buff );
         } else if( stricmp( buff, "key" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 )
+            if( code == TC_ERROR )
                 return( TIX_FAIL );
             input[0] = '\0';
             for( ;; ) {

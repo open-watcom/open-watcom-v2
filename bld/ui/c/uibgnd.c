@@ -43,12 +43,12 @@ bool uibackground( char *fname )
     BUFFER              *bgndbuff;
     int                 row;
 
-    if( fname == NULL ){
+    if( fname == NULL ) {
         uiremovebackground();
         return( TRUE );
     }
     bgndbuff = uibackgroundbuffer();
-    if( bgndbuff == NULL ){
+    if( bgndbuff == NULL ) {
         return( FALSE );
     }
     f = fopen( fname, "rb" );
@@ -64,13 +64,15 @@ bool uibackground( char *fname )
             getc( f );
             continue;
         }
-        buff[ i ].ch = c;
-        buff[ i ].attr = attr;
-        if( ++i >= 80 ){
+        buff[i].ch = c;
+        buff[i].attr = attr;
+        if( ++i >= 80 ) {
             braw( bgndbuff, row, 0, buff, i );
             i = 0;
             ++row;
-            if( row > UIData->height ) break;
+            if( row > UIData->height ) {
+                break;
+            }
         }
     }
     fclose( f );

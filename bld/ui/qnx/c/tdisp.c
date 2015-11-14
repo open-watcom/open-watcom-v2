@@ -195,18 +195,18 @@ static void __puts( char *s )
  */
 
 
-static void QNX_CURSOR_MOVE( register int c, register int r )
+static void QNX_CURSOR_MOVE( int c, int r )
 {
-    __putchar(033); __putchar('=');
-    __putchar(r+' ');
-    __putchar(c+' ');
+    __putchar( 033 ); __putchar( '=' );
+    __putchar( r + ' ' );
+    __putchar( c + ' ' );
 }
 
-static void QNX_SETCOLOUR( register int f, register int b )
+static void QNX_SETCOLOUR( int f, int b )
 {
-    __putchar(033); __putchar('@');
-    __putchar('0' + f);
-    __putchar('0' + b);
+    __putchar( 033 ); __putchar( '@' );
+    __putchar( '0' + f );
+    __putchar( '0' + b );
 }
 
 
@@ -434,7 +434,7 @@ int     OldCol= -1,
     } while( 0 )
 
 // move in the optimal way from (OldCol,OldRow) to (c,r)
-static void TI_CURSOR_MOVE( register int c, register int r )
+static void TI_CURSOR_MOVE( int c, int r )
 {
     unsigned            newLen;
     int                 i;
@@ -571,7 +571,7 @@ static void TI_CURSOR_MOVE( register int c, register int r )
     OldRow = r;
 } 
 
-static void TI_SETCOLOUR( register int f, register int b )
+static void TI_SETCOLOUR( int f, int b )
 {
     // an array of colour brightnesses
     static char colorpri[] = { 0, 1, 4, 2, 6, 5, 3, 7 };
@@ -1547,8 +1547,7 @@ static int new_attr( int nattr, int oattr )
             QNX_SETCOLOUR( nval.fore, nval.back );
         }
     } else {
-        if( nval.bold != oval.bold ||
-            nval.blink != oval.blink ) {
+        if( nval.bold != oval.bold || nval.blink != oval.blink ) {
             TIABold = nval.bold;
             TIABlink = nval.blink;
             // Note: the TI_SETCOLOUR below has to set the attributes

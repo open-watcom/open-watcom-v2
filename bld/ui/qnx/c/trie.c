@@ -85,13 +85,13 @@ struct eTrie{
 };
 
 static eTrie    KeyTrie;
-int             KeyTrieDepth=1;
+int             KeyTrieDepth = 1;
 
-int TrieInit(void)
+int TrieInit( void )
 {
-
-    KeyTrie.child= malloc( TRIE_TOP * sizeof( eNode ) );
-    if( KeyTrie.child == NULL ) return( FALSE );
+    KeyTrie.child = malloc( TRIE_TOP * sizeof( eNode ) );
+    if( KeyTrie.child == NULL )
+        return( FALSE );
     KeyTrie.alc_child = TRIE_TOP;
     KeyTrie.num_child = 0;
     return( TRUE );
@@ -119,7 +119,7 @@ void TrieFini( void )
 {
     int         i;
 
-    for( i=0; i<KeyTrie.num_child; i++ ){
+    for( i = 0; i < KeyTrie.num_child; i++ ) {
         free_subtrie( &(KeyTrie.child[i]) );
     }
 }

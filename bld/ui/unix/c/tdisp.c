@@ -88,17 +88,17 @@
 #define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
 
 #ifdef AIX
-    struct _bool_struct       _aix_cur_bools;
-    struct _bool_struct      *cur_bools = &_aix_cur_bools;
+    struct _bool_struct         _aix_cur_bools;
+    struct _bool_struct         *cur_bools = &_aix_cur_bools;
 #endif
 
 #if defined(HP) && ( OSVER >= 1100 )
-    struct __bool_struct      _hp_cur_bools;
-    struct __bool_struct *    __cur_bools     = &_hp_cur_bools;
-    //struct __num_struct     _hp_cur_nums;
-    //struct __num_struct *   __cur_nums      = &_hp_cur_nums;
-    struct __str_struct               _hp_cur_strs;
-    struct __str_struct       *       __cur_strs      = &_hp_cur_strs;
+    struct __bool_struct        _hp_cur_bools;
+    struct __bool_struct        *__cur_bools     = &_hp_cur_bools;
+    //struct __num_struct         _hp_cur_nums;
+    //struct __num_struct         *__cur_nums      = &_hp_cur_nums;
+    struct __str_struct         _hp_cur_strs;
+    struct __str_struct         *__cur_strs      = &_hp_cur_strs;
 #endif
 
 // MACRO for checking if a particular escape sequence exists in terminfo for the
@@ -438,8 +438,8 @@ int     OldCol = -1,
     }
 
 // move in the optimal way from (OldCol,OldRow) to (c,r)
-static void TI_CURSOR_MOVE( register int c, register int r )
-/**********************************************************/
+static void TI_CURSOR_MOVE( int c, int r )
+/****************************************/
 {
     unsigned            newLen;
     int                 i;
@@ -598,7 +598,7 @@ static void TI_CURSOR_MOVE( register int c, register int r )
             __putp( UNIX_TPARM2( row_address, r ) );
             break;
         case rel_parm_plus:
-            __putp( UNIX_TPARM2( parm_down_cursor, r-OldRow ));
+            __putp( UNIX_TPARM2( parm_down_cursor, r - OldRow ) );
             break;
         case relative_plus:
             for( i = 0; i < r - OldRow; i++ ) {
@@ -606,7 +606,7 @@ static void TI_CURSOR_MOVE( register int c, register int r )
             }
             break;
         case rel_parm_minus:
-            __putp( UNIX_TPARM2( parm_up_cursor, OldRow-r ));
+            __putp( UNIX_TPARM2( parm_up_cursor, OldRow - r ) );
             break;
         case relative_minus:
             for( i = 0; i < OldRow - r; i++ ) {
@@ -628,13 +628,13 @@ static void TI_CURSOR_MOVE( register int c, register int r )
     OldRow = r;
 }
 
-static void TI_SETCOLOUR( register int f, register int b )
-/********************************************************/
+static void TI_SETCOLOUR( int f, int b )
+/**************************************/
 {
     // an array of colour brightnesses
-    static int  colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
+    static int  colorpri[] = { 0, 1, 4, 2, 6, 5, 3, 7 };
     // vga to ansi conversion table
-    static int  colorans[]={ 0, 4, 2, 6, 1, 5, 3, 7 };
+    static int  colorans[] = { 0, 4, 2, 6, 1, 5, 3, 7 };
 
     UIDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
 
@@ -682,7 +682,7 @@ static int TI_PUT_FILE( const char *fnam )
             return( FALSE );
 
         // output file to terminal
-        while( feof( fil ) == 0 ) {
+        while( !feof( fil ) ) {
             c = fgetc( fil );
             putchar( c );
         }
@@ -712,7 +712,7 @@ static int TI_EXEC_PROG( char *pnam )
 
 #ifdef __WATCOMC__
         // attempt to call pgm in /usr/lib/terminfo/?/
-        ret= spawnl( P_WAIT, ppath, NULL );
+        ret = spawnl( P_WAIT, ppath, NULL );
 
         if( ret == -1 ) {
             ppath[TI_PATH_LEN - 3] = '\0';
@@ -980,7 +980,7 @@ static int ti_init( void )
     rows = lines;
     tmp = getenv( "LINES" );
     if( tmp != NULL ) {
-        rows= atoi( tmp );
+        rows = atoi( tmp );
     }
 
     // Set up screen buffer
@@ -1033,7 +1033,7 @@ static struct {
 
 static int td_update( SAREA *area )
 {
-    if( !area ) {
+    if( area == NULL ) {
         UIDebugPrintf0( "td_update: no arg" );
         dirty.row0 = 0;
         dirty.col0 = 0;
@@ -1121,16 +1121,16 @@ static int ti_refresh( int must )
 /*******************************/
 {
     int         i;
-    int         incr;           // chars per line
-    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    LP_PIXEL    pos;            // the address of the current char
-    LP_PIXEL    blankStart;     // start of spaces to eos and then complete
-                                // draw
+    int         incr;               // chars per line
+    LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
+    LP_PIXEL    pos;                // the address of the current char
+    LP_PIXEL    blankStart;         // start of spaces to eos and then complete
+                                    // draw
     int         lastattr = -1;
     int         bufSize;
     LP_PIXEL    bufEnd;
-    int         cls = dirty.row1;// line on which we should clr_eos
-                                 // and then continue to draw
+    int         cls = dirty.row1;   // line on which we should clr_eos
+                                    // and then continue to draw
     bool        done = false;
 
 
@@ -1184,9 +1184,9 @@ static int ti_refresh( int must )
             int     pos;
             bool    diff = false;
 
-            while( dirty.col0<dirty.col1 ) {
+            while( dirty.col0 < dirty.col1 ) {
                 for( r = dirty.row0; r < dirty.row1; r++ ) {
-                    pos= r * incr + dirty.col0;
+                    pos = r * incr + dirty.col0;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;

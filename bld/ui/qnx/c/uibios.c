@@ -56,11 +56,11 @@
 #include "uiproxy.h"
 #include "ctkeyb.h"
 
+
 extern PossibleDisplay      DisplayList[];
 extern struct _console_ctrl *UIConCtrl;
 
 static const char           *UITermType = NULL; /* global so that the debugger can get at it */
-
 
 bool UIAPI uiset80col( void )
 {
@@ -97,7 +97,7 @@ bool intern initbios( void )
     int                         error;
 
     my_pid = getpid();
-    if( qnx_psinfo(PROC_PID,my_pid,&psinfo,0,0) != my_pid )
+    if( qnx_psinfo( PROC_PID, my_pid, &psinfo, 0, 0 ) != my_pid )
         return( false );
     UIPGroup = psinfo.pid_group;
     if( UIConHandle == 0 ) {
@@ -128,7 +128,7 @@ bool intern initbios( void )
     if( error != 1 )
         return( false );
     // Check to make sure terminal is suitable
-    if( (cursor_address[0]=='\0') || hard_copy ) {
+    if( (cursor_address[0] == '\0') || hard_copy ) {
         __del_curterm( __cur_term );
         return( false );
     }
@@ -152,7 +152,7 @@ void intern finibios( void )
     __del_curterm( __cur_term );
 }
 
-static unsigned RefreshForbid= 0;
+static unsigned RefreshForbid = 0;
 
 void forbid_refresh( void )
 {
@@ -165,15 +165,15 @@ void permit_refresh( void )
         RefreshForbid--;
     }
     if( !RefreshForbid ){
-        _ui_refresh(0);
+        _ui_refresh( 0 );
     }
 }
 
 void intern physupdate( SAREA *area )
 {
-    _physupdate(area);
+    _physupdate( area );
     if( !RefreshForbid ){
-        _ui_refresh(0);
+        _ui_refresh( 0 );
     }
 }
 
@@ -181,18 +181,21 @@ void intern physupdate( SAREA *area )
 
 #include <stdio.h>
 #include <stdarg.h>
+
 void QNXDebugPrintf(const char *f, ...)
 {
-static FILE *file = 0;
-        va_list vargs;
-        if (!file) {
-                if ((file=fopen("QNX.Debug","w")) == 0) {
-                        return;
-                }
+    static FILE *file = NULL;
+    va_list vargs;
+
+    if( file == NULL ) {
+        if( (file = fopen( "QNX.Debug", "w" )) == NULL ) {
+            return;
         }
-        va_start(vargs, f);
-        vfprintf(file, f, vargs);
-        putc('\n',file);
-        fflush( file );
+    }
+    va_start( vargs, f );
+    vfprintf( file, f, vargs );
+    putc( '\n', file );
+    fflush( file );
 }
+
 #endif

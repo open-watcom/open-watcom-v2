@@ -255,40 +255,39 @@ void intern ck_arm( void )
 
 #define PUSHBACK_SIZE   32
 
-static char     UnreadBuffer[ PUSHBACK_SIZE ];
+static char     UnreadBuffer[PUSHBACK_SIZE];
 static int      UnreadPos = sizeof( UnreadBuffer );
 
-int nextc(int n)        // delay in 0.1 seconds -- not to exceed 9
-/**************/
+int nextc( int n )      // delay in 0.1 seconds -- not to exceed 9
+/****************/
 {
-    unsigned char       ch;
-    int                 test;       // Used to test the return of read()
-    int                 fds;
+    unsigned char   ch;
+    int             test;       // Used to test the return of read()
+    int             fds;
 
     if( UnreadPos < sizeof( UnreadBuffer ) )
-        return( UnreadBuffer[ UnreadPos++ ] );
+        return( UnreadBuffer[UnreadPos++] );
 
     n *= 100000;
-    fds = kb_wait( n/1000000, n%1000000 );
+    fds = kb_wait( n / 1000000, n % 1000000 );
     if( fds == 1 ) {                    // Console has input
         test = read( UIConHandle, &ch, 1 );
         if( test == -1 ) {
-            return -1;
+            return( -1 );
         }
     } else if( fds == 2 ) {
-        return 256; /* mouse event */
+        return( 256 ); /* mouse event */
     } else {
-        return -1;
+        return( -1 );
     }
-
-    return ch;
+    return( ch );
 }
 
 void nextc_unget( char *str, int n )
 /**********************************/
 {
-    UnreadPos-=n;
-    //assert(UnreadPos>=0);
+    UnreadPos -= n;
+    //assert( UnreadPos >= 0 );
     memcpy( &(UnreadBuffer[UnreadPos]), str, n );
 }
 
@@ -389,7 +388,9 @@ EVENT ck_keyboardevent( void )
         }
         ct_shift_state = sticky | real_shift;
         sticky = 0;
+
         #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
+
         if( ct_shift_state & S_MASK ) {
             search_ev = tolower( ev );
             entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
@@ -421,7 +422,8 @@ EVENT tk_keyboardevent( void )
     EVENT       ev;
 
     ev = ck_keyboardevent();
-    if( ev != EV_MOUSE_PRESS ) return( ev );
+    if( ev != EV_MOUSE_PRESS )
+        return( ev );
     UIDebugPrintf0( "UI: Mouse event handling" );
     tm_saveevent();
     return( EV_NO_EVENT ); /* make UI check for mouse events */
@@ -435,9 +437,11 @@ int init_trie( void )
     char        buff[2];
     int         i;
 
-    if( !TrieInit() ) return( FALSE );
+    if( !TrieInit() )
+        return( FALSE );
 
-    if( !init_interminfo() ) return( FALSE );
+    if( !init_interminfo() )
+        return( FALSE );
 
     str = getenv( "TERM" );
     /* attempt to adjust backspace with the terminfo definition */
@@ -460,7 +464,7 @@ int init_trie( void )
 
     for( i = 0; i < NUM_IN_TERM_INFO_MAPPINGS; ++i ) {
         str = InTerminfo[i].str;
-        if( !TrieAdd( InTerminfo[i].ev, (str?str:"") ) ) {
+        if( !TrieAdd( InTerminfo[i].ev, ( str ? str : "" ) ) ) {
             TrieFini();
             return( FALSE );
         }

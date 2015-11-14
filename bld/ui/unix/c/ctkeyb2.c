@@ -48,7 +48,7 @@ int ck_unevent( EVENT ev )
 
 {
     ev = ev;
-    #if 0 //Don't think this does anything under QNX
+#if 0 //Don't think this does anything under QNX
     switch( ev ) {
     case EV_SHIFT_RELEASE:
         ct_shift_state &= ~S_SHIFT;
@@ -60,7 +60,7 @@ int ck_unevent( EVENT ev )
         ct_shift_state &= ~S_ALT;
         break;
     }
-    #endif
+#endif
     return( 0 );
 }
 
@@ -74,7 +74,7 @@ int ck_flush( void )
 /******************/
 {
     tcflush( UIConHandle, TCIFLUSH );
-    return 0;
+    return( 0 );
 }
 
 int ck_shift_state( void )
@@ -92,8 +92,9 @@ int ck_shift_state( void )
             ct_shift_state |= S_SHIFT;
         if( shift_state & ( 2 | 8 ) )
             ct_shift_state |= S_ALT;
-        if( shift_state & 4 )
+        if( shift_state & 4 ) {
             ct_shift_state |= S_CTRL;
+        }
     }
 #endif
     return( ct_shift_state );
@@ -111,8 +112,9 @@ int ck_restore( void )
     new.c_lflag |= ISIG;
     new.c_cc[VMIN] = 1;
     new.c_cc[VTIME] = 0;
-    while( tcsetattr( UIConHandle, TCSADRAIN, &new ) == -1 && errno == EINTR );
-    return 0;
+    while( tcsetattr( UIConHandle, TCSADRAIN, &new ) == -1 && errno == EINTR )
+        ;
+    return( 0 );
 }
 
 int ck_init( void )
@@ -120,9 +122,11 @@ int ck_init( void )
 {
     tcgetattr( UIConHandle, &SaveTermSet );
 
-    if( !init_trie() ) return( FALSE );
+    if( !init_trie() )
+        return( FALSE );
 
-    if( !ti_read_tix( GetTermType() ) ) return( FALSE );
+    if( !ti_read_tix( GetTermType() ) )
+        return( FALSE );
 
     SavePGroup = tcgetpgrp( UIConHandle );
     tcsetpgrp( UIConHandle, UIPGroup );
@@ -135,24 +139,24 @@ int ck_fini( void )
 {
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
-    return 0;
+    return( 0 );
 }
 
 int ck_save( void )
 /*****************/
 {
     tcsetattr( UIConHandle, TCSADRAIN, &SaveTermSet );
-    return 0;
+    return( 0 );
 }
 
 Keyboard ConsKeyboard = {
-        ck_init,
-        ck_fini,
-        ck_arm,
-        ck_save,
-        ck_restore,
-        ck_flush,
-        ck_stop,
-        ck_shift_state,
-        ck_unevent
+    ck_init,
+    ck_fini,
+    ck_arm,
+    ck_save,
+    ck_restore,
+    ck_flush,
+    ck_stop,
+    ck_shift_state,
+    ck_unevent
 };
