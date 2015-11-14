@@ -88,6 +88,15 @@ const char *GetTermType( void )
     return( UITermType );
 }
 
+const char *SetTermType( const char *new_term )
+{
+    const char  *old_term;
+
+    old_term = UITermType;
+    UITermType = new_term;
+    return( old_term );
+}
+
 bool intern initbios( void )
 {
     PossibleDisplay             *curr;

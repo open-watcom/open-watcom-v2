@@ -51,5 +51,6 @@ extern bool             UserForcedTermRefresh;
 extern bool             UIDisableShiftChanges;
 
 extern const char       *GetTermType( void );
+extern const char       *SetTermType( const char * );
 
 #endif
