@@ -591,13 +591,13 @@ static void OutName( void )
 
 static void Prompt( void )
 {
-    char        *prompt;
+    const char  *prompt;
     char        drv;
     int         hour, min, sec, hundredths;
     int         year, month, day, weekday;
 
     prompt = getenv( "PROMPT" );
-    if( !prompt )
+    if( prompt == NULL )
         prompt = "$n$g";
     OutName();
     while( *prompt ) {

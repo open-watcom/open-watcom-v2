@@ -60,7 +60,6 @@
 
 
 extern unsigned     UIConHandle;
-extern char         *UITermType;
 
 char                XConfig[2048];
 char                *DbgTerminal;
@@ -130,9 +129,12 @@ static bool TryXWindows( void )
     argc = 0;
     p = XConfig;
     for( ;; ) {
-        while( isspace( *p ) ) ++p;
-        while( !isspace( *p ) && *p != '\0' ) ++p;
-        if( *p == '\0' ) break;
+        while( isspace( *p ) )
+            ++p;
+        while( !isspace( *p ) && *p != '\0' )
+            ++p;
+        if( *p == '\0' )
+            break;
         ++argc;
         *p++ = '\0';
     }
@@ -147,14 +149,17 @@ static bool TryXWindows( void )
 
     if( DbgLines != 0 || DbgColumns != 0 ) {
         argv[argc++] = "-geometry";
-        if( DbgLines == 0 ) DbgLines = 25;
-        if( DbgColumns == 0 ) DbgColumns = 80;
+        if( DbgLines == 0 )
+            DbgLines = 25;
+        if( DbgColumns == 0 )
+            DbgColumns = 80;
         p = Format( buff, "%ux%u+0+0", DbgColumns, DbgLines ) + 1;
         argv[argc++] = buff;
     }
 
     for( p = XConfig; p < end; p += strlen( p ) + 1 ) {
-        while( isspace( *p ) ) ++p;
+        while( isspace( *p ) )
+            ++p;
         argv[argc++] = p;
     }
     argv[argc++] = "-tty";
@@ -179,7 +184,7 @@ static bool TryXWindows( void )
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );
     }
-    UITermType = "qnx";
+    SetTermType( "qnx" );
     tcsetct( DbgConHandle, getpid() );
     signal( SIGHUP, &HupHandler );
     return( TRUE );
@@ -192,7 +197,7 @@ static bool TryQConsole( void )
     struct _sidinfo             info;
     struct _dev_info_entry      dev;
     char                        *ptr;
-    char                        *term;
+    const char                  *term;
 
     if( qnx_psinfo( PROC_PID, getpid(), &psinfo, 0, 0 ) != getpid() ) {
         StartupErr( "unable to obtain process information" );
@@ -203,7 +208,9 @@ static bool TryQConsole( void )
     ptr = &info.tty_name[ strlen( info.tty_name ) ];
     for( ;; ) {
         --ptr;
-        if( *ptr < '0' || *ptr > '9' ) break;
+        if( *ptr < '0' || *ptr > '9' ) {
+            break;
+        }
     }
     if( DbgConsole != 0 ) {
         ptr[ 1 ] = '0' + DbgConsole / 10;
@@ -242,7 +249,8 @@ static bool TryTTY( void )
     unsigned long       num;
     char                *end;
 
-    if( DbgTerminal == NULL ) return( FALSE );
+    if( DbgTerminal == NULL )
+        return( FALSE );
     num = strtoul( DbgTerminal, &end, 10 );
     if( *end == NULLCHAR && num < 100 ) {
         DbgConsole = num;
@@ -253,7 +261,7 @@ static bool TryTTY( void )
     if( end != NULL ) {
         /* and also told us the terminal type */
         *end = NULLCHAR;
-        UITermType = strdup( end + 1 );
+        SetTermType( strdup( end + 1 ) );
     }
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
@@ -352,7 +360,8 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     switch( ConMode ) {
     case C_QCON:
@@ -369,20 +378,30 @@ void FiniScreen( void )
 
 void ScrnSpawnStart( void )
 {
-    char        *term;
+    const char  *term;
+    const char  *curr_term;
 
-    if( ConCtrl == NULL && UITermType != NULL ) {
-        term = getenv( "TERM" );
-        if( term == NULL ) term = "";
-        strcpy( TxtBuff, term );
-        setenv( "TERM", UITermType, 1 );
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            term = getenv( "TERM" );
+            if( term == NULL )
+                term = "";
+            strcpy( TxtBuff, term );
+            setenv( "TERM", curr_term, 1 );
+        }
     }
 }
 
 void ScrnSpawnEnd( void )
 {
-    if( ConCtrl == NULL && UITermType != NULL ) {
-        setenv( "TERM", TxtBuff, 1 );
+    const char  *curr_term;
+
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            setenv( "TERM", TxtBuff, 1 );
+        }
     }
 }
 

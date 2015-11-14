@@ -180,29 +180,29 @@ long _fork( const char *cmd, size_t len )
     }
     fcntl( DbgConHandle, F_SETFD, 0 );
     if ((pid = fork()) == 0) {
-            /* make sure STDIN/STDOUT/STDERR are connected to a terminal */
-            dup2( DbgConHandle, 0 );
-            dup2( DbgConHandle, 1 );
-            dup2( DbgConHandle, 2 );
-            close( DbgConHandle );
-            setsid();
+        /* make sure STDIN/STDOUT/STDERR are connected to a terminal */
+        dup2( DbgConHandle, 0 );
+        dup2( DbgConHandle, 1 );
+        dup2( DbgConHandle, 2 );
+        close( DbgConHandle );
+        setsid();
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-            execve( shell, (char * const *)argv, (char * const *)environ );
+        execve( shell, (char * const *)argv, (char * const *)environ );
 #else
-            execve( shell, argv, (const char **)environ );
+        execve( shell, argv, (const char **)environ );
 #endif
-            exit( 1 );
+        exit( 1 );
     } else {
-            fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
-            if( pid == -1 )
-                return( 0xffff0000 | errno );
-            do {
-            } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
+        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        if( pid == -1 )
+            return( 0xffff0000 | errno );
+        do {
+        } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     }
     return 0;
 }
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
