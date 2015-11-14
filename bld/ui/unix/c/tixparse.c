@@ -70,6 +70,8 @@ typedef enum {
     TT_EOF
 } tix_token;
 
+extern char     *UITermType;
+
 static FILE     *in_file= NULL;
 
 char            ti_char_map[256][4];
@@ -78,16 +80,11 @@ unsigned char   _ti_alt_map[32];
 static void tix_error( const char *str )
 /*************************/
 {
-    static char header[]= "\nError in ";
-    extern char *UITermType;
-
-#define uiwrite( s ) write( UIConHandle, s, strlen( s ) );
-
-    write( UIConHandle, header, sizeof( header )-1 );
+    uiwritec( "\nError in " );
     uiwrite( UITermType );
-    uiwrite( ": " );
+    uiwritec( ": " );
     uiwrite( str );
-    uiwrite( "\n" );
+    uiwritec( "\n" );
 }
 
 FILE *ti_fopen( const char *fnam )
@@ -508,14 +505,14 @@ int ti_read_tix( const char *termname )
         /* force UTF-8 mode if the locale is set that way; *
          * we may be on a new VT on the Linux console      */
         if ( utf8_mode ) {
-            write( UIConHandle, "\033%G", 3 );
+            uiwritec( "\033%G" );
             /* use UTF-8 characters instead of ACS */
-            for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ;
-                 i ++ )
+            for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i ++ ) {
                 wctomb( ti_char_map[i], default_tix[i].unicode );
+            }
+        } else {
+            uiwritec( "\033%@" );
         }
-        else
-            write( UIConHandle, "\033%@", 3 );
     }
     #endif
 

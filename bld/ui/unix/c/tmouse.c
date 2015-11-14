@@ -163,7 +163,7 @@ static void TryOne( int type, char *test, char *init, char *input )
 
     MouseType = type;
     uimouseforceoff();
-    write( UIConHandle, init, strlen( init ) );
+    uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
 
     MouseInstalled = TRUE;
@@ -277,12 +277,13 @@ static int gpm_tm_init( void )
     gpm_conn.vc = gpm_conn.minMod = gpm_conn.maxMod = 0;
     sprintf( procname, "/proc/self/fd/%d", UIConHandle );
     len = readlink( procname, tty_name, sizeof( tty_name ) - 1 );
-    if ( len < 0 )
+    if( len < 0 )
         goto out;
     if( memcmp( tty_name, "/dev/tty", len ) == 0 ) {
         len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
-        if ( len < 0 )
+        if( len < 0 ) {
             goto out;
+        }
     }
     len--;
     mult = 1;
@@ -336,16 +337,16 @@ static int tm_fini( void )
 /************************/
 {
     switch( MouseType ) {
-        case M_XT:
-            write( UIConHandle, XT_FINI, sizeof( XT_FINI ) - 1 );
-            break;
+    case M_XT:
+        uiwritec( XT_FINI );
+        break;
 #ifdef __LINUX__
-        case M_GPM:
-            close( UIMouseHandle );
-            break;
+    case M_GPM:
+        close( UIMouseHandle );
+        break;
 #endif
-        default :
-            break;
+    default :
+        break;
     }
     return 0;
 }

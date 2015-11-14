@@ -108,7 +108,7 @@ static int new_sample;
 static  void tm_error( void )
 /***************************/
 {
-//    write( UIConHandle, QW_BELL, sizeof( QW_BELL ) - 1 );
+//    uiwritec( QW_BELL );
 }
 
 /*-
@@ -211,7 +211,7 @@ static void DoMouseInit( int type, char *init, char *input )
 
     MouseType = type;
     uimouseforceoff();
-    write( UIConHandle, init, strlen( init ) );
+    uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
 
     MouseInstalled = TRUE;
@@ -244,11 +244,11 @@ static int tm_init( bool install )
         return( TRUE );
     }
     if( strstr( term, "qnx" ) != 0 ) {
-        write( UIConHandle, QNX_HDR QW_TEST, sizeof( QNX_HDR QW_TEST ) - 1 );
+        uiwritec( QNX_HDR QW_TEST );
         TrieAdd( EV_MOUSE_PRESS, QNX_HDR QW_TEST_RESPONSE );
         return( TRUE );
     }
-    write( UIConHandle, ANSI_HDR QW_TEST, sizeof( ANSI_HDR QW_TEST ) - 1 );
+    uiwritec( ANSI_HDR QW_TEST );
     TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
     return( TRUE );
 }
@@ -258,13 +258,13 @@ static int tm_fini( void )
 {
     switch( MouseType ) {
     case M_QW:
-        write( UIConHandle, QNX_HDR QW_FINI, sizeof( QNX_HDR QW_FINI ) - 1 );
+        uiwritec( QNX_HDR QW_FINI );
         break;
     case M_AW:
-        write( UIConHandle, ANSI_HDR QW_FINI, sizeof( ANSI_HDR QW_FINI ) - 1 );
+        uiwritec( ANSI_HDR QW_FINI );
         break;
     case M_XT:
-        write( UIConHandle, XT_FINI, sizeof( XT_FINI ) - 1 );
+        uiwritec( XT_FINI );
         break;
     }
     return 0;

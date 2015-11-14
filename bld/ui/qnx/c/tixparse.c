@@ -71,15 +71,11 @@ unsigned char   _ti_alt_map[32];
 
 static void tix_error( const char *str )
 {
-    static char header[]= "\nError in ";
-
-#define uiwrite( s ) write( UIConHandle, s, strlen( s ) );
-
-    write( UIConHandle, header, sizeof( header )-1 );
+    uiwritec( "\nError in " );
     uiwrite( __cur_term->_termname );
-    uiwrite( ": " );
+    uiwritec( ": " );
     uiwrite( str );
-    uiwrite( "\n" );
+    uiwritec( "\n" );
 }
 
 #define TIX_PATH_NAME   "/usr/watcom/tix/"

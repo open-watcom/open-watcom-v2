@@ -442,10 +442,11 @@ int init_trie( void )
     str = getenv( "TERM" );
     /* attempt to adjust backspace with the terminfo definition */
     if( str && strncmp(str, "xterm", 5) == 0 ) {
-        if( strcmp(key_backspace, "\x08" ) == 0 )
-            write( UIConHandle, "\x1b[?67h", 6 );
-        else if( strcmp(key_backspace, "\x7f" ) == 0 )
-            write( UIConHandle, "\x1b[?67l", 6 );
+        if( strcmp(key_backspace, "\x08" ) == 0 ) {
+            uiwritec( "\x1b[?67h" );
+        } else if( strcmp(key_backspace, "\x7f" ) == 0 ) {
+            uiwritec( "\x1b[?67l" );
+        }
     }
 
     buff[1] = '\0';

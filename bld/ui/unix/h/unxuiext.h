@@ -39,6 +39,9 @@
 #include <stdio.h>
 
 
+#define uiwrite(s)      write( UIConHandle, s, strlen( s ) )
+#define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
+
 extern int              UIConHandle;
 extern FILE *           UIConFile;
 extern pid_t            UIPGroup;
