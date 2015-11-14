@@ -48,8 +48,10 @@ extern pid_t            UILocalProxy;
 extern pid_t            UIRemProxy;
 extern nid_t            UIConNid;
 extern pid_t            UIPGroup;
-extern unsigned         UIWantShiftChanges;
+extern bool             UIWantShiftChanges;
 extern unsigned long    MouseTime;
+extern bool             UserForcedTermRefresh;
+extern bool             UIDisableShiftChanges;
 
 extern const char       *GetTermType( void );
 

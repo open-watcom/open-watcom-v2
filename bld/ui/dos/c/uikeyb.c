@@ -135,11 +135,14 @@ bool intern initkeyboard( void )
 
     ReadReq = NRM_KEY_READ;
     x = BIOSTestKeyboard();
-    if( (x & 0xff) == 0xff ) return( TRUE ); /* too many damn keys pressed! */
-    if( AL( x ) != ( RAL( x ) || LAL( x ) ) ) return( TRUE );
-    if( CT( x ) != ( RCT( x ) || LCT( x ) ) ) return( TRUE );
+    if( (x & 0xff) == 0xff )
+        return( true ); /* too many damn keys pressed! */
+    if( AL( x ) != ( RAL( x ) || LAL( x ) ) )
+        return( true );
+    if( CT( x ) != ( RCT( x ) || LCT( x ) ) )
+        return( true );
     ReadReq = EXT_KEY_READ;
-    return( TRUE );
+    return( true );
 }
 
 

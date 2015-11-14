@@ -88,7 +88,7 @@ const char *GetTermType( void )
     return( UITermType );
 }
 
-int intern initbios( void )
+bool intern initbios( void )
 {
     PossibleDisplay             *curr;
     struct _dev_info_entry      dev;
@@ -97,18 +97,21 @@ int intern initbios( void )
     int                         error;
 
     my_pid = getpid();
-    if( qnx_psinfo(PROC_PID,my_pid,&psinfo,0,0) != my_pid ) return( FALSE );
+    if( qnx_psinfo(PROC_PID,my_pid,&psinfo,0,0) != my_pid )
+        return( false );
     UIPGroup = psinfo.pid_group;
     if( UIConHandle == 0 ) {
         UIConHandle = open( "/dev/tty", O_RDWR );
-        if( UIConHandle == -1 ) return( FALSE );
+        if( UIConHandle == -1 )
+            return( false );
         fcntl( UIConHandle, F_SETFD, (int)FD_CLOEXEC );
     }
-    if( dev_info( UIConHandle, &dev ) == -1 ) return( FALSE );
+    if( dev_info( UIConHandle, &dev ) == -1 )
+        return( false );
     UIConNid = dev.nid;
     UIConsole = dev.unit;               // what console did we get?
     if( !UIProxySetup() )
-        return( FALSE );
+        return( false );
 
     /* It's OK if this call fails */
     UIConCtrl = console_open( UIConHandle, O_WRONLY );
@@ -123,18 +126,20 @@ int intern initbios( void )
         free( p2 );
     }
     if( error != 1 )
-        return( FALSE );
+        return( false );
     // Check to make sure terminal is suitable
     if( (cursor_address[0]=='\0') || hard_copy ) {
         __del_curterm( __cur_term );
-        return( FALSE );
+        return( false );
     }
 
     curr = DisplayList;
 
     for( ;; ) {
-        if( curr->check == NULL ) return( FALSE );
-        if( curr->check() ) break;
+        if( curr->check == NULL )
+            return( false );
+        if( curr->check() )
+            break;
         ++curr;
     }
     UIVirt = curr->virt;

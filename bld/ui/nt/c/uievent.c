@@ -139,7 +139,7 @@ bool intern initkeyboard( void )
 //                      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
 //                      OPEN_EXISTING, 0, NULL );
 //    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT );
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )

@@ -192,7 +192,7 @@ bool intern initkeyboard( void )
     }
     KeyInstalled = TRUE;
     
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )

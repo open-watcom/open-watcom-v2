@@ -120,7 +120,7 @@ void            intern          finikeyboard( void );
 void            intern          flushkey( void );
 void            intern          frontwindow( UI_WINDOW * );
 unsigned int    intern          getkey( void );
-int             intern          initbios( void );
+bool            intern          initbios( void );
 bool            intern          initkeyboard( void );
 bool            intern          initmonitor( void );
 bool            intern          installed( int );

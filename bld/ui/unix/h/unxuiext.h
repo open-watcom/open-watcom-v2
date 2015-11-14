@@ -45,8 +45,10 @@
 extern int              UIConHandle;
 extern FILE             *UIConFile;
 extern pid_t            UIPGroup;
-extern unsigned         UIWantShiftChanges;
+extern bool             UIWantShiftChanges;
 extern unsigned long    MouseTime;
+extern bool             UserForcedTermRefresh;
+extern bool             UIDisableShiftChanges;
 
 extern const char       *GetTermType( void );
 

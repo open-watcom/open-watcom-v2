@@ -52,7 +52,7 @@ bool UIAPI uiset80col( void )
     return( TRUE );
 }
 
-int intern initbios( void )
+bool intern initbios( void )
 {
     short int *bufptr;
     int i;
@@ -80,7 +80,7 @@ int intern initbios( void )
     UIData->tick_delay = 500;
     UIData->mouse_speed = 8;
 
-    return( TRUE );
+    return( true );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )

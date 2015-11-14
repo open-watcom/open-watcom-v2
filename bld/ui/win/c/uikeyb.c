@@ -352,7 +352,7 @@ bool intern initkeyboard( void )
 /******************************/
 {
     SetEventHook( &win_uihookrtn );
-    return( FALSE );
+    return( false );
 }
 
 void intern finikeyboard( void )

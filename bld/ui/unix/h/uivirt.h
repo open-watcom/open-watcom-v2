@@ -93,30 +93,30 @@ extern VirtDisplay      UIVirt;
  * convenient naming, and easier changes later...
  */
 
-#define _uibiosinit   (*UIVirt.disp->init)
-#define _uibiosfini   (*UIVirt.disp->fini)
-#define _physupdate   (*UIVirt.disp->update)
-#define _ui_refresh   (*UIVirt.disp->refresh)
-#define _uigetcursor  (*UIVirt.disp->getcur)
-#define _uisetcursor  (*UIVirt.disp->setcur)
-#define _uievent      (*UIVirt.disp->event)
+#define _uibiosinit     (*UIVirt.disp->init)
+#define _uibiosfini     (*UIVirt.disp->fini)
+#define _physupdate     (*UIVirt.disp->update)
+#define _ui_refresh     (*UIVirt.disp->refresh)
+#define _uigetcursor    (*UIVirt.disp->getcur)
+#define _uisetcursor    (*UIVirt.disp->setcur)
+#define _uievent        (*UIVirt.disp->event)
 
-#define _initkeyboard (*UIVirt.keyb->init)
-#define _finikeyboard (*UIVirt.keyb->fini)
-#define _armkeyboard (*UIVirt.keyb->arm)
-#define _savekeyb     (*UIVirt.keyb->save)
-#define _restorekeyb  (*UIVirt.keyb->restore)
-#define _flushkey     (*UIVirt.keyb->flush)
-#define _stopkeyb     (*UIVirt.keyb->stop)
-#define _uicheckshift (*UIVirt.keyb->shift_state)
-#define _checkshift   _uicheckshift
+#define _initkeyboard   (*UIVirt.keyb->init)
+#define _finikeyboard   (*UIVirt.keyb->fini)
+#define _armkeyboard    (*UIVirt.keyb->arm)
+#define _savekeyb       (*UIVirt.keyb->save)
+#define _restorekeyb    (*UIVirt.keyb->restore)
+#define _flushkey       (*UIVirt.keyb->flush)
+#define _stopkeyb       (*UIVirt.keyb->stop)
+#define _uicheckshift   (*UIVirt.keyb->shift_state)
+#define _checkshift     _uicheckshift
 #define _uishiftrelease (*UIVirt.keyb->un_event)
 
-#define _initmouse            (*UIVirt.mouse->init)
-#define _finimouse            (*UIVirt.mouse->fini)
-#define _checkmouse           (*UIVirt.mouse->check)
-#define _stopmouse            (*UIVirt.mouse->stop)
-#define _uimousespeed         (*UIVirt.mouse->set_speed)
+#define _initmouse      (*UIVirt.mouse->init)
+#define _finimouse      (*UIVirt.mouse->fini)
+#define _checkmouse     (*UIVirt.mouse->check)
+#define _stopmouse      (*UIVirt.mouse->stop)
+#define _uimousespeed   (*UIVirt.mouse->set_speed)
 
 /*-
  The modules for each type....
@@ -127,9 +127,9 @@ extern Display          TInfDisplay;
 extern Keyboard         ConsKeyboard;
 extern Mouse            TermMouse;
 
-extern void     stopmouse(void);
-extern void     stopkeyboard( void );
-extern void     savekeyb(void);
-extern void     restorekeyb(void);
+extern void             stopmouse(void);
+extern void             stopkeyboard( void );
+extern void             savekeyb(void);
+extern void             restorekeyb(void);
 
 #endif

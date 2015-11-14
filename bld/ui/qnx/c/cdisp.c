@@ -70,16 +70,16 @@ struct _console_ctrl *UIConCtrl = NULL;
 
 bool ConsCheck( void )
 {
-    extern unsigned UIDisableShiftChanges;
-
-    if( UIConCtrl == NULL ) return( FALSE );
-    UIDisableShiftChanges = FALSE;
-    return( TRUE );
+    if( UIConCtrl == NULL )
+        return( false );
+    UIDisableShiftChanges = false;
+    return( true );
 }
 
 bool QnxWCheck( void )
 {
-    if( !ConsCheck() ) return( FALSE );
+    if( !ConsCheck() )
+        return( false );
     return( strcmp( GetTermType(), "qnxw" ) == 0 );
 }
 
@@ -101,7 +101,8 @@ static bool setupscrnbuff( void )
     scrn = UIData->screen.origin;
 #if defined( __386__ )
     scrn = realloc( scrn, num );
-    if( scrn == NULL ) return( FALSE );
+    if( scrn == NULL )
+        return( FALSE );
 #else
     {
         unsigned                seg;
@@ -172,7 +173,8 @@ bool intern initmonitor( void )
 {
     struct _osinfo      info;
 
-    if( UIConCtrl == NULL ) return( FALSE );
+    if( UIConCtrl == NULL )
+        return( false );
 
     qnx_osinfo( UIConNid, &info );
     switch( info.primary_monitor ) {
@@ -202,7 +204,7 @@ bool intern initmonitor( void )
     console_arm( UIConCtrl, UIConsole, 0,
             _CON_EVENT_SIZE|_CON_EVENT_ACTIVE|_CON_EVENT_SIZE );
 
-    return( TRUE );
+    return( true );
 }
 
 
@@ -249,8 +251,10 @@ static int cd_init( void )
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-    if( !initmonitor() ) return( FALSE );
-    if( !setupscrnbuff() ) return( FALSE );
+    if( !initmonitor() )
+        return( FALSE );
+    if( !setupscrnbuff() )
+        return( FALSE );
 
     uiinitcursor();
     initkeyboard();

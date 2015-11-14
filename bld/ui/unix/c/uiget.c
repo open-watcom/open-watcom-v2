@@ -34,6 +34,7 @@
 #include "uiforce.h"
 #include <sys/types.h>
 #include "uivirt.h"
+#include "unxuiext.h"
 
 extern int   kb_wait( int secs, int usecs );
 
@@ -72,7 +73,6 @@ static EVENT doget( bool update )
     }
     ReturnIdle = 1;
     if( ev==EV_REDRAW_SCREEN ){
-        extern bool     UserForcedTermRefresh;
         SAREA           screen={ 0, 0, 0, 0 };
 
         screen.height= UIData->height;

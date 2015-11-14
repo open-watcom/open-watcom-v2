@@ -246,7 +246,7 @@ bool intern initkeyboard( void )
 /******************************/
 {
     ScreenPointer = (struct ScreenStruct *)__GetScreenID( ScreenHandle );
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )

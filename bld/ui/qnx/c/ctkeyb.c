@@ -74,7 +74,6 @@ enum {
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
 extern struct _console_ctrl *UIConCtrl;
-extern unsigned             UIDisableShiftChanges;
 
 static struct termios   SaveTermSet;
 static int              SaveProtocol;

@@ -475,7 +475,7 @@ int ti_read_tix( const char *termname )
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
     for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
-        ti_char_map[i][0]=i;
+        ti_char_map[i][0] = i;
 
     if( !init_tix_scanner( termname ) ) {
         ret = do_default();

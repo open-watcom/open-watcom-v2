@@ -38,8 +38,6 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 
-extern bool         UserForcedTermRefresh;
-
 
 void UIAPI uiflush( void )
 /*************************/
@@ -84,7 +82,7 @@ static EVENT doget( bool update )
         screen.width=  UIData->width;
 
         uidirty( screen );
-        UserForcedTermRefresh= TRUE;
+        UserForcedTermRefresh = true;
         physupdate( &screen );
         break;
     case EV_MOUSE_HOLD:

@@ -135,16 +135,20 @@ static tix_status init_tix_scanner( const char *name, bool use_default )
     strcpy( tix_name, name );
     strcat( tix_name, ".tix" );
     in_file = ti_fopen( tix_name );
-    if( in_file != NULL ) return( TIX_OK );
+    if( in_file != NULL )
+        return( TIX_OK );
     if( strstr( name, "qnx" ) != 0 ) {
         in_file = ti_fopen( "qnx.tix" );
     } else if( strstr( name, "ansi" ) != 0 || strcmp( name, "xterm" ) == 0 ) {
         in_file = ti_fopen( "ansi.tix" );
     }
-    if( in_file != NULL ) return( TIX_OK );
+    if( in_file != NULL )
+        return( TIX_OK );
     if( use_default ) {
         in_file = ti_fopen( "default.tix" );
-        if( in_file != NULL ) return( TIX_DEFAULT );
+        if( in_file != NULL ) {
+            return( TIX_DEFAULT );
+        }
     }
     return( TIX_NOFILE );
 }
@@ -293,24 +297,26 @@ static tix_status do_parse( void )
     char        c;
 
     tok = get_tix_token( buff );
-    for( ;; ) {
-        if( tok == TT_EOF ) break;
+    while( tok != TT_EOF ) {
         if( tok != TT_STRING ) {
             tix_error( "expecting directive" );
             return( TIX_FAIL );
         }
         if( stricmp( buff, "display" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 ) return( 0 );
+            if( code == -1 )
+                return( TIX_FAIL );
             tok = get_tix_token( buff );
-            if( tok == TT_EOF ) break;
+            if( tok == TT_EOF )
+                break;
             if( tok == TT_STRING ) {
                 if( stricmp( buff, "alt" ) != 0 ) {
                     tix_error( "expecting alt" );
                     return( TIX_FAIL );
                 }
                 tok = get_tix_token( buff );
-                if( tok == TT_EOF ) break;
+                if( tok == TT_EOF )
+                    break;
                 c = find_acs_map( buff[0], acs_chars );
                 if( c != '\0' ) {
                     ti_alt_map_set( code );
@@ -331,11 +337,13 @@ static tix_status do_parse( void )
             tok = get_tix_token( buff );
         } else if( stricmp( buff, "key" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 ) return( TIX_FAIL );
+            if( code == -1 )
+                return( TIX_FAIL );
             input[0] = '\0';
             for( ;; ) {
                 tok = get_tix_token( buff );
-                if( tok != TT_CODE ) break;
+                if( tok != TT_CODE )
+                    break;
                 strcat( input, buff );
             }
             TrieAdd( code, input );
@@ -351,21 +359,24 @@ tix_status ti_read_tix( bool use_default )
 /***************************************/
 {
     int         i;
-    int         ret;
+    tix_status  ret;
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ); i++ ) ti_char_map[i]=i;
+    for( i = 0; i < sizeof( ti_char_map ); i++ )
+        ti_char_map[i] = i;
 
     ret = init_tix_scanner( __cur_term->_termname, use_default );
     switch( ret ) {
     case TIX_FAIL:
         return( ret );
     case TIX_NOFILE:
-        if( !use_default ) return( ret );
+        if( !use_default )
+            return( ret );
         return( ui_tix_missing( __cur_term->_termname ) ? TIX_OK : TIX_FAIL );
     }
-    if( do_parse() == TIX_FAIL ) ret = TIX_FAIL;
+    if( do_parse() == TIX_FAIL )
+        ret = TIX_FAIL;
     close_tix_scanner();
     return( ret );
 }

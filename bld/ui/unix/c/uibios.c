@@ -71,7 +71,7 @@ const char *GetTermType( void )
     return( UITermType );
 }
 
-int intern initbios( void )
+bool intern initbios( void )
 {
     PossibleDisplay             *curr;
 
@@ -84,7 +84,7 @@ int intern initbios( void )
         }
         UIConFile = fopen( tty, "w+" );
         if( UIConFile == NULL )
-            return( FALSE );
+            return( false );
         UIConHandle = fileno( UIConFile );
         fcntl( UIConHandle, F_SETFD, 1 );
     }
@@ -105,14 +105,14 @@ int intern initbios( void )
     // Check to make sure terminal is suitable
     if( cursor_address == NULL || hard_copy ) {
         del_curterm( cur_term );
-        return( FALSE );
+        return( false );
     }
 
     curr = DisplayList;
 
     for( ;; ) {
         if( curr->check == NULL )
-            return( FALSE );
+            return( false );
         if( curr->check() )
             break;
         ++curr;

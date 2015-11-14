@@ -186,7 +186,7 @@ bool intern initkeyboard( void )
     new.fsMask &= ~0x0009;
     new.fsMask |=  0x0006;
     KbdSetStatus( &new, 0 );
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )

@@ -84,6 +84,9 @@
 #include "tixparse.h"
 #include "walloca.h"
 
+
+#define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
+
 #ifdef AIX
     struct _bool_struct       _aix_cur_bools;
     struct _bool_struct      *cur_bools = &_aix_cur_bools;
@@ -116,7 +119,7 @@
 #endif
 #define __putc( c )     {fputc( c, UIConFile );}
 
-bool    UserForcedTermRefresh= FALSE;
+bool    UserForcedTermRefresh = false;
 
 static int _con_putchar( int ch )
 {
@@ -124,7 +127,7 @@ static int _con_putchar( int ch )
     return( 0 );
 }
 
-#if defined(SUN) && defined(UNIX64)
+#if defined( SUN ) && defined( UNIX64 )
 
 // Define a tparm interface on sun64 that takes 2 / 3 / 10 arguments.
 // Sun64 tparm interface does not allow any default arguments for tparm
@@ -146,14 +149,12 @@ static int _con_putchar( int ch )
 bool TInfCheck( void )
 /********************/
 {
-    extern unsigned     UIDisableShiftChanges;
-
     // Check to see if the term variable is set
     if( GetTermType()[0] != '\0' ) {
-        UIDisableShiftChanges = TRUE;
-        return( TRUE );
+        UIDisableShiftChanges = true;
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*-
@@ -369,8 +370,8 @@ static void ti_find_cutoff( void )
  * x is the first column that we should be printing on. (used for a little
  * optimization)
  */
-static void TI_REPEAT_CHAR( char c, int n, int a, ORD x )
-/*******************************************************/
+static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
+/********************************************************/
 {
     bool        blank;
     int         len;
@@ -860,8 +861,12 @@ static bool ti_initconsole( void )
 
     __flush();
 
-    return( TRUE );
+    return( true );
 }
+
+#ifndef SA_RESTART
+#define SA_RESTART 0
+#endif
 
 bool intern initmonitor( void )
 /*****************************/
@@ -870,70 +875,67 @@ bool intern initmonitor( void )
 
     UIData->colour = M_VGA;
 
-    sa.sa_handler               = size_handler;
-#ifndef SA_RESTART
-#define SA_RESTART 0
-#endif
-    sa.sa_flags                 = SA_RESTART;
+    sa.sa_handler = size_handler;
+    sa.sa_flags = SA_RESTART;
     memset( &sa.sa_mask, '\0', sizeof( sa.sa_mask ) );
 
     sigaction( SIGWINCH, &sa, NULL );
 
-    return( TRUE );
+    return( true );
 }
 
-static int new_attr(int nattr, int oattr)
-/***************************************/
+static int new_attr( int nattr, int oattr )
+/*****************************************/
 {
-        union {
-                unsigned char   attr;
-                struct {
+    union {
+        unsigned char   attr;
+        struct {
 #if defined( _HAS_NO_CHAR_BIT_FIELDS )
-                    unsigned char   blink_back_bold_fore;
+            unsigned char   blink_back_bold_fore;
     #define _attr_blink( a ) (((a).blink_back_bold_fore >> 7) & 1)
     #define _attr_back( a )  (((a).blink_back_bold_fore >> 4) & 7)
     #define _attr_bold( a )  (((a).blink_back_bold_fore >> 3) & 1)
     #define _attr_fore( a )  ( (a).blink_back_bold_fore       & 7)
 #else
     #if defined( __BIG_ENDIAN__ )
-                    unsigned char   blink:1;
-                    unsigned char   back:3;
-                    unsigned char   bold:1;
-                    unsigned char   fore:3;
+            unsigned char   blink:1;
+            unsigned char   back:3;
+            unsigned char   bold:1;
+            unsigned char   fore:3;
     #else
-                    unsigned char   fore:3;
-                    unsigned char   bold:1;
-                    unsigned char   back:3;
-                    unsigned char   blink:1;
+            unsigned char   fore:3;
+            unsigned char   bold:1;
+            unsigned char   back:3;
+            unsigned char   blink:1;
     #endif
     #define _attr_blink( a ) ((a).blink)
     #define _attr_back( a )  ((a).back)
     #define _attr_bold( a )  ((a).bold)
     #define _attr_fore( a )  ((a).fore)
 #endif
-                } bits;
-        } nval, oval;
-        nval.attr = nattr;
-        oval.attr = oattr;
+        } bits;
+    } nval, oval;
+    nval.attr = nattr;
+    oval.attr = oattr;
 
-        if( oattr == -1 ) {
-            oval.attr = ~nval.attr;
-        }
-        if( _attr_bold( nval.bits ) != _attr_bold( oval.bits )
-          || _attr_blink( nval.bits ) != _attr_blink( oval.bits ) ) {
-            TIABold  = _attr_bold( nval.bits );
-            TIABlink = _attr_blink( nval.bits );
-            // Note: the TI_SETCOLOUR below has to set the attributes
-            // anyways, so we've just set the flags here
-        }
+    if( oattr == -1 ) {
+        oval.attr = ~nval.attr;
+    }
+    if( _attr_bold( nval.bits ) != _attr_bold( oval.bits )
+      || _attr_blink( nval.bits ) != _attr_blink( oval.bits ) ) {
+        TIABold  = _attr_bold( nval.bits );
+        TIABlink = _attr_blink( nval.bits );
+        // Note: the TI_SETCOLOUR below has to set the attributes
+        // anyways, so we've just set the flags here
+    }
 
-        // if the colours *or* the attributs have changed we have to
-        // redo the colours. This is *necessary* for terms like VT's
-        // which reset the colour when the attributes are changed
-        if( nval.attr != oval.attr ) {
-            TI_SETCOLOUR( _attr_fore( nval.bits ), _attr_back( nval.bits ) );
-        }
-        return( nattr );
+    // if the colours *or* the attributs have changed we have to
+    // redo the colours. This is *necessary* for terms like VT's
+    // which reset the colour when the attributes are changed
+    if( nval.attr != oval.attr ) {
+        TI_SETCOLOUR( _attr_fore( nval.bits ), _attr_back( nval.bits ) );
+    }
+    return( nattr );
 }
 
 static int ti_refresh( int must );
@@ -1113,8 +1115,6 @@ static void update_shadow( void )
 
     // set dirty rectangle to be empty
     dirty.row0 = dirty.row1 = dirty.col0 = dirty.col1 = 0;
-
-    return;
 }
 
 static int ti_refresh( int must )
@@ -1131,7 +1131,7 @@ static int ti_refresh( int must )
     LP_PIXEL    bufEnd;
     int         cls = dirty.row1;// line on which we should clr_eos
                                  // and then continue to draw
-    bool        done = FALSE;
+    bool        done = false;
 
 
     // Need these for startup and the refresh key
@@ -1142,7 +1142,7 @@ static int ti_refresh( int must )
         OldRow = -1;
     }
     must |= UserForcedTermRefresh;
-    UserForcedTermRefresh = FALSE;
+    UserForcedTermRefresh = false;
 
     // Move the cursor & return if dirty box contains no chars
     if( dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1 ) {
@@ -1175,21 +1175,20 @@ static int ti_refresh( int must )
         // if we could do it at the top then we might as well
         // not bother doing anything else
         lastattr = new_attr( UIData->screen.origin->attr, -1 );
-        done = TRUE;
+        done = true;
     } else {
         lastattr = -1;
 
         if( !must ) {
             int     r,c;
             int     pos;
-            bool    diff = FALSE;
+            bool    diff = false;
 
             while( dirty.col0<dirty.col1 ) {
                 for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos= r * incr + dirty.col0;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1198,13 +1197,12 @@ static int ti_refresh( int must )
                 dirty.col0++;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.col0<dirty.col1 ) {
                 for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos = r * incr + dirty.col1 - 1;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff= TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1213,13 +1211,12 @@ static int ti_refresh( int must )
                 dirty.col1--;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.row0 < dirty.row1 ) {
                 for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos = dirty.row0 * incr + c;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1228,13 +1225,12 @@ static int ti_refresh( int must )
                 dirty.row0++;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.row0 < dirty.row1 ) {
                 for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos = ( dirty.row1 - 1 ) * incr + c;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1266,10 +1262,9 @@ static int ti_refresh( int must )
 
                     pos = cls * incr;
                     pos2 = pos + UIData->width - 1;
-                    if( ( bufp[pos].ch != sbufp[pos].ch ||
-                        bufp[pos].attr != sbufp[pos].attr ) &&
-                        ( bufp[pos].ch != sbufp[pos2].ch ||
-                        bufp[pos].attr == sbufp[pos2].attr ) ) {
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] )
+                      && ( bufp[pos].ch != sbufp[pos2].ch
+                      || bufp[pos].attr == sbufp[pos2].attr ) ) {
                         break;
                     }
                 }
@@ -1293,7 +1288,7 @@ static int ti_refresh( int must )
     } else {
         // we still have work to do if it turned out we couldn't use the
         // blank start after all
-        done = FALSE;
+        done = false;
     }
 
     if( !done ) {
@@ -1302,22 +1297,22 @@ static int ti_refresh( int must )
         bool            ca_valid;       // is cursor address valid?
 
         int             rcount;         // repeat count
-        char            rchar = 0;      // repeated character
-        int             ralt = 0;       // if repeated character is in acs
+        char            rchar = '\0';   // repeated character
+        bool            ralt = false;   // if repeated character is in acs
         int             rcol = 0;       // starting column of repeated chars
 
         bufp += dirty.row0 * incr;
         sbufp += dirty.row0 * incr;
 
         for( i = dirty.row0; i < dirty.row1; i++ ) {
-            ca_valid = FALSE;
+            ca_valid = false;
             rcount = 0;
 
             if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
                 __putp( clr_eos );
-                ca_valid = TRUE;
+                ca_valid = true;
                 //assert( dirty.col0==0 && dirty.col1==UIData->width );
             }
 
@@ -1326,11 +1321,9 @@ static int ti_refresh( int must )
 
                 if( !must && (
                     ( cls <= i )
-                    ? ( bufp[j].ch == ' ' && ( (bufp[j].attr & 112) == 0) )
-                    : ( bufp[j].ch == sbufp[j].ch
-                        && bufp[j].attr == sbufp[j].attr
-                        && pos <= blankStart ) ) ) {
-                    ca_valid = FALSE;
+                    ? ( bufp[j].ch == ' ' && ( (bufp[j].attr & 0x70) == 0) )
+                    : ( PIXELEQUAL( bufp[j], sbufp[j] ) && pos <= blankStart ) ) ) {
+                    ca_valid = false;
                     continue;
                 }
 
@@ -1340,7 +1333,7 @@ static int ti_refresh( int must )
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
                     TI_CURSOR_MOVE( j, i );
-                    ca_valid = TRUE;
+                    ca_valid = true;
                 }
 
                 if( bufp[j].attr != lastattr ) {

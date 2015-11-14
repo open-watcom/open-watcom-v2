@@ -66,20 +66,19 @@
 
 #include "tixparse.h"
 
+
 #ifdef __386__
     #define _fmemcpy memcpy
 #endif
-
-extern  unsigned    UIDisableShiftChanges;
-extern  unsigned    UIDisableShiftChanges;
+#define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
 
 extern  LP_PIXEL    asmNonBlankEnd( LP_PIXEL, int, PIXEL );
+
+bool    UserForcedTermRefresh = false;
 
 // this is handy for those functions that do *almost* the same thing
 // for the two terminal types
 static bool         TermIsQNXTerm;
-
-bool    UserForcedTermRefresh = FALSE;
 
 static void         TI_SETATTR( void );
 static int          new_attr( int nattr, int oattr );
@@ -89,23 +88,22 @@ bool TermCheck( void )
 /********************/
 {
     if( strstr( GetTermType(), "qnx" ) == 0 )
-        return( FALSE );
-    UIDisableShiftChanges = TRUE;
-    TermIsQNXTerm = TRUE;
-
-    return( TRUE );
+        return( false );
+    UIDisableShiftChanges = true;
+    TermIsQNXTerm = true;
+    return( true );
 }
 
 bool TInfCheck( void )
 /********************/
 {
     // Check to see if the term variable is set
-    if( GetTermType()[0]!='\0' ){
-        UIDisableShiftChanges= TRUE;
-        TermIsQNXTerm= FALSE;
-        return( TRUE );
+    if( GetTermType()[0] != '\0' ) {
+        UIDisableShiftChanges = true;
+        TermIsQNXTerm = false;
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -113,22 +111,22 @@ bool TInfCheck( void )
  * Mini buffered IO code...
  */
 struct ostream {
-        char    *sbuf, *ebuf;
-        char    *curp;
-        int     fd;
+    char    *sbuf, *ebuf;
+    char    *curp;
+    int     fd;
 };
 
 static struct ostream _con_out;
 
 static bool ostream_init( int f )
 {
-        if( (_con_out.sbuf = malloc(2048)) == NULL ) {
-            return( FALSE );
-        }
-        _con_out.ebuf = _con_out.sbuf + 2048;
-        _con_out.curp = _con_out.sbuf;
-        _con_out.fd   = f;
-        return( TRUE );
+    if( (_con_out.sbuf = malloc( 2048 )) == NULL ) {
+        return( false );
+    }
+    _con_out.ebuf = _con_out.sbuf + 2048;
+    _con_out.curp = _con_out.sbuf;
+    _con_out.fd   = f;
+    return( true );
 }
 #define __putchar(_c) ((_con_out.curp < _con_out.ebuf) ? \
                         (*_con_out.curp++ = (_c)) : __oflush(_c))
@@ -277,20 +275,20 @@ static void putp( char *s )
 }
 
 // Whether to use code-changing optimizations in ti
-static bool OptimizeTerminfo= TRUE;
+static bool OptimizeTerminfo = true;
 
 /* TermInfo terminal codes
 */
 
 // The following are used to remember which attrs we want
-static bool TIABold=    0;      // bold
-static bool TIABlink=   0;      // blinking
-static bool TIAULine=   0;      // underline
-static bool TIARev=     0;      // inverted (reverse)
-static bool TIAACS=     0;      // alternate character set
+static bool TIABold =   false;  // bold
+static bool TIABlink =  false;  // blinking
+static bool TIAULine =  false;  // underline
+static bool TIARev =    false;  // inverted (reverse)
+static bool TIAACS =    false;  // alternate character set
 
 // True if clearing/filling operations will use the current back colour
-static bool TI_FillColourSet= FALSE;
+static bool TI_FillColourSet = false;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         putp( cursor_invisible )
@@ -358,7 +356,7 @@ static bool TI_FillColourSet= FALSE;
 #define TCAP_CLS        ( clear_screen[0] != '\0' || clr_eos[0] != '\0' )
 
 static unsigned         TI_repeat_cutoff = ~0;
-static bool             TI_ignore_bottom_right = TRUE;
+static bool             TI_ignore_bottom_right = true;
 
 /* Find out where using the repeat_char code becomes efficient if we
  * are going to be doing optimizations.
@@ -380,7 +378,7 @@ static void ti_find_cutoff( void )
  * x is the first column that we should be printing on. (used for a little
  * optimization)
  */
-static void TI_REPEAT_CHAR( char c, int n, int a, ORD x )
+static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
 {
     bool        blank;
     int         len;
@@ -510,10 +508,10 @@ static void TI_CURSOR_MOVE( register int c, register int r )
 
     // check to make sure the method we have so far is valid
     if( ( OldRow >= 0 && OldCol >= 0 )
-        && ( len.r != 0 || method.r == none )
-        && ( len.c != 0 || method.c == none )
-        && ( ( len.r + len.c ) < strlen( tparm( cursor_address, r, c ) ) )
-        && ( ( len.r + len.c ) < strlen( cursor_home ) || cursor_home[0] == '\0' ) ) {
+      && ( len.r != 0 || method.r == none )
+      && ( len.c != 0 || method.c == none )
+      && ( ( len.r + len.c ) < strlen( tparm( cursor_address, r, c ) ) )
+      && ( ( len.r + len.c ) < strlen( cursor_home ) || cursor_home[0] == '\0' ) ) {
         switch( method.c ) {
         case none:
             break;
@@ -561,10 +559,9 @@ static void TI_CURSOR_MOVE( register int c, register int r )
             }
             break;
         }
-    } else if( r == 0
-            && c == 0
-            && cursor_home[0] != '\0'
-            && strlen( cursor_home ) <= strlen( tparm( cursor_address, r, c ) ) ) {
+    } else if( r == 0 && c == 0
+      && cursor_home[0] != '\0'
+      && strlen( cursor_home ) <= strlen( tparm( cursor_address, r, c ) ) ) {
         putp( cursor_home );
     } else {
         putp( tparm( cursor_address, r, c ) );
@@ -577,9 +574,9 @@ static void TI_CURSOR_MOVE( register int c, register int r )
 static void TI_SETCOLOUR( register int f, register int b )
 {
     // an array of colour brightnesses
-    static char colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
+    static char colorpri[] = { 0, 1, 4, 2, 6, 5, 3, 7 };
 
-    if( TCAP_MONOCHROME ){
+    if( TCAP_MONOCHROME ) {
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
@@ -587,10 +584,10 @@ static void TI_SETCOLOUR( register int f, register int b )
             QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
             QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
-            TI_FillColourSet = FALSE;
+            TI_FillColourSet = false;
         } else {
             TIARev = 0;
-            TI_FillColourSet = TRUE;
+            TI_FillColourSet = true;
         }
         TI_SETATTR();
     } else {
@@ -599,9 +596,8 @@ static void TI_SETCOLOUR( register int f, register int b )
         // If we can set a colour pair then do so
         if( set_color_pair[0] != '\0' ) {
             putp( tparm( set_color_pair, f * 10 + b ) );
-
-        // else try to set colors individually
         } else {
+            // else try to set colors individually
             putp( tparm( set_background, b ) );
             putp( tparm( set_foreground, f ) );
         }
@@ -683,8 +679,8 @@ static int TI_EXEC_PROG( char *pnam )
 
     if( pnam != NULL && pnam[0] != '\0' ) {
         // get full path name of program
-        ppath= alloca( TI_PATH_LEN + strlen( pnam ) );
-        if( ppath == NULL ){
+        ppath = alloca( TI_PATH_LEN + strlen( pnam ) );
+        if( ppath == NULL ) {
             return( FALSE );
         }
         strcpy( ppath, TI_PATH_NAME );
@@ -750,7 +746,7 @@ static bool setupscrnbuff( int srows, int scols )
     int         cols;
 
     if( dev_size( UIConHandle, -1, -1, &rows, &cols ) == -1 )
-        return( FALSE );
+        return( false );
     if( rows == 0 ) {
         rows = srows;
         if( rows == 0 ) {
@@ -779,10 +775,10 @@ static bool setupscrnbuff( int srows, int scols )
 #if defined( __386__ )
     scrn = realloc( scrn, num );
     if( scrn == NULL )
-        return( FALSE );
-    if( (shadow = realloc( shadow, num )) == 0 ) {
+        return( false );
+    if( (shadow = realloc( shadow, num )) == NULL ) {
         free( scrn );
-        return( FALSE );
+        return( false );
     }
 #else
     {
@@ -794,7 +790,7 @@ static bool setupscrnbuff( int srows, int scols )
             seg = qnx_segment_realloc( FP_SEG( scrn ), num );
         }
         if( seg == -1 )
-            return( FALSE );
+            return( false );
         scrn = MK_FP( seg, 0 );
         if( shadow == NULL ) {
             seg = qnx_segment_alloc( num );
@@ -803,7 +799,7 @@ static bool setupscrnbuff( int srows, int scols )
         }
         if( seg == -1 ) {
             qnx_segment_free( FP_SEG( scrn ) );
-            return( FALSE );
+            return( false );
         }
         shadow = MK_FP( seg, 0 );
     }
@@ -816,7 +812,7 @@ static bool setupscrnbuff( int srows, int scols )
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;
-    return( TRUE );
+    return( true );
 }
 
 static volatile int SizePending;
@@ -856,12 +852,12 @@ static bool td_initconsole( void )
 /********************************/
 {
     if( !ostream_init( UIConHandle ) )
-        return( FALSE );
+        return( false );
     QNX_NOWRAP();
     QNX_NOBOLD();
     QNX_NOBLINK();
     __flush();
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -869,7 +865,7 @@ static bool td_initconsole( void )
 /********************************/
 {
     if( !ostream_init( UIConHandle ) )
-        return( FALSE );
+        return( false );
 
     // Initialize the term as documented in "Terminal Control Under QNX"
     TI_EXEC_PROG( init_prog );
@@ -895,16 +891,16 @@ static bool td_initconsole( void )
 
     __flush();
 
-    return( TRUE );
+    return( true );
 }
 
-int initmonitor( void )
-/*********************/
+bool initmonitor( void )
+/**********************/
 {
     UIData->colour = M_VGA;
     /* notify if screen size changes */
     signal( SIGDEV, &size_handler );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -912,7 +908,7 @@ int initmonitor( void )
 static int td_init( void )
 /************************/
 {
-    if (UIData == NULL) {
+    if( UIData == NULL ) {
         UIData = &ui_data;
     }
     if( !td_initconsole() )
@@ -1120,17 +1116,16 @@ static int td_refresh( int must )
     int             incr;
     LP_PIXEL        bufp, sbufp;
 
-    must|= UserForcedTermRefresh;
-    UserForcedTermRefresh= FALSE;
+    must |= UserForcedTermRefresh;
+    UserForcedTermRefresh = false;
 
-    if (dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1) {
+    if( dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1 ) {
         td_hwcursor();
         __flush();
         return( 0 );
     }
 
-QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0,
-                                    dirty.row1, dirty.col1);
+QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0, dirty.row1, dirty.col1);
 
     if( UIData->cursor_type != C_OFF )
         QNX_CURSOR_OFF();
@@ -1146,13 +1141,12 @@ QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0,
 */
     for( i = dirty.row0; i < dirty.row1; i++ ) {
         int     j;
-        int     lastattr = -1;  // invalid to start
-        int     ca_valid=0;     // is cursor address valid?
+        int     lastattr = -1;      // invalid to start
+        bool    ca_valid = false;   // is cursor address valid?
 
         for( j = dirty.col0; j < dirty.col1; j++ ) {
-            if( !must && bufp[j].ch == sbufp[j].ch &&
-                bufp[j].attr == sbufp[j].attr ) {
-                ca_valid = 0;
+            if( !must && PIXELEQUAL( bufp[j], sbufp[j] ) ) {
+                ca_valid = false;
                 lastattr = -1;
                 continue;
             }
@@ -1160,7 +1154,7 @@ QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0,
             if( !ca_valid ) {
 QNXDebugPrintf2("cursor address %d,%d\n",j,i);
                 QNX_CURSOR_MOVE( j, i );
-                ca_valid = 1;
+                ca_valid = true;
             }
             if( bufp[j].attr != lastattr ) {
                 lastattr = new_attr( bufp[j].attr, lastattr );
@@ -1196,7 +1190,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
     {                           \
         if( rcount != 0 && ( rchar != ti_char_map[c] || ralt != ti_alt_map( c ) ) ) \
             TI_DUMPCHARS();     \
-        rcol = (rcount == 0)?j:rcol; \
+        rcol = (rcount == 0) ? j : rcol; \
         rcount++;               \
         rchar = ti_char_map[c]; \
         ralt = ti_alt_map(c);   \
@@ -1249,8 +1243,6 @@ static void update_shadow( void )
 
     // set dirty rectangle to be empty
     dirty.row0 = dirty.row1 = dirty.col0 = dirty.col1 = 0;
-
-    return;
 }
 
 
@@ -1268,7 +1260,7 @@ static int ti_refresh( int must )
     LP_PIXEL    bufEnd;
     bool        cls = dirty.row1;   // line on which we should clr_eos
                                     // and then continue to draw
-    bool        done = FALSE;
+    bool        done = false;
 
     // Need these for startup and the refresh key
     if( UserForcedTermRefresh ) {
@@ -1278,7 +1270,7 @@ static int ti_refresh( int must )
         OldRow = -1;
     }
     must |= UserForcedTermRefresh;
-    UserForcedTermRefresh = FALSE;
+    UserForcedTermRefresh = false;
 
     // Move the cursor & return if dirty box contains no chars
     if( dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1 ) {
@@ -1305,7 +1297,7 @@ static int ti_refresh( int must )
     incr = UIData->screen.increment;
 
     // Find a place where we could use clear to end of screen
-    if( OptimizeTerminfo ){
+    if( OptimizeTerminfo ) {
         blankStart = NonBlankEnd( bufEnd, bufSize, *bufEnd ) + 1;
     } else {
         blankStart = bufEnd;
@@ -1315,21 +1307,20 @@ static int ti_refresh( int must )
         // if we could do it at the top then we might as well
         // not bother doing anything else
         lastattr = new_attr( UIData->screen.origin->attr, -1 );
-        done = TRUE;
+        done = true;
     } else {
         lastattr = -1;
 
         if( !must ) {
             int         r,c;
             int         pos;
-            bool        diff = FALSE;
+            bool        diff = false;
 
             while( dirty.col0 < dirty.col1 ) {
                 for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos = r * incr + dirty.col0;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                        || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1338,13 +1329,12 @@ static int ti_refresh( int must )
                 dirty.col0++;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.col0 < dirty.col1 ) {
                 for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos = r * incr + dirty.col1 - 1;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1353,13 +1343,12 @@ static int ti_refresh( int must )
                 dirty.col1--;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.row0 < dirty.row1 ) {
                 for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos = dirty.row0 * incr + c;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1368,13 +1357,12 @@ static int ti_refresh( int must )
                 dirty.row0++;
             }
 
-            diff = FALSE;
+            diff = false;
             while( dirty.row0 < dirty.row1 ) {
                 for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos = ( dirty.row1 - 1 ) * incr + c;
-                    if( bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr ) {
-                        diff = TRUE;
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
+                        diff = true;
                         break;
                     }
                 }
@@ -1406,8 +1394,7 @@ static int ti_refresh( int must )
 
                     pos = cls * incr;
                     pos2 = pos + UIData->width - 1;
-                    if( (bufp[pos].ch != sbufp[pos].ch
-                      || bufp[pos].attr != sbufp[pos].attr)
+                    if( !PIXELEQUAL( bufp[pos], sbufp[pos] )
                       && ( bufp[pos].ch != sbufp[pos2].ch
                       || bufp[pos].attr == sbufp[pos2].attr) ) {
                         break;
@@ -1434,7 +1421,7 @@ static int ti_refresh( int must )
     } else {
         // we still have work to do if it turned out we couldn't use the
         // blank start after all
-        done = FALSE;
+        done = false;
     }
 
     if( !done ) {
@@ -1444,21 +1431,21 @@ static int ti_refresh( int must )
 
         int             rcount;         // repeat count
         char            rchar;          // repeated character
-        int             ralt;           // if repeated character is in acs
+        bool            ralt;           // if repeated character is in acs
         int             rcol;           // starting column of repeated chars
 
         bufp += dirty.row0 * incr;
         sbufp += dirty.row0 * incr;
 
         for( i = dirty.row0; i < dirty.row1; i++ ) {
-            ca_valid = FALSE;
+            ca_valid = false;
             rcount = 0;
 
             if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
                 putp( clr_eos );
-                ca_valid = TRUE;
+                ca_valid = true;
                 //assert( dirty.col0==0 && dirty.col1==UIData->width );
             }
 
@@ -1466,11 +1453,9 @@ static int ti_refresh( int must )
                 pos = &bufp[j];
                 if( !must && (
                     ( cls <= i )
-                    ? (bufp[j].ch == ' ' && ((bufp[j].attr & 112) == 0))
-                    : ( bufp[j].ch == sbufp[j].ch
-                        && bufp[j].attr == sbufp[j].attr
-                        && pos <= blankStart)) ) {
-                    ca_valid = FALSE;
+                    ? ( bufp[j].ch == ' ' && ( (bufp[j].attr & 0x70) == 0 ) )
+                    : ( PIXELEQUAL( bufp[j], sbufp[j] ) && pos <= blankStart ) ) ) {
+                    ca_valid = false;
                     continue;
                 }
 
@@ -1480,7 +1465,7 @@ static int ti_refresh( int must )
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
                     TI_CURSOR_MOVE( j, i );
-                    ca_valid = TRUE;
+                    ca_valid = true;
                 }
 
                 if( bufp[j].attr != lastattr ) {
@@ -1491,7 +1476,7 @@ static int ti_refresh( int must )
 
                 // Clear to end of screen if we can
                 if( pos > blankStart ) {
-                    if( TI_FillColourSet ){
+                    if( TI_FillColourSet ) {
                         // Dump before blank to end of screen...
                         TI_DUMPCHARS();
                         putp( clr_eos );
@@ -1502,10 +1487,9 @@ static int ti_refresh( int must )
                     }
                 }
 
-                if( !TI_ignore_bottom_right || (j != UIData->width - 1) ||
-                                                    (i != UIData->height - 1) ) {
+                if( !TI_ignore_bottom_right || (j != UIData->width - 1) || (i != UIData->height - 1) ) {
                     // slurp up the char
-                    TI_SLURPCHAR( (unsigned char)(bufp[j].ch) );
+                    TI_SLURPCHAR( bufp[j].ch );
                     OldCol++;
 
                     // if we walk off the edge our position is undefined
@@ -1545,7 +1529,7 @@ static int new_attr( int nattr, int oattr )
     if( oattr == -1 ) {
         oval.attr = ~nval.attr;
     }
-    if( TermIsQNXTerm ){
+    if( TermIsQNXTerm ) {
         if( nval.bold != oval.bold || nval.blink != oval.blink ) {
             if( nval.bold ) {
                 QNX_BOLD();
@@ -1564,7 +1548,7 @@ static int new_attr( int nattr, int oattr )
         }
     } else {
         if( nval.bold != oval.bold ||
-            nval.blink != oval.blink ){
+            nval.blink != oval.blink ) {
             TIABold = nval.bold;
             TIABlink = nval.blink;
             // Note: the TI_SETCOLOUR below has to set the attributes
@@ -1577,7 +1561,7 @@ static int new_attr( int nattr, int oattr )
         if( nval.bold != oval.bold ||
             nval.blink != oval.blink ||
             nval.fore != oval.fore ||
-            nval.back != oval.back ){
+            nval.back != oval.back ) {
             TI_SETCOLOUR( nval.fore, nval.back );
         }
     }
@@ -1606,7 +1590,7 @@ static int td_setcur( ORD row, ORD col, int typ, int attr )
         UIData->cursor_row = row;
         UIData->cursor_col = col;
         newcursor();
-        if( TermIsQNXTerm ){
+        if( TermIsQNXTerm ) {
             td_hwcursor();
         } else {
             ti_hwcursor();

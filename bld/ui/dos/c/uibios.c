@@ -410,21 +410,21 @@ bool intern initmonitor( void )
         */
         UIData->colour = M_VGA;
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 
-int intern initbios( void )
-/*************************/
+bool intern initbios( void )
+/**************************/
 {
-    int                                 initialized;
-    unsigned short __far                *poffset;
-    LP_PIXEL                            old_origin;
+    bool                    initialized;
+    unsigned short __far    *poffset;
+    LP_PIXEL                old_origin;
 
-    initialized = FALSE;
+    initialized = false;
     if( initmonitor() ) {
         UIData->desqview = (desqview_present() != 0);
         UIData->f10menus = TRUE;
@@ -459,7 +459,7 @@ int intern initbios( void )
             UIData->mouse_clk_delay = 5;   /* ticks */
             UIData->tick_delay = 9;        /* ticks */
             UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
-            initialized = TRUE;
+            initialized = true;
         }
     }
     return( initialized );

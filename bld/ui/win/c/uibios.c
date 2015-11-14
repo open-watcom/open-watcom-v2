@@ -76,19 +76,19 @@ bool intern initmonitor( void )
         UIData = &ui_data;
     }
 //    UIData->height = 25;
-    return( TRUE );
+    return( true );
 }
 
 
 //static void (__far __pascal *HookFunc)(void __far *) = NULL;
 extern void __far HookRtn( unsigned , unsigned );
 
-int intern initbios( void )
-/*************************/
+bool intern initbios( void )
+/**************************/
 {
-    int                                 initialized;
+    bool        initialized;
 
-    initialized = FALSE;
+    initialized = false;
     if( initmonitor() ) {
         UIData->desqview = 0;
         UIData->f10menus = TRUE;
@@ -105,7 +105,7 @@ int intern initbios( void )
         UIData->mouse_rpt_delay = 1;   /* ticks */
         UIData->mouse_clk_delay = 5;   /* ticks */
         UIData->tick_delay = 9;        /* ticks */
-        initialized = TRUE;
+        initialized = true;
     }
     return( initialized );
 }

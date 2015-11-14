@@ -415,7 +415,7 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = FALSE;
     }
-    if( isdialogue( vptr ) == FALSE ) {
+    if( !isdialogue( vptr ) ) {
         if( NumMenus > 0 ) {
             desc = &Describe[ Menu->menu - 1 ];
             newevent = EV_NO_EVENT; /* Moved here from "else" case below */

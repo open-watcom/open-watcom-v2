@@ -39,9 +39,9 @@ void intern battribute( BUFFER *bptr, int row, int col,
                                       int height, int width, ATTR attr )
 /**********************************************************************/
 {
-    register    LP_PIXEL                dst;
-    register    bool                    snow;
-    register    int                     r;
+    LP_PIXEL                dst;
+    bool                    snow;
+    int                     r;
 
     snow = issnow( bptr );
     for( r = row ; r < row + height ; ++r ) {
@@ -55,9 +55,9 @@ void intern battrflip( BUFFER *bptr, int row, int col,
                                      int height, int width )
 /**********************************************************/
 {
-    register    LP_PIXEL                dst;
-    register    int                     r;
-    register    bool                    snow;
+    LP_PIXEL                dst;
+    int                     r;
+    bool                    snow;
 
     snow = issnow( bptr );
     for( r = row ; r < row + height ; ++r ) {

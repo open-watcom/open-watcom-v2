@@ -43,7 +43,7 @@
 bool intern isdialogue( VSCREEN *vptr )
 /*************************************/
 {
-    return( ( vptr != NULL ) && ( ( vptr->flags & V_DIALOGUE ) != 0 ) );
+    return( ( vptr != NULL ) && ( (vptr->flags & V_DIALOGUE) != 0 ) );
 }
 
 

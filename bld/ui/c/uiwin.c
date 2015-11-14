@@ -36,9 +36,9 @@
 static bool covered( SAREA area, UI_WINDOW *wptr )
 /************************************************/
 {
-    register    int                     i;
-    register    bool                    flag;
-    auto        SAREA                   areas[ 5 ];
+    int             i;
+    bool            flag;
+    SAREA           areas[ 5 ];
 
     dividearea( area, wptr->area, areas );
     flag = ( areas[ 0 ].height > 0 );
@@ -124,7 +124,7 @@ bool intern openwindow( UI_WINDOW *wptr )
     wptr->dirty = wptr->area;
     insert( wptr, wptr->priority );
     if( wptr->prev == NULL ) {
-        return( FALSE );
+        return( false );
     } else {
         return( covered( wptr->area, wptr->prev ) );
     }

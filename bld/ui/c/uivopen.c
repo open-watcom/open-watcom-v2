@@ -57,16 +57,16 @@ static void update( SAREA area, VSCREEN *vptr )
 VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
 /***********************************************/
 {
-    register    char*                   box;
-    register    ATTR                    attr;
-    register    int                     priority;
-    register    void                    (_FAR *updatertn)( struct sarea, void * );
-    register    bool                    okbuffer;
-    register    int                     len;
-    register    ORD                     col;
-    register    unsigned int            flags;
-    register    bool                    covered;
-    auto        SAREA                   area;
+    char                    *box;
+    ATTR                    attr;
+    int                     priority;
+    void                    (_FAR *updatertn)( struct sarea, void * );
+    bool                    okbuffer;
+    int                     len;
+    ORD                     col;
+    unsigned int            flags;
+    bool                    covered;
+    SAREA                   area;
 
     okarea( vptr->area );
     flags = vptr->flags;
@@ -96,7 +96,7 @@ VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
     if( ( flags & V_UNBUFFERED ) != 0 ) {
         priority = P_UNBUFFERED;
         bfake( &(vptr->window.type.buffer), area.row, area.col );
-        okbuffer = TRUE;
+        okbuffer = true;
         updatertn = NULL;
     } else {
         okbuffer = balloc( &(vptr->window.type.buffer), area.height, area.width );
@@ -110,9 +110,7 @@ VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
         covered = openwindow( &(vptr->window) );
         vptr->flags = flags;
         if( ( flags & V_UNFRAMED ) == 0 ) {
-            if( ( !UIData->no_blowup ) &&
-                ( covered == FALSE ) &&
-                ( ( flags & V_NO_ZOOM ) == 0 ) ) {
+            if( !UIData->no_blowup && !covered && ( (flags & V_NO_ZOOM) == 0 ) ) {
                 blowup( &UIData->screen, area, box, attr );
             }
             area.row = 0;
@@ -192,7 +190,7 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
     old = vptr->area;
     if( balloc( &(wptr->type.buffer), new.height, new.width ) ) {
         vptr->area = new;
-        if( ( vptr->flags & V_UNFRAMED ) == 0 ) {
+        if( (vptr->flags & V_UNFRAMED) == 0 ) {
             (new.row)--;
             (new.col)--;
             (new.height) += 2;
@@ -205,7 +203,7 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
         if( min_width > old.width )
             min_width = old.width;
         min_height = new.height;
-        if( min_height = old.height )
+        if( min_height > old.height )
             min_height = old.height;
         for( i = 0; i < min_height; i++ ) {
             uibcopy( &(old_buff), i, 0, &(wptr->type.buffer), i, 0, min_width );
@@ -229,8 +227,8 @@ void UIAPI uivmove( VSCREEN *vptr, ORD row, ORD col )
     int         cdiff;
     UI_WINDOW   *wptr;
 
-    rdiff = (int) row - (int) vptr->area.row;
-    cdiff = (int) col - (int) vptr->area.col;
+    rdiff = (int)row - (int)vptr->area.row;
+    cdiff = (int)col - (int)vptr->area.col;
     vptr->area.row = row;
     vptr->area.col = col;
     okarea( vptr->area );
