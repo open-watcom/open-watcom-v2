@@ -13,7 +13,7 @@
 #	of the software. dosemu can hang if OWROOT is long
 #	or contain long names of the directories.
 
-export OWROOT=`pwd`
+export OWROOT=$(realpath `pwd`)
 
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
