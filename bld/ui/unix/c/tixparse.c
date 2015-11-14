@@ -70,18 +70,19 @@ typedef enum {
     TT_EOF
 } tix_token;
 
-extern char     *UITermType;
+static FILE         *in_file= NULL;
 
-static FILE     *in_file= NULL;
-
-char            ti_char_map[256][4];
-unsigned char   _ti_alt_map[32];
+char                ti_char_map[256][4];
+unsigned char       _ti_alt_map[32];
 
 static void tix_error( const char *str )
 /*************************/
 {
+    const char  *term;
+
+    term = GetTermType();
     uiwritec( "\nError in " );
-    uiwrite( UITermType );
+    uiwrite( term );
     uiwritec( ": " );
     uiwrite( str );
     uiwritec( "\n" );
@@ -91,7 +92,7 @@ FILE *ti_fopen( const char *fnam )
 /********************************/
 {
     FILE        *res;
-    char        *homeDir;
+    const char  *homeDir;
     char        fpath[FILENAME_MAX+1];
 
     if( fnam == NULL || fnam[0] == '\0' ) {
@@ -468,7 +469,7 @@ int ti_read_tix( const char *termname )
 {
     int         i;
     int         ret;
-    char        *s;
+    const char  *s;
     int         utf8_mode = 0;
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );

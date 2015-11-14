@@ -231,7 +231,7 @@ static void DoMouseInit( int type, char *init, char *input )
 static int tm_init( bool install )
 /********************************/
 {
-    char        *term;
+    const char      *term;
 
     MouseInstalled = FALSE;
     MouseType = M_NONE;

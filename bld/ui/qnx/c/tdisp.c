@@ -88,10 +88,7 @@ static int          ti_refresh( int must );
 bool TermCheck( void )
 /********************/
 {
-    char        *term;
-
-    term = GetTermType();
-    if( strstr( term, "qnx" ) == 0 )
+    if( strstr( GetTermType(), "qnx" ) == 0 )
         return( FALSE );
     UIDisableShiftChanges = TRUE;
     TermIsQNXTerm = TRUE;
@@ -942,7 +939,7 @@ static int td_init( void )
 /************************/
 {
     int         rows, cols;
-    char        *tmp;
+    const char  *tmp;
 
     if( UIData == NULL ) {
         UIData = &ui_data;

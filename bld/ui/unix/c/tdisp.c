@@ -942,7 +942,7 @@ static int ti_init( void )
 /************************/
 {
     int         rows, cols;
-    char        *tmp;
+    const char  *tmp;
 
     if( UIData == NULL ) {
         UIData = &ui_data;

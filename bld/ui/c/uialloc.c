@@ -64,7 +64,7 @@ void UIMemRedirect( int handle )
 extern void UIMemOpen( void )
 {
 #ifdef TRMEM
-    char        *tmpdir;
+    const char      *tmpdir;
 
     if( !UIMemOpened ) {
 #ifdef NLM

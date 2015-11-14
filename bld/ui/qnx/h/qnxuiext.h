@@ -51,4 +51,6 @@ extern pid_t            UIPGroup;
 extern unsigned         UIWantShiftChanges;
 extern unsigned long    MouseTime;
 
+extern const char       *GetTermType( void );
+
 #endif

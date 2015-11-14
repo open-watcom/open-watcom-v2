@@ -56,10 +56,10 @@
 #include "uiproxy.h"
 #include "ctkeyb.h"
 
-extern PossibleDisplay DisplayList[];
+extern PossibleDisplay      DisplayList[];
 extern struct _console_ctrl *UIConCtrl;
 
-char    *UITermType;    /* global so that the debugger can get at it */
+static const char           *UITermType = NULL; /* global so that the debugger can get at it */
 
 
 bool UIAPI uiset80col( void )
@@ -74,11 +74,12 @@ unsigned UIAPI uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType( void )
+const char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
-        if( UITermType == NULL ) UITermType = "";
+        if( UITermType == NULL )
+            UITermType = "";
         if( UIConCtrl != NULL && strstr( UITermType, "qnx" ) == 0 ) {
             /* We're always a QNX terminal if UIConCtrol != NULL */
             UITermType = "qnx";
@@ -106,13 +107,23 @@ int intern initbios( void )
     if( dev_info( UIConHandle, &dev ) == -1 ) return( FALSE );
     UIConNid = dev.nid;
     UIConsole = dev.unit;               // what console did we get?
-    if( !UIProxySetup() ) return( FALSE );
+    if( !UIProxySetup() )
+        return( FALSE );
 
     /* It's OK if this call fails */
     UIConCtrl = console_open( UIConHandle, O_WRONLY );
+    {
+        const char  *p1;
+        char        *p2;
 
-    __setupterm( GetTermType(), UIConHandle, &error );
-    if( error != 1 ) return( FALSE );
+        p1 = GetTermType();
+        p2 = malloc( strlen( p1 ) + 1 );
+        strcpy( p2, p1 );
+        __setupterm( p2, UIConHandle, &error );
+        free( p2 );
+    }
+    if( error != 1 )
+        return( FALSE );
     // Check to make sure terminal is suitable
     if( (cursor_address[0]=='\0') || hard_copy ) {
         __del_curterm( __cur_term );

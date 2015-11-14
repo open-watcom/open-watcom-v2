@@ -85,7 +85,7 @@ static FILE *ti_fopen( const char *fnam )
 {
     FILE        *res;
     char        *fpath;
-    char        *homeDir;
+    const char  *homeDir;
     unsigned    size;
     unsigned    len;
 
@@ -94,12 +94,12 @@ static FILE *ti_fopen( const char *fnam )
     }
 
     // first look in current directory
-    res= fopen( fnam, "r" );
+    res = fopen( fnam, "r" );
     if( res != NULL )
         return( res );
 
     // if it's not there, look in the user's home directory
-    homeDir= getenv( "HOME" );
+    homeDir = getenv( "HOME" );
     if( homeDir == NULL )
         homeDir = "";
     size = strlen( homeDir ) + 1;

@@ -431,7 +431,7 @@ EVENT tk_keyboardevent( void )
 int init_trie( void )
 /*******************/
 {
-    char        *str;
+    const char  *str;
     char        buff[2];
     int         i;
 
@@ -441,10 +441,10 @@ int init_trie( void )
 
     str = getenv( "TERM" );
     /* attempt to adjust backspace with the terminfo definition */
-    if( str && strncmp(str, "xterm", 5) == 0 ) {
-        if( strcmp(key_backspace, "\x08" ) == 0 ) {
+    if( str != NULL && strncmp( str, "xterm", 5 ) == 0 ) {
+        if( strcmp( key_backspace, "\x08" ) == 0 ) {
             uiwritec( "\x1b[?67h" );
-        } else if( strcmp(key_backspace, "\x7f" ) == 0 ) {
+        } else if( strcmp( key_backspace, "\x7f" ) == 0 ) {
             uiwritec( "\x1b[?67l" );
         }
     }

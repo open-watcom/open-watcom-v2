@@ -43,10 +43,11 @@
 #define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
 
 extern int              UIConHandle;
-extern FILE *           UIConFile;
+extern FILE             *UIConFile;
 extern pid_t            UIPGroup;
 extern unsigned         UIWantShiftChanges;
 extern unsigned long    MouseTime;
-extern char *           UITermType;
+
+extern const char       *GetTermType( void );
 
 #endif

@@ -44,8 +44,9 @@
 #include "ctkeyb.h"
 #include "qdebug.h"
 
-extern PossibleDisplay DisplayList[];
-char    *UITermType;    /* global so that the debugger can get at it */
+extern PossibleDisplay  DisplayList[];
+
+static const char       *UITermType = NULL; /* global so that the debugger can get at it */
 
 bool UIAPI uiset80col( void )
 {
@@ -59,7 +60,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType( void )
+const char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
@@ -75,19 +76,29 @@ int intern initbios( void )
     PossibleDisplay             *curr;
 
     if( UIConFile == NULL ) {
-        char *tty;
+        const char  *tty;
 
         tty = getenv( "TTY" );
         if( tty == NULL ) {
             tty = "/dev/tty";
         }
         UIConFile = fopen( tty, "w+" );
-        if( UIConFile == NULL ) return( FALSE );
+        if( UIConFile == NULL )
+            return( FALSE );
         UIConHandle = fileno( UIConFile );
         fcntl( UIConHandle, F_SETFD, 1 );
     }
 
-    setupterm( GetTermType(), UIConHandle, (int *)0);
+    {
+        const char  *p1;
+        char        *p2;
+
+        p1 = GetTermType();
+        p2 = malloc( strlen( p1 ) + 1 );
+        strcpy( p2, p1 );
+        setupterm( p2, UIConHandle, NULL );
+        free( p2 );
+    }
     /* will report an error message and exit if any
        problem with a terminfo */
 
@@ -100,8 +111,10 @@ int intern initbios( void )
     curr = DisplayList;
 
     for( ;; ) {
-        if( curr->check == NULL ) return( FALSE );
-        if( curr->check() ) break;
+        if( curr->check == NULL )
+            return( FALSE );
+        if( curr->check() )
+            break;
         ++curr;
     }
     UIVirt = curr->virt;

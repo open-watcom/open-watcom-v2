@@ -327,7 +327,7 @@ int             BandOn = 0;
                         // do nothing
 #else
                         {
-                            char *command;
+                            const char  *command;
 
                             command = getenv( "COMSPEC" );
                             if( command == NULL ){
