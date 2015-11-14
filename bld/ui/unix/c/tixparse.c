@@ -57,7 +57,7 @@
 #include <unistd.h>
 
 #include "stdui.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "tixparse.h"
 #include "trie.h"
 

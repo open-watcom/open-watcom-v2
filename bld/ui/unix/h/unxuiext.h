@@ -30,13 +30,14 @@
 ****************************************************************************/
 
 
+#ifndef unxuiext_h
+#define unxuiext_h
 
-#ifndef qnxuiext_h
-#define qnxuiext_h
 #ifndef __TYPES_H_INCLUDED
 #include <sys/types.h>
 #endif
 #include <stdio.h>
+
 
 extern int              UIConHandle;
 extern FILE *           UIConFile;
@@ -44,7 +45,5 @@ extern pid_t            UIPGroup;
 extern unsigned         UIWantShiftChanges;
 extern unsigned long    MouseTime;
 extern char *           UITermType;
-
-
 
 #endif

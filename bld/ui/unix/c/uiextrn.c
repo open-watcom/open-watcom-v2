@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include "uidef.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "uivirt.h"
 
         /* filedescriptor */

@@ -78,7 +78,7 @@
 #include "qdebug.h"
 
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "ctkeyb.h"
 
 #include "tixparse.h"

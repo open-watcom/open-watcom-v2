@@ -45,7 +45,7 @@
 #include "uishift.h"
 
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "qdebug.h"
 
 #include "trie.h"
