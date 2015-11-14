@@ -431,36 +431,36 @@ typedef unsigned char   ATTR;
 
 #if defined(__NT__)
     typedef struct pixel {
-            unsigned short  ch;
-            unsigned short  attr;
+        unsigned short  ch;
+        unsigned short  attr;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__OS2__) && defined(__386__)
     typedef struct pixel {
-            char            ch;
-            ATTR            attr;
+        unsigned char   ch;
+        ATTR            attr;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__UNIX__)
     typedef struct pixel {
-            unsigned char   ch;
-            ATTR            attr;
+        unsigned char   ch;
+        ATTR            attr;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__RDOS__)
     typedef struct pixel {
-            unsigned char   ch;
-            ATTR            attr;
+        unsigned char   ch;
+        ATTR            attr;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined( _M_IX86 )
     typedef struct pixel {
-            char            ch;
-            ATTR            attr;
+        unsigned char   ch;
+        ATTR            attr;
     } PIXEL;
     #define __FAR __far
     #define HAVE_FAR
