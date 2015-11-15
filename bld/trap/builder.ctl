@@ -79,18 +79,31 @@ set PROJNAME=trap
     <CCCMD> lcl/win/int32/wint32.dll                  <OWRELROOT>/binw/
 
     <CCCMD> lcl/nt/std/std.dll                        <OWRELROOT>/binnt/
+    <CCCMD> lcl/nt/std/std.sym                        <OWRELROOT>/binnt/
     <CCCMD> net/nt.trp/net.dll                        <OWRELROOT>/binnt/
+    <CCCMD> net/nt.trp/net.sym                        <OWRELROOT>/binnt/
     <CCCMD> net/nt.srv/netserv.exe                    <OWRELROOT>/binnt/
+    <CCCMD> net/nt.srv/netserv.sym                    <OWRELROOT>/binnt/
 #    <CCCMD> nmp/nt.trp/nmp.dll                       <OWRELROOT>/binnt/
+#    <CCCMD> nmp/nt.trp/nmp.sym                       <OWRELROOT>/binnt/
     <CCCMD> nov/nt.trp/nov.dll                        <OWRELROOT>/binnt/
+    <CCCMD> nov/nt.trp/nov.sym                        <OWRELROOT>/binnt/
     <CCCMD> nov/nt.srv/novserv.exe                    <OWRELROOT>/binnt/
+    <CCCMD> nov/nt.srv/novserv.sym                    <OWRELROOT>/binnt/
     <CCCMD> par/nt.trp/par.dll                        <OWRELROOT>/binnt/
+    <CCCMD> par/nt.trp/par.sym                        <OWRELROOT>/binnt/
     <CCCMD> par/nt.srv/parserv.exe                    <OWRELROOT>/binnt/
+    <CCCMD> par/nt.srv/parserv.sym                    <OWRELROOT>/binnt/
     <CCCMD> ser/nt.trp/ser.dll                        <OWRELROOT>/binnt/
+    <CCCMD> ser/nt.trp/ser.sym                        <OWRELROOT>/binnt/
     <CCCMD> ser/nt.srv/serserv.exe                    <OWRELROOT>/binnt/
+    <CCCMD> ser/nt.srv/serserv.sym                    <OWRELROOT>/binnt/
     <CCCMD> tcp/nt.trp/tcp.dll                        <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt.trp/tcp.sym                        <OWRELROOT>/binnt/
     <CCCMD> tcp/nt.srv/tcpserv.exe                    <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt.srv/tcpserv.sym                    <OWRELROOT>/binnt/
     <CCCMD> vdm/nt.trp/vdm.dll                        <OWRELROOT>/binnt/
+    <CCCMD> vdm/nt.trp/vdm.sym                        <OWRELROOT>/binnt/
 # NT parallel port device driver and installer
     <CCCMD> par/ntsupp/dbgport.sys                    <OWRELROOT>/binnt/
     <CCCMD> par/ntsupp/dbginst.exe                    <OWRELROOT>/binnt/
@@ -118,10 +131,15 @@ set PROJNAME=trap
     <CCCMD> tcp/qnx.srv/tcpserv.exe                   <OWRELROOT>/qnx/binq/tcpserv
 
     <CCCMD> lcl/linux/std/std.trp                     <OWRELROOT>/binl/
+    <CCCMD> lcl/linux/std/std.sym                     <OWRELROOT>/binl/
     <CCCMD> par/linux.trp/par.trp                     <OWRELROOT>/binl/
+    <CCCMD> par/linux.trp/par.sym                     <OWRELROOT>/binl/
     <CCCMD> par/linux.srv/parserv.exe                 <OWRELROOT>/binl/parserv
+    <CCCMD> par/linux.srv/parserv.sym                 <OWRELROOT>/binl/
     <CCCMD> tcp/linux.trp/tcp.trp                     <OWRELROOT>/binl/
+    <CCCMD> tcp/linux.trp/tcp.sym                     <OWRELROOT>/binl/
     <CCCMD> tcp/linux.srv/tcpserv.exe                 <OWRELROOT>/binl/tcpserv
+    <CCCMD> tcp/linux.srv/tcpserv.sym                 <OWRELROOT>/binl/
 
     <CCCMD> lcl/rdos/std/std.dll                      <OWRELROOT>/rdos/
     <CCCMD> lcl/rdos/std/std.sym                      <OWRELROOT>/rdos/
