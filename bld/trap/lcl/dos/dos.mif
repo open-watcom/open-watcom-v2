@@ -10,4 +10,7 @@ dos_objs = dossplit.obj &
 
 inc_dirs += -I"$(trap_dir)/lcl/dos/h"
 extra_srcs +=;$(trap_dir)/lcl/dos/c;$(trap_dir)/lcl/dos/asm
+
 !include $(trap_dir)/lcl/lcl.mif
+
+.c : $(watcom_dir)/c
