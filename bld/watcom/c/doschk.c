@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "tinyio.h"
 #include "doschk.h"
 
@@ -40,7 +41,6 @@ typedef struct {
 } dos_mem_block;
 #include "poppck.h"
 
-#define CHECK_FILE  "___CHK.MEM"
 #define MEMORY_BLOCK 'M'
 #define END_OF_CHAIN 'Z'
 #define MCB_PTR(curr)       ((dos_mem_block __based( curr ) *)0)
@@ -101,12 +101,11 @@ int CheckPointMem( unsigned max, char *f_buff )
     } else {
         *f_buff++ = '\\';
     }
-    for( p = CHECK_FILE; *f_buff = *p; ++p, ++f_buff )
+    for( p = "SWXXXXXX"; *f_buff = *p; ++p, ++f_buff )
         {}
-    rc = TinyCreate( ChkFile, TIO_NORMAL );
-    if( TINY_ERROR( rc ) )
+    hdl = mkstemp( ChkFile );
+    if( hdl == -1 )
         return( 0 );
-    hdl = TINY_INFO( rc );
     if( size > max )
         size = max;
     chk = end - size - 1;
