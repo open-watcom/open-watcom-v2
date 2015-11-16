@@ -1368,6 +1368,18 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [bx] [edx] [ecx] \
         value           [eax];
 
+#pragma aux             _fTinyWrite = \
+        "push ds"       \
+        "xchg edx,eax"  \
+        "mov ds,ax"     \
+        "mov ah,40h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        "pop ds"        \
+        parm caller     [bx] [dx eax] [ecx] \
+        value           [eax];
+
 #pragma aux             _nTinyRead = \
         "mov ah,3Fh"    \
         _INT_21         \
@@ -1379,12 +1391,12 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _fTinyRead = \
         "push ds"       \
         "xchg edx,eax"  \
-        "mov ds,ax"     \
+        "mov ds,eax"    \
         "mov ah,3Fh"    \
         _INT_21         \
-        "pop ds"        \
         "rcl eax,1"     \
         "ror eax,1"     \
+        "pop ds"        \
         parm caller     [bx] [dx eax] [ecx] \
         value           [eax];
 
@@ -1470,6 +1482,17 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "rcl eax,1"     \
         "ror eax,1"     \
         parm caller     [esi] [dl] \
+        value           [eax];
+
+#pragma aux             _fTinyGetCWDir = \
+        "push ds"       \
+        "mov  ds,ecx"   \
+        _MOV_AH DOS_GETCWD \
+        _INT_21         \
+        "rcl  eax,1"    \
+        "ror  eax,1"    \
+        "pop  ds"       \
+        parm caller     [cx esi] [dl] \
         value           [eax];
 
 #pragma aux             _TinyDup = \
@@ -1737,6 +1760,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [bx] [ecx] [esi] \
         value           [eax] \
         modify          [edx edi];
+
+#pragma aux             _TinyGetPSP = \
+        _PUSHF          \
+        _MOV_AH 0x51    \
+        _INT_21         \
+        _POPF           \
+        value           [ebx] \
+        modify exact    [eax ebx];
 
 #elif defined( _M_I86 )
 
