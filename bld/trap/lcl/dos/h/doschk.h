@@ -29,5 +29,5 @@
 ****************************************************************************/
 
 
-extern bool CheckPointMem( unsigned max, char *f_buff );
+extern int  CheckPointMem( unsigned max, char *f_buff );
 extern void CheckPointRestore( void );

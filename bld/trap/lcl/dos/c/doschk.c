@@ -29,23 +29,23 @@
 ****************************************************************************/
 
 
-#include <i86.h>
 #include "tinyio.h"
-#include "trpimp.h"
 #include "doschk.h"
 
-typedef _Packed struct {
-    char        chain;  /* 'M' memory block, 'Z' is last in chain */
-    unsigned_16 owner;  /* 0x0000 ==> free, otherwise psp address */
-    unsigned_16 size;   /* in paragraphs, not including header  */
+#include "pushpck1.h"
+typedef struct {
+    char            chain;  /* 'M' memory block, 'Z' is last in chain */
+    unsigned short  owner;  /* 0x0000 ==> free, otherwise psp address */
+    unsigned short  size;   /* in paragraphs, not including header  */
 } dos_mem_block;
+#include "poppck.h"
 
 #define CHECK_FILE  "___CHK.MEM"
 #define MEMORY_BLOCK 'M'
 #define END_OF_CHAIN 'Z'
-#define NEXT_BLOCK( curr )  MK_FP( (FP_SEG( curr ) + (curr)->size + 1), 0 )
-#define PUT_ITEM( item ) (TinyFarWrite( hdl, &(item), \
-                         sizeof( item ) ) == sizeof( item ))
+#define MCB_PTR(curr)       ((dos_mem_block __based( curr ) *)0)
+#define NEXT_MCB( curr )    (curr + MCB_PTR( curr )->size + 1)
+#define PUT_ITEM( item )    (TinyFarWrite( hdl, &(item), sizeof( item ) ) == sizeof( item ))
 
 static      char *ChkFile;
 
@@ -54,13 +54,13 @@ static void Cleanup( void )
     TinyDelete( ChkFile );
 }
 
-bool CheckPointMem( unsigned max, char *f_buff )
+int CheckPointMem( unsigned max, char *f_buff )
 {
-    dos_mem_block   *mem;
-    dos_mem_block   *start;
-    dos_mem_block   *end;
-    dos_mem_block   *next;
-    dos_mem_block   *chk;
+    __segment       mem;
+    __segment       start;
+    __segment       end;
+    __segment       next;
+    __segment       chk;
     tiny_ret_t      rc;
     tiny_handle_t   hdl;
     unsigned        size;
@@ -68,95 +68,95 @@ bool CheckPointMem( unsigned max, char *f_buff )
     unsigned        psp;
     char            *p;
 
-    if( max == 0 ) return( FALSE );
+    if( max == 0 )
+        return( 0 );
     ChkFile = f_buff;
     psp = TinyGetPSP();
-    start = MK_FP( psp - 1, 0 );
-    while( start->owner == psp ) {
-        if( start->chain == END_OF_CHAIN ) return( FALSE );
-//        start = NEXT_BLOCK( start );
-        start = MK_FP( (FP_SEG( start ) + (start)->size + 1), 0 );
+    for( start = psp - 1; MCB_PTR( start )->owner == psp; start = NEXT_MCB( start ) ) {
+        if( MCB_PTR( start )->chain == END_OF_CHAIN ) {
+            return( 0 );
+        }
     }
-    mem = start;
-    for( ;; ) {
-        if( mem->owner == 0 && mem->size >= max ) return( FALSE );
-        if(  mem->chain == END_OF_CHAIN ) break;
-//        mem = NEXT_BLOCK( mem );
-        mem = MK_FP( (FP_SEG( mem ) + (mem)->size + 1), 0 );
+    for( mem = start; ; mem = NEXT_MCB( mem ) ) {
+        if( MCB_PTR( mem )->owner == 0 && MCB_PTR( mem )->size >= max )
+            return( 0 );
+        if(  MCB_PTR( mem )->chain == END_OF_CHAIN ) {
+            break;
+        }
     }
-//    end = NEXT_BLOCK( mem );
-      end = MK_FP( (FP_SEG( mem ) + (mem)->size + 1), 0 );
-    size = FP_SEG( end ) - FP_SEG( start );
-    if( size < 0x1000 ) return( FALSE );
+    end = NEXT_MCB( mem );
+    size = end - start;
+    if( size < 0x1000 )
+        return( 0 );
     *f_buff++ = TinyGetCurrDrive() + 'A';
     *f_buff++ = ':';
     *f_buff++ = '\\';
-    rc = TinyFarGetCWDir( (char __far *)f_buff, 0 );
+    rc = TinyFarGetCWDir( f_buff, 0 );
     if( TINY_ERROR( rc ) )
-        return( FALSE );
-    while( *f_buff != 0 ) ++f_buff;
+        return( 0 );
+    while( *f_buff != 0 )
+        ++f_buff;
     if( f_buff[-1] == '\\' ) {
         --f_buff;
     } else {
         *f_buff++ = '\\';
     }
-    for( p = CHECK_FILE; *f_buff = *p; ++p, ++f_buff ) {}
+    for( p = CHECK_FILE; *f_buff = *p; ++p, ++f_buff )
+        {}
     rc = TinyCreate( ChkFile, TIO_NORMAL );
     if( TINY_ERROR( rc ) )
-        return( FALSE );
+        return( 0 );
     hdl = TINY_INFO( rc );
-    if( size > max ) size = max;
-    chk = MK_FP( FP_SEG( end ) - size - 1, 0 );
-    mem = start;
-    for( ;; ) {
-//        next = NEXT_BLOCK( mem );
-        next = MK_FP( (FP_SEG( mem ) + (mem)->size + 1), 0 );
-        if( FP_SEG( next ) > FP_SEG( chk ) ) break;
-        mem = next;
+    if( size > max )
+        size = max;
+    chk = end - size - 1;
+    for( mem = start; ; mem = next ) {
+        next = NEXT_MCB( mem );
+        if( next > chk ) {
+            break;
+        }
     }
-    if( !PUT_ITEM( mem ) || !PUT_ITEM( *mem ) || !PUT_ITEM( chk ) ) {
+    if( !PUT_ITEM( mem ) || !PUT_ITEM( *MCB_PTR( mem ) ) || !PUT_ITEM( chk ) ) {
         TinyClose( hdl );
         Cleanup();
-        return( FALSE );
+        return( 0 );
     }
-    next = chk;
-    while( FP_SEG( next ) < FP_SEG( end ) ) {
-        size = FP_SEG( end ) - FP_SEG( next );
-        if( size >= 0x1000 ) size = 0x0800;
+    for( next = chk; next < end; next += size ) {
+        size = end - next;
+        if( size >= 0x1000 )
+            size = 0x0800;
         bytes = size << 4;
-        if( TinyWrite( hdl, next, bytes ) != bytes ) {
+        if( TinyFarWrite( hdl, MCB_PTR( next ), bytes ) != bytes ) {
             TinyClose( hdl );
             Cleanup();
-            return( FALSE );
+            return( 0 );
         }
-        next = MK_FP( FP_SEG( next ) + size, 0 );
     }
     TinyClose( hdl );
-    mem->chain = MEMORY_BLOCK;
-    mem->size = FP_SEG( chk ) - FP_SEG( mem ) - 1;
-    chk->size = FP_SEG( end ) - FP_SEG( chk ) - 1;
-    chk->chain = END_OF_CHAIN;
-    chk->owner = 0;
-    return( TRUE );
+    MCB_PTR( mem )->chain = MEMORY_BLOCK;
+    MCB_PTR( mem )->size = chk - mem - 1;
+    MCB_PTR( chk )->size = end - chk - 1;
+    MCB_PTR( chk )->chain = END_OF_CHAIN;
+    MCB_PTR( chk )->owner = 0;
+    return( 1 );
 }
 
 void CheckPointRestore( void )
 {
-    dos_mem_block   *chk;
+    __segment       chk;
     tiny_ret_t      rc;
     tiny_handle_t   hdl;
 
     rc = TinyOpen( ChkFile, TIO_READ );
-    if( TINY_ERROR( rc ) )
-        return;
-    hdl = TINY_INFO( rc );
-
-    TinyRead( hdl, &chk, sizeof( chk ) );
-    TinyRead( hdl, chk, sizeof( *chk ) );
-    TinyRead( hdl, &chk, sizeof( chk ) );
-    while( TinyRead( hdl, chk, 0x8000 ) == 0x8000 ) {
-        chk = MK_FP( FP_SEG( chk ) + 0x800, 0 );
+    if( TINY_OK( rc ) ) {
+        hdl = TINY_INFO( rc );
+        TinyFarRead( hdl, &chk, sizeof( chk ) );
+        TinyFarRead( hdl, MCB_PTR( chk ), sizeof( *MCB_PTR( chk ) ) );
+        TinyFarRead( hdl, &chk, sizeof( chk ) );
+        while( TinyFarRead( hdl, MCB_PTR( chk ), 0x8000 ) == 0x8000 ) {
+            chk += 0x800;
+        }
+        TinyClose( hdl );
+        Cleanup();
     }
-    TinyClose( hdl );
-    Cleanup();
 }
