@@ -475,12 +475,16 @@ char *SegClassName( segment_id segid )
         if( useg->segid == segid && useg->class_name != NULL ) {
             classname = useg->class_name;
             if( classname[0] == '\0' ) {
-                len = strlen( useg->name );
-                if( len >= 4 ) {
-                    if( stricmp( useg->name + len - 4, "DATA" ) == 0 ) {
-                        classname = "FAR_DATA";
-                    } else if( stricmp( useg->name + len - 4, "TEXT" ) == 0 ) {
-                        classname = "CODE";
+                if( useg->segtype == SEGTYPE_BASED ) {
+                    classname = "FAR_DATA";
+                } else {
+                    len = strlen( useg->name );
+                    if( len >= 4 ) {
+                        if( stricmp( useg->name + len - 4, "DATA" ) == 0 ) {
+                            classname = "FAR_DATA";
+                        } else if( stricmp( useg->name + len - 4, "TEXT" ) == 0 ) {
+                            classname = "CODE";
+                        }
                     }
                 }
             }
