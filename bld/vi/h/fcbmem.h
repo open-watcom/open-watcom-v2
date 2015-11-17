@@ -75,13 +75,3 @@ void    XMSInit( void );
 void    XMSFini( void );
 void    GiveBackXMSBlock( long );
 void    XMSBlockInit( int );
-
-#if defined( USE_EMS ) || defined( USE_XMS )
-
-extern void XmemGiveBack( void (*rtn)( long ) );
-extern void XmemBlockWrite( void (*rtn)(long, void*, unsigned), __segment buff, unsigned *size );
-extern bool XmemBlockRead( void (*rtn)(long, void*, unsigned), __segment *buff );
-extern void XSwapInit( int count, long *xHandle, unsigned short *xSize );
-extern void Xopen( void );
-
-#endif

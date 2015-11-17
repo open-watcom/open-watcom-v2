@@ -41,8 +41,8 @@
 xms_struct              XMSCtrl;
 static unsigned long    *xmsPtrs;
 
-static int  xmsRead( long, void __far *, int );
-static int  xmsWrite( long, void __far *, int );
+static int  xmsRead( long, void *, int );
+static int  xmsWrite( long, void *, int );
 
 int XMSBlockTest( unsigned short blocks )
 {
@@ -56,13 +56,13 @@ int XMSBlockTest( unsigned short blocks )
 
 } /* XMSBlockTest */
 
-void XMSBlockRead( long addr, void __far *buff, unsigned len )
+void XMSBlockRead( long addr, void *buff, unsigned len )
 {
     xmsRead( addr, buff, len );
 
 } /* XMSBlockRead */
 
-void XMSBlockWrite( long addr, void __far *buff, unsigned len )
+void XMSBlockWrite( long addr, void *buff, unsigned len )
 {
     xmsWrite( addr, buff, len );
 
@@ -285,7 +285,7 @@ void XMSFini( void )
 /*
  * xmsRead - read from XMS memory
  */
-static int xmsRead( long addr, void __far *buff, int size )
+static int xmsRead( long addr, void *buff, int size )
 {
     xms_addr            h;
     U_INT               offset;
@@ -330,7 +330,7 @@ static int xmsRead( long addr, void __far *buff, int size )
 /*
  * xmsWrite - write some XMS memory
  */
-static int xmsWrite( long addr, void __far *buff, int size )
+static int xmsWrite( long addr, void *buff, int size )
 {
     xms_addr            h;
     xms_move_descriptor control;

@@ -42,12 +42,12 @@
 #elif defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
     #define _FAR
 #elif defined( _M_I86 )
-  #if _M_IX86 == 200
+  #if defined( __286__ )
     #define USE_XMS
     #define USE_EMS
     #define USE_XTD
     #define _FAR
-  #elif _M_IX86 < 200
+  #elif defined( __86__ )
     #define USE_EMS
     #define _FAR
   #endif

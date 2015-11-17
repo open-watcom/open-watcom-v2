@@ -1,6 +1,0 @@
-Open Watcom Make Version 2.0 beta Nov 17 2015 09:30:30 (64-bit)
-Copyright (c) 2002-2015 The Open Watcom Contributors. All Rights Reserved.
-Portions Copyright (c) 1988-2002 Sybase, Inc. All Rights Reserved.
-Source code is available under the Sybase Open Watcom Public License.
-See http://www.openwatcom.org/ for details.
-	bwcc -zq -w8 -we -oaxt -d1 -x -xx -zam -fo=spawn.obj -j -fpi -ml -bt=dos  -fh    -DNDEBUG -D_ENABLE_AUTODEPEND  -D__WATCOM_LFN__ -DNOUSE3D     -I. -I"c:\dev\ow-v2\bld/vi/h" -I"c:\dev\ow-v2\bld/rcsdll" -I"c:\dev\ow-v2\bld/posix/h"  -I"c:\dev\ow-v2\bld/hdr/dos"  -I"c:\dev\ow-v2\bld/watcom/h" c:\dev\ow-v2\bld\vi\dos\spawn.c
