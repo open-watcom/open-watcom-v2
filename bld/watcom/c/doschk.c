@@ -66,7 +66,8 @@ int CheckPointMem( unsigned max, char *f_buff )
     unsigned        size;
     unsigned        bytes;
     unsigned        psp;
-    char            *p;
+    char            c;
+    int             i;
 
     if( max == 0 )
         return( 0 );
@@ -101,11 +102,32 @@ int CheckPointMem( unsigned max, char *f_buff )
     } else {
         *f_buff++ = '\\';
     }
-    for( p = "SWXXXXXX"; *f_buff = *p; ++p, ++f_buff )
-        {}
-    hdl = mkstemp( ChkFile );
-    if( hdl == -1 )
+    *f_buff++ = 'S';
+    *f_buff++ = 'W';
+    *f_buff++ = 'A';
+    *f_buff++ = '0';
+    for( i = 0; i < 4; ++i ) {
+        if( (c = (psp & 0xF)) > 9 )
+            c += 'A' - '9' - 1;
+        *f_buff++ = c + '0';
+        psp >>= 4;
+    }
+    *f_buff = '\0';
+    hdl = -1;
+    for( c = 'A'; c <= 'Z'; ++c ) {
+        f_buff[-6] = c;
+        if( TINY_ERROR( TinyAccess( ChkFile, 0 ) ) ) {
+            rc = TinyCreateNew( ChkFile, TIO_NORMAL );
+            if( TINY_OK( rc ) ) {
+                hdl = TINY_INFO( rc );
+                break;
+            }
+        }
+    }
+    if( hdl == -1 ) {
         return( 0 );
+    }
+
     if( size > max )
         size = max;
     chk = end - size - 1;
