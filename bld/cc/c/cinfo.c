@@ -615,7 +615,7 @@ void    SetSegs( void )
 //          BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
 //          break;
         case SEGTYPE_DATA:  /* created through #pragma data_seg */
-            BEDefSeg( segid, INIT | GLOBAL | NOGROUP, useg->name, SegAlign( TARGET_INT ) );
+            BEDefSeg( segid, INIT | GLOBAL, useg->name, SegAlign( TARGET_INT ) );
             break;
         case SEGTYPE_BASED:
             BEDefSeg( segid, INIT | PRIVATE | GLOBAL, useg->name, SegAlign( TARGET_INT ) );
