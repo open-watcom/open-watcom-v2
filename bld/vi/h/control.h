@@ -37,28 +37,21 @@
 #endif
 
 #if defined( __WINDOWS__ )
-    #define NOXMS
-    #define NOEMS
-    #define NOXTD
     #define _FAR
     #define __WIN__
 #elif defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
-    #define NOXMS
-    #define NOEMS
-    #define NOXTD
     #define _FAR
 #elif defined( _M_I86 )
   #if defined( __286__ )
+    #define USE_XMS
+    #define USE_EMS
+    #define USE_XTD
     #define _FAR
   #elif defined( __86__ )
-    #define NOXMS
-    #define NOXTD
+    #define USE_EMS
     #define _FAR
   #endif
 #elif defined( _M_IX86 )
-    #define NOXMS
-    #define NOEMS
-    #define NOXTD
   #if !defined( __4G__ )
     #define _FAR    __far
   #else

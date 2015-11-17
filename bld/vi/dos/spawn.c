@@ -133,12 +133,12 @@ static void cleanUp( void )
         TinyClose( fileHandle );
         TinyDelete( fullName );
         break;
-#ifndef NOXMS
+#if defined( USE_XMS )
     case IN_XMS:
         memGiveBack( &GiveBackXMSBlock );
         break;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
     case IN_EMS:
         memGiveBack( &GiveBackEMSBlock );
         break;
@@ -164,12 +164,12 @@ static bool chkWrite( void *buff, unsigned *size )
             return( false );
         }
         return( true );
-#ifndef NOEMS
+#if defined( USE_EMS )
     case IN_EMS:
         memBlockWrite( &EMSBlockWrite, buff, size );
         return( true );
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     case IN_XMS:
         memBlockWrite( &XMSBlockWrite, buff, size );
         return( true );
@@ -191,11 +191,11 @@ static bool chkRead( void **buff )
             return( true );
         }
         return( false );
-#ifndef NOEMS
+#if defined( USE_EMS )
     case IN_EMS:
         return( memBlockRead( EMSBlockRead, buff ) );
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     case IN_XMS:
         return( memBlockRead( XMSBlockRead, buff ) );
 #endif
@@ -219,12 +219,12 @@ static bool chkOpen( open_attr attr )
         }
         fileHandle = TINY_INFO( ret );
         break;
-#ifndef NOEMS
+#if defined( USE_EMS )
     case IN_EMS:
         currMem = 0;
         break;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     case IN_XMS:
         currMem = 0;
         break;
@@ -353,7 +353,7 @@ long MySpawn( const char *cmd )
     /*
      * set up checkpoint file stuff:
      */
-#ifndef NOEMS
+#if defined( USE_EMS )
     if( !EMSBlockTest( chkSwapSize ) ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
@@ -364,7 +364,7 @@ long MySpawn( const char *cmd )
         goto evil_goto;
     }
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     if( !XMSBlockTest( chkSwapSize ) ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );

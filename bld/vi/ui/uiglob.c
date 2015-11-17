@@ -48,15 +48,15 @@ char_info   _FAR *ClockStart = NULL;
 char_info   _FAR *SpinLoc = NULL;
 window_id   *ScreenImage = NULL;
 
-#ifndef NOXTD
+#if defined( USE_XTD )
 int             XMemBlockArraySize;
 unsigned char   *XMemBlocks = NULL;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
 int             TotalEMSBlocks = 0;
 int             EMSBlocksInUse = 0;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
 int             TotalXMSBlocks = 0;
 int             XMSBlocksInUse = 0;
 #endif

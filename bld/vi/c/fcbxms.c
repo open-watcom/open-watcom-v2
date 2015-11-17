@@ -32,7 +32,7 @@
 #include "vi.h"
 #include <stddef.h>
 
-#ifndef NOXMS
+#if defined( USE_XMS )
 
 #include "dosx.h"
 #include "xmem.h"

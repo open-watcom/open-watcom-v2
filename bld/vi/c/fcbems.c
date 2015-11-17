@@ -32,7 +32,8 @@
 #include "vi.h"
 #include <stddef.h>
 
-#ifndef NOEMS
+#if defined( USE_EMS )
+
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"

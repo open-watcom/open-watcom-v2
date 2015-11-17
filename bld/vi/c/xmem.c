@@ -38,13 +38,13 @@
 void ExtendedMemoryInit( void )
 {
 
-#ifndef NOXTD
+#if defined( USE_XTD )
     XMemInit();
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
     EMSInit();
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     XMSInit();
 #endif
 
@@ -55,13 +55,13 @@ void ExtendedMemoryInit( void )
  */
 void ExtendedMemoryFini( void )
 {
-#ifndef NOXTD
+#if defined( USE_XTD )
     XMemFini();
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     XMSFini();
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
     EMSFini();
 #endif
 

@@ -32,7 +32,7 @@
 #include "vi.h"
 #include <stddef.h>
 
-#ifndef NOXTD
+#if defined( USE_XTD )
 
 #include "dosx.h"
 #include "xmem.h"

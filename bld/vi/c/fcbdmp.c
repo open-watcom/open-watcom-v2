@@ -378,14 +378,16 @@ void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 #endif
 
 #ifdef __DOS__
+
 #include "xmem.h"
-#ifndef NOXTD
+
+#if defined( USE_XTD )
 extern xtd_struct XMemCtrl;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
 extern ems_struct EMSCtrl;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
 extern xms_struct XMSCtrl;
 #endif
 #endif
@@ -403,7 +405,7 @@ vi_rc DumpMemory( void )
     window_id   wn;
     window_info *wi;
     char        tmp[128], tmp2[128];
-#if !defined( NOXMS ) || !defined( NOEMS ) || !defined( NOXTD )
+#if defined( USE_XMS ) || defined( USE_EMS ) || defined( USE_XTD )
     long        mem1;
 #endif
     long        mem2;
@@ -423,7 +425,7 @@ vi_rc DumpMemory( void )
     MySprintf( tmp, freeBytes, "Dsk", mem2,
         (int) ((100L * mem2) / ((long)EditVars.MaxSwapBlocks * (long)MAX_IO_BUFFER)) );
 #ifdef _M_I86
-#ifndef NOXTD
+#if defined( USE_XTD )
     if( XMemCtrl.inuse ) {
         mem1 = XMemCtrl.amount_left - XMemCtrl.allocated * (long)MAX_IO_BUFFER;
         MySprintf( tmp2, freeBytes, "XTD", mem1,
@@ -431,7 +433,7 @@ vi_rc DumpMemory( void )
     } else {
 #endif
         MySprintf( tmp2, "XTD: N/A" );
-#ifndef NOXTD
+#if defined( USE_XTD )
     }
 #endif
 #else
@@ -439,7 +441,7 @@ vi_rc DumpMemory( void )
 #endif
     WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
 
-#ifndef NOEMS
+#if defined( USE_EMS )
     if( EMSCtrl.inuse ) {
         mem1 = (long)(TotalEMSBlocks - EMSBlocksInUse) * (long)MAX_IO_BUFFER;
         MySprintf( tmp, freeBytes, "EMS", mem1,
@@ -447,10 +449,10 @@ vi_rc DumpMemory( void )
     } else {
 #endif
         MySprintf( tmp, "EMS:  N/A" );
-#ifndef NOEMS
+#if defined( USE_EMS )
     }
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     if( XMSCtrl.inuse ) {
         mem1 = (long)(TotalXMSBlocks - XMSBlocksInUse) * (long)MAX_IO_BUFFER;
         MySprintf( tmp2, freeBytes, "XMS", mem1,
@@ -458,7 +460,7 @@ vi_rc DumpMemory( void )
     } else {
 #endif
         MySprintf( tmp2, "XMS: N/A" );
-#ifndef NOXMS
+#if defined( USE_XMS )
     }
 #endif
     WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );

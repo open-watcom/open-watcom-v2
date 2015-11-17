@@ -48,15 +48,15 @@ void FetchFcb( fcb *fb )
         rc = ERR_NO_ERR;
         if( fb->swapped ) {
             rc = SwapToMemoryFromDisk( fb );
-#ifndef NOXTD
+#if defined( USE_XTD )
         } else if( fb->in_extended_memory ) {
             rc = SwapToMemoryFromExtendedMemory( fb );
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
         } else if( fb->in_ems_memory ) {
             rc = SwapToMemoryFromEMSMemory( fb );
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
         } else if( fb->in_xms_memory ) {
             rc = SwapToMemoryFromXMSMemory( fb );
 #endif
@@ -76,26 +76,26 @@ void SwapFcb( fcb *fb )
 {
     vi_rc   rc;
 
-#ifndef NOXTD
+#if defined( USE_XTD )
     rc = SwapToExtendedMemory( fb );
     if( rc == ERR_NO_EXTENDED_MEMORY ) {
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
         rc = SwapToEMSMemory( fb );
         if( rc == ERR_NO_EMS_MEMORY ) {
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
             rc = SwapToXMSMemory( fb );
             if( rc == ERR_NO_XMS_MEMORY ) {
 #endif
                 rc = SwapToDisk( fb );
-#ifndef NOXMS
+#if defined( USE_XMS )
             }
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
         }
 #endif
-#ifndef NOXTD
+#if defined( USE_XTD )
     }
 #endif
     if( rc == ERR_NO_ERR ) {
@@ -144,13 +144,13 @@ vi_rc RestoreToNormalMemory( fcb *fb, int len )
      * reset flags
      */
     fb->xmemaddr = 0L;
-#ifndef NOXTD
+#if defined( USE_XTD )
     fb->in_extended_memory = false;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
     fb->in_ems_memory = false;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     fb->in_xms_memory = false;
 #endif
     fb->swapped = false;

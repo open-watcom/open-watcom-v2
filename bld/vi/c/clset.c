@@ -199,13 +199,13 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
                 j *= (MAX_IO_BUFFER / 1024);
                 break;
             case SETVAR_T_MAXEMSK:
-#ifndef NOEMS
+#if defined( USE_EMS )
                 j = EditVars.MaxEMSBlocks;
                 j *= (MAX_IO_BUFFER / 1024);
 #endif
                 break;
             case SETVAR_T_MAXXMSK:
-#ifndef NOXMS
+#if defined( USE_XMS )
                 j = EditVars.MaxXMSBlocks;
                 j *= (MAX_IO_BUFFER / 1024);
 #endif
@@ -935,12 +935,12 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 SwapBlockInit( i );
                 break;
             case SETVAR_T_MAXEMSK:
-  #ifndef NOEMS
+  #if defined( USE_EMS )
                 EMSBlockInit( i );
   #endif
                 break;
             case SETVAR_T_MAXXMSK:
-  #ifndef NOXMS
+  #if defined( USE_XMS )
                 XMSBlockInit( i );
   #endif
                 break;

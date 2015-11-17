@@ -64,13 +64,13 @@ fcb *FcbAlloc( file *f )
     cfcb->swapped = false;
     cfcb->on_display = false;
     cfcb->was_on_display = false;
-#ifndef NOXTD
+#if defined( USE_XTD )
     cfcb->in_extended_memory = false;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
     cfcb->in_xms_memory = false;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
     cfcb->in_ems_memory = false;
 #endif
     cfcb->nullfcb = false;
@@ -94,17 +94,17 @@ void FcbFree( fcb *cfcb )
         GiveBackSwapBlock( cfcb->offset );
     }
     if( cfcb->xmemaddr > 0 ) {
-#ifndef NOEMS
+#if defined( USE_EMS )
         if( cfcb->in_ems_memory ) {
             GiveBackEMSBlock( cfcb->xmemaddr );
         }
 #endif
-#ifndef NOXTD
+#if defined( USE_XTD )
         if( cfcb->in_extended_memory ) {
             GiveBackXMemBlock( cfcb->xmemaddr );
         }
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
         if( cfcb->in_xms_memory ) {
             GiveBackXMSBlock( cfcb->xmemaddr );
         }
