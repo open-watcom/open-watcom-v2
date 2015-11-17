@@ -126,6 +126,36 @@ static bool memBlockRead( void (*rtn)(long, void*, unsigned), void **buff )
 
 } /* memBlockRead */
 
+#if defined( USE_EMS )
+int EMSInit( int count )
+{
+    if( !EMSBlockTest( count ) ) {
+        xHandle = alloca( count * sizeof( long ) );
+        xSize = alloca( count * sizeof( short ) );
+        for( i = 0; i < count; i++ ) {
+            EMSGetBlock( &xHandle[i] );
+        }
+        return( 1 );
+    }
+    return( 0 );
+}
+#endif
+
+#if defined( USE_XMS )
+int XMSInit( int count )
+{
+    if( !XMSBlockTest( count ) ) {
+        xHandle = alloca( count * sizeof( long ) );
+        xSize = alloca( count * sizeof( short ) );
+        for( i = 0; i < count; i++ ) {
+            XMSGetBlock( &xHandle[i] );
+        }
+        return( 1 );
+    }
+    return( 0 );
+}
+#endif
+
 static void cleanUp( void )
 {
     switch( isWhere ) {
@@ -258,6 +288,18 @@ static bool checkPointMem( unsigned max )
     if( max == 0 ) {
         return( false );
     }
+#if defined( USE_EMS )
+    if( EMSInit( chkSwapSize ) ) {
+        isWhere = IN_EMS;
+        goto evil_goto;
+    }
+#endif
+#if defined( USE_XMS )
+    if( XMSInit( chkSwapSize ) ) {
+        isWhere = IN_XMS;
+        goto evil_goto;
+    }
+#endif
     psp = TinyGetPSP();
     start = MK_FP( psp - 1, 0 );
     if( start->chain == END_OF_CHAIN ) {
@@ -353,28 +395,6 @@ long MySpawn( const char *cmd )
     /*
      * set up checkpoint file stuff:
      */
-#if defined( USE_EMS )
-    if( !EMSBlockTest( chkSwapSize ) ) {
-        xHandle = alloca( chkSwapSize * sizeof( long ) );
-        xSize = alloca( chkSwapSize * sizeof( short ) );
-        for( i = 0; i < chkSwapSize; i++ ) {
-            EMSGetBlock( &xHandle[i] );
-        }
-        isWhere = IN_EMS;
-        goto evil_goto;
-    }
-#endif
-#if defined( USE_XMS )
-    if( !XMSBlockTest( chkSwapSize ) ) {
-        xHandle = alloca( chkSwapSize * sizeof( long ) );
-        xSize = alloca( chkSwapSize * sizeof( short ) );
-        for( i = 0; i < chkSwapSize; i++ ) {
-            XMSGetBlock( &xHandle[i] );
-        }
-        isWhere = IN_XMS;
-        goto evil_goto;
-    }
-#endif
     MakeTmpPath( file, SPAWN_FILE_NAME );
     fileHandle = mkstemp( file );
     if( fileHandle == -1 ) {

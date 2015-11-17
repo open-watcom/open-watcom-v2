@@ -32,6 +32,16 @@
 #include "vi.h"
 #include "fcbmem.h"
 
+#if defined( USE_EMS ) || defined( USE_XMS )
+
+#include <i86.h>
+
+static unsigned short   *XSize;
+static long             *XHandle;
+static int              Xcount;
+static int              XcurrMem;
+#endif
+
 /*
  * FcbAlloc - allocate an fcb and initialize it
  */
@@ -162,3 +172,55 @@ void FreeFcbList( fcb *cfcb )
     }
 
 } /* FreeFcbList */
+
+#if defined( USE_EMS ) || defined( USE_XMS )
+
+void XmemGiveBack( void (*rtn)( long ) )
+{
+    int i;
+
+    for( i = 0; i < Xcount; i++ ) {
+        rtn( XHandle[i] );
+    }
+
+} /* memGiveBack */
+
+void XmemBlockWrite( void (*rtn)(long, void*, unsigned), __segment buff, unsigned *size )
+{
+    unsigned    bytes;
+
+    if( *size >= 0x0200 ) {
+        *size = 0x0200;
+    }
+    bytes = *size << 4;
+    rtn( XHandle[XcurrMem], MK_FP( buff, 0 ), bytes );
+    XSize[XcurrMem] = bytes;
+    XcurrMem++;
+
+} /* memBlockWrite */
+
+bool XmemBlockRead( void (*rtn)(long, void*, unsigned), __segment *buff )
+{
+    rtn( XHandle[XcurrMem], MK_FP( *buff, 0 ), XSize[XcurrMem] );
+    *buff += 0x200;
+    if( XSize[XcurrMem] < MAX_IO_BUFFER ) {
+        return( false );
+    }
+    XcurrMem++;
+    return( true );
+
+} /* memBlockRead */
+
+void XSwapInit( int count, long *xHandle, unsigned short *xSize )
+{
+    Xcount = count;
+    XHandle = xHandle;
+    XSize = xSize;
+}
+
+void Xopen( void )
+{
+    XcurrMem = 0;
+}
+
+#endif
