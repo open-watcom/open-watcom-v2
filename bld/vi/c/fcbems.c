@@ -31,6 +31,7 @@
 
 #include "vi.h"
 #include <stddef.h>
+#include <string.h>
 
 #if defined( USE_EMS )
 
@@ -43,8 +44,8 @@
 ems_struct              EMSCtrl;
 static unsigned long    *emsPtrs;
 
-static int  emsRead( long, void *, int );
-static int  emsWrite( long, void *, int );
+static int  emsRead( long, void __far *, int );
+static int  emsWrite( long, void __far *, int );
 
 int EMSBlockTest( unsigned short blocks )
 {
@@ -58,13 +59,13 @@ int EMSBlockTest( unsigned short blocks )
 
 } /* EMSBlockTest */
 
-void EMSBlockRead( long addr, void *buff, unsigned len )
+void EMSBlockRead( long addr, void __far *buff, unsigned len )
 {
     emsRead( addr, buff, len );
 
 } /* EMSBlockRead */
 
-void EMSBlockWrite( long addr, void *buff, unsigned len )
+void EMSBlockWrite( long addr, void __far *buff, unsigned len )
 {
     emsWrite( addr, buff, len );
 
@@ -333,7 +334,7 @@ static void emsRelease( ems_addr x )
 /*
  * emsRead - read some expanded memory
  */
-static int emsRead( long addr, void *buff, int size )
+static int emsRead( long addr, void __far *buff, int size )
 {
     void        *ptr;
     ems_addr    h;
@@ -343,7 +344,7 @@ static int emsRead( long addr, void *buff, int size )
     if( ptr == NULL ) {
         return( -1 );
     }
-    memcpy( buff, ptr, size );
+    _fmemcpy( buff, ptr, size );
     emsRelease( h );
     return( size );
 
@@ -352,7 +353,7 @@ static int emsRead( long addr, void *buff, int size )
 /*
  * emsWrite - write expanded memory
  */
-static int emsWrite( long addr, void *buff, int size )
+static int emsWrite( long addr, void __far *buff, int size )
 {
     void        *ptr;
     ems_addr    h;
@@ -362,7 +363,7 @@ static int emsWrite( long addr, void *buff, int size )
     if( ptr == NULL ) {
         return( -1 );
     }
-    memcpy( ptr, buff, size );
+    _fmemcpy( ptr, buff, size );
     emsRelease( h );
     return( size );
 
