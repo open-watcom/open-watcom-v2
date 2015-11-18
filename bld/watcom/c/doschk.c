@@ -30,19 +30,18 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <i86.h>
 #include "bool.h"
 #include "tinyio.h"
 #include "doschk.h"
+#include "doschkx.h"
 
-
-#define FILE_BUFFER_SIZE    0x8000
 
 #define MEMORY_BLOCK        'M'
 #define END_OF_CHAIN        'Z'
 #define MCB_PTR(curr)       ((dos_mem_block __based( curr ) *)0)
 #define NEXT_MCB(curr)      (curr + MCB_PTR( curr )->size + 1)
-#define PUT_ITEM(item)                     (TinyFarWrite( hdl, &(item), sizeof( item ) ) == sizeof( item ))
 
 #include "pushpck1.h"
 typedef struct {
@@ -52,118 +51,31 @@ typedef struct {
 } dos_mem_block;
 #include "poppck.h"
 
-static char             *ChkFile;
+static dos_mem_block saveMem;
+static __segment     savePtrMem;
+static __segment     savePtrChk;
 
-static void Cleanup( tiny_handle_t hdl )
-{
-    TinyClose( hdl );
-    TinyDelete( ChkFile );
-}
-
-static tiny_handle_t chkOpen( char *f_buff, unsigned psp )
-{
-    tiny_ret_t      rc;
-    char            c;
-    int             i;
-    tiny_handle_t   hdl;
-
-    *f_buff++ = TinyGetCurrDrive() + 'A';
-    *f_buff++ = ':';
-    *f_buff++ = '\\';
-    rc = TinyFarGetCWDir( f_buff, 0 );
-    if( TINY_ERROR( rc ) )
-        return( -1 );
-    while( *f_buff != 0 )
-        ++f_buff;
-    if( f_buff[-1] == '\\' ) {
-        --f_buff;
-    } else {
-        *f_buff++ = '\\';
-    }
-    *f_buff++ = 'S';
-    *f_buff++ = 'W';
-    *f_buff++ = 'A';
-    *f_buff++ = '0';
-    for( i = 0; i < 4; ++i ) {
-        if( (c = (psp & 0xF)) > 9 )
-            c += 'A' - '9' - 1;
-        *f_buff++ = c + '0';
-        psp >>= 4;
-    }
-    *f_buff = '\0';
-    hdl = -1;
-    for( c = 'A'; c <= 'Z'; ++c ) {
-        f_buff[-6] = c;
-        if( TINY_ERROR( TinyAccess( ChkFile, 0 ) ) ) {
-            rc = TinyCreateNew( ChkFile, TIO_NORMAL );
-            if( TINY_OK( rc ) ) {
-                hdl = TINY_INFO( rc );
-                break;
-            }
-        }
-    }
-    return( hdl );
-}
-
-static void chkClose( tiny_handle_t hdl )
-{
-    TinyClose( hdl );
-
-} /* chkClose */
-
-static bool chkWrite( tiny_handle_t hdl, __segment buff, unsigned *size )
-{
-    tiny_ret_t      rc;
-    unsigned        bytes;
-
-    if( *size >= 0x1000 ) {
-        *size = FILE_BUFFER_SIZE >> 4;
-    }
-    bytes = *size << 4;
-    rc = TinyFarWrite( hdl, MK_FP( buff, 0 ), bytes );
-    if( TINY_OK( rc ) && TINY_INFO( rc ) == bytes ) {
-        return( true );
-    }
-    return( false );
-
-} /* chkWrite */
-
-static bool chkRead( tiny_handle_t hdl, __segment *buff )
-{
-    tiny_ret_t      rc;
-
-    rc = TinyFarRead( hdl, MK_FP( *buff, 0 ), FILE_BUFFER_SIZE );
-    if( TINY_OK( rc ) && TINY_INFO( rc ) == FILE_BUFFER_SIZE ) {
-        *buff += FILE_BUFFER_SIZE >> 4;
-        return( true );
-    }
-    return( false );
-
-} /* chkRead */
-
-int CheckPointMem( unsigned max, char *f_buff )
+bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
 {
     __segment       mem;
     __segment       start;
     __segment       end;
     __segment       next;
     __segment       chk;
-    tiny_handle_t   hdl;
     unsigned        size;
     unsigned        psp;
 
     if( max == 0 )
-        return( 0 );
-    ChkFile = f_buff;
+        return( false );
     psp = TinyGetPSP();
     for( start = psp - 1; MCB_PTR( start )->owner == psp; start = NEXT_MCB( start ) ) {
         if( MCB_PTR( start )->chain == END_OF_CHAIN ) {
-            return( 0 );
+            return( false );
         }
     }
     for( mem = start; ; mem = NEXT_MCB( mem ) ) {
         if( MCB_PTR( mem )->owner == 0 && MCB_PTR( mem )->size >= max )
-            return( 0 );
+            return( false );
         if(  MCB_PTR( mem )->chain == END_OF_CHAIN ) {
             break;
         }
@@ -171,7 +83,7 @@ int CheckPointMem( unsigned max, char *f_buff )
     end = NEXT_MCB( mem );
     size = end - start;
     if( size < 0x1000 )
-        return( 0 );
+        return( false );
 
     if( size > max )
         size = max;
@@ -183,46 +95,40 @@ int CheckPointMem( unsigned max, char *f_buff )
         }
     }
 
-    hdl = chkOpen( f_buff, psp );
-    if( hdl == -1 ) {
-        return( 0 );
-    }
+    savePtrMem = mem;
+    savePtrChk = chk;
+    _fmemcpy( &saveMem, MCB_PTR( mem ), sizeof( dos_mem_block ) );
 
-    if( !PUT_ITEM( mem ) || !PUT_ITEM( *MCB_PTR( mem ) ) || !PUT_ITEM( chk ) ) {
-        Cleanup( hdl );
-        return( 0 );
+    if( !XchkOpen( where, f_buff ) ) {
+        return( false );
     }
     for( next = chk; next < end; next += size ) {
         size = end - next;
-        if( !chkWrite( hdl, next, &size ) ) {
-            Cleanup( hdl );
-            return( 0 );
+        if( !XchkWrite( where, next, &size ) ) {
+            XcleanUp( where );
+            return( false );
         }
     }
-    chkClose( hdl );
+    XchkClose( where );
 
     MCB_PTR( mem )->chain = MEMORY_BLOCK;
     MCB_PTR( mem )->size = chk - mem - 1;
     MCB_PTR( chk )->size = end - chk - 1;
     MCB_PTR( chk )->chain = END_OF_CHAIN;
     MCB_PTR( chk )->owner = 0;
-    return( 1 );
+    return( true );
 }
 
-void CheckPointRestore( void )
+void CheckPointRestore( where_parm where )
 {
     __segment       chk;
-    tiny_ret_t      rc;
-    tiny_handle_t   hdl;
 
-    rc = TinyOpen( ChkFile, TIO_READ );
-    if( TINY_OK( rc ) ) {
-        hdl = TINY_INFO( rc );
-        TinyFarRead( hdl, &chk, sizeof( chk ) );
-        TinyFarRead( hdl, MCB_PTR( chk ), sizeof( *MCB_PTR( chk ) ) );
-        TinyFarRead( hdl, &chk, sizeof( chk ) );
-        while( chkRead( hdl, &chk ) )
+    _fmemcpy( MCB_PTR( savePtrMem ), &saveMem, sizeof( dos_mem_block ) );
+
+    chk = savePtrChk;
+    if( !XchkOpen( where, NULL ) ) {
+        while( XchkRead( where, &chk ) )
             ;
-        Cleanup( hdl );
+        XcleanUp( where );
     }
 }

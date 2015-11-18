@@ -49,6 +49,7 @@ extra_c_flags_getopt   = -fh=pch01.pch -D__ISVI__
 extra_c_flags_ideactiv = -fh=pch02.pch -D__ISVI__
 extra_c_flags_mem      = -fh=pch03.pch $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
+extra_c_flags_doschk   = -fi=vi.h
 !else
 extra_c_flags_getopt   = -D__ISVI__
 extra_c_flags_ideactiv = -D__ISVI__

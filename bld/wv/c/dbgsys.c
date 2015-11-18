@@ -42,8 +42,10 @@
 #include "dbgmain.h"
 #include "dbgsys.h"
 #include "remfile.h"
-#include "dbgchk.h"
 #include "dbginit.h"
+#if defined( __DOS__ )
+#include "doschk.h"
+#endif
 
 
 static const char SystemOps[] = { "Remote\0Local\0" };
@@ -62,10 +64,14 @@ void DoSystem( const char *cmd, size_t len, int loc )
         rc = 0;
     } else {
         RemoteSuspend();
-        chk = CheckPointMem( CheckSize, TxtBuff );
+#if defined( __DOS__ )
+        chk = CheckPointMem( ON_DISK, CheckSize, TxtBuff );
+#endif
         rc = _fork( cmd, len );
+#if defined( __DOS__ )
         if( chk )
-            CheckPointRestore();
+            CheckPointRestore( ON_DISK );
+#endif
         RemoteResume();
     }
     DUISysEnd( rc >= 0 );

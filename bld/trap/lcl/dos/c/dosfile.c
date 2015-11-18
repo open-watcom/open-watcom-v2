@@ -300,10 +300,11 @@ trap_retval ReqFile_run_cmd( void )
     len = GetTotalSize() - sizeof( *acc );
     ret = GetOutPtr( 0 );
 
-    chk = CheckPointMem( acc->chk_size, buff );
+    chk = CheckPointMem( ON_DISK, acc->chk_size, buff );
     rc = Fork( (char *)GetInPtr( sizeof(*acc) ), len );
+    if( chk )
+        CheckPointRestore( ON_DISK );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
-    if( chk ) CheckPointRestore();
 #endif
     return( sizeof( *ret ) );
 }

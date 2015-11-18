@@ -38,25 +38,13 @@
     #include "pragmas.h"
     #include "tinyio.h"
 #endif
-
-#define SPAWN_FILE_NAME    "spXXXXXX"
+#include "doschk.h"
 
 void ResetSpawnScreen( void )
 {
 }
 
 #if defined( _M_I86 )
-
-static long minMemoryLeft;
-static int  chkSwapSize;
-
-static char *fullName;
-
-typedef enum {
-    IN_EMS,
-    IN_XMS,
-    ON_DISK
-} where;
 
 typedef struct {
     unsigned short      envp;
@@ -67,274 +55,6 @@ typedef struct {
 
 typedef char _fcb[16];
 
-/* Mis-aligned struct! */
-#include "pushpck1.h"
-typedef struct {
-    char        chain;  /* 'M' memory block, 'Z' is last in chain */
-    unsigned    owner;  /* 0x0000 ==> free, otherwise psp address */
-    unsigned    size;   /* in paragraphs, not including header  */
-} dos_mem_block;
-#include "poppck.h"
-
-#define MEMORY_BLOCK 'M'
-#define END_OF_CHAIN 'Z'
-#define NEXT_BLOCK( curr )  MK_FP( (FP_SEG( curr ) + (curr)->size + 1), 0 )
-
-static dos_mem_block saveMem;
-static dos_mem_block *savePtrMem;
-static dos_mem_block *savePtrChk;
-
-static int              fileHandle;
-static unsigned short   *xSize;
-static long             *xHandle;
-static unsigned short   currMem;
-static where            isWhere;
-
-static void memGiveBack( void (*rtn)( long ) )
-{
-    int i;
-
-    for( i = 0; i < chkSwapSize; i++ ) {
-        rtn( xHandle[i] );
-    }
-
-} /* memGiveBack */
-
-static void memBlockWrite( void (*rtn)(long, void*, unsigned), char *buff, unsigned *size )
-{
-    unsigned    bytes;
-
-    if( *size >= 0x0200 ) {
-        *size = 0x0200;
-    }
-    bytes = *size << 4;
-    rtn( xHandle[currMem], buff, bytes );
-    xSize[currMem] = bytes;
-    currMem++;
-
-} /* memBlockWrite */
-
-static bool memBlockRead( void (*rtn)(long, void*, unsigned), void **buff )
-{
-    rtn( xHandle[currMem], *buff, xSize[currMem] );
-    *buff = MK_FP( FP_SEG( *buff ) + 0x200, 0 );
-    if( xSize[currMem] < MAX_IO_BUFFER ) {
-        return( false );
-    }
-    currMem++;
-    return( true );
-
-} /* memBlockRead */
-
-static void cleanUp( void )
-{
-    switch( isWhere ) {
-    case ON_DISK:
-        TinyClose( fileHandle );
-        TinyDelete( fullName );
-        break;
-#if defined( USE_XMS )
-    case IN_XMS:
-        memGiveBack( &GiveBackXMSBlock );
-        break;
-#endif
-#if defined( USE_EMS )
-    case IN_EMS:
-        memGiveBack( &GiveBackEMSBlock );
-        break;
-#endif
-    }
-
-} /* cleanUp */
-
-/*
- * chkWrite - write checkpoint data
- */
-static bool chkWrite( void *buff, unsigned *size )
-{
-    unsigned    bytes;
-
-    switch( isWhere ) {
-    case ON_DISK:
-        if( *size >= 0x1000 ) {
-            *size = 0x0800;
-        }
-        bytes = *size << 4;
-        if( TinyWrite( fileHandle, buff, bytes) != bytes ) {
-            return( false );
-        }
-        return( true );
-#if defined( USE_EMS )
-    case IN_EMS:
-        memBlockWrite( &EMSBlockWrite, buff, size );
-        return( true );
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        memBlockWrite( &XMSBlockWrite, buff, size );
-        return( true );
-#endif
-    }
-    return( false );
-
-} /* chkWrite */
-
-/*
- * chkRead - read checkpoint "file"
- */
-static bool chkRead( void **buff )
-{
-    switch( isWhere ) {
-    case ON_DISK:
-        if( TinyRead( fileHandle, *buff, 0x8000 ) == 0x8000 ) {
-            *buff = MK_FP( FP_SEG( *buff ) + 0x800, 0 );
-            return( true );
-        }
-        return( false );
-#if defined( USE_EMS )
-    case IN_EMS:
-        return( memBlockRead( EMSBlockRead, buff ) );
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        return( memBlockRead( XMSBlockRead, buff ) );
-#endif
-    }
-    return( false );
-
-} /* chkRead */
-
-/*
- * chkOpen - re-open a checkpoint file
- */
-static bool chkOpen( open_attr attr )
-{
-    tiny_ret_t  ret;
-
-    switch( isWhere ) {
-    case ON_DISK:
-        ret = TinyOpen( fullName, attr );
-        if( TINY_ERROR( ret ) ) {
-            return( false );
-        }
-        fileHandle = TINY_INFO( ret );
-        break;
-#if defined( USE_EMS )
-    case IN_EMS:
-        currMem = 0;
-        break;
-#endif
-#if defined( USE_XMS )
-    case IN_XMS:
-        currMem = 0;
-        break;
-#endif
-    }
-    return( true );
-
-} /* chkOpen */
-
-/*
- * chkClose
- */
-static void chkClose( void )
-{
-    switch( isWhere ) {
-    case ON_DISK:
-        TinyClose( fileHandle );
-        break;
-    }
-
-} /* chkClose */
-
-/*
- * checkPointMem - checkpoint up to max bytes of memory
- */
-static bool checkPointMem( unsigned max )
-{
-    dos_mem_block       *mem, *start, *end, *next, *chk;
-    unsigned            size, psp;
-
-    if( max == 0 ) {
-        return( false );
-    }
-    psp = TinyGetPSP();
-    start = MK_FP( psp - 1, 0 );
-    if( start->chain == END_OF_CHAIN ) {
-        return( false );
-    }
-    start = NEXT_BLOCK( start );
-    mem = start;
-    for( ;; ) {
-        if( mem->owner == 0 && mem->size >= max ) {
-            return( false );
-        }
-        if( mem->chain == END_OF_CHAIN ) {
-            break;
-        }
-        mem = NEXT_BLOCK( mem );
-    }
-    end = NEXT_BLOCK( mem );
-    size = FP_SEG( end ) - FP_SEG( start );
-    if( size < 0x100 ) {
-        return( false );
-    }
-
-    if( size > max ) {
-        size = max;
-    }
-    chk = MK_FP( FP_SEG( end ) - size - 1, 0 );
-    mem = start;
-    for( ;; ) {
-        next = NEXT_BLOCK( mem );
-        if( FP_SEG( next ) > FP_SEG( chk ) ) {
-            break;
-        }
-        mem = next;
-    }
-
-    savePtrMem = mem;
-    memcpy( &saveMem, mem, sizeof( dos_mem_block ) );
-    savePtrChk = chk;
-
-    if( !chkOpen( TIO_WRITE ) ) {
-        cleanUp();
-        return( false );
-    }
-    next = chk;
-    while( FP_SEG( next ) < FP_SEG( end ) ) {
-        size = FP_SEG( end ) - FP_SEG( next );
-        if( !chkWrite( next, &size ) ) {
-            cleanUp();
-            return( false );
-        }
-        next = MK_FP( FP_SEG( next ) + size, 0 );
-    }
-    chkClose();
-    mem->chain = MEMORY_BLOCK;
-    mem->size = FP_SEG( chk ) - FP_SEG( mem ) - 1;
-    chk->size = FP_SEG( end ) - FP_SEG( chk ) - 1;
-    chk->chain = END_OF_CHAIN;
-    chk->owner = 0;
-    return( true );
-}
-
-static void checkPointRestore( void )
-{
-    dos_mem_block       *chk;
-
-    if( !chkOpen( TIO_READ ) ) {
-        return;
-    }
-
-    chk = savePtrMem;
-    memcpy( chk, &saveMem, sizeof( dos_mem_block ) );
-    chk = savePtrChk;
-
-    while( chkRead( (void **)&chk ) );
-    cleanUp();
-}
-
 long MySpawn( const char *cmd )
 {
     bool        cp;
@@ -342,8 +62,16 @@ long MySpawn( const char *cmd )
     exec_block  exeparm;
     _fcb        fcb1, fcb2;
     cmd_struct  cmds;
-    char        path[_MAX_PATH], file[_MAX_PATH];
+    char        path[_MAX_PATH], f_buff[_MAX_PATH];
     int         i;
+    where_parm  where;
+    long        minMemoryLeft;
+    int         chkSwapSize;
+#if defined( USE_XMS ) || defined( USE_EMS )
+    long        *xHandle;
+    unsigned short *xSize;
+#endif
+
 
     minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
     chkSwapSize = 1 + (unsigned short)
@@ -360,7 +88,8 @@ long MySpawn( const char *cmd )
         for( i = 0; i < chkSwapSize; i++ ) {
             EMSGetBlock( &xHandle[i] );
         }
-        isWhere = IN_EMS;
+        XSwapInit( chkSwapSize, xHandle, xSize );
+        where = IN_EMS;
         goto evil_goto;
     }
 #endif
@@ -371,19 +100,12 @@ long MySpawn( const char *cmd )
         for( i = 0; i < chkSwapSize; i++ ) {
             XMSGetBlock( &xHandle[i] );
         }
-        isWhere = IN_XMS;
+        XSwapInit( chkSwapSize, xHandle, xSize );
+        where = IN_XMS;
         goto evil_goto;
     }
 #endif
-    MakeTmpPath( file, SPAWN_FILE_NAME );
-    fileHandle = mkstemp( file );
-    if( fileHandle == -1 ) {
-        return( 0 );
-    }
-    close( fileHandle );
-    fileHandle = -1;
-    fullName = file;
-    isWhere = ON_DISK;
+    where = ON_DISK;
 
     /*
      * build command line
@@ -404,17 +126,19 @@ evil_goto:
     /*
      * spawn the command
      */
-    cp = checkPointMem( minMemoryLeft / 16 );
+    cp = CheckPointMem( where, minMemoryLeft / 16, f_buff );
     rc = DoSpawn( path, &exeparm );
     if( cp ) {
-        checkPointRestore();
+        CheckPointRestore( where );
     }
-
     return( rc );
 }
+
 #else
+
 long MySpawn( const char *cmd )
 {
     return( system( cmd ) );
 }
+
 #endif

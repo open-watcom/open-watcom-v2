@@ -9,6 +9,8 @@ objdossize = &
         dosmouse.obj &
         dossys.obj &
         dosdir.obj &
+        doschk.obj &
+        doschkx.obj &
         time.obj  &
         spawn.obj
 

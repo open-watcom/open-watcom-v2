@@ -24,20 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Check DOS memory blocks for consistency.
+* Description:  Check DOS memory blocks access routines.
 *
 ****************************************************************************/
 
 
-typedef enum {
-    IN_EMS,
-    IN_XMS,
-    ON_DISK
-} where_parm;
-
-extern bool CheckPointMem( where_parm where, unsigned max, char *f_buff );
-extern void CheckPointRestore( where_parm where );
-
-#if defined( USE_XMS ) || defined( USE_EMS )
-extern void XSwapInit( int count, long *handles, unsigned short *sizes );
-#endif
+extern void XcleanUp( where_parm where );
+extern bool XchkOpen( where_parm where, char *f_buff );
+extern void XchkClose( where_parm where );
+extern bool XchkWrite( where_parm where, __segment buff, unsigned *size );
+extern bool XchkRead( where_parm where, __segment *buff );

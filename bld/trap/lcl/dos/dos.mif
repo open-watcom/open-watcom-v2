@@ -3,6 +3,7 @@ dos_objs = dossplit.obj &
         dosrfx.obj &
         dosfile.obj &
         doschk.obj &
+        doschkx.obj &
         dosflip.obj &
         fork.obj &
         supp.obj &
