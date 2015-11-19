@@ -49,6 +49,7 @@ a_window *WndFPUOpen( void )
     const mad_reg_set_data      *rsd;
 
     RegFindData( MTK_FLOAT, &rsd );
-    if( rsd == NULL ) return( NULL );
+    if( rsd == NULL )
+        return( NULL );
     return( WndMadRegOpen( MTK_FLOAT, WND_FPU, &FPUIcon ) );
 }
