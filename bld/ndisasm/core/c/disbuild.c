@@ -748,7 +748,7 @@ typedef struct list_item {
     char                *handler;
 } list_item;
 
-
+#if 0
 static void addHandlerItem( list_item **owner, char *handler )
 {
     list_item   *new;
@@ -768,6 +768,7 @@ static void addHandlerItem( list_item **owner, char *handler )
     new->handler = handler;
     *owner = new;
 }
+#endif
 
 #define INVALID_INS     "????"
 string_data InvalidIns = { INVALID_INS, 0 };
