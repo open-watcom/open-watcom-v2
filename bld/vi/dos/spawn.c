@@ -30,21 +30,19 @@
 
 
 #include "vi.h"
-#include <malloc.h>
-#include <dos.h>
-#include "wio.h"
-#include "fcbmem.h"
-#if defined( _M_I86 )
+#if defined( __DOS__ ) && defined( _M_I86 )
+    #include "walloca.h"
+    #include "fcbmem.h"
     #include "pragmas.h"
     #include "tinyio.h"
+    #include "doschk.h"
 #endif
-#include "doschk.h"
 
 void ResetSpawnScreen( void )
 {
 }
 
-#if defined( _M_I86 )
+#if defined( __DOS__ ) && defined( _M_I86 )
 
 typedef struct {
     unsigned short      envp;
@@ -66,14 +64,15 @@ long MySpawn( const char *cmd )
     int         i;
     where_parm  where;
     long        minMemoryLeft;
-    int         chkSwapSize;
 #if defined( USE_XMS ) || defined( USE_EMS )
+    int         chkSwapSize;
     long        *xHandle;
     unsigned short *xSize;
 #endif
 
 
     minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
+#if defined( USE_XMS ) || defined( USE_EMS )
     chkSwapSize = 1 + (unsigned short)
         (((minMemoryLeft + ((long)MAX_IO_BUFFER - 1)) & ~((long)MAX_IO_BUFFER - 1)) /
          (long)MAX_IO_BUFFER);
@@ -104,6 +103,7 @@ long MySpawn( const char *cmd )
         where = IN_XMS;
         goto evil_goto;
     }
+#endif
 #endif
     where = ON_DISK;
 

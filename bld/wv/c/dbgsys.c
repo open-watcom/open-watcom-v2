@@ -43,7 +43,7 @@
 #include "dbgsys.h"
 #include "remfile.h"
 #include "dbginit.h"
-#if defined( __DOS__ )
+#if defined( __DOS__ ) && defined( _M_I86 )
 #include "doschk.h"
 #endif
 
@@ -54,7 +54,9 @@ void DoSystem( const char *cmd, size_t len, int loc )
 {
     long        rc;
     error_idx   ret;
+#if defined( __DOS__ ) && defined( _M_I86 )
     bool        chk;
+#endif
 
     DUISysStart();
     if( loc == 0 && _IsOn( SW_REMOTE_FILES ) )
@@ -64,11 +66,11 @@ void DoSystem( const char *cmd, size_t len, int loc )
         rc = 0;
     } else {
         RemoteSuspend();
-#if defined( __DOS__ )
+#if defined( __DOS__ ) && defined( _M_I86 )
         chk = CheckPointMem( ON_DISK, CheckSize, TxtBuff );
 #endif
         rc = _fork( cmd, len );
-#if defined( __DOS__ )
+#if defined( __DOS__ ) && defined( _M_I86 )
         if( chk )
             CheckPointRestore( ON_DISK );
 #endif
