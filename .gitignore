@@ -191,6 +191,12 @@
 /bld/win386/vxd/*.386
 /bld/win386/conv/win386/*
 #
+/bld/wipfc/linuxx64/.deps/*
+/bld/wipfc/linuxx64/config.h
+/bld/wipfc/linuxx64/config.status
+/bld/wipfc/linuxx64/Makefile
+/bld/wipfc/linuxx64/stamp-h1
+#
 /bld/wmake/regress/cmds/*
 #
 /bld/wv/dbg/*/*.dbg
