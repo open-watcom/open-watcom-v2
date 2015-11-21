@@ -34,6 +34,7 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
+#include "trptypes.h"
 #include "filelcl.h"
 
 long LocalGetFileDate( const char *name )
