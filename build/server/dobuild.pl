@@ -59,7 +59,7 @@ if ($^O eq 'MSWin32') {
     $OStype = 'WIN32';
     $ext    = 'bat';
     $setenv = 'set';
-    if ($Config{archname} =~ /64/) {
+    if ($Config{archname} =~ /x64/) {
         $build_platform = 'win32-x64';
     } else {
         $build_platform = 'win32-x86';
