@@ -177,8 +177,10 @@ sub process_compare
     $something_added = 'no';
     foreach $record (@new_records) {
         $found = 'no';
-        foreach $candidate (@old_records) {
-            if ($record eq $candidate) { $found = 'yes'; }
+        if (@old_records) {
+            foreach $candidate (@old_records) {
+                if ($record eq $candidate) { $found = 'yes'; }
+            }
         }
         if ($found eq 'no') {
             if ($first_added eq 'yes') {
@@ -196,7 +198,7 @@ sub process_compare
     # messages might appear to vanish because certain compilations failed to
     # finish. Only trust the removal list if there are no additional errors.
     #
-    if ($something_added eq 'no') {
+    if ($something_added eq 'no' and @old_records) {
         foreach $record (@old_records) {
             $found = 'no';
             foreach $candidate (@new_records) {
