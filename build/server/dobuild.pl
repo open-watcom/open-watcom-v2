@@ -68,7 +68,7 @@ if ($^O eq 'MSWin32') {
     $OStype = 'UNIX';
     $ext    = 'sh';
     $setenv = 'export';
-    if ($Config{archname} =~ /64/) {
+    if ($Config{archname} =~ /x86_64/) {
         $build_platform = 'linux-x64';
     } else {
         $build_platform = 'linux-x86';
@@ -139,7 +139,7 @@ sub batch_output_set_test_env
     print BATCH "$setenv WATCOM=", $relroot;
     if ($^O eq 'MSWin32') {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt";
-        if ($Config{archname} =~ /64/) {
+        if ($Config{archname} =~ /x64/) {
             print BATCH "$setenv PATH=%WATCOM%\\binnt64;%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%";
         } else {
             print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%";
@@ -150,7 +150,7 @@ sub batch_output_set_test_env
         print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%BEGINLIBPATH%";
     } elsif ($^O eq 'linux') {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh";
-        if ($Config{archname} =~ /64/) {
+        if ($Config{archname} =~ /x86_64/) {
             print BATCH "$setenv PATH=\$WATCOM/binl64:\$WATCOM/binl:\$PATH";
         } else {
             print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH";
@@ -327,7 +327,7 @@ sub make_test_batch
     }
     print BATCH '';
     if ($^O eq 'MSWin32') { 
-        if ($Config{archname} =~ /64/) {
+        if ($Config{archname} =~ /x64/) {
 #            print BATCH "if not '%OWDOSBOX%' == '' $setenv EXTRA_ARCH=i86";
         } else {
             print BATCH "$setenv EXTRA_ARCH=i86";
