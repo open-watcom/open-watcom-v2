@@ -1298,10 +1298,10 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ecx];
 
 #pragma aux             _nTinyBufferedInput = \
-        _MOV_AH 0x0C    \
+        _MOV_AH 0x0A    \
         _INT_21         \
         parm caller     [edx] \
-        modify exact    [eax];
+        modify exact    [ah];
 
 #pragma aux             _nTinyOpen = \
         "mov ah,3Dh"    \
@@ -1812,18 +1812,18 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax bx cx dx _SREG];
 
 #pragma aux             _nTinyBufferedInput = \
-        _MOV_AH 0x0C    \
+        _MOV_AH 0x0A    \
         _INT_21         \
         parm caller     [dx] \
-        modify exact    [ax];
+        modify exact    [ah];
 
 #pragma aux             _fTinyBufferedInput = \
         _SET_DS_SREG_SAFE \
-        _MOV_AH 0x0C    \
+        _MOV_AH 0x0A    \
         _INT_21         \
         _RST_DS_SREG    \
         parm caller     [_SREG dx] \
-        modify exact    [ax];
+        modify exact    [ah];
 
 #pragma aux             _nTinyOpen = \
         _SET_DS_DGROUP_SAFE \
