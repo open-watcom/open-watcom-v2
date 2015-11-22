@@ -30,6 +30,7 @@
 
 
 #ifndef _TINYIO_H_INCLUDED
+#define _TINYIO_H_INCLUDED
 
 #if defined(__SW_ZDP) && !defined(ZDP)
 #define ZDP
@@ -683,12 +684,12 @@ tiny_ret_t  tiny_call   _nTinySetFileAttr( const char __near *__file,
 tiny_ret_t              _fTinySetFileAttr( const char __far *__file,
                                 create_attr );
 void        tiny_call   _TinySetIntr( uint_8, uint );
-#ifndef __WINDOWS_386__
-void        tiny_call   _TinySetVect(uint_8, void (__far __interrupt *__f)());
-void  (__far __interrupt * tiny_call _TinyGetVect( uint_8 ))();
-#else
+#ifdef __WINDOWS_386__
 void        tiny_call   _TinySetVect( uint_8, void __near * );
 void *      tiny_call   _TinyGetVect( uint_8 );
+#else
+void        tiny_call   _TinySetVect(uint_8, void (__far __interrupt *__f)());
+void  (__far __interrupt * tiny_call _TinyGetVect( uint_8 ))();
 #endif
 tiny_dos_version  tiny_call _TinyDOSVersion( void );
 char        tiny_call   _TinyGetCH( void );
@@ -841,14 +842,14 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #define _INT            0xcd
 
 #if ( defined( __WINDOWS_386__ )  ||  defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
- extern  void   __Int21();
+ extern  void   __Int21( void );
  #define _INT_21        "call __Int21"
 #else
  #define _INT_21        _INT 0x21
 #endif
 
 #if defined( __OSI__ ) && defined( __CALL31__ )
- extern  void   __Int31();
+ extern  void   __Int31( void );
  #define _INT_31        "call __Int31"
 #else
  #define _INT_31        _INT 0x31
@@ -923,24 +924,34 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         "mov ah,26h"    \
         _INT_21         \
         "popfd"         \
-        parm caller [dx] \
-        modify exact [ah];
+        parm caller     [dx] \
+        modify exact    [ax];
 
 #pragma aux             _TinySetPSP = \
         "pushfd"        \
         "mov ah,50h"    \
         _INT_21         \
         "popfd"         \
-        parm caller [bx] \
-        modify exact [ah];
+        parm caller     [bx] \
+        modify exact    [ah];
+
+#pragma aux             _TinyGetPSP = \
+        _PUSHF          \
+        "xor eax,eax"   \
+        "mov ah,51h"    \
+        _INT_21         \
+        "mov ax,bx"     \
+        _POPF           \
+        value           [eax] \
+        modify exact    [eax ebx];
 
 #pragma aux _TinySetMaxHandleCount = \
         "mov    ah,67h" \
         _INT_21         \
         "rcl    eax,1"  \
         "ror    eax,1"  \
-        value [eax]     \
-        parm caller [ebx]
+        parm caller     [ebx] \
+        value           [eax]
 
 #pragma aux             _TinyCBAlloc = \
         "mov eax,80004800h" \
@@ -1748,14 +1759,6 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [bx] [ecx] [esi] \
         value           [eax] \
         modify          [edx edi];
-
-#pragma aux             _TinyGetPSP = \
-        _PUSHF          \
-        _MOV_AH 0x51    \
-        _INT_21         \
-        _POPF           \
-        value           [ebx] \
-        modify exact    [eax ebx];
 
 #elif defined( _M_I86 )
 
@@ -2599,36 +2602,36 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         value           [dx ax] \
         modify exact    [ax bx cx dx si di];
 
-#pragma aux             _TinyGetPSP = \
-        _PUSHF          \
-        _MOV_AH 0x51    \
-        _INT_21         \
-        _POPF           \
-        value           [bx] \
-        modify exact    [ax bx];
-
 #pragma aux             _TinyCreatePSP = \
         _PUSHF          \
         _MOV_AH 0x26    \
         _INT_21         \
         _POPF           \
-        parm caller [dx] \
-        modify exact [ah];
+        parm caller     [dx] \
+        modify exact    [ax];
 
 #pragma aux             _TinySetPSP = \
         _PUSHF          \
         _MOV_AH 0x50    \
         _INT_21         \
         _POPF           \
-        parm caller [bx] \
-        modify exact [ah];
+        parm caller     [bx] \
+        modify exact    [ah];
+
+#pragma aux             _TinyGetPSP = \
+        _PUSHF          \
+        _MOV_AH 0x51    \
+        _INT_21         \
+        _POPF           \
+        value           [bx] \
+        modify exact    [ah bx];
 
 #pragma aux _TinySetMaxHandleCount = \
         "mov    ah,67h" \
         _INT_21         \
         "sbb    dx,dx"  \
-        value [dx ax]   \
-        parm caller [bx]
+        value           [dx ax] \
+        parm caller     [bx]
 
 #pragma aux             _TinyDPMIGetRealVect = \
         "mov ax,200h"   \
@@ -2882,5 +2885,5 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #endif
 
 #pragma pack()
-#define _TINYIO_H_INCLUDED
+
 #endif
