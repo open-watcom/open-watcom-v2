@@ -102,6 +102,13 @@ typedef enum {
     TIO_TRUNCATE            = 0x20,
 } create_action;
 
+typedef enum {
+    TIO_F_OK                = 0x00,
+    TIO_X_OK                = 0x01,
+    TIO_W_OK                = 0x02,
+    TIO_R_OK                = 0x04,
+} access_mode;
+
 #define TINY_IN     0
 #define TINY_OUT    1
 #define TINY_ERR    2
@@ -606,8 +613,8 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
  *  WARNING! Don't change a _n or _ prototype without verifying that it
  *      won't break the WINDOWS 386 library code!! DJG
  */
-tiny_ret_t              _fTinyAccess( const char __far *__n, uint __pmode );
-tiny_ret_t  tiny_call   _nTinyAccess( const char __near *__n, uint __pmode );
+tiny_ret_t              _fTinyAccess( const char __far *__n, access_mode __amode );
+tiny_ret_t  tiny_call   _nTinyAccess( const char __near *__n, access_mode __amode );
 void                    _fTinyBufferedInput( char __far *__n );
 void        tiny_call   _nTinyBufferedInput( char __near *__n );
 tiny_ret_t              _fTinyOpen( const char __far *__n, open_attr __ax );
@@ -1292,9 +1299,8 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 "finish: "              \
         "sbb ecx,ecx"   \
         "mov cx,ax"     \
-        "mov eax,ecx"   \
-        parm caller     [edx] [bx] \
-        value           [eax] \
+        parm caller     [edx] [bl] \
+        value           [ecx] \
         modify exact    [eax ecx];
 
 #pragma aux             _nTinyBufferedInput = \
@@ -1789,9 +1795,9 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 "finish: "              \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
-        parm caller     [dx] [bx] \
+        parm caller     [dx] [bl] \
         value           [dx ax] \
-        modify exact    [ax bx cx dx];
+        modify exact    [ax cx dx];
 
 #pragma aux             _fTinyAccess = \
         _SET_DS_SREG    \
@@ -1807,9 +1813,9 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 "finish: "              \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
-        parm caller     [_SREG dx] [bx] \
+        parm caller     [_SREG dx] [bl] \
         value           [dx ax] \
-        modify exact    [ax bx cx dx _SREG];
+        modify exact    [ax cx dx _SREG];
 
 #pragma aux             _nTinyBufferedInput = \
         _MOV_AH 0x0A    \
