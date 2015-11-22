@@ -181,17 +181,6 @@ enum {
 /*
  * stuff for TinyGetFileStamp & TinySetFileStamp
  */
-#ifdef _OLD_TINYIO_
-
-typedef struct {
-    uint_16     hms;
-    uint_16     ymd;
-} tiny_file_stamp_t;
-
-#define HMS_pack( hr, min, sec )        ((hr)*2048+(min)*32+(sec)/2)
-#define YMD_pack( yr, mon, day )        (((yr)-1980)*512+(mon)*32+(day))
-
-#else
 
 typedef struct {
     uint_16             twosecs : 5;    /* seconds / 2 */
@@ -209,8 +198,6 @@ typedef struct {
     tiny_ftime_t        time;
     tiny_fdate_t        date;
 } tiny_file_stamp_t;
-
-#endif
 
 /*
  * format of DTA for TinyFindFirst/Next
@@ -687,13 +674,8 @@ tiny_ret_t  tiny_call   _TinyFindNext( void );
 tiny_ret_t  tiny_call   _TinyFindNextDTA( void * );
 tiny_ret_t  tiny_call   _TinyFindCloseDTA( void * );
 tiny_ret_t  tiny_call   _TinyGetFileStamp( tiny_handle_t );
-#ifdef _OLD_TINYIO_
-tiny_ret_t  tiny_call   _TinySetFileStamp( tiny_handle_t, uint __p_hms,
-                                uint __p_ymd );
-#else
 tiny_ret_t  tiny_call   _TinySetFileStamp( tiny_handle_t, tiny_ftime_t __hms,
                                 tiny_fdate_t __ymd );
-#endif
 tiny_ret_t  tiny_call   _nTinyGetFileAttr( const char __near *__file );
 tiny_ret_t              _fTinyGetFileAttr( const char __far *__file );
 tiny_ret_t  tiny_call   _nTinySetFileAttr( const char __near *__file,
