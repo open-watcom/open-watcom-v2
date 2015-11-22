@@ -1023,7 +1023,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyDPMIGetDescriptor = \
         "push es"       \
-        "mov es,cx"     \
+        "mov es,ecx"    \
         "mov ax,0bh"    \
         _INT_31         \
         "sbb eax,eax"   \
@@ -1034,7 +1034,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyDPMISetDescriptor = \
         "push es"       \
-        "mov es,cx"     \
+        "mov es,ecx"    \
         "mov ax,0ch"    \
         _INT_31         \
         "sbb eax,eax"   \
@@ -1125,7 +1125,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyDPMISimulateRealInt = \
         "push es"       \
-        "mov es,dx"     \
+        "mov es,edx"    \
         "mov ax,300h"   \
         _INT_31         \
         "sbb eax,eax"   \
@@ -1136,7 +1136,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyDPMICallRealFarFrame = \
         "push es"       \
-        "mov es,dx"     \
+        "mov es,edx"    \
         "mov ax,301h"   \
         _INT_31         \
         "sbb eax,eax"   \
@@ -1147,7 +1147,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyDPMICallRealIntFrame = \
         "push es"       \
-        "mov es,dx"     \
+        "mov es,edx"    \
         "mov ax,302h"   \
         _INT_31         \
         "sbb eax,eax"   \
@@ -1371,7 +1371,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _fTinyWrite = \
         "push ds"       \
         "xchg edx,eax"  \
-        "mov ds,ax"     \
+        "mov ds,eax"    \
         "mov ah,40h"    \
         _INT_21         \
         "rcl eax,1"     \
@@ -1442,7 +1442,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _nTinyRename = \
         "push ebx"      \
         "push es"       \
-        "mov es,cx"     \
+        "mov es,ecx"    \
         _MOV_AH DOS_RENAME \
         _INT_21         \
         "rcl eax,1"     \
@@ -1541,7 +1541,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #pragma aux             _TinyFreeBlock = \
         "push es"       \
-        "mov es,ax"     \
+        "mov es,eax"    \
         _MOV_AH DOS_FREE_SEG \
         _INT_21         \
         "rcl eax,1"     \
