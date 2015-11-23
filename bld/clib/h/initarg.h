@@ -55,7 +55,6 @@ _WCRTDATA extern wchar_t *_LpwPgmName;  /* pointer to wide program name */
 
 #if defined(__WINDOWS_386__)
 extern char         __Is_DLL;
-extern char _WCFAR  *_wincmdptr;
 #else
 extern int          __Is_DLL;
 #endif
