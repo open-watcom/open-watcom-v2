@@ -502,7 +502,7 @@ static dip_status DIGREGISTER WVSymType( imp_image_handle *ii, imp_sym_handle *i
         it->t.k = TK_NONE;
         it->ri = is->ri;
     } else {
-        it->t  = is->p->t;
+        it->t  = is->p->info.t;
         it->ri = NULL;
     }
     return( DS_OK );
@@ -519,12 +519,12 @@ static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handl
     if( is->ri != NULL ) {
         return( RegLocation( lc->regs, is->ri, ll ) );
     }
-    switch( se->sc ) {
+    switch( se->info.sc ) {
     case SC_USER:
-        if( se->t.k == TK_STRING ) {
-            d = se->v.string;
+        if( se->info.t.k == TK_STRING ) {
+            d = se->info.v.string;
         } else {
-            d = &se->v;
+            d = &se->info.v;
         }
         LocationCreate( ll, LT_INTERNAL, d );
         break;
@@ -538,8 +538,8 @@ static dip_status DIGREGISTER WVSymValue( imp_image_handle *ii, imp_sym_handle *
                         location_context *lc, void *d )
 {
     ii = ii; lc = lc;
-    if( is->ri != NULL || is->p->sc != SC_INTERNAL ) return( DS_ERR|DS_BAD_PARM );
-    InternalValue( is->p->v.internal, d );
+    if( is->ri != NULL || is->p->info.sc != SC_INTERNAL ) return( DS_ERR|DS_BAD_PARM );
+    InternalValue( is->p->info.v.internal, d );
     return( DS_OK );
 }
 
@@ -553,7 +553,7 @@ static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *i
         si->kind = SK_DATA;
         return( DS_OK );
     }
-    switch( is->p->sc ) {
+    switch( is->p->info.sc ) {
     case SC_USER:
         si->kind = SK_DATA;
         break;

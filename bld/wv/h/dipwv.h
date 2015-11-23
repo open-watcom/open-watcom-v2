@@ -89,7 +89,7 @@ typedef struct {
             void            *string;
             address         addr;
         }   v;
-    };
+    } info;
     char                name[1];        /* variable sized, first is length */
 } wv_sym_entry;
 

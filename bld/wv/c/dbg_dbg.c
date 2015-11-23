@@ -292,8 +292,8 @@ void PurgeUserNames( void )
 
     while( (sl = WmonSymLst) != NULL ) {
         WmonSymLst = sl->next;
-        if( sl->s.t.k == TK_STRING )
-            _Free( sl->s.v.string );
+        if( sl->s.info.t.k == TK_STRING )
+            _Free( sl->s.info.v.string );
         _Free( sl );
     }
 }
@@ -318,19 +318,19 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     case TK_ENUM:
     case TK_CHAR:
         info.k = TK_INTEGER;
-        info.s = sizeof( new->s.v.uint );
+        info.s = sizeof( new->s.info.v.uint );
         break;
     case TK_REAL:
-        info.s = sizeof( new->s.v.real );
+        info.s = sizeof( new->s.info.v.real );
         break;
     case TK_COMPLEX:
-        info.s = sizeof( new->s.v.cmplx );
+        info.s = sizeof( new->s.info.v.cmplx );
         break;
     case TK_ADDRESS:
     case TK_POINTER:
         info.k = TK_ADDRESS;
         info.m = TM_FAR;
-        info.s = sizeof( new->s.v.addr.mach );
+        info.s = sizeof( new->s.info.v.addr.mach );
         break;
     default:
         return( FALSE );
@@ -338,8 +338,8 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     new = DbgMustAlloc( sizeof( *new ) + li->name.len );
     new->next = WmonSymLst;
     WmonSymLst = new;
-    new->s.t = info;
-    new->s.sc = SC_USER;
+    new->s.info.t = info;
+    new->s.info.sc = SC_USER;
     SET_SYM_NAME_LEN( new->s.name, li->name.len );
     memcpy( SYM_NAME_NAME( new->s.name ), li->name.start, li->name.len );
     return( TRUE );
