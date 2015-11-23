@@ -71,7 +71,7 @@
 
     #define OS_GET_CMD_LINE()    getcmd(NULL)
 
-#elif defined(__WIN386__)
+#elif defined(__WINDOWS_386__)
 
     #define OS_GET_CMD_LINE()    _wincmdptr
 
@@ -128,7 +128,7 @@
 _WCRTLINK int _bgetcmd( char *buffer, int len )
 {
     int         cmdlen;
-#if defined(__WIN386__) || defined(__OS2_286__)
+#if defined(__WINDOWS_386__) || defined(__OS2_286__)
     char _WCFAR *cmd;
     char _WCFAR *tmp;
 #else
