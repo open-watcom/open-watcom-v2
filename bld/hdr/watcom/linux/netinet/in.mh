@@ -90,10 +90,10 @@ typedef uint16_t in_port_t;
 
 #define IP_LOOPBACKNET          127
 
-_WCRTLINK unsigned long int htonl(unsigned long int hostlong);
-_WCRTLINK unsigned short int htons(unsigned short int hostshort);
-_WCRTLINK unsigned long int ntohl(unsigned long int netlong);
-_WCRTLINK unsigned short int ntohs(unsigned short int netshort);
+_WCRTLINK extern unsigned long int htonl(unsigned long int hostlong);
+_WCRTLINK extern unsigned short int htons(unsigned short int hostshort);
+_WCRTLINK extern unsigned long int ntohl(unsigned long int netlong);
+_WCRTLINK extern unsigned short int ntohs(unsigned short int netshort);
 
 :include poppack.sp
 

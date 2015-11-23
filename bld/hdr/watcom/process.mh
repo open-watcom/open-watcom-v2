@@ -116,7 +116,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
  #pragma intrinsic(_beginthread);
  _WCRTLINK extern void _WCFAR _endthread( void );
- _WCRTLINK void _WCFAR *__chkstack( void _WCFAR * );
+ _WCRTLINK extern void _WCFAR *__chkstack( void _WCFAR * );
  #ifndef __SW_ZU
   #define _beginthread( __sa, __sb, __ss, __al ) \
           _beginthread( __sa, __chkstack(__sb), __ss, __al )

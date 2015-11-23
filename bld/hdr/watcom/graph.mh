@@ -137,42 +137,42 @@ struct _fontinfo {              /* structure for _getfontinfo */
 
 /* Video Setup and Query Functions */
 
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setvideomode( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setvideomoderows( short, short );
-_WCRTLINK struct videoconfig _WCI86FAR *
+_WCRTLINK extern struct videoconfig _WCI86FAR *
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getvideoconfig( struct videoconfig _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _grstatus( void );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setactivepage( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getactivepage( void );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setvisualpage( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -266,12 +266,12 @@ _WCRTLINK short
 :segment VERSION2
 /* Truecolor related extensions */
 
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _rgb2pixel(unsigned char r, unsigned char g, unsigned char b);
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -280,37 +280,37 @@ _WCRTLINK void
 :endsegment
 /* Colour Setting and Query Functions */
 
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcolor( grcolor );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getcolor( void );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setbkcolor( long );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getbkcolor( void );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _remappalette( short, long );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _remapallpalette( long _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -360,45 +360,45 @@ extern grcolor          _coltbl[ 16 ];
 :endsegment
 /* Shape and Curve Drawing Functions */
 
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _lineto( short, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _lineto_w( double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _rectangle( short, short, short, short, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _rectangle_w( short, double, double, double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _rectangle_wxy( short, struct _wxycoord _WCI86FAR *,
                                                struct _wxycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _arc( short, short, short, short, short, short,
                               short, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _arc_w( double, double, double, double, double,
                                 double, double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -406,35 +406,35 @@ _WCRTLINK short
                                   struct _wxycoord _WCI86FAR *,
                                   struct _wxycoord _WCI86FAR *,
                                   struct _wxycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _ellipse( short, short, short, short, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _ellipse_w( short, double, double, double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _ellipse_wxy( short, struct _wxycoord _WCI86FAR *,
                                       struct _wxycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _pie( short, short, short, short, short, short,
                               short, short, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _pie_w( short, double, double, double, double,
                                 double, double, double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -442,52 +442,52 @@ _WCRTLINK short
                                   struct _wxycoord _WCI86FAR *,
                                   struct _wxycoord _WCI86FAR *,
                                   struct _wxycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _polygon( short, short, struct xycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _polygon_w( short, short, double _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _polygon_wxy( short, short, struct _wxycoord _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _floodfill( short, short, grcolor );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _floodfill_w( double, double, grcolor );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setpixel( short, short );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setpixel_w( double, double );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getpixel( short, short );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getpixel_w( double, double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -497,52 +497,52 @@ _WCRTLINK short
 
 /* Position Determination Functions */
 
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getcurrentposition( void );
-_WCRTLINK struct _wxycoord
+_WCRTLINK extern struct _wxycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getcurrentposition_w( void );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getviewcoord( short, short );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getviewcoord_w( double, double );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getviewcoord_wxy( struct _wxycoord _WCI86FAR * );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getphyscoord( short, short );
-_WCRTLINK struct _wxycoord
+_WCRTLINK extern struct _wxycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getwindowcoord( short, short );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _moveto( short, short );
-_WCRTLINK struct _wxycoord
+_WCRTLINK extern struct _wxycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _moveto_w( double, double );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -553,32 +553,32 @@ _WCRTLINK struct xycoord
 
 /* Output Determination Functions */
 
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setfillmask( unsigned char _WCI86FAR * );
-_WCRTLINK unsigned char _WCI86FAR *
+_WCRTLINK extern unsigned char _WCI86FAR *
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getfillmask( unsigned char _WCI86FAR * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setlinestyle( unsigned short );
-_WCRTLINK unsigned short
+_WCRTLINK extern unsigned short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getlinestyle( void );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setplotaction( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -593,38 +593,38 @@ enum {                          /* plotting action */
 
 /* Screen Manipulation Functions */
 
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _clearscreen( short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setviewport( short, short, short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcliprgn( short, short, short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getcliprgn( short _WCI86FAR *, short _WCI86FAR *,
                                      short _WCI86FAR *, short _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _displaycursor( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _wrapon( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -647,58 +647,58 @@ enum {                          /* text wrapping */
 
 /* Graphics Text Manipulation Functions and Constants */
 
-_WCRTLINK struct textsettings _WCI86FAR *
+_WCRTLINK extern struct textsettings _WCI86FAR *
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextsettings( struct textsettings _WCI86FAR * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextextent( short, short, char _WCI86FAR *,
                            struct xycoord _WCI86FAR *, struct xycoord _WCI86FAR * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcharsize( short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcharsize_w( double, double );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextalign( short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextpath( short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextorient( short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcharspacing( short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setcharspacing_w( double );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _grtext( short, short, char _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -722,63 +722,63 @@ enum {                          /* text path */
 #define _GSCROLLDOWN    (-1)
 #define _MAXTEXTROWS    (-1)
 
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextwindow( short, short, short, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _outtext( char _WCI86FAR * );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextcolor( grcolor );
-_WCRTLINK grcolor
+_WCRTLINK extern grcolor
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextcolor( void );
-_WCRTLINK struct rccoord
+_WCRTLINK extern struct rccoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextposition( short, short );
-_WCRTLINK struct rccoord
+_WCRTLINK extern struct rccoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextposition( void );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _scrolltextwindow( short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextwindow( short _WCI86FAR *, short _WCI86FAR *,
                                          short _WCI86FAR *, short _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _gettextcursor( void );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settextcursor( short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _outmem( unsigned char _WCI86FAR *, short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -786,44 +786,44 @@ _WCRTLINK short
 
 /* Image Manipulation Functions */
 
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getimage( short, short, short, short, char _WCI86HUGE * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getimage_w( double, double, double, double, char _WCI86HUGE * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getimage_wxy( struct _wxycoord _WCI86FAR *,
                                         struct _wxycoord _WCI86FAR *,
                                         char _WCI86HUGE * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _putimage( short, short, char _WCI86HUGE *, short );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _putimage_w( double, double, char _WCI86HUGE *, short );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _imagesize( short, short, short, short );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _imagesize_w( double, double, double, double );
-_WCRTLINK long
+_WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -831,42 +831,42 @@ _WCRTLINK long
                                          struct _wxycoord _WCI86FAR * );
 /* Font Manipulation Functions */
 
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _registerfonts( char _WCI86FAR * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _unregisterfonts( void );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setfont( char _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getfontinfo( struct _fontinfo _WCI86FAR * );
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _outgtext( char _WCI86FAR * );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _getgtextextent( char _WCI86FAR * );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setgtextvector( short, short );
-_WCRTLINK struct xycoord
+_WCRTLINK extern struct xycoord
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -878,17 +878,17 @@ _WCRTLINK struct xycoord
 ::  not available in public graph.h header file
 ::  it is only in internal graph.gh file
 ::
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _settransparency( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
     _WCI86FAR _setstylewrap( short );
-_WCRTLINK short
+_WCRTLINK extern short
 :segment INTERNAL
   _CGRAPH
 :endsegment
@@ -899,7 +899,7 @@ _WCRTLINK short
 char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width );
 
 #if defined( _DEFAULT_WINDOWS )
-_WCRTLINK void
+_WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH
 :endsegment

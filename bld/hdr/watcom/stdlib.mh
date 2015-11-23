@@ -242,7 +242,7 @@ namespace std {
 :endsegment
 :segment QNX | LINUX
 :include extunix.sp
-_WCRTLINK void           _exit( int __status );
+_WCRTLINK extern void    _exit( int __status );
 :include extepi.sp
 
 :endsegment
@@ -416,11 +416,11 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
  _WCRTLINK extern errno_t _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
  _WCRTLINK extern errno_t _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
 
- _WCRTLINK errno_t   _get_pgmptr( char ** __p );
+ _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
 :segment !NO_WIDECHAR
 :segment DOS
  #if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
-  _WCRTLINK errno_t  _get_wpgmptr( wchar_t ** __p );
+  _WCRTLINK extern errno_t  _get_wpgmptr( wchar_t ** __p );
  #endif
 :endsegment
 :endsegment
@@ -485,7 +485,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 
 #define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
 
-_WCRTLINK char ***__get_environ_ptr( void );
+_WCRTLINK extern char ***__get_environ_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define environ   (*__get_environ_ptr())
 :segment DOS
@@ -497,7 +497,7 @@ _WCRTDATA extern char ** _WCDATA environ; /* pointer to environment table */
 
 :segment !NO_WIDECHAR
 :segment DOS | LINUX
-_WCRTLINK wchar_t ***__get_wenviron_ptr( void );
+_WCRTLINK extern wchar_t ***__get_wenviron_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _wenviron (*__get_wenviron_ptr())
 :segment DOS
@@ -509,7 +509,7 @@ _WCRTDATA extern wchar_t ** _WCDATA _wenviron;   /* pointer to wide environment 
 
 :endsegment
 :endsegment
-_WCRTLINK char **__get_pgmptr_ptr( void );
+_WCRTLINK extern char **__get_pgmptr_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _pgmptr   (*__get_pgmptr_ptr())
 :segment DOS
@@ -522,7 +522,7 @@ _WCRTDATA extern char * _WCDATA _pgmptr;  /* pointer to executable name */
 :segment !NO_WIDECHAR
 :segment DOS
 #if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
-_WCRTLINK wchar_t **__get_wpgmptr_ptr( void );
+_WCRTLINK extern wchar_t **__get_wpgmptr_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _wpgmptr  (*__get_wpgmptr_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
@@ -535,7 +535,7 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :endsegment
 :segment DOS
 #if defined(__NT__)
- _WCRTLINK int *__get_fileinfo_ptr( void );
+ _WCRTLINK extern int *__get_fileinfo_ptr( void );
  #if defined(__FUNCTION_DATA_ACCESS)
   #define _fileinfo (*__get_fileinfo_ptr())
  #elif defined(__SW_BR) || defined(_RTDLL)
@@ -553,12 +553,12 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
  #define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
 #endif
 
-_WCRTLINK unsigned           *__get_psp_ptr( void );
-_WCRTLINK unsigned char      *__get_osmode_ptr( void );
-_WCRTLINK int                *__get_fmode_ptr( void );
-_WCRTLINK unsigned           *__get_minreal_ptr( void );
-_WCRTLINK unsigned long      *__get_win_alloc_flags_ptr( void );
-_WCRTLINK unsigned long      *__get_win_realloc_flags_ptr( void );
+_WCRTLINK extern unsigned       *__get_psp_ptr( void );
+_WCRTLINK extern unsigned char  *__get_osmode_ptr( void );
+_WCRTLINK extern int            *__get_fmode_ptr( void );
+_WCRTLINK extern unsigned       *__get_minreal_ptr( void );
+_WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
+_WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _psp                (*__get_psp_ptr())
  #define _osmode             (*__get_osmode_ptr())
@@ -590,8 +590,8 @@ _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocat
 #define sys_errlist _sys_errlist
 #define sys_nerr _sys_nerr
 #endif
-_WCRTLINK char               **__get_sys_errlist_ptr( void );
-_WCRTLINK int                *__get_sys_nerr_ptr( void );
+_WCRTLINK extern char        **__get_sys_errlist_ptr( void );
+_WCRTLINK extern int         *__get_sys_nerr_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _sys_errlist        (*__get_sys_errlist_ptr())
  #define _sys_nerr           (*__get_sys_nerr_ptr())
@@ -605,9 +605,9 @@ _WCRTDATA extern char * _WCDATA _sys_errlist[]; /* strerror error message table 
 _WCRTDATA extern int  _WCDATA _sys_nerr;        /* # of entries in _sys_errlist array */
 
 :endsegment
-_WCRTLINK unsigned      *__get_amblksiz_ptr( void );
-_WCRTLINK unsigned char *__get_osmajor_ptr( void );
-_WCRTLINK unsigned char *__get_osminor_ptr( void );
+_WCRTLINK extern unsigned      *__get_amblksiz_ptr( void );
+_WCRTLINK extern unsigned char *__get_osmajor_ptr( void );
+_WCRTLINK extern unsigned char *__get_osminor_ptr( void );
 #if defined(__FUNCTION_DATA_ACCESS)
  #define _amblksiz      (*__get_amblksiz_ptr())
  #define _osmajor       (*__get_osmajor_ptr())
@@ -623,11 +623,11 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 
 :segment DOS
 #if defined(__NT__)
- _WCRTLINK unsigned short   *__get_osbuild_ptr( void );
- _WCRTLINK unsigned int     *__get_osver_ptr( void );
- _WCRTLINK unsigned int     *__get_winmajor_ptr( void );
- _WCRTLINK unsigned int     *__get_winminor_ptr( void );
- _WCRTLINK unsigned int     *__get_winver_ptr( void );
+ _WCRTLINK extern unsigned short *__get_osbuild_ptr( void );
+ _WCRTLINK extern unsigned int   *__get_osver_ptr( void );
+ _WCRTLINK extern unsigned int   *__get_winmajor_ptr( void );
+ _WCRTLINK extern unsigned int   *__get_winminor_ptr( void );
+ _WCRTLINK extern unsigned int   *__get_winver_ptr( void );
  #if defined(__FUNCTION_DATA_ACCESS)
   #define _osbuild          (*__get_osbuild_ptr())
   #define _osver            (*__get_osver_ptr())
