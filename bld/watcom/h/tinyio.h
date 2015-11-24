@@ -1621,7 +1621,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _MOV_AX_W _SET_ DOS_CTRL_BREAK \
         _INT_21         \
         parm caller     [dl] \
-        modify exact    [eax];
+        modify          [eax dl];
 
 #pragma aux             _TinyTerminateProcess = \
         _MOV_AH DOS_EXIT \
