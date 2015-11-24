@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int  SSLWalk( char *table, unsigned start, void **stk_bot, unsigned stk_size );
+extern int  SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned stk_size );

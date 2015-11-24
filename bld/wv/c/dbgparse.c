@@ -60,7 +60,7 @@ static token_table  ParseTokens;
 
 static void start_expr( void )
 {
-    void        *stack[ PARSE_STACK_SIZE ];
+    const char  *stack[ PARSE_STACK_SIZE ];
 
     ScanExpr( &ParseTokens );
     SSLWalk( ParseTable, 0, stack, PARSE_STACK_SIZE );
