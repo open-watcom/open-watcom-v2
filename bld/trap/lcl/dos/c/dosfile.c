@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include "tinyio.h"
 #include "dosver.h"
@@ -42,9 +43,9 @@
 #include "dosfile.h"
 
 
-const char DosExtList[] = DOSEXTLIST;
+extern tiny_ret_t       Fork( const char __far *, unsigned );
 
-extern tiny_ret_t       Fork(char *, unsigned);
+const char DosExtList[] = DOSEXTLIST;
 
 trap_retval ReqFile_get_config( void )
 {
@@ -76,8 +77,9 @@ trap_retval ReqFile_open( void )
     if( acc->mode & TF_CREATE ) {
         rc = TinyCreate( filename, TIO_NORMAL );
     } else {
-        mode = MapAcc[ acc->mode - 1 ];
-        if( IsDOS3 ) mode |= 0x80; /* set no inheritance */
+        mode = MapAcc[acc->mode - 1];
+        if( IsDOS3 )
+            mode |= 0x80; /* set no inheritance */
         rc = TinyOpen( filename, mode );
     }
     ret->handle = TINY_INFO( rc );
@@ -229,7 +231,7 @@ long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
     path = DOSEnvFind( "PATH" );
     if( path == NULL )
         return( rc );
-    for(;;) {
+    for( ;; ) {
         if( *path == '\0' )
             break;
         p2 = buffer;
@@ -291,7 +293,7 @@ trap_retval ReqFile_run_cmd( void )
     ret->err = 0;
 #else
     bool                chk;
-    char                buff[64];
+    char                buff[_MAX_PATH];
     file_run_cmd_req    *acc;
     unsigned            len;
     tiny_ret_t          rc;
@@ -301,7 +303,7 @@ trap_retval ReqFile_run_cmd( void )
     ret = GetOutPtr( 0 );
 
     chk = CheckPointMem( ON_DISK, acc->chk_size, buff );
-    rc = Fork( (char *)GetInPtr( sizeof(*acc) ), len );
+    rc = Fork( GetInPtr( sizeof( *acc ) ), len );
     if( chk )
         CheckPointRestore( ON_DISK );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
