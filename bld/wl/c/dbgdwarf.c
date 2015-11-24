@@ -96,9 +96,9 @@ enum {
     SECT_NUM_SECTIONS
 };
 
-#pragma pack( 1 )
-
 // die information
+
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_8  abbrev_code;
@@ -183,7 +183,8 @@ static char FlatStandardAbbrevs[] = {
     DW_AT_name,         DW_FORM_string,
     0,                  0
 };
-#pragma pack()
+
+#include "poppck.h"
 
 
 void DwarfInit( void )

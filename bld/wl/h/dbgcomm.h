@@ -32,7 +32,8 @@
 
 /* items used in the debugging information generation files */
 
-#pragma pack(1)
+#include "pushpck1.h"
+
 typedef struct ln_off_286 {
     unsigned_16         linnum;
     unsigned_16         off;
@@ -48,7 +49,7 @@ typedef union {
     ln_off_386  _386;
 } ln_off_pair;
 
-#pragma pack()
+#include "poppck.h"
 
 #define LINE_IS_32BIT   1       // since lines always even, can use bottom bit
 

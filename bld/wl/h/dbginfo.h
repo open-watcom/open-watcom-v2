@@ -34,7 +34,7 @@
 #define FOX2_SIGNATURE  0x8301
 #define RES_SIGNATURE   0x8302
 
-#pragma pack(1)
+#include "pushpck1.h"
 
 typedef struct sectheader {
     unsigned_32         mod_offset;
@@ -130,4 +130,4 @@ typedef struct dbinode {
     unsigned_16         segidx;
 } dbinode;
 
-#pragma pack()
+#include "poppck.h"
