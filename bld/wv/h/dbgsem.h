@@ -29,9 +29,17 @@
 ****************************************************************************/
 
 
+typedef enum {
+    TERM_NORMAL,
+    TERM_SYNTAX,
+    TERM_ERROR,
+    TERM_STK_OVERFLOW,
+    TERM_KILL
+} ssl_error_class;
+
 extern bool     SemAllowClosestLine( bool ok );
 extern unsigned SSLSemantic( int action, unsigned parm );
-extern int      SSLError( unsigned class, unsigned error );
+extern int      SSLError( ssl_error_class class, unsigned error );
 extern void     SSLOutToken( unsigned token );
 extern unsigned SSLNextToken( void );
 extern unsigned SSLCurrToken( void );

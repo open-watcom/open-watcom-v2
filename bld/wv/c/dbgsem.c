@@ -1249,13 +1249,15 @@ unsigned SSLSemantic( int action, unsigned parm )
 }
 
 
-int SSLError( unsigned class, unsigned error )
+int SSLError( ssl_error_class class, unsigned error )
 {
     switch( class ) {
-    case 1: /* syntax */
+    case TERM_NORMAL:
+        break;
+    case TERM_SYNTAX: /* syntax */
         Recog( error ); /* cause error */
         break;
-    case 2: /* error stream */
+    case TERM_ERROR: /* error stream */
         switch( error ) {
         case 0:
             Error( ERR_NONE, LIT_ENG( ERR_DUPLICATE_TYPE_SPEC ) );
@@ -1283,10 +1285,10 @@ int SSLError( unsigned class, unsigned error )
             break;
         }
         break;
-    case 3: /* stack overflow */
+    case TERM_STK_OVERFLOW: /* stack overflow */
         Error( ERR_LOC, LIT_ENG( ERR_EXPR_STACK_OVER ) );
         break;
-    case 4: /* kill (error in SSL file) */
+    case TERM_KILL: /* kill (error in SSL file) */
         Error( ERR_INTERNAL, LIT_ENG( ERR_PARSE_FILE ) );
         break;
     }

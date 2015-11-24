@@ -41,16 +41,7 @@
 
 static const char   *TblPtr;
 
-enum {
-        TERM_NORMAL,
-        TERM_SYNTAX,
-        TERM_ERROR,
-        TERM_STK_OVERFLOW,
-        TERM_KILL
-    };
-
-
-static int GetParmUInt( op_code operation )
+static unsigned GetParmUInt( op_code operation )
 {
     unsigned_16  parm;
 
@@ -75,7 +66,7 @@ static int GetParmInt( op_code operation )
 }
 
 
-static int GetWord( void )
+static unsigned GetWord( void )
 {
     return( (unsigned_16)( GETU8( TblPtr++ ) | ( GETU8( TblPtr++ ) << 8 ) ) );
 }
