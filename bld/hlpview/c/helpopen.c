@@ -139,7 +139,7 @@ static bool search_for_file( char *fullpath, const char *fname, HelpSrchPathItem
 static void initSearchList(
     HelpSrchPathItem *srchlist )    /* - list of places to look for help files */
 {
-    unsigned    i;
+    int         i;
     int         count;
 
     freeSearchList();

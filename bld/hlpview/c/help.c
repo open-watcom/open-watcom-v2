@@ -1038,7 +1038,7 @@ static void save_line( int line, long offset )
         lastHelpLine = line;
     }
     if( offset == -1 ) {
-        helpPos[line] = -1;
+        helpPos[line] = (unsigned)-1;
     } else {
         helpPos[line] = offset - topPos;
     }

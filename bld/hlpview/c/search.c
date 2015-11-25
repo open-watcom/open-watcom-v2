@@ -223,12 +223,15 @@ unsigned HelpFindFirst( HelpHdl hdl, char *name, HelpSrchInfo *info )
 
 char *HelpGetIndexedTopic( HelpHdl hdl, unsigned index )
 {
-    unsigned            i;
+    int                 i;
     PageIndexEntry      *entry;
 
-    if( hdl == NULL || index >= hdl->header.topiccnt ) return( NULL );
-    for( i=0; i < hdl->header.datapagecnt - 1; i++ ) {
-        if( hdl->itemindex[i+1] > index ) break;
+    if( hdl == NULL || index >= hdl->header.topiccnt )
+        return( NULL );
+    for( i = 0; i < hdl->header.datapagecnt - 1; i++ ) {
+        if( hdl->itemindex[i + 1] > index ) {
+            break;
+        }
     }
     loadPage( hdl, i + hdl->header.indexpagecnt );
     index -= hdl->itemindex[i];
@@ -243,7 +246,8 @@ unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
     PageIndexEntry      *entry;
     char                *foundtopic;
 
-    if( hdl == NULL ) return( -1 );
+    if( hdl == NULL )
+        return( (unsigned long)-1 );
     loadPage( hdl, 0 );
     while( pageHeader->type != PAGE_DATA ) {
         loadNextPage( hdl, topic );
@@ -253,7 +257,7 @@ unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
         entry = pageIndex;
         return( entry[ entry_num ].entry_offset );
     } else {
-        return( -1 );
+        return( (unsigned long)-1 );
     }
 }
 
