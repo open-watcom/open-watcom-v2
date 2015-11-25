@@ -136,7 +136,7 @@ static  void    IOCallValue( RTCODE rtn ) {
 }
 
 
-static  void    ChkIOErr( cg_name io_stat ) {
+static  void    chkIOErr( cg_name io_stat ) {
 //===========================================
 
 // Check for i/o errors.
@@ -213,7 +213,7 @@ static  void    IOStatement( RTCODE stmt ) {
     if( ( (stmt != RT_EX_READ) && (stmt != RT_EX_WRITE) ) || NmlSpecified ) {
         IOStatSpecified = FALSE;
     }
-    ChkIOErr( CGCall( InitCall( stmt ) ) );
+    chkIOErr( CGCall( InitCall( stmt ) ) );
 }
 
 
