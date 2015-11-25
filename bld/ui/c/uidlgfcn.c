@@ -39,24 +39,26 @@ extern void uiupdatelistbox( a_list *list );
 extern void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = TRUE;
-    v->u.check->val = 1;
+    v->u.check->val = true;
     uiprintfield( ui_dlg_info, v );
 }
 
 extern void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = TRUE;
-    v->u.check->val = 0;
+    v->u.check->val = false;
     uiprintfield( ui_dlg_info, v );
 }
 
 extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    unsigned newval = v->u.radio->value;
-    unsigned *oldval = &v->u.radio->group->value;
-    VFIELD *oldradio = NULL;
-    VFIELD *tmp = ui_dlg_info->fields;
-    if( newval == *oldval ) return; // nothing to do
+    int     newval = v->u.radio->value;
+    int     *oldval = &v->u.radio->group->value;
+    VFIELD  *oldradio = NULL;
+    VFIELD  *tmp = ui_dlg_info->fields;
+
+    if( newval == *oldval )
+        return; // nothing to do
 
     ui_dlg_info->dirty = TRUE;
     while( tmp->u.radio != NULL ) {
