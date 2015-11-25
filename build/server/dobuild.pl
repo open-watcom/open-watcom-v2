@@ -32,6 +32,7 @@ use strict;
 
 use Common;
 use Config;
+use File::Path qw( make_path );
 
 $\ = "\n";
 
@@ -648,9 +649,7 @@ if ($home eq $OW) {
 my $shortdate_stamp = get_shortdate();
 my $date_stamp = get_date();
 my $report_directory = "$Common::config{'REPORTS'}\/$shortdate_stamp";
-if (!stat($report_directory)) {
-    mkdir($report_directory);
-}
+make_path($report_directory);
 my $report_name = "$report_directory\/$date_stamp-report-$build_platform.txt";
 my $bak_name    = "$report_directory\/$date_stamp-report-$build_platform.txt.bak";
 if (stat($report_name)) {
