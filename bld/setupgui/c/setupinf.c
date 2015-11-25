@@ -225,7 +225,7 @@ file_cond_info *FileCondInfo = NULL;
 static struct file_info {
     char                *filename;
     int                 dir_index, old_dir_index, disk_index;
-    unsigned            num_files;
+    int                 num_files;
     a_file_info         *files;
     union {
         file_cond_info  *p;
@@ -476,8 +476,7 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     switch( a->op ) {
     case OP_AND:
     case OP_OR:
-        return( SameExprTree( a->u.left, b->u.left ) &&
-                SameExprTree( a->right, b->right ) );
+        return( SameExprTree( a->u.left, b->u.left ) && SameExprTree( a->right, b->right ) );
     case OP_NOT:
         return( SameExprTree( a->u.left, b->u.left ) );
     case OP_EXIST:
@@ -561,12 +560,10 @@ int GetOptionVarValue( vhandle var_handle, bool is_minimal )
     } else if( VarGetIntVal( UnInstall ) ) {
         // uninstall makes everything false
         return( 0 );
-    } else if( VarGetIntVal( FullInstall ) &&
-               VarGetAutoSetCond( var_handle ) != NULL ) {
+    } else if( VarGetIntVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstall pretends all options are turned on
         return( 1 );
-    } else if( VarGetIntVal( FullCDInstall ) &&
-               VarGetAutoSetCond( var_handle ) != NULL ) {
+    } else if( VarGetIntVal( FullCDInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstallcd pretends all options are turned on except 'HelpFiles'
         return( var_handle != HelpFiles );
     } else if( is_minimal ) {
@@ -578,20 +575,19 @@ int GetOptionVarValue( vhandle var_handle, bool is_minimal )
 }
 
 
-static int EvalExprTree( tree_node *tree, bool is_minimal )
-/*********************************************************/
+static bool EvalExprTree( tree_node *tree, bool is_minimal )
+/**********************************************************/
 {
     int         value = 0;
     char        buff[_MAX_PATH];
 
+    value = false;
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->u.left, is_minimal ) &
-                EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->u.left, is_minimal ) & EvalExprTree( tree->right, is_minimal );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->u.left, is_minimal ) |
-                EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->u.left, is_minimal ) | EvalExprTree( tree->right, is_minimal );
         break;
     case OP_NOT:
         value = !EvalExprTree( tree->u.left, is_minimal );
@@ -601,7 +597,7 @@ static int EvalExprTree( tree_node *tree, bool is_minimal )
         value = ( access( buff, F_OK ) == 0 );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal );
+        value = ( GetOptionVarValue( (vhandle)(pointer_int)tree->u.left, is_minimal ) != 0 );
         break;
     case OP_TRUE:
         value = !is_minimal;
@@ -612,10 +608,10 @@ static int EvalExprTree( tree_node *tree, bool is_minimal )
     return( value );
 }
 
-static int DoEvalCondition( const char *str, bool is_minimal )
-/************************************************************/
+static bool DoEvalCondition( const char *str, bool is_minimal )
+/*************************************************************/
 {
-    int         value;
+    bool        value;
     tree_node   *tree;
 
     tree = BuildExprTree( str );
@@ -624,7 +620,7 @@ static int DoEvalCondition( const char *str, bool is_minimal )
     return( value );
 }
 
-int EvalCondition( const char *str )
+bool EvalCondition( const char *str )
 /**********************************/
 {
     if( str == NULL || *str == '\0' )
@@ -2363,7 +2359,7 @@ static char *readLine( void *handle, char *buffer, size_t length )
         // of target buffer
         while( (*RawBufPos != '\n') &&
                (RawBufPos < RawReadBuf + raw_buf_size) &&
-               (RawBufPos - line_start < length) ) {
+               ((size_t)( RawBufPos - line_start ) < length) ) {
             ++RawBufPos;
         }
 
@@ -3394,8 +3390,7 @@ void SimCalcAddRemove( void )
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
-        add = EvalExprTree( FileInfo[i].condition.p->cond,
-                            VarGetIntVal( MinimalInstall ) != 0 );
+        add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetIntVal( MinimalInstall ) != 0 );
         if( FileInfo[i].supplimental ) {
             remove = false;
             if( uninstall ) {
@@ -3435,7 +3430,8 @@ void SimCalcAddRemove( void )
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
             a_file_info *file = &FileInfo[i].files[k];
-            if( file->size == 0 ) continue;
+            if( file->size == 0 )
+                continue;
             if( file->disk_size != 0 ) {
                 DirInfo[dir_index].num_existing++;
                 if( !TargetInfo[targ_index].supplimental ) {

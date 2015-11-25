@@ -231,7 +231,7 @@ gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
             id = VarGetId( var_handle );
             if( id == CTL_NULL ) {
                 // dummy_var allows control to have an id - used by dynamic visibility feature
-                id = VarGetId( MakeDummyVar() );
+                id = VH2ID( MakeDummyVar() );
             }
         }
         break;

@@ -147,7 +147,7 @@ extern void             MsgPut( int resourceid, va_list arglist );
 extern void             PatchError( int format, ... );
 extern void             FilePatchError( int format, ... );
 extern void             FreeAllStructs( void );
-extern int              EvalCondition( const char *str );
+extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );
 extern vhandle          SimSubFileVar( int parm, int subfile );
 extern int              SimNumSpawns();

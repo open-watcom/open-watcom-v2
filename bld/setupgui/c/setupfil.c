@@ -106,7 +106,7 @@ static char     OrigAutoExec[] = "?:\\AUTOEXEC.BAT";
 static char     OrigConfig[] = "?:\\CONFIG.SYS";
 
 
-static short GetBootDrive( void )
+static char GetBootDrive( void )
 /*******************************/
 {
 #ifdef __OS2__
@@ -419,6 +419,8 @@ static void FinishEnvironmentLines( FILE *fp, char *line, int num, bool *Found, 
             continue;
         append = SimGetEnvironmentStrings( i, &new_var, new_val, sizeof( new_val ) );
         libpath_batch = false;
+        val_before = NULL;
+        val_after = NULL;
         if( batch ) {
             if( stricmp( new_var, "LIBPATH" ) == 0 ) {
                 libpath_batch = true;
@@ -857,7 +859,7 @@ extern bool ModifyAutoExec( bool uninstall )
     int                 num_auto;
     int                 num_cfg;
     int                 num_env;
-    int                 boot_drive;
+    char                boot_drive;
     int                 mod_type;
 #ifndef __OS2__
     char                newauto[_MAX_PATH];
@@ -1088,7 +1090,7 @@ char *ReplaceVars( char *buff, size_t buff_len, const char *src )
                 break;  // no '?' operator
             } else {
                 colon = strchr( quest, ':' );
-                if( GetOptionVarValue( GetVariableByName( varname ), false ) ) {
+                if( GetOptionVarValue( GetVariableByName( varname ), false ) != 0 ) {
                     *colon = '\0';
                     varval = GetVariableStrVal( quest );
                     break;
