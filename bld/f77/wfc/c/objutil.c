@@ -48,6 +48,8 @@
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "ftextfun.h"
+#include "posio.h"
 
 #include "clibext.h"
 
@@ -85,7 +87,7 @@ extern  void            SDSetAttr(file_attr);
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
 
-static  void    ChkIOErr( file_handle fp, int error ) {
+static  void    chkIOErr( file_handle fp, int error ) {
 //=====================================================
 
 // Check for i/o errors to page file.
@@ -124,21 +126,23 @@ void    InitObj( void ) {
                 }
             }
         }
+        SDSetAttr( PageFileAttrs );
         strcpy( fn, PageFileName );
         fn += strlen( fn );
         fn[1] = NULLCHAR;
         for( idx = 0; idx < 26; idx++ ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
-                break;
+                PageFile = SDOpen( PageFileBuff, UPDATE_FILE );
+                if( Errorf( PageFile ) == IO_OK ) {
+                    break;
+                }
             }
         }
         if( idx == 26 ) {
             Error( SM_OUT_OF_VM_FILES, PageFileName );
         } else {
-            SDSetAttr( PageFileAttrs );
-            PageFile = SDOpen( PageFileBuff, UPDATE_FILE );
-            ChkIOErr( PageFile, SM_OPENING_FILE );
+            chkIOErr( PageFile, SM_OPENING_FILE );
         }
     }
     PageFlags = PF_INIT;
@@ -172,9 +176,9 @@ static  void    DumpCurrPage( void ) {
             MaxPage = CurrPage;
         }
         SDSeek( PageFile, CurrPage, WFC_PAGE_SIZE );
-        ChkIOErr( PageFile, SM_IO_WRITE_ERR );
+        chkIOErr( PageFile, SM_IO_WRITE_ERR );
         SDWrite( PageFile, ObjCode, WFC_PAGE_SIZE );
-        ChkIOErr( PageFile, SM_IO_WRITE_ERR );
+        chkIOErr( PageFile, SM_IO_WRITE_ERR );
         PageFlags &= ~PF_DIRTY;
     }
 }
@@ -187,13 +191,13 @@ static  void    LoadPage( unsigned_16 page ) {
     if( page != CurrPage ) {
         DumpCurrPage();
         SDSeek( PageFile, page, WFC_PAGE_SIZE );
-        ChkIOErr( PageFile, SM_IO_READ_ERR );
+        chkIOErr( PageFile, SM_IO_READ_ERR );
         SDRead( PageFile, ObjCode, WFC_PAGE_SIZE );
         // If we seek to the end of the last page in the disk
         // file (which is the start of a non-existent page file),
         // we will get end-of-file when we do the read.
         if( !SDEof( PageFile ) ) {
-            ChkIOErr( PageFile, SM_IO_READ_ERR );
+            chkIOErr( PageFile, SM_IO_READ_ERR );
         }
         CurrPage = page;
         PageFlags = PF_INIT;
