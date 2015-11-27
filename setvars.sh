@@ -15,9 +15,6 @@
 
 export OWROOT=$(realpath `pwd`)
 
-# Subdirectory to be used for building OW build tools
-export OWOBJDIR=binbuild
-
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
 export OWTOOLS=GCC
