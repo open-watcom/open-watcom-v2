@@ -4,7 +4,7 @@ if [ -z "$OWROOT" ]; then
     source ./setvars.sh
 fi
 if [ ! -f $OWBINDIR/builder ]; then
-    echo Cannot find builder - did you run boot.sh?
+    echo Cannot find builder - did you run build.sh?
 else
     cd $OWSRCDIR
     builder -i clean
