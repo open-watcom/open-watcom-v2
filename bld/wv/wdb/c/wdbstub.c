@@ -567,7 +567,7 @@ static void DumpLocals( void )
     var_info    Locals;
 
     VarInitInfo( &Locals );
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
         VarOkToCache( &Locals, TRUE );
@@ -575,7 +575,7 @@ static void DumpLocals( void )
 
     DisplayDebuggerVarValue( &Locals );
 
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarOkToCache( &Locals, FALSE );
         VarOldErrState();
     }

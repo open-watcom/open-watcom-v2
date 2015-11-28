@@ -96,7 +96,7 @@ static void DumpLocals( void )
     int         depth;
     var_node    *v;
 
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
         VarOkToCache( &Locals, TRUE );
@@ -126,7 +126,7 @@ static void DumpLocals( void )
         VarBuildName( v, TRUE );
         printf( " %-20s %s\n", TxtBuff, v->value );
     }
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarOkToCache( &Locals, FALSE );
         VarOldErrState();
     }
