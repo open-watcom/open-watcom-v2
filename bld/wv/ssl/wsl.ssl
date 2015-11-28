@@ -709,7 +709,7 @@ rules
                         @nest_expr
                         [SkipCount
                           | 0:
-                            StackValue(0)
+                            StackValue( 0 )
                           | *:
                         ]
                         NumAdd( 1 )
@@ -872,7 +872,7 @@ rules
           | ET_RIGHT_PAREN:
             % endchoice
           | *:
-            StackLValue(0)      % get undefined symbol
+            StackLValue( 0 )    % get undefined symbol
             ET_RIGHT_PAREN      % cause error
         ]
     ;
