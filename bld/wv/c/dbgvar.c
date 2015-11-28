@@ -2621,7 +2621,7 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
         ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
         ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
         VarError = FALSE;
-    } else if( !_IsOn( SW_TASK_RUNNING ) ) {
+    } else if( _IsOff( SW_TASK_RUNNING ) ) {
         if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
             VarError = FALSE;
             v = i->exprsp_cache;

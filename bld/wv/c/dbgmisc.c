@@ -121,7 +121,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( "ON\0OFf\0", _IsOn( SW_FLIP ) ? 0 : 1, p );
+    GetCmdEntry( "ON\0OFf\0", _IsOff( SW_FLIP ), p );
     DUIDlgTxt( TxtBuff );
 }
 

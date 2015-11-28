@@ -114,7 +114,7 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
         ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
         ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
         VarError = FALSE;
-    } else if( !_IsOn( SW_TASK_RUNNING ) ) {
+    } else if( _IsOff( SW_TASK_RUNNING ) ) {
         if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
             VarError = FALSE;
             v = i->exprsp_cache;
@@ -159,7 +159,7 @@ static void DumpLocals( void )
     int         inherit;
     var_node    *v;
 
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
         VarOkToCache( &Locals, TRUE );
@@ -189,7 +189,7 @@ static void DumpLocals( void )
         VarBuildName( &Locals, v, TRUE );
         printf( " %-20s %s\n", TxtBuff, v->value );
     }
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarOkToCache( &Locals, FALSE );
         VarOldErrState();
     }

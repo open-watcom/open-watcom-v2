@@ -895,12 +895,12 @@ void VarReMapScopes( image_entry *image )
 
 void VarChangeOptions( void )
 {
-    VarDisplaySetHidden( NULL, VARNODE_CODE, !_IsOn( SW_VAR_SHOW_CODE ) );
-    VarDisplaySetHidden( NULL, VARNODE_INHERIT, !_IsOn( SW_VAR_SHOW_INHERIT ) );
-    VarDisplaySetHidden( NULL, VARNODE_COMPILER, !_IsOn( SW_VAR_SHOW_COMPILER ) );
-    VarDisplaySetHidden( NULL, VARNODE_PRIVATE, !_IsOn( SW_VAR_SHOW_PRIVATE ) );
-    VarDisplaySetHidden( NULL, VARNODE_PROTECTED, !_IsOn( SW_VAR_SHOW_PROTECTED ) );
-    VarDisplaySetHidden( NULL, VARNODE_STATIC, !_IsOn( SW_VAR_SHOW_STATIC ) );
+    VarDisplaySetHidden( NULL, VARNODE_CODE, _IsOff( SW_VAR_SHOW_CODE ) );
+    VarDisplaySetHidden( NULL, VARNODE_INHERIT, _IsOff( SW_VAR_SHOW_INHERIT ) );
+    VarDisplaySetHidden( NULL, VARNODE_COMPILER, _IsOff( SW_VAR_SHOW_COMPILER ) );
+    VarDisplaySetHidden( NULL, VARNODE_PRIVATE, _IsOff( SW_VAR_SHOW_PRIVATE ) );
+    VarDisplaySetHidden( NULL, VARNODE_PROTECTED, _IsOff( SW_VAR_SHOW_PROTECTED ) );
+    VarDisplaySetHidden( NULL, VARNODE_STATIC, _IsOff( SW_VAR_SHOW_STATIC ) );
     VarWndDoAll( DoVarChangeOptions );
 }
 
