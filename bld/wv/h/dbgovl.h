@@ -32,7 +32,7 @@
 extern bool InitOvlState( void );
 extern void FiniOvlState( void );
 extern void InvalidateTblCache( void );
-extern int  SectIsLoaded( unsigned sect_id, int sect_map_id );
+extern bool SectIsLoaded( unsigned sect_id, int sect_map_id );
 extern void SectLoad( unsigned sect_id );
 extern void SectTblRead( machine_state *state );
 extern void SetStateOvlSect( machine_state *state, unsigned sect_id );

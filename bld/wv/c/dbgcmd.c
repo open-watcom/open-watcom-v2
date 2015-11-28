@@ -48,14 +48,14 @@ static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
         DbgFree( buff );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 
@@ -66,7 +66,7 @@ static void DoOneCmd( void *_cmd )
     if( cmd[0] == NULLCHAR ) {
         DUIDlgTxt( LIT_ENG( Empty ) );
     } else {
-        PushInpStack( cmd, DoneCmd, FALSE );
+        PushInpStack( cmd, DoneCmd, false );
         TypeInpStack( INP_DLG_CMD );
         TBreak();   /* clear any pending terminal interrupts */
     }

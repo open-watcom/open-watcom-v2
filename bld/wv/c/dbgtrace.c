@@ -188,22 +188,22 @@ mad_trace_how TraceHow( bool force_into )
     switch( TraceState.curr_control & MDC_TYPE_MASK ) {
     case MDC_CALL:
     case MDC_SYSCALL:
-        TraceState.doing_call = TRUE;
+        TraceState.doing_call = true;
         break;
     default:
-        TraceState.doing_call = FALSE;
+        TraceState.doing_call = false;
         break;
     }
     if( TraceState.give_it_up ) {
-        DbgTmpBrk.status.b.active = FALSE;
-        TraceState.give_it_up = FALSE;
+        DbgTmpBrk.status.b.active = false;
+        TraceState.give_it_up = false;
         how = MTRH_BREAK;
         return( how );
     } else if( force_into ) {
         kind = MTRK_INTO;
     } else if( TraceState.trace_out ) {
-        TraceState.trace_out = FALSE;
-        TraceState.in_dll_thunk = FALSE;
+        TraceState.trace_out = false;
+        TraceState.in_dll_thunk = false;
         kind = MTRK_OUT;
     } else {
         kind = MTRKind[ TraceState.type ];
@@ -218,7 +218,7 @@ mad_trace_how TraceHow( bool force_into )
     switch( how ) {
     case MTRH_BREAK:
     case MTRH_STEPBREAK:
-        DbgTmpBrk.status.b.active = TRUE;
+        DbgTmpBrk.status.b.active = true;
     }
     if( DbgTmpBrk.status.b.active ) {
         /* for recursion detection */
@@ -235,9 +235,9 @@ bool TraceSimulate( void )
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     ms = MADTraceSimulate( TraceState.td, TraceState.dd,
         &DbgRegs->mr, &DbgRegs->mr );
-    if( ms != MS_OK ) return( FALSE );
+    if( ms != MS_OK ) return( false );
     WriteDbgRegs();
-    return( TRUE );
+    return( true );
 }
 
 bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
@@ -246,13 +246,13 @@ bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
     case MTRH_SIMULATE:
     case MTRH_STEP:
     case MTRH_STEPBREAK:
-        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK ) return( FALSE );
+        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK ) return( false );
         if( MADDisasmMemRefWalk( TraceState.dd, wk, &DbgRegs->mr, d ) == WR_CONTINUE ) {
-            return( TRUE );
+            return( true );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 void TraceStop( bool tracing )
@@ -296,16 +296,16 @@ static bool CheckTraceSourceStop( bool *have_source )
     sym_info                    info;
     void                        *viewhndl;
 
-    *have_source = FALSE;
-    TraceState.in_thunk = FALSE;
+    *have_source = false;
+    TraceState.in_thunk = false;
     sr = DeAliasAddrSym( NO_MOD, TraceState.curraddr, sym );
     if( sr != SR_NONE
      && SymInfo( sym, NULL, &info ) == DS_OK
      && info.kind == SK_PROCEDURE
      && info.compiler ) {
         /* in a thunk */
-        TraceState.in_thunk = TRUE;
-        return( FALSE );
+        TraceState.in_thunk = true;
+        return( false );
     }
     viewhndl = NULL;
     *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, line ) != SR_NONE;
@@ -327,30 +327,30 @@ static bool CheckTraceSourceStop( bool *have_source )
                     there's a jump in the middle of the switch code.)
                 */
                 TraceState.oldaddr = line_addr;
-                return( FALSE );
+                return( false );
             }
             switch( TraceState.curr_control & MDC_TYPE_MASK ) {
             case MDC_RET:
             case MDC_SYSRET:
                 break;
             default:
-                return( TRUE );
+                return( true );
             }
             if( AddrComp( line_addr, TraceState.curraddr ) == 0 ) {
-                return( TRUE );
+                return( true );
             }
             TraceState.oldaddr = line_addr;
-            TraceState.stop_on_call = TRUE;
+            TraceState.stop_on_call = true;
         } else if( TraceState.stop_now ) {
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
     if( TraceState.req_level == MIX ) {
-        if( sr == SR_NONE ) return( TRUE );
-        if( !IsSupportRoutine( sym ) ) return( TRUE );
+        if( sr == SR_NONE ) return( true );
+        if( !IsSupportRoutine( sym ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool CheckForDLLThunk( void )
@@ -364,13 +364,13 @@ bool CheckForDLLThunk( void )
     case MDC_SYSCALL:
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     switch( TraceState.curr_control & (MDC_TYPE_MASK+MDC_CONDITIONAL_MASK) ) {
     case MDC_JUMP+MDC_UNCONDITIONAL:
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     switch( MADDisasmInsNext( TraceState.dd, &DbgRegs->mr, &next_ins ) ) {
@@ -378,9 +378,9 @@ bool CheckForDLLThunk( void )
         return( DeAliasAddrCue( NO_MOD, next_ins, line ) == SR_EXACT );
     //NYI: this next case can be removed once all the MAD's are up to snuff
     case MS_ERR|MS_UNSUPPORTED:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -395,7 +395,7 @@ unsigned TraceCheck( unsigned conditions )
 
     TraceGetData();
     if( DbgTmpBrk.status.b.hit && (conditions & COND_STOPPERS) ) {
-        DbgTmpBrk.status.b.active = FALSE;
+        DbgTmpBrk.status.b.active = false;
         conditions &= ~COND_STOPPERS;
         conditions |= COND_TRACE;
     }
@@ -404,17 +404,17 @@ unsigned TraceCheck( unsigned conditions )
         recursed =  MADTraceHaveRecursed( TraceState.watch_stack, &DbgRegs->mr ) == MS_OK;
         if( _IsOn( SW_RECURSE_CHECK ) && recursed && ( TraceState.doing_call || TraceState.unwinding ) ) {
             /* we're down some levels in a recursive call -- want to unwind. */
-            TraceState.unwinding = TRUE;
+            TraceState.unwinding = true;
             NullStatus( &DbgTmpBrk );
-            DbgTmpBrk.status.b.active = TRUE;
+            DbgTmpBrk.status.b.active = true;
             return( conditions & ~COND_STOPPERS );
         }
-        TraceState.unwinding = FALSE;
+        TraceState.unwinding = false;
         if( (conditions & COND_THREAD)
             && TraceState.etid != RemoteSetThread( 0 ) ) {
             /* stepped over a call and another thread ran into bp - keep going */
             NullStatus( &DbgTmpBrk );
-            DbgTmpBrk.status.b.active = TRUE;
+            DbgTmpBrk.status.b.active = true;
             return( conditions & ~COND_STOPPERS );
         }
     }
@@ -424,7 +424,7 @@ unsigned TraceCheck( unsigned conditions )
             -- want to get overlay loaded and enter real routine */
         DbgTmpBrk.loc.addr = TraceState.curraddr;
         NullStatus( &DbgTmpBrk );
-        DbgTmpBrk.status.b.active = TRUE;
+        DbgTmpBrk.status.b.active = true;
         return( conditions & ~COND_STOPPERS );
     }
     if( TraceState.cur_level == ASM ) return( conditions | COND_TRACE );
@@ -437,7 +437,7 @@ unsigned TraceCheck( unsigned conditions )
     */
     if( TraceState.in_dll_thunk ) {
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
-            TraceState.trace_out = TRUE;
+            TraceState.trace_out = true;
             if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
         }
         return( conditions & ~COND_STOPPERS );
@@ -447,19 +447,19 @@ unsigned TraceCheck( unsigned conditions )
     case MDC_RET:
     case MDC_SYSRET:
         if( !TraceState.in_thunk && !have_source ) {
-            TraceState.give_it_up = TRUE;
+            TraceState.give_it_up = true;
             return( conditions & ~COND_STOPPERS );
         }
         break;
     case MDC_CALL:
     case MDC_SYSCALL:
         if( CheckForDLLThunk() ) {
-            TraceState.in_dll_thunk = TRUE;
+            TraceState.in_dll_thunk = true;
             return( conditions & ~COND_STOPPERS );
         }
-        if( TraceState.stop_on_call ) TraceState.stop_now = TRUE;
+        if( TraceState.stop_on_call ) TraceState.stop_now = true;
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
-            TraceState.trace_out = TRUE;
+            TraceState.trace_out = true;
             if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
         }
         return( conditions & ~COND_STOPPERS );
@@ -480,22 +480,22 @@ static char DoTrace( debug_level curr_level )
                 return( STOP );
             }
             DbgTmpBrk.loc.addr = CueAddr( line );
-            DbgTmpBrk.status.b.active = TRUE;
+            DbgTmpBrk.status.b.active = true;
         }
         if( TraceState.state == TS_ACTIVE ) {
             DeAliasAddrCue( NO_MOD, GetCodeDot(), line );
             TraceState.oldaddr = CueAddr( line );
-            TraceState.stop_on_call = FALSE;
-            TraceState.stop_now = FALSE;
+            TraceState.stop_on_call = false;
+            TraceState.stop_now = false;
         }
     }
-    TraceState.unwinding = FALSE;
+    TraceState.unwinding = false;
     TraceState.watch_stack = NilAddr;
-    TraceState.doing_call = FALSE;
-    TraceState.trace_out = FALSE;
-    TraceState.in_dll_thunk = FALSE;
+    TraceState.doing_call = false;
+    TraceState.trace_out = false;
+    TraceState.in_dll_thunk = false;
     TraceState.etid = DbgRegs->tid;
-    conditions = Execute( TRUE, _IsOn( SW_FLIP ) );
+    conditions = Execute( true, _IsOn( SW_FLIP ) );
     if( _IsOn( SW_TRAP_CMDS_PUSHED ) ) {
         _SwitchOff( SW_TRAP_CMDS_PUSHED );
         return( PROCCMD );
@@ -535,7 +535,7 @@ void PerformTrace( void )
         if( !DbgTmpBrk.status.b.active ) {
             DbgTmpBrk.loc.addr = TraceState.brkpt;
             NullStatus( &DbgTmpBrk );
-            DbgTmpBrk.status.b.active = TRUE;
+            DbgTmpBrk.status.b.active = true;
         }
         ret = DoTrace( TraceState.cur_level );
         if( ret != PROCCMD ) {
@@ -562,15 +562,15 @@ OVL_EXTERN bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        if( TraceState.state == TS_NONE ) return( FALSE );
+        if( TraceState.state == TS_NONE ) return( false );
         PerformTrace();
-        return( TRUE );
+        return( true );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 /*
@@ -579,7 +579,7 @@ OVL_EXTERN bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
 
 static void PushTraceCmd( void )
 {
-    PushInpStack( "\0", DoneTraceCmd, TRUE );
+    PushInpStack( "\0", DoneTraceCmd, true );
     TypeInpStack( INP_HOLD );
 }
 
@@ -591,9 +591,9 @@ bool HasLineInfo( address addr )
 {
     mod_handle  mod;
 
-    if( DeAliasAddrMod( addr, &mod ) == SR_NONE ) return( FALSE );
-    if( ModHasInfo( mod, HK_CUE ) != DS_OK ) return( FALSE );
-    return( TRUE );
+    if( DeAliasAddrMod( addr, &mod ) == SR_NONE ) return( false );
+    if( ModHasInfo( mod, HK_CUE ) != DS_OK ) return( false );
+    return( true );
 }
 
 void ExecTrace( trace_cmd_type type, debug_level level )

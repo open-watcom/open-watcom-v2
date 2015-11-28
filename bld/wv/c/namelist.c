@@ -90,23 +90,23 @@ static bool CheckType( sym_handle *sym, name_list *name )
 
     if( name->d2_only ) {
         mod = SymMod( sym );
-        if( mod == NO_MOD ) return( FALSE );
-        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) return( FALSE );
+        if( mod == NO_MOD ) return( false );
+        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) return( false );
     }
     SymInfo( sym, NULL, &sinfo );
     switch( sinfo.kind ) {
     case SK_CODE:
     case SK_PROCEDURE:
-        if( sinfo.compiler ) return( FALSE );
-        if( name->type & WF_CODE ) return( TRUE );
+        if( sinfo.compiler ) return( false );
+        if( name->type & WF_CODE ) return( true );
         break;
     case SK_DATA:
-        if( name->type & WF_DATA ) return( TRUE );
+        if( name->type & WF_DATA ) return( true );
         break;
     case SK_NONE:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -249,9 +249,9 @@ unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
     if( i >= name->numrows || name->list == NULL ) return( 0 );
     sh = ASymHdl( NameGetRow( name, i ) );
     if( type == SN_PARSEABLE ) {
-        rc = QualifiedSymName( sh, buff, TXT_LEN, TRUE );
+        rc = QualifiedSymName( sh, buff, TXT_LEN, true );
     } else if( type == SN_QUALIFIED ) {
-        rc = QualifiedSymName( sh, buff, TXT_LEN, FALSE );
+        rc = QualifiedSymName( sh, buff, TXT_LEN, false );
     } else {
         rc = SymName( sh, NULL, type, buff, TXT_LEN );
     }

@@ -56,8 +56,8 @@ bool InitAsyncSupp( void )
 {
     SuppAsyncId = GetSuppId( ASYNC_SUPP_NAME );
     if( SuppAsyncId != 0 )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 bool HaveRemoteAsync( void )

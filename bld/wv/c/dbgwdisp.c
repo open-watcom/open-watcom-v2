@@ -219,7 +219,7 @@ void ProcFont( void )
     wnd_class   wndcls1;
 
     wndcls = ReqWndName();
-    if( !ScanItem( FALSE, &start, &len ) )
+    if( !ScanItem( false, &start, &len ) )
         return;
     ReqEOC();
     if( wndcls == WND_ALL ) {
@@ -312,9 +312,9 @@ static void ProcSize( wnd_class wndcls )
 
     GUIGetMinSize( &min );
     if( size.x != -1 || size.y != -1 || size.width != -1 || size.height != -1 ) {
-        coord_specified = TRUE;
+        coord_specified = true;
     } else {
-        coord_specified = FALSE;
+        coord_specified = false;
     }
     WndPosToRect( &WndPosition[wndcls], &def_rect, &WndScreen );
     size.x = range( size.x, 0, WndScreen.x, def_rect.x );
@@ -414,22 +414,22 @@ OVL_EXTERN bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
     dummy = dummy;
     switch( action ) {
     case INP_RTN_INIT:
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
         WndFreshAll();
         WndDirty( NULL );
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 
 static void PushRefresh( void )
 {
-    PushInpStack( NULL, DoneRefresh, FALSE );
+    PushInpStack( NULL, DoneRefresh, false );
     TypeInpStack( INP_NO_CMD );
 }
 

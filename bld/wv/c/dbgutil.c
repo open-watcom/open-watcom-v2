@@ -273,7 +273,7 @@ char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( addr, CAO_OMIT_PLUS, FALSE, buff, buff_len );
+    p = CnvAddr( addr, CAO_OMIT_PLUS, false, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( &addr, MAF_FULL, buff, buff_len );
     }
@@ -288,7 +288,7 @@ char *StrAddr( address *addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, false, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
@@ -300,7 +300,7 @@ char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, TRUE, buff, buff_len );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, true, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
@@ -518,14 +518,14 @@ OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds->buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
         FreeCmdList( cmds );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 
@@ -536,7 +536,7 @@ OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
 void PushCmdList( cmd_list *cmds )
 {
     cmds->use++;
-    PushInpStack( cmds, DoneCmdList, FALSE );
+    PushInpStack( cmds, DoneCmdList, false );
 }
 
 
@@ -546,13 +546,13 @@ OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 #endif
 
@@ -564,7 +564,7 @@ OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
 #ifdef DEADCODE
 void PushCmdText( char *cmds )
 {
-    PushInpStack( cmds, DoneCmdText, FALSE );
+    PushInpStack( cmds, DoneCmdText, false );
 }
 #endif
 
@@ -576,8 +576,8 @@ void PushCmdText( char *cmds )
 bool PurgeInpStack( void )
 {
     for( ;; ) {
-        if( InpStack == NULL ) return( TRUE );
-        if( InpStack->type & INP_STOP_PURGE ) return( FALSE );
+        if( InpStack == NULL ) return( true );
+        if( InpStack->type & INP_STOP_PURGE ) return( false );
         PopInpStack();
     }
 }
@@ -587,18 +587,18 @@ OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 void FreezeInpStack( void )
 {
-    PushInpStack( LIT_ENG( Empty ), DoneNull, FALSE );
+    PushInpStack( LIT_ENG( Empty ), DoneNull, false );
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 

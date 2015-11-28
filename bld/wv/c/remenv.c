@@ -51,8 +51,8 @@ bool InitEnvSupp( void )
 {
     SuppEnvId = GetSuppId( ENV_SUPP_NAME );
     if( SuppEnvId != 0 )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 bool RemoteSetEnvironmentVariable( char *name, char *value )
@@ -62,7 +62,7 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     env_set_var_req     acc;
     env_set_var_ret     ret;
 
-    if( SuppEnvId == 0 ) return( FALSE );
+    if( SuppEnvId == 0 ) return( false );
     SUPP_ENV_SERVICE( acc, REQ_ENV_SET_VAR );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -75,9 +75,9 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     TrapAccess( 3, in, 1, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -88,7 +88,7 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
     env_get_var_req     acc;
     env_get_var_ret     ret;
 
-    if( SuppEnvId == 0 ) return( FALSE );
+    if( SuppEnvId == 0 ) return( false );
     SUPP_ENV_SERVICE( acc, REQ_ENV_GET_VAR );
     acc.res_len = res_len;
     in[0].ptr = &acc;
@@ -102,8 +102,8 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
     TrapAccess( 2, in, 2, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }

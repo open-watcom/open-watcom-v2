@@ -72,7 +72,7 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
         dlg.cond = 0;
         GUISetFocus( gui, CTL_ASYNC_STOP );
         AsyncWnd = gui;
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -80,15 +80,15 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
             AsyncWnd = 0;
             dlg.cond = StopAsync();
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case GUI_DESTROY:
         AsyncWnd = 0;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 extern unsigned DlgAsyncRun( void )

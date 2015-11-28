@@ -256,14 +256,14 @@ static void DoGetItem( char *buff, bool stop_on_first )
             break;
         *buff++ = CurrChar;
         NextChar();
-        stop_on_first = TRUE;
+        stop_on_first = true;
     }
     *buff = NULLCHAR;
 }
 
 void GetItem( char *buff )
 {
-    DoGetItem( buff, TRUE );
+    DoGetItem( buff, true );
 }
 
 
@@ -303,7 +303,7 @@ void GetRawItem( char *start )
         }
         *start = NULLCHAR;
     } else {
-        DoGetItem( start, FALSE );
+        DoGetItem( start, false );
     }
 }
 
@@ -396,7 +396,7 @@ static void ProcOptList( int pass )
             _SwitchOn( SW_DEFER_SYM_LOAD );
             break;
         case OPT_DOWNLOAD:
-            DownLoadTask = TRUE;
+            DownLoadTask = true;
             break;
         case OPT_NOEXPORTS:
             _SwitchOn( SW_NO_EXPORT_SYMS );
@@ -461,13 +461,13 @@ static void ProcOptList( int pass )
             if( pass == 2 )
                 _Free( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
-            TrapTraceFileFlush = TRUE;
+            TrapTraceFileFlush = true;
             break;
         case OPT_TRAP_DEBUG:
             if( pass == 2 )
                 _Free( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
-            TrapTraceFileFlush = FALSE;
+            TrapTraceFileFlush = false;
             break;
 #endif
         case OPT_REMOTE_FILES:

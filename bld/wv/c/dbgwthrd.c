@@ -100,14 +100,14 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             switch( thd->state ) {
             case THD_THAW:
             case THD_FREEZE:
-                WndMenuEnable( wnd, MENU_THREAD_FREEZE, TRUE );
-                WndMenuEnable( wnd, MENU_THREAD_THAW, TRUE );
-                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, TRUE );
+                WndMenuEnable( wnd, MENU_THREAD_FREEZE, true );
+                WndMenuEnable( wnd, MENU_THREAD_THAW, true );
+                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, true );
                 break;
             case THD_DEBUG:
-                WndMenuEnable( wnd, MENU_THREAD_FREEZE, FALSE );
-                WndMenuEnable( wnd, MENU_THREAD_THAW, FALSE );
-                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, TRUE );
+                WndMenuEnable( wnd, MENU_THREAD_FREEZE, false );
+                WndMenuEnable( wnd, MENU_THREAD_THAW, false );
+                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, true );
                 break;
             default:
                 WndMenuGrayAll( wnd );
@@ -166,36 +166,36 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
             switch( piece ) {
             case PIECE_ID:
                 line->text = LIT_DUI( ID );
-                return( TRUE );
+                return( true );
             case PIECE_STATE:
                 line->text = LIT_DUI( State );
-                return( TRUE );
+                return( true );
             case PIECE_NAME:
                 line->text = TxtBuff;
                 RemoteThdName( 0, TxtBuff ); // nyi - pui - line up in proportional font
-                return( TRUE );
+                return( true );
             default:
-                return( FALSE );
+                return( false );
             }
         case 1:
-            if( piece != 0 ) return( FALSE );
+            if( piece != 0 ) return( false );
             SetUnderLine( wnd, line );
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     } else {
-        if( thd == NULL ) return( FALSE );
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        if( thd == NULL ) return( false );
+        line->tabstop = false;
+        line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
         switch( piece ) {
         case PIECE_ID:
-            line->tabstop = TRUE;
-            line->use_prev_attr = FALSE;
+            line->tabstop = true;
+            line->use_prev_attr = false;
             line->text = TxtBuff;
             CnvULongHex( thd->tid, TxtBuff, TXT_LEN );
-            return( TRUE );
+            return( true );
         case PIECE_STATE:
             if( IsThdCurr( thd ) ) {
                 line->text = LIT_ENG( Current );
@@ -230,15 +230,15 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
                     break;
                 }
             }
-            return( TRUE );
+            return( true );
         case PIECE_NAME:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             line->text = thd->name;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -262,5 +262,5 @@ wnd_info TrdInfo = {
 a_window *WndTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
-                               &TrdIcon, TITLE_SIZE, TRUE ) );
+                               &TrdIcon, TITLE_SIZE, true ) );
 }

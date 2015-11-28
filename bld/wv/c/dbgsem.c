@@ -279,11 +279,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         result = ExprAddrDepth;
         break;
     case 1:
-        if( _IsOn( SW_EXPR_IS_CALL ) && ExprAddrDepth == 0 ) {
-            result = TRUE;
-        } else {
-            result = FALSE;
-        }
+        result = ( _IsOn( SW_EXPR_IS_CALL ) && ExprAddrDepth == 0 );
         break;
     case 2:
         SkipCount += parm;
@@ -310,13 +306,8 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         --ScanSavePtr;
         break;
     case 8:
-        if( parm ) {        /* start scan string */
-            scan_string = TRUE;
-            ReScan( ScanPos() );
-        } else {            /* end scan string */
-            scan_string = FALSE;
-            ReScan( ScanPos() );
-        }
+        scan_string = ( parm != 0 );
+        ReScan( ScanPos() );
         break;
     case 9:
         ReScan( ScanPos() + (int)parm );
@@ -380,7 +371,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         result = EvalSubstring;
         break;
     case 19:
-        FreePgmStack( TRUE );
+        FreePgmStack( true );
         break;
     case 20:
         switch( parm ) { // nyi - begin temp
@@ -461,16 +452,16 @@ static bool UserType( type_handle *th )
         }
     }
     //NYI: end temp
-    NameResolve( ExprSP, TRUE );
+    NameResolve( ExprSP, true );
     if( (ExprSP->flags & SF_SYM) == 0 )
-        return( FALSE );
+        return( false );
     if( ExprSP->th == NULL )
-        return( FALSE );
+        return( false );
     SymInfo( ExprSP->v.sh, ExprSP->lc, &info );
     if( info.kind != SK_TYPE )
-        return( FALSE );
+        return( false );
     HDLAssign( type, th, ExprSP->th );
-    return( TRUE );
+    return( true );
 }
 
 static void PushBaseSize( void )
@@ -686,7 +677,7 @@ static unsigned MechDo( unsigned select, unsigned parm )
         if( parm ) {
             /* file scope */
             if( ExprSP->flags & SF_NAME ) {
-                ExprSP->v.li.file_scope = TRUE;
+                ExprSP->v.li.file_scope = true;
             } else {
                 Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
             }
@@ -751,7 +742,7 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         TI_CREATE( TK_COMPLEX,  TM_NONE,        16 ),
     };
 
-    result = FALSE;
+    result = false;
     switch( select ) {
     case 0:
         PushInt( parm );
@@ -760,25 +751,25 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         PushAddr( GetDotAddr() );
         break;
     case 2:
-        ParseRegSet( TRUE, &ll, &ti );
+        ParseRegSet( true, &ll, &ti );
         if( ti.size != 0 ) {
             if( ti.kind == TK_NONE )
                 Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             PushLocation( &ll, &ti );
-            result = TRUE;
+            result = true;
         }
         break;
     case 3:
         if( CurrToken == T_INT_NUM ) {
             PushNum64( IntNumVal() );
             Scan();
-            result = TRUE;
+            result = true;
         } else if( CurrToken == T_REAL_NUM ) {
             PushRealNum( RealNumVal() );
             Scan();
-            result = TRUE;
+            result = true;
         } else {
-            result = FALSE;
+            result = false;
         }
         break;
     case 4:
@@ -794,19 +785,19 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         PushString();
         break;
     case 8:
-        /* here because old debuggers will always return FALSE */
+        /* here because old debuggers will always return false */
         switch( parm & SSL_VERSION_MAJOR_MASK ) {
         case SSL_VERSION_MAJOR_CURR:
             break;
         default:
-            return( FALSE );
+            return( false );
         }
 #if SSL_VERSION_MINOR_CURR != 0
         if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
-            return( FALSE );
+            return( false );
         }
 #endif
-        result = TRUE;
+        result = true;
         break;
     case 9:
         BasicType( parm );
@@ -852,7 +843,7 @@ static unsigned MechStack( unsigned select, unsigned parm )
         break;
     case 8:
         entry = StkEntry( parm );
-        NameResolve( entry, FALSE );
+        NameResolve( entry, false );
         if( entry->flags & SF_SYM ) {
             SymInfo( entry->v.sh, entry->lc, &info );
             result = info.kind;
@@ -862,7 +853,7 @@ static unsigned MechStack( unsigned select, unsigned parm )
         break;
     case 9:
         entry = StkEntry( parm );
-        result = NameResolve( entry, FALSE );
+        result = NameResolve( entry, false );
         break;
     case 10:
         entry = StkEntry( parm );
@@ -960,9 +951,9 @@ static walk_result FindCue( cue_handle *ch, void *d )
     if( match > cd->match ) {
         cd->match = match;
         cd->id = CueFileId( ch );
-        cd->ambig = FALSE;
+        cd->ambig = false;
     } else if( match == cd->match ) {
-        cd->ambig = TRUE;
+        cd->ambig = true;
     }
     return( WR_CONTINUE );
 }
@@ -974,7 +965,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
     unsigned long       curr_line;
 
     fd->id = 0;
-    fd->ambig = FALSE;
+    fd->ambig = false;
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
         WalkFileList( mod, FindCue, fd );
@@ -984,7 +975,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
             Error( ERR_NONE, LIT_ENG( ERR_AMBIG_SRC_FILE ), fd->name, fd->len );
         }
     }
-    fd->found_a_file = TRUE;
+    fd->found_a_file = true;
     switch( LineCue( mod, fd->id, CurrGet.li.name.len, 0, ch ) ) {
     case SR_EXACT:
         HDLAssign( cue, fd->best_ch, ch );
@@ -1007,7 +998,7 @@ static search_result FindACue( cue_handle *ch )
 {
     cue_find    data;
 
-    data.found_a_file = FALSE;
+    data.found_a_file = false;
     data.best_line = 0;
     data.best_ch = ch;
     data.name = CurrGet.li.source.start;
@@ -1037,7 +1028,7 @@ static search_result FindACue( cue_handle *ch )
     return( SR_CLOSEST );
 }
 
-static bool ClosestLineOk = FALSE;
+static bool ClosestLineOk = false;
 
 bool SemAllowClosestLine( bool ok )
 {
@@ -1058,15 +1049,15 @@ static unsigned MechGet( unsigned select, unsigned parm )
     unsigned    mod_len;
     unsigned    mod_spec_token;
 
-    result = FALSE;
+    result = false;
     switch( select ) {
     case 0: /* init */
         memset( &CurrGet, 0, sizeof( CurrGet ) );
         CurrGet.li.mod = NO_MOD;
         if( _IsOn( SW_CASE_SENSITIVE ) ) {
-            CurrGet.li.case_sensitive = TRUE;
+            CurrGet.li.case_sensitive = true;
         } else {
-            CurrGet.li.case_sensitive = FALSE;
+            CurrGet.li.case_sensitive = false;
         }
         break;
     case 1: /* fini */
@@ -1096,7 +1087,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     case 2: /* mod curr */
     case 3: /* mod name lookup */
         //NYI: temporary gunk
-        CurrGet.multi_module = TRUE;
+        CurrGet.multi_module = true;
         CurrGet.li.mod = NO_MOD;
         save_scan = ScanPos();
         ReScan( "@" );
@@ -1125,7 +1116,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
                       || memicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
                         Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start, CurrGet.li.name.len );
                     } else {
-                        CurrGet.any_image = TRUE;
+                        CurrGet.any_image = true;
                     }
                 }
             }
@@ -1140,17 +1131,17 @@ static unsigned MechGet( unsigned select, unsigned parm )
             if( CurrGet.li.mod == NO_MOD ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start, CurrGet.li.name.len );
             }
-            CurrGet.multi_module = FALSE;
+            CurrGet.multi_module = false;
         } else if( !CurrGet.any_image && CurrGet.li.mod == NO_MOD ) {
             CurrGet.li.mod = CodeAddrMod;
-            CurrGet.multi_module = FALSE;
+            CurrGet.multi_module = false;
         }
         break;
     case 4: /* file scope */
-        CurrGet.li.file_scope = TRUE;
+        CurrGet.li.file_scope = true;
         break;
     case 5: /* given scope */
-        CurrGet.li.file_scope = FALSE;
+        CurrGet.li.file_scope = false;
         break;
     case 6: /* scope lookup */
         CurrGet.li.scope.start = CurrGet.li.name.start;
@@ -1162,7 +1153,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
             CurrGet.li.name.start = NamePos();
             CurrGet.li.name.len   = NameLen();
             Scan();
-            result = TRUE;
+            result = true;
         }
         break;
     case 8: /* get operator name */
@@ -1181,7 +1172,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrToken == T_INT_NUM ) {
             unsigned_64         tmp;
 
-            result = TRUE;
+            result = true;
             CurrGet.kind = GET_LNUM;
             old = SetCurrRadix( 10 );
             tmp = IntNumVal();
@@ -1197,11 +1188,11 @@ static unsigned MechGet( unsigned select, unsigned parm )
             CurrGet.li.name.len   = NameLen();
             CurrGet.li.type = ST_DESTRUCTOR;
             addr = Context.execution;
-            sym = LookupSymList( SS_SCOPED, &addr, FALSE, &CurrGet.li );
+            sym = LookupSymList( SS_SCOPED, &addr, false, &CurrGet.li );
             if( sym != NULL ) {
                 PurgeSymHandles();
                 Scan();
-                result = TRUE;
+                result = true;
             } else {
                 CurrGet.li.type = ST_NONE;
             }
@@ -1213,10 +1204,10 @@ static unsigned MechGet( unsigned select, unsigned parm )
     case 12: /* GetQueryName >>bool */
         CurrGet.kind = GET_NAME;
         addr = Context.execution;
-        sym = LookupSymList( SS_SCOPED, &addr, FALSE, &CurrGet.li );
+        sym = LookupSymList( SS_SCOPED, &addr, false, &CurrGet.li );
         if( sym != NULL ) {
             PurgeSymHandles();
-            result = TRUE;
+            result = true;
         } else {
             CurrGet.li.type = ST_NONE;
         }

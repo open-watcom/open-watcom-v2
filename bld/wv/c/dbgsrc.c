@@ -128,7 +128,7 @@ char_ring **RingEnd( char_ring **owner )
 
 void AddSourceSpec( const char *start, unsigned len )
 {
-    InsertRing( RingEnd( &SrcSpec ), start, len, FALSE );
+    InsertRing( RingEnd( &SrcSpec ), start, len, false );
 }
 
 char *SourceName( char_ring *src )
@@ -163,12 +163,12 @@ void SourceSet( void )
         owner = &SrcSpec;
         FiniSource();
     }
-    while( ScanItem( TRUE, &start, &len ) ) {
+    while( ScanItem( true, &start, &len ) ) {
         while( len > 0 && *start == ' ' ) {
             ++start;
             --len;
         }
-        InsertRing( owner, start, len, FALSE );
+        InsertRing( owner, start, len, false );
     }
     DbgUpdate( UP_NEW_SRC );
 }
@@ -215,11 +215,11 @@ void *OpenSrcFile( cue_handle *ch )
     hndl = FOpenSource( buff, CueMod( ch ), CueFileId( ch ) );
     if( hndl != NULL ) return( hndl );
     for( path = SrcSpec; path != NULL; path = path->next ) {
-        used_star = FALSE;
+        used_star = false;
         d = TxtBuff;
         for( p = path->name; *p != '\0'; ++p ) {
             if( *p == '*' ) {
-                used_star = TRUE;
+                used_star = true;
                 d += ModName( CueMod( ch ), d, TXT_LEN );
             } else {
                 *d++ = *p;

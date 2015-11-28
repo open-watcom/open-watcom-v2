@@ -187,7 +187,7 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
     wv_sym_entry        *curr;
 
     if( li->scope.start != NULL )
-        return( FALSE );
+        return( NULL );
     if( li->case_sensitive ) {
         cmp = memcmp;
     } else {
@@ -307,9 +307,9 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     wv_sym_list         *new;
 
     if( (li->mod != NO_MOD) && !IsInternalMod( li->mod ) )
-        return( FALSE );
+        return( false );
     if( li->scope.start != NULL )
-        return( FALSE );
+        return( false );
     info.k = ti->kind;
     info.m = ti->modifier;
     info.s = ti->size;
@@ -333,7 +333,7 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
         info.s = sizeof( new->s.info.v.addr.mach );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     new = DbgMustAlloc( sizeof( *new ) + li->name.len );
     new->next = WmonSymLst;
@@ -342,7 +342,7 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     new->s.info.sc = SC_USER;
     SET_SYM_NAME_LEN( new->s.name, li->name.len );
     memcpy( SYM_NAME_NAME( new->s.name ), li->name.start, li->name.len );
-    return( TRUE );
+    return( true );
 }
 
 static void GetNPXType( void )

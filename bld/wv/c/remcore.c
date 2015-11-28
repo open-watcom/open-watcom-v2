@@ -145,14 +145,14 @@ bool HaveCache( void )
 
 static bool ReadCache( address addr, char *data, unsigned len )
 {
-    if( Cache.data == NULL ) return( FALSE );
-    if( !SameAddrSpace( Cache.addr, addr ) ) return( FALSE );
-    if( len > Cache.len ) return( FALSE );
-    if( Cache.addr.mach.offset > addr.mach.offset ) return( FALSE );
+    if( Cache.data == NULL ) return( false );
+    if( !SameAddrSpace( Cache.addr, addr ) ) return( false );
+    if( len > Cache.len ) return( false );
+    if( Cache.addr.mach.offset > addr.mach.offset ) return( false );
     addr.mach.offset -= Cache.addr.mach.offset;
-    if( Cache.len - len < addr.mach.offset ) return( FALSE );
+    if( Cache.len - len < addr.mach.offset ) return( false );
     memcpy( data, &Cache.data[ addr.mach.offset ], len );
-    return( TRUE );
+    return( true );
 }
 
 unsigned ProgPeek( address addr, void *data, unsigned len )
@@ -270,7 +270,7 @@ static void ReadRegs( machine_state *state )
 void ReadDbgRegs( void )
 {
     ReadRegs( DbgRegs );
-    InitLC( &Context, TRUE );
+    InitLC( &Context, true );
 }
 
 static void WriteRegs( machine_state *state )
@@ -348,7 +348,7 @@ error_idx DoLoad( const char *args, unsigned long *phandle )
     CheckMADChange();
     ReadDbgRegs();
     DbgRegs->tid = RemoteSetThread( 0 );
-    CheckForNewThreads( TRUE );
+    CheckForNewThreads( true );
     TaskId = ret.task_id;
     if( ret.flags & LD_FLAG_IGNORE_SEGMENTS ) {
         _SwitchOn( SW_IGNORE_SEGMENTS );
@@ -391,7 +391,7 @@ bool KillProgOvlay( void )
     FreeThreads();
     GetSysConfig();
     ClearMachineDataCache();
-    return( ( ret.err == 0 ) ? TRUE : FALSE );
+    return( ( ret.err == 0 ) ? true : false );
 }
 
 
@@ -444,7 +444,7 @@ bool Redirect( bool input, char *hndlname )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( ret.err == 0 ? TRUE : FALSE );
+    return( ret.err == 0 ? true : false );
 }
 
 
@@ -696,9 +696,9 @@ bool InitCoreSupp( void )
         ClearMachineDataCache();
         GetSysConfig();
         CheckMADChange();
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

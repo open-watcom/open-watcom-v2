@@ -323,12 +323,12 @@ void ProcPaint( void )
     bool                dialog;
     int                 attr;
 
-    dialog = FALSE;
+    dialog = false;
     wndcls = WND_NO_CLASS;
     if( ScanStatus() ) {
         attr = 0;
     } else if( ScanCmd( "DIalog\0" ) == 0 ) {
-        dialog = TRUE;
+        dialog = true;
         attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
     } else {
         wndcls = ReqWndName();
@@ -426,9 +426,9 @@ static void GetAttrName( attr_map *map, int i, char *buff )
     for( i = 0;; ++i ) {
         if( bits & 1 ) {
             p = GetCmdEntry( AttrNameTab, i, p );
-            blank = TRUE;
+            blank = true;
         } else {
-            blank = FALSE;
+            blank = false;
         }
         bits >>= 1;
         if( bits == 0 ) break;

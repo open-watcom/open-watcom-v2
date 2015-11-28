@@ -255,7 +255,7 @@ static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
 
     if( new_home ) mem->u.m.home = addr;
     mem->u.m.addr = addr;
-    MemGetContents( wnd, FALSE );
+    MemGetContents( wnd, false );
 }
 
 static WNDREFRESH MemRefresh;
@@ -264,7 +264,7 @@ static  void MemRefresh( a_window *wnd )
     mem_window  *mem = WndMem( wnd );
 
     if( !mem->file ) {
-        MemGetContents( wnd, TRUE );
+        MemGetContents( wnd, true );
     } else {
         CnvULong( ULONG_MAX, TxtBuff, TXT_LEN );
         mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
@@ -293,7 +293,7 @@ static void MemGetNewAddr( a_window *wnd )
         addr = mem->u.m.home;
         if( !DlgDataAddr( LIT_DUI( New_Addr ), &addr ) ) return;
         MemValidAddr( addr );
-        MemSetStartAddr( wnd, addr, TRUE );
+        MemSetStartAddr( wnd, addr, true );
         WndNoCurrent( wnd );
         MemRefresh( wnd );
         SetDataDot( addr );
@@ -336,9 +336,9 @@ static  void    MemSetType( a_window *wnd, unsigned idx )
 static  bool    CanModify( a_window *wnd, int row, int piece )
 {
     piece = piece;
-    if( row < 0 ) return( FALSE );
-    if( WndMem( wnd )->file ) return( FALSE );
-    return( TRUE );
+    if( row < 0 ) return( false );
+    if( WndMem( wnd )->file ) return( false );
+    return( true );
 }
 
 static void SetNewDataDot( a_window *wnd )
@@ -399,10 +399,10 @@ static  void    MemModify( a_window *wnd, int row, int piece )
     --piece;
     if( !CanModify( wnd, row, piece ) ) return;
     if( piece >= mem->items_per_line ) {
-        is_char = TRUE;
+        is_char = true;
         piece -= mem->items_per_line;
     } else {
-        is_char = FALSE;
+        is_char = false;
     }
     addr = AddrAddWrap( mem->u.m.addr,
                         (row*mem->items_per_line+piece)*mem->item_size );
@@ -430,12 +430,12 @@ static bool MemScrollBytes( a_window *wnd, int tomove, bool new_home )
     mem_window  *mem = WndMem( wnd );
 
     addr = AddrAddWrap( mem->u.m.addr, tomove );
-    if( ProgPeekWrap( addr, &ch, 1 ) != 1 ) return( FALSE );
+    if( ProgPeekWrap( addr, &ch, 1 ) != 1 ) return( false );
     MemSetStartAddr( wnd, addr, new_home );
     SetNewDataDot( wnd );
 //    SetDataDot( addr );
     WndFixedThumb( wnd );
-    return( TRUE );
+    return( true );
 }
 
 static void MemFreeBackout( mem_window *mem )
@@ -468,8 +468,8 @@ static void MemBackout( a_window *wnd )
 
     backout = mem->u.m.backout;
     if( backout == NULL ) return;
-    MemSetStartAddr( wnd, backout->home, TRUE );
-    MemSetStartAddr( wnd, backout->addr, FALSE );
+    MemSetStartAddr( wnd, backout->home, true );
+    MemSetStartAddr( wnd, backout->addr, false );
     if( backout->has_current ) {
         MemSetCurrent( wnd, backout->curr_offset );
     } else {
@@ -534,12 +534,12 @@ static void MemFollow( a_window *wnd )
                 MemBackout( wnd );
                 Error( ERR_NONE, LIT_ENG( ERR_NO_READ_MEM ), new_addr );
             }
-            MemSetStartAddr( wnd, new_addr, TRUE );
+            MemSetStartAddr( wnd, new_addr, true );
         }
     } else {
         new_addr = AddrAddWrap( mem->u.m.addr, mem->total_size );
         mem->u.m.home = mem->u.m.addr;
-        if( !MemScrollBytes( wnd, mem->total_size, TRUE ) ) {
+        if( !MemScrollBytes( wnd, mem->total_size, true ) ) {
             MemBackout( wnd );
         } else {
             WndNoCurrent( wnd );
@@ -585,14 +585,14 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, int size
     if( mem->file ) {
         offset += mem->u.f.offset;
         new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
-        if( new != offset ) return( FALSE );
+        if( new != offset ) return( false );
         len = ReadStream( mem->u.f.filehndl, buff, size );
         return( len >= size );
     } else {
-        if( mem->u.m.contents == NULL ) return( FALSE );
-        if( offset + size > mem->u.m.size ) return( FALSE );
+        if( mem->u.m.contents == NULL ) return( false );
+        if( offset + size > mem->u.m.size ) return( false );
         memcpy( buff, (char*)mem->u.m.contents + offset, size );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -613,57 +613,57 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         row += TITLE_SIZE;
         switch( row ) {
         case 0:
-            line->tabstop = FALSE;
+            line->tabstop = false;
             line->indent = HeadTab[ mem->file ]( wnd, piece );
             line->attr = WND_STANDOUT;
-            if( line->indent == (gui_ord)-1 ) return( FALSE );
-            return( TRUE );
+            if( line->indent == (gui_ord)-1 ) return( false );
+            return( true );
 #if 0
         case 1:
-            if( piece != 0 ) return( FALSE );
+            if( piece != 0 ) return( false );
             SetUnderLine( wnd, line );
-            return( TRUE );
+            return( true );
 #endif
         default:
-            return( FALSE );
+            return( false );
         }
     }
-    if( row >= WndRows( wnd ) ) return( FALSE );
+    if( row >= WndRows( wnd ) ) return( false );
     TxtBuff[0] = '\0';
     offset = row * mem->items_per_line;
     if( piece == 0 ) {
-        line->tabstop = FALSE;
+        line->tabstop = false;
         offset *= mem->item_size;
         if( mem->file ) {
             p = CnvULong( mem->u.f.offset + offset, TxtBuff, TXT_LEN );
             StrCopy( ":", p );
-            return( TRUE );
+            return( true );
         }
         if( mem->stack ) {
             if( offset == mem->sp_offset ) {
                 MADRegSpecialName( MSR_SP, &DbgRegs->mr, MAF_OFFSET, TxtBuff, TXT_LEN );
                 line->text = TxtBuff;
                 line->attr = WND_STANDOUT;
-                return( TRUE );
+                return( true );
             } else if( offset == mem->bp_offset ) {
                 MADRegSpecialName( MSR_FP, &DbgRegs->mr, MAF_OFFSET, TxtBuff, TXT_LEN );
                 line->text = TxtBuff;
                 line->attr = WND_STANDOUT;
-                return( TRUE );
+                return( true );
             }
         }
         addr = AddrAddWrap( mem->u.m.addr, offset );
         p = AddrToString( &addr, MAF_OFFSET, TxtBuff, TXT_LEN );
         StrCopy( ":", p );
-        return( TRUE );
+        return( true );
     }
     if( row == mem->cursor_row && piece == mem->shadow_piece ) {
         line->attr = WND_STANDOUT;
     }
     --piece;
     if( piece >= mem->items_per_line ) {
-        if( mem->piece_type != MemByteType ) return( FALSE );
-        if( piece >= 2 * mem->items_per_line ) return( FALSE );
+        if( mem->piece_type != MemByteType ) return( false );
+        if( piece >= 2 * mem->items_per_line ) return( false );
         if( mem->item_width <= 2 ) {
             line->indent = ( mem->item_width * WndAvgCharX(wnd) );
         } else {
@@ -685,8 +685,8 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     }
     line->indent += mem->address_end + WndAvgCharX( wnd );
     offset *= mem->item_size;
-    if( mem->total_size != 0 && offset >= mem->total_size ) return( FALSE );
-    if( !GetBuff( mem, offset, buff, mem->item_size ) ) return( FALSE );
+    if( mem->total_size != 0 && offset >= mem->total_size ) return( false );
+    if( !GetBuff( mem, offset, buff, mem->item_size ) ) return( false );
     if( piece >= mem->items_per_line ) {
         ch = buff[0];
         if( !isprint( ch ) ) ch = '.';
@@ -699,7 +699,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         MADTypeHandleToString( new, MemData.info[ mem->piece_type ].type, &buff, TxtBuff, &max );
         NewCurrRadix( old );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void MemResize( a_window *wnd )
@@ -711,7 +711,7 @@ static void MemResize( a_window *wnd )
 
     curr_offset = MemCurrOffset( wnd );
     if( mem->stack ) {
-        MemSetStartAddr( wnd, Context.stack, TRUE );
+        MemSetStartAddr( wnd, Context.stack, true );
         WndZapped( wnd );
         return;
     }
@@ -778,7 +778,7 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         while( mem->u.m.backout != NULL ) {
             MemBackout( wnd );
         }
-        MemSetStartAddr( wnd, mem->u.m.home, TRUE );
+        MemSetStartAddr( wnd, mem->u.m.home, true );
         MemSetCurrent( wnd, 0 );
         WndRepaint( wnd );
         break;
@@ -799,12 +799,12 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         MemGetNewAddr( wnd );
         break;
     case MENU_MEMORY_LEFT:
-        MemScrollBytes( wnd, -mem->item_size, FALSE );
+        MemScrollBytes( wnd, -mem->item_size, false );
         WndNoSelect( wnd );
         WndRepaint( wnd );
         break;
     case MENU_MEMORY_RIGHT:
-        MemScrollBytes( wnd, mem->item_size, FALSE );
+        MemScrollBytes( wnd, mem->item_size, false );
         WndNoSelect( wnd );
         WndRepaint( wnd );
         break;
@@ -819,7 +819,7 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 static WNDREFRESH StkRefresh;
 static  void StkRefresh( a_window *wnd )
 {
-    MemSetStartAddr( wnd, Context.stack, TRUE );
+    MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
@@ -855,7 +855,7 @@ static  int     MemScroll( a_window *wnd, int lines )
         WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
         WndSetThumbPercent( wnd, ( offset * 100 ) / mem->u.f.size );
     } else {
-        if( !MemScrollBytes( wnd, tomove, FALSE ) ) {
+        if( !MemScrollBytes( wnd, tomove, false ) ) {
             lines = 0;
         }
     }
@@ -939,7 +939,7 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_RESIZE:
         MemResize( wnd );
         WndFixedThumb( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         if( mem->file && mem->u.f.filehndl != NIL_HANDLE ) {
             FileClose( mem->u.f.filehndl );
@@ -950,12 +950,12 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             while( mem->u.m.backout != NULL ) MemFreeBackout( mem );
         }
         WndFree( mem );
-        return( TRUE );
+        return( true );
     case GUI_NO_EVENT : // sent whenever WndDirtyCurr is called
         MemUpdateCursor( wnd );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info BinInfo = {
@@ -1019,11 +1019,11 @@ extern  a_window        *DoWndMemOpen( address addr, mad_type_handle type )
     mem->u.m.addr = mem->u.m.home = addr;
     mem->u.m.contents = NULL;
     SetDataDot( addr );
-    mem->file = FALSE;
-    mem->stack = FALSE;
+    mem->file = false;
+    mem->stack = false;
     mem->init_type = type;
     mem->piece_type = MemByteType;
-    wnd = DbgTitleWndCreate( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, FALSE );
+    wnd = DbgTitleWndCreate( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1042,9 +1042,9 @@ a_window        *WndStkOpen( void )
     mem->u.m.addr = mem->u.m.home = Context.stack;
     mem->u.m.contents = NULL;
     mem->init_type = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
-    mem->file = FALSE;
-    mem->stack = TRUE;
-    wnd = DbgTitleWndCreate( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, FALSE );
+    mem->file = false;
+    mem->stack = true;
+    wnd = DbgTitleWndCreate( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1055,11 +1055,11 @@ a_window        *DoWndBinOpen( const char *title, handle filehndl )
     a_window    *wnd;
 
     mem = WndMustAlloc( sizeof( mem_window ) );
-    mem->file = TRUE;
-    mem->stack = FALSE;
+    mem->file = true;
+    mem->stack = false;
     mem->init_type = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
     mem->u.f.filehndl = filehndl;
-    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, FALSE );
+    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }

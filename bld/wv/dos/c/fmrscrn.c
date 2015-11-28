@@ -112,7 +112,7 @@ bool DebugScreen( void )
 {
     bool    usr_vis;
 
-    usr_vis = TRUE;
+    usr_vis = true;
     uiswap();
     return( usr_vis );
 }
@@ -125,7 +125,7 @@ bool UsrScrnMode( void )
 {
     bool    usr_vis;
 
-    usr_vis = FALSE;
+    usr_vis = false;
     return( usr_vis );
 }
 
@@ -137,7 +137,7 @@ bool UserScreen( void )
 {
     bool    dbg_vis;
 
-    dbg_vis = TRUE;
+    dbg_vis = true;
     uiswap();
     return( dbg_vis );
 }

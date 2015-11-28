@@ -79,7 +79,7 @@ void WndInitWndMain( wnd_create_struct *info )
 void TellWinHandle( void )
 {
     if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
-        ToldWinHandle = TRUE;
+        ToldWinHandle = true;
     }
 }
 

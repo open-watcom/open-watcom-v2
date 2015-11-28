@@ -64,7 +64,7 @@ extern HWND     MainHwnd = NULL;
 extern a_window *WndMain;
 
 volatile bool   BrkPending;
-bool            ToldWinHandle = FALSE;
+bool            ToldWinHandle = false;
 
 static char     *CmdData;
 
@@ -73,7 +73,7 @@ void TellWinHandle( void )
 {
     if( !ToldWinHandle ) {
         TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
-        ToldWinHandle = TRUE;
+        ToldWinHandle = true;
     }
 }
 #endif

@@ -144,7 +144,7 @@ static bool RegResize( a_window *wnd )
             info->max_descript = space + WndExtentX( wnd, disp.descript );
         }
         info->max_extent = space + disp.max_value * WndAvgCharX( wnd );
-        info->standout = FALSE;
+        info->standout = false;
         if( info->max_extent > max_extent ) {
             max_extent = info->max_extent;
         }
@@ -219,7 +219,7 @@ static bool RegResize( a_window *wnd )
     *p++ = '\0';
     WndSetTitle( wnd, TxtBuff );
 
-    return( TRUE );
+    return( true );
 }
 
 
@@ -360,11 +360,11 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
     reg_display_piece   disp;
 
     column = piece >> 1;
-    if( column >= reg->up ) return( FALSE );
+    if( column >= reg->up ) return( false );
     i = GetRegIdx( reg, row, column );
-    if( i >= reg->count ) return( FALSE );
-    if( i == -1 ) return( FALSE );
-    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) ) return( FALSE );
+    if( i >= reg->count ) return( false );
+    if( i == -1 ) return( false );
+    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) ) return( false );
     line->text = TxtBuff;
     if( piece & 1 ) {
         line->indent = reg->indents[column].value;
@@ -377,9 +377,9 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
             max = reg->info[i].max_value + 1;
             MADTypeHandleToString( new, disp.disp_type, &value, TxtBuff, &max );
             NewCurrRadix( old );
-            reg->info[i].standout = FALSE;
+            reg->info[i].standout = false;
             if( MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) == MS_MODIFIED_SIGNIFICANTLY ) {
-                reg->info[i].standout = TRUE;
+                reg->info[i].standout = true;
                 line->attr = WND_STANDOUT;
             }
         }
@@ -389,9 +389,9 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
         if( TxtBuff[0] != '\0' ) {
             strcat( TxtBuff, ":" );
         }
-        line->tabstop = FALSE;
+        line->tabstop = false;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -440,22 +440,22 @@ static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( RegResize( wnd ) ) {
             WndZapped( wnd );
         }
-        return( TRUE );
+        return( true );
     case GUI_INIT_WINDOW:
         reg->info = NULL;
         reg->indents = NULL;
         RegResize( wnd );
         reg->popup = WndAppendToggles( MADRegSetDisplayToggleList( reg->data ), &reg->num_toggles, RegMenu, ArraySize( RegMenu ), MENU_REGISTER_TOGGLES );
         WndSetPopUpMenu( wnd, reg->popup, ArraySize( RegMenu ) + reg->num_toggles );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         WndDeleteToggles( reg->popup, ArraySize( RegMenu ), reg->num_toggles );
         WndFree( reg->info );
         WndFree( reg->indents );
         WndFree( reg );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info MadRegInfo = {

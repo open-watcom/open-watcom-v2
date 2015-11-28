@@ -104,9 +104,9 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *ti
     for( ;; ) {
         dlg( title, buff, buff_len );
         if( buff[0] == '\0' )
-            return( FALSE );
+            return( false );
         rc = rtn( buff, value );
-        if( rc ) return( TRUE );
+        if( rc ) return( true );
         PrevError( TxtBuff );
     }
 }
@@ -193,8 +193,8 @@ bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
     MADTypeInfo( th, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
     ok = DlgAnyExpr( title, buff, sizeof( buff ) );
-    if( !ok ) return( FALSE );
+    if( !ok ) return( false );
     ToItemMAD( ExprSP, value, &mti );
     PopEntry();
-    return( TRUE );
+    return( true );
 }

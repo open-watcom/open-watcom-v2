@@ -124,7 +124,7 @@ static void HupHandler( int signo )
 {
     /* Xqsh has gone away -- nothing to do except die */
     signo = signo;
-    ReleaseProgOvlay( TRUE );
+    ReleaseProgOvlay( true );
     KillDebugger( 0 );
 }
 
@@ -145,10 +145,10 @@ static bool TryXWindows( void )
 
     /* we're in the X (or helper)environment */
     if ( getenv( "DISPLAY" ) == NULL )
-        return( FALSE );
+        return( false );
     masterfd = open( "/dev/ptmx", O_RDWR );
     if( masterfd < 0 )
-        return( FALSE );
+        return( false );
     fcntl( masterfd, F_SETFD, 0 );
     ioctl( masterfd, TIOCGPTN, &slavefd ); /* slavefd = ptsname(masterfd); */
     ioctl( masterfd, TIOCSPTLCK, &unlock ); /* unlockpt(masterfd); */
@@ -157,7 +157,7 @@ static bool TryXWindows( void )
     DbgConHandle = slavefd;
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );
-        return( FALSE );
+        return( false );
     }
     tcgetattr( slavefd, &termio );
     termio.c_lflag &= ~ECHO;
@@ -229,7 +229,7 @@ static bool TryXWindows( void )
     ioctl( slavefd, TIOCSCTTY, 1 );
 
     signal( SIGHUP, &HupHandler );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryVC( void )
@@ -243,14 +243,14 @@ static bool TryVC( void )
 
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if ( len < 0 )
-        return( FALSE );
+        return( false );
     tty_name[ len ] = '\0';
     if( DbgConsole == 0 ) {
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
-            return( FALSE );
+            return( false );
         if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) )
-            return( FALSE );
+            return( false );
         close( DbgConHandle );
     }
     ptr = &tty_name[ len ];
@@ -263,9 +263,9 @@ static bool TryVC( void )
     sprintf ( ptr + 1, "%d", DbgConsole );
     DbgConHandle = open( tty_name, O_RDWR );
     if ( DbgConHandle == -1 )
-        return( FALSE );
+        return( false );
     if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) )
-        return( FALSE );
+        return( false );
     InitConsole = vt_state.v_active;
     ioctl( DbgConHandle, TIOCGWINSZ, &winsize );
     PrevLines = winsize.ws_row;
@@ -273,7 +273,7 @@ static bool TryVC( void )
     vt_sizes.v_rows = DbgLines;
     vt_sizes.v_cols = DbgColumns;
     ioctl( DbgConHandle, VT_RESIZE, &vt_sizes );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryTTY( void )
@@ -282,11 +282,11 @@ static bool TryTTY( void )
     char                *end;
 
     if( DbgTerminal == NULL )
-        return( FALSE );
+        return( false );
     num = strtoul( DbgTerminal, &end, 10 );
     if( *end == NULLCHAR && num < 100 ) {
         DbgConsole = num;
-        return( FALSE );
+        return( false );
     }
     /* guy gave an explicit terminal name */
     end = strchr( DbgTerminal, ':' );
@@ -299,7 +299,7 @@ static bool TryTTY( void )
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitScreen( void )
@@ -343,11 +343,11 @@ bool UsrScrnMode( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -372,10 +372,10 @@ bool DebugScreen( void )
 
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_CURTTY:
         _physupdate( NULL );
-        UserForcedTermRefresh = TRUE;
+        UserForcedTermRefresh = true;
         tputs( enter_ca_mode, 1, DebugPutc );
         break;
     case C_VC:
@@ -387,12 +387,12 @@ bool DebugScreen( void )
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -404,7 +404,7 @@ bool UserScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_CURTTY:
         tputs( exit_ca_mode, 1, DebugPutc );
         break;
@@ -415,7 +415,7 @@ bool UserScreen( void )
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )

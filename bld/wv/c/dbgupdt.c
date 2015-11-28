@@ -61,7 +61,7 @@ void DbgUpdate( update_list flags )
         BrkAddrRefresh();
     }
     if( flags & (UP_REG_CHANGE|UP_CSIP_CHANGE) ) {
-        InitLC( &Context, TRUE );
+        InitLC( &Context, true );
     }
     if( flags & UP_NEW_PROGRAM ) {
         SetStackPos( &Context, 0 );
@@ -71,7 +71,7 @@ void DbgUpdate( update_list flags )
         prev_mod = ContextMod;
         if( DeAliasAddrMod( Context.execution, &ContextMod ) == SR_NONE ) ContextMod = NO_MOD;
         if( prev_mod != ContextMod ) {
-            HookNotify( FALSE, HOOK_NEW_MODULE );
+            HookNotify( false, HOOK_NEW_MODULE );
         }
     }
     if( flags & (UP_CODE_ADDR_CHANGE | UP_SYM_CHANGE ) ) {

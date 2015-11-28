@@ -221,12 +221,12 @@ void FromItem( item_mach *tmp, stack_entry *entry )
             switch( size ) {
             case 4:
                 entry->v.addr.sect_id = 0;
-                entry->v.addr.indirect = FALSE;
+                entry->v.addr.indirect = false;
                 ConvAddr32ToAddr48( tmp->sa, entry->v.addr.mach );
                 return;
             case 6:
                 entry->v.addr.sect_id = 0;
-                entry->v.addr.indirect = FALSE;
+                entry->v.addr.indirect = false;
                 entry->v.addr.mach = tmp->la;
                 return;
             case sizeof( address ):
@@ -363,52 +363,52 @@ OVL_EXTERN bool ConvU8( stack_entry *entry, conv_class from )
         U32ToU64( entry->v.addr.mach.offset, &tmp );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     entry->v.uint = tmp;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvU1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     U32ToU64( (unsigned_8)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvU2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     U32ToU64( (unsigned_16)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvU4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     U32ToU64( (unsigned_32)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvI1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     I32ToI64( (signed_8)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvI2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     I32ToI64( (signed_16)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvI4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( FALSE );
+    if( !ConvU8( entry, from ) ) return( false );
     I32ToI64( (signed_32)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvI8( stack_entry *entry, conv_class from )
@@ -446,24 +446,24 @@ OVL_EXTERN bool ConvR10( stack_entry *entry, conv_class from )
         tmp = entry->v.cmplx.re;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     entry->v.real = tmp;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvR4( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( FALSE );
+    if( !ConvR10( entry, from ) ) return( false );
     DToLD( (float)LDToD( &entry->v.real ), &entry->v.real );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvR8( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( FALSE );
+    if( !ConvR10( entry, from ) ) return( false );
     DToLD( (double)LDToD( &entry->v.real ), &entry->v.real );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
@@ -497,26 +497,26 @@ OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
         tmp = entry->v.cmplx;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     entry->v.cmplx = tmp;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( FALSE );
+    if( !ConvC20( entry, from ) ) return( false );
     DToLD( (float)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (float)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvC16( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( FALSE );
+    if( !ConvC20( entry, from ) ) return( false );
     DToLD( (double)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (double)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
@@ -545,7 +545,7 @@ OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
         tmp = entry->v.addr.mach.offset;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( (entry->flags & SF_CONST) && tmp == 0 ) {
         entry->v.addr = NilAddr;
@@ -553,14 +553,14 @@ OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
         entry->v.addr = DefAddrSpaceForAddr( Context.execution );
     }
     entry->v.addr.mach.offset = tmp;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvNP2( stack_entry *entry, conv_class from )
 {
-    if( !ConvNP4( entry, from ) ) return( FALSE );
+    if( !ConvNP4( entry, from ) ) return( false );
     entry->v.addr.mach.offset = (addr32_off)entry->v.addr.mach.offset;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
@@ -596,17 +596,17 @@ OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
         tmp = entry->v.addr;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     entry->v.addr = tmp;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvFP4( stack_entry *entry, conv_class from )
 {
-    if( !ConvFP6( entry, from ) ) return( FALSE );
+    if( !ConvFP6( entry, from ) ) return( false );
     entry->v.addr.mach.offset = (addr32_off)entry->v.addr.mach.offset;
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvSTR( stack_entry *entry, conv_class from )
@@ -614,14 +614,14 @@ OVL_EXTERN bool ConvSTR( stack_entry *entry, conv_class from )
     entry = entry;
     from = from;
     /* everything has already been taken care of */
-    return( TRUE );
+    return( true );
 }
 
 OVL_EXTERN bool ConvERR( stack_entry *entry, conv_class from )
 {
     entry = entry;
     from = from;
-    return( FALSE );
+    return( false );
 }
 
 static bool (* const ConvFunc[])( stack_entry *, conv_class ) = {
@@ -802,9 +802,9 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     } else {
         result_info = &ResultInfo[ result_class ];
     }
-    promote_left = FALSE;
+    promote_left = false;
     if( lclass != result_class ) {
-        promote_left = TRUE;
+        promote_left = true;
         ConvertTo( left, result_info->kind,
                 result_info->modifier, result_info->size );
     }

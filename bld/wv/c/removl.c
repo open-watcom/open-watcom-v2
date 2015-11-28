@@ -68,17 +68,17 @@ bool RemoteOvlSectPos( unsigned sect, mem_block *where )
     ovl_get_data_req    acc;
     ovl_get_data_ret    ret;
 
-    if( SuppOvlId == 0 ) return( FALSE );
+    if( SuppOvlId == 0 ) return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_GET_DATA );
     acc.sect_id = sect;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.segment == 0 ) return( FALSE );
+    if( ret.segment == 0 ) return( false );
     where->len = ret.size;
     where->start.mach.segment = ret.segment;
     where->start.mach.offset = 0;
     where->start.sect_id = sect;
     where->start.indirect = 0;
-    return( TRUE );
+    return( true );
 }
 
 static void CheckRemapping( void )
@@ -126,7 +126,7 @@ bool RemoteOvlTransAddr( address *addr )
     ovl_trans_vect_addr_ret     ret;
     address                     real;
 
-    if( SuppOvlId == 0 ) return( FALSE );
+    if( SuppOvlId == 0 ) return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_TRANS_VECT_ADDR );
     real = *addr;
     AddrFix( &real );
@@ -135,13 +135,13 @@ bool RemoteOvlTransAddr( address *addr )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.ovl_addr.sect_id == 0 ) {
         /* not translated */
-        return( FALSE );
+        return( false );
     }
     addr->sect_id = ret.ovl_addr.sect_id;
-    addr->indirect = FALSE;
+    addr->indirect = false;
     ConvAddr32ToAddr48( ret.ovl_addr.mach, addr->mach );
     AddrFloat( addr );
-    return( TRUE );
+    return( true );
 }
 
 bool RemoteOvlRetAddr( address *addr, unsigned ovl_level )
@@ -150,7 +150,7 @@ bool RemoteOvlRetAddr( address *addr, unsigned ovl_level )
     ovl_trans_vect_addr_ret     ret;
     address                     real;
 
-    if( SuppOvlId == 0 ) return( FALSE );
+    if( SuppOvlId == 0 ) return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_TRANS_RET_ADDR );
     real = *addr;
     AddrFix( &real );
@@ -160,11 +160,11 @@ bool RemoteOvlRetAddr( address *addr, unsigned ovl_level )
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.ovl_addr.sect_id == 0 ) {
         /* not translated */
-        return( FALSE );
+        return( false );
     }
     addr->sect_id = ret.ovl_addr.sect_id;
-    addr->indirect = FALSE;
+    addr->indirect = false;
     ConvAddr32ToAddr48( ret.ovl_addr.mach, addr->mach );
     AddrFloat( addr );
-    return( TRUE );
+    return( true );
 }

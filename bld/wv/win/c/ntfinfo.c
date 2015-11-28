@@ -66,11 +66,11 @@ bool LocalSetFileDate( const char *name, long date )
     h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL,
                     OPEN_EXISTING, 0, NULL );
     if( h == INVALID_HANDLE_VALUE ) {
-        return( FALSE );
+        return( false );
     }
     if( !SetFileTime( h, &ft, &ft, &ft ) ) {
-        return( FALSE );
+        return( false );
     }
     CloseHandle( h );
-    return( TRUE );
+    return( true );
 }

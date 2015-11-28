@@ -306,13 +306,13 @@ static void PrintAddress( char fmt )
     address     addr;
 
     if( fmt == 'l' ) {
-        MakeMemoryAddr( TRUE, EXPR_CODE, &addr );
+        MakeMemoryAddr( true, EXPR_CODE, &addr );
         ptr = LineAddr( &addr, buff, sizeof( buff ) );
         if( ptr == NULL ) {
             ptr = StrAddr( &addr, buff, sizeof( buff ) );
         }
     } else {
-        MakeMemoryAddr( TRUE, EXPR_DATA, &addr );
+        MakeMemoryAddr( true, EXPR_DATA, &addr );
         ptr = StrAddr( &addr, buff, sizeof( buff ) );
     }
     PrtStr( buff, ptr - buff );
@@ -343,13 +343,13 @@ static void PrintDouble( char format, xreal *val )
     buff[ MAX_WIDTH ] = NULLCHAR;
     for( start = buff; *start == ' '; ++start )
         ;
-    found_dot = FALSE;
+    found_dot = false;
     ptr = start;
     for( ;; ) {
         if( *ptr == '\0' ) break;
         if( *ptr == 'e' ) break;
         if( *ptr == 'E' ) break;
-        if( *ptr == '.' ) found_dot = TRUE;
+        if( *ptr == '.' ) found_dot = true;
         ++ptr;
     }
     back = ptr;
@@ -461,7 +461,7 @@ static void DoPrintString( bool force )
     char        buff[MAX_PRINTSTRING_LEN+10];
     char        *p;
 
-    MakeMemoryAddr( FALSE, EXPR_DATA, &addr );
+    MakeMemoryAddr( false, EXPR_DATA, &addr );
     if( IS_NIL_ADDR( addr ) && !force ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
@@ -488,13 +488,13 @@ static void DoPrintString( bool force )
 
 void PrintString( void )
 {
-    DoPrintString( FALSE );
+    DoPrintString( false );
 }
 
 
 void ForcePrintString( void )
 {
-    DoPrintString( TRUE );
+    DoPrintString( true );
 }
 
 
@@ -556,7 +556,7 @@ static void GetExpr( void )
     if( !First && CurrToken == T_COMMA ) Scan();
     NormalExpr();
     if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE ) ReqEOC();
-    First = FALSE;
+    First = false;
 }
 
 /*
@@ -568,7 +568,7 @@ static void DoFormat( const char *fmt_ptr, const char *fmt_end )
     char        z_format;
 
     StartPrintBuff( buff, BUFLEN );
-    First = TRUE;
+    First = true;
     while( fmt_ptr < fmt_end ) {
         if( (*fmt_ptr != '%') || (fmt_end - fmt_ptr == 1) ) {
             PrtChar( *fmt_ptr );
@@ -690,7 +690,7 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, voi
             /* print a space if not at start of a line */
             if( OutPtr != OutBuff ) PrtChar( ' ' );
         }
-        d->first_time = FALSE;
+        d->first_time = false;
         DupStack();
         len = SymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
@@ -709,7 +709,7 @@ static void PrintStruct( void )
 {
     print_fld   d;
 
-    d.first_time = TRUE;
+    d.first_time = true;
     PrtChar( '{' );
     WalkSymList( SS_TYPE, ExprSP->th, PrintDlgField, &d );
     PrtChar( '}' );
@@ -724,7 +724,7 @@ static void PrintArray( void )
     bool                first_time;
     signed_64           tmp;
 
-    first_time = TRUE;
+    first_time = true;
     PrtChar( '{' );
     TypeArrayInfo( ExprSP->th, ExprSP->lc, &ai, NULL );
     while( ai.num_elts != 0 ) {
@@ -752,7 +752,7 @@ static void PrintArray( void )
         PopEntry();
         ai.num_elts--;
         ai.low_bound++;
-        first_time = FALSE;
+        first_time = false;
     }
     PrtChar( '}' );
 }
@@ -774,7 +774,7 @@ OVL_EXTERN walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
     if( SymValue( sh, ExprSP->lc, &val ) != DS_OK ) return( WR_STOP );
     if( U64Cmp( &val, &vd->value ) != 0 ) return( WR_CONTINUE );
     HDLAssign( sym, vd->sh, sh );
-    vd->found = TRUE;
+    vd->found = true;
     return( WR_STOP );
 }
 
@@ -793,7 +793,7 @@ OVL_EXTERN walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
             HDLAssign( sym, vd->sh, sh );
             vd->best_value = val;
-            vd->found = TRUE;
+            vd->found = true;
         }
     }
     return( WR_CONTINUE );
@@ -808,7 +808,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     DIPHDL( sym, sh );
 
     d.sh = sh;
-    d.found = FALSE;
+    d.found = false;
     d.value = ExprSP->v.uint;
     WalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
     if( d.found ) {
@@ -816,7 +816,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     }
     p = buff;
     while( U64Test( &d.value ) != 0 ) {
-        d.found = FALSE;
+        d.found = false;
         WalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found ) return( 0 );
         U64Not( &d.best_value, &d.best_value );
@@ -867,11 +867,11 @@ void PrintValue( void )
         /* fall through */
     case TK_POINTER:
         if( IS_NIL_ADDR(ExprSP->v.addr) ) {
-            SetTokens( TRUE );
+            SetTokens( true );
             if( !TokenName( TSTR_NULL, &tstr, &tlen ) ) {
                 tlen = 0;
             }
-            SetTokens( FALSE );
+            SetTokens( false );
             if( tlen != 0 ) {
                 PrtStr( tstr + 1, tlen - 1 );
             } else {
@@ -919,7 +919,7 @@ void DoPrintList( bool output )
     size_t      fmt_len;
 
     OutPgm = output;
-    First = TRUE;
+    First = true;
     while( !ScanEOC() ) {
         if( ScanQuote( &fmt_start, &fmt_len ) ) {
             DoFormat( fmt_start, fmt_start + fmt_len );
@@ -934,7 +934,7 @@ static void LogPrintList( void )
     if( _IsOn( SW_CMD_INTERACTIVE ) ) {
         DUIShowLogWindow();
     }
-    DoPrintList( FALSE );
+    DoPrintList( false );
 }
 
 void ChkPrintList( void )
@@ -943,16 +943,16 @@ void ChkPrintList( void )
     const char  *start;
     size_t      len;
 
-    first = TRUE;
+    first = true;
     while( !ScanEOC() ) {
         if( ScanQuote( &start, &len ) )
-            first = TRUE;
+            first = true;
         if( !first && CurrToken == T_COMMA )
             Scan();
         ChkExpr();
         if( CurrToken != T_COMMA )
             ReqEOC();
-        first = FALSE;
+        first = false;
     }
 }
 
@@ -971,7 +971,7 @@ void ProcPrint( void )
         Scan();
         switch( ScanCmd( PrintOps ) ) {
         case 0:
-            DoPrintList( TRUE );
+            DoPrintList( true );
             break;
         case 1:
             GraphicDisplay();

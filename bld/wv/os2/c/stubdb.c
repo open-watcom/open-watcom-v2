@@ -85,8 +85,8 @@ unsigned DUIConfigScreen( void )
 
 bool DUIClose( void )
 {
-    Done = TRUE;
-    return( TRUE );
+    Done = true;
+    return( true );
 }
 
 #if 0
@@ -103,23 +103,23 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
         VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
-        row_v->value_valid = FALSE;
+        row_v->value_valid = false;
     }
     if( !row_v->gadget_valid ) {
         VarSetGadget( row_v, VARGADGET_NONE );
-        row_v->gadget_valid = FALSE;
+        row_v->gadget_valid = false;
     }
     v = row_v;
     if( piece == VAR_PIECE_NAME ||
         ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
         ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
-        VarError = FALSE;
+        VarError = false;
     } else if( _IsOff( SW_TASK_RUNNING ) ) {
         if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
-            VarError = FALSE;
+            VarError = false;
             v = i->exprsp_cache;
         } else if( row == i->exprsp_cacherow && i->exprsp_cache_is_error ) {
-            VarError = TRUE;
+            VarError = true;
             v = NULL;
         } else {
             VarErrState();
@@ -162,7 +162,7 @@ static void DumpLocals( void )
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
-        VarOkToCache( &Locals, TRUE );
+        VarOkToCache( &Locals, true );
     }
     for( row = 0;; ++row ) {
         v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit );
@@ -186,11 +186,11 @@ static void DumpLocals( void )
             printf( "<-" );
             break;
         }
-        VarBuildName( &Locals, v, TRUE );
+        VarBuildName( &Locals, v, true );
         printf( " %-20s %s\n", TxtBuff, v->value );
     }
     if( _IsOff( SW_TASK_RUNNING ) ) {
-        VarOkToCache( &Locals, FALSE );
+        VarOkToCache( &Locals, false );
         VarOldErrState();
     }
 }
@@ -230,7 +230,7 @@ VOID APIENTRY ControlFunc( ULONG parm )
         DosResetEventSem( Requestsem, &ulCount );
         switch( Req ) {
         case REQ_GO:
-            Go( TRUE );
+            Go( true );
             break;
         case REQ_TRACE_OVER:
             ExecTrace( TRACE_OVER, DbgLevel );
@@ -321,8 +321,8 @@ int main( int argc, char **argv )
     _SwitchOff( SW_ERROR_STARTUP );
     DoInput();
     VarInitInfo( &Locals );
-    DosCreateEventSem( NULL, &Requestsem, 0, FALSE );
-    DosCreateEventSem( NULL, &Requestdonesem, 0, FALSE );
+    DosCreateEventSem( NULL, &Requestsem, 0, false );
+    DosCreateEventSem( NULL, &Requestdonesem, 0, false );
     DosPostEventSem( Requestdonesem ); // signal req done
     rc = DosCreateThread( &tid, ControlFunc, 0, 0, 32768 );
     if( rc != 0 ) {
@@ -363,7 +363,7 @@ void DUIMsgBox( const char *text )
 bool DUIDlgTxt( const char *text )
 {
     printf( "DLG %s\n", text );
-    return( TRUE );
+    return( true );
 }
 
 void DUIInfoBox( const char *text )
@@ -384,7 +384,7 @@ void DUIStatusText( const char *text )
 bool DUIDlgGivenAddr( const char *title, address *value )
 {
     // needed when segment's don't map (from new/sym command)
-    return( FALSE );
+    return( false );
 }
 
 bool DlgNewWithSym( const char *title, char *buff, int buff_len )
@@ -396,38 +396,38 @@ bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 bool DlgUpTheStack( void )
 {
     // used when trying to trace, but we've unwound the stack a bit
-    return( FALSE );
+    return( false );
 }
 
 bool DlgAreYouNuts( unsigned long mult )
 {
     // used when too many break on write points are set
-    return( FALSE );
+    return( false );
 }
 
 bool DlgBackInTime( bool warn )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     warn = warn;
-    return( FALSE );
+    return( false );
 }
 
 bool DlgIncompleteUndo( void )
 {
     // used when trying to trace, but we've backed up over a call or asynch
-    return( FALSE );
+    return( false );
 }
 
 bool DlgBreak( address addr )
 {
     // used when an error occurs in the break point expression or it is entered wrong
-    return( FALSE );
+    return( false );
 }
 
 bool DUIInfoRelease( void )
 {
     // used when we're low on memory
-    return( FALSE );
+    return( false );
 }
 void DUIUpdate( update_list flags )
 {
@@ -460,7 +460,7 @@ extern bool DUIStopRefresh( bool stop )
 {
     // temporarily turn off/on screen refreshing, cause we're going to run a
     // big command file and we don't want flashing.
-    return( FALSE );
+    return( false );
 }
 
 extern void DUIShow( void )
@@ -509,7 +509,7 @@ extern void DUIArrowCursor( void )
 bool DUIAskIfAsynchOk( void )
 {
     // we're about to try to replay across an asynchronous event.  Ask user
-    return( FALSE );
+    return( false );
 }
 
 extern void DUIFlushKeys( void )
@@ -841,15 +841,15 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( FALSE );
+    if( viewhndl == NULL ) return( false );
     buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
     FDoneSource( viewhndl );
-    return( TRUE );
+    return( true );
 }
 
 bool DUIIsDBCS( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
@@ -910,7 +910,7 @@ bool DUIImageLoaded( image_entry *image, bool load,
         sprintf( buff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( buff );
-    return( FALSE );
+    return( false );
 }
 
 void DUICopySize( void *cookie, unsigned long size )
@@ -931,7 +931,7 @@ bool DUICopyCancelled( void * cookie )
 /************************************/
 {
     cookie = cookie;
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIDlgAsyncRun( void )

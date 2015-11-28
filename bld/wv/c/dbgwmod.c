@@ -138,15 +138,15 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
         if( handle != NO_MOD ) {
-            WndMenuEnable( wnd, MENU_MODULES_BREAK_SET_ALL, TRUE );
-            WndMenuEnable( wnd, MENU_MODULES_BREAK_CLEAR_ALL, TRUE );
+            WndMenuEnable( wnd, MENU_MODULES_BREAK_SET_ALL, true );
+            WndMenuEnable( wnd, MENU_MODULES_BREAK_CLEAR_ALL, true );
             WndMenuEnable( wnd, MENU_MODULES_ASSEMBLY, !IS_NIL_ADDR( addr ) );
-            WndMenuEnable( wnd, MENU_MODULES_FUNCTIONS, TRUE );
+            WndMenuEnable( wnd, MENU_MODULES_FUNCTIONS, true );
             if( ModHasSourceInfo( handle ) ) {
-                WndMenuEnable( wnd, MENU_MODULES_SOURCE, TRUE );
+                WndMenuEnable( wnd, MENU_MODULES_SOURCE, true );
             }
         }
-        WndMenuEnable( wnd, MENU_MODULES_SHOW_ALL, TRUE );
+        WndMenuEnable( wnd, MENU_MODULES_SHOW_ALL, true );
         WndMenuCheck( wnd, MENU_MODULES_SHOW_ALL, mod->all_modules );
         break;
     case MENU_MODULES_BREAK_SET_ALL:
@@ -158,7 +158,7 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_MODULES_SOURCE:
         if( IS_NIL_ADDR( addr ) ) {
             ModName( handle, TxtBuff, TXT_LEN );
-            WndFileInspect( TxtBuff, FALSE );
+            WndFileInspect( TxtBuff, false );
         } else {
             WndSrcInspect( addr );
         }
@@ -202,27 +202,27 @@ static  bool    ModGetLine( a_window *wnd, int row, int piece,
     mod_window  *mod = WndMod( wnd );
     modinfo     *info;
 
-    if( row >= ModListNumRows( ModList( mod ) ) ) return( FALSE );
+    if( row >= ModListNumRows( ModList( mod ) ) ) return( false );
     handle = ModListMod( ModList( mod ), row );
-    line->tabstop = FALSE;
+    line->tabstop = false;
     switch( piece ) {
     case PIECE_SOURCE:
         info = &mod->info[ row ];
         info->source = ModHasSourceInfo( handle );
         info->open = OpenGadget( wnd, line, handle, info->source );
-        return( TRUE );
+        return( true );
     case PIECE_MODULE:
         line->indent = MaxGadgetLength;
-        line->tabstop = TRUE;
+        line->tabstop = true;
         ModListName( ModList( mod ), row, TxtBuff );
         line->text = TxtBuff;
-        return( TRUE );
+        return( true );
     case PIECE_IMAGE:
         line->indent = mod->max_modlen + MaxGadgetLength;
         line->text = ModImageName( handle );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -296,17 +296,17 @@ static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         WndSetKey( wnd, PIECE_MODULE );
         ModSetOptions( wnd );
         ModSetCurrent( wnd );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE:
         ModCalcIndent( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         ModListFree( ModList( mod ) );
         WndFree( mod->info );
         WndFree( mod );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void ModChangeOptions( void )

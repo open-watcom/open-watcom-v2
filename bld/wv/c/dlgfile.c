@@ -198,17 +198,17 @@ static bool AskIfKillPB( void )
                              GUI_YES_NO ) == GUI_RET_YES );
 }
 
-static bool     WndDead = FALSE;
+static bool     WndDead = false;
 bool WndShutDownHook( void )
 {
 
     if( WndDead )
-        return( TRUE );
-    WndDead = TRUE;
-    HookNotify( TRUE, HOOK_QUIT );
+        return( true );
+    WndDead = true;
+    HookNotify( true, HOOK_QUIT );
     if( _IsOn( SW_POWERBUILDER ) && _IsOn( SW_HAVE_TASK ) && !AskIfKillPB() ) {
-        WndDead = FALSE;
-        return( FALSE );
+        WndDead = false;
+        return( false );
     }
     WritableConfig();
     if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != '\0' ) {
@@ -219,7 +219,7 @@ bool WndShutDownHook( void )
     #if defined(__GUI__) && defined(__OS2__)
         KillProgOvlay(); // must be done before windows are shut down
     #endif
-    return( TRUE );
+    return( true );
 }
 
 
@@ -236,9 +236,9 @@ bool ConfigSave( bool writing )
         } else {
             RestoreConfigFromFile( TxtBuff );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -250,9 +250,9 @@ bool BreakSave( bool writing )
         } else {
             RestoreBreaksFromFile( TxtBuff );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -265,17 +265,17 @@ bool ReplaySave( bool writing )
             } else {
                 RestoreReplayFromFile( TxtBuff );
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 extern void FileBrowse( void )
 {
     if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
-        WndFileInspect( TxtBuff, FALSE );
+        WndFileInspect( TxtBuff, false );
     }
 }
 

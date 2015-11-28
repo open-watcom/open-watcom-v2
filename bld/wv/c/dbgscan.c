@@ -78,10 +78,10 @@ static  const char      *ScanPtr;
 static  token_value     TokenVal;
 static  const char      *TokenStart;
 static  token_table     *ExprTokens;
-        bool            scan_string = FALSE;
+        bool            scan_string = false;
         char            *StringStart = NULL;
         unsigned        StringLength = 0;
-        unsigned        ScanCCharNum = TRUE;
+        unsigned        ScanCCharNum = true;
 
 
 static void SetRadixSpec( const char *str, unsigned len, unsigned radix, bool clear )
@@ -127,8 +127,8 @@ void InitScan( void )
     TokenStart = ScanPtr;
     CurrToken = T_LINE_SEPARATOR;
     RadStrs = NULL;
-    SetRadixSpec( "0x", 2, 16, FALSE );
-    SetRadixSpec( "0n", 2, 10, FALSE );
+    SetRadixSpec( "0x", 2, 16, false );
+    SetRadixSpec( "0n", 2, 10, false );
 }
 
 
@@ -317,11 +317,11 @@ static bool FindToken( const char *table, unsigned token,
         chk |= table[2] << 8;
         if( chk == token ) {
             *len = table - *start;
-            return( TRUE );
+            return( true );
         }
         table += 3;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -331,27 +331,27 @@ bool TokenName( unsigned token, const char **start, unsigned *len )
     case T_LINE_SEPARATOR:
         *start = LIT_ENG( End_Of_Line );
         *len = strlen( LIT_ENG( End_Of_Line ) ) + 1;
-        return( TRUE );
+        return( true );
     case T_INT_NUM:
     case T_REAL_NUM:
         *start = LIT_ENG( Num_Name );
         *len = strlen( LIT_ENG( Num_Name ) ) + 1;
-        return( TRUE );
+        return( true );
     case T_NAME:
         *start = LIT_ENG( Sym_Name_Name );
         *len = strlen( LIT_ENG( Sym_Name_Name ) ) + 1;
-        return( TRUE );
+        return( true );
     }
     if( token < LAST_CMDLN_DELIM ) {
         *start = &CmdLnDelimTab[ token - FIRST_CMDLN_DELIM ];
         *len = sizeof( char );
-        return( TRUE );
+        return( true );
     }
     if( ExprTokens != NULL ) {
-        if( FindToken( ExprTokens->delims, token, start, len ) ) return(TRUE);
-        if( FindToken( ExprTokens->keywords, token, start, len ) ) return(TRUE);
+        if( FindToken( ExprTokens->delims, token, start, len ) ) return(true);
+        if( FindToken( ExprTokens->keywords, token, start, len ) ) return(true);
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -379,7 +379,7 @@ bool ScanQuote( const char **start, size_t *len )
     if( CurrToken != T_LEFT_BRACE ) {
         *start = NULL;
         *len   = 0;
-        return( FALSE );
+        return( false );
     }
     *start = ScanPtr;
     cnt = 1;
@@ -395,7 +395,7 @@ bool ScanQuote( const char **start, size_t *len )
     }
     *len = TokenStart - *start;
     Scan();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -408,9 +408,9 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
     if( ScanEOC() ) {
         *start = NULL;
         *len   = 0;
-        return( FALSE );
+        return( false );
     }
-    if( ScanQuote( start, len ) ) return( TRUE );
+    if( ScanQuote( start, len ) ) return( true );
     *start = TokenStart;
     for( ;; ) {
         if( blank_delim && isspace( *ScanPtr ) ) break;
@@ -421,7 +421,7 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
     }
     *len = ScanPtr - TokenStart;
     Scan();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -434,10 +434,10 @@ bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, siz
     if( ScanEOC() ) {
         *start = NULL;
         *len   = 0;
-        return( FALSE );
+        return( false );
     }
     if( ScanQuote( start, len ) )
-        return( TRUE );
+        return( true );
     *start = TokenStart;
     for( ;; ) {
         if( blank_delim && isspace( *ScanPtr ) )
@@ -450,7 +450,7 @@ bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, siz
     }
     *len = ScanPtr - TokenStart;
     Scan();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -486,11 +486,11 @@ static bool ScanExprDelim( const char *table )
             table++;
             CurrToken = *table;
             ScanPtr = ptr;
-            return( TRUE );
+            return( true );
         }
         for( ; *table != NULLCHAR ; table++ );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -500,13 +500,13 @@ static bool ScanCmdLnDelim( void )
 
     for( ptr = CmdLnDelimTab; ; ptr++ ) {
         if( *ScanPtr == *ptr ) break;
-        if( *ptr == NULLCHAR ) return( FALSE );
+        if( *ptr == NULLCHAR ) return( false );
     }
     CurrToken = FIRST_CMDLN_DELIM + (ptr - CmdLnDelimTab);
     if( *ScanPtr != NULLCHAR ) {
         ++ScanPtr;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -520,14 +520,14 @@ static bool ScanRealNum( void )
 
     curr = ScanPtr;
     while( isdigit( *curr ) ) ++curr;
-    if( *curr != '.' ) return( FALSE );
+    if( *curr != '.' ) return( false );
     SToLD( ScanPtr, &ScanPtr, &TokenVal.real_val );
     if( curr == ScanPtr ) {    /* it isn't a number, it's just a dot */
         ScanPtr++;
-        return( FALSE );
+        return( false );
     }
     CurrToken = T_REAL_NUM;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -562,7 +562,7 @@ static bool GetNum( unsigned base )
     unsigned_64 big_dig;
     int         dig;
 
-    ok = FALSE;
+    ok = false;
     U32ToU64( base, &big_base );
     U64Clear( num );
     for( ; ; ) {
@@ -572,7 +572,7 @@ static bool GetNum( unsigned base )
         U64Mul( &num, &big_base, &num );
         U64Add( &num, &big_dig, &num );
         ++ScanPtr;
-        ok = TRUE;
+        ok = true;
     }
     TokenVal.int_val = num;
     return( ok );
@@ -590,32 +590,32 @@ static bool ScanNumber( void )
     bool        ret;
     const char  *hold_scan;
 
-    ret = FALSE;
+    ret = false;
     hold_scan = ScanPtr;
     if( ScanCCharNum && (*ScanPtr == '\'') ) {
         if( ScanPtr[ 1 ] != NULLCHAR && ScanPtr[ 2 ] == '\'' ) {
             U32ToU64( ScanPtr[1], &TokenVal.int_val );
             ScanPtr += 3;
             CurrToken = T_INT_NUM;
-            return( TRUE );
+            return( true );
         }
     } else {
         CurrToken = T_BAD_NUM; /* assume we'll find a bad number */
         for( pref = RadStrs; pref != NULL; pref = pref->next ) {
             if( memicmp( ScanPtr, SYM_NAME_NAME( pref->radstr ), SYM_NAME_LEN( pref->radstr ) ) == 0 ) {
-                ret = TRUE;
+                ret = true;
                 ScanPtr += SYM_NAME_LEN( pref->radstr );
                 hold_scan = ScanPtr;
                 if( GetNum( pref->radval ) ) {
                     CurrToken = T_INT_NUM;
-                    return( TRUE );
+                    return( true );
                 }
                 ScanPtr -= SYM_NAME_LEN( pref->radstr );
             }
         }
         if( isdigit( *ScanPtr ) && GetNum( CurrRadix ) ) {
             CurrToken = T_INT_NUM;
-            return( TRUE );
+            return( true );
         }
     }
     ScanPtr = hold_scan;
@@ -673,9 +673,9 @@ static bool ScanId( void )
              c = *++ScanPtr;
         }
     }
-    if( NameLen() == 0 ) return( FALSE );
+    if( NameLen() == 0 ) return( false );
     CurrToken = T_NAME;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -692,10 +692,10 @@ static bool ScanKeyword( const char *table )
                 !memicmp( table, TokenStart, namelen ) ) ) {
              table += (namelen + 1);
              CurrToken = *table;
-             return( TRUE );
+             return( true );
          }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -760,7 +760,7 @@ static void RawScan( void )
         _Free( StringStart );
         StringStart = NULL;   /* this is necessary */
         StringLength = 0;
-        scan_string = FALSE;  /* this is essential */
+        scan_string = false;  /* this is essential */
         Error( ERR_NONE, LIT_ENG( ERR_WANT_END_STRING ) );
     }
     if( *ScanPtr != NULLCHAR ) {

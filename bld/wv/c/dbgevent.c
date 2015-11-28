@@ -99,9 +99,9 @@ void ShowReplay( void )
 
 bool OkToSaveReplay( void )
 {
-    if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( TRUE );
-    if( DUIAskIfAsynchOk() ) return( TRUE );
-    return( FALSE );
+    if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( true );
+    if( DUIAskIfAsynchOk() ) return( true );
+    return( false );
 }
 
 void SaveReplayToFile( const char *name )
@@ -129,11 +129,11 @@ static void AddEvent( const char *start, size_t len, address ip )
     new->next = NULL;
     new->cmd = AllocCmdList( start, len );
     new->ip = ip;
-    new->after_asynch = FALSE;
+    new->after_asynch = false;
     new->rad = CurrRadix;
     if( _IsOn( SW_HAD_ASYNCH_EVENT ) ) {
         if( _IsOn( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
-            new->after_asynch = TRUE;
+            new->after_asynch = true;
         }
     }
     *owner = new;
@@ -150,7 +150,7 @@ void ProcRecord( void )
     rad = ReqExpr();
     NewCurrRadix( old );
     if( !ScanEOC() ) {
-        if( ScanItem( FALSE, &start, &len ) ) {
+        if( ScanItem( false, &start, &len ) ) {
             ReqEOC();
             old = NewCurrRadix( rad );
             AddEvent( start, len, NilAddr );
@@ -171,19 +171,19 @@ OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
         NewCurrRadix( (unsigned)(pointer_int)parm );
-        return( FALSE );
+        return( false );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 
 static void PushRadChange( unsigned rad )
 {
-    PushInpStack( (inp_data_handle)(pointer_int)rad, DoneRadix, FALSE );
+    PushInpStack( (inp_data_handle)(pointer_int)rad, DoneRadix, false );
     TypeInpStack( INP_NO_CMD );
 }
 

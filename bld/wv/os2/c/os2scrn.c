@@ -92,7 +92,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -107,12 +107,12 @@ void DbgScrnMode( void )
 
 bool DebugScreen( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -122,7 +122,7 @@ bool DebugScreenRecover( void )
 
 bool UserScreen( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -155,7 +155,7 @@ void uifarfree( void __FAR *ptr )
 }
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 void PopErrBox( const char *buff )
 {

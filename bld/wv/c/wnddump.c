@@ -74,7 +74,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     font = WndGetFontInfo( wnd );
     gadget_len = MaxGadgetLength;
     MaxGadgetLength = ( strlen( WndGadgetArray[0].chars ) + 1 ) * WndAvgCharX( wnd );
-    WndSetSysFont( wnd, TRUE );
+    WndSetSysFont( wnd, true );
     indent_per_char = WndAvgCharX( wnd );
 //    len = WndGetTitle( wnd, buff, TXT_LEN );
     WndGetTitle( wnd, buff, TXT_LEN );
@@ -151,7 +151,7 @@ void WndDumpFile( a_window *wnd )
     size_t              len;
     bool                got;
 
-    got = ScanItem( TRUE, &start, &len );
+    got = ScanItem( true, &start, &len );
     ReqEOC();
     if( !got ) {
         WndDumpPrompt( wnd );

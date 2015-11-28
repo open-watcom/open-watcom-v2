@@ -64,12 +64,12 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 #if 0
     switch( Lookup( SysOptNameTab, start, len ) ) {
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 #else
     start=start;len=len;
-    return( FALSE );
+    return( false );
 #endif
 }
 

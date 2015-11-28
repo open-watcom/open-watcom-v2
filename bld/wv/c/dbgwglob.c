@@ -70,7 +70,7 @@ static  void    GlobInit( a_window *wnd )
     WndScrollAbs( wnd, 0 );
     NameListFree( NameList( glob ) );
     WndZapped( wnd );
-    NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, TRUE );
+    NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, true );
     WndSetKey( wnd, PIECE_NAME );
 }
 
@@ -89,7 +89,7 @@ void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         } else {
             WndMenuEnableAll( wnd );
         }
-        WndMenuEnable( wnd, MENU_GLOB_D2_ONLY, TRUE );
+        WndMenuEnable( wnd, MENU_GLOB_D2_ONLY, true );
         WndMenuCheck( wnd, MENU_GLOB_D2_ONLY, glob->d2_only );
         break;
     case MENU_GLOB_INSPECT_MEMORY:
@@ -118,14 +118,14 @@ bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
-    if( row >= NameListNumRows( NameList( glob ) ) ) return( FALSE );
+    if( row >= NameListNumRows( NameList( glob ) ) ) return( false );
     switch( piece ) {
     case PIECE_NAME:
         NameListName( NameList( glob ), row, TxtBuff, SN_QUALIFIED );
         line->text = TxtBuff;
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -163,13 +163,13 @@ bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_INIT_WINDOW:
         NameListInit( NameList( glob ), WF_DATA );
         GlobSetOptions( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         NameListFree( NameList( glob ) );
         WndFree( glob );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GlobChangeOptions( void )

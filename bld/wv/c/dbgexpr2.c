@@ -55,11 +55,11 @@ static bool DefaultTypeInfo( dip_type_info *info )
 {
     bool        real_type;
 
-    real_type = TRUE;
+    real_type = true;
     switch( info->kind ) {
     case TK_DATA:
     case TK_NONE:
-        real_type = FALSE;
+        real_type = false;
         info->kind = TK_INTEGER;
         /* fall through */
     case TK_INTEGER:
@@ -72,7 +72,7 @@ static bool DefaultTypeInfo( dip_type_info *info )
         break;
     case TK_CODE:
     case TK_ADDRESS:
-        real_type = FALSE;
+        real_type = false;
         /* fall through */
     case TK_POINTER:
         if( info->modifier == TM_NONE ) {
@@ -139,7 +139,7 @@ static void LocationToAddr( stack_entry *entry )
 {
     entry->v.addr = entry->v.loc.e[0].u.addr;
     entry->flags &= ~SF_LOCATION;
-    ExprSetAddrInfo( entry, FALSE );
+    ExprSetAddrInfo( entry, false );
 }
 
 sym_list *ExprGetSymList( stack_entry *entry, bool source_only )
@@ -157,7 +157,7 @@ sym_list *ExprGetSymList( stack_entry *entry, bool source_only )
         ss = SS_TYPE;
         d = entry->lc->th;
         entry->lc->th = NULL;
-        source_only = TRUE;
+        source_only = true;
     } else {
         ss = SS_SCOPED;
         d = &entry->lc->execution;
@@ -183,7 +183,7 @@ bool NameResolve( stack_entry *entry, bool source_only )
 
     if( entry->flags & SF_NAME ) {
         syms = ExprGetSymList( entry, source_only );
-        if( syms == NULL ) return( FALSE );
+        if( syms == NULL ) return( false );
         if( syms->next != NULL ) {
             syms = Disambiguate( syms, entry->lc );
         }
@@ -191,7 +191,7 @@ bool NameResolve( stack_entry *entry, bool source_only )
         ExprSymbol( entry, SL2SH( syms ) );
         FreeSymHandle( syms );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -229,7 +229,7 @@ void SymResolve( stack_entry *entry )
         case TK_CODE:
         case TK_ADDRESS:
             if( !(entry->flags & SF_LOCATION) ) {
-                ExprSetAddrInfo( entry, FALSE );
+                ExprSetAddrInfo( entry, false );
 /*
         This was here before, but that messes up things like 'do x=0:0'
         where 'x' is a newly created debugger variable. I can't think
@@ -249,7 +249,7 @@ void SymResolve( stack_entry *entry )
 
 void LValue( stack_entry *entry )
 {
-    if( !NameResolve( entry, FALSE ) ) {
+    if( !NameResolve( entry, false ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
                             entry->v.li.name.len );
     }
@@ -300,33 +300,33 @@ void ClassNum( stack_entry *entry )
 
 static bool AddressExpression( stack_entry *entry )
 {
-    if( !(entry->flags & SF_LOCATION) ) return( FALSE );
-    if( !(entry->flags & SF_IMP_ADDR) ) return( FALSE );
-    if( ExprAddrDepth != 0 ) return( FALSE );
+    if( !(entry->flags & SF_LOCATION) ) return( false );
+    if( !(entry->flags & SF_IMP_ADDR) ) return( false );
+    if( ExprAddrDepth != 0 ) return( false );
     /* doing an address expression (unnested) */
     entry->th = NULL;
     LocationToAddr( entry );
-    return( TRUE );
+    return( true );
 }
 
 static bool DoNameResolve( stack_entry *entry )
 {
     unsigned_64 val;
 
-    if( NameResolve( entry, FALSE ) ) return( TRUE );
+    if( NameResolve( entry, false ) ) return( true );
     /* check for raw name */
-    if( entry->lc->sh != NULL ) return( FALSE );
-    if( entry->lc->th != NULL ) return( FALSE );
-    if( entry->v.li.mod != NO_MOD ) return( FALSE );
-    if( entry->v.li.file_scope ) return( FALSE );
-    if( entry->v.li.type != ST_NONE ) return( FALSE );
-    if( entry->v.li.scope.start != NULL ) return( FALSE );
+    if( entry->lc->sh != NULL ) return( false );
+    if( entry->lc->th != NULL ) return( false );
+    if( entry->v.li.mod != NO_MOD ) return( false );
+    if( entry->v.li.file_scope ) return( false );
+    if( entry->v.li.type != ST_NONE ) return( false );
+    if( entry->v.li.scope.start != NULL ) return( false );
 
     if( !ForceSym2Num( entry->v.li.name.start, entry->v.li.name.len, &val ) )
-        return( FALSE );
+        return( false );
     entry->v.uint = val;
     ClassNum( entry );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -347,15 +347,15 @@ static bool IsCodePointer( stack_entry *entry )
     DIPHDL( type, base_th );
     dip_type_info   ti;
 
-    if( entry->th == NULL ) return( FALSE );
-    if( TypeBase( entry->th, base_th, NULL, NULL ) != DS_OK ) return( FALSE );
-    if( TypeInfo( base_th, entry->lc, &ti ) != DS_OK ) return( FALSE );
+    if( entry->th == NULL ) return( false );
+    if( TypeBase( entry->th, base_th, NULL, NULL ) != DS_OK ) return( false );
+    if( TypeInfo( base_th, entry->lc, &ti ) != DS_OK ) return( false );
     switch( ti.kind ) {
     case TK_CODE:
     case TK_FUNCTION:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void NearToFar( stack_entry *entry )
@@ -398,10 +398,10 @@ void LRValue( stack_entry *entry )
         if( entry->info.kind == TK_FUNCTION || entry->info.kind == TK_CODE ) {
             /* rvalue of procedure is its address */
             entry->v.addr = entry->v.loc.e[0].u.addr;
-            ExprSetAddrInfo( entry, FALSE );
+            ExprSetAddrInfo( entry, false );
             entry->info.kind = TK_ADDRESS;
         } else if( !AddressExpression( entry ) ) {
-            extend = FALSE;
+            extend = false;
             switch( entry->info.kind ) {
             case TK_ARRAY:
                 /* rvalue of array is its address */
@@ -413,14 +413,14 @@ void LRValue( stack_entry *entry )
                     TypePointer( th, TM_FAR, mti.b.bits / BITS_PER_BYTE, entry->th );
                     TypeInfo( entry->th, entry->lc, &entry->info );
                 } else {
-                    ExprSetAddrInfo( entry, FALSE );
+                    ExprSetAddrInfo( entry, false );
                 }
                 break;
             case TK_STRING:
                 _ChkAlloc( entry->v.string.allocated, entry->info.size,
                             LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
-                if( LocationAssign( &ll, &entry->v.loc, entry->info.size, FALSE ) != DS_OK ) {
+                if( LocationAssign( &ll, &entry->v.loc, entry->info.size, false ) != DS_OK ) {
                     _Free( entry->v.string.allocated );
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
@@ -430,7 +430,7 @@ void LRValue( stack_entry *entry )
             case TK_CHAR:
             case TK_ENUM:
             case TK_INTEGER:
-                if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) extend = TRUE;
+                if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) extend = true;
                 /* fall through */
             default:
                 LocationCreate( &ll, LT_INTERNAL, &tmp );

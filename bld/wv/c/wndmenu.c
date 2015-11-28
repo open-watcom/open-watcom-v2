@@ -168,7 +168,7 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
     if( menu_accel ) {
         for( p = menu; *p; ++p ) {
             if( *p == '&' ) {
-                if( tolower( p[1] ) == menu_accel ) return( TRUE );
+                if( tolower( p[1] ) == menu_accel ) return( true );
                 break;
             }
         }
@@ -178,12 +178,12 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
     }
     while( --len >= 0 ) {
         if( *menu == '&' ) ++menu;
-        if( tolower( *menu ) != tolower( *str ) ) return( FALSE );
-        if( *menu == '\0' ) return( FALSE );
+        if( tolower( *menu ) != tolower( *str ) ) return( false );
+        if( *menu == '\0' ) return( false );
         ++menu;
         ++str;
     }
-    return( TRUE );
+    return( true );
 }
 
 static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
@@ -191,7 +191,7 @@ static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
     const char          *start;
     size_t              len;
 
-    if( !ScanItem( TRUE, &start, &len ) ) return( NULL );
+    if( !ScanItem( true, &start, &len ) ) return( NULL );
     while( --size >= 0 ) {
         if( StrAmpEqual( start, menu->label, len ) ) break;
         ++menu;
@@ -288,44 +288,44 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     if( ScanCmd( MainTab ) == 0 ) {
         main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         if( main_menu == NULL ) {
-            if( add_to_menu ) return( TRUE );
+            if( add_to_menu ) return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
-        if( ScanItem( TRUE, &start, &len ) ) {
+        if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
         }
         if( child == NULL ) {
-            if( add_to_menu ) return( TRUE );
+            if( add_to_menu ) return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = main_menu->child;
         *num_siblings = main_menu->num_child_menus;
-        if( add_to_menu ) return( TRUE );
+        if( add_to_menu ) return( true );
         ReqEOC();
-        AccelMenuItem( child, TRUE );
+        AccelMenuItem( child, true );
     } else {
         info = WndInfoTab[wndcls];
-        if( ScanItem( TRUE, &start, &len ) ) {
+        if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, info->popupmenu, info->num_popups );
         }
         if( child == NULL ) {
             if( add_to_menu )
-                return( FALSE );
+                return( false );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = info->popupmenu;
         *num_siblings = info->num_popups;
         if( add_to_menu )
-            return( FALSE );
+            return( false );
         wnd = WndFindActive();
         if( WndClass( wnd ) != wndcls )
             Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
         ReqEOC();
-        AccelMenuItem( child, FALSE );
+        AccelMenuItem( child, false );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern void ProcAccel( void )
@@ -333,7 +333,7 @@ extern void ProcAccel( void )
     gui_menu_struct     *menu,*parent;
     int                 num_sibs;
 
-    DoProcAccel( FALSE, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
+    DoProcAccel( false, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
 }
 
 static void FreeLabels( gui_menu_struct *menu, int num_menus )
@@ -399,7 +399,7 @@ void SetTargMenuItems( void )
 {
     WndEnableMainMenu( MENU_MAIN_BREAK_ON_DLL, _IsOn( SW_HAVE_RUNTIME_DLLS ) );
 #if defined(__GUI__) && defined(__OS2__)
-    WndEnableMainMenu( MENU_MAIN_FILE_FONT, FALSE );
+    WndEnableMainMenu( MENU_MAIN_FILE_FONT, false );
 #endif
     SetMADMenuItems();
 }
@@ -473,7 +473,7 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndcl
     old = ReScan( cmd );
     menu = NULL;
     if( ScanCmd( GetCmdName( CMD_ACCEL ) ) == 0 ) {
-        *is_main = DoProcAccel( TRUE, &menu, &parent, &num_sibs, wndcls );
+        *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndcls );
     }
     ReScan( old );
     if( menu == NULL || !ScanEOC() ) return( NULL );
@@ -566,7 +566,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_TOOL_GO:
     case MENU_MAIN_RUN_GO:
-        Go( TRUE );
+        Go( true );
         break;
     case MENU_MAIN_RUN_SKIP_TO_CURSOR:
         SkipToAddr( GetCodeDot() );
@@ -628,7 +628,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         {
             bool old;
 
-            old = SetProgStartHook( FALSE );
+            old = SetProgStartHook( false );
             ReStart();
             SetProgStartHook( old );
         }
@@ -656,23 +656,23 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         BrkEnableAll();
         break;
     case MENU_MAIN_BREAK_SAVE_ALL:
-        BreakSave( TRUE );
+        BreakSave( true );
         break;
     case MENU_MAIN_BREAK_RESTORE_ALL:
-        BreakSave( FALSE );
+        BreakSave( false );
         break;
     case MENU_MAIN_SAVE_REPLAY:
-        ReplaySave( TRUE );
+        ReplaySave( true );
         break;
     case MENU_MAIN_RESTORE_REPLAY:
-        ReplaySave( FALSE );
+        ReplaySave( false );
         break;
     case MENU_MAIN_FILE_SAVE_CONFIGURATION:
-        ConfigSave( TRUE );
+        ConfigSave( true );
         break;
     case MENU_MAIN_FILE_LOAD_CONFIGURATION:
-        save = WndStopRefresh( TRUE );
-        ConfigSave( FALSE );
+        save = WndStopRefresh( true );
+        ConfigSave( false );
         WndStopRefresh( save );
         break;
     case MENU_MAIN_FILE_SOURCE_PATH:
@@ -792,7 +792,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
 #endif
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

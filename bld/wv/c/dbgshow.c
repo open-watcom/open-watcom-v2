@@ -211,15 +211,15 @@ static void ConfigTypes( void )
 }
 
 static  show_rtn ShowJmpTab[] = {
-    &ConfigPaint,   TRUE,
-    &ConfigDisp,    TRUE,
-    &ConfigFont,    TRUE,
-    &ConfigSet,     TRUE,
-    &ConfigFlip,    TRUE,
-    &ConfigHook,    TRUE,
-    &ConfigEvent,   FALSE,
-    &ConfigCalls,   FALSE,
-    &ConfigTypes,   FALSE,
+    &ConfigPaint,   true,
+    &ConfigDisp,    true,
+    &ConfigFont,    true,
+    &ConfigSet,     true,
+    &ConfigFlip,    true,
+    &ConfigHook,    true,
+    &ConfigEvent,   false,
+    &ConfigCalls,   false,
+    &ConfigTypes,   false,
 };
 
 void ProcShow( void )

@@ -84,7 +84,7 @@ static _trmem_hdl       TRMemHandle;
 
 
 /* extern to avoid problems with taking address and overlays */
-static bool Closing = FALSE;
+static bool Closing = false;
 
 static void TRPrintLine( void *handle, const char *buff, size_t len )
 /*******************************************************************/
@@ -176,7 +176,7 @@ static const char TrackErr[] = { "Memory Tracker Errors Detected" };
 
 static void MemTrackFini( void )
 {
-    Closing = TRUE;
+    Closing = true;
     if( TrackFile != STDERR_FILENO ) {
         if( lseek( TrackFile, 0, SEEK_END ) != 0 ) {
             PopErrBox( TrackErr );
@@ -204,10 +204,10 @@ extern int __saveregs __fmemneed( size_t size );
 int __saveregs __fmemneed( size_t size )
 {
     if( DIPMoreMem( size ) == DS_OK )
-        return( TRUE );
+        return( true );
     if( DUIInfoRelease() )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 #endif
 

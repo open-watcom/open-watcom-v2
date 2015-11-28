@@ -88,7 +88,7 @@ void SetProgState( unsigned run_conditions )
     }
     if( run_conditions & COND_THREAD ) {
         DbgRegs->tid = RemoteSetThread( 0 );
-        CheckForNewThreads( TRUE );
+        CheckForNewThreads( true );
     }
     if( run_conditions & COND_ALIASING ) CheckSegAlias();
 }
@@ -142,12 +142,12 @@ bool SetMsgText( char *message, unsigned *conditions )
                 sizeof( DEBUGGER_THREADID_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_THREADID_COMMAND ) - 1;
         equal = strchr( message, '=' );
-        if( equal == NULL ) return( TRUE );
+        if( equal == NULL ) return( true );
         *equal = '\0';
-        CheckForNewThreads( FALSE );
+        CheckForNewThreads( false );
         NoCRLF( equal + 1 );
         NameThread( strtoul( message, NULL, 16 ), equal + 1 );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_SETTRUE_COMMAND,
                 sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1 ) == 0 ) {
         unsigned old = NewCurrRadix( 16 );
@@ -156,7 +156,7 @@ bool SetMsgText( char *message, unsigned *conditions )
             ProgPoke( addr, "\x1", 1 );
         }
         NewCurrRadix( old );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_EXECUTE_COMMAND,
                 sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1;
@@ -172,29 +172,29 @@ bool SetMsgText( char *message, unsigned *conditions )
         TypeInpStack( INP_HOOK );
         FreeCmdList( cmds );
         *conditions |= COND_STOP;
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_MESSAGE_COMMAND,
                 sizeof( DEBUGGER_MESSAGE_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_MESSAGE_COMMAND ) - 1;
         NoCRLF( message );
         AddMessageText( message );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_LOOKUP_COMMAND,
                 sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1;
         comma1 = strchr( message, ',' );
-        if( comma1 == NULL ) return( TRUE );
+        if( comma1 == NULL ) return( true );
         *comma1++ = '\0';
         comma2 = strchr( comma1, ',' );
-        if( comma2 == NULL ) return( TRUE );
+        if( comma2 == NULL ) return( true );
         *comma2++ = '\0';
         NoCRLF( comma2 );
         if( !DlgScanDataAddr( message, &addr ) )
-            return( TRUE );
+            return( true );
         if( !DlgScanDataAddr( comma1, &buff_addr ) )
-            return( TRUE );
+            return( true );
         if( !DlgScanLong( comma2, &buff_len ) )
-            return( TRUE );
+            return( true );
         CnvNearestAddr( addr, TxtBuff, TXT_LEN );
         sym_len = strlen( TxtBuff ) + 1;
         if( sym_len > buff_len ) {
@@ -202,36 +202,36 @@ bool SetMsgText( char *message, unsigned *conditions )
             sym_len = buff_len;
         }
         ProgPoke( buff_addr, TxtBuff, sym_len );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_LOADMODULE_COMMAND,
                 sizeof( DEBUGGER_LOADMODULE_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_LOADMODULE_COMMAND ) - 1;
         comma1 = strchr( message, ',' );
         if( comma1 == NULL )
-            return( TRUE );
+            return( true );
         *comma1++ = '\0';
         NoCRLF( comma1 );
         if( !DlgScanDataAddr( message, &addr ) )
-            return( TRUE );
+            return( true );
         SymUserModLoad( comma1, &addr );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_UNLOADMODULE_COMMAND,
                 sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_UNLOADMODULE_COMMAND ) - 1;
         NoCRLF( message );
         SymUserModUnload( message );
-        return( FALSE );
+        return( false );
     } else if( memcmp( message, DEBUGGER_BREAKRETURN_COMMAND,
                 sizeof( DEBUGGER_BREAKRETURN_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_BREAKRETURN_COMMAND ) - 1;
         NoCRLF( message );
         if( !DlgScanLong( message, &num_returns ) )
-            return( TRUE );
+            return( true );
         // TODO: do something with num_returns value
-        return( FALSE );
+        return( false );
     } else {
         AddMessageText( message );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -239,7 +239,7 @@ static bool RecordMsgText( unsigned *conditions )
 {
     char        *p,*p2;
     unsigned    flags;
-    bool        rc = FALSE;
+    bool        rc = false;
 
     do {
         flags = RemoteGetMsgText( TxtBuff, TXT_LEN );
@@ -298,11 +298,11 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     if( !want_wps ) ++InCall;
     tracing = TraceStart( tracing );
     WriteDbgRegs();
-    first_time = TRUE;
+    first_time = true;
     es = ES_NORMAL;
     run_conditions = 0;
     if( !HaveRemoteAsync() ) {
-        DUIPlayDead( TRUE );
+        DUIPlayDead( true );
     }
     how = MTRH_STOP;
     for( ;; ) {
@@ -310,14 +310,14 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         case ES_FORCE_BREAK:
         case ES_NORMAL:
             if( tracing ) {
-                how = TraceHow( FALSE );
+                how = TraceHow( false );
             } else {
                 _SwitchOn( SW_EXECUTE_LONG );
                 how = MTRH_BREAK;
             }
             break;
         case ES_STEP_ONE:
-            how = TraceHow( TRUE );
+            how = TraceHow( true );
             break;
         }
         if( how == MTRH_STOP ) break;
@@ -341,7 +341,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         if( first_time ) {
             /* got to be down here so that SW_EXECUTE_LONG is properly set */
             SetThreadStates();
-            first_time = FALSE;
+            first_time = false;
         }
         have_brk_at_ip = InsertBPs( (es == ES_FORCE_BREAK) );
         act_wps = UpdateWPs();
@@ -366,11 +366,11 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
             /* fall through */
         case MTRH_STEP:
             /* only updates stack/execution */
-            conditions = DoRun( TRUE );
+            conditions = DoRun( true );
             break;
         default:
             /* only updates stack/execution */
-            conditions = DoRun( FALSE  );
+            conditions = DoRun( false  );
             break;
         }
         if( _IsOn( SW_EXECUTE_LONG ) ) {
@@ -400,7 +400,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         if( conditions & COND_LIBRARIES ) {
             already_stopping = ( conditions & COND_STOPPERS ) != 0;
             conditions &= ~COND_LIBRARIES;
-            force_stop = FALSE;
+            force_stop = false;
             if( AddLibInfo( already_stopping, &force_stop ) ) {
                 if( force_stop || DLLMatch() ) {
                     conditions |= COND_STOP | COND_LIBRARIES;
@@ -442,7 +442,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         }
     }
     TraceStop( tracing );
-    DUIPlayDead( FALSE );
+    DUIPlayDead( false );
     SetProgState( run_conditions );
     _SwitchOff( SW_KNOW_EMULATOR );
     if( !want_wps ) --InCall;
@@ -508,7 +508,7 @@ unsigned Execute( bool tracing, bool do_flip )
 
     if( executing == 0 ) {
         ++executing;
-        HookNotify( TRUE, HOOK_EXEC_START );
+        HookNotify( true, HOOK_EXEC_START );
         --executing;
     }
 
@@ -521,20 +521,20 @@ unsigned Execute( bool tracing, bool do_flip )
         PopInpStack();
     }
     _SwitchOff( SW_TRAP_CMDS_PUSHED );
-    conditions = ExecProg( tracing, do_flip, TRUE );
+    conditions = ExecProg( tracing, do_flip, true );
     SetCodeDot( GetRegIP() );
-    stack_cmds = TRUE;
-    if( tracing && (conditions & COND_BREAK) ) stack_cmds = FALSE;
+    stack_cmds = true;
+    if( tracing && (conditions & COND_BREAK) ) stack_cmds = false;
     if( ReportTrap( conditions, stack_cmds ) ) {
         _SwitchOn( SW_TRAP_CMDS_PUSHED );
     }
     if( executing == 0 ) {
         ++executing;
-        HookNotify( TRUE, HOOK_EXEC_END );
+        HookNotify( true, HOOK_EXEC_END );
         --executing;
     }
     if( conditions & COND_TERMINATE ) {
-        HookNotify( TRUE, HOOK_PROG_END );
+        HookNotify( true, HOOK_PROG_END );
     }
     return( conditions );
 }
@@ -551,7 +551,7 @@ unsigned Go( bool do_flip )
     } else {
         RecordGo( TxtBuff );
     }
-    conditions = Execute( FALSE, do_flip );
+    conditions = Execute( false, do_flip );
     CheckEventRecorded();
     return( conditions );
 }

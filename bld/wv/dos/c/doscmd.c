@@ -93,9 +93,9 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         OvlAreaSize = num / 16; /* OvlAreaSize is in paragraphs */
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

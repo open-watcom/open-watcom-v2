@@ -77,7 +77,7 @@ OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_NEWP_OK:
             GUIDlgBuffGetText( gui, CTL_NEWP_PROG, prog, sizeof( prog ) );
             GUIDlgBuffGetText( gui, CTL_NEWP_ARGS, args, sizeof( args ) );
-            dlg->cancel = FALSE;
+            dlg->cancel = false;
             GUICloseDialog( gui );
             return( true );
         case CTL_NEWP_CANCEL:
@@ -98,7 +98,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     GetProgArgs( args, sizeof( args ) );
     pdlg->prog = prog;
     pdlg->args = args;
-    pdlg->cancel = TRUE;
+    pdlg->cancel = true;
     ResDlgOpen( &ProgEvent, pdlg, GUI_MAKEINTRESOURCE( DIALOG_NEW_PROG ) );
 }
 

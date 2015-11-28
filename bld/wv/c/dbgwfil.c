@@ -204,14 +204,14 @@ static void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_INITIALIZE:
         has_popitem = ( *WndPopItem( wnd ) != '\0' );
         if( has_popitem && !ScanSelectedExpr( WndPopItem( wnd ) ) ) {
-            has_popitem = FALSE;
+            has_popitem = false;
         }
-        WndMenuEnable( wnd, MENU_FILE_SHOW, TRUE );
-        WndMenuEnable( wnd, MENU_FILE_SHOW_ADDRESS, TRUE );
-        WndMenuEnable( wnd, MENU_FILE_SHOW_MODULE, TRUE );
+        WndMenuEnable( wnd, MENU_FILE_SHOW, true );
+        WndMenuEnable( wnd, MENU_FILE_SHOW_ADDRESS, true );
+        WndMenuEnable( wnd, MENU_FILE_SHOW_MODULE, true );
         WndMenuEnable( wnd, MENU_FILE_FUNCTIONS, file->mod != NO_MOD );
-        WndMenuEnable( wnd, MENU_FILE_HOME, TRUE );
-        addr = GetRowAddr( file, row, FALSE );
+        WndMenuEnable( wnd, MENU_FILE_HOME, true );
+        addr = GetRowAddr( file, row, false );
         WndMenuEnable( wnd, MENU_FILE_ASSEMBLY, !IS_NIL_ADDR( addr ) );
         WndMenuEnable( wnd, MENU_FILE_WATCH, has_popitem );
         WndMenuEnable( wnd, MENU_FILE_INSPECT, has_popitem );
@@ -254,7 +254,7 @@ static void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         break;
     case MENU_FILE_SEARCH:
         WndSaveToHistory( SrchHistory, WndPopItem( wnd ) );
-        DbgWndSearch( wnd, FALSE, DlgSearch( wnd, SrchHistory ) );
+        DbgWndSearch( wnd, false, DlgSearch( wnd, SrchHistory ) );
         break;
     case MENU_FILE_ASSEMBLY:
         AsmWndFind( file->asw, addr, file->track );
@@ -333,7 +333,7 @@ static  void    FileModify( a_window *wnd, int row, int piece )
     address     addr;
 
     if( piece == PIECE_BREAK ) {
-        addr = GetRowAddr( file, row, TRUE );
+        addr = GetRowAddr( file, row, true );
         if( IS_NIL_ADDR( addr ) ) return;
         file->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
@@ -363,7 +363,7 @@ static void FileNotify( a_window *wnd, wnd_row row, int piece )
     address     addr;
 
     piece = piece;
-    addr = GetRowAddr( file, row, FALSE );
+    addr = GetRowAddr( file, row, false );
     if( IS_NIL_ADDR( addr ) ) return;
     FileSetDotAddr( wnd, addr );
 }
@@ -377,12 +377,12 @@ bool FileOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
         if( mod == WndFile( curr )->mod ) {
             if( line != NULL )
                 SetGadgetLine( wnd, line, GADGET_OPEN_SOURCE );
-            return( TRUE );
+            return( true );
         }
     }
     if( line != NULL )
         SetGadgetLine( wnd, line, GADGET_CLOSED_SOURCE );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -421,23 +421,23 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
 
     line->text = LIT_ENG( Empty );
     if( file->viewhndl == NULL && ModHasInfo( file->mod, HK_CUE ) != DS_OK ) {
-        return( FALSE );
+        return( false );
     }
     curr = ( row == file->active && ContextMod == file->mod );
     switch( piece ) {
     case PIECE_BREAK:
-        line->tabstop = FALSE;
-        if( row >= file->eof ) return( FALSE );
-        if( file->mod == NO_MOD ) return( TRUE );
+        line->tabstop = false;
+        if( row >= file->eof ) return( false );
+        if( file->mod == NO_MOD ) return( true );
         addr = NilAddr;
         if( !WndDoingSearch ) { // too expensive
-            addr = GetRowAddr( file, row, TRUE );
+            addr = GetRowAddr( file, row, true );
         }
         if( !IS_NIL_ADDR( addr ) ) {
             bp = FindBreakByLine( file->mod, file->file_id, row+1 );
             FileBreakGadget( wnd, line, curr, bp );
         }
-        return( TRUE );
+        return( true );
     case PIECE_SOURCE:
         line->text = TxtBuff;
         line->extent = WND_MAX_EXTEND;
@@ -452,12 +452,12 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
                     file->eof = CueLine( ch );
                 }
             }
-            return( TRUE );
+            return( true );
         }
         len = FReadLine( file->viewhndl, row+1, 0, TxtBuff, MAX_LINE_LEN );
         if( len < 0 ) {
             file->eof = row;
-            return( FALSE );
+            return( false );
         }
         if( len == MAX_LINE_LEN ) {
             StrCopy( " ...", TxtBuff + MAX_LINE_LEN );
@@ -468,9 +468,9 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
             file->rows = row+1;
             file->rows_offset = FLastOffset( file->viewhndl );
         }
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -608,20 +608,20 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     file_window *file;
     DIPHDL( cue, ch );
 
-    if( wnd == NULL ) return( FALSE );
+    if( wnd == NULL ) return( false );
     file = WndFile( wnd );
-    if( file->mod == NO_MOD && !file->track ) return( FALSE );
+    if( file->mod == NO_MOD && !file->track ) return( false );
     if( IS_NIL_ADDR( addr ) ) {
         WndScrollAbs( wnd, 0 );
-        return( FALSE );
+        return( false );
     }
     DeAliasAddrMod( addr, &mod );
     if( DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-        if( LineCue( mod, 0, 0, 0, ch ) == SR_NONE ) return( FALSE );
+        if( LineCue( mod, 0, 0, 0, ch ) == SR_NONE ) return( false );
     }
     line = CueLine( ch );
     if( mod != file->mod || CueFileId( ch ) != file->file_id ) {
-        if( !file->track ) return( FALSE );
+        if( !file->track ) return( false );
         FileTrack( wnd, ch );
     }
     --line;
@@ -629,7 +629,7 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     WndMoveCurrent( wnd, line, PIECE_SOURCE );
     FileSetDotAddr( wnd, addr );
     FileSetTitle( wnd, CueMod( ch ) );
-    return( TRUE );
+    return( true );
 }
 
 extern a_window *SrcWndFind( a_window *wnd, address addr, bool track )
@@ -738,7 +738,7 @@ static void FileRefresh( a_window *wnd )
     }
     if( (UpdateFlags & UP_BREAK_CHANGE) && (file->mod != NO_MOD) ) {
         if( file->toggled_break ) {
-            file->toggled_break = FALSE;
+            file->toggled_break = false;
         } else {
             WndRepaint( wnd );
         }
@@ -754,10 +754,10 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
         ActiveWindowLevel = SOURCE;
-        if( IS_NIL_ADDR( file->dotaddr ) ) return( TRUE );
+        if( IS_NIL_ADDR( file->dotaddr ) ) return( true );
         SetCodeDot( file->dotaddr );
         AsmMoveDot( file->asw, file->dotaddr );
-        return( TRUE );
+        return( true );
     case GUI_INIT_WINDOW:
         file->active = NOT_ACTIVE;
         file->rows = 0;
@@ -766,7 +766,7 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         SeekToTheEnd( file );
         FileNewIP( wnd );
         DbgUpdate( UP_OPEN_CHANGE );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         if( file->viewhndl != NULL ) {
             FDoneSource( file->viewhndl );
@@ -780,9 +780,9 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         AsmFreeSrc( file->asw );
         WndFree( file );
         DbgUpdate( UP_OPEN_CHANGE );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info FileInfo = {
@@ -823,7 +823,7 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     }
     file->track = 0;
     file->erase = erase;
-    file->toggled_break = FALSE;
+    file->toggled_break = false;
     file->eof = UINT_MAX;
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
@@ -880,7 +880,7 @@ static  a_window        *SrcFileOpen( cue_handle *ch,
 
 extern a_window *DoWndSrcOpen( cue_handle *ch, bool track )
 {
-    return( SrcFileOpen( ch, track, FALSE, ch == NULL ? NO_MOD : CueMod( ch ) ) );
+    return( SrcFileOpen( ch, track, false, ch == NULL ? NO_MOD : CueMod( ch ) ) );
 }
 
 
@@ -897,7 +897,7 @@ extern a_window *WndSrcOpen( void )
     if( DeAliasAddrMod( addr, &mod ) == SR_NONE || DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
         ch = NULL;
     }
-    return( SrcFileOpen( ch, TRUE, FALSE, mod ) );
+    return( SrcFileOpen( ch, true, false, mod ) );
 }
 
 
@@ -907,17 +907,17 @@ void ProcView( void )
     size_t              len;
     bool                binary;
 
-    binary = FALSE;
+    binary = false;
     start = ScanPos();
     if( CurrToken == T_DIV ) {
         Scan();
         if( ScanCmd( "Binary\0" ) == 0 ) {
-            binary = TRUE;
+            binary = true;
         } else {
             ReScan( start );
         }
     }
-    ScanItem( TRUE, &start, &len );
+    ScanItem( true, &start, &len );
     memcpy( TxtBuff, start, len );
     TxtBuff[len] = '\0';
     ReqEOC();

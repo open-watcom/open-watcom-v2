@@ -84,9 +84,9 @@ static void GetLocation( location_list *ll, dip_type_info *ti )
 {
     bool        reg_set;
 
-    reg_set = FALSE;
+    reg_set = false;
     if( CurrToken == T_LEFT_BRACKET ) {
-        reg_set = TRUE;
+        reg_set = true;
         Scan();
     }
     ParseRegSet( reg_set, ll, ti );
@@ -213,14 +213,14 @@ void CallConf( void )
             ptr += MADCliString( DefCallType, ptr, TXT_LEN );
         }
         *ptr++ = '(';
-        first = TRUE;
+        first = true;
         for( i = 0; i < MAX_PARMS; ++i ) {
             if( DefParms[i] != NULL ) {
                 if( !first ) {
                     *ptr++ = ',';
                 }
                 ptr = StrCopy( DefParms[i], ptr );
-                first = FALSE;
+                first = false;
             }
         }
         *ptr++ = ')';
@@ -242,7 +242,7 @@ void CallConf( void )
 OVL_EXTERN void CallResults( void )
 {
     if( CurrToken != T_DIV ) {
-        DoPrintList( FALSE );
+        DoPrintList( false );
     }
 }
 
@@ -344,5 +344,5 @@ void ProcCall( void )
         }
     }
     UnFreezeRegs();
-    FreePgmStack( FALSE );
+    FreePgmStack( false );
 }

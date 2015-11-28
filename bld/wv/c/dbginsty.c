@@ -121,7 +121,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
         }
     }
     ExprValue( ExprSP );
-    MakeMemoryAddr( TRUE, EXPR_DATA, paddr );
+    MakeMemoryAddr( true, EXPR_DATA, paddr );
     return( INSP_RAW_DATA );
 }
 

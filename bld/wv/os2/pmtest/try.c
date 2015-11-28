@@ -62,7 +62,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
     ULONG                       value;
     ULONG                       stopvalue;
     ULONG                       notify=0;
-    BOOL                        got_second_notification;
+//    bool                        got_second_notification;
     ULONG                       fcp;
     CONTEXTRECORD               fcr;
 
@@ -72,7 +72,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
         value = 0;
     }
     stopvalue = XCPT_CONTINUE_EXECUTION;
-    got_second_notification = FALSE;
+//    got_second_notification = false;
     if( cmd == DBG_C_Stop ) {
         stopvalue = XCPT_CONTINUE_STOP;
     }

@@ -83,10 +83,10 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     RemoteOvlTransAddr( &a );
     switch( lk ) {
     case MLK_CODE:
-        p = CnvAddr( a, CAO_NO_PLUS, FALSE, buff, buff_len );
+        p = CnvAddr( a, CAO_NO_PLUS, false, buff, buff_len );
         break;
     default:
-        p = CnvAddr( a, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
+        p = CnvAddr( a, CAO_NORMAL_PLUS, false, buff, buff_len );
         break;
     }
     if( p != NULL )
@@ -103,7 +103,7 @@ mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, addre
     old_radix = SetCurrRadix( radix );
     old_scan = ReScan( expr );
     EvalExpr( 0 );   /* memory expression */
-    MakeMemoryAddr( TRUE, EXPR_DATA, a );
+    MakeMemoryAddr( true, EXPR_DATA, a );
     SetCurrRadix( old_radix );
     ReScan( old_scan );
     return( MS_OK );

@@ -189,5 +189,5 @@ long _fork( const char *cmd, size_t len )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }

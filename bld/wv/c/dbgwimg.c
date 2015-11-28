@@ -75,7 +75,7 @@ static void CalcIndents( a_window *wnd )
     for( img = DbgImageList; img != NULL; img = img->link ) {
         curr = WndExtentX( wnd, img->image_name );
         if( curr > max_image ) max_image = curr;
-        curr = WndExtentX( wnd, ImgSymName( img, FALSE ) );
+        curr = WndExtentX( wnd, ImgSymName( img, false ) );
         if( curr > max_symbol ) max_symbol = curr;
     }
     Indents[PIECE_SYMBOL] = max_image + 2*WndMaxCharX( wnd );
@@ -115,7 +115,7 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         WndMenuGrayAll( wnd );
         if( img != NULL ) {
             if( img->dip_handle == NO_MOD ) {
-                WndMenuEnable( wnd, MENU_IMAGE_ADD_SYMBOLS, TRUE );
+                WndMenuEnable( wnd, MENU_IMAGE_ADD_SYMBOLS, true );
             } else {
                 WndMenuEnableAll( wnd );
             }
@@ -126,11 +126,11 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         if( img->deferred_symbols ) {
             ReLoadSymInfo( img );
         } else {
-            new_name = DupStr( ImgSymName( img, TRUE ) );
+            new_name = DupStr( ImgSymName( img, true ) );
             if( !SymBrowse( &new_name ) ) {
                 _Free( new_name );
             } else {
-                UnLoadSymInfo( img, TRUE );
+                UnLoadSymInfo( img, true );
                 old_name = img->sym_name;
                 img->sym_name = new_name;
                 if( ReLoadSymInfo( img ) ) {
@@ -144,7 +144,7 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         ImgInit( wnd );
         break;
     case MENU_IMAGE_DEL_SYMBOLS:
-        UnLoadSymInfo( img, TRUE );
+        UnLoadSymInfo( img, true );
         ImgInit( wnd );
         break;
     case MENU_IMAGE_SHOW_FUNCTIONS:
@@ -185,52 +185,52 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
         row += TITLE_SIZE;
         switch( row ) {
         case 0:
-            line->tabstop = FALSE;
+            line->tabstop = false;
             switch( piece ) {
             case PIECE_IMAGE:
                 line->text = LIT_DUI( Executable_File );
-                return( TRUE );
+                return( true );
             case PIECE_SYMBOL:
                 line->text = LIT_DUI( Debug_Information );
-                return( TRUE );
+                return( true );
             case PIECE_DIP:
                 line->text = LIT_DUI( Debug_Information_Type );
-                return( TRUE );
+                return( true );
             default:
-                return( FALSE );
+                return( false );
             }
         case 1:
-            if( piece != 0 ) return( FALSE );
+            if( piece != 0 ) return( false );
             SetUnderLine( wnd, line );
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     } else {
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        line->tabstop = false;
+        line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
         img = ImgGetImage( row );
-        if( img == NULL ) return( FALSE );
+        if( img == NULL ) return( false );
         switch( piece ) {
         case PIECE_IMAGE:
             line->text = img->image_name;
-            line->tabstop = TRUE;
-            line->use_prev_attr = FALSE;
-            return( TRUE );
+            line->tabstop = true;
+            line->use_prev_attr = false;
+            return( true );
         case PIECE_SYMBOL:
-            line->text = ImgSymName( img, FALSE );
-            return( TRUE );
+            line->text = ImgSymName( img, false );
+            return( true );
         case PIECE_DIP:
             if( img->dip_handle == NO_MOD ) {
                 line->text = " ";
             } else {
                 line->text = (char *)ImageDIP( img->dip_handle );
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static WNDREFRESH ImgRefresh;
@@ -247,14 +247,14 @@ static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         ImgInit( wnd );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE:
         ImgInit( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY:
-        return( FALSE );
+        return( false );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info ImgInfo = {
@@ -278,5 +278,5 @@ extern WNDOPEN WndImgOpen;
 extern a_window *WndImgOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
-            NULL, &ImgIcon, TITLE_SIZE, TRUE ) );
+            NULL, &ImgIcon, TITLE_SIZE, true ) );
 }

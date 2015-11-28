@@ -141,7 +141,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
     switch( ci ) {
     case CI_FRAME:
         if( lc->maybe_have_frame ) {
-            lc->maybe_have_frame = FALSE;
+            lc->maybe_have_frame = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
             } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
@@ -155,7 +155,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
                 /* nothing to do */
             } else if( lc->execution.mach.offset
                  <= ll->e[0].u.addr.mach.offset+info.rtn_size-info.epilog_size ) {
-                lc->have_frame = TRUE;
+                lc->have_frame = true;
             }
         }
         if( Context.maybe_have_frame
@@ -163,7 +163,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
             && AddrComp( Context.execution, lc->execution ) == 0 ) {
             /* cache result in global context item */
             Context.have_frame = lc->have_frame;
-            Context.maybe_have_frame = FALSE;
+            Context.maybe_have_frame = false;
         }
         if( !lc->have_frame ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
         LocationCreate( ll, LT_ADDR, &lc->frame );
@@ -177,7 +177,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
         return( DS_OK );
     case CI_OBJECT:
         if( lc->maybe_have_object ) {
-            lc->maybe_have_object = FALSE;
+            lc->maybe_have_object = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
             } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
@@ -185,7 +185,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
             } else if( info.kind != SK_PROCEDURE ) {
                 /* nothing to do */
             } else if( SymObjLocation( sh, lc, &lc->object ) == DS_OK ) {
-                lc->have_object = TRUE;
+                lc->have_object = true;
             }
         }
         if( !lc->have_object ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
@@ -206,7 +206,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
 dip_status DIGCLIENT DIPCliAssignLocation( location_list *dst,
                         location_list *src, unsigned long size )
 {
-    return( LocationAssign( dst, src, size, FALSE ) );
+    return( LocationAssign( dst, src, size, false ) );
 }
 
 dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
@@ -548,7 +548,7 @@ static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *i
 {
     memset( si, 0, sizeof( *si ) );
     ii = ii; lc = lc;
-    si->is_global = TRUE;
+    si->is_global = true;
     if( is->ri != NULL ) {
         si->kind = SK_DATA;
         return( DS_OK );
@@ -929,12 +929,12 @@ static bool CheckDIPLoad( char *dip, bool defaults )
 
     ret = DIPLoad( dip );
     if( ret != DS_OK ) {
-        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( FALSE );
+        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( false );
         DIPFini();
         Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ret ) );
         StartupErr( TxtBuff );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitDbgInfo( void )
@@ -957,7 +957,7 @@ void InitDbgInfo( void )
         p = DIPDefaults;
         for( ;; ) {
             if( *p == NULLCHAR ) break;
-            if( CheckDIPLoad( p, TRUE ) ) ++dip_count;
+            if( CheckDIPLoad( p, true ) ) ++dip_count;
             p += strlen( p ) + 1;
         }
         if( dip_count == 0 ) {
@@ -979,7 +979,7 @@ void InitDbgInfo( void )
         }
     } else {
         do {
-            CheckDIPLoad( *dip, FALSE );
+            CheckDIPLoad( *dip, false );
             _Free( *dip );
             *dip = NULL;
         } while( *++dip );
@@ -999,7 +999,7 @@ bool IsInternalMod( mod_handle mod )
 
 bool IsInternalModName( const char *start, unsigned len )
 {
-    if( len != sizeof( InternalName ) - 1 ) return( FALSE );
-    if( memicmp( start, InternalName, len ) != 0 ) return( FALSE );
-    return( TRUE );
+    if( len != sizeof( InternalName ) - 1 ) return( false );
+    if( memicmp( start, InternalName, len ) != 0 ) return( false );
+    return( true );
 }

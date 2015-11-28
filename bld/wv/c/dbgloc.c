@@ -168,9 +168,9 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     unsigned            (*modify)( address, const void *, unsigned );
 
     modify = _IsOn( SW_RECORD_LOCATION_ASSIGN ) ? ChangeMem : ProgPoke;
-    mem_mod = FALSE;
+    mem_mod = false;
     len *= BPB; /* turn byte length into bit length */
-    padding = FALSE;
+    padding = false;
     sidx = 0;
     didx = 0;
     sitem.bit_length = 0;
@@ -187,7 +187,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                 sitem = src->e[sidx++];
                 if( sidx == src->num
                  && sitem.bit_length != 0 ) {
-                    padding = TRUE;
+                    padding = true;
                     if( sign_extend ) {
                         size = sitem.bit_start + sitem.bit_length - 1;
                         num_bytes = size / BPB;
@@ -225,7 +225,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
             }
         }
         if( !mem_mod && ditem.type == LT_ADDR ) {
-            mem_mod = TRUE;
+            mem_mod = true;
             DbgUpdate( UP_MEM_CHANGE );
         }
         NORMALIZE_BITSTART( sitem );

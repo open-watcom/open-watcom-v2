@@ -104,7 +104,7 @@ void ProcSystem( void )
             break;
         }
     }
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     ReqEOC();
     DoSystem( start, len, loc );
 }

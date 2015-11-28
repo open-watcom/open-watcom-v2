@@ -62,7 +62,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
             AlreadyRunning = true;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 const char *CheckForPowerBuilder( const char *name )

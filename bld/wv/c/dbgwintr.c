@@ -64,7 +64,7 @@ void MenuCopy( char *dst, const char *from, char *to )
     bool        ampdumped;
 
     ampchar = 0;
-    ampdumped = FALSE;
+    ampdumped = false;
     while( *from ) {
         if( *from == '&' ) {
             ++from;
@@ -73,7 +73,7 @@ void MenuCopy( char *dst, const char *from, char *to )
         if( *from == '\t' ) {
             ++from;
             if( ampchar && !ampdumped ) {
-                ampdumped = TRUE;
+                ampdumped = true;
                 *to++ = ' ';
                 *to++ = '(';
                 *to++ = ampchar;
@@ -154,7 +154,7 @@ static void XTimeSymComp( void )
     num = ReqExpr();
     ReqEOC();
     for( i = 0; i < num; ++i ) {
-        SymCompInit( TRUE, TRUE, FALSE, FALSE, NO_MOD );
+        SymCompInit( true, true, false, false, NO_MOD );
         SymCompFini();
     }
 }

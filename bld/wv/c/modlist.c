@@ -48,10 +48,10 @@
 
 extern  bool            ModHasSourceInfo( mod_handle handle )
 {
-    if( ModHasInfo( handle, HK_CUE ) == DS_OK ) return( TRUE );
-    if( ModHasInfo( handle, HK_TYPE ) == DS_OK ) return( TRUE );
-    if( ModHasInfo( handle, HK_SYM ) == DS_OK ) return( TRUE );
-    return( FALSE );
+    if( ModHasInfo( handle, HK_CUE ) == DS_OK ) return( true );
+    if( ModHasInfo( handle, HK_TYPE ) == DS_OK ) return( true );
+    if( ModHasInfo( handle, HK_SYM ) == DS_OK ) return( true );
+    return( false );
 }
 
 

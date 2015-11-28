@@ -335,10 +335,10 @@ void DUIProcPendingPaint( void )
 bool DUIInfoRelease( void )
 {
     if( DlgInfoRelease() )
-        return( TRUE );
+        return( true );
     if( VarInfoRelease() )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 void *DUIHourGlass( void *x )
@@ -365,10 +365,10 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( FALSE );
+    if( viewhndl == NULL ) return( false );
     buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
     FDoneSource( viewhndl );
-    return( TRUE );
+    return( true );
 }
 
 bool DUIIsDBCS( void )
@@ -420,7 +420,7 @@ bool DUICopyCancelled( void * cookie )
 /************************************/
 {
     cookie = cookie;
-    return( FALSE );
+    return( false );
 }
 
 bool DUIImageLoaded( image_entry *image, bool load,
@@ -435,7 +435,7 @@ bool DUIImageLoaded( image_entry *image, bool load,
         Format( TxtBuff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( TxtBuff );
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIDlgAsyncRun( void )

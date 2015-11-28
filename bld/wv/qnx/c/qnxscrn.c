@@ -102,7 +102,7 @@ static void HupHandler( int signo )
 {
     /* Xqsh has gone away -- nothing to do except die */
     signo = signo;
-    ReleaseProgOvlay( TRUE );
+    ReleaseProgOvlay( true );
     KillDebugger( 0 );
 }
 
@@ -187,7 +187,7 @@ static bool TryXWindows( void )
     SetTermType( "qnx" );
     tcsetct( DbgConHandle, getpid() );
     signal( SIGHUP, &HupHandler );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -232,7 +232,7 @@ static bool TryQConsole( void )
     ConCtrl = console_open( DbgConHandle, O_WRONLY );
     if( ConCtrl == NULL ) {
         close( DbgConHandle );
-        return( FALSE );
+        return( false );
     }
     if( dev_info( DbgConHandle, &dev ) == -1 ) {
         StartupErr( "unable to obtain console information" );
@@ -241,7 +241,7 @@ static bool TryQConsole( void )
     console_size( ConCtrl, DbgConsole, 0, 0, &PrevLines, &PrevColumns );
     console_size( ConCtrl, DbgConsole, DbgLines, DbgColumns, 0, 0 );
     InitConsole = console_active( ConCtrl, -1 );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryTTY( void )
@@ -250,11 +250,11 @@ static bool TryTTY( void )
     char                *end;
 
     if( DbgTerminal == NULL )
-        return( FALSE );
+        return( false );
     num = strtoul( DbgTerminal, &end, 10 );
     if( *end == NULLCHAR && num < 100 ) {
         DbgConsole = num;
-        return( FALSE );
+        return( false );
     }
     /* guy gave an explicit terminal name */
     end = strchr( DbgTerminal, ':' );
@@ -267,7 +267,7 @@ static bool TryTTY( void )
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitScreen( void )
@@ -305,9 +305,9 @@ bool UsrScrnMode( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -324,17 +324,17 @@ bool DebugScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_QCON:
         PrevConsole = console_active( ConCtrl, DbgConsole );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -346,12 +346,12 @@ bool UserScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_QCON:
         console_active( ConCtrl, PrevConsole );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -458,9 +458,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
             XConfig[0] = NULLCHAR;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void ScreenOptInit( void )

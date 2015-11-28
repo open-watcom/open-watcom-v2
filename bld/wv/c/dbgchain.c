@@ -84,15 +84,15 @@ static bool ReAllocChain( traceback *curr, int new_size )
     call_chain  *chain;
 
     chain = curr->chain;
-    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( FALSE );
+    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( false );
     new_chain = DbgAlloc( new_size * sizeof(call_chain) );
-    if( new_chain == NULL ) return( FALSE );
+    if( new_chain == NULL ) return( false );
     memset( new_chain, 0, new_size*sizeof( call_chain ) );
     memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
     DbgFree( chain );
     curr->chain = new_chain;
     curr->allocated_size = new_size;
-    return( TRUE );
+    return( true );
 }
 
 static bool EarlyOut( cached_traceback *tb, address execution, address frame )
@@ -111,7 +111,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
         if( AddrComp( chain->lc.frame, frame ) != 0 ) continue;
         new_size = curr->current_depth + prev->total_depth - i;
         if( new_size > curr->allocated_size ) {
-            if( !ReAllocChain( curr, new_size ) ) return( FALSE );
+            if( !ReAllocChain( curr, new_size ) ) return( false );
         }
         curr->clean_size = prev->total_depth - i;
         memcpy( &curr->chain[ curr->current_depth ], chain,
@@ -123,9 +123,9 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
             ++chain;
             ++i;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -144,7 +144,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     curr = tb->curr;
     if( curr->current_depth >= curr->allocated_size ) {
         if( !ReAllocChain( curr, curr->allocated_size + MODEST_INCREMENT ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( curr->current_depth != 0 ) {
@@ -154,11 +154,11 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
             execution.mach.offset -= MADDisasmInsSize( dd );
         }
     }
-    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( FALSE );
+    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( false );
     chain = &curr->chain[ curr->current_depth ];
     chain->lc = entry->lc;
     chain->lc.execution = execution;
-    chain->open = FALSE;
+    chain->open = false;
     chain->source_line = NULL;
     chain->symbol = NULL;
     if( DeAliasAddrCue( NO_MOD, execution, ch ) != SR_NONE ) {
@@ -169,7 +169,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     chain->symbol = DupStr( TxtBuff );
     chain->sym_len = 0;
     curr->current_depth++;
-    return( TRUE );
+    return( true );
 }
 
 static traceback *DoInitTraceBack( traceback *curr )

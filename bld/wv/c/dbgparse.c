@@ -210,7 +210,7 @@ void ReqMemAddr( memory_expr def_seg, address *out_val )
     old = SetCurrRadix( 16 );
     _SwitchOff( SW_EXPR_IS_CALL );
     EvalExpr( 0 );   /* memory expression */
-    MakeMemoryAddr( TRUE, def_seg, out_val );
+    MakeMemoryAddr( true, def_seg, out_val );
     SetCurrRadix( old );
 }
 
@@ -225,7 +225,7 @@ void CallExpr( address *out_val )
     old = SetCurrRadix( 16 );
     _SwitchOn( SW_EXPR_IS_CALL );
     EvalExpr( 0 ); /* call expression */
-    MakeMemoryAddr( TRUE, EXPR_CODE, out_val );
+    MakeMemoryAddr( true, EXPR_CODE, out_val );
     SetCurrRadix( old );
 }
 
@@ -301,17 +301,17 @@ static bool ReadAllSections( handle filehndl )
     /* read rules */
     key_off = ReadSection( filehndl, 0 );
     if( key_off == 0 )
-        return( FALSE );
+        return( false );
     /* read keywords */
     delim_off = ReadSection( filehndl, key_off );
     if( delim_off == 0 )
-        return( FALSE );
+        return( false );
     /* read delimiters */
     if( ReadSection( filehndl, delim_off ) == 0 )
-        return( FALSE );
+        return( false );
     ParseTokens.keywords = &ParseTable[key_off];
     ParseTokens.delims = &ParseTable[delim_off];
-    return( TRUE );
+    return( true );
 }
 
 bool LangLoad( const char *lang, unsigned langlen )
@@ -321,7 +321,7 @@ bool LangLoad( const char *lang, unsigned langlen )
 
     filehndl = LocalPathOpen( lang, langlen, "prs" );
     if( filehndl == NIL_HANDLE )
-        return( FALSE );
+        return( false );
     ret = ReadAllSections( filehndl );
     FileClose( filehndl );
     return( ret );

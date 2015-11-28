@@ -62,12 +62,12 @@ static bool ChkDate( void )
     struct date_st { char day; char month; int year; } date;
     extern struct date_st getdate();
     date = getdate();
-    if( date.year  < _EXPIRY_YEAR  ) return( TRUE );
-    if( date.year  > _EXPIRY_YEAR  ) return( FALSE );
-    if( date.month < _EXPIRY_MONTH ) return( TRUE );
-    if( date.month > _EXPIRY_MONTH ) return( FALSE );
-    if( date.day   > _EXPIRY_DAY   ) return( FALSE );
-    return( TRUE );
+    if( date.year  < _EXPIRY_YEAR  ) return( true );
+    if( date.year  > _EXPIRY_YEAR  ) return( false );
+    if( date.month < _EXPIRY_MONTH ) return( true );
+    if( date.month > _EXPIRY_MONTH ) return( false );
+    if( date.day   > _EXPIRY_DAY   ) return( false );
+    return( true );
 }
 #endif
 
@@ -97,30 +97,30 @@ static WNDGETLINE FingGetLine;
 static  bool    FingGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
-    if( piece != 0 ) return( FALSE );
+    if( piece != 0 ) return( false );
     row -= TOP_BLANK( wnd );
     if( row < 0 ) {
         line->text = " ";
-        return( TRUE );
+        return( true );
     }
     if( row >= FingMessageSize ) {
-        if( !GUIIsGUI() || piece != 0 ) return( FALSE );
+        if( !GUIIsGUI() || piece != 0 ) return( false );
         row -= FingMessageSize;
         switch( row ) {
         case 0:
             line->text = " ";
-            return( TRUE );
+            return( true );
         case 1:
             SetGadgetLine( wnd, line, GADGET_SPLASH );
             line->indent = ( Width - BitmapSize.x ) / 2;
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     }
     line->text = AboutMessage[ row ];
     line->indent = ( Width - WndExtentX( wnd, line->text ) ) / 2;
-    return( TRUE );
+    return( true );
 }
 
 static WNDCALLBACK FingEventProc;
@@ -140,9 +140,9 @@ static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
             GUIMemFree( colours );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static wnd_info FingInfo = {

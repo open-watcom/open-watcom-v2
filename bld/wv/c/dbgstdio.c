@@ -45,7 +45,7 @@ static void StdioRedirect( bool input )
     size_t      len;
     char        buff[160];
 
-    ScanItem( TRUE, &start, &len );
+    ScanItem( true, &start, &len );
     memcpy( buff, start, len );
     buff[ len ] = NULLCHAR;
     ReqEOC();
@@ -65,7 +65,7 @@ static void StdioRedirect( bool input )
 
 extern void StdInNew( void )
 {
-    StdioRedirect( TRUE );
+    StdioRedirect( true );
 }
 
 
@@ -75,5 +75,5 @@ extern void StdInNew( void )
 
 extern void StdOutNew( void )
 {
-    StdioRedirect( FALSE );
+    StdioRedirect( false );
 }

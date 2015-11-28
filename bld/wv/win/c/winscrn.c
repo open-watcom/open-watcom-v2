@@ -71,7 +71,7 @@ bool            WantFast;
 flip_types      FlipMech;
 mode_types      ScrnMode = MD_EGA;
 int             ScrnLines = 25;
-bool            WndUseGMouse = FALSE;
+bool            WndUseGMouse = false;
 
 static display_configuration    HWDisplay;
 
@@ -136,7 +136,7 @@ bool UsrScrnMode( void )
         }
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void DbgScrnMode( void )
@@ -151,15 +151,15 @@ bool DebugScreen( void )
     if( FlipMech == FLIP_SWAP ) {
         ToCharacter();
         WndDirty( NULL );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -167,12 +167,12 @@ bool DebugScreenRecover( void )
  */
 bool UserScreen( void )
 {
-    bool rc = FALSE;
+    bool rc = false;
     if( FlipMech == FLIP_SWAP ) {
         ToGraphical();
-        rc = FALSE;
+        rc = false;
     } else {
-        rc = TRUE;
+        rc = true;
     }
     return( rc );
 }
@@ -187,7 +187,7 @@ void FiniScreen( void )
     uistop();
     if( FlipMech == FLIP_SWAP ) {
         FiniSwapper();
-        InvalidateRect( HWND_DESKTOP, NULL, TRUE );
+        InvalidateRect( HWND_DESKTOP, NULL, true );
     }
 }
 
@@ -223,14 +223,14 @@ static bool ChkCntrlr( int port )
 
 static bool TstMono( void )
 {
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
+    return( true );
 }
 
 static bool TstColour( void )
 {
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
+    return( true );
 }
 
 static void GetDispConfig( void )
@@ -313,7 +313,7 @@ void uirefresh( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 static const char ScreenOptNameTab[] = {
@@ -414,9 +414,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

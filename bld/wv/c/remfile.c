@@ -147,10 +147,10 @@ bool InitFileSupp( void )
 
     SuppFileId = GetSuppId( FILE_SUPP_NAME );
     if( SuppFileId == 0 )
-        return( FALSE );
+        return( false );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
-    return( TRUE );
+    return( true );
 }
 
 bool HaveRemoteFiles( void )

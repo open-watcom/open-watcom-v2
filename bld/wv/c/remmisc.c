@@ -112,9 +112,9 @@ void InitTrap( const char *parms )
 #if !defined( BUILD_RFX )
     TrapSetFailCallBack( TrapFailed );
 #endif
-    InitTrapError = FALSE;
+    InitTrapError = false;
     RestoreHandlers();
-    ver.remote = FALSE;
+    ver.remote = false;
     if( parms == NULL )
         parms = "";
 #if !defined( BUILD_RFX )
@@ -129,13 +129,13 @@ void InitTrap( const char *parms )
     GrabHandlers();
     if( error != NULL ) {
         strcpy( buff, error );
-        InitTrapError = TRUE;
+        InitTrapError = true;
         StartupErr( buff );
     }
     acc.req = REQ_CONNECT;
     acc.ver.major = TRAP_MAJOR_VERSION;
     acc.ver.minor = TRAP_MINOR_VERSION;
-    acc.ver.remote = FALSE;
+    acc.ver.remote = false;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
@@ -147,7 +147,7 @@ void InitTrap( const char *parms )
     MaxPacketLen = ret.max_msg_size;
     if( buff[0] != '\0' ) {
         KillTrap();
-        InitTrapError = TRUE;
+        InitTrapError = true;
         StartupErr( buff );
     }
 #if !defined( BUILD_RFX )

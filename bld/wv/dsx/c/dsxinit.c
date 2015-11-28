@@ -192,7 +192,7 @@ void WndCleanUp( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void PopErrBox( const char *buff )

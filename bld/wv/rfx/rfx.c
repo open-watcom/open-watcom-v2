@@ -511,12 +511,12 @@ static int IsDevice( const char *fn, int loc )
     unsigned h;
 
     if( GetAttrs( fn, loc ) >= 0 )
-        return( FALSE );
+        return( false );
     h = FileOpen( fn, OP_READ | RFX2Acc( loc ) );
     if( h == NIL_HANDLE )
-        return( FALSE );
+        return( false );
     FileClose( h );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -629,7 +629,7 @@ static void Prompt( void )
                 WriteStream( STD_ERR, Buff, 15 );
                 break;
             case 'p':
-                ProcCD( 0, NULL, FALSE );
+                ProcCD( 0, NULL, false );
                 break;
             case 'v':
                 #define RFX "RFX Version " _RFX_VERSION_
@@ -817,7 +817,7 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
         return( -1 );
     } else if( strcmp( argv[ 0 ], "cd"    ) == 0
             || strcmp( argv[ 0 ], "chdir" ) == 0 ) {
-        ProcCD( argc - 1, argv + 1, TRUE );
+        ProcCD( argc - 1, argv + 1, true );
     } else if( strcmp( argv[ 0 ], "ren" ) == 0 ) {
         ProcRename( argc - 1, argv + 1 );
     } else if( strcmp( argv[ 0 ], "type" ) == 0 ) {
@@ -1194,7 +1194,7 @@ static void WildCopy( int recursive )
     int         none_in_root;
 
     first = 1;
-    none_in_root = FALSE;
+    none_in_root = false;
     while( (list = CopySpecs) != NULL ) { /* Careful. List shifts underfoot */
         errcod = CopyASpec( list->src, list->dst, list->src_loc, list->dst_loc );
         WriteNL( STD_ERR );
@@ -1203,7 +1203,7 @@ static void WildCopy( int recursive )
             if( REAL_CODE( errcod ) == 0x02 ||
                 REAL_CODE( errcod ) == 0x12 ) { /* File not found */
                 if( first ) { /* only crap out if top of tree */
-                    none_in_root = TRUE;
+                    none_in_root = true;
                 }
             } else {
                 TransSetErr( errcod );
@@ -1701,11 +1701,11 @@ void ProcErase( int argc, char **argv )
         BuildDFSList();
     if( ErrorStatus != 0 )
         return;
-    erased_one = FALSE;
+    erased_one = false;
     while( CopySpecs != NULL ) {
         ErrorStatus = 0;
         Scratchf( CopySpecs->src, CopySpecs->src_loc );
-        if( ErrorStatus == 0 ) erased_one = TRUE;
+        if( ErrorStatus == 0 ) erased_one = true;
         FreeCopySpec( CopySpecs );
     }
     if( erased_one ) {

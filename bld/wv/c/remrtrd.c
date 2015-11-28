@@ -51,9 +51,9 @@ bool InitRunThreadSupp( void )
 {
     SuppRunThreadId = GetSuppId( RUN_THREAD_SUPP_NAME );
     if( SuppRunThreadId == 0 )
-        return( FALSE );
+        return( false );
     DUIInitRunThreadInfo();
-    return( TRUE );
+    return( true );
 }
 
 bool HaveRemoteRunThread( void )
@@ -68,7 +68,7 @@ bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char 
     run_thread_info_req acc;
     run_thread_info_ret ret;
 
-    if( SuppRunThreadId == 0 ) return( FALSE );
+    if( SuppRunThreadId == 0 ) return( false );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -87,9 +87,9 @@ bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char 
     if( ret.info ) {
         *infotype = ret.info;
         *width = ret.width;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -127,7 +127,7 @@ void RemotePollRunThread( void )
         CheckMADChange();
     }
     if( ret.conditions & COND_THREAD ) {
-        CheckForNewThreads( TRUE );
+        CheckForNewThreads( true );
     }
 }
 

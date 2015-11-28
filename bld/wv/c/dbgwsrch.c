@@ -147,7 +147,7 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             srch->found = found;
             found[ srch->num_rows ].mod = CueMod( ch );
             found[ srch->num_rows ].file_id = CueFileId( ch );
-            found[ srch->num_rows ].open = FALSE;
+            found[ srch->num_rows ].open = false;
             found[ srch->num_rows ].source_line = DupStr( TxtBuff );
             srch->num_rows++;
             len = ModName( CueMod( ch ), NULL, 0 );
@@ -249,7 +249,7 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         WndSetSrchIgnoreCase( srch->ignore_case );
         WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT_ENG( Empty ) );
         WndSetSrchItem( new, srch->expr );
-        WndSearch( new, TRUE, 1 );
+        WndSearch( new, true, 1 );
         break;
     }
 }
@@ -262,29 +262,29 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
 
-    if( row >= srch->num_rows ) return( FALSE );
-    if( srch->found == NULL ) return( FALSE );
+    if( row >= srch->num_rows ) return( false );
+    if( srch->found == NULL ) return( false );
     found = &srch->found[ row ];
     switch( piece ) {
     case PIECE_OPENER:
-        found->open = OpenGadget( wnd, line, found->mod, TRUE );
-        return( TRUE );
+        found->open = OpenGadget( wnd, line, found->mod, true );
+        return( true );
     case PIECE_MODULE:
         ModName( found->mod, TxtBuff, TXT_LEN );
         line->text = TxtBuff;
         line->indent = MaxGadgetLength;
         line->extent = WND_MAX_EXTEND;
-        return( TRUE );
+        return( true );
     case PIECE_SOURCE:
         line->indent = MaxGadgetLength;
         line->indent += ( srch->max_mod_name + 2 ) * WndAvgCharX( wnd );
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
-        if( found->source_line == NULL ) return( FALSE );
+        line->tabstop = false;
+        line->use_prev_attr = true;
+        if( found->source_line == NULL ) return( false );
         line->text = found->source_line;
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -307,7 +307,7 @@ static void     SrchRefresh( a_window *wnd )
         for( i = 0; i < srch->num_rows; ++i ) {
             found = &srch->found[ i ];
             found->open = CheckOpenGadget( wnd, i, found->open,
-                           found->mod, TRUE, PIECE_OPENER );
+                           found->mod, true, PIECE_OPENER );
         }
     }
 }
@@ -323,15 +323,15 @@ static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_INIT_WINDOW:
         SrchInit( wnd );
         WndSetKey( wnd, PIECE_MODULE );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         WndFreeRX( srch->expr );
         WndFreeRX( srch->rx );
         SrchFreeFound( srch );
         WndFree( srch );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info SrchInfo = {

@@ -328,7 +328,7 @@ bool IsAbsolutePath( const char *path )
     p = RealFName( path, &loc );
     info = PathInfo( p, loc );
     if( strlen( p ) == 0 )
-        return( FALSE );
+        return( false );
     return( CHECK_PATH_ABS( p, info ) );
 }
 
@@ -483,8 +483,8 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
     p1 = FileLoc( name, &loc );
     name_len -= p1 - name;
     name = p1;
-    have_ext = FALSE;
-    have_path = FALSE;
+    have_ext = false;
+    have_path = false;
     if( force_local ) {
         loc &= ~OP_REMOTE;
         loc |= OP_LOCAL;
@@ -499,10 +499,10 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
         c = *name++;
         *p++ = c;
         if( CHECK_PATH_SEP( c, file ) ) {
-            have_ext = FALSE;
-            have_path = TRUE;
+            have_ext = false;
+            have_path = true;
         } else if( c == file->ext_separator ) {
-            have_ext = TRUE;
+            have_ext = true;
         }
     }
     if( !have_ext ) {
@@ -511,7 +511,7 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
     }
     *p = NULLCHAR;
     if( loc & OP_REMOTE ) {
-        RemoteStringToFullName( FALSE, buffer, result, max_result );
+        RemoteStringToFullName( false, buffer, result, max_result );
         f = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
         StrCopy( buffer, result );
@@ -530,12 +530,12 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
 
 handle FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, max_result, FALSE ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, max_result, false ) );
 }
 
 handle LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
-    return( FullPathOpenInternal( name, name_len, ext, result, max_result, TRUE ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, max_result, true ) );
 }
 
 static handle PathOpenInternal( const char *name, unsigned name_len, const char *ext, bool force_local )
@@ -551,12 +551,12 @@ static handle PathOpenInternal( const char *name, unsigned name_len, const char 
 
 handle PathOpen( const char *name, unsigned name_len, const char *ext )
 {
-    return( PathOpenInternal( name, name_len, ext, FALSE ) );
+    return( PathOpenInternal( name, name_len, ext, false ) );
 }
 
 handle LocalPathOpen( const char *name, unsigned name_len, const char *ext )
 {
-    return( PathOpenInternal( name, name_len, ext, TRUE ) );
+    return( PathOpenInternal( name, name_len, ext, true ) );
 }
 
 #if !defined( BUILD_RFX )
@@ -570,17 +570,17 @@ static bool IsWritable( char const *name, open_access loc )
         if( h != NIL_HANDLE ) {
             FileClose( h );
             FileRemove( name, loc );
-            return( TRUE );
+            return( true );
         }
     } else {
         FileClose( h );
         h = FileOpen( name, OP_WRITE | loc );
         if( h != NIL_HANDLE ) {
             FileClose( h );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool FindWritable( char const *src, char *dst )
@@ -595,7 +595,7 @@ bool FindWritable( char const *src, char *dst )
     src = RealFName( src, &loc );
     if( IsWritable( src, loc ) ) {
         StrCopy( src, dst );
-        return( TRUE );
+        return( true );
     }
     name = SkipPathInfo( src, loc );
     nlen = strlen( name );
@@ -603,7 +603,7 @@ bool FindWritable( char const *src, char *dst )
         plen = DUIEnvLkup( "HOME", buffer, sizeof( buffer ) );
         if( plen > 0 ) {
             MakeNameWithPath( loc, buffer, plen, name, nlen, dst );
-            if( IsWritable( dst, loc ) ) return( TRUE );
+            if( IsWritable( dst, loc ) ) return( true );
         }
     }
     MakeNameWithPath( loc, NULL, 0, name, nlen, dst );
@@ -731,7 +731,7 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, c
         buff = dummy;
         buff_size = sizeof( dummy );
     }
-    f = FullPathOpenInternal( name, name_len, ext, buff, buff_size, FALSE );
+    f = FullPathOpenInternal( name, name_len, ext, buff, buff_size, false );
     return( ( f == NIL_HANDLE ) ? DIG_NIL_HANDLE : f );
 }
 

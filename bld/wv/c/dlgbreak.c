@@ -277,7 +277,7 @@ OVL_EXTERN bool BrkEvent( gui_window *gui, gui_event gui_ev, void *param )
             }
             return( true );
         case CTL_BRK_CLEAR:
-            dlg->clear = TRUE;
+            dlg->clear = true;
             GUICloseDialog( gui );
             return( true );
         case CTL_BRK_CANCEL:

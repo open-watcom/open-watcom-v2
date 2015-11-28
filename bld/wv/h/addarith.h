@@ -37,4 +37,4 @@ extern int      AddrComp( address a, address b );
 extern address  AddrAdd( address a, long b );
 extern address  AddrAddWrap( address a, long b );
 extern long     AddrDiff( address a, address b );
-extern int      SameAddrSpace( address a, address b );
+extern bool     SameAddrSpace( address a, address b );

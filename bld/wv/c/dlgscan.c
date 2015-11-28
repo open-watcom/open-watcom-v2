@@ -92,7 +92,7 @@ OVL_EXTERN void GetModName( void *value )
     size_t      len;
 
     RawScanInit();
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     mod = LookupModName( NO_MOD, start, len );
     if( mod == NO_MOD ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), start, len );
@@ -111,7 +111,7 @@ static bool DlgDoScan( const char *str, void *value, wv_spawn_funcP *rtn )
     _SwitchOn( SW_ERR_IN_TXTBUFF );
     FreezeStack();
     ok = ( SpawnP( rtn, value ) == 0 );
-    UnFreezeStack( FALSE );
+    UnFreezeStack( false );
     _SwitchOff( SW_ERR_IN_TXTBUFF );
     ReScan( old );
     return( ok );
@@ -157,7 +157,7 @@ bool DlgScanAny( const char *str, void *value )
 bool DlgScanString( const char *str, void *value )
 {
     strcpy( value, str );
-    return( TRUE );
+    return( true );
 }
 
 bool DlgScanModName( const char *str, void *value )

@@ -79,7 +79,7 @@ extern void SymComplete( gui_window *gui, gui_ctl_id id )
     size_t              matchoff;
     char                *savebuff;
 
-    SortedNames = SymCompInit( TRUE, TRUE, FALSE, FALSE, NO_MOD );
+    SortedNames = SymCompInit( true, true, false, false, NO_MOD );
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
     if( match != NULL && match[0] != '\0' ) {

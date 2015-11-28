@@ -76,7 +76,7 @@ void WndInitWndMain( wnd_create_struct *info )
 void TellWinHandle( void )
 {
     if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
-        ToldWinHandle = TRUE;
+        ToldWinHandle = true;
     }
 }
 
@@ -169,8 +169,8 @@ void InitScreen( void )
     TID                 tid;
 
     RestoreMainScreen( "WDPM" );
-    DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, FALSE );
-    DosCreateEventSem( NULL, &PumpMessageSem, 0, FALSE );
+    DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, false );
+    DosCreateEventSem( NULL, &PumpMessageSem, 0, false );
     DosCreateThread( &tid, (PFNTHREAD)PumpMessageQueue, 0, 0, STACK_SIZE );
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }

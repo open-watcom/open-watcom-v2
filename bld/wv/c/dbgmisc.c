@@ -178,8 +178,8 @@ void ProcAssign( void )
 static void SetTempBreak( address addr )
 {
     NullStatus( &UserTmpBrk );
-    UserTmpBrk.status.b.has_address = TRUE;
-    UserTmpBrk.status.b.active = TRUE;
+    UserTmpBrk.status.b.has_address = true;
+    UserTmpBrk.status.b.active = true;
     UserTmpBrk.loc.addr = addr;
 }
 
@@ -188,7 +188,7 @@ void GoToAddr( address addr )
 {
     if( IS_NIL_ADDR( addr ) ) return;
     SetTempBreak( addr );
-    Go( TRUE );
+    Go( true );
     NullStatus( &UserTmpBrk );
 }
 
@@ -244,20 +244,20 @@ void ProcGo( void )
     unsigned    conditions;
     int         count;
 
-    have_keep = FALSE;
-    doflip = TRUE;
-    until = FALSE;
+    have_keep = false;
+    doflip = true;
+    until = false;
     while( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( GoOptionTab ) ) {
         case KEEP:
-            have_keep = TRUE;
+            have_keep = true;
             break;
         case NOFLIP:
-            doflip = FALSE;
+            doflip = false;
             break;
         case UNTIL:
-            until = TRUE;
+            until = true;
             break;
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_GO ) );
@@ -266,21 +266,21 @@ void ProcGo( void )
     if( !have_keep ) TraceKill();
     NullStatus( &DbgTmpBrk );
     start = GetRegIP();
-    have_stop = FALSE;
-    have_start = FALSE;
+    have_stop = false;
+    have_start = false;
     if( !ScanEOC() ) {
         stop = start;
         ReqMemAddr( EXPR_GIVEN, &stop );
         if( CurrToken == T_COMMA ) {
             start = stop;
-            have_start = TRUE;
+            have_start = true;
             Scan();
             if( !ScanEOC() ) {
                 ReqMemAddr( EXPR_GIVEN, &stop );
-                have_stop = TRUE;
+                have_stop = true;
             }
         } else {
-            have_stop = TRUE;
+            have_stop = true;
         }
     }
     ReqEOC();
@@ -290,7 +290,7 @@ void ProcGo( void )
             if( have_keep ) {
                 if( UserTmpBrk.status.b.has_address ) {
                     NullStatus( &UserTmpBrk );
-                    UserTmpBrk.status.b.has_address = TRUE;
+                    UserTmpBrk.status.b.has_address = true;
                 } else {
                     NullStatus( &UserTmpBrk );
                 }
@@ -299,7 +299,7 @@ void ProcGo( void )
             SetTempBreak( stop );
         } else if( have_keep ) {
             if( UserTmpBrk.status.b.has_address ) {
-                UserTmpBrk.status.b.active = TRUE;
+                UserTmpBrk.status.b.active = true;
             }
         } else {
             NullStatus( &UserTmpBrk );
@@ -315,7 +315,7 @@ void ProcGo( void )
         if( flip_on ) _SwitchOn( SW_FLIP );
         if( UserTmpBrk.status.b.has_address ) {
             NullStatus( &UserTmpBrk );
-            UserTmpBrk.status.b.has_address = TRUE;
+            UserTmpBrk.status.b.has_address = true;
         } else {
             NullStatus( &UserTmpBrk );
         }
@@ -350,7 +350,7 @@ void ProcIf( void )
     bool                have_true;
 
     true_len = 0;
-    have_true = FALSE;
+    have_true = false;
     for( ;; ) {
         if( have_true ) {
             ChkExpr();
@@ -364,7 +364,7 @@ void ProcIf( void )
         if( U64Test( &res ) != 0 ) {
             true_start = start;
             true_len   = len;
-            have_true  = TRUE;
+            have_true  = true;
         }
         if( ScanCmd( ElseifTab ) < 0 ) {
             break;
@@ -421,7 +421,7 @@ void ProcError( void )
     const char  *start;
     size_t      len;
 
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     ReqEOC();
     memcpy( TxtBuff, start, len );
     TxtBuff[ len ] = NULLCHAR;
@@ -714,27 +714,27 @@ void ProcThread( void )
             tcmd = (enum thread_cmds)cmd;
         }
     }
-    CheckForNewThreads( FALSE );
+    CheckForNewThreads( false );
     if( CurrToken == T_MUL ) {
         if( cmd < 0 )
             tcmd = T_SHOW;
         Scan();
-        all = TRUE;
+        all = true;
     } else if( ScanEOC() ) {
         if( cmd < 0 )
             tcmd = T_SHOW;
         if( tcmd == T_SHOW ) {
-            all = TRUE;
+            all = true;
         } else {
             tid = DbgRegs->tid;
-            all = FALSE;
+            all = false;
         }
     } else {
         if( cmd < 0 )
             tcmd = T_CHANGE;
         old = SetCurrRadix( 16 );
         tid = ReqExpr();
-        all = FALSE;
+        all = false;
         SetCurrRadix( old );
     }
     ReqEOC();

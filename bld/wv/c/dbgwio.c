@@ -103,7 +103,7 @@ static void IOAddNewAddr( a_window *wnd, address *addr, int type )
     curr = &io->list[ row ];
     curr->type = PIECE_TYPE( type );
     curr->addr = *addr;
-    curr->value_known = FALSE;
+    curr->value_known = false;
 }
 
 static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
@@ -128,7 +128,7 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         } else {
             WndMenuEnableAll( wnd );
         }
-        WndMenuEnable( wnd, MENU_IO_NEW_ADDRESS, TRUE );
+        WndMenuEnable( wnd, MENU_IO_NEW_ADDRESS, true );
         break;
     case MENU_IO_DELETE:
         io->num_rows--;
@@ -152,21 +152,21 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             ok = DlgMadTypeExpr( TxtBuff, &item, IOData.info[ curr->type ].type );
             if( ok ) {
                 curr->value = item;
-                curr->value_known = TRUE;
+                curr->value_known = true;
             }
             NewCurrRadix( old );
         } else {
             addr = curr->addr;
             if( !DlgGivenAddr( LIT_DUI( New_Port_Addr ), &addr ) ) return;
             curr->addr = addr;
-            curr->value_known = FALSE;
+            curr->value_known = false;
         }
         WndRowDirty( wnd, row );
         break;
     case MENU_IO_READ:
-        curr->value_known = TRUE;
+        curr->value_known = true;
         if( ItemGetMAD( &curr->addr, &curr->value, IT_IO, IOData.info[ curr->type ].type ) == IT_NIL ) {
-            curr->value_known = FALSE;
+            curr->value_known = false;
         }
         WndPieceDirty( wnd, row, PIECE_VALUE );
         break;
@@ -215,22 +215,22 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
     unsigned    old, new;
     unsigned    max;
 
-    if( row >= io->num_rows ) return( FALSE );
+    if( row >= io->num_rows ) return( false );
     curr = &io->list[ row ];
-//    ret = TRUE;
+//    ret = true;
     line->text = TxtBuff;
     switch( piece ) {
     case PIECE_READ:
         SetGadgetLine( wnd, line, GADGET_READ );
-        return( TRUE );
+        return( true );
     case PIECE_WRITE:
         SetGadgetLine( wnd, line, GADGET_WRITE );
         line->indent = MaxGadgetLength;
-        return( TRUE );
+        return( true );
     case PIECE_ADDRESS:
         AddrToIOString( &curr->addr, TxtBuff, TXT_LEN );
         line->indent = 2*MaxGadgetLength;
-        return( TRUE );
+        return( true );
     case PIECE_VALUE:
         new = IOData.info[ curr->type ].piece_radix;
         old = NewCurrRadix( new );
@@ -245,9 +245,9 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
             TxtBuff[i] = '\0';
         }
         NewCurrRadix( old );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -308,13 +308,13 @@ static bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( io->num_rows != 0 ) {
             IOMenuItem( wnd, MENU_IO_READ, 0, PIECE_VALUE );
         }
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         WndFree( io->list );
         WndFree( io );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info IOInfo = {
@@ -362,7 +362,7 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
         }
     }
     io->list->value.ud = 0;
-    io->list->value_known = FALSE;
+    io->list->value_known = false;
     return( DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
 }
 

@@ -67,7 +67,7 @@ static void GetDlgStatus( gui_window *gui )
     }
     NewCurrRadix( old );
 
-    SetCapabilitiesExactBreakpointSupport( GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ), TRUE );
+    SetCapabilitiesExactBreakpointSupport( GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ), true );
 }
 
 
@@ -90,7 +90,7 @@ static void SetDlgStatus( gui_window *gui )
     if( IsExactBreakpointsSupported() ) {
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn( SW_BREAK_ON_WRITE ) );
     } else {
-        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, FALSE );
+        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, false );
     }
 }
 

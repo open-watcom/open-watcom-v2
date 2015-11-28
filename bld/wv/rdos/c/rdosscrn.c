@@ -68,7 +68,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreen( void )
@@ -83,13 +83,13 @@ bool DebugScreen( void )
     if( my_key )
         RdosSetFocus( my_key );
         
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
     DebugScreen();
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
@@ -108,7 +108,7 @@ bool UserScreen( void )
     if( debug_key )
         RdosSetFocus( debug_key );
 
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -124,7 +124,7 @@ void FiniScreen( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 #if 0
 int mygetlasterr( void )

@@ -350,12 +350,12 @@ static void DoSetMode( uint_8 mode )
 
 static bool TstMono( void )
 {
-    return( ChkCntrlr( VIDMONOINDXREG ) ? TRUE : FALSE );
+    return( ChkCntrlr( VIDMONOINDXREG ) ? true : false );
 }
 
 static bool TstColour( void )
 {
-    return( ChkCntrlr( VIDCOLRINDXREG ) ? TRUE : FALSE );
+    return( ChkCntrlr( VIDCOLRINDXREG ) ? true : false );
 }
 
 static void GetEGAConfig( uint_8 colour, uint_8 curr_mode )
@@ -429,10 +429,10 @@ static void GetDispConfig( void )
 static bool ChkForColour( hw_display_type display )
 {
     if( ColourAdapters[ display ] <= 0 ) {
-        return( FALSE );
+        return( false );
     }
     ScrnMode = MD_COLOUR;
-    return( TRUE );
+    return( true );
 }
 
 static void SwapActAlt( void )
@@ -442,40 +442,40 @@ static void SwapActAlt( void )
     temp = HWDisplay.active;
     HWDisplay.active = HWDisplay.alt;
     HWDisplay.alt = temp;
-    OnAlt = TRUE;
+    OnAlt = true;
 }
 
 static bool ChkColour( void )
 {
     if( ChkForColour( HWDisplay.active ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ChkForColour( HWDisplay.alt ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool ChkForMono( hw_display_type display )
 {
     if( ColourAdapters[ display ] >= 0 ) {
-        return( FALSE );
+        return( false );
     }
     ScrnMode = MD_MONO;
-    return( TRUE );
+    return( true );
 }
 
 static bool ChkMono( void )
 {
     if( ChkForMono( HWDisplay.active ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ChkForMono( HWDisplay.alt ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool ChkForEGA( hw_display_type display )
@@ -486,29 +486,29 @@ static bool ChkForEGA( hw_display_type display )
     case DISP_EGA_MONO:
     case DISP_VGA_MONO:
         ScrnMode = MD_EGA;
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 static bool ChkEGA( void )
 {
     if( ChkForEGA( HWDisplay.active ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ChkForEGA( HWDisplay.alt ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void GetDefault( void )
 {
     if( StartScrn.mode == 0x07 || StartScrn.mode == 0x0f ) {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkColour() == FALSE ) {
+            if( ChkColour() == false ) {
                 FlipMech = FLIP_SWAP;
                 ChkMono();
             }
@@ -517,7 +517,7 @@ static void GetDefault( void )
         }
     } else {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkMono() == FALSE ) {
+            if( ChkMono() == false ) {
                 FlipMech = FLIP_PAGE;
                 ChkColour();
             }
@@ -671,17 +671,17 @@ static void GetAdapter( void )
         GetDefault();
         break;
     case MD_MONO:
-        if( ChkMono() == FALSE ) {
+        if( ChkMono() == false ) {
             GetDefault();
         }
         break;
     case MD_COLOUR:
-        if( ChkColour() == FALSE ) {
+        if( ChkColour() == false ) {
             GetDefault();
         }
         break;
     case MD_EGA:
-        if( ChkEGA() == FALSE ) {
+        if( ChkEGA() == false ) {
             GetDefault();
         }
         break;
@@ -691,7 +691,7 @@ static void GetAdapter( void )
 /* ConfigScreen -- figure out screen configuration we're going to use. */
 unsigned ConfigScreen( void )
 {
-    OnAlt = FALSE;
+    OnAlt = false;
     GetDispConfig();
     SaveBIOSSettings();
     StartScrn.points = SaveScrn.points;
@@ -736,10 +736,10 @@ unsigned ConfigScreen( void )
 static bool SetMode( uint_8 mode )
 {
     if( ( BIOSGetMode() & 0x7f ) == ( mode & 0x7f ) ) {
-        return( FALSE );
+        return( false );
     }
     DoSetMode( mode );
-    return( TRUE );
+    return( true );
 }
 
 static void SetRegenClear( void )
@@ -1082,9 +1082,9 @@ extern bool UsrScrnMode( void )
                                         ( StartScrn.strt.attr & 0x70 ) >> 4;
     }
     if( FlipMech != FLIP_TWO ) {
-        usr_vis = FALSE;
+        usr_vis = false;
     } else {
-        usr_vis = TRUE;
+        usr_vis = true;
         SaveMouse( DbgMouse );
         RestoreMouse( PgmMouse );
         user_mode = ( DbgBiosMode == 7 ) ? 3 : 7;
@@ -1127,7 +1127,7 @@ extern bool DebugScreen( void )
 {
     bool                usr_vis;
 
-    usr_vis = TRUE;
+    usr_vis = true;
     SaveMouse( PgmMouse );
     SaveBIOSSettings();
     switch( FlipMech ) {
@@ -1136,7 +1136,7 @@ extern bool DebugScreen( void )
         SwapSave();
         BIOSSetPage( 0 );
         WndDirty( NULL );
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_PAGE:
         if( SetMode( DbgBiosMode ) ) {
@@ -1145,7 +1145,7 @@ extern bool DebugScreen( void )
             WndDirty( NULL );
         }
         BIOSSetPage( 1 );
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_OVERWRITE:
         if( SetMode( DbgBiosMode ) ) {
@@ -1153,7 +1153,7 @@ extern bool DebugScreen( void )
             SaveBIOSSettings();
         }
         WndDirty( NULL );
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     }
     RestoreMouse( DbgMouse );
@@ -1164,7 +1164,7 @@ extern bool DebugScreen( void )
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 /* UserScreen -- swap/page to user screen */
@@ -1172,17 +1172,17 @@ extern bool UserScreen( void )
 {
     bool                dbg_vis;
 
-    dbg_vis = TRUE;
+    dbg_vis = true;
     uiswap();
     SaveMouse( DbgMouse );
     switch( FlipMech ) {
     case FLIP_SWAP:
     case FLIP_CHEAPSWAP:
         SwapRestore();
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     case FLIP_PAGE:
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     }
     BIOSSetPage( SaveScrn.save.page );
@@ -1388,9 +1388,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

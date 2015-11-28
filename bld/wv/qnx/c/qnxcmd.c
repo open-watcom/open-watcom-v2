@@ -53,7 +53,7 @@ bool OptDelim( char ch )
 bool ProcSysOption( const char *start, unsigned len, int pass )
 {
     start=start;len=len;pass=pass;
-    return( FALSE );
+    return( false );
 }
 
 

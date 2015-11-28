@@ -159,23 +159,23 @@ static bool GetInvkCmd( invokes *inv )
     char        *buff;
     bool        eatwhite;
 
-    if( inv == NULL ) return( FALSE );
+    if( inv == NULL ) return( false );
     cmd = inv->buff;
     buff = inv->buff;
     ch = '\0';
     unmatched = 0;
-    eatwhite = FALSE;
+    eatwhite = false;
     for( ;; ) {
         ch = InvGetKey( inv );
-        if( inv->flags & AT_EOF ) return( FALSE );
+        if( inv->flags & AT_EOF ) return( false );
         if( ( ch == ' ' || ch == '\t' ) && eatwhite ) continue;
-        eatwhite = FALSE;
+        eatwhite = false;
         if( ch == '}' ) --unmatched;
         if( ch == '{' ) ++unmatched;
         if( ch == '\n' ) {
             inv->line++;
             if( unmatched <= 0 ) break;
-            eatwhite = TRUE;
+            eatwhite = true;
             ch = '\r';
         }
         if( cmd >= &buff[ inv->buff_size ] ) {
@@ -195,7 +195,7 @@ static bool GetInvkCmd( invokes *inv )
         cmd++;
     }
     *cmd = NULLCHAR;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -217,14 +217,14 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
-        if( !GetInvkCmd( inv ) ) return( FALSE );
+        if( !GetInvkCmd( inv ) ) return( false );
         ReScan( inv->buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_FINI:
         Conclude( inv );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE ); // silence compiler
+        return( false ); // silence compiler
     }
 }
 
@@ -257,7 +257,7 @@ static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
-    PushInpStack( inv, DoneInvLine, TRUE );
+    PushInpStack( inv, DoneInvLine, true );
     TypeInpStack( INP_CMD_FILE );
 }
 
@@ -325,12 +325,12 @@ void ProcInvoke( void )
     char_ring   *path;
     size_t      len;
 
-    if( !ScanItem( TRUE, &fstart, &flen ) )
+    if( !ScanItem( true, &fstart, &flen ) )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     parmlist = NULL;
     owner = &parmlist;
     while( !ScanEOC() ) {
-        ScanItem( TRUE, &start, &len );
+        ScanItem( true, &start, &len );
         _Alloc( path, sizeof( char_ring ) + len );
         if( path == NULL ) {
             FreeRing( parmlist );

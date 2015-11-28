@@ -50,8 +50,8 @@ bool InitFileInfoSupp( void )
 {
     SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
     if( SuppFileInfoId != 0 )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 long RemoteGetFileDate( const char *name )
@@ -85,7 +85,7 @@ bool RemoteSetFileDate( const char *name, long date )
     file_info_set_date_req      acc;
     file_info_set_date_ret      ret;
 
-    if( SuppFileInfoId == 0 ) return( FALSE );
+    if( SuppFileInfoId == 0 ) return( false );
     SUPP_FILE_INFO_SERVICE( acc, REQ_FILE_INFO_SET_DATE );
     acc.date = date;
     in[0].ptr = &acc;
@@ -97,8 +97,8 @@ bool RemoteSetFileDate( const char *name, long date )
     TrapAccess( 2, in, 1, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }

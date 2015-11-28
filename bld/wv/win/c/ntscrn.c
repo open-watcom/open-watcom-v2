@@ -74,7 +74,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreen( void )
@@ -86,13 +86,13 @@ bool DebugScreen( void )
         HwndFore = fore;
     }
     if( !IsIconic( DebuggerHwnd ) ) SetForegroundWindow( DebuggerHwnd );
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
     DebugScreen();
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
@@ -102,7 +102,7 @@ bool UserScreen( void )
     } else {
         HwndFore = NULL;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -129,7 +129,7 @@ void uifarfree( void *ptr )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 #if 0
 int mygetlasterr( void )

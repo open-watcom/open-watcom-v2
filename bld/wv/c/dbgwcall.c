@@ -126,8 +126,8 @@ static  bool    CallGetLine( a_window *wnd, int row, int piece, wnd_line_piece *
         return( true );
     case PIECE_SOURCE:
         line->indent = call->max_sym_len + 3 * WndAvgCharX( wnd );
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        line->tabstop = false;
+        line->use_prev_attr = true;
         if( chain->source_line == NULL ) {
             line->text = TxtBuff;
             UnAsm( chain->lc.execution, TxtBuff, TXT_LEN );

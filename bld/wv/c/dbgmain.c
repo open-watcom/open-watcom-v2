@@ -317,7 +317,7 @@ void DebugMain( void )
 
     LoadProg();
 
-    save = DUIStopRefresh( TRUE );
+    save = DUIStopRefresh( true );
     FreezeInpStack();
     _SwitchOn( SW_RUNNING_PROFILE );
     Spawn( Profile );           /* run profile command file */
@@ -346,7 +346,7 @@ void DebugFini( void )
 {
     PointFini();
 #if !( defined( __GUI__ ) && defined( __OS2__ ) )
-    ReleaseProgOvlay( TRUE ); // see dlgfile.c
+    ReleaseProgOvlay( true ); // see dlgfile.c
 #endif
     VarDisplayFini();
     FiniHook();

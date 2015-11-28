@@ -213,7 +213,7 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     if( bytes > MAX_DELTA_BYTES ) return( WR_STOP ); /* don't fit */
     new = NewMemDelta( a, bytes );
     if( new == NULL ) return( WR_STOP );
-    if( mk & MMK_VOLATILE ) new->_volatile = TRUE;
+    if( mk & MMK_VOLATILE ) new->_volatile = true;
     /* can keep in target form */
     new->size = ProgPeek( a, &new->data[0], bytes );
     return( WR_CONTINUE );
@@ -222,11 +222,11 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
 void SetMemBefore( bool tracing )
 {
     if( !tracing ) {
-        StateCurr->lost_mem_state = TRUE;
+        StateCurr->lost_mem_state = true;
         return;
     }
     if( !TraceModifications( FindMemRefs, NULL ) ) {
-        StateCurr->lost_mem_state = TRUE;
+        StateCurr->lost_mem_state = true;
     }
 }
 
@@ -244,9 +244,9 @@ void SetMemAfter( bool tracing )
         if( curr == NULL ) break;
         if( curr->after_set ) break;
         if( ProgPeek( curr->addr, &curr->data[curr->size], curr->size ) != curr->size ) {
-            StateCurr->lost_mem_state = TRUE;
+            StateCurr->lost_mem_state = true;
         }
-        curr->after_set = TRUE;
+        curr->after_set = true;
         if( !curr->_volatile
           && memcmp( &curr->data[0], &curr->data[curr->size], curr->size ) == 0 ) {
             /* don't need the sucker */
@@ -298,7 +298,7 @@ void ResizeRegData( void )
     if( new_size > CurrRegSize ) {
         /* should I zero out new memory? */
         /* Yes, it is neccessary for debug version */
-        found_dbgregs = FALSE;
+        found_dbgregs = false;
         state = StateCurr;
         for( ;; ) {
             old = state;
@@ -315,7 +315,7 @@ void ResizeRegData( void )
             state->prev->next = state;
             state->next->prev = state;
             if( &old->s == DbgRegs ) {
-                found_dbgregs = TRUE;
+                found_dbgregs = true;
                 DbgRegs = &state->s;
             }
             if( &old->s == PrevRegs ) PrevRegs = &state->s;
@@ -383,7 +383,7 @@ void ClearMachState( void )
     } while( state != StateCurr );
     PrevRegs = DbgRegs = &StateCurr->s;
     StateLast = StateCurr;
-    AlreadyWarnedUndo = FALSE;
+    AlreadyWarnedUndo = false;
 }
 
 
@@ -429,13 +429,13 @@ void SetupMachState( void )
         _Free( state->s.ovl );
         _Alloc( state->s.ovl, OvlSize );
         if( state->s.ovl == NULL ) {
-            ReleaseProgOvlay( FALSE );
+            ReleaseProgOvlay( false );
             Error( ERR_NONE, LIT_ENG( ERR_NO_OVL_STATE ) );
         }
         state = state->next;
     } while( state != StateCurr );
     if( !InitOvlState() ) {
-        ReleaseProgOvlay( FALSE );
+        ReleaseProgOvlay( false );
         Error( ERR_NONE, LIT_ENG( ERR_NO_OVL_STATE ) );
     }
     SectTblRead( DbgRegs );
@@ -490,7 +490,7 @@ void CollapseMachState( void )
     prev = &StateCurr->prev->s;
     if( prev->tid != curr->tid ) return;
     if( memcmp( &prev->mr, &curr->mr, CurrRegSize ) != 0 ) return;
-    StateCurr->valid = FALSE;
+    StateCurr->valid = false;
     StateCurr = StateCurr->prev;
     StateLast = StateCurr;
     PrevRegs = DbgRegs = &StateCurr->s;
@@ -503,14 +503,14 @@ bool CheckStackPos( void )
 {
     if( StackPos != 0 ) {
         if( _IsOff( SW_IN_REPLAY_MODE ) ) {
-            if( !DlgUpTheStack() ) return( FALSE );
+            if( !DlgUpTheStack() ) return( false );
         }
         SetRegIP( Context.execution );
         SetRegSP( Context.stack );
         SetRegBP( Context.frame );
         StackPos = 0;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -519,22 +519,22 @@ bool AdvMachState( int action )
     save_state          *new;
     bool                warn;
 
-    warn = FALSE;
+    warn = false;
     new = StateCurr;
     while( new != StateLast ) {
         new = new->next;
-        if( new->lost_mem_state ) warn = TRUE;
+        if( new->lost_mem_state ) warn = true;
     }
     if( StateCurr != StateLast && _IsOff( SW_IN_REPLAY_MODE ) ) {
-        if( !DlgBackInTime( warn ) ) return( FALSE );
+        if( !DlgBackInTime( warn ) ) return( false );
     }
     new = StateCurr;
     while( new != StateLast ) {
         new = new->next;
-        new->valid = FALSE;
+        new->valid = false;
     }
     PrevRegs = DbgRegs;
-    StateCurr->valid = TRUE;
+    StateCurr->valid = true;
     if( SysConfig.mad != MAD_MSJ ) {
         if( !StateCurr->next->valid ) {
             StateCurr = StateCurr->next;
@@ -552,14 +552,14 @@ bool AdvMachState( int action )
             }
         }
     }
-    StateCurr->valid = TRUE;
+    StateCurr->valid = true;
     DbgRegs = &StateCurr->s;
     StateLast = StateCurr;
 
     FreeMemDelta( StateCurr );
     CopyMachState( PrevRegs, DbgRegs );
-    AlreadyWarnedUndo = FALSE;
-    return( TRUE );
+    AlreadyWarnedUndo = false;
+    return( true );
 }
 
 
@@ -578,12 +578,12 @@ unsigned ChangeMem( address addr, const void * to, unsigned size )
         if( amount > MAX_DELTA_BYTES ) amount = MAX_DELTA_BYTES;
         curr = NewMemDelta( addr, amount );
         if( curr == NULL ) {
-            StateCurr->lost_mem_state = TRUE;
+            StateCurr->lost_mem_state = true;
         } else {
             if( ProgPeek( addr, &curr->data[0], amount ) != amount ) {
-                StateCurr->lost_mem_state = TRUE;
+                StateCurr->lost_mem_state = true;
             }
-            curr->after_set = TRUE;
+            curr->after_set = true;
             memcpy( &curr->data[amount], p, amount );
         }
         addr.mach.offset += amount;
@@ -648,19 +648,19 @@ bool MachStateInfoRelease( void )
     bool        freed;
 
     state = StateCurr;
-    freed = FALSE;
+    freed = false;
     do {
         next = state->next;
         if( !state->valid ) {
             FreeState( state );
-            freed = TRUE;
+            freed = true;
         }
         state = next;
     } while( state != StateCurr );
     if( !freed ) {
         if( StateLast->next != StateCurr ) {;
             FreeState( StateLast->next );
-            freed = TRUE;
+            freed = true;
         }
     }
     if( PrevRegs == NULL ) PrevRegs = &StateCurr->s;
@@ -702,7 +702,7 @@ void MoveStackPos( int by )
     }
     info.targ = StackPos + by;
     info.curr = 0;
-    info.success = FALSE;
+    info.success = false;
     WalkCallChain( CheckOneLevel, &info );
     if( info.success ) {
         SetStackPos( &info.lc, info.targ );
@@ -769,19 +769,19 @@ void PosMachState( int rel_pos )
             ReverseMemList( curr );
         } while( curr != new );
     } else {
-        lost_mem_state = FALSE;
+        lost_mem_state = false;
         for( curr = StateCurr; curr != new; curr = curr->prev ) {
             if( curr->lost_mem_state ) {
-                lost_mem_state = TRUE;
+                lost_mem_state = true;
             }
         }
         curr = StateCurr;
         if( lost_mem_state ) {
             if( AlreadyWarnedUndo ) {
-                lost_mem_state = FALSE;
+                lost_mem_state = false;
             } else if( DlgIncompleteUndo() ) {
-                lost_mem_state = FALSE;
-                AlreadyWarnedUndo = TRUE;
+                lost_mem_state = false;
+                AlreadyWarnedUndo = true;
             }
         }
         if( !lost_mem_state ) {
@@ -796,12 +796,12 @@ void PosMachState( int rel_pos )
     StateCurr = curr;
     PrevRegs = DbgRegs;
     DbgRegs = &StateCurr->s;
-    InitLC( &Context, TRUE );
+    InitLC( &Context, true );
     SetCodeLoc( GetRegIP() );
     DbgUpdate(UP_MEM_CHANGE | UP_CSIP_JUMPED | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_THREAD_STATE);
     MoveStackPos( stack_pos );
     if( StateCurr == StateLast ) {
-        AlreadyWarnedUndo = FALSE;
+        AlreadyWarnedUndo = false;
     }
 }
 
@@ -815,12 +815,12 @@ static bool CheckOneLevel( call_chain_entry *entry, void *_info )
     move_info  *info = _info;
 
     if( info->curr == info->targ ) {
-        info->success = TRUE;
+        info->success = true;
         info->lc = entry->lc;
-        return( FALSE );
+        return( false );
     } else {
         info->curr--;
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -943,7 +943,7 @@ void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
 
     li.scope.start = NULL;
     li.type = ST_NONE;
-    li.case_sensitive = FALSE;
+    li.case_sensitive = false;
     list = NULL;
     for( ;; ) {
         li.name.start = NamePos();
@@ -1000,7 +1000,7 @@ void RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mac
     size = ( reginfo->bit_size + (BITS_PER_BYTE-1) ) / BITS_PER_BYTE;
     RegLocation( mach, reginfo, &src_ll );
     LocationCreate( &dst_ll, LT_INTERNAL, value );
-    LocationAssign( &dst_ll, &src_ll, size, FALSE );
+    LocationAssign( &dst_ll, &src_ll, size, false );
 }
 
 void RegNewValue( const mad_reg_info *reginfo,

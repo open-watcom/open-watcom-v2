@@ -92,7 +92,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             break;
         }
     }
-    SetProgStartHook( TRUE );
+    SetProgStartHook( true );
     UnFreezeRegs();
     ScanExpr( NULL );
     ExprPurge();
@@ -128,7 +128,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         RingBell();
         DUIErrorBox( buff );
     }
-    cmderror = FALSE;
+    cmderror = false;
     for( inp = InpStack; inp != NULL; inp = inp->link ) {
         if( inp->type & INP_BREAK_POINT ) {
             BrkCmdError();
@@ -137,7 +137,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             CaptureError();
         }
         if( inp->type & INP_DLG_CMD ) {
-            cmderror = TRUE;
+            cmderror = true;
         }
     }
     PurgeInpStack();

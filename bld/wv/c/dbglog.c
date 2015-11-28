@@ -120,7 +120,7 @@ static void OpenLog( open_access mode )
 
     if( LogHndl != NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_LOG_STARTED ) );
-    } else if( !ScanItem( TRUE, &start, &len ) ) {
+    } else if( !ScanItem( true, &start, &len ) ) {
         Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     } else {
         if( len > TXT_LEN ) len = TXT_LEN;

@@ -159,15 +159,15 @@ long AddrDiff( address a, address b )
 
 
 /*
- * SameAddrSpace - return TRUE if two addresses are in the same address space
+ * SameAddrSpace - return true if two addresses are in the same address space
  */
 
-int SameAddrSpace( address a, address b )
+bool SameAddrSpace( address a, address b )
 {
-    if( _IsOn( SW_IGNORE_SEGMENTS ) ) return( TRUE );
+    if( _IsOn( SW_IGNORE_SEGMENTS ) ) return( true );
     if( a.sect_id == 0 ) a.sect_id = b.sect_id;
     if( b.sect_id == 0 ) b.sect_id = a.sect_id;
-    if( a.sect_id != b.sect_id ) return( FALSE );
+    if( a.sect_id != b.sect_id ) return( false );
     AddrFix( &a );
     AddrFix( &b );
     DeAlias( &a.mach );

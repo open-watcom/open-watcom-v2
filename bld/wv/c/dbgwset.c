@@ -491,11 +491,11 @@ extern void MacroSet( void )
 
     wndcls = ReqWndName();
     key = 0;
-    if( ScanItem( TRUE, &start, &len ) ) {
+    if( ScanItem( true, &start, &len ) ) {
         key = MapKey( start, len );
     }
     if( key == 0 ) Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
-    scanned = ScanItem( TRUE, &start, &len );
+    scanned = ScanItem( true, &start, &len );
     ReqEOC();
     if( scanned ) {
         p = TxtBuff;
@@ -608,23 +608,23 @@ extern void SearchSet( void )
         Scan();
         switch( ScanCmd( SearchSettings ) ) {
         case SEARCH_IGNORE:
-            WndSetSrchIgnoreCase( TRUE );
+            WndSetSrchIgnoreCase( true );
             break;
         case SEARCH_RESPECT:
-            WndSetSrchIgnoreCase( FALSE );
+            WndSetSrchIgnoreCase( false );
             break;
         case SEARCH_RX:
-            WndSetSrchRX( TRUE );
+            WndSetSrchRX( true );
             break;
         case SEARCH_NORX:
-            WndSetSrchRX( FALSE );
+            WndSetSrchRX( false );
             break;
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             break;
         }
     }
-    if( ScanItem( TRUE, &start, &len ) ) {
+    if( ScanItem( true, &start, &len ) ) {
         WndSetSrchMagicChars( start, len );
     }
     ReqEOC();

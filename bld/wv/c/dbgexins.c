@@ -60,7 +60,7 @@ void AsmExam( void )
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
+//    prompt = true;
     ReqEOC();
     WndAsmInspect( addr );
 }
@@ -81,7 +81,7 @@ void SrcExam( void )
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
+//    prompt = true;
     ReqEOC();
     WndSrcInspect( addr );
 }

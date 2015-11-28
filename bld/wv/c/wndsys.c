@@ -211,17 +211,17 @@ void ProcPUINYI( a_window *wnd )
 
 void ProcWndSearch( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, DlgSearch( wnd, SrchHistory ) );
+    DbgWndSearch( wnd, false, DlgSearch( wnd, SrchHistory ) );
 }
 
 void ProcWndTabLeft( a_window *wnd )
 {
-    WndTabLeft( wnd, TRUE );
+    WndTabLeft( wnd, true );
 }
 
 void ProcWndTabRight( a_window *wnd )
 {
-    WndTabRight( wnd, TRUE );
+    WndTabRight( wnd, true );
 }
 
 void ProcSearchAll( void )
@@ -240,12 +240,12 @@ void ProcWndPopUp( a_window *wnd )
 
 void ProcWndFindNext( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, 1 );
+    DbgWndSearch( wnd, false, 1 );
 }
 
 void ProcWndFindPrev( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, -1 );
+    DbgWndSearch( wnd, false, -1 );
 }
 
 static void WndBadCmd( a_window *wnd )
@@ -293,7 +293,7 @@ void WndSysEnd( bool pause )
 static bool DoScreenSwap( void )
 {
 #if defined(__GUI__) && defined(__WINDOWS__)
-    return( FALSE );
+    return( false );
 #else
     return( _IsOff( SW_REMOTE_LINK ) );
 #endif
@@ -362,9 +362,9 @@ void WndRedraw( wnd_class wndcls )
 static void ProcessMacro( wnd_macro *mac )
 {
     if( mac->type == MACRO_MAIN_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, TRUE );
+        if( mac->menu != NULL ) AccelMenuItem( mac->menu, true );
     } else if( mac->type == MACRO_POPUP_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, FALSE );
+        if( mac->menu != NULL ) AccelMenuItem( mac->menu, false );
     } else {
         PushCmdList( mac->cmd );
     }
@@ -376,10 +376,10 @@ static bool AmpEqual( const char *label, char ch )
     ch = tolower( ch );
     while( label[0] != '\0' ) {
         if( label[0] == '&' && ch == tolower( label[1] ) )
-            return( TRUE );
+            return( true );
         ++label;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -416,7 +416,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 
     all = NULL;
     if( WndClass( wnd ) == WND_MACRO && MacKeyHit( wnd, key ) ) {
-        return( TRUE );
+        return( true );
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         if( mac->key == key ) {
@@ -424,21 +424,21 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
                 all = mac;
             } else if( mac->wndcls == WndClass( wnd ) ) {
                 ProcessMacro( mac );
-                return( TRUE );
+                return( true );
             }
         }
     }
     if( all != NULL ) {
         ProcessMacro( all );
-        return( TRUE );
+        return( true );
     }
-    if( wnd == NULL ) return( FALSE );
+    if( wnd == NULL ) return( false );
     ch = LookUpCtrlKey( key );
-    if( ch == 0 ) return( FALSE );
+    if( ch == 0 ) return( false );
     menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );//
-    if( menu == NULL ) return( FALSE );
-    AccelMenuItem( menu, FALSE );
-    return( TRUE );
+    if( menu == NULL ) return( false );
+    AccelMenuItem( menu, false );
+    return( true );
 }
 
 
@@ -458,10 +458,10 @@ void WndSysInit( void )
 void SetUnderLine( a_window *wnd, wnd_line_piece *line )
 {
     line->attr = WND_STANDOUT;
-    line->tabstop = FALSE;
-    line->static_text = TRUE;
+    line->tabstop = false;
+    line->static_text = true;
     line->text = LIT_ENG( Empty );
-    line->underline = TRUE;
+    line->underline = true;
     line->indent = 0;
     line->extent = WndWidth( wnd );
 }
@@ -620,7 +620,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 extern a_window *DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class wndcls, void *extra, gui_resource *icon )
 {
-    return( DbgTitleWndCreate( title, info, wndcls, extra, icon, 0, TRUE ) );
+    return( DbgTitleWndCreate( title, info, wndcls, extra, icon, 0, true ) );
 }
 
 static char **RXErrTxt[] = {
@@ -648,12 +648,12 @@ extern void WndRXError( int num )
 static bool GetInitName( char *name, char *buff, unsigned buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );
-    if( buff_len == 0 ) return( FALSE );
+    if( buff_len == 0 ) return( false );
     buff += buff_len;
     *buff++ = '\\';
     buff = StrCopy( name, buff );
     buff = StrCopy( ".INI", buff );
-    return( TRUE );
+    return( true );
 }
 
 void SaveMainScreen( char *name )

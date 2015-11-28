@@ -67,9 +67,9 @@ void InitLC( location_context *new, bool use_real_regs )
 {
     memset( new, 0, sizeof( *new ) );
     new->regs = DbgRegs;
-    new->have_stack = TRUE;
-    new->maybe_have_frame = TRUE;
-    new->maybe_have_object = TRUE;
+    new->have_stack = true;
+    new->maybe_have_frame = true;
+    new->maybe_have_object = true;
     new->use = 1;
     if( use_real_regs ) {
         new->execution = GetRegIP();
@@ -92,7 +92,7 @@ void CreateLC( stack_entry *entry )
 
     if( entry->lc == NULL ) {
         _ChkAlloc( new, sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-        InitLC( new, FALSE );
+        InitLC( new, false );
         entry->lc = new;
     }
 }
@@ -148,9 +148,9 @@ void CreateEntry( void )
 bool AllocatedString( stack_entry *stk )
 {
     if( stk->info.kind != TK_STRING )
-        return( FALSE );
+        return( false );
     if( stk->flags & SF_LOCATION )
-        return( FALSE );
+        return( false );
     return( stk->v.string.allocated != 0 );
 }
 
@@ -412,7 +412,7 @@ void PushAddr( address addr )
     CreateEntry();
     ExprSP->v.addr = addr;
     AddrFix( &ExprSP->v.addr );
-    ExprSetAddrInfo( ExprSP, FALSE );
+    ExprSetAddrInfo( ExprSP, false );
 }
 
 void PushLocation( location_list *ll, dip_type_info *ti )
@@ -646,7 +646,7 @@ unsigned TstLT( unsigned true_value )
 
 
 /*
- * TstTrue - set to FALSE or TRUE and return result
+ * TstTrue - set to false or true and return result
  */
 
 unsigned TstTrue( unsigned true_value )
@@ -669,15 +669,15 @@ unsigned TstExist( unsigned true_value )
     sym_list    *syms;
 
     if( ExprSP->flags & SF_NAME ) {
-        syms = ExprGetSymList( ExprSP, FALSE );
+        syms = ExprGetSymList( ExprSP, false );
         if( syms != NULL ) {
             PurgeSymHandles();
-            tst = TRUE;
+            tst = true;
         } else {
-            tst = FALSE;
+            tst = false;
         }
     } else {
-        tst = TRUE;
+        tst = true;
     }
     PopEntry();
     PushBool( tst ? true_value : 0 );
@@ -706,7 +706,7 @@ void MakeAddr( void )
     ExprSP->v.addr.mach.offset = offset;
     ExprSP->v.addr.mach.segment = U32FetchTrunc( left->v.uint );
     AddrFloat( &ExprSP->v.addr );
-    ExprSetAddrInfo( ExprSP, TRUE );
+    ExprSetAddrInfo( ExprSP, true );
     CombineEntries( ExprSP, left, ExprSP );
 }
 
@@ -753,7 +753,7 @@ void ExprPurge( void )
     ExprSP = stk_ptr;
     if( StringStart != NULL )
         _Free( StringStart );
-    FreePgmStack( TRUE );
+    FreePgmStack( true );
 }
 
 void MarkArrayOrder( bool column_major )

@@ -106,13 +106,13 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         } else {
             WndMenuGrayAll( wnd );
         }
-        WndMenuEnable( wnd, MENU_BREAK_CREATE_NEW, TRUE );
+        WndMenuEnable( wnd, MENU_BREAK_CREATE_NEW, true );
         break;
     case MENU_BREAK_ENABLE:
-        ActPoint( bp, TRUE );
+        ActPoint( bp, true );
         break;
     case MENU_BREAK_DISABLE:
-        ActPoint( bp, FALSE );
+        ActPoint( bp, false );
         break;
     case MENU_BREAK_CREATE_NEW:
         if( !DlgBreak( NilAddr ) ) break;
@@ -145,7 +145,7 @@ static void     BrkModify( a_window *wnd, int row, int piece )
     if( bp == NULL ) return;
     if( piece == PIECE_ACTIVE ) {
         WndRowDirty( wnd, row );
-        WndBreak( wnd )->toggled_break = TRUE;
+        WndBreak( wnd )->toggled_break = true;
         ActPoint( bp, !bp->status.b.active );
 #ifdef OPENER_GADGET
     } else if( piece == PIECE_OPENER ) {
@@ -184,9 +184,9 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
 
     wnd = wnd;
     bp = BrkGetBP( row );
-    if( bp == NULL ) return( FALSE );
+    if( bp == NULL ) return( false );
     line->text = TxtBuff;
-    line->tabstop = FALSE;
+    line->tabstop = false;
     switch( piece ) {
 #ifdef OPENER_GADGET
     case PIECE_OPENER:
@@ -198,7 +198,7 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
             bp->status.b.source_open =
                 OpenGadget( wnd, line, mh, bp->source_line != NULL );
         }
-        return( TRUE );
+        return( true );
     }
 #endif
     case PIECE_ACTIVE:
@@ -207,21 +207,21 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
         #endif
         curr = AddrComp( bp->loc.addr, Context.execution ) == 0;
         FileBreakGadget( wnd, line, curr, bp );
-        return( TRUE );
+        return( true );
     case PIECE_ADDR:
         line->indent = wndbreak->addr_indent;
         line->extent = WND_MAX_EXTEND;
-        line->tabstop = TRUE;
+        line->tabstop = true;
         GetBPAddr( bp, TxtBuff );
-        return( TRUE );
+        return( true );
     case PIECE_SOURCE:
         line->indent = wndbreak->source_indent;
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        line->tabstop = false;
+        line->use_prev_attr = true;
         GetBPText( bp, TxtBuff );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -251,7 +251,7 @@ static void     BrkInit( a_window *wnd )
     wndbreak->source_indent = length;
 
     if( wndbreak->toggled_break ) {
-        wndbreak->toggled_break = FALSE;
+        wndbreak->toggled_break = false;
         return;
     }
     WndNoSelect( wnd );
@@ -301,16 +301,16 @@ static bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     parm=parm;
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
-        wndbreak->toggled_break = FALSE;
+        wndbreak->toggled_break = false;
         BrkInit( wnd );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE:
         BrkInit( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY:
         WndFree( wndbreak );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info BrkInfo = {

@@ -90,13 +90,13 @@ static bool CallRoutine( void )
 
     sp = GetRegSP();
     for( ;; ) {
-        trap = ExecProg( FALSE, TRUE, FALSE );
+        trap = ExecProg( false, true, false );
         if( !(trap & COND_BREAK) ) {
-            ReportTrap( trap, FALSE );
-            return( FALSE );
+            ReportTrap( trap, false );
+            return( false );
         }
         if( MADTraceHaveRecursed( sp, &DbgRegs->mr ) != MS_OK ) {
-            return( TRUE );
+            return( true );
         }
     }
 }
@@ -139,7 +139,7 @@ bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
     MADCallBuildFrame( ctype, start, start, &DbgRegs->mr, &DbgRegs->mr );
     DbgTmpBrk.loc.addr = start;
     NullStatus( &DbgTmpBrk );
-    DbgTmpBrk.status.b.active = TRUE;
+    DbgTmpBrk.status.b.active = true;
     ret = CallRoutine();
     NullStatus( &DbgTmpBrk );
     return( ret );

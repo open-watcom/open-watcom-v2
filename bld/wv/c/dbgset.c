@@ -335,7 +335,7 @@ static void AutoConf( void )
 static void BreakOnWriteSet( void )
 {
     _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
-    SetCapabilitiesExactBreakpointSupport( TRUE, FALSE );
+    SetCapabilitiesExactBreakpointSupport( true, false );
 }
 
 static void BreakOnWriteConf( void )
@@ -378,7 +378,7 @@ bool LangSetInit( void )
     LangInit();
     _Alloc( Language, sizeof( InitialLang ) + 1 );
     if( Language == NULL )
-        return( FALSE );
+        return( false );
     StrCopy( InitialLang, Language );
     return( LangLoad( Language, strlen( Language ) ) );
 }
@@ -426,7 +426,7 @@ static void LangSet( void )
     const char  *start;
     size_t      len;
 
-    ScanItem( TRUE, &start, &len );
+    ScanItem( true, &start, &len );
     ReqEOC();
     NewLang( start );
 }
@@ -540,7 +540,7 @@ static bool DoOneToggle( mad_window_toggles wt )
     const mad_toggle_strings    *toggles;
     const mad_reg_set_data      *rsd;
 
-    if( !ScanItem( TRUE, &start, &len ) ) return( FALSE );
+    if( !ScanItem( true, &start, &len ) ) return( false );
     switch( wt ) {
     case MWT_ASM:
         rsd = NULL;
@@ -549,35 +549,35 @@ static bool DoOneToggle( mad_window_toggles wt )
         RegFindData( MTK_FLOAT, &rsd );
         if( rsd == NULL ) {
             PendingAdd( SysConfig.mad, wt, start, len );
-            return( TRUE );
+            return( true );
         }
         break;
     case MWT_REG:
         RegFindData( MTK_INTEGER, &rsd );
         if( rsd == NULL ) {
             PendingAdd( SysConfig.mad, wt, start, len );
-            return( TRUE );
+            return( true );
         }
         break;
     case MWT_MMX:
         RegFindData( MTK_CUSTOM, &rsd );
         if( rsd == NULL ) {
             PendingAdd( SysConfig.mad, wt, start, len );
-            return( TRUE );
+            return( true );
         }
         break;
     case MWT_XMM:
         RegFindData( MTK_XMM, &rsd );
         if( rsd == NULL ) {
             PendingAdd( SysConfig.mad, wt, start, len );
-            return( TRUE );
+            return( true );
         }
         break;
     }
     bit = 1;
     toggles = GetMADToggleList( rsd );
     for( ;; ) {
-        if( toggles->on == MAD_MSTR_NIL ) return( FALSE );
+        if( toggles->on == MAD_MSTR_NIL ) return( false );
         GetMADNormalizedString( toggles->on, TxtBuff, TXT_LEN );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, bit, 0 );
@@ -591,7 +591,7 @@ static bool DoOneToggle( mad_window_toggles wt )
         bit <<= 1;
         ++toggles;
     }
-    return( TRUE );
+    return( true );
 }
 
 void PendingToggles( void )
@@ -631,9 +631,9 @@ static bool OneToggle( mad_window_toggles wt )
 
 
     scan = ScanPos();
-    if( DoOneToggle( wt ) ) return( TRUE );
+    if( DoOneToggle( wt ) ) return( true );
     ReScan( scan );
-    if( !ScanItem( TRUE, &name, &len ) ) return( FALSE );
+    if( !ScanItem( true, &name, &len ) ) return( false );
     scan = name;
     for( ;; ) {
         if( scan > &name[len] ) break;
@@ -644,15 +644,15 @@ static bool OneToggle( mad_window_toggles wt )
         }
         ++scan;
     }
-    if( CurrToken != T_DIV ) return( FALSE );
+    if( CurrToken != T_DIV ) return( false );
     Scan();
     new_mad = FindMAD( name, len );
-    if( new_mad == MAD_NIL ) return( FALSE );
+    if( new_mad == MAD_NIL ) return( false );
     if( MADLoaded( new_mad ) != MS_OK ) {
         /* put the toggle on the pending list */
-        if( !ScanItem( TRUE, &name, &len ) ) return( FALSE );
+        if( !ScanItem( true, &name, &len ) ) return( false );
         PendingAdd( wt, new_mad, name, len );
-        return( TRUE );
+        return( true );
     }
     old_mad = MADActiveSet( new_mad );
     res = DoOneToggle( wt );
@@ -1013,10 +1013,10 @@ static bool IsInSupportNames( const char *name, size_t len )
 
     for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
         if( strlen( curr->name ) == len && memcmp( curr->name, name, len ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void SupportSet( void )
@@ -1027,7 +1027,7 @@ static void SupportSet( void )
     unsigned    count;
 
     count = 0;
-    while( ScanItemDelim( ";}", TRUE, &start, &len ) ) {
+    while( ScanItemDelim( ";}", true, &start, &len ) ) {
         if( !IsInSupportNames( start, len ) ) {
             new = DbgMustAlloc( sizeof( *new ) + len );
             new->next = SupportRtns;
@@ -1065,9 +1065,9 @@ static void SupportConf( void )
 static bool SupportName( char *name, char *pattern )
 {
     for( ;; ) {
-        if( *name == '\0' && *pattern == '\0' ) return( TRUE );
-        if( *pattern == '*' ) return( TRUE );
-        if( *name != *pattern ) return( FALSE );
+        if( *name == '\0' && *pattern == '\0' ) return( true );
+        if( *pattern == '*' ) return( true );
+        if( *name != *pattern ) return( false );
         ++name;
         ++pattern;
     }
@@ -1078,9 +1078,9 @@ bool IsSupportRoutine( sym_handle *sym )
     char_ring                   *curr;
     char                        name[TXT_LEN];
 
-    QualifiedSymName( sym, name, sizeof( name ), TRUE );
+    QualifiedSymName( sym, name, sizeof( name ), true );
     for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
-        if( SupportName( name, curr->name ) ) return( TRUE );
+        if( SupportName( name, curr->name ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }

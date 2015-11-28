@@ -89,9 +89,9 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         break;
 #endif
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

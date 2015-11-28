@@ -109,9 +109,9 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         DPMICheck = 2;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
