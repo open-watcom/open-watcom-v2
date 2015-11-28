@@ -31,19 +31,19 @@
 
 
 typedef enum
- {
-        /* one character command line delimiters */
+{
+    /* one character command line delimiters */
     #define pick(t,c)   t,
     #include "_dbgtok.h"
     #undef pick
-        /* numbers & names for expressions and command lines */
+    /* numbers & names for expressions and command lines */
     T_INT_NUM,
     T_REAL_NUM,
     T_BAD_NUM,
     T_NAME,
     T_STRING,
     T_UNKNOWN,
- } tokens;
+} tokens;
 
 #define FIRST_CMDLN_DELIM  T_LT
 #define LAST_CMDLN_DELIM   T_UNKNOWN
