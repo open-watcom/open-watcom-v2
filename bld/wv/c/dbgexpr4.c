@@ -488,9 +488,12 @@ void DoAPoints( stack_entry *stk, type_kind def )
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
             TypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
             ClassifyEntry( stk, &stk->info );
-            if( stk->info.kind == TK_VOID ) Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
+            if( stk->info.kind == TK_VOID ) {
+                Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
+            }
         } else {
-            if( def == TK_NONE ) def = TK_INTEGER;
+            if( def == TK_NONE )
+                def = TK_INTEGER;
             stk->info.kind = def;
             switch( def ) {
             case TK_INTEGER:
@@ -528,22 +531,29 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
-    if( object->th != NULL ) HDLAssign( type, obj_th, object->th );
+    if( object->th != NULL )
+        HDLAssign( type, obj_th, object->th );
     ClassifyEntry( new, &new_type );
     new_type.modifier &= TM_MOD_MASK; /* turn off DEREF bit */
     ConvertTo( object, new_type.kind, new_type.modifier, new_type.size );
-    if( object->th == NULL ) goto no_adjust;
+    if( object->th == NULL )
+        goto no_adjust;
     ClassifyEntry( object, &obj_type );
-    if( obj_type.kind != TK_POINTER ) goto no_adjust;
-    if( AddrComp( object->v.addr, NilAddr ) == 0 ) goto no_adjust;
+    if( obj_type.kind != TK_POINTER )
+        goto no_adjust;
+    if( AddrComp( object->v.addr, NilAddr ) == 0 )
+        goto no_adjust;
     TypeBase( obj_th, obj_th, NULL, NULL );
     ClassifyType( object->lc, obj_th, &obj_type );
-    if( obj_type.kind != TK_STRUCT ) goto no_adjust;
+    if( obj_type.kind != TK_STRUCT )
+        goto no_adjust;
     ClassifyEntry( new, &new_type );
-    if( new_type.kind != TK_POINTER ) goto no_adjust;
+    if( new_type.kind != TK_POINTER )
+        goto no_adjust;
     TypeBase( new->th, new_th, NULL, NULL );
     ClassifyType( object->lc, new_th, &new_type );
-    if( new_type.kind != TK_STRUCT ) goto no_adjust;
+    if( new_type.kind != TK_STRUCT )
+        goto no_adjust;
     /*
      * At this point we know both the old type and the new type were
      * pointers to structures (classes) and that the pointer is non-null.
@@ -703,7 +713,8 @@ OVL_EXTERN bool FindContext( call_chain_entry *entry, void *_info )
     find_context *info = _info;
     unsigned    save_use;
 
-    if( AddrComp( entry->start, info->proc_addr ) != 0 ) return( TRUE );
+    if( AddrComp( entry->start, info->proc_addr ) != 0 )
+        return( TRUE );
     save_use = info->lc->use;
     *info->lc = entry->lc;
     info->lc->use = save_use;
@@ -828,8 +839,7 @@ void DoAssign( void )
     LValue( ExprSP );
     if( (dest->flags & SF_NAME) && !NameResolve( dest, FALSE ) ) {
         if( !CreateSym( &dest->v.li, &ExprSP->info ) ) {
-            Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start,
-                        dest->v.li.name.len );
+            Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start, dest->v.li.name.len );
         }
     }
     LValue( dest );
@@ -839,20 +849,22 @@ void DoAssign( void )
                 Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
             copy = ExprSP->info.size;
-            if( copy > dest->info.size ) copy = dest->info.size;
+            if( copy > dest->info.size )
+                copy = dest->info.size;
             if( LocationAssign( &dest->v.loc, &ExprSP->v.loc, copy, FALSE ) != DS_OK ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
             if( dest->info.size > copy ) {
                 /* have to pad */
                 #define PADDING "                     "
-                #define PAD_LEN (sizeof(PADDING)-1)
+                #define PAD_LEN (sizeof( PADDING ) - 1)
                 ll = dest->v.loc;
                 pad = dest->info.size - ExprSP->info.size;
                 do {
                     LocationAdd( &ll, copy * 8 );
                     copy = pad;
-                    if( copy > PAD_LEN ) copy = PAD_LEN;
+                    if( copy > PAD_LEN )
+                        copy = PAD_LEN;
                     LocationCreate( &src, LT_INTERNAL, PADDING );
                     if( LocationAssign( &ll, &src, copy, FALSE ) != DS_OK ) {
                         Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
@@ -882,12 +894,14 @@ static address AllocPgmStack( unsigned size )
     address     addr;
     address     new;
 
-    if( _IsOn( SW_STACK_GROWS_UP ) ) size = -size;
+    if( _IsOn( SW_STACK_GROWS_UP ) )
+        size = -size;
     addr = GetRegSP();
     new = addr;
     new.mach.offset -= (int)size;
-    PgmStackUsage[ NestedCallLevel ] += size;
-    if( _IsOff( SW_STACK_GROWS_UP ) ) addr.mach.offset = new.mach.offset;
+    PgmStackUsage[NestedCallLevel] += size;
+    if( _IsOff( SW_STACK_GROWS_UP ) )
+        addr.mach.offset = new.mach.offset;
     SetRegSP( new );
     return( addr );
 }
@@ -937,9 +951,12 @@ static type_modifier DerefType( type_handle *th )
 {
     dip_type_info   ti;
 
-    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK ) return( TM_NONE );
-    if( ti.kind != TK_POINTER ) return( TM_NONE );
-    if( !(ti.modifier & TM_FLAG_DEREF) ) return( TM_NONE );
+    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
+        return( TM_NONE );
+    if( ti.kind != TK_POINTER )
+        return( TM_NONE );
+    if( !(ti.modifier & TM_FLAG_DEREF) )
+        return( TM_NONE );
     return( ti.modifier & TM_MOD_MASK );
 }
 
@@ -1061,7 +1078,8 @@ void DoCall( unsigned num_parms, bool build_scbs )
     unsigned            size;
     dip_status          ds;
 
-    if( _IsOn( SW_CALL_FATAL ) ) Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
+    if( _IsOn( SW_CALL_FATAL ) )
+        Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     rtn_entry = StkEntry( num_parms );
     RValue( rtn_entry );
     switch( rtn_entry->info.kind ) {
@@ -1274,7 +1292,8 @@ void PrepReturnInfo( sym_handle *f, return_info *ri )
             ExprSP->info.kind = TK_INTEGER;
             ExprSP->info.modifier = TM_UNSIGNED;
             ExprSP->info.size = ri->ref_size;
-            if( ri->ref_far ) ExprSP->info.size -= sizeof( addr_seg );
+            if( ri->ref_far )
+                ExprSP->info.size -= sizeof( addr_seg );
             ExprSP->flags = SF_LOCATION;
             RValue( ExprSP );
             ri->ti.size = ExprSP->v.uint;
@@ -1316,7 +1335,8 @@ void PushReturnInfo( sym_handle *f, return_info *ri )
     }
     SymType( f, th );
     TypeProcInfo( th, th, 0 );
-    if( ri->want_base_type ) TypeBase( th, th, NULL, NULL );
+    if( ri->want_base_type )
+        TypeBase( th, th, NULL, NULL );
     PushType( th );
     ExprSP->v.loc = ri->ll;
     ExprSP->flags = SF_LOCATION;

@@ -140,16 +140,20 @@ static stack_class TypeInfoToClass( dip_type_info *ti )
     switch( ti->kind ) {
     case TK_INTEGER:
         c = STK_INT;
-        if( ti->modifier == TM_UNSIGNED ) c |= STK_UNSIGNED;
-        if( ti->size == 4 ) c |= STK_LONG;
+        if( ti->modifier == TM_UNSIGNED )
+            c |= STK_UNSIGNED;
+        if( ti->size == 4 )
+            c |= STK_LONG;
         break;
     case TK_POINTER:
         c = STK_FAR_PTR;
-        if( ti->size == 6 ) c |= STK_LONG;
+        if( ti->size == 6 )
+            c |= STK_LONG;
         break;
     case TK_ADDRESS:
         c = STK_ADDR;
-        if( ti->size == 6 ) c |= STK_LONG;
+        if( ti->size == 6 )
+            c |= STK_LONG;
         break;
     case TK_ARRAY:
         c = STK_ARRAY;
@@ -226,7 +230,8 @@ static void FillInDefaults( dip_type_info *info )
 
     switch( info->kind ) {
     case TK_INTEGER:
-        if( info->modifier == TM_NONE ) info->modifier = TM_SIGNED;
+        if( info->modifier == TM_NONE )
+            info->modifier = TM_SIGNED;
         if( info->size == 0 ) {
             if( ModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
@@ -253,7 +258,8 @@ static void FillInDefaults( dip_type_info *info )
                 }
             }
             if( info->size == 0 ) {
-                if( info->modifier == TM_NEAR ) mti.b.bits -= mti.a.seg.bits;
+                if( info->modifier == TM_NEAR )
+                    mti.b.bits -= mti.a.seg.bits;
                 info->size = mti.b.bits / BITS_PER_BYTE;
             }
         }
@@ -294,11 +300,13 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         CurrScan[ScanSavePtr++] = ScanPos();
         break;
     case 6:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 )
+            Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         ReScan( CurrScan[--ScanSavePtr] );
         break;
     case 7:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 )
+            Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         --ScanSavePtr;
         break;
     case 8:
@@ -329,7 +337,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         if( NestedCallLevel == MAX_NESTED_CALL - 1 ) {
             Error( ERR_NONE, LIT_ENG( ERR_TOO_MANY_CALLS ) );
         } else {
-            PgmStackUsage[ ++NestedCallLevel ] = 0;
+            PgmStackUsage[++NestedCallLevel] = 0;
         }
         break;
     case 15:
@@ -365,7 +373,8 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         break;
     case 17:
         EvalSubstring = parm;
-        if( parm ) ExprSP->v.string.ss_offset = 0;
+        if( parm )
+            ExprSP->v.string.ss_offset = 0;
         break;
     case 18:
         result = EvalSubstring;
@@ -443,8 +452,7 @@ static bool UserType( type_handle *th )
         ExprSP->v.li.type = ST_TYPE;
         for( i = 0; TagIds[i] != NULL; ++i ) {
             len = strlen( TagIds[i] );
-            if( len == ExprSP->v.li.name.len
-                && memcmp( ExprSP->v.li.name.start, TagIds[i], len ) == 0 ) {
+            if( len == ExprSP->v.li.name.len && memcmp( ExprSP->v.li.name.start, TagIds[i], len ) == 0 ) {
                 ExprSP->v.li.type = ST_STRUCT_TAG + i;
                 ExprSP->v.li.name.start = NamePos();
                 ExprSP->v.li.name.len = NameLen();
@@ -454,10 +462,13 @@ static bool UserType( type_handle *th )
     }
     //NYI: end temp
     NameResolve( ExprSP, TRUE );
-    if( !(ExprSP->flags & SF_SYM) ) return( FALSE );
-    if( ExprSP->th == NULL ) return( FALSE );
+    if( (ExprSP->flags & SF_SYM) == 0 )
+        return( FALSE );
+    if( ExprSP->th == NULL )
+        return( FALSE );
     SymInfo( ExprSP->v.sh, ExprSP->lc, &info );
-    if( info.kind != SK_TYPE ) return( FALSE );
+    if( info.kind != SK_TYPE )
+        return( FALSE );
     HDLAssign( type, th, ExprSP->th );
     return( TRUE );
 }
@@ -695,7 +706,8 @@ struct internal_mod {
 
 OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
 {
-    if( !IsInternalMod( mh ) ) return( WR_CONTINUE );
+    if( !IsInternalMod( mh ) )
+        return( WR_CONTINUE );
     ((struct internal_mod *)d)->mh = mh;
     return( WR_STOP );
 }
@@ -750,7 +762,8 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
     case 2:
         ParseRegSet( TRUE, &ll, &ti );
         if( ti.size != 0 ) {
-            if( ti.kind == TK_NONE ) Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
+            if( ti.kind == TK_NONE )
+                Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             PushLocation( &ll, &ti );
             result = TRUE;
         }
@@ -769,7 +782,7 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         }
         break;
     case 4:
-        BasicType( TypeTbl[ parm ] );
+        BasicType( TypeTbl[parm] );
         break;
     case 5:
         DupStack();
@@ -788,11 +801,11 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         default:
             return( FALSE );
         }
-        #if SSL_VERSION_MINOR_CURR != 0
-            if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
-                return( FALSE );
-            }
-        #endif
+#if SSL_VERSION_MINOR_CURR != 0
+        if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
+            return( FALSE );
+        }
+#endif
         result = TRUE;
         break;
     case 9:
@@ -935,7 +948,8 @@ static walk_result FindCue( cue_handle *ch, void *d )
 
 
     len = CueFile( ch, file, sizeof( file ) );
-    if( len < cd->len ) return( WR_CONTINUE );
+    if( len < cd->len )
+        return( WR_CONTINUE );
     if( memcmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
         match = CMP_SENSITIVE;
     } else if( memicmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
@@ -964,7 +978,8 @@ static walk_result FindModCue( mod_handle mod, void *d )
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
         WalkFileList( mod, FindCue, fd );
-        if( fd->id == 0 ) return( WR_CONTINUE );
+        if( fd->id == 0 )
+            return( WR_CONTINUE );
         if( fd->ambig ) {
             Error( ERR_NONE, LIT_ENG( ERR_AMBIG_SRC_FILE ), fd->name, fd->len );
         }
@@ -1006,7 +1021,8 @@ static search_result FindACue( cue_handle *ch )
             return( SR_FAIL );
         }
     } else {
-        if( CurrGet.li.mod == NO_MOD ) CurrGet.li.mod = CodeAddrMod;
+        if( CurrGet.li.mod == NO_MOD )
+            CurrGet.li.mod = CodeAddrMod;
         if( FindModCue( CurrGet.li.mod, &data ) == WR_FAIL ) {
             return( SR_FAIL );
         }
@@ -1014,8 +1030,10 @@ static search_result FindACue( cue_handle *ch )
     if( !data.found_a_file ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_SRC_FILE ), data.name, data.len );
     }
-    if( data.best_line == 0 ) return( SR_NONE );
-    if( data.best_line == CurrGet.li.name.len ) return( SR_EXACT );
+    if( data.best_line == 0 )
+        return( SR_NONE );
+    if( data.best_line == CurrGet.li.name.len )
+        return( SR_EXACT );
     return( SR_CLOSEST );
 }
 
@@ -1065,7 +1083,9 @@ static unsigned MechGet( unsigned select, unsigned parm )
             case SR_EXACT:
                 break;
             case SR_CLOSEST:
-                if( ClosestLineOk ) break;
+                if( ClosestLineOk )
+                    break;
+                /* fall down */
             default:
                 Error( ERR_NONE, LIT_ENG( ERR_NO_CODE ), CurrGet.li.name.len );
             }
@@ -1103,8 +1123,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
                     #define ANY_IMAGE_NAME_LEN  (sizeof(ANY_IMAGE_NAME)-1)
                     if( CurrGet.li.name.len != ANY_IMAGE_NAME_LEN
                       || memicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
-                        Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start,
-                                              CurrGet.li.name.len );
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start, CurrGet.li.name.len );
                     } else {
                         CurrGet.any_image = TRUE;
                     }
@@ -1119,8 +1138,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrGet.li.name.start != NULL ) {
             CurrGet.li.mod = LookupModName( CurrGet.li.mod, CurrGet.li.name.start, CurrGet.li.name.len );
             if( CurrGet.li.mod == NO_MOD ) {
-                Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start,
-                                      CurrGet.li.name.len );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start, CurrGet.li.name.len );
             }
             CurrGet.multi_module = FALSE;
         } else if( !CurrGet.any_image && CurrGet.li.mod == NO_MOD ) {
