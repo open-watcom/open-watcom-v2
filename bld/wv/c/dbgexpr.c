@@ -76,7 +76,8 @@ void InitLC( location_context *new, bool use_real_regs )
         new->frame = GetRegBP();
         new->stack = GetRegSP();
     } else {
-        if( Context.up_stack_level ) new->regs = NULL;
+        if( Context.up_stack_level )
+            new->regs = NULL;
         new->execution = Context.execution;
         new->frame = Context.frame;
         new->stack = Context.stack;
@@ -137,22 +138,27 @@ void CreateEntry( void )
     memset( new, 0, size );
     new->up = ExprSP;
     new->dn = ExprSP->dn;
-    if( new->dn != NULL ) new->dn->up = new;
-    if( new->up != NULL ) new->up->dn = new;
+    if( new->dn != NULL )
+        new->dn->up = new;
+    if( new->up != NULL )
+        new->up->dn = new;
     ExprSP = new;
 }
 
 bool AllocatedString( stack_entry *stk )
 {
-    if( stk->info.kind != TK_STRING ) return( FALSE );
-    if( stk->flags & SF_LOCATION ) return( FALSE );
+    if( stk->info.kind != TK_STRING )
+        return( FALSE );
+    if( stk->flags & SF_LOCATION )
+        return( FALSE );
     return( stk->v.string.allocated != 0 );
 }
 
 
 static void FreeEntry( stack_entry *old )
 {
-    if( AllocatedString( old ) ) _Free( old->v.string.allocated );
+    if( AllocatedString( old ) )
+        _Free( old->v.string.allocated );
     FreeLC( old );
     _Free( old );
 }
@@ -164,9 +170,12 @@ static void FreeEntry( stack_entry *old )
 
 void DeleteEntry( stack_entry *old )
 {
-    if( old == ExprSP ) ExprSP = old->up;
-    if( old->up != NULL ) old->up->dn = old->dn;
-    if( old->dn != NULL ) old->dn->up = old->up;
+    if( old == ExprSP )
+        ExprSP = old->up;
+    if( old->up != NULL )
+        old->up->dn = old->dn;
+    if( old->dn != NULL )
+        old->dn->up = old->up;
     FreeEntry( old );
 }
 
@@ -181,12 +190,15 @@ stack_entry *StkEntry( int amount )
 
     new = ExprSP;
     for( ; amount > 0; --amount ) {
-        if( new == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_OVERFL ) );
+        if( new == &ExprBOS )
+            Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_OVERFL ) );
         new = new->up;
     }
     for( ; amount < 0; ++amount ) {
         new = new->dn;
-        if( new == NULL ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+        if( new == NULL ) {
+            Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+        }
     }
     return( new );
 }
@@ -211,19 +223,25 @@ void SwapStack( int entry )
 
     other = StkEntry( entry );
 
-    if( (temp = ExprSP->up) == other ) temp = ExprSP;
+    if( (temp = ExprSP->up) == other )
+        temp = ExprSP;
     ExprSP->up = other->up;
     other->up = temp;
 
-    if( (temp = other->dn) == ExprSP ) temp = other;
+    if( (temp = other->dn) == ExprSP )
+        temp = other;
     other->dn = ExprSP->dn;
     ExprSP->dn = temp;
 
-    if( ExprSP->up != NULL ) ExprSP->up->dn = ExprSP;
-    if( ExprSP->dn != NULL ) ExprSP->dn->up = ExprSP;
+    if( ExprSP->up != NULL )
+        ExprSP->up->dn = ExprSP;
+    if( ExprSP->dn != NULL )
+        ExprSP->dn->up = ExprSP;
 
-    if( other->up != NULL ) other->up->dn = other;
-    if( other->dn != NULL ) other->dn->up = other;
+    if( other->up != NULL )
+        other->up->dn = other;
+    if( other->dn != NULL )
+        other->dn->up = other;
 
     ExprSP = other;
 }
@@ -250,7 +268,7 @@ void UnFreezeStack( bool nuke_top )
         while( ExprSP->dn != NULL ) {
             ExprSP = ExprSP->dn;
         }
-        while( !( ExprSP->flags & SF_END_PURGE ) ) {
+        while( (ExprSP->flags & SF_END_PURGE) == 0 ) {
             DeleteEntry( ExprSP );
         }
         sp = ExprSP->v.save_sp;
@@ -261,7 +279,7 @@ void UnFreezeStack( bool nuke_top )
         if( sp->flags & SF_END_PURGE ) {
             ExprSP = ExprSP->v.save_sp;
         }
-        while( !(sp->flags & SF_END_PURGE) ) {
+        while( (sp->flags & SF_END_PURGE) == 0 ) {
             sp = sp->up;
         }
         DeleteEntry( sp );
@@ -273,8 +291,10 @@ char *DupStringVal( stack_entry *stk )
 {
     char *dest;
 
-    if( stk->info.size == 0 ) return( NULL );
-    if( stk->info.size >= UINT_MAX ) Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    if( stk->info.size == 0 )
+        return( NULL );
+    if( stk->info.size >= UINT_MAX )
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     _ChkAlloc( dest, stk->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memcpy( dest, stk->v.string.loc.e[0].u.p, stk->info.size );
     return( dest );
@@ -290,15 +310,18 @@ void DupStack( void )
     stack_entry *old, *down, *link;
 
     old = link = ExprSP;
-    while( old->flags & SF_END_PURGE ) old = old->up;
+    while( old->flags & SF_END_PURGE )
+        old = old->up;
     CreateEntry();
     down = ExprSP->dn;
     memcpy( ExprSP, old, sizeof( *old ) + type_SIZE + sym_SIZE );
     ExprSP->up = link;
     ExprSP->dn = down;
     DupLC( ExprSP );
-    if( old->th != NULL ) SET_TH( ExprSP );
-    if( old->flags & SF_SYM ) SET_SH( ExprSP );
+    if( old->th != NULL )
+        SET_TH( ExprSP );
+    if( old->flags & SF_SYM )
+        SET_SH( ExprSP );
     if( AllocatedString( old ) ) {
         ExprSP->v.string.allocated = DupStringVal( old );
         ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
@@ -376,8 +399,7 @@ void ExprSetAddrInfo( stack_entry *stk, bool trunc )
     GetMADTypeDefaultAt( stk->v.addr, MTK_ADDRESS, &mti );
     stk->info.size = mti.b.bits / BITS_PER_BYTE;
     if( trunc ) {
-        stk->v.addr.mach.offset &=
-                ~0UL >> (sizeof(addr48_off)*8-(mti.b.bits-mti.a.seg.bits));
+        stk->v.addr.mach.offset &= ~0UL >> ( sizeof( addr48_off ) * 8 - ( mti.b.bits - mti.a.seg.bits ) );
     }
 }
 
@@ -396,7 +418,8 @@ void PushAddr( address addr )
 void PushLocation( location_list *ll, dip_type_info *ti )
 {
     CreateEntry();
-    if( ti != NULL ) ExprSP->info = *ti;
+    if( ti != NULL )
+        ExprSP->info = *ti;
     ExprSP->v.loc = *ll;
     ExprSP->flags |= SF_LOCATION;
 }
@@ -416,13 +439,18 @@ void CombineEntries( stack_entry *dest, stack_entry *l, stack_entry *r )
     lc_src = l;
     if( r != NULL ) {
         f &= r->flags;
-        if( r->lc != NULL ) lc_src = r;
+        if( r->lc != NULL ) {
+            lc_src = r;
+        }
     }
     MoveLC( lc_src, dest );
     dest->flags &= ~SF_CONST;
     dest->flags |= f & SF_CONST;
-    if( l != dest ) DeleteEntry( l );
-    if( r != dest ) DeleteEntry( r );
+    if( l != dest )
+        DeleteEntry( l );
+    if( r != dest ) {
+        DeleteEntry( r );
+    }
 }
 
 
@@ -499,7 +527,8 @@ void PushString( void )
 
 void PopEntry( void )
 {
-    if( ExprSP == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+    if( ExprSP == &ExprBOS )
+        Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
     DeleteEntry( ExprSP );
 }
 
@@ -516,7 +545,9 @@ static int FStrCmp( char *str1, unsigned len1, char *str2, unsigned len2 )
     for( count = 0; count < max; ++count ) {
         c1 = (count < len1)  ?  *str1++  :  ' ';
         c2 = (count < len2)  ?  *str2++  :  ' ';
-        if( c1 != c2 ) return(  c1 - c2 );
+        if( c1 != c2 ) {
+            return(  c1 - c2 );
+        }
     }
     return( 0 );
 }
@@ -691,8 +722,8 @@ void FreePgmStack( bool freeall )
                     ( (NestedCallLevel > 0)  ?  NestedCallLevel - 1  :  0 ) );
     MADRegSpecialGet( MSR_SP, &DbgRegs->mr, &stk );
     for( ; count > 0; --count ) {
-        stk.offset += PgmStackUsage[ NestedCallLevel ];
-        PgmStackUsage[ NestedCallLevel ] = 0;
+        stk.offset += PgmStackUsage[NestedCallLevel];
+        PgmStackUsage[NestedCallLevel] = 0;
         --NestedCallLevel;
     }
     MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &stk );
@@ -720,7 +751,8 @@ void ExprPurge( void )
     }
     stk_ptr->dn = NULL;
     ExprSP = stk_ptr;
-    if( StringStart != NULL ) _Free( StringStart );
+    if( StringStart != NULL )
+        _Free( StringStart );
     FreePgmStack( TRUE );
 }
 
