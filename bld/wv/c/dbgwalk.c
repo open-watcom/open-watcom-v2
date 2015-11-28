@@ -38,6 +38,7 @@
 
 #define GETU8(x)    (*(unsigned char *)(x))
 #define GETI8(x)    (*(signed char *)(x))
+#define GETU16(x)   (*(unsigned_16 *)(x))
 
 static const char   *TblPtr;
 
@@ -63,12 +64,6 @@ static int GetParmInt( op_code operation )
         parm |= GETI8( TblPtr++ ) << 8;
     }
     return( parm );
-}
-
-
-static unsigned GetWord( void )
-{
-    return( (unsigned_16)( GETU8( TblPtr++ ) | ( GETU8( TblPtr++ ) << 8 ) ) );
 }
 
 
@@ -149,7 +144,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
                 if( token == GetParmUInt( operation ) ) {
                     token = SSLNextToken();
-                    TblPtr = table + GetWord();
+                    TblPtr = table + GETU16( TblPtr );
                     break;
                 }
                 TblPtr += 2;
@@ -158,7 +153,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
         case INS_CHOICE:
             for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
                 if( result == GetParmUInt( operation ) ) {
-                    TblPtr = table + GetWord();
+                    TblPtr = table + GETU16( TblPtr );
                     break;
                 }
                 TblPtr += 2;
