@@ -36,9 +36,6 @@
 #include "dbgwalk.h"
 
 
-#define GETU8(x)    (*(unsigned char *)(x))
-#define GETI8(x)    (*(signed char *)(x))
-
 static const char   *TblPtr;
 
 static unsigned GetParmUInt( op_code operation )

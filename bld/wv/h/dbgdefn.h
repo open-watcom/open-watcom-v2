@@ -45,8 +45,11 @@
 #define OVL_EXTERN      static
 #endif
 
-#define NULLCHAR '\0'
+#define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'
+
+#define GETU8(x)        (*(unsigned char *)(x))
+#define GETI8(x)        (*(signed char *)(x))
 
 /* Handles */
 
