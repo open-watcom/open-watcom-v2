@@ -1054,11 +1054,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     case 0: /* init */
         memset( &CurrGet, 0, sizeof( CurrGet ) );
         CurrGet.li.mod = NO_MOD;
-        if( _IsOn( SW_CASE_SENSITIVE ) ) {
-            CurrGet.li.case_sensitive = true;
-        } else {
-            CurrGet.li.case_sensitive = false;
-        }
+        CurrGet.li.case_sensitive = _IsOn( SW_CASE_SENSITIVE );
         break;
     case 1: /* fini */
         switch( CurrGet.kind ) {
