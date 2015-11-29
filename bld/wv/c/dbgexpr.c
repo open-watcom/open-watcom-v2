@@ -557,9 +557,7 @@ static int FStrCmp( char *str1, unsigned len1, char *str2, unsigned len2 )
 /*
  * TstEQ - test for equality
  */
-
-
-unsigned TstEQ( unsigned true_value )
+int TstEQ( int true_value )
 {
     stack_entry *left, *rite;
     int temp;
@@ -603,8 +601,7 @@ unsigned TstEQ( unsigned true_value )
 /*
  * TstLT - test for less than
  */
-
-unsigned TstLT( unsigned true_value )
+int TstLT( int true_value )
 {
     stack_entry *left, *rite;
     int temp;
@@ -648,22 +645,20 @@ unsigned TstLT( unsigned true_value )
 /*
  * TstTrue - set to false or true and return result
  */
-
-unsigned TstTrue( unsigned true_value )
+int TstTrue( int true_value )
 {
     PushInt( 0 );
     TstEQ( true_value );
     PushInt( true_value );
     DoXor();
-    return( U32FetchTrunc( ExprSP->v.uint ) );
+    return( I32FetchTrunc( ExprSP->v.sint ) );
 }
 
 
 /*
  * TstExist - test if a variable exists or not
  */
-
-unsigned TstExist( unsigned true_value )
+int TstExist( int true_value )
 {
     bool        tst;
     sym_list    *syms;
@@ -681,7 +676,7 @@ unsigned TstExist( unsigned true_value )
     }
     PopEntry();
     PushBool( tst ? true_value : 0 );
-    return( U32FetchTrunc( ExprSP->v.uint ) );
+    return( I32FetchTrunc( ExprSP->v.sint ) );
 }
 
 

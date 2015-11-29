@@ -474,10 +474,10 @@ static bool ScanExprDelim( const char *table )
 {
     const char  *ptr;
 
-    for( ; *table != NULLCHAR ; table += 3 ) {
-        for( ptr = ScanPtr ;  ( _IsOn( SW_CASE_SENSITIVE ) ?
-                *table == *ptr  :  toupper(*table) == toupper(*ptr) )
-                && *table != NULLCHAR ;  ptr++, table++ ) {
+    for( ; *table != NULLCHAR; table += 3 ) {
+        for( ptr = ScanPtr; ( _IsOn( SW_CASE_SENSITIVE ) ?
+                *table == *ptr : toupper(*table) == toupper(*ptr) )
+                && *table != NULLCHAR; ptr++, table++ ) {
             ;
         }
         if( *table == NULLCHAR ) {
