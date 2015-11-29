@@ -49,7 +49,7 @@ extern void DoGivenField( sym_handle *member_hdl );
 extern void DoField( void );
 extern void DoScope( void );
 extern void DoAssign( void );
-extern void DoCall( unsigned num_parms, bool build_scbs );
+extern void DoCall( int num_parms, bool build_scbs );
 #if 0
 extern void InitReturnInfo( sym_handle *f, return_info *ri );
 extern void PrepReturnInfo( sym_handle *f, return_info *ri );

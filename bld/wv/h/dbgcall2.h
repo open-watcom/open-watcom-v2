@@ -31,5 +31,5 @@
 
 extern void FreezeRegs( void );
 extern void UnFreezeRegs( void );
-extern bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms );
-extern bool PerformCall( address start, bool far_rtn, unsigned num_parms );
+extern bool PerformExplicitCall( address start, mad_string ctype, int num_parms );
+extern bool PerformCall( address start, bool far_rtn, int num_parms );

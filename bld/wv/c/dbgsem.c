@@ -89,8 +89,8 @@ extern stack_entry      *ExprSP;
 
 /* SSL Table Variables */
 static type_bitsII      Bits;
-static unsigned         Num;
-static unsigned         EvalSubstring;
+static int              Num;
+static bool             EvalSubstring;
 static struct {
     lookup_item         li;
     unsigned            multi_module    : 1;
@@ -364,7 +364,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         break;
     case 17:
         EvalSubstring = parm;
-        if( parm )
+        if( EvalSubstring )
             ExprSP->v.string.ss_offset = 0;
         break;
     case 18:
@@ -885,7 +885,7 @@ static unsigned MechNum( unsigned select, unsigned parm )
         break;
     case 3:
         /* need to check that top stack entry is an integer value here? */
-        Num = U32FetchTrunc( ExprSP->v.uint );
+        Num = I32FetchTrunc( ExprSP->v.sint );
         PopEntry();
         break;
     }

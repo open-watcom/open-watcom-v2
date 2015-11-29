@@ -1048,7 +1048,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
  * DoCall - call a procedure
  */
 
-void DoCall( unsigned num_parms, bool build_scbs )
+void DoCall( int num_parms, bool build_scbs )
 {
     stack_entry         *rtn_entry;
     address             addr;

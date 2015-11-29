@@ -102,7 +102,7 @@ static bool CallRoutine( void )
 }
 
 
-bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
+bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
 {
     bool                ret;
     stack_entry         *src;
@@ -114,7 +114,7 @@ bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
     stack = GetRegSP();
     GetMADTypeDefaultAt( stack, MTK_INTEGER, &mti );
     align = mti.b.bits / BITS_PER_BYTE;
-    for( ; num_parms != 0; --num_parms ) {
+    for( ; num_parms > 0; --num_parms ) {
         if( ExprSP->v.loc.e[0].type!=LT_ADDR && ExprSP->v.loc.e[0].u.p==NULL ) {
             /* push item */
             src = StkEntry( 1 );
@@ -145,7 +145,7 @@ bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
     return( ret );
 }
 
-bool PerformCall( address start, bool far_rtn, unsigned num_parms )
+bool PerformCall( address start, bool far_rtn, int num_parms )
 {
     const mad_string    *list;
 
