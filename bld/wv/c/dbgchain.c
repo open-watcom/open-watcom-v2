@@ -129,7 +129,6 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
 }
 
 
-static CALL_CHAIN_RTN RecordTraceBackInfo;
 static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 {
     address     prev_ins;

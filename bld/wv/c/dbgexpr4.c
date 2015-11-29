@@ -707,7 +707,6 @@ typedef struct {
     bool                found;
 } find_context;
 
-OVL_EXTERN CALL_CHAIN_RTN FindContext;
 OVL_EXTERN bool FindContext( call_chain_entry *entry, void *_info )
 {
     find_context *info = _info;

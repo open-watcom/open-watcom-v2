@@ -677,7 +677,19 @@ typedef struct {
     bool                success;
 } move_info;
 
-static CALL_CHAIN_RTN CheckOneLevel;
+static bool CheckOneLevel( call_chain_entry *entry, void *_info )
+{
+    move_info  *info = _info;
+
+    if( info->curr == info->targ ) {
+        info->success = true;
+        info->lc = entry->lc;
+        return( false );
+    } else {
+        info->curr--;
+        return( true );
+    }
+}
 
 void SetStackPos( location_context *lc, int pos )
 {
@@ -808,20 +820,6 @@ void PosMachState( int rel_pos )
 void LastMachState( void )
 {
     PosMachState( UndoLevel() );
-}
-
-static bool CheckOneLevel( call_chain_entry *entry, void *_info )
-{
-    move_info  *info = _info;
-
-    if( info->curr == info->targ ) {
-        info->success = true;
-        info->lc = entry->lc;
-        return( false );
-    } else {
-        info->curr--;
-        return( true );
-    }
 }
 
 
