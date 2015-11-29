@@ -775,14 +775,14 @@ int ProcessCmd( const char *cmd ) {
     int         argc;
     char        *argv[20];
     char        *p;
-    char        tokens[255];
+    char        cmd_tokens[255];
 
-    CopyCmd( cmd, tokens );
+    CopyCmd( cmd, cmd_tokens );
     WriteNL( STD_ERR );
-    if( tokens[0] == '\0' )
+    if( cmd_tokens[0] == '\0' )
         return( 0 );
     argc = 0;
-    p = strtok( tokens, " " );
+    p = strtok( cmd_tokens, " " );
     while( p != NULL ) {
         argv[ argc ] = p;
         ++argc;
