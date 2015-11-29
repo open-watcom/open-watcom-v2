@@ -38,9 +38,9 @@
 
 static const char   *TblPtr;
 
-static unsigned GetParmUInt( op_code operation )
+static ssl_value GetParm( op_code operation )
 {
-    unsigned_16  parm;
+    ssl_value   parm;
 
     parm = GETU8( TblPtr++ );
     if( operation & INS_LONG ) {
@@ -77,35 +77,37 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     const char      *addr;
     const char      **stk_ptr;
     const char      **stk_end;
-    unsigned        result = 0;
-    unsigned        parm = 0;
-    unsigned        wanted;
-    unsigned        token;
+    ssl_value       result;
+    ssl_value       parm;
+    ssl_value       wanted;
+    ssl_value       ssl_token;
 
+    result = 0;
+    parm = 0;
     stk_ptr = stk_bot;
     stk_end = stk_bot + stk_size;
     TblPtr = table + start;
-    token = SSLCurrToken();
+    ssl_token = SSLCurrToken();
     for( ;; ) {
-        operation = GETU8( TblPtr++ );
+        operation = (op_code)GETU8( TblPtr++ );
         switch( operation & INS_MASK ) {
         case INS_INPUT:
-            wanted = GetParmUInt( operation );
-            if( token != wanted ) {
+            wanted = GetParm( operation );
+            if( ssl_token != wanted ) {
                 if( SSLError( TERM_SYNTAX, wanted ) ) {
                     return( TERM_SYNTAX );
                 }
             }
-            token = SSLNextToken();
+            ssl_token = SSLNextToken();
             break;
         case INS_IN_ANY:
-            token = SSLNextToken();
+            ssl_token = SSLNextToken();
             break;
         case INS_OUTPUT:
-            SSLOutToken( GetParmUInt( operation ) );
+            SSLOutToken( GetParm( operation ) );
             break;
         case INS_ERROR:
-            if( SSLError( TERM_ERROR, GetParmUInt( operation ) ) ) {
+            if( SSLError( TERM_ERROR, GetParm( operation ) ) ) {
                 return( TERM_ERROR );
             }
             break;
@@ -125,17 +127,17 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             TblPtr = addr + disp;
             break;
         case INS_SET_RESULT:
-            result = GetParmUInt( operation );
+            result = GetParm( operation );
             break;
         case INS_SET_PARM:
-            parm = (signed_16)GetParmUInt( operation );
+            parm = GetParm( operation );
             break;
         case INS_SEMANTIC:
-            result = SSLSemantic( GetParmUInt( operation ), parm );
-            token = SSLCurrToken();
+            result = SSLSemantic( GetParm( operation ), parm );
+            ssl_token = SSLCurrToken();
             break;
         case INS_KILL:
-            SSLError( TERM_KILL, GetParmUInt( operation ) );
+            SSLError( TERM_KILL, GetParm( operation ) );
             return( TERM_KILL );
         case INS_RETURN:
             if( stk_ptr <= stk_bot )
@@ -144,8 +146,8 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_IN_CHOICE:
             for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
-                if( token == GetParmUInt( operation ) ) {
-                    token = SSLNextToken();
+                if( ssl_token == GetParm( operation ) ) {
+                    ssl_token = SSLNextToken();
                     TblPtr = GetTablePos( table );
                     break;
                 }
@@ -154,7 +156,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_CHOICE:
             for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
-                if( result == GetParmUInt( operation ) ) {
+                if( result == GetParm( operation ) ) {
                     TblPtr = GetTablePos( table );
                     break;
                 }

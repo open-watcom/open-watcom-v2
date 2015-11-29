@@ -267,12 +267,13 @@ static void FillInDefaults( dip_type_info *info )
     }
 }
 
-static unsigned MechMisc( unsigned select, unsigned parm )
+static ssl_value MechMisc( unsigned select, ssl_value parm )
 {
     long                value;
-    unsigned            result = 0;
+    ssl_value           result;
     mad_type_info       mti;
 
+    result = 0;
     switch( select ) {
     case 0:
         ExprAddrDepth += parm;
@@ -547,14 +548,15 @@ static void DoMinusScaled( void )
     DoMinus();
 }
 
-static unsigned MechDo( unsigned select, unsigned parm )
+static ssl_value MechDo( unsigned select, ssl_value parm )
 {
     unsigned long       size;
-    unsigned            result = 0;
+    ssl_value           result;
     DIPHDL( type, th );
     dip_type_info       info;
     mad_type_info       mti;
 
+    result = 0;
     switch( select ) {
     case 0:
         DoAssign();
@@ -723,11 +725,11 @@ static void BasicType( unsigned basic_type )
     PushType( th );
 }
 
-static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
+static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
 {
     location_list       ll;
     dip_type_info       ti;
-    unsigned            result;
+    ssl_value           result;
     const static unsigned       TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),
         TI_CREATE( TK_INTEGER,  TM_UNSIGNED,     1 ),
@@ -742,7 +744,7 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         TI_CREATE( TK_COMPLEX,  TM_NONE,        16 ),
     };
 
-    result = false;
+    result = 0;
     switch( select ) {
     case 0:
         PushInt( parm );
@@ -806,12 +808,13 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
     return( result );
 }
 
-static unsigned MechStack( unsigned select, unsigned parm )
+static ssl_value MechStack( unsigned select, ssl_value parm )
 {
-    unsigned    result = 0;
+    ssl_value   result;
     stack_entry *entry;
     sym_info    info;
 
+    result = 0;
     switch( select ) {
     case 0:
         SwapStack( parm );
@@ -871,7 +874,7 @@ static unsigned MechStack( unsigned select, unsigned parm )
     return( result );
 }
 
-static unsigned MechNum( unsigned select, unsigned parm )
+static ssl_value MechNum( unsigned select, ssl_value parm )
 {
     switch( select ) {
     case 0:
@@ -892,10 +895,11 @@ static unsigned MechNum( unsigned select, unsigned parm )
     return( 0 );
 }
 
-static unsigned MechBits( unsigned select, unsigned parm )
+static ssl_value MechBits( unsigned select, ssl_value parm )
 {
-    unsigned result = 0;
+    ssl_value   result;
 
+    result = 0;
     switch( select ) {
     case 0:
         Bits = parm;
@@ -1037,9 +1041,9 @@ bool SemAllowClosestLine( bool ok )
     return( old );
 }
 
-static unsigned MechGet( unsigned select, unsigned parm )
+static ssl_value MechGet( unsigned select, ssl_value parm )
 {
-    unsigned    result;
+    ssl_value   result;
     DIPHDL( cue, ch );
     sym_list    *sym;
     address     addr;
@@ -1049,7 +1053,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     unsigned    mod_len;
     unsigned    mod_spec_token;
 
-    result = false;
+    result = 0;
     switch( select ) {
     case 0: /* init */
         memset( &CurrGet, 0, sizeof( CurrGet ) );
@@ -1221,11 +1225,12 @@ static unsigned MechGet( unsigned select, unsigned parm )
 }
 
 
-unsigned SSLSemantic( int action, unsigned parm )
+ssl_value SSLSemantic( ssl_value action, ssl_value parm )
 {
-    unsigned    result = 0;
+    ssl_value   result;
     unsigned    select;
 
+    result = 0;
     select = action & SEM_SELECTOR;
     switch( action & SEM_MECHANISM ) {
     case SEM_MISC:
@@ -1254,7 +1259,7 @@ unsigned SSLSemantic( int action, unsigned parm )
 }
 
 
-int SSLError( ssl_error_class class, unsigned error )
+int SSLError( ssl_error_class class, ssl_value error )
 {
     switch( class ) {
     case TERM_NORMAL:
@@ -1301,18 +1306,18 @@ int SSLError( ssl_error_class class, unsigned error )
 }
 
 
-void SSLOutToken( unsigned token )
+void SSLOutToken( ssl_value token )
 {
     token = token;
 }
 
-unsigned SSLNextToken( void )
+ssl_value SSLNextToken( void )
 {
     Scan();
-    return( CurrToken );
+    return( (ssl_value)CurrToken );
 }
 
-unsigned SSLCurrToken( void )
+ssl_value SSLCurrToken( void )
 {
-    return( CurrToken );
+    return( (ssl_value)CurrToken );
 }

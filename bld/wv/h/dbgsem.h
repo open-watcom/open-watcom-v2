@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#define SSL2BOOL(x)     (x != 0)
+#define SSL2INT(x)      ((signed short)(x))
+
 typedef enum {
     TERM_NORMAL,
     TERM_SYNTAX,
@@ -37,9 +40,11 @@ typedef enum {
     TERM_KILL
 } ssl_error_class;
 
-extern bool     SemAllowClosestLine( bool ok );
-extern unsigned SSLSemantic( int action, unsigned parm );
-extern int      SSLError( ssl_error_class class, unsigned error );
-extern void     SSLOutToken( unsigned token );
-extern unsigned SSLNextToken( void );
-extern unsigned SSLCurrToken( void );
+typedef unsigned short  ssl_value;
+
+extern bool         SemAllowClosestLine( bool ok );
+extern ssl_value    SSLSemantic( ssl_value action, ssl_value parm );
+extern int          SSLError( ssl_error_class class, ssl_value error );
+extern void         SSLOutToken( ssl_value token );
+extern ssl_value    SSLNextToken( void );
+extern ssl_value    SSLCurrToken( void );
