@@ -65,7 +65,7 @@ static int GetParmInt( op_code operation )
 
 static const char *GetTablePos( const char *table )
 {
-    return( table + GETU8( TblPtr ) + ( GETU8( TblPtr + 1 ) << 8 ) );
+    return( table + GETWORD( TblPtr ) );
 }
 
 

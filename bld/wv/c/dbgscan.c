@@ -307,15 +307,11 @@ bool ScanEOC( void )
 static bool FindToken( const char *table, unsigned token,
                        const char **start, unsigned *len )
 {
-    unsigned chk;
-
     while( *table != NULLCHAR ) {
         *start = table;
         for( ; *table != NULLCHAR; ++table )
             ;
-        chk = table[1];
-        chk |= table[2] << 8;
-        if( chk == token ) {
+        if( GETWORD( table + 1 ) == token ) {
             *len = table - *start;
             return( true );
         }
@@ -481,14 +477,18 @@ static bool ScanExprDelim( const char *table )
     for( ; *table != NULLCHAR ; table += 3 ) {
         for( ptr = ScanPtr ;  ( _IsOn( SW_CASE_SENSITIVE ) ?
                 *table == *ptr  :  toupper(*table) == toupper(*ptr) )
-                && *table != NULLCHAR ;  ptr++, table++ );
+                && *table != NULLCHAR ;  ptr++, table++ ) {
+            ;
+        }
         if( *table == NULLCHAR ) {
             table++;
-            CurrToken = *table;
+            CurrToken = GETWORD( table );
             ScanPtr = ptr;
             return( true );
         }
-        for( ; *table != NULLCHAR ; table++ );
+        for( ; *table != NULLCHAR ; table++ ) {
+            ;
+        }
     }
     return( false );
 }
@@ -685,13 +685,13 @@ static bool ScanKeyword( const char *table )
     int   keylen;
 
     namelen = ScanPtr - TokenStart;
-    for( ; *table != NULLCHAR ; table += (keylen + 3) ) {
+    for( ; *table != NULLCHAR; table += (keylen + 3) ) {
          keylen = strlen( table );
-         if( keylen == namelen &&  ( _IsOn( SW_CASE_SENSITIVE )  ?
-                !memcmp( table, TokenStart, namelen )  :
-                !memicmp( table, TokenStart, namelen ) ) ) {
+         if( keylen == namelen && ( _IsOn( SW_CASE_SENSITIVE )  ?
+                memcmp( table, TokenStart, namelen ) == 0 :
+                memicmp( table, TokenStart, namelen ) == 0 ) ) {
              table += (namelen + 1);
-             CurrToken = *table;
+             CurrToken = GETWORD( table );
              return( true );
          }
     }

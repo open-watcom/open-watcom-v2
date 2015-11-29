@@ -50,6 +50,7 @@
 
 #define GETU8(x)        (*(unsigned char *)(x))
 #define GETI8(x)        (*(signed char *)(x))
+#define GETWORD(x)      (GETU8((x)) + ( GETU8((x + 1)) << 8 ))
 
 /* Handles */
 
