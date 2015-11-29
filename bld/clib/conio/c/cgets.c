@@ -58,7 +58,7 @@ _WCRTLINK char *cgets( char *s )
         return( s + 2 );
     }
 #endif
-	TinyBufferedInput( s );
+    TinyBufferedInput( s );
     len = *s;
     p = s + 2;
     for(;;) {
