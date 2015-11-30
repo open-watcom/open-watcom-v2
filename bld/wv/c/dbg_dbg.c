@@ -249,7 +249,7 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
     se = StaticLookup( ListInternal, li );
     if( se != NULL )
         return( se );
-    if( TokenName( TSTR_NULL, &null_start, &null_len ) ) {
+    if( TokenName( T_SSL_SPEC_NULL, &null_start, &null_len ) ) {
         ++null_start;
         --null_len;
         if( null_len != li->name.len )

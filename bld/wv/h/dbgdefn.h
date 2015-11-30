@@ -118,16 +118,6 @@ typedef unsigned_8 memory_expr; enum {
         EXPR_GIVEN
 };
 
-enum {
-        TSTR_PAREN       = 0x1000,
-        TSTR_POINTER_IND,
-        TSTR_FIELD_SELECT,
-        TSTR_POINTER_FIELD,
-        TSTR_ARRAY,
-        TSTR_SELF,
-        TSTR_NULL
-};
-
 typedef unsigned_8 cnvaddr_option; enum {
     CAO_NORMAL_PLUS,
     CAO_OMIT_PLUS,

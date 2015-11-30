@@ -80,7 +80,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     ssl_value       result;
     ssl_value       parm;
     ssl_value       wanted;
-    ssl_value       ssl_token;
+    ssl_tokens      ssl_token;
 
     result = 0;
     parm = 0;

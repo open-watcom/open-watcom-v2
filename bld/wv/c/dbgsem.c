@@ -1046,7 +1046,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
     const char  *save_scan;
     const char  *mod_name;
     unsigned    mod_len;
-    unsigned    mod_spec_token;
+    tokens      mod_spec_token;
 
     result = 0;
     switch( select ) {
@@ -1260,7 +1260,7 @@ int SSLError( ssl_error_class class, ssl_value error )
     case TERM_NORMAL:
         break;
     case TERM_SYNTAX: /* syntax */
-        Recog( error ); /* cause error */
+        Recog( (tokens)error ); /* cause error */
         break;
     case TERM_ERROR: /* error stream */
         switch( error ) {
@@ -1301,18 +1301,18 @@ int SSLError( ssl_error_class class, ssl_value error )
 }
 
 
-void SSLOutToken( ssl_value token )
+void SSLOutToken( ssl_tokens ssl_token )
 {
-    token = token;
+    ssl_token = ssl_token;
 }
 
-ssl_value SSLNextToken( void )
+ssl_tokens SSLNextToken( void )
 {
     Scan();
-    return( (ssl_value)CurrToken );
+    return( (ssl_tokens)CurrToken );
 }
 
-ssl_value SSLCurrToken( void )
+ssl_tokens SSLCurrToken( void )
 {
-    return( (ssl_value)CurrToken );
+    return( (ssl_tokens)CurrToken );
 }

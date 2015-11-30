@@ -1420,7 +1420,7 @@ static void InsertTxt( char *buff, const char *txt, unsigned len )
 }
 
 
-static char AddToName( unsigned token, const char *fldname, int namelen, char pprio )
+static char AddToName( tokens token, const char *fldname, int namelen, char pprio )
 /*
     See VarBuildName
 */
@@ -1435,11 +1435,11 @@ static char AddToName( unsigned token, const char *fldname, int namelen, char pp
     SetTokens( false );
     prio = *tstr++;
     if( pprio < prio && TxtBuff[0] != '\0' ) {
-        AddToName( TSTR_PAREN, NULL, 0, 127 );
+        AddToName( T_SSL_SPEC_PAREN, NULL, 0, 127 );
     }
     buff = TxtBuff;
     end = TxtBuff + strlen( TxtBuff );
-    for( ; tlen > 1; tlen--, tstr++ ) {
+    for( --tlen; tlen > 0; tlen--, tstr++ ) {
         if( *tstr == 'x' ) {
             buff = end;
         } else if( *tstr == 'y' ) {
@@ -1520,10 +1520,10 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 SymName( field, NULL, SN_SOURCE, name, len+1 );
             }
             if( delay_indirect ) {
-                prio = AddToName( TSTR_POINTER_FIELD, name, len, prio );
+                prio = AddToName( T_SSL_SPEC_POINTER_FIELD, name, len, prio );
                 delay_indirect = false;
             } else {
-                prio = AddToName( TSTR_FIELD_SELECT, name, len, prio );
+                prio = AddToName( T_SSL_SPEC_FIELD_SELECT, name, len, prio );
             }
             if( just_end_bit ) {
                 TxtBuff[0] = '\0';
@@ -1532,7 +1532,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
             break;
         case NODE_SUBSCR:
             if( delay_indirect ) {
-                prio = AddToName( TSTR_POINTER_IND, NULL, 0, prio );
+                prio = AddToName( T_SSL_SPEC_POINTER_IND, NULL, 0, prio );
                 delay_indirect = false;
             }
             ArrayParms( v, &ainfo );
@@ -1540,11 +1540,11 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
             if( just_end_bit ) {
                 *TxtBuff = '\0';
             }
-            prio = AddToName( TSTR_ARRAY, buff, end-buff, prio );
+            prio = AddToName( T_SSL_SPEC_ARRAY, buff, end-buff, prio );
             break;
         case NODE_POINTS:
             if( delay_indirect ) {
-                prio = AddToName( TSTR_POINTER_IND, NULL, 0, prio );
+                prio = AddToName( T_SSL_SPEC_POINTER_IND, NULL, 0, prio );
                 delay_indirect = false;
             }
             delay_indirect = true;
@@ -1553,7 +1553,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
         v = v->path;
     }
     if( delay_indirect ) {
-        AddToName( TSTR_POINTER_IND, NULL, 0, prio );
+        AddToName( T_SSL_SPEC_POINTER_IND, NULL, 0, prio );
     }
 }
 

@@ -51,6 +51,7 @@
 #include "dbgparse.h"
 #include "dbgupdt.h"
 #include "dbglkup.h"
+#include "dbgsem.h"
 
 #include "clibext.h"
 
@@ -304,14 +305,14 @@ bool ScanEOC( void )
 }
 
 
-static bool FindToken( const char *table, unsigned token,
+static bool FindToken( const char *table, tokens token,
                        const char **start, unsigned *len )
 {
     while( *table != NULLCHAR ) {
         *start = table;
         for( ; *table != NULLCHAR; ++table )
             ;
-        if( GETWORD( table + 1 ) == token ) {
+        if( GETWORD( table + 1 ) == (ssl_tokens)token ) {
             *len = table - *start;
             return( true );
         }
@@ -321,7 +322,7 @@ static bool FindToken( const char *table, unsigned token,
 }
 
 
-bool TokenName( unsigned token, const char **start, unsigned *len )
+bool TokenName( tokens token, const char **start, unsigned *len )
 {
     switch( token ) {
     case T_LINE_SEPARATOR:
@@ -344,14 +345,17 @@ bool TokenName( unsigned token, const char **start, unsigned *len )
         return( true );
     }
     if( ExprTokens != NULL ) {
-        if( FindToken( ExprTokens->delims, token, start, len ) ) return(true);
-        if( FindToken( ExprTokens->keywords, token, start, len ) ) return(true);
+        if( FindToken( ExprTokens->delims, token, start, len ) )
+            return( true );
+        if( FindToken( ExprTokens->keywords, token, start, len ) ) {
+            return( true );
+        }
     }
     return( false );
 }
 
 
-void Recog( unsigned token )
+void Recog( tokens token )
 {
     const char  *start;
     unsigned    len;
@@ -482,7 +486,7 @@ static bool ScanExprDelim( const char *table )
         }
         if( *table == NULLCHAR ) {
             table++;
-            CurrToken = GETWORD( table );
+            CurrToken = (tokens)GETWORD( table );
             ScanPtr = ptr;
             return( true );
         }
@@ -691,7 +695,7 @@ static bool ScanKeyword( const char *table )
                 memcmp( table, TokenStart, namelen ) == 0 :
                 memicmp( table, TokenStart, namelen ) == 0 ) ) {
              table += (namelen + 1);
-             CurrToken = GETWORD( table );
+             CurrToken = (tokens)GETWORD( table );
              return( true );
          }
     }
@@ -749,7 +753,7 @@ void AddCEscapeChar( void )
     static char escape_seq[] = "\n\t\v\b\r\f\a\\\?\'\"\0";
                                 /* the order above must match with SSL file */
 
-    AddActualChar( escape_seq[(int)CurrToken & 0x7f] );
+    AddActualChar( escape_seq[CurrToken - FIRST_SSL_ESCAPE_CHAR] );
 }
 
 
