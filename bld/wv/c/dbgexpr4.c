@@ -1072,8 +1072,8 @@ void DoCall( int num_parms, bool build_scbs )
     dip_type_info       ti;
     dip_type_info       ret_ti;
     item_mach           item;
-    unsigned            parm_loc_adjust;
-    unsigned            parm;
+    int                 parm_loc_adjust;
+    int                 parm;
     unsigned            size;
     dip_status          ds;
 
