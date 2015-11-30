@@ -51,15 +51,15 @@ wcpatch_objs += $+$(__subdir__)$-/symtab.obj
 
 wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
+    $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
 !else
-        @%create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ @$^&.lnk
+    @%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bdiff.res
+    $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
 # WPATCH. Apply patch.
@@ -81,15 +81,15 @@ wpatch_objs = &
 
 wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
+    $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
 !else
-        @%create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ @$^&.lnk
+    @%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bpatch.res
+    $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BPATCH.
@@ -111,15 +111,15 @@ bpatch_objs = &
 
 bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
+    $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
 !else
-        @%create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ @$^&.lnk
+    @%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bpatch.res
+    $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
 # BDUMP.
@@ -140,15 +140,15 @@ bdump_objs = &
 
 bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
+    $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
 !else
-        @%create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(bdump_objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ @$^&.lnk
+    @%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(bdump_objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bdump.res
+    $(wstrip) -q -a -r $^@ . bdump.res
 
 #
 # BDIFF.
@@ -174,15 +174,15 @@ bdiff_objs += $+$(__subdir__)$-/symtab.obj
 
 bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
+    $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
 !else
-        @%create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk lib $(wres_lib)
-        @for %i in ($(bdiff_objs)) do @%append $^&.lnk file %i
-        $(linker) name $^@ @$^&.lnk
+    @%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk lib $(wres_lib)
+    @for %i in ($(bdiff_objs)) do @%append $^&.lnk file %i
+    $(linker) name $^@ @$^&.lnk
 !endif
-        $(wstrip) -q -a -r $^@ . bdiff.res
+    $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
 # BCMT
@@ -198,9 +198,9 @@ bpcmt_objs = &
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
+    $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(bpcmt_objs)}
+    $(linker) name $^@ $(lflags) file {$(bpcmt_objs)}
 !endif
 
 #
@@ -216,27 +216,27 @@ bplevel_objs = &
 
 bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(bplevel_objs) $(ldflags)
+    $(cl) $(clflags) $(bplevel_objs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file { $(bplevel_objs) }
+    $(linker) name $^@ $(lflags) file { $(bplevel_objs) }
 !endif
 
 # resources
 ############
 pusage.gh : ../usage.sp
-        *wsplice -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    *wsplice -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
 pusagej.gh : ../usage.sp
-        *wsplice -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
+    *wsplice -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
 
 dusage.gh : ../usage.sp
-        *wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    *wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
-        $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
+    $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
 
 bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
-        $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
+    $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@
 
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
-        $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
+    $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
