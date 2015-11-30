@@ -276,14 +276,14 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
     result = 0;
     switch( select ) {
     case 0:
-        ExprAddrDepth += parm;
+        ExprAddrDepth += SSL2INT( parm );
         result = ExprAddrDepth;
         break;
     case 1:
         result = ( _IsOn( SW_EXPR_IS_CALL ) && ExprAddrDepth == 0 );
         break;
     case 2:
-        SkipCount += parm;
+        SkipCount += SSL2INT( parm );
         break;
     case 3:
         result = SkipCount;
@@ -307,11 +307,11 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
         --ScanSavePtr;
         break;
     case 8:
-        scan_string = ( parm != 0 );
+        scan_string = SSL2BOOL( parm );
         ReScan( ScanPos() );
         break;
     case 9:
-        ReScan( ScanPos() + (int)parm );
+        ReScan( ScanPos() + SSL2INT( parm ) );
         break;
     case 10:
         AddChar();
@@ -323,7 +323,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
         AddActualChar( '\0' );
         break;
     case 13:
-        ScanCCharNum = parm;
+        ScanCCharNum = SSL2BOOL( parm );
         break;
     case 14:
         if( NestedCallLevel == MAX_NESTED_CALL - 1 ) {
@@ -364,7 +364,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
         }
         break;
     case 17:
-        EvalSubstring = parm;
+        EvalSubstring = SSL2BOOL( parm );
         if( EvalSubstring )
             ExprSP->v.string.ss_offset = 0;
         break;
@@ -410,12 +410,12 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
             break;
         case SSL_32_BIT:
             GetMADTypeDefault( MTK_INTEGER, &mti );
-            result = (mti.b.bits >= 32);
+            result = ( mti.b.bits >= 32 );
             break;
         }
         break;
     case 23: // nyi - end temp
-        MarkArrayOrder( parm );
+        MarkArrayOrder( SSL2BOOL( parm ) );
         break;
     case 24:
         StartSubscript();
@@ -596,7 +596,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         DoField();
         break;
     case 12:
-        DoCall( Num, parm );
+        DoCall( Num, SSL2BOOL( parm ) );
         break;
     case 13:
         DoConvert();
@@ -608,16 +608,16 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         MakeAddr();
         break;
     case 16:
-        result = TstEQ( parm );
+        result = ( TstEQ( SSL2INT( parm ) ) != 0 );
         break;
     case 17:
-        result = TstLT( parm );
+        result = ( TstLT( SSL2INT( parm ) ) != 0 );
         break;
     case 18:
-        result = TstTrue( parm );
+        result = ( TstTrue( SSL2INT( parm ) ) != 0 );
         break;
     case 19:
-        result = TstExist( parm );
+        result = ( TstExist( SSL2INT( parm ) ) != 0 );
         break;
     case 20:
         size = ExprSP->info.size;
@@ -676,7 +676,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         PushType( th );
         break;
     case 31:
-        if( parm ) {
+        if( SSL2BOOL( parm ) ) {
             /* file scope */
             if( ExprSP->flags & SF_NAME ) {
                 ExprSP->v.li.file_scope = true;
@@ -747,7 +747,7 @@ static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
     result = 0;
     switch( select ) {
     case 0:
-        PushInt( parm );
+        PushInt( SSL2INT( parm ) );
         break;
     case 1:
         PushAddr( GetDotAddr() );
@@ -770,8 +770,6 @@ static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
             PushRealNum( RealNumVal() );
             Scan();
             result = true;
-        } else {
-            result = false;
         }
         break;
     case 4:
@@ -788,15 +786,12 @@ static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
         break;
     case 8:
         /* here because old debuggers will always return false */
-        switch( parm & SSL_VERSION_MAJOR_MASK ) {
-        case SSL_VERSION_MAJOR_CURR:
+        if( (parm & SSL_VERSION_MAJOR_MASK) != SSL_VERSION_MAJOR_CURR ) {
             break;
-        default:
-            return( false );
         }
 #if SSL_VERSION_MINOR_CURR != 0
         if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
-            return( false );
+            break;
         }
 #endif
         result = true;
@@ -817,35 +812,35 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
     result = 0;
     switch( select ) {
     case 0:
-        SwapStack( parm );
+        SwapStack( SSL2INT( parm ) );
         break;
     case 1:
-        MoveSP( parm );
+        MoveSP( SSL2INT( parm ) );
         break;
     case 2:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
         result = TypeInfoToClass( &entry->info ) & (BASE_TYPE | STK_UNSIGNED);
         break;
     case 3:
-        ExprValue( StkEntry( parm ) );
+        ExprValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 4:
-        LValue( StkEntry( parm ) );
+        LValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 5:
-        RValue( StkEntry( parm ) );
+        RValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 6:
-        LRValue( StkEntry( parm ) );
+        LRValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 7:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
         result = TI_CREATE( entry->info.kind, TM_NONE, 0 );
         break;
     case 8:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         NameResolve( entry, false );
         if( entry->flags & SF_SYM ) {
             SymInfo( entry->v.sh, entry->lc, &info );
@@ -855,11 +850,11 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
         }
         break;
     case 9:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         result = NameResolve( entry, false );
         break;
     case 10:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         if( entry->flags & SF_NAME ) {
             result = 0;
         } else if( entry->flags & SF_SYM ) {
@@ -878,10 +873,10 @@ static ssl_value MechNum( unsigned select, ssl_value parm )
 {
     switch( select ) {
     case 0:
-        Num = parm;
+        Num = SSL2INT( parm );
         break;
     case 1:
-        Num += parm;
+        Num += SSL2INT( parm );
         break;
     case 2:
         PushInt( Num );
@@ -908,11 +903,11 @@ static ssl_value MechBits( unsigned select, ssl_value parm )
         result = Bits;
         break;
     case 2:
-        result = (Bits & parm) != 0;
+        result = ( (Bits & parm) != 0 );
         Bits |= parm;
         break;
     case 3:
-        result = (Bits & parm) == 0;
+        result = ( (Bits & parm) == 0 );
         Bits &= parm;
         break;
     }
