@@ -82,9 +82,6 @@ Else
         OutFile.WriteLine "set OWHHC="
     End If
     OutFile.WriteLine
-    OutFile.WriteLine "REM Subdirectory to be used for bootstrapping"
-    OutFile.WriteLine "set OWOBJDIR=bootstrp"
-    OutFile.WriteLine
     OutFile.WriteLine "REM Invoke the batch file for the common environment"
     OutFile.WriteLine "call %OWROOT%\cmnvars.bat"
     OutFile.WriteLine
