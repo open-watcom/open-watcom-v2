@@ -17,6 +17,10 @@ additional_cleanup_subdir = $(all_execs:.exe=)
 
 !include wres.mif
 
+# systems where manifest file resource must be added to .EXE
+manifest_nt_386 = ntmanif.res
+#manifest_nt_x64 = ntmanif.res
+
 .c : ../c;$(watcom_dir)/c
 
 inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h"
@@ -49,7 +53,7 @@ wcpatch_objs = &
 wcpatch_objs += $+$(__subdir__)$-/symtab.obj
 !endif
 
-wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
+wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
 !else
@@ -59,6 +63,7 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
     @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
     $(linker) name $^@ @$^&.lnk
 !endif
+    @%make bind_manifest
     $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
@@ -79,7 +84,7 @@ wpatch_objs = &
     $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/bpatch.obj
 
-wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
+wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
 !else
@@ -89,6 +94,7 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
     @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
     $(linker) name $^@ @$^&.lnk
 !endif
+    @%make bind_manifest
     $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
@@ -109,7 +115,7 @@ bpatch_objs = &
     $+$(__subdir__)$-/patmain.obj &
     $+$(__subdir__)$-/bdiffmem.obj
 
-bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
+bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
 !else
@@ -119,6 +125,7 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(__MAKEFILES__)
     @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
     $(linker) name $^@ @$^&.lnk
 !endif
+    @%make bind_manifest
     $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
@@ -240,3 +247,21 @@ bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
 
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
+
+ntmanif.res: ../ntmanif.rc
+!ifeq verbose 1
+        $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
+!else
+        @echo rc $@
+        @$(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
+!endif
+
+bind_manifest: .PROCEDURE
+!ifdef manifest_$(host_os)_$(host_cpu)
+!ifeq verbose 1
+        $(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
+!else
+        @echo bind rc $@
+        @$(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
+!endif
+!endif
