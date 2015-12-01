@@ -41,11 +41,10 @@ typedef enum {
 } ssl_error_class;
 
 typedef unsigned short  ssl_value;
-typedef unsigned short  ssl_tokens;
 
 extern bool         SemAllowClosestLine( bool ok );
 extern ssl_value    SSLSemantic( ssl_value action, ssl_value parm );
 extern int          SSLError( ssl_error_class class, ssl_value error );
-extern void         SSLOutToken( ssl_value token );
-extern ssl_value    SSLNextToken( void );
-extern ssl_value    SSLCurrToken( void );
+extern void         SSLOutToken( tokens token );
+extern tokens       SSLNextToken( void );
+extern tokens       SSLCurrToken( void );

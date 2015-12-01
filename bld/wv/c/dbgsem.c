@@ -1301,18 +1301,18 @@ int SSLError( ssl_error_class class, ssl_value error )
 }
 
 
-void SSLOutToken( ssl_tokens ssl_token )
+void SSLOutToken( tokens token )
 {
-    ssl_token = ssl_token;
+    token = token;
 }
 
-ssl_tokens SSLNextToken( void )
+tokens SSLNextToken( void )
 {
     Scan();
-    return( (ssl_tokens)CurrToken );
+    return( CurrToken );
 }
 
-ssl_tokens SSLCurrToken( void )
+tokens SSLCurrToken( void )
 {
-    return( (ssl_tokens)CurrToken );
+    return( CurrToken );
 }

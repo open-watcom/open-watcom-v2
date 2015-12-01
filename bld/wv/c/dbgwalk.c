@@ -31,6 +31,7 @@
 
 
 #include "dbgdefn.h"
+#include "dbgdata.h"
 #include "sslops.h"
 #include "dbgsem.h"
 #include "dbgwalk.h"
@@ -80,31 +81,31 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     ssl_value       result;
     ssl_value       parm;
     ssl_value       wanted;
-    ssl_tokens      ssl_token;
+    tokens          token;
 
     result = 0;
     parm = 0;
     stk_ptr = stk_bot;
     stk_end = stk_bot + stk_size;
     TblPtr = table + start;
-    ssl_token = SSLCurrToken();
+    token = SSLCurrToken();
     for( ;; ) {
         operation = (op_code)GETU8( TblPtr++ );
         switch( operation & INS_MASK ) {
         case INS_INPUT:
             wanted = GetParm( operation );
-            if( ssl_token != wanted ) {
+            if( token != (tokens)wanted ) {
                 if( SSLError( TERM_SYNTAX, wanted ) ) {
                     return( TERM_SYNTAX );
                 }
             }
-            ssl_token = SSLNextToken();
+            token = SSLNextToken();
             break;
         case INS_IN_ANY:
-            ssl_token = SSLNextToken();
+            token = SSLNextToken();
             break;
         case INS_OUTPUT:
-            SSLOutToken( GetParm( operation ) );
+            SSLOutToken( (tokens)GetParm( operation ) );
             break;
         case INS_ERROR:
             if( SSLError( TERM_ERROR, GetParm( operation ) ) ) {
@@ -134,7 +135,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_SEMANTIC:
             result = SSLSemantic( GetParm( operation ), parm );
-            ssl_token = SSLCurrToken();
+            token = SSLCurrToken();
             break;
         case INS_KILL:
             SSLError( TERM_KILL, GetParm( operation ) );
@@ -146,8 +147,8 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_IN_CHOICE:
             for( num_items = GETU8( TblPtr++ ); num_items > 0; num_items-- ) {
-                if( ssl_token == GetParm( operation ) ) {
-                    ssl_token = SSLNextToken();
+                if( token == (tokens)GetParm( operation ) ) {
+                    token = SSLNextToken();
                     TblPtr = GetTablePos( table );
                     break;
                 }

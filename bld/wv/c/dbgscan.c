@@ -312,7 +312,7 @@ static bool FindToken( const char *table, tokens token,
         *start = table;
         for( ; *table != NULLCHAR; ++table )
             ;
-        if( GETWORD( table + 1 ) == (ssl_tokens)token ) {
+        if( (tokens)GETWORD( table + 1 ) == token ) {
             *len = table - *start;
             return( true );
         }
