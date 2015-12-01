@@ -1429,7 +1429,7 @@ static void scopeWalkSymbolNameSymbols( SYMBOL_NAME name, void *data )
 /********************************************************************/
 {
     SYMBOL sym;
-    void (*rtn)( SYMBOL ) = data;
+    void (*rtn)( SYMBOL ) = (void(*)(SYMBOL))data;
 
     RingIterBeg( name->name_syms, sym ) {
         (*rtn)( sym );
