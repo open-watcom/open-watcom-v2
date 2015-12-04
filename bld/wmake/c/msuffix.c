@@ -52,44 +52,44 @@ STATIC UINT16   nextId;
 STATIC UINT16   prevId;     // Has to be one less than nextId
 
 
-STATIC void freePathRing( PATHRING *pring )
-/*****************************************/
+STATIC void freePathRing( PATHRING pathring )
+/*******************************************/
 {
-    PATHRING    *walk;
-    PATHRING    *cur;
+    PATHNODE    *walk;
+    PATHNODE    *cur;
 
-    if( pring == NULL ) {
+    if( pathring == NULL ) {
         return;
     }
 
-    walk = pring;
+    walk = pathring;
     do {
         cur = walk;
         walk = walk->next;
         FreeSafe( cur->name );
         FreeSafe( cur );
-    } while( walk != pring );
+    } while( walk != pathring );
 }
 
 
 STATIC BOOLEAN freeSuffix( void *node, void *ptr )
 /************************************************/
 {
-    SUFFIX  *suf = node;
+    SUFFIX  *suffix = node;
     CREATOR *creator;
     CREATOR *creator_next;
 
     (void)ptr; // Unused
-    FreeSafe( suf->node.name );
-    freePathRing( suf->first );
+    FreeSafe( suffix->node.name );
+    freePathRing( suffix->pathring );
 
-    for( creator = suf->creator; creator != NULL; creator = creator_next ) {
+    for( creator = suffix->creator; creator != NULL; creator = creator_next ) {
         creator_next = creator->next;
         FreeSList( creator->slist );
         FreeSafe( creator );
     }
 
-    FreeSafe( suf );
+    FreeSafe( suffix );
 
     return( FALSE );
 }
@@ -242,26 +242,26 @@ void AddSuffix( const char *name )
 }
 
 
-STATIC void ringPath( PATHRING **pring, const char *path )
-/********************************************************/
+STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
+/*******************************************************************/
 {
-    PATHRING    **tail;
-    PATHRING    *new;
+    PATHNODE    **tail;
+    PATHNODE    *new;
     const char  *p;
     size_t      len;
 
-    assert( pring != NULL && path != NULL );
+    assert( pathring != NULL && path != NULL );
 
-    tail = pring;            /* find "tail" of ring */
+    tail = pathring;            /* find "tail" of ring */
     if( *tail != NULL ) {
         do {
             tail = &(*tail)->next;
-        } while( *tail != *pring );
+        } while( *tail != *pathring );
     }
 
     p = path;
     while( *p != NULLCHAR ) {
-            /* find end of path in string */
+        /* find end of path in string */
         while( *p != NULLCHAR && *p != PATH_SPLIT && *p != ';' ) {
             ++p;
         }
@@ -278,10 +278,10 @@ STATIC void ringPath( PATHRING **pring, const char *path )
 
         if( *p != NULLCHAR ) {
             ++p;
-            path = p;        /* advance to next path in string */
+            path = p;       /* advance to next path in string */
         }
     }
-    *tail = *pring;         /* now we finally close the ring up */
+    *tail = *pathring;      /* now we finally close the ring up */
 }
 
 
@@ -289,24 +289,24 @@ void SetSufPath( const char *name, const char *path )
 /**********************************************************/
 /* name with . */
 {
-    SUFFIX      *suf;
+    SUFFIX      *suffix;
 
     assert( name != NULL && name[0] == DOT );
 
-    suf = FindSuffix( name );
+    suffix = FindSuffix( name );
 
-    assert( suf != NULL );
+    assert( suffix != NULL );
 
     if( path == NULL ) {
-        freePathRing( suf->first );
-        suf->first = NULL;
-        suf->pathring = NULL;
+        freePathRing( suffix->pathring );
+        suffix->pathring = NULL;
+        suffix->currpath = NULL;
         return;
     }
 
-    ringPath( &suf->first, path );
-    if( suf->pathring == NULL ) {
-        suf->pathring = suf->first;
+    addPathToPathRing( &suffix->pathring, path );
+    if( suffix->currpath == NULL ) {
+        suffix->currpath = suffix->pathring;
     }
 }
 
@@ -432,26 +432,26 @@ char *AddCreator( const char *sufsuf )
 STATIC BOOLEAN printSuf( void *node, void *ptr )
 /**********************************************/
 {
-    SUFFIX      *suf = node;
+    SUFFIX      *suffix = node;
     CREATOR     *cur;
-    PATHRING    *pring;
+    PATHNODE    *currpath;
     SLIST       *slist;
     CLIST       *cmds;
     BOOLEAN     printed;
 
     (void)ptr; // Unused
-    PrtMsg( INF | PSUF_SUFFIX, suf->node.name );
-    if( suf->pathring != NULL ) {
-        pring = suf->pathring;
+    PrtMsg( INF | PSUF_SUFFIX, suffix->node.name );
+    if( suffix->currpath != NULL ) {
+        currpath = suffix->currpath;
         do {
-            PrtMsg( INF | PSUF_FOUND_IN, pring->name );
-            pring = pring->next;
-        } while( pring != suf->pathring );
+            PrtMsg( INF | PSUF_FOUND_IN, currpath->name );
+            currpath = currpath->next;
+        } while( currpath != suffix->currpath );
         printed = TRUE;
     } else {
         printed = FALSE;
     }
-    cur = suf->creator;
+    cur = suffix->creator;
     if( cur != NULL && printed ) {
         PrtMsg( INF | NEWLINE );
     }
@@ -516,34 +516,34 @@ STATIC RET_T chkOneName( char *buffer, TARGET **chktarg )
 }
 
 
-STATIC RET_T tryPathRing( PATHRING **pring, char *buffer,
+STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
     const char *dir, const char *fname, const char *ext, TARGET **chktarg )
 /**************************************************************************
  * walk a path ring, and attempt to find fname.ext using different paths
  */
 {
-    PATHRING    *cur;
+    PATHNODE    *currpath;
     char        fake_name[_MAX_PATH];
 
-    assert( pring != NULL );
-    if( *pring == NULL ) {
+    assert( pathring != NULL );
+    if( *pathring == NULL ) {
         return( RET_ERROR );
     }
     if( dir[0] == '\0' ) {
         dir = NULL;
     }
     _makepath( fake_name, NULL, dir, fname, ext );
-    cur = *pring;
+    currpath = *pathring;
     do {
-        _makepath( buffer, NULL, cur->name, fake_name, NULL );
+        _makepath( buffer, NULL, currpath->name, fake_name, NULL );
         if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
             if( Glob.optimize ) {       /* nail down pathring here */
-                *pring = cur;
+                *pathring = currpath;
             }
             return( RET_SUCCESS );
         }
-        cur = cur->next;
-    } while( cur != *pring );
+        currpath = currpath->next;
+    } while( currpath != *pathring );
 
     return( RET_ERROR );
 }
@@ -561,7 +561,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN 
     PGROUP      pg;
     SUFFIX      *suffix;
     char        *env;
-    PATHRING    *envpath;
+    PATHRING    envpathring;
     RET_T       ret;
 
     if( chktarg != NULL ) { /* always NULL the chktarg before working */
@@ -588,24 +588,24 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN 
 
     ret = RET_ERROR;
 
-    if( suffix == NULL || suffix->pathring == NULL ) {
+    if( suffix == NULL || suffix->currpath == NULL ) {
         if( tryenv ) {
             /* no suffix info - use %PATH */
             env = getenv( "PATH" );
             if( env != NULL ) {
-                envpath = NULL;
-                ringPath( &envpath, env );
+                envpathring = NULL;
+                addPathToPathRing( &envpathring, env );
 
                 /* never cache %path */
                 Glob.cachedir = FALSE;
-                ret = tryPathRing( &envpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+                ret = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
                 Glob.cachedir = TRUE;
 
-                freePathRing( envpath );
+                freePathRing( envpathring );
             }
         }
     } else {
-        ret = tryPathRing( &suffix->pathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
+        ret = findInPathRing( &suffix->currpath, buffer, pg.dir, pg.fname, pg.ext, chktarg );
     }
 
     return( ret );
