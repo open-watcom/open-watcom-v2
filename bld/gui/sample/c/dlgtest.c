@@ -236,7 +236,7 @@ void ResDialogCreate( gui_window *parent )
     res_name_or_id  dlg_id;
     char            *text;
     char            *ep;
-    unsignd long    id;
+    unsigned long   id;
 
     dlg_id = NULL;
     while( dlg_id == NULL ) {
