@@ -79,43 +79,42 @@ static char c_regular[]   = "1234567890`-=[]\\;',./*+";
 static char c_shifted[]   = "!@#$%^&*()~_+{}|:\"<>?*+";
 #endif
 
-#define         EV_FUNC( n )            ( 0x13A + (n) )
-#define         EV_SHIFT_FUNC( n )      ( 0x153 + (n) )
-#define         EV_CTRL_FUNC( n )       ( 0x15d + (n) )
-#define         EV_ALT_FUNC( n )        ( 0x167 + (n) )
-#define         EV_CTRL( n )            ( (n) + 1 )
-#define         EV_KEYPAD_FUNC( n )     ( 0x030 + (n) )
-#define         EV_ALT_NUMS( n )        ( 0x178 + (n) )
-
+#define GUI_KEYS_FUNC( n )          ( 0x13A + (n) )
+#define GUI_KEYS_SHIFT_FUNC( n )    ( 0x153 + (n) )
+#define GUI_KEYS_CTRL_FUNC( n )     ( 0x15d + (n) )
+#define GUI_KEYS_ALT_FUNC( n )      ( 0x167 + (n) )
+#define GUI_KEYS_CTRL( n )          ( (n) + 1 )
+#define GUI_KEYS_KEYPAD_FUNC( n )   ( 0x030 + (n) )
+#define GUI_KEYS_ALT_NUMS( n )      ( 0x178 + (n) )
 
 static gui_key AltFunc[] =
 {
-GUI_KEY_ALT_A,
-GUI_KEY_ALT_B,
-GUI_KEY_ALT_C,
-GUI_KEY_ALT_D,
-GUI_KEY_ALT_E,
-GUI_KEY_ALT_F,
-GUI_KEY_ALT_G,
-GUI_KEY_ALT_H,
-GUI_KEY_ALT_I,
-GUI_KEY_ALT_J,
-GUI_KEY_ALT_K,
-GUI_KEY_ALT_L,
-GUI_KEY_ALT_M,
-GUI_KEY_ALT_N,
-GUI_KEY_ALT_O,
-GUI_KEY_ALT_P,
-GUI_KEY_ALT_K,
-GUI_KEY_ALT_R,
-GUI_KEY_ALT_S,
-GUI_KEY_ALT_T,
-GUI_KEY_ALT_U,
-GUI_KEY_ALT_V,
-GUI_KEY_ALT_W,
-GUI_KEY_ALT_X,
-GUI_KEY_ALT_Y,
-GUI_KEY_ALT_Z
+    GUI_KEY_ALT_A,
+    GUI_KEY_ALT_B,
+    GUI_KEY_ALT_C,
+    GUI_KEY_ALT_D,
+    GUI_KEY_ALT_E,
+    GUI_KEY_ALT_F,
+    GUI_KEY_ALT_G,
+    GUI_KEY_ALT_H,
+    GUI_KEY_ALT_I,
+    GUI_KEY_ALT_J,
+    GUI_KEY_ALT_K,
+    GUI_KEY_ALT_L,
+    GUI_KEY_ALT_M,
+    GUI_KEY_ALT_N,
+    GUI_KEY_ALT_O,
+    GUI_KEY_ALT_P,
+    GUI_KEY_ALT_K,
+    GUI_KEY_ALT_R,
+    GUI_KEY_ALT_S,
+    GUI_KEY_ALT_T,
+    GUI_KEY_ALT_U,
+    GUI_KEY_ALT_V,
+    GUI_KEY_ALT_W,
+    GUI_KEY_ALT_X,
+    GUI_KEY_ALT_Y,
+    GUI_KEY_ALT_Z
 };
 
 static bool convert_shiftkeys( WORD vk, gui_key *key,
@@ -194,7 +193,7 @@ static bool convert_numeric( WORD ch, gui_key *key )
             if( t == -1 ) {
                 t = 9;
             }
-            *key = EV_ALT_NUMS( t );
+            *key = GUI_KEYS_ALT_NUMS( t );
             return( true );
         } else if( CHK_KS_CTRL ) {
             if( ch == '2' ) {
@@ -222,7 +221,7 @@ static bool convert_alpha( WORD ch, gui_key *key )
         if( CHK_KS_ALT ) {
             *key = AltFunc[t];
         } else if( CHK_KS_CTRL ) {
-            *key = EV_CTRL( t );
+            *key = GUI_KEYS_CTRL( t );
         } else if ( CHK_KS_SHIFT ) {
             *key = 'A'+ t;
         } else {
@@ -272,7 +271,7 @@ static bool convert_keytable( WORD vk, gui_key *key )
 static bool convert_numpad( WORD vk, gui_key *key )
 {
     if( ( vk >= VK_NUMPAD0 ) && ( vk <= VK_NUMPAD9 ) ) {
-        *key = EV_KEYPAD_FUNC( vk - VK_NUMPAD0 );
+        *key = GUI_KEYS_KEYPAD_FUNC( vk - VK_NUMPAD0 );
         return( true );
     }
     return( false );
@@ -294,13 +293,13 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
     } else if( vk >= VK_F1 && vk <= VK_F10 ) {
         t = vk - VK_F1 + 1;
         if( CHK_KS_ALT ) {
-            *key = EV_ALT_FUNC( t );
+            *key = GUI_KEYS_ALT_FUNC( t );
         } else if( CHK_KS_CTRL ) {
-            *key = EV_CTRL_FUNC( t );
+            *key = GUI_KEYS_CTRL_FUNC( t );
         } else if( CHK_KS_SHIFT ) {
-            *key = EV_SHIFT_FUNC( t );
+            *key = GUI_KEYS_SHIFT_FUNC( t );
         } else {
-            *key = EV_FUNC( t );
+            *key = GUI_KEYS_FUNC( t );
         }
 #ifndef __OS2_PM__
     } else if( convert_numpad( vk, key ) ) {
