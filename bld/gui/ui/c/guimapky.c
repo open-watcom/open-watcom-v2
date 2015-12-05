@@ -93,22 +93,22 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_END :
         key = GUI_KEY_END;
         break;
-    case EV_CTRL_UP :
+    case EV_CTRL_CURSOR_UP :
     case EV_SHIFT_CURSOR_UP :
     case EV_CURSOR_UP :
         key = GUI_KEY_UP;
         break;
-    case EV_CTRL_DOWN :
+    case EV_CTRL_CURSOR_DOWN :
     case EV_CURSOR_DOWN :
     case EV_SHIFT_CURSOR_DOWN :
         key = GUI_KEY_DOWN;
         break;
-    case EV_CTRL_LEFT :
+    case EV_CTRL_CURSOR_LEFT :
     case EV_SHIFT_CURSOR_LEFT :
     case EV_CURSOR_LEFT :
         key = GUI_KEY_LEFT;
         break;
-    case EV_CTRL_RIGHT :
+    case EV_CTRL_CURSOR_RIGHT :
     case EV_SHIFT_CURSOR_RIGHT :
     case EV_CURSOR_RIGHT :
         key = GUI_KEY_RIGHT;
@@ -175,10 +175,10 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_CTRL_TAB :
     case EV_CTRL_HOME :
     case EV_CTRL_END :
-    case EV_CTRL_UP :
-    case EV_CTRL_DOWN :
-    case EV_CTRL_LEFT :
-    case EV_CTRL_RIGHT :
+    case EV_CTRL_CURSOR_UP :
+    case EV_CTRL_CURSOR_DOWN :
+    case EV_CTRL_CURSOR_LEFT :
+    case EV_CTRL_CURSOR_RIGHT :
     case EV_CTRL_INSERT :
     case EV_CTRL_DELETE :
     case EV_CTRL_PAGE_UP :
