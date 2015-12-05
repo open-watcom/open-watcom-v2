@@ -500,13 +500,13 @@ typedef enum {
     GUI_GMOUSE          = (GUI_CHARMAP_DLG|GUI_CHARMAP_MOUSE)
 } gui_window_styles;
 
-#define GUI_SHIFT( state )      ( state & GUI_KS_SHIFT )
-#define GUI_ALT( state )        ( state & GUI_KS_ALT  )
-#define GUI_CTRL( state )       ( state & GUI_KS_CTRL )
+#define GUI_SHIFT_STATE( state )    ((state & GUI_KS_SHIFT) != 0)
+#define GUI_ALT_STATE( state )      ((state & GUI_KS_ALT) != 0)
+#define GUI_CTRL_STATE( state )     ((state & GUI_KS_CTRL) != 0)
 
-#define GUI_NO_COLUMN ((gui_ord)-1)
-#define GUI_NO_ROW ((gui_ord)-1)
-#define NO_SELECT -1
+#define GUI_NO_COLUMN   ((gui_ord)-1)
+#define GUI_NO_ROW      ((gui_ord)-1)
+#define NO_SELECT       -1
 
 // GUIIsChecked and GUISetChecked values
 #define GUI_NOT_CHECKED         0
