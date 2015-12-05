@@ -34,10 +34,12 @@
 #include "guigmous.h"
 #include "guixinit.h"
 
+#ifdef __DOS__
 static  bool    GraphicsMouse   = false;
 static  bool    GraphicsDlg     = false;
 static  bool    GMouseOn        = false;
 static  int     Param           = 0;
+#endif
 
 void GUIInitGraphicsMouse( gui_window_styles style )
 {
@@ -57,8 +59,8 @@ int GUIInitMouse( int param )
 {
     int init;
 
-    Param = param;
 #ifdef __DOS__
+    Param = param;
     if( GraphicsMouse ) {
         init = uiinitgmouse( param );
         if( GraphicsDlg ) {
@@ -67,10 +69,10 @@ int GUIInitMouse( int param )
     } else {
         init = initmouse( param );
     }
+    GMouseOn = true;
 #else
     init = initmouse( param );
 #endif
-    GMouseOn = true;
     return( init );
 }
 
@@ -85,14 +87,15 @@ void GUIFiniMouse( void )
     } else {
         finimouse();
     }
+    GMouseOn = false;
 #else
     finimouse();
 #endif
-    GMouseOn = false;
 }
 
 void GUIGMouseOn( void )
 {
+#ifdef __DOS__
     ORD row;
     ORD col;
 
@@ -101,16 +104,23 @@ void GUIGMouseOn( void )
         GUIInitMouse( Param );
         uisetmouseposn( row, col );
     }
+#endif
 }
 
 void GUIGMouseOff( void )
 {
+#ifdef __DOS__
     if( GMouseOn && GraphicsMouse ) {
         GUIFiniMouse();
     }
+#endif
 }
 
 bool GUIHasCharRemap( void )
 {
+#ifdef __DOS__
     return( GraphicsDlg );
+#else
+    return( false );
+#endif
 }
