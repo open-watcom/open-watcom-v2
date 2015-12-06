@@ -57,7 +57,7 @@ static void update( SAREA area, VSCREEN *vptr )
 VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
 /***********************************************/
 {
-    char                    *box;
+    unsigned char           *box;
     ATTR                    attr;
     int                     priority;
     void                    (_FAR *updatertn)( struct sarea, void * );
@@ -73,16 +73,16 @@ VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
     area = vptr->area;
     if( ( flags & V_DIALOGUE ) != 0 ) {
         if( flags & V_LISTBOX ) {
-            box = (char *)&UiGChar[ UI_SBOX_TOP_LEFT ];
+            box = UI_SBOX_CHARS();
             attr = UIData->attrs[ ATTR_NORMAL ];
         } else {
-            box = (char *)&UiGChar[ UI_BOX_TOP_LEFT ];
+            box = UI_BOX_CHARS();
             attr = UIData->attrs[ ATTR_DIAL_FRAME ];
         }
         priority = P_DIALOGUE;
     } else {
         flags &= ~V_UNBUFFERED;
-        box = (char *)&UiGChar[ UI_SBOX_TOP_LEFT ];
+        box = UI_SBOX_CHARS();
         attr = UIData->attrs[ ATTR_FRAME ];
         priority = P_VSCREEN;
     }

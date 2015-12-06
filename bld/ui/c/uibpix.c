@@ -35,12 +35,8 @@
 #include "uifar.h"
 
 
-void intern bpixel( register BUFFER     *bptr,
-                    register ORD        row,
-                    register ORD        col,
-                    register ATTR       attr,
-                    register char       ch )
-/********************************************/
+void intern bpixel( BUFFER *bptr, ORD row, ORD col, ATTR attr, unsigned char ch )
+/*******************************************************************************/
 {
     LP_PIXEL    dst;
     PIXEL       fill;

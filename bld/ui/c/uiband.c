@@ -42,8 +42,7 @@ static ATTR             Attr;
 static void drawband( SAREA area, void *dummy )
 {
     area=area;dummy=dummy;
-    drawbox( &UIData->screen, BandArea, (char *)&UiGChar[ UI_SBOX_TOP_LEFT ],
-             Attr, FALSE );
+    drawbox( &UIData->screen, BandArea, UI_SBOX_CHARS(), Attr, FALSE );
 }
 
 void UIAPI uibandinit( SAREA start, ATTR attr )

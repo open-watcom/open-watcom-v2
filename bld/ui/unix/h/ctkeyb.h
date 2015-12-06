@@ -55,7 +55,7 @@ extern unsigned short   ct_shift_state;
 
 extern void         clear_shift( void );
 extern int          nextc( int n );
-extern void         nextc_unget( char *, int );
+extern void         nextc_unget( unsigned char *, int );
 extern EVENT        ck_keyboardevent( void );
 extern EVENT        tk_keyboardevent( void );
 extern EVENT        td_event( void );

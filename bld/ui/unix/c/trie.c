@@ -227,14 +227,14 @@ static int child_comp( const int *pkey, const eNode *pbase )
 
 EVENT TrieRead( void )
 {
-    eTrie       *trie;
-    char        *buf;
-    int         c;
-    int         cpos = 0;
-    EVENT       ev = EV_UNUSED;
-    int         ev_pos = 0;
-    eNode       *node;
-    int         timeout;
+    eTrie           *trie;
+    unsigned char   *buf;
+    int             c;
+    int             cpos = 0;
+    EVENT           ev = EV_UNUSED;
+    int             ev_pos = 0;
+    eNode           *node;
+    int             timeout;
 
     buf = alloca( KeyTrieDepth + 1 );
 

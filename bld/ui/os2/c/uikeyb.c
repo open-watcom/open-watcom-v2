@@ -133,7 +133,7 @@ EVENT intern keyboardevent( void )
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
-                case EV_RETURN:
+                case EV_ENTER:
                 case EV_ESCAPE:
                     ev = ascii + 0x100;
                     break;
@@ -148,7 +148,7 @@ EVENT intern keyboardevent( void )
         if( changed != 0 ) {
             key = 0;
             scan = 1;
-            while( scan < 128 ) {
+            while( scan < (1 << 7) ) {
                 if( ( changed & scan ) != 0 ) {
                     if( ( newshift & scan ) != 0 ) {
                         UIData->old_shift |= scan;

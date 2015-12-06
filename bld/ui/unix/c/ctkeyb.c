@@ -281,8 +281,8 @@ int nextc( int n )      // delay in 0.1 seconds -- not to exceed 9
     return( ch );
 }
 
-void nextc_unget( char *str, int n )
-/**********************************/
+void nextc_unget( unsigned char *str, int n )
+/*******************************************/
 {
     UnreadPos -= n;
     //assert( UnreadPos >= 0 );

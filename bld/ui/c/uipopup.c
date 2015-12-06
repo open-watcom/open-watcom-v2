@@ -50,7 +50,7 @@ static EVENT PopupEvents[] = {
     EV_CURSOR_DOWN,
     EV_CURSOR_RIGHT,
     EV_ESCAPE,
-    EV_RETURN,
+    EV_ENTER,
     EV_MOUSE_MOVE,
     EV_MOUSE_DCLICK,
     EV_MOUSE_DCLICK_R,
@@ -551,7 +551,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
                 break;
             }
             break;
-        case EV_RETURN :
+        case EV_ENTER :
             if( ScrollPos != NO_SELECT && menu[ScrollPos].popup != NULL ) { // JD
                 done = createsubpopup( menu, left, right, keep_inside,
                                        &new_ev, &window, desc, TRUE );

@@ -134,8 +134,8 @@ EVENT intern keyboardevent( void )
                 ev = EV_TAB_FORWARD;
             } else if( ascii + 0x100 == EV_ESCAPE ){
                 ev = EV_ESCAPE;
-            } else if( ascii + 0x100 == EV_RETURN ){
-                ev = EV_RETURN;
+            } else if( ascii + 0x100 == EV_ENTER ){
+                ev = EV_ENTER;
             } else if( ascii + 0x100 == EV_RUB_OUT ){
                 ev = EV_RUB_OUT;
             } else {

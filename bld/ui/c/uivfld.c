@@ -42,8 +42,8 @@
 static EVENT livefieldevents[] = {
     ' ',            '~',
     EV_HOME,        EV_DELETE,
-    0x01,           0xff,
-    EV_NO_EVENT,            /* end of list of ranges */
+    0x0001,         0x00ff,     /* Alt Keypad number */
+    EV_NO_EVENT,                /* end of list of ranges */
     EV_RUB_OUT,
     EV_CTRL_END,
     EV_CTRL_HOME,
@@ -55,7 +55,7 @@ static EVENT livefieldevents[] = {
 
 static EVENT deadfieldevents[] = {
     EV_HOME,        EV_INSERT,
-    EV_NO_EVENT,            /* end of list of ranges */
+    EV_NO_EVENT,                /* end of list of ranges */
     EV_TAB_FORWARD,
     EV_TAB_BACKWARD,
     EV_NO_EVENT

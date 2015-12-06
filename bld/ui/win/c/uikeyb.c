@@ -49,17 +49,17 @@ typedef struct {
 } keytable;
 
 static keytable kt[] = {
-    { 0xbc,',','<' },
-    { 0xbe,'.','>' },
-    { 0xbf,'/','?' },
-    { 0xba,';',':' },
-    { 0xde,'\'','"' },
-    { 0xdb,'[','{' },
-    { 0xdd,']','}' },
-    { 0xdc,'\\','|' },
-    { 0xc0,'`','~' },
-    { 0xbd,'-','_' },
-    { 0xbb,'=','+' }
+    { 0xbc, ',',  '<' },
+    { 0xbe, '.',  '>' },
+    { 0xbf, '/',  '?' },
+    { 0xba, ';',  ':' },
+    { 0xde, '\'', '"' },
+    { 0xdb, '[',  '{' },
+    { 0xdd, ']',  '}' },
+    { 0xdc, '\\', '|' },
+    { 0xc0, '`',  '~' },
+    { 0xbd, '-',  '_' },
+    { 0xbb, '=',  '+' }
 };
 
 static unsigned char    ShiftState;
@@ -103,7 +103,9 @@ static int CheckState( unsigned info, unsigned down )
         return( FALSE );
     }
     if( bit > S_ALT ) { /* it's a toggle bit */
-        if( down ) ShiftState ^= bit;
+        if( down ) {
+            ShiftState ^= bit;
+        }
     } else if( down ) {
         ShiftState |= bit;
     } else {
@@ -396,7 +398,7 @@ EVENT intern keyboardevent( void )
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
-                case EV_RETURN:
+                case EV_ENTER:
                 case EV_ESCAPE:
                     ev = ascii + 0x100;
                     break;
@@ -411,7 +413,7 @@ EVENT intern keyboardevent( void )
         if( changed != 0 ) {
             key = 0;
             scan = 1;
-            while( scan < 0x100 ) {
+            while( scan < (1 << 8) ) {
                 if( ( changed & scan ) != 0 ) {
                     if( ( newshift & scan ) != 0 ) {
                         UIData->old_shift |= scan;

@@ -142,7 +142,7 @@ static VEDITLINE inputline = {
 
 static EVENT oplist[] = {
     EV_NO_EVENT,
-    EV_RETURN,
+    EV_ENTER,
     EV_ESCAPE,
     EV_NO_EVENT
 };
@@ -206,8 +206,7 @@ static void open( void )
     if( uivopen( &opwin ) ) {
 
         uipushlist( oplist );
-        uivtextput( &opwin, 1, 2, UIData->attrs[ ATTR_NORMAL ],
-                "Enter file name.", 16 );
+        uivtextput( &opwin, 1, 2, UIData->attrs[ATTR_NORMAL], "Enter file name.", 16 );
         inputline.attr = UIData->attrs[ ATTR_EDIT ];
         /* blank out the buffer */
         inputline.index = 0;
@@ -217,7 +216,7 @@ static void open( void )
             ev = uiveditline( &opwin, &inputline );
             if( ev != EV_NO_EVENT ) break;
         }
-        if( ev == EV_RETURN ) {
+        if( ev == EV_ENTER ) {
             /* open file */
         } else if( ev == EV_ESCAPE ) {
             /* do nothing */
@@ -270,9 +269,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     if( uivopen( &mainwin ) ) {
         uirefresh();
         sprintf( buff, "screen height : %d\0", UIData->height );
-        uivtextput( &mainwin, TOP_ROW - 1, 2,
-                  UIData->attrs[ ATTR_NORMAL ],
-                  buff, 30 );
+        uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
         for( ; ; ) {
             uipushlist( evlist );
             ev = uivgetevent( NULL );
@@ -338,15 +335,11 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                         break;
                     }
                 }
-                uivtextput( &mainwin, evrow, 2,
-                          UIData->attrs[ ATTR_NORMAL ],
-                          buff, 30 );
+                uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
                 if( ++evrow >= mainwin.area.height ){
                     evrow = TOP_ROW;
                 }
-                uivtextput( &mainwin, evrow, 2,
-                          UIData->attrs[ ATTR_NORMAL ],
-                          "", 30 );
+                uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
                 switch( ev ) {
                 case EV_MOUSE_PRESS:
                     BandOn = 1;

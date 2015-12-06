@@ -65,7 +65,7 @@ bool UIAPI uichecklist( EVENT ev, EVENT *eptr )
 /**********************************************/
 {
     while( *eptr != EV_NO_EVENT ) {
-        if( ( ev >= *eptr ) && ( ev <= *( eptr+1 ) ) ) {
+        if( ( ev >= *eptr ) && ( ev <= *( eptr + 1 ) ) ) {
             return( TRUE );
         }
         eptr += 2;

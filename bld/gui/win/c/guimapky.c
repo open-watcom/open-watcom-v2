@@ -79,9 +79,6 @@ static char c_regular[]   = "1234567890`-=[]\\;',./*+";
 static char c_shifted[]   = "!@#$%^&*()~_+{}|:\"<>?*+";
 #endif
 
-#define GUI_KEYS_CTRL( n )          ( (n) + 1 )
-#define GUI_KEYS_ALT_NUMS( n )      ( 0x178 + (n) )
-
 static gui_key AltFunc[] =
 {
     GUI_KEY_ALT_A,
@@ -188,7 +185,7 @@ static bool convert_numeric( WORD ch, gui_key *key )
             if( t == -1 ) {
                 t = 9;
             }
-            *key = GUI_KEYS_ALT_NUMS( t );
+            *key = GUI_KEY_ALT_1 + t;
             return( true );
         } else if( CHK_KS_CTRL ) {
             if( ch == '2' ) {
@@ -212,11 +209,11 @@ static bool convert_alpha( WORD ch, gui_key *key )
     WORD        t;
 
     if( isalpha( ch ) ) {
-        t = toupper(ch) - 'A';
+        t = toupper( ch ) - 'A';
         if( CHK_KS_ALT ) {
             *key = AltFunc[t];
         } else if( CHK_KS_CTRL ) {
-            *key = GUI_KEYS_CTRL( t );
+            *key = t + 1;
         } else if ( CHK_KS_SHIFT ) {
             *key = 'A'+ t;
         } else {
@@ -454,7 +451,7 @@ bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
     }
     GUISetKeyState();
     *scan = HIWORD( LOBYTE( data ) );
-    return( GUIConvertVirtKeyToGUIKey( (WORD) vk, scan ) );
+    return( GUIConvertVirtKeyToGUIKey( (WORD)vk, scan ) );
 }
 
 WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,

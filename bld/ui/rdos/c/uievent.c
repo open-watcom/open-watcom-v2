@@ -117,7 +117,7 @@ static EVENT KeyEventProc()
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
-                case EV_RETURN:
+                case EV_ENTER:
                 case EV_ESCAPE:
                     ev = ascii + 0x100;
                     break;
@@ -129,7 +129,7 @@ static EVENT KeyEventProc()
         if( changed != 0 ) {
             key = 0;
             scan = 1;
-            while( scan < 256 ) {
+            while( scan < (1 << 8) ) {
                 if( ( changed & scan ) != 0 ) {
                     if( ( keystate & scan ) != 0 ) {
                         UIData->old_shift |= scan;

@@ -311,7 +311,8 @@ int nextc(int n)
     unsigned char       ch;
     unsigned            least;
 
-    if( UnreadPos < sizeof( UnreadBuffer ) ) return( UnreadBuffer[ UnreadPos++ ] );
+    if( UnreadPos < sizeof( UnreadBuffer ) )
+        return( UnreadBuffer[ UnreadPos++ ] );
 
     least = (n != 0) ? 1 : 0;
 
@@ -322,10 +323,10 @@ int nextc(int n)
     return ch;
 }
 
-void nextc_unget( char *str, int n )
+void nextc_unget( unsigned char *str, int n )
 {
-    UnreadPos-=n;
-    //assert(UnreadPos>=0);
+    UnreadPos -= n;
+    //assert( UnreadPos >= 0 );
     memcpy( &(UnreadBuffer[UnreadPos]), str, n );
 }
 
@@ -396,15 +397,18 @@ EVENT ck_keyboardevent( void )
         real_shift |= S_ALT;
         break;
     case EV_SHIFT_RELEASE:
-        if( !(real_shift & S_SHIFT) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_SHIFT) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_SHIFT;
         break;
     case EV_CTRL_RELEASE:
-        if( !(real_shift & S_CTRL) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_CTRL) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_CTRL;
         break;
     case EV_ALT_RELEASE:
-        if( !(real_shift & S_ALT) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_ALT) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_ALT;
         break;
     case EV_NO_EVENT:
@@ -453,7 +457,7 @@ EVENT ck_keyboardevent( void )
             }
             sticky &= ~S_FUNC;
         }
-        if( !(real_shift & S_CTRL) ) {
+        if( (real_shift & S_CTRL) == 0 ) {
             /*
                 If the ctrl key isn't down (won't ever be on a terminal)
                 then we want to see certain CTRL-? combinations come back
@@ -501,7 +505,8 @@ EVENT tk_keyboardevent( void )
     EVENT       ev;
 
     ev = ck_keyboardevent();
-    if( ev != EV_MOUSE_PRESS ) return( ev );
+    if( ev != EV_MOUSE_PRESS )
+        return( ev );
     QNXDebugPrintf0( "UI: Mouse event handling" );
     tm_saveevent();
     return( EV_NO_EVENT ); /* make UI check for mouse events */
@@ -584,7 +589,8 @@ static int ck_init( void )
 
     tcgetattr( UIConHandle, &SaveTermSet );
 
-    if( !init_trie() ) return( FALSE );
+    if( !init_trie() )
+        return( FALSE );
 
     switch( ti_read_tix( UIConCtrl == NULL ) ) {
     case TIX_FAIL:
@@ -641,7 +647,8 @@ static int init_trie( void )
     char        buff[2];
     int         i;
 
-    if( !TrieInit() ) return( FALSE );
+    if( !TrieInit() )
+        return( FALSE );
 
     buff[1] = '\0';
     for( i = 0; i < NUM_ELTS( InStandard ); ++i ) {

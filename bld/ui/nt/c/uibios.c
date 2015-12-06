@@ -149,12 +149,11 @@ void intern physupdate( SAREA *area )
         char    buff[256];
 
 
-        for( j=sr.Top;j<=sr.Bottom;j++ ) {
-            for( i=sr.Left;i<=sr.Right;i++ ) {
-                buff[i-sr.Left] = ((PIXEL *) UIData->screen.origin)
-                                [ j*UIData->width + i ].ch;
+        for( j = sr.Top; j <= sr.Bottom; j++ ) {
+            for( i = sr.Left; i <= sr.Right; i++ ) {
+                buff[i - sr.Left] = ((PIXEL *)UIData->screen.origin)[j * UIData->width + i].ch;
             }
-            buff[i-sr.Left] = 0;
+            buff[i - sr.Left] = 0;
             printf( "%s\n", buff );
         }
     }

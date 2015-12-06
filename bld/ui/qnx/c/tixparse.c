@@ -68,7 +68,7 @@ extern char     ui_tix_path[];
 
 extern int      ui_tix_missing( const char *name );
 
-char            ti_char_map[256];
+unsigned char   ti_char_map[256];
 unsigned char   _ti_alt_map[32];
 
 static FILE     *in_file= NULL;
