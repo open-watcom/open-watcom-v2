@@ -143,16 +143,16 @@ static void MyHookRtn( unsigned event, unsigned info )
                                 EV_FUNC( key ) );
                 key = 0;
             } else if( key == VK_F11 ) {
-                info = PickOne( EV_ALT_FUNC_11,
-                                EV_CTRL_FUNC_11,
-                                EV_SHIFT_FUNC_11,
-                                EV_FUNC_11 );
+                info = PickOne( EV_ALT_F11,
+                                EV_CTRL_F11,
+                                EV_SHIFT_F11,
+                                EV_F11 );
                 key = 0;
             } else if( key == VK_F12 ) {
-                info = PickOne( EV_ALT_FUNC_12,
-                                EV_CTRL_FUNC_12,
-                                EV_SHIFT_FUNC_12,
-                                EV_FUNC_12 );
+                info = PickOne( EV_ALT_F12,
+                                EV_CTRL_F12,
+                                EV_SHIFT_F12,
+                                EV_F12 );
                 key = 0;
             } else if( key >= 'A' && key <= 'Z' ) {
                 if( ShiftState & S_ALT ) {

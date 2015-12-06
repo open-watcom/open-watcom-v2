@@ -152,7 +152,7 @@ static VFIELD hotSpotFields[] = {
 
 static EVENT keyShift[] = {
     EV_NO_EVENT,
-    EV_ALT_FUNC_12,
+    EV_ALT_F12,
     EV_MARK_PRESS,      EV_MARK_RELEASE,
     EV_MOUSE_RELEASE,   EV_MOUSE_DRAG,
     EV_INSERT,          EV_DELETE,

@@ -356,9 +356,9 @@ EVENT ck_keyboardevent( void )
             if( ev == '0' ) {
                 ev = EV_FUNC( 10 );
             } else if( ev == 'a' || ev == 'A' ) {
-                ev = EV_FUNC_11;
+                ev = EV_F11;
             } else if( ev == 'b' || ev == 'B' ) {
-                ev = EV_FUNC_12;
+                ev = EV_F12;
             } else if( isdigit( ev ) ) {
                 ev = EV_FUNC( ev - '0' );
             }

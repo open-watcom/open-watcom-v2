@@ -95,14 +95,14 @@
 #define         EV_CTRL_FUNC( n )       ( 0x15d + (n) )
 #define         EV_ALT_FUNC( n )        ( 0x167 + (n) )
 
-#define         EV_FUNC_11              0x185
-#define         EV_FUNC_12              0x186
-#define         EV_SHIFT_FUNC_11        0x187
-#define         EV_SHIFT_FUNC_12        0x188
-#define         EV_CTRL_FUNC_11         0x189
-#define         EV_CTRL_FUNC_12         0x18A
-#define         EV_ALT_FUNC_11          0x18B
-#define         EV_ALT_FUNC_12          0x18C
+#define         EV_F11                  0x185
+#define         EV_F12                  0x186
+#define         EV_SHIFT_F11            0x187
+#define         EV_SHIFT_F12            0x188
+#define         EV_CTRL_F11             0x189
+#define         EV_CTRL_F12             0x18A
+#define         EV_ALT_F11              0x18B
+#define         EV_ALT_F12              0x18C
 
 #define         EV_TAB_BACKWARD         0x10F
 
