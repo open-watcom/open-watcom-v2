@@ -32,8 +32,8 @@
 
 #include "guiwind.h"
 
-int GUISysInit( int param )
+bool GUISysInit( int param )
 {
     param=param;
-    return( 1 );
+    return( true );
 }

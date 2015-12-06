@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int GUISysInit( int );
+extern bool GUISysInit( int );
