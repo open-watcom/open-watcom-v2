@@ -64,45 +64,45 @@ enum    Conditons { ON, OFF };
 
 extern EVENT    LineEvents[];
 
-#define         EV_QUIT         EV_FUNC( 2 )
+#define EV_QUIT         EV_F2
 enum {
-        EV_OPEN = EV_FIRST_UNUSED,
-        EV_CLOSE,
-        EV_CUT,
-        EV_PASTE,
-        EV_GO,
-        EV_SAMPLE_DIALOG,
-        EV_NOTHING
+    EV_OPEN = EV_FIRST_UNUSED,
+    EV_CLOSE,
+    EV_CUT,
+    EV_PASTE,
+    EV_GO,
+    EV_SAMPLE_DIALOG,
+    EV_NOTHING
 };
 
 static MENUITEM filemenu[] = {
-        { "Open",     EV_OPEN,          0 },
-        { "Close",    EV_CLOSE,         0 },
-        { "Nothing",  EV_NOTHING,       2 },
-        { NULL,       EV_NO_EVENT,      ITEM_SEPARATOR },
-        { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-        { "",         EV_NO_EVENT,      0 },
-        { "Exit",     EV_QUIT,          1 },
-        NULL
+    { "Open",     EV_OPEN,          0 },
+    { "Close",    EV_CLOSE,         0 },
+    { "Nothing",  EV_NOTHING,       2 },
+    { NULL,       EV_NO_EVENT,      ITEM_SEPARATOR },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
+    { "",         EV_NO_EVENT,      0 },
+    { "Exit",     EV_QUIT,          1 },
+    NULL
 };
 
 static MENUITEM editmenu[] = {
-        { NULL,       EV_NO_EVENT,      0 },
+    { NULL,       EV_NO_EVENT,      0 },
 };
 
 static MENUITEM barmenu[] = {
-        { "File",     EV_NO_EVENT,      0 },
-        { "Edit",     EV_NO_EVENT,      1 },
-        { "Go!",      EV_GO,            0 },
-        { "File",     EV_NO_EVENT,      2 },
-        NULL
+    { "File",     EV_NO_EVENT,      0 },
+    { "Edit",     EV_NO_EVENT,      1 },
+    { "Go!",      EV_GO,            0 },
+    { "File",     EV_NO_EVENT,      2 },
+    NULL
 };
 
 static MENUITEM *pulldownuimenus[] = {
-        filemenu,
-        editmenu,
-        NULL,
-        filemenu
+    filemenu,
+    editmenu,
+    NULL,
+    filemenu
 };
 
 static VSCREEN mainwin = {
@@ -141,29 +141,29 @@ static VEDITLINE inputline = {
 };
 
 static EVENT oplist[] = {
-        EV_NO_EVENT,
-        EV_RETURN,
-        EV_ESCAPE,
-        EV_NO_EVENT
+    EV_NO_EVENT,
+    EV_RETURN,
+    EV_ESCAPE,
+    EV_NO_EVENT
 };
 
 static EVENT             evlist[] = {
-        EV_FIRST_EVENT, EV_LAST_KEYBOARD,
-        EV_MOUSE_PRESS, EV_MOUSE_RELEASE,
-        EV_MOUSE_HOLD_R, EV_MOUSE_REPEAT_M,
-        EV_OPEN,        EV_NOTHING,
-        EV_NO_EVENT,
-        EV_MOUSE_DCLICK,
-        EV_MOUSE_REPEAT,
-        EV_IDLE,
-        EV_MENU_INITPOPUP,
-        EV_CLOCK_TICK,
-        EV_BACKGROUND_RESIZE,
-        EV_CURSOR_UP,
-        EV_CURSOR_DOWN,
-        EV_CURSOR_LEFT,
-        EV_CURSOR_RIGHT,
-        EV_NO_EVENT
+    EV_FIRST_EVENT,     EV_LAST_KEYBOARD,
+    EV_MOUSE_PRESS,     EV_MOUSE_RELEASE,
+    EV_MOUSE_HOLD_R,    EV_MOUSE_REPEAT_M,
+    EV_OPEN,            EV_NOTHING,
+    EV_NO_EVENT,
+    EV_MOUSE_DCLICK,
+    EV_MOUSE_REPEAT,
+    EV_IDLE,
+    EV_MENU_INITPOPUP,
+    EV_CLOCK_TICK,
+    EV_BACKGROUND_RESIZE,
+    EV_CURSOR_UP,
+    EV_CURSOR_DOWN,
+    EV_CURSOR_LEFT,
+    EV_CURSOR_RIGHT,
+    EV_NO_EVENT
 };
 
 typedef struct an_event_string{
@@ -175,31 +175,31 @@ static SAREA    BandArea;
 int             BandOn = 0;
 
 static          an_event_string         evstrs[] = {
-    { EV_MOUSE_PRESS,   "EV_MOUSE_PRESS" },
-    { EV_MOUSE_RELEASE, "EV_MOUSE_RELEASE" },
-    { EV_MOUSE_DRAG,    "EV_MOUSE_DRAG" },
-    { EV_MOUSE_REPEAT,  "EV_MOUSE_REPEAT" },
-    { EV_MOUSE_DCLICK,  "EV_MOUSE_DCLICK" },
-    { EV_MOUSE_PRESS_R, "EV_MOUSE_PRESS_R" },
-    { EV_MOUSE_RELEASE_R,"EV_MOUSE_RELEASE_R" },
-    { EV_MOUSE_DRAG_R,  "EV_MOUSE_DRAG_R" },
-    { EV_MOUSE_REPEAT_R,"EV_MOUSE_REPEAT_R" },
-    { EV_MOUSE_DCLICK_R,"EV_MOUSE_DCLICK_R" },
-    { EV_MOUSE_PRESS_M, "EV_MOUSE_PRESS_M" },
-    { EV_MOUSE_RELEASE_M,"EV_MOUSE_RELEASE_M" },
-    { EV_MOUSE_DRAG_M,  "EV_MOUSE_DRAG_M" },
-    { EV_MOUSE_REPEAT_M,"EV_MOUSE_REPEAT_M" },
-    { EV_MOUSE_DCLICK_M,"EV_MOUSE_DCLICK_M" },
-    { EV_ALT_PRESS,     "EV_ALT_PRESS" },
-    { EV_ALT_RELEASE,   "EV_ALT_RELEASE" },
-    { EV_IDLE,          "EV_IDLE" },
-    { EV_MENU_INITPOPUP,"EV_MENU_INITPOPUP" },
+    { EV_MOUSE_PRESS,       "EV_MOUSE_PRESS" },
+    { EV_MOUSE_RELEASE,     "EV_MOUSE_RELEASE" },
+    { EV_MOUSE_DRAG,        "EV_MOUSE_DRAG" },
+    { EV_MOUSE_REPEAT,      "EV_MOUSE_REPEAT" },
+    { EV_MOUSE_DCLICK,      "EV_MOUSE_DCLICK" },
+    { EV_MOUSE_PRESS_R,     "EV_MOUSE_PRESS_R" },
+    { EV_MOUSE_RELEASE_R,   "EV_MOUSE_RELEASE_R" },
+    { EV_MOUSE_DRAG_R,      "EV_MOUSE_DRAG_R" },
+    { EV_MOUSE_REPEAT_R,    "EV_MOUSE_REPEAT_R" },
+    { EV_MOUSE_DCLICK_R,    "EV_MOUSE_DCLICK_R" },
+    { EV_MOUSE_PRESS_M,     "EV_MOUSE_PRESS_M" },
+    { EV_MOUSE_RELEASE_M,   "EV_MOUSE_RELEASE_M" },
+    { EV_MOUSE_DRAG_M,      "EV_MOUSE_DRAG_M" },
+    { EV_MOUSE_REPEAT_M,    "EV_MOUSE_REPEAT_M" },
+    { EV_MOUSE_DCLICK_M,    "EV_MOUSE_DCLICK_M" },
+    { EV_ALT_PRESS,         "EV_ALT_PRESS" },
+    { EV_ALT_RELEASE,       "EV_ALT_RELEASE" },
+    { EV_IDLE,              "EV_IDLE" },
+    { EV_MENU_INITPOPUP,    "EV_MENU_INITPOPUP" },
     { EV_BACKGROUND_RESIZE, "EV_BACKGROUND_RESIZE" },
-    { EV_NO_EVENT, NULL }
+    { EV_NO_EVENT,          NULL }
 };
 
- static void open()
-/******************/
+static void open( void )
+/**********************/
 {
     EVENT ev;
 
@@ -255,7 +255,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     ToCharacter();
 
     initmouse( 2 );
-    uimenus( barmenu, pulldownuimenus, EV_FUNC( 1 ) );
+    uimenus( barmenu, pulldownuimenus, EV_F1 );
     UIData->mouse_clk_delay = uiclockdelay( 250 );
     UIData->tick_delay = uiclockdelay( 3000 );
     mainwin.area.height = UIData->height - 7;
@@ -294,7 +294,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 case EV_OPEN:
                     open();
                     break;
-                case EV_FUNC(1):
+                case EV_F1:
                     area.width = 10;
                     area.height = 10;
                     area.row = 1;

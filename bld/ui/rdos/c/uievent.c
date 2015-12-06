@@ -62,26 +62,26 @@ extern bool                 MouseOn;
 extern bool                 MouseInstalled;
 extern unsigned short int   MouseStatus;
 
-static          EVENT                   EventsPress[]   = {
-                EV_SHIFT_PRESS,
-                EV_ALT_PRESS,
-                EV_CTRL_PRESS,
-                EV_NO_EVENT,
-                EV_SCROLL_PRESS,
-                EV_NO_EVENT,
-                EV_CAPS_PRESS,
-                EV_NUM_PRESS
+static EVENT    EventsPress[]   = {
+    EV_SHIFT_PRESS,
+    EV_ALT_PRESS,
+    EV_CTRL_PRESS,
+    EV_NO_EVENT,
+    EV_SCROLL_PRESS,
+    EV_NO_EVENT,
+    EV_CAPS_PRESS,
+    EV_NUM_PRESS
 };
 
-static          EVENT                   EventsRelease[] = {
-                EV_SHIFT_RELEASE,
-                EV_ALT_RELEASE,
-                EV_CTRL_RELEASE,
-                EV_NO_EVENT,
-                EV_SCROLL_RELEASE,
-                EV_NO_EVENT,
-                EV_CAPS_RELEASE,
-                EV_NUM_RELEASE
+static EVENT    EventsRelease[] = {
+    EV_SHIFT_RELEASE,
+    EV_ALT_RELEASE,
+    EV_CTRL_RELEASE,
+    EV_NO_EVENT,
+    EV_SCROLL_RELEASE,
+    EV_NO_EVENT,
+    EV_CAPS_RELEASE,
+    EV_NUM_RELEASE
 };
 
 static EVENT KeyEventProc()

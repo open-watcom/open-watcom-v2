@@ -154,7 +154,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             --bptr;
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_LEFT ) {
+    } else if( ev == EV_CTRL_CURSOR_LEFT ) {
         bptr = buffer->content + buffer->index;
         while( bptr > buffer->content ) {
             --bptr;
@@ -170,7 +170,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             }
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_RIGHT ) {
+    } else if( ev == EV_CTRL_CURSOR_RIGHT ) {
 
         char                    *eptr;   /* end pointer */
         char                    *tptr;   /* blank tail */

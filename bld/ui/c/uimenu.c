@@ -42,45 +42,44 @@
 #include "clibext.h"
 
 
-#define         TABCHAR                 '\t'
-#define         TITLE_OFFSET            2
-#define         BETWEEN_TITLES          2
+#define TABCHAR                 '\t'
+#define TITLE_OFFSET            2
+#define BETWEEN_TITLES          2
 
-static          int                     BetweenTitles = BETWEEN_TITLES;
+static  int                     BetweenTitles = BETWEEN_TITLES;
 
-extern          EVENT                   Event;
+extern  EVENT                   Event;
 
-static          VBARMENU                MenuList;
-static          VBARMENU*               Menu;
+static  VBARMENU                MenuList;
+static  VBARMENU*               Menu;
 
-static          DESCMENU                Describe[ MAX_MENUS ];
-static          int                     NumMenus        = 0;
+static  DESCMENU                Describe[ MAX_MENUS ];
+static  int                     NumMenus        = 0;
 
-static          UI_WINDOW               BarWin;
+static  UI_WINDOW               BarWin;
 
-static          EVENT                   menu_list[]      = {
-                EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
-                EV_ALT_Q, EV_ALT_M,
-                EV_SCROLL_PRESS, EV_CAPS_RELEASE,
-                EV_NO_EVENT,
-                EV_MOUSE_PRESS,
-                EV_MOUSE_DRAG,
-                EV_MOUSE_RELEASE,
-                EV_ESCAPE,
-                EV_RETURN,
-                EV_CURSOR_LEFT,
-                EV_CURSOR_RIGHT,
-                EV_CURSOR_DOWN,
-                EV_ALT_PRESS,
-                EV_ALT_RELEASE,
-                EV_FUNC(10),
-                EV_NO_EVENT
+static EVENT    menu_list[] = {
+    EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
+    EV_ALT_Q,           EV_ALT_M,
+    EV_SCROLL_PRESS,    EV_CAPS_RELEASE,
+    EV_NO_EVENT,
+    EV_MOUSE_PRESS,
+    EV_MOUSE_DRAG,
+    EV_MOUSE_RELEASE,
+    EV_ESCAPE,
+    EV_RETURN,
+    EV_CURSOR_LEFT,
+    EV_CURSOR_RIGHT,
+    EV_CURSOR_DOWN,
+    EV_ALT_PRESS,
+    EV_ALT_RELEASE,
+    EV_F10,
+    EV_NO_EVENT
 };
 
-static          char*                   alt             =
-        "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
+static char     *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
-static          bool                    InitMenuPopupPending = FALSE;
+static bool     InitMenuPopupPending = FALSE;
 
 extern void uisetbetweentitles( int between )
 {
@@ -441,7 +440,7 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                     menu = 1;
                 }
                 Menu->altpressed = FALSE;
-            } else if( ev == EV_FUNC( 10 ) && UIData->f10menus ){
+            } else if( ev == EV_F10 && UIData->f10menus ){
                 desc = &Describe[ 0 ];
                 menu = 1;
             } else if( ev == EV_MOUSE_PRESS_R  ||

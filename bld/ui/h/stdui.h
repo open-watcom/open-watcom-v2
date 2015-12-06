@@ -48,15 +48,14 @@
 #define         EV_FIRST_EVENT          0x01
 
 #define         EV_FIRST_EDIT_CHAR      0x01
+#define         EV_CTRL_ENTER           0x0A
+#define         EV_CTRL_BACKSPACE       0x7F
 #define         EV_LAST_EDIT_CHAR       0xfe
 
 #define         EV_RUB_OUT              0x108
-#define         EV_TAB_FORWARD          0x109
-#define         EV_RETURN               0x10D
+#define         EV_TAB                  0x109
 #define         EV_ENTER                0x10D
-#define         EV_CTRL_ENTER           0x00A
-#define         EV_CTRL_RETURN          0x00A
-#define         EV_CTRL_BACKSPACE       0x07F
+#define         EV_SHIFT_TAB            0x10F
 #define         EV_ESCAPE               0x11B
 /*
  * This next one isn't all that useful on AT-class machines, I grant you.
@@ -77,23 +76,66 @@
 #if !defined( NO_SHIFT_MOVEMENT )
 #define         EV_SHIFT_HOME           0x1C0
 #define         EV_SHIFT_END            0x1C1
-
 #define         EV_SHIFT_CURSOR_UP      0x1C2
 #define         EV_SHIFT_CURSOR_DOWN    0x1C3
 #define         EV_SHIFT_CURSOR_LEFT    0x1C4
 #define         EV_SHIFT_CURSOR_RIGHT   0x1C5
-
 #define         EV_SHIFT_PAGE_UP        0x1C6
 #define         EV_SHIFT_PAGE_DOWN      0x1C7
+#else
+#define         EV_SHIFT_HOME           EV_HOME
+#define         EV_SHIFT_END            EV_END
+#define         EV_SHIFT_CURSOR_UP      EV_CURSOR_UP
+#define         EV_SHIFT_CURSOR_DOWN    EV_CURSOR_DOWN
+#define         EV_SHIFT_CURSOR_LEFT    EV_CURSOR_LEFT
+#define         EV_SHIFT_CURSOR_RIGHT   EV_CURSOR_RIGHT
+#define         EV_SHIFT_PAGE_UP        EV_PAGE_UP
+#define         EV_SHIFT_PAGE_DOWN      EV_PAGE_DOWN
 #endif
 
 #define         EV_CTRL( k )            ( (k) - 'a' + 1 )
 #define         EV_ALT_KEYPAD( k )      (k)
 
-#define         EV_FUNC( n )            ( 0x13A + (n) )
-#define         EV_SHIFT_FUNC( n )      ( 0x153 + (n) )
-#define         EV_CTRL_FUNC( n )       ( 0x15d + (n) )
-#define         EV_ALT_FUNC( n )        ( 0x167 + (n) )
+#define         EV_F1                   0x13B
+#define         EV_F2                   0x13C
+#define         EV_F3                   0x13D
+#define         EV_F4                   0x13E
+#define         EV_F5                   0x13F
+#define         EV_F6                   0x140
+#define         EV_F7                   0x141
+#define         EV_F8                   0x142
+#define         EV_F9                   0x143
+#define         EV_F10                  0x144
+#define         EV_SHIFT_F1             0x154
+#define         EV_SHIFT_F2             0x155
+#define         EV_SHIFT_F3             0x156
+#define         EV_SHIFT_F4             0x157
+#define         EV_SHIFT_F5             0x158
+#define         EV_SHIFT_F6             0x159
+#define         EV_SHIFT_F7             0x15A
+#define         EV_SHIFT_F8             0x15B
+#define         EV_SHIFT_F9             0x15C
+#define         EV_SHIFT_F10            0x15D
+#define         EV_CTRL_F1              0x15E
+#define         EV_CTRL_F2              0x15F
+#define         EV_CTRL_F3              0x160
+#define         EV_CTRL_F4              0x161
+#define         EV_CTRL_F5              0x162
+#define         EV_CTRL_F6              0x163
+#define         EV_CTRL_F7              0x164
+#define         EV_CTRL_F8              0x165
+#define         EV_CTRL_F9              0x166
+#define         EV_CTRL_F10             0x167
+#define         EV_ALT_F1               0x168
+#define         EV_ALT_F2               0x169
+#define         EV_ALT_F3               0x16A
+#define         EV_ALT_F4               0x16B
+#define         EV_ALT_F5               0x16C
+#define         EV_ALT_F6               0x16D
+#define         EV_ALT_F7               0x16E
+#define         EV_ALT_F8               0x16F
+#define         EV_ALT_F9               0x170
+#define         EV_ALT_F10              0x171
 
 #define         EV_F11                  0x185
 #define         EV_F12                  0x186
@@ -104,299 +146,299 @@
 #define         EV_ALT_F11              0x18B
 #define         EV_ALT_F12              0x18C
 
-#define         EV_TAB_BACKWARD         0x10F
+#define         EV_ALT_TAB              0x1a5
 
 typedef int EVENT;  /* must be signed for uiungetevent */
 
 enum {
-        EV_ALT_Q                        = 0x110,
-        EV_ALT_W,
-        EV_ALT_E,
-        EV_ALT_R,
-        EV_ALT_T,
-        EV_ALT_Y,
-        EV_ALT_U,
-        EV_ALT_I,
-        EV_ALT_O,
-        EV_ALT_P,
-        EV_ALT_LEFT_BRACKET,
-        EV_ALT_RIGHT_BRACKET,
-        EV_ALT_ENTER,
-        EV_ALT_A                        = 0x11e,
-        EV_ALT_S,
-        EV_ALT_D,
-        EV_ALT_F,
-        EV_ALT_G,
-        EV_ALT_H,
-        EV_ALT_J,
-        EV_ALT_K,
-        EV_ALT_L,
-        EV_ALT_SEMI_COLON,
-        EV_ALT_QUOTE,
-        EV_ALT_BACKQUOTE,
-        EV_ALT_BACKSLASH                = 0x12b,
-        EV_ALT_Z                        = 0x12c,
-        EV_ALT_X,
-        EV_ALT_C,
-        EV_ALT_V,
-        EV_ALT_B,
-        EV_ALT_N,
-        EV_ALT_M,
-        EV_ALT_COMMA,
-        EV_ALT_PERIOD,
-        EV_ALT_SLASH,
-        EV_ALT_SPACE,
-        EV_HOME                         = 0x147,
-        EV_CURSOR_UP,
-        EV_PAGE_UP,
-        EV_CURSOR_LEFT                  = 0x14B,
-        EV_CURSOR_RIGHT                 = 0x14D,
-        EV_END                          = 0x14F,
-        EV_CURSOR_DOWN,
-        EV_PAGE_DOWN,
-        EV_INSERT,
-        EV_DELETE,
-        EV_CTRL_CURSOR_LEFT             = 0x173,
-        EV_CTRL_CURSOR_RIGHT,
-        EV_CTRL_END,
-        EV_CTRL_PAGE_DOWN,
-        EV_CTRL_HOME,
-        EV_ALT_1                        = 0x178,
-        EV_ALT_2,
-        EV_ALT_3,
-        EV_ALT_4,
-        EV_ALT_5,
-        EV_ALT_6,
-        EV_ALT_7,
-        EV_ALT_8,
-        EV_ALT_9,
-        EV_ALT_0,
-        EV_ALT_MINUS,
-        EV_ALT_EQUAL,
-        EV_CTRL_PAGE_UP                 = 0x184,
+    EV_ALT_Q                        = 0x110,
+    EV_ALT_W,
+    EV_ALT_E,
+    EV_ALT_R,
+    EV_ALT_T,
+    EV_ALT_Y,
+    EV_ALT_U,
+    EV_ALT_I,
+    EV_ALT_O,
+    EV_ALT_P,
+    EV_ALT_LEFT_BRACKET,
+    EV_ALT_RIGHT_BRACKET,
+    EV_ALT_ENTER,
+    EV_ALT_A                        = 0x11e,
+    EV_ALT_S,
+    EV_ALT_D,
+    EV_ALT_F,
+    EV_ALT_G,
+    EV_ALT_H,
+    EV_ALT_J,
+    EV_ALT_K,
+    EV_ALT_L,
+    EV_ALT_SEMI_COLON,
+    EV_ALT_QUOTE,
+    EV_ALT_BACKQUOTE,
+    EV_ALT_BACKSLASH                = 0x12b,
+    EV_ALT_Z                        = 0x12c,
+    EV_ALT_X,
+    EV_ALT_C,
+    EV_ALT_V,
+    EV_ALT_B,
+    EV_ALT_N,
+    EV_ALT_M,
+    EV_ALT_COMMA,
+    EV_ALT_PERIOD,
+    EV_ALT_SLASH,
+    EV_ALT_SPACE,
+    EV_HOME                         = 0x147,
+    EV_CURSOR_UP,
+    EV_PAGE_UP,
+    EV_CURSOR_LEFT                  = 0x14B,
+    EV_CURSOR_RIGHT                 = 0x14D,
+    EV_END                          = 0x14F,
+    EV_CURSOR_DOWN,
+    EV_PAGE_DOWN,
+    EV_INSERT,
+    EV_DELETE,
+    EV_CTRL_CURSOR_LEFT             = 0x173,
+    EV_CTRL_CURSOR_RIGHT,
+    EV_CTRL_END,
+    EV_CTRL_PAGE_DOWN,
+    EV_CTRL_HOME,
+    EV_ALT_1                        = 0x178,
+    EV_ALT_2,
+    EV_ALT_3,
+    EV_ALT_4,
+    EV_ALT_5,
+    EV_ALT_6,
+    EV_ALT_7,
+    EV_ALT_8,
+    EV_ALT_9,
+    EV_ALT_0,
+    EV_ALT_MINUS,
+    EV_ALT_EQUAL,
+    EV_CTRL_PAGE_UP                 = 0x184,
 #ifdef FD6
-        EV_LAST_KEYBOARD,
+    EV_LAST_KEYBOARD,
 #else
-        EV_CTRL_CURSOR_UP               = 0x18d,
-        EV_CTRL_CURSOR_DOWN             = 0x191,
-        EV_CTRL_INSERT,
-        EV_CTRL_DELETE,
-        EV_CTRL_TAB,
-        EV_ALT_HOME                     = 0x197,
-        EV_ALT_CURSOR_UP,
-        EV_ALT_PAGE_UP,
-        EV_ALT_CURSOR_LEFT              = 0x19b,
-        EV_ALT_CURSOR_RIGHT             = 0x19d,
-        EV_ALT_END                      = 0x19f,
-        EV_ALT_CURSOR_DOWN              = 0x1a0,
-        EV_ALT_PAGE_DOWN,
-        EV_ALT_INSERT,
-        EV_ALT_DELETE,
+    EV_CTRL_CURSOR_UP               = 0x18d,
+    EV_CTRL_CURSOR_DOWN             = 0x191,
+    EV_CTRL_INSERT,
+    EV_CTRL_DELETE,
+    EV_CTRL_TAB,
+    EV_ALT_HOME                     = 0x197,
+    EV_ALT_CURSOR_UP,
+    EV_ALT_PAGE_UP,
+    EV_ALT_CURSOR_LEFT              = 0x19b,
+    EV_ALT_CURSOR_RIGHT             = 0x19d,
+    EV_ALT_END                      = 0x19f,
+    EV_ALT_CURSOR_DOWN              = 0x1a0,
+    EV_ALT_PAGE_DOWN,
+    EV_ALT_INSERT,
+    EV_ALT_DELETE,
 
-        EV_LAST_KEYBOARD                = 0x1ff,
+    EV_LAST_KEYBOARD                = 0x1ff,
 #endif
-        EV_SHOW_FIELD,
-        EV_MODIFIED_FIELD,
-        EV_LINE_CHANGE,
-        EV_MOUSE_HOLD,
-        EV_MOUSE_PRESS,
-        EV_MOUSE_DRAG,
-        EV_MOUSE_RELEASE,
-        EV_BUFFER_FULL,
-        EV_FIELD_CHANGE,
-        EV_ALT_PRESS,
-        EV_ALT_RELEASE,
-        EV_MOUSE_DCLICK,
-        EV_MOUSE_REPEAT,
-        EV_SHIFT_PRESS,
-        EV_SHIFT_RELEASE,
-        EV_CTRL_PRESS,
-        EV_CTRL_RELEASE,
-        EV_SCROLL_PRESS,
-        EV_SCROLL_RELEASE,
-        EV_NUM_PRESS,
-        EV_NUM_RELEASE,
-        EV_CAPS_PRESS,
-        EV_CAPS_RELEASE,
-        EV_INSERT_PRESS,
-        EV_INSERT_RELEASE,
+    EV_SHOW_FIELD,
+    EV_MODIFIED_FIELD,
+    EV_LINE_CHANGE,
+    EV_MOUSE_HOLD,
+    EV_MOUSE_PRESS,
+    EV_MOUSE_DRAG,
+    EV_MOUSE_RELEASE,
+    EV_BUFFER_FULL,
+    EV_FIELD_CHANGE,
+    EV_ALT_PRESS,
+    EV_ALT_RELEASE,
+    EV_MOUSE_DCLICK,
+    EV_MOUSE_REPEAT,
+    EV_SHIFT_PRESS,
+    EV_SHIFT_RELEASE,
+    EV_CTRL_PRESS,
+    EV_CTRL_RELEASE,
+    EV_SCROLL_PRESS,
+    EV_SCROLL_RELEASE,
+    EV_NUM_PRESS,
+    EV_NUM_RELEASE,
+    EV_CAPS_PRESS,
+    EV_CAPS_RELEASE,
+    EV_INSERT_PRESS,
+    EV_INSERT_RELEASE,
 
-        EV_CLOCK_TICK,
-        EV_SINK,
+    EV_CLOCK_TICK,
+    EV_SINK,
 
-        EV_MOUSE_HOLD_R,
-        EV_MOUSE_PRESS_R,
-        EV_MOUSE_DRAG_R,
-        EV_MOUSE_RELEASE_R,
-        EV_MOUSE_DCLICK_R,
-        EV_MOUSE_REPEAT_R,
-        EV_MOUSE_HOLD_M,
-        EV_MOUSE_PRESS_M,
-        EV_MOUSE_DRAG_M,
-        EV_MOUSE_RELEASE_M,
-        EV_MOUSE_DCLICK_M,
-        EV_MOUSE_REPEAT_M,
+    EV_MOUSE_HOLD_R,
+    EV_MOUSE_PRESS_R,
+    EV_MOUSE_DRAG_R,
+    EV_MOUSE_RELEASE_R,
+    EV_MOUSE_DCLICK_R,
+    EV_MOUSE_REPEAT_R,
+    EV_MOUSE_HOLD_M,
+    EV_MOUSE_PRESS_M,
+    EV_MOUSE_DRAG_M,
+    EV_MOUSE_RELEASE_M,
+    EV_MOUSE_DCLICK_M,
+    EV_MOUSE_REPEAT_M,
 
-        EV_TOP,
-        EV_BOTTOM,
+    EV_TOP,
+    EV_BOTTOM,
 
-        EV_BUMP_RIGHT,
-        EV_BUMP_LEFT,
-        EV_JOIN_RIGHT,
-        EV_JOIN_LEFT,
-        EV_SPLIT,
-        EV_SCROLL_LINE_UP,
-        EV_SCROLL_LINE_DOWN,
-        EV_SCROLL_PAGE_UP,
-        EV_SCROLL_PAGE_DOWN,
-        EV_SCROLL_LEFT_FIELD,
-        EV_SCROLL_RIGHT_FIELD,
-        EV_SCROLL_LEFT_PAGE,
-        EV_SCROLL_RIGHT_PAGE,
-        EV_SCROLL_VERTICAL,
-        EV_SCROLL_HORIZONTAL,
+    EV_BUMP_RIGHT,
+    EV_BUMP_LEFT,
+    EV_JOIN_RIGHT,
+    EV_JOIN_LEFT,
+    EV_SPLIT,
+    EV_SCROLL_LINE_UP,
+    EV_SCROLL_LINE_DOWN,
+    EV_SCROLL_PAGE_UP,
+    EV_SCROLL_PAGE_DOWN,
+    EV_SCROLL_LEFT_FIELD,
+    EV_SCROLL_RIGHT_FIELD,
+    EV_SCROLL_LEFT_PAGE,
+    EV_SCROLL_RIGHT_PAGE,
+    EV_SCROLL_VERTICAL,
+    EV_SCROLL_HORIZONTAL,
 
-        EV_IDLE,
-        EV_BUFFER_CLEAR,
+    EV_IDLE,
+    EV_BUFFER_CLEAR,
 
-        EV_MOUSE_MOVE,
-        EV_LIST_BOX_CHANGED,
-        EV_MENU_ACTIVE,
-        EV_MENU_INITPOPUP,
-        EV_LIST_BOX_DCLICK,
-        EV_LIST_BOX_CLOSED,
-        EV_BACKGROUND_RESIZE,
+    EV_MOUSE_MOVE,
+    EV_LIST_BOX_CHANGED,
+    EV_MENU_ACTIVE,
+    EV_MENU_INITPOPUP,
+    EV_LIST_BOX_DCLICK,
+    EV_LIST_BOX_CLOSED,
+    EV_BACKGROUND_RESIZE,
 
-        // NOTE: This event should always be passed up, from all functions.
-        EV_KILL_UI,
+    // NOTE: This event should always be passed up, from all functions.
+    EV_KILL_UI,
 
-        EV_CHECK_BOX_CLICK,
-        EV_REDRAW_SCREEN,
+    EV_CHECK_BOX_CLICK,
+    EV_REDRAW_SCREEN,
 
-        EV_LAST_PLUS_1,
-        EV_LAST_ENUMERATED              = EV_LAST_PLUS_1-1,
+    EV_LAST_PLUS_1,
+    EV_LAST_ENUMERATED              = EV_LAST_PLUS_1-1,
 
-        EV_FIRST_UNUSED                 = 0x400
+    EV_FIRST_UNUSED                 = 0x400
 };
 
 /*
- * The following section provides compatibility with earlier UI based
- * programs which may have relied on these names. The names have been
- * changed for consistency.
- */
+* The following section provides compatibility with earlier UI based
+* programs which may have relied on these names. The names have been
+* changed for consistency.
+*/
 
-#define EV_CTRL_LEFT            EV_CTRL_CURSOR_LEFT
-#define EV_CTRL_RIGHT           EV_CTRL_CURSOR_RIGHT
-#define EV_CTRL_UP              EV_CTRL_CURSOR_UP
-#define EV_CTRL_DOWN            EV_CTRL_CURSOR_DOWN
+#define EV_TAB_FORWARD          EV_TAB
+#define EV_TAB_BACKWARD         EV_SHIFT_TAB
 
-#define EV_CTRL_PGUP            EV_CTRL_PAGE_UP
-#define EV_CTRL_PGDN            EV_CTRL_PAGE_DOWN
-#define EV_ALT_PGUP             EV_ALT_PAGE_UP
-#define EV_ALT_PGDN             EV_ALT_PAGE_DOWN
+#define EV_RETURN               EV_ENTER
+#define EV_CTRL_RETURN          EV_CTRL_ENTER
 
-#define         MAX_EVENT_LISTS         30
+#define EV_SHIFT_INSERT         EV_INSERT
+#define EV_SHIFT_DELETE         EV_DELETE
+
+
+#define MAX_EVENT_LISTS         30
 
 typedef struct eventlist {
-        int             num_lists;
-        EVENT _FARD*    events[ MAX_EVENT_LISTS ];
+    int             num_lists;
+    EVENT _FARD*    events[ MAX_EVENT_LISTS ];
 } EVENTLIST;
 
 enum    {
-        ATTR_MENU,
-        ATTR_ACTIVE,
-        ATTR_CURR_ACTIVE,
-        ATTR_INACTIVE,
-        ATTR_CURR_INACTIVE,
-        ATTR_SHADOW,
-        ATTR_DEFAULT_HOTSPOT,
-        ATTR_NORMAL,
-        ATTR_BRIGHT,
-        ATTR_EDIT,
-        ATTR_REVERSE,
-        ATTR_EDIT2,
-        ATTR_HOTSPOT,
-        ATTR_HELP,
-        ATTR_HOT,
-        ATTR_HOT_CURR,
-        ATTR_HOT_QUIET,
-        ATTR_CURR_EDIT,
-        ATTR_CURR_MARK_EDIT,
-        ATTR_MARK_NORMAL,
-        ATTR_MARK_EDIT,
-        ATTR_CURR_HOTSPOT_KEY,
-        ATTR_EDIT_DIAL,
-        ATTR_UNUSED3,
-        ATTR_UNUSED4,
-        ATTR_CURR_SELECT_DIAL,
-        ATTR_FRAME,
-        ATTR_SCROLL_ICON,
-        ATTR_SCROLL_BAR,
-        ATTR_DIAL_FRAME,
-        ATTR_BROWSE,
-        ATTR_CURR_HOTSPOT,
-        ATTR_ERROR,
-        ATTR_HINT,
-        ATTR_WARNING,
-        ATTR_OFF_HOTSPOT,
-        ATTR_RADIO_HOTSPOT,
-        ATTR_LAST
+    ATTR_MENU,
+    ATTR_ACTIVE,
+    ATTR_CURR_ACTIVE,
+    ATTR_INACTIVE,
+    ATTR_CURR_INACTIVE,
+    ATTR_SHADOW,
+    ATTR_DEFAULT_HOTSPOT,
+    ATTR_NORMAL,
+    ATTR_BRIGHT,
+    ATTR_EDIT,
+    ATTR_REVERSE,
+    ATTR_EDIT2,
+    ATTR_HOTSPOT,
+    ATTR_HELP,
+    ATTR_HOT,
+    ATTR_HOT_CURR,
+    ATTR_HOT_QUIET,
+    ATTR_CURR_EDIT,
+    ATTR_CURR_MARK_EDIT,
+    ATTR_MARK_NORMAL,
+    ATTR_MARK_EDIT,
+    ATTR_CURR_HOTSPOT_KEY,
+    ATTR_EDIT_DIAL,
+    ATTR_UNUSED3,
+    ATTR_UNUSED4,
+    ATTR_CURR_SELECT_DIAL,
+    ATTR_FRAME,
+    ATTR_SCROLL_ICON,
+    ATTR_SCROLL_BAR,
+    ATTR_DIAL_FRAME,
+    ATTR_BROWSE,
+    ATTR_CURR_HOTSPOT,
+    ATTR_ERROR,
+    ATTR_HINT,
+    ATTR_WARNING,
+    ATTR_OFF_HOTSPOT,
+    ATTR_RADIO_HOTSPOT,
+    ATTR_LAST
 };
 
 /* line drawing and graphics characters */
 enum {
-        /* single line box drawing */
-        UI_LLCORNER = 1,
-        UI_LRCORNER,
-        UI_ULCORNER,
-        UI_URCORNER,
-        UI_HLINE,
-        UI_VLINE,
-        UI_TTEE,
-        UI_RTEE,
-        UI_LTEE,
+    /* single line box drawing */
+    UI_LLCORNER = 1,
+    UI_LRCORNER,
+    UI_ULCORNER,
+    UI_URCORNER,
+    UI_HLINE,
+    UI_VLINE,
+    UI_TTEE,
+    UI_RTEE,
+    UI_LTEE,
 
-        /* double line box drawing */
-        UI_DLLCORNER,
-        UI_DLRCORNER,
-        UI_DULCORNER,
-        UI_DURCORNER,
-        UI_DHLINE,
-        UI_DVLINE,
+    /* double line box drawing */
+    UI_DLLCORNER,
+    UI_DLRCORNER,
+    UI_DULCORNER,
+    UI_DURCORNER,
+    UI_DHLINE,
+    UI_DVLINE,
 
-        /* triangles */
-        UI_DPOINT,
-        UI_LPOINT,
-        UI_RPOINT,
-        UI_UPOINT,
+    /* triangles */
+    UI_DPOINT,
+    UI_LPOINT,
+    UI_RPOINT,
+    UI_UPOINT,
 
-        /* arrows */
-        UI_DARROW,
-        UI_UDARROW,
+    /* arrows */
+    UI_DARROW,
+    UI_UDARROW,
 
-        /* boxes */
-        UI_DBLOCK,
-        UI_LBLOCK,
-        UI_RBLOCK,
-        UI_UBLOCK,
-        UI_CKBOARD,
-        UI_BOARD,
-        UI_BLOCK,
+    /* boxes */
+    UI_DBLOCK,
+    UI_LBLOCK,
+    UI_RBLOCK,
+    UI_UBLOCK,
+    UI_CKBOARD,
+    UI_BOARD,
+    UI_BLOCK,
 
-        /* misc */
-        UI_SQUARE,
-        UI_ROOT,
-        UI_EQUIVALENT = 31
-        /* we use 31 of them: don't add any more!
-           they have to fit in the C0 ASCII range */
+    /* misc */
+    UI_SQUARE,
+    UI_ROOT,
+    UI_EQUIVALENT = 31
+    /* we use 31 of them: don't add any more!
+       they have to fit in the C0 ASCII range */
 };
 
 #ifdef __GUI__
 /*
-        ORD needs to be an unsigned int for the WINDOWS scaling system
-        in WVIDEO since values in the range 0-10000 are used.
-        Only the data structures are use.. No UI functions are actually
-        called for Windows so UI does not need to be rebuilt
+    ORD needs to be an unsigned int for the WINDOWS scaling system
+    in WVIDEO since values in the range 0-10000 are used.
+    Only the data structures are use.. No UI functions are actually
+    called for Windows so UI does not need to be rebuilt
 */
 
 typedef unsigned int    ORD;
@@ -404,9 +446,9 @@ typedef unsigned int    ORD;
 #elif __RDOS__
 
 /*      This needs to be fixed so scaling for a mouse also need a larger range!!
-        An improper reference to __GUI__ is used. Fixed for now so it works for RDOS. 
+    An improper reference to __GUI__ is used. Fixed for now so it works for RDOS. 
 */
-        
+    
 typedef int    ORD;
 
 #else
@@ -418,10 +460,10 @@ typedef unsigned char   ORD;
 typedef unsigned short  MOUSEORD;
 
 typedef struct sarea {
-        ORD             row;
-        ORD             col;
-        ORD             height;
-        ORD             width;
+    ORD             row;
+    ORD             col;
+    ORD             height;
+    ORD             width;
 } SAREA;
 
 typedef unsigned char   ATTR;

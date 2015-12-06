@@ -41,37 +41,37 @@
 #include "uishift.h"
 #include "biosui.h"
 
-#define         NRM_KEY_READ            0x00
-#define         NRM_KEY_STAT            0x01
-#define         NRM_KEY_SHFT            0x02
-#define         NRM_KEY_WRITE           0x05
+#define NRM_KEY_READ            0x00
+#define NRM_KEY_STAT            0x01
+#define NRM_KEY_SHFT            0x02
+#define NRM_KEY_WRITE           0x05
 
-#define         EXT_KEY_READ            0x10
-#define         EXT_KEY_STAT            0x11
-#define         EXT_KEY_SHFT            0x12
+#define EXT_KEY_READ            0x10
+#define EXT_KEY_STAT            0x11
+#define EXT_KEY_SHFT            0x12
 
 static unsigned char    ReadReq;      /* this will be 0x00 or 0x10 */
 
-static          EVENT                   EventsPress[]   = {
-                EV_SHIFT_PRESS,
-                EV_SHIFT_PRESS,
-                EV_CTRL_PRESS,
-                EV_ALT_PRESS,
-                EV_SCROLL_PRESS,
-                EV_NUM_PRESS,
-                EV_CAPS_PRESS,
-                EV_INSERT_PRESS
+static EVENT    EventsPress[]   = {
+    EV_SHIFT_PRESS,
+    EV_SHIFT_PRESS,
+    EV_CTRL_PRESS,
+    EV_ALT_PRESS,
+    EV_SCROLL_PRESS,
+    EV_NUM_PRESS,
+    EV_CAPS_PRESS,
+    EV_INSERT_PRESS
 };
 
-static          EVENT                   EventsRelease[] = {
-                EV_SHIFT_RELEASE,
-                EV_SHIFT_RELEASE,
-                EV_CTRL_RELEASE,
-                EV_ALT_RELEASE,
-                EV_SCROLL_RELEASE,
-                EV_NUM_RELEASE,
-                EV_CAPS_RELEASE,
-                EV_INSERT_RELEASE
+static EVENT    EventsRelease[] = {
+    EV_SHIFT_RELEASE,
+    EV_SHIFT_RELEASE,
+    EV_CTRL_RELEASE,
+    EV_ALT_RELEASE,
+    EV_SCROLL_RELEASE,
+    EV_NUM_RELEASE,
+    EV_CAPS_RELEASE,
+    EV_INSERT_RELEASE
 };
 
 unsigned int extern uiextkeyboard( void )

@@ -42,7 +42,7 @@ static  int     PrevScrollPos   = NO_SELECT;
 
 static EVENT PopupEvents[] = {
     EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
-    EV_ALT_Q, EV_ALT_M, // JD - handle alt keys
+    EV_ALT_Q,           EV_ALT_M, // JD - handle alt keys
     EV_NO_EVENT,
     EV_ALT_PRESS,
     EV_ALT_RELEASE,
@@ -68,14 +68,16 @@ static EVENT LeftMouseEvents[] = {
     EV_NO_EVENT,
     EV_MOUSE_PRESS,
     EV_MOUSE_DRAG,
-    EV_MOUSE_RELEASE
+    EV_MOUSE_RELEASE,
+    EV_NO_EVENT
 };
 
 static EVENT RightMouseEvents[] = {
     EV_NO_EVENT,
     EV_MOUSE_PRESS_R,
     EV_MOUSE_DRAG_R,
-    EV_MOUSE_RELEASE_R
+    EV_MOUSE_RELEASE_R,
+    EV_NO_EVENT
 };
 
 static bool InArea( ORD row, ORD col, SAREA *area )

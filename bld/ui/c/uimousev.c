@@ -32,27 +32,27 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-static          EVENT                   mouseevtab[6][3] = {
+static EVENT    mouseevtab[6][3] = {
     { EV_MOUSE_PRESS,   EV_MOUSE_PRESS_R,       EV_MOUSE_PRESS_M },
     { EV_MOUSE_RELEASE, EV_MOUSE_RELEASE_R,     EV_MOUSE_RELEASE_M },
     { EV_MOUSE_DCLICK,  EV_MOUSE_DCLICK_R,      EV_MOUSE_DCLICK_M },
     { EV_MOUSE_HOLD,    EV_MOUSE_HOLD_R,        EV_MOUSE_HOLD_M },
     { EV_MOUSE_DRAG,    EV_MOUSE_DRAG_R,        EV_MOUSE_DRAG_M },
     { EV_MOUSE_REPEAT,  EV_MOUSE_REPEAT_R,      EV_MOUSE_REPEAT_M }
-    };
+};
 
-                MOUSEORD          MouseRow;
-                MOUSEORD          MouseCol;
-                bool                    MouseOn;
-                unsigned short          MouseStatus;
-                bool                    MouseInstalled;
+        MOUSEORD            MouseRow;
+        MOUSEORD            MouseCol;
+        bool                MouseOn;
+        unsigned short      MouseStatus;
+        bool                MouseInstalled;
 
-static          int                     MouseForcedOff = 0;
+static  int                 MouseForcedOff = 0;
 
-static          bool                    MouseRepeat;
-static          unsigned long           MouseTime       = 0L;
-static          int                     MouseLast       = MOUSE_OFF;
-static          unsigned short          MouseLastButton = (unsigned short)~0;
+static  bool                MouseRepeat;
+static  unsigned long       MouseTime       = 0L;
+static  int                 MouseLast       = MOUSE_OFF;
+static  unsigned short      MouseLastButton = (unsigned short)~0;
 
 
 int UIAPI uimouseinstalled( void )

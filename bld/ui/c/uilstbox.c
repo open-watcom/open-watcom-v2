@@ -174,13 +174,20 @@ void uiboxpushlist( void )
         'a',            'z',
         'A',            'Z',
         EV_NO_EVENT,
-        EV_SCROLL_LINE_UP, EV_SCROLL_LINE_DOWN,
-        EV_SCROLL_PAGE_UP, EV_SCROLL_PAGE_DOWN,
-        EV_PAGE_UP, EV_PAGE_DOWN,
-        EV_CURSOR_UP,   EV_CURSOR_DOWN,
-        EV_MOUSE_PRESS, EV_MOUSE_RELEASE,
-        EV_MOUSE_REPEAT, EV_MOUSE_DRAG,
-        EV_ALT_CURSOR_UP, EV_NO_EVENT
+        EV_SCROLL_LINE_UP,
+        EV_SCROLL_LINE_DOWN,
+        EV_SCROLL_PAGE_UP,
+        EV_SCROLL_PAGE_DOWN,
+        EV_PAGE_UP,
+        EV_PAGE_DOWN,
+        EV_CURSOR_UP,
+        EV_CURSOR_DOWN,
+        EV_MOUSE_PRESS,
+        EV_MOUSE_RELEASE,
+        EV_MOUSE_REPEAT,
+        EV_MOUSE_DRAG,
+        EV_ALT_CURSOR_UP,
+        EV_NO_EVENT
     };
 
     uipushlist( listboxevents );

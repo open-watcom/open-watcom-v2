@@ -33,11 +33,13 @@
 #ifndef _GUIKEY_H_
 #define _GUIKEY_H_
 
-#define GUI_SCAN_OFFSET         256
-#define GUI_CTRL_ASCII_OFFSET   512
-#define GUI_ASCII( name, ascii ) GUI_KEY_##name = ascii
-#define GUI_SCAN( name, scan ) GUI_KEY_##name = GUI_SCAN_OFFSET + scan
-#define GUI_CTRL_ASCII( name, ascii ) GUI_KEY_##name = GUI_CTRL_ASCII_OFFSET + ascii
+#define GUI_SCAN_OFFSET                 256
+#define GUI_CTRL_ASCII_OFFSET           512
+
+#define GUI_ASCII( name, ascii )        GUI_KEY_##name = ascii
+#define GUI_SCAN( name, scan )          GUI_KEY_##name = GUI_SCAN_OFFSET + scan
+#define GUI_CTRL_ASCII( name, ascii )   GUI_KEY_##name = GUI_CTRL_ASCII_OFFSET + ascii
+
 typedef enum gui_key {
     GUI_ASCII( CTRL_KP_ENTER,           0x0a ),
     GUI_ASCII( KP_ENTER,                0x0d ),
@@ -333,6 +335,8 @@ typedef enum gui_key {
     GUI_SCAN( CTRL_8,                   0x09 ),
     GUI_SCAN( CTRL_TAB,                 0x94 )
 } gui_key;
+
+#undef GUI_CTRL_ASCII
 #undef GUI_ASCII
 #undef GUI_SCAN
 
@@ -361,20 +365,20 @@ typedef struct {
 
 #define GUI_GET_KEY( param, inkey ) ( inkey = (( gui_key_state *)param)->key )
 
-#define GUI_GET_KEY_STATE( param, inkey, instate ) {            \
-                inkey = (( gui_key_state *)param)->key;         \
-                instate = (( gui_key_state *)param)->state;     \
-                                                }               \
+#define GUI_GET_KEY_STATE( param, inkey, instate ) {    \
+    inkey = (( gui_key_state *)param)->key;             \
+    instate = (( gui_key_state *)param)->state;         \
+}
 
-#define GUI_GET_KEY_CONTROL( param, inid, inkey )       {               \
-        inid = ((gui_key_control *)param)->id;                  \
-        inkey = (( gui_key_control *)param)->key_state.key;     \
-                                                }               \
+#define GUI_GET_KEY_CONTROL( param, inid, inkey ) {     \
+    inid = ((gui_key_control *)param)->id;              \
+    inkey = (( gui_key_control *)param)->key_state.key; \
+}
 
-#define GUI_GET_KEY_STATE_CONTROL( param, inid, inkey, instate ){       \
-        inid = ((gui_key_control *)param)->id;                  \
-        inkey = (( gui_key_control *)param)->key_state.key;     \
-        instate = (( gui_key_control *)param)->key_state.state; \
-                                        }                       \
+#define GUI_GET_KEY_STATE_CONTROL( param, inid, inkey, instate ) {  \
+    inid = ((gui_key_control *)param)->id;                          \
+    inkey = (( gui_key_control *)param)->key_state.key;             \
+    instate = (( gui_key_control *)param)->key_state.state;         \
+}
 
 #endif // _GUIKEY_H_

@@ -79,12 +79,7 @@ static char c_regular[]   = "1234567890`-=[]\\;',./*+";
 static char c_shifted[]   = "!@#$%^&*()~_+{}|:\"<>?*+";
 #endif
 
-#define GUI_KEYS_FUNC( n )          ( 0x13A + (n) )
-#define GUI_KEYS_SHIFT_FUNC( n )    ( 0x153 + (n) )
-#define GUI_KEYS_CTRL_FUNC( n )     ( 0x15d + (n) )
-#define GUI_KEYS_ALT_FUNC( n )      ( 0x167 + (n) )
 #define GUI_KEYS_CTRL( n )          ( (n) + 1 )
-#define GUI_KEYS_KEYPAD_FUNC( n )   ( 0x030 + (n) )
 #define GUI_KEYS_ALT_NUMS( n )      ( 0x178 + (n) )
 
 static gui_key AltFunc[] =
@@ -125,7 +120,7 @@ static bool convert_shiftkeys( WORD vk, gui_key *key,
     str = strchr( regular, vk );
     if( CHK_KS_SHIFT ) {
         if( str != NULL ) {
-            *key = *(shifted+(str-regular));
+            *key = *( shifted + ( str - regular ) );
             return( true );
         } else {
             str = strchr( shifted, vk );
@@ -240,9 +235,12 @@ static bool convert_otherkeys( WORD vk, gui_key *key )
 
 static bool convert_ascii( WORD ch, gui_key *key )
 {
-    if( convert_alpha( ch, key ) ) return( true );
-    if( convert_numeric( ch, key ) ) return( true );
-    if( convert_otherkeys( ch, key ) ) return( true );
+    if( convert_alpha( ch, key ) )
+        return( true );
+    if( convert_numeric( ch, key ) )
+        return( true );
+    if( convert_otherkeys( ch, key ) )
+        return( true );
     return( false );
 }
 
@@ -250,7 +248,7 @@ static bool convert_keytable( WORD vk, gui_key *key )
 {
     int         i;
 
-    for( i=0; i < ( sizeof(vk_table) / sizeof(vk_table[0]) ); i++ ) {
+    for( i = 0; i < ( sizeof( vk_table ) / sizeof( vk_table[0] ) ); i++ ) {
         if( vk == vk_table[i].value ) {
             if( CHK_KS_SHIFT ) {
                 *key = vk_table[i].shifted;
@@ -271,7 +269,7 @@ static bool convert_keytable( WORD vk, gui_key *key )
 static bool convert_numpad( WORD vk, gui_key *key )
 {
     if( ( vk >= VK_NUMPAD0 ) && ( vk <= VK_NUMPAD9 ) ) {
-        *key = GUI_KEYS_KEYPAD_FUNC( vk - VK_NUMPAD0 );
+        *key = '0' + ( vk - VK_NUMPAD0 );
         return( true );
     }
     return( false );
@@ -280,8 +278,6 @@ static bool convert_numpad( WORD vk, gui_key *key )
 
 static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
 {
-    int         t;
-
     if( key == NULL ) {
         return( false );
     }
@@ -290,17 +286,6 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
 
     if( discard_this_vk( vk ) ) {
         return( false );
-    } else if( vk >= VK_F1 && vk <= VK_F10 ) {
-        t = vk - VK_F1 + 1;
-        if( CHK_KS_ALT ) {
-            *key = GUI_KEYS_ALT_FUNC( t );
-        } else if( CHK_KS_CTRL ) {
-            *key = GUI_KEYS_CTRL_FUNC( t );
-        } else if( CHK_KS_SHIFT ) {
-            *key = GUI_KEYS_SHIFT_FUNC( t );
-        } else {
-            *key = GUI_KEYS_FUNC( t );
-        }
 #ifndef __OS2_PM__
     } else if( convert_numpad( vk, key ) ) {
         // do nothing
@@ -355,6 +340,36 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
         case VK_SPACE :
             *key = GUIMapKey( GUI_KEY_SPACE );
             break;
+        case VK_F1 :
+            *key = GUIMapKey( GUI_KEY_F1 );
+            break;
+        case VK_F2 :
+            *key = GUIMapKey( GUI_KEY_F2 );
+            break;
+        case VK_F3 :
+            *key = GUIMapKey( GUI_KEY_F3 );
+            break;
+        case VK_F4 :
+            *key = GUIMapKey( GUI_KEY_F4 );
+            break;
+        case VK_F5 :
+            *key = GUIMapKey( GUI_KEY_F5 );
+            break;
+        case VK_F6 :
+            *key = GUIMapKey( GUI_KEY_F6 );
+            break;
+        case VK_F7 :
+            *key = GUIMapKey( GUI_KEY_F7 );
+            break;
+        case VK_F8 :
+            *key = GUIMapKey( GUI_KEY_F8 );
+            break;
+        case VK_F9 :
+            *key = GUIMapKey( GUI_KEY_F9 );
+            break;
+        case VK_F10 :
+            *key = GUIMapKey( GUI_KEY_F10 );
+            break;
         case VK_F11 :
             *key = GUIMapKey( GUI_KEY_F11 );
             break;
@@ -387,8 +402,8 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
                 return( *key != 0 );
             }
             // the rest of this case assumes that vk is ascii
-            if( convert_ascii( vk, key ) ) break;
-            return( false );
+            if( !convert_ascii( vk, key ) )
+                return( false );
             break;
         }
     }

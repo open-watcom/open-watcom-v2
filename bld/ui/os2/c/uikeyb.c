@@ -38,24 +38,24 @@
 #define INCL_DOSDEVICES
 #include "doscall.h"
 
-static          EVENT                   EventsPress[]   = {
-                EV_SHIFT_PRESS,
-                EV_SHIFT_PRESS,
-                EV_CTRL_PRESS,
-                EV_ALT_PRESS,
-                EV_SCROLL_PRESS,
-                EV_NUM_PRESS,
-                EV_CAPS_PRESS,
+static EVENT    EventsPress[]   = {
+    EV_SHIFT_PRESS,
+    EV_SHIFT_PRESS,
+    EV_CTRL_PRESS,
+    EV_ALT_PRESS,
+    EV_SCROLL_PRESS,
+    EV_NUM_PRESS,
+    EV_CAPS_PRESS,
 };
 
-static          EVENT                   EventsRelease[] = {
-                EV_SHIFT_RELEASE,
-                EV_SHIFT_RELEASE,
-                EV_CTRL_RELEASE,
-                EV_ALT_RELEASE,
-                EV_SCROLL_RELEASE,
-                EV_NUM_RELEASE,
-                EV_CAPS_RELEASE,
+static EVENT    EventsRelease[] = {
+    EV_SHIFT_RELEASE,
+    EV_SHIFT_RELEASE,
+    EV_CTRL_RELEASE,
+    EV_ALT_RELEASE,
+    EV_SCROLL_RELEASE,
+    EV_NUM_RELEASE,
+    EV_CAPS_RELEASE,
 };
 
 static unsigned         shift_state;

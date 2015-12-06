@@ -39,15 +39,15 @@
 
 
 EVENT LineEvents[] = {
-        EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
-        EV_HOME, EV_DELETE,
-        EV_NO_EVENT,            /* end of list of ranges */
-        EV_RUB_OUT,
-        EV_CTRL_END,
-        EV_CTRL_HOME,
-        EV_CTRL_LEFT,
-        EV_CTRL_RIGHT,
-        EV_NO_EVENT
+    EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
+    EV_HOME,            EV_DELETE,
+    EV_NO_EVENT,            /* end of list of ranges */
+    EV_RUB_OUT,
+    EV_CTRL_END,
+    EV_CTRL_HOME,
+    EV_CTRL_CURSOR_LEFT,
+    EV_CTRL_CURSOR_RIGHT,
+    EV_NO_EVENT
 };
 
 

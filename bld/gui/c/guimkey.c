@@ -38,23 +38,23 @@
 
 gui_keystate    KeyState = GUI_KS_NONE;
 
-#define ALT_CTRL( in, key ) {                               \
-        if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
-        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
-        else key = GUI_KEY_##in;                            \
+#define ALT_CTRL( in, key ) {                           \
+    if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
+    else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+    else key = GUI_KEY_##in;                            \
 }
 
-#define ALT_CTRL_SHIFT( in, key ) {                         \
-        if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
-        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
-        else if( CHK_KS_SHIFT ) key = GUI_KEY_SHIFT_##in;   \
-        else key = GUI_KEY_##in;                            \
+#define ALT_CTRL_SHIFT( in, key ) {                     \
+    if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
+    else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+    else if( CHK_KS_SHIFT ) key = GUI_KEY_SHIFT_##in;   \
+    else key = GUI_KEY_##in;                            \
 }
 
-#define EXTALT_CTRL( in, key ) {                            \
-        if( CHK_KS_ALT ) key = GUI_KEY_ALT_EXT_##in;        \
-        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
-        else key = GUI_KEY_##in;                            \
+#define EXTALT_CTRL( in, key ) {                        \
+    if( CHK_KS_ALT ) key = GUI_KEY_ALT_EXT_##in;        \
+    else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+    else key = GUI_KEY_##in;                            \
 }
 
 #define ALTorCTRL( in, key ) {                              \
@@ -106,6 +106,36 @@ gui_key GUIMapKey( gui_key key )
         break;
     case GUI_KEY_PAGEDOWN :
         EXTALT_CTRL( PAGEDOWN, key );
+        break;
+    case GUI_KEY_F1 :
+        ALT_CTRL_SHIFT( F1, key );
+        break;
+    case GUI_KEY_F2 :
+        ALT_CTRL_SHIFT( F2, key );
+        break;
+    case GUI_KEY_F3 :
+        ALT_CTRL_SHIFT( F3, key );
+        break;
+    case GUI_KEY_F4 :
+        ALT_CTRL_SHIFT( F4, key );
+        break;
+    case GUI_KEY_F5 :
+        ALT_CTRL_SHIFT( F5, key );
+        break;
+    case GUI_KEY_F6 :
+        ALT_CTRL_SHIFT( F6, key );
+        break;
+    case GUI_KEY_F7 :
+        ALT_CTRL_SHIFT( F7, key );
+        break;
+    case GUI_KEY_F8 :
+        ALT_CTRL_SHIFT( F8, key );
+        break;
+    case GUI_KEY_F9 :
+        ALT_CTRL_SHIFT( F9, key );
+        break;
+    case GUI_KEY_F10 :
+        ALT_CTRL_SHIFT( F10, key );
         break;
     case GUI_KEY_F11 :
         ALT_CTRL_SHIFT( F11, key );

@@ -171,17 +171,17 @@ static vi_key get_vi_key( EVENT ev )
     if( iseditchar( ev ) ) {
         return( (vi_key)ev );
     }
-    if( ev >= EV_FUNC( 1 ) && ev <= EV_FUNC( 10 ) ) {
-        return( VI_KEY( F1 ) + ev - EV_FUNC( 1 ) );
+    if( ev >= EV_F1 && ev <= EV_F10 ) {
+        return( VI_KEY( F1 ) + ( ev - EV_F1 ) );
     }
-    if( ev >= EV_SHIFT_FUNC( 1 ) && ev <= EV_SHIFT_FUNC( 10 ) ) {
-        return( VI_KEY( SHIFT_F1 ) + ev - EV_SHIFT_FUNC( 1 ) );
+    if( ev >= EV_SHIFT_F1 && ev <= EV_SHIFT_F10 ) {
+        return( VI_KEY( SHIFT_F1 ) + ( ev - EV_SHIFT_F1 ) );
     }
-    if( ev >= EV_CTRL_FUNC( 1 ) && ev <= EV_CTRL_FUNC( 10 ) ) {
-        return( VI_KEY( CTRL_F1 ) + ev - EV_CTRL_FUNC( 1 ) );
+    if( ev >= EV_CTRL_F1 && ev <= EV_CTRL_F10 ) {
+        return( VI_KEY( CTRL_F1 ) + ( ev - EV_CTRL_F1 ) );
     }
-    if( ev >= EV_ALT_FUNC( 1 ) && ev <= EV_ALT_FUNC( 10 ) ) {
-        return( VI_KEY( ALT_F1 ) + ev - EV_FUNC( 1 ) );
+    if( ev >= EV_ALT_F1 && ev <= EV_ALT_F10 ) {
+        return( VI_KEY( ALT_F1 ) + ( ev - EV_ALT_F1 ) );
     }
     return( VI_KEY( DUMMY ) );
 }

@@ -65,8 +65,8 @@ extern void GUIStartEventProcessing( void );
 gui_window      *GUICurrWnd     =       NULL;
 
 EVENT GUIAllEvents[] = {
-    EV_FIRST_EVENT, LAST_EVENT,
-    FIRST_GUI_EVENT, LAST_GUI_EVENT,
+    EV_FIRST_EVENT,     LAST_EVENT,
+    FIRST_GUI_EVENT,    LAST_GUI_EVENT,
     EV_NO_EVENT,
     EV_NO_EVENT
 };

@@ -145,13 +145,13 @@ EVENT intern keyboardevent( void )
         break;
     case FUNCTION_KEY:
         if( status & ALT_KEY ){
-            ev = EV_ALT_FUNC( ascii - 0x1e );
+            ev = EV_ALT_F1 + ( ascii - 30 - 1 );
         } else if( status & CONTROL_KEY ){
-            ev = EV_CTRL_FUNC( ascii - 0x14 );
+            ev = EV_CTRL_F1 + ( ascii - 20 - 1 );
         } else if( status & ( RIGHT_SHIFT_KEY | LEFT_SHIFT_KEY ) ){
-            ev = EV_SHIFT_FUNC( ascii - 0xa );
+            ev = EV_SHIFT_F1 + ( ascii - 10 - 1 );
         } else {
-            ev = EV_FUNC( ascii );
+            ev = EV_F1 + ( ascii - 1 );
         } /* end if */
         break;
     case ENTER_KEY:
@@ -171,28 +171,28 @@ EVENT intern keyboardevent( void )
         break;
     case CURSOR_UP_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_UP;
+            ev = EV_CTRL_CURSOR_UP;
         } else {
             ev = EV_CURSOR_UP;
         }
         break;
     case CURSOR_DOWN_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_DOWN;
+            ev = EV_CTRL_CURSOR_DOWN;
         } else {
             ev = EV_CURSOR_DOWN;
         }
         break;
     case CURSOR_RIGHT_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_RIGHT;
+            ev = EV_CTRL_CURSOR_RIGHT;
         } else {
             ev = EV_CURSOR_RIGHT;
         }
         break;
     case CURSOR_LEFT_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_LEFT;
+            ev = EV_CTRL_CURSOR_LEFT;
         } else {
             ev = EV_CURSOR_LEFT;
         }
@@ -213,14 +213,14 @@ EVENT intern keyboardevent( void )
         break;
     case CURSOR_PUP_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_PGUP;
+            ev = EV_CTRL_PAGE_UP;
         } else {
             ev = EV_PAGE_UP;
         }
         break;
     case CURSOR_PDOWN_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_PGDN;
+            ev = EV_CTRL_PAGE_DOWN;
         } else {
             ev = EV_PAGE_DOWN;
         }

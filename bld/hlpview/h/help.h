@@ -48,7 +48,7 @@
 
 #define ishelpchr(ch)   (isalnum(ch) || ch=='-')
 
-#define EV_HELP EV_FUNC( 1 )
+#define EV_HELP         EV_F1
 
 enum {
         E_UP = EV_FIRST_UNUSED,

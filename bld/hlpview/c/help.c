@@ -135,7 +135,7 @@ static a_gadget         vGadget = {
 };
 
 static a_hot_spot       hotSpots[] = {
-    { "&Back",            EV_FUNC(4),     -1,       1,     15, 0  },
+    { "&Back",            EV_F4,          -1,       1,     15, 0  },
     { "&Search",          EV_ALT_S,       -1,       0,     15, 0  },
     { "Cancel",           EV_ESCAPE,      -1,      -2,     15, 0  },
     { NULL,               EV_NO_EVENT }
@@ -174,9 +174,9 @@ static EVENT helpEventList[] = {
     EV_PAGE_UP,
     EV_PAGE_DOWN,
     '-','+',
-    EV_FUNC(4),
-    EV_FUNC(9),
-    EV_FUNC(10),
+    EV_F4,
+    EV_F9,
+    EV_F10,
     EV_CURSOR_UP,
     EV_CURSOR_DOWN,
     EV_TOP,
@@ -695,8 +695,8 @@ static EVENT hlpwait( VTAB *tab )
         case EV_ALT_B:
         case 'b':
         case 'B':
-        case EV_FUNC(8):
-        case EV_FUNC(4):
+        case EV_F8:
+        case EV_F4:
             prevtopic();
             if( strcmp( helpStack->helpfname, curFile ) ) {
                 len1 = strlen( helpStack->word );
@@ -742,7 +742,7 @@ static EVENT hlpwait( VTAB *tab )
             tab->other = tab->curr;
             /* fall through */
         case EV_ENTER:  /*same as page-down if there are other topics*/
-        case EV_FUNC(7):
+        case EV_F7:
         case '+':
             // DEN 90/04/12 - next line necessary for mouse release kludge
             helpCur = tab->curr;

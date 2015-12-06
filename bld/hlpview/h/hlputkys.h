@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#define E_REPEAT                EV_FUNC( 2 )
-#define E_LEFT                  EV_FUNC( 5 )
-#define E_RIGHT                 EV_FUNC( 6 )
+#define E_REPEAT                EV_F2
+#define E_LEFT                  EV_F5
+#define E_RIGHT                 EV_F6
 #define E_DOUBLE_CLICK          0x300
