@@ -36,10 +36,6 @@
 #include "charmap.h"
 
 
-extern void         (*DrawCursor)( void );
-
-unsigned short      Points;                 /* Number of lines / char  */
-
 struct mouse_data {
     unsigned short    bx,cx,dx;
 };
@@ -71,19 +67,23 @@ extern void MouseState( unsigned short, md_stk_ptr );
 
 #define MOUSE_SCALE         8
 
+extern void         (*DrawCursor)( void );
+
 extern MOUSEORD             MouseRow;
 extern MOUSEORD             MouseCol;
+
+extern bool                 MouseOn;
+
+extern unsigned short       MouseStatus;
+extern bool                 MouseInstalled;
+
+unsigned short              Points;                 /* Number of lines / char  */
+
+unsigned long               MouseTime = 0;
 
 /* MickeyRow and MickeyCol are accurate under DOS and OS2's DOS */
 static int                  MickeyRow;
 static int                  MickeyCol;
-
-extern bool                 MouseOn;
-
-extern unsigned long        MouseTime;
-
-extern unsigned short       MouseStatus;
-extern bool                 MouseInstalled;
 
 void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
 /*************************************************************************************************/

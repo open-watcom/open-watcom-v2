@@ -37,9 +37,6 @@
 #include "biosui.h"
 
 
-static int MouseX,MouseY,MouseStatusBits;
-static int ScreenXFudge,ScreenYFudge;
-
 struct mouse_data {
     unsigned    bx,cx,dx;
 };
@@ -68,15 +65,17 @@ extern void MouseState( unsigned, md_stk_ptr );
 
 #define MOUSE_SCALE     8
 
-
 extern MOUSEORD         MouseRow;
 extern MOUSEORD         MouseCol;
 extern bool             MouseOn;
 
-extern unsigned long    MouseTime;
-
 extern unsigned         MouseStatus;
 extern bool             MouseInstalled;
+
+unsigned long           MouseTime = 0;
+
+static int MouseX,MouseY,MouseStatusBits;
+static int ScreenXFudge,ScreenYFudge;
 
 void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
 /*************************************************************************************************/
