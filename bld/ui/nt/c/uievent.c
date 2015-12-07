@@ -186,23 +186,23 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool UIAPI initmouse( int install )
+int UIAPI initmouse( int install )
 {
-    DWORD       tmp;
+    unsigned long   tmp;
 
     if( install == 0 ) {
-        return( FALSE );
+        return( false );
     }
     UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
     UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
-    MouseOn = FALSE;
-    MouseInstalled = TRUE;
-    UIData->mouse_swapped = FALSE;
+    MouseOn = false;
+    MouseInstalled = true;
+    UIData->mouse_swapped = false;
     checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 
-void intern finimouse( void )
+void UIAPI finimouse( void )
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -214,8 +214,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
-                        MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;

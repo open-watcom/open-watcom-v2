@@ -48,21 +48,21 @@
 #define KEY_ALT_PRESSED         0x2
 #define KEY_SHIFT_PRESSED       0x1
 
-int                  WaitHandle;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+extern bool             MouseOn;
+extern bool             MouseInstalled;
+extern unsigned short   MouseStatus;
 
-static int                  KeyInstalled;
+int                     WaitHandle;
 
-static ORD                  currMouseRow;
-static ORD                  currMouseCol;
-static ORD                  currMouseStatus;
+static int              KeyInstalled;
 
-extern MOUSEORD             MouseRow;
-extern MOUSEORD             MouseCol;
-extern bool                 MouseOn;
-extern bool                 MouseInstalled;
-extern unsigned short int   MouseStatus;
+static ORD              currMouseRow;
+static ORD              currMouseCol;
+static ORD              currMouseStatus;
 
-static EVENT    EventsPress[]   = {
+static EVENT    EventsPress[] = {
     EV_SHIFT_PRESS,
     EV_ALT_PRESS,
     EV_CTRL_PRESS,
@@ -84,7 +84,7 @@ static EVENT    EventsRelease[] = {
     EV_NUM_RELEASE
 };
 
-static EVENT KeyEventProc()
+static EVENT KeyEventProc( void )
 {
     int                 ext;
     int                 keystate;
@@ -148,7 +148,7 @@ static EVENT KeyEventProc()
     return( ev );
 }
 
-static EVENT MouseEventProc()
+static EVENT MouseEventProc( void )
 {
     ORD stat = 0;
     int row;
@@ -237,12 +237,12 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool UIAPI initmouse( int install )
+int UIAPI initmouse( int install )
 {
-    unsigned long tmp;
+    unsigned long   tmp;
 
     if( install == 0 ) {
-        return( FALSE );
+        return( false );
     }
     UIData->mouse_xscale = 8;
     UIData->mouse_yscale = 8;
@@ -256,15 +256,15 @@ bool UIAPI initmouse( int install )
         RdosSetMouseMickey( 8, 8 );
     }
 
-    MouseOn = FALSE;
-    MouseInstalled = TRUE;
+    MouseOn = false;
+    MouseInstalled = true;
 
-    UIData->mouse_swapped = FALSE;
+    UIData->mouse_swapped = false;
     checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 
-void intern finimouse( void )
+void UIAPI finimouse( void )
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -273,7 +273,7 @@ void intern finimouse( void )
             RdosCloseWait( WaitHandle );
             WaitHandle = 0;
         }
-        MouseInstalled = FALSE;
+        MouseInstalled = false;
     }
 }
 
@@ -282,8 +282,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
-                        MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;
@@ -295,8 +294,8 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
 unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
-    unsigned char kst = 0;
-    int state = RdosGetKeyboardState();
+    unsigned char   kst = 0;
+    int             state = RdosGetKeyboardState();
     
     if( state & KEY_NUM_ACTIVE )
         kst |= 0x20;

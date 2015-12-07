@@ -427,7 +427,7 @@ bool intern initbios( void )
     initialized = false;
     if( initmonitor() ) {
         UIData->desqview = (desqview_present() != 0);
-        UIData->f10menus = TRUE;
+        UIData->f10menus = true;
 
         poffset = firstmeg( BIOS_PAGE, SCREEN_OFFSET );
         if( UIData->colour == M_MONO ) {

@@ -101,7 +101,7 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
         return;
     }
 
-    drawbox( &(vs->window.type.buffer), *area, UI_SBOX_CHARS(), attr, FALSE );
+    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, FALSE );
 
     if( title == NULL ) {
         return;

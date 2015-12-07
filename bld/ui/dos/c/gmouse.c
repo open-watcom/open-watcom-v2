@@ -37,20 +37,21 @@
 #include "charmap.h"
 #include "biosui.h"
 
-#define  CURSOR_HEIGHT  14                       /* Mouse cursor height      */
 
-#define  DEFCHAR        0xD5
-#define  DEFCHAR2       0xD7
+#define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
 
-#define  VidCol         (UIData->width)
-#define  VidRow         (UIData->height)
+#define DEFCHAR         0xD5
+#define DEFCHAR2        0xD7
 
-extern   MOUSEORD       MouseRow;
-extern   MOUSEORD       MouseCol;
+#define VidCol          (UIData->width)
+#define VidRow          (UIData->height)
 
-extern   void           (intern *DrawCursor)(void);
-extern   void           (intern *EraseCursor)(void);
-extern   int            MouseInstalled;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+
+extern void             (intern *DrawCursor)( void );
+extern void             (intern *EraseCursor)( void );
+extern bool             MouseInstalled;
 
 static char             SaveChars[2][2];        /* Overwritten characters  */
 extern unsigned short   Points;                 /* Number of lines / char  */
@@ -311,7 +312,7 @@ void UIAPI uifinigmouse( void )
 
 bool UIAPI uiinitgmouse( int install )
 {
-    MouseInstalled = FALSE;
+    MouseInstalled = false;
     if( install > 0 && installed( BIOS_MOUSE ) ) {
         if( install > 1 ) {
             if( CheckEgaVga() ) {

@@ -192,7 +192,7 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
 {
     vptr=vptr;
     editline->index = 0;
-    editline->dirty = FALSE;
+    editline->dirty = false;
     editline->row = row;
     editline->col = col;
     editline->fldlen = len;

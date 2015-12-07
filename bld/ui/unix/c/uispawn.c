@@ -36,22 +36,24 @@
 #include "uivirt.h"
 
 
-extern bool MouseInstalled;
+extern bool     MouseInstalled;
 
 void UIAPI uispawnstart( void )
-/******************************/
+/*****************************/
 {
     uiswap();
     uisetcursor( 0, 0, C_NORMAL, -1 );
-    if( MouseInstalled ) _finimouse();
+    if( MouseInstalled )
+        _finimouse();
     savekeyb();
 }
 
 void UIAPI uispawnend( void )
-/****************************/
+/***************************/
 {
     restorekeyb();
-    if( MouseInstalled ) _initmouse( TRUE );
+    if( MouseInstalled )
+        _initmouse( 1 );
     uiswap();
-    _ui_refresh(1);
+    _ui_refresh( 1 );
 }

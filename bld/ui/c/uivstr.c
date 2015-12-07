@@ -42,7 +42,7 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
 {
     int             count;
     int             scount;
-    SAREA           dirtyarea;
+    SAREA           dirty_area;
 
     if( len == 0 ) return;
     if( slen < 0 ) {
@@ -57,11 +57,11 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
     if( count > 0 ) {
         okopen( vptr );
         okline( row, col, count, vptr->area );
-        dirtyarea.row = row;
-        dirtyarea.col = col;
-        dirtyarea.height = 1;
-        dirtyarea.width = (ORD) count;
-        uivdirty( vptr, dirtyarea );
+        dirty_area.row = row;
+        dirty_area.col = col;
+        dirty_area.height = 1;
+        dirty_area.width = (ORD) count;
+        uivdirty( vptr, dirty_area );
         bstring( &(vptr->window.type.buffer), row, col, attr, string, scount );
         if( count > scount ) {
             bfill( &(vptr->window.type.buffer), row, col+scount, attr, ' ', count-scount );
@@ -92,14 +92,14 @@ void UIAPI uivrawput( register VSCREEN *vptr,
                        register int     len )
 /*******************************************/
 {
-    auto        SAREA                   dirtyarea;
+    SAREA           dirty_area;
 
     okopen( vptr );
     okline( row, col, len, vptr->area );
-    dirtyarea.row = row;
-    dirtyarea.col = col;
-    dirtyarea.height = 1;
-    dirtyarea.width = (ORD) len;
-    uivdirty( vptr, dirtyarea );
+    dirty_area.row = row;
+    dirty_area.col = col;
+    dirty_area.height = 1;
+    dirty_area.width = (ORD) len;
+    uivdirty( vptr, dirty_area );
     braw( &(vptr->window.type.buffer), row, col, pixels, len );
 }

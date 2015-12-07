@@ -59,17 +59,16 @@
 
 
 #ifdef __LINUX__
-static          void                    GPM_parse( void );
+static void             GPM_parse( void );
 #endif
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE     8
 
-extern          MOUSEORD                MouseRow;
-extern          MOUSEORD                MouseCol;
-extern          bool                    MouseOn;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
 
-extern          unsigned short          MouseStatus;
-extern          bool                    MouseInstalled;
+extern unsigned short   MouseStatus;
+extern bool             MouseInstalled;
 
 static enum {
     M_NONE,
@@ -81,8 +80,8 @@ static enum {
 
 #define MAXBUF    30
 static char buf[ MAXBUF + 1 ];
-static int new_sample;
-int UIMouseHandle = -1;
+static int  new_sample;
+int         UIMouseHandle = -1;
 
 #define ANSI_HDR        "\x1b["
 
@@ -117,13 +116,11 @@ static void XT_parse( void )
     }
 }
 
-static int tm_check( unsigned short *status, MOUSEORD *row,
-                     MOUSEORD *col, unsigned long *the_time )
-/**********************************************/
+static int tm_check( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *the_time )
+/**************************************************************************************************/
 {
-
     if( !MouseInstalled ) {
-         uisetmouse(*row, *col);
+         uisetmouse( *row, *col );
          return 0;
     }
     UIDebugPrintf1( "mouse_string = '%s'", buf );
@@ -146,7 +143,7 @@ static int tm_check( unsigned short *status, MOUSEORD *row,
     *col        = last_col;
     *status     = last_status;
     *the_time   = (long)time( NULL ) * 1000L;
-    uisetmouse(*row, *col);
+    uisetmouse( *row, *col );
     return 0;
 }
 
@@ -166,7 +163,7 @@ static void TryOne( int type, char *test, char *init, char *input )
     uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
 
-    MouseInstalled = TRUE;
+    MouseInstalled = true;
 
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
@@ -266,7 +263,7 @@ static int gpm_tm_init( void )
 
     UIMouseHandle = socket( PF_UNIX, SOCK_STREAM, 0 );
     if( UIMouseHandle < 0 )
-        return( FALSE );
+        return( false );
     sau.sun_family = AF_UNIX;
     strcpy( sau.sun_path, "/dev/gpmctl" );
     if( connect( UIMouseHandle, (struct sockaddr *)&sau, sizeof sau ) < 0 )
@@ -295,11 +292,11 @@ static int gpm_tm_init( void )
     write( UIMouseHandle, &gpm_conn, sizeof gpm_conn );
     TryOne( M_GPM, NULL, "", ANSI_HDR "M" );
     MouseType = M_GPM;
-    return( TRUE );
+    return( true );
  out:
     close( UIMouseHandle );
     UIMouseHandle = -1;
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -308,12 +305,12 @@ static int tm_init( int install )
 {
     bool        kmous;                          // Does key_mouse exist?
 
-    MouseInstalled      = FALSE;
-    MouseType           = M_NONE;
-    kmous               = ( key_mouse != NULL );
+    MouseInstalled  = false;
+    MouseType       = M_NONE;
+    kmous           = ( key_mouse != NULL );
 
     if( install == 0 )
-        return( FALSE );
+        return( false );
 
     if( strstr( GetTermType(), "xterm" ) != NULL ) {
         if( kmous ) {
@@ -321,13 +318,13 @@ static int tm_init( int install )
         } else {
             TryOne( M_XT, NULL, XT_INIT, ANSI_HDR "M" );
         }
-        return( TRUE );
+        return( true );
     }
 
 #ifdef __LINUX__
     return( gpm_tm_init() );
 #else
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -407,9 +404,9 @@ void tm_saveevent( void )
 }
 
 Mouse TermMouse = {
-        tm_init,
-        tm_fini,
-        ( int (*) (int) )tm_set_speed,
-        tm_stop,
-        tm_check,
+    tm_init,
+    tm_fini,
+    (int (*)(int))tm_set_speed,
+    tm_stop,
+    tm_check,
 };

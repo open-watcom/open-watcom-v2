@@ -247,10 +247,11 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     hPrevInstance = hPrevInstance;
     lpCmdLine = lpCmdLine;
     nShowCmd = nShowCmd;
-    if( InitSwapper() ) return( 0 ); // Yes - well, I would make the swapper
-                                     // return 1 on error, unlike everything
-                                     // else, wouldn't I?
-    if( !uistart() ) return( 0 );
+    if( InitSwapper() ) // Yes - well, I would make the swapper
+        return( 0 );    // return 1 on error, unlike everything
+                        // else, wouldn't I?
+    if( !uistart() )
+        return( 0 );
     ToCharacter();
 
     initmouse( 2 );

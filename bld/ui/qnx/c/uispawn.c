@@ -38,20 +38,22 @@
 
 extern bool MouseInstalled;
 
-void UIAPI uispawnstart()
-/************************/
+void UIAPI uispawnstart( void )
+/*****************************/
 {
     uiswap();
     uisetcursor( 0, 0, C_NORMAL, -1 );
-    if( MouseInstalled ) finimouse();
+    if( MouseInstalled )
+        finimouse();
     savekeyb();
 }
 
-void UIAPI uispawnend()
-/**********************/
+void UIAPI uispawnend( void )
+/***************************/
 {
     restorekeyb();
-    if( MouseInstalled ) initmouse( TRUE );
+    if( MouseInstalled )
+        initmouse( 1 );
     uiswap();
-    _ui_refresh(1);
+    _ui_refresh( 1 );
 }

@@ -38,14 +38,14 @@ extern void uiupdatelistbox( a_list *list );
 
 extern void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    ui_dlg_info->dirty = TRUE;
+    ui_dlg_info->dirty = true;
     v->u.check->val = true;
     uiprintfield( ui_dlg_info, v );
 }
 
 extern void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    ui_dlg_info->dirty = TRUE;
+    ui_dlg_info->dirty = true;
     v->u.check->val = false;
     uiprintfield( ui_dlg_info, v );
 }
@@ -60,7 +60,7 @@ extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
     if( newval == *oldval )
         return; // nothing to do
 
-    ui_dlg_info->dirty = TRUE;
+    ui_dlg_info->dirty = true;
     while( tmp->u.radio != NULL ) {
         if( tmp->typ == FLD_RADIO ) {
             if( tmp->u.radio->value == *oldval ) {
@@ -86,14 +86,14 @@ extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
     // highlighted, and we change to the same selection.  Result - selection
     // does not get highlighted.
     *oldchoice = n;
-    ui_dlg_info->dirty = TRUE;
+    ui_dlg_info->dirty = true;
     uiprintfield( ui_dlg_info, v );
     uiupdatelistbox( v->u.list );
 }
 
 extern void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
-    ui_dlg_info->dirty = TRUE;
+    ui_dlg_info->dirty = true;
     v->u.combo->list.choice = n;
     uiprintfield( ui_dlg_info, v );
 }

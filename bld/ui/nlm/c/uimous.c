@@ -36,24 +36,20 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-extern          bool                    MouseInstalled;
+extern bool     MouseInstalled;
 
-void intern mousespawnstart()
-/***************************/
+void intern mousespawnstart( void )
+/*********************************/
 {
 }
 
-void intern mousespawnend()
-/*************************/
+void intern mousespawnend( void )
+/*******************************/
 {
 }
 
-void intern checkmouse( pstatus, prow, pcol, ptime )
-/**************************************************/
-register        unsigned short*         pstatus;
-register        MOUSEORD*               prow;
-register        MOUSEORD*               pcol;
-register        unsigned long*          ptime;
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+/*****************************************************************************************************/
 {
     pstatus = pstatus;
     prow = prow;
@@ -67,16 +63,16 @@ void uimousespeed( unsigned speed )
     speed = speed;
 }
 
-bool UIAPI initmouse( bool install )
-/**********************************/
+int UIAPI initmouse( int install )
+/********************************/
 {
     install = install;
-    MouseInstalled = FALSE;
-    return( FALSE );
+    MouseInstalled = false;
+    return( false );
 }
 
-void extern finimouse()
-/*********************/
+void UIAPI finimouse( void )
+/**************************/
 {
 }
 

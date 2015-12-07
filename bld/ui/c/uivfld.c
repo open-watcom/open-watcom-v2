@@ -203,7 +203,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 buffer.length = cur->length;
                 buffer.index = vptr->col - cur->col;
                 uieditevent( EV_DELETE, &buffer );
-                header->dirty = TRUE;
+                header->dirty = true;
                 header->delpending = FALSE;
             }
             uivtextput( vptr, cur->row, cur->col, header->enter,

@@ -86,20 +86,19 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
                         parm [ax] [si] modify [bx cx dx];
 extern void MouseState( unsigned, struct mouse_data __near * );
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE     8
 
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+extern bool             MouseOn;
 
-extern          MOUSEORD                MouseRow;
-extern          MOUSEORD                MouseCol;
-extern          bool                    MouseOn;
+extern bool             MouseInstalled;
+static HMOU             MouHandle;
+static bool             TwoButtonMouse = FALSE;
 
-extern          bool                    MouseInstalled;
-static          HMOU                    MouHandle;
-static          bool                    TwoButtonMouse = FALSE;
-
-static          ORD                     Row;
-static          ORD                     Col;
-static          unsigned short          Status;
+static ORD              Row;
+static ORD              Col;
+static unsigned short   Status;
 
 
 
@@ -137,9 +136,8 @@ static void GetMouseInfo( void )
     Col  = mouinfo.col;
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
-                          MOUSEORD *pcol, unsigned long *ptime )
-/**************************************************************/
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+/*****************************************************************************************************/
 {
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
@@ -202,9 +200,9 @@ static void DOS_initmouse( int install )
             }
         }
         if( install > 0 ) {
-            dx = ( UIData->width - 1 )*MOUSE_SCALE;
+            dx = ( UIData->width - 1 ) * MOUSE_SCALE;
             MouseInt( 7, 0, 0, dx );
-            dx = ( UIData->height - 1 )*MOUSE_SCALE;
+            dx = ( UIData->height - 1 ) * MOUSE_SCALE;
             MouseInt( 8, 0, 0, dx );
 
             cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
@@ -212,12 +210,12 @@ static void DOS_initmouse( int install )
             MouseInt( 10, 0, cx, dx );
             MouseInt2( 16, 0, 0, 0, 0 );
 
-            UIData->mouse_swapped = FALSE;
+            UIData->mouse_swapped = false;
             UIData->mouse_xscale = 1;
             UIData->mouse_yscale = 1;
-            uisetmouseposn( UIData->height/2 - 1, UIData->width/2 - 1 );
-            MouseInstalled = TRUE;
-            MouseOn = FALSE;
+            uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
+            MouseInstalled = true;
+            MouseOn = false;
             checkmouse( &Status, &MouseRow, &MouseCol, &time );
             uimousespeed( UIData->mouse_speed );
         }
@@ -230,7 +228,7 @@ static void OS2_initmouse( int install )
     USHORT          mouevents;
     USHORT          num_buttons;
 
-    if( install && (MouOpen(0L, &MouHandle) == 0) ) {
+    if( install > 0 && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
         if( MouGetNumButtons( &num_buttons, MouHandle ) == 0 ) {
             if( num_buttons == 2 ) {
                 TwoButtonMouse = TRUE;
@@ -241,7 +239,7 @@ static void OS2_initmouse( int install )
                 MouSetEventMask( &mouevents, MouHandle );
             }
         }
-        MouseInstalled = TRUE;
+        MouseInstalled = true;
         {
 #ifdef __386__
             PTIB        tib;
@@ -264,17 +262,17 @@ static void OS2_initmouse( int install )
 #endif
         }
     }
-    MouseOn = FALSE;
-    UIData->mouse_swapped = FALSE;
+    MouseOn = false;
+    UIData->mouse_swapped = false;
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
 }
 
 
-bool UIAPI initmouse( int install )
-/**********************************/
+int UIAPI initmouse( int install )
+/********************************/
 {
-    MouseInstalled = FALSE;
+    MouseInstalled = false;
     if( _osmode == DOS_MODE ) {
         DOS_initmouse( install );
     } else {
@@ -284,8 +282,8 @@ bool UIAPI initmouse( int install )
 }
 
 
-void finimouse( void )
-/********************/
+void UIAPI finimouse( void )
+/**************************/
 {
     if( MouseInstalled ) {
         uioffmouse();

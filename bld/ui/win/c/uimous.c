@@ -66,21 +66,20 @@ extern void MouseState( unsigned, md_stk_ptr );
     "mov ss:[si+4],dx"      \
     parm [ax] [si] modify [bx cx dx];
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE     8
 
 
-extern          MOUSEORD                MouseRow;
-extern          MOUSEORD                MouseCol;
-extern          bool                    MouseOn;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+extern bool             MouseOn;
 
-extern          unsigned long           MouseTime       = 0L;
+extern unsigned long    MouseTime;
 
-extern          unsigned                MouseStatus;
-extern          bool                    MouseInstalled;
+extern unsigned         MouseStatus;
+extern bool             MouseInstalled;
 
-void intern checkmouse( unsigned short *status, MOUSEORD *row,
-                          MOUSEORD *col, unsigned long *time )
-/************************************************************/
+void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
+/*************************************************************************************************/
 {
     struct  mouse_data state;
 
@@ -94,21 +93,20 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row,
 
 
 
-bool UIAPI initmouse( int install )
-/**********************************/
+int UIAPI initmouse( int install )
+/********************************/
 {
-    int         cx,dx;
+    int             cx,dx;
     unsigned short  tmp;
 
-    MouseInstalled = FALSE;
-    ScreenXFudge = (WORD) ((DWORD) GetSystemMetrics( SM_CXSCREEN )/(DWORD) UIData->width);
-    ScreenYFudge = (WORD) ((DWORD) GetSystemMetrics( SM_CYSCREEN )/(DWORD) UIData->height);
+    MouseInstalled = false;
+    ScreenXFudge = (WORD)((DWORD) GetSystemMetrics( SM_CXSCREEN )/(DWORD) UIData->width);
+    ScreenYFudge = (WORD)((DWORD) GetSystemMetrics( SM_CYSCREEN )/(DWORD) UIData->height);
     if( install > 0 ) {
-
         if( install > 0 ) {
-            dx = ( UIData->width - 1 )*MOUSE_SCALE;
+            dx = ( UIData->width - 1 ) * MOUSE_SCALE;
             MouseInt( 7, 0, 0, dx );
-            dx = ( UIData->height - 1 )*MOUSE_SCALE;
+            dx = ( UIData->height - 1 ) * MOUSE_SCALE;
             MouseInt( 8, 0, 0, dx );
 
             cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
@@ -116,12 +114,12 @@ bool UIAPI initmouse( int install )
             MouseInt( 10, 0, cx, dx );
             MouseInt2( 16, 0, 0, 0, 0 );
 
-            UIData->mouse_swapped = FALSE;
+            UIData->mouse_swapped = false;
             UIData->mouse_xscale = 1;
             UIData->mouse_yscale = 1;
-            uisetmouseposn( UIData->height/2 - 1, UIData->width/2 - 1 );
-            MouseInstalled = TRUE;
-            MouseOn = FALSE;
+            uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
+            MouseInstalled = true;
+            MouseOn = false;
             checkmouse( &tmp, &MouseRow, &MouseCol, &MouseTime );
             MouseStatus = tmp;
         }
@@ -130,8 +128,8 @@ bool UIAPI initmouse( int install )
 }
 
 
-void extern finimouse( void )
-/***************************/
+void UIAPI finimouse( void )
+/**************************/
 {
     if( MouseInstalled ) {
         uioffmouse();

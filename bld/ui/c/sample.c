@@ -297,7 +297,7 @@ void main( void )
                     mrow++;
                     mcol++;
                     uipushlist( evlist );
-                    ev = uicreatepopup( mrow, mcol, filemenu, FALSE, TRUE, (int)NULL );
+                    ev = uicreatepopup( mrow, mcol, filemenu, false, true, (int)NULL );
                     uipoplist();
                 }
                 switch ( ev ) {
@@ -365,7 +365,7 @@ void main( void )
                         }
                     }
                     uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-                    if( ++evrow >= mainwin.area.height ){
+                    if( ++evrow >= mainwin.area.height ) {
                         evrow = TOP_ROW;
                     }
                     uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
@@ -383,16 +383,19 @@ void main( void )
                         if( BandOn ) {
                             uimousepos( NULL, &mrow, &mcol );
                             diff = mcol - BandArea.col;
-                            if( diff < 0 ) diff = 0;
+                            if( diff < 0 )
+                            	diff = 0;
                             BandArea.width = diff;
                             diff = mrow - BandArea.row;
-                            if( diff < 0 ) diff = 0;
+                            if( diff < 0 )
+                            	diff = 0;
                             BandArea.height = diff;
                             uibandmove( BandArea );
                         }
                         break;
                     case EV_MOUSE_RELEASE:
-                        if( BandOn ) uibandfini();
+                        if( BandOn )
+                        	uibandfini();
                         BandOn = 0;
                         break;
                     }

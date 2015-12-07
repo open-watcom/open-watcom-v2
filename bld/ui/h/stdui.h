@@ -518,7 +518,7 @@ typedef struct image_def {      // this gets attached to the graphic field
 
 typedef struct window {
     SAREA               area;
-    SAREA               dirty;
+    SAREA               dirty_area;
     int                 priority;
     void                (_FAR *update)( struct sarea, void * );
     void _FARD          *parm;
@@ -617,7 +617,7 @@ enum {
 extern      MONITOR _FARD   *UIData;
 
 extern      void            finimouse( void );
-extern      bool            initmouse( int );
+extern      int             initmouse( int );
 extern      void            uiactivatemenus( void );
 extern      void            *uialloc( size_t );
 extern      bool            uiattrs( void );
@@ -657,7 +657,7 @@ extern      unsigned long   uiclock( void );
 extern      EVENT           uiget( void );
 extern      void            uigetcursor( ORD _FARD*, ORD _FARD*, int _FARD*, int _FARD* );
 extern      EVENTLIST _FARD *uigetlist( void );
-extern      void            uigetmouse( ORD _FARD*, ORD _FARD*, int _FARD* );
+extern      void            uigetmouse( ORD _FARD*, ORD _FARD*, bool _FARD* );
 extern      void            uiignorealt( void );
 extern      unsigned int    uiextkeyboard( void );
 extern      bool            uiinit( int );
@@ -712,7 +712,7 @@ extern      EVENT           uivgetevent( VSCREEN _FARD* );
 extern      EVENT           uivgetprime( VSCREEN _FARD* );
 extern      EVENT           uivgetprimevent( VSCREEN _FARD* );
 extern      bool            uivhide( VSCREEN _FARD * );
-extern      int             uivmouseinstalled( void );
+extern      bool            uivmouseinstalled( void );
 extern      VSCREEN _FARD   *uivmousepos( VSCREEN _FARD*, ORD _FARD*, ORD _FARD* );
 extern      VSCREEN _FARD   *uimousepos( VSCREEN _FARD*, int _FARD*, int _FARD* );
 extern      void            uivmoveblock( VSCREEN _FARD*, SAREA, int, int );
@@ -728,7 +728,7 @@ extern      void            uitextfield( VSCREEN _FARD*, ORD, ORD, ORD, ATTR, LP
 extern      void            uimousespeed( unsigned );
 extern      unsigned char   uicheckshift( void );
 extern      EVENT           uikeyboardevent( void );
-extern      int             uimouseinstalled( void );
+extern      bool            uimouseinstalled( void );
 
 extern      bool            FlipCharacterMap( void );
 extern      bool            UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] );

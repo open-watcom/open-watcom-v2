@@ -39,7 +39,7 @@
 extern MOUSEORD MouseRow, MouseCol;
 
 static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
-static bool     MouseOn = FALSE;
+static bool     mouseOn = false;
 static ATTR     OldAttr;
 
 static char *RegenPos( unsigned row, unsigned col )
@@ -58,7 +58,7 @@ static void uisetmouseoff( void )
     char                *old;
     SAREA               area;
 
-    if( MouseOn ) {
+    if( mouseOn ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
         *old = OldAttr;
         area.row = OldMouseRow;
@@ -76,7 +76,7 @@ static void uisetmouseon( register MOUSEORD row,
     char                *new;
     SAREA               area;
 
-    if( MouseOn ){
+    if( mouseOn ) {
         new = RegenPos( row, col );
         OldAttr = *new;
         if( UIData->colour == M_MONO ){
@@ -108,10 +108,10 @@ void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {
-        MouseOn = TRUE;
+        mouseOn = true;
         uisetmouseon( OldMouseRow, OldMouseCol );
     } else {
         uisetmouseoff();
-        MouseOn = FALSE;
+        mouseOn = false;
     }
 }

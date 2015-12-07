@@ -47,8 +47,8 @@ static void update( SAREA area, VSCREEN *vptr )
     register    int                     vcol;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
-        vrow = row - (int) vptr->area.row;
-        vcol = (int) area.col - (int) vptr->area.col;
+        vrow = row - (int)vptr->area.row;
+        vcol = (int)area.col - (int)vptr->area.col;
         uibcopy( &(vptr->window.type.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
     }
 }
@@ -73,16 +73,16 @@ VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
     area = vptr->area;
     if( ( flags & V_DIALOGUE ) != 0 ) {
         if( flags & V_LISTBOX ) {
-            box = UI_SBOX_CHARS();
+            box = SBOX_CHARS();
             attr = UIData->attrs[ ATTR_NORMAL ];
         } else {
-            box = UI_BOX_CHARS();
+            box = BOX_CHARS();
             attr = UIData->attrs[ ATTR_DIAL_FRAME ];
         }
         priority = P_DIALOGUE;
     } else {
         flags &= ~V_UNBUFFERED;
-        box = UI_SBOX_CHARS();
+        box = SBOX_CHARS();
         attr = UIData->attrs[ ATTR_FRAME ];
         priority = P_VSCREEN;
     }

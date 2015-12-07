@@ -121,7 +121,7 @@ static void removewindow( UI_WINDOW *wptr )
 bool intern openwindow( UI_WINDOW *wptr )
 /***************************************/
 {
-    wptr->dirty = wptr->area;
+    wptr->dirty_area = wptr->area;
     insert( wptr, wptr->priority );
     if( wptr->prev == NULL ) {
         return( false );
@@ -146,7 +146,7 @@ void intern movewindow( UI_WINDOW *wptr, ORD row, ORD col )
     }
     wptr->area.row = row;
     wptr->area.col = col;
-    wptr->dirty = wptr->area;
+    wptr->dirty_area = wptr->area;
 }
 
 
@@ -156,7 +156,7 @@ void intern frontwindow( UI_WINDOW *wptr )
     if( wptr->prev != NULL ) {
         if( wptr->prev->priority >= wptr->priority ) {
             removewindow( wptr );
-            wptr->dirty = wptr->area;
+            wptr->dirty_area = wptr->area;
             /* we really only need to dirty what is covered */
             /* using a similar algorithm to dirtynext */
             insert( wptr, wptr->priority );

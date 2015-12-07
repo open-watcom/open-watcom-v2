@@ -93,7 +93,7 @@ static bool setupscrnbuff( void )
     int                 i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     UIData->width = cols;
     UIData->height = rows;
@@ -102,7 +102,7 @@ static bool setupscrnbuff( void )
 #if defined( __386__ )
     scrn = realloc( scrn, num );
     if( scrn == NULL )
-        return( FALSE );
+        return( false );
 #else
     {
         unsigned                seg;
@@ -112,7 +112,8 @@ static bool setupscrnbuff( void )
         } else {
             seg = qnx_segment_realloc( FP_SEG( scrn ), num );
         }
-        if( seg == -1 ) return( FALSE );
+        if( seg == -1 )
+            return( false );
         scrn = MK_FP( seg, 0 );
     }
 #endif
@@ -123,7 +124,7 @@ static bool setupscrnbuff( void )
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;
-    return( TRUE );
+    return( true );
 }
 
 static volatile int     StatePending;
@@ -143,7 +144,8 @@ static EVENT cd_sizeevent( void )
     unsigned    state;
     unsigned    arm;
 
-    if( !StatePending ) return( EV_NO_EVENT );
+    if( !StatePending )
+        return( EV_NO_EVENT );
     StatePending = 0;
     state = console_state( UIConCtrl, UIConsole, 0,
                 (_CON_EVENT_ACTIVE|_CON_EVENT_INACTIVE|_CON_EVENT_SIZE) );
@@ -155,9 +157,12 @@ static EVENT cd_sizeevent( void )
         arm = _CON_EVENT_INACTIVE;
     }
     console_arm( UIConCtrl, UIConsole, 0, arm | _CON_EVENT_SIZE );
-    if( !(state & _CON_EVENT_SIZE) ) return( EV_NO_EVENT );
-    if( !uiinlist( EV_BACKGROUND_RESIZE ) ) return( EV_NO_EVENT );
-    if( !setupscrnbuff() ) return( EV_NO_EVENT );
+    if( !(state & _CON_EVENT_SIZE) )
+        return( EV_NO_EVENT );
+    if( !uiinlist( EV_BACKGROUND_RESIZE ) )
+        return( EV_NO_EVENT );
+    if( !setupscrnbuff() )
+        return( EV_NO_EVENT );
     closebackground();
     openbackground();
     area.row = 0;
@@ -252,9 +257,9 @@ static int cd_init( void )
         UIData = &ui_data;
     }
     if( !initmonitor() )
-        return( FALSE );
+        return( false );
     if( !setupscrnbuff() )
-        return( FALSE );
+        return( false );
 
     uiinitcursor();
     initkeyboard();
@@ -262,8 +267,8 @@ static int cd_init( void )
     UIData->mouse_rpt_delay = 100;
     UIData->mouse_clk_delay = 277;
     UIData->tick_delay      = 500;
-    UIData->f10menus        = TRUE;
-    return( TRUE );
+    UIData->f10menus        = true;
+    return( true );
 }
 
 
@@ -273,7 +278,7 @@ static int cd_fini( void )
     finikeyboard();
     uifinicursor();
     console_close( UIConCtrl );
-    return( FALSE );
+    return( false );
 }
 
 static int cd_update( SAREA *area )
@@ -303,13 +308,13 @@ static int cd_update( SAREA *area )
                             row, col, type );
         }
     }
-    return 0;
+    return( 0 );
 }
 
 static int cd_refresh(int must)
 {
-        must = must;
-        return 0;
+    must = must;
+    return( 0 );
 }
 
 static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
@@ -319,7 +324,7 @@ static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
     *col = UIData->cursor_col;
     *type = UIData->cursor_type;
     *attr = 0;
-    return 0;
+    return( 0 );
 }
 
 
@@ -336,7 +341,7 @@ static int cd_setcur( ORD row, ORD col, int typ, int attr )
         newcursor();
         physupdate( NULL );
     }
-    return 0;
+    return( 0 );
 }
 
 EVENT cd_event( void )
@@ -344,11 +349,14 @@ EVENT cd_event( void )
     EVENT       ev;
 
     ev = cd_sizeevent();
-    if( ev > EV_NO_EVENT ) return( ev );
+    if( ev > EV_NO_EVENT )
+        return( ev );
     ev = mouseevent();
-    if( ev > EV_NO_EVENT ) return( ev );
+    if( ev > EV_NO_EVENT )
+        return( ev );
     ev = ck_keyboardevent();
-    if( ev == EV_NO_EVENT ) return( ev );
+    if( ev == EV_NO_EVENT )
+        return( ev );
     uihidemouse();
     return( ev );
 }

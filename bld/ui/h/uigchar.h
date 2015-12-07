@@ -34,8 +34,8 @@
 #define _UIGCHAR_H_
 
 
-#define UI_BOX_CHARS()      ((unsigned char *)&UiGChar[UI_BOX_TOP_LEFT])
-#define UI_SBOX_CHARS()     ((unsigned char *)&UiGChar[UI_SBOX_TOP_LEFT])
+#define BOX_CHARS()         ((unsigned char *)&UiGChar[UI_BOX_TOP_LEFT])
+#define SBOX_CHARS()        ((unsigned char *)&UiGChar[UI_SBOX_TOP_LEFT])
 
 #define BOX_CHAR(x,y)       (x)[UI_SBOX_##y - UI_SBOX_TOP_LEFT]
 #define CHECKBOX_CHAR(x)    UiGChar[UI_CHECKBOX_##x]

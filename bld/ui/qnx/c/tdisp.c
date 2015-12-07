@@ -924,8 +924,8 @@ static int td_init( void )
     UIData->mouse_acc_delay = 277;
     UIData->mouse_rpt_delay = 55;
     UIData->mouse_clk_delay = 277;
-    UIData->tick_delay = 500;
-    UIData->f10menus = TRUE;
+    UIData->tick_delay      = 500;
+    UIData->f10menus        = true;
     td_refresh( 1 );
     return( TRUE );
 }
@@ -980,8 +980,8 @@ static int td_init( void )
     UIData->mouse_acc_delay = 277;
     UIData->mouse_rpt_delay = 100;
     UIData->mouse_clk_delay = 277;
-    UIData->tick_delay = 500;
-    UIData->f10menus = TRUE;
+    UIData->tick_delay      = 500;
+    UIData->f10menus        = true;
 
     //find point at which repeat chars code becomes efficient
     ti_find_cutoff();
@@ -1032,32 +1032,32 @@ static int td_fini( void )
 static struct {
     int     row0, col0;
     int     row1, col1;
-} dirty;
+} dirty_area;
 
 
 static int td_update( SAREA *area )
 {
     if( !area ) {
 QNXDebugPrintf0("td_update: no arg");
-        dirty.row0 = 0;
-        dirty.col0 = 0;
-        dirty.row1 = UIData->height;
-        dirty.col1 = UIData->width;
+        dirty_area.row0 = 0;
+        dirty_area.col0 = 0;
+        dirty_area.row1 = UIData->height;
+        dirty_area.col1 = UIData->width;
         return( 0 );
     }
 QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
                                         area->width);
-    if( area->row < dirty.row0 ) {
-        dirty.row0 = area->row;
+    if( area->row < dirty_area.row0 ) {
+        dirty_area.row0 = area->row;
     }
-    if( area->col < dirty.col0 ) {
-        dirty.col0 = area->col;
+    if( area->col < dirty_area.col0 ) {
+        dirty_area.col0 = area->col;
     }
-    if( area->row + area->height > dirty.row1 ) {
-        dirty.row1 = area->row + area->height;
+    if( area->row + area->height > dirty_area.row1 ) {
+        dirty_area.row1 = area->row + area->height;
     }
-    if( area->col + area->width > dirty.col1 ) {
-        dirty.col1 = area->col + area->width;
+    if( area->col + area->width > dirty_area.col1 ) {
+        dirty_area.col1 = area->col + area->width;
     }
     return( 0 );
 }
@@ -1119,13 +1119,13 @@ static int td_refresh( int must )
     must |= UserForcedTermRefresh;
     UserForcedTermRefresh = false;
 
-    if( dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1 ) {
+    if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         td_hwcursor();
         __flush();
         return( 0 );
     }
 
-QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0, dirty.row1, dirty.col1);
+QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1);
 
     if( UIData->cursor_type != C_OFF )
         QNX_CURSOR_OFF();
@@ -1133,18 +1133,18 @@ QNXDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty.row0, dirty.col0, dirty.row
     bufp = UIData->screen.origin;
     incr = UIData->screen.increment;
     sbufp = shadow;
-    bufp += dirty.row0 * incr;
-    sbufp += dirty.row0 * incr;
+    bufp += dirty_area.row0 * incr;
+    sbufp += dirty_area.row0 * incr;
 
 /*-
 * minimize updates
 */
-    for( i = dirty.row0; i < dirty.row1; i++ ) {
+    for( i = dirty_area.row0; i < dirty_area.row1; i++ ) {
         int     j;
         int     lastattr = -1;      // invalid to start
         bool    ca_valid = false;   // is cursor address valid?
 
-        for( j = dirty.col0; j < dirty.col1; j++ ) {
+        for( j = dirty_area.col0; j < dirty_area.col1; j++ ) {
             if( !must && PIXELEQUAL( bufp[j], sbufp[j] ) ) {
                 ca_valid = false;
                 lastattr = -1;
@@ -1167,8 +1167,8 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
         bufp += incr;
         sbufp += incr;
     }
-    dirty.row0 = dirty.row1 = 0;
-    dirty.col0 = dirty.col1 = 0;
+    dirty_area.row0 = dirty_area.row1 = 0;
+    dirty_area.col0 = dirty_area.col1 = 0;
 
     td_hwcursor();
     __flush();
@@ -1235,14 +1235,14 @@ static void update_shadow( void )
     // copy buffer to shadow buffer
     bufp = UIData->screen.origin;
     sbufp = shadow;
-    for( ; dirty.row0 < dirty.row1; dirty.row0++ ) {
-        _fmemcpy( sbufp + incr * dirty.row0 + dirty.col0,
-                bufp + incr * dirty.row0 + dirty.col0,
-                ( dirty.col1 - dirty.col0 ) * sizeof( PIXEL ) );
+    for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
+        _fmemcpy( sbufp + incr * dirty_area.row0 + dirty_area.col0,
+                bufp + incr * dirty_area.row0 + dirty_area.col0,
+                ( dirty_area.col1 - dirty_area.col0 ) * sizeof( PIXEL ) );
     }
 
-    // set dirty rectangle to be empty
-    dirty.row0 = dirty.row1 = dirty.col0 = dirty.col1 = 0;
+    // set dirty_area rectangle to be empty
+    dirty_area.row0 = dirty_area.row1 = dirty_area.col0 = dirty_area.col1 = 0;
 }
 
 
@@ -1258,7 +1258,7 @@ static int ti_refresh( int must )
     int         lastattr = -1;
     int         bufSize;
     LP_PIXEL    bufEnd;
-    bool        cls = dirty.row1;   // line on which we should clr_eos
+    bool        cls = dirty_area.row1;   // line on which we should clr_eos
                                     // and then continue to draw
     bool        done = false;
 
@@ -1273,14 +1273,14 @@ static int ti_refresh( int must )
     UserForcedTermRefresh = false;
 
     // Move the cursor & return if dirty box contains no chars
-    if( dirty.row0 == dirty.row1 && dirty.col0 == dirty.col1 ) {
+    if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
         __flush();
         return( 0 );
     }
 
-    QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty.row0,
-                                    dirty.col0, dirty.row1, dirty.col1 );
+    QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0,
+                                    dirty_area.col0, dirty_area.row1, dirty_area.col1 );
 
     // Disable cursor during draw if we can
     if( UIData->cursor_type != C_OFF ) {
@@ -1316,9 +1316,9 @@ static int ti_refresh( int must )
             int         pos;
             bool        diff = false;
 
-            while( dirty.col0 < dirty.col1 ) {
-                for( r = dirty.row0; r < dirty.row1; r++ ) {
-                    pos = r * incr + dirty.col0;
+            while( dirty_area.col0 < dirty_area.col1 ) {
+                for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
+                    pos = r * incr + dirty_area.col0;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1326,13 +1326,13 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty.col0++;
+                dirty_area.col0++;
             }
 
             diff = false;
-            while( dirty.col0 < dirty.col1 ) {
-                for( r = dirty.row0; r < dirty.row1; r++ ) {
-                    pos = r * incr + dirty.col1 - 1;
+            while( dirty_area.col0 < dirty_area.col1 ) {
+                for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
+                    pos = r * incr + dirty_area.col1 - 1;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1340,13 +1340,13 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty.col1--;
+                dirty_area.col1--;
             }
 
             diff = false;
-            while( dirty.row0 < dirty.row1 ) {
-                for( c = dirty.col0; c < dirty.col1; c++ ) {
-                    pos = dirty.row0 * incr + c;
+            while( dirty_area.row0 < dirty_area.row1 ) {
+                for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
+                    pos = dirty_area.row0 * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1354,13 +1354,13 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty.row0++;
+                dirty_area.row0++;
             }
 
             diff = false;
-            while( dirty.row0 < dirty.row1 ) {
-                for( c = dirty.col0; c < dirty.col1; c++ ) {
-                    pos = ( dirty.row1 - 1 ) * incr + c;
+            while( dirty_area.row0 < dirty_area.row1 ) {
+                for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
+                    pos = ( dirty_area.row1 - 1 ) * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1368,27 +1368,27 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty.row1--; 
+                dirty_area.row1--; 
             }
         }
 
         if( OptimizeTerminfo ) {
             // Set cls if drawing box is bottom part (or whole) of screen
-            if( dirty.col0 == 0 &&
-                dirty.row1 == UIData->height &&
-                dirty.col1 == UIData->width &&
+            if( dirty_area.col0 == 0 &&
+                dirty_area.row1 == UIData->height &&
+                dirty_area.col1 == UIData->width &&
                 TCAP_CLS ) {
 
                 if( clr_eos[0] != '\0' ) {
-                    cls = dirty.row0;
-                } else if( dirty.row0 == 0 ) {
+                    cls = dirty_area.row0;
+                } else if( dirty_area.row0 == 0 ) {
                     cls = 0;
                 }
             }
 
             if( !must ) {
                 // Adjust cls so refresh looks pretty
-                for( ; cls < dirty.row1; cls++ ) {
+                for( ; cls < dirty_area.row1; cls++ ) {
                     int         pos;
                     int         pos2;
 
@@ -1403,7 +1403,7 @@ static int ti_refresh( int must )
             }
 
             /*
-            if( cls < dirty.row1 ) {
+            if( cls < dirty_area.row1 ) {
                 // If cls is set to by this point we've decided to clear the area
                 blankStart = bufEnd;
             }
@@ -1434,10 +1434,10 @@ static int ti_refresh( int must )
         bool            ralt;           // if repeated character is in acs
         int             rcol;           // starting column of repeated chars
 
-        bufp += dirty.row0 * incr;
-        sbufp += dirty.row0 * incr;
+        bufp += dirty_area.row0 * incr;
+        sbufp += dirty_area.row0 * incr;
 
-        for( i = dirty.row0; i < dirty.row1; i++ ) {
+        for( i = dirty_area.row0; i < dirty_area.row1; i++ ) {
             ca_valid = false;
             rcount = 0;
 
@@ -1446,10 +1446,10 @@ static int ti_refresh( int must )
                 TI_CURSOR_MOVE( 0, i );
                 putp( clr_eos );
                 ca_valid = true;
-                //assert( dirty.col0==0 && dirty.col1==UIData->width );
+                //assert( dirty_area.col0==0 && dirty_area.col1==UIData->width );
             }
 
-            for( j = dirty.col0; j < dirty.col1; j++ ) {
+            for( j = dirty_area.col0; j < dirty_area.col1; j++ ) {
                 pos = &bufp[j];
                 if( !must && (
                     ( cls <= i )

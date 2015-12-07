@@ -93,9 +93,9 @@ void UIREFRESH( void )
     total.start = (unsigned)-1;
     total.end = 0;
     while( wptr != NULL ) {
-        if( wptr->dirty.height > 0 ) {
-            _dorefresh( &total, wptr->dirty, wptr, wptr->prev );
-            wptr->dirty.height = 0;
+        if( wptr->dirty_area.height > 0 ) {
+            _dorefresh( &total, wptr->dirty_area, wptr, wptr->prev );
+            wptr->dirty_area.height = 0;
         }
         wptr = wptr->prev;
     }

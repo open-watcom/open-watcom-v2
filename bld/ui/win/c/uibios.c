@@ -91,7 +91,7 @@ bool intern initbios( void )
     initialized = false;
     if( initmonitor() ) {
         UIData->desqview = 0;
-        UIData->f10menus = TRUE;
+        UIData->f10menus = true;
         if( UIData->colour == M_MONO ) {
             UIData->screen.origin = MK_FP( _B000h, 0 );
         } else {

@@ -48,17 +48,16 @@
 #include "qnxuiext.h"
 
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE             8
 
 
-extern          ORD       MouseRow;
-extern          ORD       MouseCol;
-extern          bool      MouseOn;
+extern ORD                  MouseRow;
+extern ORD                  MouseCol;
 
-extern          struct _mouse_ctrl *    MouseCtrl       = NULL;
+extern struct _mouse_ctrl   *MouseCtrl;
 
-extern          unsigned short          MouseStatus;
-extern          bool                    MouseInstalled;
+extern unsigned short       MouseStatus;
+extern bool                 MouseInstalled;
 
 static __segment            SysTimeSel;
 static int                  ScaledRow;
@@ -85,13 +84,8 @@ static timer_t              MouseTimer;
 #endif
 
 
-static int cm_check( status, row, col, time )
-/**********************************************/
-
-register        unsigned short*         status;
-register        unsigned short*         row;
-register        unsigned short*         col;
-register        unsigned long*          time;
+static int cm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
+/**********************************************************************************************************/
 {
     struct  mouse_event    event;
     struct  itimerspec     timer;
@@ -99,28 +93,35 @@ register        unsigned long*          time;
     if( MouseInstalled ) {
         if( mouse_read( MouseCtrl, &event, 1, UIRemProxy, 0 ) > 0 ) {
             ScaledRow -= event.dy;
-            if( ScaledRow < 0 ) ScaledRow = 0;
-            if( ScaledRow > (UIData->height-1) * MOUSE_SCALE ) {
-                ScaledRow = (UIData->height-1) * MOUSE_SCALE;
+            if( ScaledRow < 0 )
+                ScaledRow = 0;
+            if( ScaledRow > ( UIData->height - 1 ) * MOUSE_SCALE ) {
+                ScaledRow = ( UIData->height - 1 ) * MOUSE_SCALE;
             }
             ScaledCol += event.dx;
-            if( ScaledCol < 0 ) ScaledCol = 0;
-            if( ScaledCol > (UIData->width-1) * MOUSE_SCALE ) {
-                ScaledCol = (UIData->width-1) * MOUSE_SCALE;
+            if( ScaledCol < 0 )
+                ScaledCol = 0;
+            if( ScaledCol > ( UIData->width - 1 ) * MOUSE_SCALE ) {
+                ScaledCol = ( UIData->width - 1 ) * MOUSE_SCALE;
             }
             MyStatus = 0;
-            if( event.buttons & _MOUSE_LEFT ) MyStatus |= MOUSE_PRESS;
-            if( event.buttons & _MOUSE_MIDDLE ) MyStatus |= MOUSE_PRESS_MIDDLE;
-            if( event.buttons & _MOUSE_RIGHT ) MyStatus |= MOUSE_PRESS_RIGHT;
+            if( event.buttons & _MOUSE_LEFT )
+                MyStatus |= MOUSE_PRESS;
+            if( event.buttons & _MOUSE_MIDDLE )
+                MyStatus |= MOUSE_PRESS_MIDDLE;
+            if( event.buttons & _MOUSE_RIGHT )
+                MyStatus |= MOUSE_PRESS_RIGHT;
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
-        } else if( !(MyStatus & MOUSE_PRESS_ANY) ) {
+        } else if( (MyStatus & MOUSE_PRESS_ANY) == 0 ) {
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
         } else {
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = UIData->mouse_rpt_delay * 1000000UL;
-            if( timer.it_value.tv_nsec == 0 ) timer.it_value.tv_nsec = 1;
+            if( timer.it_value.tv_nsec == 0 ) {
+                timer.it_value.tv_nsec = 1;
+            }
         }
         timer.it_interval.tv_sec = 0;
         timer.it_interval.tv_nsec = 0;
@@ -131,7 +132,7 @@ register        unsigned long*          time;
         *col = ScaledCol / MOUSE_SCALE;
     }
     uisetmouse( *row, *col );
-    return 0;
+    return( 0 );
 }
 
 static int cm_stop()
@@ -140,7 +141,7 @@ static int cm_stop()
    struct itimerspec    timer;
 
 
-    if( MouseInstalled) {
+    if( MouseInstalled ) {
 
         timer.it_value.tv_sec = 0;
         timer.it_value.tv_nsec = 0;
@@ -153,26 +154,28 @@ static int cm_stop()
     return 0;
 }
 
-static int cm_init( bool install )
-/******************************/
+static int cm_init( int install )
+/*******************************/
 {
     struct itimercb     timercb;
     struct _osinfo      osinfo;
     MOUSEORD            row;
     MOUSEORD            col;
 
-    MouseInstalled = FALSE;
-    if( !install ) return( FALSE );
+    MouseInstalled = false;
+    if( install == 0 )
+        return( false );
 
     MouseCtrl = mouse_open( 0, 0, UIConHandle );
-    if( MouseCtrl == 0 ) return( FALSE );
+    if( MouseCtrl == 0 )
+        return( false );
     timercb.itcb_event.evt_value = UIProxy;
     MouseTimer = mktimer( TIMEOFDAY, _TNOTIFY_PROXY, &timercb );
     if( MouseTimer == -1 ) {
         mouse_close( MouseCtrl );
-        return( FALSE );
+        return( false );
     }
-    MouseInstalled = TRUE;
+    MouseInstalled = true;
 
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
@@ -184,12 +187,12 @@ static int cm_init( bool install )
     MouseRow = row;
     MouseCol = col;
     stopmouse();
-    return( TRUE );
+    return( true );
 }
 
 
-static int cm_fini()
-/*********************/
+static int cm_fini( void )
+/************************/
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -227,9 +230,9 @@ static int cm_set_speed( int speed )
 }
 
 Mouse ConsMouse = {
-        cm_init,
-        cm_fini,
-        cm_set_speed,
-        cm_stop,
-        cm_check,
+    cm_init,
+    cm_fini,
+    cm_set_speed,
+    cm_stop,
+    cm_check,
 };
