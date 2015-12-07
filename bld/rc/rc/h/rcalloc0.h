@@ -30,30 +30,39 @@
 ****************************************************************************/
 
 
+#ifdef RCMEM_DEBUG
+
+#define RCMEM_STARTBYTE      0x94
+#define RCMEM_ENDBYTE        0xA1
+#define RCMEM_GARBAGEBYTE    0xE2
+
+typedef struct DebugMemInfo {
+    size_t          size;
+    unsigned char   startbyte;
+} DebugMemInfo;
+
+#endif
+
 typedef struct FreeListInfo {
-    char            *next;
+#ifdef RCMEM_DEBUG
+    DebugMemInfo        dbg;
+#endif
+    union {
+        struct FreeListInfo *next;
+        unsigned char       data[1];
+    } u;
 } FreeListInfo;
 
 typedef struct HeapList {
-    struct HeapList *next;
+    struct HeapList     *next;
 } HeapList;
 
 typedef struct HeapHandle {
     HeapList        *list;
     size_t          heapsize;
     size_t          blocksize;
-    char            *freeList;
+    FreeListInfo    *freeList;
 } HeapHandle;
-
-#ifdef RCMEM_DEBUG
-#define RCMEM_STARTBYTE      0x94
-#define RCMEM_ENDBYTE        0xA1
-#define RCMEM_GARBAGEBYTE    0xE2
-typedef struct DebugMemInfo {
-    size_t          size;
-    unsigned char   startbyte;
-} DebugMemInfo;
-#endif
 
 extern void         RCMemLayer0Free( void *mem, HeapHandle *heap );
 extern HeapHandle   *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap );
