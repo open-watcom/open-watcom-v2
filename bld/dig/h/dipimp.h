@@ -253,6 +253,8 @@ DIG_DLLEXPORT dip_init_func DIPLOAD;
 DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #endif
 
+#define DCSEEK_POSBACK(x) ((unsigned long)-(long)(x))
+
 void            *DCAlloc( size_t amount );
 void            *DCAllocZ( size_t amount );
 void            *DCRealloc( void *p, size_t amount );
