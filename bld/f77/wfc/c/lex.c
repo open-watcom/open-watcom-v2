@@ -34,6 +34,7 @@
 // LEX       : lexical analyser
 //
 
+#include <string.h>
 #include "ftnstd.h"
 #include "opr.h"
 #include "opn.h"
@@ -44,11 +45,7 @@
 #include "ferror.h"
 #include "frl.h"
 #include "comio.h"
-
-#include <string.h>
-
-extern  void            InitScan(void);
-extern  void            Scan(void);
+#include "scan.h"
 
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];
