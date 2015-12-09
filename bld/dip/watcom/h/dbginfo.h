@@ -120,11 +120,16 @@ typedef struct {
     }               u;
 } _WCUNALIGNED demand_info;
 
-enum { DMND_FIRST = 0, DMND_LOCALS = 0, DMND_TYPES, DMND_LINES, DMND_NUM };
+typedef enum {
+    DMND_LOCALS = 0,
+    DMND_TYPES,
+    DMND_LINES,
+    MAX_DMND
+} demand_kind;
 
 typedef struct {
     word            language;       /* offset from source language table */
-    demand_info     di[DMND_NUM];
+    demand_info     di[MAX_DMND];
     char            name[1];
 } _WCUNALIGNED mod_info;
 

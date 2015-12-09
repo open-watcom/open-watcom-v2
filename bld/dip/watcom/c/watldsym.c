@@ -220,7 +220,7 @@ static dip_status ProcSectionInfo( imp_image_handle *ctl, unsigned long pos )
 static dip_status DoPermInfo( imp_image_handle *ii )
 {
     master_dbg_header   header;
-    dip_status           ret;
+    dip_status          ret;
     unsigned long       end;
     unsigned long       curr;
     unsigned            num_segs;
@@ -271,8 +271,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
         return( DS_ERR|DS_INFO_INVALID );
     }
     num_segs = header.segment_size / sizeof( addr_seg );
-    curr = DCSeek( ii->sym_file, -header.debug_size + header.lang_size
-                        + header.segment_size, DIG_CUR );
+    curr = DCSeek( ii->sym_file, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
     ret = GetNumSect( ii->sym_file, curr, end, &num_sects );
     if( ret != DS_OK ) return( ret );
     new = DCAlloc( header.lang_size

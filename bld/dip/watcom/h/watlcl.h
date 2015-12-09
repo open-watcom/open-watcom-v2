@@ -106,9 +106,9 @@ typedef union {
 
 
 extern unsigned         InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                                unsigned item, unsigned entry );
+                                demand_kind dk, unsigned entry );
 extern void             *InfoLoad( imp_image_handle *ii, imp_mod_handle im,
-                                unsigned item, unsigned entry,
+                                demand_kind dk, unsigned entry,
                                 void (*clear)(void *, void *) );
 extern void             InfoClear( imp_image_handle *ii );
 extern void             InfoUnlock( void );

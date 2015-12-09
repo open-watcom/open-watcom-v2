@@ -81,12 +81,12 @@ static unsigned         TimeStamp;
  * InfoSize -- return size of demand info section
  */
 unsigned InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                        unsigned item, unsigned entry )
+                        demand_kind dk, unsigned entry )
 {
     demand_info         *dmnd;
     section_info        *inf;
 
-    dmnd = &ModPointer( ii, im )->di[item];
+    dmnd = &ModPointer( ii, im )->di[dk];
     if( entry >= dmnd->u.entries )
         return( 0 );
     entry += dmnd->info_off;
@@ -107,13 +107,13 @@ static walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
     struct walk_demand  *wdd = d;
     unsigned long       size;
-    unsigned            dmnd;
+    demand_kind         dk;
     unsigned            i;
 
-    for( dmnd = DMND_FIRST; dmnd < DMND_NUM; ++dmnd ) {
+    for( dk = 0; dk < MAX_DMND; ++dk ) {
         i = 0;
         for( ;; ) {
-            size = InfoSize( ii, im, dmnd, i );
+            size = InfoSize( ii, im, dk, i );
             if( size == 0 )
                 break;
             if( size > wdd->max_size )
@@ -188,7 +188,7 @@ void FiniDemand( void )
 
 static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
-    unsigned            dmnd;
+    demand_kind         dk;
     mod_info            *mp;
     section_info        *sect;
     int                 entry;
@@ -198,9 +198,9 @@ static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
     d = d;
     mp = ModPointer( ii, im );
     sect = FindInfo( ii, im );
-    for( dmnd = DMND_FIRST; dmnd < DMND_NUM; ++dmnd ) {
-        for( entry = mp->di[dmnd].u.entries-1; entry >= 0; --entry ) {
-            real_entry = entry + mp->di[dmnd].info_off;
+    for( dk = 0; dk < MAX_DMND; ++dk ) {
+        for( entry = mp->di[dk].u.entries-1; entry >= 0; --entry ) {
+            real_entry = entry + mp->di[dk].info_off;
             lnk = &GET_LINK( sect, real_entry );
             if( IS_RESIDENT( *lnk ) ) {
                 Unload( MK_DMND_PTR( *lnk ) );
@@ -234,7 +234,7 @@ void InfoUnlock( void )
  * InfoLoad -- load demand info
  */
 
-void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
+void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
                 unsigned entry, void (*clear)(void *, void *) )
 {
     demand_ctrl         *section;
@@ -251,7 +251,7 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
             section->time_stamp = 0;
         }
     }
-    info = &ModPointer( ii, im )->di[ item ];
+    info = &ModPointer( ii, im )->di[dk];
     if( entry >= info->u.entries )
         return( NULL );
     entry += info->info_off;

@@ -101,7 +101,7 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
     unsigned            num;
     unsigned long       count;
     unsigned            i;
-    unsigned            d;
+    demand_kind         dk;
     mod_info            *mod;
     unsigned            tbl_entries;
     pointer_int         end = 0;
@@ -136,28 +136,28 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
     lnk = *lnk_tbl;
     num = 0;
     count = 0;
-    for( d = DMND_FIRST; d < DMND_NUM; ++d ) {
+    for( dk = 0; dk < MAX_DMND; ++dk ) {
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( i = 0; i < tbl->count; ++i ) {
                 mod = (mod_info *)((byte *)blk->info + tbl->mod_off[i]);
                 if( inf->ctl->v2 ) {
-                    if( mod->di[d].u.size != 0 ) {
+                    if( mod->di[dk].u.size != 0 ) {
                         if( num >= MAX_LINK_ENTRIES ) {
                             lnk = *++lnk_tbl;
                             num = 0;
                         }
-                        lnk[num] = mod->di[d].info_off;
-                        end = lnk[num] + mod->di[d].u.size;
-                        mod->di[d].u.entries = 1;
-                        mod->di[d].info_off = count;
+                        lnk[num] = mod->di[dk].info_off;
+                        end = lnk[num] + mod->di[dk].u.size;
+                        mod->di[dk].u.entries = 1;
+                        mod->di[dk].info_off = count;
                         ++num;
                         ++count;
                     }
                 } else {
-                    if( mod->di[d].u.entries != 0 ) {
-                        mod->di[d].info_off =
-                        ( mod->di[d].info_off - first_link ) / sizeof( pointer_int );
+                    if( mod->di[dk].u.entries != 0 ) {
+                        mod->di[dk].info_off =
+                        ( mod->di[dk].info_off - first_link ) / sizeof( pointer_int );
                     }
                 }
             }
@@ -189,7 +189,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     unsigned long       num_links;
     unsigned long       first_link;
     unsigned long       last_link;
-    unsigned            d;
+    demand_kind         dk;
     unsigned            num;
     pointer_int         *lnk;
     pointer_int         **lnk_tbl;
@@ -216,16 +216,16 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
         for( mod_off = 0; mod_off < blk->size; mod_off += MODINFO_SIZE( mod ) ) {
             tbl->mod_off[count++] = mod_off;
             mod = (mod_info *)((byte *)blk->info + mod_off);
-            for( d = DMND_FIRST; d < DMND_NUM; ++d ) {
+            for( dk = 0; dk < MAX_DMND; ++dk ) {
                 if( inf->ctl->v2 ) {
-                    if( mod->di[d].u.size != 0 ) ++num_links;
+                    if( mod->di[dk].u.size != 0 ) ++num_links;
                 } else {
-                    if( mod->di[d].u.entries != 0 ) {
-                        num_links = mod->di[d].info_off;
+                    if( mod->di[dk].u.entries != 0 ) {
+                        num_links = mod->di[dk].info_off;
                         if( num_links < first_link ) {
                             first_link = num_links;
                         }
-                        num_links += mod->di[d].u.entries * sizeof( pointer_int );
+                        num_links += mod->di[dk].u.entries * sizeof( pointer_int );
                         if( num_links > last_link ) {
                             last_link = num_links;
                         }

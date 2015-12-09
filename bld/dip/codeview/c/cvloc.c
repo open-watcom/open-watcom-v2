@@ -57,7 +57,7 @@ void LocationAdd( location_list *ll, long sbits )
 
     bits = sbits;
     if( sbits < 0 ) {
-        bits = -bits;
+        bits = -sbits;
         add = (bits + 7) / 8;
         if( ll->e[0].type == LT_ADDR ) {
             ll->e[0].u.addr.mach.offset -= add;
