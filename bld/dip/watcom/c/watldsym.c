@@ -164,8 +164,7 @@ static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr,
             }
         }
         (*count)++;
-        curr = DCSeek( sym_file,
-                header.section_size - sizeof(section_dbg_header), DIG_CUR );
+        curr = DCSeek( sym_file, DCSEEK_POSBACK( sizeof( section_dbg_header ) ) + header.section_size, DIG_CUR );
     }
 }
 
@@ -229,7 +228,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     byte                v2;
     char                *new;
 
-    end = DCSeek( ii->sym_file, -(long)sizeof( header ), DIG_END );
+    end = DCSeek( ii->sym_file, DCSEEK_POSBACK( sizeof( header ) ), DIG_END );
     if( DCRead( ii->sym_file, &header, sizeof(header) ) != sizeof(header) ) {
         return( DS_FAIL );
     }
@@ -290,8 +289,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     ii->real_segs = (void *)(ii->map_segs + num_segs);
     ii->sect = (void *)(ii->real_segs + num_segs);
     ii->num_sects = 0;
-    DCSeek( ii->sym_file, curr - header.lang_size - header.segment_size,
-                DIG_ORG );
+    DCSeek( ii->sym_file, curr - header.lang_size - header.segment_size, DIG_ORG );
     if( DCRead( ii->sym_file, ii->lang, header.lang_size ) != header.lang_size ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
@@ -333,8 +331,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
  * InfoRead -- read demand information from disk
  */
 
-dip_status InfoRead( section_info *inf, unsigned long offset, unsigned size,
-                void *buff )
+dip_status InfoRead( section_info *inf, unsigned long offset, unsigned size, void *buff )
 {
     dig_fhandle  sym_file;
 

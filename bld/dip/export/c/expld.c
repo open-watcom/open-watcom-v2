@@ -69,7 +69,7 @@ static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
     case DIG_END:
-        return( -1UL ); /* unsupported */
+        return( DCSEEK_ERROR ); /* unsupported */
     case DIG_CUR:
         npos = bpos + p + Buff.off;
         break;
@@ -96,7 +96,7 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
-        if( Buff.fpos == -1UL ) return( 0 );
+        if( Buff.fpos == DCSEEK_ERROR ) return( 0 );
         got = DCRead( h, b, s );
         Buff.fpos += got;
         return( got );
@@ -110,7 +110,7 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
     if( want > 0 ) {
         Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
         if( Buff.len == (unsigned)-1 ) {
-            Buff.fpos = -1UL;
+            Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
             return( (unsigned)-1 );
@@ -1042,7 +1042,7 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     for( ;; ) {
         if( Try[i] == NULL ) return( DS_FAIL );
         switch( BSeek( h, 0, DIG_ORG ) ) {
-        case (unsigned long)-1L:
+        case DCSEEK_ERROR:
             return( DS_FSEEK_FAILED );
         case 0:
             break;

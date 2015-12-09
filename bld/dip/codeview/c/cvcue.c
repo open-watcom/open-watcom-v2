@@ -298,7 +298,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
        about the VM system throwing it out */
     line_off = __alloca( num_segs * sizeof( unsigned_32 ) );
     memcpy( line_off, &fp->baseSrcLn[0], num_segs * sizeof( unsigned_32 ) );
-    best_line = -1UL;
+    best_line = (unsigned long)-1L;
     for( seg_idx = 0; seg_idx < num_segs; ++seg_idx ) {
         line_base = line_off[seg_idx] + cde->lfo;
         lp = VMBlock( ii, line_base, sizeof( *lp ) );
@@ -318,7 +318,8 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
             num_base += sizeof( *line_number );
         }
     }
-    if( best_line == -1UL ) return( SR_NONE );
+    if( best_line == (unsigned long)-1L )
+        return( SR_NONE );
     return( SR_CLOSEST );
 }
 
@@ -461,13 +462,14 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) + file_tab_size );
     files = __alloca( file_tab_size );
     memcpy( files, &hdr->baseSrcFile[0], file_tab_size );
-    best_offset = (addr_off)-1UL;
+    best_offset = (addr_off)-1L;
     for( file_idx = 0; file_idx < num_files; ++file_idx ) {
         file_base = files[file_idx] + cde->lfo;
         rc = SearchFile( ii, addr, ic, file_base, cde, &best_offset );
         if( rc != SR_FAIL ) return( rc );   /* see comment in SearchFile above */
     }
-    if( best_offset == (addr_off)-1UL ) return( SR_NONE );
+    if( best_offset == (addr_off)-1L )
+        return( SR_NONE );
     return( SR_CLOSEST );
 }
 

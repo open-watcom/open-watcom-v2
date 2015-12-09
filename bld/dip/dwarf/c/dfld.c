@@ -105,7 +105,7 @@ static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned lon
     uint                sect;
 
     // Find TIS header seek to elf header
-    start = DCSeek( f, -(long)sizeof( dbg_head ), DIG_END );
+    start = DCSeek( f, DCSEEK_POSBACK( sizeof( dbg_head ) ), DIG_END );
     for( ;; ) {
         if( DCRead( f, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
             return( DS_FAIL );
@@ -212,7 +212,7 @@ static void DWRSeek( void *_f, dr_section sect, long offs )
     long        base;
 
     base = f->dwarf->sect_offsets[sect];
-    DCSeek( f->sym_file, offs+base, DIG_ORG );
+    DCSeek( f->sym_file, offs + base, DIG_ORG );
 }
 
 
