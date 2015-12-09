@@ -134,7 +134,7 @@ typedef unsigned_16 dip_status; enum {
     DS_INVALID_OPERATOR,
     DS_LAST,
     DS_ERR=0x4000
-;
+};
 
 
 typedef struct {
