@@ -401,7 +401,7 @@ static dip_status TryLX( dig_fhandle h, imp_image_handle *ii,
         if( pref.b32_cnt == 0 ) break;
         if( pref.b32_type == FLT_BNDL_EMPTY ) {
             ord += pref.b32_cnt;
-            BSeek( h, -2, DIG_CUR ); /* backup 2 bytes */
+            BSeek( h, DCSEEK_POSBACK( 2 ), DIG_CUR );   /* backup 2 bytes */
         } else {
             for( i = 0; i < pref.b32_cnt; ++i ) {
                 switch( pref.b32_type ) {

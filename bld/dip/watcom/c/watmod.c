@@ -421,12 +421,18 @@ char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
  * DIPImpModInfo - does a module have a particular brand of info
  */
 
-dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
-                                handle_kind hk )
+dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im, handle_kind hk )
 {
     mod_info    *mod;
-    static unsigned DmndType[] = {0,DMND_TYPES,DMND_LINES,DMND_LOCALS};
+    static unsigned DmndType[MAX_HK] = {
+        0,
+        DMND_TYPES,
+        DMND_LINES,
+        DMND_LOCALS
+    };
 
+    if( hk == HK_IMAGE )
+        return( DS_FAIL );
     mod = ModPointer( ii, im );
     return( mod->di[DmndType[hk]].u.entries != 0 ? DS_OK : DS_FAIL );
 }

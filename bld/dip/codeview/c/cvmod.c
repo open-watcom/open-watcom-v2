@@ -144,19 +144,23 @@ char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle
 dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
-    static const unsigned DmndType[] = {
+    static const unsigned DmndType[MAX_HK] = {
         0,
         0, //sstGlobalTypes,
         sstSrcModule,
-        sstAlignSym };
+        sstAlignSym
+    };
     unsigned            type;
     cv_directory_entry  *cde;
 
     type = DmndType[hk];
-    if( type == 0 ) return( DS_FAIL );
+    if( type == 0 )
+        return( DS_FAIL );
     cde = FindDirEntry( ii, im, type );
-    if( cde == NULL ) return( DS_FAIL );
-    if( cde->cb == 0 ) return( DS_FAIL );
+    if( cde == NULL )
+        return( DS_FAIL );
+    if( cde->cb == 0 )
+        return( DS_FAIL );
     return( DS_OK );
 }
 

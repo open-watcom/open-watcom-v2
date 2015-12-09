@@ -62,14 +62,14 @@ unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
         Return the sizes of the individual handle types. This version
         should be OK as given.
 */
-    static unsigned_8 Sizes[] = {
+    static unsigned_8 Sizes[MAX_HK] = {
         sizeof( imp_image_handle ),
         sizeof( imp_type_handle ),
         sizeof( imp_cue_handle ),
         sizeof( imp_sym_handle )
     };
 
-    return( Sizes[ hk ] );
+    return( Sizes[hk] );
 }
 
 static imp_image_handle *Images;
