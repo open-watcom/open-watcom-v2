@@ -170,7 +170,7 @@ static dip_status SectFindAddrInfo( section_info *inf, address addr,
                 curr_off += info->size;
                 if( curr_off > addr.mach.offset ) {
                     if( info->mod == (word)-1 ) goto next_block;
-                    *im = info->mod;
+                    *im = IDX2IMH( info->mod );
                     code->len = info->size;
                     code->start.mach.offset = curr_off - code->len;
                     code->start.mach.segment = ptr->base.segment;
@@ -230,7 +230,7 @@ address FindModBase( imp_image_handle *ii, imp_mod_handle im )
             base.mach = ptr->base;
             info = ptr->addr;
             for( num = GET_NUM_SEGS( ptr ); num != 0; --num ) {
-                if( info->mod == im ) return( base );
+                if( IDX2IMH( info->mod ) == im ) return( base );
                 base.mach.offset += info->size;
                 ++info;
             }

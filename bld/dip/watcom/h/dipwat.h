@@ -39,9 +39,12 @@
 #include "dipimp.h"
 #include "dbginfo.h"
 
-#define INFO_MAX_BLOCK   0xff80
+#define INFO_MAX_BLOCK      0xff80
 
-#define MAX_LINK_ENTRIES (4 * 1024U) /* per table block */
+#define MAX_LINK_ENTRIES    (4 * 1024U) /* per table block */
+
+#define IDX2IMH(x)          (x + IMH_BASE)
+#define IMH2IDX(x)          (x - IMH_BASE)
 
 struct type_pos {
     unsigned short      entry;
@@ -116,7 +119,7 @@ typedef struct section_info {
     info_block                  *addr_info;
     info_block                  *gbl;
     pointer_int                 **dmnd_link;
-    imp_mod_handle              mod_base_idx;
+    word                        mod_base_idx;
     unsigned                    sect_id;
 } section_info;
 

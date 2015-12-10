@@ -76,7 +76,7 @@ typedef struct gbl_link_info {
 #define GBL_KIND( gbl )         (GblNameOff==0? 0 : ((gbl_info*)(gbl))->name[0])
 #define GBL_NAME( gbl )         (&((gbl_info*)(gbl))->name[GblNameOff+1])
 #define GBL_NAMELEN( gbl )      ((gbl)->name[GblNameOff])
-#define GBL_MOD( gbl )          (((gbl_info*)(gbl))->mod)
+#define GBL_MOD( gbl )          (IDX2IMH(((gbl_info*)(gbl))->mod))
 /* I know -- this is evil. It's temporary and it's fast */
 #define SET_GBLNAMEOFF( ctl )   (GblNameOff = (ctl)->v2 ^ 0x1)
 

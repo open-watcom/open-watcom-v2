@@ -52,7 +52,7 @@ section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
     inf = ii->sect;
     num_sects = ii->num_sects;
     for( ;; ) {
-        if( inf->mod_base_idx > im ) {
+        if( IDX2IMH( inf->mod_base_idx ) > im ) {
             --inf;
             break;
         }
@@ -77,7 +77,7 @@ mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle im )
     inf = FindInfo( ii, im );
     if( inf == NULL )
         return( NULL );
-    index = im - inf->mod_base_idx;
+    index = im - IDX2IMH( inf->mod_base_idx );
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         tbl = blk->link;
         if( index < tbl->count ) {
@@ -273,7 +273,7 @@ void SetModBase( imp_image_handle *ii )
     info_block  *blk;
     mod_table   *tbl;
 
-    base = 1;   /* first module index */
+    base = 0;
     for( i = 0; i < ii->num_sects; ++i ) {
         ii->sect[i].mod_base_idx = base;
         count = 0;
@@ -364,7 +364,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
 
     inf = ii->sect;
     for( num_sects = ii->num_sects; num_sects != 0; --num_sects ) {
-        im = inf->mod_base_idx;
+        im = IDX2IMH( inf->mod_base_idx );
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
@@ -392,7 +392,7 @@ walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk,
 
     inf = ii->sect;
     for( num_sects = ii->num_sects; num_sects != 0; --num_sects ) {
-        im = inf->mod_base_idx;
+        im = IDX2IMH( inf->mod_base_idx );
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
