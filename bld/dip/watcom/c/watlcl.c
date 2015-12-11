@@ -92,7 +92,7 @@ static void LclCreate( imp_sym_handle *is, const char *ptr, const char *name, lc
     is->u.lcl.base = local->base_off;
     is->u.lcl.offset = ptr - local->start;
     is->u.lcl.gbl_link = NULL;
-    is->name_off = name - ptr;
+    is->name_off = (byte)( name - ptr );
 }
 
 /*

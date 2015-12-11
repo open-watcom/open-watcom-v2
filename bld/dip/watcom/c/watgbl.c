@@ -114,7 +114,7 @@ static void GblCreate( imp_sym_handle *is, gbl_info *gbl )
 {
     is->type = SH_GBL;
     is->im = GBL_MOD( gbl );
-    is->name_off = GBL_NAME( gbl ) - (char *)gbl - 1;
+    is->name_off = (byte)( GBL_NAME( gbl ) - (char *)gbl - 1 );
     is->u.gbl = gbl;
 }
 

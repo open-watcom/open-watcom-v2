@@ -68,7 +68,7 @@ struct imp_sym_handle {
             struct type_pos     h;
         }               typ;
     }                   u;
-    unsigned char       name_off;
+    byte                name_off;
     enum {
         SH_NONE,
         SH_GBL,

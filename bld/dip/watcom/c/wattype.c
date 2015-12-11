@@ -636,7 +636,7 @@ static search_result SearchEnumTypeName( imp_image_handle *ii, imp_mod_handle im
                 break;
             is = DCSymCreate( ii, d );
             is->im = im;
-            is->name_off = NamePtr( p ) - p;
+            is->name_off = (byte)( NamePtr( p ) - p );
             is->u.typ.t.entry = entry;
             is->u.typ.t.offset = p - Type->start;
             if( (GETU8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
@@ -1699,7 +1699,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                 is = DCSymCreate( ii, d );
                 is->u.typ.t.offset = p - Type->start;
                 is->u.typ.t.entry = Type->entry;
-                is->name_off = name - p;
+                is->name_off = (byte)( name - p );
                 is->im = it->im;
                 is->u.typ.h = it->t;
                 is->type = SH_MBR;
@@ -1793,7 +1793,7 @@ do_walk:
             } else {
                 is->u.typ.t.offset = p - Type->start;
                 is->u.typ.t.entry = Type->entry;
-                is->name_off = NamePtr( p ) - p;
+                is->name_off = (byte)( NamePtr( p ) - p );
                 wr = wk( ii, SWI_SYMBOL, is, d );
                 if( wr != WR_CONTINUE ) break;
             }
