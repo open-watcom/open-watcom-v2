@@ -42,8 +42,6 @@ extern "C" {
 #endif
 #include "dm_pts.h"
 
-typedef void (*outfunPtr)(void **, dm_pts, size_t, char const *);
-
 /*
     extra semantics:
         - buff == NULL; proper size for a buffer will be returned
@@ -67,15 +65,18 @@ int __is_mangled(                               // IS NAME MANGLED ?
 
 #if !defined( __WLIB__ ) && !defined( __DISASM__ )
 
-int __is_mangled_internal(                      // IS NAME MANGLED? INTERNAL?
+typedef enum {
+    __NOT_MANGLED,                              // not mangled name
+    __MANGLED,                                  // mangled user name
+    __MANGLED_INTERNAL,                         // mangled compiler generated name
+    __MANGLED_CTOR,                             // mangled ctor name
+    __MANGLED_DTOR,                             // mangled dtor name
+} mangled_type;
+
+mangled_type __is_mangled_internal(             // IS NAME MANGLED? INTERNAL?
     char const *name,                           // - C++ name
     size_t len )                                // - length of name
 ;                                               // RETURNS one of following:
-#define __NOT_MANGLED           0       // not mangled name
-#define __MANGLED               1       // mangled user name
-#define __MANGLED_INTERNAL      2       // mangled compiler generated name
-#define __MANGLED_CTOR          3       // mangled ctor name
-#define __MANGLED_DTOR          4       // mangled dtor name
 
 int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     char const *name,                           // - mangled C++ name

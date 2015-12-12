@@ -124,6 +124,8 @@
 
 typedef void *(*realloc_fn_t)( void *, size_t );
 
+typedef void (*outfunPtr)(void **, dm_pts, pointer_int, char const *);
+
 #define MAX_REPLICATE   10
 typedef struct replicate_desc {
     char const      *ptr;
@@ -148,7 +150,7 @@ typedef struct output_desc {
     size_t          pending_loc;
     size_t          scope_len;
     int             suppress_output;
-    int             scope_index;
+    unsigned        scope_index;
     unsigned        ctdt_pending : 1;
     unsigned        cv_pending : 1;
     unsigned        scope_name : 1;
@@ -284,6 +286,8 @@ static char const _WCI86FAR * const _WCI86FAR assignmentFunction[] = {
     /* K */ "^="
 };
 #define num_elements( __a ) (sizeof(__a) / sizeof(__a[0]))
+
+#define check_element(i,a)  (i >= 0 && i < num_elements( a ))
 
 typedef union key_desc {
     char        str[2];
@@ -448,9 +452,10 @@ static void unforceSuppression( output_desc *data )
     }
 }
 
-static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *ptr )
+static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char const *ptr )
 {
     output_desc *data = *((output_desc **)cookie);
+    size_t      idx = (size_t)value;
 
     switch( dp ) {
     case DM_BASIC_TYPE:
@@ -482,10 +487,10 @@ static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *pt
         }
         break;
     case DM_SET_INDEX:
-        setEmitIndex( data, value );
+        setEmitIndex( data, idx );
         break;
     case DM_RESET_INDEX:
-        resetEmitIndex( data, value );
+        resetEmitIndex( data, idx );
         break;
     case DM_ZAP_SPACE:
         zapSpace( data );
@@ -498,10 +503,10 @@ static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *pt
         if( data->base_name && data->ctdt_pending ) {
             unforceSuppression( data );
         }
-        if( value == 0 ) {
+        if( idx == 0 ) {
             emitStr( data, ptr );
         } else {
-            while( value-- ) {
+            while( idx-- > 0 ) {
                 emitChar( data, *ptr++ );
             }
         }
@@ -512,14 +517,14 @@ static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *pt
     case DM_INTEGER:
         {
             char buff[12];
-            itoa( value, buff, 10 );
+            ltoa( (long)value, buff, 10 );
             emitStr( data, buff );
         }
         break;
     case DM_ARRAY_SIZE:
         if( value != 0 ) {
             char buff[12];
-            ultoa( value, buff, 10 );
+            ultoa( (unsigned long)value, buff, 10 );
             emitStr( data, buff );
         }
         break;
@@ -602,19 +607,19 @@ static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *pt
         emitStr( data, scopeSeparator );
         break;
     case DM_CHAR_ENCODING:
-        emitStr( data, translate_type_encoding[value].string );
+        emitStr( data, translate_type_encoding[idx].string );
         break;
     case DM_WATCOM_OBJECT:
-        emitStr( data, watcomObject[value].name );
+        emitStr( data, watcomObject[idx].name );
         break;
     case DM_OPERATOR_FUNCTION:
-        emitStr( data, operatorFunction[value] );
+        emitStr( data, operatorFunction[idx] );
         break;
     case DM_RELATIONAL_FUNCTION:
-        emitStr( data, relationalFunction[value] );
+        emitStr( data, relationalFunction[idx] );
         break;
     case DM_ASSIGNMENT_FUNCTION:
-        emitStr( data, assignmentFunction[value] );
+        emitStr( data, assignmentFunction[idx] );
         break;
     case DM_DECLSPEC_IMPORT:
         emitStr( data, "__declspec(dllimport) " );
@@ -632,11 +637,13 @@ static void demangleEmit( void **cookie, dm_pts dp, size_t value, char const *pt
 // everything before this point deals with output to the demangled name
 // ==========================================================================
 
-static int typeChar( int c, int grouping )
+static int typeChar( char c, int grouping )
 {
-    c -= LOWER_TABLE_LIMIT;
-    if( c < num_elements( translate_type_encoding ) ) {
-        return( translate_type_encoding[c].grouping == grouping );
+    int i;
+
+    i = c - LOWER_TABLE_LIMIT;
+    if( check_element( i, translate_type_encoding ) ) {
+        return( translate_type_encoding[i].grouping == grouping );
     }
     return( FALSE );
 }
@@ -653,7 +660,7 @@ static char prevChar( output_desc *data )
 {
     char c;
 
-    c = *(data->input-1);
+    c = *(data->input - 1);
     return( mytoupper( c ) );
 }
 
@@ -765,7 +772,7 @@ static int basic_type( output_desc *data, state_desc *state )
         }
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
-        _output2( DM_CHAR_ENCODING, (int)c - LOWER_TABLE_LIMIT );
+        _output2( DM_CHAR_ENCODING, c - LOWER_TABLE_LIMIT );
         return( TRUE );
     }
     return( FALSE );
@@ -780,7 +787,7 @@ static int pointer( output_desc *data, state_desc *state )
     if( typeChar( c, CHAR_POINTER ) ) {
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
-        _output2( DM_CHAR_ENCODING, (int)c - LOWER_TABLE_LIMIT );
+        _output2( DM_CHAR_ENCODING, c - LOWER_TABLE_LIMIT );
         if( c == MEMBER_POINTER ) {
             if( currChar( data ) == TYPE_NAME_PREFIX ) {
                 advanceChar( data );
@@ -918,7 +925,7 @@ static int tq_function( output_desc *data, state_desc *state )
                 _output1( DM_EMIT_SPACE );
                 while( tq_len-- ) {
                     c = *tq_ptr++;
-                    _output2( DM_CHAR_ENCODING, (int)mytoupper( c ) - LOWER_TABLE_LIMIT );
+                    _output2( DM_CHAR_ENCODING, mytoupper( c ) - LOWER_TABLE_LIMIT );
                 }
                 _output1( DM_ZAP_SPACE );
             }
@@ -1028,7 +1035,7 @@ static int modifier_list( output_desc *data, state_desc *state )
             // don't emit unsigned before default char
         } else {
             _output2( DM_SET_INDEX, state->prefix );
-            _output2( DM_CHAR_ENCODING, (int)c - LOWER_TABLE_LIMIT );
+            _output2( DM_CHAR_ENCODING, c - LOWER_TABLE_LIMIT );
         }
         if( c == 'J' ) {
             if( !based_encoding( data, state ) ) {
@@ -1196,14 +1203,14 @@ static int special_type_names( output_desc *data, state_desc *state )
 
 static int operator_function( output_desc *data, state_desc *state )
 {
-    char c;
+    int i;
 
-    c = currChar( data ) - LOWER_TABLE_LIMIT;
-    if( c < num_elements( operatorFunction ) ) {
+    i = currChar( data ) - LOWER_TABLE_LIMIT;
+    if( check_element( i, operatorFunction ) ) {
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
-        _output2( DM_OPERATOR_FUNCTION, (int)c );
+        _output2( DM_OPERATOR_FUNCTION, i );
         return( TRUE );
     }
     return( FALSE );
@@ -1211,14 +1218,14 @@ static int operator_function( output_desc *data, state_desc *state )
 
 static int relational_function( output_desc *data, state_desc *state )
 {
-    char c;
+    int i;
 
-    c = currChar( data ) - LOWER_TABLE_LIMIT;
-    if( c < num_elements( relationalFunction ) ) {
+    i = currChar( data ) - LOWER_TABLE_LIMIT;
+    if( check_element( i, relationalFunction ) ) {
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
-        _output2( DM_RELATIONAL_FUNCTION, (int)c );
+        _output2( DM_RELATIONAL_FUNCTION, i );
         return( TRUE );
     }
     return( FALSE );
@@ -1226,14 +1233,14 @@ static int relational_function( output_desc *data, state_desc *state )
 
 static int assignment_function( output_desc *data, state_desc *state )
 {
-    char c;
+    int i;
 
-    c = currChar( data ) - LOWER_TABLE_LIMIT;
-    if( c < num_elements( assignmentFunction ) ) {
+    i = currChar( data ) - LOWER_TABLE_LIMIT;
+    if( check_element( i, assignmentFunction ) ) {
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
-        _output2( DM_ASSIGNMENT_FUNCTION, (int)c );
+        _output2( DM_ASSIGNMENT_FUNCTION, i );
         return( TRUE );
     }
     return( FALSE );
@@ -1367,21 +1374,22 @@ static int op_name( output_desc *data, state_desc *state )
 
 static int name( output_desc *data, state_desc *state )
 {
-    int c;
+    char c;
 
     c = currChar( data );
     if( isdigit( c ) ) {
-        size_t len;
+        size_t     len;
         char const *id;
+        int        i;
 
-        c = c - '0';
+        i = c - '0';
         // in case C++ compiler and demangler don't match; don't crash
-        if( c >= next_replicate ) {
+        if( i < 0 || i >= next_replicate ) {
             id = "@";
             len = 1;
         } else {
-            id = replicate[c].ptr;
-            len = replicate[c].len;
+            id = replicate[i].ptr;
+            len = replicate[i].len;
         }
         if( data->ctdt_pending ) {
             _output2( DM_RESET_INDEX, data->pending_loc );
@@ -1573,9 +1581,9 @@ static void do_demangle( output_desc *data )
 
 static void do_copy( output_desc *data )
 {
-    char const *ptr;
-    unsigned len;
-    char c;
+    char const  *ptr;
+    size_t      len;
+    char        c;
 
     ptr = data->input;
     len = 0;
@@ -1724,7 +1732,7 @@ int __is_mangled( char const *name, size_t len )
 
 #if !defined( __WLIB__ ) && !defined( __DISASM__ )
 
-static int checkInternal( char const *n )
+static mangled_type checkInternal( char const *n )
 {
     if( n[0] == '.' ) {
         return( __MANGLED_INTERNAL );
@@ -1741,7 +1749,7 @@ static int checkInternal( char const *n )
     return( __MANGLED );
 }
 
-int __is_mangled_internal( char const *name, size_t len )
+mangled_type __is_mangled_internal( char const *name, size_t len )
 {
     unsigned offset;
     len = len;
@@ -1935,7 +1943,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
             if( operatorFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
                 *buff++ = OP_FUN_PREFIX;
-                *buff++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = (char)( i + LOWER_TABLE_LIMIT );
                 return( 3 );
             }
         }
@@ -1945,7 +1953,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
             if( relationalFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
                 *buff++ = REL_FUN_PREFIX;
-                *buff++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = (char)( i + LOWER_TABLE_LIMIT );
                 return( 3 );
             }
         }
@@ -1955,7 +1963,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
             if( assignmentFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
                 *buff++ = ASGN_FUN_PREFIX;
-                *buff++ = i + LOWER_TABLE_LIMIT;
+                *buff++ = (char)( i + LOWER_TABLE_LIMIT );
                 return( 3 );
             }
         }
