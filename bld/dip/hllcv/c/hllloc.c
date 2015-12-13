@@ -104,18 +104,17 @@ void hllLocationAdd( location_list *ll, long sbits )
 
 void hllLocationTrunc( location_list *ll, unsigned bits )
 {
-    unsigned    i;
+    byte    i;
 
-    if( bits == 0 ) return;
-    i = 0;
-    for( ;; ) {
-        if( i >= ll->num ) return;
-        if( ll->e[i].bit_length == 0 ) break;
-        if( ll->e[i].bit_length > bits ) break;
-        bits -= ll->e[i].bit_length;
-        ++i;
+    if( bits != 0 ) {
+        for( i = 0; i < ll->num; ++i ) {
+            if( ll->e[i].bit_length == 0  || ll->e[i].bit_length > bits ) {
+                ll->e[i].bit_length = (word)bits;
+                break;
+            }
+            bits -= ll->e[i].bit_length;
+        }
     }
-    ll->e[i].bit_length = bits;
 }
 
 typedef struct {
