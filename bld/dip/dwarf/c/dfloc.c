@@ -49,23 +49,24 @@ dip_status SafeDCItemLocation( location_context *lc, context_item ci, location_l
     return( rc );
 }
 
-static void LocationInit( location_list *ll ){
+static void LocationInit( location_list *ll )
+{
     ll->num = 0;
     ll->flags = 0;
 }
 
 static void LocationLast( location_list *ll )
 {
-    int                 num;
+    byte    num;
 
     num = ll->num;
-    if( --num >= 0 ){
+    if( num-- > 0 ){
         ll->e[num].bit_length = 0;
     }
 }
 
-extern void LocationCreate( location_list *ll, location_type lt, void *d ){
-
+extern void LocationCreate( location_list *ll, location_type lt, void *d )
+{
     ll->num = 1;
     ll->flags = 0;
     ll->e[0].bit_start = 0;
@@ -80,10 +81,7 @@ extern void LocationCreate( location_list *ll, location_type lt, void *d ){
 
 static void LocationJoin( location_list *to, location_list *from )
 {
-    int next;
-
-    next = to->num;
-    memcpy( &to->e[next], &from->e[0], from->num * sizeof( from->e[0] ) );
+    memcpy( to->e + to->num, from->e, from->num * sizeof( from->e[0] ) );
     to->flags |= from->flags;
     to->num += from->num;
 }
@@ -92,7 +90,7 @@ extern void LocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
-    unsigned            num;
+    byte                num;
     unsigned long       bits;
 
     bits = sbits;
@@ -122,7 +120,8 @@ extern void LocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {

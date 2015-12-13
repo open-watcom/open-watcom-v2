@@ -56,7 +56,7 @@ void LocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
-    unsigned            num;
+    byte                num;
     unsigned long       bits;
 
     bits = sbits;
@@ -100,7 +100,7 @@ void LocationTrunc( location_list *ll, unsigned bits )
 
     if( bits != 0 ) {
         for( i = 0; i < ll->num; ++i ) {
-            if( ll->e[i].bit_length == 0  || ll->e[i].bit_length > bits ) {
+            if( ll->e[i].bit_length == 0 || ll->e[i].bit_length > bits ) {
                 ll->e[i].bit_length = (word)bits;
                 break;
             }

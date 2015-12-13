@@ -64,7 +64,7 @@ void hllLocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
-    unsigned            num;
+    byte                num;
     unsigned long       bits;
 
     bits = sbits;
@@ -94,7 +94,8 @@ void hllLocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {
@@ -192,15 +193,15 @@ dip_status hllLocationManyReg( imp_image_handle *ii, unsigned count,
                                const unsigned_8 *reg_list,
                                location_context *lc, location_list *ll )
 {
-    int                 i;
-    int                 j;
+    unsigned            i;
+    byte                j;
     unsigned            idx;
     const reg_entry     *reg;
     location_list       reg_ll;
     dip_status          ds;
 
     j = 0;
-    for( i = count-1; i >= 0; --i ) {
+    for( i = count; i-- > 0; ) {
         idx = reg_list[i];
         switch( ii->mad ) {
         case MAD_X86:
