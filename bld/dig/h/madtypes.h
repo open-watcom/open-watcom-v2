@@ -36,6 +36,9 @@
 #include "digtypes.h"
 #include "digpck.h"
 
+
+#define SIGNTYPE_SIZE(x)        (-(int)(x))
+
 struct mad_reg_set_data;
 struct mad_state_data;
 struct mad_disasm_data;

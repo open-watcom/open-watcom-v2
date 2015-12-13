@@ -643,25 +643,25 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
     tk &= MTK_ALL;
     mti->b.kind = tk;
     mti->b.handler_code = MAD_DEFAULT_HANDLING;
-    mti->b.bits = size * BITS_PER_BYTE;
+    if( size < 0 ) {
+        mti->b.bits = -size * BITS_PER_BYTE;
+    } else {
+        mti->b.bits = size * BITS_PER_BYTE;
+    }
     mti->i.endian = ME_HOST;
     switch( tk ) {
     case MTK_INTEGER:
         mti->i.nr = MNR_UNSIGNED;
-        if( size < 0 ) {
+        if( size < 0 )
             mti->i.nr = MNR_HOST_SIGNED;
-            mti->b.bits = -mti->b.bits;
-        }
         mti->i.sign_pos = mti->b.bits - 1;
         break;
     case MTK_ADDRESS:
-        if( size == sizeof( address ) ) {
-            size = sizeof( addr48_ptr );
-            mti->b.bits = sizeof( addr48_ptr ) * BITS_PER_BYTE;
-        }
         mti->a.i.nr = MNR_UNSIGNED;
-        mti->a.seg.bits = sizeof( addr_seg )*BITS_PER_BYTE;
-        mti->a.seg.pos = (size - sizeof( addr_seg )) * BITS_PER_BYTE;
+        if( size == sizeof( address ) )
+            mti->b.bits = sizeof( addr48_ptr ) * BITS_PER_BYTE;
+        mti->a.seg.pos = mti->b.bits - sizeof( addr_seg ) * BITS_PER_BYTE;
+        mti->a.seg.bits = sizeof( addr_seg ) * BITS_PER_BYTE;
         break;
     case MTK_FLOAT:
         mti->f.exp.base = FLT_RADIX;

@@ -179,7 +179,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_type );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, -(int)sizeof( entry->v.sint ), &dst_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_type );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_type );
         }
@@ -261,7 +261,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_type );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, -(int)sizeof( entry->v.sint ), &src_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_type );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_type );
         }

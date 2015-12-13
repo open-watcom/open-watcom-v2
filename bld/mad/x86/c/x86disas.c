@@ -956,7 +956,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
     case DO_MEMORY_REL:
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             // direct memory address
-            MCTypeInfoForHost( MTK_INTEGER, ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2, &mti );
+            size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
+            MCTypeInfoForHost( MTK_INTEGER, size, &mti );
             MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         } else if( op->value == 0 ) {
             // don't output zero disp in indirect memory address

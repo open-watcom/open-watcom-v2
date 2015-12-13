@@ -106,7 +106,7 @@ char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len )
 
 char    *CnvLongDec( long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( buff, buff_len, value, 10, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, 10, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
 char    *CnvULongDec( unsigned long value, char *buff, unsigned buff_len )
@@ -116,7 +116,7 @@ char    *CnvULongDec( unsigned long value, char *buff, unsigned buff_len )
 
 char    *CnvLong( long value, char *buff, unsigned buff_len )
 {
-    return( DoMadLongConv( buff, buff_len, value, CurrRadix, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, CurrRadix, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
 char    *CnvULong( unsigned long value, char *buff, unsigned buff_len )
