@@ -243,7 +243,7 @@ char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
 }
 
 char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     const char chLbrac = ( h->cpu == DISCPU_sparc ) ? '[' : '(';
     const char chRbrac = ( h->cpu == DISCPU_sparc ) ? ']' : ')';
@@ -315,7 +315,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
 }
 
 dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
-                dis_format_flags flags, char *name, unsigned name_len, char *opers, unsigned opers_len )
+                dis_format_flags flags, char *name, size_t name_len, char *opers, size_t opers_len )
 // Format up an instruction name or operands or both
 {
     unsigned    i;
@@ -324,6 +324,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     size_t      len;
     char        *end;
 
+    name_len = name_len;
     ins = *ins_p;       /* so we can fiddle it around */
 
     if( name != NULL ) name[0] = '\0';

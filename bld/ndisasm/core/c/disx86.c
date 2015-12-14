@@ -4045,7 +4045,7 @@ static char *DisAddUnixReg( dis_register reg, char *p, dis_format_flags flags )
 }
 
 static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     char    *end = p + buff_len;
 
@@ -4092,7 +4092,7 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 }
 
 static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     size_t      len;
     char        *end = p + buff_len;
@@ -4178,7 +4178,7 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
 #define FAR_PTR     "far" PTR_SUFFIX
 
 static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
     char            over;
@@ -4349,7 +4349,7 @@ static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 #define EMU_INT        "; int "
 
 static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
     size_t      len = 0;

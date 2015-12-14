@@ -253,7 +253,7 @@ static size_t JVMFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 }
 
 static size_t JVMOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
@@ -275,7 +275,7 @@ static void JVMPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t JVMPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     // Nothing to do
     h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
