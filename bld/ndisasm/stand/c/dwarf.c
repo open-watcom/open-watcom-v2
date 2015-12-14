@@ -185,7 +185,7 @@ static void init_state( state_info *state, int default_is_stmt )
     state->file = 1;
     state->line = 1;
     state->column = 0;
-    state->is_stmt = default_is_stmt;
+    state->is_stmt = ( default_is_stmt != 0 );
     state->basic_block = 0;
     state->end_sequence = 0;
 }
@@ -202,7 +202,7 @@ static void dump_state( state_info *state, int *numlines, uint limit )
                 lines = (orl_linnum *)MemAlloc( currlinesize*sizeof(orl_linnum) );
             }
         }
-        lines[*numlines].linnum = state->line;
+        lines[*numlines].linnum = (uint_16)state->line;
         lines[*numlines].off = state->address;
         (*numlines)++;
     }
@@ -268,14 +268,18 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
             ++p;
         }
 
-        if( p - input >= length ) return 0;
+        if( p - input >= length ) {
+            return 0;
+        }
 
         file_index = 0;
         while( *p != 0 ) {
             ++file_index;
             name = (char *)p;
             p += strlen( (char *)p ) + 1;
-            if( p - input >= length ) return 0;
+            if( p - input >= length ) {
+                return 0;
+            }
         }
         p++;
         file_index = 0;
@@ -290,7 +294,9 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                 SourceFileInDwarf = MemAlloc( strlen( name ) + 1 );
                 strcpy( SourceFileInDwarf, name );
             }
-            if( p - input >= length ) return 0;
+            if( p - input >= length ) {
+                return 0;
+            }
         }
         p++;
         init_state( &state, default_is_stmt );
@@ -330,7 +336,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     }else{
                         tmp = 0xffffffff;
                     }
-                    state.segment = tmp;
+                    state.segment = (uint_16)tmp;
                     p += op_len;
                     break;
                 case DW_LNE_define_file:
@@ -392,7 +398,7 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     }
                 }
             } else {
-                op_code -= opcode_base;
+                op_code -= (uint_8)opcode_base;
                 state.line += line_base + op_code % line_range;
                 state.address += ( op_code / line_range ) * min_instr;
                 dump_state( &state, &numlines, limit );

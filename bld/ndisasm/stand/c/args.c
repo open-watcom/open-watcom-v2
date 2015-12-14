@@ -237,7 +237,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             if( !isspace( *cmd ) ) {
-                                LabelChar = toupper( *cmd );
+                                LabelChar = (char)toupper( *(unsigned char *)cmd );
                             } else {
                                 printUsage( INVALID_I );
                             }

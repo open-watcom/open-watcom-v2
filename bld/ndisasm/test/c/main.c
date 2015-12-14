@@ -48,7 +48,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_len )
 {
     char        *p = buff;
 

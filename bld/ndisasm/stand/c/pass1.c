@@ -61,14 +61,14 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
                 value = HandleAddend( r_entry );
             } else {
                 switch( RelocSize( r_entry ) ) {
-                case( 6 ):
-                case( 4 ):
+                case 6:
+                case 4:
                     value = *((long *)&(contents[ r_entry->offset ]));
                     break;
-                case( 2 ):
+                case 2:
                     value = *((short *)&(contents[ r_entry->offset ]));
                     break;
-                case( 1 ):
+                case 1:
                     value = *((signed char *)&(contents[ r_entry->offset ]));
                     break;
                 default:
@@ -225,16 +225,16 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                                 decoded.op[i].value -= loop;
                                 decoded.op[i].value -= decoded.size;
                                 switch( RelocSize( r_entry ) ) {
-                                case( 2 ):
-                                    decoded.op[i].value =
-                                        (uint_16)(decoded.op[i].value);
-                                case( 1 ):
-                                    decoded.op[i].value =
-                                        (uint_8)(decoded.op[i].value);
+                                case 2:
+                                    decoded.op[i].value = (uint_16)(decoded.op[i].value);
+                                    break;
+                                case 1:
+                                    decoded.op[i].value = (uint_8)(decoded.op[i].value);
+                                    break;
                                 }
                             }
                             value = decoded.op[i].value;
-                            if( value < 0 || value > ORLSecGetSize( r_entry->label->shnd ) ) {
+                            if( (uint_32)value > ORLSecGetSize( r_entry->label->shnd ) ) {
                                 // can't fold it into the label position - BBB Oct 28, 1996
                                 value = 0;
                                 r_entry->no_val = 0;

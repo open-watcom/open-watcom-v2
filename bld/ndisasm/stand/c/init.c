@@ -137,8 +137,8 @@ static unsigned long            objFileLen;
 int IsIntelx86( void )
 {
     switch( GetMachineType() ) {
-    case( ORL_MACHINE_TYPE_I386 ):
-    case( ORL_MACHINE_TYPE_I8086 ):
+    case ORL_MACHINE_TYPE_I386:
+    case ORL_MACHINE_TYPE_I8086:
         return( 1 );
     default:
         return( 0 );
@@ -481,7 +481,7 @@ static void * objRead( void *hdl, size_t len )
     if( (unsigned long)( objFilePos + len ) > objFileLen )
         return NULL;
     retval = objFileBuf + objFilePos;
-    objFilePos += len;
+    objFilePos += (long)len;
     return retval;
 }
 

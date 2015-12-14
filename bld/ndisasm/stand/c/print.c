@@ -44,5 +44,5 @@ void ChangePrintDest( int dest )
 
 void Print( const char *string )
 {
-    write( CurrentDest, string, strlen( string ) );
+    write( CurrentDest, string, (unsigned)strlen( string ) );
 }

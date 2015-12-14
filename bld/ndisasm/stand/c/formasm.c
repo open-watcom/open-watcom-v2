@@ -546,18 +546,18 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
     while( l_entry != NULL
         && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
         switch( l_entry->type ) {
-        case( LTYP_ABSOLUTE ):
+        case LTYP_ABSOLUTE:
             // no print any absolute label here
             break;
-        case( LTYP_SECTION ):
+        case LTYP_SECTION:
             if( is_masm )
                 break;
             /* fall through */
-        case( LTYP_NAMED ):
+        case LTYP_NAMED:
             if( strcmp( l_entry->label.name, sec->name ) == 0 )
                 break;
             /* fall through */
-        case( LTYP_UNNAMED ):
+        case LTYP_UNNAMED:
 
             if( raw ) {
                 strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
@@ -603,9 +603,9 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
                                    orl_sec_offset end, label_entry *labent,
                                    ref_entry *refent, section_ptr sec )
 {
-    size_t              curr_pos;
-    size_t              curr_size;
-    size_t              tmp_size;
+    orl_sec_offset      curr_pos;
+    orl_sec_offset      curr_size;
+    orl_sec_offset      tmp_size;
     size_t              size;
     label_entry         l_entry;
     ref_entry           r_entry;
@@ -618,7 +618,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
     if( size < sizeof( unsigned_32 ) )
         size = sizeof( unsigned_32 );
     buffer = MemAlloc( size + 1 );
-    if( !buffer ) {
+    if( buffer == NULL ) {
         PrintErrorMsg( RC_OUT_OF_MEMORY, WHERE_PRINT_SECTION );
         return( RC_OUT_OF_MEMORY );
     }
@@ -632,7 +632,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         curr_size = end - curr_pos;
         if( l_entry != NULL ) {
             tmp_size = l_entry->offset - curr_pos;
-            if( tmp_size < curr_size ) {
+            if( curr_size > tmp_size ) {
                 curr_size = tmp_size;
             }
         }
@@ -650,12 +650,12 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
                 continue;
             } else {
                 tmp_size = r_entry->offset - curr_pos;
-                if( tmp_size < curr_size ) {
+                if( curr_size > tmp_size ) {
                     curr_size = tmp_size;
                 }
             }
         }
-        memcpy( buffer, (contents + curr_pos), curr_size );
+        memcpy( buffer, contents + curr_pos, curr_size );
         buffer[ curr_size ] = 0;
         printOut( buffer, curr_pos, curr_size );
     }

@@ -508,13 +508,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     FmtHexNum( buff, size, mask & value, no_prefix );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
 {
     struct pass2        *pd = d;
     size_t              len;
     dis_operand         *op;
     ref_flags           rf;
 
+    buff_len = buff_len;
     buff[0] = '\0';
 
     rf = RFLAG_DEFAULT;
