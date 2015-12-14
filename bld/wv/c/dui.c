@@ -69,7 +69,6 @@
 extern a_window         *WndMain;
 extern const char       WndNameTab[];
 
-extern unsigned long    CueLine( cue_handle *ch );
 extern GUICALLBACK      WndMainEventProc;
 extern void             DlgNewProg( void );
 extern void             InitPaint( void );

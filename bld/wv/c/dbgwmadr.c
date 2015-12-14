@@ -244,7 +244,7 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 static const char *RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
-    unsigned        buff_len;
+    size_t          buff_len;
 
     buff_len = TXT_LEN;
     if( possible->name == MAD_MSTR_NIL ) {

@@ -56,9 +56,6 @@
 
 extern char             *Language;
 
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
-
 unsigned DefaultSize( default_kind dk )
 {
     dip_type_info       info;

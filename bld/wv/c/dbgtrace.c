@@ -108,9 +108,6 @@ extern char             Opcode;
 extern char             SecondByte;
 
 
-extern cue_fileid       CueFileId( cue_handle * );
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
 extern int_16           GetDataWord( void );
 extern long             GetDataLong( void );
 extern void             GetCurrOpcode( void );

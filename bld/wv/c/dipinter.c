@@ -56,9 +56,6 @@
 #include "clibext.h"
 
 
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
-
 /*
  * Client support routines
  */

@@ -72,9 +72,6 @@
 #include "dbgupdt.h"
 
 
-extern cue_fileid       CueFileId( cue_handle * );
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
 OVL_EXTERN brkp         *TypePoint( memory_expr );
 OVL_EXTERN brkp         *BadPoint( memory_expr );
 OVL_EXTERN brkp         *ImageBreak( memory_expr );

@@ -66,9 +66,6 @@
 #include "dbgwtogl.h"
 
 
-extern cue_fileid       CueFileId( cue_handle * );
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
 extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
 
 #include "menudef.h"

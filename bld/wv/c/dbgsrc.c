@@ -47,11 +47,6 @@
 #include "clibext.h"
 
 
-extern cue_fileid       CueFileId( cue_handle * );
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
-
-
 static const char AddTab[] = { "Add\0" };
 
 

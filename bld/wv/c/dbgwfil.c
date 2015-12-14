@@ -65,7 +65,6 @@
 extern int              DlgSearch( a_window *, void * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern unsigned         ExprSize( stack_entry * );
-extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 
 extern stack_entry      *ExprSP;
 

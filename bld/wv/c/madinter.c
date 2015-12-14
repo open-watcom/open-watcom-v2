@@ -120,7 +120,7 @@ unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *
     return( ProgPoke( a, buff, size ) );
 }
 
-unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
+size_t          DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
 {
     static  char ** strings[] = {
         #define pick( e, es, js ) LITREF_ENG( e ),
@@ -128,7 +128,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
         #undef pick
     };
 
-    unsigned    len;
+    size_t      len;
 
     len = strlen( *strings[mstr] );
     if( buff_len > 0 ) {
@@ -148,10 +148,10 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
     return( MS_FAIL );
 }
 
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
+size_t          DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, size_t buff_len )
 {
     const char          *start;
-    unsigned            len;
+    size_t              len;
 
     if( radix == CurrRadix )
         return( 0 );
@@ -307,7 +307,7 @@ void CheckMADChange( void )
     }
 }
 
-static unsigned NormalizeString( char *p )
+static size_t NormalizeString( char *p )
 {
 //    char        *start;
     char        *d;
@@ -332,13 +332,13 @@ static unsigned NormalizeString( char *p )
     return( d - p );
 }
 
-unsigned GetMADNormalizedString( mad_string ms, char *buff, unsigned buff_len )
+size_t GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len )
 {
     MADCliString( ms, buff, buff_len );
     return( NormalizeString( buff ) );
 }
 
-unsigned GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len )
+size_t GetMADTypeNameForCmd( mad_type_handle th, char *buff, size_t buff_len )
 {
     return( GetMADNormalizedString( MADTypeName( th ), buff, buff_len ) );
 }
