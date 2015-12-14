@@ -69,17 +69,17 @@ static const mad_toggle_strings CPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
 
 static mad_status       CPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value );
+                                size_t *max_value );
 
 static const mad_reg_set_data RegSet[] = {
     { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU },
@@ -140,7 +140,7 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
 /*
         Return the register set level string (8086, 186, 286, etc).
 */
-unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     if( buff_size > 0 )
         *buff = '\0';
@@ -163,10 +163,10 @@ unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 
 static mad_status       CPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value )
+                                size_t *max_value )
 {
     if( piece >= sizeof( RegList ) / sizeof( RegList[0] ) )
         return( MS_FAIL );
@@ -185,10 +185,10 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value )
+                                size_t *max_value )
 {
     return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
@@ -374,10 +374,10 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
 /*
         Get the name of a special register.
 */
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
+size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     unsigned    idx;
-    unsigned    len;
+    size_t      len;
     const char  *p;
 
     switch( sr ) {

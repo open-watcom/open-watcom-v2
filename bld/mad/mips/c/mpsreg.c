@@ -206,24 +206,24 @@ static const mad_toggle_strings FPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
 
 static mad_status       CPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value );
+                                size_t *max_value );
 
 static mad_status       FPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value );
+                                size_t *max_value );
 
 static const mad_reg_set_data RegSet[] = {
     { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU },
@@ -336,10 +336,10 @@ mad_string DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
     return( rsd->name );
 }
 
-unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     char        str[80];
-    unsigned    len;
+    size_t      len;
 
     if( rsd == &RegSet[CPU_REG_SET] ) {
         switch( MCSystemConfig()->cpu ) {
@@ -420,10 +420,10 @@ static int FindEntry( const reg_display_entry *tbl, unsigned piece,
 
 static mad_status CPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value )
+                                size_t *max_value )
 {
     unsigned    idx;
 
@@ -466,10 +466,10 @@ static const reg_display_entry FPUList[] = {
 
 static mad_status FPUGetPiece( unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value )
+                                size_t *max_value )
 {
     unsigned    idx;
 
@@ -493,10 +493,10 @@ mad_status DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 mad_registers const *mr,
                                 unsigned piece,
                                 const char **descript_p,
-                                unsigned *max_descript_p,
+                                size_t *max_descript_p,
                                 const mad_reg_info **reg,
                                 mad_type_handle *disp_type,
-                                unsigned *max_value )
+                                size_t *max_value )
 {
     mr = mr;
 
@@ -594,7 +594,7 @@ unsigned DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned o
     unsigned    old;
 
     toggle = on & off;
-    index = rsd - &RegSet[CPU_REG_SET];
+    index = (unsigned)( rsd - &RegSet[CPU_REG_SET] );
     bits = &MADState->reg_state[index];
     old = *bits;
     *bits ^= toggle;
@@ -632,7 +632,7 @@ walk_result DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_info 
             }
         }
     } else {
-        reg_set = rsd - RegSet;
+        reg_set = (unsigned)( rsd - RegSet );
         curr = RegList;
         while( curr < &RegList[ IDX_LAST_ONE ] ) {
             if( curr->reg_set == reg_set ) {
@@ -678,10 +678,10 @@ void DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr c
     }
 }
 
-unsigned DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, unsigned buff_size )
+size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     unsigned    idx;
-    unsigned    len;
+    size_t      len;
     char const  *p;
 
     mr = mr; af = af;
@@ -752,7 +752,7 @@ void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_st
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \
-      ((bit) >= RegList[i].info.bit_start && (bit) < RegList[i].info.bit_start+RegList[i].info.bit_size)
+      ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
         if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
@@ -777,19 +777,19 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     unsigned    i;
     unsigned    j;
 
-    i = RegList[idx].info.bit_start / (sizeof( unsigned_64 )*BITS_PER_BYTE);
+    i = RegList[idx].info.bit_start / (sizeof( unsigned_64 ) * BITS_PER_BYTE);
     if( RegSubList[i] != NULL )
         return( MS_OK );
-    RegSubList[i] = MCAlloc( sizeof( mips_reg_info ) * (num+1) );
+    RegSubList[i] = MCAlloc( sizeof( mips_reg_info ) * (num + 1) );
     if( RegSubList[i] == NULL )
         return( MS_ERR | MS_NO_MEM );
-    memset( RegSubList[i], 0, sizeof( mips_reg_info ) * (num+1) );
+    memset( RegSubList[i], 0, sizeof( mips_reg_info ) * (num + 1) );
     for( j = 0; j < num; ++j ) {
         RegSubList[i][j] = RegList[idx];
         RegSubList[i][j].info.name       = sub[j].name;
         RegSubList[i][j].info.type       = sub[j].mth;
         RegSubList[i][j].info.bit_start += sub[j].start;
-        RegSubList[i][j].info.bit_size   = TypeArray[ sub[j].mth ].u.b->bits;
+        RegSubList[i][j].info.bit_size   = (unsigned_8)TypeArray[sub[j].mth].u.b->bits;
         RegSubList[i][j].sublist_code    = RS_NONE;
     }
     return( MS_OK );

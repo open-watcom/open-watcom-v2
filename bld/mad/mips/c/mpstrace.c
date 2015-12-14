@@ -178,7 +178,7 @@ void DIGENTRY MITraceFini( mad_trace_data *td )
 #define BRK_POINT       0x0000000D      // 'break' (with code of 0)
 
 
-mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     address     a;
     struct {
@@ -188,8 +188,8 @@ mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *
         unsigned_8      name[8];
     }           data;
     char        ch;
-    unsigned    buff_size;
-    unsigned    len;
+    size_t      buff_size;
+    size_t      len;
 
     buff_size = *buff_size_p;
     *buff_size_p = 0;

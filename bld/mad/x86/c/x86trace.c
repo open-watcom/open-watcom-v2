@@ -335,12 +335,12 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
         out->x86 = in->x86;
         sp = GetRegSP( out );
         sp.mach.offset -= sizeof( word );
-        value = out->x86.cpu.efl;
+        value = (word)out->x86.cpu.efl;
         MCWriteMem( sp, sizeof( value ), &value );
         out->x86.cpu.efl &= ~FLG_I;
         value = out->x86.cpu.cs;
         MCWriteMem( sp, sizeof( value ), &value );
-        value = out->x86.cpu.eip;
+        value = (word)out->x86.cpu.eip;
         MCWriteMem( sp, sizeof( value ), &value );
         out->x86.cpu.esp = sp.mach.offset;
         return( MS_OK );
@@ -358,7 +358,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
 #define JMP_SHORT        ((unsigned char)0XEB)
 #define BRK_POINT        ((unsigned char)0XCC)
 
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     address     a;
     union {
@@ -366,8 +366,8 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         addr32_ptr      a32;
         addr48_ptr      a48;
     }           data;
-    unsigned    buff_size;
-    unsigned    len;
+    size_t      buff_size;
+    size_t      len;
 
     buff_size = *buff_size_p;
     *buff_size_p = 0;

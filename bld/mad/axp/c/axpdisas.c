@@ -62,7 +62,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -120,15 +120,15 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
     return( DisasmOne( dd, a, adj ) );
 }
 
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
     char                *np;
     char                *op;
-    unsigned            nlen;
-    unsigned            olen;
-    unsigned            len;
+    size_t              nlen;
+    size_t              olen;
+    size_t              len;
     dis_format_flags    ff;
 
     nbuff[0] = '\0';

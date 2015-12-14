@@ -386,7 +386,7 @@ NULL };
 
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
+    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
     const x86_reg_info          * const *reglist;
@@ -431,10 +431,10 @@ static const mad_toggle_strings XMMToggleList[] =
 
 #define FPU_GROUPING    6
 
-static mad_status CPUGetPiece( const mad_registers *, unsigned piece, const char **, unsigned *, const mad_reg_info **, mad_type_handle *, unsigned * );
-static mad_status FPUGetPiece( const mad_registers *, unsigned piece, const char **, unsigned *, const mad_reg_info **, mad_type_handle *, unsigned * );
-static mad_status MMXGetPiece( const mad_registers *, unsigned piece, const char **, unsigned *, const mad_reg_info **, mad_type_handle *, unsigned * );
-static mad_status XMMGetPiece( const mad_registers *, unsigned piece, const char **, unsigned *, const mad_reg_info **, mad_type_handle *, unsigned * );
+static mad_status CPUGetPiece( const mad_registers *, unsigned piece, const char **, size_t *, const mad_reg_info **, mad_type_handle *, size_t * );
+static mad_status FPUGetPiece( const mad_registers *, unsigned piece, const char **, size_t *, const mad_reg_info **, mad_type_handle *, size_t * );
+static mad_status MMXGetPiece( const mad_registers *, unsigned piece, const char **, size_t *, const mad_reg_info **, mad_type_handle *, size_t * );
+static mad_status XMMGetPiece( const mad_registers *, unsigned piece, const char **, size_t *, const mad_reg_info **, mad_type_handle *, size_t * );
 
 static const mad_reg_set_data RegSet[] = {
     { CPUGetPiece, CPUToggleList, MAD_MSTR_CPU, CPURegList, 0 },
@@ -456,9 +456,9 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
     unsigned_16 tag;
 
     /* normalize the tag bits to tag[0..1] refer to ST(0), etc */
-    st = EXTRACT_ST(mr)*2;
-    tag = mr->x86.u.fpu.tag;
-    tag = (tag >> (st)) | (tag << (16-st));
+    st = EXTRACT_ST( mr ) * 2;
+    tag = (unsigned_16)mr->x86.u.fpu.tag;
+    tag = (tag >> (st)) | (tag << (16 - st));
     mr->x86.u.fpu.tag &= ~0xffffUL;
     mr->x86.u.fpu.tag |= tag;
     return( MS_MODIFIED );
@@ -470,9 +470,9 @@ mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
     unsigned_16 tag;
 
     /* put the tag bits back the stupid way the x87 wants them */
-    st = EXTRACT_ST(mr)*2;
-    tag = mr->x86.u.fpu.tag;
-    tag = (tag << (st)) | (tag >> (16-st));
+    st = EXTRACT_ST( mr ) * 2;
+    tag = (unsigned_16)mr->x86.u.fpu.tag;
+    tag = (tag << (st)) | (tag >> (16 - st));
     mr->x86.u.fpu.tag &= ~0xffffUL;
     mr->x86.u.fpu.tag |= tag;
     return( MS_MODIFIED );
@@ -514,10 +514,10 @@ mad_string DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
     return( rsd->name );
 }
 
-unsigned DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     char        str[80];
-    unsigned    len;
+    size_t      len;
 
     switch( rsd - RegSet ) {
     case CPU_REG_SET:
@@ -621,10 +621,10 @@ static mad_status CPUGetPiece(
     const mad_registers *mr,
     unsigned piece,
     const char **descript_p,
-    unsigned *max_descript_p,
+    size_t *max_descript_p,
     const mad_reg_info **reg_p,
     mad_type_handle *disp_type_p,
-    unsigned *max_value_p )
+    size_t *max_value_p )
 {
     static const x86_reg_info *list16[] = {
         &CPU_ax, &CPU_bx, &CPU_cx, &CPU_dx,
@@ -681,7 +681,7 @@ static mad_status CPUGetPiece(
     strcpy( DescriptBuff, curr->info.name );
     p = DescriptBuff;
     while( *p != '\0' ) {
-        *p = toupper( *p );
+        *p = (char)toupper( *(unsigned char *)p );
         ++p;
     }
     *p = '\0';
@@ -766,14 +766,13 @@ static const mad_modify_list ModFPUIc[] = {
 
 #define MODLEN( name ) MaxModLen( name, NUM_ELTS( name ) )
 
-static unsigned MaxModLen( const mad_modify_list *list, unsigned num )
+static size_t MaxModLen( const mad_modify_list *list, unsigned num )
 {
-    unsigned    max;
-    unsigned    len;
+    size_t      max;
+    size_t      len;
 
     max = 0;
-    while( num != 0 ) {
-        --num;
+    while( num-- > 0 ) {
         len = MCString( list[num].name, NULL, 0 );
         if( len > max ) {
             max = len;
@@ -810,10 +809,10 @@ static mad_status FPUGetPiece(
     const mad_registers *mr,
     unsigned piece,
     const char **descript_p,
-    unsigned *max_descript_p,
+    size_t *max_descript_p,
     const mad_reg_info **reg_p,
     mad_type_handle *disp_type_p,
-    unsigned *max_value_p )
+    size_t *max_value_p )
 {
     const static x86_reg_info   FPU_nil = { 0 };
 
@@ -847,7 +846,7 @@ static mad_status FPUGetPiece(
         *p++ = 'S';
         *p++ = 'T';
         *p++ = '(';
-        *p++ = '0' + row;
+        *p++ = '0' + (char)row;
         *p++ = ')';
         *p++ = '\0';
         if( MCSystemConfig()->fpu == X86_NO )
@@ -876,7 +875,7 @@ static mad_status FPUGetPiece(
         *p++ = 'A';
         *p++ = 'G';
         *p++ = '(';
-        *p++ = '0' + row;
+        *p++ = '0' + (char)row;
         *p++ = ')';
         *p++ = '\0';
         *reg_p = &list1[row]->info;
@@ -972,10 +971,10 @@ static mad_status MMXGetPiece(
     const mad_registers *mr,
     unsigned piece,
     const char **descript_p,
-    unsigned *max_descript_p,
+    size_t *max_descript_p,
     const mad_reg_info **reg_p,
     mad_type_handle *disp_type_p,
-    unsigned *max_value_p )
+    size_t *max_value_p )
 {
     static const x86_reg_info *list_byte[] = {
         &MMX0_b7,&MMX0_b6,&MMX0_b5,&MMX0_b4,&MMX0_b3,&MMX0_b2,&MMX0_b1,&MMX0_b0,
@@ -1076,7 +1075,7 @@ static mad_status MMXGetPiece(
     if( piece < group ) {
         *max_value_p = 2;
         *reg_p = &XXX_dummy.info;
-        *disp_type_p = X86T_MMX_TITLE0 - 1 + group - piece;
+        *disp_type_p = (mad_type_handle)( X86T_MMX_TITLE0 - 1 + group - piece );
         return( MS_OK );
     }
     piece -= group;
@@ -1087,7 +1086,7 @@ static mad_status MMXGetPiece(
         /* first column */
         DescriptBuff[0] = 'M';
         DescriptBuff[1] = 'M';
-        DescriptBuff[2] = (piece / group) + '0';
+        DescriptBuff[2] = (char)( piece / group ) + '0';
         DescriptBuff[3] = '\0';
         *max_descript_p = 3;
     }
@@ -1099,10 +1098,10 @@ static mad_status XMMGetPiece(
     const mad_registers *mr,
     unsigned piece,
     const char **descript_p,
-    unsigned *max_descript_p,
+    size_t *max_descript_p,
     const mad_reg_info **reg_p,
     mad_type_handle *disp_type_p,
-    unsigned *max_value_p )
+    size_t *max_value_p )
 {
     static const x86_reg_info *list_byte[] = {
         &XMM0_b15,&XMM0_b14,&XMM0_b13,&XMM0_b12,&XMM0_b11,&XMM0_b10,&XMM0_b9,&XMM0_b8,
@@ -1238,7 +1237,7 @@ static mad_status XMMGetPiece(
         if( column < group ) {
             *max_value_p = 2;
             *reg_p = &XXX_dummy.info;
-            *disp_type_p = X86T_XMM_TITLE0 - 1 + group - column;
+            *disp_type_p = (mad_type_handle)( X86T_XMM_TITLE0 - 1 + group - piece );
         } else {
             *max_value_p = 0;
             *reg_p = NULL;
@@ -1254,7 +1253,7 @@ static mad_status XMMGetPiece(
         DescriptBuff[0] = 'X';
         DescriptBuff[1] = 'M';
         DescriptBuff[2] = 'M';
-        DescriptBuff[3] = row + '0';
+        DescriptBuff[3] = (char)row + '0';
         DescriptBuff[4] = '\0';
         *max_descript_p = 4;
     }
@@ -1290,10 +1289,10 @@ mad_status DIGENTRY MIRegSetDisplayGetPiece(
     const mad_registers *mr,
     unsigned piece,
     const char **descript_p,
-    unsigned *max_descript_p,
+    size_t *max_descript_p,
     const mad_reg_info **reg,
     mad_type_handle *disp_type,
-    unsigned *max_value )
+    size_t *max_value )
 {
     return( rsd->get_piece( mr, piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
@@ -1355,11 +1354,11 @@ mad_status DIGENTRY MIRegSetDisplayModify(
 }
 
 
-static unsigned FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *buff, unsigned buff_size )
+static size_t FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *buff, size_t buff_size )
 {
     char        buff1[20];
     char        *p;
-    unsigned    len;
+    size_t      len;
 
     p = &buff1[ MCRadixPrefix( 16, buff1, sizeof( buff1 ) ) ];
     p = CnvRadix( seg, 16, 'A', p, 4 );
@@ -1377,11 +1376,11 @@ static unsigned FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *b
     return( len );
 }
 
-unsigned RegDispType( mad_type_handle th, const void *d, char *buff, unsigned buff_size )
+size_t RegDispType( mad_type_handle th, const void *d, char *buff, size_t buff_size )
 {
-    const mad_modify_list       *p = NULL;
-    const fpu_ptr       *fp;
-    char                title[3];
+    const mad_modify_list   *p = NULL;
+    const fpu_ptr           *fp;
+    char                    title[3];
 
     switch( th ) {
     case X86T_PC:       p = ModFPUPc; break;
@@ -1403,10 +1402,10 @@ unsigned RegDispType( mad_type_handle th, const void *d, char *buff, unsigned bu
         return( FmtPtr( (fp->r.low >> 4) + (fp->r.hi << 12), fp->r.low & 0xf, 4, buff, buff_size ) );
     case X86T_FPPTR_32:
         fp = d;
-        return( FmtPtr( fp->p.segment, fp->p.offset, 8, buff, buff_size ) );
+        return( FmtPtr( (addr_seg)fp->p.segment, fp->p.offset, 8, buff, buff_size ) );
     case X86T_FPPTR_16:
         fp = d;
-        return( FmtPtr( fp->p.segment, fp->p.offset & 0xffff, 4, buff, buff_size ) );
+        return( FmtPtr( (addr_seg)fp->p.segment, fp->p.offset & 0xffff, 4, buff, buff_size ) );
     case X86T_F10SPECIAL:
         return( MCString( MAD_MSTR_SPECIAL, buff, buff_size ) );
     case X86T_MMX_TITLE0:
@@ -1426,7 +1425,7 @@ unsigned RegDispType( mad_type_handle th, const void *d, char *buff, unsigned bu
         } else {
             title[0] = 'q';
         }
-        title[1] = th - X86T_MMX_TITLE0 + '0';
+        title[1] = (char)( th - X86T_MMX_TITLE0 ) + '0';
         title[2] = '\0';
         if( buff_size > 0 ) {
             --buff_size;
@@ -1466,10 +1465,10 @@ unsigned RegDispType( mad_type_handle th, const void *d, char *buff, unsigned bu
             title[0] = 'q';
         }
         if( th - X86T_XMM_TITLE0 > 9 ) {
-            title[1] = ( th - X86T_XMM_TITLE0 ) / 10 + '0';
-            title[2] = ( th - X86T_XMM_TITLE0 ) % 10 + '0';
+            title[1] = (char)( ( th - X86T_XMM_TITLE0 ) / 10 ) + '0';
+            title[2] = (char)( ( th - X86T_XMM_TITLE0 ) % 10 ) + '0';
         } else {
-            title[1] = th - X86T_XMM_TITLE0 + '0';
+            title[1] = (char)( th - X86T_XMM_TITLE0 ) + '0';
             title[2] = ' ';
         }
         if( buff_size > 0 ) {
@@ -1641,7 +1640,7 @@ unsigned DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned o
     unsigned    mask;
     int         index;
 
-    index = rsd - RegSet;
+    index = (unsigned)( rsd - RegSet );
     toggle = on & off;
     save_on = 0;
     switch( index ) {
@@ -1718,17 +1717,13 @@ walk_result DIGENTRY MIRegWalk(
     } else {
         fpulevel = LN;
     }
-    for( ;; ) {
-        reg = *list;
-        if( reg == NULL )
-            break;
-        if( reg->cpulevel <= cpulevel || reg->fpulevel <= fpulevel ) {
+    for( ; (reg = *list) != NULL; ++list ) {
+        if( (processor_level)reg->cpulevel <= cpulevel || (processor_level)reg->fpulevel <= fpulevel ) {
             wr = wk( &reg->info, reg->sublist != NULL, d );
             if( wr != WR_CONTINUE ) {
                 return( wr );
             }
         }
-        ++list;
     }
     return( WR_CONTINUE );
 }
@@ -1799,18 +1794,18 @@ void DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr
     }
 }
 
-unsigned DIGENTRY MIRegSpecialName(
+size_t DIGENTRY MIRegSpecialName(
     mad_special_reg sr,
     const mad_registers *mr,
     mad_address_format af,
     char *buff,
-    unsigned buff_size )
+    size_t buff_size )
 {
     const char  *seg;
     const char  *offset;
-    unsigned    len;
-    unsigned    left;
-    unsigned    amount;
+    size_t      len;
+    size_t      left;
+    size_t      amount;
 
     switch( sr ) {
     case MSR_IP:

@@ -103,7 +103,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;

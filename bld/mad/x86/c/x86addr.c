@@ -42,7 +42,7 @@ void            DIGENTRY MIAddrAdd( address *a, long b, mad_address_format af )
         if( a->mach.offset > 0xffff ) {
             if( af != MAF_OFFSET ) {
                 over = a->mach.offset >> (16 - MCSystemConfig()->huge_shift);
-                a->mach.segment += over;
+                a->mach.segment += (addr_seg)over;
             }
             a->mach.offset &= 0xffff;
         }
@@ -62,10 +62,10 @@ int             DIGENTRY MIAddrComp( const address *ap, const address *bp, mad_a
                                    return( -1 );
     }
     if( AddrCharacteristics( *ap ) & X86AC_REAL ) {
-        a.segment += a.offset >> 4;
-        b.segment += b.offset >> 4;
-        a.offset = a.offset & 0X0F;
-        b.offset = b.offset & 0X0F;
+        a.segment = (addr_seg)( a.segment + ( a.offset >> 4 ) );
+        b.segment = (addr_seg)( b.segment + ( b.offset >> 4 ) );
+        a.offset = a.offset & 0x0F;
+        b.offset = b.offset & 0x0F;
     }
     if( a.segment == b.segment ) {
         if( a.offset == b.offset ) {
@@ -125,10 +125,12 @@ mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, cons
     mr = mr;
     memset( &addr, 0, sizeof( addr ) );
     addr.mach = *a;
-    if( !(AddrCharacteristics( addr ) & X86AC_REAL) ) return( MS_FAIL );
-    start = ((unsigned long) a->segment << 4) + a->offset;
-    end = start + size;
-    if( start < 0x400 || end < 0x400 ) return( MS_OK );
+    if( !(AddrCharacteristics( addr ) & X86AC_REAL) )
+        return( MS_FAIL );
+    start = (unsigned_16)( ((unsigned long)a->segment << 4) + a->offset );
+    end = (unsigned_16)( start + size );
+    if( start < 0x400 || end < 0x400 )
+        return( MS_OK );
     return( MS_FAIL );
 }
 

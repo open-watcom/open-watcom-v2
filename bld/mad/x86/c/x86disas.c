@@ -137,15 +137,15 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
     char                *np;
     char                *op;
-    unsigned            nlen;
-    unsigned            olen;
-    unsigned            len;
+    size_t              nlen;
+    size_t              olen;
+    size_t              len;
     dis_format_flags    ff;
 
     nbuff[0] = '\0';
@@ -228,7 +228,7 @@ static mad_disasm_control Adjustment( mad_disasm_data *dd )
     switch( dd->ins.op[OP_1].type & DO_MASK ) {
     case DO_IMMED:
     case DO_RELATIVE:
-        if( dd->ins.op[OP_1].value < dd->addr.mach.offset )
+        if( (addr_off)dd->ins.op[OP_1].value < dd->addr.mach.offset )
             return( MDC_TAKEN_BACK );
         return( MDC_TAKEN_FORWARD );
     }
@@ -769,7 +769,7 @@ mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsign
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsigned len )
+char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, size_t len )
 {
     char        internal[33];
     char        *ptr;
@@ -778,7 +778,7 @@ char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsi
     ptr = &internal[32];
     for( ; len > 0 || value != 0; value /= radix ) {
         dig = value % radix;
-        *ptr = ( dig <= 9 ) ? dig + '0' : dig - 10 + base;
+        *ptr = ( dig <= 9 ) ? (char)dig + '0' : (char)( dig - 10 ) + base;
         --ptr;
         --len;
     }
@@ -910,7 +910,7 @@ static int GetValueByteSize( unsigned long value )
     return( size );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;

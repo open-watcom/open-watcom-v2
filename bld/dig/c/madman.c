@@ -94,7 +94,7 @@ static mad_status DIGCLIENT MADCliTypeConvert( const mad_type_info *in_t, const 
     return( MADTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     return( MADTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
@@ -203,8 +203,8 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
     mad_entry   **owner;
     mad_entry   *curr;
     mad_entry   *old;
-    unsigned    file_len;
-    unsigned    desc_len;
+    size_t      file_len;
+    size_t      desc_len;
 
     for( owner = &MADList; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr->mh == mh ) {
@@ -436,15 +436,17 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
 
     for( me = MADList; me != NULL; me = me->next ) {
         wr = wk( me->mh, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
 
-unsigned        MADNameFile( mad_handle mh, char *buff, unsigned buff_size )
+size_t MADNameFile( mad_handle mh, char *buff, size_t buff_size )
 {
     mad_entry   *me;
-    unsigned    len;
+    size_t      len;
 
     me = MADFind( mh );
     if( me == NULL ) {
@@ -462,10 +464,10 @@ unsigned        MADNameFile( mad_handle mh, char *buff, unsigned buff_size )
     return( len );
 }
 
-unsigned        MADNameDescription( mad_handle mh, char *buff, unsigned buff_size )
+size_t MADNameDescription( mad_handle mh, char *buff, size_t buff_size )
 {
     mad_entry   *me;
-    unsigned    len;
+    size_t      len;
 
     me = MADFind( mh );
     if( me == NULL ) {
@@ -644,9 +646,9 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
     mti->b.kind = tk;
     mti->b.handler_code = MAD_DEFAULT_HANDLING;
     if( size < 0 ) {
-        mti->b.bits = -size * BITS_PER_BYTE;
+        mti->b.bits = (word)( -size * BITS_PER_BYTE );
     } else {
-        mti->b.bits = size * BITS_PER_BYTE;
+        mti->b.bits = (word)( size * BITS_PER_BYTE );
     }
     mti->i.endian = ME_HOST;
     switch( tk ) {
@@ -660,7 +662,7 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
         mti->a.i.nr = MNR_UNSIGNED;
         if( size == sizeof( address ) )
             mti->b.bits = sizeof( addr48_ptr ) * BITS_PER_BYTE;
-        mti->a.seg.pos = mti->b.bits - sizeof( addr_seg ) * BITS_PER_BYTE;
+        mti->a.seg.pos = (byte)( mti->b.bits - sizeof( addr_seg ) * BITS_PER_BYTE );
         mti->a.seg.bits = sizeof( addr_seg ) * BITS_PER_BYTE;
         break;
     case MTK_FLOAT:
@@ -806,7 +808,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
             v->a.offset = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.offset = *(unsigned_32 *)valp;
+            v->a.offset = (addr_seg)*(unsigned_32 *)valp;
             break;
         default:
             return( MS_UNSUPPORTED );
@@ -847,7 +849,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
             v->a.segment = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.segment = *(unsigned_32 *)valp;
+            v->a.segment = (addr_seg)( *(unsigned_32 *)valp );
             break;
         default:
             return( MS_UNSUPPORTED );
@@ -1167,7 +1169,7 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
     return( Active->rtns->MITypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     base = base;
     mti = mti;
@@ -1221,14 +1223,14 @@ static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length 
     return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
-static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
     int                 neg;
     char                buff1[128];
     char                *p;
-    unsigned            buff_size;
-    unsigned            len;
+    size_t              buff_size;
+    size_t              len;
     mad_status          ms;
 
 
@@ -1240,10 +1242,10 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
         neg = 1;
         U64Neg( &val.i, &val.i );
     }
-    p = U64CvtNum( val.i, radix, &buff1[sizeof( buff1 )], mti->b.bits );
+    p = U64CvtNum( val.i, radix, buff1 + sizeof( buff1 ), mti->b.bits );
     if( neg )
         *--p = '-';
-    len = &buff1[sizeof( buff1 )] - p;
+    len = buff1 + sizeof( buff1 ) - p;
     buff_size = *buff_size_p;
     *buff_size_p = len;
     if( buff_size > 0 ) {
@@ -1256,24 +1258,24 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
     return( MS_OK );
 }
 
-static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
     char                *p;
-    unsigned            buff_size;
-    unsigned            len;
+    size_t              buff_size;
+    size_t              len;
     char                buff1[80];
     mad_status          ms;
 
     ms = DecomposeAddr( mti, d, 0, &val );
     if( ms != MS_OK )
         return( ms );
-    p = CvtNum( val.a.offset, radix, &buff1[ sizeof( buff1 ) ], mti->b.bits - mti->a.seg.bits );
+    p = CvtNum( val.a.offset, radix, buff1 + sizeof( buff1 ), mti->b.bits - mti->a.seg.bits );
     if( mti->a.seg.bits != 0 ) {
         *--p = ':';
         p = CvtNum( val.a.segment, radix, p, mti->a.seg.bits );
     }
-    len = &buff1[sizeof( buff1 )] - p;
+    len = buff1 + sizeof( buff1 ) - p;
     buff_size = *buff_size_p;
     *buff_size_p = len;
     if( buff_size > 0 ) {
@@ -1331,14 +1333,14 @@ static char *__xcvt( long_double *value,
 }
 #endif
 
-static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *buff, unsigned buff_size )
+static size_t DoStrReal( long_double *value, mad_type_info const *mti, char *buff, size_t buff_size )
 {
     unsigned    mant_digs;
 //    unsigned    exp_digs;
     char        *p;
     int         sign;
     int         exp;
-    unsigned    len;
+    size_t      len;
     char        buff1[80];
 #ifdef __WATCOMC__
     char        buff2[80];
@@ -1368,12 +1370,12 @@ static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *b
     return( len );
 }
 
-static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
-    unsigned            buff_size;
+    size_t              buff_size;
     mad_type_info       host;
     unsigned_8    const *p;
-    unsigned            len;
+    size_t              len;
     mad_status          ms;
 #if defined( _LONG_DOUBLE_ )
     xreal               val;
@@ -1393,8 +1395,8 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
             --p;
 #endif
             if( len + 1 < buff_size ) {
-                buff[len + 0] = DigitTab[ *p >>   4 ];
-                buff[len + 1] = DigitTab[ *p &  0xf ];
+                buff[len + 0] = DigitTab[*p >> 4];
+                buff[len + 1] = DigitTab[*p & 0x0f];
             }
 #if defined( __BIG_ENDIAN__ )
             ++p;
@@ -1421,7 +1423,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
 
 #endif
 
-mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, char *buff, unsigned *buff_size_p )
+mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     if( mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
         switch( mti->b.kind ) {
@@ -1444,7 +1446,7 @@ mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void
     return( Active->rtns->MITypeToString( radix, mti, d, buff, buff_size_p ) );
 }
 
-mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, char *buff, unsigned *buff_size_p )
+mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, char *buff, size_t *buff_size_p )
 {
     mad_type_info       mti;
 
@@ -1529,7 +1531,7 @@ mad_string      MADRegSetName( const mad_reg_set_data *rsd )
     return( Active->rtns->MIRegSetName( rsd ) );
 }
 
-static unsigned DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     rsd = rsd;
     if( buff_size > 0 )
@@ -1537,7 +1539,7 @@ static unsigned DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char 
     return( 0 );
 }
 
-unsigned        MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+size_t MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIRegSetLevel( rsd, buff, buff_size ) );
 }
@@ -1553,7 +1555,7 @@ unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data *rsd )
     return( Active->rtns->MIRegSetDisplayGrouping( rsd ) );
 }
 
-static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value )
+static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
     rsd = rsd;
     mr = mr;
@@ -1566,7 +1568,7 @@ static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data
     return( MS_FAIL );
 }
 
-mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value )
+mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
     return( Active->rtns->MIRegSetDisplayGetPiece( rsd, mr, piece, descript_p,
                 max_descript_p, reg, disp_type, max_value ) );
@@ -1686,8 +1688,8 @@ struct full_name {
     mad_reg_info  const         *ri;
     const char                  *op;
     char                        *buff;
-    unsigned                    buff_size;
-    unsigned                    len;
+    size_t                      buff_size;
+    size_t                      len;
 };
 
 static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *d )
@@ -1698,8 +1700,8 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
     struct full_name_component  *h;
     struct full_name_component  *t;
     walk_result                 wr;
-    unsigned                    op_len;
-    unsigned                    amount;
+    size_t                      op_len;
+    size_t                      amount;
     int                         first;
 
     curr.parent = name->components;
@@ -1749,7 +1751,7 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
     return( wr );
 }
 
-unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, unsigned buff_size )
+size_t MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, size_t buff_size )
 {
     struct full_name    name;
 
@@ -1793,7 +1795,7 @@ void            MADRegSpecialSet( mad_special_reg sr, mad_registers *mr, const a
     Active->rtns->MIRegSpecialSet( sr, mr, a );
 }
 
-static unsigned DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     sr = sr;
     mr = mr;
@@ -1803,7 +1805,7 @@ static unsigned DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_r
     return( 0 );
 }
 
-unsigned        MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
+size_t MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIRegSpecialName( sr, mr, af, buff, buff_size ) );
 }
@@ -1992,11 +1994,11 @@ mad_status              MADDisasm( mad_disasm_data *dd, address *a, int adj )
     return( Active->rtns->MIDisasm( dd, a, adj ) );
 }
 
-static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
 {
     dd = dd;
     radix = radix;
-    if( !(dp & MDP_INSTRUCTION) )
+    if( (dp & MDP_INSTRUCTION) == 0 )
         return( 0 );
     if( buff_size > 0 ) {
         --buff_size;
@@ -2008,7 +2010,7 @@ static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_p
     return( sizeof( ILL_INSTR ) - 1 );
 }
 
-unsigned    MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIDisasmFormat( dd, dp, radix, buff, buff_size ) );
 }
@@ -2204,7 +2206,7 @@ void            MADTraceFini( mad_trace_data *td )
     Active->rtns->MITraceFini( td );
 }
 
-static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     mr = mr;
 
@@ -2214,7 +2216,7 @@ static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buf
     return( MS_FAIL );
 }
 
-mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     return( Active->rtns->MIUnexpectedBreak( mr, buff, buff_size_p ) );
 }
