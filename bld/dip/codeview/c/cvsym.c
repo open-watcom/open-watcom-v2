@@ -1174,9 +1174,9 @@ static unsigned ImpSymName( imp_image_handle *ii,
     return( NameCopy( buff, name, buff_size, len ) );
 }
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     return( ImpSymName( ii, is, lc, sn, buff, buff_size ) );
 }

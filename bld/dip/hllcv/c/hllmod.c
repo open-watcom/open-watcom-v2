@@ -78,7 +78,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
 /*
  * Strips path and extension from the name and copies into the specified buffer.
  */
-static unsigned StripAndCopyName( unsigned_8 *name, char *buff, unsigned buff_size )
+static size_t StripAndCopyName( unsigned_8 *name, char *buff, size_t buff_size )
 {
     char        *start = (char *)&name[1];
     char        *end   = start + *name;
@@ -103,8 +103,8 @@ static unsigned StripAndCopyName( unsigned_8 *name, char *buff, unsigned buff_si
 /*
  * Gets the module name.
  */
-unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
-                                 char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+                                 char *buff, size_t buff_size )
 {
     hll_dir_entry *hdd;
 

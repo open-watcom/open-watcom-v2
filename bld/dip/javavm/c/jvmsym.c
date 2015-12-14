@@ -380,11 +380,11 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
     return( len );
 }
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
-                        imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+                    imp_sym_handle *is, location_context *lc,
+                    symbol_name sn, char *buff, size_t buff_size )
 {
-    unsigned    len;
+    size_t      len;
     ji_ptr      sig;
 
     len = GetName( ii, is );

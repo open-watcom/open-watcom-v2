@@ -67,8 +67,8 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 
 #define GBL_NAME "__global"
 
-unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
+                        imp_mod_handle im, char *buff, size_t buff_size )
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;

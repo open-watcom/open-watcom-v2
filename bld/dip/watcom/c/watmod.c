@@ -446,13 +446,13 @@ dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im, hand
  * DIPImpModName -- return the module name
  */
 
-unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
-                                char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+                                char *buff, size_t buff_size )
 {
     char        *name;
     char        *start;
     char        *end;
-    unsigned    len;
+    size_t      len;
 
     name = ModPointer( ii, im )->name;
     len = (unsigned char)name[0];
@@ -500,10 +500,10 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
  * PrimaryCueFile -- return the module source file
  */
 
-unsigned PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *buff, unsigned buff_size )
+size_t PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                        char *buff, size_t buff_size )
 {
-    unsigned    len;
+    size_t      len;
     char        *name;
 
     name = ModPointer( ii, ic->im )->name;

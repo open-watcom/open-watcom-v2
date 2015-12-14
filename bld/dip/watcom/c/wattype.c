@@ -382,7 +382,7 @@ static int CharName( const char *name, unsigned len )
     if( len > 4 ) {
         name += len - 5;
         if( name[0] != ' ' )
-        	return( 0 );
+            return( 0 );
         ++name;
     }
     if( memcmp( name, "char", 4 ) == 0 )
@@ -1868,8 +1868,8 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 
-unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     //NYI: stub implementation
     ii = ii; it = it; num = num; tag = tag; buff = buff; buff_size = buff_size;

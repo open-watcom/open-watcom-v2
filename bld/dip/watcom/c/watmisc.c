@@ -100,14 +100,14 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
 
 #define SH_ESCAPE       0xf0
 
-unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,
-                                symbol_name sn, char *buff, unsigned buff_size )
+                                symbol_name sn, char *buff, size_t buff_size )
 {
     byte                *sp;
     byte                *ep;
     byte                curr;
-    unsigned            len;
+    size_t              len;
     char                *mangled_name;
     location_list       ll;
     imp_sym_handle      gbl_is;
@@ -261,7 +261,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         dst = buff;
         for( ;; ) {
             if( len == 0 )
-            	break;
+                break;
             if( src == sym_li.source.start ) {
                 op_len = __mangle_operator( src, sym_li.source.len, buff );
                 if( op_len == 0 ) {

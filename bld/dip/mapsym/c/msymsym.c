@@ -78,9 +78,9 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii,
     return( IMH_MAP );
 }
 
-unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     ii = ii; lc = lc;
     if( sn == SN_DEMANGLED ) return( 0 );

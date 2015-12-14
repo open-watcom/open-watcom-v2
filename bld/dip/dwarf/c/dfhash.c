@@ -210,7 +210,7 @@ extern void AddHashName( name_ctl *ctl, const char *name, dr_handle sym )
     uint_16     rem;
     name_blk    *blk;
     name_entry  *curr;
-    unsigned    len;
+    size_t      len;
 
     len = strlen( name );
     key = elf_hash( name );
@@ -225,7 +225,7 @@ extern void AddHashName( name_ctl *ctl, const char *name, dr_handle sym )
         blk = ctl->bucket[bnum].head;
     }
     curr = &blk->entry[NAME_BLKSIZE - rem];
-    ctl->bucket[bnum].rem = rem-1;
+    ctl->bucket[bnum].rem = rem - 1;
     ++ctl->count;
     curr->sym = sym;
     curr->key = key;

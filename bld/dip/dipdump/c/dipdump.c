@@ -498,7 +498,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
     char            buff[1024];
-    unsigned        len;
+    size_t          len;
     dip_status      rc;
 
     /* filename */

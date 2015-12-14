@@ -422,7 +422,7 @@ dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char 
                 DCStatus( ok );
                 goto done;
             }
-            LocationAdd( &sp->u.ll, loc.bp_offset.offset*8 );
+            LocationAdd( &sp->u.ll, loc.bp_offset.offset * 8 );
             break;
         case CONSTANT + ADDR386:
             ++sp;

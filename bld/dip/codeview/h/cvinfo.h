@@ -47,7 +47,7 @@ enum {
 CV_LAST_REG
 };
 
-#define IMH_FORTRAN	    IMH_BASE
+#define IMH_FORTRAN         IMH_BASE
 
 typedef unsigned long   virt_mem;
 
@@ -119,7 +119,7 @@ extern void                     LocationTrunc( location_list *, unsigned );
 extern dip_status               LocationOneReg( imp_image_handle *, unsigned, location_context *, location_list * );
 extern dip_status               LocationManyReg( imp_image_handle *, unsigned, const unsigned_8 *, location_context *, location_list * );
 
-extern unsigned                 NameCopy( char *, const char *, unsigned, unsigned );
+extern size_t                   NameCopy( char *, const char *, size_t, size_t );
 extern void                     MapLogical( imp_image_handle *, address * );
 extern const void               *GetNumLeaf( const void *, numeric_leaf * );
 extern dip_status               SegIsExecutable( imp_image_handle *, unsigned );

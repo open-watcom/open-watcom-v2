@@ -333,11 +333,11 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     return( ret );
 }
 
-unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
-                        imp_mod_handle im, char *buff, unsigned buff_size )
+size_t      DIGENTRY DIPImpModName( imp_image_handle *ii,
+                        imp_mod_handle im, char *buff, size_t buff_size )
 {
     char        *name;
-    unsigned    len;
+    size_t      len;
 
     if( im == IMH_NOMOD || (name = IMH2MODI( ii, im )->name) == NULL ) {
         DCStatus( DS_FAIL );
@@ -595,10 +595,10 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-unsigned    NameCopy( char *buff, const char *from, unsigned buff_size, unsigned len )
-/************************************************************************************/
+size_t NameCopy( char *buff, const char *from, size_t buff_size, size_t len )
+/***************************************************************************/
 {
-    unsigned    new_len;
+    size_t      new_len;
 
     new_len = len + strlen( from );
     if( buff_size > 0 ) {

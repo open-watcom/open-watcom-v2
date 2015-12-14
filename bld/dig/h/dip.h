@@ -90,7 +90,7 @@ const char      *ImageDIP( mod_handle );
 /*
  * Module Information
  */
-unsigned        ModName( mod_handle, char *buff, unsigned buff_size );
+size_t          ModName( mod_handle, char *buff, size_t buff_size );
 char            *ModSrcLang( mod_handle );
 dip_status      ModHasInfo( mod_handle, handle_kind );
 search_result   AddrMod( address, mod_handle * );
@@ -110,7 +110,7 @@ dip_status      TypeThunkAdjust( type_handle *, type_handle *, location_context 
 dip_status      TypePointer( type_handle *, type_modifier, unsigned, type_handle * );
 void            *TypeCreate( type_handle *, mod_handle );
 int             TypeCmp( type_handle *, type_handle * );
-unsigned        TypeName( type_handle *, unsigned, symbol_type *, char *buff, unsigned buff_size );
+size_t          TypeName( type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size );
 dip_status      TypeAddRef( type_handle * );
 dip_status      TypeRelease( type_handle * );
 dip_status      TypeFreeAll( void );
@@ -119,7 +119,7 @@ dip_status      TypeFreeAll( void );
  * Symbol Information
  */
 mod_handle      SymMod( sym_handle * );
-unsigned        SymName( sym_handle *, location_context *, symbol_name, char *buff, unsigned buff_size );
+size_t          SymName( sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size );
 dip_status      SymType( sym_handle *, type_handle * );
 dip_status      SymLocation( sym_handle *, location_context *, location_list * );
 dip_status      SymValue( sym_handle *, location_context *, void * );
@@ -142,7 +142,7 @@ dip_status      SymFreeAll( void );
  * Source Cue Information
  */
 mod_handle      CueMod( cue_handle * );
-unsigned        CueFile( cue_handle *, char *buff, unsigned buff_size );
+size_t          CueFile( cue_handle *, char *buff, size_t buff_size );
 cue_fileid      CueFileId( cue_handle * );
 dip_status      CueAdjust( cue_handle *, int adj, cue_handle * );
 unsigned long   CueLine( cue_handle * );

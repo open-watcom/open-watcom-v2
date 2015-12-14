@@ -68,7 +68,7 @@ void            DIGENTRY DIPImpCancel( void )
 {
 }
 
-unsigned NameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
+size_t NameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 {
     if( buff_size > 0 ) {
         --buff_size;

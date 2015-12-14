@@ -181,10 +181,10 @@ extern imp_mod_handle DIGENTRY  DIPImpTypeMod( imp_image_handle *ii,
                                     imp_type_handle *it );
 extern int DIGENTRY             DIPImpTypeCmp( imp_image_handle *ii,
                                     imp_type_handle *it1, imp_type_handle *it2 );
-extern unsigned DIGENTRY        DIPImpTypeName( imp_image_handle *ii,
+extern size_t DIGENTRY          DIPImpTypeName( imp_image_handle *ii,
                                     imp_type_handle *it, unsigned num,
                                     symbol_type *tag, char *buff,
-                                    unsigned buff_size );
+                                    size_t buff_size );
 extern dip_status DIGENTRY      DIPImpTypeAddRef( imp_image_handle *ii,
                                     imp_type_handle *it );
 extern dip_status DIGENTRY      DIPImpTypeRelease( imp_image_handle *ii,

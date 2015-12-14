@@ -173,13 +173,13 @@ static bool IsRelPathname( const char *name )
 }
 
 
-unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                                          char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                          char *buff, size_t buff_size )
 /************************************************************************/
 {
     char            *name;
     file_walk_name  wlk;
-    unsigned        len;
+    size_t          len;
     dr_handle       stmts;
     dr_handle       cu_tag;
     int             i;

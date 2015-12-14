@@ -94,7 +94,7 @@ void DIGENTRY DIPImpCancel( void )
 /*
  * Creates a zero terminated string.
  */
-unsigned hllNameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
+size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 {
     if( buff_size > 0 ) {
         --buff_size;

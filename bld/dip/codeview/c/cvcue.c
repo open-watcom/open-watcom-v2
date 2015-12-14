@@ -89,8 +89,8 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
     return( ic->im );
 }
 
-unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned buff_size )
+size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
+                        imp_cue_handle *ic, char *buff, size_t buff_size )
 {
     void                                *p;
     unsigned_16                         name_len;
@@ -100,15 +100,18 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
 
     offset = ic->file;
     fp = VMBlock( ii, offset, sizeof( *fp ) );
-    if( fp == 0 ) return( 0 );
+    if( fp == 0 )
+        return( 0 );
     offset += offsetof( cv_sst_src_module_file_table, baseSrcLn )
                     + (fp->cSeg * (sizeof( unsigned_32 ) * 3));
     p = VMBlock( ii, offset, sizeof( unsigned_16 ) );
-    if( p == NULL ) return( 0 );
+    if( p == NULL )
+        return( 0 );
     /* Doc says the length is unsigned_16, cvpack says 8. */
     name_len = *(unsigned_8 *)p;
     p = VMBlock( ii, offset + sizeof( unsigned_8 ), name_len );
-    if( p == NULL ) return( 0 );
+    if( p == NULL )
+        return( 0 );
     return( NameCopy( buff, p, buff_size, name_len ) );
 }
 

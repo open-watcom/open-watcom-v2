@@ -32,7 +32,7 @@
 
 typedef struct {
     addr_off        map_offset;
-    dword           map_seg;
+    addr_seg        map_seg;
     dr_handle       sym;  /* dwarf handle */
 }addrsym_info;
 

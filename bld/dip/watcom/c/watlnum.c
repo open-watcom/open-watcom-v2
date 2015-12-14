@@ -132,11 +132,11 @@ static unsigned SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic,
     return( ret );
 }
 
-static unsigned SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                    unsigned file_id, char *buff, unsigned buff_size )
+static size_t SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                    unsigned file_id, char *buff, size_t buff_size )
 {
     unsigned_16         size;
-    unsigned_16         len;
+    size_t              len;
     const unsigned_16   *index;
     const char          *name;
     const char          *start;
@@ -503,8 +503,8 @@ cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
     return( 1 );
 }
 
-unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                        char *buff, size_t buff_size )
 {
     cue_fileid      id;
 

@@ -54,9 +54,9 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is 
 }
 
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
-                        imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+                    imp_sym_handle *is, location_context *lc,
+                    symbol_name sn, char *buff, size_t buff_size )
 /****************************************************************/
 {
     /*
@@ -80,8 +80,8 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                 Not possible. Will never happen.
     */
     char        *name;
-    unsigned    demangled_len;
-    unsigned    len = 0;
+    size_t      demangled_len;
+    size_t      len = 0;
 
     lc = lc;
 //TODO: what's lc for?
@@ -199,7 +199,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
 //TODO: no segments, better TAG_label
     struct mod_wlk  *d = _d;
     uint_32         offset;
-    uint_32         seg;
+    addr_seg        seg;
 //    bool            ret;
     addrsym_info    info;
     bool            is_segment;
@@ -324,7 +324,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
     /* Get the location of the given symbol. */
     dip_status       ret;
     address          base; /* base segment & offset */
-    uint_32          seg;
+    addr_seg         seg;
     dr_handle        sym;
     bool             is_segment;
 
@@ -723,7 +723,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     dr_handle       dr_this;
     dr_handle       dr_type;
     dr_typeinfo     typeinfo;
-    uint_32         seg;
+    addr_seg        seg;
     address         base;   /* base segment & offset */
     location_list   tmp;
     dip_status      ret;

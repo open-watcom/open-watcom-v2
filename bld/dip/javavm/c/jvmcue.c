@@ -62,12 +62,12 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
      return( IMH_JAVA );
 }
 
-unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned buff_size )
+size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
+                        imp_cue_handle *ic, char *buff, size_t buff_size )
 {
     ji_ptr      name;
-    unsigned    len;
-    unsigned    class_len = 0;
+    size_t      len;
+    size_t      class_len = 0;
 
     /* Stick the package name on the front of the source file name */
     name = GetPointer( ic->cc + offsetof( ClassClass, name ) );

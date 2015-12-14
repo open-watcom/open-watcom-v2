@@ -1476,12 +1476,12 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
  *         when scanned in an expression, the symbol handle can
  *         be reconstructed. Deprecated - never used.
  */
-static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
+static size_t hllSymName( imp_image_handle *ii, imp_sym_handle *is,
                             location_context *lc, symbol_name sn,
-                            char *buff, unsigned buff_size )
+                            char *buff, size_t buff_size )
 {
     const char  *name = NULL;
-    unsigned    name_len;
+    size_t      name_len;
 
     if( is->type == HLL_SYM_TYPE_PUB ) {
         unsigned off_name;
@@ -1557,9 +1557,9 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get the symbol name.
  */
-unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                  location_context *lc, symbol_name sn,
-                                 char *buff, unsigned buff_size )
+                                 char *buff, size_t buff_size )
 {
     return( hllSymName( ii, is, lc, sn, buff, buff_size ) );
 }

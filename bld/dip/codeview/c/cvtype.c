@@ -2077,12 +2077,12 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
     return( it2->idx - it1->idx );
 }
 
-unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     lf_all              *p;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_type_handle     real_it;
 
     if( num != 0 ) return( 0 );
