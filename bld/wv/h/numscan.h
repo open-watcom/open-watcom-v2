@@ -30,5 +30,5 @@
 
 
 extern unsigned_64  IntNumVal( void );
-extern bool         ForceSym2Num( const char *start, unsigned len, unsigned_64 *val_ptr );
+extern bool         ForceSym2Num( const char *start, size_t len, unsigned_64 *val_ptr );
 extern xreal        RealNumVal( void );

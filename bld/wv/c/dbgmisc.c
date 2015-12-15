@@ -705,6 +705,7 @@ void ProcThread( void )
     unsigned            old;
 
     cmd = -1;
+    tcmd = T_BAD;
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( ThreadOps );

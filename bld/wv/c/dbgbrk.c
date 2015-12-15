@@ -88,7 +88,6 @@ extern void             ErrorBox( char * );
 extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
 extern bool             DlgAreYouNuts( unsigned long );
-extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 
 extern char_ring        *DLLList;
 extern stack_entry      *ExprSP;
@@ -297,7 +296,7 @@ void GetBPAddr( brkp *bp, char *buff )
 
 void GetBPText( brkp *bp, char *buff )
 {
-    unsigned    max;
+    size_t      max;
 
     //MAD: might be a different mad then when break set
     max = ~0;
@@ -356,7 +355,7 @@ brkp *FindBreak( address addr )
 
 static char *StrVal( char *which, brkp *wp, char *p )
 {
-    unsigned    max;
+    size_t      max;
 
     for( *p++ = ' '; *which != NULLCHAR; *p++ = *which++ ) {}
     *p++ = '=';
@@ -1730,7 +1729,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
     if( wphit )
         return( COND_WATCH | ( conditions & ~COND_STOPPERS ) );
     if( conditions & COND_BREAK ) {
-        unsigned        max = TXT_LEN;
+        size_t  max = TXT_LEN;
 
         ReadDbgRegs();
         if( MADUnexpectedBreak( &DbgRegs->mr, TxtBuff, &max ) == MS_OK ) {

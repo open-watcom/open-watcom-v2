@@ -85,7 +85,7 @@ static  token_table     *ExprTokens;
         unsigned        ScanCCharNum = true;
 
 
-static void SetRadixSpec( const char *str, unsigned len, unsigned radix, bool clear )
+static void SetRadixSpec( const char *str, size_t len, unsigned radix, bool clear )
 {
 
     rad_str   *pref;
@@ -160,7 +160,7 @@ const char *ScanPos( void )
  * ScanLen -- return the length of current token
  */
 
-unsigned ScanLen( void )
+size_t ScanLen( void )
 {
     return( ScanPtr - TokenStart );
 }
@@ -306,7 +306,7 @@ bool ScanEOC( void )
 
 
 static bool FindToken( const char *table, tokens token,
-                       const char **start, unsigned *len )
+                       const char **start, size_t *len )
 {
     while( *table != NULLCHAR ) {
         *start = table;
@@ -322,7 +322,7 @@ static bool FindToken( const char *table, tokens token,
 }
 
 
-bool TokenName( tokens token, const char **start, unsigned *len )
+bool TokenName( tokens token, const char **start, size_t *len )
 {
     switch( token ) {
     case T_LINE_SEPARATOR:
@@ -358,7 +358,7 @@ bool TokenName( tokens token, const char **start, unsigned *len )
 void Recog( tokens token )
 {
     const char  *start;
-    unsigned    len;
+    size_t      len;
 
     if( token != CurrToken ) {
         TokenName( token, &start, &len );
@@ -635,7 +635,7 @@ const char *NamePos( void )
     return( TokenStart );
 }
 
-unsigned NameLen( void )
+size_t NameLen( void )
 {
     const char  *end;
     const char  *start;
@@ -925,7 +925,7 @@ void RadixConf( void )
 }
 
 
-void FindRadixSpec( unsigned char value, const char **start, unsigned *len )
+void FindRadixSpec( unsigned char value, const char **start, size_t *len )
 {
     rad_str     *rad;
 
@@ -944,7 +944,7 @@ void FindRadixSpec( unsigned char value, const char **start, unsigned *len )
 char *AddHexSpec( char *p )
 {
     const char  *pref;
-    unsigned    len;
+    size_t      len;
 
     if( CurrRadix == 16 ) return( p );
     FindRadixSpec( 16, &pref, &len );
@@ -959,7 +959,7 @@ char *AddHexSpec( char *p )
  * ForceSym2Num -- try to force an unknown symbol into a number
  */
 
-bool ForceSym2Num( const char *start, unsigned len, unsigned_64 *val_ptr )
+bool ForceSym2Num( const char *start, size_t len, unsigned_64 *val_ptr )
 {
     const char  *old_scanptr;
     const char  *old_tokenstart;

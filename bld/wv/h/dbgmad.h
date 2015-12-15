@@ -38,5 +38,5 @@ extern void             RegFindData( mad_type_kind kind, const mad_reg_set_data 
 #ifdef DEAD_CODE
 extern void             CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti );
 #endif
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
-extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
+extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len );
+extern char             *AddrToString( address *a, mad_address_format af, char *buff, size_t buff_len );

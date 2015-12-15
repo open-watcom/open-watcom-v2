@@ -107,7 +107,7 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
 {
     unsigned            old,new;
     item_mach           tmp;
-    unsigned            max;
+    size_t              max;
     mad_type_info       mti;
     int                 sign = 0;
     unsigned long       *plong;

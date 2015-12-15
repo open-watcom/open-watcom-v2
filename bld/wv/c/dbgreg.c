@@ -1008,7 +1008,7 @@ void RegNewValue( const mad_reg_info *reginfo,
     char                        *p;
     location_list               dst_ll,src_ll;
     dip_type_info               dst_ti,src_ti;
-    unsigned                    max;
+    size_t                      max;
 
     if( !AdvMachState( ACTION_MODIFY_REGISTER ) ) return;
     RegLocation( DbgRegs, reginfo, &dst_ll );

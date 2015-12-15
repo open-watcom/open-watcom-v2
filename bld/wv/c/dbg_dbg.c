@@ -243,7 +243,7 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
 {
     wv_sym_entry    *se;
     const char      *null_start;
-    unsigned        null_len;
+    size_t          null_len;
     cmp_func        *cmp;
 
     se = StaticLookup( ListInternal, li );

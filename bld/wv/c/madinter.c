@@ -76,7 +76,7 @@ mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned buff_len )
+                            mad_label_kind lk, char *buff, size_t buff_len )
 {
     char        *p;
 

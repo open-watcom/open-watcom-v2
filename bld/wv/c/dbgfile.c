@@ -75,8 +75,6 @@ static sys_error        SysErrors[MAX_ERRORS];
 static error_idx        ErrRover;
 static error_idx        LastErr;
 
-handle PathOpen( const char *name, unsigned name_len, const char *ext );
-
 const char  *RealFName( char const *name, open_access *loc )
 {
     *loc &= ~(OP_REMOTE|OP_LOCAL);
@@ -165,7 +163,7 @@ unsigned ReadText( handle h, void *b, unsigned l )
     return( ReadStream( h, b, l ) );
 }
 
-unsigned WriteStream( handle h, const void *b, unsigned l)
+unsigned WriteStream( handle h, const void *b, unsigned l )
 {
     sys_handle  sys;
 
@@ -218,16 +216,19 @@ handle FileOpen( const char *name, open_access o )
     }
     name = FileLoc( name, &o );
     h = FindFreeHandle();
-    if( h == NIL_HANDLE ) return( NIL_HANDLE );
+    if( h == NIL_HANDLE )
+        return( NIL_HANDLE );
     if( o & OP_REMOTE ) {
         h |= REMOTE_IND;
         sys = RemoteOpen( name, o );
     } else {
         sys = LocalOpen( name, o );
     }
-    if( sys == NIL_SYS_HANDLE ) return( NIL_HANDLE );
+    if( sys == NIL_SYS_HANDLE )
+        return( NIL_HANDLE );
     SysHandles[ h & ~REMOTE_IND ] = sys;
-    if( o & OP_APPEND ) SeekStream( h, 0, DIO_SEEK_END );
+    if( o & OP_APPEND )
+        SeekStream( h, 0, DIO_SEEK_END );
     return( h );
 }
 
@@ -265,7 +266,8 @@ void WriteToPgmScreen( const void *buff, unsigned len )
 
 open_access FileHandleInfo( handle h )
 {
-    if( h & REMOTE_IND ) return( OP_REMOTE );
+    if( h & REMOTE_IND )
+        return( OP_REMOTE );
     return( OP_LOCAL );
 }
 
@@ -357,7 +359,8 @@ const char  *SkipPathInfo( char const *path, open_access loc )
     info = PathInfo( path, loc );
     for( ;; ) {
         c = *path++;
-        if( c == NULLCHAR ) break;
+        if( c == NULLCHAR )
+            break;
         if( CHECK_PATH_SEP( c, info ) ) {
             name = path;
         }
@@ -403,9 +406,9 @@ unsigned MakeFileName( char *result, const char *name, const char *ext, open_acc
     return( p - result );
 }
 
-static unsigned MakeNameWithPath( open_access loc,
-                                const char *path, unsigned plen,
-                                const char *name, unsigned nlen, char *res )
+static size_t MakeNameWithPath( open_access loc,
+                                const char *path, size_t plen,
+                                const char *name, size_t nlen, char *res )
 {
     file_components     *info;
     char                *p;
@@ -439,11 +442,11 @@ static unsigned MakeNameWithPath( open_access loc,
 }
 
 
-handle LclStringToFullName( const char *name, unsigned len, char *full )
+handle LclStringToFullName( const char *name, size_t len, char *full )
 {
     char_ring   *curr;
     handle      hndl;
-    unsigned    plen;
+    size_t      plen;
 
     // check open file in current directory or in full path
     MakeNameWithPath( OP_LOCAL, NULL, 0, name, len, full );
@@ -466,8 +469,8 @@ handle LclStringToFullName( const char *name, unsigned len, char *full )
 /*
  *
  */
-static handle FullPathOpenInternal( const char *name, unsigned name_len, const char *ext,
-                                    char *result, unsigned max_result, bool force_local )
+static handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
+                                    char *result, size_t max_result, bool force_local )
 {
     char        buffer[TXT_LEN];
     char        *p;
@@ -528,17 +531,17 @@ static handle FullPathOpenInternal( const char *name, unsigned name_len, const c
     return( f );
 }
 
-handle FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     return( FullPathOpenInternal( name, name_len, ext, result, max_result, false ) );
 }
 
-handle LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     return( FullPathOpenInternal( name, name_len, ext, result, max_result, true ) );
 }
 
-static handle PathOpenInternal( const char *name, unsigned name_len, const char *ext, bool force_local )
+static handle PathOpenInternal( const char *name, size_t name_len, const char *ext, bool force_local )
 {
     char        result[TXT_LEN];
 
@@ -549,12 +552,12 @@ static handle PathOpenInternal( const char *name, unsigned name_len, const char 
     }
 }
 
-handle PathOpen( const char *name, unsigned name_len, const char *ext )
+handle PathOpen( const char *name, size_t name_len, const char *ext )
 {
     return( PathOpenInternal( name, name_len, ext, false ) );
 }
 
-handle LocalPathOpen( const char *name, unsigned name_len, const char *ext )
+handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
 {
     return( PathOpenInternal( name, name_len, ext, true ) );
 }
@@ -586,8 +589,8 @@ static bool IsWritable( char const *name, open_access loc )
 bool FindWritable( char const *src, char *dst )
 {
     char        buffer[TXT_LEN];
-    unsigned    plen;
-    unsigned    nlen;
+    size_t      plen;
+    size_t      nlen;
     const char  *name;
     open_access loc;
 
@@ -638,7 +641,7 @@ void PathFini( void )
 static void parsePathList( char_ring **owner, char *src )
 {
     char       *start, *end;
-    unsigned   len;
+    size_t     len;
     char_ring  *new;
 
     // find end of list
@@ -672,7 +675,7 @@ static void parsePathList( char_ring **owner, char *src )
 static void parseEnvVar( char_ring **owner, const char *name )
 {
     char        *buff;
-    unsigned    size;
+    size_t      size;
 
     size = DUIEnvLkup( name, NULL, 0 );
     if( size > 0 ) {
@@ -722,7 +725,7 @@ void PathInit( void )
 }
 
 #if defined( __DOS__ ) || defined( __LINUX__ )
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *buff, unsigned buff_size )
+dig_fhandle DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char        dummy[TXT_LEN];
     handle      f;

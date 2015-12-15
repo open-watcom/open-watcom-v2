@@ -55,13 +55,13 @@
 #include "dlgexpr.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
+#include "dbgmad.h"
 #include "dbgwmem.h"
 
 
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 extern void             MemFiniTypes( mem_type_walk_data *data );
 extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
-extern char             *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len );
 
 
 typedef gui_ord (MEMHEADER)(a_window *,int);
@@ -605,7 +605,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     address         addr;
     char            *p;
     unsigned        old, new;
-    unsigned        max;
+    size_t          max;
     char            ch;
 
     line->text = TxtBuff;

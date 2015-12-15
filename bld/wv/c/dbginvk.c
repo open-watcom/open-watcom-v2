@@ -45,9 +45,6 @@
 #include "clibext.h"
 
 
-extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-
-
 /*
  * ImplicitSet - set implicit/explicit invoke file processing
  */

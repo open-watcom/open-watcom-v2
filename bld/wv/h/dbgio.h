@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "sysdef.h"
 
 typedef int             handle;
@@ -88,11 +89,11 @@ extern const char       *RealFName( char const *name, open_access *loc );
 extern bool             IsAbsolutePath( const char *path );
 extern char             *AppendPathDelim( char *path, open_access loc );
 extern const char       *ExtPointer( char const *path, open_access loc );
-extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
-extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern handle           PathOpen( const char *name, unsigned name_len, const char *ext );
-extern handle           LocalPathOpen( const char *name, unsigned name_len, const char *ext );
+extern handle           LclStringToFullName( const char *name, size_t len, char *full );
+extern handle           FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
+extern handle           LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
+extern handle           PathOpen( const char *name, size_t name_len, const char *ext );
+extern handle           LocalPathOpen( const char *name, size_t name_len, const char *ext );
 
 extern bool             FindWritable( char const *, char * );
 #if !defined( BUILD_RFX )

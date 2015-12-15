@@ -39,13 +39,12 @@
 #include "strutil.h"
 #include "wndhelp.h"
 
-extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 
-static gui_help_instance Handle;
 extern a_window         *WndMain;
 
 #define HELPNAME "wd"
 
+static gui_help_instance Handle;
 
 void InitHelp( void )
 {

@@ -30,18 +30,18 @@
 
 
 extern unsigned     DefaultSize( default_kind dk );
-extern char         *CnvULongHex( unsigned long value, char *buff, unsigned buff_len );
-extern char         *CnvLongDec( long value, char *buff, unsigned buff_len );
-extern char         *CnvULongDec( unsigned long value, char *buff, unsigned buff_len );
-extern char         *CnvLong( long value, char *buff, unsigned buff_len );
-extern char         *CnvULong( unsigned long value, char *buff, unsigned buff_len );
-extern char         *AddrToIOString( address *a, char *buff, unsigned buff_len );
-extern unsigned     QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq );
-extern char         *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, unsigned max );
-extern char         *CnvNearestAddr( address addr, char *buff, unsigned buff_len );
-extern char         *StrAddr( address *addr, char *buff, unsigned buff_len );
-extern char         *UniqStrAddr( address *addr, char *buff, unsigned buff_len );
-extern char         *LineAddr( address  *addr, char *buff, unsigned buff_len );
+extern char         *CnvULongHex( unsigned long value, char *buff, size_t buff_len );
+extern char         *CnvLongDec( long value, char *buff, size_t buff_len );
+extern char         *CnvULongDec( unsigned long value, char *buff, size_t buff_len );
+extern char         *CnvLong( long value, char *buff, size_t buff_len );
+extern char         *CnvULong( unsigned long value, char *buff, size_t buff_len );
+extern char         *AddrToIOString( address *a, char *buff, size_t buff_len );
+extern size_t       QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq );
+extern char         *CnvAddr( address addr, cnvaddr_option cao, bool uniq, char *p, size_t max );
+extern char         *CnvNearestAddr( address addr, char *buff, size_t buff_len );
+extern char         *StrAddr( address *addr, char *buff, size_t buff_len );
+extern char         *UniqStrAddr( address *addr, char *buff, size_t buff_len );
+extern char         *LineAddr( address  *addr, char *buff, size_t buff_len );
 extern void         RingBell( void );
 extern void         Warn( char *p );
 extern cmd_list     *AllocCmdList( const char *start, size_t len );
@@ -59,5 +59,5 @@ extern void         PushCmdText( char *cmds );
 #endif
 extern bool         PurgeInpStack( void );
 extern void         FreezeInpStack( void );
-extern void         UnAsm( address addr, char *buff, unsigned buff_len );
+extern void         UnAsm( address addr, char *buff, size_t buff_len );
 extern const char   *ModImageName( mod_handle handle );

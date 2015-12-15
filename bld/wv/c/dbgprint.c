@@ -184,7 +184,7 @@ static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class si
 {
     char        *ptr;
     const char  *prefix;
-    unsigned    pref_len;
+    size_t      pref_len;
 
     if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
         *buff = '-';
@@ -215,7 +215,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
     char                buff[BUFLEN];
     char                *ptr;
     mad_type_info       mti;
-    unsigned            buff_len;
+    size_t              buff_len;
     item_mach           item;
     mad_type_info       host;
     mad_type_handle     mth;
@@ -839,7 +839,7 @@ void PrintValue( void )
     char                buff[TXT_LEN];
     char                *p;
     const char          *tstr;
-    unsigned            tlen;
+    size_t              tlen;
 
     switch( ExprSP->info.kind ) {
     case TK_VOID:

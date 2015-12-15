@@ -53,7 +53,7 @@ static const char SystemOps[] = { "Remote\0Local\0" };
 void DoSystem( const char *cmd, size_t len, int loc )
 {
     long        rc;
-    error_idx   ret;
+//    error_idx   ret;
 #if defined( __DOS__ ) && defined( _M_I86 )
     bool        chk;
 #endif
@@ -62,7 +62,8 @@ void DoSystem( const char *cmd, size_t len, int loc )
     if( loc == 0 && _IsOn( SW_REMOTE_FILES ) )
         loc = 1;
     if( loc > 0 ) {
-        ret = RemoteFork( cmd, len );
+//        ret = RemoteFork( cmd, len );
+        RemoteFork( cmd, len );
         rc = 0;
     } else {
         RemoteSuspend();

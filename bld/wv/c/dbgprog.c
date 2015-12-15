@@ -70,15 +70,11 @@
 #include "clibext.h"
 
 
-search_result           LineCue( mod_handle, cue_fileid,
-                          unsigned long line, unsigned column, cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SymInfoMvHdl( handle, handle );
-extern handle           PathOpen( const char *, unsigned, const char * );
-extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             SetNoSectSeg( void );
 extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );

@@ -188,7 +188,7 @@ bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
     bool                ok;
     mad_type_info       mti;
     char                buff[EXPR_LEN];
-    unsigned            buff_len = sizeof( buff );
+    size_t              buff_len = sizeof( buff );
 
     MADTypeInfo( th, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );

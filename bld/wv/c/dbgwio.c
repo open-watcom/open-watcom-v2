@@ -205,15 +205,14 @@ static void     IOModify( a_window *wnd, int row, int piece )
 }
 
 static WNDGETLINE IOGetLine;
-static  bool    IOGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
 //    bool        ret;
     io_location *curr;
     int         i;
     unsigned    old, new;
-    unsigned    max;
+    size_t      max;
 
     if( row >= io->num_rows ) return( false );
     curr = &io->list[ row ];
@@ -237,7 +236,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
         line->indent = 2*MaxGadgetLength + 10 * WndMaxCharX( wnd );
         if( curr->value_known ) {
             max = TXT_LEN;
-            MADTypeHandleToString( new, IOData.info[ curr->type ].type, &curr->value, TxtBuff, &max );
+            MADTypeHandleToString( new, IOData.info[curr->type].type, &curr->value, TxtBuff, &max );
         } else {
             for( i = 0; i < IOData.info[ curr->type ].item_width; ++i ) {
                 TxtBuff[i] = '?';

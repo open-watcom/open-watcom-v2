@@ -86,10 +86,10 @@ typedef struct {
 
 typedef struct {
     const char              *descript;
-    unsigned                max_descript;
+    size_t                  max_descript;
     const mad_reg_info      *reginfo;
     mad_type_handle         disp_type;
-    unsigned                max_value;
+    size_t                  max_value;
 } reg_display_piece;
 
 static bool GetDisplayPiece( reg_display_piece *disp, reg_window *reg, machine_state *mach, int i )
@@ -354,7 +354,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
     int                 column;
     int                 i;
     reg_window          *reg = WndReg( wnd );
-    unsigned            max = TXT_LEN;
+    size_t              max = TXT_LEN;
     unsigned            old,new;
     item_mach           value;
     reg_display_piece   disp;

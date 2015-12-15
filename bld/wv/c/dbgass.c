@@ -48,7 +48,7 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
 {
     char                *p = TxtBuff;
     item_mach           item;
-    unsigned            max;
+    size_t              max;
 
     d = d;
     if( mk & MMK_IMPLICIT ) return( WR_CONTINUE );

@@ -52,8 +52,6 @@
 #include "trpld.h"
 
 
-extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
-
 extern unsigned         MaxPacketLen;
 
 static trap_shandle     SuppFileId = 0;

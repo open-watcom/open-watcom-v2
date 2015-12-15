@@ -40,7 +40,7 @@ extern char             *DIPMsgText( dip_status status );
 extern void             InitDbgInfo( void );
 extern void             FiniDbgInfo( void );
 extern bool             IsInternalMod( mod_handle mod );
-extern bool             IsInternalModName( const char *start, unsigned len );
+extern bool             IsInternalModName( const char *start, size_t len );
 
 extern void         DIGCLIENT DIPCliImageUnload( mod_handle mh );
 extern void         DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d );

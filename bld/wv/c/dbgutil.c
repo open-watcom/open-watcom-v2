@@ -84,39 +84,39 @@ unsigned DefaultSize( default_kind dk )
     return( info.size );
 }
 
-static char *DoMadLongConv( char *buff, unsigned buff_len, unsigned long value, int radix, int size )
+static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, int radix, int size )
 {
-    unsigned            old;
+    unsigned            old_radix;
     mad_type_info       mti;
 
-    old = NewCurrRadix( radix );
+    old_radix = NewCurrRadix( radix );
     MADTypeInfoForHost( MTK_INTEGER, size, &mti );
     MADTypeToString( radix, &mti, &value, buff, &buff_len );
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
     return( buff + buff_len );
 }
 
-char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len )
+char *CnvULongHex( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, 16, sizeof( value ) ) );
 }
 
-char    *CnvLongDec( long value, char *buff, unsigned buff_len )
+char    *CnvLongDec( long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, 10, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
-char    *CnvULongDec( unsigned long value, char *buff, unsigned buff_len )
+char    *CnvULongDec( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, 10, sizeof( value ) ) );
 }
 
-char    *CnvLong( long value, char *buff, unsigned buff_len )
+char    *CnvLong( long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, CurrRadix, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
-char    *CnvULong( unsigned long value, char *buff, unsigned buff_len )
+char    *CnvULong( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, CurrRadix, sizeof( value ) ) );
 }
@@ -139,7 +139,7 @@ void CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti )
 }
 #endif
 
-char *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len )
+char *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len )
 {
     mad_type_info       mti;
     item_mach           item;
@@ -153,21 +153,22 @@ char *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buf
     return( buff + buff_len );
 }
 
-char *AddrToIOString( address *a, char *buff, unsigned buff_len )
+char *AddrToIOString( address *a, char *buff, size_t buff_len )
 {
     return( AddrTypeToString( a, MADTypeDefault( MAS_IO | MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
-char *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len )
+char *AddrToString( address *a, mad_address_format af, char *buff, size_t buff_len )
 {
     return( AddrTypeToString( a, MADTypeDefault( MTK_ADDRESS, af, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
-unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
+size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
 {
     mod_handle  mod;
-    unsigned    name_len;
-    unsigned    len,rc;
+    size_t      name_len;
+    size_t      len;
+    size_t      rc;
     sym_info    sinfo;
 
     SymInfo( sh, NULL, &sinfo );
@@ -215,10 +216,10 @@ unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
  */
 
 char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
-                        char *p, unsigned max )
+                        char *p, size_t max )
 {
     char                off_buff[40];
-    unsigned            str_width, name_width, off_width;
+    size_t              str_width, name_width, off_width;
     addr_off            sym_offset;
     search_result       sr;
     location_list       ll;
@@ -266,7 +267,7 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     return( p );
 }
 
-char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
+char *CnvNearestAddr( address addr, char *buff, size_t buff_len )
 {
     char        *p;
 
@@ -281,7 +282,7 @@ char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
  * StrAddr --
  */
 
-char *StrAddr( address *addr, char *buff, unsigned buff_len )
+char *StrAddr( address *addr, char *buff, size_t buff_len )
 {
     char        *p;
 
@@ -293,7 +294,7 @@ char *StrAddr( address *addr, char *buff, unsigned buff_len )
 }
 
 
-char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
+char *UniqStrAddr( address *addr, char *buff, size_t buff_len )
 {
     char        *p;
 
@@ -309,7 +310,7 @@ char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
  * LineAddr
  */
 
-char *LineAddr( address  *addr, char *buff, unsigned buff_len )
+char *LineAddr( address  *addr, char *buff, size_t buff_len )
 {
     mod_handle          mod;
     char                *end;
@@ -599,7 +600,7 @@ void FreezeInpStack( void )
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 
-void UnAsm( address addr, char *buff, unsigned buff_len )
+void UnAsm( address addr, char *buff, size_t buff_len )
 {
     mad_disasm_data     *dd;
 

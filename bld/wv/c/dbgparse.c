@@ -46,8 +46,6 @@
 #include "dbgreg.h"
 
 
-extern handle           LocalPathOpen( const char *, unsigned, const char * );
-
 extern stack_entry      *ExprSP;
 
 

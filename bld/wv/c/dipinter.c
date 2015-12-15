@@ -314,16 +314,16 @@ static walk_result DIGREGISTER WVWalkModList( imp_image_handle *ii, IMP_MOD_WKR 
 
 static const char InternalName[] = "_dbg";
 
-static unsigned DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im,
-                                char *name, unsigned max )
+static size_t DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im, char *name, size_t max )
 {
-    unsigned len;
+    size_t  len;
 
     ii = ii; im = im;
     len = sizeof( InternalName ) - 1;
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( name, InternalName, max );
         name[max] = '\0';
     }
@@ -464,11 +464,11 @@ static imp_mod_handle DIGREGISTER WVSymMod( imp_image_handle *ii, imp_sym_handle
     return( WV_INT_MH );
 }
 
-static unsigned DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
+static size_t DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc,
-                        symbol_name sn, char *name, unsigned max )
+                        symbol_name sn, char *name, size_t max )
 {
-    unsigned    len;
+    size_t      len;
     char  const *p;
 
     ii = ii; lc = lc;
@@ -673,8 +673,7 @@ static imp_mod_handle DIGREGISTER WVCueMod( imp_image_handle *ii, imp_cue_handle
     return( WV_INT_MH );
 }
 
-static unsigned DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *name, unsigned max )
+static size_t DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
 {
     /* will never get called */
     ii = ii; ic = ic; name = name; max = max;
@@ -761,8 +760,8 @@ static int DIGREGISTER WVCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
 }
 
 
-static unsigned DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+static size_t DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t max )
 {
     ii = ii; it = it; num = num; tag = tag; buff = buff; max = max;
     return( 0 );
@@ -994,9 +993,10 @@ bool IsInternalMod( mod_handle mod )
     return( ImageDIP( mod ) == WVName );
 }
 
-bool IsInternalModName( const char *start, unsigned len )
+bool IsInternalModName( const char *start, size_t len )
 {
-    if( len != sizeof( InternalName ) - 1 ) return( false );
+    if( len != sizeof( InternalName ) - 1 )
+        return( false );
     if( memicmp( start, InternalName, len ) != 0 ) return( false );
     return( true );
 }

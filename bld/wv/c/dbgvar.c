@@ -1426,7 +1426,7 @@ static char AddToName( tokens token, const char *fldname, int namelen, char ppri
 */
 {
     const char  *tstr;
-    unsigned    tlen;
+    size_t      tlen;
     char        *buff, *end;
     char        prio;
 
