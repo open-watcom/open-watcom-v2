@@ -71,10 +71,10 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h )
 }
 
 static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                            const char **name_p, unsigned *name_len_p, s_all **pp )
+                            const char **name_p, size_t *name_len_p, s_all **pp )
 {
     s_all               *p;
-    unsigned            skip = 0;
+    size_t              skip = 0;
     const char          *name;
     numeric_leaf        val;
 
@@ -855,7 +855,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    sym_base;
     unsigned long               count;
     const char                  *curr;
-    unsigned                    curr_len;
+    size_t                      curr_len;
     s_all                       *sp;
     search_result               sr;
 
@@ -1141,7 +1141,7 @@ static unsigned ImpSymName( imp_image_handle *ii,
                         symbol_name sn, char *buff, unsigned buff_size )
 {
     const char          *name;
-    unsigned            len;
+    size_t              len;
     location_list       ll;
     dip_status          ds;
     imp_sym_handle      global_ish;
@@ -1499,7 +1499,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                  location_list *ll )
 {
     const char          *name;
-    unsigned            len;
+    size_t              len;
     dip_status          ds;
     virt_mem            check;
     virt_mem            next;
@@ -1588,7 +1588,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
     struct search_data  *sd = d;
     lookup_item         *li;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_sym_handle      *new;
     s_all               *p;
 

@@ -201,7 +201,7 @@ STATIC void dumpSampleInfo( void )
             while( count-- > 0 ) {
                 FormatAddr( image->map_data[index].map,    buff1, sizeof( buff1 ) );
                 FormatAddr( image->map_data[index].actual, buff2, sizeof( buff2 ) );
-                fprintf( df, "      %s -> %s (length 0x%8.8lx)\n", buff1, buff2, image->map_data[index].length );
+                fprintf( df, "      %s -> %s (length 0x%8.8lx)\n", buff1, buff2, (unsigned long)image->map_data[index].length );
                 index++;
             }
             fprintf( df, "\n" );

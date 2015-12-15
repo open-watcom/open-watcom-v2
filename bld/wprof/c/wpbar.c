@@ -43,7 +43,7 @@
 bool GetCurrentAbsBar( sio_data * curr_sio )
 /******************************************/
 {
-    bool        bar;
+    bool        bar = false;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->abs_bar;
@@ -64,7 +64,7 @@ bool GetCurrentAbsBar( sio_data * curr_sio )
 bool GetCurrentRelBar( sio_data * curr_sio )
 /******************************************/
 {
-    bool        bar;
+    bool        bar = false;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->rel_bar;
@@ -85,7 +85,7 @@ bool GetCurrentRelBar( sio_data * curr_sio )
 bool GetCurrentMaxBar( sio_data * curr_sio )
 /******************************************/
 {
-    bool        bar;
+    bool        bar = false;
 
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         bar = curr_sio->bar_max;
@@ -115,8 +115,7 @@ extern void FlipCurrentAbsBar( sio_data * curr_sio )
     } else if( curr_sio->level_open == LEVEL_FILE ) {
         curr_sio->curr_file->abs_bar = !curr_sio->curr_file->abs_bar;
     } else if( curr_sio->level_open >= LEVEL_ROUTINE ) {
-        curr_sio->asm_src_info.abs_bar
-            = !curr_sio->asm_src_info.abs_bar;
+        curr_sio->asm_src_info.abs_bar = !curr_sio->asm_src_info.abs_bar;
     }
 }
 
@@ -134,8 +133,7 @@ extern void FlipCurrentRelBar( sio_data * curr_sio )
     } else if( curr_sio->level_open == LEVEL_FILE ) {
         curr_sio->curr_file->rel_bar = !curr_sio->curr_file->rel_bar;
     } else if( curr_sio->level_open >= LEVEL_ROUTINE ) {
-        curr_sio->asm_src_info.rel_bar
-            = !curr_sio->asm_src_info.rel_bar;
+        curr_sio->asm_src_info.rel_bar = !curr_sio->asm_src_info.rel_bar;
     }
 }
 
@@ -153,7 +151,6 @@ extern void FlipCurrentMaxBar( sio_data * curr_sio )
     } else if( curr_sio->level_open == LEVEL_FILE ) {
         curr_sio->curr_file->bar_max = !curr_sio->curr_file->bar_max;
     } else if( curr_sio->level_open >= LEVEL_ROUTINE ) {
-        curr_sio->asm_src_info.bar_max
-            = !curr_sio->asm_src_info.bar_max;
+        curr_sio->asm_src_info.bar_max = !curr_sio->asm_src_info.bar_max;
     }
 }

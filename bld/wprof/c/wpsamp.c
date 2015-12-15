@@ -932,6 +932,7 @@ STATIC bool sampleSetLine( a_window *wnd, int row, int piece,
         Ring();
         return( false );
     }
+    catcher_extent = 0;
     if( sampNewRow ) {
         catcher_extent = BAR_TAIL_POINT - (WndMaxCharX( wnd ) / 2);
         catcher_extent = WPPixelTruncWidth( catcher_extent );

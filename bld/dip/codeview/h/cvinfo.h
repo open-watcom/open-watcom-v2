@@ -126,7 +126,7 @@ extern dip_status               SegIsExecutable( imp_image_handle *, unsigned );
 
 extern search_result            ImpAddrMod( imp_image_handle *, address, imp_mod_handle * );
 
-extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, unsigned * );
+extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, size_t * );
 extern dip_status               TypeSymGetType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );

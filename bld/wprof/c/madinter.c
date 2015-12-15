@@ -55,7 +55,7 @@ extern bool     IsX86BigAddr( address );
 extern bool     IsX86RealAddr( address );
 extern void     SetExeOffset( address );
 extern int_16   GetDataByte( void );
-extern bool     CnvAddr( address addr, char *buff, unsigned buff_len );
+extern bool     CnvAddr( address addr, char *buff, size_t buff_len );
 extern void     AsmSize( void );
 extern void     AsmFini( void );
 
@@ -78,18 +78,18 @@ void DIGCLIENT MADCliAddrSection( address *addr )
 mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 {
     /* never called */
-	addr = addr;
+    addr = addr;
     return( MS_FAIL );
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned buff_len )
+                            mad_label_kind lk, char *buff, size_t buff_len )
 {
     mad_type_info       mti;
     addr_ptr            item;
     mad_type_info       host;
 
-	lk = lk;
+    lk = lk;
     if( CnvAddr( a, buff, buff_len ) )
         return( MS_OK );
     MADTypeInfo( th, &mti );
@@ -102,14 +102,14 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
 mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
 {
     /* never called */
-	expr = expr; radix = radix; a = a;
+    expr = expr; radix = radix; a = a;
     return( MS_FAIL );
 }
 
 
-unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
+size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
 {
-    unsigned    len;
+    size_t      len;
     unsigned_8  *d;
 
     d = buff;
@@ -120,13 +120,13 @@ unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
     return( len );
 }
 
-unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
+size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
 {
-	a = a; size = size; buff = buff;
+    a = a; size = size; buff = buff;
     return( 0 );
 }
 
-unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
+size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
 {
     //MAD: need to resourcify
     static const char *strings[] = {
@@ -134,7 +134,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
         #include "mad.str"
         #undef pick
     };
-    unsigned    len;
+    size_t  len;
 
     len = strlen( strings[mstr] );
     if( buff_len > 0 ) {
@@ -150,13 +150,13 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
 mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
 {
     //MAD: NYI
-	mstr = mstr; str = str;
+    mstr = mstr; str = str;
     return( MS_FAIL );
 }
 
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
+size_t DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, size_t buff_len )
 {
-	radix=radix; buff = buff; buff_len = buff_len;
+    radix=radix; buff = buff; buff_len = buff_len;
     return( 0 );
 }
 

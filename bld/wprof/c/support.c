@@ -114,8 +114,8 @@ void AsmFini( void )
 
 
 
-extern file_handle ExeOpen( char * name )
-/***************************************/
+file_handle ExeOpen( char * name )
+/********************************/
 {
     file_handle     fh;
 
@@ -130,8 +130,8 @@ extern file_handle ExeOpen( char * name )
 
 
 
-extern void ExeClose( file_handle fh )
-/************************************/
+void ExeClose( file_handle fh )
+/*****************************/
 {
     close( fh );
 }
@@ -173,8 +173,8 @@ STATIC void MapSetExeOffset( address a )
     AdvanceCurrentOffset( 0 );
 }
 
-extern void SetExeOffset( address a )
-/********************************/
+void SetExeOffset( address a )
+/****************************/
 {
     MapAddressToMap( &a.mach );
     MapSetExeOffset( a );
@@ -388,8 +388,8 @@ STATIC int exeHeader( file_handle fh )
 
 
 
-extern void SetExeImage( image_info *image )
-/******************************************/
+void SetExeImage( image_info *image )
+/***********************************/
 {
     exeImage = image;
 }
@@ -754,8 +754,8 @@ STATIC uint_32 TransformExeOffset( uint_16 seg, uint_32 off, uint_16 sect_id )
 
 
 
-extern image_info *AddrImage( address *addr )
-/*******************************************/
+image_info *AddrImage( address *addr )
+/************************************/
 {
     addr_ptr        closest;
     image_info      *closest_image;
@@ -767,10 +767,12 @@ extern image_info *AddrImage( address *addr )
 
     closest.segment = 0;
     closest.offset = 0;
+    closest_image = NULL;
     count = 0;
     for( ;; ) {
         if( count >= CurrSIOData->image_count ) {
-            if( closest.segment != 0 ) break;
+            if( closest.segment != 0 ) 
+                break;
             return( NULL );
         }
         curr_image = CurrSIOData->images[count];
@@ -786,8 +788,8 @@ extern image_info *AddrImage( address *addr )
             map = curr_image->map_data;
             for( count2 = 0; count2 < curr_image->map_count; ++count2, ++map ) {
                 if( map->actual.mach.segment == addr->mach.segment
-                 && addr->mach.offset >= map->actual.mach.offset
-                 && (addr->mach.offset-map->actual.mach.offset) < map->length ) {
+                  && addr->mach.offset >= map->actual.mach.offset
+                  && (addr->mach.offset-map->actual.mach.offset) < map->length ) {
                     if( map->actual.mach.offset > closest.offset ) {
                         closest = map->actual.mach;
                         closest_image = curr_image;
@@ -802,8 +804,8 @@ extern image_info *AddrImage( address *addr )
 
 
 
-extern void MapAddressToActual( image_info *curr_image, addr_ptr *addr )
-/**********************************************************************/
+void MapAddressToActual( image_info *curr_image, addr_ptr *addr )
+/***************************************************************/
 {
     map_to_actual       *map;
     int                 count;
@@ -846,8 +848,8 @@ extern void MapAddressToActual( image_info *curr_image, addr_ptr *addr )
 }
 
 
-extern void MapAddressToMap( addr_ptr *addr )
-/*******************************************/
+void MapAddressToMap( addr_ptr *addr )
+/************************************/
 {
     map_to_actual   *map;
     int             count;
@@ -855,6 +857,8 @@ extern void MapAddressToMap( addr_ptr *addr )
     bool            first_save;
     addr_ptr        save_addr;
 
+    save_addr.offset = 0;
+    save_addr.segment = 0;
     first_save = true;
     map = CurrSIOData->curr_image->map_data;
     count = CurrSIOData->curr_image->map_count;
@@ -881,8 +885,8 @@ extern void MapAddressToMap( addr_ptr *addr )
 
 
 
-extern void MapAddressIntoSection( address *addr )
-/************************************************/
+void MapAddressIntoSection( address *addr )
+/*****************************************/
 {
     image_info          *curr_image;
     ovl_entry           *overlay;
@@ -1204,7 +1208,7 @@ STATIC unsigned char exeGetChar( void )
     return( exeBuff[ exeCurrent++ ] );
 }
 
-unsigned FormatAddr( address a, char *buffer, unsigned max )
+size_t FormatAddr( address a, char *buffer, size_t max )
 {
     mad_type_info       host;
     mad_type_info       mti;
@@ -1217,8 +1221,8 @@ unsigned FormatAddr( address a, char *buffer, unsigned max )
     return( max );
 }
 
-void GetFullInstruct( address a, char * buffer, int max )
-/*******************************************************/
+void GetFullInstruct( address a, char * buffer, size_t max )
+/**********************************************************/
 {
     unsigned            i;
     char *              tail;
@@ -1226,16 +1230,16 @@ void GetFullInstruct( address a, char * buffer, int max )
     unsigned            ins_size;
     mad_type_info       host;
     unsigned_8          item;
-    unsigned            mad_max = max;
+    size_t              mad_max = max;
 
     start = a;
     MADDisasm( MDData, &a, 0 );
 
-    tail = &buffer[ FormatAddr( start, buffer, max ) ];
+    tail = &buffer[FormatAddr( start, buffer, max )];
     *tail++ = ' ';              /* two spaces */
     *tail++ = ' ';
 
-    if( 1 <= numBytes ) {
+    if( numBytes > 0 ) {
         SetExeOffset( start );
         ins_size = MADDisasmInsSize( MDData );
         for( i = 0; i < ins_size || i < numBytes; i++ ) {
@@ -1255,7 +1259,7 @@ void GetFullInstruct( address a, char * buffer, int max )
         *tail++ = ' ';
         exeRewind( ins_size );
     }
-    MADDisasmFormat( MDData, MDP_ALL, 16, tail, max - (tail-buffer) );
+    MADDisasmFormat( MDData, MDP_ALL, 16, tail, max - ( tail - buffer ) );
 }
 
 
@@ -1264,11 +1268,11 @@ void GetFullInstruct( address a, char * buffer, int max )
  * Convert address to a symbol string.  Return false if this could not be done.
  */
 
-bool CnvAddr( address addr, char *buff, unsigned buff_len )
+bool CnvAddr( address addr, char *buff, size_t buff_len )
 {
     sym_handle *    sym;
     search_result   sr;
-    unsigned        name_len;
+    size_t          name_len;
 
     sym = alloca( DIPHandleSize( HK_SYM ) );
 //    MapAddressToActual( exeImage, &addr.mach );

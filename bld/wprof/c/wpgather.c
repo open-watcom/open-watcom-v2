@@ -122,6 +122,7 @@ void GatherImage( sio_data * curr_sio, bool gather_active )
 
     curr_sio->gather_active = gather_active;
     image_count = 0;
+    gather_image = NULL;
     count = curr_sio->image_count;
     curr_sio->number_gathered = 0;
     if( !gather_active ) {
@@ -172,6 +173,7 @@ void GatherMod( sio_data * curr_sio, bool gather_active )
     clicks_t        agg_count;
     clicks_t        cutoff;
 
+    gather_mod = NULL;
     curr_image = curr_sio->curr_image;
     curr_image->gather_active = gather_active;
     curr_image->number_gathered = 0;
@@ -225,6 +227,7 @@ void GatherFile( sio_data * curr_sio, bool gather_active )
     clicks_t        agg_count;
     clicks_t        cutoff;
 
+    gather_file = NULL;
     curr_mod = curr_sio->curr_mod;
     curr_mod->gather_active = gather_active;
     curr_mod->number_gathered = 0;
@@ -278,6 +281,7 @@ void GatherRtn( sio_data * curr_sio, bool gather_active )
     clicks_t        agg_count;
     clicks_t        cutoff;
 
+    gather_rtn = NULL;
     curr_file = curr_sio->curr_file;
     curr_file->gather_active = gather_active;
     curr_file->number_gathered = 0;

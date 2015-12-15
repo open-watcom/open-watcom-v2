@@ -134,9 +134,9 @@ char *FindFile( char *fullname, char *name, char *path_list )
 }
 
 #if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len,
-                const char *ext, char *result, unsigned max_result )
-/******************************************************************/
+dig_fhandle DIGPathOpen( const char *name, size_t name_len,
+                const char *ext, char *result, size_t max_result )
+/****************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char *      filename;

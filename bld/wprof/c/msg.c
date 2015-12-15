@@ -46,16 +46,16 @@ extern  bool    WPWndInitDone;
 STATIC void doErr( char * msg, va_list args )
 /*******************************************/
 {
-    char *      dest;
-    char *      str_arg;
-    int         str_len;
-    int         msg_len;
+    char        *dest;
+    char        *str_arg;
+    size_t      str_len;
+    size_t      msg_len;
     char        num_buff[11];
-    char        buff[MAX_MSG_LEN+3];
+    char        buff[MAX_MSG_LEN + 3];
 
     msg_len = 0;
     dest = buff;
-    while( *msg ) {
+    while( *msg != '\0' ) {
         if( *msg != '%' ) {
             *dest++ = *msg;
             msg_len++;
@@ -69,21 +69,24 @@ STATIC void doErr( char * msg, va_list args )
                 if( *msg == 's' ) {
                     str_arg = va_arg( args, char * );
                     str_len = strlen( str_arg );
-                    msg_len += str_len;
                 } else if( *msg == 'd' ) {
                     sprintf( num_buff, "%d", va_arg( args, int ) );
                     str_arg = num_buff;
                     str_len = strlen( str_arg );
+                } else {
+                    str_arg = msg - 1;
+                    str_len = 2;
                 }
-                if( msg_len+str_len > MAX_MSG_LEN ) {
+                if( msg_len + str_len > MAX_MSG_LEN ) {
                     str_len = MAX_MSG_LEN - msg_len;
                 }
-                msg_len += str_len;
                 memcpy( dest, str_arg, str_len );
+                msg_len += str_len;
                 dest += str_len;
             }
         }
-        if( msg_len == MAX_MSG_LEN ) break;
+        if( msg_len == MAX_MSG_LEN ) 
+            break;
         ++msg;
     }
     *dest++ = '\r';

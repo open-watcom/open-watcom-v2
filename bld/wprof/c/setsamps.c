@@ -754,7 +754,7 @@ STATIC void calcAggregates( void )
     unsigned            *sorted_idx;
     address             ***sorted_vect;
     massgd_sample_addr  **massgd_data;
-    unsigned            mbuckets;
+//    unsigned            mbuckets;
     unsigned            curr_mbucket;
     unsigned            curr_midx;
     thread_data         *thd;
@@ -797,7 +797,7 @@ STATIC void calcAggregates( void )
     curr = NULL;
     curr_mbucket = 0;
     curr_midx = -1;
-    mbuckets = 1;
+//    mbuckets = 1;
     massgd_data = ProfAlloc( sizeof( *massgd_data ) );
     massgd_data[0] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );
     for( ;; ) {

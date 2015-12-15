@@ -35,8 +35,8 @@
 #include "madtypes.h"
 #include "digcli.h"
 
-unsigned        DIGCLIENT MADCliReadMem( address, unsigned size, void *buff );
-unsigned        DIGCLIENT MADCliWriteMem( address, unsigned size, const void *buff );
+size_t          DIGCLIENT MADCliReadMem( address, size_t size, void *buff );
+size_t          DIGCLIENT MADCliWriteMem( address, size_t size, const void *buff );
 
 size_t          DIGCLIENT MADCliString( mad_string, char *buff, size_t buff_size );
 mad_status      DIGCLIENT MADCliAddString( mad_string, const char * );

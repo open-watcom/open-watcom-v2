@@ -265,8 +265,8 @@ typedef struct mad_client_routines {
     unsigned            (DIGCLIENT *MADCliRead)( dig_fhandle, void *, unsigned );
     void                (DIGCLIENT *MADCliClose)( dig_fhandle );
 
-    unsigned            (DIGCLIENT *MADCliReadMem)( address, unsigned size, void *buff );
-    unsigned            (DIGCLIENT *MADCliWriteMem)( address, unsigned size, void const *buff );
+    size_t              (DIGCLIENT *MADCliReadMem)( address, size_t size, void *buff );
+    size_t              (DIGCLIENT *MADCliWriteMem)( address, size_t size, void const *buff );
 
     size_t              (DIGCLIENT *MADCliString)( mad_string, char *buff, size_t buff_size );
     mad_status          (DIGCLIENT *MADCliAddString)( mad_string, const char * );
@@ -308,8 +308,8 @@ unsigned long   MCSeek( dig_fhandle, unsigned long, dig_seek );
 unsigned        MCRead( dig_fhandle, void *, unsigned );
 void            MCClose( dig_fhandle );
 
-unsigned        MCReadMem( address, unsigned size, void *buff );
-unsigned        MCWriteMem( address, unsigned size, void *buff );
+size_t          MCReadMem( address, size_t size, void *buff );
+size_t          MCWriteMem( address, size_t size, void *buff );
 
 size_t          MCString( mad_string, char *buff, size_t buff_size );
 mad_status      MCAddString( mad_string, const char * );

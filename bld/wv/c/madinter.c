@@ -52,11 +52,11 @@
 #include "dbgreg.h"
 #include "dbgset.h"
 #include "dbgupdt.h"
+#include "dbgmad.h"
 
 #include "clibext.h"
 
 
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
 extern void             SetMADMenuItems( void );
 
 static mad_status       MADStatus;
@@ -110,17 +110,17 @@ mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, addre
 }
 
 
-unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
+size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
 {
     return( ProgPeek( a, buff, size ) );
 }
 
-unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
+size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
 {
     return( ProgPoke( a, buff, size ) );
 }
 
-size_t          DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
+size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
 {
     static  char ** strings[] = {
         #define pick( e, es, js ) LITREF_ENG( e ),
