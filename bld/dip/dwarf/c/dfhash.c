@@ -73,14 +73,11 @@ static void StrFini( str_ctl *ctl )
 /*********************************/
 {
     str_blk     *blks;
+    str_blk     *next;
 
-    blks = ctl->blks;
-    while( blks != NULL ) {
-        str_blk *curr;
-
-        curr = blks;
-        blks = blks->next;
-        DCFree( curr );
+    for( blks = ctl->blks; blks != NULL; blks = next ) {
+        next = blks->next;
+        DCFree( blks );
     }
     ctl->rem = 0;
     ctl->blks = NULL;
@@ -140,7 +137,7 @@ static uint_32 elf_hash( char const *name )
 
     h = 0;
     while( *name != '\0' ) {
-        h = (h << 4 ) + tolower( *name );
+        h = (h << 4 ) + tolower( *(unsigned char *)name );
         ++name;
         if( (g = h & 0xf000000) != 0 ) {
             h ^= g >> 24;
@@ -173,10 +170,13 @@ extern void FiniHashName( name_ctl *ctl )
 /***************************************/
 // Kill hash table
 {
-    int     bnum;
-    int     vacant, max, size;
+    unsigned    bnum;
+    unsigned    vacant;
+    unsigned    max;
+    unsigned    size;
 
-    vacant= 0;  max = 0;
+    vacant = 0;
+    max = 0;
     for( bnum = 0; bnum < NAME_BUCKETS; ++bnum ) {
         name_blk    *blk;
         name_blk    *next;
@@ -185,7 +185,7 @@ extern void FiniHashName( name_ctl *ctl )
         if( ctl->bucket[bnum].rem == 0 ) {
             ++vacant;
         } else {
-            size =  NAME_BLKSIZE-ctl->bucket[bnum].rem;
+            size = NAME_BLKSIZE - ctl->bucket[bnum].rem;
             if( size > max ) {
                 max = size;
             }
@@ -247,9 +247,8 @@ bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
     key = elf_hash( wlk->name );
     bnum = BNUM( key );
     count = NAME_BLKSIZE-ctl->bucket[bnum].rem;
-    blk = ctl->bucket[bnum].head;
 //    ret = TRUE;
-    while( blk != NULL ) {
+    for( blk = ctl->bucket[bnum].head; blk != NULL; blk = blk->next ) {
         name_entry  *curr;
 
         curr = &blk->entry[0];
@@ -262,7 +261,6 @@ bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
             ++curr;
             --count;
         }
-        blk = blk->next;
         count = NAME_BLKSIZE;
     }
     return( TRUE );

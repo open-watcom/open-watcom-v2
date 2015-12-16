@@ -38,7 +38,7 @@
 #include "wattype.h"
 #include "watgbl.h"
 
-#define NO_LINE         ((unsigned_16)-1)
+#define NO_LINE         ((word)-1)
 
 #define NEXT_SEG( ptr ) (V2Lines ? ((line_segment *)&((ptr)->v2.line[(ptr)->v2.num])) \
                                  : ((line_segment *)&((ptr)->v3.line[(ptr)->v3.num])))
@@ -181,7 +181,7 @@ static void UnlockLine( void )
 
 
 static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im,
-                                 unsigned entry )
+                                 word entry )
 {
     if( entry != 0 )
         UnlockLine();
@@ -311,7 +311,7 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
                 address addr, imp_cue_handle *ic )
 {
     struct search_info  close;
-    unsigned            save_entry = 0;
+    word                save_entry = 0;
 
     close.ic.im = im;
     close.have = SR_NONE;
@@ -319,10 +319,12 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
     close.have_spec_table = ST_UNKNOWN;
     close.off = 0;
     for( ;; ) {
-        if( GetLineInfo( ii, close.ic.im, close.ic.entry ) != DS_OK ) break;
+        if( GetLineInfo( ii, close.ic.im, close.ic.entry ) != DS_OK )
+            break;
         SearchSection( ii, &close, addr );
         if( close.found ) save_entry = close.ic.entry;
-        if( close.have == SR_EXACT ) break;
+        if( close.have == SR_EXACT )
+            break;
         ++close.ic.entry;
     }
     *ic = close.ic;
@@ -376,21 +378,25 @@ search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
                         imp_cue_handle *ic )
 {
     struct search_info  close;
-    unsigned            save_entry = 0;
+    word                save_entry = 0;
     const char          *base;
 
     col = col;
-    if( file == 0 ) file = 1;
+    if( file == 0 )
+        file = 1;
     close.ic.im = im;
     close.have = SR_NONE;
     close.num = 0;
     close.ic.entry = 0;
     close.special_table = FindSpecCueTable( ii, im, &base );
     for( ;; ) {
-        if( GetLineInfo( ii, im, close.ic.entry ) != DS_OK ) break;
+        if( GetLineInfo( ii, im, close.ic.entry ) != DS_OK )
+            break;
         ScanSection( &close, file, line );
-        if( close.found ) save_entry = close.ic.entry;
-        if( close.have == SR_EXACT ) break;
+        if( close.found )
+            save_entry = close.ic.entry;
+        if( close.have == SR_EXACT )
+            break;
         ++close.ic.entry;
     }
     *ic = close.ic;
@@ -524,14 +530,15 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info           *info;
     line_segment        *seg;
-    unsigned            num_entries;
+    word                num_entries;
     dip_status          status;
 
     status = DS_OK;
     num_entries = ModPointer( ii, ic->im )->di[DMND_LINES].u.entries;
     for( ;; ) {
         status = GetLineInfo( ii, ic->im, ic->entry );
-        if( status != DS_OK ) return( status );
+        if( status != DS_OK )
+            return( status );
         seg = UNBIAS( ic->seg_bias );
         info = UNBIAS( ic->info_bias );
         ++info;
@@ -543,7 +550,8 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
                 return( DS_OK );
             }
             seg = NEXT_SEG( seg );
-            if( seg >= LinEnd ) break;
+            if( seg >= LinEnd )
+                break;
             info = LINE_LINE( seg );
         }
         ic->entry++;
@@ -578,7 +586,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info           *info;
     line_segment        *seg;
-    unsigned            num_entries;
+    word                num_entries;
     dip_status          status;
 
     LinStart = NULL;

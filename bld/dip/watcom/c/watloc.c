@@ -72,8 +72,10 @@ void LocationAdd( location_list *ll, long sbits )
     num = 0;
     le = &ll->e[0];
     for( ;; ) {
-        if( le->bit_length == 0 ) break;
-        if( le->bit_length > bits ) break;
+        if( le->bit_length == 0 )
+            break;
+        if( le->bit_length > bits )
+            break;
         bits -= le->bit_length;
         ++num;
     }
@@ -84,7 +86,8 @@ void LocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {
@@ -216,7 +219,7 @@ location_info InfoLocation( const char *e )
 static const char *ParseLocEntry( imp_image_handle *ii, const char *ptr,
                         loc_entry *location )
 {
-    unsigned int    numregs;
+    byte    numregs;
 
     location->bp_offset.class = GETU8( ptr++ );
     switch( location->bp_offset.class & CLASS_MASK ) {
@@ -268,7 +271,7 @@ static const char *ParseLocEntry( imp_image_handle *ii, const char *ptr,
         location->multi_reg.class &= CLASS_MASK;
         location->multi_reg.numregs = numregs;
         do {
-            location->multi_reg.regs[ location->multi_reg.numregs - numregs ] = GETU8( ptr++ );
+            location->multi_reg.regs[location->multi_reg.numregs - numregs] = *ptr++;
         } while( --numregs != 0 );
         break;
     case REG :

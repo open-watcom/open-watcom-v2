@@ -60,7 +60,7 @@ typedef struct {
     lcl_block           b;
     unsigned char       pro_size;
     unsigned char       epi_size;
-    unsigned long       ret_addr_offset;
+    addr_off            ret_addr_offset;
 } lcl_routine;
 
 typedef struct {
@@ -106,9 +106,9 @@ typedef union {
 
 
 extern unsigned         InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                                demand_kind dk, unsigned entry );
+                                demand_kind dk, word entry );
 extern void             *InfoLoad( imp_image_handle *ii, imp_mod_handle im,
-                                demand_kind dk, unsigned entry,
+                                demand_kind dk, word entry,
                                 void (*clear)(void *, void *) );
 extern void             InfoClear( imp_image_handle *ii );
 extern void             InfoUnlock( void );

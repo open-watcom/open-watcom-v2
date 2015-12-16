@@ -560,7 +560,7 @@ static dip_status TryFindTrailer( imp_image_handle *ii )
     }
 
     pos -= sig.offset - sizeof( sig );
-    return FoundHLLSign( ii, pos, sig.offset - sizeof( sig ) );
+    return( FoundHLLSign( ii, pos, sig.offset - sizeof( sig ) ) );
 }
 
 /*

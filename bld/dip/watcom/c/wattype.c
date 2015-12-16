@@ -43,7 +43,7 @@
 typedef struct typeinfo {
     const char          *start;
     const char          *end;
-    unsigned            entry;
+    word                entry;
     imp_mod_handle      im;
     struct typeinfo     *prev;
 } typeinfo;
@@ -76,8 +76,7 @@ void KillTypeLoadStack( void )
     Type = NULL;
 }
 
-static dip_status LoadType( imp_image_handle *ii, imp_mod_handle im,
-                                unsigned entry )
+static dip_status LoadType( imp_image_handle *ii, imp_mod_handle im, word entry )
 {
     FreeLoad();
     Type->start = InfoLoad( ii, im, DMND_TYPES, entry, NULL );
@@ -322,7 +321,7 @@ static dip_status FindRawTypeHandle( imp_image_handle *ii, imp_mod_handle im,
 {
     const char  *p;
     byte        kind;
-    unsigned    entry;
+    word        entry;
     unsigned    count;
 
     if( index == 0 )
@@ -583,7 +582,7 @@ static const char *FindAName( struct name_state *state, const char *p,
 search_result LookupTypeName( imp_image_handle *ii, imp_mod_handle im,
                 lookup_item *li, imp_type_handle *it )
 {
-    unsigned            entry;
+    word                entry;
     struct name_state   state;
     const char          *p;
     typeinfo            typeld;
@@ -616,7 +615,7 @@ search_result LookupTypeName( imp_image_handle *ii, imp_mod_handle im,
 static search_result SearchEnumTypeName( imp_image_handle *ii, imp_mod_handle im,
                          lookup_item *li, void *d, type_or_enum which )
 {
-    unsigned            entry;
+    word                entry;
     struct name_state   state;
     search_result       sr;
     imp_sym_handle      *is;
@@ -628,7 +627,8 @@ static search_result SearchEnumTypeName( imp_image_handle *ii, imp_mod_handle im
     InitNameState( &state );
     entry = 0;
     for( ;; ) {
-        if( LoadType( ii, im, entry ) != DS_OK ) break;
+        if( LoadType( ii, im, entry ) != DS_OK )
+            break;
         p = Type->start;
         for( ;; ) {
             p = FindAName( &state, p, which, li );
@@ -687,7 +687,8 @@ walk_result DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii, imp_mod_handle im
     it->f.all = 0;
     it->t.entry = 0;
     for( ;; ) {
-        if( LoadType( ii, im, it->t.entry ) != DS_OK ) break;
+        if( LoadType( ii, im, it->t.entry ) != DS_OK )
+            break;
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = GETU8( p + 1 );
             switch( kind & CLASS_MASK ) {
@@ -845,8 +846,7 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
                 ti->size = GETU32( p + 4 );
             } else {
                 max = 0;
-                count = GETU16( p + 2 );
-                while( count != 0 ) {
+                for( count = GETU16( p + 2 ); count > 0; --count ) {
                     skip = 2;
                     p = NEXT_TYPE( p );
                     switch( GETU8( p + 1 ) ) {
@@ -890,7 +890,6 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
                             max = offset;
                         }
                     }
-                    --count;
                 }
                 ti->size = max;
             }
@@ -1306,7 +1305,7 @@ struct anc_graph {
             unsigned short      count;
         }                       s;
     }                           u;
-    unsigned short              entry;
+    word                        entry;
 };
 
 dip_status SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
@@ -1822,7 +1821,7 @@ const char *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im, const cha
 {
     typeinfo            typeld;
     const char          *p;
-    unsigned            entry;
+    word                entry;
     unsigned long       offset;
     unsigned            size;
 

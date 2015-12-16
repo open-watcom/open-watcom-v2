@@ -162,7 +162,7 @@ msym_block *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
     for( b = ii->addr; b != NULL; b = b->next ) {
         if( SameAddrSpace( b->start, addr )
           && b->start.offset <= addr.offset
-          && (b->start.offset+b->len) > addr.offset ) {
+          && (b->start.offset + b->len) > addr.offset ) {
             return( b );
         }
     }
@@ -318,6 +318,8 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, int count,
         goto done;
     }
 
+    sym.offset = 0;
+    sym_32.offset = 0;
     for( i = 0; i < count; ++i ) {
         if( BSeek( h, base_ofs + sym_tbl[i], DIG_ORG ) == DCSEEK_ERROR ) {
             ds = DS_ERR | DS_FSEEK_FAILED;
@@ -380,7 +382,6 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         if( seg_start == DCSEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
-
         if( BRead( h, &seg, SYM_SEGDEF_FIXSIZE ) != SYM_SEGDEF_FIXSIZE ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
@@ -391,10 +392,11 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         /* There's no good way to tell whether segment is code or data. Try
          * to guess what a segment is based on its name.
          */
-        if( !strcmp( name, "DGROUP" ) )
+        if( strcmp( name, "DGROUP" ) == 0 ) {
             is_code = 0;
-        else
+        } else {
             is_code = 1;
+        }
         ds = AddBlock( ii, seg.load_addr, 0, 0, is_code );
         if( ds != DS_OK )
             return( ds );

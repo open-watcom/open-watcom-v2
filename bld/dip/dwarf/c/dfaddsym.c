@@ -189,8 +189,7 @@ extern  int  FindAddrSym( seg_list     *addr_map,
         if( cmp.hi == 0 ) {
             cmp.hi = OFF_PER_BLK;
         }
-        blk = ctl->off.head;
-        while( blk != NULL ) {
+        for( blk = ctl->off.head; blk != NULL; blk = blk->next ) {
             cmp.base = &blk->info[0];
             diff =  BlkOffSearch( &cmp );
             if( diff >= 0 ) {
@@ -206,7 +205,6 @@ extern  int  FindAddrSym( seg_list     *addr_map,
                 }
             }
             cmp.hi = OFF_PER_BLK;
-            blk = blk->next;
         }
     }
     if( last_find < 0 ) {
@@ -334,14 +332,12 @@ static bool FreeSegOffsets( void *d, void *_curr )
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;
-    off_blk     *blk, *old;
+    off_blk     *blk, *next;
 
     d = d;
-    blk = curr->off.head;
-    while( blk != NULL ) {
-        old = blk;
-        blk = blk->next;
-        DCFree( old );
+    for( blk = curr->off.head; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
     return( TRUE );
 }

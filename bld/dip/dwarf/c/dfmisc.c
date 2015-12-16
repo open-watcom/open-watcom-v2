@@ -43,17 +43,14 @@ char const  DIPImpName[] = "DWARF";
 
 df_cleaner       *Cleaners;
 
-static void CallCleaners( void ){
-/********************************/
+static void CallCleaners( void )
+/******************************/
 //Call all stacked resource cleanup
-    df_cleaner *curr;
-
-    curr = Cleaners;
-    while( curr != NULL ){
-        curr->rtn( curr->d );
-        curr = curr->prev;
+{
+    while( Cleaners != NULL ){
+        Cleaners->rtn( Cleaners->d );
+        Cleaners = Cleaners->prev;
     }
-    Cleaners = NULL;
 }
 
 unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
@@ -80,16 +77,15 @@ extern void DFAddImage( imp_image_handle *ii ){
     Images = ii;
 }
 
-extern void DFFreeImage( imp_image_handle *ii ){
+void DFFreeImage( imp_image_handle *ii )
 /**************************************/
+{
     imp_image_handle *curr, **lnk;
 
-    lnk = &Images;
-    while( (curr = *lnk) != NULL  ){
-       if( curr == ii ){
+    for( lnk = &Images; (curr = *lnk) != NULL; lnk = &curr->next ) {
+       if( curr == ii ) {
            *lnk = curr->next;
        }
-       lnk = &curr->next;
     }
 }
 
@@ -105,8 +101,7 @@ dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
     size = size;
 
     ret = DS_FAIL;
-    curr = Images;
-    while( curr != NULL ){
+    for( curr = Images; curr != NULL; curr = curr->next ) {
         if( ClearMods( curr ) ){
             ret = DS_OK;
         }
@@ -116,7 +111,6 @@ dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
         if( FiniImpCueInfo( curr ) ){
             ret = DS_OK;
         }
-        curr = curr->next;
     }
     return( ret );
 }

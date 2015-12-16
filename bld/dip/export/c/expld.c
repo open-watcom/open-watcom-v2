@@ -96,7 +96,8 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
-        if( Buff.fpos == DCSEEK_ERROR ) return( 0 );
+        if( Buff.fpos == DCSEEK_ERROR )
+            return( 0 );
         got = DCRead( h, b, s );
         Buff.fpos += got;
         return( got );
@@ -251,7 +252,7 @@ static dip_status ProcTable( dig_fhandle h, imp_image_handle *ii,
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( len == 0 ) break;
-        if( BRead( h, buff, len + 2 ) != len + 2 ) {
+        if( BRead( h, buff, len + 2 ) != (unsigned)( len + 2 ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         ord = *(unsigned_16 *)&buff[len];
@@ -394,6 +395,7 @@ static dip_status TryLX( dig_fhandle h, imp_image_handle *ii,
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     ord = 1;
+    memset( &entry, 0, sizeof( entry ) );
     for( ;; ) {
         if( BRead( h, &pref, sizeof( pref ) ) != sizeof( pref ) ) {
             return( DS_ERR|DS_FREAD_FAILED );

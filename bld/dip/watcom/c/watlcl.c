@@ -487,6 +487,7 @@ search_result LookupLclAddr( imp_image_handle *ii, address addr,
         return( SR_NONE );
     sr = SR_NONE;
     next = local->start;
+    close_addr.mach.offset = 0;
     for( ;; ) {
         ptr = ModAddrLkupVar( next, local );
         if( ptr == NULL )

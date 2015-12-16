@@ -86,11 +86,9 @@ void GblSymFini( section_info *inf )
 {
     info_block          *ptr;
 
-    ptr = inf->gbl;
-    while( ptr != NULL ) {
+    for( ptr = inf->gbl; ptr != NULL; ptr = ptr->next ) {
         DCFree( ptr->link );
         ptr->link = NULL;
-        ptr = ptr->next;
     }
 }
 
@@ -198,38 +196,49 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     }
     for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
         lnk_array = LINK( blk )->link;
-        lnk_off = LINK( blk )->hash[GblNameHash( snam, snamlen )];
-        while( lnk_off != HL_END ) {
+        for( lnk_off = LINK( blk )->hash[GblNameHash( snam, snamlen )]; lnk_off != HL_END; lnk_off = lnk->hash_off ) {
             lnk = MAKE_LP( lnk_array, lnk_off );
             gbl = lnk->gbl;
-            if( lnk->dtor != lkup_dtor ) goto next_global;
+            if( lnk->dtor != lkup_dtor )
+                continue;
             if( lkup_full ) {
-                if( GBL_NAMELEN( gbl ) != namlen ) goto next_global;
+                if( GBL_NAMELEN( gbl ) != namlen ) {
+                    continue;
+                }
             } else {
-                if( lnk->src_len != namlen ) goto next_global;
+                if( lnk->src_len != namlen ) {
+                    continue;
+                }
             }
             if( im == IMH_NOMOD ) {
-                if( GBL_KIND( gbl ) & GBL_KIND_STATIC &&
-                    cim != GBL_MOD( gbl ) ) goto next_global;
+                if( (GBL_KIND( gbl ) & GBL_KIND_STATIC) && cim != GBL_MOD( gbl ) ) {
+                    continue;
+                }
             } else {
-                if( im != GBL_MOD( gbl ) ) goto next_global;
+                if( im != GBL_MOD( gbl ) ) {
+                    continue;
+                }
             }
             mangled_name = GBL_NAME( gbl );
             gblname = mangled_name;
             if( !lkup_full )
                 gblname += lnk->src_off;
-            if( compare( gblname, nam, namlen ) != 0 ) goto next_global;
+            if( compare( gblname, nam, namlen ) != 0 )
+                continue;
             if( li->scope.start != NULL ) {
+                int     rc;
+
                 mangled_len = GBL_NAMELEN( gbl );
-                entry = 0;
-                for( ;; ) {
-                    if( !__scope_name( mangled_name, mangled_len, entry, &gblname, &gbllen ) )
-                        goto next_global;
+                for( entry = 0;
+                  (rc = __scope_name( mangled_name, mangled_len, entry, &gblname, &gbllen )) != 0;
+                  ++entry ) {
                     if( li->scope.len == gbllen &&
                         compare( li->scope.start, gblname, gbllen ) == 0 ) {
                         break;
                     }
-                    ++entry;
+                }
+                if( rc == 0 ) {
+                    continue;
                 }
             }
             is = DCSymCreate( inf->ctl, d );
@@ -246,8 +255,6 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
                 GblCreate( is, gbl );
             }
             sr = SR_EXACT;
-next_global:
-            lnk_off = lnk->hash_off;
         }
     }
     return( sr );
@@ -313,7 +320,7 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is,
          * pointer scaling and to allow the code to work when the size
          * of the link block exceeds 32K.
          */
-        diff = (byte *)high - (byte *)low;
+        diff = (unsigned)( (byte *)high - (byte *)low );
         diff = (diff / 2) & ~(sizeof( gbl_link ) - 1);
         target = (gbl_link *)((byte *)low + diff);
         gbl = target->gbl;
@@ -330,7 +337,8 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is,
             return( SR_EXACT );
         }
     }
-    if( nearest == NULL ) return( SR_NONE );
+    if( nearest == NULL )
+        return( SR_NONE );
     gbl = nearest->gbl;
     if( is->u.gbl != NULL
         && ((gbl_info *)is->u.gbl)->addr.offset > gbl->addr.offset ) {
@@ -400,7 +408,7 @@ static int CmpInfo( const void *a, const void *b )
     gbl_info    *ga = ((gbl_link *)a)->gbl;
     gbl_info    *gb = ((gbl_link *)b)->gbl;
 
-    return( MachAddrComp( ga->addr, GBL_MOD(ga), gb->addr, GBL_MOD(gb) ) );
+    return( MachAddrComp( ga->addr, GBL_MOD( ga ), gb->addr, GBL_MOD( gb ) ) );
 }
 
 
@@ -419,7 +427,8 @@ void AdjustSyms( section_info *inf )
         count = 0;
         for( lnk = &LINK( ginf )->link[0]; lnk < LINK( ginf )->end; ++lnk ) {
             gbl = lnk->gbl;
-            if( inf->ctl->v2 ) gbl->mod = ModOff2Idx( inf, gbl->mod );
+            if( inf->ctl->v2 )
+                gbl->mod = ModOff2Idx( inf, gbl->mod );
             gbl->mod += inf->mod_base_idx;
             AddressMap( inf->ctl, &gbl->addr );
             ++count;
@@ -448,10 +457,8 @@ static dip_status DoMakeGblLst( info_block *inf, unsigned size )
     start = inf->info;
     end = start + size;
     num_syms = 0;
-    ptr = start;
-    while( ptr < end ) {
+    for( ptr = start; ptr < end; ptr += GBL_SIZE( ptr ) ) {
         ++num_syms;
-        ptr += GBL_SIZE( ptr );
     }
     link_data = DCAlloc( sizeof( gbl_link_info )
                         + (num_syms-1) * sizeof( gbl_link ) );
@@ -625,20 +632,22 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
     inf = ii->sect;
     for( i = 0; i < ii->num_sects; ++i, ++inf ) {
         for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
-            ptr = blk->info;
-            end = ptr + blk->size;
-            while( ptr < end ) {
+            end = blk->info + blk->size;
+            for( ptr = blk->info; ptr < end; ptr += GBL_SIZE( ptr ) ) {
                 is->im = GBL_MOD( ptr );
                 if( im == IMH_NOMOD ) {
                     if( ImpInterface.mod_info( ii, is->im, HK_SYM ) != DS_OK ) {
                         GblCreate( is, (gbl_info *)ptr );
                         wr = wk( ii, SWI_SYMBOL, is, d );
-                        if( wr != WR_CONTINUE ) return( wr );
+                        if( wr != WR_CONTINUE ) {
+                            return( wr );
+                        }
                     }
                 } else if( is->im == im ) {
                     GblCreate( is, (gbl_info *)ptr );
                     wr = wk( ii, SWI_SYMBOL, is, d );
-                    if( wr != WR_CONTINUE ) return( wr );
+                    if( wr != WR_CONTINUE )
+                        return( wr );
                     seen_module = 1;
                 } else if( seen_module ) {
                     /*
@@ -648,7 +657,6 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
                     */
                     return( WR_CONTINUE );
                 }
-                ptr += GBL_SIZE( ptr );
             }
         }
     }

@@ -311,7 +311,8 @@ static char *DoDemangle( char *name, unsigned *add, unsigned *len, char *sig )
     switch( *sig++ ) {
     case SIGNATURE_ARRAY:
         Insert( name, add, len, " []" );
-        while( isdigit( *sig ) ) ++sig;
+        while( isdigit( *sig ) )
+            ++sig;
         sig = DoDemangle( name, add, len, sig );
         break;
     case SIGNATURE_CLASS:
@@ -956,7 +957,7 @@ static search_result FindAScope( imp_image_handle *ii, scope_block *scope )
     if( best.idx == ~0 ) {
         scope->len = ii->methods[mb_idx].code_length;
         scope->unique = OBJECT_SCOPE;
-        return( (off ==0) ? SR_EXACT : SR_CLOSEST );
+        return( (off == 0) ? SR_EXACT : SR_CLOSEST );
     }
     scope->start.mach.offset += best.pc;
     scope->len = best.len;

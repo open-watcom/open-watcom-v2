@@ -280,6 +280,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         sym_li.name.start = buff;
     }
     sr = SR_NONE;
+    im = IMH_NOMOD;
     switch( ss ) {
     case SS_SCOPED:
         if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
@@ -437,6 +438,7 @@ static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
     sym_glue            glue;
     walk_result         wr;
 
+    wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE:
         return( WalkTypeSymList( ii, (imp_type_handle *)t, wk, is, d ) );

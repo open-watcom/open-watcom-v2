@@ -96,7 +96,7 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
         }
         --len;
         if( buff_size != 0 && len > buff_size ) {
-           buff[buff_size - 1] = '\0';
+            buff[buff_size - 1] = '\0';
         }
         break;
     case SN_SCOPED:
@@ -494,10 +494,11 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
             si->ret_modifier = TM_NONE;
             si->epilog_size = 0;
             si->rtn_calloc  = 0;
-            if( EvalOffset( ii, is->sym, &num1 ) )
+            if( EvalOffset( ii, is->sym, &num1 ) ) {
                 si->ret_addr_offset = num1;
-            else
-                si->ret_addr_offset = ~0;
+            } else {
+                si->ret_addr_offset = (addr_off)-1L;
+            }
             addr_class =  DRGetAddrClass( is->sym );
             switch( addr_class ) {
             case DR_PTR_far32:
@@ -867,8 +868,7 @@ static bool IsInScope( scope_ctl  *ctl, address addr )
     root = ctl->root;
     if( root != NULL ) {
         if( ctl->base.mach.segment == addr.mach.segment ) {
-            if( root->start <= addr.mach.offset
-              && addr.mach.offset <  root->end ) {
+            if( root->start <= addr.mach.offset && addr.mach.offset < root->end ) {
                 ret = TRUE;
            }
         }
@@ -1562,16 +1562,15 @@ static unsigned StrVCopy( strvo *dst, strvi *src )
     unsigned    total;
 
     total = src->len;
-    for( ;; ) {
-        if( src->len == 0 ) break;
-        if( *src->p == '\0' ) break;
+    for( ; src->len > 0; --src->len ) {
+        if( *src->p == '\0' )
+            break;
         if( dst->len > 0 ) {
             *dst->p = *src->p;
             ++dst->p;
             --dst->len;
         }
         ++src->p;
-        --src->len;
     }
     total -= src->len;
     return( total );
@@ -1692,7 +1691,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.kind = WLK_LOOKUP;
     df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
     df.lookup.li = li;
-    df.lookup.len =  li->name.len+1;
+    df.lookup.len =  li->name.len + 1;
     if( df.lookup.len <= sizeof( buff ) ) {
         df.lookup.buff = buff;
     } else {

@@ -67,13 +67,11 @@ void LocationAdd( location_list *ll, long sbits )
         bits = 8 - (bits % 8);
         bits %= 8;
     }
-    num = 0;
-    le = &ll->e[0];
-    for( ;; ) {
-        if( le->bit_length == 0 ) break;
-        if( le->bit_length > bits ) break;
+    le = ll->e;
+    for( num = 0; ; ++num ) {
+        if( le->bit_length == 0 || le->bit_length > bits )
+            break;
         bits -= le->bit_length;
-        ++num;
     }
     if( num != 0 ) {
         ll->num -= num;

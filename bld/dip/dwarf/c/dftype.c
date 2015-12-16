@@ -889,13 +889,11 @@ static bool FreeBases( void *_lnk )
 {
     inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
-    inh_vbase   *old;
+    inh_vbase   *next;
 
-    cur = *lnk;
-    while( cur != NULL ){
-        old = cur;
-        cur = cur->next;
-        DCFree( old );
+    for( cur = *lnk; cur != NULL; cur = next ) {
+        next = cur->next;
+        DCFree( cur );
     }
     *lnk = NULL;
     return 0;
@@ -1282,15 +1280,14 @@ static bool AInhFind( dr_handle inh, int index, void *_df )
     df->lnk = &head.next;
     dr_derived = DRGetTypeAT( inh );        /* get base type */
     if( dr_derived == df->dr_derived ){
-        curr = df->head;
-        while( curr != NULL ){
+        for( curr = df->head; curr != NULL; curr = curr->next ) {
             df->wr = EvalLocAdj( df->ii, df->lc, curr->inh, df->addr );
-            if( df->wr != DS_OK )
+            if( df->wr != DS_OK ) {
                 break;
-            curr = curr->next;
+            }
         }
         df->cont = FALSE;
-    }else{
+    } else {
         dr_derived =  DRSkipTypeChain( dr_derived); /* skip modifiers and typedefs */
         DRWalkStruct( dr_derived, InheritWlk, df ); /* walk struct looking for inheritance */
     }
@@ -1364,15 +1361,13 @@ size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     ++num;
     len = 0;
-    dr_type = it->type;
-    while( dr_type != DR_HANDLE_NUL ) {
+    for( dr_type = it->type; dr_type != DR_HANDLE_NUL; dr_type = DRGetTypeAT( dr_type ) ) {
         name =  DRGetName( dr_type );
         if( name != NULL ){
             if( --num == 0 )
                 break;
             DCFree( name );
         }
-        dr_type = DRGetTypeAT( dr_type );
     }
     if( num == 0 ){
         DRGetTypeInfo( dr_type, &typeinfo );

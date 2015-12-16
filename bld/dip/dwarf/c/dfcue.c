@@ -138,7 +138,7 @@ static bool ACueFile( void *_info, dr_line_file *curr )
         }
         cont = FALSE;
     }
-    return( cont  );
+    return( cont );
 }
 
 
@@ -589,6 +589,8 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     }
     cue.line = line;
     cue.col = (uint_16)column;
+    cue.mach.offset = 0;
+    cue.mach.segment = 0;
     ic->a = NilAddr;
     if( line == 0 ) {
         what = LOOK_FILE;

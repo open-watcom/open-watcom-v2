@@ -119,14 +119,15 @@ static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned lon
         start += sizeof( dbg_head );
         start -= dbg_head.size;
         DCSeek( f, start, DIG_ORG );
-        if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS
-         && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) break;
+        if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
+            break;
+        }
     }
     // read elf header find dwarf info
-    if( DCRead( f, &elf_head, sizeof( elf_head )) != sizeof( elf_head ) ) {
+    if( DCRead( f, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) ) {
         return( DS_FAIL );
     }
-    if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
+    if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) != 0 ) {
         return( DS_FAIL );
     }
     if( elf_head.e_ident[EI_CLASS] == ELFCLASS64 ) {

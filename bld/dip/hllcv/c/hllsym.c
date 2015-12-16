@@ -1183,6 +1183,7 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
 {
     unsigned        off_name_len;
     unsigned_32     pos;
+    unsigned_16     len;
 
     /*
      * Iterate the publics.
@@ -1192,11 +1193,9 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
     } else {
         off_name_len = offsetof( cv3_public_16, name_len );
     }
-    pos = 0;
-    while( pos < hde->cb ) {
+    for( pos = 0; pos < hde->cb; pos += len ) {
         hll_public_all  *pub;
         unsigned_8      name_len;
-        unsigned_16     len;
         walk_result     wr;
 
         /* get the record length and make sure it's all valid. */
@@ -1223,9 +1222,6 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
-
-        /* next */
-        pos += len;
     }
     return( WR_CONTINUE );
 }
@@ -1742,7 +1738,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         case HLL_SSR_MEM_FUNC:
             si->kind = SK_PROCEDURE;
             si->rtn_far = !!(ssr->proc.flags & HLL_SSR_PROC_FAR);
-            si->ret_addr_offset = ssr->proc.flags & HLL_SSR_PROC_32BIT
+            si->ret_addr_offset = (ssr->proc.flags & HLL_SSR_PROC_32BIT)
                                 ? sizeof( unsigned_32 ) : sizeof( unsigned_16 );
             si->prolog_size = ssr->proc.prologue_len;
             si->epilog_size = ssr->proc.len - ssr->proc.prologue_body_len;

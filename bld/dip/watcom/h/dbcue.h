@@ -35,10 +35,10 @@ typedef unsigned_16 cue_idx;
 
 #include "pushpck1.h"
 typedef struct cue_state{
-    cue_idx     cue;
-    short       fno;
-    unsigned_16 line;
-    unsigned_16 col;
+    cue_idx         cue;
+    unsigned_16     fno;
+    unsigned_16     line;
+    unsigned_16     col;
 } _WCUNALIGNED cue_state;
 #include "poppck.h"
 

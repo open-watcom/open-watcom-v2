@@ -63,17 +63,16 @@ static demand_ctrl      *LastDemand;
 static unsigned         LastDmndSize;
 static unsigned         TimeStamp;
 
-#define GET_LINK( sect, idx )                                   \
-        ((sect)->dmnd_link[(unsigned)(idx) / MAX_LINK_ENTRIES]  \
-        [(unsigned)(idx) % MAX_LINK_ENTRIES])
+#define GET_LINK( sect, idx )                               \
+        ((sect)->dmnd_link[(dword)(idx) / MAX_LINK_ENTRIES] \
+        [(dword)(idx) % MAX_LINK_ENTRIES])
 
 #define RESIDENT                0x00000001UL
 #define MK_DMND_PTR( p )        ((demand_ctrl *)( (p) & ~RESIDENT))
 #define IS_RESIDENT( p )        ((p) & RESIDENT)
 #define DMND_LINK( p )          (IS_RESIDENT(p)?MK_DMND_PTR(p)->save:(p))
-#define MK_DMND_OFFSET( p )     (DMND_LINK( p ) >> 1)
-#define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1))     \
-                                 - DMND_LINK(GET_LINK(sect,idx))) >> 1)
+#define MK_DMND_OFFSET( p )     ((p) >> 1)
+#define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1)) - DMND_LINK(GET_LINK(sect,idx))) >> 1)
 #define STASH_DMND_PTR( p )     ((pointer_int)(p) | RESIDENT)
 
 
@@ -81,17 +80,18 @@ static unsigned         TimeStamp;
  * InfoSize -- return size of demand info section
  */
 unsigned InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                        demand_kind dk, unsigned entry )
+                        demand_kind dk, word entry )
 {
     demand_info         *dmnd;
     section_info        *inf;
+    dword               real_entry;
 
     dmnd = &ModPointer( ii, im )->di[dk];
     if( entry >= dmnd->u.entries )
         return( 0 );
-    entry += dmnd->info_off;
+    real_entry = dmnd->info_off + entry;
     inf = FindInfo( ii, im );
-    return( DMND_SIZE( inf, entry ) );
+    return( (unsigned)DMND_SIZE( inf, real_entry ) );
 }
 
 
@@ -108,7 +108,7 @@ static walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
     struct walk_demand  *wdd = d;
     unsigned long       size;
     demand_kind         dk;
-    unsigned            i;
+    word                i;
 
     for( dk = 0; dk < MAX_DMND; ++dk ) {
         i = 0;
@@ -191,16 +191,16 @@ static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
     demand_kind         dk;
     mod_info            *mp;
     section_info        *sect;
-    int                 entry;
-    unsigned            real_entry;
+    word                entry;
+    dword               real_entry;
     pointer_int         *lnk;
 
     d = d;
     mp = ModPointer( ii, im );
     sect = FindInfo( ii, im );
     for( dk = 0; dk < MAX_DMND; ++dk ) {
-        for( entry = mp->di[dk].u.entries-1; entry >= 0; --entry ) {
-            real_entry = entry + mp->di[dk].info_off;
+        for( entry = mp->di[dk].u.entries; entry-- > 0; ) {
+            real_entry = mp->di[dk].info_off + entry;
             lnk = &GET_LINK( sect, real_entry );
             if( IS_RESIDENT( *lnk ) ) {
                 Unload( MK_DMND_PTR( *lnk ) );
@@ -235,7 +235,7 @@ void InfoUnlock( void )
  */
 
 void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
-                unsigned entry, void (*clear)(void *, void *) )
+                word entry, void (*clear)(void *, void *) )
 {
     demand_ctrl         *section;
     demand_info         *info;
@@ -243,27 +243,27 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
     unsigned long       tmpoff;
     pointer_int         *lnk;
     unsigned            size;
+    dword               real_entry;
 
     ++TimeStamp;
     if( TimeStamp == 0 ) { /* TimeStamp wrapped */
         TimeStamp = 1;
-        for(section = DemandList; section != NULL; section = section->link) {
+        for( section = DemandList; section != NULL; section = section->link ) {
             section->time_stamp = 0;
         }
     }
     info = &ModPointer( ii, im )->di[dk];
     if( entry >= info->u.entries )
         return( NULL );
-    entry += info->info_off;
+    real_entry = info->info_off + entry;
     sect = FindInfo( ii, im );
-    lnk = &GET_LINK( sect, entry );
+    lnk = &GET_LINK( sect, real_entry );
     if( IS_RESIDENT( *lnk ) ) {
         section = MK_DMND_PTR( *lnk );
     } else {
         /* section not loaded */
-        size = DMND_SIZE( sect, entry );
-        if( (LastDemand->owner == NULL || LastDemand->size < size)
-            && LastDemand->locks == 0 ) {
+        size = (unsigned)DMND_SIZE( sect, real_entry );
+        if( ( LastDemand->owner == NULL || LastDemand->size < size ) && LastDemand->locks == 0 ) {
             /* keep largest section in LastDemand */
             section = LastDemand;
             Unload( LastDemand );
@@ -278,7 +278,7 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
                 Unload( LastDemand );
             }
         }
-        tmpoff = MK_DMND_OFFSET( *lnk );
+        tmpoff = (unsigned long)MK_DMND_OFFSET( *lnk );
         if( InfoRead( sect, tmpoff, size, section->buff ) != DS_OK ) {
             if( section != LastDemand )
                 DCFree( section );

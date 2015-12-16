@@ -43,11 +43,11 @@
 
 #define MAX_LINK_ENTRIES    (4 * 1024U) /* per table block */
 
-#define IDX2IMH(x)          (x + IMH_BASE)
-#define IMH2IDX(x)          (x - IMH_BASE)
+#define IDX2IMH(x)          ((imp_mod_handle)(x) + IMH_BASE)
+#define IMH2IDX(x)          ((word)(x - IMH_BASE))
 
 struct type_pos {
-    unsigned short      entry;
+    word                entry;
     unsigned short      offset;
 };
 
@@ -101,7 +101,7 @@ struct subrange_info {
 
 struct imp_cue_handle {
     imp_mod_handle      im;
-    unsigned short      entry;
+    word                entry;
     unsigned short      seg_bias;
     unsigned short      info_bias;
 };
@@ -120,7 +120,7 @@ typedef struct section_info {
     info_block                  *gbl;
     pointer_int                 **dmnd_link;
     word                        mod_base_idx;
-    unsigned                    sect_id;
+    word                        sect_id;
 } section_info;
 
 struct imp_image_handle {

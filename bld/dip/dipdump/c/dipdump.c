@@ -307,16 +307,16 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     /* try get the name */
     buff[0] = '\0';
     len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
     } else {
-        printf( "(len=%d)\n", len );
+        printf( "(len=%u)\n", len );
     }
 
 
@@ -507,7 +507,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     if( len > 0 ) {
         printf( " %lx %s\n", file_id, buff );
     } else {
-        printf( " %lx (len=%d)\n", file_id, len );
+        printf( " %lx (len=%u)\n", file_id, len );
     }
 
     /* check the LineCue function */
@@ -705,16 +705,16 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
     /* try get the name */
     buff[0] = '\0';
     len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
     } else {
-        printf( "(len=%d)\n", len );
+        printf( "(len=%u)\n", len );
     }
 
     /* more locations. */
@@ -763,7 +763,7 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
     /* language and name */
     lang = ModSrcLang( mh );
     len = ModName( mh, buff, sizeof(buff) );
-    if( !len ) {
+    if( len == 0 ) {
         buff[0] = '\0';
     }
     printf( "%-4s  %s\n", lang, buff );

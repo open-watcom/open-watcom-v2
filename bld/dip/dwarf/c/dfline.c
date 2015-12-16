@@ -59,23 +59,23 @@ struct seg_cue{
 
 
 
-extern void  InitCueList( cue_list *ctl ){
+extern void  InitCueList( cue_list *ctl ) {
 /*********************************/
 
     ctl->head = NULL;
 }
 
-extern  seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, dword offset ){
-/************************************************************************/
+seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, dword offset )
+/**************************************************************/
 /* Keep in asending order  seg:offset */
+{
     seg_cue  *curr;
     seg_cue **lnk;
 
-    lnk = &ctl->head;
-    while( (curr = *lnk) != NULL ){
-        if( seg < curr->seg )break;
-        if( seg == curr->seg && offset <  curr->low  )break;
-        lnk = &curr->next;
+    for( lnk = &ctl->head; (curr = *lnk) != NULL; lnk = &curr->next ) {
+        if( seg < curr->seg || ( seg == curr->seg && offset < curr->low ) ) {
+            break;
+        }
     }
     curr = DCAlloc( sizeof( *curr ) );
     curr->seg = seg;
@@ -88,7 +88,7 @@ extern  seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, dword offset ){
     return( curr );
 }
 
-extern  void AddCue( seg_cue *ctl, dr_line_data *new ){
+extern  void AddCue( seg_cue *ctl, dr_line_data *new ) {
 /************************************************************/
 // Add a new offset to the last block if full alloc a new one
 // bump the item count
@@ -98,15 +98,15 @@ extern  void AddCue( seg_cue *ctl, dr_line_data *new ){
 
     rem = ctl->count % CUES_PER_BLK;
     blk = ctl->head;
-    if( blk != NULL ){
-        while( blk->next  != NULL ){
+    if( blk != NULL ) {
+        while( blk->next  != NULL ) {
             blk = blk->next;
         }
         lnk = &blk->next;
     }else{
         lnk = &ctl->head;
     }
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk = DCAlloc( sizeof( *blk ) );
         blk->next = NULL;
         *lnk = blk;
@@ -115,7 +115,7 @@ extern  void AddCue( seg_cue *ctl, dr_line_data *new ){
     next->offset = new->offset;
     next->line = new->line;
     next->fno = new->file;
-    if( new->offset > ctl->high ){
+    if( new->offset > ctl->high ) {
         ctl->high = new->offset;
     }
     ++ctl->count;
@@ -130,7 +130,7 @@ typedef struct{
 }off_cmp;
 
 
-static  long BlkOffSearch( off_cmp *cmp  ){
+static  long BlkOffSearch( off_cmp *cmp  ) {
 /****************************************/
 // Do a B-search on the blk
     cue_info    *curr;
@@ -145,14 +145,14 @@ static  long BlkOffSearch( off_cmp *cmp  ){
     base = cmp->base;
     hi = cmp->hi;
     lo = 0;
-    for(;;){
+    for(;;) {
         mid = (lo + hi)/2;
         curr = &base[mid];
         diff = (long)key - (long)curr->offset;
-        if( mid == lo ){ /* fix up last cmp */
+        if( mid == lo ) { /* fix up last cmp */
             break;
         }
-        if( diff < 0 ){               // key < mid
+        if( diff < 0 ) {               // key < mid
             hi = mid;
         }else{                        // key > mid
             lo = mid;
@@ -163,24 +163,24 @@ static  long BlkOffSearch( off_cmp *cmp  ){
     return( diff );
 }
 
-static  seg_cue  *FindSegCue( cue_list *list, addr_ptr *mach ){
+static  seg_cue  *FindSegCue( cue_list *list, addr_ptr *mach )
 /************************************************************/
+{
     seg_cue   *ctl;
     seg_cue   *last;
 
     last = NULL;
-    ctl = list->head;
-    while( ctl != NULL ){
-        if( mach->segment == ctl->seg ){
-            if( mach->offset < ctl->low )break;
+    for( ctl = list->head; ctl != NULL; ctl = ctl->next ) {
+        if( mach->segment == ctl->seg ) {
+            if( mach->offset < ctl->low )
+                break;
             last = ctl;
         }
-        ctl = ctl->next;
     }
     return( last );
 }
 
-extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ){
+extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ) {
 /****************************************************/
     cue_blk    *blk;
     cue_info   *info;
@@ -192,51 +192,49 @@ extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ){
 
     info = NULL;
     ctl = FindSegCue( list, mach );
-    if( ctl != NULL ){
+    if( ctl != NULL ) {
         rem = CUES_PER_BLK;
-        blk = ctl->head;
         cmp.last = 0;
         cmp.hi = 0;
-        while( blk != NULL ){
-            if( blk->next == NULL ){ /* last blk */
+        for( blk = ctl->head; blk != NULL; blk = blk->next ) {
+            if( blk->next == NULL ) { /* last blk */
                 rem = ctl->count % CUES_PER_BLK;
-                if( rem == 0 ){
+                if( rem == 0 ) {
                     rem = CUES_PER_BLK; /* never have empty blocks */
                 }
             }
-            info = &blk->info[rem-1];
-            cmp.last  = rem-1;
+            info = &blk->info[rem - 1];
+            cmp.last = rem - 1;
             cmp.hi = rem;
-            if( info->offset >= mach->offset ){
+            if( info->offset >= mach->offset ) {
                 cmp.key  = mach->offset;
                 cmp.base = &blk->info[0];
                 diff = BlkOffSearch( &cmp );
-                if( diff >= 0 ){
+                if( diff >= 0 ) {
                     info = cmp.base;
                     break;
-                }else{
+                } else {
                      //shouldn't happen an error
                     return( FALSE );
                 }
             }
-            blk = blk->next;
         }
         ret->fno = info->fno;
         ret->line = info->line;
         ret->mach.offset = info->offset;
         ret->mach.segment = ctl->seg;
         ret->col = 0;
-        if( cmp.last+1 < cmp.hi ){
+        if( cmp.last+1 < cmp.hi ) {
             ++info;
             next_off = info->offset;
         }else{
-            if( blk != NULL ){
+            if( blk != NULL ) {
                 blk = blk->next;
             }
-            if( blk == NULL ){
+            if( blk == NULL ) {
                 next_off = 0xffffffff; /* high value */
-                if( (ctl = ctl->next ) != NULL ){
-                    if( ctl->seg == ret->mach.segment ){
+                if( (ctl = ctl->next ) != NULL ) {
+                    if( ctl->seg == ret->mach.segment ) {
                         next_off = ctl->low;
                     }
                 }
@@ -264,7 +262,7 @@ typedef enum{
 
 extern   dfline_find FindCue( cue_list    *list,
                               cue_item    *item,
-                              dfline_search what ){
+                              dfline_search what ) {
 /****************************************************/
     cue_blk        *blk;
     cue_info       *info;
@@ -276,7 +274,7 @@ extern   dfline_find FindCue( cue_list    *list,
     dfline_find     ret;
 
     state = ST_START_LOW;
-    switch( what ){ /* init state */
+    switch( what ) { /* init state */
     case LOOK_LOW:
         state = ST_START_LOW;
         break;
@@ -292,22 +290,20 @@ extern   dfline_find FindCue( cue_list    *list,
     }
     seg_last = 0;
     info_last = NULL;
-    ctl = list->head;
-    while( ctl != NULL ){
-        blk = ctl->head;
-        while( blk != NULL ){
+    for( ctl = list->head; ctl != NULL; ctl = ctl->next ) {
+        for( blk = ctl->head; blk != NULL; blk = blk->next ) {
             info =  &blk->info[0];
-            if( blk->next == NULL ){ /* last blk */
+            if( blk->next == NULL ) {   /* last blk */
                 rem = ctl->count % CUES_PER_BLK;
-                if( rem == 0 ){
+                if( rem == 0 ) {
                     rem = CUES_PER_BLK; /* never have empty blocks */
                 }
-            }else{
+            } else {
                 rem = CUES_PER_BLK;
             }
-            while( rem > 0 ){
-                if( info->fno == item->fno ){
-                    switch( state ){
+            while( rem > 0 ) {
+                if( info->fno == item->fno ) {
+                    switch( state ) {
                     case ST_START_FILE:
                         info_last = info;
                         seg_last = ctl->seg;
@@ -316,7 +312,7 @@ extern   dfline_find FindCue( cue_list    *list,
                     case ST_START_LOW:
                         info_last = info;
                         seg_last = ctl->seg;
-                        if( item->line > info->line ){
+                        if( item->line > info->line ) {
                             state = ST_SQUEEZE_LOW;
                         }else{
                             state = ST_WRAP_LOW;
@@ -325,42 +321,42 @@ extern   dfline_find FindCue( cue_list    *list,
                     case ST_START_HIGH:
                         info_last = info;
                         seg_last = ctl->seg;
-                        if( item->line < info->line ){
+                        if( item->line < info->line ) {
                             state = ST_SQUEEZE_HIGH;
                         }else{
                             state = ST_WRAP_HIGH;
                         }
                         break;
                     case ST_WRAP_LOW:
-                        if( item->line  > info->line ){
+                        if( item->line  > info->line ) {
                             info_last = info;
                             seg_last = ctl->seg;
                             state = ST_SQUEEZE_LOW;
-                        }else if( info_last->line < info->line ){
+                        }else if( info_last->line < info->line ) {
                             info_last = info;
                             seg_last = ctl->seg;
                         }
                         break;
                     case ST_WRAP_HIGH:
-                        if( item->line < info->line ){
+                        if( item->line < info->line ) {
                             info_last = info;
                             seg_last = ctl->seg;
                             state = ST_SQUEEZE_HIGH;
-                        }else if( info_last->line > info->line ){
+                        }else if( info_last->line > info->line ) {
                             info_last = info;
                             seg_last = ctl->seg;
                         }
                         break;
                     case ST_SQUEEZE_HIGH:
-                        if( item->line < info->line ){
-                            if( info_last->line > info->line ){
+                        if( item->line < info->line ) {
+                            if( info_last->line > info->line ) {
                                 info_last = info;
                                 seg_last = ctl->seg;
                             }
                         }
                         break;
                     case ST_START_CLOSEST:
-                        if( item->line < info->line ){
+                        if( item->line < info->line ) {
                             break; //continue on
                         }
                         info_last = info;
@@ -368,15 +364,15 @@ extern   dfline_find FindCue( cue_list    *list,
                         state = ST_FOUND_CLOSEST;
                         //drop through
                     case ST_FOUND_CLOSEST:
-                        if( item->line == info->line ){
+                        if( item->line == info->line ) {
                             info_last = info;
                             seg_last = ctl->seg;
                             ret = LINE_FOUND;
                             goto found;
                         }// else drop through
                     case ST_SQUEEZE_LOW:
-                        if( item->line > info->line ){
-                            if( info_last->line < info->line ){
+                        if( item->line > info->line ) {
+                            if( info_last->line < info->line ) {
                                 info_last = info;
                                 seg_last = ctl->seg;
                             }
@@ -387,12 +383,10 @@ extern   dfline_find FindCue( cue_list    *list,
                 ++info;
                 --rem;
             }
-            blk = blk->next;
         }
-        ctl = ctl->next;
     }
     ret = LINE_NOT;
-    switch( state  ){
+    switch( state  ) {
     case ST_START_LOW:
     case ST_START_HIGH:
     case ST_START_CLOSEST:
@@ -423,38 +417,34 @@ not_found:
     return( ret );
 }
 
-static void FreeSegCue(  seg_cue *curr ){
+static void FreeSegCue(  seg_cue *curr )
 /***********************************************/
 // Free all offset blocks for a segment
-    cue_blk    *blk, *old;
+{
+    cue_blk    *blk, *next;
 
-    blk = curr->head;
-    while( blk != NULL ){
-        old = blk;
-        blk = blk->next;
-        DCFree( old );
+    for( blk = curr->head; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
 }
 
-extern void  FiniCueInfo( cue_list *list ){
-/*****************************************/
+void  FiniCueInfo( cue_list *list )
+/*********************************/
 //Free all offset blocks for a line segment
 //Free all line segments
+{
     seg_cue   *ctl;
-    seg_cue   *next;
 
-    ctl = list->head;
-    while( ctl != NULL ){
-        next = ctl->next;
+    while( (ctl = list->head) != NULL ) {
+        list->head = ctl->next;
         FreeSegCue( ctl );
         DCFree( ctl );
-        ctl = next;
     }
-    list->head = NULL;
 }
 #ifdef DEBUG
 #include <stdarg.h>
-extern void myprintf( char *ctl, ... ){
+extern void myprintf( char *ctl, ... ) {
 /** my printf ************************/
     va_list argument;
     char buff[100];
@@ -464,18 +454,18 @@ extern void myprintf( char *ctl, ... ){
 
     curr = buff;
     va_start( argument, ctl );
-    while( *ctl != '\0' ){
-        if( *ctl == '%' ){
+    while( *ctl != '\0' ) {
+        if( *ctl == '%' ) {
             ++ctl;
-            if( *ctl == 'l' ){
+            if( *ctl == 'l' ) {
                 ++ctl;
                 form = 'l';
             }else{
                 form = ' ';
             }
-            switch( *ctl ){
+            switch( *ctl ) {
             case 'x':
-                if( form == 'l' ){
+                if( form == 'l' ) {
                     val = va_arg( argument, long );
                 }else{
                     val = va_arg( argument, int );
@@ -483,7 +473,7 @@ extern void myprintf( char *ctl, ... ){
                 ultoa( val, curr, 16 );
                 break;
             case 'd':
-                if( form == 'l' ){
+                if( form == 'l' ) {
                     val = va_arg( argument, long );
                 }else{
                     val = va_arg( argument, int );
@@ -509,33 +499,32 @@ extern void myprintf( char *ctl, ... ){
 
 }
 
-extern  void DmpCueOffset( cue_list *list ){
-/****************************************************/
-    cue_blk    *blk;
-    cue_info   *info;
+void DmpCueOffset( cue_list *list )
+/*********************************/
+{
+    cue_blk     *blk;
+    cue_info    *info;
     unsigned_16 rem;
-    seg_cue   *ctl;
+    seg_cue     *ctl;
 
-    ctl = list->head;
-    while( ctl != NULL ){
+    for( ctl = list->head; ctl != NULL; ctl = ctl->next ) {
         myprintf( "seg %x:%x\n", ctl->seg, ctl->low );
-        blk = ctl->head;
-        while( blk != NULL ){
+        for( blk = ctl->head; blk != NULL; blk = blk->next ) {
             info = &blk->info[0];
-            if( blk->next == NULL ){ /* last blk */
+            if( blk->next == NULL ) { /* last blk */
                 rem = ctl->count % CUES_PER_BLK;
-                if( rem == 0 ){
+                if( rem == 0 ) {
                     rem = CUES_PER_BLK; /* never have empty blocks */
                 }
+            } else {
+                rem = CUES_PER_BLK;
             }
-            while( rem > 0 ){
+            while( rem > 0 ) {
                myprintf( "    %lx f%d.%d\n", info->offset, info->fno, info->line );
                 ++info;
                 --rem;
             }
-            blk = blk->next;
         }
-        ctl = ctl->next;
     }
 }
 #endif

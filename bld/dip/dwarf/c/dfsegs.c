@@ -42,15 +42,15 @@ extern void  InitSegList( seg_list *ctl, unsigned_16 item_size ){
     ctl->count = 0;
 }
 
-extern void FiniSegList( seg_list *ctl ){
-/****************************************/
+void FiniSegList( seg_list *ctl )
+/*******************************/
 // Free segment blocks
-    seg_blk_head *blk, *old;
-    blk = ctl->head;
-    while( blk != NULL ){
-        old = blk;
-        blk = blk->next;
-        DCFree( old );
+{
+    seg_blk_head *blk, *next;
+
+    for( blk = ctl->head; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
     ctl->head = NULL;
     ctl->count = 0;
@@ -73,8 +73,7 @@ extern  seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg ){
     }else{
         blk_count = rem;
     }
-    blk = list->head;
-    while( blk != NULL ){
+    for( blk = list->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
         while( blk_count > 0 ){
             if( info->real == seg ){
@@ -84,13 +83,12 @@ extern  seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg ){
             --blk_count;
         }
         blk_count = SEG_PER_BLK;
-        blk = blk->next;
     }
     if( rem == 0 ){ /* new block */
         blk = ctl->alloc();
         blk->next = list->head;
         list->head = blk;
-    }else{  /* use head block */
+    } else {    /* use head block */
         blk = list->head;
     }
     info = blk->info;
@@ -116,8 +114,7 @@ extern  seg_entry *FindMapSeg( seg_list *list, word seg ){
     if( blk_count == 0 ){
         blk_count = SEG_PER_BLK;
     }
-    blk  = list->head;
-    while( blk != NULL ){
+    for( blk  = list->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
         while( blk_count > 0 ){
             if( info->real == seg ){
@@ -127,7 +124,6 @@ extern  seg_entry *FindMapSeg( seg_list *list, word seg ){
             --blk_count;
         }
         blk_count = SEG_PER_BLK;
-        blk = blk->next;
     }
     info = NULL;
 exit_rtn:
@@ -194,16 +190,14 @@ extern  seg_entry *FindRealSeg( seg_list *ctl, word seg ){
     }
     cmp.hi = blk_count;  /* only first block not full */
     cmp.key = seg;
-    blk = ctl->head;
     info = NULL;
-    while( blk != NULL ){
+    for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         cmp.base = blk->info;
         if( BlkSegSearch( &cmp )== 0 ){
             info = cmp.base;
             break;
         }
         cmp.hi = SEG_PER_BLK;
-        blk = blk->next;
     }
     return( info );
 }
@@ -224,8 +218,7 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
     if( blk_count == 0 ){  /* first block may be short */
         blk_count = SEG_PER_BLK;
     }
-    blk = ctl->head;
-    while( blk != NULL ){
+    for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
         while( blk_count > 0 ){
             if( !wlk( d, info  ) )goto end_wlk;
@@ -233,7 +226,6 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
             --blk_count;
         }
         blk_count = SEG_PER_BLK;
-        blk = blk->next;
     }
     return( TRUE );
 end_wlk:
@@ -263,11 +255,11 @@ extern  void    SortSegReal( seg_list *ctl ){
     item_size = ctl->item_size;
     if( blk_count == 0 ){  /* first block may be short */
         blk_count = SEG_PER_BLK;
-    }else{
+    } else {
         seg_entry      *info;
 
         info = blk->info;
-        blk = DCRealloc( blk, PTRDIFF( INFO_ITEM( info, blk_count ), blk )  );
+        blk = DCRealloc( blk, PTRDIFF( INFO_ITEM( info, blk_count ), blk ) );
         ctl->head = blk;
     }
     while( blk != NULL ){

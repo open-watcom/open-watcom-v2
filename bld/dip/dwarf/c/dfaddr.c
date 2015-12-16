@@ -323,24 +323,25 @@ static bool CheckInfo( seg_info *ctl )
     } else {
         blk_count = rem;
     }
-    curr = ctl->off.head;
-    while( curr != NULL ) { // shuffle free space down to blk
+    for( curr = ctl->off.head; curr != NULL; curr = next ) { // shuffle free space down to blk
         next = curr->next;
         info = curr->info;
         if( next != NULL ){
-            if( info->offset < next->info[OFF_PER_BLK-1].offset ) goto error;
+            if( info->offset < next->info[OFF_PER_BLK-1].offset ) {
+                goto error;
+            }
         }
         last_info = info;
         ++info;
         --blk_count;
         while( blk_count > 0 ){
-            if( info->offset < last_info->offset ) goto error;
+            if( info->offset < last_info->offset )
+                goto error;
             last_info = info;
             ++info;
             --blk_count;
         }
         blk_count = OFF_PER_BLK;
-        curr = curr->next;
     }
     return( TRUE );
 error:
@@ -389,8 +390,7 @@ static  off_info *SearchBlkList( seg_info *ctl, addr_off offset )
     unsigned_16     blk_count;
 
     info = NULL;
-    blk = ctl->off.head;
-    while( blk != NULL ) {
+    for( blk = ctl->off.head; blk != NULL; blk = blk->next ) {
         if( offset >= blk->info[0].offset ) {
             if( blk == ctl->off.head ) {    /* only first block might not be full */
                 blk_count = ctl->entry.count % OFF_PER_BLK;
@@ -408,7 +408,6 @@ static  off_info *SearchBlkList( seg_info *ctl, addr_off offset )
             }
             break;
         }
-        blk = blk->next;
     }
     return( info );
 }
@@ -506,14 +505,12 @@ static bool FreeSegOffsets( void *d, void *_curr )
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;
-    off_blk     *blk, *old;
+    off_blk     *blk, *next;
 
     d = d;
-    blk = curr->off.head;
-    while( blk != NULL ) {
-        old = blk;
-        blk = blk->next;
-        DCFree( old );
+    for( blk = curr->off.head; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
     return( TRUE );
 }

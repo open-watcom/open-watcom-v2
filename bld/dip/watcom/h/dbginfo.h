@@ -152,8 +152,8 @@ typedef struct {
 
 typedef struct {
     addr48_ptr      addr;
-    word            mod;            /* offset from mod info class for V2 */
-                                    /* module index number for V3 */
+    word            mod;        /* offset from mod info class for V2 */
+                                /* module index number for V3 */
     char            name[1];
 } _WCUNALIGNED gbl_info;
 
@@ -163,7 +163,7 @@ typedef struct {
 
 typedef struct {
     addr48_ptr          addr;
-    word                mod;
+    word                mod;    /* module index number for V3 */
     byte                kind;
     char                name[1];
 } _WCUNALIGNED v3_gbl_info;
@@ -171,8 +171,8 @@ typedef struct {
 
 typedef struct {
     dword           size;
-    word            mod;            /* offset from mod info class for V2 */
-                                    /* module index number for V3 */
+    word            mod;        /* offset from mod info class for V2 */
+                                /* module index number for V3 */
 } _WCUNALIGNED addr_info;
 
 typedef struct {
