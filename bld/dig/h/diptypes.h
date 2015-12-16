@@ -64,8 +64,6 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_EXPORTS   75
 #define DIP_PRIOR_MAX       100
 
-#define DIP_OFFS_INVAL	    ((addr_off)-1)
-
 typedef unsigned_8 handle_kind; enum {
     HK_IMAGE,
     HK_TYPE,
