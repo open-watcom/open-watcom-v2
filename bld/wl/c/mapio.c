@@ -573,7 +573,7 @@ void WriteMapLines( void )
         default_is_stmt = *p;
         p += 1;
 
-        line_base = *(int_8 *)p;
+        line_base = GET_I8( p );
         p += 1;
 
         line_range = GET_U8( p );
