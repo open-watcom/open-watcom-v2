@@ -30,10 +30,10 @@
 
 
 extern void             FiniCache( void );
-extern void             InitCache( address addr, unsigned size );
+extern void             InitCache( address addr, size_t size );
 extern bool             HaveCache( void );
-extern unsigned         ProgPeek( address addr, void *data, unsigned len );
-extern unsigned         ProgPoke( address addr, const void *data, unsigned len );
+extern size_t           ProgPeek( address addr, void *data, size_t len );
+extern size_t           ProgPoke( address addr, const void *data, size_t len );
 extern unsigned long    ProgChkSum( address addr, unsigned len );
 extern unsigned         PortPeek( unsigned port, void *data, unsigned size );
 extern unsigned         PortPoke( unsigned port, const void *data, unsigned size );

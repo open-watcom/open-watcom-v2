@@ -456,7 +456,7 @@ void PrintChar( void )
 
 static void DoPrintString( bool force )
 {
-    int         count;
+    size_t      count;
     address     addr;
     char        buff[MAX_PRINTSTRING_LEN+10];
     char        *p;
@@ -470,7 +470,7 @@ static void DoPrintString( bool force )
         Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
     p = buff;
-    while( --count >= 0 ) {
+    while( count-- > 0 ) {
         if( *p == '\0' ) break;
         if( !force ) {
             if( count == 0 ) {
@@ -480,7 +480,7 @@ static void DoPrintString( bool force )
         PrtChar( *p );
         ++p;
     }
-    if( count < 0 ) {
+    if( count == (size_t)-1L ) {
         PrtStr( " ...", 4 );
     }
 }

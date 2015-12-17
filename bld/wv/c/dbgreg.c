@@ -207,13 +207,17 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
 
 
     d = d;
-    if( (mk & (MMK_VOLATILE|MMK_WRITE)) == 0 ) return( WR_CONTINUE );
+    if( (mk & (MMK_VOLATILE|MMK_WRITE)) == 0 )
+        return( WR_CONTINUE );
     MADTypeInfo( th, &mti );
     bytes = mti.b.bits / BITS_PER_BYTE;
-    if( bytes > MAX_DELTA_BYTES ) return( WR_STOP ); /* don't fit */
+    if( bytes > MAX_DELTA_BYTES )
+        return( WR_STOP ); /* don't fit */
     new = NewMemDelta( a, bytes );
-    if( new == NULL ) return( WR_STOP );
-    if( mk & MMK_VOLATILE ) new->_volatile = true;
+    if( new == NULL )
+        return( WR_STOP );
+    if( mk & MMK_VOLATILE )
+        new->_volatile = true;
     /* can keep in target form */
     new->size = ProgPeek( a, &new->data[0], bytes );
     return( WR_CONTINUE );
@@ -563,19 +567,19 @@ bool AdvMachState( int action )
 }
 
 
-unsigned ChangeMem( address addr, const void * to, unsigned size )
+size_t ChangeMem( address addr, const void * to, size_t size )
 {
     memory_delta        *curr;
     const unsigned_8    *p;
     unsigned            amount;
-    unsigned            left;
+    size_t              left;
 
     p = to;
+    amount = MAX_DELTA_BYTES;
     left = size;
-    for( ;; ) {
-        if( left == 0 ) break;
-        amount = left;
-        if( amount > MAX_DELTA_BYTES ) amount = MAX_DELTA_BYTES;
+    for( ; left != 0; ) {
+        if( amount > left )
+            amount = (unsigned)left;
         curr = NewMemDelta( addr, amount );
         if( curr == NULL ) {
             StateCurr->lost_mem_state = true;

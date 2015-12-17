@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-extern void         ChangeMemUndoable( address addr, const void *item, unsigned size );
-extern unsigned     ProgPeekWrap(address addr,char * buff,unsigned length );
+extern void         ChangeMemUndoable( address addr, const void *item, size_t size );
+extern size_t       ProgPeekWrap( address addr, char *buff, size_t length );
 extern unsigned     ItemSize( item_type typ );
 extern item_type    ItemGetMAD( address *addr, item_mach *item, item_type ops, mad_type_handle th );
 extern item_type    ItemPutMAD( address *addr, const item_mach *item, item_type ops, mad_type_handle th );

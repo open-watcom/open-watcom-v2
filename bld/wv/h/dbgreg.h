@@ -50,7 +50,7 @@ extern void             FreeMachState( machine_state *state );
 extern void             CollapseMachState( void );
 extern bool             CheckStackPos( void );
 extern bool             AdvMachState( int action );
-extern unsigned         ChangeMem( address addr, const void * to, unsigned size );
+extern size_t           ChangeMem( address addr, const void * to, size_t size );
 extern unsigned         UndoLevel( void );
 #ifdef DEADCODE
 extern bool             MachStateInfoRelease( void );

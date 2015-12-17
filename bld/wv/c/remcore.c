@@ -59,7 +59,7 @@ extern unsigned         CurrRegSize;
 
 typedef struct{
     address     addr;
-    unsigned    len;
+    size_t      len;
     char        *data;
 } cache_block;
 
@@ -79,39 +79,41 @@ static bool IsInterrupt( addr_ptr *addr, unsigned size )
     return( MADAddrInterrupt( addr, size, &DbgRegs->mr ) == MS_OK );
 }
 
-static unsigned MemRead( address addr, void *ptr, unsigned size )
+static size_t MemRead( address addr, void *ptr, size_t size )
 {
     read_mem_req        acc;
     bool                int_tbl;
-    unsigned            left;
-    unsigned            piece;
-    unsigned            got;
+    size_t              left;
+    size_t              piece;
+    size_t              got;
 
     if( size == 0 ) return( 0 );
     SectLoad( addr.sect_id );
     acc.req = REQ_READ_MEM;
     AddrFix( &addr );
     acc.mem_addr = addr.mach;
+    piece = MaxPacketLen;
     left = size;
     for( ;; ) {
-        if( left > MaxPacketLen ) {
-            piece = MaxPacketLen;
-        } else {
+        if( piece > left )
             piece = left;
-        }
         acc.len = piece;
 
         int_tbl = IsInterrupt( &(acc.mem_addr), size );
-        if( int_tbl ) RestoreHandlers();
+        if( int_tbl )
+            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
         got = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
-        if( int_tbl ) GrabHandlers();
+        if( int_tbl )
+            GrabHandlers();
 
         left -= got;
-        if( left == 0 ) break;
-        if( got != piece ) break;
+        if( left == 0 )
+            break;
+        if( got != piece )
+            break;
         addr.mach.offset += piece;
         acc.mem_addr = addr.mach;
         ptr = (char *)ptr + piece;
@@ -125,7 +127,7 @@ void FiniCache( void )
     Cache.data = NULL;
 }
 
-void InitCache( address addr, unsigned size )
+void InitCache( address addr, size_t size )
 {
     void *ptr;
 
@@ -143,7 +145,7 @@ bool HaveCache( void )
     return( Cache.data != NULL );
 }
 
-static bool ReadCache( address addr, char *data, unsigned len )
+static bool ReadCache( address addr, char *data, size_t len )
 {
     if( Cache.data == NULL ) return( false );
     if( !SameAddrSpace( Cache.addr, addr ) ) return( false );
@@ -151,11 +153,11 @@ static bool ReadCache( address addr, char *data, unsigned len )
     if( Cache.addr.mach.offset > addr.mach.offset ) return( false );
     addr.mach.offset -= Cache.addr.mach.offset;
     if( Cache.len - len < addr.mach.offset ) return( false );
-    memcpy( data, &Cache.data[ addr.mach.offset ], len );
+    memcpy( data, &Cache.data[addr.mach.offset], len );
     return( true );
 }
 
-unsigned ProgPeek( address addr, void *data, unsigned len )
+size_t ProgPeek( address addr, void *data, size_t len )
 {
     if( ReadCache( addr, data, len ) ) {
         return( len );
@@ -164,15 +166,15 @@ unsigned ProgPeek( address addr, void *data, unsigned len )
     }
 }
 
-unsigned ProgPoke( address addr, const void *data, unsigned len )
+size_t ProgPoke( address addr, const void *data, size_t len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
     write_mem_req       acc;
     write_mem_ret       ret;
     bool                int_tbl;
-    unsigned            left;
-    unsigned            piece;
+    size_t              left;
+    size_t              piece;
 
     SectLoad( addr.sect_id );
     acc.req = REQ_WRITE_MEM;
@@ -182,13 +184,11 @@ unsigned ProgPoke( address addr, const void *data, unsigned len )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
+    piece = MaxPacketLen - sizeof( acc );
     left = len;
     for( ;; ) {
-        if( left > (MaxPacketLen - sizeof( acc )) ) {
-            piece = MaxPacketLen - sizeof( acc );
-        } else {
+        if( piece > left )
             piece = left;
-        }
         in[1].ptr = data;
         in[1].len = piece;
 

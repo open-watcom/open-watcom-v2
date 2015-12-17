@@ -835,7 +835,7 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
 }
 
 
-static void ReadMem( address a, unsigned s, void *d )
+static void ReadMem( address a, size_t s, void *d )
 {
 
     if( a.sect_id == Cache.start.sect_id

@@ -186,12 +186,12 @@ void            MCClose( dig_fhandle h )
     MadClient->MADCliClose( h );
 }
 
-unsigned        MCReadMem( address a, unsigned size, void *buff )
+size_t          MCReadMem( address a, size_t size, void *buff )
 {
     return( MadClient->MADCliReadMem( a, size, buff ) );
 }
 
-unsigned        MCWriteMem( address a, unsigned size, void *buff )
+size_t          MCWriteMem( address a, size_t size, void *buff )
 {
     return( MadClient->MADCliWriteMem( a, size, buff ) );
 }

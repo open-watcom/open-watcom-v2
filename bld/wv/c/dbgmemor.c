@@ -57,7 +57,7 @@ static unsigned Sizes[IT_MAX] = {
     #undef pick
 };
 
-void ChangeMemUndoable( address addr, const void *item, unsigned size )
+void ChangeMemUndoable( address addr, const void *item, size_t size )
 {
     char                *p;
     const unsigned char *it;
@@ -78,15 +78,15 @@ void ChangeMemUndoable( address addr, const void *item, unsigned size )
     }
 }
 
-unsigned        ProgPeekWrap(address addr,char * buff,unsigned length )
+size_t ProgPeekWrap( address addr, char * buff, size_t length )
 {
-    unsigned    peek1,peek2;
+    size_t  peek1,peek2;
 
     peek1 = ProgPeek( addr, buff, length );
     if( peek1 == 0 || peek1 == length )
         return( peek1 );
-    peek2 = ProgPeek( AddrAddWrap( addr, peek1 ), buff+peek1, length-peek1 );
-    return( peek1+peek2 );
+    peek2 = ProgPeek( AddrAddWrap( addr, peek1 ), buff + peek1, length - peek1 );
+    return( peek1 + peek2 );
 }
 
 static item_type ItemType( unsigned size )

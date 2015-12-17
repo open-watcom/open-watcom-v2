@@ -596,7 +596,7 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
         if( Is32BitSegment ) return( MS_FAIL );
         if( !BPTraceBack( execution, frame, stack ) ) return( MS_FAIL );
     } else {
-        if( return_disp != -1 ) {
+        if( return_disp != -1L ) {
             SymbolicTraceBack( &start, rtn_characteristics, return_disp,
                         execution, frame, stack );
         } else {
