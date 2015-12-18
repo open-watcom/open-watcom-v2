@@ -134,6 +134,9 @@ _WCRTLINK struct hostent *gethostent (void)
             
         } while (i < MAX_HOST_ALIASES);
         
+    } else {
+        ret.h_aliases = calloc (1, sizeof(char *));
+        ret.h_aliases[0] = NULL;
     }
     return &ret;
 }

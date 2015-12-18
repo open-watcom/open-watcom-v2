@@ -13,6 +13,7 @@
 !inject gtscknam.obj                                                                    l32 lpc lmp
 !inject gtsckopt.obj                                                                    l32 lpc lmp
 !inject gtsrvnam.obj                                                                    l32 lpc lmp
+!inject _h_errno.obj                                                                    l32 lpc lmp
 !inject htonl.obj                                                                       l32 lpc lmp
 !inject htons.obj                                                                       l32 lpc lmp
 !inject inetaddr.obj                                                                    l32 lpc lmp
@@ -25,6 +26,7 @@
 !inject readdir.obj                                                                     l32 lpc lmp
 !inject recv.obj                                                                        l32 lpc lmp
 !inject recvfrom.obj                                                                    l32 lpc lmp
+!inject _resolve.obj                                                                    l32 lpc lmp
 !inject send.obj                                                                        l32 lpc lmp
 !inject sendto.obj                                                                      l32 lpc lmp
 !inject shutdown.obj                                                                    l32 lpc lmp

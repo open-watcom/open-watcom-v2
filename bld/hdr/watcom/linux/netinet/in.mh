@@ -12,6 +12,8 @@
 
 :include systypes.sp
 
+:include syssock.sp
+
 :include cpluspro.sp
 
 :include lnxkpack.sp
