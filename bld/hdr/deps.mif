@@ -295,7 +295,7 @@ termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(c
 unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
 
 arpa/inet.h     : linux/arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
 netinet/tcp.h   : linux/netinet/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
 sys/ioctl.h     : linux/sys/ioctl.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
 sys/mman.h      : linux/sys/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
