@@ -18,30 +18,30 @@ set PROJNAME=madaxp
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/madaxp.mad     <OWRELROOT>/binw/
-#    <CCCMD> dos386/madaxp.sym     <OWRELROOT>/binw/madaxp.dsy
+    <CCCMD> dos386/mad*.mad     <OWRELROOT>/binw/
+#    <CCCMD> dos386/madaxp.sym   <OWRELROOT>/binw/madaxp.dsy
 
-    <CCCMD> wini86/madaxp.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/madaxp.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/mad*.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/mad*.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/madaxp.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/madaxp.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/madaxp.d32     <OWRELROOT>/binp/
-    <CCCMD> os2386/madaxp.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/mad*.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/mad*.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/mad*.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/mad*.sym     <OWRELROOT>/binp/
 
-    <CCCMD> nt386/madaxp.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/madaxp.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/mad*.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/mad*.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/madaxp.mad   <OWRELROOT>/binl/
-    <CCCMD> linux386/madaxp.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/mad*.mad   <OWRELROOT>/binl/
+    <CCCMD> linux386/mad*.sym   <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/madaxp.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/madaxp.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/mad*.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/mad*.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/madaxp.mad     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/madaxp.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/mad*.mad     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/mad*.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> ntx64/madaxp.dll      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/mad*.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

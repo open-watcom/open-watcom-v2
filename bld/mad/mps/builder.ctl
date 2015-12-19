@@ -2,7 +2,7 @@
 # ================================
 
 set PROJDIR=<CWD>
-set PROJNAME=madmips
+set PROJNAME=madmps
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,30 +18,30 @@ set PROJNAME=madmips
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/madmips.mad     <OWRELROOT>/binw/
-#    <CCCMD> dos386/madmips.sym     <OWRELROOT>/binw/madmips.dsy
+    <CCCMD> dos386/mad*.mad     <OWRELROOT>/binw/
+#    <CCCMD> dos386/madmps.sym   <OWRELROOT>/binw/madmps.dsy
 
-    <CCCMD> wini86/madmips.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/madmips.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/mad*.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/mad*.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/madmips.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/madmips.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/madmips.d32     <OWRELROOT>/binp/
-    <CCCMD> os2386/madmips.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/mad*.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/mad*.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/mad*.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/mad*.sym     <OWRELROOT>/binp/
 
-    <CCCMD> nt386/madmips.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/madmips.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/mad*.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/mad*.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/madmips.mad   <OWRELROOT>/binl/
-    <CCCMD> linux386/madmips.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/mad*.mad   <OWRELROOT>/binl/
+    <CCCMD> linux386/mad*.sym   <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/madmips.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/madmips.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/mad*.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/mad*.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/madmips.mad     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/madmips.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/mad*.mad     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/mad*.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> ntx64/madmips.dll      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/mad*.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
