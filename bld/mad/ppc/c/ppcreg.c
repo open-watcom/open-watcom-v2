@@ -35,14 +35,19 @@
 #include "ppctypes.h"
 #include "madregs.h"
 
+
 #define BIT_OFF( who ) (offsetof( mad_registers, ppc.who ) * BITS_PER_BYTE)
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
-/* Macros to get at GP/FP registers based on their number; useful in loops */
-#define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_GPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64HI32])) + (2 * idx)))
-#define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64HI32])) + (2 * idx)))
+#define PPC_SWAP_REG_64(x)                          \
+    {                                               \
+        unsigned_32     temp;                       \
+        CONV_BE_32( (x).u._32[I64LO32] );           \
+        CONV_BE_32( (x).u._32[I64HI32] );           \
+        temp = (x).u._32[I64LO32];                  \
+        (x).u._32[I64LO32] = (x).u._32[I64HI32];    \
+        (x).u._32[I64HI32] = temp;                  \
+    }
 
 enum {
     RS_NONE,
@@ -203,44 +208,17 @@ mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_GPREG_LO( mr->ppc, i ) );
-        CONV_BE_32( TRANS_GPREG_HI( mr->ppc, i ) );
-        temp = TRANS_GPREG_LO( mr->ppc, i );
-        TRANS_GPREG_LO( mr->ppc, i ) = TRANS_GPREG_HI( mr->ppc, i );
-        TRANS_GPREG_HI( mr->ppc, i ) = temp;
+        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_FPREG_LO( mr->ppc, i ) );
-        CONV_BE_32( TRANS_FPREG_HI( mr->ppc, i ) );
-        temp = TRANS_FPREG_LO( mr->ppc, i );
-        TRANS_FPREG_LO( mr->ppc, i ) = TRANS_FPREG_HI( mr->ppc, i );
-        TRANS_FPREG_HI( mr->ppc, i ) = temp;
+        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
     }
     // Convert special registers
-    CONV_BE_32( mr->ppc.iar.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.iar.u._32[I64HI32] );
-    temp = mr->ppc.iar.u._32[I64LO32];
-    mr->ppc.iar.u._32[I64LO32] = mr->ppc.iar.u._32[I64HI32];
-    mr->ppc.iar.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.msr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.msr.u._32[I64HI32] );
-    temp = mr->ppc.msr.u._32[I64LO32];
-    mr->ppc.msr.u._32[I64LO32] = mr->ppc.msr.u._32[I64HI32];
-    mr->ppc.msr.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.ctr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.ctr.u._32[I64HI32] );
-    temp = mr->ppc.ctr.u._32[I64LO32];
-    mr->ppc.ctr.u._32[I64LO32] = mr->ppc.ctr.u._32[I64HI32];
-    mr->ppc.ctr.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.lr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.lr.u._32[I64HI32] );
-    temp = mr->ppc.lr.u._32[I64LO32];
-    mr->ppc.lr.u._32[I64LO32] = mr->ppc.lr.u._32[I64HI32];
-    mr->ppc.lr.u._32[I64HI32] = temp;
+    PPC_SWAP_REG_64( mr->ppc.iar );
+    PPC_SWAP_REG_64( mr->ppc.msr );
+    PPC_SWAP_REG_64( mr->ppc.ctr );
+    PPC_SWAP_REG_64( mr->ppc.lr );
 
     CONV_BE_32( mr->ppc.xer );
     CONV_BE_32( mr->ppc.cr );
@@ -257,44 +235,17 @@ mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_GPREG_LO( mr->ppc, i ) );
-        CONV_BE_32( TRANS_GPREG_HI( mr->ppc, i ) );
-        temp = TRANS_GPREG_LO( mr->ppc, i );
-        TRANS_GPREG_LO( mr->ppc, i ) = TRANS_GPREG_HI( mr->ppc, i );
-        TRANS_GPREG_HI( mr->ppc, i ) = temp;
+        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_FPREG_LO( mr->ppc, i ) );
-        CONV_BE_32( TRANS_FPREG_HI( mr->ppc, i ) );
-        temp = TRANS_FPREG_LO( mr->ppc, i );
-        TRANS_FPREG_LO( mr->ppc, i ) = TRANS_FPREG_HI( mr->ppc, i );
-        TRANS_FPREG_HI( mr->ppc, i ) = temp;
+        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
     }
     // Convert special registers
-    CONV_BE_32( mr->ppc.iar.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.iar.u._32[I64HI32] );
-    temp = mr->ppc.iar.u._32[I64LO32];
-    mr->ppc.iar.u._32[I64LO32] = mr->ppc.iar.u._32[I64HI32];
-    mr->ppc.iar.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.msr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.msr.u._32[I64HI32] );
-    temp = mr->ppc.msr.u._32[I64LO32];
-    mr->ppc.msr.u._32[I64LO32] = mr->ppc.msr.u._32[I64HI32];
-    mr->ppc.msr.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.ctr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.ctr.u._32[I64HI32] );
-    temp = mr->ppc.ctr.u._32[I64LO32];
-    mr->ppc.ctr.u._32[I64LO32] = mr->ppc.ctr.u._32[I64HI32];
-    mr->ppc.ctr.u._32[I64HI32] = temp;
-
-    CONV_BE_32( mr->ppc.lr.u._32[I64LO32] );
-    CONV_BE_32( mr->ppc.lr.u._32[I64HI32] );
-    temp = mr->ppc.lr.u._32[I64LO32];
-    mr->ppc.lr.u._32[I64LO32] = mr->ppc.lr.u._32[I64HI32];
-    mr->ppc.lr.u._32[I64HI32] = temp;
+    PPC_SWAP_REG_64( mr->ppc.iar );
+    PPC_SWAP_REG_64( mr->ppc.msr );
+    PPC_SWAP_REG_64( mr->ppc.ctr );
+    PPC_SWAP_REG_64( mr->ppc.lr );
 
     CONV_BE_32( mr->ppc.xer );
     CONV_BE_32( mr->ppc.cr );
@@ -309,11 +260,15 @@ walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 
     if( tk & MTK_INTEGER ) {
         wr = wk( &RegSet[CPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     if( tk & MTK_FLOAT ) {
         wr = wk( &RegSet[FPU_REG_SET], d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -386,8 +341,10 @@ static int FindEntry( const reg_display_entry *tbl, unsigned piece,
                                 unsigned *idx, mad_type_handle *type )
 {
     for( ;; ) {
-        if( tbl->num_regs == 0 ) return( 0 );
-        if( tbl->num_regs > piece ) break;
+        if( tbl->num_regs == 0 )
+            return( 0 );
+        if( tbl->num_regs > piece )
+            break;
         piece -= tbl->num_regs;
         ++tbl;
     }
@@ -587,28 +544,29 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
     if( ri != NULL ) {
         switch( ((ppc_reg_info *)ri)->sublist_code ) {
         case RS_DWORD:
-           curr = RegSubList[ ri->bit_start / (sizeof( unsigned_64 )*BITS_PER_BYTE) ];
+           curr = RegSubList[ri->bit_start / ( sizeof( unsigned_64 ) * BITS_PER_BYTE )];
            break;
         default:
             curr = SubList[((ppc_reg_info *)ri)->sublist_code];
             break;
         }
         if( curr != NULL ) {
-            while( curr->info.name != NULL ) {
+            for( ; curr->info.name != NULL; ++curr ) {
                 wr = wk( &curr->info, 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
-                ++curr;
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
         }
     } else {
         reg_set = (unsigned)( rsd - RegSet );
-        curr = RegList;
-        while( curr < &RegList[ IDX_LAST_ONE ] ) {
+        for( curr = RegList; curr < &RegList[IDX_LAST_ONE]; ++curr ) {
             if( curr->reg_set == reg_set ) {
                 wr = wk( &curr->info, curr->sublist_code != 0, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
-            ++curr;
         }
     }
     return( WR_CONTINUE );
@@ -732,7 +690,7 @@ void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsi
     #define IN_RANGE( i, bit )  \
       ((bit) >= RegList[i].info.bit_start && (bit) < (unsigned)( RegList[i].info.bit_start + RegList[i].info.bit_size ))
     for( i = 0; i < IDX_LAST_ONE; ++i ) {
-        if( (IN_RANGE(i, bit_start) || IN_RANGE( i, bit_end ))) {
+        if( IN_RANGE( i, bit_start ) || IN_RANGE( i, bit_end ) ) {
             MCNotify( MNT_MODIFY_REG, (void *)&RegSet[RegList[i].reg_set] );
             break;
         }
@@ -755,11 +713,13 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     unsigned    i;
     unsigned    j;
 
-    i = RegList[idx].info.bit_start / (sizeof( unsigned_64 )*BITS_PER_BYTE);
-    if( RegSubList[i] != NULL ) return( MS_OK );
-    RegSubList[i] = MCAlloc( sizeof( ppc_reg_info ) * (num+1) );
-    if( RegSubList[i] == NULL ) return( MS_ERR|MS_NO_MEM );
-    memset( RegSubList[i], 0, sizeof( ppc_reg_info ) * (num+1) );
+    i = RegList[idx].info.bit_start / ( sizeof( unsigned_64 ) * BITS_PER_BYTE );
+    if( RegSubList[i] != NULL )
+        return( MS_OK );
+    RegSubList[i] = MCAlloc( sizeof( ppc_reg_info ) * ( num + 1 ) );
+    if( RegSubList[i] == NULL )
+        return( MS_ERR|MS_NO_MEM );
+    memset( RegSubList[i], 0, sizeof( ppc_reg_info ) * ( num + 1 ) );
     for( j = 0; j < num; ++j ) {
         RegSubList[i][j] = RegList[idx];
         RegSubList[i][j].info.name       = sub[j].name;
@@ -783,8 +743,9 @@ mad_status RegInit()
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_DWORD:
-            curr = RegList[i].info.bit_start / (sizeof(unsigned_64)*BITS_PER_BYTE);
-            if( curr > max ) max = curr;
+            curr = RegList[i].info.bit_start / ( sizeof( unsigned_64 ) * BITS_PER_BYTE );
+            if( curr > max )
+                max = curr;
             RegListHalf[half_idx] = RegList[i];
 #if defined( __BIG_ENDIAN__ )
             // kludge for 64-bit registers displayed as 32-bit - need to
@@ -796,14 +757,16 @@ mad_status RegInit()
             break;
         }
     }
-    RegSubList = MCAlloc( (max+1) * sizeof( *RegSubList ) );
-    if( RegSubList == NULL ) return( MS_ERR | MS_NO_MEM );
-    memset( RegSubList, 0, (max+1) * sizeof( *RegSubList ) );
+    RegSubList = MCAlloc( ( max + 1 ) * sizeof( *RegSubList ) );
+    if( RegSubList == NULL )
+        return( MS_ERR | MS_NO_MEM );
+    memset( RegSubList, 0, ( max + 1 ) * sizeof( *RegSubList ) );
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_DWORD:
             ms = AddSubList( i, IntRegSubData, NUM_ELTS( IntRegSubData ) );
-            if( ms != MS_OK ) return( ms );
+            if( ms != MS_OK )
+                return( ms );
             break;
         }
     }
@@ -820,12 +783,14 @@ void RegFini()
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_DWORD:
-            curr = RegList[i].info.bit_start / (sizeof(unsigned_64)*BITS_PER_BYTE);
-            if( curr > max ) max = curr;
+            curr = RegList[i].info.bit_start / ( sizeof( unsigned_64 ) * BITS_PER_BYTE );
+            if( curr > max )
+                max = curr;
             break;
         }
     }
-    for( i = 0; i <= max; ++i ) MCFree( RegSubList[i] );
+    for( i = 0; i <= max; ++i )
+        MCFree( RegSubList[i] );
     MCFree( RegSubList );
     RegSubList = NULL;
 }

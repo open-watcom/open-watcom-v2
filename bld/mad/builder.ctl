@@ -9,7 +9,7 @@ cdsay .
 [ INCLUDE x86/builder.ctl ]
 [ INCLUDE axp/builder.ctl ]
 [ INCLUDE ppc/builder.ctl ]
-[ INCLUDE mips/builder.ctl ]
+[ INCLUDE mps/builder.ctl ]
 
 [ BLOCK . . ]
 #============

@@ -8,13 +8,13 @@ type="s" usr="madx86.mad"
 # It seems rather unlikely anyone would want to cross debug from DOS...
 #type="s" usr="madaxp.mad"
 #type="s" usr="madppc.mad"
-#type="s" usr="madmips.mad"
+#type="s" usr="madmps.mad"
 
 [ DEFAULT dir="binw" cond="winhost" where="c f77 jc jf77" ]
 type="d" usr="madx86.dll"
 type="d" usr="madaxp.dll"
 type="d" usr="madppc.dll"
-type="d" usr="madmips.dll"
+type="d" usr="madmps.dll"
 
 #######################
 # OS/2
@@ -23,7 +23,7 @@ type="d" usr="madmips.dll"
 type="d" usr="madx86.d32"
 type="d" usr="madaxp.d32"
 type="d" usr="madppc.d32"
-type="d" usr="madmips.d32"
+type="d" usr="madmps.d32"
 
 #######################
 # Windows NT - 386
@@ -32,7 +32,7 @@ type="d" usr="madmips.d32"
 type="d" usr="madx86.dll"
 type="d" usr="madaxp.dll"
 type="d" usr="madppc.dll"
-type="d" usr="madmips.dll"
+type="d" usr="madmps.dll"
 
 #######################
 # Windows NT - AXP
@@ -41,7 +41,7 @@ type="d" usr="madmips.dll"
 type="d" usr="madx86.dll"
 type="d" usr="madaxp.dll"
 type="d" usr="madppc.dll"
-type="d" usr="madmips.dll"
+type="d" usr="madmps.dll"
 
 #######################
 # Windows NT - X64
@@ -50,7 +50,7 @@ type="d" usr="madmips.dll"
 type="d" usr="madx86.dll"
 type="d" usr="madaxp.dll"
 type="d" usr="madppc.dll"
-type="d" usr="madmips.dll"
+type="d" usr="madmps.dll"
 
 #######################
 # Linux - 386
@@ -59,7 +59,7 @@ type="d" usr="madmips.dll"
 type="s" usr="madx86.mad"
 type="s" usr="madaxp.mad"
 type="s" usr="madppc.mad"
-type="s" usr="madmips.mad"
+type="s" usr="madmps.mad"
 
 #######################
 # Linux - 386
@@ -68,7 +68,7 @@ type="s" usr="madmips.mad"
 type="s" usr="madx86.mad"
 type="s" usr="madaxp.mad"
 type="s" usr="madppc.mad"
-type="s" usr="madmips.mad"
+type="s" usr="madmps.mad"
 
 #######################
 # RDOS - 386
