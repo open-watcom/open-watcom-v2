@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +40,6 @@
 #include <arpa/inet.h>
 
 #include "rtdata.h"
-#include "variety.h"
 
 #define MAX_HOST_ALIASES  16
 
@@ -55,21 +56,21 @@ _WCRTLINK struct hostent *gethostent (void)
 {
     static struct hostent ret;
     char *ip, *alias;
-    
+
     /* For loading a line from the hosts file */
     static char     *buf = NULL;
     static size_t    buflen = 0;
-    
+
     /* More static data */
     static in_addr_t primary;
     static char *addr_list[2];
-    
+
     /* For line parsing */
     int i;
-    
+
     if(__hostFile == NULL)
         sethostent(0);
- 
+
     /* First pass */
     if(buf == NULL) {
         buflen = 64;
@@ -80,32 +81,32 @@ _WCRTLINK struct hostent *gethostent (void)
             buflen = 0;
     }
 
-    do
-    {
-        if(getline(&buf, &buflen, __hostFile) < 0)
+    do {
+        if(getline(&buf, &buflen, __hostFile) < 0) {
             return NULL;
-    } while (buf[0] == '\0' || buf[0] == '#' || buf[0] == ';');
+        }
+    } while( buf[0] == '\0' || buf[0] == '#' || buf[0] == ';' );
 
     /* Store the IP address (a bit complicated) */
     /* ... and we only support one IP address */
     ip = strtok(buf, " \t");
     primary = inet_addr(ip);
-    
+
     /* If no address for this line, try again (could be an IPv6 value) */
     if(primary == INADDR_NONE)
         return gethostent();
-    
+
     if(__hostClose)
         endhostent();
-    
+
     addr_list[0] = (char *)&primary;
     addr_list[1] = NULL;
     ret.h_addr_list = addr_list;
     ret.h_length = 4;
-    
+
     /* Everything here is assumed to be a Internet address */
     ret.h_addrtype  = AF_INET;
-    
+
     /* The host name */
     ret.h_name = strtok(NULL, " \t\n");
 
@@ -122,18 +123,18 @@ _WCRTLINK struct hostent *gethostent (void)
             i++;
             if (*alias == '#' || *alias == ';')
                 break;
-        
+
             ret.h_aliases[i] = strtok(NULL, " \t\n");
-            
+
             if(ret.h_aliases[i] == NULL)
                 break;
             else if(ret.h_aliases[i][0] == '\0') {
                 ret.h_aliases[i] = NULL;
                 break;
             }
-            
+
         } while (i < MAX_HOST_ALIASES);
-        
+
     } else {
         ret.h_aliases = calloc (1, sizeof(char *));
         ret.h_aliases[0] = NULL;
@@ -143,20 +144,20 @@ _WCRTLINK struct hostent *gethostent (void)
 
 _WCRTLINK void sethostent (int stayopen)
 {
-  __hostClose = (stayopen == 0);
-  
-  if (!__hostFile)    
-      __hostFile = fopen (__hostFname, "rt");
-  else 
-      rewind (__hostFile);
+    __hostClose = ( stayopen == 0 );
+
+    if( !__hostFile ) {
+      __hostFile = fopen ( __hostFname, "rt" );
+    } else {
+      rewind( __hostFile );
+    }
 }
 
 _WCRTLINK void endhostent (void)
 {
-  if (!__hostFile)
-     return;   
-
-  fclose (__hostFile);
-  __hostFile  = NULL;
-  __hostClose = 1;
-} 
+    if( __hostFile ) {
+        fclose( __hostFile );
+        __hostFile  = NULL;
+        __hostClose = 1;
+    }
+}

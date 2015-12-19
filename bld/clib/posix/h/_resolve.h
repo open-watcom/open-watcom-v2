@@ -31,9 +31,9 @@
 *
 ****************************************************************************/
 
+
 #include <netinet/in.h>
 #include <netdb.h>
-#include "variety.h"
 
 /* Query types for DNS queries */
 #define DNSQ_TYPE_A     1   /* IPv4 Address */
@@ -47,7 +47,7 @@
  * routine will return 1.  Upon failure, routine should return the
  * negative error code.
  */
-extern _WCRTLINK int _dns_query(const char *__name, 
+extern int _dns_query(const char *__name, 
                                 int __query_type, 
                                 in_addr_t __dnsaddr, 
                                 struct hostent *__res);

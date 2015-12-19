@@ -44,25 +44,25 @@
 
 #define DNSRESOLV   "/etc/resolv.conf"
 
-extern int _dns_query(const char *name, int query_type, in_addr_t dnsaddr, struct hostent *res);
-
 static struct hostent *__check_hostdb( const char *name )
 {
-int i;
-struct hostent *one;
-    
+    int             i;
+    struct hostent  *one;
+
     one = NULL;
-    
-    if(name == NULL) return one;
+
+    if( name == NULL )
+        return one;
 
     sethostent(1);
     while((one = gethostent()) != NULL) {
-        if(one->h_name != NULL && strcmp(one->h_name, name) == 0)
+        if( one->h_name != NULL && strcmp( one->h_name, name ) == 0 ) {
             break;
-        else {     
-            for(i=0;one->h_aliases[i] != NULL;i++) {
-                if(strcmp(one->h_aliases[i], name) == 0)
+        } else {
+            for( i = 0; one->h_aliases[i] != NULL; i++ ) {
+                if( strcmp( one->h_aliases[i], name ) == 0 ) {
                     break;
+                }
             }
         }
     }
@@ -77,17 +77,17 @@ struct hostent *one;
  */
 static int __get_nameserver( int last, in_addr_t *dnsaddr )
 {
-FILE *fp;
-int ret;
-    
-/* for parsing resolv.conf */
-char *currentline;
-size_t linelength;
-int which;
-char *ptrlabel;
-char *ptraddr;
-char *ptraddrtail;
-    
+    FILE *fp;
+    int ret;
+
+    /* for parsing resolv.conf */
+    char *currentline;
+    size_t linelength;
+    int which;
+    char *ptrlabel;
+    char *ptraddr;
+    char *ptraddrtail;
+
     fp = fopen(DNSRESOLV, "r");
     if(fp == NULL) return 0;
 
@@ -95,17 +95,17 @@ char *ptraddrtail;
     which = 0;
     currentline = NULL;
     linelength = 0;
-    
+
     while(getline(&currentline, &linelength, fp) >= 0) {
         ptrlabel = currentline;
         while(*ptrlabel == ' ' || *ptrlabel == '\t') ptrlabel++;
-        
+
         if(strlen(ptrlabel) == 0) continue;
-        
+
         ptraddr = ptrlabel;
         while(*ptraddr != ' ' && *ptraddr != '\t' && *ptraddr != '\0') ptraddr++;
         *ptraddr = '\0';
-        
+
         if(strcmp(ptrlabel, "nameserver") == 0) {
             if(which == last) {
                 ptraddr++;
@@ -124,27 +124,27 @@ char *ptraddrtail;
         }
     }
     fclose(fp);
-    
+
     return ret;
 }
 
 static struct hostent *__check_dns_4( const char *name )
 {
-in_addr_t dnsaddr;
-int servercount;
-int dns_success;
-static struct hostent ret;
-    
+    in_addr_t dnsaddr;
+    int servercount;
+    int dns_success;
+    static struct hostent ret;
+
     dns_success = 0;
     servercount = 0;
     while(__get_nameserver(servercount, &dnsaddr)) {
-        
+
         dns_success = _dns_query(name, DNSQ_TYPE_A, dnsaddr, &ret);
         if(dns_success > 0)
             break;
         servercount++;
     }
-    
+
     if(dns_success > 0)
         return &ret;
     else {
@@ -158,7 +158,7 @@ static struct hostent ret;
             case ENOENT:
                 h_errno = HOST_NOT_FOUND;
                 break;
-        
+
         }
         return NULL;
     }
@@ -166,7 +166,7 @@ static struct hostent ret;
 
 _WCRTLINK struct hostent *gethostbyname( const char *name )
 {
-static struct hostent *ret;
+    static struct hostent *ret;
 
     ret = __check_hostdb(name);
     if(ret != NULL) goto host_search_complete;

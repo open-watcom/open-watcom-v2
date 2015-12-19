@@ -31,9 +31,10 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <stdio.h>
 #include <langinfo.h>
-#include "variety.h"
 #include "li_base.h"
 
 static char *__langinfo_array_get(int index, char *array[])
@@ -48,7 +49,7 @@ _WCRTLINK char *nl_langinfo(int __item)
     char *ret;
 
     ret = NULL;
-    
+
     if(__item == CODESET)
         ret = BASE_CODESET;
 
