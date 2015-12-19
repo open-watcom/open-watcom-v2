@@ -448,6 +448,7 @@
 .fnc getgroups                  getgrps.gml         QXO
 .fnc _getgtextextent            gr_getge.gml    DOS QNX W GRAPH
 .fnc _getgtextvector            gr_gettv.gml    DOS QNX W GRAPH
+.fnc gethostbyname              gthstnam.gml    DOS     W WIN32
 .fnc gethostent                 gthstent.gml    DOS     W WIN32
 .fnc _getimage                  gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_w                gr_getim.gml    DOS QNX W GRAPH
