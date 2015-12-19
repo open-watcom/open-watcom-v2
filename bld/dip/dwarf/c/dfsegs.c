@@ -157,7 +157,7 @@ static  int  BlkSegSearch( seg_cmp *cmp  ){
     base = cmp->base;
     lo = 0;
     for(;;){
-        mid = (lo + hi)/2;
+        mid = MIDIDX16( lo, hi );
         curr = INFO_ITEM( base, mid ); // compare keys
         diff = (long)cmp->key - (long)curr->real;
         if( mid == lo )break;

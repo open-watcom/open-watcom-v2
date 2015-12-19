@@ -49,6 +49,8 @@
 #define IMX2MODI(ii,imx)    ((ii)->mod_map+(imx))
 #define IMH2MODI(ii,im)     IMX2MODI(ii,IMH2IMX(im))
 
+#define MIDIDX16(lo,hi)     ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi)/2))
+
 typedef imp_mod_handle  im_idx;
 
 typedef enum {

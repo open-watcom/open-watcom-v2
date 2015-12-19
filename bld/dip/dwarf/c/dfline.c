@@ -146,7 +146,7 @@ static  long BlkOffSearch( off_cmp *cmp  ) {
     hi = cmp->hi;
     lo = 0;
     for(;;) {
-        mid = (lo + hi)/2;
+        mid = MIDIDX16( lo, hi );
         curr = &base[mid];
         diff = (long)key - (long)curr->offset;
         if( mid == lo ) { /* fix up last cmp */

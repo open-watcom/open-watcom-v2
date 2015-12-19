@@ -46,6 +46,8 @@
 #define LINE_NUM( ptr ) (V2Lines ? (ptr)->v2.num : (ptr)->v3.num)
 #define LINE_LINE( ptr) (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
 
+#define MIDIDX16(lo,hi)     ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi)/2))
+
 typedef union {
     v2_line_segment     v2;
     v3_line_segment     v3;
@@ -63,7 +65,7 @@ static int  CueFind( const char *base, cue_idx cue, cue_state *ret )
     unsigned_16     lo;
     unsigned_16     mid;
     int             ok;
-    unsigned        hi;
+    unsigned_16     hi;
 
     if( base == NULL )
         return( 0 );
@@ -72,30 +74,30 @@ static int  CueFind( const char *base, cue_idx cue, cue_state *ret )
     cue -= PRIMARY_RANGE;
     ok = 0;
     lo = 0;
-    for(;;){
-        mid = (lo + hi)/2;
+    for( ;; ) {
+        mid = MIDIDX16( lo, hi );
         curr = ((const cue_state *)base) + mid;      // compare keys
-        diff = (long)cue - (long)(curr->cue);
-        if( mid == lo )break;
-        if( diff < 0 ){       // key < mid
+        diff = (long)cue - (long)curr->cue;
+        if( mid == lo )
+            break;
+        if( diff < 0 ) {        // key < mid
             hi = mid;
-        }else if( diff > 0 ){ // key > mid
+        } else if( diff > 0 ) { // key > mid
             lo = mid;
-        }else{                // key == mid
+        } else {                // key == mid
             break;
         }
     }
-    if( diff >= 0 ){
+    if( diff >= 0 ) {
         ok = 1;
     }
     *ret = *curr;
     ret->line += diff;
-    ret->fno += 2; /* 0 => no file, 1 => primary file */
+    ret->fno += 2;      /* 0 => no file, 1 => primary file */
     return( ok );
 }
 
-static unsigned long SpecCueLine( imp_image_handle *ii, imp_cue_handle *ic,
-                                  unsigned cue_id )
+static unsigned long SpecCueLine( imp_image_handle *ii, imp_cue_handle *ic, unsigned cue_id )
 {
     cue_state           info;
     unsigned long       ret;
@@ -113,8 +115,7 @@ static unsigned long SpecCueLine( imp_image_handle *ii, imp_cue_handle *ic,
     return( ret );
 }
 
-static unsigned SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic,
-                                unsigned cue_id )
+static unsigned SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic, unsigned cue_id )
 {
     cue_state           info;
     unsigned long       ret;
@@ -180,8 +181,7 @@ static void UnlockLine( void )
 }
 
 
-static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im,
-                                 word entry )
+static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im, word entry )
 {
     if( entry != 0 )
         UnlockLine();
@@ -274,8 +274,7 @@ static line_info *FindLineOff( addr_off off, addr_off adj,
 #define BIAS( p )       ((byte *)(p) - (byte *)LinStart)
 #define UNBIAS( o )     ((void *)((byte *)LinStart + (o)))
 
-static void SearchSection( imp_image_handle *ii,
-                    struct search_info *close, address addr )
+static void SearchSection( imp_image_handle *ii, struct search_info *close, address addr )
 {
     line_segment        *seg;
     line_segment        *next;
@@ -333,8 +332,7 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
     return( close.have );
 }
 
-static void ScanSection( struct search_info *close, unsigned file_id,
-                        unsigned line )
+static void ScanSection( struct search_info *close, unsigned file_id, unsigned line )
 {
     line_info           *curr;
     line_segment        *ptr;
