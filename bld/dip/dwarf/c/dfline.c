@@ -34,27 +34,27 @@
 #include "dfline.h"
 
 typedef struct {
-    dword           offset;
+    addr_off        offset;
     dword           line;
     unsigned_16     fno;
-}cue_info;
+} cue_info;
 
 enum {
     CUES_PER_BLK = 256,
 };
 
-typedef struct cue_blk{
-    struct cue_blk     *next;
-    cue_info            info[CUES_PER_BLK]; /*variable*/
-}cue_blk;
+typedef struct cue_blk {
+    struct cue_blk  *next;
+    cue_info        info[CUES_PER_BLK]; /* variableb */
+} cue_blk;
 
 struct seg_cue{
-    struct seg_cue *next;
+    struct seg_cue  *next;
     addr_seg        seg;
-    dword           low;
-    dword           high;
-    unsigned_16     count;    /*#entries collected by head */
-    cue_blk         *head;    /* list of cues              */
+    addr_off        low;
+    addr_off        high;
+    unsigned_16     count;    /* #entries collected by head */
+    cue_blk         *head;    /* list of cues               */
 };
 
 
@@ -65,12 +65,12 @@ extern void  InitCueList( cue_list *ctl ) {
     ctl->head = NULL;
 }
 
-seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, dword offset )
-/**************************************************************/
+seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, addr_off offset )
+/*****************************************************************/
 /* Keep in asending order  seg:offset */
 {
-    seg_cue  *curr;
-    seg_cue **lnk;
+    seg_cue     *curr;
+    seg_cue     **lnk;
 
     for( lnk = &ctl->head; (curr = *lnk) != NULL; lnk = &curr->next ) {
         if( seg < curr->seg || ( seg == curr->seg && offset < curr->low ) ) {
@@ -182,13 +182,13 @@ static  seg_cue  *FindSegCue( cue_list *list, addr_ptr *mach )
 
 extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ) {
 /****************************************************/
-    cue_blk    *blk;
-    cue_info   *info;
+    cue_blk     *blk;
+    cue_info    *info;
     off_cmp     cmp;
     unsigned_16 rem;
-    seg_cue   *ctl;
-    long       diff;
-    dword      next_off;
+    seg_cue     *ctl;
+    long        diff;
+    addr_off    next_off;
 
     info = NULL;
     ctl = FindSegCue( list, mach );
@@ -264,12 +264,12 @@ extern   dfline_find FindCue( cue_list    *list,
                               cue_item    *item,
                               dfline_search what ) {
 /****************************************************/
-    cue_blk        *blk;
-    cue_info       *info;
+    cue_blk         *blk;
+    cue_info        *info;
     unsigned_16     rem;
-    unsigned_16     seg_last;
-    cue_info       *info_last;
-    seg_cue        *ctl;
+    addr_seg        seg_last;
+    cue_info        *info_last;
+    seg_cue         *ctl;
     line_state      state;
     dfline_find     ret;
 
@@ -417,7 +417,7 @@ not_found:
     return( ret );
 }
 
-static void FreeSegCue(  seg_cue *curr )
+static void FreeSegCue( seg_cue *curr )
 /***********************************************/
 // Free all offset blocks for a segment
 {
@@ -520,7 +520,7 @@ void DmpCueOffset( cue_list *list )
                 rem = CUES_PER_BLK;
             }
             while( rem > 0 ) {
-               myprintf( "    %lx f%d.%d\n", info->offset, info->fno, info->line );
+                myprintf( "    %lx f%d.%d\n", info->offset, info->fno, info->line );
                 ++info;
                 --rem;
             }

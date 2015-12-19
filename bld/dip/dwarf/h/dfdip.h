@@ -49,9 +49,9 @@
 #define IMX2MODI(ii,imx)    ((ii)->mod_map+(imx))
 #define IMH2MODI(ii,im)     IMX2MODI(ii,IMH2IMX(im))
 
-#define MIDIDX16(lo,hi)     ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi)/2))
+#define MIDIDX16(lo,hi)     ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi) / 2))
 
-typedef imp_mod_handle  im_idx;
+typedef imp_mod_handle      im_idx;
 
 typedef enum {
     DF_NOT = 0,  /* handle info not set */
@@ -73,37 +73,37 @@ typedef struct {
 } enum_einfo;
 
 typedef struct {
-    dr_handle       root;    /* root class for member */
-    dr_handle       inh;     /* inheritance handle for member */
+    dr_handle           root;    /* root class for member */
+    dr_handle           inh;     /* inheritance handle for member */
 } mem_minfo;
 
 struct imp_sym_handle {
     /* any stuff for getting information on symbols */
-    sym_sclass      sclass;
-    imp_mod_handle  im;
-    unsigned        size;
-    dr_handle       sym;
-    dr_tag_type     stype;
-    dr_access       acc;
-    imp_state       state;
-    int             isdef        :1;
-    int             isstatic     :1;
-    int             isartificial :1;
+    sym_sclass          sclass;
+    imp_mod_handle      im;
+    unsigned            size;
+    dr_handle           sym;
+    dr_tag_type         stype;
+    dr_access           acc;
+    imp_state           state;
+    int                 isdef        :1;
+    int                 isstatic     :1;
+    int                 isartificial :1;
     union {
-        enum_einfo   einfo;
-        mem_minfo    minfo;
+        enum_einfo      einfo;
+        mem_minfo       minfo;
     } f;
 };
 
 typedef struct {
-    uint_16    dims;
-    dr_handle  index;
-    int_32     low;
-    uint_32    num_elts;
-    uint_32    base_stride;
-    uint_8     column_major :1;
-    uint_8     is_set       :1;
-    uint_8     is_based     :1;
+    uint_16             dims;
+    dr_handle           index;
+    int_32              low;
+    uint_32             num_elts;
+    uint_32             base_stride;
+    uint_8              column_major :1;
+    uint_8              is_set       :1;
+    uint_8              is_based     :1;
 } imp_array;
 
 

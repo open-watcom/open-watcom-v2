@@ -58,8 +58,9 @@ void FiniSegList( seg_list *ctl )
 
 #define INFO_ITEM( base, index ) (seg_entry *)( (char *)base+ index*item_size )
 
-extern  seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg ){
-/****************************************************/
+seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, addr_seg seg )
+/****************************************************************/
+{
     seg_blk_head   *blk;
     seg_entry      *info;
     unsigned_16     item_size;
@@ -102,8 +103,9 @@ exit_rtn:
 
 }
 
-extern  seg_entry *FindMapSeg( seg_list *list, word seg ){
-/****************************************************/
+seg_entry *FindMapSeg( seg_list *list, addr_seg seg )
+/***************************************************/
+{
     seg_blk_head   *blk;
     seg_entry      *info;
     unsigned_16     item_size;
@@ -134,7 +136,7 @@ exit_rtn:
 typedef struct{
     unsigned_16 item_size;
     unsigned_16 hi;
-    seg_entry    *base;
+    seg_entry   *base;
     word        key;
     unsigned_16 last;
 }seg_cmp;
@@ -175,9 +177,10 @@ static  int  BlkSegSearch( seg_cmp *cmp  ){
 }
 
 
-extern  seg_entry *FindRealSeg( seg_list *ctl, word seg ){
-/****************************************************/
+seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
+/***************************************************/
 // Find real seg seg_entry
+{
     seg_entry      *info;
     seg_blk_head   *blk;
     seg_cmp         cmp;
@@ -232,9 +235,10 @@ end_wlk:
     return( FALSE );
 }
 
-static int  SegCmp( void const *_seg1, void const *_seg2 ){
-/****************************************************************/
+static int  SegCmp( void const *_seg1, void const *_seg2 )
+/********************************************************/
 //Compare segments
+{
     seg_entry const *seg1 = _seg1;
     seg_entry const *seg2 = _seg2;
     int diff;
@@ -243,9 +247,10 @@ static int  SegCmp( void const *_seg1, void const *_seg2 ){
     return( diff );
 }
 
-extern  void    SortSegReal( seg_list *ctl ){
-/********************************************/
+void    SortSegReal( seg_list *ctl )
+/**********************************/
 //Sort a seg's real address
+{
     seg_blk_head   *blk;
     unsigned_16     blk_count;
     unsigned_16     item_size;

@@ -46,7 +46,7 @@
 #define LINE_NUM( ptr ) (V2Lines ? (ptr)->v2.num : (ptr)->v3.num)
 #define LINE_LINE( ptr) (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
 
-#define MIDIDX16(lo,hi)     ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi)/2))
+#define MIDIDX16(lo,hi) ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi) / 2))
 
 typedef union {
     v2_line_segment     v2;
