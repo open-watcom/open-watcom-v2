@@ -2,9 +2,10 @@
 host_cpu = axp
 host_os  = nt
 
+target_cpu = axp
+
 os = nt
 srv = nov
-cpu = axp
 which = SERVER
 gui = 1
 remote_link = 1

@@ -5,9 +5,10 @@
 host_os  = nto
 host_cpu = 386
 
+target_cpu = x86
+
 os    = nto
 srv   = lcl
-cpu   = x86
 which = TRAP
 
 !include $(trap_dir)/lcl/nto/trap.mif

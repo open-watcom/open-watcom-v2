@@ -3,13 +3,14 @@
 host_os  = os2
 host_cpu = 386
 
+target_cpu = x86
+
 #
 # Create the 32-bit OS/2 std.dll
 #
 
 os    = os2v2
 srv   = lcl
-cpu   = x86
 name  = std
 which = TRAP
 

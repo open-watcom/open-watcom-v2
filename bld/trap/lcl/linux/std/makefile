@@ -5,9 +5,10 @@
 host_cpu = 386
 host_os  = linux
 
+target_cpu = x86
+
 os      = linux
 srv     = lcl
-cpu     = x86
 which   = TRAP
 
 !include $(trap_dir)/lcl/linux/trap.mif

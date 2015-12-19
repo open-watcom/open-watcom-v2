@@ -5,9 +5,10 @@
 host_cpu = 386
 host_os  = qnx
 
+target_cpu = x86
+
 os      = qnx
 srv     = lcl
-cpu     = x86
 which = TRAP
 
 extra_objs = &

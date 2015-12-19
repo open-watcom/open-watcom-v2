@@ -2,14 +2,15 @@
 host_cpu = 386
 host_os  = dos
 
+target_cpu = x86
+
 os = ads
 srv = ads
-cpu = x86
 name = adshelp
 which = SERVER
 
 extra_objs = adsacc.obj adsintr.obj
- 
+
 extra_cpp_flags = -DACAD
 extra_c_flags = -I"$(adsdir)"
 extra_a_flags = -3s -DACAD

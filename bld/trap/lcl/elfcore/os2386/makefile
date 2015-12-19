@@ -5,10 +5,11 @@
 host_cpu = 386
 host_os  = os2
 
+target_cpu = x86
+
 os      = os2v2
 srv     = lcl
-cpu     = x86
-name    = elf 
+name    = elf
 which   = TRAP
 
 extra_cpp_flags = -DELFCORE
@@ -21,7 +22,7 @@ extra_objs = &
         coremisc.obj &
         supp.obj &
         core.obj
-        
+
 inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"
 
 !include $(trap_dir)/lcl/lcl.mif

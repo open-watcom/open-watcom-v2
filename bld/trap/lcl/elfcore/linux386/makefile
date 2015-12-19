@@ -5,9 +5,10 @@
 host_cpu = 386
 host_os  = linux
 
+target_cpu = x86
+
 os      = linux
 srv     = lcl
-cpu     = x86
 name    = elf
 which   = TRAP
 
@@ -20,7 +21,7 @@ extra_objs = &
         coremisc.obj &
         supp.obj &
         core.obj
-        
+
 inc_dirs   = -I"$(trap_dir)/lcl/elfcore/h"
 
 !include $(trap_dir)/lcl/lcl.mif

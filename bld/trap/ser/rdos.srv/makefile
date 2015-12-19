@@ -2,9 +2,10 @@
 host_cpu = 386
 host_os  = rdos
 
+target_cpu = x86
+
 os = rdos
 srv = ser
-cpu = x86
 which = SERVER
 remote_link = 1
 

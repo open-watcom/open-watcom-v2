@@ -113,7 +113,7 @@ xname=d$(name)
 
 # cflags stuff
 ###############
-extra_cpp_flags += -D$(which) -DMD_$(cpu) $(extra_cppflags)
+extra_cpp_flags += -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE
@@ -216,14 +216,14 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
         @%append $^&.lnk $(mode_lflags)
         @%append $^&.lnk op map, elim
         @%append $^&.lnk name $^@
-        @%append $^&.lnk $(sys_$(cpu)_$(os))
+        @%append $^&.lnk $(sys_$(target_cpu)_$(os))
 !ifeq which TRAP
         @%append $^&.lnk op dosseg
 !endif
         @for %i in ($(objs)) do @%append $^&.lnk file %i
         @for %i in ($(extra_libs) $(dbg_libs)) do @%append $^&.lnk library %i
         @%append $^&.lnk $(extra_linker)
-        $(linker) @$^&.lnk 
+        $(linker) @$^&.lnk
 !endif
 !ifdef resource_file
         $(rc) $(resource_file) $^@
@@ -235,10 +235,10 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
 dbgstr.lib : dbgstr.obj
         $(librarian) $(libflags) +$[@
 
-inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)" 
+inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov
-inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h" 
+inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h"
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 !endif
 

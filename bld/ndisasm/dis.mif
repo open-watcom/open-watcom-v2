@@ -3,15 +3,15 @@ dis_hdirs       = $(disasm_dir)/core/h
 dis_includes    = -I"$(disasm_dir)/core/h"
 dis_prereq      = distbls.gh
 
-#                    oaxp oppc ox86 ojvm osparc omips ox64 oall otest
+#                    oaxp oppc ox86 ojvm osparc omps ox64 oall otest
 #====================================================================
-!inject disaxp.obj   oaxp                                  oall otest
-!inject disppc.obj        oppc                             oall otest
-!inject disx86.obj             ox86                        oall otest
-!inject disjvm.obj                  ojvm                        otest
-!inject dissparc.obj                     osparc            oall otest
-!inject dismips.obj                             omips      oall otest
-!inject disx64.obj                                    ox64 oall otest
+!inject disaxp.obj   oaxp                                 oall otest
+!inject disppc.obj        oppc                            oall otest
+!inject disx86.obj             ox86                       oall otest
+!inject disjvm.obj                  ojvm                       otest
+!inject dissparc.obj                     osparc           oall otest
+!inject dismips.obj                             omps      oall otest
+!inject disx64.obj                                   ox64 oall otest
 
 dis_objs = disentry.obj $+$(o$(target_cpu))$-
 
@@ -23,14 +23,14 @@ sparc_disbuild_headers = $(disasm_dir)/core/h/inssparc.h $(disasm_dir)/core/h/re
 mips_disbuild_headers  = $(disasm_dir)/core/h/insmips.h  $(disasm_dir)/core/h/refmips.h  $(disasm_dir)/core/h/regmips.h
 x64_disbuild_headers   = $(disasm_dir)/core/h/insx64.h   $(disasm_dir)/core/h/refx64.h   $(disasm_dir)/core/h/regx64.h
 
-#                                  haxp hppc hx86 hjvm hsparc hmips hx64 hall htest
+#                                  haxp hppc hx86 hjvm hsparc hmps hx64 hall htest
 #==================================================================================
-!inject $$(axp_disbuild_headers)   haxp                                  hall htest
-!inject $$(ppc_disbuild_headers)        hppc                             hall htest
-!inject $$(x86_disbuild_headers)             hx86                        hall htest
-!inject $$(jvm_disbuild_headers)                  hjvm                        htest
-!inject $$(sparc_disbuild_headers)                     hsparc            hall htest
-!inject $$(mips_disbuild_headers)                             hmips      hall htest
-!inject $$(x64_disbuild_headers)                                    hx64 hall htest
+!inject $$(axp_disbuild_headers)   haxp                                 hall htest
+!inject $$(ppc_disbuild_headers)        hppc                            hall htest
+!inject $$(x86_disbuild_headers)             hx86                       hall htest
+!inject $$(jvm_disbuild_headers)                  hjvm                       htest
+!inject $$(sparc_disbuild_headers)                     hsparc           hall htest
+!inject $$(mips_disbuild_headers)                             hmps      hall htest
+!inject $$(x64_disbuild_headers)                                   hx64 hall htest
 
 disbuild_headers = $+$(h$(target_cpu))$-

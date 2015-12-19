@@ -3,9 +3,10 @@
 host_os  = os2
 host_cpu = 386
 
+target_cpu = x86
+
 os    = os2v2
 srv   = net
-cpu   = x86
 which = TRAP
 remote_link = 1
 

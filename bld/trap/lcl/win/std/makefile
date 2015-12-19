@@ -3,6 +3,8 @@
 host_os  = win
 host_cpu = i86
 
+target_cpu = x86
+
 sys_windowed = 1
 
 #
@@ -11,7 +13,6 @@ sys_windowed = 1
 
 os      = win
 srv     = lcl
-cpu     = x86
 which = TRAP
 
 extra_objs = &

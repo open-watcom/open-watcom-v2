@@ -3,9 +3,10 @@
 host_os  = os2
 host_cpu = i86
 
+target_cpu = x86
+
 os  = os2
 srv = tcp
-cpu = x86
 which = SERVER
 remote_link = 1
 

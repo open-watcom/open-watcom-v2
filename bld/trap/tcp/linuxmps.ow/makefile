@@ -3,9 +3,10 @@
 host_os  = linux
 host_cpu = mps
 
+target_cpu = mps
+
 os    = linux
 srv   = tcp
-cpu   = mips
 which = SERVER
 remote_link = 1
 builtin_trap = 1

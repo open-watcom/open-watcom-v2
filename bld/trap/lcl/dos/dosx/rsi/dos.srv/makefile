@@ -3,9 +3,10 @@
 host_os  = dos
 host_cpu = i86
 
+target_cpu = x86
+
 os   = rsi
 srv  = rsi
-cpu  = x86
 name = rsihelp
 which = SERVER
 

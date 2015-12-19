@@ -3,9 +3,10 @@
 host_os  = dos
 host_cpu = i86
 
+target_cpu = x86
+
 os  = dos
 srv = cw
-cpu = x86
 which = TRAP
 
 extra_cpp_flags = -DCAUSEWAY

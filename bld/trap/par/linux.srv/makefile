@@ -2,9 +2,10 @@
 host_cpu = 386
 host_os  = linux
 
+target_cpu = x86
+
 os = linux
 srv = par
-cpu = x86
 which = SERVER
 remote_link = 1
 

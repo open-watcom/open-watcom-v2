@@ -2,11 +2,12 @@
 host_cpu = 386
 host_os  = dos
 
+target_cpu = x86
+
 #NOTE: This file is also included from the ..\DOSPED.SRV makefile
 
 os = pls
 srv = pls
-cpu = x86
 !ifndef name
 name = plshelp
 !endif

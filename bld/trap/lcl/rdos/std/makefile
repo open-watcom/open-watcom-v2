@@ -3,13 +3,14 @@
 host_os  = rdos
 host_cpu = 386
 
+target_cpu = x86
+
 #
 # Create the RDOS STD.DLL
 #
 
 os      = rdos
 srv     = lcl
-cpu     = x86
 which = TRAP
 
 extra_objs = &

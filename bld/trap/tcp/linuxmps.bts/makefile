@@ -5,9 +5,10 @@ bootstrap = 1
 host_os  = linux
 host_cpu = mips
 
+target_cpu = mps
+
 os    = linux
 srv   = tcp
-cpu   = mips
 which = SERVER
 remote_link = 1
 builtin_trap = 1

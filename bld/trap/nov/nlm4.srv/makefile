@@ -2,10 +2,11 @@
 host_cpu = 386
 host_os  = nov
 
+target_cpu = x86
+
 nlm_ver = 4
 os    = nlm
 srv   = nov
-cpu   = x86
 which = SERVER
 remote_link = 1
 builtin_trap = 1

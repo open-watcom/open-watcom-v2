@@ -56,7 +56,7 @@
 #define DISCPU DISCPU_jvm
 #elif defined( NDIS_sparc )
 #define DISCPU DISCPU_sparc
-#elif defined( NDIS_mips )
+#elif defined( NDIS_mps )
 #define DISCPU DISCPU_mips
 #elif defined( NDIS_test )
 #define DISCPU ( DISCPU_axp | DISCPU_ppc | DISCPU_x86 | DISCPU_jvm | DISCPU_sparc | DISCPU_mips | DISCPU_x64 )

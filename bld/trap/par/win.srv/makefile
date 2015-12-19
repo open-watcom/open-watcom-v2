@@ -2,9 +2,10 @@
 host_cpu = i86
 host_os  = win
 
+target_cpu = x86
+
 os = win
 srv = par
-cpu = x86
 which = SERVER
 gui = 1
 remote_link = 1
