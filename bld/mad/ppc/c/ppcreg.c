@@ -200,7 +200,6 @@ unsigned        DIGENTRY MIRegistersSize( void )
 mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
 {
 #if !defined( __BIG_ENDIAN__ )
-    unsigned_32     temp;
     int             i;
 
     // Currently harcoded for big endian targets - should be dynamic
@@ -230,7 +229,6 @@ mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
 mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
 {
 #if !defined( __BIG_ENDIAN__ )
-    unsigned_32     temp;
     int             i;
 
     // Convert GPRs
