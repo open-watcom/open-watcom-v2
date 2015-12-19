@@ -6,8 +6,8 @@ host_os  = nt
 host_cpu = axp
 
 target_cpu = axp
+target_os  = nt
 
-os      = nt
 srv     = lcl
 which   = TRAP
 

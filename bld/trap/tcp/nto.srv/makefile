@@ -4,8 +4,8 @@ host_os  = nto
 host_cpu = 386
 
 target_cpu = x86
+target_os  = nto
 
-os    = nto
 srv   = tcp
 which = SERVER
 remote_link = 1

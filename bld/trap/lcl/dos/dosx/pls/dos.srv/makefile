@@ -3,10 +3,10 @@ host_cpu = 386
 host_os  = dos
 
 target_cpu = x86
+target_os  = pls
 
 #NOTE: This file is also included from the ..\DOSPED.SRV makefile
 
-os = pls
 srv = pls
 !ifndef name
 name = plshelp

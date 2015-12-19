@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = qnx
 
 target_cpu = x86
+target_os  = qnx
 
-os = qnx
 srv = ser
 which = TRAP
 remote_link = 1

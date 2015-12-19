@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = linux
 
 target_cpu = x86
+target_os  = linux
 
-os = linux
 srv = par
 which = TRAP
 remote_link = 1

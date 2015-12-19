@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = nt
 
 target_cpu = jvm
+target_os  = nt
 
-os = nt
 srv = jvm
 name = jvmhelp
 which = SERVER

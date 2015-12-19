@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = os2
 
 target_cpu = x86
+target_os  = os2v2
 
-os    = os2v2
 srv   = vdm
 which = TRAP
 remote_link = 1

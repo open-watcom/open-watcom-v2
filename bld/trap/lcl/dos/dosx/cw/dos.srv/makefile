@@ -4,8 +4,8 @@ host_os  = dos
 host_cpu = 386
 
 target_cpu = x86
+target_os  = cw
 
-os = cw
 srv = cw
 name = cwhelp
 which = SERVER

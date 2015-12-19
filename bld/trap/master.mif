@@ -12,13 +12,13 @@ suppress_zc = 1
 # Common stuff between trap file and server implementations
 #
 # Macros:
-#       os              - Name of the operating system the executable is
+#       target_os       - Name of the operating system the executable is
 #                         being built for. Look at the "comp_*" macros
 #                         below for the list of acceptable names (required).
 #       srv             - Name of the remote link that the server/trap file
 #                         is implementing. Use "lcl" for "STD" trap
 #                         files (required).
-#       cpu             - Name of the CPU that the server/trap is being
+#       target_cpu      - Name of the CPU that the server/trap is being
 #                         built for (x86,axp,ppc,etc).
 #       name            - Root name of the server/trap file. A name is
 #                         created from the "srv" macro if this is not
@@ -55,12 +55,12 @@ memory_model_i86 = c
 
 !ifeq nwlib libc
 os_prefix = libc
-!else ifeq os linux
+!else ifeq target_os linux
 os_prefix = lnx
-!else ifeq os os2v2
+!else ifeq target_os os2v2
 os_prefix = os22
 !else
-os_prefix = $(os)
+os_prefix = $(target_os)
 !endif
 
 fpu_flags_dos_i86   = -fpc
@@ -79,7 +79,7 @@ additional_cleanup = *.d32 *.trp
 name = std
 !else ifeq which SERVER
 name = $(srv)serv
-!ifeq os win
+!ifeq target_os win
 name+=w
 !endif
 !else
@@ -130,7 +130,7 @@ extra_c_flags += -zlf
 
 !ifeq host_os nov
 extra_c_flags_386 += -3s
-!else ifeq os ads
+!else ifeq target_os ads
 extra_c_flags_386 += -3s
 !endif
 
@@ -216,7 +216,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
         @%append $^&.lnk $(mode_lflags)
         @%append $^&.lnk op map, elim
         @%append $^&.lnk name $^@
-        @%append $^&.lnk $(sys_$(target_cpu)_$(os))
+        @%append $^&.lnk $(sys_$(target_cpu)_$(target_os))
 !ifeq which TRAP
         @%append $^&.lnk op dosseg
 !endif
@@ -235,17 +235,17 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
 dbgstr.lib : dbgstr.obj
         $(librarian) $(libflags) +$[@
 
-inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)"
+inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h"
 inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 !endif
 
-.c: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
-.cpp: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
-.asm: ../asm;../../asm;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
-.rc: ../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
+.c: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.cpp: ../c;../../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.asm: ../asm;../../asm;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
+.rc: ../c;$(trap_dir)/common/$(target_os);$(trap_dir)/common;$(extra_srcs)
 
 rc_inc_dirs = -I"$(trap_dir)/common"
 

@@ -3,8 +3,8 @@ host_cpu = axp
 host_os  = nt
 
 target_cpu = axp
+target_os  = nt
 
-os = nt
 srv = nov
 which = TRAP
 remote_link = 1

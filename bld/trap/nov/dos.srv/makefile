@@ -3,8 +3,8 @@ host_cpu = i86
 host_os  = dos
 
 target_cpu = x86
+target_os  = dos
 
-os = dos
 srv = nov
 which = SERVER
 remote_link = 1

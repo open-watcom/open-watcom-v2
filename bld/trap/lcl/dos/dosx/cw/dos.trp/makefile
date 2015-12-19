@@ -4,8 +4,8 @@ host_os  = dos
 host_cpu = i86
 
 target_cpu = x86
+target_os  = dos
 
-os  = dos
 srv = cw
 which = TRAP
 

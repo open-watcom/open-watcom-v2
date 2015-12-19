@@ -3,8 +3,8 @@ host_cpu = i86
 host_os  = win
 
 target_cpu = x86
+target_os  = win
 
-os = win
 srv = tcp
 which = TRAP
 remote_link = 1

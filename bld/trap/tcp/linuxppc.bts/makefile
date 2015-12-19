@@ -6,8 +6,8 @@ host_os  = linux
 host_cpu = ppc
 
 target_cpu = ppc
+target_os  = linux
 
-os    = linux
 srv   = tcp
 which = SERVER
 remote_link = 1

@@ -3,8 +3,8 @@ host_cpu = 386
 host_os  = dos
 
 target_cpu = x86
+target_os  = ads
 
-os = ads
 srv = ads
 name = adshelp
 which = SERVER

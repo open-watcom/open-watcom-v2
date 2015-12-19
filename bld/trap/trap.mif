@@ -130,8 +130,8 @@ trap_ext_os2_os2v2   = .d32
 trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
-!ifdef trap_ext_$(host_os)_$(os)
-target = $(xname)$(trap_ext_$(host_os)_$(os))
+!ifdef trap_ext_$(host_os)_$(target_os)
+target = $(xname)$(trap_ext_$(host_os)_$(target_os))
 !else ifdef trap_ext_$(host_os)
 target = $(xname)$(trap_ext_$(host_os))
 !else
@@ -152,9 +152,9 @@ TRAP_common_objs += $(os_prefix)noth.obj
 !endif
 
 TRAP_remote_objs = remote.obj
-!ifeq os win
+!ifeq target_os win
 TRAP_remote_objs += winstub.obj
-!else ifeq os nt
+!else ifeq target_os nt
 TRAP_remote_objs += ntstub.obj
 !endif
 

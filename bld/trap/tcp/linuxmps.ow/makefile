@@ -4,8 +4,8 @@ host_os  = linux
 host_cpu = mps
 
 target_cpu = mps
+target_os  = linux
 
-os    = linux
 srv   = tcp
 which = SERVER
 remote_link = 1

@@ -5,31 +5,14 @@
 host_os  = $(bld_os)
 host_cpu = $(bld_cpu)
 
+target_cpu = $(bld_cpu)
+!ifeq bld_cpu 386
+target_cpu = x86
+!endif
+
 os      = linux
 srv     = lcl
 which   = TRAP
 
-extra_objs = &
-        lnxacc.obj &
-        lnxmap.obj &
-        lnxcomm.obj &
-        lnxfile.obj &
-        lnxutl.obj &
-        supp.obj &
-        core.obj
-
-!ifeq host_cpu 386
-cpu     = x86
-extra_objs += lnxx86.obj x86cpu.obj #misc7386.obj
-!else ifeq host_cpu ppc
-cpu     = ppc
-extra_objs += lnxppc.obj
-!else ifeq host_cpu mips
-cpu     = mips
-extra_objs += lnxmips.obj
-!else
-!error Unknown CPU architecture
-!endif
-
-!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/lcl/linux/trap.mif
 !include $(trap_dir)/master.mif
