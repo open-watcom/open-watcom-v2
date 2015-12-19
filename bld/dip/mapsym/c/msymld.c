@@ -105,11 +105,11 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
     want -= got;
     if( want > 0 ) {
         Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( Buff.len == (unsigned)-1 ) {
+        if( Buff.len == DCREAD_ERROR ) {
             Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( (unsigned)-1 );
+            return( DCREAD_ERROR );
         }
         Buff.fpos += Buff.len;
         b = (unsigned_8 *)b + got;
@@ -281,7 +281,7 @@ static dip_status ReadString( dig_fhandle h, char *buf, unsigned *len_ptr )
     if( BRead( h, &str_len, sizeof( str_len ) ) != sizeof( str_len ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( BRead( h, buf, str_len ) != str_len ) {
+    if( BRead( h, buf, str_len ) != (unsigned)str_len ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     buf[str_len] = '\0';            // NUL terminate string
@@ -291,13 +291,13 @@ static dip_status ReadString( dig_fhandle h, char *buf, unsigned *len_ptr )
 }
 
 /* Load symbols for a segment */
-static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, int count,
+static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, unsigned count,
                         unsigned long base_ofs, unsigned_32 table_ofs,
                         addr_seg seg, int big_syms )
 {
     dip_status      ds;
     unsigned_16     *sym_tbl;
-    size_t          tbl_size;
+    unsigned        tbl_size;
     sym_symdef      sym;
     sym_symdef_32   sym_32;
     char            name[256];

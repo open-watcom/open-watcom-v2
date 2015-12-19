@@ -110,11 +110,11 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
     want -= got;
     if( want > 0 ) {
         Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( Buff.len == (unsigned)-1 ) {
+        if( Buff.len == DCREAD_ERROR ) {
             Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( (unsigned)-1 );
+            return( DCREAD_ERROR );
         }
         Buff.fpos += Buff.len;
         b = (unsigned_8 *)b + got;

@@ -214,7 +214,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             return( NULL );
         }
         /* last block might be a short read */
-        if( DCRead( ii->sym_file, pg->block->data, len ) == (unsigned)-1 ) {
+        if( DCRead( ii->sym_file, pg->block->data, len ) == DCREAD_ERROR ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }
