@@ -77,12 +77,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             have_ext = 0;
             break;
         case '.':
+#ifdef USE_FILENAME_VERSION
+            *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+            *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
             have_ext = 1;
             break;
         }
         *dst++ = chr;
     }
     if( !have_ext ) {
+#ifdef USE_FILENAME_VERSION
+        *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+        *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
         *dst++ = '.';
         *dst++ = 'd';
         *dst++ = 'l';

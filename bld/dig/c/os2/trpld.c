@@ -41,6 +41,7 @@
 #include "trpsys.h"
 #include "tcerr.h"
 
+
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
@@ -97,8 +98,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         ;
     len = ptr - parms;
     memcpy( trpfile, parms, len );
-    trpfile[len] = '\0';
-    if( !stricmp( trpfile, "std" ) ) {
+    if( stricmp( trpfile, "std" ) == 0 ) {
         unsigned        version;
         char            os2ver;
 
@@ -111,8 +111,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             trpfile[len++] = '1';
             trpfile[len++] = '6';
         }
-        trpfile[len] = 0;
     }
+#ifdef USE_FILENAME_VERSION
+    trpfile[len++] = ( USE_FILENAME_VERSION / 10 ) + '0';
+    trpfile[len++] = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
+    trpfile[len] = '\0';
     rc = DosLoadModule( NULL, 0, trpfile, &TrapFile );
     if( rc != 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );

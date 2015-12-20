@@ -519,17 +519,31 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                *err;
-    const char          *end;
+    const char          *ptr;
     dig_fhandle         dh;
     trap_file_header    __far *head;
-
+#ifdef USE_FILENAME_VERSION
+    char                filename[256];
+    char                *p;
+#endif
 
     if( parms == NULL || *parms == '\0' ) {
         parms = DEFAULT_TRP_NAME;
     }
-    for( end = parms; *end != '\0' && *end != TRAP_PARM_SEPARATOR; ++end )
+#ifdef USE_FILENAME_VERSION
+    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+        *p++ = *ptr;
+    }
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p = '\0';
+    dh = DIGPathOpen( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
+#else
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
-    dh = DIGPathOpen( parms, end - parms, DEFAULT_TRP_EXT, NULL, 0 );
+    }
+    dh = DIGPathOpen( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
+#endif
     if( dh == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
@@ -550,7 +564,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 PMData->initfunc.s.segment = TrapMem.segm.rm;
                 PMData->reqfunc.s.segment  = TrapMem.segm.rm;
                 PMData->finifunc.s.segment = TrapMem.segm.rm;
-                parms = end;
+                parms = ptr;
                 if( *parms != '\0' )
                     ++parms;
                 if( CallTrapInit( parms, buff, trap_ver ) ) {

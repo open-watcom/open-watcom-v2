@@ -83,13 +83,29 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     trap_load_func      *ld_func;
     char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
+#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
+    char                *p;
+#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
+#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
+    for( ptr = parms, p = trap_name; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+        *p++ = *ptr;
+    }
+#else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
+#endif
 #if !defined( BUILTIN_TRAP_FILE )
-    filehndl = DIGPathOpen( parms, ptr - parms, "trp", trap_name, sizeof(trap_name) );
+  #ifdef USE_FILENAME_VERSION
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p = '\0';
+    filehndl = DIGPathOpen( trap_name, p - trap_name, "trp", trap_name, sizeof( trap_name ) );
+  #else
+    filehndl = DIGPathOpen( parms, ptr - parms, "trp", trap_name, sizeof( trap_name ) );
+  #endif
     if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );

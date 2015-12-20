@@ -100,6 +100,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         ;
     len = ptr - parms;
     memcpy( trpfile, parms, len );
+#ifdef USE_FILENAME_VERSION
+    trpfile[len++] = ( USE_FILENAME_VERSION / 10 ) + '0';
+    trpfile[len++] = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
     trpfile[len] = '\0';
 
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"

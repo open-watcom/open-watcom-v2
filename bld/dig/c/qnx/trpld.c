@@ -82,12 +82,27 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     const char          *ptr;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
+#ifdef USE_FILENAME_VERSION
+    char                filename[256];
+    char                *p;
+#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+#ifdef USE_FILENAME_VERSION
+    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+        *p++ = *ptr;
+    }
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p = '\0';
+    filehndl = DIGPathOpen( filename, p - filename, "trp", NULL, 0 );
+#else
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
+    }
     filehndl = DIGPathOpen( parms, ptr - parms, "trp", NULL, 0 );
+#endif
     if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
