@@ -167,6 +167,8 @@ static mad_entry *MADFind( mad_handle mh )
     return( NULL );
 }
 
+#define quoted(x)   # x
+#define strx(x)     quoted(x)
 
 /*
  *      Control Routines
@@ -179,7 +181,11 @@ mad_status      MADInit( void )
         const char      *file;
         const char      *desc;
     } list[] = {
+#ifdef USE_FILENAME_VERSION
+        #define pick_mad(enum,file,desc) {enum,file strx(USE_FILENAME_VERSION),desc},
+#else
         #define pick_mad(enum,file,desc) {enum,file,desc},
+#endif
         #include "madarch.h"
         #undef pick_mad
     };
