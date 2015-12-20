@@ -48,24 +48,24 @@ static struct hostent *__check_hostdb( const char *name )
 {
     int             i;
     struct hostent  *one;
+    int             alias;
 
     one = NULL;
-
-    if( name == NULL )
-        return( one );
-
-    sethostent( 1 );
-    while( (one = gethostent()) != NULL ) {
-        if( one->h_name != NULL && strcmp( one->h_name, name ) == 0 )
-            break;
-        for( i = 0; one->h_aliases[i] != NULL; i++ ) {
-            if( strcmp( one->h_aliases[i], name ) == 0 ) {
+    if( name != NULL ) {
+        alias = 0;
+        sethostent( 1 );
+        while( alias == 0 && (one = gethostent()) != NULL ) {
+            if( one->h_name != NULL && strcmp( one->h_name, name ) == 0 )
                 break;
+            for( i = 0; one->h_aliases[i] != NULL; i++ ) {
+                if( strcmp( one->h_aliases[i], name ) == 0 ) {
+                    alias = 1;
+                    break;
+                }
             }
         }
+        endhostent();
     }
-    endhostent();
-
     return( one );
 }
 
@@ -85,50 +85,48 @@ static int __get_nameserver( int last, in_addr_t *dnsaddr )
     char    *ptraddr;
     char    *ptraddrtail;
 
-    fp = fopen( DNSRESOLV, "r" );
-    if( fp == NULL )
-        return( 0 );
-
     ret = 0;
-    which = 0;
-    currentline = NULL;
-    linelength = 0;
+    fp = fopen( DNSRESOLV, "r" );
+    if( fp != NULL ) {
+        which = 0;
+        currentline = NULL;
+        linelength = 0;
 
-    while( getline( &currentline, &linelength, fp ) >= 0 ) {
-        ptrlabel = currentline;
-        while( *ptrlabel == ' ' || *ptrlabel == '\t' )
-            ptrlabel++;
+        while( getline( &currentline, &linelength, fp ) >= 0 ) {
+            ptrlabel = currentline;
+            while( *ptrlabel == ' ' || *ptrlabel == '\t' )
+                ptrlabel++;
 
-        if( strlen( ptrlabel ) == 0 )
-            continue;
+            if( *ptrlabel == '\0' )
+                continue;
 
-        ptraddr = ptrlabel;
-        while( *ptraddr != ' ' && *ptraddr != '\t' && *ptraddr != '\0' )
-            ptraddr++;
-        *ptraddr = '\0';
-
-        if( strcmp( ptrlabel, "nameserver" ) == 0 ) {
-            if( which == last ) {
+            ptraddr = ptrlabel;
+            while( *ptraddr != ' ' && *ptraddr != '\t' && *ptraddr != '\0' )
                 ptraddr++;
-                while( *ptraddr == ' ' || *ptraddr == '\t' )
+            *ptraddr = '\0';
+
+            if( strcmp( ptrlabel, "nameserver" ) == 0 ) {
+                if( which == last ) {
                     ptraddr++;
-                ptraddrtail = ptraddr;
-                while( *ptraddrtail != ' ' && *ptraddrtail != '\t' && 
-                      *ptraddrtail != '\0' && *ptraddrtail != '\n' )
-                    ptraddrtail++;
-                *ptraddrtail = '\0';
-                if( strlen( ptraddr ) > 0 ) {
-                    *dnsaddr = inet_addr( ptraddr );
-                    ret = 1;
-                    break;
+                    while( *ptraddr == ' ' || *ptraddr == '\t' )
+                        ptraddr++;
+                    ptraddrtail = ptraddr;
+                    while( *ptraddrtail != ' ' && *ptraddrtail != '\t' &&
+                          *ptraddrtail != '\0' && *ptraddrtail != '\n' )
+                        ptraddrtail++;
+                    *ptraddrtail = '\0';
+                    if( *ptraddr != '\0' ) {
+                        *dnsaddr = inet_addr( ptraddr );
+                        ret = 1;
+                        break;
+                    }
+                } else {
+                    which++;
                 }
-            } else {
-                which++;
             }
         }
+        fclose( fp );
     }
-    fclose( fp );
-
     return( ret );
 }
 
@@ -142,7 +140,6 @@ static struct hostent *__check_dns_4( const char *name )
     dns_success = 0;
     servercount = 0;
     while( __get_nameserver( servercount, &dnsaddr ) ) {
-
         dns_success = _dns_query( name, DNSQ_TYPE_A, dnsaddr, &ret );
         if( dns_success > 0 )
             break;
