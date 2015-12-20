@@ -114,6 +114,10 @@ xname=d$(name)
 # cflags stuff
 ###############
 extra_cpp_flags += -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
+
 !ifndef test
 !ifdef builtin_trap
 extra_cpp_flags += -DBUILTIN_TRAP_FILE

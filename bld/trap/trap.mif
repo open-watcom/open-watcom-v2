@@ -130,16 +130,22 @@ trap_ext_os2_os2v2   = .d32
 trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
-!ifdef trap_ext_$(host_os)_$(target_os)
-target = $(xname)$(trap_ext_$(host_os)_$(target_os))
-!else ifdef trap_ext_$(host_os)
-target = $(xname)$(trap_ext_$(host_os))
+!ifdef %USE_FILENAME_VERSION
+target_basename = $(xname)$(bld_ver)
 !else
-target = $(xname).trp
+target_basename = $(xname)
+!endif
+
+!ifdef trap_ext_$(host_os)_$(os)
+target = $(target_basename)$(trap_ext_$(host_os)_$(os))
+!else ifdef trap_ext_$(host_os)
+target = $(target_basename)$(trap_ext_$(host_os))
+!else
+target = $(target_basename).trp
 !endif
 !ifndef __WATCOM__
 !ifdef ext_lib_shared
-target = $(xname)$(ext_lib_shared)
+target = $(target_basename)$(ext_lib_shared)
 !endif
 !endif
 

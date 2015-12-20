@@ -3,7 +3,7 @@
 bootstrap = 1
 
 host_os  = linux
-host_cpu = mips
+host_cpu = mps
 
 target_cpu = mps
 target_os  = linux
