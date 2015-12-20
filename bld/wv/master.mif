@@ -76,6 +76,9 @@ extra_cpp_flags = -D__CHAR__
 !ifeq release 0
 extra_cpp_flags += -DAUI_DBG
 !endif
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
 extra_c_flags = -s
