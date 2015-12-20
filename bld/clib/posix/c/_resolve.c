@@ -78,15 +78,12 @@ struct __dns_question
     uint16_t qclass;
 };
 
-#pragma pack(push, 1)
 struct __dns_response_data
 {
     uint16_t type;
     uint16_t klass;
     uint32_t ttl;
-    uint16_t data_length;
 };
-#pragma pack(pop)
 
 struct __dns_resource_record
 {
@@ -236,13 +233,13 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
     int             result;
     size_t          query_size;
     int             ret;
-    
+
     struct __dns_resource_record *answers; //the replies from the DNS server
     struct sockaddr_in      dest;
-    
+
     struct __dns_header     *dns;
     struct __dns_question   *qinfo;
-    
+
     struct in_addr  *lptr;
 
     ret = 0;
@@ -344,25 +341,29 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
     res->h_addrtype = AF_INET;
 
     for( i = 0; i < ntohs( dns->n_answers ); i++ ) {
+        int     rdata_length;
+
         answers[i].name = (unsigned char *)malloc( 256 * sizeof( unsigned char ) );
         name_length = _from_dns_name_format( answers[i].name, reader, buf );
         reader += name_length;
 
         answers[i].resource = (struct __dns_response_data *)reader;
-        reader = reader + sizeof( struct __dns_response_data );
+        reader += sizeof( struct __dns_response_data );
+        rdata_length = ntohs( *(uint16_t *)reader );
+        reader += sizeof( uint16_t * );
 
         if( ntohs( answers[i].resource->type ) == DNSQ_TYPE_A ) { /* IPv4 encountered */
 
-            answers[i].rdata = (unsigned char *)malloc( ( ntohs( answers[i].resource->data_length ) + 1 ) * sizeof( char ) );
+            answers[i].rdata = (unsigned char *)malloc( ( rdata_length + 1 ) * sizeof( char ) );
             if( answers[i].rdata != NULL ) {
-                for( j = 0; j < ntohs( answers[i].resource->data_length ); j++ ) {
+                for( j = 0; j < rdata_length; j++ ) {
                     answers[i].rdata[j] = reader[j];
                 }
             }
 
-            answers[i].rdata[ntohs( answers[i].resource->data_length )] = '\0';
+            answers[i].rdata[rdata_length] = '\0';
 
-            reader = reader + ntohs( answers[i].resource->data_length );
+            reader += rdata_length;
 
             lptr = (struct in_addr *)answers[i].rdata;
 
