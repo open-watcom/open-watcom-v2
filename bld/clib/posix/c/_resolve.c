@@ -27,7 +27,7 @@
 *
 * Description:  Helper functions for DNS resolution.
 *               Loosely based on code available at:
-*               http://www.binarytides.com/dns-query-code-in-c-with-linux-sockets/ 
+*               http://www.binarytides.com/dns-query-code-in-c-with-linux-sockets/
 *
 * Author: J. Armstrong
 *
@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <sys/socket.h>
-#include <arpa/inet.h> 
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <errno.h>
 #include <netdb.h>
@@ -235,7 +235,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
     query_socket = socket( AF_INET , SOCK_DGRAM , IPPROTO_UDP ); //UDP packet for DNS queries
 
     dest.sin_family = AF_INET;
-    dest.sin_port = htons( 53 );
+    dest.sin_port = htons( 53 );    // dns service port
     dest.sin_addr.s_addr = dnsaddr; //dns servers
 
     //Set the DNS structure to standard queries
@@ -320,7 +320,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
         rdata_length = ntohs( *(uint16_t *)reader );
         reader += sizeof( uint16_t * );
 
-        if( ntohs( answers[i].resource->type ) == DNSQ_TYPE_A) { /* IPv4 encountered */
+        if( ntohs( answers[i].resource->type ) == DNSQ_TYPE_A ) { /* IPv4 encountered */
 
             answers[i].rdata = malloc( rdata_length + 1 );
             if( answers[i].rdata != NULL ) {

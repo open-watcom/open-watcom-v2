@@ -138,16 +138,12 @@ static struct hostent *__check_dns_4( const char *name )
     static struct hostent   ret;
 
     dns_success = 0;
-    servercount = 0;
-    while( __get_nameserver( servercount, &dnsaddr ) ) {
+    for( servercount = 0; __get_nameserver( servercount, &dnsaddr ); servercount++ ) {
         dns_success = _dns_query( name, DNSQ_TYPE_A, dnsaddr, &ret );
-        if( dns_success > 0 )
-            break;
-        servercount++;
+        if( dns_success > 0 ) {
+            return( &ret );
+        }
     }
-
-    if( dns_success > 0 )
-        return( &ret );
     switch( -dns_success ) {
     case EINVAL:
     case ENOMEM:
@@ -157,6 +153,9 @@ static struct hostent *__check_dns_4( const char *name )
         break;
     case ENOENT:
         h_errno = HOST_NOT_FOUND;
+        break;
+    case 0:
+        h_errno = NO_DATA;
         break;
     }
     return( NULL );
