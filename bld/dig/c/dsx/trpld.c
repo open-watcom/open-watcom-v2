@@ -40,8 +40,6 @@
 #endif
 #include "dpmi.h"
 #include "exedos.h"
-#include "dbgdefn.h"
-#include "dbgio.h"
 #include "dsxutil.h"
 #include "trptypes.h"
 #include "trpcore.h"
@@ -390,7 +388,7 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     GoToRealMode( RMTrapInit );
     *trap_ver = callstruct->version;
     _fstrcpy( errmsg, (char __far *)callstruct + callstruct->errmsg_off );
-    return( *errmsg == NULLCHAR );
+    return( *errmsg == '\0' );
 }
 
 static char *ReadInTrap( tiny_handle_t fh )
