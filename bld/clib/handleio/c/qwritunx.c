@@ -36,6 +36,7 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 #include "qwrite.h"
 
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)
