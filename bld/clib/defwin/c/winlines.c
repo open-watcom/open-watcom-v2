@@ -122,14 +122,14 @@ static void replaceTail( LPWDATA w )
     w->LineTail = _MemAlloc( sizeof( line_data ) + w->buffoff );
 #endif
 
-    FARstrcpy( (LPSTR)w->LineTail->data, (LPSTR)w->tmpbuff->data );
+    FARstrcpy( w->LineTail->data, w->tmpbuff->data );
     w->LineTail->prev = tmp;
     if( tmp != NULL ) {
         tmp->next = w->LineTail;
     } else {
         w->LineHead = w->LineTail;
     }
-    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)w->LineTail->data );
+    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, w->LineTail->data );
 
 } /* replaceTail */
 
@@ -142,7 +142,7 @@ static void addBuff( LPWDATA w )
 
     ld = createNewEntry( w );
     ld->has_cr = TRUE;
-    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)ld->data );
+    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, ld->data );
 
 } /* addBuff */
 
@@ -320,7 +320,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                     curbufoff--;
                 }
             } else {
-                w->tmpbuff->data[ curbufoff++ ] = ch;
+                w->tmpbuff->data[curbufoff++] = ch;
                 if( curbufoff > w->buffoff ) {
                     w->buffoff = curbufoff;
                 }
@@ -384,7 +384,7 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
         w->buffoff = j;
         newLine( w );
     } else {
-        _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)w->tmpbuff->data );
+        _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, w->tmpbuff->data );
         if( !wassplit ) {
             j = -1;
         }
@@ -580,7 +580,7 @@ void _CopyAllLines( LPWDATA w )
     ld = w->LineHead;
     total = 0;
     while( ld != NULL ) {
-        total += FARstrlen( (LPSTR)ld->data ) + 2;
+        total += FARstrlen( ld->data ) + 2;
         ld = ld->next;
     }
     if( total > MAX_BYTES ) {
@@ -606,7 +606,7 @@ void _CopyAllLines( LPWDATA w )
     ld = w->LineHead;
     total = 0;
     while( ld != NULL ) {
-        slen = FARstrlen( (LPSTR)ld->data ) + 2;
+        slen = FARstrlen( ld->data ) + 2;
         if( total + slen > MAX_BYTES ) break;
         #if defined(__NT__)
             memcpy( &ptr[total], ld->data, slen - 2 );

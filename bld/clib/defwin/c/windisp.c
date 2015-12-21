@@ -80,9 +80,9 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 
     for( i=1; i<end; i++ ) {
         if( ld == NULL ) {
-            _DisplayLineInWindow( w, i, (LPSTR)" " );
+            _DisplayLineInWindow( w, i, " " );
         } else {
-            _DisplayLineInWindow( w, i, (LPSTR)ld->data );
+            _DisplayLineInWindow( w, i, ld->data );
             ln++;
             ld = _GetLineDataPointer( w, ln );
         }
@@ -157,9 +157,9 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         GpiQueryTextBox( ps, startcol, w->tmpbuff->data, TXTBOX_COUNT, points );
         rcl.xLeft = points[TXTBOX_BOTTOMRIGHT].x;
     #ifdef _MBCS
-        GpiQueryTextBox( ps, __mbslen(buff), buff, TXTBOX_COUNT, points );
+        GpiQueryTextBox( ps, __mbslen( (unsigned char *)buff ), buff, TXTBOX_COUNT, points );
     #else
-        GpiQueryTextBox( ps, strlen(buff), buff, TXTBOX_COUNT, points );
+        GpiQueryTextBox( ps, strlen( buff ), buff, TXTBOX_COUNT, points );
     #endif
         rcl.xRight = points[TXTBOX_BOTTOMRIGHT].x;
         rcl.yTop = (w->y2 - w->y1) - line*w->ychar;

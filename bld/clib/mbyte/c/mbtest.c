@@ -910,7 +910,7 @@ void TestMisc( void )
     unsigned char *     ptr;
     int                 len;
     unsigned int        ch;
-    char                mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX+1];
 
     VERIFY( _mbsdec( foo, foo ) == NULL );
     VERIFY( _mbsdec( foo, foo-1 ) == NULL );

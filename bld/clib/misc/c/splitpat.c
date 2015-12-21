@@ -137,7 +137,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
   #ifdef __WIDECHAR__
         ptr = wcschr( path, ':' );
   #else
-        ptr = _mbschr( path, ':' );
+        ptr = _mbschr( (unsigned char *)path, ':' );
   #endif
     if( ptr != NULL ) {
         if( drive != NULL ) {
