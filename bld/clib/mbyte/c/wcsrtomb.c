@@ -40,18 +40,18 @@ _WCRTLINK size_t _NEARFAR(wcsrtombs,_fwcsrtombs)( char _FFAR *dst, const wchar_t
 {
     int                     bytesConverted = 0;
     const wchar_t _FFAR *   wcPtr = *src;
-    char                    mbc[MB_LEN_MAX+1];
+    unsigned char           mbc[MB_LEN_MAX+1];
     int                     rc;
 
     /*** Process the characters, one by one ***/
     if( dst != NULL ) {
         while( len > 0 ) {
-            rc = _NEARFAR(wcrtomb,_fwcrtomb)( mbc, *wcPtr, ps );
+            rc = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
             if( rc > 0 ) {
                 if( *mbc != '\0' ) {
                     if( len >= rc ) {
-                        _NEARFAR(_mbccpy,_fmbccpy)( dst, mbc );
-                        dst = _NEARFAR(_mbsinc,_fmbsinc)( dst );
+                        _NEARFAR(_mbccpy,_fmbccpy)( (unsigned char _FFAR *)dst, mbc );
+                        dst = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)dst );
                         wcPtr++;
                         bytesConverted += rc;
                         len -= rc;
@@ -72,7 +72,7 @@ _WCRTLINK size_t _NEARFAR(wcsrtombs,_fwcsrtombs)( char _FFAR *dst, const wchar_t
         }
     } else {
         for( ;; ) {
-            rc = _NEARFAR(wcrtomb,_fwcrtomb)( mbc, *wcPtr, ps );
+            rc = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
             if( rc > 0 ) {
                 if( *mbc != '\0' ) {
                     wcPtr++;

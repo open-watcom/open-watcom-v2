@@ -60,7 +60,7 @@ _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *c
 
     /*** Convert the character ***/
     #ifdef __NT__
-        len = _NEARFAR(_mbclen,_fmbclen)( ch );
+        len = _NEARFAR(_mbclen,_fmbclen)( (unsigned char _FFAR *)ch );
         rc = MultiByteToWideChar( __MBCodePage, MB_ERR_INVALID_CHARS,
                                   (LPCSTR)ch, min(n,len), (LPWSTR)&wch, 1 );
         if( rc != 0 ) {

@@ -46,17 +46,17 @@
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsupr,_fmbsupr)( unsigned char _FFAR *string )
 {
 #if defined(__NT__) && !defined(__FARFUNC__)
-    CharUpper( string );    // call the Win32 API
+    CharUpper( (char _FFAR *)string );    // call the Win32 API
 #else
     unsigned int            ch;
-    unsigned char _FFAR *   p;
-    char                    mbc[MB_LEN_MAX+1];
+    unsigned char _FFAR     *p;
+    unsigned char           mbc[MB_LEN_MAX+1];
 
     p = string;
-    while( !_NEARFAR(_mbterm,_fmbterm)(p) ) {
-        ch = _mbctoupper( _NEARFAR(_mbsnextc,_fmbsnextc)(p) );
+    while( !_NEARFAR(_mbterm,_fmbterm)( p ) ) {
+        ch = _mbctoupper( _NEARFAR(_mbsnextc,_fmbsnextc)( p ) );
         _NEARFAR(_mbvtop,_fmbvtop)( ch, mbc );
-        mbc[_NEARFAR(_mbclen,_fmbclen)(mbc)] = '\0';
+        mbc[_NEARFAR(_mbclen,_fmbclen)( mbc )] = '\0';
         _NEARFAR(_mbccpy,_fmbccpy)( p, mbc );
         p = _NEARFAR(_mbsinc,_fmbsinc)( p );
     }

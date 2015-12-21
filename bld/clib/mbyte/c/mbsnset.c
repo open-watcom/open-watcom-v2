@@ -45,7 +45,7 @@
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnset,_fmbsnset)( unsigned char _FFAR *string, unsigned int ch, size_t n )
 {
     unsigned char           mbc[MB_LEN_MAX+1];
-    int                     slen = _NEARFAR(strlen,_fstrlen)( string );
+    int                     slen = _NEARFAR(strlen,_fstrlen)( (char _FFAR *)string );
     int                     clen;
 
     _NEARFAR(_mbvtop,_fmbvtop)( ch, mbc );

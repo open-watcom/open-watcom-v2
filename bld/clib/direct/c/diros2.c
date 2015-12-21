@@ -113,7 +113,7 @@ static int is_directory( const CHAR_TYPE *name )
 #ifdef __WIDECHAR__
         curr_ch = *name;
 #else
-        curr_ch = _mbsnextc( name );
+        curr_ch = _mbsnextc( (unsigned char *)name );
 #endif
         if( curr_ch == NULLCHAR ) {
             if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
@@ -135,7 +135,7 @@ static int is_directory( const CHAR_TYPE *name )
 #ifdef __WIDECHAR__
         ++name;
 #else
-        name = _mbsinc( name );
+        name = (char *)_mbsinc( (unsigned char *)name );
 #endif
     }
     /* with wildcards must be file */

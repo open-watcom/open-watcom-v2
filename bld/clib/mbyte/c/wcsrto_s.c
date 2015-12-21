@@ -47,7 +47,7 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
 {
     int                     bytesConverted = 0;
     const wchar_t _FFAR *   wcPtr;
-    char                    mbc[MB_LEN_MAX+1];
+    unsigned char           mbc[MB_LEN_MAX+1];
     int                     ret = 0;
 
     errno_t                 rc = -1;
@@ -75,7 +75,7 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
                 for( ;; ) {
                     if( *wcPtr != '\0' ) {
                         if(srcend < wcPtr) break;             //no null found
-                        ret = _NEARFAR(wcrtomb,_fwcrtomb)( mbc, *wcPtr, ps );
+                        ret = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
                         if( ret > 0 ) {
                             wcPtr++;
                             bytesConverted += ret;
@@ -106,12 +106,12 @@ _WCRTLINK errno_t _NEARFAR(wcsrtombs_s,_fwcsrtombs_s)(
                 /*** Process the characters, one by one ***/
                 for( ;; ) {
 
-                    ret = _NEARFAR(wcrtomb,_fwcrtomb)( mbc, *wcPtr, ps );
+                    ret = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
                     if( ret > 0 ) {
                         if( *mbc != '\0' ) {
                             if( len >= ret ) {
-                                _NEARFAR(_mbccpy,_fmbccpy)( dst, mbc );
-                                dst = _NEARFAR(_mbsinc,_fmbsinc)( dst );
+                                _NEARFAR(_mbccpy,_fmbccpy)( (unsigned char _FFAR *)dst, mbc );
+                                dst = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)dst );
                                 wcPtr++;
                                 bytesConverted += ret;
                                 len -= ret;

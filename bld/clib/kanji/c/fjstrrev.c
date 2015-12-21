@@ -37,17 +37,17 @@
 
 /**
 *
-*  Name:        _fjstrrev -- •¶Žš—ñ‚ð”½“]‚·‚é
+*  Name:        _fjstrrev -- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ð”½“]ï¿½ï¿½ï¿½ï¿½
 *
 *  Synopsis:    p = _fjstrrev( s );
 *
-*               FJSTRING p,s;   •¶Žš—ñ
+*               FJSTRING p,s;   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *
-*  Description: ‚±‚ÌŠÖ”‚Í•¶Žš—ñ‚ð”½“]‚µ‚Ü‚·B‚Â‚Ü‚èA•¶Žš—ñ‚Ì’†“_‚ÉŠÖ‚µ‚ÄA
-*               ‰ñ“]‚³‚¹‚éŠÖ”‚ÌŠ¿Žš”Å‚Å‚ ‚éBŠ¿Žš‚Í‚P•¶Žš‚Æ‚µ‚Äˆµ‚í‚êA
-*               •¶Žš—ñ‚Ì’†‚ÌŠ¿Žš‚Ì‘æ‚PƒoƒCƒg‚Æ‘æ‚QƒoƒCƒg‚Ì‡˜‚Í•Û‚½‚ê‚éB
+*  Description: ï¿½ï¿½ï¿½ÌŠÖï¿½ï¿½Í•ï¿½ï¿½ï¿½ï¿½ï¿½ð”½“]ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½Â‚Ü‚ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½ï¿½_ï¿½ÉŠÖ‚ï¿½ï¿½ÄA
+*               ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½ÌŠï¿½ï¿½ï¿½ï¿½Å‚Å‚ï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½Í‚Pï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Äˆï¿½ï¿½ï¿½ï¿½A
+*               ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½ï¿½ÌŠï¿½ï¿½ï¿½ï¿½Ì‘ï¿½Pï¿½oï¿½Cï¿½gï¿½Æ‘ï¿½Qï¿½oï¿½Cï¿½gï¿½Ìï¿½ï¿½ï¿½ï¿½Í•Û‚ï¿½ï¿½ï¿½ï¿½B
 *
-*  Returns:     _fjstrrev ŠÖ”‚ÍAˆø” s ‚Æ“¯‚¶’l‚ð•Ô‚·B
+*  Returns:     _fjstrrev ï¿½Öï¿½ï¿½ÍAï¿½ï¿½ï¿½ï¿½ s ï¿½Æ“ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½Ô‚ï¿½ï¿½B
 *
 *
 *  Name:        _fjstrrev -- reverse a character string
@@ -73,7 +73,7 @@ _WCRTLINK FJSTRING _WCI86FAR _fjstrrev( JCHAR _WCFAR *s )
     JCHAR _WCFAR *p, _WCFAR *q, _WCFAR *r;
 
     p = s;
-    q = p + _fstrlen( p );
+    q = p + _fstrlen( (char _WCFAR *)p );
     while( p < q ) {
         if( iskanji( *p ) ) {
             if( iskanji2( *( r = p + 1 ) ) ) {

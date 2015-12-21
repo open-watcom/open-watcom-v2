@@ -48,16 +48,21 @@ static int is_valid_template( CHAR_TYPE *template, CHAR_TYPE **xs )
     CHAR_TYPE           *p;
 
     /*** Ensure the last 6 characters form the string "XXXXXX" ***/
-    len = __F_NAME(_mbslen,wcslen)( template );
+#ifdef __WIDECHAR__
+    len = wcslen( template );
+#else
+    len = _mbslen( (unsigned char *)template );
+#endif
     if( len < 6 ) {
         return( 0 );        /* need room for "XXXXXX" */
     }
 #ifdef __WIDECHAR__
     p = template + len - 6;
+    if( wcscmp( p, STRING( "XXXXXX" ) ) ) {
 #else
-    p = _mbsninc( template, len - 6 );
+    p = (char *)_mbsninc( (unsigned char *)template, len - 6 );
+    if( _mbscmp( (unsigned char *)p, (unsigned char *)STRING( "XXXXXX" ) ) ) {
 #endif
-    if( __F_NAME(_mbscmp,wcscmp)( p, STRING( "XXXXXX" ) ) ) {
         return( 0 );
     }
     *xs = p;

@@ -137,9 +137,9 @@
     if( __rdos_finddata_get( findbuf, fileinfo ) )
         return( (long) findbuf );
     else {
-        lib_free( findbuf );        
+        lib_free( findbuf );
         return( -1 );
-    }            
+    }
 #else   /* DOS */
     DOSFINDTYPE     *findbuf;
     unsigned       rc;
@@ -257,7 +257,7 @@
         fileinfo->attrib = ffb->attrFile;
         fileinfo->size = ffb->cbFile;
     #ifdef __WIDECHAR__
-        mbstowcs( fileinfo->name, ffb->achName, _mbslen( ffb->achName ) + 1 );
+        mbstowcs( fileinfo->name, ffb->achName, _mbslen( (unsigned char *)ffb->achName ) + 1 );
     #else
         strcpy( fileinfo->name, ffb->achName );
     #endif
@@ -266,7 +266,7 @@
         fileinfo->attrib = ((FF_BUFFER_32 *)ffb)->attrFile;
         fileinfo->size = ((FF_BUFFER_32 *)ffb)->cbFile;
     #ifdef __WIDECHAR__
-        mbstowcs( fileinfo->name, ((FF_BUFFER_32 *)ffb)->achName, _mbslen( ((FF_BUFFER_32 *)ffb)->achName ) + 1 );
+        mbstowcs( fileinfo->name, ((FF_BUFFER_32 *)ffb)->achName, _mbslen( (unsigned char *)((FF_BUFFER_32 *)ffb)->achName ) + 1 );
     #else
         strcpy( fileinfo->name, ((FF_BUFFER_32 *)ffb)->achName );
     #endif
@@ -284,13 +284,13 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
     unsigned long   LsbTime;
     int             stat;
 
-    stat = RdosReadDir( findbuf->handle, 
-                        findbuf->entry, 
-                        _MAX_PATH, 
-                        fileinfo->name, 
-                        &FileSize, 
-                        &Attribute, 
-                        &MsbTime, 
+    stat = RdosReadDir( findbuf->handle,
+                        findbuf->entry,
+                        _MAX_PATH,
+                        fileinfo->name,
+                        &FileSize,
+                        &Attribute,
+                        &MsbTime,
                         &LsbTime );
 
     if( stat ) {

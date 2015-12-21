@@ -71,7 +71,7 @@ _WCRTLINK JSTRING jstrrev( JCHAR *s )
     JCHAR *p, *q, *r;
 
     p = s;
-    q = p + strlen( p );
+    q = p + strlen( (char *)p );
     while( p < q ) {
         if( iskanji( *p ) ) {
             if( iskanji2( *( r = p + 1 ) ) ) {

@@ -51,7 +51,7 @@ _WCRTLINK int __F_NAME(chdir,_wchdir)( const CHAR_TYPE *path )
 
     /*** Convert the wide character string to a multibyte string ***/
     rcConvert = wcstombs( mbcsPath, path, sizeof( mbcsPath ) );
-    p = _mbsninc( mbcsPath, rcConvert );
+    p = _mbsninc( (unsigned char *)mbcsPath, rcConvert );
     *p = '\0';
 #endif
 #ifdef _M_I86

@@ -105,7 +105,7 @@ static unsigned short at2mode( int attr, char *fname )
 /****************************************************/
 {
     unsigned short  mode;
-    char            *ext;
+    unsigned char   *ext;
 
     if( attr & _A_SUBDIR ) {
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
@@ -114,9 +114,9 @@ static unsigned short at2mode( int attr, char *fname )
     } else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = _mbschr( fname, '.' )) != NULL ) {
+        if( (ext = _mbschr( (unsigned char *)fname, '.' )) != NULL ) {
             ++ext;
-            if( _mbscmp( ext, "EXE" ) == 0 || _mbscmp( ext, "COM" ) == 0 ) {
+            if( _mbscmp( ext, (unsigned char *)"EXE" ) == 0 || _mbscmp( ext, (unsigned char *)"COM" ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }
@@ -127,9 +127,8 @@ static unsigned short at2mode( int attr, char *fname )
     return( mode );
 }
 
-_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
-                                              struct __F_NAME(stat,_stat) *buf )
-/******************************************************************************/
+_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat,_stat) *buf )
+/********************************************************************************************/
 {
     struct find_t       dta;
     const CHAR_TYPE     *ptr;
@@ -138,7 +137,11 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
     int                 isrootdir = 0;
 
     /* reject null string and names that has wildcard */
-    if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
+#ifdef __WIDECHAR__
+    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+#else
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+#endif
         _RWD_errno = ENOENT;
         return( -1 );
     }

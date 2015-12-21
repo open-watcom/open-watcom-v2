@@ -64,7 +64,11 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     cwd[0] = TinyGetCurrDrive() + 'A';
     cwd[1] = ':';
     cwd[2] = '\\';
-    len = __F_NAME(strlen,_mbslen)( cwd ) + 1;
+#ifdef __WIDECHAR__
+    len = _mbslen( (unsigned char *)cwd ) + 1;
+#else
+    len = strlen( cwd ) + 1;
+#endif
     if( buf == NULL ) {
         if( (buf = lib_malloc( max( size, len ) * CHARSIZE )) == NULL ) {
             _RWD_errno = ENOMEM;

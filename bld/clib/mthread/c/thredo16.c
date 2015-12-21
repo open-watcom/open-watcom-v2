@@ -90,7 +90,7 @@ _WCRTLINK int _WCFAR _beginthread( thread_fn *start_address,
     Argument = arglist;
     StackBottom = stack_bottom;
     rc = DosCreateThread( begin_thread_helper, (PTID)&tid,
-                          (char *)stack_bottom + stack_size );
+                          (PBYTE)((char _WCFAR *)stack_bottom + stack_size) );
     if( rc != 0 ) {
         DosSemClear( &data_sem );
         return( -1 );

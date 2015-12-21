@@ -47,9 +47,10 @@
 
 _WCRTLINK int wctob( wint_t c )
 {
-    char                mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX+1];
 
-    if( wctomb( mbc, c ) == -1 )  return( EOF );
+    if( wctomb( (char *)mbc, c ) == -1 )
+        return( EOF );
     if( _mbclen( mbc ) == 1 )
         return( mbc[0] );
     else

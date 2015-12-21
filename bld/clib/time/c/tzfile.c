@@ -48,21 +48,21 @@ static unsigned char *tzfile = NULL;
 
 void __check_tzfile( time_t t, struct tm *timep )
 {
-    long        tzh_timecnt;
-    long        tzh_typecnt;
+    long                tzh_timecnt;
+    long                tzh_typecnt;
 #if 0
-    long        tzh_ttisgmtcnt;
-    long        tzh_ttisstdcnt;
-    long        tzh_leapcnt;
-    long        tzh_charcnt;
+    long                tzh_ttisgmtcnt;
+    long                tzh_ttisstdcnt;
+    long                tzh_leapcnt;
+    long                tzh_charcnt;
 #endif
-    char const  *dstname;
-    long        timidx;
-    long        stdzon;
-    long        dstzon;
-    long        i;
-    char const  *tzp;
-    int         isdst;
+    const char          *dstname;
+    long                timidx;
+    long                stdzon;
+    long                dstzon;
+    long                i;
+    const unsigned char *tzp;
+    int                 isdst;
 
     if( tzfile == NULL )
         return;
@@ -78,29 +78,29 @@ void __check_tzfile( time_t t, struct tm *timep )
     tzp += 24;
     timidx = 0;
     for( i = 0; i < tzh_timecnt; i++ ) {
-        if( t >= pntohl( tzp ) ) 
+        if( t >= (time_t)pntohl( tzp ) )
             timidx = i;
         tzp += 4;
     }
     stdzon = tzh_timecnt + tzp[timidx] * 6;
     isdst = tzp[stdzon + 4];
-    if( timep != NULL ) 
+    if( timep != NULL )
         timep->tm_isdst = isdst;
     dstname = "\0";
     dstzon = stdzon;
     if( timidx > 0 ) {
-        if( isdst ) 
-            stdzon = tzh_timecnt + tzp[timidx - 1] * 6; 
-        else 
+        if( isdst )
+            stdzon = tzh_timecnt + tzp[timidx - 1] * 6;
+        else
             dstzon = tzh_timecnt + tzp[timidx - 1] * 6;
-        dstname = &tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
+        dstname = (char *)&tzp[tzp[dstzon + 5] + tzh_timecnt + tzh_typecnt * 6];
         _RWD_dst_adjust = pntohl( &tzp[dstzon] ) - pntohl( &tzp[stdzon] );
     } else {
         _RWD_daylight = 0;  // daylight savings not supported
         _RWD_dst_adjust = 0;
     }
     _RWD_timezone = -pntohl( &tzp[stdzon] );
-    strcpy( _RWD_tzname[0], &tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
+    strcpy( _RWD_tzname[0], (char *)&tzp[tzp[stdzon + 5] + tzh_timecnt + tzh_typecnt * 6] );
     strcpy( _RWD_tzname[1], dstname );
 #if 0
     tzp += tzh_timecnt;
@@ -136,9 +136,9 @@ int __read_tzfile( const char *tz )
         return( 0 );
     if( tzfile != NULL )
         free( tzfile );
-    tzfile = malloc( ( size_t ) fsize );
+    tzfile = malloc( (size_t)fsize );
     lseek( fd, 0, SEEK_SET );
-    read( fd, tzfile, ( unsigned int ) fsize );
+    read( fd, tzfile, (unsigned int)fsize );
     close( fd );
     if( pntohl( tzfile ) != TZif ) {
         free( tzfile );

@@ -44,16 +44,16 @@
 
 _WCRTLINK size_t _NEARFAR(_mbscspn,_fmbscspn)( const unsigned char _FFAR *string, const unsigned char _FFAR *charset )
 {
-    const char _FFAR *  stringStart = string;
+    const unsigned char _FFAR *stringStart = string;
 
 //    if( !__IsDBCS )  return( strcspn( string, charset ) );
 
     /*** Count the number of characters in 'string' not from 'charset' ***/
-    while( !_NEARFAR(_mbterm,_fmbterm)(string) ) {
+    while( !_NEARFAR(_mbterm,_fmbterm)( string ) ) {
         #ifdef __FARFUNC__
-            if( _fmbschr(charset,_fmbsnextc(string)) != NULL )  break;
+            if( _fmbschr(charset,_fmbsnextc( string )) != NULL )  break;
         #else
-            if( _mbschr(charset,_mbsnextc(string)) != NULL )  break;
+            if( _mbschr(charset,_mbsnextc( string )) != NULL )  break;
         #endif
         string = _NEARFAR(_mbsinc,_fmbsinc)( string ); /* skip char */
     }

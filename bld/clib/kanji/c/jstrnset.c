@@ -94,7 +94,7 @@ _WCRTLINK JSTRING jstrnset( JCHAR *str, JMOJI c, size_t n )
 
     if( !n ) return str;
     byte = n * ( jiszen( c ) ? 2 : 1 );
-    len = strlen( str );
+    len = strlen( (char *)str );
     if( len <= byte ) {
         if( jiszen( c ) ) {
             for( count = 0; count < len/2; count++ ) {

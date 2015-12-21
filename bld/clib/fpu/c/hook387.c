@@ -61,7 +61,7 @@ extern int getcr0( void );
 extern void putcr0( int );
 #pragma aux putcr0 = "mov cr0,eax" parm [ eax ];
 
-extern char IsWindows( void );
+extern unsigned char IsWindows( void );
 #pragma aux IsWindows = \
         "mov ax,1600h" \
         "int 2fh" \
@@ -94,7 +94,7 @@ static char FPArea[128];
 char __hook387( D16INFO __far *_d16infop )
 /****************************************/
 {
-    char        iswin;
+    unsigned char   iswin;
 
     iswin = IsWindows();
     if( iswin != 0 && iswin != 0x80 ) {

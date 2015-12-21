@@ -124,9 +124,9 @@ typedef struct thread_data {
     MAX_CHAR_TYPE               __tmpnambuf[ L_tmpnam ];
 #endif
 #if defined(__NT__) || defined(__OS2__)
-    char *                      __nextmbtokP;
-    char _WCFAR *               __nextmbftokP;
-    wchar_t *                   __nextwtokP;
+    unsigned char               *__nextmbtokP;
+    unsigned char _WCFAR        *__nextmbftokP;
+    wchar_t                     *__nextwtokP;
 #endif
     unsigned                    __data_size;
 } thread_data;

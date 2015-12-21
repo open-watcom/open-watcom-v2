@@ -59,12 +59,16 @@ static CHAR_TYPE *try_dir( CHAR_TYPE *dir, CHAR_TYPE *prefix )
     }
 
     /*** Initialize addslash ***/
-    numchars = __F_NAME(_mbslen,wcslen)( dir );
+#ifdef __WIDECHAR__
+    numchars = wcslen( dir );
+#else
+    numchars = _mbslen( (unsigned char *)dir );
+#endif
     if( numchars > 0  &&  prefix[0] != STRING( '\\' ) ) {
 #ifdef __WIDECHAR__
         if( dir[numchars-1] != L'\\' ) {
 #else
-        if( _mbccmp( _mbsninc(dir,numchars-1), "\\" ) ) {
+        if( _mbccmp( (unsigned char *)_mbsninc( (unsigned char *)dir, numchars - 1 ), (unsigned char *)"\\" ) ) {
 #endif
             addslash = 1;
         }

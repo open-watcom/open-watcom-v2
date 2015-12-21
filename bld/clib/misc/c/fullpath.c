@@ -326,7 +326,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
   #if defined(__OS2__)
         OS_UINT dir_len = sizeof( curr_dir );
 
-        if( DosQCurDir( path_drive_idx, curr_dir, &dir_len ) ) {
+        if( DosQCurDir( path_drive_idx, (PBYTE)curr_dir, &dir_len ) ) {
             _RWD_errno = ENOENT;
             return( NULL );
         }

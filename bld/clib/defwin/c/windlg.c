@@ -112,12 +112,12 @@ void _GetClearInterval( void )
                 0, "");
 
     if( data == NULL ) return;
-    for( i=0;i<MAX_INT_ITEMS;i++ ) {
+    for( i = 0; i < MAX_INT_ITEMS; i++ ) {
         new = _AddControl( data,
                 _getint[i].x, _getint[i].y, _getint[i].cx, _getint[i].cy,
                 _getint[i].id, _getint[i].style | WS_VISIBLE,
                 _getint[i].class, _getint[i].text,
-                _getint[i].info, _getint[i].data);
+                _getint[i].info, (const char *)_getint[i].data);
         if( new == NULL  ) {
             GlobalFree( data );
             return;

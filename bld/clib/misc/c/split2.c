@@ -69,10 +69,10 @@ static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_sr
     dst[ len ] = NULLCHAR;
     return( dst + len + 1 );
 #else
-    len = _mbsnccnt( b_src, len );          /* # chars in len bytes */
-    _mbsncpy( dst, b_src, len );            /* copy the chars */
-    dst[ _mbsnbcnt( dst,len ) ] = NULLCHAR;
-    return( dst + _mbsnbcnt( dst, len ) + 1 );
+    len = _mbsnccnt( (unsigned char *)b_src, len );          /* # chars in len bytes */
+    _mbsncpy( (unsigned char *)dst, (unsigned char *)b_src, len );            /* copy the chars */
+    dst[ _mbsnbcnt( (unsigned char *)dst, len ) ] = NULLCHAR;
+    return( dst + _mbsnbcnt( (unsigned char *)dst, len ) + 1 );
 #endif
 }
 
@@ -104,7 +104,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
             ++inp;
 #else
-            inp = _mbsinc( inp );
+            inp = (char *)_mbsinc( (unsigned char *)inp );
 #endif
         }
         outp = pcopy( drive, outp, startp, inp );
@@ -137,7 +137,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ch = *inp;
 #else
-        ch = _mbsnextc( inp );
+        ch = _mbsnextc( (unsigned char *)inp );
 #endif
         if( ch == 0 )
             break;
@@ -149,7 +149,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         inp++;
 #else
-        inp = _mbsinc( inp );
+        inp = (char *)_mbsinc( (unsigned char *)inp );
 #endif
         if( IS_PC( ch ) ) {
             fnamep = inp;

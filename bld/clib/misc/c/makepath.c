@@ -236,11 +236,11 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
   #ifdef __WIDECHAR__
                 *path++ = pickup( *dir++, &first_pc );
   #else
-                ch = pickup( _mbsnextc( dir ), &first_pc );
-                _mbvtop( ch, path );
-                path[ _mbclen( path ) ] = '\0';
-                path = _mbsinc( path );
-                dir = _mbsinc( dir );
+                ch = pickup( _mbsnextc( (unsigned char *)dir ), &first_pc );
+                _mbvtop( ch, (unsigned char *)path );
+                path[_mbclen( (unsigned char *)path )] = '\0';
+                path = (char *)_mbsinc( (unsigned char *)path );
+                dir = (char *)_mbsinc( (unsigned char *)dir );
   #endif
             } while( *dir != '\0' );
             /* if no path separator was specified then pick a default */
@@ -254,7 +254,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
                 *path = first_pc;
             }
   #else
-            if( *(_mbsdec( pathstart, path )) == first_pc ) {
+            if( *(_mbsdec( (unsigned char *)pathstart, (unsigned char *)path )) == first_pc ) {
                 path--;
             } else {
                 *path = first_pc;
@@ -271,7 +271,7 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
         if( pickup( *fname, &first_pc ) != first_pc && *path == first_pc )
             path++;
   #else
-        ch = _mbsnextc( fname );
+        ch = _mbsnextc( (unsigned char *)fname );
         if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
             path++;
   #endif
@@ -281,11 +281,11 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
   #ifdef __WIDECHAR__
             *path++ = pickup( *fname++, &first_pc );
   #else
-            ch = pickup( _mbsnextc( fname ), &first_pc );
-            _mbvtop( ch, path );
-            path[ _mbclen( path ) ] = '\0';
-            path = _mbsinc( path );
-            fname = _mbsinc( fname );
+            ch = pickup( _mbsnextc( (unsigned char *)fname ), &first_pc );
+            _mbvtop( ch, (unsigned char *)path );
+            path[_mbclen( (unsigned char *)path )] = '\0';
+            path = (char *)_mbsinc( (unsigned char *)path );
+            fname = (char *)_mbsinc( (unsigned char *)fname );
   #endif
         } //while( *fname != '\0' );
     } else {

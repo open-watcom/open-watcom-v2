@@ -44,14 +44,14 @@
 
 _WCRTLINK size_t _NEARFAR(wcstombs,_fwcstombs)( char _FFAR *s, const wchar_t _FFAR *pwcs, size_t n )
 {
-    char                mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX+1];
     size_t              numBytes = 0;
     size_t              rc;
 
     if( s != NULL ) {
         while( n > 0 ) {                /* convert the string */
             if( *pwcs != L'\0' ) {
-                rc = wctomb( mbc, *pwcs );
+                rc = wctomb( (char *)mbc, *pwcs );
                 if( rc == -1 )  return( -1 );
                 if( rc > n )  break;
                 _NEARFAR(memcpy,_fmemcpy)( s, mbc, rc );
@@ -67,7 +67,7 @@ _WCRTLINK size_t _NEARFAR(wcstombs,_fwcstombs)( char _FFAR *s, const wchar_t _FF
     } else {                            /* get required size */
         for( ;; ) {
             if( *pwcs != L'\0' ) {
-                rc = wctomb( mbc, *pwcs );
+                rc = wctomb( (char *)mbc, *pwcs );
                 if( rc == -1 )  return( -1 );
                 numBytes += rc;
                 pwcs++;

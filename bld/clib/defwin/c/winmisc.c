@@ -192,11 +192,11 @@ void _DisplayCursor( LPWDATA w )
     #ifdef _MBCS
         #ifdef __NT__
             GetTextExtentPoint32( dc, w->tmpbuff->data,
-                                  FAR_mbsnbcnt(w->tmpbuff->data,w->buffoff+w->curr_pos),
+                                  FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data,w->buffoff+w->curr_pos),
                                   &size );
         #else
             GetTextExtentPoint( dc, w->tmpbuff->data,
-                                FAR_mbsnbcnt(w->tmpbuff->data,w->buffoff+w->curr_pos),
+                                FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos),
                                 &size );
         #endif
     #else

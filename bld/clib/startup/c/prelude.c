@@ -307,7 +307,7 @@ extern long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
                                      AllocSignature );
     _LpCmdLine = CommandLine;
     if( cmdLineP != NULL ) {
-        strcpy( _LpCmdLine, cmdLineP );
+        strcpy( _LpCmdLine, (char *)cmdLineP );
     }
     return( _StartNLM( NLMHandle, initializationErrorScreenID, cmdLineP,
                       loadDirectoryPath, uninitializedDataLength,

@@ -56,7 +56,7 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbcat,_fmbsnbcat)( unsigned char _FF
 
     /*** Determine where to begin copying ***/
     if( *s1 != '\0' ) {
-        p2 = _NEARFAR(strchr,_fstrchr)( s1, '\0' ) - 1; /* find null byte */
+        p2 = (unsigned char _FFAR *)_NEARFAR(strchr,_fstrchr)( (char _FFAR *)s1, '\0' ) - 1; /* find null byte */
         p1 = s1;                                /* start at string start */
         while( *p1 != '\0' ) {                  /* until last character */
             if( p1 == p2  &&  _ismbblead(*p1) ) {/* s1 ends in a lead byte? */

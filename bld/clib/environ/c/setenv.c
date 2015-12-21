@@ -101,7 +101,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
         RdosDeleteEnvVar( handle, name );
         if( *newvalue != NULLCHAR )
             RdosAddEnvVar( handle, name, newvalue );
-        RdosCloseEnv( handle );        
+        RdosCloseEnv( handle );
     }
 #elif defined( __RDOSDEV__ )
     /*** Update the process environment if using RDOSDEV ***/
@@ -112,7 +112,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
         RdosDeleteEnvVar( handle, name );
         if( *newvalue != NULLCHAR )
             RdosAddEnvVar( handle, name, newvalue );
-        RdosCloseEnv( handle );        
+        RdosCloseEnv( handle );
     }
 #endif
 
@@ -133,14 +133,22 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
         return( 0 );    // _wenviron uninitialized
     }
   #endif
-    otherNameLen = __F_NAME(_mbslen,wcslen)( name ) + 1;
+  #ifdef __WIDECHAR__
+    otherNameLen = wcslen( name ) + 1;
+  #else
+    otherNameLen = _mbslen( (unsigned char *)name ) + 1;
+  #endif
     otherName = lib_malloc( otherNameLen * charsize );
     if( otherName == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
     if( newvalue != NULL ) {
-        otherNewvalLen = __F_NAME(_mbslen,wcslen)( newvalue ) + 1;
+  #ifdef __WIDECHAR__
+        otherNewvalLen = wcslen( newvalue ) + 1;
+  #else
+        otherNewvalLen = _mbslen( (unsigned char *)newvalue ) + 1;
+  #endif
         otherNewval = lib_malloc( otherNewvalLen * charsize );
         if( otherNewval == NULL ) {
             lib_free( otherName );

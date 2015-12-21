@@ -66,7 +66,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     int                 i;
 
     /* reject null string and names that has wildcard */
-    if( *path == '\0' || _mbspbrk( path, "*?" ) != NULL )
+    if( *path == '\0' || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL )
         return( -1 );
 
     /*** Determine if 'path' refers to a root directory ***/
@@ -76,13 +76,14 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         {
             isrootdir = 1;
         }
-    }
-    else
+    } else {
         return( -1 );
+    }
 
     ptr = path;
-    if( *_mbsinc(path ) )  ptr += 2;
-    if( ( (ptr[0] == '\\' || ptr[0] == '/') && ptr[1] == '\0' )  ||  isrootdir )
+    if( *_mbsinc( (unsigned char *)path ) )
+        ptr += 2;
+    if( ( (ptr[0] == '\\' || ptr[0] == '/') && ptr[1] == '\0' ) || isrootdir )
     {
         /* handle root directory */
         CHAR_TYPE       cwd[_MAX_PATH];
@@ -96,7 +97,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         /* restore current directory */
         chdir( cwd );
 
-        attrib   = _A_SUBDIR;    
+        attrib   = _A_SUBDIR;
         wr_msb   = 0;
         wr_lsb   = 0;
         size     = 0;
@@ -109,14 +110,14 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         fullp++;
         if( strlen( fullpath ) == 0 )
             strcpy( fullpath, "*" );
-                        
+
         handle = RdosOpenDir( fullpath );
 
         ok = 0;
         i = 0;
         strlwr( fullp );
         while( RdosReadDir( handle, i, _MAX_PATH, name, &size, &RdosAttrib, &wr_msb, &wr_lsb ) ) {
-            strlwr( name );        
+            strlwr( name );
             if( !strcmp( name, fullp ) ) {
                 ok = 1;
                 break;
@@ -151,7 +152,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
 
     /* process drive number */
-    if( *_mbsinc(path) ) {
+    if( *_mbsinc( (unsigned char *)path ) ) {
         buf->st_dev = tolower( fullpath[0] ) - 'a';
     } else {
         buf->st_dev = RdosGetCurDrive();
@@ -161,8 +162,8 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     buf->st_size = size;
     buf->st_mode = at2mode( attrib, name );
 
-    RdosDecodeMsbTics( wr_msb, 
-                       &tm.tm_year, 
+    RdosDecodeMsbTics( wr_msb,
+                       &tm.tm_year,
                        &tm.tm_mon,
                        &tm.tm_mday,
                        &tm.tm_hour );
@@ -172,7 +173,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
                        &tm.tm_sec,
                        &ms,
                        &us );
-                           
+
     tm.tm_year -= 1900;
     tm.tm_mon--;
     tm.tm_isdst = -1;
@@ -198,16 +199,16 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 static unsigned short at2mode( int attr, char *fname )
 {
     register unsigned short mode;
-    register char *         ext;
+    register unsigned char  *ext;
 
     if( attr & _A_SUBDIR )
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
     else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = _mbschr( fname, '.' )) != NULL ) {
+        if( (ext = _mbschr( (unsigned char *)fname, '.' )) != NULL ) {
             ++ext;
-            if( _mbscmp( ext, "EXE" ) == 0 || _mbscmp( ext, "COM" ) == 0 ) {
+            if( _mbscmp( ext, (unsigned char *)"EXE" ) == 0 || _mbscmp( ext, (unsigned char *)"COM" ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }

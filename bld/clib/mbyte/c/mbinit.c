@@ -145,7 +145,7 @@ int __mbinit( int codepage )
         if( cpInfo.LeadByte[0] )  __IsDBCS = 1; /* set __IsDBCS if needed */
         for( countRange=0; !(cpInfo.LeadByte[countRange]==0x00 &&
              cpInfo.LeadByte[countRange+1]==0x00); countRange+=2 ) {
-            set_dbcs_table( cpInfo.LeadByte[countRange], 
+            set_dbcs_table( cpInfo.LeadByte[countRange],
                             cpInfo.LeadByte[countRange+1] );
         }
         /*** Update __MBCodePage ***/
@@ -159,16 +159,16 @@ int __mbinit( int codepage )
         countryInfo.country = 0;                /* default country */
         countryInfo.codepage = codepage;        /* specified code page */
         #if defined(__WARP__)
-            rc = DosQueryDBCSEnv( 12, &countryInfo, leadBytes );
+            rc = DosQueryDBCSEnv( 12, &countryInfo, (PCHAR)leadBytes );
         #else
-            rc = DosGetDBCSEv( 12, &countryInfo, leadBytes );
+            rc = DosGetDBCSEv( 12, &countryInfo, (PCHAR)leadBytes );
         #endif
         if( rc != 0 )  return( 1 );
         clear_dbcs_table();
         if( leadBytes[0] )  __IsDBCS = 1;       /* set __IsDBCS if needed */
         for( countRange=0; !(leadBytes[countRange]==0x00 &&
              leadBytes[countRange+1]==0x00); countRange+=2 ) {
-            set_dbcs_table( leadBytes[countRange], 
+            set_dbcs_table( leadBytes[countRange],
                             leadBytes[countRange+1] );
         }
         /*** Update __MBCodePage ***/

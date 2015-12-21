@@ -44,7 +44,7 @@
 
 _WCRTLINK size_t _NEARFAR(_mbsspn,_fmbsspn)( const unsigned char _FFAR *string, const unsigned char _FFAR *charset )
 {
-    const char _FFAR *  stringStart = string;
+    const unsigned char _FFAR   *stringStart = string;
 
 //    if( !__IsDBCS )  return( strspn( string, charset ) );
 

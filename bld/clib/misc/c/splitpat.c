@@ -77,9 +77,9 @@ static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
         /*strncpy( buf, p, len ); */
         buf[ len ] = NULLCHAR;
 #else
-        len = _mbsnccnt( p, len );          /* # chars in len bytes */
-        _mbsncpy( buf, p, len );            /* copy the chars */
-        buf[ _mbsnbcnt( buf, len ) ] = NULLCHAR;
+        len = _mbsnccnt( (unsigned char *)p, len );                 /* # chars in len bytes */
+        _mbsncpy( (unsigned char *)buf, (unsigned char *)p, len );  /* copy the chars */
+        buf[_mbsnbcnt( (unsigned char *)buf, len )] = NULLCHAR;
 #endif
     }
 }
@@ -181,7 +181,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ch = *path;
 #else
-        ch = _mbsnextc( path );
+        ch = _mbsnextc( (unsigned char *)path );
 #endif
         if( ch == '.' ) {
             dotp = path;
@@ -191,7 +191,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ++path;
 #else
-        path = _mbsinc( path );
+        path = (char *)_mbsinc( (unsigned char *)path );
 #endif
 #if defined(__UNIX__)
         if( ch == PC ) {

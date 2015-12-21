@@ -163,16 +163,16 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
             ++cmdline;
             sd.PgmName = pgm;
-            sd.PgmInputs = cmdline;
+            sd.PgmInputs = (PBYTE)cmdline;
             if( app_type & FAPPTYP_DOS ) {  // A DOS program
                 sd.SessionType = ( ppib->pib_ultype == FS_SESSION )
                                  ? SSF_TYPE_VDM: SSF_TYPE_WINDOWEDVDM;
                 sd.Environment = NULL;
             } else {
                 sd.SessionType = SSF_TYPE_DEFAULT;
-                sd.Environment = envp;
+                sd.Environment = (PBYTE)envp;
             }
-            sd.TermQ = queuename;
+            sd.TermQ = (PBYTE)queuename;
             sd.InheritOpt = SSF_INHERTOPT_PARENT;
             sd.IconFile = NULL;
             sd.PgmHandle = 0;
@@ -282,10 +282,10 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
             ++cmdline;
             sd.PgmName = pgm;
-            sd.PgmInputs = cmdline;
+            sd.PgmInputs = (PBYTE)cmdline;
             sd.SessionType = 0;
-            sd.Environment = envp;
-            sd.TermQ = queuename;
+            sd.Environment = (PBYTE)envp;
+            sd.TermQ = (PBYTE)queuename;
             sd.InheritOpt = 1;
             sd.IconFile = NULL;
             sd.PgmHandle = 0;

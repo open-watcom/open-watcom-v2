@@ -60,7 +60,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 #endif
     OS_UINT         drive;
 
-    error = DosQCurDir( 0, &path[3], &pathlen );
+    error = DosQCurDir( 0, (PBYTE)&path[3], &pathlen );
     if( error ) {
         __set_errno_dos( error );
         return( NULL );

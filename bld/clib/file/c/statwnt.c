@@ -157,7 +157,11 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     int                 isrootdir = 0;
 
     /* reject null string and names that has wildcard */
-    if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
+#ifdef __WIDECHAR__
+    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+#else
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+#endif
         _RWD_errno = ENOENT;
         return( -1 );
     }
@@ -175,7 +179,11 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     }
 
     ptr = path;
-    if( __F_NAME(*_mbsinc(path),path[1]) == STRING( ':' ) )
+#ifdef __WIDECHAR__
+    if( path[1] == STRING( ':' ) )
+#else
+    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) )
+#endif
         ptr += 2;
     if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
@@ -196,7 +204,11 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     }
 
     /* process drive number */
-    if( __F_NAME(*_mbsinc(path),path[1]) == STRING( ':' ) ) {
+#ifdef __WIDECHAR__
+    if( path[1] == STRING( ':' ) ) {
+#else
+    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) ) {
+#endif
         buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
     } else {
         buf->st_dev = __F_NAME(tolower,towlower)( cwd[0] ) - STRING( 'a' );

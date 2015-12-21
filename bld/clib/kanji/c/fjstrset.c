@@ -36,22 +36,22 @@
 
 /********************************************************************
 *
-*  Name:        _fjstrset       •¶Žš—ñ‚É•¶Žš‚ð–„‚ß‚é
+*  Name:        _fjstrset       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É•ï¿½ï¿½ï¿½ï¿½ð–„‚ß‚ï¿½
 *
 *  Synopsis:    p = _fjstrset( str, c, n );
 *
-*               FJSTRING        p;      str‚Æ“¯‚¶ƒ|ƒCƒ“ƒ^
-*               FJSTRING        str;    •¶Žš‚ð–„‚ß‚é•¶Žš—ñ
-*               JMOJI   c;      –„‚ß‚é•¶Žš‚Ì’l
+*               FJSTRING        p;      strï¿½Æ“ï¿½ï¿½ï¿½ï¿½|ï¿½Cï¿½ï¿½ï¿½^
+*               FJSTRING        str;    ï¿½ï¿½ï¿½ï¿½ï¿½ð–„‚ß‚é•¶ï¿½ï¿½ï¿½ï¿½
+*               JMOJI   c;      ï¿½ï¿½ï¿½ß‚é•¶ï¿½ï¿½ï¿½Ì’l
 *
-*  Description: _fjstrsetŠÖ”‚Í•¶Žš—ñstr‚ðˆø” c ‚Ì’l‚Å–„‚ß‚Ü‚·Bc ‚ªŠ¿Žš‚Ì
-*               ê‡A‚ˆÊ‚Wƒrƒbƒg‚ªAŠ¿Žš‚Ì‘æ‚PƒoƒCƒg‚ÅA’áˆÊ‚Wƒrƒbƒg‚ªŠ¿Žš‚Ì
-*               ‘æ‚QƒoƒCƒg‚Å‚·B‘æ‚QƒoƒCƒg‚ª NULL‚Ìê‡A‘æ‚PƒoƒCƒg‚à NULL
-*               ‚Æ‚µ‚Äˆµ‚¢‚Ü‚·B‚à‚µA c ‚É‚PƒoƒCƒg•¶Žš‚ðŽw’è‚·‚éê‡‚É‚ÍA
-*               ãˆÊƒoƒCƒg‚ÍA‚O‚É‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B•¶Žš—ñ‚Ì’·‚³‚ªŠï”‚Ìê‡
-*               ‚É‚ÍAc ‚ªŠ¿Žš‚ÌŽž‚É‚ÍA•¶Žš—ñ‚ÌÅŒã‚ÌƒoƒCƒg‚Í0x20‚É‚È‚è‚Ü‚·B
+*  Description: _fjstrsetï¿½Öï¿½ï¿½Í•ï¿½ï¿½ï¿½ï¿½ï¿½strï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ c ï¿½Ì’lï¿½Å–ï¿½ï¿½ß‚Ü‚ï¿½ï¿½Bc ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+*               ï¿½ê‡ï¿½Aï¿½ï¿½ï¿½Ê‚Wï¿½rï¿½bï¿½gï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Ì‘ï¿½Pï¿½oï¿½Cï¿½gï¿½ÅAï¿½ï¿½Ê‚Wï¿½rï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+*               ï¿½ï¿½Qï¿½oï¿½Cï¿½gï¿½Å‚ï¿½ï¿½Bï¿½ï¿½Qï¿½oï¿½Cï¿½gï¿½ï¿½ NULLï¿½Ìê‡ï¿½Aï¿½ï¿½Pï¿½oï¿½Cï¿½gï¿½ï¿½ NULL
+*               ï¿½Æ‚ï¿½ï¿½Äˆï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½A c ï¿½É‚Pï¿½oï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½ê‡ï¿½É‚ÍA
+*               ï¿½ï¿½Êƒoï¿½Cï¿½gï¿½ÍAï¿½Oï¿½É‚ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï”ï¿½Ìê‡
+*               ï¿½É‚ÍAc ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŽï¿½ï¿½É‚ÍAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌÅŒï¿½Ìƒoï¿½Cï¿½gï¿½ï¿½0x20ï¿½É‚È‚ï¿½Ü‚ï¿½ï¿½B
 *
-*  Returns:     _fjstrsetŠÖ”‚Í str ‚Æ“¯‚¶’l‚ð•Ô‚µ‚Ü‚·B
+*  Returns:     _fjstrsetï¿½Öï¿½ï¿½ï¿½ str ï¿½Æ“ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½Ô‚ï¿½ï¿½Ü‚ï¿½ï¿½B
 *
 *
 *  Name:        _fjstrset               fill the string with a letter
@@ -86,7 +86,7 @@ _WCRTLINK FJSTRING _WCI86FAR _fjstrset( JCHAR _WCFAR *str, JMOJI c )
     JCHAR _WCFAR *keep = str;
     size_t count, len;
 
-    len = _fstrlen( str );
+    len = _fstrlen( (char _WCFAR *)str );
     if( jiszen( c ) ) {
         for( count = 0; count < len/2; count++ ) {
             str = _fjputmoji( str, c );

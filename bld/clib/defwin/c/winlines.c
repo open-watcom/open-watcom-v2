@@ -48,16 +48,16 @@
 static LPLDATA createNewEntry( LPWDATA w )
 {
     LPLDATA             ld;
+#ifdef _MBCS
+    LPBYTE              p;
 
-    #ifdef _MBCS
-        char _WCI86FAR *        p;
-        p = FAR_mbsninc( w->tmpbuff->data, w->buffoff);
-        *p = '\0';
-        ld = _MemAlloc( sizeof(line_data) + FAR_mbsnbcnt(w->tmpbuff->data,w->buffoff) );
-    #else
-        w->tmpbuff->data[ w->buffoff ] = 0;
-        ld = _MemAlloc( sizeof(line_data) + w->buffoff );
-    #endif
+    p = FAR_mbsninc( (LPBYTE)w->tmpbuff->data, w->buffoff );
+    *p = '\0';
+    ld = _MemAlloc( sizeof( line_data ) + FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff ) );
+#else
+    w->tmpbuff->data[w->buffoff] = 0;
+    ld = _MemAlloc( sizeof( line_data ) + w->buffoff );
+#endif
     w->buffoff = 0;
     FARstrcpy( ld->data, w->tmpbuff->data );
     if( w->LineTail == NULL ) {
@@ -86,7 +86,7 @@ static void incrementLastLineNumber( LPWDATA w )
     diff = w->LastLineNumber - w->TopLineNumber;
     if( diff < w->height ) {
         w->CurrentLineNumber++;
-        if( diff == w->height-1 ) {
+        if( diff == w->height - 1 ) {
             w->TopLineNumber++;
             _ShiftWindow( w, 1 );
             /* We must clear the bottom line which NT cannot do when it
@@ -107,30 +107,29 @@ static void replaceTail( LPWDATA w )
 {
     LPLDATA             tmp;
 
-    #ifdef _MBCS
-        * (FAR_mbsninc( w->tmpbuff->data, w->buffoff )) = '\0';
-    #else
-        w->tmpbuff->data[ w->buffoff ] = 0;
-    #endif
+#ifdef _MBCS
+    *(FAR_mbsninc( (LPBYTE)w->tmpbuff->data, w->buffoff )) = '\0';
+#else
+    w->tmpbuff->data[w->buffoff] = 0;
+#endif
 
     tmp = w->LineTail->prev;
     _MemFree( w->LineTail );
 
-    #ifdef _MBCS
-        w->LineTail = _MemAlloc( sizeof(line_data) + w->buffoff*MB_CUR_MAX );
-    #else
-        w->LineTail = _MemAlloc( sizeof(line_data) + w->buffoff );
-    #endif
+#ifdef _MBCS
+    w->LineTail = _MemAlloc( sizeof( line_data ) + w->buffoff * MB_CUR_MAX );
+#else
+    w->LineTail = _MemAlloc( sizeof( line_data ) + w->buffoff );
+#endif
 
-    FARstrcpy( w->LineTail->data, w->tmpbuff->data );
+    FARstrcpy( (LPSTR)w->LineTail->data, (LPSTR)w->tmpbuff->data );
     w->LineTail->prev = tmp;
     if( tmp != NULL ) {
         tmp->next = w->LineTail;
     } else {
         w->LineHead = w->LineTail;
     }
-    _DisplayLineInWindow( w, w->LastLineNumber-w->TopLineNumber+1,
-                    w->LineTail->data );
+    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)w->LineTail->data );
 
 } /* replaceTail */
 
@@ -143,7 +142,7 @@ static void addBuff( LPWDATA w )
 
     ld = createNewEntry( w );
     ld->has_cr = TRUE;
-    _DisplayLineInWindow( w, w->LastLineNumber-w->TopLineNumber+1, ld->data );
+    _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)ld->data );
 
 } /* addBuff */
 
@@ -193,12 +192,12 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
     int                 tabcnt = 0;
     int                 nlcnt = 0;
     int                 curbufoff = 0;
-    const char *        data;
+    const char          *data;
 #ifdef _MBCS
     static char         leadByte;
     static int          leadByteWaiting;
-    char                ch[MB_CUR_MAX+1];
-    char _WCI86FAR *    p;
+    unsigned char       ch[MB_CUR_MAX+1];
+    LPBYTE              p;
 #else
     char                ch;
 #endif
@@ -209,11 +208,11 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
     _AccessWinLines();
     if( w->LineTail != NULL && !w->LineTail->has_cr ) {
         FARstrcpy( w->tmpbuff->data, w->LineTail->data );
-        #ifdef _MBCS
-            curbufoff = FAR_mbslen( w->tmpbuff->data );
-        #else
-            curbufoff = FARstrlen( w->tmpbuff->data );
-        #endif
+#ifdef _MBCS
+        curbufoff = FAR_mbslen( (LPBYTE)w->tmpbuff->data );
+#else
+        curbufoff = FARstrlen( w->tmpbuff->data );
+#endif
         if( curbufoff > w->buffoff ) {
             w->buffoff = curbufoff;
         }
@@ -225,113 +224,113 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
         w->no_advance = FALSE;
         do {
             hadbreak = FALSE;
-            #ifdef _MBCS                        /* MBCS */
-                if( tabcnt ) {
-                    _mbccpy( ch, " " );         /* copy the character */
-                    ch[_mbclen(ch)] = '\0';     /* terminate char with NULL */
-                    tabcnt--;
-                } else if( nlcnt ) {
-                    _mbccpy( ch, "\n" );        /* copy the character */
-                    ch[_mbclen(ch)] = '\0';     /* terminate char with NULL */
-                    nlcnt--;
-                } else {
-                    if( !leadByteWaiting ) {
-                        if( _ismbblead(*data) ) {
-                            leadByteWaiting = 1;
-                            leadByte = *data;
-                            ch[0] = '\0';
-                        } else {
-                            ch[0] = *data;
-                            ch[1] = '\0';
-                        }
+#ifdef _MBCS                        /* MBCS */
+            if( tabcnt ) {
+                _mbccpy( ch, (unsigned char *)" " );     /* copy the character */
+                ch[_mbclen( ch )] = '\0';           /* terminate char with NULL */
+                tabcnt--;
+            } else if( nlcnt ) {
+                _mbccpy( ch, (unsigned char *)"\n" );    /* copy the character */
+                ch[_mbclen( ch )] = '\0';           /* terminate char with NULL */
+                nlcnt--;
+            } else {
+                if( !leadByteWaiting ) {
+                    if( _ismbblead( *data ) ) {
+                        leadByteWaiting = 1;
+                        leadByte = *data;
+                        ch[0] = '\0';
                     } else {
-                        leadByteWaiting = 0;
-                        ch[0] = leadByte;
-                        ch[1] = *data;
-                        ch[2] = '\0';
+                        ch[0] = *data;
+                        ch[1] = '\0';
                     }
-                    data++;
+                } else {
+                    leadByteWaiting = 0;
+                    ch[0] = leadByte;
+                    ch[1] = *data;
+                    ch[2] = '\0';
                 }
+                data++;
+            }
 
-                if( !_mbccmp(ch,"\t") ) {
-                    tabcnt = TAB( curbufoff + 1 );
-                    continue;
-                } else if( !_mbccmp(ch,"\f") ) {
-                    nlcnt = w->height;
-                    continue;
-                } else if( !_mbccmp(ch,"\r") ) {
-                    curbufoff = 0;
-                    w->no_advance = TRUE;
-                    w->tmpbuff->has_cr = TRUE;
-                    continue;
-                } else if( !_mbccmp(ch,"\n") ) {
+            if( !_mbccmp( ch, (unsigned char *)"\t" ) ) {
+                tabcnt = TAB( curbufoff + 1 );
+                continue;
+            } else if( !_mbccmp( ch, (unsigned char *)"\f" ) ) {
+                nlcnt = w->height;
+                continue;
+            } else if( !_mbccmp( ch, (unsigned char *)"\r" ) ) {
+                curbufoff = 0;
+                w->no_advance = TRUE;
+                w->tmpbuff->has_cr = TRUE;
+                continue;
+            } else if( !_mbccmp( ch, (unsigned char *)"\n" ) ) {
+                hadbreak = TRUE;
+                newLine( w );
+                curbufoff = w->buffoff;
+            } else if( !_mbccmp( ch, (unsigned char *)"\b" ) ) {
+                if( curbufoff > 0 ) {
+                    p = FAR_mbsninc( (LPBYTE)w->tmpbuff->data, curbufoff - 1 );
+                    if( _ismbblead( *p ) ) {
+                        *p = ' ';           /* stomp lead byte */
+                        /* char split into 2; don't change curbufoff */
+                    } else {
+                        curbufoff--;        /* back up one character */
+                    }
+                }
+            } else if( ch[0] != '\0' ) {
+                FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, curbufoff ), ch );
+                curbufoff++;
+                if( curbufoff > w->buffoff ) {
+                    w->buffoff = curbufoff;
+                }
+                if( TOOWIDE( w->buffoff, w ) ) {
                     hadbreak = TRUE;
                     newLine( w );
                     curbufoff = w->buffoff;
-                } else if( !_mbccmp(ch,"\b") ) {
-                    if( curbufoff > 0 ) {
-                        p = FAR_mbsninc( w->tmpbuff->data, curbufoff-1 );
-                        if( _ismbblead( *p ) ) {
-                            *p = ' ';           /* stomp lead byte */
-                            /* char split into 2; don't change curbufoff */
-                        } else {
-                            curbufoff--;        /* back up one character */
-                        }
-                    }
-                } else if( ch[0] != '\0' ) {
-                    FAR_mbccpy( FAR_mbsninc(w->tmpbuff->data,curbufoff), ch );
-                    curbufoff++;
-                    if( curbufoff > w->buffoff ) {
-                        w->buffoff = curbufoff;
-                    }
-                    if( TOOWIDE( w->buffoff, w ) ) {
-                        hadbreak = TRUE;
-                        newLine( w );
-                        curbufoff = w->buffoff;
-                    }
                 }
-            #else                               /* SBCS */
-                if( tabcnt ) {
-                    ch = ' ';
-                    tabcnt--;
-                } else if( nlcnt ) {
-                    ch = '\n';
-                    nlcnt--;
-                } else {
-                    ch = data[i];
-                }
+            }
+#else                               /* SBCS */
+            if( tabcnt ) {
+                ch = ' ';
+                tabcnt--;
+            } else if( nlcnt ) {
+                ch = '\n';
+                nlcnt--;
+            } else {
+                ch = data[i];
+            }
 
-                if( ch == '\t' ) {
-                    tabcnt = TAB( curbufoff + 1 );
-                    continue;
-                } else if( ch == '\f' ) {
-                    nlcnt = w->height;
-                    continue;
-                } else if( ch == '\r' ) {
-                    curbufoff = 0;
-                    w->no_advance = TRUE;
-                    w->tmpbuff->has_cr = TRUE;
-                    continue;
-                } else if( ch == '\n' ) {
+            if( ch == '\t' ) {
+                tabcnt = TAB( curbufoff + 1 );
+                continue;
+            } else if( ch == '\f' ) {
+                nlcnt = w->height;
+                continue;
+            } else if( ch == '\r' ) {
+                curbufoff = 0;
+                w->no_advance = TRUE;
+                w->tmpbuff->has_cr = TRUE;
+                continue;
+            } else if( ch == '\n' ) {
+                hadbreak = TRUE;
+                newLine( w );
+                curbufoff = w->buffoff;
+            } else if( ch == '\b' ) {
+                if( curbufoff > 0 ) {
+                    curbufoff--;
+                }
+            } else {
+                w->tmpbuff->data[ curbufoff++ ] = ch;
+                if( curbufoff > w->buffoff ) {
+                    w->buffoff = curbufoff;
+                }
+                if( TOOWIDE( w->buffoff, w ) ) {
                     hadbreak = TRUE;
                     newLine( w );
                     curbufoff = w->buffoff;
-                } else if( ch == '\b' ) {
-                    if( curbufoff > 0 ) {
-                        curbufoff--;
-                    }
-                } else {
-                    w->tmpbuff->data[ curbufoff++ ] = ch;
-                    if( curbufoff > w->buffoff ) {
-                        w->buffoff = curbufoff;
-                    }
-                    if( TOOWIDE( w->buffoff, w ) ) {
-                        hadbreak = TRUE;
-                        newLine( w );
-                        curbufoff = w->buffoff;
-                    }
                 }
-            #endif
+            }
+#endif
         } while( tabcnt || nlcnt );
     }
     if( !hadbreak ) {
@@ -354,40 +353,41 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
     _AccessWinLines();
     w->lineinprogress = TRUE;
     j = w->buffoff;
-    for( i=0;i<len;i++ ) {
+    for( i = 0; i < len; i++ ) {
         justnew = FALSE;
         if( TOOWIDE( j, w ) ) {
-            #ifdef _MBCS
-                FAR_mbccpy( FAR_mbsninc(w->tmpbuff->data,j), "" );
-            #else
-                w->tmpbuff->data[ j ] = 0;
-            #endif
+#ifdef _MBCS
+            FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), (LPBYTE)"" );
+#else
+            w->tmpbuff->data[j] = 0;
+#endif
             w->buffoff = j;
             newLine( w );
             j = 0;
             justnew = TRUE;
             wassplit = TRUE;
         }
-        #ifdef _MBCS
-            FAR_mbccpy( FAR_mbsninc(w->tmpbuff->data,j), FAR_mbsninc(line,i) );
-        #else
-            w->tmpbuff->data[ j ] = line[ i ];
-        #endif
+#ifdef _MBCS
+        FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), FAR_mbsninc( (LPBYTE)line, i ) );
+#else
+        w->tmpbuff->data[j] = line[i];
+#endif
         j++;
     }
     #ifdef _MBCS
-        FAR_mbccpy( FAR_mbsninc(w->tmpbuff->data,j), "" );
+        FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), (LPBYTE)"" );
     #else
-        w->tmpbuff->data[ j ] = 0;
+        w->tmpbuff->data[j] = 0;
     #endif
 
     if( force_add && !justnew ) {
         w->buffoff = j;
         newLine( w );
     } else {
-        _DisplayLineInWindow( w, w->LastLineNumber-w->TopLineNumber+1,
-                              w->tmpbuff->data );
-        if( !wassplit ) j = -1;
+        _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, (LPSTR)w->tmpbuff->data );
+        if( !wassplit ) {
+            j = -1;
+        }
     }
     _ReleaseWinLines();
 
@@ -402,7 +402,7 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
 void _PositionScrollThumb( LPWDATA w )
 {
     DWORD       c;
-    WORD        curr,end;
+    WORD        curr, end;
     DWORD       ll;
 
     c = w->TopLineNumber;
@@ -580,11 +580,14 @@ void _CopyAllLines( LPWDATA w )
     ld = w->LineHead;
     total = 0;
     while( ld != NULL ) {
-        total += FARstrlen( ld->data ) + 2;
+        total += FARstrlen( (LPSTR)ld->data ) + 2;
         ld = ld->next;
     }
-    if( total > MAX_BYTES ) len = (unsigned) MAX_BYTES;
-    else len = total;
+    if( total > MAX_BYTES ) {
+        len = (unsigned)MAX_BYTES;
+    } else {
+        len = total;
+    }
 
     /*
      * get memory block
@@ -603,7 +606,7 @@ void _CopyAllLines( LPWDATA w )
     ld = w->LineHead;
     total = 0;
     while( ld != NULL ) {
-        slen = FARstrlen( ld->data ) + 2;
+        slen = FARstrlen( (LPSTR)ld->data ) + 2;
         if( total + slen > MAX_BYTES ) break;
         #if defined(__NT__)
             memcpy( &ptr[total], ld->data, slen - 2 );

@@ -46,13 +46,13 @@
 
 _WCRTLINK unsigned int _mbctolower( unsigned int ch )
 {
-    char                mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX+1];
 
     mbc[1] = '\0';      // [0] and possibly [1] are set with chars
     mbc[2] = '\0';
     _mbvtop( ch, mbc );
 #ifdef __NT__
-    CharLower( mbc ); // call the Win32 API
+    CharLower( (char *)mbc ); // call the Win32 API
     return( _mbsnextc( mbc ) );
 #else                               /* OS/2 and others */
     if( _ismbblead( mbc[0] ) ) {

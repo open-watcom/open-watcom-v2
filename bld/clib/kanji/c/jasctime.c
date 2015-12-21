@@ -36,9 +36,10 @@
 
 #define TMSZ 37
 
-static const char *dtbl[] = {"“ú","Œ","‰Î","…","–Ø","‹à","“y"};
+static const char   *dtbl[] = {"“ú","Œ","‰Î","…","–Ø","‹à","“y"};
 
-static unsigned char s[TMSZ];
+static char         s[TMSZ];
+
 /**
 *
 *  Name:        jasctime
@@ -84,5 +85,5 @@ _WCRTLINK unsigned char *jasctime( const struct tm *t )
         t->tm_hour,
         t->tm_min,
         t->tm_sec );
-    return( s );
+    return( (unsigned char *)s );
 }

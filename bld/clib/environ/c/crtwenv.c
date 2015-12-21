@@ -46,10 +46,11 @@ void __create_wide_environment( void )
     size_t              len;
     wchar_t             *wcs;
 
-    if( envp == NULL ) return;
-    while( (p=*envp++) != NULL ) {
-        len = _mbslen( p ) + 1;
-        wcs = lib_malloc( len * sizeof(wchar_t) );
+    if( envp == NULL )
+        return;
+    while( (p = *envp++) != NULL ) {
+        len = _mbslen( (unsigned char *)p ) + 1;
+        wcs = lib_malloc( len * sizeof( wchar_t ) );
         if( wcs != NULL ) {
             if( mbstowcs( wcs, p, len ) != -1 ) {
                 __wputenv( wcs );

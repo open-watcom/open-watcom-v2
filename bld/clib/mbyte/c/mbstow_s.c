@@ -72,7 +72,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                             *retval = -1;
                             break;               //encoding error
                         }
-                        src = _NEARFAR(_mbsinc,_fmbsinc)( src );
+                        src = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)src );
                         numChars++;
                     } else {
                         break;
@@ -99,7 +99,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                             *retval = -1;
                             break;               //encoding error
                         }
-                        src = _NEARFAR(_mbsinc,_fmbsinc)( src );
+                        src = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)src );
                         dst++;
                         numChars++;
                     } else {
