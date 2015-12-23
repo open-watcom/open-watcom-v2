@@ -59,18 +59,18 @@ extern  const double __FAR      P1d100;
 extern  const double __FAR      P1d_99;
 
 typedef union bit_extended {
-    char        pattern[16];
-    extended    value;
+    byte            pattern[16];
+    extended        value;
 } bit_extended;
 
 typedef union bit_double {
-    char        pattern[8];
-    double      value;
+    byte            pattern[8];
+    double          value;
 } bit_double;
 
 typedef union bit_float {
-    char        pattern[4];
-    float       value;
+    byte            pattern[4];
+    float           value;
 } bit_float;
 
 static  const bit_extended __FAR XInfinity =

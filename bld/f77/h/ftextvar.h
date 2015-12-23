@@ -49,10 +49,10 @@ extern  char            NormalCtrlSeq[];
 extern  char            SDTermOut[];
 extern  char            SDTermIn[];
 extern  char            *SpecId[];
-extern  char            __FAR ErrWord[];
-extern  char            __FAR GrpCodes[];
+extern  const char      __FAR ErrWord[];
+extern  const unsigned char __FAR GrpCodes[];
+extern  const unsigned char __FAR * const __FAR GroupTable[];
 extern  const byte      __FAR SizeVars[];
-extern  char            __FAR * __FAR GroupTable[];
 
 extern  void            (*FmtRoutine)( void );
 extern  void            (*TraceRoutine)( char * );

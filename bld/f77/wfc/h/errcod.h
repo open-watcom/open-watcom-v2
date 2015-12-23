@@ -30,8 +30,4 @@
 ****************************************************************************/
 
 
-#if _CPU == 8086
-  #include "errcodi.h"
-#else
-  #include "errcod3.h"
-#endif
+#include "errcod.gh"
