@@ -32,7 +32,9 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
+#endif
 
 #define NULLCHAR        '\0'
 
