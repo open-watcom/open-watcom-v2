@@ -90,6 +90,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
+# The following tools are required by F77
+[ INCLUDE <OWSRCDIR>/f77/utils/builder.ctl ]
 
 ## The following tools are required by tests
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]

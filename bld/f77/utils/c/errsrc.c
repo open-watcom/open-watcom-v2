@@ -107,87 +107,96 @@ static  char    sw_language = { ' ' };
 static  char    sw_compiler = { ' ' };
 static  char    sw_target = { ' ' };
 static  char    sw_used_at = { ' ' };
+static  char    *input_file = NULL;
+static  char    file_prefix[2] = { 0 };
 
-
-int     main() {
-//==============
-
-    char        cmd[128+1];
-
-    ProcArgs( getcmd( cmd ) );
-    if( Initialize() != 0 ) {
-        return( 1 );
-    }
-    printf( "Building Lists...\n" );
-    BuildLists();
-    printf( "Finding Phrases...\n" );
-    FindPhrases();
-    printf( "Sorting...\n" );
-    SortByRef();
-    printf( "ReNumbering...\n" );
-    ReNumber();
-    printf( "Dumping Header...\n" );
-    DumpHeader();
-    printf( "Dumping Msgs...\n" );
-    DumpMsg();
-    printf( "Dumping GroupTable...\n" );
-    DumpGroupTable();
-    printf( "Dumping ErrWords...\n" );
-    DumpErrWord();
-    Finalize();
-    return( 0 );
-}
-
-
-static  void    ProcArgs( char *args ) {
-//======================================
+static  void    ProcArgs( char *args )
+//====================================
+{
+    int     len;
+    char    delim = ' ';
+    char    c;
+    char    *p;
 
     while( *args == ' ' ) {
         ++args;
     }
-    if( *args == '\0' ) return;
+    if( *args == '\0' )
+        return;
+    len = strlen( args ) + 1;
+    if( *args == '"' ) {
+        delim = '"';
+        len -= 2;
+        ++args;
+    }
+    input_file = malloc( len );
+    p = input_file;
+    while( (c = *args) != '\0' ) {
+        ++args;
+        if( c == delim ) {
+            break;
+        }
+        *p++ = c;
+    }
+    *p = '\0';
+    while( *args == ' ' ) {
+        ++args;
+    }
     sw_language = *args;
     if( sw_language == 'e' ) {
         sw_language = ' ';
     }
+    if( sw_language != ' ' ) {
+        file_prefix[0] = sw_language;
+        file_prefix[1] = '\0';
+    }
     ++args;
-    if( *args == '\0' ) return;
+    if( *args == '\0' )
+        return;
     sw_compiler = *args;
     ++args;
-    if( *args == '\0' ) return;
+    if( *args == '\0' )
+        return;
     sw_target = *args;
     ++args;
-    if( *args == '\0' ) return;
+    if( *args == '\0' )
+        return;
     sw_used_at = *args;
 }
 
 
-static  int     Initialize() {
-//============================
+static  int     Initialize( void )
+//================================
+{
+    char    output_file[14];
 
-    MsgFile = fopen( "error.msg", "rt" );
+    MsgFile = fopen( input_file, "rt" );
     if( MsgFile == NULL ) {
         return( 1 );
     }
-    ErrMsg = fopen( "errmsg.c", "wt" );
+    sprintf( output_file, "%serrmsg.gc", file_prefix );
+    ErrMsg = fopen( output_file, "wt" );
     if( ErrMsg == NULL ) {
         fclose( MsgFile );
         return( 1 );
     }
-    ErrGrp = fopen( "errgrp.c", "wt" );
+    sprintf( output_file, "%serrgrp.gc", file_prefix );
+    ErrGrp = fopen( output_file, "wt" );
     if( ErrGrp == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
         return( 1 );
     }
-    ErrCod = fopen( "errcod.h", "wt" );
+    sprintf( output_file, "%serrcod.gh", file_prefix );
+    ErrCod = fopen( output_file, "wt" );
     if( ErrCod == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
         fclose( ErrGrp );
         return( 1 );
     }
-    ErrFile = fopen( "errmsg.msg", "wt" );
+    sprintf( output_file, "%serrmsg.gh", file_prefix );
+    ErrFile = fopen( output_file, "wt" );
     if( ErrFile == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
@@ -195,7 +204,8 @@ static  int     Initialize() {
         fclose( ErrCod );
         return( 1 );
     }
-    RCFile = fopen( "errmsg.rc", "wt" );
+    sprintf( output_file, "%serrmsg.grc", file_prefix );
+    RCFile = fopen( output_file, "wt" );
     if( RCFile == NULL ) {
         fclose( MsgFile );
         fclose( ErrMsg );
@@ -213,9 +223,9 @@ static  int     Initialize() {
 }
 
 
-static  void    Finalize() {
-//==========================
-
+static  void    Finalize( void )
+//==============================
+{
     fclose( MsgFile );
     fclose( ErrMsg );
     fclose( ErrGrp );
@@ -267,119 +277,6 @@ static  char    UseMessage( char cmp, char target, char used_at ) {
     return( 0 );
 }
 
-
-static  void    BuildLists() {
-//============================
-
-    int         index;
-    group_list  *curr_group;
-    int         group;
-    msg_list    *curr_msg;
-    msg_list    *msg_ptr;
-    msg_list    *last_non_null_msg;
-    msg_list    **p_null_msg;
-    msg_word    *word;
-    int         caret;
-    char        rec[BUFF_LEN+1];
-    char        msg_used_at;
-    char        msg_compiler;
-    char        msg_target;
-    char        delim;
-
-    fprintf( ErrCod, "#define    NO_CARROT  0\n" );
-    fprintf( ErrCod, "#define    OPR_CARROT 1\n" );
-    fprintf( ErrCod, "#define    OPN_CARROT 2\n" );
-    fprintf( RCFile, "#include \"errcod.h\"\n\n" );
-    fprintf( RCFile, "stringtable begin\n\n" );
-    group = 0;
-    ReadInFile( &rec );
-    last_non_null_msg = NULL;
-    for(;;) {
-        if( HeadGroup == NULL ) {
-            HeadGroup = malloc( sizeof( group_list ) );
-            curr_group = HeadGroup;
-        } else {
-            curr_group->link = malloc( sizeof( group_list ) );
-            curr_group = curr_group->link;
-        }
-        curr_group->link = NULL;
-        curr_group->start_msg_num = group * 256;
-        curr_group->end_msg_num = curr_group->start_msg_num;
-        curr_group->name[ 0 ] = rec[ 0 ];
-        curr_group->name[ 1 ] = rec[ 1 ];
-        curr_group->name[ 2 ] = NULLCHAR;
-        for(;;) {
-            if( ReadInFile( &rec ) != 0 ) {
-                fprintf( RCFile, "\nend\n" );
-                return;
-            }
-            ++RecNum;
-            if( ( strlen( rec ) > 2 ) && ( rec[ 2 ] == ' ' ) ) break;
-            index = 3;
-            while( rec[ index ] != ' ' ) {
-                ++index;
-            }
-            rec[ index ] = '\0';
-            ++index;
-            ++index;    // skip [
-            if( rec[ index ] != sw_language ) continue;
-            ++index;
-            msg_compiler = rec[ index ];
-            ++index;
-            msg_target = rec[ index ];
-            ++index;
-            msg_used_at = rec[ index ];
-            ++index;
-            caret = rec[ index ] - '0';
-            ++index;
-            ++index;    // skip ]
-            if( UseMessage( msg_compiler, msg_target, msg_used_at ) ) {
-                msg_ptr = AddWords( &rec[ index ] );
-            } else {
-                msg_ptr = InitMsg();
-            }
-            if( msg_ptr->msg != NULL ) {
-                fprintf( ErrCod, "#define    %s %d\n", rec,
-                         curr_group->end_msg_num );
-                fprintf( RCFile, "    %s+MSG_LANG_BASE \"", rec );
-                word = msg_ptr->msg;
-                delim = ' ';
-                while( word != NULL ) {
-                    if( word->link == NULL ) {
-                        delim = '"';
-                    }
-                    fprintf( RCFile, "%s%c", word->word->word, delim );
-                    word = word->link;
-                }
-                fprintf( RCFile, "\n" );
-                last_non_null_msg = msg_ptr;
-            }
-            curr_group->end_msg_num++;
-            if( HeadMsg == NULL ) {
-                HeadMsg = msg_ptr;
-            } else {
-                curr_msg->link = msg_ptr;
-            }
-            curr_msg = msg_ptr;
-            curr_msg->caret = caret;
-        }
-        curr_msg = last_non_null_msg;
-        if( last_non_null_msg == NULL ) {
-            p_null_msg = &HeadMsg;
-        } else {
-            p_null_msg = &last_non_null_msg->link;
-        }
-        while( *p_null_msg != NULL ) {
-            msg_ptr = (*p_null_msg)->link;
-            free( *p_null_msg );
-            curr_group->end_msg_num--;
-            *p_null_msg = msg_ptr;
-        }
-        ++group;
-    }
-}
-
-
 static  int     ReadInFile( char *buff ) {
 //========================================
 
@@ -398,9 +295,9 @@ static  int     ReadInFile( char *buff ) {
 }
 
 
-static  msg_list        *InitMsg() {
-//==================================
-
+static  msg_list        *InitMsg( void )
+//======================================
+{
     msg_list    *curr_msg;
 
     curr_msg = malloc( sizeof( msg_list ) );
@@ -505,36 +402,6 @@ static  word_list       *ProcessWord( char *word ) {
 }
 
 
-static  void    FindPhrases() {
-//=============================
-
-    msg_list    *msg;
-    msg_word    *word;
-    word_list   *w1;
-    word_list   *w2;
-
-    msg = HeadMsg;
-    for(;;) {
-        word = msg->msg;
-        for(;;) {
-            if( word == NULL ) break;
-            w1 = word->word;
-            if( word->link == NULL ) break;
-            w2 = word->link->word;
-            if( ( w1 != w2 ) &&
-                ( w1->ref_count == w2->ref_count ) &&
-                ( PhraseCount( msg, word, w1, w2 ) == w1->ref_count ) ) {
-                Combine( w1, w2 );
-            } else {
-                word = word->link;
-            }
-        }
-        msg = msg->link;
-        if( msg == NULL ) break;
-    }
-}
-
-
 static  int     PhraseCount( msg_list *curr_msg, msg_word *curr_word,
                              word_list *word1, word_list *word2 ) {
 //===================================================================
@@ -616,17 +483,38 @@ static  void    Combine( word_list *word1, word_list *word2 ) {
 }
 
 
-static  void    DumpHeader() {
-//============================
+static  void    FindPhrases( void )
+//=================================
+{
+    msg_list    *msg;
+    msg_word    *word;
+    word_list   *w1;
+    word_list   *w2;
 
-    fprintf( ErrGrp, "#include \"ftnstd.h\"\n\n" );
-    fprintf( ErrMsg, "#include \"ftnstd.h\"\n\n" );
+    msg = HeadMsg;
+    for(;;) {
+        word = msg->msg;
+        for(;;) {
+            if( word == NULL ) break;
+            w1 = word->word;
+            if( word->link == NULL ) break;
+            w2 = word->link->word;
+            if( ( w1 != w2 ) &&
+                ( w1->ref_count == w2->ref_count ) &&
+                ( PhraseCount( msg, word, w1, w2 ) == w1->ref_count ) ) {
+                Combine( w1, w2 );
+            } else {
+                word = word->link;
+            }
+        }
+        msg = msg->link;
+        if( msg == NULL ) break;
+    }
 }
 
-
-static  void    DumpMsg() {
-//=========================
-
+static  void    DumpMsg( void )
+//=============================
+{
     msg_list    *msg;
     msg_word    *word;
     group_list  *group;
@@ -644,12 +532,12 @@ static  void    DumpMsg() {
         fprintf( ErrGrp, "#define    NO__CARET  0\n" );
         fprintf( ErrGrp, "#define    OPR_CARET  1\n" );
         fprintf( ErrGrp, "#define    OPN_CARET  2\n\n" );
-        fprintf( ErrGrp, "const char __FAR CaretTable[] = {\n" );
+        fprintf( ErrGrp, "const unsigned char __FAR CaretTable[] = {\n" );
     }
     for( group = HeadGroup; group != NULL; group = group->link ) {
         msg_num = group->start_msg_num;
         if( group->end_msg_num == msg_num ) continue;
-        fprintf( ErrMsg, "static const char __FAR Msg%d[] = {\n",msg_num );
+        fprintf( ErrMsg, "static const unsigned char __FAR Msg%d[] = {\n", msg_num );
         delim = ' ';
         while( msg_num < group->end_msg_num ) {
             word = msg->msg;
@@ -702,6 +590,7 @@ static  void    DumpMsg() {
         }
         fprintf( ErrMsg, "};\n" );
     }
+    fprintf( ErrMsg, "\n\n" );
     if( (sw_compiler == 'w') ||
         ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
         fprintf( ErrGrp, "};\n" );
@@ -709,18 +598,21 @@ static  void    DumpMsg() {
     if( sw_compiler == 'w' ) {
         fprintf( ErrGrp, "\n#endif\n" );
     }
+    if( (sw_compiler == 'w') ||
+        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
+        fprintf( ErrGrp, "\n" );
+    }
 }
 
 
-static  void    DumpGroupTable() {
-//================================
-
+static  void    DumpGroupTable( void )
+//====================================
+{
     group_list  *curr;
     char        delim;
 
-    fprintf( ErrMsg,
-             "\n\nextern const char __FAR * const __FAR GroupTable[] = {\n" );
-    fprintf( ErrGrp, "\n\nextern const char __FAR GrpCodes[] = {\n" );
+    fprintf( ErrMsg, "const unsigned char __FAR * const __FAR GroupTable[] = {\n" );
+    fprintf( ErrGrp, "const unsigned char __FAR GrpCodes[] = {\n" );
     delim = ' ';
     for( curr = HeadGroup; curr != NULL; curr = curr->link ) {
         if( curr->start_msg_num == curr->end_msg_num ) {
@@ -728,73 +620,14 @@ static  void    DumpGroupTable() {
             fprintf( ErrMsg, "    %cNULL\n", delim );
         } else {
             fprintf( ErrMsg, "    %cMsg%d\n", delim, curr->start_msg_num );
-            fprintf( ErrGrp, "    %c'%c','%c',%d\n", delim,
-                     curr->name[ 0 ], curr->name[ 1 ],
-                     curr->end_msg_num - curr->start_msg_num );
+            fprintf( ErrGrp, "    %c'%c','%c',%d\n", delim, curr->name[0],
+                        curr->name[1], curr->end_msg_num - curr->start_msg_num );
         }
         delim = ',';
     }
-    fprintf( ErrMsg, "    };\n" );
-    fprintf( ErrGrp, "    };\n" );
+    fprintf( ErrMsg, "};\n" );
+    fprintf( ErrGrp, "};\n" );
 }
-
-
-static  void    DumpErrWord() {
-//=============================
-
-    word_list   *cw;
-    int         first_word;
-    int         phrase_count;
-    int         sum;
-    char        *word;
-    int         len;
-    int         chars_per;
-
-    fprintf( ErrMsg, "\n\nextern const char __FAR ErrWord[] = {\n" );
-    phrase_count = 0;
-    sum = 0;
-    first_word = 1;
-    for( cw = SortHead; cw != NULL; cw = cw->sortlink ) {
-        fprintf( ErrMsg, "          " );
-        if( first_word == 0 ) {
-            fprintf( ErrMsg, "," );
-        }
-        first_word = 0;
-        word = cw->word;
-        if( word == NULL ) {
-            fprintf( ErrMsg, "%d", len );
-            continue;
-        }
-        len = strlen( word );
-        fprintf( ErrMsg, "%d", len );
-        chars_per = 10;
-        for(;;) {
-            if( --chars_per == 0 ) {
-                fprintf( ErrMsg, "\n              " );
-                chars_per = 10;
-            }
-            if( *word == '\\' ) {
-                fprintf( ErrMsg, ",'\\\\'" );
-            } else if( *word == '\'' ) {
-                fprintf( ErrMsg, ",'\\''" );
-            } else {
-                fprintf( ErrMsg, ",'%c'", *word );
-            }
-            ++word;
-            if( *word == NULLCHAR ) break;
-        }
-        fprintf( ErrMsg, "\n" );
-        fprintf( ErrMsg, "/* count=%3d", cw->ref_count );
-        PrtRefs( cw );
-        sum += len * cw->ref_count;
-        ++phrase_count;
-    }
-    fprintf( ErrMsg, "                   };\n" );
-    fprintf( ErrMsg, "/* Total number of phrases = %d */\n", phrase_count );
-    printf( "Total number of phrases = %d\n", phrase_count );
-    printf( "word size * reference count = %d\n", sum );
-}
-
 
 static  group_list      *NextGroup( group_list *group ) {
 //=======================================================
@@ -811,7 +644,6 @@ static  group_list      *NextGroup( group_list *group ) {
     }
     return( group );
 }
-
 
 static  void    PrtRefs( word_list *this_word ) {
 //===============================================
@@ -860,9 +692,86 @@ static  void    PrtRefs( word_list *this_word ) {
 }
 
 
-static  void    SortByRef() {
-//===========================
+static  void    DumpErrWord( void )
+//=================================
+{
+    word_list   *cw;
+    int         first_word;
+    int         phrase_count;
+    int         sum;
+    char        *word;
+    int         len;
+    int         chars_per;
 
+    fprintf( ErrMsg, "\n\nconst char __FAR ErrWord[] = {\n" );
+    phrase_count = 0;
+    sum = 0;
+    first_word = 1;
+    for( cw = SortHead; cw != NULL; cw = cw->sortlink ) {
+        fprintf( ErrMsg, "          " );
+        if( first_word == 0 ) {
+            fprintf( ErrMsg, "," );
+        }
+        first_word = 0;
+        word = cw->word;
+        if( word == NULL ) {
+            fprintf( ErrMsg, "%d", len );
+            continue;
+        }
+        len = strlen( word );
+        fprintf( ErrMsg, "%d", len );
+        chars_per = 10;
+        for(;;) {
+            if( --chars_per == 0 ) {
+                fprintf( ErrMsg, "\n              " );
+                chars_per = 10;
+            }
+            if( *word == '\\' ) {
+                fprintf( ErrMsg, ",'\\\\'" );
+            } else if( *word == '\'' ) {
+                fprintf( ErrMsg, ",'\\''" );
+            } else {
+                fprintf( ErrMsg, ",'%c'", *word );
+            }
+            ++word;
+            if( *word == NULLCHAR ) break;
+        }
+        fprintf( ErrMsg, "\n" );
+        fprintf( ErrMsg, "/* count=%3d", cw->ref_count );
+        PrtRefs( cw );
+        sum += len * cw->ref_count;
+        ++phrase_count;
+    }
+    fprintf( ErrMsg, "};\n" );
+    fprintf( ErrMsg, "/* Total number of phrases = %d */\n", phrase_count );
+    printf( "Total number of phrases = %d\n", phrase_count );
+    printf( "word size * reference count = %d\n", sum );
+}
+
+
+static  int     FindMax( int upper_bound ) {
+//==========================================
+
+    word_list   *curr_word;
+    int         curr_max;
+
+    curr_word = HeadWord;
+    curr_max = 0;
+    while( curr_word != NULL ) {
+        if( ( curr_word->ref_count > curr_max ) &&
+            ( curr_word->ref_count < upper_bound ) ) {
+            curr_max = curr_word->ref_count;
+            SortPtr = curr_word;
+        }
+        curr_word = curr_word->link;
+    }
+    return( curr_max );
+}
+
+
+static  void    SortByRef( void )
+//===============================
+{
     word_list   *curr_word;
     word_list   *sort_tail;
     int         ceiling;
@@ -891,29 +800,9 @@ static  void    SortByRef() {
 }
 
 
-static  int     FindMax( int upper_bound ) {
-//==========================================
-
-    word_list   *curr_word;
-    int         curr_max;
-
-    curr_word = HeadWord;
-    curr_max = 0;
-    while( curr_word != NULL ) {
-        if( ( curr_word->ref_count > curr_max ) &&
-            ( curr_word->ref_count < upper_bound ) ) {
-            curr_max = curr_word->ref_count;
-            SortPtr = curr_word;
-        }
-        curr_word = curr_word->link;
-    }
-    return( curr_max );
-}
-
-
-static  void    ReNumber() {
-//==========================
-
+static  void    ReNumber( void )
+//==============================
+{
     word_list   *curr_word;
     int         index;
 
@@ -925,4 +814,142 @@ static  void    ReNumber() {
         curr_word = curr_word->sortlink;
         if( curr_word == NULL ) break;
     }
+}
+
+static  void    BuildLists( void )
+//================================
+{
+    int         index;
+    group_list  *curr_group;
+    int         group;
+    msg_list    *curr_msg;
+    msg_list    *msg_ptr;
+    msg_list    *last_non_null_msg;
+    msg_list    **p_null_msg;
+    msg_word    *word;
+    int         caret;
+    char        rec[BUFF_LEN+1];
+    char        msg_used_at;
+    char        msg_compiler;
+    char        msg_target;
+    char        delim;
+
+    fprintf( ErrCod, "#define    NO_CARROT  0\n" );
+    fprintf( ErrCod, "#define    OPR_CARROT 1\n" );
+    fprintf( ErrCod, "#define    OPN_CARROT 2\n" );
+    fprintf( RCFile, "#include \"errcod.h\"\n\n" );
+    fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
+    group = 0;
+    ReadInFile( &rec );
+    last_non_null_msg = NULL;
+    for(;;) {
+        if( HeadGroup == NULL ) {
+            HeadGroup = malloc( sizeof( group_list ) );
+            curr_group = HeadGroup;
+        } else {
+            curr_group->link = malloc( sizeof( group_list ) );
+            curr_group = curr_group->link;
+        }
+        curr_group->link = NULL;
+        curr_group->start_msg_num = group * 256;
+        curr_group->end_msg_num = curr_group->start_msg_num;
+        curr_group->name[ 0 ] = rec[ 0 ];
+        curr_group->name[ 1 ] = rec[ 1 ];
+        curr_group->name[ 2 ] = NULLCHAR;
+        for(;;) {
+            if( ReadInFile( &rec ) != 0 ) {
+                fprintf( RCFile, "\nEND\n" );
+                return;
+            }
+            ++RecNum;
+            if( ( strlen( rec ) > 2 ) && ( rec[ 2 ] == ' ' ) ) break;
+            index = 3;
+            while( rec[ index ] != ' ' ) {
+                ++index;
+            }
+            rec[ index ] = '\0';
+            ++index;
+            ++index;    // skip [
+            if( rec[ index ] != sw_language ) continue;
+            ++index;
+            msg_compiler = rec[ index ];
+            ++index;
+            msg_target = rec[ index ];
+            ++index;
+            msg_used_at = rec[ index ];
+            ++index;
+            caret = rec[ index ] - '0';
+            ++index;
+            ++index;    // skip ]
+            if( UseMessage( msg_compiler, msg_target, msg_used_at ) ) {
+                msg_ptr = AddWords( &rec[ index ] );
+            } else {
+                msg_ptr = InitMsg();
+            }
+            if( msg_ptr->msg != NULL ) {
+                fprintf( ErrCod, "#define    %s %d\n", rec,
+                         curr_group->end_msg_num );
+                fprintf( RCFile, "    %s+MSG_LANG_BASE \"", rec );
+                word = msg_ptr->msg;
+                delim = ' ';
+                while( word != NULL ) {
+                    if( word->link == NULL ) {
+                        delim = '"';
+                    }
+                    fprintf( RCFile, "%s%c", word->word->word, delim );
+                    word = word->link;
+                }
+                fprintf( RCFile, "\n" );
+                last_non_null_msg = msg_ptr;
+            }
+            curr_group->end_msg_num++;
+            if( HeadMsg == NULL ) {
+                HeadMsg = msg_ptr;
+            } else {
+                curr_msg->link = msg_ptr;
+            }
+            curr_msg = msg_ptr;
+            curr_msg->caret = caret;
+        }
+        curr_msg = last_non_null_msg;
+        if( last_non_null_msg == NULL ) {
+            p_null_msg = &HeadMsg;
+        } else {
+            p_null_msg = &last_non_null_msg->link;
+        }
+        while( *p_null_msg != NULL ) {
+            msg_ptr = (*p_null_msg)->link;
+            free( *p_null_msg );
+            curr_group->end_msg_num--;
+            *p_null_msg = msg_ptr;
+        }
+        ++group;
+    }
+}
+
+int     main( void )
+//==================
+{
+    char        cmd[128+1];
+
+    ProcArgs( getcmd( cmd ) );
+    if( Initialize() != 0 ) {
+        return( 1 );
+    }
+    printf( "Building Lists...\n" );
+    BuildLists();
+    printf( "Finding Phrases...\n" );
+    FindPhrases();
+    printf( "Sorting...\n" );
+    SortByRef();
+    printf( "ReNumbering...\n" );
+    ReNumber();
+    printf( "Dumping Msgs...\n" );
+    DumpMsg();
+    printf( "Dumping GroupTable...\n" );
+    DumpGroupTable();
+    printf( "Dumping ErrWords...\n" );
+    DumpErrWord();
+    Finalize();
+    return( 0 );
 }
