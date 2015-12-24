@@ -77,6 +77,7 @@
 #define _SC_PHYS_PAGES       14
 #define _SC_AVPHYS_PAGES     15
 #define _SC_REALTIME_SIGNALS 16
+#define _SC_SOMAXCONN        17
 /* Execution-time Symbolic Constants for Portability Specifications */
 
 #define _POSIX_CHOWN_RESTRICTED 0       /* restricted use of chown() */

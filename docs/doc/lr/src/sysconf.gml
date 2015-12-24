@@ -10,7 +10,7 @@ function retrieves a current system configuration parameter
 depending on the value of system information from the kernel via the
 .arg name
 passed.  This implementation currently supports the following inputs:
-.begterm 16
+.begterm 17
 .termhd1 Member
 .termhd2 Meaning
 .term _SC_ARG_MAX
@@ -47,6 +47,10 @@ The total number of physical pages of memory for the system
 The available number of physical pages of memory for the system
 .term _SC_REALTIME_SIGNALS
 If real-time signals are supported, the value of 1 is returned
+.term _SC_SOMAXCONN
+For the socket
+.kw listen
+function, retrieve the largest supported backlog of listen requests
 .endterm
 In this implementation, requesting either _SC_NPROCESSORS_CONF or
 _SC_NPROCESSORS_ONLN will return the same value.
