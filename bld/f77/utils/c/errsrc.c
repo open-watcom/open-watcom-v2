@@ -36,6 +36,8 @@
 #include <process.h>
 #endif
 
+#include "clibext.h"
+
 #define NULLCHAR        '\0'
 
 typedef struct word_list {
@@ -284,7 +286,7 @@ static  int     ReadInFile( char *buff ) {
 
     int         len;
 
-    for(;;) {
+    for( ;; ) {
         if( fgets( buff, BUFF_LEN, MsgFile ) == NULL ) {
             return( 1 );
         }
@@ -708,6 +710,7 @@ static  void    DumpErrWord( void )
     fprintf( ErrMsg, "\n\nconst char __FAR ErrWord[] = {\n" );
     phrase_count = 0;
     sum = 0;
+    len = 0;
     first_word = 1;
     for( cw = SortHead; cw != NULL; cw = cw->sortlink ) {
         fprintf( ErrMsg, "          " );
@@ -779,6 +782,7 @@ static  void    SortByRef( void )
     int         ceiling;
     int         first_word;
 
+    sort_tail = NULL;
     ceiling = MaxRefCount + 1;
     first_word = 1;
     for(;;) {
@@ -842,9 +846,10 @@ static  void    BuildLists( void )
     fprintf( RCFile, "#include \"errcod.h\"\n\n" );
     fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
     group = 0;
-    ReadInFile( &rec );
+    curr_group = NULL;
+    ReadInFile( rec );
     last_non_null_msg = NULL;
-    for(;;) {
+    for( ;; ) {
         if( HeadGroup == NULL ) {
             HeadGroup = malloc( sizeof( group_list ) );
             curr_group = HeadGroup;
@@ -858,8 +863,9 @@ static  void    BuildLists( void )
         curr_group->name[ 0 ] = rec[ 0 ];
         curr_group->name[ 1 ] = rec[ 1 ];
         curr_group->name[ 2 ] = NULLCHAR;
-        for(;;) {
-            if( ReadInFile( &rec ) != 0 ) {
+        curr_msg = NULL;
+        for( ;; ) {
+            if( ReadInFile( rec ) != 0 ) {
                 fprintf( RCFile, "\nEND\n" );
                 return;
             }
@@ -929,11 +935,18 @@ static  void    BuildLists( void )
     }
 }
 
-int     main( void )
-//==================
+int     main( int argc, char **argv )
+//===================================
 {
     char        cmd[128+1];
 
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#else
+    argc = argc;
+    argv = argv;
+#endif
     ProcArgs( getcmd( cmd ) );
     if( Initialize() != 0 ) {
         return( 1 );
