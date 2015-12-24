@@ -43,7 +43,7 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 .c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
 
 #-------------------------------------------------------------------------------
-#cc = wcl -c -cc++ 
+#cc = wcl -c -cc++
 
 $(libname).lib : errcod.gh $(files)
     @%create $(libname).lbc
@@ -72,5 +72,5 @@ errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
 jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ jo r
 
-errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../h/errcod.h errcod.gh
+errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

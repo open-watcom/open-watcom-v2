@@ -106,5 +106,5 @@ errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
 jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ $(jerrsrc_opt_$(target_cpu))
 
-errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../h/errcod.h errcod.gh
+errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
