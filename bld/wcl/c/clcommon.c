@@ -76,6 +76,7 @@ static _trmem_hdl   TRMemHandle;
 
 static void memLine( void *fh, const char *buf, size_t size )
 {
+    fh=fh;size=size;
     PrintMsg( buf );
 }
 #endif
@@ -221,6 +222,25 @@ char *MemStrDup( const char *str )
         PrintMsg( WclMsgs[OUT_OF_MEMORY] );
         exit( 1 );
     }
+    return( ptr );
+}
+
+char *MemStrLenDup( const char *str, size_t len )
+/***********************************************/
+{
+    char        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( len + 1, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = malloc( len + 1 );
+#endif
+    if( ptr == NULL ) {
+        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
+        exit( 1 );
+    }
+    memcpy( ptr, str, len );
+    ptr[len] = '\0';
     return( ptr );
 }
 

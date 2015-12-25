@@ -126,6 +126,7 @@ extern void     MemInit( void );
 extern void     MemFini( void );
 extern void     *MemAlloc( size_t );
 extern char     *MemStrDup( const char * );
+extern char     *MemStrLenDup( const char *str, size_t len );
 extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
 extern char     *MakePath( const char * );
