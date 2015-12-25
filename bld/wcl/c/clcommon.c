@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <assert.h>
 #ifndef __UNIX__
 #include <direct.h>
 #else
@@ -42,7 +41,6 @@
 #endif
 #include "wio.h"
 #include "diskos.h"
-#include "cmdlhelp.h"
 #include "clcommon.h"
 #ifdef TRMEM
 #include "trmem.h"
@@ -412,59 +410,6 @@ void FindPath( const char *name, char *buf )
         PrintMsg( WclMsgs[UNABLE_TO_FIND], name );
         exit( 1 );
     }
-}
-
-static int iswsOrOpt( char ch, char opt, char *Switch_Chars )
-{
-    if( ch == ' ' || ch == '\t' )
-        return( 1 );
-
-    if( opt == '-'  ||  opt == Switch_Chars[1] ) {
-        /* if we are processing a switch, stop at a '-' */
-        if( ch == '-' )
-            return( 1 );
-#ifndef __UNIX__
-        if( ch == Switch_Chars[1] ) {
-            return( 1 );
-        }
-#endif
-    }
-    return( 0 );
-}
-
-char *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars )
-/***********************************
- * Finds next free white space character, allowing doublequotes to
- * be used to specify strings with white spaces.
- */
-{
-    char    string_open = 0;
-
-    while( *str != '\0' ) {
-        if( *str == '\\' ) {
-            str++;
-            if( *str != '\0' ) {
-                if( !string_open && iswsOrOpt( *str, opt, Switch_Chars ) ) {
-                    break;
-                }
-                str++;
-            }
-        } else {
-            if( *str == '\"' ) {
-                string_open = !string_open;
-                str++;
-            } else {
-                if( string_open ) {
-                    str++;
-                } else {
-                    if( iswsOrOpt( *str, opt, Switch_Chars ) )
-                        break;
-                    str++;
-                }
-            }
-        }
-    }
-    return( str );
 }
 
 static int needQuotes( const char *name )

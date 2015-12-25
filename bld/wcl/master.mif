@@ -19,9 +19,9 @@ wcl_trmem = 1
 !include trmem.mif
 
 !ifdef target_cpu
-objs = clcommon.obj cmdlhelp.obj wcl.obj
+objs = clcommon.obj wcl.obj
 !else
-objs = clcommon.obj cmdlhelp.obj owcc.obj getopt.obj quit.obj
+objs = clcommon.obj owcc.obj getopt.obj quit.obj
 extra_deps = owcchelp.gh $(owcc_specs)
 !endif
 objs += $(trmem_objs)

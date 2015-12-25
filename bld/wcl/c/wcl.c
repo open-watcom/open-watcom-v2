@@ -46,7 +46,6 @@
 #include "watcom.h"
 #include "swchar.h"
 #include "diskos.h"
-#include "cmdlhelp.h"
 #include "clcommon.h"
 #include "banner.h"
 
@@ -116,9 +115,11 @@
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
 #define fname_cmp       strcmp
+#define IS_OPT(x)       (x=='-')
 #else
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
 #define fname_cmp       stricmp
+#define IS_OPT(x)       (x=='-' || x==alt_switch_char)
 #endif
 
 static  char    *Word;              /* one parameter                      */
@@ -132,7 +133,9 @@ static  list    *Directive_List;    /* linked list of directives          */
 static  char    *StackSize;         /* size of stack                      */
 static  int     DebugFlag = 0;      /* debug info wanted                  */
 static  char    Conventions;        /* 'r' for -3r or 's' for -3s         */
-static  char    Switch_Chars[3];    /* valid switch characters            */
+#ifndef __UNIX__
+static  char    alt_switch_char;    /* valid switch characters            */
+#endif
 static  int     via_environment = FALSE;
 
 /*
@@ -437,6 +440,148 @@ static int FileExtension( char *p, char *ext )
 }
 
 
+static int iswsOrOpt( char ch, char opt )
+{
+    if( ch == ' ' || ch == '\t' )
+        return( 1 );
+
+    /* if we are processing a switch, stop at a switch */
+    if( IS_OPT( opt ) ) {
+        if( IS_OPT( ch ) ) {
+            return( 1 );
+        }
+    }
+    return( 0 );
+}
+
+static int UnquoteFName( char *dst, size_t maxlen, const char *src )
+/***********************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    char    string_open = 0;
+    size_t  pos = 0;
+    char    t;
+    int     un_quoted = 0;
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( pos < maxlen ) {
+        t = *src++;
+
+        if( t == '\0' ) break;
+
+        if( t == '\\' ) {
+            t = *src++;
+
+            if( t == '\"' ) {
+                *dst++ = '\"';
+                pos++;
+                un_quoted = 1;
+            } else {
+                *dst++ = '\\';
+                pos++;
+
+                if( pos < maxlen ) {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        } else {
+            if( t == '\"' ) {
+                string_open = !string_open;
+                un_quoted = 1;
+            } else {
+                if( string_open ) {
+                    *dst++ = t;
+                    pos++;
+                } else if( t == ' ' || t == '\t' ) {
+                    break;
+                } else {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        }
+    }
+
+    *dst = '\0';
+
+    return( un_quoted );
+}
+
+static char *FindNextWS( char *str )
+/***********************************
+ * Finds next free white space character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    char    string_open = 0;
+
+    while( *str != '\0' ) {
+        if( *str == '\\' ) {
+            str++;
+            if( *str != '\0' ) {
+                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
+                    break;
+                }
+                str++;
+            }
+        } else {
+            if( *str == '\"' ) {
+                string_open = !string_open;
+                str++;
+            } else {
+                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
+                    break;
+                }
+                str++;
+            }
+        }
+    }
+
+    return( str );
+}
+
+static char *FindNextWSOrOpt( char *str, char opt )
+/**************************************************
+ * Finds next free white space character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    char    string_open = 0;
+
+    while( *str != '\0' ) {
+        if( *str == '\\' ) {
+            str++;
+            if( *str != '\0' ) {
+                if( !string_open && iswsOrOpt( *str, opt ) ) {
+                    break;
+                }
+                str++;
+            }
+        } else {
+            if( *str == '\"' ) {
+                string_open = !string_open;
+                str++;
+            } else {
+                if( string_open ) {
+                    str++;
+                } else {
+                    if( iswsOrOpt( *str, opt ) )
+                        break;
+                    str++;
+                }
+            }
+        }
+    }
+    return( str );
+}
+
 static void AddDirective( size_t len )
 /************************************/
 {
@@ -471,7 +616,7 @@ static int Parse( char *Cmd )
         if( *Cmd == '\0' )
             break;
         opt = *Cmd;
-        if( opt == '-'  ||  opt == Switch_Chars[1] ) {
+        if( IS_OPT( opt ) ) {
             Cmd++;
         } else if( opt != '@' ) {
             opt = ' ';
@@ -481,7 +626,7 @@ static int Parse( char *Cmd )
         if( *Cmd == '"' ) {
             end = FindNextWS( end );
         } else {
-            end = FindNextWSOrOpt( end, opt, Switch_Chars );
+            end = FindNextWSOrOpt( end, opt );
         }
         len = end - Cmd;
         if( len != 0 ) {
@@ -1049,13 +1194,32 @@ static int ProcMemFini( void )
     return( 0 );
 }
 
+static int check_y_opt( char *cmdl )
+{
+    char        switch_chars[3];
+
+    switch_chars[0] = '-';
+#ifndef __UNIX__
+    switch_chars[1] = alt_switch_char;
+    switch_chars[2] = '\0';
+#else
+    switch_chars[1] = '\0';
+#endif
+    while( (cmdl = strpbrk( cmdl, switch_chars )) != NULL ) {
+        ++cmdl;
+        if( tolower( *cmdl ) == 'y' ) {
+            return( 1 );
+        }
+    }
+    return( 0 );
+}
+
 int  main( int argc, char **argv )
 /********************************/
 {
     int         rc;
     char        *wcl_env;
     char        *p;
-    char        *q;
     char        *Cmd;               /* command line parameters            */
 
 #ifndef __WATCOMC__
@@ -1065,9 +1229,9 @@ int  main( int argc, char **argv )
 
     CC_Opts[0] = '\0';
 
-    Switch_Chars[0] = '-';
-    Switch_Chars[1] = _dos_switch_char();
-    Switch_Chars[2] = '\0';
+#ifndef __UNIX__
+    alt_switch_char = _dos_switch_char();
+#endif
 
     MemInit();
     ProcMemInit();
@@ -1083,29 +1247,23 @@ int  main( int argc, char **argv )
         strcat( Cmd, " " );
         p = Cmd + strlen( Cmd );
         getcmd( p );
-        q = Cmd;
-        while( (q = strpbrk( q, Switch_Chars )) != NULL ) {
-            if( tolower( *(++q) ) == 'y' ) {
-                getcmd( Cmd );
-                p = Cmd;
-                break;
-            }
+        if( check_y_opt( Cmd ) ) {
+            getcmd( Cmd );
+            p = Cmd;
         }
     } else {
         getcmd( Cmd );
         p = Cmd;
     }
     p = SkipSpaces( p );
-    if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' )
-        || p[0] == '-' && p[1] == '?' ) {
+    if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
         Usage();
         rc = 1;
     } else {
         errno = 0; /* Standard C does not require fopen failure to set errno */
         if( (Fp = fopen( TEMPFILE, "w" )) == NULL ) {
             /* Message before banner decision as '@' option uses Fp in Parse() */
-            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE,
-                strerror( errno ) );
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
             rc = 1;
         } else {
             initialize_Flags();
@@ -1133,5 +1291,5 @@ int  main( int argc, char **argv )
     MemFree( Cmd );
     MemFree( Word );
     MemFini();
-    return( rc == 0 ? 0 : 1 );
+    return( ( rc != 0 ) );
 }

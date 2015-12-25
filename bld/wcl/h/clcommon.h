@@ -130,5 +130,4 @@ extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
 extern char     *MakePath( const char * );
 extern char     *GetName( const char * );
-extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
 extern char     *DoQuoted( char *buffer, const char *name );
