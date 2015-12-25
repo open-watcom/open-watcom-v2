@@ -428,8 +428,8 @@ static void addccopt( char option, char *opt )
     MemFree( op );
 }
 
-static int FileExtension( char *p, char *ext )
-/********************************************/
+static int hasFileExtension( char *p, char *ext )
+/***********************************************/
 {
     char        *dot;
 
@@ -1187,7 +1187,7 @@ static  int  ParseArgs( int argc, char **argv )
         new_item = MemAlloc( sizeof( list ) );
         new_item->next = NULL;
         new_item->item = strfdup( Word );
-        if( FileExtension( Word, ".lib" ) || FileExtension( Word, ".a" ) ) {
+        if( hasFileExtension( Word, ".lib" ) || hasFileExtension( Word, ".a" ) ) {
             ListAppend( &Libs_List, new_item );
         } else {
             ListAppend( &Files_List, new_item );
@@ -1431,8 +1431,8 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-            if( !FileExtension( file, OBJ_EXT ) &&  // if not .obj or .o, compile
-                !FileExtension( file, OBJ_EXT_SECONDARY ) ) {
+            if( !hasFileExtension( file, OBJ_EXT ) &&  // if not .obj or .o, compile
+                !hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
                 char fname[_MAX_PATH];
 
                 rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
@@ -1459,8 +1459,8 @@ static  int  CompLink( void )
                     DoQuoted( ofname, file );
                     DoQuoted( sfname + 3, Exe_Name );
                 } else {
-                    if( FileExtension( file, OBJ_EXT ) ||
-                        FileExtension( file, OBJ_EXT_SECONDARY ) ) {
+                    if( hasFileExtension( file, OBJ_EXT ) ||
+                        hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
                         DoQuoted( ofname, file );
                         p = strrchr( file, '.' );
                         if( p != NULL )  {
