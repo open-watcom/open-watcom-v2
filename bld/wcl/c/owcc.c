@@ -159,9 +159,6 @@ static  char    *cpp_linewrap;          /* line length for cpp output         */
  *  Static function prototypes
  */
 
-static void MakeName( char *, char * );
-
-
 const char *WclMsgs[] = {
     #define pick(code,english)      english
     #include "wclmsg.h"
@@ -457,6 +454,15 @@ static  void AddDirective( char *directive )
     itm->item = MemAlloc( strlen( directive ) + 1 );
     strcpy( itm->item, directive );
     ListAppend( &Directive_List, itm );
+}
+
+static  void  MakeName( char *name, char *ext )
+/*********************************************/
+{
+    /* If the last '.' is before the last path seperator character */
+    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
+        strcat( name, ext );
+    }
 }
 
 static  FILE *OpenSpecsFile( void )
@@ -1540,15 +1546,6 @@ static  int  CompLink( void )
     return( rc );
 }
 
-
-static  void  MakeName( char *name, char *ext )
-/*********************************************/
-{
-    /* If the last '.' is before the last path seperator character */
-    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
-        strcat( name, ext );
-    }
-}
 
 static void ExitHandler( void )
 /*****************************/
