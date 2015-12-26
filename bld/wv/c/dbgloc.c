@@ -153,9 +153,9 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     byte                tmp2;
     byte                tmp3;
     byte                mask;
-    unsigned            num_bytes;
+    size_t              num_bytes;
     unsigned            dest_num_bytes;
-    unsigned            size;
+    size_t              size;
     unsigned            sidx;
     unsigned            didx;
     location_entry      sitem;
@@ -165,7 +165,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     bool                padding;
     unsigned_32         pad_bytes = 0;
     bool                mem_mod;
-    unsigned            (*modify)( address, const void *, unsigned );
+    size_t              (*modify)( address, const void *, size_t );
 
     modify = _IsOn( SW_RECORD_LOCATION_ASSIGN ) ? ChangeMem : ProgPoke;
     mem_mod = false;
@@ -232,23 +232,24 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
         NORMALIZE_BITSTART( ditem );
         /* pick the smallest size to move */
         size = sitem.bit_length;
-        if( ditem.bit_length < size ) size = ditem.bit_length;
+        if( ditem.bit_length < size )
+            size = ditem.bit_length;
         if( sitem.bit_start == 0
-         && ditem.bit_start == 0
-         && (sitem.type != LT_ADDR || ditem.type != LT_ADDR)
-         && size >= BPB ) {
+          && ditem.bit_start == 0
+          && (sitem.type != LT_ADDR || ditem.type != LT_ADDR)
+          && size >= BPB ) {
             /* special case - can move straight from one to the other */
             num_bytes = size / BPB;
             size -= num_bytes * BPB;
             len -= num_bytes * BPB;
             if( sitem.type == LT_ADDR ) {
-                if( ProgPeek( sitem.u.addr, ditem.u.p, num_bytes )
-                    != num_bytes ) return( DS_ERR|DS_NO_READ_MEM );
+                if( ProgPeek( sitem.u.addr, ditem.u.p, num_bytes ) != num_bytes )
+                    return( DS_ERR|DS_NO_READ_MEM );
                 sitem.u.addr.mach.offset += num_bytes;
                 BUMP_INTERNAL( ditem, num_bytes );
             } else if( ditem.type == LT_ADDR ) {
-                if( modify( ditem.u.addr, sitem.u.p, num_bytes )
-                    != num_bytes ) return( DS_ERR|DS_NO_WRITE_MEM );
+                if( modify( ditem.u.addr, sitem.u.p, num_bytes ) != num_bytes )
+                    return( DS_ERR|DS_NO_WRITE_MEM );
                 BUMP_INTERNAL( sitem, num_bytes );
                 ditem.u.addr.mach.offset += num_bytes;
             } else {
