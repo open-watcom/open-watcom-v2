@@ -490,9 +490,9 @@ static  FILE *OpenSpecsFile( void )
 
     specs = OpenSpecsFile();
     begin_len = strlen( "system begin " );
-    while( fgets( line, MAX_CMD, specs ) ) {
+    while( fgets( line, MAX_CMD, specs ) != NULL ) {
         p = strchr( line, '\n' );
-        if( p ) {
+        if( p != NULL ) {
             *p = '\0';
         }
         if( strncmp( line, "system begin ", begin_len ) == 0 ) {
@@ -519,7 +519,7 @@ static  int  ConsultSpecsFile( const char *target )
 
     /* search for a block whose first line is "system begin <target>" ... */
     strcat( start_line, target );
-    while( fgets( line, MAX_CMD, specs ) ) {
+    while( fgets( line, MAX_CMD, specs ) != NULL ) {
         p = strchr( line, '\n' );
         if( p != NULL ) {
             *p = '\0';
@@ -675,7 +675,7 @@ static  int  ParseArgs( int argc, char **argv )
 
     initialize_Flags();
     DebugFlag          = 1;
-    StackSize = NULL;
+    StackSize          = NULL;
     Conventions[0]     = '\0';
     Conventions[1]     = '\0';
     CPU_Arch           = TARGET_ARCH_DEFAULT;
