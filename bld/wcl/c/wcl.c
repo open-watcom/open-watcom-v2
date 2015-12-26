@@ -126,9 +126,9 @@
 
 static  char    *Word;              /* one parameter                      */
 static  char    *SystemName;        /* system to link for                 */
-static  list    *Files_List;        /* list of filenames from Cmd         */
-static  list    *Res_List;          /* list of resources from Cmd         */
-static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmd  */
+static  list    *Files_List;        /* list of filenames from Cmdl        */
+static  list    *Res_List;          /* list of resources from Cmdl        */
+static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmdl */
 static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
 static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
 static  list    *Directive_List;    /* linked list of directives          */
@@ -143,7 +143,7 @@ static  int     via_environment = FALSE;
 /*
  *  Static function prototypes
  */
-static int     Parse( char *Cmd );
+static int     Parse( const char *cmd );
 
 const char *WclMsgs[] = {
     #define pick( code, english )   english
@@ -308,8 +308,8 @@ static void print_banner( void )
 }
 
 
-static  char  *SkipSpaces( char *ptr )
-/************************************/
+static const char *SkipSpaces( const char *ptr )
+/**********************************************/
 {
     while( IS_WS( *ptr ) )
         ptr++;
@@ -401,18 +401,18 @@ static void  Usage( void )
 }
 
 
-static char *ScanFName( char *end, size_t len )
-/*********************************************/
-/* Allow switch char in filenames */
+static const char *ScanFName( const char *end, size_t len )
+/*********************************************************/
+/* Allow switch chars in unquoted filename */
 {
-    for( ; *end != '\0'; ) {
-        if( IS_WS( *end ) )
-            break;
-        Word[len] = *end;
-        ++len;
-        ++end;
+    if( end[-1] != '"' ) {
+        for( ; *end != '\0'; ) {
+            if( IS_WS( *end ) )
+                break;
+            Word[len++] = *end++;
+        }
+        Word[len] = '\0';
     }
-    Word[len] = '\0';
     return( end );
 }
 
@@ -448,7 +448,7 @@ static int isWSOrOpt( char ch, char opt )
     return( 0 );
 }
 
-static int UnquoteFName( char *dst, size_t maxlen, const char *src )
+static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
  * Removes doublequote characters from filename and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
@@ -531,8 +531,8 @@ static void NormalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static char *FindNextWS( char *str )
-/***********************************
+static const char *FindNextWSOrOpt( const char *str, char opt )
+/**************************************************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
  */
@@ -542,42 +542,17 @@ static char *FindNextWS( char *str )
 
     while( (c = *str) != '\0' ) {
         if( c == '\\' ) {
-            str++;
-            if( (c = *str) == '\0' )
-                break;
-            if( !string_open && IS_WS( c ) ) {
+            c = *(++str);
+            if( c == '\0' || !string_open && isWSOrOpt( c, opt ) ) {
                 break;
             }
         } else if( c == '"' ) {
             string_open = !string_open;
-        } else if( !string_open && IS_WS( c ) ) {
-            break;
-        }
-        str++;
-    }
-
-    return( str );
-}
-
-static char *FindNextWSOrOpt( char *str, char opt )
-/**************************************************
- * Finds next free white space character, allowing doublequotes to
- * be used to specify strings with white spaces.
- */
-{
-    char    string_open = 0;
-    char    c;
-
-    while( (c = *str) != '\0' ) {
-        if( c == '\\' ) {
-            str++;
-            if( (c = *str) == '\0' )
-                break;
-            if( !string_open && isWSOrOpt( c, opt ) ) {
+            /* stop on next character after end quote */
+            if( string_open == 0 ) {
+                str++;
                 break;
             }
-        } else if( c == '"' ) {
-            string_open = !string_open;
         } else if( !string_open && isWSOrOpt( c, opt ) ) {
             break;
         }
@@ -594,16 +569,17 @@ static void AddDirective( size_t len )
     p = MemAlloc( sizeof( list ) );
     p->next = NULL;
     p->item = MemAlloc( len + 1 );
-    UnquoteFName( p->item, len + 1, Word );
+    UnquoteDirective( p->item, len + 1, Word );
     ListAppend( &Directive_List, p );
 }
 
 
-static int Parse( char *Cmd )
-/***************************/
+static int Parse( const char *cmd )
+/*********************************/
 {
     char        opt;
-    char        *end;
+    const char  *end;
+    const char  *file_end;
     FILE        *atfp;
     char        buffer[_MAX_PATH];
     char        filename[_MAX_PATH];
@@ -612,68 +588,60 @@ static int Parse( char *Cmd )
     int         wcc_option;
     list        *new_item;
 
-    /* Cmd will always begin with at least one */
+    /* cmd will always begin with at least one */
     /* non-space character if we get this far  */
 
     for( ;; ) {
-        Cmd = SkipSpaces( Cmd );
-        if( *Cmd == '\0' )
+        cmd = SkipSpaces( cmd );
+        if( *cmd == '\0' )
             break;
-        if( IS_OPT( *Cmd ) ) {
-            Cmd++;
+        if( IS_OPT( *cmd ) ) {
+            cmd++;
             opt = '-';
-        } else if( *Cmd == '@' ) {
+        } else if( *cmd == '@' ) {
+            cmd++;
             opt = '@';
         } else {
             opt = ' ';
         }
-
-        end = Cmd;
-        if( *Cmd == '"' ) {
-            end = FindNextWS( end );
-        } else {
-            end = FindNextWSOrOpt( end, opt );
-        }
-        len = end - Cmd;
-        if( len != 0 ) {
+        end = FindNextWSOrOpt( cmd, opt );
+        len = end - cmd;
+        if( len > 0 ) {
+            strncpy( Word, cmd, len );
+            Word[len] = '\0';
             if( opt == ' ' ) {          /* if filename, add to list */
-                strncpy( Word, Cmd, len );
-                Word[len] = '\0';
                 end = ScanFName( end, len );
                 NormalizeFName( filename, sizeof( filename ), Word );
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
                 new_item->item = MemStrDup( filename );
-                if( hasFileExtension( Word, ".lib" ) ) {
+                if( hasFileExtension( filename, ".lib" ) ) {
                     ListAppend( &Libs_List, new_item );
-                } else if( hasFileExtension( Word, ".res" ) ) {
+                } else if( hasFileExtension( filename, ".res" ) ) {
                     ListAppend( &Res_List, new_item );
                 } else {
                     ListAppend( &Files_List, new_item );
                 }
             } else {                    /* otherwise, do option */
-                --len;
-                strncpy( Word, Cmd + 1, len );
-                Word[len] = '\0';
                 wcc_option = 1;         /* assume it's a wcc option */
-                switch( tolower( *Cmd ) ) {
+                switch( tolower( Word[0] ) ) {
                 case 'b':               /* possibly -bcl */
-                    if( strnicmp( Word, "cl=", 3 ) == 0 ) {
+                    if( strnicmp( Word + 1, "cl=", 3 ) == 0 ) {
                         strcat( CC_Opts, " -bt=" );
-                        strcat( CC_Opts, Word + 3 );
+                        strcat( CC_Opts, Word + 4 );
                         Flags.link_for_sys = TRUE;
                         MemFree( SystemName );
-                        SystemName = MemStrDup( Word + 3 );
+                        SystemName = MemStrDup( Word + 4 );
                         wcc_option = 0;
                     }
                     break;
                 case 'f':               /* files option */
-                    p = ScanFName( end, len );
-                    switch( tolower( Word[0] ) ) {
+                    file_end = ScanFName( end, len );
+                    switch( tolower( Word[1] ) ) {
                     case 'd':           /* name of linker directive file */
-                        if( Word[1] == '=' || Word[1] == '#' ) {
-                            end = p;
-                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
+                        if( Word[2] == '=' || Word[2] == '#' ) {
+                            end = file_end;
+                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
                             MakeName( filename, ".lnk" );    /* add extension */
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( filename );
@@ -684,32 +652,31 @@ static int Parse( char *Cmd )
                         wcc_option = 0;
                         break;
                     case 'e':           /* name of exe file */
-                        if( Word[1] == '=' || Word[1] == '#' ) {
-                            end = p;
-                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
+                        if( Word[2] == '=' || Word[2] == '#' ) {
+                            end = file_end;
+                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
                             MemFree( Exe_Name );
                             Exe_Name = MemStrDup( filename );
                         }
                         wcc_option = 0;
                         break;
                     case 'i':           /* name of forced include file */
-                        end = p;
+                        end = file_end;
                         break;
                     case 'm':           /* name of map file */
                         Flags.map_wanted = TRUE;
-                        if( Word[1] == '=' || Word[1] == '#' ) {
-                            end = p;
-                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
+                        if( Word[2] == '=' || Word[2] == '#' ) {
+                            end = file_end;
+                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
                             MemFree( Map_Name );
                             Map_Name = MemStrDup( filename );
                         }
                         wcc_option = 0;
                         break;
                     case 'o':           /* name of object file */
-                        end = p;
-                        /* parse off argument, so we get right filename in linker command file */
-                        p = &Word[1];
-                        if( Word[1] == '=' || Word[1] == '#' )
+                        end = file_end;
+                        p = Word + 2;
+                        if( *p == '=' || *p == '#' )
                             ++p;
                         NormalizeFName( filename, sizeof( filename ), p );
                         MemFree( Obj_Name );
@@ -717,26 +684,26 @@ static int Parse( char *Cmd )
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
-                        end = p;
-                        if( tolower( Word[1] ) == 'c' ) {
+                        end = file_end;
+                        if( tolower( Word[2] ) == 'c' ) {
                             Flags.math_8087 = 0;
                         }
                         break;
 #endif
                     default:
-                        end = p;
+                        end = file_end;
                         break;
                     }
                     break;
                 case 'k':               /* stack size option */
-                    if( Word[0] != '\0' ) {
+                    if( Word[1] != '\0' ) {
                         MemFree( StackSize );
-                        StackSize = MemStrDup( Word );
+                        StackSize = MemStrDup( Word + 1 );
                     }
                     wcc_option = 0;
                     break;
                 case 'l':               /* link target option */
-                    switch( (Word[1] << 8) | tolower( Word[0] ) ) {
+                    switch( (Word[2] << 8) | tolower( Word[1] ) ) {
                     case 'p':
                         Flags.link_for_dos = 0;
                         Flags.link_for_os2 = TRUE;
@@ -745,10 +712,10 @@ static int Parse( char *Cmd )
                         Flags.link_for_dos = TRUE;
                         Flags.link_for_os2 = 0;
                         break;
-                    default:                    /* 10-jun-91 */
+                    default:
                         Flags.link_for_sys = TRUE;
-                        p = &Word[0];
-                        if( Word[0] == '=' || Word[0] == '#' )
+                        p = Word + 1;
+                        if( *p == '=' || *p == '#' )
                             ++p;
                         MemFree( SystemName );
                         SystemName = MemStrDup( p );
@@ -757,15 +724,16 @@ static int Parse( char *Cmd )
                     wcc_option = 0;
                     break;
                 case '@':
-                    if( Word[0] != '\0' ) {
-                        char const * const      env = getenv( Word );
+                    if( len > 0 ) {
+                        char const *env;
 
+                        env = getenv( Word );
                         if( env != NULL ) {
                             if( handle_environment_variable( env ) ) {
                                 return( 1 );          // Recursive call failed
                             }
                             via_environment = TRUE;
-                            Cmd = end;
+                            cmd = end;
                             continue;
                         }
                         end = ScanFName( end, len );
@@ -778,7 +746,6 @@ static int Parse( char *Cmd )
                         }
                         while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
                             if( strnicmp( buffer, "file ", 5 ) == 0 ) {
-
                                 /* look for names separated by ','s */
                                 p = strchr( buffer, '\n' );
                                 if( p != NULL )
@@ -799,47 +766,56 @@ static int Parse( char *Cmd )
                 case '3':
                 case '4':
                 case '5':
-                    Conventions = (char)tolower( Word[0] );
+                    Conventions = (char)tolower( Word[1] );
                     break;
 #endif
                 case 'd':
                     if( DebugFlag == 0 ) {  /* not set by -h yet */
-                        if( strcmp( Word, "1" ) == 0 ) {
-                            DebugFlag = 1;
-                        } else if( strcmp( Word, "1+" ) == 0 ) { /* 02-mar-91 */
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "2" ) == 0 ) {
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "2i" ) == 0 ) {
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "2s" ) == 0 ) {
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "3" ) == 0 ) {
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "3i" ) == 0 ) {
-                            DebugFlag = 2;
-                        } else if( strcmp( Word, "3s" ) == 0 ) {
-                            DebugFlag = 2;
+                        p = Word + 1;
+                        if( len == 2 ) {
+                            if( *p == '1' ) {
+                                DebugFlag = 1;
+                            } else if( *p == '2' ) {
+                                DebugFlag = 2;
+                            } else if( *p == '3' ) {
+                                DebugFlag = 2;
+                            }
+                        } else if( len == 3 ) {
+                            if( p[0] == '1' && p[1] == '+' ) {
+                                DebugFlag = 2;
+                            } else if( p[0] == '2' && p[1] == 'i' ) {
+                                DebugFlag = 2;
+                            } else if( p[0] == '2' && p[1] == 's' ) {
+                                DebugFlag = 2;
+                            } else if( p[0] == '3' && p[1] == 'i' ) {
+                                DebugFlag = 2;
+                            } else if( p[0] == '3' && p[1] == 's' ) {
+                                DebugFlag = 2;
+                            }
                         }
                     }
                     break;
                 case 'h':
-                    if( strcmp( Word, "w" ) == 0 ) {
-                        DebugFlag = 3;
-                    } else if( strcmp( Word, "c" ) == 0 ) { /* 02-mar-91 */
-                        Flags.do_cvpack = 1;
-                        DebugFlag = 4;
-                    } else if( strcmp( Word, "d" ) == 0 ) {
-                        DebugFlag = 5;
+                    if( len == 2 ) {
+                        p = Word + 1;
+                        if( *p == 'w' ) {
+                            DebugFlag = 3;
+                        } else if( *p == 'c' ) {
+                            Flags.do_cvpack = 1;
+                            DebugFlag = 4;
+                        } else if( *p == 'd' ) {
+                            DebugFlag = 5;
+                        }
                     }
                     break;
                 case 'i':           /* include file path */
                     end = ScanFName( end, len );
                     break;
                 case 'c':           /* compile only */
-                    if( stricmp( Word, "c" ) == 0 ) {
+                    p = Word + 1;
+                    if( len == 2 && tolower( *p ) == 'c' ) {
                         Flags.force_c = TRUE;
-                    } else if( stricmp( Word, "c++" ) == 0 ) {
+                    } else if( stricmp( p, "c++" ) == 0 ) {
                         Flags.force_c_plus = TRUE;
                     } else {
                         Flags.no_link = TRUE;
@@ -850,8 +826,9 @@ static int Parse( char *Cmd )
                     break;
 #if defined( WCLI86 ) || defined( WCL386 )
                 case 'm':           /* memory model */
-                    if( Cmd[1] == 't' || Cmd[1] == 'T' ) { /* tiny model*/
-                        Word[0] = 's';              /* change to small */
+                    /* if tiny model specified then change to small for compilers */
+                    if( len == 2 && ( Word[1] == 't' || Word[1] == 'T' ) ) {
+                        Word[1] = 's';
                         Flags.tiny_model = TRUE;
                     }
                     break;
@@ -862,29 +839,30 @@ static int Parse( char *Cmd )
                 case 'q':
                     Flags.be_quiet = TRUE;
                     break;
-                case 'z':                   /* 12-jan-89 */
-                    switch( tolower( Cmd[1] ) ) {
-                    case 's':
-                        Flags.no_link = TRUE;
-                        break;
-                    case 'q':
-                        Flags.be_quiet = TRUE;
-                        break;
+                case 'z':
+                    if( len == 2 ) {
+                        switch( tolower( Word[1] ) ) {
+                        case 's':
+                            Flags.no_link = TRUE;
+                            break;
+                        case 'q':
+                            Flags.be_quiet = TRUE;
+                            break;
 #ifdef WCLI86
-                    case 'w':
-                        Flags.windows = TRUE;
+                        case 'w':
+                            Flags.windows = TRUE;
+                            break;
 #endif
+                        }
                     }
                     break;
-                case '"':                           /* 17-dec-91 */
+                case '"':
                     /* As parameter passing to linker is a special case, we need to pass
                      * whole command instead of first character removed. This allows us
                      * to parse also string literals in AddDirective.
                      */
-                    wcc_option = 0;
-                    strncpy( Word, Cmd, ++len );
-                    Word[len] = '\0';
                     AddDirective( len );
+                    wcc_option = 0;
                     break;
                 }
 
@@ -892,15 +870,14 @@ static int Parse( char *Cmd )
                 /* to compiler command line:     */
 
                 if( wcc_option ) {
-                    len = strlen( CC_Opts );
-                    CC_Opts[len++] = ' ';
-                    CC_Opts[len++] = opt;
-                    CC_Opts[len++] = *Cmd;    /* keep original case */
-                    CC_Opts[len] = '\0';
-                    strcat( CC_Opts, Word );
+                    p = CC_Opts + strlen( CC_Opts );
+                    *p++ = ' ';
+                    *p++ = '-';
+                    memcpy( p, Word, len );     /* keep original case */
+                    p[len] = '\0';
                 }
             }
-            Cmd = end;
+            cmd = end;
         }
     }
 
@@ -1207,8 +1184,8 @@ int  main( int argc, char **argv )
 {
     int         rc;
     char        *wcl_env;
-    char        *p;
-    char        *Cmd;               /* command line parameters            */
+    const char  *p;
+    char        *cmd;               /* command line parameters            */
 
 #ifndef __WATCOMC__
     _argc = argc;
@@ -1224,24 +1201,21 @@ int  main( int argc, char **argv )
     MemInit();
     ProcMemInit();
     Word = MemAlloc( MAX_CMD );
-    Cmd = MemAlloc( MAX_CMD * 2 );  /* enough for cmd line & wcl variable */
+    cmd = MemAlloc( MAX_CMD * 2 );  /* enough for cmd line & wcl variable */
 
-    /* add wcl environment variable to Cmd             */
-    /* unless /y is specified in either Cmd or wcl */
+    /* add wcl environment variable to cmd             */
+    /* unless /y is specified in either cmd or wcl */
 
     wcl_env = getenv( WCLENV );
     if( wcl_env != NULL ) {
-        strcpy( Cmd, wcl_env );
-        strcat( Cmd, " " );
-        p = Cmd + strlen( Cmd );
-        getcmd( p );
-        if( check_y_opt( Cmd ) ) {
-            getcmd( Cmd );
-            p = Cmd;
+        strcpy( cmd, wcl_env );
+        strcat( cmd, " " );
+        p = getcmd( cmd + strlen( cmd ) );
+        if( check_y_opt( cmd ) ) {
+            p = getcmd( cmd );
         }
     } else {
-        getcmd( Cmd );
-        p = Cmd;
+        p = getcmd( cmd );
     }
     p = SkipSpaces( p );
     if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
@@ -1255,7 +1229,7 @@ int  main( int argc, char **argv )
             rc = 1;
         } else {
             initialize_Flags();
-            rc = Parse( Cmd );
+            rc = Parse( cmd );
             if( rc == 0 ) {
                 if( !Flags.be_quiet ) {
                     print_banner();
@@ -1276,7 +1250,7 @@ int  main( int argc, char **argv )
         }
     }
     ProcMemFini();
-    MemFree( Cmd );
+    MemFree( cmd );
     MemFree( Word );
     MemFini();
     return( ( rc != 0 ) );
