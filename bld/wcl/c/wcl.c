@@ -464,39 +464,71 @@ static int UnquoteFName( char *dst, size_t maxlen, const char *src )
     // leave space for NUL terminator
     maxlen--;
 
-    while( pos < maxlen ) {
-        c = *src++;
-        if( c == '\0' )
-            break;
+    while( (c = *src++) != '\0' && pos < maxlen ) {
         if( c == '\\' ) {
             c = *src++;
-            if( c == '\"' ) {
-                *dst++ = '\"';
-                pos++;
+            if( c == '"' ) {
                 un_quoted = 1;
             } else {
                 *dst++ = '\\';
                 pos++;
-                if( pos < maxlen ) {
-                    *dst++ = c;
-                    pos++;
+                if( pos >= maxlen ) {
+                    break;
                 }
             }
-        } else {
-            if( c == '\"' ) {
-                string_open = !string_open;
-                un_quoted = 1;
-            } else {
-                if( !string_open && IS_WS( c ) )
-                    break;
-                *dst++ = c;
-                pos++;
-            }
+        } else if( c == '"' ) {
+            string_open = !string_open;
+            un_quoted = 1;
+            continue;
+        } else if( !string_open && IS_WS( c ) ) {
+            break;
         }
+        *dst++ = c;
+        pos++;
     }
     *dst = '\0';
 
     return( un_quoted );
+}
+
+static void NormalizeFName( char *dst, size_t maxlen, const char *src )
+/***********************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    char    string_open = 0;
+    size_t  pos = 0;
+    char    c;
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( (c = *src++) != '\0' && pos < maxlen ) {
+        if( c == '"' ) {
+            string_open = !string_open;
+            continue;
+        }
+        if( string_open && c == '\\' ) {
+            c = *src++;
+            if( c != '"' ) {
+                *dst++ = '\\';
+                pos++;
+                if( pos >= maxlen ) {
+                    break;
+                }
+            }
+        }
+#ifndef __UNIX__
+        if( c == '/' )
+            c = '\\';
+#endif
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
 }
 
 static char *FindNextWS( char *str )
@@ -516,12 +548,10 @@ static char *FindNextWS( char *str )
             if( !string_open && IS_WS( c ) ) {
                 break;
             }
-        } else {
-            if( c == '\"' ) {
-                string_open = !string_open;
-            } else if( !string_open && IS_WS( c ) ) {
-                break;
-            }
+        } else if( c == '"' ) {
+            string_open = !string_open;
+        } else if( !string_open && IS_WS( c ) ) {
+            break;
         }
         str++;
     }
@@ -546,12 +576,10 @@ static char *FindNextWSOrOpt( char *str, char opt )
             if( !string_open && isWSOrOpt( c, opt ) ) {
                 break;
             }
-        } else {
-            if( c == '\"' ) {
-                string_open = !string_open;
-            } else if( !string_open && isWSOrOpt( c, opt ) ) {
-                break;
-            }
+        } else if( c == '"' ) {
+            string_open = !string_open;
+        } else if( !string_open && isWSOrOpt( c, opt ) ) {
+            break;
         }
         str++;
     }
@@ -578,7 +606,7 @@ static int Parse( char *Cmd )
     char        *end;
     FILE        *atfp;
     char        buffer[_MAX_PATH];
-    char        unquoted[_MAX_PATH];
+    char        filename[_MAX_PATH];
     size_t      len;
     char        *p;
     int         wcc_option;
@@ -612,10 +640,10 @@ static int Parse( char *Cmd )
                 strncpy( Word, Cmd, len );
                 Word[len] = '\0';
                 end = ScanFName( end, len );
-                UnquoteFName( unquoted, sizeof( unquoted ), Word );
+                NormalizeFName( filename, sizeof( filename ), Word );
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
-                new_item->item = MemStrDup( unquoted );
+                new_item->item = MemStrDup( filename );
                 if( hasFileExtension( Word, ".lib" ) ) {
                     ListAppend( &Libs_List, new_item );
                 } else if( hasFileExtension( Word, ".res" ) ) {
@@ -632,10 +660,10 @@ static int Parse( char *Cmd )
                 case 'b':               /* possibly -bcl */
                     if( strnicmp( Word, "cl=", 3 ) == 0 ) {
                         strcat( CC_Opts, " -bt=" );
-                        strcat( CC_Opts, Word+3 );
+                        strcat( CC_Opts, Word + 3 );
                         Flags.link_for_sys = TRUE;
                         MemFree( SystemName );
-                        SystemName = MemStrDup( Word+3 );
+                        SystemName = MemStrDup( Word + 3 );
                         wcc_option = 0;
                     }
                     break;
@@ -643,15 +671,12 @@ static int Parse( char *Cmd )
                     p = ScanFName( end, len );
                     switch( tolower( Word[0] ) ) {
                     case 'd':           /* name of linker directive file */
-                        if( Word[1] == '='  ||  Word[1] == '#' ) {
+                        if( Word[1] == '=' || Word[1] == '#' ) {
                             end = p;
-                            /* remove quotes from target linker control filename */
-                            UnquoteFName( unquoted, sizeof( unquoted ), Word + 2 );
-
-                            MakeName( unquoted, ".lnk" );    /* add extension */
-
+                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
+                            MakeName( filename, ".lnk" );    /* add extension */
                             MemFree( Link_Name );
-                            Link_Name = MemStrDup( unquoted );
+                            Link_Name = MemStrDup( filename );
                         } else {
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( TEMPFILE );
@@ -659,13 +684,11 @@ static int Parse( char *Cmd )
                         wcc_option = 0;
                         break;
                     case 'e':           /* name of exe file */
-                        if( Word[1] == '='  ||  Word[1] == '#' ) {
+                        if( Word[1] == '=' || Word[1] == '#' ) {
                             end = p;
-                            /* remove quotes from target executable filename */
-                            UnquoteFName( unquoted, sizeof( unquoted ), Word + 2 );
-                            if( Exe_Name != NULL )
-                                MemFree( Exe_Name );
-                            Exe_Name = MemStrDup( unquoted );
+                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
+                            MemFree( Exe_Name );
+                            Exe_Name = MemStrDup( filename );
                         }
                         wcc_option = 0;
                         break;
@@ -674,29 +697,23 @@ static int Parse( char *Cmd )
                         break;
                     case 'm':           /* name of map file */
                         Flags.map_wanted = TRUE;
-                        if( Word[1] == '='  ||  Word[1] == '#' ) {
+                        if( Word[1] == '=' || Word[1] == '#' ) {
                             end = p;
-                            /* remove quotes from target map filename */
-                            UnquoteFName( unquoted, sizeof( unquoted ), Word + 2 );
-
+                            NormalizeFName( filename, sizeof( filename ), Word + 2 );
                             MemFree( Map_Name );
-                            Map_Name = MemStrDup( unquoted );
+                            Map_Name = MemStrDup( filename );
                         }
                         wcc_option = 0;
                         break;
                     case 'o':           /* name of object file */
                         end = p;
-                        /* parse off argument, so we get right filename
-                            in linker command file */
+                        /* parse off argument, so we get right filename in linker command file */
                         p = &Word[1];
-                        if( Word[1] == '='  ||  Word[1] == '#' )
+                        if( Word[1] == '=' || Word[1] == '#' )
                             ++p;
-
-                        /* remove quotes from object name */
-                        UnquoteFName( unquoted, sizeof( unquoted ), p );
-
+                        NormalizeFName( filename, sizeof( filename ), p );
                         MemFree( Obj_Name );
-                        Obj_Name = MemStrDup( unquoted );
+                        Obj_Name = MemStrDup( filename );
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
@@ -731,7 +748,7 @@ static int Parse( char *Cmd )
                     default:                    /* 10-jun-91 */
                         Flags.link_for_sys = TRUE;
                         p = &Word[0];
-                        if( Word[0] == '='  ||  Word[0] == '#' )
+                        if( Word[0] == '=' || Word[0] == '#' )
                             ++p;
                         MemFree( SystemName );
                         SystemName = MemStrDup( p );
@@ -751,17 +768,12 @@ static int Parse( char *Cmd )
                             Cmd = end;
                             continue;
                         }
-
                         end = ScanFName( end, len );
-
-                        /* remove quotes from additional linker options file */
-                        UnquoteFName( unquoted, sizeof( unquoted ), Word );
-                        strcpy( Word, unquoted );
-
-                        MakeName( Word, ".lnk" );
+                        NormalizeFName( filename, sizeof( filename ), Word );
+                        MakeName( filename, ".lnk" );
                         errno = 0;
-                        if( (atfp = fopen( Word, "r" )) == NULL ) {
-                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
+                        if( (atfp = fopen( filename, "r" )) == NULL ) {
+                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], filename, strerror(  errno ) );
                             return( 1 );
                         }
                         while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
