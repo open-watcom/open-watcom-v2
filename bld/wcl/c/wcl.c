@@ -115,12 +115,14 @@
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
 #define fname_cmp       strcmp
-#define IS_OPT(x)       (x=='-')
+#define IS_OPT(x)       ((x)=='-')
 #else
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
 #define fname_cmp       stricmp
-#define IS_OPT(x)       (x=='-' || x==alt_switch_char)
+#define IS_OPT(x)       ((x)=='-' || (x)==alt_switch_char)
 #endif
+
+#define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
 static  char    *Word;              /* one parameter                      */
 static  char    *SystemName;        /* system to link for                 */
@@ -309,9 +311,8 @@ static void print_banner( void )
 static  char  *SkipSpaces( char *ptr )
 /************************************/
 {
-    while( *ptr == ' ' || *ptr == '\t' ) {  /* 16-mar-91 */
+    while( IS_WS( *ptr ) )
         ptr++;
-    }
     return( ptr );
 }
 
@@ -402,13 +403,10 @@ static void  Usage( void )
 
 static char *ScanFName( char *end, size_t len )
 /*********************************************/
+/* Allow switch char in filenames */
 {
-    for( ;; ) { /* 15-jan-89: Allow switch char in filenames */
-        if( *end == '\0' )
-            break;
-        if( *end == ' '  )
-            break;
-        if( *end == '\t'  )
+    for( ; *end != '\0'; ) {
+        if( IS_WS( *end ) )
             break;
         Word[len] = *end;
         ++len;
@@ -440,17 +438,13 @@ static int hasFileExtension( char *p, char *ext )
 }
 
 
-static int iswsOrOpt( char ch, char opt )
+static int isWSOrOpt( char ch, char opt )
 {
-    if( ch == ' ' || ch == '\t' )
+    if( IS_WS( ch ) )
         return( 1 );
-
     /* if we are processing a switch, stop at a switch */
-    if( IS_OPT( opt ) ) {
-        if( IS_OPT( ch ) ) {
-            return( 1 );
-        }
-    }
+    if( opt == '-' && IS_OPT( ch ) )
+        return( 1 );
     return( 0 );
 }
 
@@ -464,51 +458,42 @@ static int UnquoteFName( char *dst, size_t maxlen, const char *src )
 {
     char    string_open = 0;
     size_t  pos = 0;
-    char    t;
+    char    c;
     int     un_quoted = 0;
 
     // leave space for NUL terminator
     maxlen--;
 
     while( pos < maxlen ) {
-        t = *src++;
-
-        if( t == '\0' ) break;
-
-        if( t == '\\' ) {
-            t = *src++;
-
-            if( t == '\"' ) {
+        c = *src++;
+        if( c == '\0' )
+            break;
+        if( c == '\\' ) {
+            c = *src++;
+            if( c == '\"' ) {
                 *dst++ = '\"';
                 pos++;
                 un_quoted = 1;
             } else {
                 *dst++ = '\\';
                 pos++;
-
                 if( pos < maxlen ) {
-                    *dst++ = t;
+                    *dst++ = c;
                     pos++;
                 }
             }
         } else {
-            if( t == '\"' ) {
+            if( c == '\"' ) {
                 string_open = !string_open;
                 un_quoted = 1;
             } else {
-                if( string_open ) {
-                    *dst++ = t;
-                    pos++;
-                } else if( t == ' ' || t == '\t' ) {
+                if( !string_open && IS_WS( c ) )
                     break;
-                } else {
-                    *dst++ = t;
-                    pos++;
-                }
+                *dst++ = c;
+                pos++;
             }
         }
     }
-
     *dst = '\0';
 
     return( un_quoted );
@@ -521,27 +506,24 @@ static char *FindNextWS( char *str )
  */
 {
     char    string_open = 0;
+    char    c;
 
-    while( *str != '\0' ) {
-        if( *str == '\\' ) {
+    while( (c = *str) != '\0' ) {
+        if( c == '\\' ) {
             str++;
-            if( *str != '\0' ) {
-                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
-                    break;
-                }
-                str++;
+            if( (c = *str) == '\0' )
+                break;
+            if( !string_open && IS_WS( c ) ) {
+                break;
             }
         } else {
-            if( *str == '\"' ) {
+            if( c == '\"' ) {
                 string_open = !string_open;
-                str++;
-            } else {
-                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
-                    break;
-                }
-                str++;
+            } else if( !string_open && IS_WS( c ) ) {
+                break;
             }
         }
+        str++;
     }
 
     return( str );
@@ -554,30 +536,24 @@ static char *FindNextWSOrOpt( char *str, char opt )
  */
 {
     char    string_open = 0;
+    char    c;
 
-    while( *str != '\0' ) {
-        if( *str == '\\' ) {
+    while( (c = *str) != '\0' ) {
+        if( c == '\\' ) {
             str++;
-            if( *str != '\0' ) {
-                if( !string_open && iswsOrOpt( *str, opt ) ) {
-                    break;
-                }
-                str++;
+            if( (c = *str) == '\0' )
+                break;
+            if( !string_open && isWSOrOpt( c, opt ) ) {
+                break;
             }
         } else {
-            if( *str == '\"' ) {
+            if( c == '\"' ) {
                 string_open = !string_open;
-                str++;
-            } else {
-                if( string_open ) {
-                    str++;
-                } else {
-                    if( iswsOrOpt( *str, opt ) )
-                        break;
-                    str++;
-                }
+            } else if( !string_open && isWSOrOpt( c, opt ) ) {
+                break;
             }
         }
+        str++;
     }
     return( str );
 }
@@ -615,10 +591,12 @@ static int Parse( char *Cmd )
         Cmd = SkipSpaces( Cmd );
         if( *Cmd == '\0' )
             break;
-        opt = *Cmd;
-        if( IS_OPT( opt ) ) {
+        if( IS_OPT( *Cmd ) ) {
             Cmd++;
-        } else if( opt != '@' ) {
+            opt = '-';
+        } else if( *Cmd == '@' ) {
+            opt = '@';
+        } else {
             opt = ' ';
         }
 
@@ -650,7 +628,6 @@ static int Parse( char *Cmd )
                 strncpy( Word, Cmd + 1, len );
                 Word[len] = '\0';
                 wcc_option = 1;         /* assume it's a wcc option */
-
                 switch( tolower( *Cmd ) ) {
                 case 'b':               /* possibly -bcl */
                     if( strnicmp( Word, "cl=", 3 ) == 0 ) {
@@ -662,7 +639,6 @@ static int Parse( char *Cmd )
                         wcc_option = 0;
                     }
                     break;
-
                 case 'f':               /* files option */
                     p = ScanFName( end, len );
                     switch( tolower( Word[0] ) ) {
@@ -923,12 +899,12 @@ static int Parse( char *Cmd )
 static int useCPlusPlus( char *p )
 /********************************/
 {
-    return
+    return(
         fname_cmp( p, ".cpp" ) == 0 ||
         fname_cmp( p, ".cxx" ) == 0 ||
         fname_cmp( p, ".cc" )  == 0 ||
         fname_cmp( p, ".hpp" ) == 0 ||
-        fname_cmp( p, ".hxx" ) == 0 ;
+        fname_cmp( p, ".hxx" ) == 0 );
 }
 
 
