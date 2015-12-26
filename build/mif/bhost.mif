@@ -20,9 +20,9 @@ no_def_include  = -x -xx -zam
 !endif
 
 !ifeq release 0
-bld_gen_cflags  = -d2 -w8 -fo=.obj
+bld_gen_cflags  = -d2-w8-j-fo=.obj
 !else
-bld_gen_cflags  = -ox -w8 -fo=.obj
+bld_gen_cflags  = -ox-w8-j-fo=.obj
 !endif
 
 # options for source compilations

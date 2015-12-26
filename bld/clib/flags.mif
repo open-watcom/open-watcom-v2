@@ -1,7 +1,7 @@
 !ifeq release 0
-sw_c_common = -w8-zl-x-xx-zam
+sw_c_common = -w8-zl-x-xx-zam-j
 !else
-sw_c_common = -we-w8-zl-x-xx-zam
+sw_c_common = -we-w8-zl-x-xx-zam-j
 !endif
 sw_a_common = -we
 !ifdef __UNIX__
