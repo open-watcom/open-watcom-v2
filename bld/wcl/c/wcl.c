@@ -607,7 +607,7 @@ static int Parse( const char *cmd )
         end = FindNextWSOrOpt( cmd, opt );
         len = end - cmd;
         if( len > 0 ) {
-            memcpy( Word, Cmd, len );
+            memcpy( Word, cmd, len );
             Word[len] = '\0';
             if( opt == ' ' ) {          /* if filename, add to list */
                 end = ScanFName( end, len );
