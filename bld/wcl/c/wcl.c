@@ -607,7 +607,7 @@ static int Parse( const char *cmd )
         end = FindNextWSOrOpt( cmd, opt );
         len = end - cmd;
         if( len > 0 ) {
-            strncpy( Word, cmd, len );
+            memcpy( Word, Cmd, len );
             Word[len] = '\0';
             if( opt == ' ' ) {          /* if filename, add to list */
                 end = ScanFName( end, len );
@@ -696,14 +696,15 @@ static int Parse( const char *cmd )
                     }
                     break;
                 case 'k':               /* stack size option */
-                    if( Word[1] != '\0' ) {
+                    if( len > 1 ) {
                         MemFree( StackSize );
                         StackSize = MemStrDup( Word + 1 );
                     }
                     wcc_option = 0;
                     break;
                 case 'l':               /* link target option */
-                    switch( (Word[2] << 8) | tolower( Word[1] ) ) {
+                    p = Word + 1;
+                    switch( (p[1] << 8) | tolower( p[0] ) ) {
                     case 'p':
                         Flags.link_for_dos = 0;
                         Flags.link_for_os2 = TRUE;
@@ -714,7 +715,6 @@ static int Parse( const char *cmd )
                         break;
                     default:
                         Flags.link_for_sys = TRUE;
-                        p = Word + 1;
                         if( *p == '=' || *p == '#' )
                             ++p;
                         MemFree( SystemName );
@@ -725,7 +725,7 @@ static int Parse( const char *cmd )
                     break;
                 case '@':
                     if( len > 0 ) {
-                        char const *env;
+                        char const  *env;
 
                         env = getenv( Word );
                         if( env != NULL ) {
@@ -773,11 +773,11 @@ static int Parse( const char *cmd )
                     if( DebugFlag == 0 ) {  /* not set by -h yet */
                         p = Word + 1;
                         if( len == 2 ) {
-                            if( *p == '1' ) {
+                            if( p[0] == '1' ) {
                                 DebugFlag = 1;
-                            } else if( *p == '2' ) {
+                            } else if( p[0] == '2' ) {
                                 DebugFlag = 2;
-                            } else if( *p == '3' ) {
+                            } else if( p[0] == '3' ) {
                                 DebugFlag = 2;
                             }
                         } else if( len == 3 ) {
