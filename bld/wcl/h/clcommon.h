@@ -45,6 +45,15 @@
 #define OBJ_EXT_SECONDARY   ".o"
 #define EXE_EXT             ".exe"
 #endif
+#define LIB_EXT             ".lib"
+#define LIB_EXT_SECONDARY   ".a"
+
+#define ASM_EXT             ".asm"
+#define ASMS_EXT            ".s"
+
+#define LNK_EXT             ".lnk"
+
+#define IS_OBJ(x)           (hasFileExtension( x, OBJ_EXT ) || hasFileExtension( x, OBJ_EXT_SECONDARY ))
 
 #define TRUE        1
 #define FALSE       0
@@ -119,7 +128,7 @@ extern char     *DebugOptions[];
 extern void     PrintMsg( const char *fmt, ... );
 extern void     FindPath( const char *name, char *buf );
 extern void     BuildLinkFile( FILE *fp );
-extern void     AddNameLink( const char * );
+extern void     AddNameObj( const char * );
 extern void     ListAppend( list **, list * );
 extern void     ListFree( list * );
 extern void     Fputnl( const char *, FILE * );
@@ -136,3 +145,4 @@ extern char     *DoQuoted( char *buffer, const char *name, char quote );
 extern void     BuildSystemLink( FILE *fp );
 extern void     AddDirective( const char *directive );
 extern void     AddDirectivePath( const char *directive, const char *path );
+extern char     *RemoveExt( char * );

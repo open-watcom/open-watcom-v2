@@ -70,50 +70,50 @@
 #endif
 
 #if defined( _M_I86 )
-#define CC          BPRFX "wcc"           /* Open Watcom C compiler (16-bit)   */
-#define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
-#define FC          BPRFX "wfc"           /* Open Watcom F77 compiler (16-bit) */
-#define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#define CC          BPRFX "wcc"         /* Open Watcom C compiler (16-bit)   */
+#define CCXX        BPRFX "wpp"         /* Open Watcom C++ compiler (16-bit) */
+#define FC          BPRFX "wfc"         /* Open Watcom F77 compiler (16-bit) */
+#define ASM         BPRFX "wasm"        /* Open Watcom assembler             */
 #define _TARGET_    "x86 16-bit"
 #define ARCH        TARGET_ARCH_I86
 #elif defined( __AXP__ )
-#define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
-#define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
-#define FC          BPRFX "wfcaxp"        /* Open Watcom F77 compiler (32-bit) */
-#define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
+#define CC          BPRFX "wccaxp"      /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppaxp"      /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcaxp"      /* Open Watcom F77 compiler (32-bit) */
+#define ASM         BPRFX "wasaxp"      /* Open Watcom assembler             */
 #define _TARGET_    "Alpha AXP"
 #define ARCH        TARGET_ARCH_AXP
 #elif defined( __PPC__ )
-#define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
-#define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
-#define FC          BPRFX "wfcppc"        /* Open Watcom F77 compiler (32-bit) */
-#define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
+#define CC          BPRFX "wccppc"      /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppppc"      /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcppc"      /* Open Watcom F77 compiler (32-bit) */
+#define ASM         BPRFX "wasppc"      /* Open Watcom assembler             */
 #define _TARGET_    "PowerPC"
 #define ARCH        TARGET_ARCH_PPC
 #elif defined( __MIPS__ )
-#define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
-#define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
-#define FC          BPRFX "wfcmps"        /* Open Watcom F77 compiler (32-bit) */
-#define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
+#define CC          BPRFX "wccmps"      /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wppmps"      /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfcmps"      /* Open Watcom F77 compiler (32-bit) */
+#define ASM         BPRFX "wasmps"      /* Open Watcom assembler             */
 #define _TARGET_    "MIPS"
 #define ARCH        TARGET_ARCH_MIPS
 #else
-#define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
-#define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
-#define FC          BPRFX "wfc386"        /* Open Watcom F77 compiler (32-bit) */
-#define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
+#define CC          BPRFX "wcc386"      /* Open Watcom C compiler (32-bit)   */
+#define CCXX        BPRFX "wpp386"      /* Open Watcom C++ compiler (32-bit) */
+#define FC          BPRFX "wfc386"      /* Open Watcom F77 compiler (32-bit) */
+#define ASM         BPRFX "wasm"        /* Open Watcom assembler             */
 #define _TARGET_    "x86 32-bit"
 #define ARCH        TARGET_ARCH_X86
 #endif
-#define PACK              "cvpack"        /* Open Watcom executable packer      */
-#define LINK        BPRFX "wlink"         /* Open Watcom linker                 */
-#define DIS               "wdis"          /* Open Watcom disassembler           */
-#define SPECS_FILE  BPRFX "specs.owc"     /* spec file with target definition   */
+#define PACK              "cvpack"      /* Open Watcom executable packer      */
+#define LINK        BPRFX "wlink"       /* Open Watcom linker                 */
+#define DIS               "wdis"        /* Open Watcom disassembler           */
+#define SPECS_FILE  BPRFX "specs.owc"   /* spec file with target definition   */
 
 #define WCLENV      "OWCC"
 
 #define OUTPUTFILE  "a.out"
-#define TEMPFILE    "__owcc__.lnk"  /* temporary linker directive file    */
+#define TEMPFILE    "__owcc__" LNK_EXT  /* temporary linker directive file    */
 
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
@@ -122,6 +122,8 @@
 #endif
 
 #define MAX_CC_OPTS     256
+
+#define IS_LIB(x)       (hasFileExtension( Word, LIB_EXT ) || hasFileExtension( Word, LIB_EXT_SECONDARY ))
 
 typedef enum {
     TARGET_ARCH_DEFAULT,
@@ -365,27 +367,27 @@ static char *strfdup( const char *source )
 
 static void addccstring( char *string )
 {
-    char *op;
-    int i;
-    
-    if( string == NULL || strlen(string) == 0 )
+    char    *op;
+    int     i;
+
+    if( string == NULL || strlen( string ) == 0 )
         return;
-        
-    op = MemAlloc( (strlen(string)+1)*sizeof(char) );
+
+    op = MemAlloc( ( strlen( string ) + 1 ) * sizeof( char ) );
     strcpy(op, string);
-    
+
     i = 0;
-    while(CC_Opts[i] != NULL) i++;
-    
+    while( CC_Opts[i] != NULL )
+        i++;
     CC_Opts[i] = op;
-    CC_Opts[i+1] = NULL;
+    CC_Opts[i + 1] = NULL;
 }
 
 static void addcclongopt( char *option, char *tail )
 {
     char    *op;
     size_t  len;
-    
+
     if( option == NULL )
         return;
     len = strlen( option );
@@ -394,13 +396,13 @@ static void addcclongopt( char *option, char *tail )
 
     /* Calculate our necessary memory here for readability */
     len += ( ( tail == NULL ) ? 0 : strlen( tail ) ) + 2;
-        
+
     op = MemAlloc( len * sizeof( char ) );
     op[0] = '-';
     strcpy( op + 1, option );
     if( tail != NULL )
         strcat( op, tail );
-    
+
     addccstring( op );
     MemFree( op );
 }
@@ -749,7 +751,7 @@ static  int  ParseArgs( int argc, char **argv )
             switch( Word[0] ) {
             case 'd':           /* name of linker directive file */
                 if( Word[1] == '='  ||  Word[1] == '#' ) {
-                    MakeName( Word, ".lnk" );    /* add extension */
+                    MakeName( Word, LNK_EXT );  /* add extension */
                     MemFree( Link_Name );
                     Link_Name = strfdup( Word + 2 );
                 } else {
@@ -1099,10 +1101,9 @@ static  int  ParseArgs( int argc, char **argv )
             strcat( pelc, "l" );
         if( cpp_keep_comments )
             strcat( pelc, "c" );
-        
+
         /* cpp_linewrap may be NULL, and that's fine */
         addcclongopt( pelc, cpp_linewrap );
-        
     }
     if( CPU_Arch != TARGET_ARCH_DEFAULT || CPU_Class != -1 || *Conventions != '\0' ) {
         owcc_target_arch    arch;
@@ -1176,7 +1177,7 @@ static  int  ParseArgs( int argc, char **argv )
         new_item = MemAlloc( sizeof( list ) );
         new_item->next = NULL;
         new_item->item = strfdup( Word );
-        if( hasFileExtension( Word, ".lib" ) || hasFileExtension( Word, ".a" ) ) {
+        if( IS_LIB( Word ) ) {
             ListAppend( &Libs_List, new_item );
         } else {
             ListAppend( &Files_List, new_item );
@@ -1282,20 +1283,20 @@ static int tool_exec( tool_type utl, char *fn, char **options )
 
     pass_argv[0] = tool->name;
     pass_argc = 1; 
-    
+
     while(options != NULL && options[pass_argc-1] != NULL && pass_argc < MAX_CC_OPTS) {
         pass_argv[pass_argc] = options[pass_argc-1];
         pass_argc++;
     } 
-    
+
     if( utl == TYPE_DIS ) {
         pass_argv[pass_argc++] = "-s";
         pass_argv[pass_argc++] = "-a";
     }
-    
+
     pass_argv[pass_argc++] = fn;
     pass_argv[pass_argc] = NULL;    
-    
+
     if( !Flags.be_quiet ) {
         printf("\t");
         for( i=0; i<pass_argc; i++ )
@@ -1303,9 +1304,9 @@ static int tool_exec( tool_type utl, char *fn, char **options )
         printf("\n");
     }
     fflush( NULL );
-    
+
     rc = (int)spawnvp( P_WAIT, tool->path, (char const *const *)pass_argv );
-    
+
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
             PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tool->path );
@@ -1331,14 +1332,11 @@ static tool_type SrcName( char *name )
     p = strrchr( name, '.' );
     if( p == NULL || strpbrk( p, PATH_SEPS_STR ) != NULL )
         p = name + strlen( name );
-    if( strfcmp( p, ".asm" ) == 0 || 
-        stricmp( p, ".s" ) == 0 ) 
-    {
+    if( strfcmp( p, ASM_EXT ) == 0 || stricmp( p, ASMS_EXT ) == 0 ) {
         utl = TYPE_ASM;
     } else if( strfcmp( p, ".f" ) == 0 || 
                 stricmp( p, ".for" ) == 0 ||
-                strfcmp( p, ".ftn" ) == 0 ) 
-    {
+                strfcmp( p, ".ftn" ) == 0 ) {
         utl = TYPE_FORT;
     } else {
         utl = TYPE_C;               // assume C compiler
@@ -1395,7 +1393,6 @@ static  int  CompLink( void )
 /***************************/
 {
     int         rc;
-    char        *p;
     char        *file;
     char        *path;
     list        *itm;
@@ -1413,21 +1410,16 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-            if( !hasFileExtension( file, OBJ_EXT ) &&  // if not .obj or .o, compile
-                !hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
+            if( !IS_OBJ( file ) ) {
                 char fname[_MAX_PATH];
 
                 rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
-                p = strrchr( file, '.' );
-                if( p != NULL )  {
-                    *p = '\0';
-                }
-                strcpy( Word, file );
+                strcpy( Word, RemoveExt( file ) );
             }
-            AddNameLink( Word );
+            AddNameObj( Word );
             if( Obj_List != NULL && Flags.do_disas ) {
                 char    sfname[_MAX_PATH + 3];
                 char    ofname[_MAX_PATH];
@@ -1441,18 +1433,13 @@ static  int  CompLink( void )
                     DoQuoted( ofname, file, '"' );
                     DoQuoted( sfname + 3, Exe_Name, '"' );
                 } else {
-                    if( hasFileExtension( file, OBJ_EXT ) ||
-                        hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
+                    if( IS_OBJ( file ) ) {
                         DoQuoted( ofname, file, '"' );
-                        p = strrchr( file, '.' );
-                        if( p != NULL )  {
-                            *p = '\0';
-                        }
-                        strcpy( Word, file );
+                        strcpy( Word, RemoveExt( file ) );
                     } else {            /* wdis needs extension */
                         DoQuoted( ofname, Obj_Name, '"' );
                     }
-                    strcat( Word, ".s" );
+                    strcat( Word, ASMS_EXT );
                     DoQuoted( sfname + 3, Word, '"' );
                 }
                 dis_args[0] = sfname;
@@ -1464,11 +1451,7 @@ static  int  CompLink( void )
                 Exe_Name = MemStrDup( OUTPUTFILE );
                 Flags.keep_exename = 1;
 #else
-                p = strrchr( Word, '.' );
-                if( p != NULL ) {
-                    *p = '\0';
-                }
-                Exe_Name = MemStrDup( Word );
+                Exe_Name = MemStrDup( RemoveExt( Word ) );
 #endif
             }
 #ifdef __UNIX__
@@ -1495,7 +1478,7 @@ static  int  CompLink( void )
                 rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
                     char fname[_MAX_PATH];
-    
+
                     rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
                 }
             }
@@ -1548,11 +1531,19 @@ static int ProcMemInit( void )
     Files_List = NULL;
     Obj_List = NULL;
     Libs_List = NULL;
+    CC_Opts[0] = NULL;
     return( 0 );
 }
 
 static int ProcMemFini( void )
 {
+    int i;
+
+    for( i = 0; i < MAX_CC_OPTS; ++i ) {
+        if( CC_Opts[i] == NULL )
+            break;
+        MemFree( CC_Opts[i] );
+    }
     ListFree( Directive_List );
     ListFree( Files_List );
     ListFree( Obj_List );
@@ -1593,5 +1584,5 @@ int main( int argc, char **argv )
     }
     ProcMemFini();
     MemFini();
-    return( rc == 0 ? 0 : 1 );
+    return( ( rc != 0 ) );
 }

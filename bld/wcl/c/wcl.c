@@ -110,7 +110,7 @@
   #define _TARGET_    "x86 16-bit"
 #endif
 
-#define TEMPFILE      "__wcl__.lnk"     /* temporary linker directive file */
+#define TEMPFILE      "__wcl__" LNK_EXT /* temporary linker directive file */
 
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
@@ -123,6 +123,11 @@
 #endif
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
+
+#define IS_LIB(x)       hasFileExtension(x, LIB_EXT)
+#define IS_RES(x)       hasFileExtension(x, ".res")
+
+#define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
 static  char    *Word;              /* one parameter                      */
 static  char    *SystemName;        /* system to link for                 */
@@ -302,15 +307,6 @@ static void print_banner( void )
     puts( banner3 );
     puts( banner3a );
     done = 1;
-}
-
-
-static const char *SkipSpaces( const char *ptr )
-/**********************************************/
-{
-    while( IS_WS( *ptr ) )
-        ptr++;
-    return( ptr );
 }
 
 
@@ -576,7 +572,7 @@ static int Parse( const char *cmd )
     /* non-space character if we get this far  */
 
     for( ;; ) {
-        cmd = SkipSpaces( cmd );
+        SKIP_SPACES( cmd );
         if( *cmd == '\0' )
             break;
         if( IS_OPT( *cmd ) ) {
@@ -599,9 +595,9 @@ static int Parse( const char *cmd )
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
                 new_item->item = MemStrDup( filename );
-                if( hasFileExtension( filename, ".lib" ) ) {
+                if( IS_LIB( filename ) ) {
                     ListAppend( &Libs_List, new_item );
-                } else if( hasFileExtension( filename, ".res" ) ) {
+                } else if( IS_RES( filename ) ) {
                     ListAppend( &Res_List, new_item );
                 } else {
                     ListAppend( &Files_List, new_item );
@@ -626,7 +622,7 @@ static int Parse( const char *cmd )
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( filename, sizeof( filename ), Word + 3 );
-                            MakeName( filename, ".lnk" );    /* add extension */
+                            MakeName( filename, LNK_EXT );  /* add extension */
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( filename );
                         } else {
@@ -722,7 +718,7 @@ static int Parse( const char *cmd )
                         }
                         end = ScanFName( end, len );
                         NormalizeFName( filename, sizeof( filename ), Word );
-                        MakeName( filename, ".lnk" );
+                        MakeName( filename, LNK_EXT );
                         errno = 0;
                         if( (atfp = fopen( filename, "r" )) == NULL ) {
                             PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], filename, strerror(  errno ) );
@@ -734,7 +730,7 @@ static int Parse( const char *cmd )
                                 *p = '\0';
                             if( strnicmp( buffer, "file ", 5 ) == 0 ) {
                                 /* look for names separated by ','s */
-                                AddNameLink( &buffer[5] );
+                                AddNameObj( buffer + 5 );
                                 Flags.do_link = TRUE;
                             } else {
                                 AddDirective( buffer );
@@ -947,7 +943,7 @@ static tool_type SrcName( char *name )
             if( access( name, F_OK ) != 0 ) {
                 strcpy( p, ".cc" );
                 if( access( name, F_OK ) != 0 ) {
-                    strcpy( p, ".asm" );
+                    strcpy( p, ASM_EXT );
                     if( access( name, F_OK ) != 0 ) {
                         strcpy( p, ".c" );
                     }
@@ -955,7 +951,7 @@ static tool_type SrcName( char *name )
             }
         }
     }
-    if( fname_cmp( p, ".asm" ) == 0 ) {
+    if( fname_cmp( p, ASM_EXT ) == 0 ) {
         utl = TYPE_ASM;
     } else {
         utl = TYPE_C;               // assume C compiler
@@ -1026,7 +1022,6 @@ static  int  CompLink( void )
 /***************************/
 {
     int         rc;
-    char        *p;
     char        *file;
     char        *path;
     list        *itm;
@@ -1047,25 +1042,18 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-            if( !hasFileExtension( file, OBJ_EXT ) &&  /* if not .obj or .o, compile */
-                !hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
+            if( !IS_OBJ( file ) ) {
                 char fname[_MAX_PATH];
 
                 rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
-                p = strrchr( file, '.' );
-                if( p != NULL )
-                    *p = '\0';
-                strcpy( Word, file );
+                strcpy( Word, RemoveExt( file ) );
             }
-            AddNameLink( Word );
+            AddNameObj( Word );
             if( Exe_Name == NULL ) {
-                p = strrchr( Word, '.' );
-                if( p != NULL )
-                    *p = '\0';
-                Exe_Name = MemStrDup( Word );
+                Exe_Name = MemStrDup( RemoveExt( Word ) );
             }
 #ifdef __UNIX__
             MemFree( file );
@@ -1093,7 +1081,7 @@ static  int  CompLink( void )
                 rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
                     char fname[_MAX_PATH];
-    
+
                     rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
                 }
             }
@@ -1207,7 +1195,7 @@ int  main( int argc, char **argv )
     } else {
         p = getcmd( cmd );
     }
-    p = SkipSpaces( p );
+    SKIP_SPACES( p );
     if( *p == '\0' || p[0] == '?' && ( p[1] == '\0' || p[1] == ' ' ) || IS_OPT( p[0] ) && p[1] == '?' ) {
         Usage();
         rc = 1;

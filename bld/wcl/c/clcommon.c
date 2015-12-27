@@ -302,8 +302,8 @@ void ListFree( list *itm_list )
     }
 }
 
-void  AddNameLink( const char *name )
-/***********************************/
+void  AddNameObj( const char *name )
+/**********************************/
 {
     list        *curr_name;
     list        *last_name;
@@ -313,8 +313,7 @@ void  AddNameLink( const char *name )
     PGROUP      pg2;
 
     last_name = NULL;
-    curr_name = Obj_List;
-    while( curr_name != NULL ) {
+    for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
 #ifdef __UNIX__
         if( strcmp( name, curr_name->item ) == 0 )  // Case-sensitive
 #else
@@ -322,7 +321,6 @@ void  AddNameLink( const char *name )
 #endif
             return;
         last_name = curr_name;
-        curr_name = curr_name->next;
     }
     new_name = MemAlloc( sizeof( list ) );
     if( Obj_List == NULL ) {
@@ -485,3 +483,13 @@ void AddDirectivePath( const char *directive, const char *path )
 #endif
     ListAppend( &Directive_List, new_item );
 }
+
+char *RemoveExt( char *fname )
+{
+    char    *start = fname;
+
+    if( (fname = strrchr( fname, '.' )) != NULL )
+        *fname = '\0';
+    return( start );
+}
+
