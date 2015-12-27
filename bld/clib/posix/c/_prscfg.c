@@ -25,44 +25,44 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
-*
-* Author: J. Armstrong
+* Description:  Helper function for retrieving significant lines from a
+*               POSIX-like configuration file
 *
 ****************************************************************************/
 
-
-#include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <stdlib.h>
+//#include "variety.h"
+#include <stdio.h>
 #include <string.h>
 
-#include "rterrno.h"
-
-#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
-
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK ssize_t __getconfigline( char **s, size_t *n, FILE *fp )
 {
-struct servent *ret;
-    
-    if( name == NULL ) {
-        _RWD_errno = EINVAL;
-        return NULL;
-    }
-    
-    setservent( 1 );
+char *buf;
+int i;
     
     do {
+        if( getline( s, n, fp ) < 0 ) {
+            return( -1 );
+        }
         
-        ret = getservent( );
+        /* Remove newlines */
+        buf = strchr( *s, '\n' );
+        if( buf != NULL )
+            buf[0] = '\0';
         
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
+        /* Remove comments */
+        buf = strchr( *s, '#' );
+        if( buf != NULL )
+            buf[0] = '\0';
+        
+        /* Left-trim the resultant string */
+        while( **s == ' ' || **s == '\t' ) {
+            buf = *s;
+            for( i=1; i<=strlen(buf); i++ ) {
+                buf[i-1] = buf[i];
+            }
+        }
+        
+    } while( **s == '\0' || **s == '#' || **s == ';' );
     
-    endservent( );
-    
-    return ret;
+    return (ssize_t)*n;
 }

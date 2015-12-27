@@ -25,9 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  Implementations of gethostent/sethostent/endhostent
+* Description:  Implementations of getprotoent/setprotoent/endprotoent
 *
-* Author: J. Armstronhg
+* Author: J. Armstrong
 *
 ****************************************************************************/
 
@@ -43,35 +43,36 @@
 #include <arpa/inet.h>
 #include "_prscfg.h"
 
-#define MAX_HOST_ALIASES  16
+#define MAX_PROTO_ALIASES  16
 
-static const char   *__hostFname = "/etc/hosts";
-static FILE         *__hostFile;
-static int          __hostClose = 1;
+static const char   *__protFname = "/etc/protocols";
+static FILE         *__protFile;
+static int          __protClose = 1;
 
 /*
- * Return the next (non-commented) line from the host-file
+ * Return the next (non-commented) line from the services-file
  * Format is:
  *  ip-address [=] host-name [alias..] {\n | # ..}
  */
-_WCRTLINK struct hostent *gethostent( void )
+_WCRTLINK struct protoent *getprotoent( void )
 {
-    static struct hostent   ret;
-    char                    *ip, *alias;
+    static struct protoent  ret;
+    char                    *alias;
 
-    /* For loading a line from the hosts file */
+    /* For loading a line from the services file */
     static char             *buf = NULL;
     static size_t           buflen = 0;
+    char                    *buf_ptr;
+    
+    /* Translating the port string */
+    char *protonum;
 
-    /* More static data */
-    static in_addr_t        primary;
-    static char             *addr_list[2];
 
     /* For line parsing */
     int i;
 
-    if( __hostFile == NULL )
-        sethostent( 0 );
+    if( __protFile == NULL )
+        setprotoent( 0 );
 
     /* First pass */
     if( buf == NULL ) {
@@ -84,81 +85,70 @@ _WCRTLINK struct hostent *gethostent( void )
         }
     }
 
-    if( __getconfigline( &buf, &buflen, __hostFile ) < 0)
+    if( __getconfigline( &buf, &buflen, __protFile ) < 0)
         return( NULL );
-
-    /* Store the IP address (a bit complicated) */
-    /* ... and we only support one IP address */
-    ip = strtok( buf, " \t" );
-    primary = inet_addr( ip );
-
-    /* If no address for this line, try again (could be an IPv6 value) */
-    if( primary == INADDR_NONE )
-        return( gethostent() );
-
-    if( __hostClose )
-        endhostent();
-
-    addr_list[0] = (char *)&primary;
-    addr_list[1] = NULL;
-    ret.h_addr_list = addr_list;
-    ret.h_length = 4;
-
-    /* Everything here is assumed to be a Internet address */
-    ret.h_addrtype  = AF_INET;
-
-    /* The host name */
-    ret.h_name = strtok( NULL, " \t\n" );
-
+    
+    if( __protClose )
+        endprotoent();
+    
+    /* Name */
+    ret.p_name = strtok_r( buf, " \t", &buf_ptr );
+    
+    /* Protocol number */
+    protonum = strtok_r( NULL, " \t", &buf_ptr );
+    if(protonum == NULL) 
+        return( NULL );
+    ret.p_proto = atoi( protonum );
+    
     /* Load in any aliases */
-    if(ret.h_aliases == NULL) 
-        ret.h_aliases = (char **)malloc( (1 + MAX_HOST_ALIASES)*sizeof( char * ) );
+    if(ret.p_aliases == NULL) 
+        ret.p_aliases = (char **)malloc( (1 + MAX_PROTO_ALIASES)*sizeof( char * ) );
     
     /* Explcitly NULL the entries in a nice, readable manner */
-    for( i = 0; i < (1 + MAX_HOST_ALIASES) && ret.h_aliases != NULL; i++ )
-        ret.h_aliases[i] = NULL;
+    for( i = 0; i < (1 + MAX_PROTO_ALIASES) && ret.p_aliases != NULL; i++ )
+        ret.p_aliases[i] = NULL;
     
-    alias = strtok( NULL, " \t\n" );
-    if( alias && *alias != '#' && *alias != ';' && ret.h_aliases != NULL) {
-        
+    alias = strtok_r( NULL, " \t", &buf_ptr );
+
+    if( alias && *alias != '#' && *alias != ';' && ret.p_aliases != NULL ) {
         i = -1;
         do {
             i++;
             if( *alias == '#' || *alias == ';' )
                 break;
 
-            ret.h_aliases[i] = strtok( NULL, " \t\n" );
+            ret.p_aliases[i] = strtok_r( NULL, " \t", &buf_ptr );
 
-            if( ret.h_aliases[i] == NULL ) {
+            if( ret.p_aliases[i] == NULL ) {
                 break;
-            } else if( ret.h_aliases[i][0] == '\0' ) {
-                ret.h_aliases[i] = NULL;
+            } else if( ret.p_aliases[i][0] == '\0' ) {
+                ret.p_aliases[i] = NULL;
                 break;
             }
 
-        } while( i < MAX_HOST_ALIASES );
+        } while( i < MAX_PROTO_ALIASES );
 
     } 
     
     return( &ret );
 }
 
-_WCRTLINK void sethostent( int stayopen )
+_WCRTLINK void setprotoent( int stayopen )
 {
-    __hostClose = ( stayopen == 0 );
+    __protClose = ( stayopen == 0 );
 
-    if( __hostFile == NULL ) {
-        __hostFile = fopen( __hostFname, "rt" );
+    if( __protFile == NULL ) {
+        __protFile = fopen( __protFname, "rt" );
     } else {
-        rewind( __hostFile );
+        rewind( __protFile );
     }
 }
 
-_WCRTLINK void endhostent( void )
+_WCRTLINK void endprotoent( void )
 {
-    if( __hostFile != NULL ) {
-        fclose( __hostFile );
-        __hostFile = NULL;
-        __hostClose = 1;
+    if( __protFile != NULL ) {
+        fclose( __protFile );
+        __protFile = NULL;
+        __protClose = 1;
     }
 }

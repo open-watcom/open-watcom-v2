@@ -25,44 +25,33 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
+* Description:  Implementation of getnetbyaddr
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include "rtdata.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 
-#include "rterrno.h"
-
-#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
-
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK struct netent *getnetbyaddr(uint32_t naddr, int type)
 {
-struct servent *ret;
+    struct netent *ret;
     
-    if( name == NULL ) {
-        _RWD_errno = EINVAL;
-        return NULL;
+    setnetent( 1 );
+    
+    ret = getnetent( );
+    while(ret != NULL) {
+        if(ret->n_net == naddr && ret->n_addrtype == type)
+            break;
+        ret = getnetent( );
     }
+
+    endnetent( );
     
-    setservent( 1 );
-    
-    do {
-        
-        ret = getservent( );
-        
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
-    
-    endservent( );
-    
-    return ret;
+    return( ret );
 }

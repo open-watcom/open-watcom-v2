@@ -25,44 +25,49 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
+* Description:  Implementation of getnetbyname
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 
-#include "rterrno.h"
-
-#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
-
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK struct netent *getnetbyname(const char *name)
 {
-struct servent *ret;
+    struct netent *ret;
+    int i;
     
     if( name == NULL ) {
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
     
-    setservent( 1 );
+    setnetent( 1 );
     
-    do {
+    ret = getnetent( );
+    while(ret != NULL) {
+        if( ret->n_name != NULL && strcmp(name, ret->n_name) == 0)
+            goto netbyname_cleanup;
         
-        ret = getservent( );
         
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
+        for( i=0; ret->n_aliases != NULL && ret->n_aliases[i] != NULL; i++) {
+            if(strcmp(name, ret->n_aliases[i]) == 0)
+                goto netbyname_cleanup;
+        }
+        
+        ret = getnetent( );
+    }
+
+netbyname_cleanup:
     
-    endservent( );
+    endnetent( );
     
-    return ret;
+    return( ret );
 }

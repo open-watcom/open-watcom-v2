@@ -25,44 +25,48 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
+* Description:  Implementation of gethostbyaddr
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 
-#include "rterrno.h"
-
-#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
-
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)
 {
-struct servent *ret;
+    struct hostent *ret;
+    int i;
     
-    if( name == NULL ) {
+    if(addr == NULL) {
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
-    
-    setservent( 1 );
-    
-    do {
         
-        ret = getservent( );
+    sethostent( 1 );
+    
+    ret = gethostent( );
+    while(ret != NULL) {
+        if(ret->h_addrtype == type && ret->h_length == (int)len && ret->h_addr_list != NULL)
+        {
+            for( i=0; ret->h_addr_list[i] != NULL; i++ ) {
+                if(memcmp(ret->h_addr_list[i], addr, len) == 0)
+                    goto gethostbyaddr_cleanup;
+            }
+        }
         
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
+        ret = gethostent( );
+    }
+
+gethostbyaddr_cleanup:
     
-    endservent( );
+    endhostent( );
     
-    return ret;
+    return( ret );
 }

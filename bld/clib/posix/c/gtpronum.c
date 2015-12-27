@@ -25,44 +25,34 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
+* Description:  Implementation of getprotobyname
 *
 * Author: J. Armstrong
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
+#include "rtdata.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 
-#include "rterrno.h"
-
-#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
-
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK struct protoent *getprotobynumber(int proto)
 {
-struct servent *ret;
+    struct protoent *ret;
     
-    if( name == NULL ) {
-        _RWD_errno = EINVAL;
-        return NULL;
+    setprotoent( 1 );
+    
+    ret = getprotoent( );
+    while(ret != NULL) {
+        if( ret->p_proto == proto )
+            break;
+        
+        ret = getprotoent( );
     }
+
+    endprotoent( );
     
-    setservent( 1 );
-    
-    do {
-        
-        ret = getservent( );
-        
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
-    
-    endservent( );
-    
-    return ret;
+    return( ret );
 }

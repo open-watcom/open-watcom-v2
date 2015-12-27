@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getservbyname() for Linux.
+* Description:  Implementation of getservbyport() for Linux.
 *
 * Author: J. Armstrong
 *
@@ -43,11 +43,11 @@
 
 #define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
 
-_WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
+_WCRTLINK struct servent *getservbyport( int port, const char *proto )
 {
 struct servent *ret;
     
-    if( name == NULL ) {
+    if( port < 1 ) {
         _RWD_errno = EINVAL;
         return NULL;
     }
@@ -59,7 +59,7 @@ struct servent *ret;
         ret = getservent( );
         
     } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
+             !(port == ret->s_port && 
                (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
     
     endservent( );
