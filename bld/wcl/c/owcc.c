@@ -141,9 +141,6 @@ static  list    *Files_List;            /* list of filenames from Cmd         */
 static  char    *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
 static  char    PathBuffer[_MAX_PATH];  /* buffer for path name of tool       */
 static  char    *Link_Name;             /* Temp_Link copy if /fd specified    */
-static  list    *Directive_List;        /* linked list of directives          */
-static  char    *StackSize;             /* size of stack                      */
-static  int     DebugFlag;              /* debug info wanted                  */
 static  char    CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
 static  owcc_target_arch CPU_Arch;      /* CPU architecture TARGET_ARCH_...   */
 static  char    Conventions[2];         /* 'r' for -3r or 's' for -3s         */
@@ -442,18 +439,6 @@ static int hasFileExtension( char *p, char *ext )
         }
     }
     return( 0 );                        /* indicate no match */
-}
-
-static  void AddDirective( char *directive )
-/******************************************/
-{
-    list    *itm;
-
-    itm = MemAlloc( sizeof( list ) );
-    itm->next = NULL;
-    itm->item = MemAlloc( strlen( directive ) + 1 );
-    strcpy( itm->item, directive );
-    ListAppend( &Directive_List, itm );
 }
 
 static  void  MakeName( char *name, char *ext )
@@ -1024,9 +1009,7 @@ static  int  ParseArgs( int argc, char **argv )
             wcc_option = 0;
             break;
         case 'L':
-            xlate_fname( Word );
-            fputs( "libpath ", Fp );
-            Fputnl( Word, Fp );
+            AddDirectivePath( "libpath ", Word );
             wcc_option = 0;
             break;
         case 'i':       /* -include <file> --> -fi=<file> */
@@ -1368,6 +1351,46 @@ static tool_type SrcName( char *name )
     return( utl );
 }
 
+void BuildSystemLink( FILE *fp )
+{
+    if( Flags.link_for_sys ) {
+        fputs( "system ", fp );
+        Fputnl( SystemName, fp );
+  #if defined(_M_I86)
+    } else if( CPU_Arch == TARGET_ARCH_X86 ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_X86 ) {
+  #endif
+  #if defined(__OS2__)
+        Fputnl( "system os2v2", fp );
+  #elif defined(__NT__)
+        Fputnl( "system nt", fp );
+  #elif defined(__LINUX__)
+        Fputnl( "system linux", fp );
+        if( !Flags.strip_all )
+            Fputnl( "option exportall", fp );
+  #else
+        Fputnl( "system dos4g", fp );
+  #endif
+  #if defined(_M_I86)
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_I86 ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_I86 ) {
+  #endif
+        if( Flags.windows ) {
+            Fputnl( "system windows", fp );
+        } else if( Flags.tiny_model ) {
+            Fputnl( "system com", fp );
+        } else {
+#if defined(__OS2__)
+            Fputnl( "system os2", fp );
+#else
+            Fputnl( "system dos", fp );
+#endif
+        }
+    }
+}
+
 static  int  CompLink( void )
 /***************************/
 {
@@ -1380,53 +1403,6 @@ static  int  CompLink( void )
     tool_type   utl;
     int         i;
 
-    if( Flags.be_quiet ) {
-        Fputnl( "option quiet", Fp );
-    }
-    fputs( DebugOptions[DebugFlag], Fp );
-    if( StackSize != NULL ) {
-        fputs( "option stack=", Fp );
-        Fputnl( StackSize, Fp );
-    }
-    if( Flags.link_for_sys ) {
-        fputs( "system ", Fp );
-        Fputnl( SystemName, Fp );
-  #if defined(_M_I86)
-    } else if( CPU_Arch == TARGET_ARCH_X86 ) {
-  #else
-    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_X86 ) {
-  #endif
-  #if defined(__OS2__)
-        Fputnl( "system os2v2", Fp );
-  #elif defined(__NT__)
-        Fputnl( "system nt", Fp );
-  #elif defined(__LINUX__)
-        Fputnl( "system linux", Fp );
-        if( !Flags.strip_all )
-            Fputnl( "option exportall", Fp );
-  #else
-        Fputnl( "system dos4g", Fp );
-  #endif
-  #if defined(_M_I86)
-    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_I86 ) {
-  #else
-    } else if( CPU_Arch == TARGET_ARCH_I86 ) {
-  #endif
-        if( Flags.windows ) {
-            Fputnl( "system windows", Fp );
-        } else if( Flags.tiny_model ) {
-            Fputnl( "system com", Fp );
-        } else {
-#if defined(__OS2__)
-            Fputnl( "system os2", Fp );
-#else
-            Fputnl( "system dos", Fp );
-#endif
-        }
-    }
-    for( itm = Directive_List; itm != NULL; itm = itm->next ) {
-        Fputnl( itm->item, Fp );
-    }
     Word = MemAlloc( MAX_CMD );
     errors_found = 0;
     for( itm = Files_List; itm != NULL; itm = itm->next ) {
@@ -1441,7 +1417,7 @@ static  int  CompLink( void )
                 !hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
                 char fname[_MAX_PATH];
 
-                rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
+                rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
@@ -1451,7 +1427,7 @@ static  int  CompLink( void )
                 }
                 strcpy( Word, file );
             }
-            AddName( Word, Fp );
+            AddNameLink( Word );
             if( Obj_List != NULL && Flags.do_disas ) {
                 char    sfname[_MAX_PATH + 3];
                 char    ofname[_MAX_PATH];
@@ -1462,22 +1438,22 @@ static  int  CompLink( void )
                 sfname[2] = '=';
 
                 if( Exe_Name != NULL ) {     /* have "-S -o output.name" */
-                    DoQuoted( ofname, file );
-                    DoQuoted( sfname + 3, Exe_Name );
+                    DoQuoted( ofname, file, '"' );
+                    DoQuoted( sfname + 3, Exe_Name, '"' );
                 } else {
                     if( hasFileExtension( file, OBJ_EXT ) ||
                         hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
-                        DoQuoted( ofname, file );
+                        DoQuoted( ofname, file, '"' );
                         p = strrchr( file, '.' );
                         if( p != NULL )  {
                             *p = '\0';
                         }
                         strcpy( Word, file );
                     } else {            /* wdis needs extension */
-                        DoQuoted( ofname, Obj_Name );
+                        DoQuoted( ofname, Obj_Name, '"' );
                     }
                     strcat( Word, ".s" );
-                    DoQuoted( sfname + 3, Word );
+                    DoQuoted( sfname + 3, Word, '"' );
                 }
                 dis_args[0] = sfname;
                 dis_args[1] = NULL;
@@ -1505,17 +1481,31 @@ static  int  CompLink( void )
     if( errors_found ) {
         rc = 1;
     } else {
-        rc = 0;
-        BuildLinkFile();
-        if(( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
-            rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
-            if( rc == 0 && Flags.do_cvpack ) {
-                char fname[_MAX_PATH];
+        FILE    *fp;
 
-                rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name ), NULL );
+        errno = 0; /* Standard C does not require fopen failure to set errno */
+        if( (fp = fopen( TEMPFILE, "w" )) == NULL ) {
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
+            rc = 2;
+        } else {
+            rc = 0;
+            BuildLinkFile( fp );
+            fclose( fp );
+            if( ( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
+                rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
+                if( rc == 0 && Flags.do_cvpack ) {
+                    char fname[_MAX_PATH];
+    
+                    rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
+                }
             }
-            if( rc != 0 ) {
-                rc = 2;     /* return 2 to show Temp_File already closed */
+            if( Link_Name != NULL ) {
+                if( strfcmp( Link_Name, TEMPFILE ) != 0 ) {
+                    remove( Link_Name );
+                    rename( TEMPFILE, Link_Name );
+                }
+            } else {
+                remove( TEMPFILE );
             }
         }
     }
@@ -1544,16 +1534,6 @@ static  int  CompLink( void )
         }
     }
     return( rc );
-}
-
-
-static void ExitHandler( void )
-/*****************************/
-{
-    if( Fp != NULL ) {
-        fclose( Fp );
-        remove( TEMPFILE );
-    }
 }
 
 static int ProcMemInit( void )
@@ -1602,33 +1582,14 @@ int main( int argc, char **argv )
         exit( EXIT_SUCCESS );
     }
 
-    errno = 0; /* Standard C does not require fopen failure to set errno */
-    if( (Fp = fopen( TEMPFILE, "w" )) == NULL ) {
-        /* Message before banner decision as '@' option uses Fp in Parse() */
-        PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE,
-            strerror( errno ) );
-        exit( EXIT_FAILURE );
-    }
     MemInit();
     ProcMemInit();
-    /* destruct the temp. linker script in case of -? or parse errors */
-    atexit( ExitHandler );
     rc = Parse( argc, argv );
     if( rc == 0 ) {
         if( !Flags.be_quiet ) {
             print_banner();
         }
         rc = CompLink();
-    }
-    fclose( Fp );
-    Fp = NULL;
-    if( Link_Name != NULL ) {
-        if( strfcmp( Link_Name, TEMPFILE ) != 0 ) {
-            remove( Link_Name );
-            rename( TEMPFILE, Link_Name );
-        }
-    } else {
-        remove( TEMPFILE );
     }
     ProcMemFini();
     MemFini();

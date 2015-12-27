@@ -55,12 +55,14 @@
 #endif
 
 flags   Flags;
-FILE    *Fp = NULL;         /* file pointer for Temp_Link         */
+int     DebugFlag = 0;      /* debug info wanted                  */
+char    *StackSize = NULL;  /* size of stack                      */
 list    *Libs_List;         /* list of libraires from Cmd         */
 char    *Map_Name;          /* name of map file                   */
 list    *Obj_List;          /* linked list of object filenames    */
 char    *Obj_Name;          /* object file name pattern           */
 char    *Exe_Name;          /* name of executable                 */
+list    *Directive_List;    /* linked list of wlink directives    */
 
 char *DebugOptions[] = {
     "",
@@ -120,55 +122,55 @@ void PrintMsg( const char *fmt, ... )
     }
 }
 
-void  Fputnl( const char *text, FILE *fptr )
-/******************************************/
+void  Fputnl( const char *text, FILE *fp )
+/****************************************/
 {
-    fputs( text, fptr );
-    fputs( "\n", fptr );
+    fputs( text, fp );
+    fputs( "\n", fp );
 }
 
-void FputnlQuoted( const char *text, FILE *fptr )
-/***********************************************/
-{
-    if( text != NULL ) {
-        if( strchr( text, ' ' ) != NULL ) {
-            fputs( "'", fptr );
-            fputs( text, fptr );
-            fputs( "'\n", fptr );
-        } else {
-            fputs( text, fptr );
-            fputs( "\n", fptr );
-        }
-    }
-}
-
-void BuildLinkFile( void )
-/************************/
+void BuildLinkFile( FILE *fp )
+/****************************/
 {
     list    *itm;
+    char    filename[_MAX_PATH];
 
-    fputs( "name ", Fp );
-    FputnlQuoted( Exe_Name, Fp );
+    if( Flags.be_quiet ) {
+        Fputnl( "option quiet", fp );
+    }
+    fputs( DebugOptions[DebugFlag], fp );
+    if( StackSize != NULL ) {
+        fputs( "option stack=", fp );
+        Fputnl( StackSize, fp );
+    }
+
+    BuildSystemLink( fp );
+
+    /* pass given directives to linker */
+    for( itm = Directive_List; itm != NULL; itm = itm->next ) {
+        Fputnl( itm->item, fp );
+    }
+
+    fputs( "name ", fp );
+    Fputnl( DoQuoted( filename, Exe_Name, '\'' ), fp );
     if( Flags.keep_exename ) {
-        Fputnl( "option noextension", Fp );
+        Fputnl( "option noextension", fp );
     }
     if( Flags.map_wanted ) {
         if( Map_Name == NULL ) {
-            Fputnl( "option map", Fp );
+            Fputnl( "option map", fp );
         } else {
-            fputs( "option map=", Fp );
-            FputnlQuoted( Map_Name, Fp );
+            fputs( "option map=", fp );
+            Fputnl( DoQuoted( filename, Map_Name, '\'' ), fp );
         }
     }
     for( itm = Libs_List; itm != NULL; itm = itm->next ) {
-        fputs( "library ", Fp );
-        FputnlQuoted( itm->item, Fp );
+        fputs( "library ", fp );
+        Fputnl( DoQuoted( filename, itm->item, '\'' ), fp );
     }
     if( Flags.link_ignorecase ) {
-        Fputnl( "option nocaseexact", Fp );
+        Fputnl( "option nocaseexact", fp );
     }
-    fclose( Fp );       /* close Temp_Link */
-    Fp = NULL;
 }
 
 void  MemInit( void )
@@ -300,13 +302,13 @@ void ListFree( list *itm_list )
     }
 }
 
-void  AddName( char *name, FILE *link_fp )
-/****************************************/
+void  AddNameLink( const char *name )
+/***********************************/
 {
     list        *curr_name;
     list        *last_name;
     list        *new_name;
-    char        path  [_MAX_PATH ];
+    char        path[_MAX_PATH];
     PGROUP      pg1;
     PGROUP      pg2;
 
@@ -353,8 +355,7 @@ void  AddName( char *name, FILE *link_fp )
         _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
     }
-    fputs( "file ", link_fp );
-    FputnlQuoted( name, link_fp );
+    AddDirectivePath( "file ", name );
 }
 
 
@@ -432,25 +433,55 @@ void FindPath( const char *name, char *buf )
     }
 }
 
-static int needQuotes( const char *name )
-{
-    return( strchr( name, ' ' ) != NULL );
-}
-
-char *DoQuoted( char *buffer, const char *name )
+char *DoQuoted( char *buffer, const char *name, char quote_char )
+/***************************************************************/
 {
     char *p = buffer;
     int  quotes;
 
-    quotes = needQuotes( name );
+    quotes = ( strchr( name, ' ' ) != NULL );
     if( quotes )
-        *p++ = '"';
+        *p++ = quote_char;
     while( (*p = *name) != '\0' ) {
         ++p;
         ++name;
     }
     if( quotes )
-        *p++ = '"';
+        *p++ = quote_char;
     *p = '\0';
     return( buffer );
+}
+
+void AddDirective( const char *directive )
+/****************************************/
+{
+    list    *itm;
+
+    itm = MemAlloc( sizeof( list ) );
+    itm->next = NULL;
+    itm->item = MemAlloc( strlen( directive ) + 1 );
+    strcpy( itm->item, directive );
+    ListAppend( &Directive_List, itm );
+}
+
+void AddDirectivePath( const char *directive, const char *path )
+/**************************************************************/
+{
+    list        *new_item;
+    size_t      len;
+    char        *p;
+
+    len = strlen( directive );
+    new_item = MemAlloc( sizeof( list ) );
+    new_item->next = NULL;
+    p = new_item->item = MemAlloc( len + strlen( path ) + 2 + 1 );
+    memcpy( p, directive, len );
+    p += len;
+    DoQuoted( p, path, '\'' );
+#ifndef __UNIX__
+    while( (p = strchr( p, '/' )) != NULL ) {
+        *p++ = '\\';
+    }
+#endif
+    ListAppend( &Directive_List, new_item );
 }

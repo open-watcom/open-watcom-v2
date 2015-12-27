@@ -131,9 +131,6 @@ static  list    *Res_List;          /* list of resources from Cmdl        */
 static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmdl */
 static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
 static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
-static  list    *Directive_List;    /* linked list of directives          */
-static  char    *StackSize;         /* size of stack                      */
-static  int     DebugFlag = 0;      /* debug info wanted                  */
 static  char    Conventions;        /* 'r' for -3r or 's' for -3s         */
 #ifndef __UNIX__
 static  char    alt_switch_char;    /* valid switch characters            */
@@ -561,19 +558,6 @@ static const char *FindNextWSOrOpt( const char *str, char opt )
     return( str );
 }
 
-static void AddDirective( size_t len )
-/************************************/
-{
-    list    *p;
-
-    p = MemAlloc( sizeof( list ) );
-    p->next = NULL;
-    p->item = MemAlloc( len + 1 );
-    UnquoteDirective( p->item, len + 1, Word );
-    ListAppend( &Directive_List, p );
-}
-
-
 static int Parse( const char *cmd )
 /*********************************/
 {
@@ -745,15 +729,15 @@ static int Parse( const char *cmd )
                             return( 1 );
                         }
                         while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
+                            p = strchr( buffer, '\n' );
+                            if( p != NULL )
+                                *p = '\0';
                             if( strnicmp( buffer, "file ", 5 ) == 0 ) {
                                 /* look for names separated by ','s */
-                                p = strchr( buffer, '\n' );
-                                if( p != NULL )
-                                    *p = '\0';
-                                AddName( &buffer[5], Fp );
+                                AddNameLink( &buffer[5] );
                                 Flags.do_link = TRUE;
                             } else {
-                                fputs( buffer, Fp );
+                                AddDirective( buffer );
                             }
                         }
                         fclose( atfp );
@@ -861,7 +845,8 @@ static int Parse( const char *cmd )
                      * whole command instead of first character removed. This allows us
                      * to parse also string literals in AddDirective.
                      */
-                    AddDirective( len );
+                    UnquoteDirective( Word, MAX_CMD, Word );
+                    AddDirective( Word );
                     wcc_option = 0;
                     break;
                 }
@@ -983,6 +968,59 @@ static tool_type SrcName( char *name )
     return( utl );
 }
 
+void BuildSystemLink( FILE *fp )
+{
+    list    *itm;
+
+    if( Flags.link_for_sys ) {
+        fputs( "system ", fp );
+        Fputnl( SystemName, fp );
+    } else {
+#if defined( WCLAXP )
+        Fputnl( "system ntaxp", fp );
+#elif defined( WCLPPC )
+  #if defined( __LINUX__ )
+        Fputnl( "system linuxppc", fp );
+  #else
+        Fputnl( "system ntppc", fp );
+  #endif
+#elif defined( WCLMPS )
+        Fputnl( "system linuxmips", fp );
+#elif defined( WCL386 )
+  #if defined( __OS2__ )
+        Fputnl( "system os2v2", fp );
+  #elif defined( __NT__ )
+        Fputnl( "system nt", fp );
+  #elif defined( __LINUX__ )
+        Fputnl( "system linux", fp );
+  #else
+        Fputnl( "system dos4g", fp );
+  #endif
+#else
+        if( Flags.windows ) {
+            Fputnl( "system windows", fp );
+        } else if( Flags.tiny_model ) {
+            Fputnl( "system com", fp );
+        } else if( Flags.link_for_dos ) {
+            Fputnl( "system dos", fp );
+        } else if( Flags.link_for_os2 ) {
+            Fputnl( "system os2", fp );
+        } else {
+#if defined( __OS2__ )
+            Fputnl( "system os2", fp );
+#else
+            Fputnl( "system dos", fp );
+#endif
+        }
+#endif
+    }
+
+    for( itm = Res_List; itm != NULL; itm = itm->next ) {
+        AddDirectivePath( "option resource=", itm->item );
+    }
+    ListFree( Res_List );
+    Res_List = NULL;
+}
 
 static  int  CompLink( void )
 /***************************/
@@ -996,68 +1034,6 @@ static  int  CompLink( void )
     void        *tmp_env;
     tool_type   utl;
     int         i;
-
-    if( Flags.be_quiet ) {
-        Fputnl( "option quiet", Fp );
-    }
-
-    fputs( DebugOptions[DebugFlag], Fp );
-    if( StackSize != NULL ) {
-        fputs( "option stack=", Fp );
-        Fputnl( StackSize, Fp );
-    }
-    if( Flags.link_for_sys ) {                  /* 10-jun-91 */
-        fputs( "system ", Fp );
-        Fputnl( SystemName, Fp );
-    } else {
-#if defined( WCLAXP )
-        Fputnl( "system ntaxp", Fp );
-#elif defined( WCLPPC )
-  #if defined( __LINUX__ )
-        Fputnl( "system linuxppc", Fp );
-  #else
-        Fputnl( "system ntppc", Fp );
-  #endif
-#elif defined( WCLMPS )
-        Fputnl( "system linuxmips", Fp );
-#elif defined( WCL386 )
-  #if defined( __OS2__ )
-        Fputnl( "system os2v2", Fp );           /* 04-feb-92 */
-  #elif defined( __NT__ )
-        Fputnl( "system nt", Fp );
-  #elif defined( __LINUX__ )
-        Fputnl( "system linux", Fp );
-  #else
-        Fputnl( "system dos4g", Fp );
-  #endif
-#else
-        if( Flags.windows ) {                   /* 15-mar-90 */
-            Fputnl( "system windows", Fp );
-        } else if( Flags.tiny_model ) {
-            Fputnl( "system com", Fp );
-        } else if( Flags.link_for_dos ) {
-            Fputnl( "system dos", Fp );
-        } else if( Flags.link_for_os2 ) {
-            Fputnl( "system os2", Fp );
-        } else {
-#if defined( __OS2__ )
-            Fputnl( "system os2", Fp );
-#else
-            Fputnl( "system dos", Fp );
-#endif
-        }
-#endif
-    }
-
-    /* pass given resources to linker */
-    for( itm = Res_List; itm != NULL; itm = itm->next ) {
-        fputs( "option resource=", Fp );
-        FputnlQuoted( itm->item, Fp );
-    }
-    /* pass given directives to linker */
-    for( itm = Directive_List; itm != NULL; itm = itm->next ) {
-        Fputnl( itm->item, Fp );
-    }
 
     tmp_env = NULL;
     if( via_environment && strlen( CC_Opts ) >= 20 ) // 20 to allow wclxxxxx=y
@@ -1075,7 +1051,7 @@ static  int  CompLink( void )
                 !hasFileExtension( file, OBJ_EXT_SECONDARY ) ) {
                 char fname[_MAX_PATH];
 
-                rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
+                rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
@@ -1084,7 +1060,7 @@ static  int  CompLink( void )
                     *p = '\0';
                 strcpy( Word, file );
             }
-            AddName( Word, Fp );
+            AddNameLink( Word );
             if( Exe_Name == NULL ) {
                 p = strrchr( Word, '.' );
                 if( p != NULL )
@@ -1103,17 +1079,31 @@ static  int  CompLink( void )
     if( errors_found ) {
         rc = 1;
     } else {
-        rc = 0;
-        BuildLinkFile();
-        if(( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
-            rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
-            if( rc == 0 && Flags.do_cvpack ) {
-                char fname[_MAX_PATH];
+        FILE    *fp;
 
-                rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name ), NULL );
+        errno = 0; /* Standard C does not require fopen failure to set errno */
+        if( (fp = fopen( TEMPFILE, "w" )) == NULL ) {
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
+            rc = 2;
+        } else {
+            rc = 0;
+            BuildLinkFile( fp );
+            fclose( fp );
+            if( ( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
+                rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
+                if( rc == 0 && Flags.do_cvpack ) {
+                    char fname[_MAX_PATH];
+    
+                    rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name, '"' ), NULL );
+                }
             }
-            if( rc != 0 ) {
-                rc = 2;     /* return 2 to show Temp_File already closed */
+            if( Link_Name != NULL ) {
+                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
+                    remove( Link_Name );
+                    rename( TEMPFILE, Link_Name );
+                }
+            } else {
+                remove( TEMPFILE );
             }
         }
     }
@@ -1222,31 +1212,13 @@ int  main( int argc, char **argv )
         Usage();
         rc = 1;
     } else {
-        errno = 0; /* Standard C does not require fopen failure to set errno */
-        if( (Fp = fopen( TEMPFILE, "w" )) == NULL ) {
-            /* Message before banner decision as '@' option uses Fp in Parse() */
-            PrintMsg( WclMsgs[UNABLE_TO_OPEN_TEMPORARY_FILE], TEMPFILE, strerror( errno ) );
-            rc = 1;
-        } else {
-            initialize_Flags();
-            rc = Parse( cmd );
-            if( rc == 0 ) {
-                if( !Flags.be_quiet ) {
-                    print_banner();
-                }
-                rc = CompLink();
+        initialize_Flags();
+        rc = Parse( cmd );
+        if( rc == 0 ) {
+            if( !Flags.be_quiet ) {
+                print_banner();
             }
-            if( rc == 1 ) {
-                fclose( Fp );
-            }
-            if( Link_Name != NULL ) {
-                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
-                    remove( Link_Name );
-                    rename( TEMPFILE, Link_Name );
-                }
-            } else {
-                remove( TEMPFILE );
-            }
+            rc = CompLink();
         }
     }
     ProcMemFini();
