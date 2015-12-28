@@ -931,7 +931,7 @@ static  int  ParseArgs( int argc, char **argv )
             Flags.no_link = TRUE;
             if( DebugFlag == DBG_NONE ) {
                 c = 'd';
-                if( Word[0] == '\0' ) {
+                if( Word[0] == '\0' )
                     Word = MemAlloc( 1 + 6 );
                 strcpy( Word, "1" );
                 DebugFlag = DBG_LINES;
