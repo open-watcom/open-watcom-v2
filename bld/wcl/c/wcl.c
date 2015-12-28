@@ -591,10 +591,10 @@ static int Parse( const char *cmd )
             Word[len] = '\0';
             if( opt == ' ' ) {          /* if filename, add to list */
                 end = ScanFName( end, len );
-                NormalizeFName( filename, sizeof( filename ), Word );
+                NormalizeFName( Word, MAX_CMD, Word );
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
-                new_item->item = MemStrDup( filename );
+                new_item->item = MemStrDup( Word );
                 if( IS_LIB( filename ) ) {
                     ListAppend( &Libs_List, new_item );
                 } else if( IS_RES( filename ) ) {
@@ -621,10 +621,10 @@ static int Parse( const char *cmd )
                     case 'd':           /* name of linker directive file */
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
-                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
-                            MakeName( filename, LNK_EXT );  /* add extension */
+                            NormalizeFName( Word, MAX_CMD, Word + 3 );
+                            MakeName( Word, LNK_EXT );  /* add extension */
                             MemFree( Link_Name );
-                            Link_Name = MemStrDup( filename );
+                            Link_Name = MemStrDup( Word );
                         } else {
                             MemFree( Link_Name );
                             Link_Name = MemStrDup( TEMPFILE );
@@ -634,9 +634,9 @@ static int Parse( const char *cmd )
                     case 'e':           /* name of exe file */
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
-                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
+                            NormalizeFName( Word, MAX_CMD, Word + 3 );
                             MemFree( Exe_Name );
-                            Exe_Name = MemStrDup( filename );
+                            Exe_Name = MemStrDup( Word );
                         }
                         wcc_option = 0;
                         break;
@@ -647,9 +647,9 @@ static int Parse( const char *cmd )
                         Flags.map_wanted = TRUE;
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
-                            NormalizeFName( filename, sizeof( filename ), Word + 3 );
+                            NormalizeFName( Word, MAX_CMD, Word + 3 );
                             MemFree( Map_Name );
-                            Map_Name = MemStrDup( filename );
+                            Map_Name = MemStrDup( Word );
                         }
                         wcc_option = 0;
                         break;
@@ -658,13 +658,12 @@ static int Parse( const char *cmd )
                         p = Word + 2;
                         if( *p == '=' || *p == '#' )
                             ++p;
-                        NormalizeFName( filename, sizeof( filename ), p );
+                        NormalizeFName( Word, MAX_CMD, p );
                         MemFree( Obj_Name );
-                        Obj_Name = MemStrDup( filename );
+                        Obj_Name = MemStrDup( Word );
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
-                        end = file_end;
                         if( tolower( Word[2] ) == 'c' ) {
                             Flags.math_8087 = 0;
                         }
@@ -717,11 +716,11 @@ static int Parse( const char *cmd )
                             continue;
                         }
                         end = ScanFName( end, len );
-                        NormalizeFName( filename, sizeof( filename ), Word );
-                        MakeName( filename, LNK_EXT );
+                        NormalizeFName( Word, MAX_CMD, Word );
+                        MakeName( Word, LNK_EXT );
                         errno = 0;
-                        if( (atfp = fopen( filename, "r" )) == NULL ) {
-                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], filename, strerror(  errno ) );
+                        if( (atfp = fopen( Word, "r" )) == NULL ) {
+                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
                             return( 1 );
                         }
                         while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
@@ -854,7 +853,8 @@ static int Parse( const char *cmd )
                     p = CC_Opts + strlen( CC_Opts );
                     *p++ = ' ';
                     *p++ = '-';
-                    memcpy( p, Word, len );     /* keep original case */
+                    len = end - cmd;
+                    memcpy( p, cmd, len );    /* keep original case */
                     p[len] = '\0';
                 }
             }
@@ -1035,9 +1035,11 @@ static  int  CompLink( void )
         tmp_env = makeTmpEnv( CC_Opts );
     errors_found = 0;
     for( itm = Files_List; itm != NULL; itm = itm->next ) {
+        char    buffer[_MAX_PATH];
+
         strcpy( Word, itm->item );
         utl = SrcName( Word );          /* if no extension, assume .c */
-        file = GetName( Word );         /* get first matching filename */
+        file = GetName( Word, buffer ); /* get first matching filename */
         path = MakePath( Word );        /* isolate path portion of filespec */
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
@@ -1058,7 +1060,7 @@ static  int  CompLink( void )
 #ifdef __UNIX__
             MemFree( file );
 #endif
-            file = GetName( NULL );     /* get next filename */
+            file = GetName( NULL, NULL );   /* get next filename */
         }
         MemFree( path );
     }

@@ -176,96 +176,96 @@ typedef struct {
 
 /* Map of options which don't need special treatment */
 option_mapping mappings[] = {
-    { "fpmath=87",  "fp0" },
-    { "fpmath=287", "fp2" },
-    { "fpmath=387", "fp3" },
-    { "fptune=586", "fp5" },
-    { "fptune=686", "fp6" },
-    { "fno-short-enum", "ei" },
-    { "fshort-enum", "em" },
-    { "fsigned-char", "j" },
-    { "fpack-struct=:", "zp" },
-    { "ffar-data-threshold=:", "zt" },
-    { "frtti", "xr" },
-    { "fmessage-full-path", "ef" },
-    { "femit-names", "en" },
-    { "fbrowser", "db" },
-    { "fhook-epilogue", "ee" },
-    { "fhook-prologue=:", "ep" },
-    { "fhook-prologue", "ep" },
-    { "fwrite-def", "v" },
-    { "fwrite-def-without-typedefs", "zg" },
-    { "fno-stack-check", "s" },
-    { "fgrow-stack", "sg" },
-    { "fstack-probe", "st" },
-    { "fno-writable-strings", "zc" },
-    { "fnostdlib", "zl" },
-    { "ffunction-sections", "zm" },
-    { "fno-strict-aliasing", "oa" },
-    { "fguess-branch-probability", "ob" },
-    { "fno-optimize-sibling-calls", "oc" },
-    { "finline-functions", "oe" },
-    { "finline-limit=:", "oe=" },
-    { "fno-omit-frame-pointer", "of" },
-    { "fno-omit-leaf-frame-pointer", "of+" },
-    { "frerun-optimizer", "oh" },
-    { "finline-intrinsics-max", "oi+" },
-    { "finline-intrinsics", "oi" },
-    { "finline-fp-rounding", "zri" },
-    { "fomit-fp-rounting", "zro" },
-    { "fschedule-prologue", "ok" },
-    { "floop-optimize", "ol" },
-    { "funroll-loops", "ol+" },
-    { "finline-math", "om" },
-    { "funsafe-math-optimizations", "on" },
-    { "ffloat-store", "op" },
-    { "fschedule-insns", "or" },
-    { "fkeep-duplicates", "ou" },
-    { "fno-eh", "xd" },
-    { "feh-direct", "xst" },
-    { "feh-table", "xss" },
-    { "feh", "xs" },
-    { "ftabstob=:", "t=" },
-    /* { "mcmodel=:", "m" }, --- handled explicitly */
-    { "mabi=cdecl", "ecc" },
-    { "mabi=stdcall", "ecd" },
-    { "mabi=fastcall", "ecf" },
-    { "mabi=pascal", "ecp" },
-    { "mabi=fortran", "ecr" },
-    { "mabi=syscall", "ecs" },
-    { "mabi=watcall", "ecw" },
-    { "mwindows", "bg" },
-    { "mconsole", "bc" },
-    { "mthreads", "bm" },
-    { "mrtdll", "br" },
-    { "mdefault-windowing", "bw" },
-    { "msoft-float", "fpc" },
-    { "w", "w0" },
-    { "Wlevel:", "w" },
-    { "Wall", "w4" },
-    { "Wextra", "wx" },
-    { "Werror", "we" },
-    { "Wno-n:", "wcd=" }, /* NOTE: this needs to be listed before -Wn to work */
-    { "Wn:", "wce=" },
-    { "Woverlay", "wo" },
-    { "Wpadded", "zpw" },
-    { "Wc,-:", "" },
-    { "Wstop-after-errors=:", "e" },
-    { "ansi", "za" },
-    { "std=c99", "za99" },
-    { "std=c89", "za" },
-    { "std=ow", "ze" },
-    { "O0", "od" },
-    { "O1", "oil" },
-    { "O2", "onatx" },
-    { "O3", "onatxl+" },
-    { "Os", "os" },
-    { "Ot", "ot" },
-    { "O", "oil" },
-    { "H", "fti" },
-    { "fignore-line-directives", "pil" },
-    { "fvoid-ptr-arithmetic", "zev" },
-    { "shared", "bd" },
+    { "fpmath=87",                      "fp0" },
+    { "fpmath=287",                     "fp2" },
+    { "fpmath=387",                     "fp3" },
+    { "fptune=586",                     "fp5" },
+    { "fptune=686",                     "fp6" },
+    { "fno-short-enum",                 "ei" },
+    { "fshort-enum",                    "em" },
+    { "fsigned-char",                   "j" },
+    { "fpack-struct=:",                 "zp" },
+    { "ffar-data-threshold=:",          "zt" },
+    { "frtti",                          "xr" },
+    { "fmessage-full-path",             "ef" },
+    { "femit-names",                    "en" },
+    { "fbrowser",                       "db" },
+    { "fhook-epilogue",                 "ee" },
+    { "fhook-prologue=:",               "ep" },
+    { "fhook-prologue",                 "ep" },
+    { "fwrite-def",                     "v" },
+    { "fwrite-def-without-typedefs",    "zg" },
+    { "fno-stack-check",                "s" },
+    { "fgrow-stack",                    "sg" },
+    { "fstack-probe",                   "st" },
+    { "fno-writable-strings",           "zc" },
+    { "fnostdlib",                      "zl" },
+    { "ffunction-sections",             "zm" },
+    { "fno-strict-aliasing",            "oa" },
+    { "fguess-branch-probability",      "ob" },
+    { "fno-optimize-sibling-calls",     "oc" },
+    { "finline-functions",              "oe" },
+    { "finline-limit=:",                "oe=" },
+    { "fno-omit-frame-pointer",         "of" },
+    { "fno-omit-leaf-frame-pointer",    "of+" },
+    { "frerun-optimizer",               "oh" },
+    { "finline-intrinsics-max",         "oi+" },
+    { "finline-intrinsics",             "oi" },
+    { "finline-fp-rounding",            "zri" },
+    { "fomit-fp-rounting",              "zro" },
+    { "fschedule-prologue",             "ok" },
+    { "floop-optimize",                 "ol" },
+    { "funroll-loops",                  "ol+" },
+    { "finline-math",                   "om" },
+    { "funsafe-math-optimizations",     "on" },
+    { "ffloat-store",                   "op" },
+    { "fschedule-insns",                "or" },
+    { "fkeep-duplicates",               "ou" },
+    { "fno-eh",                         "xd" },
+    { "feh-direct",                     "xst" },
+    { "feh-table",                      "xss" },
+    { "feh",                            "xs" },
+    { "ftabstob=:",                     "t=" },
+    /* { "mcmodel=:",                      "m" }, --- handled explicitly */
+    { "mabi=cdecl",                     "ecc" },
+    { "mabi=stdcall",                   "ecd" },
+    { "mabi=fastcall",                  "ecf" },
+    { "mabi=pascal",                    "ecp" },
+    { "mabi=fortran",                   "ecr" },
+    { "mabi=syscall",                   "ecs" },
+    { "mabi=watcall",                   "ecw" },
+    { "mwindows",                       "bg" },
+    { "mconsole",                       "bc" },
+    { "mthreads",                       "bm" },
+    { "mrtdll",                         "br" },
+    { "mdefault-windowing",             "bw" },
+    { "msoft-float",                    "fpc" },
+    { "w",                              "w0" },
+    { "Wlevel:",                        "w" },
+    { "Wall",                           "w4" },
+    { "Wextra",                         "wx" },
+    { "Werror",                         "we" },
+    { "Wno-n:",                         "wcd=" }, /* NOTE: this needs to be listed before -Wn to work */
+    { "Wn:",                            "wce=" },
+    { "Woverlay",                       "wo" },
+    { "Wpadded",                        "zpw" },
+    { "Wc,-:",                          "" },
+    { "Wstop-after-errors=:",           "e" },
+    { "ansi",                           "za" },
+    { "std=c99",                        "za99" },
+    { "std=c89",                        "za" },
+    { "std=ow",                         "ze" },
+    { "O0",                             "od" },
+    { "O1",                             "oil" },
+    { "O2",                             "onatx" },
+    { "O3",                             "onatxl+" },
+    { "Os",                             "os" },
+    { "Ot",                             "ot" },
+    { "O",                              "oil" },
+    { "H",                              "fti" },
+    { "fignore-line-directives",        "pil" },
+    { "fvoid-ptr-arithmetic",           "zev" },
+    { "shared",                         "bd" },
 };
 
 /* Others to be checked:
@@ -687,7 +687,7 @@ static  int  ParseArgs( int argc, char **argv )
 #endif
                         EnglishHelp )) != -1 ) {
 
-        char    *Word = "";
+        char    *Word = NULL;
         int     found_mapping = FALSE;
 
         c = (char)i;
@@ -1080,7 +1080,7 @@ static  int  ParseArgs( int argc, char **argv )
         if( wcc_option ) {
             addccopt( c, Word );
         }
-        if( OptArg != NULL ) {
+        if( Word != NULL ) {
             MemFree( Word );
             Word = NULL;
         }
@@ -1403,9 +1403,11 @@ static  int  CompLink( void )
     Word = MemAlloc( MAX_CMD );
     errors_found = 0;
     for( itm = Files_List; itm != NULL; itm = itm->next ) {
+        char    buffer[_MAX_PATH];
+
         strcpy( Word, itm->item );
         utl = SrcName( Word );          /* if no extension, assume .c */
-        file = GetName( Word );         /* get first matching filename */
+        file = GetName( Word, buffer ); /* get first matching filename */
         path = MakePath( Word );        /* isolate path portion of filespec */
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
@@ -1457,7 +1459,7 @@ static  int  CompLink( void )
 #ifdef __UNIX__
             MemFree( file );
 #endif
-            file = GetName( NULL );     /* get next filename */
+            file = GetName( NULL, NULL );   /* get next filename */
         }
         MemFree( path );
     }
@@ -1523,7 +1525,7 @@ static int ProcMemInit( void )
 {
     Exe_Name = NULL;
     Map_Name = NULL;
-    Obj_Name = MemStrDup( ".o" );
+    Obj_Name = MemStrDup( OBJ_EXT );
     Link_Name = NULL;
     SystemName = NULL;
     StackSize = NULL;

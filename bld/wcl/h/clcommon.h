@@ -140,7 +140,7 @@ extern char     *MemStrLenDup( const char *str, size_t len );
 extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
 extern char     *MakePath( const char * );
-extern char     *GetName( const char * );
+extern char     *GetName( const char *, char * );
 extern char     *DoQuoted( char *buffer, const char *name, char quote );
 extern void     BuildSystemLink( FILE *fp );
 extern void     AddDirective( const char *directive );

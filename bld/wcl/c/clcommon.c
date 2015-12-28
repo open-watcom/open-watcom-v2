@@ -380,12 +380,13 @@ char  *MakePath( const char *path )
     }
 }
 
-char  *GetName( const char *path )
-/********************************/
+char  *GetName( const char *path, char *buffer )
+/**********************************************/
 {
+    const char      *p;
 #ifndef __UNIX__
-    static      DIR     *dirp;
-    struct      dirent  *direntp;
+    static DIR      *dirp;
+    struct dirent   *direntp;
 
     if( path != NULL ) {                /* if given a filespec to open,  */
         if( *path == '\0' ) {           /*   but filespec is empty, then */
@@ -395,7 +396,15 @@ char  *GetName( const char *path )
         dirp = opendir( path );         /* try to find matching filenames */
         if( dirp == NULL ) {
             PrintMsg( WclMsgs[UNABLE_TO_OPEN], path );
-            return( NULL );
+            if( strpbrk( path, "?*" ) != NULL )
+                return( NULL );
+            if( (p = strrchr( path, '\\' )) == NULL )
+                p = strrchr( path, ':' );
+            if( p == NULL )
+                p = path - 1;
+            if( *(++p) == '\0' )
+                return( NULL );
+            return( strcpy( buffer, p ) );
         }
     }
 
@@ -407,17 +416,16 @@ char  *GetName( const char *path )
     closedir( dirp );
     return( NULL );
 #else
-    const char      *name;
-
-    if( path == NULL )
+    if( path == NULL || *path == '\0' )
         return( NULL );
-    name = strrchr( path, '/' );
-    if( name == NULL ) {
-        name = path;
-    } else {
-        name++;
-    }
-    return( MemStrDup(name) );
+    if( strpbrk( path, "?*" ) != NULL )
+        return( NULL );
+    p = strrchr( path, '/' );
+    if( p == NULL )
+        p = path - 1;
+    if( *(++p) == '\0' )
+        return( NULL );
+    return( strcpy( buffer, p ) );
 #endif
 }
 
