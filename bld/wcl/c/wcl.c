@@ -124,8 +124,8 @@
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
-#define IS_LIB(x)       hasFileExtension(x, LIB_EXT)
-#define IS_RES(x)       hasFileExtension(x, ".res")
+#define IS_LIB(x)       HasFileExtension(x, LIB_EXT)
+#define IS_RES(x)       HasFileExtension(x, ".res")
 
 #define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
@@ -408,28 +408,6 @@ static const char *ScanFName( const char *end, size_t len )
     }
     return( end );
 }
-
-
-static int hasFileExtension( char *p, char *ext )
-/***********************************************/
-{
-    char        *dot;
-
-    dot = NULL;
-    while( *p != '\0' ) {
-        if( *p == '.' ) {
-            dot = p;
-        }
-        ++p;
-    }
-    if( dot != NULL ) {
-        if( fname_cmp( dot, ext ) == 0 ) {
-            return( 1 );                // indicate file extension matches
-        }
-    }
-    return( 0 );                        // indicate no match
-}
-
 
 static int isWSOrOpt( char ch, char opt )
 {
@@ -1057,9 +1035,6 @@ static  int  CompLink( void )
             if( Exe_Name == NULL ) {
                 Exe_Name = MemStrDup( RemoveExt( Word ) );
             }
-#ifdef __UNIX__
-            MemFree( file );
-#endif
             file = GetName( NULL, NULL );   /* get next filename */
         }
         MemFree( path );

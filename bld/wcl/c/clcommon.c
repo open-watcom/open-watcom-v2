@@ -374,7 +374,7 @@ char  *MakePath( const char *path )
     } else {
         len = p + 1 - path;
         p = MemAlloc( len + 1 );
-        strncpy( p, path, len );
+        memcpy( p, path, len );
         p[len] = '\0';
         return( p );
     }
@@ -501,3 +501,15 @@ char *RemoveExt( char *fname )
     return( start );
 }
 
+int HasFileExtension( char *p, char *ext )
+/****************************************/
+{
+    char        *dot;
+
+    if( (dot = strrchr( p, '.' )) != NULL ) {
+        if( strfcmp( dot, ext ) == 0 ) {
+            return( 1 );                /* indicate file extension matches */
+        }
+    }
+    return( 0 );                        /* indicate no match */
+}

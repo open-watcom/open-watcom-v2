@@ -123,7 +123,7 @@
 
 #define MAX_CC_OPTS     256
 
-#define IS_LIB(x)       (hasFileExtension( Word, LIB_EXT ) || hasFileExtension( Word, LIB_EXT_SECONDARY ))
+#define IS_LIB(x)       (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
 
 typedef enum {
     TARGET_ARCH_DEFAULT,
@@ -422,25 +422,6 @@ static void addccopt( char option, char *opt )
     }
     addccstring( op );
     MemFree( op );
-}
-
-static int hasFileExtension( char *p, char *ext )
-/***********************************************/
-{
-    char        *dot;
-
-    dot = NULL;
-    while( *p != '\0' ) {
-        if( *p == '.' )
-            dot = p;
-        ++p;
-    }
-    if( dot != NULL ) {
-        if( strfcmp( dot, ext ) == 0 ) {
-            return( 1 );                /* indicate file extension matches */
-        }
-    }
-    return( 0 );                        /* indicate no match */
 }
 
 static  void  MakeName( char *name, char *ext )
@@ -1456,9 +1437,6 @@ static  int  CompLink( void )
                 Exe_Name = MemStrDup( RemoveExt( Word ) );
 #endif
             }
-#ifdef __UNIX__
-            MemFree( file );
-#endif
             file = GetName( NULL, NULL );   /* get next filename */
         }
         MemFree( path );
