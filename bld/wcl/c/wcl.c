@@ -538,7 +538,6 @@ static int Parse( const char *cmd )
     const char  *file_end;
     FILE        *atfp;
     char        buffer[_MAX_PATH];
-    char        filename[_MAX_PATH];
     size_t      len;
     char        *p;
     int         wcc_option;
@@ -571,9 +570,9 @@ static int Parse( const char *cmd )
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
                 new_item->item = MemStrDup( Word );
-                if( IS_LIB( filename ) ) {
+                if( IS_LIB( Word ) ) {
                     ListAppend( &Libs_List, new_item );
-                } else if( IS_RES( filename ) ) {
+                } else if( IS_RES( Word ) ) {
                     ListAppend( &Res_List, new_item );
                 } else {
                     ListAppend( &Files_List, new_item );

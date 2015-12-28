@@ -905,7 +905,6 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             c = 'd';
-        parse_d:
             if( DebugFlag == 0 ) {  /* not set by -h yet */
                 if( strcmp( Word, "1" ) == 0 ) {
                     DebugFlag = 1;
@@ -932,7 +931,8 @@ static  int  ParseArgs( int argc, char **argv )
             if( DebugFlag == 0 ) {
                 c = 'd';
                 Word = "1";
-                goto parse_d;
+                DebugFlag = 1;
+                break;
             }
             wcc_option = 0;
             break;
