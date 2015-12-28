@@ -53,7 +53,7 @@
 
 #define LNK_EXT             ".lnk"
 
-#define IS_OBJ(x)           (hasFileExtension( x, OBJ_EXT ) || hasFileExtension( x, OBJ_EXT_SECONDARY ))
+#define IS_OBJ(x)           (HasFileExtension( x, OBJ_EXT ) || HasFileExtension( x, OBJ_EXT_SECONDARY ))
 
 #define TRUE        1
 #define FALSE       0
@@ -146,3 +146,4 @@ extern void     BuildSystemLink( FILE *fp );
 extern void     AddDirective( const char *directive );
 extern void     AddDirectivePath( const char *directive, const char *path );
 extern char     *RemoveExt( char * );
+extern int      HasFileExtension( char *p, char *ext );
