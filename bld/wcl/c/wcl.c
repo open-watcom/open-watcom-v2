@@ -135,7 +135,7 @@ static  char    *Word;                      /* one parameter                    
 static  char    *SystemName;                /* system to link for                   */
 static  list    *Files_List;                /* list of filenames from Cmdl          */
 static  list    *Res_List;                  /* list of resources from Cmdl          */
-static  char    CC_Opts[MAX_CMD];           /* list of compiler options from Cmdl   */
+static  char    *CC_Opts;                   /* list of compiler options from Cmdl   */
 static  char    *Link_Name;                 /* Temp_Link copy if /fd specified      */
 static  char    Conventions;                /* 'r' for -3r or 's' for -3s           */
 #ifndef __UNIX__
@@ -1090,6 +1090,10 @@ static int ProcMemInit( void )
     Files_List = NULL;
     Libs_List = NULL;
     Res_List = NULL;
+    Word = MemAlloc( MAX_CMD );
+    CC_Opts = MemAlloc( MAX_CMD );
+    Word[0] = '\0';
+    CC_Opts[0] = '\0';
     return( 0 );
 }
 
@@ -1101,6 +1105,8 @@ static int ProcMemFini( void )
     MemFree( Link_Name );
     MemFree( SystemName );
     MemFree( StackSize );
+    MemFree( Word );
+    MemFree( CC_Opts );
     ListFree( Directive_List );
     ListFree( Obj_List );
     ListFree( Files_List );
@@ -1135,22 +1141,17 @@ int  main( int argc, char **argv )
     int         rc;
     const char  *wcl_env;
     const char  *p;
-    char        *cmd;               /* command line parameters            */
+    char        *cmd;           /* command line parameters  */
 
 #ifndef __WATCOMC__
     _argc = argc;
     _argv = argv;
 #endif
-
-    CC_Opts[0] = '\0';
-
 #ifndef __UNIX__
     alt_switch_char = _dos_switch_char();
 #endif
-
     MemInit();
     ProcMemInit();
-    Word = MemAlloc( MAX_CMD );
     cmd = MemAlloc( MAX_CMD * 2 );  /* enough for cmd line & wcl variable */
 
     /* add wcl environment variable to cmd             */
@@ -1181,9 +1182,8 @@ int  main( int argc, char **argv )
             rc = CompLink();
         }
     }
-    ProcMemFini();
     MemFree( cmd );
-    MemFree( Word );
+    ProcMemFini();
     MemFini();
     return( ( rc != 0 ) );
 }

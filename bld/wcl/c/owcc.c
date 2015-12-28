@@ -717,8 +717,8 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             if( strncmp( Word, "cpp-wrap=", 9 ) == 0 ) {
-                MemFree( cpp_linewrap );
                 Word[7] = 'w';
+                MemFree( cpp_linewrap );
                 cpp_linewrap = MemStrDup( Word + 7 );
                 wcc_option = 0;
                 break;
@@ -931,7 +931,9 @@ static  int  ParseArgs( int argc, char **argv )
             Flags.no_link = TRUE;
             if( DebugFlag == DBG_NONE ) {
                 c = 'd';
-                Word = "1";
+                if( Word[0] == '\0' ) {
+                    Word = MemAlloc( 1 + 6 );
+                strcpy( Word, "1" );
                 DebugFlag = DBG_LINES;
                 break;
             }
@@ -1000,6 +1002,7 @@ static  int  ParseArgs( int argc, char **argv )
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
+                    MemFree( Word );
                     PrintMsg( "Argument of -include missing\n", OptArg );
                     return( 1 );
                 }
@@ -1027,6 +1030,7 @@ static  int  ParseArgs( int argc, char **argv )
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
+                    MemFree( Word );
                     PrintMsg( "Argument of -MF missing\n", OptArg );
                     return( 1 );
                 }
@@ -1037,6 +1041,7 @@ static  int  ParseArgs( int argc, char **argv )
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
+                    MemFree( Word );
                     PrintMsg( "Argument of -M%s missing\n", OptArg );
                     return( 1 );
                 }
@@ -1146,7 +1151,6 @@ static  int  ParseArgs( int argc, char **argv )
     for( i = 1; i < argc ; i++ ) {
         Word = argv[i];
         if( Word == NULL || Word[0] == '\0' )
-            /* HBB 20060217: argument was used up */
             continue;
         new_item = MemAlloc( sizeof( list ) );
         new_item->next = NULL;
