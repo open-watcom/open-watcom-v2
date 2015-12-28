@@ -59,84 +59,87 @@
 #endif
 
 #ifdef WCLAXP
-  #define WCLNAME     BPRFX "wclaxp"          /* Name of Compile and Link Utility*/
-  #define CC          BPRFX "wccaxp"          /* Open Watcom C compiler          */
-  #define CPP         BPRFX "wppaxp"          /* Open Watcom C++ compiler        */
-  #define AS          BPRFX "wasaxp"          /* Open Watcom assembler           */
+  #define WCLNAME       BPRFX "wclaxp"      /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wccaxp"      /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wppaxp"      /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasaxp"      /* Open Watcom assembler            */
+  #define FC            BPRFX "wfcaxp"      /* Open Watcom F77 compiler         */
 #elif defined( WCLPPC )
-  #define WCLNAME     BPRFX "wclppc"          /* Name of Compile and Link Utility*/
-  #define CC          BPRFX "wccppc"          /* Open Watcom C compiler          */
-  #define CPP         BPRFX "wppppc"          /* Open Watcom C++ compiler        */
-  #define AS          BPRFX "wasppc"          /* Open Watcom assembler           */
+  #define WCLNAME       BPRFX "wclppc"      /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wccppc"      /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wppppc"      /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasppc"      /* Open Watcom assembler            */
+  #define FC            BPRFX "wfcppc"      /* Open Watcom F77 compiler         */
 #elif defined( WCLMPS )
-  #define WCLNAME     BPRFX "wclmps"          /* Name of Compile and Link Utility*/
-  #define CC          BPRFX "wccmps"          /* Open Watcom C compiler          */
-  #define CPP         BPRFX "wppmps"          /* Open Watcom C++ compiler        */
-  #define AS          BPRFX "wasmps"          /* Open Watcom assembler           */
+  #define WCLNAME       BPRFX "wclmps"      /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wccmps"      /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wppmps"      /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasmps"      /* Open Watcom assembler            */
+  #define FC            BPRFX "wfcmps"      /* Open Watcom F77 compiler         */
 #elif defined( WCL386 )
-  #define WCLNAME     BPRFX "wcl386"          /* Name of Compile and Link Utility*/
-  #define CC          BPRFX "wcc386"          /* Open Watcom C compiler          */
-  #define CPP         BPRFX "wpp386"          /* Open Watcom C++ compiler        */
-  #define AS          BPRFX "wasm"            /* Open Watcom assembler           */
+  #define WCLNAME       BPRFX "wcl386"      /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wcc386"      /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wpp386"      /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
+  #define FC            BPRFX "wfc386"      /* Open Watcom F77 compiler         */
 #else
-  #define WCLNAME     BPRFX "wcl"             /* Name of Compile and Link Utility*/
-  #define CC          BPRFX "wcc"             /* Open Watcom C compiler          */
-  #define CPP         BPRFX "wpp"             /* Open Watcom C++ compiler        */
-  #define AS          BPRFX "wasm"            /* Open Watcom assembler           */
+  #define WCLNAME       BPRFX "wcl"         /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wcc"         /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wpp"         /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
+  #define FC            BPRFX "wfc"         /* Open Watcom F77 compiler         */
 #endif
-#define PACK                "cvpack"          /* Open Watcom executable packer   */
-#define LINK          BPRFX "wlink"           /* Open Watcom linker              */
-#define DIS                 "wdis"            /* Open Watcom disassembler        */
+#define PACK                  "cvpack"      /* Open Watcom executable packer    */
+#define LINK            BPRFX "wlink"       /* Open Watcom linker               */
+#define DIS                   "wdis"        /* Open Watcom disassembler         */
 
 #ifdef WCLAXP
-  #define WCLENV      "WCLAXP"          /* name of environment variable    */
-  #define STACKSIZE   "8192"            /* default stack size              */
-  #define _TARGET_    "Alpha AXP"
+  #define WCLENV        "WCLAXP"            /* name of environment variable     */
+  #define STACKSIZE     "8192"              /* default stack size               */
+  #define _TARGET_      "Alpha AXP"
 #elif defined( WCLPPC )
-  #define WCLENV      "WCLPPC"          /* name of environment variable    */
-  #define STACKSIZE   "8192"            /* default stack size              */
-  #define _TARGET_    "PowerPC"
+  #define WCLENV        "WCLPPC"            /* name of environment variable     */
+  #define STACKSIZE     "8192"              /* default stack size               */
+  #define _TARGET_      "PowerPC"
 #elif defined( WCLMPS )
-  #define WCLENV      "WCLMPS"          /* name of environment variable    */
-  #define STACKSIZE   "8192"            /* default stack size              */
-  #define _TARGET_    "MIPS"
+  #define WCLENV        "WCLMPS"            /* name of environment variable     */
+  #define STACKSIZE     "8192"              /* default stack size               */
+  #define _TARGET_      "MIPS"
 #elif defined( WCL386 )
-  #define WCLENV      "WCL386"          /* name of environment variable    */
-  #define STACKSIZE   "8192"            /* default stack size              */
-  #define _TARGET_    "x86 32-bit"
+  #define WCLENV        "WCL386"            /* name of environment variable     */
+  #define STACKSIZE     "8192"              /* default stack size               */
+  #define _TARGET_      "x86 32-bit"
 #else
-  #define WCLENV      "WCL"             /* name of environment variable    */
-  #define STACKSIZE   "4096"            /* default stack size              */
-  #define _TARGET_    "x86 16-bit"
+  #define WCLENV        "WCL"               /* name of environment variable     */
+  #define STACKSIZE     "4096"              /* default stack size               */
+  #define _TARGET_      "x86 16-bit"
 #endif
 
-#define TEMPFILE      "__wcl__" LNK_EXT /* temporary linker directive file */
+#define TEMPFILE        "__wcl__" LNK_EXT   /* temporary linker directive file  */
 
 #ifdef __UNIX__
-#define PATH_SEPS_STR   SYS_DIR_SEP_STR
 #define IS_OPT(x)       ((x)=='-')
 #else
-#define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
 #define IS_OPT(x)       ((x)=='-' || (x)==alt_switch_char)
 #endif
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
+#define IS_ASM(x)       (fname_cmp(x, ASM_EXT) == 0)
 #define IS_LIB(x)       HasFileExtension(x, LIB_EXT)
 #define IS_RES(x)       HasFileExtension(x, ".res")
 
 #define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
-static  char    *Word;              /* one parameter                      */
-static  char    *SystemName;        /* system to link for                 */
-static  list    *Files_List;        /* list of filenames from Cmdl        */
-static  list    *Res_List;          /* list of resources from Cmdl        */
-static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmdl */
-static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
-static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
-static  char    Conventions;        /* 'r' for -3r or 's' for -3s         */
+static  char    *Word;                      /* one parameter                        */
+static  char    *SystemName;                /* system to link for                   */
+static  list    *Files_List;                /* list of filenames from Cmdl          */
+static  list    *Res_List;                  /* list of resources from Cmdl          */
+static  char    CC_Opts[MAX_CMD];           /* list of compiler options from Cmdl   */
+static  char    *Link_Name;                 /* Temp_Link copy if /fd specified      */
+static  char    Conventions;                /* 'r' for -3r or 's' for -3s           */
 #ifndef __UNIX__
-static  char    alt_switch_char;    /* valid switch characters            */
+static  char    alt_switch_char;            /* alternate switch character           */
 #endif
 static  int     via_environment = FALSE;
 
@@ -163,7 +166,8 @@ static etool tools[TYPE_MAX] = {
     { DIS,  DIS  EXE_EXT,   NULL },
     { AS,   AS   EXE_EXT,   NULL },
     { CC,   CC   EXE_EXT,   NULL },
-    { CPP,  CPP  EXE_EXT,   NULL }
+    { CPP,  CPP  EXE_EXT,   NULL },
+    { FC,   FC   EXE_EXT,   NULL }
 };
 
 
@@ -230,7 +234,7 @@ static int handle_environment_variable( const char *env )
  * makeTmpEnv() and killTmpEnv() ar adapted from synonyms in wmake/c/mexec.c.
  * They are simpler because support for recursion is not needed.
  */
-static void *makeTmpEnv( char *arg )
+static char *makeTmpEnv( char *arg )
 /**********************************/
 /*
  *  Copy arg into an environment var if possible.  If succeeds, then changes
@@ -283,7 +287,6 @@ static void killTmpEnv( char *env )
             MemFree( env );
         MemFree( never_free ); /* Actually OK */
     }
-
 }
 
 
@@ -305,16 +308,6 @@ static void print_banner( void )
     puts( banner3 );
     puts( banner3a );
     done = 1;
-}
-
-
-static  void  MakeName( char *name, char *ext )
-/*********************************************/
-{
-    /* If the last '.' is before the last path seperator character */
-    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
-        strcat( name, ext );
-    }
 }
 
 
@@ -724,28 +717,28 @@ static int Parse( const char *cmd )
                     break;
 #endif
                 case 'd':
-                    if( DebugFlag == 0 ) {  /* not set by -h yet */
-                        p = Word + 1;
-                        if( len == 2 ) {
-                            if( p[0] == '1' ) {
-                                DebugFlag = 1;
-                            } else if( p[0] == '2' ) {
-                                DebugFlag = 2;
-                            } else if( p[0] == '3' ) {
-                                DebugFlag = 2;
-                            }
-                        } else if( len == 3 ) {
-                            if( p[0] == '1' && p[1] == '+' ) {
-                                DebugFlag = 2;
-                            } else if( p[0] == '2' && p[1] == 'i' ) {
-                                DebugFlag = 2;
-                            } else if( p[0] == '2' && p[1] == 's' ) {
-                                DebugFlag = 2;
-                            } else if( p[0] == '3' && p[1] == 'i' ) {
-                                DebugFlag = 2;
-                            } else if( p[0] == '3' && p[1] == 's' ) {
-                                DebugFlag = 2;
-                            }
+                    p = Word + 1;
+                    if( len == 2 ) {
+                        if( p[0] == '0' ) {
+                            DebugFlag = DBG_NONE;
+                        } else if( p[0] == '1' ) {
+                            DebugFlag = DBG_LINES;
+                        } else if( p[0] == '2' ) {
+                            DebugFlag = DBG_ALL;
+                        } else if( p[0] == '3' ) {
+                            DebugFlag = DBG_ALL;
+                        }
+                    } else if( len == 3 ) {
+                        if( p[0] == '1' && p[1] == '+' ) {
+                            DebugFlag = DBG_ALL;
+                        } else if( p[0] == '2' && p[1] == 'i' ) {
+                            DebugFlag = DBG_ALL;
+                        } else if( p[0] == '2' && p[1] == 's' ) {
+                            DebugFlag = DBG_ALL;
+                        } else if( p[0] == '3' && p[1] == 'i' ) {
+                            DebugFlag = DBG_ALL;
+                        } else if( p[0] == '3' && p[1] == 's' ) {
+                            DebugFlag = DBG_ALL;
                         }
                     }
                     break;
@@ -753,12 +746,12 @@ static int Parse( const char *cmd )
                     if( len == 2 ) {
                         p = Word + 1;
                         if( *p == 'w' ) {
-                            DebugFlag = 3;
+                            DebugFormat = DBG_FMT_WATCOM;
                         } else if( *p == 'c' ) {
                             Flags.do_cvpack = 1;
-                            DebugFlag = 4;
+                            DebugFormat = DBG_FMT_CODEVIEW;
                         } else if( *p == 'd' ) {
-                            DebugFlag = 5;
+                            DebugFormat = DBG_FMT_DWARF;
                         }
                     }
                     break;
@@ -841,8 +834,8 @@ static int Parse( const char *cmd )
 }
 
 
-static int useCPlusPlus( char *p )
-/********************************/
+static int useCPlusPlus( const char *p )
+/**************************************/
 {
     return(
         fname_cmp( p, ".cpp" ) == 0 ||
@@ -856,16 +849,20 @@ static int useCPlusPlus( char *p )
 static etool *FindToolGetPath( tool_type utl )
 /********************************************/
 {
+    char    *buffer;
+
     if( tools[utl].path == NULL ) {
-        FindPath( tools[utl].exename, PathBuffer );
-        tools[utl].path = MemAlloc( strlen( PathBuffer ) + 1 );
-        strcpy( tools[utl].path, PathBuffer );
+        buffer = MemAlloc( MAX_CMD );
+        FindPath( tools[utl].exename, buffer );
+        tools[utl].path = MemAlloc( strlen( buffer ) + 1 );
+        strcpy( tools[utl].path, buffer );
+        MemFree( buffer );
     }
     return( &tools[utl] );
 }
 
-static int tool_exec( tool_type utl, char *p1, char *p2 )
-/*******************************************************/
+static int tool_exec( tool_type utl, const char *p1, const char *p2 )
+/*******************************************************************/
 {
     int     rc;
     etool   *tool;
@@ -926,7 +923,7 @@ static tool_type SrcName( char *name )
             }
         }
     }
-    if( fname_cmp( p, ASM_EXT ) == 0 ) {
+    if( IS_ASM( p ) ) {
         utl = TYPE_ASM;
     } else {
         utl = TYPE_C;               // assume C compiler
@@ -1001,7 +998,7 @@ static  int  CompLink( void )
     char        *path;
     list        *itm;
     char        errors_found;
-    void        *tmp_env;
+    char        *tmp_env;
     tool_type   utl;
     int         i;
 
@@ -1019,6 +1016,7 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
+            // if not .obj or .o, compile
             if( !IS_OBJ( file ) ) {
                 char fname[_MAX_PATH];
 
@@ -1111,7 +1109,7 @@ static int ProcMemFini( void )
     return( 0 );
 }
 
-static int check_y_opt( char *cmdl )
+static int check_y_opt( const char *cmdl )
 {
     char        switch_chars[3];
 
@@ -1135,7 +1133,7 @@ int  main( int argc, char **argv )
 /********************************/
 {
     int         rc;
-    char        *wcl_env;
+    const char  *wcl_env;
     const char  *p;
     char        *cmd;               /* command line parameters            */
 

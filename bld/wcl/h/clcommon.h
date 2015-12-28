@@ -43,6 +43,12 @@
 #endif
 
 #ifdef __UNIX__
+#define PATH_SEPS_STR   SYS_DIR_SEP_STR
+#else
+#define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
+#endif
+
+#ifdef __UNIX__
 #define OBJ_EXT             ".o"
 #define OBJ_EXT_SECONDARY   ".obj"
 #define EXE_EXT             ""
@@ -91,6 +97,15 @@ enum {
     #undef E
 };
 
+typedef enum DBG_OPT {
+    DBG_NONE,
+    DBG_LINES,
+    DBG_ALL,
+    DBG_FMT_DWARF,
+    DBG_FMT_WATCOM,
+    DBG_FMT_CODEVIEW,
+} DBG_OPT;
+
 typedef struct  list {
     char        *item;
     struct list *next;
@@ -128,8 +143,8 @@ extern const char *WclMsgs[];
 extern flags    Flags;
 
 extern char     *StackSize;         /* size of stack                      */
-extern int      DebugFlag;          /* debug info wanted                  */
-extern char     *DebugOptions[];
+extern DBG_OPT  DebugFlag;          /* debug info wanted                  */
+extern DBG_OPT  DebugFormat;        /* debug info format                  */
 
 extern void     PrintMsg( const char *fmt, ... );
 extern void     FindPath( const char *name, char *buf );
@@ -152,4 +167,5 @@ extern void     BuildSystemLink( FILE *fp );
 extern void     AddDirective( const char *directive );
 extern void     AddDirectivePath( const char *directive, const char *path );
 extern char     *RemoveExt( char * );
-extern int      HasFileExtension( char *p, char *ext );
+extern int      HasFileExtension( const char *p, const char *ext );
+extern void     MakeName( char *name, const char *ext );

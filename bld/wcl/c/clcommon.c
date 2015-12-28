@@ -55,22 +55,23 @@
 #endif
 
 flags   Flags;
-int     DebugFlag = 0;      /* debug info wanted                  */
-char    *StackSize = NULL;  /* size of stack                      */
-list    *Libs_List;         /* list of libraires from Cmd         */
-char    *Map_Name;          /* name of map file                   */
-list    *Obj_List;          /* linked list of object filenames    */
-char    *Obj_Name;          /* object file name pattern           */
-char    *Exe_Name;          /* name of executable                 */
-list    *Directive_List;    /* linked list of wlink directives    */
+DBG_OPT DebugFlag = DBG_NONE;           /* debug info wanted                  */
+DBG_OPT DebugFormat = DBG_FMT_DWARF;    /* debug info format                  */
+char    *StackSize = NULL;              /* size of stack                      */
+list    *Libs_List;                     /* list of libraires from Cmd         */
+char    *Map_Name;                      /* name of map file                   */
+list    *Obj_List;                      /* linked list of object filenames    */
+char    *Obj_Name;                      /* object file name pattern           */
+char    *Exe_Name;                      /* name of executable                 */
+list    *Directive_List;                /* linked list of wlink directives    */
 
-char *DebugOptions[] = {
+static char *DebugOptions[] = {
     "",
-    "debug dwarf\n",
-    "debug dwarf\n",
-    "debug watcom all\n",
-    "debug codeview\n",
-    "debug dwarf\n",
+    " lines",
+    " all",
+    "debug dwarf",
+    "debug watcom",
+    "debug codeview",
 };
 
 #ifdef TRMEM
@@ -138,7 +139,10 @@ void BuildLinkFile( FILE *fp )
     if( Flags.be_quiet ) {
         Fputnl( "option quiet", fp );
     }
-    fputs( DebugOptions[DebugFlag], fp );
+    if( DebugFlag != DBG_NONE ) {
+        fputs( DebugOptions[DebugFormat], fp );
+        Fputnl( DebugOptions[DebugFlag], fp );
+    }
     if( StackSize != NULL ) {
         fputs( "option stack=", fp );
         Fputnl( StackSize, fp );
@@ -227,6 +231,7 @@ char *MemStrDup( const char *str )
     return( ptr );
 }
 
+#if 0
 char *MemStrLenDup( const char *str, size_t len )
 /***********************************************/
 {
@@ -245,6 +250,7 @@ char *MemStrLenDup( const char *str, size_t len )
     ptr[len] = '\0';
     return( ptr );
 }
+#endif
 
 void  *MemReAlloc( void *p, size_t size )
 /***************************************/
@@ -414,8 +420,10 @@ char  *GetName( const char *path, char *buffer )
 #else
     if( path == NULL || *path == '\0' )
         return( NULL );
-    if( strpbrk( path, "?*" ) != NULL )
+    if( strpbrk( path, "?*" ) != NULL ) {
+//        PrintMsg( WclMsgs[UNABLE_TO_OPEN], path );
         return( NULL );
+    }
     p = strrchr( path, '/' );
     if( p == NULL )
         p = path - 1;
@@ -489,18 +497,19 @@ void AddDirectivePath( const char *directive, const char *path )
 }
 
 char *RemoveExt( char *fname )
+/****************************/
 {
-    char    *start = fname;
+    char    *dot;
 
-    if( (fname = strrchr( fname, '.' )) != NULL )
-        *fname = '\0';
-    return( start );
+    if( (dot = strrchr( fname, '.' )) != NULL )
+        *dot = '\0';
+    return( fname );
 }
 
-int HasFileExtension( char *p, char *ext )
-/****************************************/
+int HasFileExtension( const char *p, const char *ext )
+/****************************************************/
 {
-    char        *dot;
+    const char  *dot;
 
     if( (dot = strrchr( p, '.' )) != NULL ) {
         if( fname_cmp( dot, ext ) == 0 ) {
@@ -508,4 +517,14 @@ int HasFileExtension( char *p, char *ext )
         }
     }
     return( 0 );                        /* indicate no match */
+}
+
+
+void  MakeName( char *name, const char *ext )
+/*******************************************/
+{
+    /* If the last '.' is before the last path seperator character */
+    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
+        strcat( name, ext );
+    }
 }

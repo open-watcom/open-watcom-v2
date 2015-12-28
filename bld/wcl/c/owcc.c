@@ -109,15 +109,11 @@
 #define OUTPUTFILE  "a.out"
 #define TEMPFILE    "__owcc__" LNK_EXT  /* temporary linker directive file    */
 
-#ifdef __UNIX__
-#define PATH_SEPS_STR   SYS_DIR_SEP_STR
-#else
-#define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
-#endif
+#define MAX_CC_OPTS 256
 
-#define MAX_CC_OPTS     256
-
-#define IS_LIB(x)       (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
+#define IS_ASM(x)   (fname_cmp( x, ASM_EXT ) == 0 || stricmp( x, ASMS_EXT ) == 0) 
+#define IS_FOR(x)   (fname_cmp( x, ".f" ) == 0 || stricmp( x, ".for" ) == 0 || fname_cmp( x, ".ftn" ) == 0) 
+#define IS_LIB(x)   (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
 
 typedef enum {
     TARGET_ARCH_DEFAULT,
@@ -129,24 +125,23 @@ typedef enum {
     TARGET_ARCH_COUNT
 } owcc_target_arch;
 
-char *OptEnvVar = WCLENV;               /* Data interface for GetOpt()        */
+char *OptEnvVar = WCLENV;                   /* Data interface for GetOpt()        */
 
-static  char    *Word;                  /* one parameter                      */
-static  char    *SystemName;            /* system to link for                 */
-static  list    *Files_List;            /* list of filenames from Cmd         */
-static  char    *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
-static  char    PathBuffer[_MAX_PATH];  /* buffer for path name of tool       */
-static  char    *Link_Name;             /* Temp_Link copy if /fd specified    */
-static  char    CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
-static  owcc_target_arch CPU_Arch;      /* CPU architecture TARGET_ARCH_...   */
-static  char    Conventions[2];         /* 'r' for -3r or 's' for -3s         */
-static  char    *O_Name;                /* name of -o option                  */
+static  char        *Word;                  /* one parameter                      */
+static  char        *SystemName;            /* system to link for                 */
+static  list        *Files_List;            /* list of filenames from Cmd         */
+static  char        *CC_Opts[MAX_CC_OPTS];  /* list of compiler options from Cmd  */
+static  char        *Link_Name;             /* Temp_Link copy if /fd specified    */
+static  char        CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
+static  owcc_target_arch CPU_Arch;          /* CPU architecture TARGET_ARCH_...   */
+static  char        Conventions[2];         /* 'r' for -3r or 's' for -3s         */
+static  char        *O_Name;                /* name of -o option                  */
 
-static  char    preprocess_only;        /* flag: -E option used?              */
-static  char    cpp_want_lines;         /* flag: want #lines output?          */
-static  char    cpp_keep_comments;      /* flag: keep comments in output?     */
-static  char    cpp_encrypt_names;      /* flag: encrypt C++ names?           */
-static  char    *cpp_linewrap;          /* line length for cpp output         */
+static  char        preprocess_only;        /* flag: -E option used?              */
+static  char        cpp_want_lines;         /* flag: want #lines output?          */
+static  char        cpp_keep_comments;      /* flag: keep comments in output?     */
+static  char        cpp_encrypt_names;      /* flag: encrypt C++ names?           */
+static  char        *cpp_linewrap;          /* line length for cpp output         */
 
 /*
  *  Static function prototypes
@@ -169,7 +164,7 @@ typedef struct {
 } option_mapping;
 
 /* Map of options which don't need special treatment */
-option_mapping mappings[] = {
+static option_mapping mappings[] = {
     { "fpmath=87",                      "fp0" },
     { "fpmath=287",                     "fp2" },
     { "fpmath=387",                     "fp3" },
@@ -337,12 +332,12 @@ static char *xlate_fname( char *name )
     /* On non-POSIX hosts, pathnames must be translated to format
      * expected by other tools.
      */
-    char    *run = name;
+    char    *p;
 
-    while( *run ) {
-        if( *run == '/' )
-            *run = '\\';
-        run++;
+    for( p = name; *p != '\0'; ++p ) {
+        if( *p == '/' ) {
+            *p = '\\';
+        }
     }
 #endif
     return( name );
@@ -359,16 +354,17 @@ static char *strfdup( const char *source )
     return( xlate_fname( MemStrDup( source ) ) );
 }
 
-static void addccstring( char *string )
+static void addccstring( const char *string )
+/*******************************************/
 {
     char    *op;
     int     i;
 
-    if( string == NULL || strlen( string ) == 0 )
+    if( string == NULL || *string == '\0' )
         return;
 
     op = MemAlloc( ( strlen( string ) + 1 ) * sizeof( char ) );
-    strcpy(op, string);
+    strcpy( op, string );
 
     i = 0;
     while( CC_Opts[i] != NULL )
@@ -377,92 +373,91 @@ static void addccstring( char *string )
     CC_Opts[i + 1] = NULL;
 }
 
-static void addcclongopt( char *option, char *tail )
+static void addcclongopt( const char *option, const char *tail )
+/**************************************************************/
 {
     char    *op;
     size_t  len;
 
-    if( option == NULL )
-        return;
-    len = strlen( option );
-    if( len == 0 )
+    if( option == NULL || *option == '\0' )
         return;
 
     /* Calculate our necessary memory here for readability */
-    len += ( ( tail == NULL ) ? 0 : strlen( tail ) ) + 2;
+    len = strlen( option ) + 2;
+    if( tail != NULL && *tail != '\0' )
+        len += strlen( tail );
 
     op = MemAlloc( len * sizeof( char ) );
     op[0] = '-';
     strcpy( op + 1, option );
-    if( tail != NULL )
+    if( tail != NULL && *tail != '\0' )
         strcat( op, tail );
 
     addccstring( op );
     MemFree( op );
 }
 
-static void addccopt( char option, char *opt )
-/*************************************/
+static void addccopt( char option, const char *opt )
+/**************************************************/
 {
     char    *op;
+    size_t  len;
 
-    op = MemAlloc( (3 + (opt == NULL ? 0 : strlen(opt)))*sizeof(char) );
+    len = 3;
+    if( opt != NULL && *opt != '\0' ) {
+        len += strlen( opt );
+    }
+    op = MemAlloc( len * sizeof( char ) );
 
     op[0] = '-';
     op[1] = option;
     op[2] = '\0';
-    if( opt != NULL ) {
-        strcat( op, opt );
-    }
+    if( len > 3 )
+        strcpy( op + 2, opt );
     addccstring( op );
     MemFree( op );
 }
 
-static  void  MakeName( char *name, char *ext )
-/*********************************************/
-{
-    /* If the last '.' is before the last path seperator character */
-    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
-        strcat( name, ext );
-    }
-}
-
-static  FILE *OpenSpecsFile( void )
-/*********************************/
+static  FILE *OpenSpecsFile( char *buffer )
+/*****************************************/
 {
     FILE    *specs;
 
-    FindPath( SPECS_FILE, PathBuffer );
-    specs = fopen( PathBuffer, "r" );
+    FindPath( SPECS_FILE, buffer );
+    specs = fopen( buffer, "r" );
     if( specs == NULL ) {
-        fprintf( stderr, "Could not open specs file '%s' for reading!\n", PathBuffer );
+        fprintf( stderr, "Could not open specs file '%s' for reading!\n", buffer );
         exit( EXIT_FAILURE );
     }
     return( specs );
 }
+
+#define SYSTEM_BEGIN    "system begin "
+#define SYSTEM_END      "end"
 
 #if 0
 /*static*/  int  ListSpecsFile( void )
 /************************************/
 {
     FILE    *specs;
-    char    line[MAX_CMD];
+    char    *line;
     size_t  begin_len;
     char    *p;
 
-    specs = OpenSpecsFile();
-    begin_len = strlen( "system begin " );
+    line = MemAlloc( MAX_CMD );
+    specs = OpenSpecsFile( line );
+    begin_len = sizeof( SYSTEM_BEGIN ) - 1;
     while( fgets( line, MAX_CMD, specs ) != NULL ) {
         p = strchr( line, '\n' );
         if( p != NULL ) {
             *p = '\0';
         }
-        if( strncmp( line, "system begin ", begin_len ) == 0 ) {
+        if( strncmp( line, SYSTEM_BEGIN, begin_len ) == 0 ) {
             printf( "%s\n", line + begin_len);
         }
     }
-
     fclose( specs );
+    MemFree( line );
     return( 0 );
 }
 #endif
@@ -471,16 +466,18 @@ static  int  ConsultSpecsFile( const char *target )
 /*************************************************/
 {
     FILE    *specs;
-    char    line[MAX_CMD];
-    char    start_line[MAX_CMD] = "system begin ";
+    char    *line;
+    char    *start_line;
     int     in_target = FALSE;
     char    *p;
     int     rc = 0;
 
-    specs = OpenSpecsFile();
-
-    /* search for a block whose first line is "system begin <target>" ... */
+    line = MemAlloc( MAX_CMD );
+    specs = OpenSpecsFile( line );
+    start_line = MemAlloc( sizeof( SYSTEM_BEGIN ) + strlen( target ) );
+    strcpy( start_line, SYSTEM_BEGIN );
     strcat( start_line, target );
+    /* search for a block whose first line is "system begin <target>" ... */
     while( fgets( line, MAX_CMD, specs ) != NULL ) {
         p = strchr( line, '\n' );
         if( p != NULL ) {
@@ -488,10 +485,10 @@ static  int  ConsultSpecsFile( const char *target )
         }
         if( stricmp( line, start_line ) == 0 ) {
             in_target = TRUE;
-        } else if( stricmp( line, "end" ) == 0 ) {
+        } else if( stricmp( line, SYSTEM_END ) == 0 ) {
             in_target = FALSE;
         } else if( in_target ) {
-            for( p = line; isspace( (unsigned char)*p ); p++ )
+            for( p = line; isspace( *(unsigned char *)p ); p++ )
                 ; /* do nothing else */
             p = strtok( p, " \t=" );
             if( p == NULL )
@@ -537,6 +534,8 @@ static  int  ConsultSpecsFile( const char *target )
         }
     }
     fclose( specs );
+    MemFree( start_line );
+    MemFree( line );
     return( rc );
 }
 
@@ -625,6 +624,39 @@ typedef struct stack {
     char            **argv;
 } stack;
 
+static int find_mapping( char c )
+/*******************************/
+{
+    int     i;
+
+    for( i = 0; i < sizeof( mappings ) / sizeof( mappings[0] ); i++ ) {
+        option_mapping  *m;
+        const char      *tail;
+
+        m = mappings + i;
+        if( c != m->LongName[0] )
+            continue;
+        if( OptArg == NULL ) {
+            if( m->LongName[1] != '\0' )
+                /* non-existant argument can't match other cases */
+                continue;
+            addcclongopt( m->WatcomName, NULL );
+            return( TRUE );
+        }
+        tail = strchr( m->LongName, ':' );
+        if( tail != NULL ) {
+            if( strncmp( OptArg, m->LongName + 1, tail - m->LongName - 1 ) == 0 ) {
+                addcclongopt( m->WatcomName, OptArg + ( tail - m->LongName - 1 ) );
+                return( TRUE );
+            }
+        } else if( strcmp( OptArg, m->LongName + 1 ) == 0 ) {
+            addcclongopt( m->WatcomName, NULL );
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+
 static  int  ParseArgs( int argc, char **argv )
 /*********************************************/
 {
@@ -636,7 +668,8 @@ static  int  ParseArgs( int argc, char **argv )
     char        pelc[6];
 
     initialize_Flags();
-    DebugFlag          = 1;
+    DebugFlag          = DBG_LINES;
+    DebugFormat        = DBG_FMT_DWARF;
     StackSize          = NULL;
     Conventions[0]     = '\0';
     Conventions[1]     = '\0';
@@ -662,47 +695,19 @@ static  int  ParseArgs( int argc, char **argv )
 #endif
                         EnglishHelp )) != -1 ) {
 
-        char    *Word = NULL;
-        int     found_mapping = FALSE;
+        char    *Word;
 
         c = (char)i;
-        for( i = 0; i < sizeof( mappings ) / sizeof( mappings[0] ); i++ ) {
-            option_mapping  *m    = mappings + i;
-            char            *tail = strchr( m->LongName, ':' );
-
-            if( c != m->LongName[0] )
-                continue;
-            if( OptArg == NULL ) {
-                if( m->LongName[1] == '\0' ) {
-                    addcclongopt( m->WatcomName, NULL );
-                    found_mapping = TRUE;
-                    break;
-                }
-                /* non-existant argument can't match other cases */
-                continue;
-            }
-            if( tail != NULL ) {
-                if( strncmp( OptArg, m->LongName + 1, tail - m->LongName - 1 ) == 0 ) {
-                    addcclongopt( m->WatcomName, OptArg + ( tail - m->LongName - 1) );
-                    found_mapping = TRUE;
-                    break;
-                }
-            } else if( strcmp( OptArg, m->LongName + 1 ) == 0 ) {
-                addcclongopt( m->WatcomName, NULL );
-                found_mapping = TRUE;
-                break;
-            }
-        }
-        if( found_mapping )
+        if( find_mapping( c ) )
             continue;
 
-        if( OptArg != NULL ) {
+        Word = "";
+        if( OptArg != NULL && *OptArg != '\0' ) {
             Word = MemAlloc( strlen( OptArg ) + 6 );
             strcpy( Word, OptArg );
         }
 
         wcc_option = 1;
-
         switch( c ) {
         case 'f':
             if( strcmp( Word, "syntax-only" ) == 0 ) {
@@ -725,7 +730,7 @@ static  int  ParseArgs( int argc, char **argv )
             }
             switch( Word[0] ) {
             case 'd':           /* name of linker directive file */
-                if( Word[1] == '='  ||  Word[1] == '#' ) {
+                if( Word[1] == '=' || Word[1] == '#' ) {
                     MakeName( Word, LNK_EXT );  /* add extension */
                     MemFree( Link_Name );
                     Link_Name = strfdup( Word + 2 );
@@ -737,7 +742,7 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             case 'm':           /* name of map file */
                 Flags.map_wanted = TRUE;
-                if( Word[1] == '='  ||  Word[1] == '#' ) {
+                if( Word[1] == '=' || Word[1] == '#' ) {
                     MemFree( Map_Name );
                     Map_Name = strfdup( Word + 2 );
                 }
@@ -746,12 +751,11 @@ static  int  ParseArgs( int argc, char **argv )
             case 'o':           /* name of object file */
                 /* parse off argument, so we get right filename
                    in linker command file */
-                p = &Word[1];
-                if( Word[1] == '='  ||  Word[1] == '#' ) {
+                p = Word + 1;
+                if( *p == '=' || *p == '#' )
                     ++p;
-                }
                 MemFree( Obj_Name );
-                Obj_Name = strfdup( p );        /* 08-mar-90 */
+                Obj_Name = strfdup( p );
                 break;
             case 'r':           /* name of error report file */
                 Flags.want_errfile = TRUE;
@@ -760,8 +764,7 @@ static  int  ParseArgs( int argc, char **argv )
             /* avoid passing on unknown options */
             wcc_option = 0;
             break;
-
-        case 'k':               /* stack size option */
+        case 'k':           /* stack size option */
             if( Word[0] != '\0' ) {
                 MemFree( StackSize );
                 StackSize = MemStrDup( Word );
@@ -784,12 +787,10 @@ static  int  ParseArgs( int argc, char **argv )
             }
             wcc_option = 0;
             break;
-
         case 'm':
-            if( ( strncmp( "cmodel=", Word, 7 ) == 0 )
-                && ( Word[8] == '\0' ) ) {
+            if( ( strncmp( "cmodel=", Word, 7 ) == 0 ) && ( Word[8] == '\0' ) ) {
                 if( Word[7] == 't' ) {      /* tiny model */
-                    Word[0] = 's';              /* change to small */
+                    Word[0] = 's';          /* change to small */
                     Flags.tiny_model = TRUE;
                 } else {
                     Word[0] = Word[7];
@@ -859,8 +860,7 @@ static  int  ParseArgs( int argc, char **argv )
             }
             wcc_option = 0;     /* dont' pass on unknown options */
             break;
-
-        case 'z':                   /* 12-jan-89 */
+        case 'z':
             switch( tolower( Word[0] ) ) {
             case 's':
                 Flags.no_link = TRUE;
@@ -886,64 +886,65 @@ static  int  ParseArgs( int argc, char **argv )
             break;
         case 'o':
             MemFree( O_Name );
-            O_Name = strfdup( OptArg );
+            O_Name = strfdup( Word );
             wcc_option = 0;
             break;
         case 'g':
-            if( OptArg == NULL ) {
-                Word = "2";
-            } else if( !isdigit( OptArg[0] ) ) {
+            if( Word[0] == '\0' ) {
+                Word = MemAlloc( 1 + 6 );
+                strcpy( Word, "2" );
+            } else if( !isdigit( Word[0] ) ) {
                 c = 'h';
                 if( strcmp( Word, "w" ) == 0 ) {
-                    DebugFlag = 3;
-                } else if( strcmp( Word, "c" ) == 0 ) { /* 02-mar-91 */
+                    DebugFormat = DBG_FMT_WATCOM;
+                } else if( strcmp( Word, "c" ) == 0 ) {
                     Flags.do_cvpack = 1;
-                    DebugFlag = 4;
+                    DebugFormat = DBG_FMT_CODEVIEW;
                 } else if( strcmp( Word, "d" ) == 0 ) {
-                    DebugFlag = 5;
+                    DebugFormat = DBG_FMT_DWARF;
                 }
                 break;
             }
             c = 'd';
-            if( DebugFlag == 0 ) {  /* not set by -h yet */
-                if( strcmp( Word, "1" ) == 0 ) {
-                    DebugFlag = 1;
-                } else if( strcmp( Word, "1+" ) == 0 ) { /* 02-mar-91 */
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "2" ) == 0 ) {
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "2i" ) == 0 ) {
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "2s" ) == 0 ) {
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "3" ) == 0 ) {
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "3i" ) == 0 ) {
-                    DebugFlag = 2;
-                } else if( strcmp( Word, "3s" ) == 0 ) {
-                    DebugFlag = 2;
-                }
+            if( strcmp( Word, "0" ) == 0 ) {
+                DebugFlag = DBG_NONE;
+            } else if( strcmp( Word, "1" ) == 0 ) {
+                DebugFlag = DBG_LINES;
+            } else if( strcmp( Word, "1+" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "2" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "2i" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "2s" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "3" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "3i" ) == 0 ) {
+                DebugFlag = DBG_ALL;
+            } else if( strcmp( Word, "3s" ) == 0 ) {
+                DebugFlag = DBG_ALL;
             }
             break;
         case 'S':
             Flags.do_disas = TRUE;
             Flags.no_link = TRUE;
-            if( DebugFlag == 0 ) {
+            if( DebugFlag == DBG_NONE ) {
                 c = 'd';
                 Word = "1";
-                DebugFlag = 1;
+                DebugFlag = DBG_LINES;
                 break;
             }
             wcc_option = 0;
             break;
         case 's':
-            if( OptArg != NULL ) {
+            if( Word[0] != '\0' ) {
                 /* leave -shared to mapping table */
                 wcc_option = 0;
                 break;
             }
             Flags.strip_all = 1;
-            DebugFlag = 0;
+            DebugFlag = DBG_NONE;
             wcc_option = 0;
             break;
         case 'v':
@@ -951,8 +952,8 @@ static  int  ParseArgs( int argc, char **argv )
             wcc_option = 0;
             break;
         case 'W':
-            if( OptArg != NULL && strncmp( OptArg, "l,", 2 ) == 0 ) {
-                AddDirective( OptArg + 2 );
+            if( strncmp( Word, "l,", 2 ) == 0 ) {
+                AddDirective( Word + 2 );
                 wcc_option = 0;
             }
             /* other cases handled by table */
@@ -977,9 +978,9 @@ static  int  ParseArgs( int argc, char **argv )
         case 'l':
             new_item = MemAlloc( sizeof( list ) );
             new_item->next = NULL;
-            p = MemAlloc( strlen( OptArg ) + 2 + 1 );
-            strcpy( p, OptArg );
-            strcat( p, ".a" );
+            p = MemAlloc( strlen( Word ) + 2 + 1 );
+            strcpy( p, Word );
+            strcat( p, LIB_EXT_SECONDARY );
             new_item->item = strfdup( p );
             MemFree( p );
             ListAppend( &Libs_List, new_item );
@@ -990,11 +991,11 @@ static  int  ParseArgs( int argc, char **argv )
             wcc_option = 0;
             break;
         case 'i':       /* -include <file> --> -fi=<file> */
-            if( OptArg == NULL ) {
+            if( Word[0] == '\0' ) {
                 wcc_option = 0;
                 break;
             }
-            if( strcmp( OptArg, "nclude" ) == 0 ) {
+            if( strcmp( Word, "nclude" ) == 0 ) {
                 c = 'f';
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
@@ -1012,18 +1013,17 @@ static  int  ParseArgs( int argc, char **argv )
             break;
 
         case 'M':               /* autodepend information for Unix makes */
-            if( OptArg == NULL ) {
+            if( Word[0] == '\0' ) {
                 wcc_option = 0;
                 break;
             }
             c = 'a';
-            if( strcmp( OptArg, "D" ) == 0 ||
-                strcmp( OptArg, "MD" ) == 0 ) {
+            if( strcmp( Word, "D" ) == 0 || strcmp( Word, "MD" ) == 0 ) {
                 /* NB: only -MMD really matches OW's behaviour, but
                  * for now, let's accept -MD to mean the same */
                 /* translate to -adt=.o */
-                strcpy( Word, "dt=.o" );
-            } else if( strcmp( OptArg, "F" ) == 0 ) {
+                strcpy( Word, "dt=" OBJ_EXT );
+            } else if( strcmp( Word, "F" ) == 0 ) {
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
@@ -1033,7 +1033,7 @@ static  int  ParseArgs( int argc, char **argv )
                 strcpy( Word, "d=" );
                 strfcat( Word, argv[OptInd] );
                 argv[OptInd++][0] = '\0';
-            } else if( strcmp( OptArg, "T") == 0 ) {
+            } else if( strcmp( Word, "T" ) == 0 ) {
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
@@ -1055,9 +1055,8 @@ static  int  ParseArgs( int argc, char **argv )
         if( wcc_option ) {
             addccopt( c, Word );
         }
-        if( Word != NULL ) {
+        if( Word[0] != '\0' ) {
             MemFree( Word );
-            Word = NULL;
         }
     }
 
@@ -1165,12 +1164,12 @@ static  int  ParseArgs( int argc, char **argv )
 static  int  Parse( int argc, char **argv )
 /*****************************************/
 {
-    int     old_argc;
-    char    **old_argv;
-    char    *cmdbuf;
-    char    *env;
-    int     ret;
-    int     i;
+    int         old_argc;
+    char        **old_argv;
+    char        *cmdbuf;
+    const char  *env;
+    int         ret;
+    int         i;
 
     env = getenv( WCLENV );
     if( env != NULL ) {
@@ -1194,8 +1193,8 @@ static  int  Parse( int argc, char **argv )
     return( ret );
 }
 
-static int useCPlusPlus( char *p )
-/********************************/
+static int useCPlusPlus( const char *p )
+/**************************************/
 {
     return(
         fname_cmp( p, ".cp" ) == 0 ||
@@ -1215,6 +1214,7 @@ static etool *FindToolGetPath( tool_type utl )
 /********************************************/
 {
     etool   *tool;
+    char    *buffer;
 
     switch( utl ) {
     case TYPE_LINK:
@@ -1238,29 +1238,31 @@ static etool *FindToolGetPath( tool_type utl )
         return( NULL );
     }
     if( tool->path == NULL ) {
-        FindPath( tool->exename, PathBuffer );
-        tool->path = MemAlloc( strlen( PathBuffer ) + 1 );
-        strcpy( tool->path, PathBuffer );
+        buffer = MemAlloc( MAX_CMD );
+        FindPath( tool->exename, buffer );
+        tool->path = MemAlloc( strlen( buffer ) + 1 );
+        strcpy( tool->path, buffer );
+        MemFree( buffer );
     }
     return( tool );
 }
 
-static int tool_exec( tool_type utl, char *fn, char **options )
-/*******************************************************/
+static int tool_exec( tool_type utl, const char *fn, const char **options )
+/*************************************************************************/
 {
-    int     rc;
-    etool   *tool;
-    int     i;
-    int     pass_argc;
-    char    *pass_argv[MAX_CC_OPTS+5];
+    int         rc;
+    etool       *tool;
+    int         i;
+    int         pass_argc;
+    const char  *pass_argv[MAX_CC_OPTS+5];
 
     tool = FindToolGetPath( utl );
 
     pass_argv[0] = tool->name;
     pass_argc = 1; 
 
-    while(options != NULL && options[pass_argc-1] != NULL && pass_argc < MAX_CC_OPTS) {
-        pass_argv[pass_argc] = options[pass_argc-1];
+    while( options != NULL && options[pass_argc - 1] != NULL && pass_argc < MAX_CC_OPTS ) {
+        pass_argv[pass_argc] = options[pass_argc - 1];
         pass_argc++;
     } 
 
@@ -1270,13 +1272,13 @@ static int tool_exec( tool_type utl, char *fn, char **options )
     }
 
     pass_argv[pass_argc++] = fn;
-    pass_argv[pass_argc] = NULL;    
+    pass_argv[pass_argc] = NULL;
 
     if( !Flags.be_quiet ) {
-        printf("\t");
-        for( i=0; i<pass_argc; i++ )
-            printf("%s ", pass_argv[i]);
-        printf("\n");
+        printf( "\t" );
+        for( i = 0; i < pass_argc; i++ )
+            printf( "%s ", pass_argv[i] );
+        printf( "\n" );
     }
     fflush( NULL );
 
@@ -1298,20 +1300,18 @@ static int tool_exec( tool_type utl, char *fn, char **options )
     return( rc );
 }
 
-static tool_type SrcName( char *name )
-/************************************/
+static tool_type SrcName( const char *name )
+/******************************************/
 {
-    char        *p;
+    const char  *p;
     tool_type   utl;
 
     p = strrchr( name, '.' );
     if( p == NULL || strpbrk( p, PATH_SEPS_STR ) != NULL )
         p = name + strlen( name );
-    if( fname_cmp( p, ASM_EXT ) == 0 || stricmp( p, ASMS_EXT ) == 0 ) {
+    if( IS_ASM( p ) ) {
         utl = TYPE_ASM;
-    } else if( fname_cmp( p, ".f" ) == 0 || 
-                stricmp( p, ".for" ) == 0 ||
-                fname_cmp( p, ".ftn" ) == 0 ) {
+    } else if( IS_FOR( p ) ) {
         utl = TYPE_FORT;
     } else {
         utl = TYPE_C;               // assume C compiler
@@ -1387,10 +1387,11 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
+            // if not .obj or .o, compile
             if( !IS_OBJ( file ) ) {
                 char fname[_MAX_PATH];
 
-                rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), CC_Opts );
+                rc = tool_exec( utl, DoQuoted( fname, Word, '"' ), (const char **)CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
@@ -1398,22 +1399,22 @@ static  int  CompLink( void )
             }
             AddNameObj( Word );
             if( Obj_List != NULL && Flags.do_disas ) {
-                char    sfname[_MAX_PATH + 3];
-                char    ofname[_MAX_PATH];
-                char    *dis_args[2];
+                char        sfname[_MAX_PATH + 3];
+                char        ofname[_MAX_PATH];
+                const char  *dis_args[2];
 
                 sfname[0] = '-';
                 sfname[1] = 'l';
                 sfname[2] = '=';
 
-                if( Exe_Name != NULL ) {     /* have "-S -o output.name" */
+                if( Exe_Name != NULL ) {    /* have "-S -o output.name" */
                     DoQuoted( ofname, file, '"' );
                     DoQuoted( sfname + 3, Exe_Name, '"' );
                 } else {
                     if( IS_OBJ( file ) ) {
                         DoQuoted( ofname, file, '"' );
                         strcpy( Word, RemoveExt( file ) );
-                    } else {            /* wdis needs extension */
+                    } else {                /* wdis needs extension */
                         DoQuoted( ofname, Obj_Name, '"' );
                     }
                     strcat( Word, ASMS_EXT );
