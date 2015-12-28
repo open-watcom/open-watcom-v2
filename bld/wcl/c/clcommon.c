@@ -314,11 +314,7 @@ void  AddNameObj( const char *name )
 
     last_name = NULL;
     for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
-#ifdef __UNIX__
-        if( strcmp( name, curr_name->item ) == 0 )  // Case-sensitive
-#else
-        if( stricmp( name, curr_name->item ) == 0 ) // Case-insensitive
-#endif
+        if( fname_cmp( name, curr_name->item ) == 0 )
             return;
         last_name = curr_name;
     }
@@ -507,7 +503,7 @@ int HasFileExtension( char *p, char *ext )
     char        *dot;
 
     if( (dot = strrchr( p, '.' )) != NULL ) {
-        if( strfcmp( dot, ext ) == 0 ) {
+        if( fname_cmp( dot, ext ) == 0 ) {
             return( 1 );                /* indicate file extension matches */
         }
     }

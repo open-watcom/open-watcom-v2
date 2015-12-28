@@ -36,6 +36,12 @@
 #define MAX_CMD 500
 #endif
 
+#if defined(__UNIX__)
+#define fname_cmp   strcmp
+#else
+#define fname_cmp   stricmp
+#endif
+
 #ifdef __UNIX__
 #define OBJ_EXT             ".o"
 #define OBJ_EXT_SECONDARY   ".obj"

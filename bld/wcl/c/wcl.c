@@ -114,11 +114,9 @@
 
 #ifdef __UNIX__
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR
-#define fname_cmp       strcmp
 #define IS_OPT(x)       ((x)=='-')
 #else
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
-#define fname_cmp       stricmp
 #define IS_OPT(x)       ((x)=='-' || (x)==alt_switch_char)
 #endif
 

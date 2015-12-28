@@ -57,12 +57,6 @@
 #include "clibext.h"
 
 
-#if defined(__UNIX__)
-#define strfcmp strcmp
-#else
-#define strfcmp stricmp
-#endif
-
 #ifdef BOOTSTRAP
 #define BPRFX   "b"
 #else
@@ -1204,16 +1198,16 @@ static int useCPlusPlus( char *p )
 /********************************/
 {
     return(
-        strfcmp( p, ".cp" ) == 0 ||
-        strfcmp( p, ".cpp" ) == 0 ||
+        fname_cmp( p, ".cp" ) == 0 ||
+        fname_cmp( p, ".cpp" ) == 0 ||
 #ifdef __UNIX__
         strcmp( p, ".c++" ) == 0 ||
         strcmp( p, ".C" ) == 0 ||
 #endif
-        strfcmp( p, ".cxx" ) == 0 ||
-        strfcmp( p, ".cc" )  == 0 ||
-        strfcmp( p, ".hpp" ) == 0 ||
-        strfcmp( p, ".hxx" ) == 0 );
+        fname_cmp( p, ".cxx" ) == 0 ||
+        fname_cmp( p, ".cc" )  == 0 ||
+        fname_cmp( p, ".hpp" ) == 0 ||
+        fname_cmp( p, ".hxx" ) == 0 );
 }
 
 
@@ -1313,11 +1307,11 @@ static tool_type SrcName( char *name )
     p = strrchr( name, '.' );
     if( p == NULL || strpbrk( p, PATH_SEPS_STR ) != NULL )
         p = name + strlen( name );
-    if( strfcmp( p, ASM_EXT ) == 0 || stricmp( p, ASMS_EXT ) == 0 ) {
+    if( fname_cmp( p, ASM_EXT ) == 0 || stricmp( p, ASMS_EXT ) == 0 ) {
         utl = TYPE_ASM;
-    } else if( strfcmp( p, ".f" ) == 0 || 
+    } else if( fname_cmp( p, ".f" ) == 0 || 
                 stricmp( p, ".for" ) == 0 ||
-                strfcmp( p, ".ftn" ) == 0 ) {
+                fname_cmp( p, ".ftn" ) == 0 ) {
         utl = TYPE_FORT;
     } else {
         utl = TYPE_C;               // assume C compiler
@@ -1463,7 +1457,7 @@ static  int  CompLink( void )
                 }
             }
             if( Link_Name != NULL ) {
-                if( strfcmp( Link_Name, TEMPFILE ) != 0 ) {
+                if( fname_cmp( Link_Name, TEMPFILE ) != 0 ) {
                     remove( Link_Name );
                     rename( TEMPFILE, Link_Name );
                 }
