@@ -147,11 +147,6 @@ trap_cpu_regs   TaskRegs;
 char            DOS_major;
 char            DOS_minor;
 bool            BoundAppLoading;
-bool            IsBreak[4];
-
-#define MAX_WP  32
-watch           WatchPoints[ MAX_WP ];
-short           WatchCount;
 
 struct {
     unsigned    Is386       : 1;
@@ -162,6 +157,12 @@ struct {
     unsigned    NoOvlMgr    : 1;
     unsigned    BoundApp    : 1;
 } Flags;
+
+#define MAX_WP          32
+static watch            WatchPoints[ MAX_WP ];
+static short            WatchCount;
+
+static bool             IsBreak[4];
 
 static tiny_handle_t    EXEhandle;
 static tiny_ftime_t     EXETime;
