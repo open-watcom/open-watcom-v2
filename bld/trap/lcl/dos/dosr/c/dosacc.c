@@ -68,22 +68,6 @@ typedef enum {
     EXE_LAST_TYPE
 } EXE_TYPE;
 
-#pragma aux MoveBytes =                                  \
-/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */ \
-       " rep    movsb "                                  \
-    parm    caller  [ ds ] [ si ] [ es ] [ di ] [ cx ]   \
-    modify  [ si di ];
-
-#pragma aux MyFlags = \
-       " pushf  "     \
-       " pop ax "     \
-    value [ax];
-
-extern void MoveBytes( short, short, short, short, short );
-extern unsigned short MyCS( void );
-extern unsigned short MyFlags( void );
-
-
 typedef _Packed struct pblock {
     addr_seg    envstring;
     addr32_ptr  commandln;
@@ -106,25 +90,34 @@ typedef _Packed struct watch {
     short       len;
 } watch;
 
-#define MAX_WP  32
-watch   WatchPoints[ MAX_WP ];
-short   WatchCount;
-
 typedef enum {
-        TRAP_SKIP = -1,
-        TRAP_NONE,
-        TRAP_TRACE_POINT,
-        TRAP_BREAK_POINT,
-        TRAP_WATCH_POINT,
-        TRAP_USER,
-        TRAP_TERMINATE,
-        TRAP_MACH_EXCEPTION,
-        TRAP_OVL_CHANGE_LOAD,
-        TRAP_OVL_CHANGE_RET
+    TRAP_SKIP = -1,
+    TRAP_NONE,
+    TRAP_TRACE_POINT,
+    TRAP_BREAK_POINT,
+    TRAP_WATCH_POINT,
+    TRAP_USER,
+    TRAP_TERMINATE,
+    TRAP_MACH_EXCEPTION,
+    TRAP_OVL_CHANGE_LOAD,
+    TRAP_OVL_CHANGE_RET
 } trap_types;
 
 /* user modifiable flags */
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | FLG_I | FLG_D | FLG_O)
+
+extern void MoveBytes( short, short, short, short, short );
+#pragma aux MoveBytes =                                  \
+/*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */ \
+       " rep    movsb "                                  \
+    parm    caller  [ ds ] [ si ] [ es ] [ di ] [ cx ]   \
+    modify  [ si di ];
+
+extern unsigned short MyFlags( void );
+#pragma aux MyFlags = \
+       " pushf  "     \
+       " pop ax "     \
+    value [ax];
 
 extern addr_seg         DbgPSP(void);
 extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
@@ -150,6 +143,26 @@ extern int              __far NoOvlsHdlr( int, void * );
 
 extern word             __based(__segname("_CODE")) SegmentChain;
 
+trap_cpu_regs   TaskRegs;
+char            DOS_major;
+char            DOS_minor;
+bool            BoundAppLoading;
+bool            IsBreak[4];
+
+#define MAX_WP  32
+watch           WatchPoints[ MAX_WP ];
+short           WatchCount;
+
+struct {
+    unsigned    Is386       : 1;
+    unsigned    IsMMX       : 1;
+    unsigned    IsXMM       : 1;
+    unsigned    DRsOn       : 1;
+    unsigned    com_file    : 1;
+    unsigned    NoOvlMgr    : 1;
+    unsigned    BoundApp    : 1;
+} Flags;
+
 static tiny_handle_t    EXEhandle;
 static tiny_ftime_t     EXETime;
 static tiny_fdate_t     EXEDate;
@@ -167,22 +180,6 @@ static int              ExceptNum;
 
 static unsigned_8       RealNPXType;
 static unsigned_8       CPUType;
-
-trap_cpu_regs   TaskRegs;
-char            DOS_major;
-char            DOS_minor;
-bool            BoundAppLoading;
-bool            IsBreak[4];
-
-struct {
-    unsigned    Is386       : 1;
-    unsigned    IsMMX       : 1;
-    unsigned    IsXMM       : 1;
-    unsigned    DRsOn       : 1;
-    unsigned    com_file    : 1;
-    unsigned    NoOvlMgr    : 1;
-    unsigned    BoundApp    : 1;
-} Flags;
 
 #ifdef DEBUG_ME
 int out( char * str )
