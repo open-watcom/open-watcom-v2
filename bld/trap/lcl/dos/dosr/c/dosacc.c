@@ -164,17 +164,7 @@ static short            WatchCount;
 
 static bool             IsBreak[4];
 
-static tiny_handle_t    EXEhandle;
-static tiny_ftime_t     EXETime;
-static tiny_fdate_t     EXEDate;
-#define ReadEXE( x )    TinyRead( EXEhandle, &x, sizeof(x) )
-#define WriteEXE( x )   TinyWrite( EXEhandle, &x, sizeof(x) )
-#define SeekEXEset( x ) TinySeek( EXEhandle, x, TIO_SEEK_START )
-static dword            NEOffset;
 static word             NumSegments;
-static dword            SegTable;
-static dword            StartByte;
-static opcode_type      saved_opcode;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
@@ -457,66 +447,27 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-static EXE_TYPE CheckEXEType( char *name )
+static EXE_TYPE CheckEXEType( tiny_handle_t handle )
 {
-    tiny_ret_t            rc;
-    union {
-        tiny_ret_t        rc;
-        tiny_file_stamp_t stamp;
-    } exe_time;
-    word                  value;
-    opcode_type           brk_opcode;
     static dos_exe_header head;
-    static os2_exe_header os2_head;
 
     Flags.com_file = FALSE;
-    EXEhandle = 0;
-    rc = TinyOpen( name, TIO_READ_WRITE );
-    if( TINY_ERROR( rc ) )
-        return( EXE_UNKNOWN );
-    EXEhandle = TINY_INFO( rc );
-    exe_time.rc = TinyGetFileStamp( EXEhandle );
-    EXETime = exe_time.stamp.time;
-    EXEDate = exe_time.stamp.date;
-    if( TINY_ERROR( ReadEXE( head ) ) )
-        return( EXE_UNKNOWN );    /* MZ Signature */
-    switch( head.signature ) {
-    case SIMPLE_SIGNATURE: // mp
-    case REX_SIGNATURE: // mq
-    case EXTENDED_SIGNATURE: // 'P3'
-        return( EXE_PHARLAP_SIMPLE );
-    case DOS_SIGNATURE:
-        if( head.reloc_offset != OS2_EXE_HEADER_FOLLOWS )
-            return( EXE_DOS );
-        if( TINY_ERROR( SeekEXEset( OS2_NE_OFFSET ) ) )
-            return( EXE_UNKNOWN );/* offset of new exe */
-        if( TINY_ERROR( ReadEXE( NEOffset ) ) )
-            return( EXE_UNKNOWN );
-        if( TINY_ERROR( SeekEXEset( NEOffset ) ) )
-            return( EXE_UNKNOWN );
-        if( TINY_ERROR( ReadEXE( os2_head ) ) )
-            return( EXE_UNKNOWN );/* NE Signature */
-        if( os2_head.signature == RAT_SIGNATURE_WORD )
-            return( EXE_RATIONAL_386 );
-        if( os2_head.signature != OS2_SIGNATURE_WORD )
-            return( EXE_UNKNOWN );
-        NumSegments = os2_head.segments;
-        SegTable = NEOffset + os2_head.segment_off;
-        if( os2_head.align == 0 )
-            os2_head.align = 9;
-        SeekEXEset( SegTable + ( os2_head.entrynum - 1 ) * 8 );
-        ReadEXE( value );
-        StartByte = ( (long)value << os2_head.align ) + os2_head.IP;
-        SeekEXEset( StartByte );
-        ReadEXE( saved_opcode );
-        SeekEXEset( StartByte );
-        brk_opcode = BRKPOINT;
-        rc = WriteEXE( brk_opcode );
-        return( EXE_OS2 );
-    default:
-        Flags.com_file = TRUE;
-        return( EXE_UNKNOWN );
+    if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
+        switch( head.signature ) {
+        case SIMPLE_SIGNATURE: // mp
+        case REX_SIGNATURE: // mq
+        case EXTENDED_SIGNATURE: // 'P3'
+            return( EXE_PHARLAP_SIMPLE );
+        case DOS_SIGNATURE:
+            if( head.reloc_offset != OS2_EXE_HEADER_FOLLOWS )
+                return( EXE_DOS );
+            return( EXE_OS2 );
+        default:
+            Flags.com_file = TRUE;
+            break;
+        }
     }
+    return( EXE_UNKNOWN );
 }
 
 
@@ -533,6 +484,18 @@ trap_retval ReqProg_load( void )
     EXE_TYPE        exe;
     prog_load_ret   *ret;
     unsigned        len;
+    union {
+        tiny_ret_t        rc;
+        tiny_file_stamp_t stamp;
+    } exe_time;
+    word            value;
+    opcode_type     brk_opcode;
+    os2_exe_header  os2_head;
+    tiny_handle_t   handle;
+    dword           NEOffset;
+    dword           StartByte;
+    opcode_type     saved_opcode;
+    dword           SegTable;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
@@ -568,26 +531,56 @@ trap_retval ReqProg_load( void )
     parmblock.fcb02.segment = psp;
     parmblock.fcb01.offset  = 0x5C;
     parmblock.fcb02.offset  = 0x6C;
-    exe = CheckEXEType( exe_name );
-    if( EXEhandle != 0 ) {
-        TinyClose( EXEhandle );
-        EXEhandle = 0;
-    }
-    switch( exe ) {
-    case EXE_RATIONAL_386:
-        ret->err = ERR_RATIONAL_EXE;
-        return( sizeof( *ret ) );
-    case EXE_PHARLAP_SIMPLE:
-        ret->err = ERR_PHARLAP_EXE;
-        return( sizeof( *ret ) );
+
+    exe = EXE_UNKNOWN;
+    rc = TinyOpen( exe_name, TIO_READ_WRITE );
+    if( TINY_OK( rc ) ) {
+        handle = TINY_INFO( rc );
+        exe_time.rc = TinyGetFileStamp( handle );
+        exe = CheckEXEType( handle );
+        if( exe == EXE_OS2 ) {
+            if( TINY_OK( TinySeek( handle, OS2_NE_OFFSET, TIO_SEEK_START ) )
+              && TINY_OK( TinyFarRead( handle, &NEOffset, sizeof( NEOffset ) ) )
+              && TINY_OK( TinySeek( handle, NEOffset, TIO_SEEK_START ) )
+              && TINY_OK( TinyFarRead( handle, &os2_head, sizeof( os2_head ) ) ) ) {
+                if( os2_head.signature == RAT_SIGNATURE_WORD ) {
+                    exe = EXE_RATIONAL_386;
+                } else if( os2_head.signature == OS2_SIGNATURE_WORD ) {
+                    NumSegments = os2_head.segments;
+                    SegTable = NEOffset + os2_head.segment_off;
+                    if( os2_head.align == 0 )
+                        os2_head.align = 9;
+                    TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );
+                    TinyFarRead( handle, &value, sizeof( value ) );
+                    StartByte = ( (dword)value << os2_head.align ) + os2_head.IP;
+                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    TinyFarRead( handle, &saved_opcode, sizeof( saved_opcode ) );
+                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    brk_opcode = BRKPOINT;
+                    rc = TinyFarWrite( handle, &brk_opcode, sizeof( brk_opcode ) );
+                } else {
+                    exe = EXE_UNKNOWN;
+                }
+            } else {
+                exe = EXE_UNKNOWN;
+            }
+        }
+        TinyClose( handle );
+        switch( exe ) {
+        case EXE_RATIONAL_386:
+            ret->err = ERR_RATIONAL_EXE;
+            return( sizeof( *ret ) );
+        case EXE_PHARLAP_SIMPLE:
+            ret->err = ERR_PHARLAP_EXE;
+            return( sizeof( *ret ) );
+        }
     }
     SegmentChain = 0;
     BoundAppLoading = FALSE;
     rc = DOSLoadProg( exe_name, &parmblock );
     if( TINY_OK( rc ) ) {
         TaskRegs.SS = parmblock.startsssp.segment;
-        /* for some insane reason DOS returns a starting SP two less then
-           normal */
+        /* for some insane reason DOS returns a starting SP two less then normal */
         TaskRegs.ESP = parmblock.startsssp.offset + 2;
         TaskRegs.CS = parmblock.startcsip.segment;
         TaskRegs.EIP = parmblock.startcsip.offset;
@@ -616,18 +609,17 @@ trap_retval ReqProg_load( void )
                 BoundAppLoading = FALSE;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
-                    EXEhandle = TINY_INFO( rc );
-                    SeekEXEset( StartByte );
-                    WriteEXE( saved_opcode );
-                    TinySetFileStamp( EXEhandle, EXETime, EXEDate );
-                    TinyClose( EXEhandle );
-                    EXEhandle = 0;
+                    handle = TINY_INFO( rc );
+                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    TinyFarWrite( handle, &saved_opcode, sizeof( saved_opcode ) );
+                    TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
+                    TinyClose( handle );
                     Flags.BoundApp = TRUE;
                 }
             }
         }
     }
-    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
+    ret->err = ( TINY_ERROR( rc ) ) ? TINY_INFO( rc ) : 0;
     ret->task_id = psp;
     ret->flags = 0;
     ret->mod_handle = 0;
