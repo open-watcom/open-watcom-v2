@@ -305,7 +305,7 @@ trap_retval ReqProg_load( void )
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( src, buffer, DosExtList );
+    rc = FindProgFile( src, buffer, DosExtList );
     endparm = LinkParms;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line

@@ -199,7 +199,7 @@ static tiny_ret_t TryPath( const char *name, char *end, const char *ext_list )
     return( rc );
 }
 
-long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
 {
     const char  __far *path;
     char        *p2;
@@ -274,7 +274,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     } else {
         ext_list = "";
     }
-    rc = FindFilePath( name, fullname, ext_list );
+    rc = FindProgFile( name, fullname, ext_list );
     if( TINY_OK( rc ) ) {
         ret->err = 0;
     } else {

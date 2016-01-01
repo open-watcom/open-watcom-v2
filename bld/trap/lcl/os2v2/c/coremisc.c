@@ -85,14 +85,14 @@ static long TryPath( const char *name, char *end, const char *ext_list )
     return 0xffff0000 | rc;
 }
 
-long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
 {
-    const char  *p;
-    char        *p2;
-    const char  *p3;
-    APIRET      rc;
-    int         have_ext;
-    int         have_path;
+    const char      *p;
+    char            *p2;
+    const char      *p3;
+    unsigned long   rc;
+    int             have_ext;
+    int             have_path;
 
     have_ext = 0;
     have_path = 0;

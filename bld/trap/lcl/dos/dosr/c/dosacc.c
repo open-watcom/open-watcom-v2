@@ -542,7 +542,7 @@ trap_retval ReqProg_load( void )
     Flags.BoundApp = FALSE;
     psp = DbgPSP();
     parm = name = GetInPtr( sizeof( prog_load_req ) );
-    if( TINY_ERROR( FindFilePath( name, exe_name, DosExtList ) ) ) {
+    if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
         exe_name[0] = '\0';
     }
     while( *parm++ != '\0' ) {}     // skip program name

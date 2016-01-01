@@ -50,7 +50,7 @@
 
 #if defined( MD_x64 )
     #define MYCONTEXT           WOW64_CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
@@ -60,7 +60,7 @@
                         WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
 #else
     #define MYCONTEXT           CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
@@ -76,7 +76,7 @@
 
 #if defined( MD_x64 )
     #define WOW64CONTEXT           WOW64_CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define WOW64CONTEXT_MXCSR     24
     #define WOW64CONTEXT_XMM       (10 * 16)
@@ -194,7 +194,7 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 BOOL IsBigSel( WORD sel );
-int FindFilePath( const char *pgm, char *buffer, const char *ext_list );
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list );
 void AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */

@@ -30,4 +30,4 @@
 
 
 
-extern long     FindFilePath( const char *pgm, char *buffer, const char *ext_list );
+extern unsigned long    FindProgFile( const char *pgm, char *buffer, const char *ext_list );

@@ -564,14 +564,14 @@ static long TryPath( const char *name, char *end, const char *ext_list )
     return( 0xffff0000 | rc );
 }
 
-long FindFilePath( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
 {
-    char    *p;
-    char    *p2;
-    char    *p3;
-    long    rc;
-    int     have_ext;
-    int     have_path;
+    char            *p;
+    char            *p2;
+    char            *p3;
+    unsigned long   rc;
+    int             have_ext;
+    int             have_path;
 
     have_ext = 0;
     have_path = 0;
@@ -634,7 +634,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     } else {
         ext_list = OS2ExtList;
     }
-    ret->err = FindFilePath( name, fullname, ext_list );
+    ret->err = FindProgFile( name, fullname, ext_list );
     if( ret->err != 0 ) {
         *fullname = '\0';
     }

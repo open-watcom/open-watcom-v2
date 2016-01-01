@@ -587,7 +587,7 @@ static USHORT ReadBuffer( void *dst, USHORT segv, ULONG offv, USHORT size )
             length--;
             if( length != 0 ) {
                 *data = resdata >> 8;
-                data++; 
+                data++;
                 offv++;
                 length--;
             }
@@ -1094,7 +1094,7 @@ trap_retval ReqProg_load( void )
     /* If PID was not specified, start the debuggee process */
     if( attach_pid == -1 ) {
         isAttached = FALSE;
-        if( FindFilePath( prog, exe_name, OS2ExtList ) != 0 ) {
+        if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
             exe_name[0] = '\0';
         }
         parms = AddDriveAndPath( exe_name, UtilBuff );

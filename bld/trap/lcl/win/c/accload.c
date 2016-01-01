@@ -167,7 +167,7 @@ trap_retval ReqProg_load( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindFilePath( parm, exe_name, DosExtList ) ) ) {
+        if( TINY_ERROR( FindProgFile( parm, exe_name, DosExtList ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath( exe_name, drive, directory, NULL, NULL );

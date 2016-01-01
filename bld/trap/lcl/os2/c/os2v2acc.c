@@ -992,7 +992,7 @@ trap_retval ReqProg_load( void )
     AtEnd = FALSE;
     TaskFS = 0;
     prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindFilePath( prog, exe_name, OS2ExtList ) != 0 ) {
+    if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
         exe_name[0] = '\0';
     }
     parms = AddDriveAndPath( exe_name, UtilBuff );

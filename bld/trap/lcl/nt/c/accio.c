@@ -287,7 +287,7 @@ trap_retval ReqFile_string_to_fullpath( void )
         } else {
             ext_list = NtExtList;
         }
-        ret->err = FindFilePath( name, fullname, ext_list );
+        ret->err = FindProgFile( name, fullname, ext_list );
     }
     if( ret->err != 0 )
         *fullname = '\0';

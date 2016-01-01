@@ -447,16 +447,16 @@ static int tryPath( const char *name, char *end, const char *ext_list )
     return( -1 );
 }
 
-int FindFilePath( const char *pgm, char *buffer, const char *ext_list )
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
 {
-    const char  *p;
-    char        *p2;
-    const char  *p3;
-    BOOL        have_ext;
-    BOOL        have_path;
-    char        *envbuf;
-    DWORD       envlen;
-    int         rc;
+    const char      *p;
+    char            *p2;
+    const char      *p3;
+    BOOL            have_ext;
+    BOOL            have_path;
+    char            *envbuf;
+    DWORD           envlen;
+    unsigned long   rc;
 
     have_ext = FALSE;
     have_path = FALSE;
@@ -480,14 +480,14 @@ int FindFilePath( const char *pgm, char *buffer, const char *ext_list )
         return( 0 );
     }
     if( have_path ) {
-        return( 1 );
+        return( ERROR_FILE_NOT_FOUND );
     }
     envlen = GetEnvironmentVariable( "PATH", NULL, 0 );
     if( envlen == 0 )
-        return( -1 );
+        return( GetLastError() );
     envbuf = LocalAlloc( LMEM_FIXED, envlen );
     GetEnvironmentVariable( "PATH", envbuf, envlen );
-    rc = -1;
+    rc = ERROR_FILE_NOT_FOUND;
     for( p = envbuf; *p != '\0'; ++p ) {
         p2 = buffer;
         while( *p != '\0' ) {
