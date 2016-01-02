@@ -63,11 +63,11 @@ typedef struct {
 //#pragma aux (intrface) TrapAccess;
 //#pragma aux (intrface) TrapFini;
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
-    int         len;
-} watch;
+    word        len;
+} watch_point;
 
 /* Maximum watchpoints */
 #define MAX_WP  32
@@ -88,7 +88,7 @@ extern unsigned         CurrModHandle;
 extern ULONG            ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 //extern uDB_t          Buff;
-//extern watch          WatchPoints[MAX_WP];
+//extern watch_point      WatchPoints[MAX_WP];
 //extern short          WatchCount;
 extern USHORT           FlatCS,FlatDS;
 

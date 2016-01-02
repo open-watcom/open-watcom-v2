@@ -68,7 +68,8 @@ typedef enum {
     EXE_LAST_TYPE
 } EXE_TYPE;
 
-typedef _Packed struct pblock {
+#include "pushpck1.h"
+typedef struct pblock {
     addr_seg    envstring;
     addr32_ptr  commandln;
     addr32_ptr  fcb01;
@@ -77,18 +78,19 @@ typedef _Packed struct pblock {
     addr32_ptr  startcsip;
 } pblock;
 
-#define CMD_OFFSET      0x80
-
 //
 // NOTE: if you change this structure, you must update DBGTRAP.ASM
 //
-typedef _Packed struct watch {
+typedef struct watch_point {
     addr32_ptr  addr;
     dword       value;
     dword       linear;
-    short       dregs;
-    short       len;
-} watch;
+    word        dregs;
+    word        len;
+} watch_point;
+#include "poppck.h"
+
+#define CMD_OFFSET      0x80
 
 typedef enum {
     TRAP_SKIP = -1,
@@ -110,8 +112,8 @@ extern void MoveBytes( short, short, short, short, short );
 #pragma aux MoveBytes =                                  \
 /*  MoveBytes( fromseg, fromoff, toseg, tooff, len ); */ \
        " rep    movsb "                                  \
-    parm    caller  [ ds ] [ si ] [ es ] [ di ] [ cx ]   \
-    modify  [ si di ];
+    parm    caller  [ds] [si] [es] [di] [cx]   \
+    modify  [si di];
 
 extern unsigned short MyFlags( void );
 #pragma aux MyFlags = \
@@ -124,8 +126,8 @@ extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
 extern addr_seg         DOSTaskPSP(void);
 extern void             EndUser(void);
 extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
-extern void             SetWatch386( unsigned, watch __far * );
-extern void             SetWatchPnt(unsigned, watch __far *);
+extern void             SetWatch386( unsigned, watch_point __far * );
+extern void             SetWatchPnt(unsigned, watch_point __far *);
 extern void             SetSingleStep(void);
 extern void             SetSingle386(void);
 extern void             InitVectors(void);
@@ -143,10 +145,10 @@ extern int              __far NoOvlsHdlr( int, void * );
 
 extern word             __based(__segname("_CODE")) SegmentChain;
 
-trap_cpu_regs   TaskRegs;
-char            DOS_major;
-char            DOS_minor;
-bool            BoundAppLoading;
+trap_cpu_regs           TaskRegs;
+char                    DOS_major;
+char                    DOS_minor;
+bool                    BoundAppLoading;
 
 struct {
     unsigned    Is386       : 1;
@@ -159,7 +161,7 @@ struct {
 } Flags;
 
 #define MAX_WP          32
-static watch            WatchPoints[ MAX_WP ];
+static watch_point      WatchPoints[MAX_WP];
 static short            WatchCount;
 
 static bool             IsBreak[4];
@@ -173,13 +175,14 @@ static unsigned_8       RealNPXType;
 static unsigned_8       CPUType;
 
 #ifdef DEBUG_ME
-int out( char * str )
+int out( char *str )
 {
     char *p;
 
     p = str;
-    while( *p ) ++p;
-    TinyWrite( 1, str, p - str );
+    while( *p != '\0' )
+        ++p;
+    TinyFarWrite( 1, str, p - str );
     return 0;
 }
 
@@ -198,7 +201,7 @@ char * hex( unsigned long num )
       return( p );
     }
     while( num != 0 ) {
-        *--p = "0123456789abcdef"[ num & 15 ];
+        *--p = "0123456789abcdef"[num & 15];
         num >>= 4;
     }
     return( p );
@@ -254,16 +257,16 @@ trap_retval ReqMap_addr( void )
         break;
     }
     if( Flags.BoundApp ) {
-        count = NumSegments - seg;
         segment = MK_FP( SegmentChain, 14 );
-        while( count != 0 ) {
+        for( count = NumSegments - seg; count != 0; --count ) {
             segment = MK_FP( *segment, 14 );
-            --count;
         }
         ret->out_addr.segment = FP_SEG( segment ) + 1;
     } else {
         ret->out_addr.segment = DOSTaskPSP() + seg;
-        if( !Flags.com_file ) ret->out_addr.segment += 0x10;
+        if( !Flags.com_file ) {
+            ret->out_addr.segment += 0x10;
+        }
     }
     ret->out_addr.offset = acc->in_addr.offset;
     ret->lo_bound = 0;
@@ -346,10 +349,10 @@ trap_retval ReqWrite_mem( void )
     trap_elen       len;
     void            *data;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    data = GetInPtr(sizeof(*acc));
-    len = GetTotalSize() - sizeof(*acc);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    data = GetInPtr( sizeof( *acc ) );
+    len = GetTotalSize() - sizeof( *acc );
 
     acc->mem_addr.offset &= 0xffff;
     int_tbl = IsInterrupt( acc->mem_addr, len );
@@ -437,7 +440,7 @@ trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
-    mr = GetInPtr(sizeof(write_regs_req));
+    mr = GetInPtr( sizeof( write_regs_req ) );
     *(struct x86_cpu *)&TaskRegs = mr->x86.cpu;
     if( Have87Emu() ) {
         Write87EmuState( &mr->x86.u.fpu );
@@ -459,9 +462,9 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
         case EXTENDED_SIGNATURE: // 'P3'
             return( EXE_PHARLAP_SIMPLE );
         case DOS_SIGNATURE:
-            if( head.reloc_offset != OS2_EXE_HEADER_FOLLOWS )
-                return( EXE_DOS );
-            return( EXE_OS2 );
+            if( head.reloc_offset == OS2_EXE_HEADER_FOLLOWS )
+                return( EXE_OS2 );
+            return( EXE_DOS );
         default:
             Flags.com_file = TRUE;
             break;
@@ -508,7 +511,8 @@ trap_retval ReqProg_load( void )
     if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
         exe_name[0] = '\0';
     }
-    while( *parm++ != '\0' ) {}     // skip program name
+    while( *parm++ != '\0' )        // skip program name
+        {}
     len = GetTotalSize() - ( parm - name ) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
@@ -651,7 +655,7 @@ out( "done AccKillProg\r\n" );
 
 trap_retval ReqSet_watch( void )
 {
-    watch               *curr;
+    watch_point         *curr;
     set_watch_req       *wp;
     set_watch_ret       *wr;
     int                 i,needed;
@@ -668,13 +672,13 @@ trap_retval ReqSet_watch( void )
         curr->value = *(dword __far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
         curr->linear = ( (unsigned long)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = ( wp->watch_addr.offset & (curr->len-1) ) ? 2 : 1;
+        curr->linear &= ~( curr->len - 1 );
+        curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
         ++WatchCount;
         if( Flags.DRsOn ) {
             needed = 0;
             for( i = 0; i < WatchCount; ++i ) {
-                needed += WatchPoints[ i ].dregs;
+                needed += WatchPoints[i].dregs;
             }
             if( needed <= 4 ) {
                 wr->multiplier |= USING_DEBUG_REG;
@@ -762,7 +766,7 @@ static int ClearDebugRegs( int trap )
              }
         }
         for( i = 0; i < 4; ++i ) {
-            IsBreak[ i ] = FALSE;
+            IsBreak[i] = FALSE;
         }
         SetDR6( 0 );
         SetDR7( 0 );
@@ -778,7 +782,7 @@ static bool SetDebugRegs( void )
     int                 dr;
     unsigned long       dr7;
     unsigned long       linear;
-    watch               *wp;
+    watch_point         *wp;
     bool                watch386;
 
     if( !Flags.DRsOn )
@@ -805,7 +809,7 @@ static bool SetDebugRegs( void )
     if( GotABadBreak && dr < 4 ) {
         linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
         dr7 |= SetDRn( dr, linear, DR7_L1 | DR7_BINST );
-        IsBreak[ dr ] = TRUE;
+        IsBreak[dr] = TRUE;
         ++dr;
     }
     SetDR7( dr7 );
@@ -932,7 +936,7 @@ trap_retval ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        strcpy( err_txt, DosErrMsgs[acc->err] );
     } else {
         strcpy( err_txt, TRP_ERR_unknown_system_error );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
@@ -951,7 +955,7 @@ trap_retval ReqGet_message_text( void )
     char                        *err_txt;
 
     ret = GetOutPtr( 0 );
-    err_txt = GetOutPtr( sizeof(*ret) );
+    err_txt = GetOutPtr( sizeof( *ret ) );
     if( ExceptNum == -1 ) {
         err_txt[0] = '\0';
     } else {

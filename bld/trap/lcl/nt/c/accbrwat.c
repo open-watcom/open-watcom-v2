@@ -44,8 +44,8 @@ typedef struct {
     DWORD           value;
     DWORD           value_high; /* Extended for 8 byte breakpoints */
     DWORD           linear;
-    unsigned short  len;
-    unsigned short  dregs;
+    word            len;
+    word            dregs;
 }                   watch_point;
 
 static watch_point  wpList[MAX_WP];
@@ -240,14 +240,14 @@ BOOL SetDebugRegs( void )
         dr  = 0;
         dr7 = 0;
         for( i = 0, wp = wpList; i < WPCount; i++, wp++ ) {
-            
+
             DWORD   boundary_check = wp->linear & 0x3;
-            
+
             switch( wp->dregs ) {
             case 1: /* If we only need one register, then we are 1 byte anywhere, 2 bytes on word boundary, or 4 bytes on dword boundary */
                 {
                     dr7 |= setDRn( dr+0, wp->linear, DRLen( wp->len ) | DR7_BWR );
-                    dr++;                    
+                    dr++;
                 }
                 break;
             case 2: /* If we need 2 registers, then ... */
@@ -299,9 +299,9 @@ BOOL SetDebugRegs( void )
                 return FALSE;
             }
         }
-        
-    } else { 
-    
+
+    } else {
+
         needed = 0;
         for( i = 0; i < WPCount; i++ ) {
             needed += wpList[i].dregs;
@@ -321,9 +321,9 @@ BOOL SetDebugRegs( void )
             /* by allocating 2 debug registers. It is now possible, then, for an 8 byte */
             /* breakpoint to require 3 hardware registers (2, 4, 2)                     */
             /* The macro DRLen supports 1, 2, 4 bytes ( >4 == 4 ) for BPlen             */
-            if( wp->dregs > 1 ) {  
+            if( wp->dregs > 1 ) {
                 /* Must be 2, 4 or 8 to cross a boundary */
-                DWORD   additive = wp->len == 8 ? 4 : wp->len;
+                DWORD   additive = ( wp->len == 8 ) ? 4 : wp->len;
                 dr7 |= setDRn( dr, wp->linear + additive, DRLen( wp->len ) | DR7_BWR );
                 dr++;
             }
@@ -408,23 +408,23 @@ trap_retval ReqSet_watch( void )
         curr = wpList + WPCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        
+
         /*
          *  This always reads 4 bytes. I think it should read min(4, acc->size) and ensure
-         *  the rest is NULed out for comparison purposes. Could read past a segment end 
+         *  the rest is NULed out for comparison purposes. Could read past a segment end
          *  otherwise
          */
         ReadMem( acc->watch_addr.segment, acc->watch_addr.offset, &value, sizeof( dword ) );
         curr->value = value;
         curr->len = acc->size;
 
-        /* 
+        /*
          *  Carl: The debugger main has been extended to request 8 byte breakpoints. This code was originally
-         *  only storing the bytes from above - which is probably wrong as well! 
+         *  only storing the bytes from above - which is probably wrong as well!
          *  Nevertheless, I store the next 4 bytes if the watchpoint is larger than 4 bytes
          */
         if( curr->len > 4 ) {
-            ReadMem( acc->watch_addr.segment, acc->watch_addr.offset+sizeof(dword), &value_high, sizeof( dword ) );
+            ReadMem( acc->watch_addr.segment, acc->watch_addr.offset + sizeof( dword ), &value_high, sizeof( dword ) );
             curr->value_high = value_high;
         }
 
@@ -437,60 +437,62 @@ trap_retval ReqSet_watch( void )
 
         /* Calculate where the breakpoint should be */
         /* 1 byte breakpoint starts at where it says on the tin -   OK */
-        /* 2 byte breakpoint starts at previous word offset -       OK */        
-        /* 4 byte breakpoint starts at previous dword offset -      not sure */        
-        /* 8 byte breakpoint starts at previous dword offset -      not sure */        
+        /* 2 byte breakpoint starts at previous word offset -       OK */
+        /* 4 byte breakpoint starts at previous dword offset -      not sure */
+        /* 8 byte breakpoint starts at previous dword offset -      not sure */
         curr->linear = linear;
-        
+
         /* If we are supporting exact break on write, then don't adjust the linear address */
         if( !SupportingExactBreakpoints ) {
             curr->linear &= ~( lencalc - 1 );
             /* This is checking if we are crossing a DWORD boundary to use 2 registers. We need to do the same if we are a QWord */
             curr->dregs = ( linear & ( lencalc - 1 ) ) ? 2 : 1;
             /* QWord always needs 1 more register */
-            if(curr->len == 8)
+            if( curr->len == 8 ) {
                 curr->dregs++;
+            }
         } else {
             DWORD   boundary_check = linear & 0x3;
-            
+
             if( 1 == curr->len ) {
                 curr->dregs = 1;
             } else if ( 2 == curr->len ) {
                 curr->dregs = 1;
-                if(boundary_check & 1)
+                if( boundary_check & 1 ) {
                     curr->dregs++;      /* Need two 1 byte watches */
+                }
             } else if ( 4 == curr->len ) {
                 switch( boundary_check ) {
-                    case 0:
-                        curr->dregs = 1;    /* 0x00-0x03:   4B@0x00 */
-                        break;
-                    case 1:
-                        curr->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1@0x04 */
-                        break;
-                    case 2:
-                        curr->dregs = 2;    /* 0x02-0x05:   2B@0x02, 2B@0x04 */
-                        break;
-                    case 3:
-                        curr->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1@0x06 */
-                        break;
+                case 0:
+                    curr->dregs = 1;    /* 0x00-0x03:   4B@0x00 */
+                    break;
+                case 1:
+                    curr->dregs = 3;    /* 0x01-0x04:   1B@0x01, 2B@0x02, 1@0x04 */
+                    break;
+                case 2:
+                    curr->dregs = 2;    /* 0x02-0x05:   2B@0x02, 2B@0x04 */
+                    break;
+                case 3:
+                    curr->dregs = 3;    /* 0x03-0x06L   1B@0x03, 2B@0x04, 1@0x06 */
+                    break;
                 }
             } else if ( 8 == curr->len ) {
                 switch( boundary_check ) {
-                    case 0:
-                        curr->dregs = 2;    /* 0x00-0x07:   4B@0x00, 4B@0x04 */
-                        break;
-                    case 1:
-                        curr->dregs = 4;    /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
-                        break;
-                    case 2:
-                        curr->dregs = 3;    /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
-                        break;
-                    case 3:
-                        curr->dregs = 4;    /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
-                        break;
+                case 0:
+                    curr->dregs = 2;    /* 0x00-0x07:   4B@0x00, 4B@0x04 */
+                    break;
+                case 1:
+                    curr->dregs = 4;    /* 0x01-0x08:   1B@0x01, 2B@0x02, 4B@0x04, 1B@0x08 */
+                    break;
+                case 2:
+                    curr->dregs = 3;    /* 0x02-0x09:   2B@0x02, 4B@0x04, 2B@0x08 */
+                    break;
+                case 3:
+                    curr->dregs = 4;    /* 0x03-0x0A:   1B@0x03, 4B@0x04, 2B@0x08, 1B@0x0A */
+                    break;
                 }
             } else {
-                return 0;   /* Error!!! */   
+                return 0;   /* Error!!! */
             }
         }
         if(1) /* New scope */
@@ -521,8 +523,7 @@ trap_retval ReqClear_watch( void )
     acc = GetInPtr( 0 );
     dst = src = wpList;
     for( i = 0; i < WPCount; i++ ) {
-        if( src->loc.segment != acc->watch_addr.segment
-        ||  src->loc.offset != acc->watch_addr.offset ) {
+        if( src->loc.segment != acc->watch_addr.segment || src->loc.offset != acc->watch_addr.offset ) {
             dst->loc.offset = src->loc.offset;
             dst->loc.segment = src->loc.segment;
             dst->value = src->value;

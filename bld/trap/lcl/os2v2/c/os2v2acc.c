@@ -114,7 +114,7 @@ static void OutNum( ULONG i )
 static ULONG            ExceptLinear;
 static UCHAR            TypeProcess;
 static BOOL             Is32Bit;
-static watch            WatchPoints[MAX_WP];
+static watch_point      WatchPoints[MAX_WP];
 static short            WatchCount = 0;
 static short            DebugRegsNeeded = 0;
 static unsigned_16      lastCS;
@@ -1284,8 +1284,8 @@ trap_retval ReqSet_watch( void )
 trap_retval ReqClear_watch( void )
 {
     clear_watch_req  *acc;
-    watch            *dst;
-    watch            *src;
+    watch_point      *dst;
+    watch_point      *src;
     int              i;
 
 

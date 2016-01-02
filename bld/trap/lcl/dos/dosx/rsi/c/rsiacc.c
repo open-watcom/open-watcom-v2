@@ -66,15 +66,15 @@
 
 #define IsDPMI          (_d16info.swmode == 0)
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr          addr;
     dword               value;
     dword               linear;
-    short               dregs;
-    unsigned short      len;
+    word                dregs;
+    word                len;
     dpmi_watch_handle   handle;
     dpmi_watch_handle   handle2;
-} watch;
+} watch_point;
 
 static struct {
     unsigned_32         size;
@@ -92,7 +92,7 @@ static unsigned_8       RealNPXType;
 static char             UtilBuff[BUFF_SIZE];
 
 #define MAX_WP 32
-static watch            WatchPoints[ MAX_WP ];
+static watch_point      WatchPoints[MAX_WP];
 static int              WatchCount;
 
 static void EMURestore( _word seg, const void __far *data )
@@ -278,27 +278,24 @@ trap_retval ReqChecksum_mem( void )
     unsigned short      read;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
+    unsigned short      buff_len;
 
     _DBG_Writeln( "AccChkSum" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    len = acc->len;
+
     ret->result = 0;
-    while( len >= BUFF_SIZE ) {
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, BUFF_SIZE );
+    buff_len = BUFF_SIZE;
+    for( len = acc->len; len > 0; len -= buff_len ) {
+        if( buff_len > len )
+            buff_len = len;
+        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, buff_len );
         for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[ i ];
+            ret->result += UtilBuff[i];
         }
-        if( read != BUFF_SIZE ) return( sizeof( *ret ) );
-        len -= BUFF_SIZE;
-    }
-    if( len != 0 ) {
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, len );
-        if( read == len ) {
-            for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[ i ];
-            }
+        if( read != buff_len ) {
+            break;
         }
     }
     return( sizeof( ret ) );
@@ -456,7 +453,7 @@ trap_retval ReqWrite_regs( void )
 {
     const mad_registers *mr;
 
-    mr = GetInPtr(sizeof(write_regs_req));
+    mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
     WriteFPU( &mr->x86.u.fpu );
     return( 0 );
@@ -568,7 +565,7 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_watch( void )
 {
-    watch           *curr;
+    watch_point     *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
     int             i;
@@ -585,7 +582,7 @@ trap_retval ReqSet_watch( void )
     curr->addr.offset = acc->watch_addr.offset;
     curr->linear = DPMIGetSegmentBaseAddress( curr->addr.segment ) + curr->addr.offset;
     curr->len = acc->size;
-    curr->dregs = ( curr->linear & (curr->len - 1) ) ? 2 : 1;
+    curr->dregs = ( curr->linear & ( curr->len - 1 ) ) ? 2 : 1;
     curr->handle = -1;
     curr->handle2 = -1;
     curr->value = 0;
@@ -593,7 +590,7 @@ trap_retval ReqSet_watch( void )
     ++WatchCount;
     needed = 0;
     for( i = 0; i < WatchCount; ++i ) {
-        needed += WatchPoints[ i ].dregs;
+        needed += WatchPoints[i].dregs;
     }
     if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
     return( sizeof( *ret ) );
@@ -663,7 +660,7 @@ static unsigned long SetDRn( int i, unsigned long linear, long type )
 static void ClearDebugRegs( void )
 {
     int         i;
-    watch       *wp;
+    watch_point *wp;
 
     if( IsDPMI ) {
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -687,7 +684,7 @@ static bool SetDebugRegs( void )
 {
     int                 needed;
     int                 i;
-    watch               *wp;
+    watch_point         *wp;
     bool                success;
     long                rc;
 
@@ -773,7 +770,7 @@ static bool CheckWatchPoints( void )
 {
     addr48_ptr  addr;
     dword       val;
-    watch       *wp;
+    watch_point *wp;
 
     for( wp = WatchPoints; wp < WatchPoints + WatchCount; ++wp ) {
         addr.segment = wp->addr.segment;
@@ -836,7 +833,7 @@ static unsigned ProgRun( bool step )
                     ret->conditions = DoRun();
                     Proc.eflags &= ~TRACE_BIT;
                 }
-                if( !(ret->conditions & (COND_TRACE|COND_BREAK)) )
+                if( ( ret->conditions & (COND_TRACE|COND_BREAK) ) == 0 )
                     break;
                 if( CheckWatchPoints() ) {
                     ret->conditions |= COND_WATCH;
@@ -892,7 +889,7 @@ trap_retval ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        strcpy( err_txt, DosErrMsgs[acc->err] );
         _DBG_Writeln( "After strcpy" );
     } else {
         _DBG_Writeln( "After acc->error_code > MAX_ERR_CODE" );
@@ -923,7 +920,7 @@ trap_retval ReqGet_message_text( void )
     char                        *err_txt;
 
     ret = GetOutPtr( 0 );
-    err_txt = GetOutPtr( sizeof(*ret) );
+    err_txt = GetOutPtr( sizeof( *ret ) );
     if( Proc.int_id == -1 ) {
         err_txt[0] = '\0';
     } else {

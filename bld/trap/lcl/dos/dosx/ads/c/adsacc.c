@@ -85,12 +85,12 @@ typedef struct watch {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    short       dregs;
-    short       len;
+    word        dregs;
+    word        len;
 } watch;
 
 #define MAX_WP  8
-watch   WatchPoints[ MAX_WP ];
+watch   WatchPoints[MAX_WP];
 int     WatchCount;
 
 #define _DBG3( x ) // MyOut x
@@ -163,7 +163,8 @@ void RawOut( char *str )
         scr[i*2+1] = 7;
     }
     _line++;
-    if( _line > 24 ) _line = 0;
+    if( _line > 24 )
+        _line = 0;
 
     scr = &scrn[_line*80*2];
     for( i=0;i<80;i++ ) {
@@ -205,10 +206,13 @@ static  word    LookUp( word sdtseg, word seg, word global_sel )
     sdtlim = SegLimit( sdtseg );
     linear = GetLinear( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
-        if( sdtoff == ( seg & 0xfff8 ) ) continue;
+        if( sdtoff == ( seg & 0xfff8 ) )
+            continue;
         otherseg = sdtoff + ( global_sel ? 0 : 4 );
-        if( !WriteOk( otherseg ) ) continue;
-        if( GetLinear( otherseg, 0 ) != linear ) continue;
+        if( !WriteOk( otherseg ) )
+            continue;
+        if( GetLinear( otherseg, 0 ) != linear )
+            continue;
                                                                           _DBG3(("lookup %4.4x", otherseg));
         return( otherseg );
     }
@@ -221,9 +225,11 @@ word    AltSegment( word seg )
     word        otherseg;
 
     otherseg = LookUp( 0x30, seg, 0 );  /* try LDT */
-    if( otherseg != 0 ) return( otherseg );
+    if( otherseg != 0 )
+        return( otherseg );
     otherseg = LookUp( 0x38, seg, 1 );  /* try GDT */
-    if( otherseg != 0 ) return( otherseg );
+    if( otherseg != 0 )
+        return( otherseg );
     return( seg );
 }
 
@@ -260,7 +266,8 @@ static int ReadWrite( int (*r)(word,dword,char*), addr48_ptr *addr, char *data, 
     len = 0;
                                                                           _DBG2(("Read Write One byte at a time for %d", req));
     while( --req >= 0 ) {
-        if( SegLimit( segment ) < offset ) break;
+        if( SegLimit( segment ) < offset )
+            break;
         if( !r( segment, offset, data ) ) {
             segment = AltSegment( segment );
         }
@@ -281,7 +288,8 @@ static int ReadMemory( addr48_ptr *addr, byte *data, int len )
 
 static int WriteMemory( addr48_ptr *addr, byte *data, int len )
 {
-    if( addr->segment == Regs.CS ) addr->segment = Regs.DS; // hack, ack
+    if( addr->segment == Regs.CS )
+        addr->segment = Regs.DS; // hack, ack
     return( ReadWrite( DoWriteMem, addr, (char *)data, len ) );
 }
 
@@ -290,7 +298,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
                                                                           _DBG1(( "AccGetConfig" ));
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->sys.os = MAD_OS_AUTOCAD;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
@@ -307,8 +315,8 @@ trap_retval ReqMap_addr( void )
     map_addr_req        *acc;
     map_addr_ret        *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( acc->in_addr.segment == MAP_FLAT_DATA_SELECTOR ) {
         ret->out_addr.segment = Regs.DS;
     } else {
@@ -351,16 +359,17 @@ trap_retval ReqChecksum_mem( void )
         read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, BUFF_SIZE );
         acc->in_addr.offset += BUFF_SIZE;
         for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[ i ];
+            ret->result += UtilBuff[i];
         }
-        if( read != BUFF_SIZE ) return( sizeof( *ret ) );
+        if( read != BUFF_SIZE )
+            return( sizeof( *ret ) );
         len -= BUFF_SIZE;
     }
     if( len != 0 ) {
         read = ReadMemory( &acc->in_addr, (byte *)&UtilBuff, len );
         if( read == len ) {
             for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[ i ];
+                ret->result += UtilBuff[i];
             }
         }
     }
@@ -387,8 +396,8 @@ trap_retval ReqWrite_mem( void )
                                                                           _DBG1(( "WriteMem" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof(*acc) ),
-                            GetTotalSize() - sizeof(*acc) );
+    ret->len = WriteMemory( &acc->mem_addr, GetInPtr( sizeof( *acc ) ),
+                            GetTotalSize() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -397,8 +406,8 @@ trap_retval ReqRead_io( void )
     read_io_req *acc;
     void        *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
     if( acc->len == 1 ) {
         *( (byte *)ret ) = In_b( acc->IO_offset );
     } else if( acc->len == 2 ) {
@@ -417,10 +426,10 @@ trap_retval ReqWrite_io( void )
     write_io_ret        *ret;
     void                *data;
 
-    acc = GetInPtr(0);
+    acc = GetInPtr( 0 );
     data = GetInPtr( sizeof( *acc ) );
     len = GetTotalSize() - sizeof( *acc );
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     if( len == 1 ) {
         Out_b( acc->IO_offset, *( (byte *)data ) );
     } else if( len == 2 ) {
@@ -436,7 +445,7 @@ trap_retval ReqRead_regs( void )
 {
     mad_registers       *mr;
 
-    mr = GetOutPtr(0);
+    mr = GetOutPtr( 0 );
     mr->x86.cpu = *(struct x86_cpu *)&Regs;
     Read387( &mr->x86.u.fpu );
     return( sizeof( mr->x86 ) );
@@ -446,7 +455,7 @@ trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
-    mr = GetInPtr(sizeof(write_regs_req));
+    mr = GetInPtr( sizeof( write_regs_req ) );
     *(struct x86_cpu *)&Regs = mr->x86.cpu;
     Write387( &mr->x86.u.fpu );
     return( 0 );
@@ -560,10 +569,10 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_watch( void )
 {
-    watch        *curr;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
-    int          i,needed;
+    watch           *curr;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    int             i, needed;
 
     _DBG0(( "AccSetWatch" ));
     acc = GetInPtr( 0 );
@@ -578,23 +587,16 @@ trap_retval ReqSet_watch( void )
         ++WatchCount;
         curr->linear = GetLinear( curr->addr.segment, curr->addr.offset );
         curr->len = acc->size;
-        curr->dregs = ( curr->linear & (curr->len-1) ) ? 2 : 1;
-        curr->linear &= ~(curr->len-1);
+        curr->dregs = ( curr->linear & ( curr->len - 1 ) ) ? 2 : 1;
+        curr->linear &= ~( curr->len - 1 );
         needed = 0;
         for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[ i ].dregs;
+            needed += WatchPoints[i].dregs;
         }
-        if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
-        _DBG0((
-        "addr %4.4x:%8.8lx "
-        "linear %8.8x "
-        "len %d "
-        "needed %d "
-        ,curr->addr.segment,curr->addr.offset
-        ,curr->linear
-        ,curr->len
-        ,needed
-        ));
+        if( needed <= 4 )
+            ret->multiplier |= USING_DEBUG_REG;
+        _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d "
+            ,curr->addr.segment, curr->addr.offset, curr->linear, curr->len, needed));
     }
     return( sizeof( *ret ) );
 }
@@ -642,7 +644,7 @@ static dword *DR[] = { &SysRegs.dr0, &SysRegs.dr1, &SysRegs.dr2, &SysRegs.dr3 };
 
 static void SetDRnBW( int dr, dword linear, int len ) /* Set DRn for break on write */
 {
-    *DR[ dr ] = linear;
+    *DR[dr] = linear;
     SysRegs.dr7 |= ( ( DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
                      | ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
@@ -659,7 +661,8 @@ static bool SetDebugRegs()
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         needed += wp->dregs;
     }
-    if( needed > 4 ) return( FALSE );
+    if( needed > 4 )
+        return( FALSE );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -699,9 +702,12 @@ static unsigned ProgRun( bool step )
             for( ;; ) {
                 Regs.EFL |= TRACE_BIT;
                 MyRunProg();
-                if( DoneAutoCAD ) break;
-                if( IntNum != 1 ) break;
-                if( !( SysRegs.dr6 & DR6_BS ) ) break;
+                if( DoneAutoCAD )
+                    break;
+                if( IntNum != 1 )
+                    break;
+                if( ( SysRegs.dr6 & DR6_BS ) == 0 )
+                    break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                     ReadMemory( &wp->addr, (void *)&value, 4 );
                     if( value != wp->value ) {
@@ -791,7 +797,7 @@ extern int GtKey();
 #pragma aux GtKey = \
     "xor    ah,ah"  \
     "int    16"     \
-modify [ ax ];
+modify [ax];
 
 
 static unsigned_16 AccReadUserKey()
@@ -818,7 +824,7 @@ trap_retval ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        strcpy( err_txt, DosErrMsgs[acc->err] );
     } else {
         strcpy( err_txt, TRP_ERR_unknown_system_error );
         ultoa( acc->err, err_txt + strlen( err_txt ), 16 );
@@ -847,7 +853,7 @@ trap_retval ReqGet_message_text( void )
     char                        *err_txt;
 
     ret = GetOutPtr( 0 );
-    err_txt = GetOutPtr( sizeof(*ret) );
+    err_txt = GetOutPtr( sizeof( *ret ) );
     if( IntNum == -1 ) {
         err_txt[0] = '\0';
     } else {
