@@ -55,7 +55,7 @@ static PFNSHGPFIL       pfnSHGetPathFromIDList = NULL;
 #endif
 
 static fancy_find       snoopData =
-    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
+    { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
 
 #ifdef __NT__
 

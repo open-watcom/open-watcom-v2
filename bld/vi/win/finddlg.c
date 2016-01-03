@@ -39,7 +39,7 @@
 WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static fancy_find findData =
-    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0 };
+    { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
 
 /*
  * FindDlgProc - callback routine for find dialog
@@ -63,7 +63,7 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         if( findData.posx == -1 && findData.posy == -1 ) {
             CenterWindowInRoot( hwnd );
         } else {
-            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy, 
+            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );

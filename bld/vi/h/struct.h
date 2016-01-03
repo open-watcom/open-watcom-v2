@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Definition if internal editor structures. 
+* Description:  Definition if internal editor structures.
 *
 ****************************************************************************/
 
@@ -46,13 +46,6 @@ typedef struct {
 } cursor_type;
 
 typedef struct {
-    bool            case_ignore     : 1;
-    bool            use_regexp      : 1;
-    bool            search_forward  : 1;
-    bool            search_wrap     : 1;
-    bool            prompt          : 1;
-    bool            selection       : 1;
-    bool            spare           : 2;
     int             posx;
     int             posy;
     char            *find;
@@ -63,6 +56,12 @@ typedef struct {
     int             extlen;
     char            *path;
     int             pathlen;
+    bool            case_ignore     : 1;
+    bool            use_regexp      : 1;
+    bool            search_forward  : 1;
+    bool            search_wrap     : 1;
+    bool            prompt          : 1;
+    bool            selection       : 1;
 } fancy_find;
 
 typedef struct {
@@ -314,7 +313,6 @@ typedef struct range {
  */
     unsigned char   fix_range   : 1;
     unsigned char   selected    : 1;
-    unsigned char   spare       : 4;
 } range;
 
 typedef vi_rc (*insert_rtn)( void );
@@ -516,40 +514,35 @@ typedef struct {
     char        *result;        // where to copy the data for the picked line
     int         num;            // number of the picked line
     int         *allowrl;       // allow cursor right/left (for menu bar)
-    hilst       *hilite;       // chars to highlight
+    hilst       *hilite;        // chars to highlight
     vi_key      *retevents;     // events that simulate pressing enter
     vi_key      event;          // event that caused a return
-    bool        show_lineno;    // show lines in top-right corner
     linenum     cln;            // current line to display
-    window_id   eiw;            // alternate window to accept events in (like
-                                // the options window after fgrep...)
-    bool        is_menu : 1;    // is a menu we are showing
-    bool        spare   : 7;
+    window_id   eiw;            // alternate window to accept events in (like the options window after fgrep...)
+    bool        show_lineno : 1;// show lines in top-right corner
+    bool        is_menu     : 1;// is a menu we are showing
 } selectitem;
 
 /*
  * SelectLineInFile data structure
  */
 typedef struct {
-    file        *f;                 // file with data for lines
-    char        **vals;             // values associated with each line
-    int         valoff;             // offset to display values beside line data
-    window_info *wi;                // info describing window to create
-    linenum     sl;                 // selected line
-    char        *title;             // title of window
-    vi_rc       (*checkres)(const char *, char *, int * ); // check if selected
-                                    // change is valid
-    int         *allow_rl;          // allow cursor right/left (for menu bar)
-    hilst       *hilite;           // chars to highlight
-    bool        show_lineno;        // show lines in top-right corner
-    vi_key      *retevents;         // events that simulate pressing enter
-    vi_key      event;              // event that caused a return
-    linenum     cln;                // current line to display
-    window_id   eiw;                // alternate window to accept events in (like
-                                    // the options window after fgrep...)
-    bool        is_menu             : 1; // select list is a menu
-    bool        has_scroll_gadgets  : 1; // list has scroll gadgets
-    bool        spare               : 6;
+    file        *f;                     // file with data for lines
+    char        **vals;                 // values associated with each line
+    int         valoff;                 // offset to display values beside line data
+    window_info *wi;                    // info describing window to create
+    linenum     sl;                     // selected line
+    char        *title;                 // title of window
+    vi_rc       (*checkres)(const char *, char *, int * ); // check if selected change is valid
+    int         *allow_rl;              // allow cursor right/left (for menu bar)
+    hilst       *hilite;                // chars to highlight
+    vi_key      *retevents;             // events that simulate pressing enter
+    vi_key      event;                  // event that caused a return
+    linenum     cln;                    // current line to display
+    window_id   eiw;                    // alternate window to accept events in (like the options window after fgrep...)
+    bool        show_lineno        : 1; // show lines in top-right corner
+    bool        is_menu            : 1; // select list is a menu
+    bool        has_scroll_gadgets : 1; // list has scroll gadgets
 } selflinedata;
 
 /*
