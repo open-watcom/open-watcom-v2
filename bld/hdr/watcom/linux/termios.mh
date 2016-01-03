@@ -28,10 +28,10 @@ struct termios {
     tcflag_t        c_oflag;        /* Output mode flags    */
     tcflag_t        c_cflag;        /* Control mode flags   */
     tcflag_t        c_lflag;        /* Local mode flags     */
-    cc_t            c_line;         /* Line discipline      */
     cc_t            c_cc[NCCS];     /* Control characters   */
     speed_t         c_ispeed;       /* Input speed          */
     speed_t         c_ospeed;       /* Output speed         */
+    cc_t            c_line;         /* Line discipline      */
 };
 
 /*
