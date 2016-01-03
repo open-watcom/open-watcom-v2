@@ -35,7 +35,7 @@
 #include "win.h"
 
 static window_info      exwInfo =
-    { 0, BLACK, WHITE, { BRIGHT_WHITE, BLACK, 0 }, { WHITE, BLACK, 0 }, 0, 24, 79, 24 };
+    { BLACK, WHITE, { BRIGHT_WHITE, BLACK, 0 }, { WHITE, BLACK, 0 }, 0, 24, 79, 24, false };
 
 /*
  * EnterExMode - start Ex emulation mode

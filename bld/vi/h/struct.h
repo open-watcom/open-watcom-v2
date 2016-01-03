@@ -71,15 +71,11 @@ typedef struct {
 } history_data;
 
 typedef struct {
+    vi_key          *data;
     unsigned char   inuse           : 1;
     unsigned char   is_base         : 1;
     unsigned char   was_inuse       : 1;
     unsigned char   no_input_window : 1;
-    unsigned char   fill5           : 1;
-    unsigned char   fill6           : 1;
-    unsigned char   fill7           : 1;
-    unsigned char   fill8           : 1;
-    vi_key          *data;
 } key_map;
 
 /* command structure */
@@ -131,7 +127,6 @@ typedef struct {
 } date_struct;
 
 typedef struct {
-    char                attr;
     long                fsize;
 #ifndef __UNIX__
     time_struct         time;
@@ -140,6 +135,7 @@ typedef struct {
     unsigned long       time;
     unsigned short      st_mode;
 #endif
+    char                attr;
     char                name[1];
 } direct_ent;
 
@@ -177,8 +173,7 @@ typedef struct {
 typedef struct linedata {
     unsigned    mark        : 5;    // first mark on the line
     unsigned    globmatch   : 1;    // global command matched this line
-    unsigned    nolinedata  : 1;    // no data associated with this line (WorkLine
-                                    // has the data instead)
+    unsigned    nolinedata  : 1;    // no data associated with this line (WorkLine has the data instead)
     unsigned    hidden      : 1;    // line is hidden (NYI)
     unsigned    hilite      : 1;    // line need hiliting
     unsigned    fill10      : 1;
@@ -194,11 +189,11 @@ typedef vi_ushort   linedata_t;
 
 typedef struct line {
     struct line *next, *prev;   // links for other lines
-    short       len;            // length of line
     union {
         linedata        ld;
         linedata_t      ld_word;
     } u;
+    short       len;            // length of line
     char        data[1];        // actual string for line
 } line;
 
@@ -216,9 +211,9 @@ typedef struct fcb {
     struct file *f;                         // file associated with fcb
     line_list   lines;                      // linked list of lines
     linenum     start_line, end_line;       // starting/ending line number
-    short       byte_cnt;                   // number of bytes in lines
     long        offset;                     // offset in swap file
     long        last_swap;                  // time fcb was last swapped
+    long        xmemaddr;                   // address of fcb in extended memory
     unsigned    swapped             : 1;    // fcb is swapped
     unsigned    in_memory           : 1;    // fcb is in memory
     unsigned    on_display          : 1;    // lines in fcb are displayed
@@ -238,7 +233,7 @@ typedef struct fcb {
     unsigned    flag14              : 1;
     unsigned    flag15              : 1;
     unsigned    flag16              : 1;
-    long        xmemaddr;                   // address of fcb in extended memory
+    short       byte_cnt;                   // number of bytes in lines
 } fcb;
 #define FCB_SIZE sizeof( fcb )
 
@@ -254,26 +249,21 @@ typedef struct file {
     char        *home;                  // home directory of file
     fcb_list    fcbs;                   // linked list of fcbs
     long        curr_pos;               // current offset in file on disk
+    long        size;                   // size of file in bytes
     unsigned    modified        : 1;    // file has been modified
-    unsigned    bytes_pending   : 1;    // there are still bytes to be read
-                                        // off the disk for the file
+    unsigned    bytes_pending   : 1;    // there are still bytes to be read off the disk for the file
     unsigned    viewonly        : 1;    // file is view only
     unsigned    read_only       : 1;    // file is read only
-    unsigned    check_readonly  : 1;    // file needs its read-only status
-                                        // checked against the file on disk
-    unsigned    dup_count       : 4;    // number of duplicate views on the
-                                        // file that have been opened
+    unsigned    check_readonly  : 1;    // file needs its read-only status checked against the file on disk
+    unsigned    dup_count       : 4;    // number of duplicate views on the file that have been opened
     unsigned    been_autosaved  : 1;    // file has been autosaved
     unsigned    need_autosave   : 1;    // file needs to be autosaved
-    unsigned    is_stdio        : 1;    // file is a "stdio" file (reads from
-                                        // stdin and writes to stdout)
+    unsigned    is_stdio        : 1;    // file is a "stdio" file (reads from stdin and writes to stdout)
     unsigned    needs_display   : 1;    // file needs to be displayed
     unsigned    write_crlf      : 1;    // check file system when we write it out
     unsigned    fill15          : 1;
     unsigned    fill16          : 1;
-    long        size;                   // size of file in bytes
-    int         handle;                 // file handle (if entire file is not
-                                        // read, will be an open file handle)
+    int         handle;                 // file handle (if entire file is not read, will be an open file handle)
 #ifdef __UNIX__
     short       attr;
 #endif
@@ -367,11 +357,11 @@ typedef struct {
  * window init info
  */
 typedef struct {
-    bool        has_border;
     vi_color    border_color1, border_color2;
     type_style  text;
     type_style  hilight;
     short       x1, y1, x2, y2;
+    bool        has_border;
 } window_info;
 
 /*
@@ -426,6 +416,11 @@ typedef struct select_rgn {
  * all specific info for a file being edited
  */
 typedef struct fs_info {
+    char        *TagFileName;
+    char        *GrepDefault;
+    int         TabAmount;
+    int         HardTab;
+    int         ShiftWidth;
     lang_t      Language;
     bool        PPKeywordOnly;
     bool        CMode;
@@ -435,16 +430,11 @@ typedef struct fs_info {
     bool        CRLFAutoDetect;
     bool        WriteCRLF;
     bool        EightBits;
-    int         TabAmount;
     bool        RealTabs;
-    int         HardTab;
     bool        AutoIndent;
-    int         ShiftWidth;
     bool        IgnoreTagCase;
     bool        TagPrompt;
     bool        ShowMatch;
-    char        *TagFileName;
-    char        *GrepDefault;
 } fs_info;
 
 /*
