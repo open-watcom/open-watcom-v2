@@ -1,17 +1,29 @@
-.func gethostbyname
+.func gethostbyaddr
 .synop begin
 #include <netdb.h>
-struct hostent *gethostbyname( const char *name );
+struct hostent *gethostbyaddr( const void *addr, 
+                               socklen_t len,
+                               int type );
 .synop end
 .desc begin
 The
 .id &funcb.
-function determines the address or addresses of a host specified
-by the
-.arg name
-argument.  The routine will query the local database initially.
-If not found, the routine will perform a DNS query, returning 
-all "A" records for the given host name.
+function searches the system's network host database for a host
+matching the
+.arg addr
+argument.  The address should be specified in network byte order.
+The
+.arg len
+argument specifies the length in bytes of the
+.arg addr
+argument, and 
+.arg type
+specifies the address type.  Accepted types, such as
+.kw AF_INET
+or
+.kw AF_INET6
+, are expected.  The routine will query only the local network
+hosts database.
 .np
 The structure returned is defined as:
 .blkcode begin
@@ -30,11 +42,6 @@ struct hostent {
 };
 .blkcode end
 .np
-In the current Open Watcom implementation, this routine will only
-ever return IPv4 addresses, and all addresses will be of 
-.kw AF_INET
-address type.
-.np
 The pointer returned by 
 .id &funcb.
 points to a private location, and the user should free neither 
@@ -52,9 +59,10 @@ The returned pointer should not be freed by the calling routine.
 .np
 If the host is found, the
 .kw h_name
-member will be a copy of the
-.arg name
-argument.  The addresses are contained in the 
+member will be the defintive name of the host, and
+.kw h_aliases
+will contain a NULL-terminated list of aliases.  The addresses 
+are contained in the 
 .kw h_addr_list
 member as a NULL-terminated list, and this structure entry will
 never be NULL.
@@ -63,44 +71,7 @@ If no matching host is found or an error occurs, the return value
 will be NULL.
 .return end
 .see begin
-.seelist gethostent gethostbyaddr
+.seelist gethostent gethostbyname
 .see end
-.exmp begin
-.blktext begin
-The following program will attempt to determine the address of
-a hostname passed as an argument.
-.blktext end
-.blkcode begin
-#include <stdio.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-int main(int argc, char *argv[])
-  {
-    int i;
-    struct hostent *he;
-    struct in_addr **addr_list;
-    
-    if (argc != 2) {
-        fprintf(stderr,"usage: %s <hostname>\n", argv[0]);
-        return 1;
-    }
-    
-    if ((he = gethostbyname(argv[1])) == NULL) {  // get the host info
-        printf("Failed to find %s\n", argv[1]);
-        return 2;
-    }
-
-    printf("IP addresses for %s:\n", argv[1]);
-    addr_list = (struct in_addr **)he->h_addr_list;
-    for(i = 0; addr_list[i] != NULL; i++) {
-        printf("    %s\n", inet_ntoa(*addr_list[i]));
-    }
-
-    return 0;
-  }
-
-.blkcode end
-.exmp end
 .class POSIX
 .system
