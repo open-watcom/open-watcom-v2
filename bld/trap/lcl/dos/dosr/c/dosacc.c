@@ -68,6 +68,20 @@ typedef enum {
     EXE_LAST_TYPE
 } EXE_TYPE;
 
+/********************************************************************
+ * NOTE: if you change this enum, you must update dbgtrap.asm
+ */
+typedef enum {
+    F_Is386     = 0x01,
+    F_IsMMX     = 0x02,
+    F_IsXMM     = 0x04,
+    F_DRsOn     = 0x08,
+    F_com_file  = 0x10,
+    F_NoOvlMgr  = 0x20,
+    F_BoundApp  = 0x40,
+} FLAGS;
+/********************************************************************/
+
 #include "pushpck1.h"
 typedef struct pblock {
     addr_seg    envstring;
@@ -78,9 +92,9 @@ typedef struct pblock {
     addr32_ptr  startcsip;
 } pblock;
 
-//
-// NOTE: if you change this structure, you must update DBGTRAP.ASM
-//
+/********************************************************************
+ * NOTE: if you change this structure, you must update dbgtrap.asm
+ */
 typedef struct watch_point {
     addr32_ptr  addr;
     dword       value;
@@ -88,6 +102,7 @@ typedef struct watch_point {
     word        dregs;
     word        len;
 } watch_point;
+/********************************************************************/
 #include "poppck.h"
 
 #define CMD_OFFSET      0x80
@@ -150,15 +165,7 @@ char                    DOS_major;
 char                    DOS_minor;
 bool                    BoundAppLoading;
 
-struct {
-    unsigned    Is386       : 1;
-    unsigned    IsMMX       : 1;
-    unsigned    IsXMM       : 1;
-    unsigned    DRsOn       : 1;
-    unsigned    com_file    : 1;
-    unsigned    NoOvlMgr    : 1;
-    unsigned    BoundApp    : 1;
-} Flags;
+FLAGS                   Flags;
 
 #define MAX_WP          32
 static watch_point      WatchPoints[MAX_WP];
@@ -256,7 +263,7 @@ trap_retval ReqMap_addr( void )
         seg = 0;
         break;
     }
-    if( Flags.BoundApp ) {
+    if( Flags & F_BoundApp ) {
         segment = MK_FP( SegmentChain, 14 );
         for( count = NumSegments - seg; count != 0; --count ) {
             segment = MK_FP( *segment, 14 );
@@ -264,7 +271,7 @@ trap_retval ReqMap_addr( void )
         ret->out_addr.segment = FP_SEG( segment ) + 1;
     } else {
         ret->out_addr.segment = DOSTaskPSP() + seg;
-        if( !Flags.com_file ) {
+        if( (Flags & F_com_file) == 0 ) {
             ret->out_addr.segment += 0x10;
         }
     }
@@ -384,7 +391,7 @@ trap_retval ReqRead_io( void )
     } else if( acc->len == 2 ) {
        *( (word __far *)data ) = In_w( acc->IO_offset );
        len = 2;
-    } else if( Flags.Is386 ) {
+    } else if( Flags & F_Is386 ) {
        *( (dword __far *)data ) = In_d( acc->IO_offset );
        len = 4;
     } else {
@@ -411,7 +418,7 @@ trap_retval ReqWrite_io( void )
     } else if( len == 2 ) {
         Out_w( acc->IO_offset, *( (word __far *)data ) );
         ret->len = 2;
-    } else if ( Flags.Is386 ) {
+    } else if ( Flags & F_Is386 ) {
         Out_d( acc->IO_offset, *( (dword __far *)data ) );
         ret->len = 4;
     } else {
@@ -454,7 +461,7 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
 {
     static dos_exe_header head;
 
-    Flags.com_file = FALSE;
+    Flags &= ~F_com_file;
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
         case SIMPLE_SIGNATURE: // mp
@@ -466,7 +473,7 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
                 return( EXE_OS2 );
             return( EXE_DOS );
         default:
-            Flags.com_file = TRUE;
+            Flags |= F_com_file;
             break;
         }
     }
@@ -505,7 +512,7 @@ trap_retval ReqProg_load( void )
     memset( &TaskRegs, 0, sizeof( TaskRegs ) );
     TaskRegs.EFL = MyFlags() & ~USR_FLAGS;
     /* build a DOS command line parameter in our PSP command area */
-    Flags.BoundApp = FALSE;
+    Flags &= ~F_BoundApp;
     psp = DbgPSP();
     parm = name = GetInPtr( sizeof( prog_load_req ) );
     if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
@@ -600,7 +607,7 @@ trap_retval ReqProg_load( void )
     TaskRegs.DS = psp;
     TaskRegs.ES = psp;
     if( TINY_OK( rc ) ) {
-        if( Flags.NoOvlMgr || !CheckOvl( parmblock.startcsip ) ) {
+        if( (Flags & F_NoOvlMgr) || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
                 opcode_type __far *loc_brk_opcode;
 
@@ -618,7 +625,7 @@ trap_retval ReqProg_load( void )
                     TinyFarWrite( handle, &saved_opcode, sizeof( saved_opcode ) );
                     TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
                     TinyClose( handle );
-                    Flags.BoundApp = TRUE;
+                    Flags |= F_BoundApp;
                 }
             }
         }
@@ -675,7 +682,7 @@ trap_retval ReqSet_watch( void )
         curr->linear &= ~( curr->len - 1 );
         curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
         ++WatchCount;
-        if( Flags.DRsOn ) {
+        if( Flags & F_DRsOn ) {
             needed = 0;
             for( i = 0; i < WatchCount; ++i ) {
                 needed += WatchPoints[i].dregs;
@@ -752,7 +759,7 @@ static int ClearDebugRegs( int trap )
     long        dr6;
     int         i;
 
-    if( Flags.DRsOn ) {
+    if( Flags & F_DRsOn ) {
         out( "tr=" ); out( hex( trap ) );
         out( " dr6=" ); out( hex( GetDR6() ) );
         out( "\r\n" );
@@ -785,7 +792,7 @@ static bool SetDebugRegs( void )
     watch_point         *wp;
     bool                watch386;
 
-    if( !Flags.DRsOn )
+    if( (Flags & F_DRsOn) == 0 )
         return( FALSE );
     needed = 0;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -858,7 +865,7 @@ static trap_elen ProgRun( bool step )
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
-    if( Flags.DRsOn ) {
+    if( Flags & F_DRsOn ) {
         SetSingle386();
     } else {
         SetSingleStep();
@@ -868,7 +875,7 @@ static trap_elen ProgRun( bool step )
     } else  {
         watch386 = SetDebugRegs();
         if( WatchCount != 0 && !watch386 ) {
-            if( Flags.DRsOn ) {
+            if( Flags & F_DRsOn ) {
                 SetWatch386( WatchCount, WatchPoints );
             } else {
                 SetWatchPnt( WatchCount, WatchPoints );
@@ -976,30 +983,30 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
 out( "in TrapInit\r\n" );
 out( "    checking environment:\r\n" );
+    Flags = 0;
     CPUType = X86CPUType();
-    Flags.Is386 = ( CPUType >= X86_386 );
+    if( CPUType >= X86_386 )
+        Flags |= F_Is386;
     if( *parms == 'D' || *parms == 'd' ) {
-        Flags.DRsOn = FALSE;
         ++parms;
-    } else if( out0( "    CPU type\r\n" ) || ( Flags.Is386 == 0 ) ) {
-        Flags.DRsOn = FALSE;
+    } else if( out0( "    CPU type\r\n" ) || ( CPUType < X86_386 ) ) {
     } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
         /* Enhanced Windows 3.0 VM kernel messes up handling of debug regs */
-        Flags.DRsOn = FALSE;
     } else if( out0( "    DOSEMU\r\n" ) || DOSEMUCheck() ) {
         /* no fiddling with debug regs in Linux DOSEMU either */
-        Flags.DRsOn = FALSE;
     } else {
-        Flags.DRsOn = TRUE;
+        Flags |= F_DRsOn;
     }
     if( *parms == 'O' || *parms == 'o' ) {
-        Flags.NoOvlMgr = TRUE;
+        Flags |= F_NoOvlMgr;
     }
 out( "    done checking environment\r\n" );
     err[0] = '\0'; /* all ok */
 
-    Flags.IsMMX = ( ( CPUType & X86_MMX ) != 0 );
-    Flags.IsXMM = ( ( CPUType & X86_XMM ) != 0 );
+    if( CPUType & X86_MMX )
+        Flags |= F_IsMMX;
+    if( CPUType & X86_XMM )
+        Flags |= F_IsXMM;
 
     /* NPXType initializes '87, so check for it before a program
        starts using the thing */
@@ -1009,7 +1016,7 @@ out( "    done checking environment\r\n" );
         /* In an OS/2 2.0 DOS box. It doesn't let us fiddle the debug
         registers. The check is done here because InitVectors is the
         routine that sets up DOS_major */
-        Flags.DRsOn = FALSE;
+        Flags &= ~F_DRsOn;
     }
     Null87Emu();
     NullOvlHdlr();
