@@ -36,6 +36,6 @@ _WCRTLINK int sigaddset( sigset_t *__set, int signum )
 {
     unsigned long sig = signum - 1;
     __set->sig[sig / 32] |= (1 << (sig % 32));
-    return 0;
+    return( 0 );
 }
 

@@ -35,6 +35,6 @@
 _WCRTLINK int sigismember( const sigset_t *__set, int __signum )
 {
     unsigned long sig = __signum - 1;
-    return (__set->sig[sig / 32] >> (sig % 32)) & 1;
+    return( ( __set->sig[sig / 32] >> (sig % 32) ) & 1 );
 }
 

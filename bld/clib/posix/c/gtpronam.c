@@ -43,31 +43,31 @@ _WCRTLINK struct protoent *getprotobyname(const char *name)
 {
     struct protoent *ret;
     int i;
-    
+
     if( name == NULL ) {
         _RWD_errno = EINVAL;
         return( NULL );
     }
-    
+
     setprotoent( 1 );
-    
-    ret = getprotoent( );
-    while(ret != NULL) {
-        if( ret->p_name != NULL && strcmp(name, ret->p_name) == 0)
+
+    ret = getprotoent();
+    while( ret != NULL ) {
+        if( ret->p_name != NULL && strcmp(name, ret->p_name) == 0 )
             goto protobyname_cleanup;
-        
-        
-        for( i=0; ret->p_aliases != NULL && ret->p_aliases[i] != NULL; i++) {
-            if(strcmp(name, ret->p_aliases[i]) == 0)
+
+        for( i = 0; ret->p_aliases != NULL && ret->p_aliases[i] != NULL; i++ ) {
+            if( strcmp( name, ret->p_aliases[i] ) == 0 ) {
                 goto protobyname_cleanup;
+            }
         }
-        
-        ret = getprotoent( );
+
+        ret = getprotoent();
     }
 
 protobyname_cleanup:
-    
-    endprotoent( );
-    
+
+    endprotoent();
+
     return( ret );
 }

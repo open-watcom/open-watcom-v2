@@ -45,24 +45,24 @@
 
 _WCRTLINK struct servent *getservbyport( int port, const char *proto )
 {
-struct servent *ret;
-    
+    struct servent *ret;
+
     if( port < 1 ) {
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
-    
+
     setservent( 1 );
-    
+
     do {
-        
-        ret = getservent( );
-        
-    } while( ret != NULL && 
-             !(port == ret->s_port && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
-    
-    endservent( );
-    
-    return ret;
+
+        ret = getservent();
+
+    } while( ret != NULL &&
+             !( port == ret->s_port &&
+               ( proto == NULL || SAFE_SAME_STR( proto, ret->s_proto ) ) ) );
+
+    endservent();
+
+    return( ret );
 }

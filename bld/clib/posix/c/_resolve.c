@@ -114,7 +114,7 @@ static int _from_dns_name_format( char *dest, const char *reader, const char *bu
 
         if( c >= 0xC0 ) {
 
-            offset = ( c - 0xC0 ) * 256 + *(unsigned char *)(reader + 1); 
+            offset = ( c - 0xC0 ) * 256 + *(unsigned char *)(reader + 1);
             reader = buffer + offset;
             /* If we havent jumped to another location then we can count up */
             if( jumped == 0 ) {
@@ -253,9 +253,9 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
     qinfo = (struct __dns_question *)&buf[query_size];
 
     /* type of the query, A, MX, CNAME, NS etc */
-    qinfo->qclass = htons( 1 ); 
-    qinfo->qtype = htons( query_type ); 
-    qinfo->qclass = htons( 1 ); 
+    qinfo->qclass = htons( 1 );
+    qinfo->qtype = htons( query_type );
+    qinfo->qclass = htons( 1 );
     query_size += sizeof( *qinfo );
 
     result = sendto( query_socket, buf, query_size, 0, (struct sockaddr *)&dest, sizeof( dest ) );

@@ -63,7 +63,7 @@ _WCRTLINK struct servent *getservent( void )
     static char             *buf = NULL;
     static size_t           buflen = 0;
     char                    *buf_ptr;
-    
+
     /* Translating the port string */
     char *port;
 
@@ -85,32 +85,32 @@ _WCRTLINK struct servent *getservent( void )
         }
     }
 
-    if( __getconfigline( &buf, &buflen, __servFile ) < 0)
+    if( __getconfigline( &buf, &buflen, __servFile ) < 0 )
         return( NULL );
-    
+
     if( __servClose )
         endservent();
-    
+
     /* Name */
     ret.s_name = strtok_r( buf, " \t", &buf_ptr );
-    
+
     /* Port */
     port = strtok_r( NULL, "/", &buf_ptr );
-    if(port == NULL) 
+    if( port == NULL )
         return( NULL );
     ret.s_port = atoi( port );
-    
+
     /* Protocol */
     ret.s_proto = strtok_r( NULL, " \t", &buf_ptr );
 
     /* Load in any aliases */
-    if(ret.s_aliases == NULL) 
-        ret.s_aliases = (char **)malloc( (1 + MAX_SERV_ALIASES)*sizeof( char * ) );
-    
+    if( ret.s_aliases == NULL )
+        ret.s_aliases = (char **)malloc( ( 1 + MAX_SERV_ALIASES ) * sizeof( char * ) );
+
     /* Explcitly NULL the entries in a nice, readable manner */
-    for( i = 0; i < (1 + MAX_SERV_ALIASES) && ret.s_aliases != NULL; i++ )
+    for( i = 0; i < ( 1 + MAX_SERV_ALIASES ) && ret.s_aliases != NULL; i++ )
         ret.s_aliases[i] = NULL;
-    
+
     alias = strtok_r( NULL, " \t", &buf_ptr );
 
     if( alias && *alias != '#' && *alias != ';' && ret.s_aliases != NULL ) {
@@ -131,8 +131,8 @@ _WCRTLINK struct servent *getservent( void )
 
         } while( i < MAX_SERV_ALIASES );
 
-    } 
-    
+    }
+
     return( &ret );
 }
 

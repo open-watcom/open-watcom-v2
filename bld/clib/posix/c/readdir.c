@@ -54,6 +54,6 @@ _WCRTLINK struct dirent *readdir( DIR *dirp )
     dirp->bufofs += dirent->d_reclen;
     if( dirp->bufofs >= dirp->bufsize )
         dirp->bufofs = 0;
-    
+
     return( dirent );
 }

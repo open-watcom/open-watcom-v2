@@ -38,7 +38,7 @@ _WCRTLINK  pid_t  tcgetpgrp( int __fildes )
 {
     pid_t pid;
     if ( ioctl( __fildes, TIOCGPGRP, &pid ) == -1 )
-        return -1;
-    return pid;
+        return( -1 );
+    return( pid );
 }
 

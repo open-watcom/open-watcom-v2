@@ -30,7 +30,5 @@
 *
 ****************************************************************************/
 
-#include <stdio.h>
-#include <sys/types.h>
 
 extern ssize_t __getconfigline( char **s, size_t *n, FILE *fp );

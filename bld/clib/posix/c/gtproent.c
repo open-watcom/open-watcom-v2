@@ -63,7 +63,7 @@ _WCRTLINK struct protoent *getprotoent( void )
     static char             *buf = NULL;
     static size_t           buflen = 0;
     char                    *buf_ptr;
-    
+
     /* Translating the port string */
     char *protonum;
 
@@ -87,27 +87,27 @@ _WCRTLINK struct protoent *getprotoent( void )
 
     if( __getconfigline( &buf, &buflen, __protFile ) < 0)
         return( NULL );
-    
+
     if( __protClose )
         endprotoent();
-    
+
     /* Name */
     ret.p_name = strtok_r( buf, " \t", &buf_ptr );
-    
+
     /* Protocol number */
     protonum = strtok_r( NULL, " \t", &buf_ptr );
-    if(protonum == NULL) 
+    if(protonum == NULL)
         return( NULL );
     ret.p_proto = atoi( protonum );
-    
+
     /* Load in any aliases */
-    if(ret.p_aliases == NULL) 
+    if(ret.p_aliases == NULL)
         ret.p_aliases = (char **)malloc( (1 + MAX_PROTO_ALIASES)*sizeof( char * ) );
-    
+
     /* Explcitly NULL the entries in a nice, readable manner */
     for( i = 0; i < (1 + MAX_PROTO_ALIASES) && ret.p_aliases != NULL; i++ )
         ret.p_aliases[i] = NULL;
-    
+
     alias = strtok_r( NULL, " \t", &buf_ptr );
 
     if( alias && *alias != '#' && *alias != ';' && ret.p_aliases != NULL ) {
@@ -128,8 +128,8 @@ _WCRTLINK struct protoent *getprotoent( void )
 
         } while( i < MAX_PROTO_ALIASES );
 
-    } 
-    
+    }
+
     return( &ret );
 }
 

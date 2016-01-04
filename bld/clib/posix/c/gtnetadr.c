@@ -41,17 +41,17 @@
 _WCRTLINK struct netent *getnetbyaddr(uint32_t naddr, int type)
 {
     struct netent *ret;
-    
+
     setnetent( 1 );
-    
-    ret = getnetent( );
+
+    ret = getnetent();
     while(ret != NULL) {
         if(ret->n_net == naddr && ret->n_addrtype == type)
             break;
-        ret = getnetent( );
+        ret = getnetent();
     }
 
-    endnetent( );
-    
+    endnetent();
+
     return( ret );
 }

@@ -38,21 +38,21 @@
 #include <string.h>
 #include <netdb.h>
 
-_WCRTLINK struct protoent *getprotobynumber(int proto)
+_WCRTLINK struct protoent *getprotobynumber( int proto )
 {
     struct protoent *ret;
-    
+
     setprotoent( 1 );
-    
-    ret = getprotoent( );
-    while(ret != NULL) {
+
+    ret = getprotoent();
+    while( ret != NULL ) {
         if( ret->p_proto == proto )
             break;
-        
-        ret = getprotoent( );
+
+        ret = getprotoent();
     }
 
-    endprotoent( );
-    
+    endprotoent();
+
     return( ret );
 }

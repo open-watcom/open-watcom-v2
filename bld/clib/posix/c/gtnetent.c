@@ -57,7 +57,7 @@ _WCRTLINK struct netent *getnetent( void )
     static char             *buf = NULL;
     static size_t           buflen = 0;
     char                    *buf_ptr;
-    
+
     /* Translating the port string */
     char *address;
 
@@ -79,30 +79,30 @@ _WCRTLINK struct netent *getnetent( void )
         }
     }
 
-    if( __getconfigline( &buf, &buflen, __netFile ) < 0)
+    if( __getconfigline( &buf, &buflen, __netFile ) < 0 )
         return( NULL );
-    
+
     if( __netClose )
         endnetent();
-    
+
     /* Name */
     ret.n_name = strtok_r( buf, " \t", &buf_ptr );
-    
+
     /* OW only supports AF_INET for now */
     ret.n_addrtype  = AF_INET;
-    
+
     /* Address */
     address = strtok_r( NULL, " \t", &buf_ptr );
     ret.n_net = inet_addr(address);
 
     /* Load in any aliases */
-    if(ret.n_aliases == NULL) 
+    if(ret.n_aliases == NULL)
         ret.n_aliases = (char **)malloc( (1 + MAX_NET_ALIASES)*sizeof( char * ) );
-    
+
     /* Explcitly NULL the entries in a nice, readable manner */
     for( i = 0; i < (1 + MAX_NET_ALIASES) && ret.n_aliases != NULL; i++ )
         ret.n_aliases[i] = NULL;
-    
+
     alias = strtok_r( NULL, " \t", &buf_ptr );
 
     if( alias && *alias != '#' && *alias != ';' && ret.n_aliases != NULL ) {
@@ -123,8 +123,8 @@ _WCRTLINK struct netent *getnetent( void )
 
         } while( i < MAX_NET_ALIASES );
 
-    } 
-    
+    }
+
     return( &ret );
 }
 

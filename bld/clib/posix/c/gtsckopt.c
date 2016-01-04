@@ -43,5 +43,5 @@ _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t
     args[2] = (u_long)optname;
     args[3] = (u_long)optval;
     args[4] = (u_long)optlen;
-    return ( __socketcall( SYS_GETSOCKOPT, args ) );
+    return( __socketcall( SYS_GETSOCKOPT, args ) );
 }

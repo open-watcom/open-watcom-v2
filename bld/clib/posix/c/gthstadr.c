@@ -43,15 +43,15 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
 {
     struct hostent *ret;
     int i;
-    
+
     if(addr == NULL) {
         _RWD_errno = EINVAL;
         return( NULL );
     }
-        
+
     sethostent( 1 );
-    
-    ret = gethostent( );
+
+    ret = gethostent();
     while(ret != NULL) {
         if(ret->h_addrtype == type && ret->h_length == (int)len && ret->h_addr_list != NULL)
         {
@@ -60,13 +60,13 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
                     goto gethostbyaddr_cleanup;
             }
         }
-        
-        ret = gethostent( );
+
+        ret = gethostent();
     }
 
 gethostbyaddr_cleanup:
-    
-    endhostent( );
-    
+
+    endhostent();
+
     return( ret );
 }

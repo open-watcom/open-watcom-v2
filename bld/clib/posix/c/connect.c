@@ -40,5 +40,5 @@ _WCRTLINK int connect(int sockfd, const struct sockaddr *serv_addr, socklen_t ad
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)serv_addr;
     args[2] = (unsigned long)addrlen;
-    return ( __socketcall( SYS_CONNECT, args ) );
+    return( __socketcall( SYS_CONNECT, args ) );
 }

@@ -35,6 +35,6 @@
 
 _WCRTLINK int tcflush( int __fd, int __queue_selector )
 {
-    return ioctl( __fd, TCFLSH, __queue_selector );
+    return( ioctl( __fd, TCFLSH, __queue_selector ) );
 }
 

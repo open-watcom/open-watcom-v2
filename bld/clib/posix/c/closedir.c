@@ -40,6 +40,6 @@ _WCRTLINK int closedir( DIR *__dirp )
 {
     int ret = close( __dirp->fd );
     free( __dirp );
-    return ret;
+    return( ret );
 }
 

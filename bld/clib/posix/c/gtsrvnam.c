@@ -45,24 +45,24 @@
 
 _WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
 {
-struct servent *ret;
-    
+    struct servent *ret;
+
     if( name == NULL ) {
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
-    
+
     setservent( 1 );
-    
+
     do {
-        
-        ret = getservent( );
-        
-    } while( ret != NULL && 
-             !(SAFE_SAME_STR(name, ret->s_name) && 
-               (proto == NULL || SAFE_SAME_STR(proto, ret->s_proto))) );
-    
-    endservent( );
-    
-    return ret;
+
+        ret = getservent();
+
+    } while( ret != NULL &&
+             !( SAFE_SAME_STR( name, ret->s_name ) &&
+               ( proto == NULL || SAFE_SAME_STR( proto, ret->s_proto ) ) ) );
+
+    endservent();
+
+    return( ret );
 }

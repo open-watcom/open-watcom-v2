@@ -33,6 +33,6 @@
 
 _WCRTLINK speed_t cfgetospeed( const struct termios *__termios_p )
 {
-    return __termios_p->c_cflag & CBAUD;
+    return( __termios_p->c_cflag & CBAUD );
 }
 

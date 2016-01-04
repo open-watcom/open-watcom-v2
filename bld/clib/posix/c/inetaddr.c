@@ -46,16 +46,16 @@ _WCRTLINK uint32_t inet_addr(const char *cp)
             val = val*10 + (*cp - '0');
         } else if ( *cp == '.' || *cp == '\0' ) {
             if ( val > 255 )
-                return INADDR_NONE;
+                return( INADDR_NONE );
             ret |= ( val << shift );
             shift += 8;
             val = 0;
         } else {
-            return INADDR_NONE;
+            return( INADDR_NONE );
         }
         cp++;
     } while ( cp[-1] );
     if ( shift != 32 )
-        return INADDR_NONE;
-    return ret;
+        return( INADDR_NONE );
+    return( ret );
 }

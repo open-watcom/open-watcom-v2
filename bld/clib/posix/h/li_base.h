@@ -51,26 +51,26 @@ static char *__li_number[] = {"", ".", ",", NULL};
 static char *__li_era[] = {"", "", "", "", NULL};
 
 #define ABMON_OFFSET    0x500
-static char *__li_abmon[] = {"Jan", "Feb", "Mar", "Apr", 
+static char *__li_abmon[] = {"Jan", "Feb", "Mar", "Apr",
                              "May", "Jun", "Jul", "Aug",
                              "Sep", "Oct", "Nov", "Dec",
                              NULL};
-                             
+
 #define MON_OFFSET      0x400
-static char *__li_mon[] = {"January", "February", "March", "April", 
+static char *__li_mon[] = {"January", "February", "March", "April",
                            "May", "June", "July", "August",
                            "September", "October", "November", "December",
                            NULL};
-                           
+
 #define ABDAY_OFFSET    0x300
 static char *__li_abday[] = {"Sun", "Mon", "Tue", "Wed",
                              "Thu", "Fri", "Sat", NULL};
-                           
+
 #define DAY_OFFSET      0x200
-static char *__li_day[] = {"Sunday", "Monday", "Tuesday", 
-                           "Wednesday", "Thursday", 
+static char *__li_day[] = {"Sunday", "Monday", "Tuesday",
+                           "Wednesday", "Thursday",
                            "Friday", "Saturday", NULL};
-                           
+
 #define FMT_OFFSET      0x100
 static char *__li_fmt[] = {"%a %b %e %H:%M:%S %Y",
                            "%y-%m-%d",             /* Note: should be a nice compromise */

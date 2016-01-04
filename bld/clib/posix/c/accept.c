@@ -39,5 +39,5 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)addr;
     args[2] = (unsigned long)addrlen;
-    return ( __socketcall( SYS_ACCEPT, args ) );
+    return( __socketcall( SYS_ACCEPT, args ) );
 }

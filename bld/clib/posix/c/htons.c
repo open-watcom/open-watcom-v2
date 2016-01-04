@@ -37,8 +37,8 @@
 _WCRTLINK unsigned short htons( unsigned short hostshort )
 {
 #if defined( __BIG_ENDIAN__ )
-    return ( hostshort );
+    return( hostshort );
 #else
-    return ( ((hostshort >> 8) & 0xff) | ((hostshort & 0xff) << 8) );
+    return( ((hostshort >> 8) & 0xff) | ((hostshort & 0xff) << 8) );
 #endif
 }

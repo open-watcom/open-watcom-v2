@@ -35,6 +35,6 @@
 _WCRTLINK int sigemptyset( sigset_t *__set )
 {
     __set->sig[0] = __set->sig[1] = 0;
-    return 0;
+    return( 0 );
 }
 

@@ -35,6 +35,6 @@
 
 _WCRTLINK int tcgetattr( int __fd, struct termios *__termios_p )
 {
-    return ioctl( __fd, TCGETS, __termios_p );
+    return( ioctl( __fd, TCGETS, __termios_p ) );
 }
 

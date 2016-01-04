@@ -56,12 +56,12 @@ static char icase( int ch, int flags )
     }
 }
 
-/* Maximum length of character class name. 
+/* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
 #define CCL_NAME_MAX    8
 
-/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid 
+/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
 static int sub_bracket( const char *p, int c )
@@ -104,11 +104,11 @@ static int sub_bracket( const char *p, int c )
 
 static const char *cclass_match( const char *patt, int c )
 {
-    int	        ok = 0;
-    int	        lc = 0;
-    int	        state = 0;
+    int         ok = 0;
+    int         lc = 0;
+    int         state = 0;
     int         invert = 0;
-    int	        sb;
+    int         sb;
 
     /* Meaning of '^' is unspecified in POSIX - consider it equal to '!' */
     if( *patt == '!' || *patt == '^' ) {
@@ -116,8 +116,8 @@ static const char *cclass_match( const char *patt, int c )
         ++patt;
     }
     while( *patt ) {
-    	if( *patt == ']' )
-    	    return( ok ^ invert ? patt + 1 : NULL );
+        if( *patt == ']' )
+            return( ( ok ^ invert ) ? patt + 1 : NULL );
 
         if( *patt == '[' ) {
              sb = sub_bracket( patt, c );
@@ -134,28 +134,28 @@ static const char *cclass_match( const char *patt, int c )
 
         switch( state ) {
         case 0:
-    	    if( *patt == '\\' )
+            if( *patt == '\\' )
                 ++patt;
-    	    if( *patt == c )
+            if( *patt == c )
                 ok = 1;
-    	    lc = (int)*patt++;
-    	    state = 1;
-    	    break;
-    	case 1:
-    	    if( state = (*patt == '-') ? 2 : 0 )
+            lc = (int)*patt++;
+            state = 1;
+            break;
+        case 1:
+            if( state = (*patt == '-') ? 2 : 0 )
                 ++patt;
-    	    break;
-    	case 2:	
-    	    if( *patt == '\\' )
+            break;
+        case 2: 
+            if( *patt == '\\' )
                 ++patt;
             if( lc <= c && c <= *patt )
                 ok = 1;
-    	    ++patt;	
-    	    state = 0;
-    	    break;
-    	default:
-    	    return( NULL );
-    	}
+            ++patt;     
+            state = 0;
+            break;
+        default:
+            return( NULL );
+        }
     }
     return( NULL );
 }
@@ -169,42 +169,42 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
 
     while( 1 ) {
         c = icase( *patt++, flags );
-    	switch( c ) {
+        switch( c ) {
         case '\0':
-            if( flags & FNM_LEADING_DIR && IS_PATH_SEP( *s ) )
+            if( (flags & FNM_LEADING_DIR) && IS_PATH_SEP( *s ) )
                 return( 0 );
-            return( *s ? FNM_NOMATCH : 0 );
-    	case '?':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            return( ( *s != '\0' ) ? FNM_NOMATCH : 0 );
+        case '?':
+            if( (flags & FNM_PATHNAME) && IS_PATH_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             ++s;
-    	    break;
+            break;
         case '[':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_PATH_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             patt = cclass_match( patt, *s );
-    	    if( patt == NULL )
+            if( patt == NULL )
                 return( FNM_NOMATCH );
-    	    ++s;
-    	    break;
+            ++s;
+            break;
         case '*':
             if( *s == '\0' )
                 return( 0 );
-            if( flags & FNM_PATHNAME && ( *patt == '/' ) ) {
-                while( *s && !IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && ( *patt == '/' ) ) {
+                while( *s != '\0' && !IS_PATH_SEP( *s ) )
                     ++s;
                 break;
             }
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             if( *patt == '\0' ) {
                 /* Shortcut - don't examine every remaining character. */
                 if( flags & FNM_PATHNAME ) {
-                    if( flags & FNM_LEADING_DIR || !strchr( s, '/' ) )
+                    if( (flags & FNM_LEADING_DIR) || !strchr( s, '/' ) )
                         return( 0 );
                     else
                         return( FNM_NOMATCH );
@@ -215,15 +215,15 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
             while( (cl = icase( *s, flags )) != '\0' ) {
                 if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
                     return( 0 );
-                if( flags & FNM_PATHNAME && IS_PATH_SEP( cl ) ) {
+                if( (flags & FNM_PATHNAME) && IS_PATH_SEP( cl ) ) {
                     start = s + 1;
                     break;
                 }
                 ++s;
             }
-    	    return( FNM_NOMATCH );
+            return( FNM_NOMATCH );
         case '\\':
-            if( !( flags & FNM_NOESCAPE ) ) {
+            if( (flags & FNM_NOESCAPE) == 0 ) {
                 c = icase( *patt++, flags );
             }
             /* Fall through */
@@ -232,11 +232,12 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
                 start = s + 1;
             cl = icase( *s++, flags );
 #ifndef __UNIX__
-            if( flags & FNM_PATHNAME && cl == '\\' )
+            if( (flags & FNM_PATHNAME) && cl == '\\' )
                 cl = '/';
 #endif
-    	    if( c != cl )
+            if( c != cl ) {
                 return( FNM_NOMATCH );
-    	}
+            }
+        }
     }
 }

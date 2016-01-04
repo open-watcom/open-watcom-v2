@@ -47,5 +47,4 @@
  * routine will return 1.  Upon failure, routine should return the
  * negative error code.
  */
-extern int _dns_query( const char *__name, int __query_type, in_addr_t __dnsaddr,
-                        struct hostent *__res );
+extern int _dns_query( const char *__name, int __query_type, in_addr_t __dnsaddr, struct hostent *__res );

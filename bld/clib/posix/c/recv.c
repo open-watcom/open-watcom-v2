@@ -41,5 +41,5 @@ _WCRTLINK int recv( int s, void *buf, size_t len, int flags )
     args[1] = (unsigned long)buf;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
-    return ( __socketcall( SYS_RECV, args ) );
+    return( __socketcall( SYS_RECV, args ) );
 }

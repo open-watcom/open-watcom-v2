@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-struct __dirstream 
+struct __dirstream
 {
     int fd;
     size_t bufofs, bufsize;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================

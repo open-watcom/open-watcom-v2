@@ -42,5 +42,5 @@ _WCRTLINK int setsockopt( int s, int level, int optname, const void *optval, soc
     args[2] = (unsigned long)optname;
     args[3] = (unsigned long)optval;
     args[4] = (unsigned long)optlen;
-    return ( __socketcall( SYS_SETSOCKOPT, args ) );
+    return( __socketcall( SYS_SETSOCKOPT, args ) );
 }

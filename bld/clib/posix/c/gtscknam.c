@@ -40,5 +40,5 @@ _WCRTLINK int getsockname( int s , struct sockaddr *name , socklen_t *namelen )
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)name;
     args[2] = (unsigned long)namelen;
-    return ( __socketcall( SYS_GETSOCKNAME, args ) );
+    return( __socketcall( SYS_GETSOCKNAME, args ) );
 }

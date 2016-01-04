@@ -111,16 +111,16 @@ _WCRTLINK struct hostent *gethostent( void )
     ret.h_name = strtok( NULL, " \t\n" );
 
     /* Load in any aliases */
-    if(ret.h_aliases == NULL) 
+    if(ret.h_aliases == NULL)
         ret.h_aliases = (char **)malloc( (1 + MAX_HOST_ALIASES)*sizeof( char * ) );
-    
+
     /* Explcitly NULL the entries in a nice, readable manner */
     for( i = 0; i < (1 + MAX_HOST_ALIASES) && ret.h_aliases != NULL; i++ )
         ret.h_aliases[i] = NULL;
-    
+
     alias = strtok( NULL, " \t\n" );
     if( alias && *alias != '#' && *alias != ';' && ret.h_aliases != NULL) {
-        
+
         i = -1;
         do {
             i++;
@@ -138,8 +138,8 @@ _WCRTLINK struct hostent *gethostent( void )
 
         } while( i < MAX_HOST_ALIASES );
 
-    } 
-    
+    }
+
     return( &ret );
 }
 

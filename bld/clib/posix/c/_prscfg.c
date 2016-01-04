@@ -30,39 +30,41 @@
 *
 ****************************************************************************/
 
-//#include "variety.h"
+#include "variety.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include "_prscfg.h"
 
-_WCRTLINK ssize_t __getconfigline( char **s, size_t *n, FILE *fp )
+ssize_t __getconfigline( char **s, size_t *n, FILE *fp )
 {
-char *buf;
-int i;
-    
+    char    *buf;
+    int     i;
+
     do {
         if( getline( s, n, fp ) < 0 ) {
             return( -1 );
         }
-        
+
         /* Remove newlines */
         buf = strchr( *s, '\n' );
         if( buf != NULL )
             buf[0] = '\0';
-        
+
         /* Remove comments */
         buf = strchr( *s, '#' );
         if( buf != NULL )
             buf[0] = '\0';
-        
+
         /* Left-trim the resultant string */
         while( **s == ' ' || **s == '\t' ) {
             buf = *s;
-            for( i=1; i<=strlen(buf); i++ ) {
-                buf[i-1] = buf[i];
+            for( i = 1; i <= strlen( buf ); i++ ) {
+                buf[i - 1] = buf[i];
             }
         }
-        
+
     } while( **s == '\0' || **s == '#' || **s == ';' );
-    
-    return (ssize_t)*n;
+
+    return( (ssize_t)*n );
 }

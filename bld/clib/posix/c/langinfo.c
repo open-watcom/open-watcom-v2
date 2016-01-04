@@ -40,8 +40,8 @@
 static char *__langinfo_array_get(int index, char *array[])
 {
     int i;
-    for(i=0; i < index && array[i] != NULL; i++);
-    return array[i];
+    for( i = 0; i < index && array[i] != NULL; i++);
+    return( array[i] );
 }
 
 _WCRTLINK char *nl_langinfo(int __item)
@@ -81,8 +81,8 @@ _WCRTLINK char *nl_langinfo(int __item)
         ret = __langinfo_array_get(__item - FMT_OFFSET, __li_fmt);
 
     /* POSIX says unsupported args should return empty strings */
-    if(ret == NULL)
+    if( ret == NULL )
         ret = "";
 
-    return ret;
+    return( ret );
 }

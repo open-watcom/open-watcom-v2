@@ -40,5 +40,5 @@ _WCRTLINK int socket( int domain, int type, int protocol )
     args[0] = (unsigned long)domain;
     args[1] = (unsigned long)type;
     args[2] = (unsigned long)protocol;
-    return ( __socketcall( SYS_SOCKET, args ) );
+    return( __socketcall( SYS_SOCKET, args ) );
 }

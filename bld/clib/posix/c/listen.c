@@ -39,5 +39,5 @@ _WCRTLINK int listen(int s, int backlog)
     unsigned long args[2];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)backlog;
-    return ( __socketcall( SYS_LISTEN, args ) );
+    return( __socketcall( SYS_LISTEN, args ) );
 }

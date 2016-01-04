@@ -41,5 +41,5 @@ _WCRTLINK int send(int s, const void *msg, size_t len, int flags)
     args[1] = (unsigned long)msg;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
-    return ( __socketcall( SYS_SEND, args ) );
+    return( __socketcall( SYS_SEND, args ) );
 }
