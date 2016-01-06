@@ -110,8 +110,6 @@ void    StatusWndFini( void );
 #define TOTAL_HORZ (2 * (HORZ_BORDER + BORDER_SIZE))
 
 /* Maximum number of sections on status bar */
-#ifndef MAX_SECTIONS
-    #define MAX_SECTIONS    20
-#endif
+#define MAX_SECTIONS    20
 
 #endif /* _STATWND_H_INCLUDED */
