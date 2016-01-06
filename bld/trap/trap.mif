@@ -136,8 +136,8 @@ target_basename = $(xname)$(bld_ver)
 target_basename = $(xname)
 !endif
 
-!ifdef trap_ext_$(host_os)_$(os)
-target = $(target_basename)$(trap_ext_$(host_os)_$(os))
+!ifdef trap_ext_$(host_os)_$(target_os)
+target = $(target_basename)$(trap_ext_$(host_os)_$(target_os))
 !else ifdef trap_ext_$(host_os)
 target = $(target_basename)$(trap_ext_$(host_os))
 !else
