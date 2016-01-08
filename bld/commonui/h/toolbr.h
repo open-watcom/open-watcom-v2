@@ -36,16 +36,16 @@
 
 typedef int     CMDID;
 
-typedef bool (*toolhook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-typedef void (*helphook)( HWND, WPI_PARAM1, bool );
+typedef bool (*toolhook_fn)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+typedef void (*helphook_fn)( HWND, WPI_PARAM1, bool );
 
 typedef struct TOOLDISPLAYINFO {
     WPI_POINT   button_size;        /* size, in pixels, of one tool item */
     WPI_POINT   border_size;        /* width/height, in pixels, of border around tools */
     WPI_RECT    area;               /* area of window in units appropriate to style */
     DWORD       style;              /* style of toolbar window */
-    toolhook    hook;               /* function called before toolbar window proc */
-    helphook    helphook;           /* function called when help text is needed */
+    toolhook_fn hook;               /* function called before toolbar window proc */
+    helphook_fn helphook;           /* function called when help text is needed */
     HBITMAP     background;         /* background of depressed button (0 == default) */
     HBRUSH      foreground;         /* color of mono bitmap when depressed (0 == default) */
     bool        is_fixed    : 1;    /* is toolbar fixed or floating? */

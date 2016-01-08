@@ -70,8 +70,8 @@ typedef struct tool {
 typedef struct toolbar {
     HWND        hwnd;
     HWND        owner;
-    toolhook    hook;
-    helphook    helphook;
+    toolhook_fn hook;
+    helphook_fn helphook;
     WPI_POINT   button_size;
     WPI_POINT   border;
     HBITMAP     background;
