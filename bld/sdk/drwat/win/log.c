@@ -82,8 +82,7 @@ static BOOL getNewLogName( HWND parent ) {
 /*
  * LogDialog - show task status
  */
-BOOL __export FAR PASCAL LogDialog( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 
@@ -617,7 +616,7 @@ static BOOL     hasTitle;
 /*
  * formatModuleSeg - format a segment for a module entry
  */
-void formatModuleSeg( int index, WORD sel )
+static void formatModuleSeg( int index, WORD sel )
 {
     if( !hasTitle ) {
         hasTitle = TRUE;

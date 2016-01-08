@@ -66,8 +66,7 @@ void initDipMsgs( void ) {
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                  LPARAM lparam )
+BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     WORD        i;

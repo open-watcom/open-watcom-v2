@@ -49,8 +49,7 @@ stdata  std;
 /*
  * STDialog - show a stack frame
  */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam )
+BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 
