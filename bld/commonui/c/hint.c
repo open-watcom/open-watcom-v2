@@ -40,7 +40,7 @@ typedef struct {
     HWND                parent;
     MSGID               curmsg;
     WORD                hintlen;
-    MenuItemHint        *hints;
+    const MenuItemHint  *hints;
 } HintWndInfo;
 
 #define HINT_PROP_ID    "info"
@@ -54,7 +54,7 @@ static MSGID getItemMsg( statwnd *wnd, WORD menuid )
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
-    MenuItemHint        *hinttable;
+    const MenuItemHint  *hinttable;
     MSGID               msgid;
 
     hint = GetHintHwnd( wnd );
@@ -181,10 +181,10 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 /*
  * SetHintsText - set the hint text for the specified menu items
  */
-MenuItemHint *SetHintsText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
+const MenuItemHint *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt )
 {
     HintWndInfo         *info;
-    MenuItemHint        *ret;
+    const MenuItemHint  *ret;
     HLOCAL              hinfo;
     HWND                hint;
 

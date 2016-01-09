@@ -41,7 +41,7 @@
 static BOOL     spyAll;
 static WORD     statusHite = 25;
 
-static MenuItemHint menuHints[] = {
+static const MenuItemHint menuHints[] = {
     SPY_SAVE,                       STR_HINT_SAVE,
     SPY_SAVE_AS,                    STR_HINT_SAVE_AS,
     SPY_LOG,                        STR_HINT_LOG,
