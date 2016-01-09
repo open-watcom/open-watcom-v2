@@ -239,8 +239,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         area.top = area.bottom - statusHite;
         StatusHdl = HintWndCreate( hwnd, &area, Instance, NULL );
         statusHite = SizeHintBar( StatusHdl );
-        SetHintText( StatusHdl, (MenuItemHint *)menuHints,
-                     sizeof( menuHints ) / sizeof( MenuItemHint ) );
+        SetHintsText( StatusHdl, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         if( SpyMainWndInfo.show_hints ) {
             CheckMenuItem( mh, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
         } else {

@@ -220,7 +220,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         memset( info, 0, sizeof( DDEWndInfo ) );
         memset( &area, 0, sizeof( RECT ) );
         info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL );
-        SetHintText( info->hintbar, (MenuItemHint *)menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
+        SetHintsText( info->hintbar, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         hinthwnd = GetHintHwnd( info->hintbar );
         info->list.ypos = 0;
         info->horz_extent = 0;

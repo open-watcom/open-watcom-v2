@@ -179,9 +179,9 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 } /* HintMenuSelect */
 
 /*
- * SetHintText - set the hint text for the specified menu items
+ * SetHintsText - set the hint text for the specified menu items
  */
-MenuItemHint *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
+MenuItemHint *SetHintsText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
 {
     HintWndInfo         *info;
     MenuItemHint        *ret;
@@ -197,7 +197,7 @@ MenuItemHint *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
     LocalUnlock( hinfo );
     return( ret );
 
-} /* SetHintText */
+} /* SetHintsText */
 
 /*
  * HintWndCreate - create a hint status bar
