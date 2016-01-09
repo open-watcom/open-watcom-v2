@@ -77,8 +77,7 @@ static HWND _wpi_getscrollhwnd( HWND parent, int scroll )
 static BOOL _wpi_setmenuitemattr( HMENU hmenu, unsigned id,
                                   unsigned mask, unsigned attr )
 {
-    return( (BOOL) WinSendMsg( hmenu, MM_SETITEMATTR, MPFROM2SHORT(id, TRUE),
-                               MPFROM2SHORT(mask,attr) ) );
+    return( (BOOL)WinSendMsg( hmenu, MM_SETITEMATTR, MPFROM2SHORT(id, TRUE), MPFROM2SHORT(mask,attr) ) );
 }
 
 void _wpi_menutext2win( char *text )
@@ -98,8 +97,7 @@ static unsigned _wpi_getmenuitemposfromid( HMENU hmenu, unsigned id )
 {
     MRESULT     result;
 
-    result = WinSendMsg( hmenu, MM_ITEMPOSITIONFROMID,
-                         MPFROM2SHORT(id, TRUE), NULL );
+    result = WinSendMsg( hmenu, MM_ITEMPOSITIONFROMID, MPFROM2SHORT(id, TRUE), NULL );
     if( result != MIT_NONE ) {
         return( (unsigned)result );
     }
@@ -107,7 +105,7 @@ static unsigned _wpi_getmenuitemposfromid( HMENU hmenu, unsigned id )
 }
 #endif
 
-static unsigned _wpi_getmenuitemidfrompos( HMENU hmenu, unsigned pos )
+static unsigned _wpi_getmenuitemidfrompos( HMENU hmenu, int pos )
 {
     MRESULT     result;
 
@@ -118,11 +116,10 @@ static unsigned _wpi_getmenuitemidfrompos( HMENU hmenu, unsigned pos )
     return( -1 );
 }
 
-static BOOL _wpi_getmenuparentoffset( HMENU hmenu, unsigned id,
-                                      HMENU *parent, unsigned *offset )
+static BOOL _wpi_getmenuparentpos( HMENU hmenu, unsigned id, HMENU *parent, int *pos_parent )
 {
     int         num;
-    int         i;
+    int         pos;
     unsigned    item_id;
     MENUITEM    mi;
     MRESULT     result;
@@ -131,9 +128,9 @@ static BOOL _wpi_getmenuparentoffset( HMENU hmenu, unsigned id,
         return( FALSE );
     }
 
-    num = (int) _wpi_getmenuitemcount( hmenu );
-    for( i = 0; i < num; i++ ) {
-        item_id = _wpi_getmenuitemidfrompos( hmenu, i );
+    num = _wpi_getmenuitemcount( hmenu );
+    for( pos = 0; pos < num; pos++ ) {
+        item_id = _wpi_getmenuitemidfrompos( hmenu, pos );
         if( item_id == -1 ) {
             return( FALSE );
         }
@@ -141,21 +138,21 @@ static BOOL _wpi_getmenuparentoffset( HMENU hmenu, unsigned id,
             if( parent != NULL ) {
                 *parent = hmenu;
             }
-            if( offset != NULL ) {
-                *offset = i;
+            if( pos_parent != NULL ) {
+                *pos_parent = pos;
             }
             return( TRUE );
         }
     }
 
-    for( i = 0; i < num; i++ ) {
-        item_id = _wpi_getmenuitemidfrompos( hmenu, i );
+    for( pos = 0; pos < num; pos++ ) {
+        item_id = _wpi_getmenuitemidfrompos( hmenu, pos );
         if( item_id == -1 ) {
             return( FALSE );
         }
         result = WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(item_id, FALSE), MPFROMP(&mi) );
         if( (BOOL)result && (mi.afStyle & MF_POPUP) && (mi.hwndSubMenu != NULLHANDLE) ) {
-            if( _wpi_getmenuparentoffset( mi.hwndSubMenu, id, parent, offset ) ) {
+            if( _wpi_getmenuparentpos( mi.hwndSubMenu, id, parent, pos_parent ) ) {
                 return( TRUE );
             }
         }
@@ -164,8 +161,8 @@ static BOOL _wpi_getmenuparentoffset( HMENU hmenu, unsigned id,
     return( FALSE );
 }
 
-static void _OldBrush( WPI_PRES pres, WPI_OBJECT* brush )
-/**************************************/
+static void _OldBrush( WPI_PRES pres, WPI_OBJECT *brush )
+/*******************************************************/
 /* The function is used to determine the type of and retrieve the
    old brush. */
 {
@@ -205,7 +202,7 @@ void GetClientRect( HWND hwnd, WPI_RECT *prect )
     ret = WinCalcFrameRect( hwnd, prect, TRUE );
     prect->xRight   = prect->xRight - prect->xLeft;
     prect->yTop     = prect->yTop - prect->yBottom;
-    if ( ret ) {
+    if( ret ) {
         prect->xLeft    = prect->xLeft - screen.xLeft;
         prect->yBottom  = prect->yBottom - screen.yBottom;
         prect->xRight  += prect->xLeft;
@@ -264,8 +261,8 @@ WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
     bmih.cbFix = sizeof( WPI_BITMAP );
     bmih.cx = width;
     bmih.cy = height;
-    bmih.cPlanes = (USHORT) formats[0];
-    bmih.cBitCount = (USHORT) formats[1];
+    bmih.cPlanes = (USHORT)formats[0];
+    bmih.cBitCount = (USHORT)formats[1];
 
     obj = _wpi_malloc( sizeof(WPI_OBJECT) );
     obj->type = WPI_BITMAP_OBJ;
@@ -283,8 +280,7 @@ WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
                                 0L, 0L, 0L, 0L, 0L };
 
     pres = pres;                        // PM doesn't use this variable
-    *hdc = DevOpenDC( inst.hab, OD_MEMORY, "*", 5L,
-                                        (PDEVOPENDATA)&dop, NULLHANDLE );
+    *hdc = DevOpenDC( inst.hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     mempres = GpiCreatePS( inst.hab, *hdc, &sizl, PU_PELS | GPIA_ASSOC );
     return( mempres );
 } /* _wpi_createcompatiblepres */
@@ -327,8 +323,7 @@ int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst, LPCSTR res_id,
     HWND                new_dlg;
     int                 ret;
 
-    new_dlg = WinLoadDlg( HWND_DESKTOP, parent, proc, inst.mod_handle,
-                                            (ULONG)res_id, (PVOID)data );
+    new_dlg = WinLoadDlg( HWND_DESKTOP, parent, proc, inst.mod_handle, (ULONG)res_id, (PVOID)data );
     if( new_dlg == (HWND)NULL ) {
         return( -1 );
     }
@@ -368,15 +363,17 @@ BOOL _wpi_ellipse( WPI_PRES pres, int left, int top, int right, int bottom )
     LONG        height;
     BOOL        ret = TRUE;
 
-    width = abs(right - left);
-    height = abs(top - bottom);
+    width = abs( right - left );
+    height = abs( top - bottom );
     pt.x = left;
     pt.y = top;
-    if ( !GpiSetCurrentPosition(pres, &pt) ) ret = FALSE;
+    if( !GpiSetCurrentPosition( pres, &pt ) )
+        ret = FALSE;
     pt.x = right - 1;
     pt.y = bottom + 1;
 
-    if ( !GpiBox(pres, DRO_OUTLINEFILL, &pt, width, height) ) ret = FALSE;
+    if( !GpiBox( pres, DRO_OUTLINEFILL, &pt, width, height ) )
+        ret = FALSE;
 
     return( ret );
 } /* _wpi_ellipse */
@@ -448,7 +445,7 @@ int _wpi_getdlgitemint( HWND hwnd, int item, BOOL *retcode, BOOL issigned )
 
     *retcode = TRUE;
     if( WinQueryDlgItemText( hwnd, (ULONG)item, 20, buffer ) != 0 ) {
-        if( sscanf( buffer, "%d%1s", &result, dummy ) != 1) {
+        if( sscanf( buffer, "%d%1s", &result, dummy ) != 1 ) {
             result = 0;
             *retcode = FALSE;
         }
@@ -532,7 +529,7 @@ BOOL _wpi_iszoomed( HWND hwnd )
 
     WinQueryWindowPos( hwnd, &swp );
 
-    if (PM1632SWP_FLAG( swp ) & SWP_MAXIMIZE) {
+    if( PM1632SWP_FLAG( swp ) & SWP_MAXIMIZE ) {
         return( TRUE );
     } else {
         return( FALSE );
@@ -546,7 +543,7 @@ BOOL _wpi_isiconic( HWND hwnd )
 
     WinQueryWindowPos( hwnd, &swp );
 
-    if (PM1632SWP_FLAG( swp ) & SWP_MINIMIZE) {
+    if( PM1632SWP_FLAG( swp ) & SWP_MINIMIZE ) {
         return( TRUE );
     } else {
         return( FALSE );
@@ -585,8 +582,7 @@ BOOL _wpi_polygon( WPI_PRES pres, WPI_POINT *pts, int num_pts )
     poly[0].ulPoints = num_pts;
 
     GpiSetCurrentPosition( pres, &pts[0] );
-    ret = ( GpiPolygons(pres, 1, poly, POLYGON_BOUNDARY, POLYGON_INCL) ==
-                                                                    GPI_OK );
+    ret = ( GpiPolygons( pres, 1, poly, POLYGON_BOUNDARY, POLYGON_INCL ) == GPI_OK );
     return( ret );
 } /* _wpi_polygon */
 #endif
@@ -618,12 +614,12 @@ BOOL _wpi_rectangle( WPI_PRES pres, int left, int top, int right, int bottom )
 
     pt.x = (LONG)left;
     pt.y = (LONG)top;
-    if ( !GpiSetCurrentPosition(pres, &pt) ) ret = FALSE;
-
+    if( !GpiSetCurrentPosition( pres, &pt ) )
+        ret = FALSE;
     pt.x = right - 1;
     pt.y = bottom + 1;
-    if ( !GpiBox(pres, DRO_OUTLINEFILL, &pt, 0L, 0L) ) ret = FALSE;
-
+    if( !GpiBox( pres, DRO_OUTLINEFILL, &pt, 0L, 0L ) )
+        ret = FALSE;
     return( ret );
 } /* _wpi_rectangle */
 
@@ -644,7 +640,7 @@ WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
     obj = (WPI_OBJECT *)bitmap;
 
     if( obj != NULL ) {
-        old_obj = _wpi_malloc( sizeof(WPI_OBJECT) );
+        old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         old_obj->type = WPI_BITMAP_OBJ;
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
     }
@@ -700,13 +696,17 @@ WPI_COLOUR _wpi_setpixel( WPI_PRES hps, int x, int y, WPI_COLOUR clr )
 
     setclr = GpiQueryNearestColor( hps, 0L, clr );
     oldclr = GpiQueryColor( hps );
-    if ( !oldclr ) setclr = -1;
-    if ( !GpiSetColor(hps, clr) ) setclr = -1;
+    if( !oldclr )
+        setclr = -1;
+    if( !GpiSetColor( hps, clr ) )
+        setclr = -1;
 
     pt.x = (LONG)x;
     pt.y = (LONG)y;
-    if ( !GpiSetPel(hps, &pt) ) setclr = -1;
-    if ( !GpiSetColor(hps, oldclr) ) setclr = -1;
+    if( !GpiSetPel( hps, &pt ) )
+        setclr = -1;
+    if( !GpiSetColor( hps, oldclr ) )
+        setclr = -1;
     return( setclr );
 } /* _wpi_setpixel */
 
@@ -743,8 +743,8 @@ BOOL _wpi_ptinrect( WPI_RECT *prect, WPI_POINT pt )
             ( pt.y <= prect->yTop ) && ( pt.y > prect->yBottom ) );
 }
 
-BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
-                      unsigned attr_flags, unsigned id,
+BOOL _wpi_insertmenu( HMENU hmenu, unsigned id, unsigned menu_flags,
+                      unsigned attr_flags, unsigned new_id,
                       HMENU popup, const char *text, BOOL by_position )
 {
     MENUITEM    mi;
@@ -752,28 +752,28 @@ BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
     char        *new_text;
     char        *t;
     HMENU       parent;
-    unsigned    pos_in_parent;
+    int         pos;
 
     if( hmenu == NULLHANDLE ) {
         return( FALSE );
     }
 
     if( by_position ) {
-        if( pos == -1 ) {
+        pos = (int)id;
+        if( id == -1 ) {
             pos = MIT_END;
         }
         parent = hmenu;
-        pos_in_parent = pos;
     } else {
-        if( !_wpi_getmenuparentoffset( hmenu, pos, &parent, &pos_in_parent ) ) {
+        if( !_wpi_getmenuparentpos( hmenu, id, &parent, &pos ) ) {
             return( FALSE );
         }
     }
 
-    mi.iPosition   = pos_in_parent;
+    mi.iPosition   = pos;
     mi.afStyle     = menu_flags;
     mi.afAttribute = attr_flags;
-    mi.id          = id;
+    mi.id          = new_id;
     mi.hwndSubMenu = popup;
     mi.hItem       = 0;
 
@@ -794,25 +794,24 @@ BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
 }
 
 BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
-                      unsigned attr_flags, unsigned id,
+                      unsigned attr_flags, unsigned new_id,
                       HMENU popup, const char *text )
 {
-    return( _wpi_insertmenu( hmenu, -1, menu_flags, attr_flags, id, popup, text, TRUE ) );
+    return( _wpi_insertmenu( hmenu, -1, menu_flags, attr_flags, new_id, popup, text, TRUE ) );
 }
 
-BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
-                        BOOL by_position )
+BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state, BOOL by_position )
 {
     if( !hmenu || !state ) {
         return( FALSE );
     }
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
     }
-    return( (BOOL) WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, TRUE), MPFROMP(state) ) );
+    return( (BOOL)WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT( id, TRUE ), MPFROMP( state ) ) );
 }
 
 void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state, unsigned *menu_flags,
@@ -826,19 +825,19 @@ BOOL _wpi_modifymenu( HMENU hmenu, unsigned id, unsigned menu_flags,
                       unsigned attr_flags, unsigned new_id,
                       HMENU new_popup, const char *new_text, BOOL by_position )
 {
-    HMENU               parent;
-    unsigned            pos;
+    HMENU       parent;
+    int         pos;
 
     if( hmenu == NULLHANDLE ) {
         return( FALSE );
     }
 
     if( by_position ) {
+        pos = (int)id;
         parent = hmenu;
-        pos = id;
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, pos );
     } else {
-        if( !_wpi_getmenuparentoffset( hmenu, id, &parent, &pos ) ) {
+        if( !_wpi_getmenuparentpos( hmenu, id, &parent, &pos ) ) {
             return( FALSE );
         }
     }
@@ -848,11 +847,12 @@ BOOL _wpi_modifymenu( HMENU hmenu, unsigned id, unsigned menu_flags,
     return( _wpi_insertmenu( parent, pos, menu_flags, attr_flags, new_id, new_popup, new_text, TRUE ) );
 }
 
-HMENU _wpi_getsubmenu( HMENU hmenu, unsigned id )
+HMENU _wpi_getsubmenu( HMENU hmenu, int pos )
 {
     MENUITEM    mi;
+    unsigned    id;
 
-    id = _wpi_getmenuitemidfrompos( hmenu, id );
+    id = _wpi_getmenuitemidfrompos( hmenu, pos );
     if( id == -1 ) {
         return( NULLHANDLE );
     }
@@ -910,19 +910,19 @@ BOOL _wpi_deletemenu( HMENU hmenu, unsigned id, BOOL by_position )
         return( FALSE );
     }
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
     }
-    return( (BOOL) WinSendMsg( hmenu, MM_DELETEITEM, MPFROM2SHORT(id, TRUE), NULL ) );
+    return( (BOOL)WinSendMsg( hmenu, MM_DELETEITEM, MPFROM2SHORT(id, TRUE), NULL ) );
 }
 
 BOOL _wpi_checkmenuitem( HMENU hmenu, unsigned id,
                          BOOL fchecked, BOOL by_position )
 {
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
@@ -934,7 +934,7 @@ BOOL _wpi_enablemenuitem( HMENU hmenu, unsigned id,
                          BOOL fenabled, BOOL by_position )
 {
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
@@ -952,7 +952,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
     }
 
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
@@ -960,7 +960,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
 
     new_text = _wpi_menutext2pm( text );
 
-    ret = (BOOL) WinSendMsg( hmenu, MM_SETITEMTEXT, (WPI_PARAM1)id, MPFROMP(new_text) );
+    ret = (BOOL)WinSendMsg( hmenu, MM_SETITEMTEXT, (WPI_PARAM1)id, MPFROMP(new_text) );
 
     if( new_text ) {
         _wpi_free( new_text );
@@ -979,19 +979,19 @@ BOOL _wpi_getmenutext( HMENU hmenu, unsigned id, char *text, int ctext,
     }
     text[0] = '\0';
     if( by_position ) {
-        id = _wpi_getmenuitemidfrompos( hmenu, id );
+        id = _wpi_getmenuitemidfrompos( hmenu, (int)id );
     }
     if( id == -1 ) {
         return( FALSE );
     }
     ret = (BOOL)WinSendMsg( hmenu, MM_QUERYITEMTEXT, MPFROM2SHORT(id, ctext), MPFROMP(text) );
-    if ( ret ) {
+    if( ret ) {
         _wpi_menutext2win( text );
     }
     return( ret );
 }
 
-UINT _wpi_getmenuitemid( HMENU hmenu, unsigned pos )
+UINT _wpi_getmenuitemid( HMENU hmenu, int pos )
 {
     return( _wpi_getmenuitemidfrompos( hmenu, pos ) );
 }
@@ -1170,7 +1170,7 @@ BOOL _wpi_setscrollpos( HWND parent, int scroll, int pos, BOOL redraw )
     if( scroll_bar == NULLHANDLE ) {
         scroll_bar = parent;
     }
-    return( (BOOL)(WinSendMsg(scroll_bar, SBM_SETPOS, MPFROMSHORT( pos ), 0)) );
+    return( (BOOL)WinSendMsg( scroll_bar, SBM_SETPOS, MPFROMSHORT( pos ), 0 ) );
 }
 
 int _wpi_getscrollpos( HWND parent, int scroll )
@@ -1181,7 +1181,7 @@ int _wpi_getscrollpos( HWND parent, int scroll )
     if( scroll_bar == NULLHANDLE ) {
         scroll_bar = parent;
     }
-    return( (int) WinSendMsg( scroll_bar, SBM_QUERYPOS, 0, 0 ) );
+    return( (int)WinSendMsg( scroll_bar, SBM_QUERYPOS, 0, 0 ) );
 }
 
 BOOL _wpi_setscrollrange( HWND parent, int scroll, int min, int max, BOOL redraw )
@@ -1195,8 +1195,8 @@ BOOL _wpi_setscrollrange( HWND parent, int scroll, int min, int max, BOOL redraw
     if( scroll_bar == NULLHANDLE ) {
         scroll_bar = parent;
     }
-    pos = (SHORT) WinSendMsg( scroll_bar, SBM_QUERYPOS, 0, 0 );
-    return( (BOOL) WinSendMsg( scroll_bar, SBM_SETSCROLLBAR, MPFROMSHORT(pos),
+    pos = (SHORT)WinSendMsg( scroll_bar, SBM_QUERYPOS, 0, 0 );
+    return( (BOOL)WinSendMsg( scroll_bar, SBM_SETSCROLLBAR, MPFROMSHORT(pos),
                                MPFROM2SHORT( min, max ) ) );
 }
 
@@ -1667,7 +1667,7 @@ void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char 
         for( i = 0; i < num_fonts; i++ ) {
             ret = proc( (WPI_LOGFONT *) &pfm[i], (WPI_TEXTMETRIC *) &pfm[i],
                                         (short)pfm[i].fsDefn, (LPSTR)data );
-            if (!ret) {
+            if( !ret ) {
                 break;
             }
         }
@@ -1762,7 +1762,8 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
 
     bitsize = sizeof(BITMAPINFO) + sizeof(RGB) * (1 << ih.cBitCount);
     bmi = _wpi_malloc( bitsize );
-    if (!bmi) return( 0L );
+    if( !bmi )
+        return( 0L );
 
     memset( bmi, 0, bitsize );
     memcpy( bmi, &ih, sizeof(BITMAPINFOHEADER) );
@@ -1830,7 +1831,7 @@ BOOL _wpi_movewindow( HWND hwnd, int x, int y, int width, int height, BOOL repai
 {
     BOOL        ret;
 
-    if ( repaint ) {
+    if( repaint ) {
         ret = WinSetWindowPos( hwnd, HWND_TOP, x, y, width, height,
                                SWP_MOVE | SWP_SIZE );
     } else {
@@ -1938,7 +1939,8 @@ WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
     WPI_OBJECT  *obj;
 
     obj = _wpi_malloc( sizeof(WPI_OBJECT) );
-    if (!obj) return ( (WPI_HANDLE)NULL );
+    if( !obj )
+        return( (WPI_HANDLE)NULL );
 
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, (WPI_BITMAP *)info, opt, data,
@@ -2031,17 +2033,13 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
     WinSetWindowPos( hwndMenu, NULL, x, y, 0, 0, SWP_MOVE | SWP_SHOW );
 
     // set the initially selected item to be the first selectable one
-    item_count = (int) WinSendMsg( hwndMenu, MM_QUERYITEMCOUNT, NULL, NULL );
-    pos = 0;
-    while ( pos <= item_count ) {
+    item_count = _wpi_getmenuitemcount( hwndMenu );
+    for( pos = 0; pos <= item_count; ++pos ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, pos );
-        if( (BOOL) WinSendMsg( hwndMenu, MM_ISITEMVALID,
-                               MPFROM2SHORT(id, FALSE), NULL ) ) {
-            WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT(id, FALSE),
-                        NULL );
+        if( (BOOL)WinSendMsg( hwndMenu, MM_ISITEMVALID, MPFROM2SHORT(id, FALSE), NULL ) ) {
+            WinSendMsg( hwndMenu, MM_SELECTITEM, MPFROM2SHORT(id, FALSE), NULL );
             break;
         }
-        pos++;
     }
 
     // if no selectable item was found then set the initially selected
@@ -2260,15 +2258,21 @@ void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
     bih.cbFix = sizeof( BITMAPINFOHEADER );
     GpiQueryBitmapParameters( obj->bitmap, &bih );
 
-    if( width ) *width = bih.cx;
-    if( height ) *height = bih.cy;
-    if( planes ) *planes = bih.cPlanes;
-    if ( notused1 ) *notused1 = 0;      // this variable not used for PM
+    if( width )
+        *width = bih.cx;
+    if( height )
+        *height = bih.cy;
+    if( planes )
+        *planes = bih.cPlanes;
+    if( notused1 )
+        *notused1 = 0;      // this variable not used for PM
     /*
      * this parameter is bitspixel (usually 1) in Windows but bitcount in
      * PM
      */
-    if ( bitcount ) *bitcount = bih.cBitCount;
+    if( bitcount ) {
+        *bitcount = bih.cBitCount;
+    }
 } /* _wpi_getbitmapparms */
 
 LONG _wpi_getbitmapstruct( WPI_HANDLE bitmap, WPI_BITMAP *info )

@@ -1289,7 +1289,7 @@ void _wpi_getrestoredrect( HWND hwnd, WPI_RECT *prect );
     #define _wpi_createpopupmenu() WinCreateMenu( HWND_DESKTOP, NULL )
 
     #define _wpi_getmenuitemcount( hmenu ) \
-                                    WinSendMsg( hmenu, MM_QUERYITEMCOUNT, 0, 0 )
+                                    (int)WinSendMsg( hmenu, MM_QUERYITEMCOUNT, 0, 0 )
 
     #define _wpi_maximizewindow( hwnd ) \
                         WinSetWindowPos( (hwnd), NULLHANDLE, 0,0,0,0, SWP_MAXIMIZE )
@@ -1307,10 +1307,10 @@ extern BOOL _wpi_iszoomed( HWND hwnd );
         ( (WPI_PROC) WinSubclassWindow( hwnd, new ) )
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text, BOOL by_position );
 extern BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text );
 extern BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
                                BOOL by_position );
@@ -1337,7 +1337,7 @@ extern BOOL _wpi_modifymenu( HMENU hmenu, unsigned id, unsigned menu_flags,
 
     #define _wpi_createmenu() WinCreateMenu( HWND_DESKTOP, NULL )
 
-extern HMENU _wpi_getsubmenu( HMENU hmenu, unsigned pos );
+extern HMENU _wpi_getsubmenu( HMENU hmenu, int pos );
 extern HMENU _wpi_getsystemmenu( HWND hwnd );
 extern BOOL _wpi_setmenu( HWND hwnd, HMENU hmenu );
 extern BOOL _wpi_deletemenu( HMENU hmenu, unsigned id, BOOL by_position );
@@ -1349,7 +1349,7 @@ extern BOOL _wpi_setmenutext( HMENU hmenu, unsigned id,
                               const char *text, BOOL by_position );
 extern BOOL _wpi_getmenutext( HMENU hmenu, unsigned id, char *text, int ctext,
                               BOOL by_position );
-extern UINT _wpi_getmenuitemid( HMENU hmenu, unsigned pos );
+extern UINT _wpi_getmenuitemid( HMENU hmenu, int pos );
 
     #define _wpi_destroymenu( hmenu ) WinDestroyWindow( hmenu )
 

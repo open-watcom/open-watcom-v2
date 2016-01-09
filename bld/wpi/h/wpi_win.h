@@ -1115,11 +1115,11 @@ extern void _wpi_setrestoredrect( HWND hwnd, WPI_RECT *prect );
 extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newproc );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text, BOOL by_position );
 
 extern BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text );
 
 extern BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
