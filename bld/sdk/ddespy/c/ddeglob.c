@@ -35,8 +35,8 @@
 HANDLE          Instance;
 HWND            DDEMainWnd;
 DWORD           DDEInstId;
-BOOL            Monitoring[DDE_MON_LAST - DDE_MON_FIRST + 1];
-WndConfigInfo   Tracking[NO_TRK_WND];
+bool            Monitoring[MAX_DDE_MON];
+WndConfigInfo   Tracking[MAX_DDE_TRK];
 WndConfigInfo   MainWndConfig;
 DDEConfigInfo   ConfigInfo;
 AliasHdl        HwndAlias;

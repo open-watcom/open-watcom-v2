@@ -546,7 +546,7 @@ extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, char *file
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
-void    ShowHintText( UINT wparam );
+void    ShowHintText( int id );
 void    InitMenus( HMENU hmenu );
 
 #else
@@ -571,6 +571,6 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO2 *bmi );
 
 /* hinttext.c */
-void    ShowHintText( MPARAM wparam );
+void    ShowHintText( int id );
 
 #endif

@@ -94,14 +94,14 @@ static void makeWndCfgName( char *buf, char *name, char *ext )
 /*
  * putProfileBool - write a boolean value to the configuration file
  */
-static void putProfileBool( char *id, BOOL val )
+static void putProfileBool( char *id, bool val )
 {
     char        buf[15];
 
     if( val ) {
-        itoa( TRUE, buf, 10 );
+        itoa( true, buf, 10 );
     } else {
-        itoa( FALSE, buf, 10 );
+        itoa( false, buf, 10 );
     }
     WritePrivateProfileString( SECT_NAME, id, buf, iniPath );
 
@@ -177,13 +177,13 @@ void ReadConfig( void )
     SetTrackWndDefault();
     SetMainWndDefault();
 
-    Monitoring[MON_SENT_IND] = GetPrivateProfileInt( SECT_NAME, MONSENT, TRUE, iniPath );
-    Monitoring[MON_POST_IND] = GetPrivateProfileInt( SECT_NAME, MONPOST, TRUE, iniPath );
-    Monitoring[MON_CB_IND] = GetPrivateProfileInt( SECT_NAME, MONCB, TRUE, iniPath );
-    Monitoring[MON_STR_IND] = GetPrivateProfileInt( SECT_NAME, MONSTR, TRUE, iniPath );
-    Monitoring[MON_ERR_IND] = GetPrivateProfileInt( SECT_NAME, MONERR, TRUE, iniPath );
-    Monitoring[MON_LNK_IND] = GetPrivateProfileInt( SECT_NAME, MONLNK, TRUE, iniPath );
-    Monitoring[MON_CONV_IND] = GetPrivateProfileInt( SECT_NAME, MONCONV, TRUE, iniPath );
+    Monitoring[MON_SENT_IND] = GetPrivateProfileInt( SECT_NAME, MONSENT, true, iniPath );
+    Monitoring[MON_POST_IND] = GetPrivateProfileInt( SECT_NAME, MONPOST, true, iniPath );
+    Monitoring[MON_CB_IND] = GetPrivateProfileInt( SECT_NAME, MONCB, true, iniPath );
+    Monitoring[MON_STR_IND] = GetPrivateProfileInt( SECT_NAME, MONSTR, true, iniPath );
+    Monitoring[MON_ERR_IND] = GetPrivateProfileInt( SECT_NAME, MONERR, true, iniPath );
+    Monitoring[MON_LNK_IND] = GetPrivateProfileInt( SECT_NAME, MONLNK, true, iniPath );
+    Monitoring[MON_CONV_IND] = GetPrivateProfileInt( SECT_NAME, MONCONV, true, iniPath );
 
     /* global settings */
 
@@ -201,7 +201,7 @@ void ReadConfig( void )
                                               ConfigInfo.on_top, iniPath );
 
     /* window size/pos info */
-    for( i = 0; i < NO_TRK_WND; i++ ) {
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
         itoa( i, buf, 10 );
         readWindowInfo( Tracking + i, buf );
     }
@@ -252,7 +252,7 @@ void SaveConfigFile( void )
     putProfileBool( CFG_ON_TOP, ConfigInfo.on_top );
 
     /* window position/size information */
-    for( i = 0; i < NO_TRK_WND; i++ ) {
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
         itoa( i, buf, 10 );
         writeWindowInfo( Tracking + i, buf );
     }

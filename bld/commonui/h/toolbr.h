@@ -37,7 +37,7 @@
 typedef int     CMDID;
 
 typedef bool (*toolhook_fn)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-typedef void (*helphook_fn)( HWND, WPI_PARAM1, bool );
+typedef void (*helphook_fn)( HWND, int, bool );
 
 typedef struct TOOLDISPLAYINFO {
     WPI_POINT   button_size;        /* size, in pixels, of one tool item */

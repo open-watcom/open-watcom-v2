@@ -99,7 +99,7 @@ WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
-static bool genLine( unsigned char digits, DWORD limit, WORD type, WORD sel, char *buf, DWORD offset );
+static bool genLine( unsigned char digits, DWORD limit, int type, WORD sel, char *buf, DWORD offset );
 
 typedef enum {
     MT_FREE,
@@ -185,7 +185,7 @@ static void memDumpHeader( int hdl, MemWndInfo *info )
     time_t              tm;
     char                buf[80];
     unsigned            len;
-    WORD                type_index;
+    int                 type_index;
     char                *rcstr;
 #ifndef __NT__
     GLOBALENTRY         ge;
@@ -350,22 +350,22 @@ void GetMemWndConfig( MemWndConfig *cfg )
 /*
  * GetMemWndDefault
  */
-void GetMemWndDefault( MemWndConfig *info )
+void GetMemWndDefault( MemWndConfig *cfg )
 {
-    info->init = true;
-    info->xpos = 0;
-    info->ypos = 0;
-    info->ysize = GetSystemMetrics( SM_CYSCREEN ) / 5;
-    info->xsize = GetSystemMetrics( SM_CXSCREEN );
-    info->disp_info = true;
-    info->maximized = false;
-    info->allowmult = WND_MULTI;
-    strcpy( info->fname, "mem.txt" );
-    info->appname = "";
-    info->autopos_info = true;
-    info->forget_pos = false;
-    info->disp_type = MEMINFO_BYTE;
-    info->code_disp_type = MEMINFO_CODE_16;
+    cfg->init = true;
+    cfg->xpos = 0;
+    cfg->ypos = 0;
+    cfg->ysize = GetSystemMetrics( SM_CYSCREEN ) / 5;
+    cfg->xsize = GetSystemMetrics( SM_CXSCREEN );
+    cfg->disp_info = true;
+    cfg->maximized = false;
+    cfg->allowmult = WND_MULTI;
+    strcpy( cfg->fname, "mem.txt" );
+    cfg->appname = "";
+    cfg->autopos_info = true;
+    cfg->forget_pos = false;
+    cfg->disp_type = MEMINFO_BYTE;
+    cfg->code_disp_type = MEMINFO_CODE_16;
 
 } /* GetMemWndDefault */
 
@@ -407,7 +407,7 @@ static char *genByte( char ch, char *ptr )
  * genLine - create a line for output of the form:
 XXXXXXXX  dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd  cccccccccccccccc
  */
-static bool genLine( unsigned char digits, DWORD limit, WORD type,
+static bool genLine( unsigned char digits, DWORD limit, int type,
                      WORD sel, char *buf, DWORD offset )
 {
     char        *ptr;
@@ -608,7 +608,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
 /*
  * bytesToDisplay
  */
-static unsigned char bytesToDisplay( int width, WORD type )
+static unsigned char bytesToDisplay( int width, int type )
 {
     int     bytes;
 
@@ -911,7 +911,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
     DWORD               size;
     HBRUSH              wbrush;
     FARPROC             fp;
-    WORD                cmd;
+    int                 cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
     switch( msg ) {

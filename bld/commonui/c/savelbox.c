@@ -55,8 +55,8 @@
  */
 static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
 {
-    LRESULT     i;
-    LRESULT     count;
+    int         i;
+    int         count;
     FILE        *f;
     char        str[256];
 
@@ -67,7 +67,7 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
     if( writefn != NULL ) {
         writefn( f );
     }
-    count = SendMessage( listbox, LB_GETCOUNT, 0, 0L );
+    count = (int)SendMessage( listbox, LB_GETCOUNT, 0, 0L );
     if( count == LB_ERR ) {
         fclose( f );
         return( false );

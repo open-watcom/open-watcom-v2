@@ -116,16 +116,14 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( UINT wparam )
+void ShowHintText( int id )
 {
     int         i;
-    int         toolid;
 
-    toolid = LOWORD( wparam );
     for( i = 0; i < MAX_HINT; i++ ) {
         if( hintText[i].id <= 0 ) {
             break;
-        } else if( hintText[i].id == toolid ) {
+        } else if( hintText[i].id == id ) {
             PrintHintTextByID( hintText[i].hint, NULL );
             return;
         }
@@ -271,18 +269,14 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( MPARAM wparam )
+void ShowHintText( int id )
 {
     int         i;
-    int         toolid;
-
-    toolid = LOWORD( wparam );
-    toolid = SHORT1FROMMP( wparam );
 
     for( i = 0; i < MAX_HINT; i++ ) {
         if( hintText[i].id <= 0 ) {
             break;
-        } else if( hintText[i].id == toolid ) {
+        } else if( hintText[i].id == id ) {
             SetHintText( hintText[i].text );
             return;
         }

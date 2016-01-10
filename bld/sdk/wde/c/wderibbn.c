@@ -57,7 +57,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 bool WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
-void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
+void WdeRibbonHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -303,11 +303,11 @@ void WdeSetRibbonItemState( WORD item, int state )
     }
 }
 
-void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
+void WdeRibbonHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wde_touch( hwnd );
 
-    WdeHandleToolHint( wParam, pressed );
+    WdeHandleToolHint( id, pressed );
 }
 
 bool WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )

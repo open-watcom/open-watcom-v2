@@ -99,7 +99,7 @@ static gui_window *GetToolWnd( HWND hwnd )
     return( NULL );
 }
 
-void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
+void GUIToolBarHelp( HWND hwnd, int id, bool down )
 {
     gui_window          *wnd;
     gui_menu_styles     style;
@@ -107,7 +107,7 @@ void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
     wnd = GetToolWnd( hwnd );
     if( wnd != NULL ) {
         style = ( down ) ? GUI_ENABLED : GUI_IGNORE;
-        GUIDisplayHintText( wnd, wnd, (int)id, TOOL_HINT, style );
+        GUIDisplayHintText( wnd, wnd, id, TOOL_HINT, style );
     }
 }
 

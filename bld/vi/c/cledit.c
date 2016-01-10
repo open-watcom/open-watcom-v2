@@ -58,12 +58,12 @@ static bool isMultipleFiles( const char *altname )
     while( *altname != '\0' && *altname != ' ' ) {
         altname++;
     }
-    return( altname[0] == ' ' );
+    return( *altname == ' ' );
 }
 #else
 static bool isMultipleFiles( const char *altname )
 {
-    while( *altname != '\0' ) {
+    while( altname[0] != '\0' ) {
         altname++;
     }
     return( altname[0] == '\0' && altname[1] != '\0' );

@@ -152,11 +152,11 @@ static void addItems( void )
 /*
  * FunctionBarHelpProc
  */
-void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+void FunctionBarHelpProc( HWND hwnd, int id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
-        ShowHintText( wparam );
+        ShowHintText( id );
     } else {
         SetHintText( " " );
     }
@@ -170,6 +170,7 @@ bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
+    int                 id;
 
     hwnd = hwnd;
 
@@ -178,19 +179,21 @@ bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
         break;
 
     case WM_USER:
+        id = LOWORD( wparam );
         if( !lparam ) {
-            ShowHintText( wparam );
+            ShowHintText( id );
         }
 
-        if( LOWORD( wparam ) == IMGED_GRID ) {
-            ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_DOWN );
+        if( id == IMGED_GRID ) {
+            ToolBarSetState( functionBar, id, BUTTON_DOWN );
         } else {
             return( true );
         }
         break;
 
     case WM_COMMAND:
-        if( LOWORD( wparam ) == IMGED_GRID ) {
+        id = LOWORD( wparam );
+        if( id == IMGED_GRID ) {
             if( !gridButtonDown ) {
                 gridButtonDown = TRUE;
             } else {
@@ -203,7 +206,7 @@ bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
             return( true );
         }
 
-        ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_UP );
+        ToolBarSetState( functionBar, id, BUTTON_UP );
         break;
 
     case WM_DESTROY:

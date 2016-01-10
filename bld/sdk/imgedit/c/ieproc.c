@@ -371,7 +371,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             break;
         }
 #endif
-        ShowHintText( wparam );
+        ShowHintText( LOWORD( wparam ) );
         break;
 
     case WM_COMMAND:

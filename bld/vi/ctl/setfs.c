@@ -363,7 +363,7 @@ static void writeSettings( HWND hwndDlg )
     FTSInit();
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     for( index = 0; index < dlgDataArray_count; index++ ) {
         // put back in order we got them
@@ -389,7 +389,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
     if( index == CB_ERR ) {
@@ -432,7 +432,7 @@ static long insertFT( HWND hwndDlg )
     int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     // get new template
     len = GetWindowTextLength( hwndCB );

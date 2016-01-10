@@ -56,7 +56,7 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     info    *info;
     char    *name;
 
-    count = SendMessage( list_box, LB_GETCOUNT, 0, 0L );
+    count = (int)SendMessage( list_box, LB_GETCOUNT, 0, 0L );
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
             name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );

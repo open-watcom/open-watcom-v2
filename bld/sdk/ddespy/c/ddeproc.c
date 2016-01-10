@@ -83,7 +83,7 @@ static const MenuItemHint menuHints[] = {
  */
 void SetMainWndDefault( void )
 {
-    MainWndConfig.visible = TRUE;
+    MainWndConfig.visible = true;
     MainWndConfig.xpos = 0;
     MainWndConfig.ypos = 0;
     MainWndConfig.xsize = GetSystemMetrics( SM_CXSCREEN );
@@ -99,12 +99,12 @@ void SetMainWndDefault( void )
 static void initMonitoring( HWND hwnd )
 {
     HMENU       mh;
-    UINT        itemid;
+    int         i;
 
     mh = GetMenu( hwnd );
-    for( itemid = DDE_MON_FIRST; itemid <= DDE_MON_LAST; itemid++ ) {
-        if( Monitoring[itemid - DDE_MON_FIRST] ) {
-            CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_CHECKED );
+    for( i = 0; i < MAX_DDE_MON; i++ ) {
+        if( Monitoring[i] ) {
+            CheckMenuItem( mh, DDE_MON_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         }
     }
 
@@ -114,16 +114,16 @@ static void initMonitoring( HWND hwnd )
  * monitorChange - change the check state a menu item to reflect a
  *                 change in the monitoring state
  */
-static void monitorChange( HWND hwnd, UINT itemid )
+static void monitorChange( HWND hwnd, int i )
 {
     UINT        action;
     HMENU       mh;
 
     action = MF_BYCOMMAND;
     mh = GetMenu( hwnd );
-    Monitoring[itemid - DDE_MON_FIRST] = !Monitoring[itemid - DDE_MON_FIRST];
-    action |= Monitoring[itemid - DDE_MON_FIRST] ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem( mh, itemid, action );
+    Monitoring[i] = !Monitoring[i];
+    action |= ( Monitoring[i] ) ? MF_CHECKED : MF_UNCHECKED;
+    CheckMenuItem( mh, DDE_MON_FIRST + i, action );
 
 } /* monitorChange */
 
@@ -293,13 +293,13 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         case DDEMENU_MON_ERR:
         case DDEMENU_MON_CONV:
         case DDEMENU_MON_LNK:
-            monitorChange( hwnd, cmd );
+            monitorChange( hwnd, cmd - DDE_MON_FIRST );
             break;
         case DDEMENU_TRK_STR:
         case DDEMENU_TRK_CONV:
         case DDEMENU_TRK_LINK:
         case DDEMENU_TRK_SERVER:
-            DisplayTracking( cmd );
+            DisplayTracking( cmd - DDE_TRK_FIRST );
             break;
         case DDEMENU_SCREEN_OUT:
             ConfigInfo.screen_out = !ConfigInfo.screen_out;

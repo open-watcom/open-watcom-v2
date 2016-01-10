@@ -94,7 +94,7 @@ vi_rc ChangeDirectory( const char *dir )
 vi_rc ConditionalChangeDirectory( const char *where )
 {
     if( CurrentDirectory != NULL ) {
-        if( !stricmp( CurrentDirectory, where ) ) {
+        if( stricmp( CurrentDirectory, where ) == 0 ) {
             return( ERR_NO_ERR );
         }
     }

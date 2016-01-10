@@ -106,7 +106,7 @@ bool RegPushWin( HANDLE instance )
 /*
  * CreatePushWin - create a push window
  */
-HWND CreatePushWin( HWND parent, char *txt, WORD id, HFONT font, HANDLE inst )
+HWND CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst )
 {
     HWND                hwnd;
     PushWinInfo         *info;

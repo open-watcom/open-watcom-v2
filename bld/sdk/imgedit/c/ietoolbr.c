@@ -57,11 +57,11 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 /*
  * ToolBarHelpProc
  */
-void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+void ToolBarHelpProc( HWND hwnd, int id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
-        ShowHintText( wparam );
+        ShowHintText( id );
     } else {
         SetHintText( " " );
     }
@@ -100,11 +100,10 @@ bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
         break;
 
     case WM_USER:
-        if( !lparam ) {
-            ShowHintText( wparam );
-        }
-
         id = LOWORD( wparam );
+        if( !lparam ) {
+            ShowHintText( id );
+        }
         ToolBarSetState( toolBar, id, lparam ? BUTTON_UP : BUTTON_DOWN );
         if( id != currentTool ) {
             if( lparam ) {

@@ -335,9 +335,9 @@ static HMENU duplicateMenu( HMENU orig )
     int                 num;
     unsigned            menu_flags;
     unsigned            attr_flags;
-    UINT                id;
+    int                 menuid;
     char                name[MAX_STR];
-    int                 i;
+    int                 pos;
     HMENU               copy;
     HMENU               sub;
 
@@ -348,20 +348,20 @@ static HMENU duplicateMenu( HMENU orig )
             return( NULLHANDLE );
         }
         num = _wpi_getmenuitemcount( orig );
-        for( i = 0; i < num; i++ ) {
-            if( _wpi_getmenustate( orig, i, &mstate, TRUE ) ) {
+        for( pos = 0; pos < num; pos++ ) {
+            if( _wpi_getmenustate( orig, pos, &mstate, TRUE ) ) {
                 _wpi_getmenuflagsfromstate( &mstate, &menu_flags, &attr_flags );
                 if( _wpi_ismenuseparatorfromstate( &mstate ) ) {
                     _wpi_appendmenu( copy, menu_flags, attr_flags, 0, NULLHANDLE, NULL );
                 } else if( _wpi_ismenupopupfromstate( &mstate ) ) {
-                    sub = duplicateMenu( _wpi_getsubmenu( orig, i ) );
+                    sub = duplicateMenu( _wpi_getsubmenu( orig, pos ) );
                     name[0] = 0;
-                    _wpi_getmenutext( orig, i, name, MAX_STR - 1, TRUE );
+                    _wpi_getmenutext( orig, pos, name, MAX_STR - 1, TRUE );
                     _wpi_appendmenu( copy, menu_flags, attr_flags, 0, sub, name );
                 } else {
-                    id = _wpi_getmenuitemid( orig, i );
-                    _wpi_getmenutext( orig, i, name, MAX_STR - 1, TRUE );
-                    _wpi_appendmenu( copy, menu_flags, attr_flags, id, NULLHANDLE, name );
+                    menuid = _wpi_getmenuitemid( orig, pos );
+                    _wpi_getmenutext( orig, pos, name, MAX_STR - 1, TRUE );
+                    _wpi_appendmenu( copy, menu_flags, attr_flags, menuid, NULLHANDLE, name );
                 }
             }
         }
@@ -504,11 +504,9 @@ void SetRestoreBitmap( bool pressed )
 
     menu = _wpi_getmenu( mdiInfo.root );
     if( pressed ) {
-        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP,
-                    SC_RESTORE, (LPVOID) restoredBitmap );
+        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoredBitmap );
     } else {
-        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP,
-                    SC_RESTORE, (LPVOID) restoreBitmap );
+        ModifyMenu( menu, 7, MF_BYPOSITION | MF_BITMAP | MF_HELP, SC_RESTORE, (LPVOID)restoreBitmap );
     }
     _wpi_drawmenubar( mdiInfo.root );
 
@@ -582,7 +580,7 @@ static void deleteMaximizedMenuConfig( void )
     root_menu = _wpi_getmenu( mdiInfo.root );
     _wpi_deletemenu( root_menu, 0, TRUE );
     count = _wpi_getmenuitemcount( root_menu );
-    _wpi_deletemenu( root_menu, count-1, TRUE );
+    _wpi_deletemenu( root_menu, count - 1, TRUE );
     _wpi_drawmenubar( mdiInfo.root );
 
 } /* deleteMaximizedMenuConfig */
@@ -944,21 +942,19 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
                              WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         num;
-    int         i;
-    UINT        id;
+    int         pos;
     UINT        flags;
 
     if( menu != NULL ) {
         num = _wpi_getmenuitemcount( menu );
-        for( i = 0; i < num; i++ ) {
-            flags = GetMenuState( menu, i, MF_BYPOSITION );
+        for( pos = 0; pos < num; pos++ ) {
+            flags = GetMenuState( menu, pos, MF_BYPOSITION );
             if( flags & MF_POPUP ) {
-                if( CheckForMessage( GetSubMenu( menu, i ), currentWindow, wparam, lparam ) ) {
+                if( CheckForMessage( GetSubMenu( menu, pos ), currentWindow, wparam, lparam ) ) {
                     return( true );
                 }
             } else {
-                id = GetMenuItemID( menu, i );
-                if( id == wparam ) {
+                if( GetMenuItemID( menu, pos ) == wparam ) {
                     _wpi_sendmessage( currentWindow, WM_COMMAND, wparam, lparam );
                     return( true );
                 }

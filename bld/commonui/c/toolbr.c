@@ -970,8 +970,7 @@ static void drawBottomRightCorner( WPI_PRES pres, WPI_POINT size, int border, HP
 /*
  * drawBottomRightInsideCorner - draw the inside corner of a button
  */
-static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int border,
-                                         HPEN pen )
+static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int border, HPEN pen )
 {
     HPEN        old_pen;
     WPI_POINT   pt;
@@ -1061,8 +1060,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
 /*
  * toolBarDrawBitmap - draw the bitmap on a button
  */
-static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org,
-                               HBITMAP bitmap )
+static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, HBITMAP bitmap )
 {
     WPI_BITMAP  bm;
     WPI_PRES    mempres;
@@ -1242,14 +1240,11 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     drawBorder( mempres, bar->button_size, BORDER_WIDTH( bar ) );
     if( selected ) {
         drawTopLeftCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
-        drawTopLeftInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                                 btnFacePen );
+        drawTopLeftInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnFacePen );
     } else {
         drawTopLeftCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnHighlightPen );
-        drawBottomRightCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                               btnShadowPen );
-        drawBottomRightInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                                     btnShadowPen );
+        drawBottomRightCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
+        drawBottomRightInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
     }
     _wpi_getrectvalues( tool->area, &left, &top, &right, &bottom );
     _wpi_bitblt( pres, left, top, bar->button_size.x, bar->button_size.y, mempres, 0, 0,
@@ -1454,7 +1449,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                 _wpi_setcapture( hwnd );
                 currIsDown = true;
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
+                    bar->helphook( hwnd, currTool->id, true );
                 }
             }
         }
@@ -1482,7 +1477,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                                             WM_MOUSEMOVE message */
                 _wpi_releasecapture();
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
+                    bar->helphook( hwnd, currTool->id, false );
                 }
                 currTool = NULL;
             }
@@ -1500,7 +1495,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                     currIsDown = true;
                     drawButton( hwnd, currTool, true, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
+                        bar->helphook( hwnd, currTool->id, true );
                     }
                 }
             } else {
@@ -1508,17 +1503,17 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                     drawButton( hwnd, currTool, false, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                     currIsDown = false;
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
+                        bar->helphook( hwnd, currTool->id, false );
                     }
                 }
             }
         } else {
             if( bar->helphook != NULL ) {
                 if( tool ) {
-                    bar->helphook( hwnd, MPFROMSHORT( tool->id ), true );
+                    bar->helphook( hwnd, tool->id, true );
                     lastID = tool->id;
                 } else if( lastID != NO_ID ) {
-                    bar->helphook( hwnd, MPFROMSHORT( lastID ), false );
+                    bar->helphook( hwnd, lastID, false );
                     lastID = NO_ID;
                 }
             }

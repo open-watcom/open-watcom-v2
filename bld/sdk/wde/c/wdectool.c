@@ -68,7 +68,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 bool WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
+void WdeCToolHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -432,10 +432,10 @@ void WdeHandleShowToolsMenu( void )
     }
 }
 
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
+void WdeCToolHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wde_touch( hwnd );
-    WdeHandleToolHint( wParam, pressed );
+    WdeHandleToolHint( id, pressed );
 }
 
 bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )

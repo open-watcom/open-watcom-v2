@@ -56,7 +56,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 bool WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
-void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
+void WRERibbonHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -239,14 +239,14 @@ void WREDestroyRibbon( void )
     WREResizeWindows();
 }
 
-void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
+void WRERibbonHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wre_touch( hwnd );
 
     if( !pressed ) {
         WRESetStatusText( NULL, "", TRUE );
     } else {
-        WREDisplayHint( wParam );
+        WREDisplayHint( id );
     }
 }
 

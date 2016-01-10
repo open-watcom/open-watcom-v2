@@ -57,7 +57,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 extern bool WRibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
+extern void WRibbonHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -330,13 +330,13 @@ void WDestroyRibbon( WAccelEditInfo *einfo )
     }
 }
 
-void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
+void WRibbonHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wtouch( hwnd );
     if( !pressed ) {
         WSetStatusText( NULL, NULL, "" );
     } else {
-        WDisplayHint( NULL, wParam );
+        WDisplayHint( NULL, id );
     }
 }
 

@@ -48,7 +48,7 @@ typedef struct {
 /*
  * getItemMsg - find the hint message for the specified menu item
  */
-static MSGID getItemMsg( statwnd *wnd, WORD menuid )
+static MSGID getItemMsg( statwnd *wnd, int menuid )
 {
     WORD                i;
     HWND                hint;
@@ -104,7 +104,7 @@ static void updateHintText( statwnd *wnd, MSGID msgid )
 /*
  * HintToolbar - handle the selection or deselection of a menu item
  */
-void HintToolBar( statwnd *wnd, WORD menuid, bool select )
+void HintToolBar( statwnd *wnd, int menuid, bool select )
 {
     MSGID   msgid;
 

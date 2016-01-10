@@ -39,7 +39,7 @@
 
 typedef struct tool_item {
     ss                  tool_head;
-    UINT                id;
+    int                 id;
     HBITMAP             bmp;
     bool                is_blank    : 1;
     bool                dont_save   : 1;
@@ -81,7 +81,7 @@ static HBITMAP          buttonPattern;
 
 RECT                    ToolBarFloatRect;
 
-vi_rc HandleToolCommand( UINT id )
+vi_rc HandleToolCommand( int id )
 {
     ss          *p;
     tool_item   *item;
@@ -118,7 +118,7 @@ static void nukeButtons( void )
 }
 
 bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
-void ToolBarHelp( HWND hwnd, UINT id, bool isdown );
+void ToolBarHelp( HWND hwnd, int id, bool isdown );
 
 #if 0
 static void newToolBarWindow( void )
@@ -177,7 +177,7 @@ static void newToolBarWindow( void )
 /*
  * ToolBarHelp - update tool bar hint text
  */
-void ToolBarHelp( HWND hwnd, UINT id, bool isdown )
+void ToolBarHelp( HWND hwnd, int id, bool isdown )
 {
     ss                 *p;
 

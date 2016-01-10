@@ -97,10 +97,10 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 /*
  * spyToolBarHint
  */
-static void spyToolBarHint( HWND hwnd, WPARAM menuid, bool select ) {
+static void spyToolBarHint( HWND hwnd, int id, bool select ) {
 
     hwnd = hwnd;
-    HintToolBar( StatusHdl, (UINT)menuid, select );
+    HintToolBar( StatusHdl, id, select );
 }
 
 /*
