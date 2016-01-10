@@ -88,7 +88,7 @@ static bool GetParentOffset( HMENU hmenu, HMENU popup, HMENU *parent,
     int         i;
     HMENU       submenu;
 
-    num = (int) _wpi_getmenuitemcount( hmenu );
+    num = _wpi_getmenuitemcount( hmenu );
     for( i = 0; i < num; i++ ) {
         submenu = _wpi_getsubmenu( hmenu, i );
         if( submenu != NULLHANDLE ) {
@@ -345,7 +345,7 @@ int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
     popup = GetPopupHMENU( wnd, hmenu, id, NULL, NULL, MENU_HINT );
 
     if( popup ) {
-        count = (int)_wpi_getmenuitemcount( popup );
+        count = _wpi_getmenuitemcount( popup );
     } else {
         count = -1;
     }
@@ -675,7 +675,7 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
         return( false );
     }
     if( GUIMDI && ( _wpi_getparent( hwnd ) != NULLHANDLE ) ) {
-        num = (int)_wpi_getmenuitemcount( system );
+        num = _wpi_getmenuitemcount( system );
 #ifndef __OS2_PM__
         ModifyMenu( system, num - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
                     SC_NEXTWINDOW, LIT( NexXt ) ); // add \tCtrl+F6" );

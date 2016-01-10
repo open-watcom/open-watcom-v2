@@ -347,7 +347,7 @@ static HMENU duplicateMenu( HMENU orig )
         if( copy == NULLHANDLE ) {
             return( NULLHANDLE );
         }
-        num = (int)_wpi_getmenuitemcount( orig );
+        num = _wpi_getmenuitemcount( orig );
         for( i = 0; i < num; i++ ) {
             if( _wpi_getmenustate( orig, i, &mstate, TRUE ) ) {
                 _wpi_getmenuflagsfromstate( &mstate, &menu_flags, &attr_flags );
@@ -581,7 +581,7 @@ static void deleteMaximizedMenuConfig( void )
     insertedItems = false;
     root_menu = _wpi_getmenu( mdiInfo.root );
     _wpi_deletemenu( root_menu, 0, TRUE );
-    count = (int)_wpi_getmenuitemcount( root_menu );
+    count = _wpi_getmenuitemcount( root_menu );
     _wpi_deletemenu( root_menu, count-1, TRUE );
     _wpi_drawmenubar( mdiInfo.root );
 
@@ -949,12 +949,11 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
     UINT        flags;
 
     if( menu != NULL ) {
-        num = (int)_wpi_getmenuitemcount( menu );
+        num = _wpi_getmenuitemcount( menu );
         for( i = 0; i < num; i++ ) {
             flags = GetMenuState( menu, i, MF_BYPOSITION );
             if( flags & MF_POPUP ) {
-                if( CheckForMessage( GetSubMenu( menu, i ), currentWindow,
-                                     wparam, lparam ) ) {
+                if( CheckForMessage( GetSubMenu( menu, i ), currentWindow, wparam, lparam ) ) {
                     return( true );
                 }
             } else {

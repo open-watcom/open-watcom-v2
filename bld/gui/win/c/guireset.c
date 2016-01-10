@@ -49,7 +49,7 @@ static void FreeSystemMenu( gui_window *wnd )
         ( wnd->style & GUI_SYSTEM_MENU ) ) {
         system = _wpi_getsystemmenu( frame );
         if( system != NULLHANDLE ) {
-            num = (int) _wpi_getmenuitemcount( system );
+            num = _wpi_getmenuitemcount( system );
             for( i = num; i >= NUM_SYSTEM_MENUS; i-- ) {
                 _wpi_deletemenu( system, i, TRUE );
             }
