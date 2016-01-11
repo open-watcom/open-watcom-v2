@@ -51,43 +51,6 @@
 
 #define NO_ID   (CMDID)-1
 
-typedef struct tool {
-    struct tool *next;
-    union {
-        HBITMAP bitmap;
-        WORD    blank_space;
-    } u;
-    HBITMAP     depressed;
-    CMDID       id;
-    UINT        flags;
-    WORD        state;
-    WPI_RECT    area;
-#ifdef __NT__
-    char        tip[MAX_TIP];
-#endif
-} tool;
-
-typedef struct toolbar {
-    HWND        hwnd;
-    HWND        owner;
-    toolhook_fn hook;
-    helphook_fn helphook;
-    WPI_POINT   button_size;
-    WPI_POINT   border;
-    HBITMAP     background;
-    HBRUSH      foreground;
-    HBRUSH      bgbrush;
-    int         border_width;
-    tool        *tool_list;
-    char        is_fixed    : 1;
-    char        spare       : 7;
-#ifdef __NT__
-    HWND        container;
-    WNDPROC     old_wndproc;
-    HWND        tooltips;
-#endif
-} toolbar;
-
 #ifdef __NT__
 HBITMAP TB_CreateTransparentBitmap( HBITMAP, int, int );
 #endif
@@ -321,7 +284,7 @@ static void reinsertButtons( toolbar *bar )
 /*
  * ToolBarRedrawButtons - redraw the toolbar buttons
  */
-void ToolBarRedrawButtons( struct toolbar *bar )
+void ToolBarRedrawButtons( toolbar *bar )
 {
     if( bar ) {
         createButtonList( bar->hwnd, bar, bar->tool_list );
@@ -1338,7 +1301,7 @@ static int customHitTest( toolbar *bar, POINT *pt )
 /*
  * HasToolAtPoint - return TRUE if a tool exists at a given point
  */
-bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifdef __NT__
     POINT   pt;
@@ -1360,7 +1323,7 @@ bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
  * FindToolIDAtPoint - Find the tool ID at a given point, if any.  Returns
  *                     TRUE if tool exists at a given point.
  */
-bool FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id )
+bool FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id )
 {
     tool    *ctool;
 #ifdef __NT__
@@ -1566,7 +1529,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
  */
 WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    struct toolbar  *bar;
+    toolbar         *bar;
     CMDID           id;
     int             n;
     TBBUTTON        tbb;
@@ -1574,7 +1537,7 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
     POINT           pt;
     RECT            rc;
 
-    bar = (struct toolbar *)GetProp( hwnd, "bar" );
+    bar = (toolbar *)GetProp( hwnd, "bar" );
     switch( msg ) {
     case WM_MOUSEMOVE:
         if( FindToolIDAtPoint( bar, wparam, lparam, &id ) ) {
@@ -1631,14 +1594,14 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
  */
 WINEXPORT LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    HWND            otherwnd;
-    struct toolbar  *bar;
+    HWND        otherwnd;
+    toolbar     *bar;
 
     if( msg == WM_NCCREATE ) {
         bar = ((CREATESTRUCT *)lparam)->lpCreateParams;
         SetProp( hwnd, "bar", bar );
     } else {
-        bar = (struct toolbar *)GetProp( hwnd, "bar" );
+        bar = (toolbar *)GetProp( hwnd, "bar" );
     }
     if( bar != NULL ) {
         bar->hook( hwnd, msg, wparam, lparam );

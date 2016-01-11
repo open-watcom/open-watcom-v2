@@ -142,8 +142,7 @@ WORD SizeHintBar( statwnd *wnd )
     ReleaseDC( hint, dc );
     GetClientRect( info->parent, &area );
     area.top = area.bottom - sz.cy - TOTAL_VERT;
-    MoveWindow( hint, area.left, area.top, area.right - area.left,
-                area.bottom - area.top, TRUE );
+    MoveWindow( hint, area.left, area.top, area.right - area.left, area.bottom - area.top, TRUE );
     updateHintText( wnd, info->curmsg );
     GetWindowRect( hint, &area );
     LocalUnlock( hinfo );
@@ -162,8 +161,7 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 
     menu = GetMenu( hwnd );
     flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
-    if( flags == (WORD)-1 &&
-        GET_WM_MENUSELECT_HMENU( wparam, lparam ) == (HMENU)NULL ) {
+    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wparam, lparam ) == (HMENU)NULL ) {
         updateHintText( wnd, HINT_EMPTY );
     } else if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
         updateHintText( wnd, HINT_EMPTY );

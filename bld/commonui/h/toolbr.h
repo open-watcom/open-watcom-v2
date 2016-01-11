@@ -75,24 +75,61 @@ typedef struct TOOLITEMINFO {
     char        tip[MAX_TIP];   /* tool tip string */
 } TOOLITEMINFO;
 
-struct toolbar  *ToolBarInit( HWND );
-void    ToolBarDisplay( struct toolbar *, TOOLDISPLAYINFO * );
-void    ToolBarAddItem( struct toolbar *, TOOLITEMINFO * );
-bool    ToolBarDeleteItem( struct toolbar *, CMDID id );
-HWND    ToolBarWindow( struct toolbar * );
-void    ToolBarSetState( struct toolbar *, CMDID id, WORD state );
-WORD    ToolBarGetState( struct toolbar *bar, CMDID id );
-void    ToolBarDestroy ( struct toolbar *bar );
-void    ToolBarFini( struct toolbar * );
+typedef struct tool {
+    struct tool *next;
+    union {
+        HBITMAP bitmap;
+        WORD    blank_space;
+    } u;
+    HBITMAP     depressed;
+    CMDID       id;
+    UINT        flags;
+    WORD        state;
+    WPI_RECT    area;
+#ifdef __NT__
+    char        tip[MAX_TIP];
+#endif
+} tool;
+
+typedef struct toolbar {
+    HWND        hwnd;
+    HWND        owner;
+    toolhook_fn hook;
+    helphook_fn helphook;
+    WPI_POINT   button_size;
+    WPI_POINT   border;
+    HBITMAP     background;
+    HBRUSH      foreground;
+    HBRUSH      bgbrush;
+    int         border_width;
+    tool        *tool_list;
+    char        is_fixed    : 1;
+    char        spare       : 7;
+#ifdef __NT__
+    HWND        container;
+    WNDPROC     old_wndproc;
+    HWND        tooltips;
+#endif
+} toolbar;
+
+toolbar *ToolBarInit( HWND );
+void    ToolBarDisplay( toolbar *, TOOLDISPLAYINFO * );
+void    ToolBarAddItem( toolbar *, TOOLITEMINFO * );
+bool    ToolBarDeleteItem( toolbar *, CMDID id );
+HWND    ToolBarWindow( toolbar * );
+void    ToolBarSetState( toolbar *, CMDID id, WORD state );
+WORD    ToolBarGetState( toolbar *bar, CMDID id );
+void    ToolBarDestroy ( toolbar *bar );
+void    ToolBarFini( toolbar * );
 void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, HBITMAP bitmap );
-void    UpdateToolBar( struct toolbar *bar );
-void    ChangeToolButtonBitmap( struct toolbar *bar, CMDID id, HBITMAP newbmp );
-bool    HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-bool    FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
+void    UpdateToolBar( toolbar *bar );
+void    ChangeToolButtonBitmap( toolbar *bar, CMDID id, HBITMAP newbmp );
+bool    HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool    FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
 #ifndef __OS2_PM__
 void    ToolBarChangeSysColors( COLORREF, COLORREF, COLORREF );
 #endif
-void    ToolBarRedrawButtons( struct toolbar *bar );
+void    ToolBarRedrawButtons( toolbar *bar );
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
 void    TB_TransparentBlt( HDC hDC, UINT x, UINT y, UINT width, UINT height, HDC hDCIn, COLORREF cr );
