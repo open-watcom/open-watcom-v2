@@ -295,7 +295,7 @@ static int getTip( char *name )
     return( -1 );
 
 } /* getTip */
- 
+
 /*
  * addToolBarItem - add an item to the tool bar
  */
@@ -303,7 +303,7 @@ static void addToolBarItem( tool_item *item )
 {
     TOOLITEMINFO        info;
     int                 id;
-    
+
     if( item->is_blank ) {
         info.u.blank_space = 8;
         info.flags = ITEM_BLANK;
@@ -342,7 +342,7 @@ void NewToolBar( RECT *rect )
     }
     createToolBar( rect );
     curr = toolBarHead;
-    while( curr != NULL ) {            
+    while( curr != NULL ) {
         addToolBarItem( (tool_item *)curr );
         curr = curr->next;
     }

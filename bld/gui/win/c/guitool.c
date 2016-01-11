@@ -201,7 +201,7 @@ bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
 #else
             WPI_MINMAXINFO *minmax = (WPI_MINMAXINFO *)lparam;
 #endif
-            _wpi_setmintracksize( minmax, 
+            _wpi_setmintracksize( minmax,
                 ( tbar->info.border_size.x + _wpi_getsystemmetrics( SM_CXFRAME ) ) * 2 + tbar->info.button_size.x,
                 ( tbar->info.border_size.y + _wpi_getsystemmetrics( SM_CYFRAME ) ) * 2 + tbar->info.button_size.y + _wpi_getsystemmetrics( SM_CYCAPTION ) );
         }

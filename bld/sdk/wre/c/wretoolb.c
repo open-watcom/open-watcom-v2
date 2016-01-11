@@ -159,7 +159,7 @@ bool WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         } else {
             bstate = BUTTON_DOWN;
         }
-        WRESetToolBarItemState( tbar, wParam, bstate );
+        WRESetToolBarItemState( tbar, LOWORD( wParam ), bstate );
         break;
 
     case WM_SIZE:

@@ -158,7 +158,7 @@ bool WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         } else {
             bstate = BUTTON_DOWN;
         }
-        WSetToolBarItemState( tbar, wParam, bstate );
+        WSetToolBarItemState( tbar, LOWORD( wParam ), bstate );
         break;
 
     case WM_SIZE:

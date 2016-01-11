@@ -93,7 +93,7 @@ static button           toolListDDE[NUM_TOOLS_DDE] = {
     { CLROTBMP,     IMGED_ROTATECL, FALSE,  CLROTDBMP,      0, 0, WIE_TIP_ROTATECL  },
     { CCROTBMP,     IMGED_ROTATECC, FALSE,  CCROTDBMP,      0, 0, WIE_TIP_ROTATECC  }
 };
-    
+
 /*
  * addFunctionButton - add a button to the function bar
  */
