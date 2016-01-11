@@ -91,9 +91,9 @@ static void getRect( statwnd *sw, WPI_RECT *r, int i )
     if( i > 0 ) {
         if( sw->sectionDesc[i - 1].width_is_percent ) {
             if( r_right > r_left ) {
-                pos = (WORD)( ( ( r_right - r_left ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+                pos = (WORD)( ( ( r_right - r_left ) * (DWORD)sw->sectionDesc[i].width ) / 100L );
             } else {
-                pos = (WORD)( ( ( r_left - r_right ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+                pos = (WORD)( ( ( r_left - r_right ) * (DWORD)sw->sectionDesc[i].width ) / 100L );
             }
         } else {
             pos = sw->sectionDesc[i - 1].width;
@@ -104,9 +104,9 @@ static void getRect( statwnd *sw, WPI_RECT *r, int i )
         pos = right;
     } else if( sw->sectionDesc[i].width_is_percent ) {
         if( r_right > r_left ) {
-            pos = (WORD)( ( ( r_right - r_left ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+            pos = (WORD)( ( ( r_right - r_left ) * (DWORD)sw->sectionDesc[i].width ) / 100L );
         } else {
-            pos = (WORD)( ( ( r_left - r_right ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+            pos = (WORD)( ( ( r_left - r_right ) * (DWORD)sw->sectionDesc[i].width ) / 100L );
         }
     } else {
         pos = sw->sectionDesc[i].width;
@@ -362,11 +362,11 @@ bool StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDef
     /* Win16 and Win32 version of the initialization */
     WNDCLASS    wc;
 
-#ifdef __NT__
+  #ifdef __NT__
     if( LoadCommCtrl() ) {
         rc = true;
     } else {
-#endif
+  #endif
         if( !hasGDIObjects ) {
             colorButtonFace = GetSysColor( COLOR_BTNFACE );
             colorTextFace = GetSysColor( COLOR_BTNTEXT );
@@ -392,15 +392,15 @@ bool StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDef
             if( wc.hCursor == NULL ) {
                 wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
             }
-            wc.hbrBackground = (HBRUSH) 0;
+            wc.hbrBackground = (HBRUSH)0;
             wc.lpszMenuName = NULL;
             wc.lpszClassName = className;
             rc = ( RegisterClass( &wc ) != 0 );
             classRegistered = true;
         }
-#ifdef __NT__
+  #ifdef __NT__
     }
-#endif
+  #endif
 #endif
     return( rc );
 
@@ -460,7 +460,7 @@ static void updateParts( statwnd *sw )
     int     width;
     int     *parts;
 
-    parts = (int *)MemAlloc( sizeof( int ) * (sw->numSections + 1) );
+    parts = (int *)MemAlloc( sizeof( int ) * ( sw->numSections + 1 ) );
     GetClientRect( sw->win, &rc );
     width = rc.right - rc.left;
     for( i = 0; i < sw->numSections; i++ ) {
@@ -523,9 +523,9 @@ HWND StatusWndCreate( statwnd *sw, HWND parent, WPI_RECT *size, WPI_INST hinstan
 #ifdef __NT__
        if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
            /* New shell active, Win95 or later */
-           systemDataFont = (HFONT) GetStockObject( DEFAULT_GUI_FONT );
+           systemDataFont = (HFONT)GetStockObject( DEFAULT_GUI_FONT );
        } else {
-           systemDataFont = (HFONT) GetStockObject( SYSTEM_FONT );
+           systemDataFont = (HFONT)GetStockObject( SYSTEM_FONT );
        }
 #endif
         ShowWindow( sw->win, SW_SHOWNORMAL );
@@ -634,7 +634,7 @@ void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags
     draw_rect = *r;
 #endif
     if( flags & DT_CENTER ) {
-        width = (ir_right - ir_left - ext) / 2;
+        width = ( ir_right - ir_left - ext ) / 2;
         if( width > 0 ) {
             ir_right = ir_left + width;
             _wpi_setrectvalues( &ir, ir_left, ir_top, ir_right, ir_bottom );
@@ -667,8 +667,7 @@ void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags
 /*
  * StatusWndDrawLine - draws a line in the status bar
  */
-void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *str,
-                        UINT flags )
+void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *str, UINT flags )
 {
     WPI_RECT    rect;
     char        buff[256];
@@ -691,10 +690,10 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
         getRect( sw, &rect, curr_block );
         makeInsideRect( &rect );
         bptr = (char *)str;
-        if( flags == (UINT) -1  ) {
+        if( flags == (UINT)-1  ) {
             flags = DT_VCENTER | DT_LEFT;
             bptr = buff;
-            while( *str ) {
+            while( *str != '\0' ) {
                 if( *str == STATUS_ESC_CHAR ) {
                     str++;
                     switch( *str ) {
@@ -735,7 +734,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
         bptr = (char *)str;
         if( flags == (UINT)-1 ) {
             bptr = buff;
-            while( *str ) {
+            while( *str != '\0' ) {
                 if( *str == STATUS_ESC_CHAR ) {
                     str++;
                     if( *str == STATUS_NEXT_BLOCK ) {
