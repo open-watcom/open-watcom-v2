@@ -17,17 +17,17 @@ which   = TRAP
 extra_cpp_flags = -DELFCORE
 extra_cflags = -bd
 
-extra_srcs = $(trap_dir)/lcl/linux/c
+extra_srcs = $(trap_dir)/lcl/elfcore/c
 
 extra_objs = &
-    lnxcore.obj &
+    elfcore.obj &
     coremisc.obj &
 #    accmisc.obj &
     x86cpu.obj &
     supp.obj &
     core.obj
 
-inc_dirs = -I"$(trap_dir)/lcl/linux/h"
+inc_dirs = -I"$(trap_dir)/lcl/elfcore/h"
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
