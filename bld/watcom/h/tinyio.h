@@ -554,9 +554,9 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyFCBDeleteFile       _nTinyFCBDeleteFile
 #define TinyAbsWrite            _nTinyAbsWrite
 #define TinyAbsRead             _nTinyAbsRead
-#define TinyDPMIAlloc( x )      _TinyDPMIAlloc( ( x ) >> 16, ( x ) )
+#define TinyDPMIAlloc(x)        _TinyDPMIAlloc((x) >> 16, (x))
 #define TinyDPMIRealloc(addr,x) _TinyDPMIRealloc(addr, (x) >> 16, (x))
-#define TinyDPMIFree( x )       _TinyDPMIFree(((unsigned)x) >> 16, ((unsigned)x) )
+#define TinyDPMIFree(x)         _TinyDPMIFree((x) >> 16, (x))
 #define TinyCBAlloc             _TinyCBAlloc
 #define TinyDPMIDOSAlloc        _TinyDPMIDOSAlloc
 #define TinyDPMIDOSFree         _TinyDPMIDOSFree
@@ -711,12 +711,12 @@ tiny_ret_t  tiny_call   _TinyUnlock(tiny_handle_t,uint_32 __start,uint_32 __l);
 uint        tiny_call   _TinyGetPSP( void );
 void        tiny_call   _TinySetPSP( uint_16 __seg );
 void        tiny_call   _TinyCreatePSP( uint_16 __seg );
-tiny_ret_t  tiny_call   _TinySetMaxHandleCount( unsigned );
+tiny_ret_t  tiny_call   _TinySetMaxHandleCount( uint_16 );
 void *      tiny_call   _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
 void        tiny_call   _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyCBAlloc( uint_32 );
-unsigned    tiny_call   _TinyDPMIDOSAlloc( uint_16 __paras );
+uint_32     tiny_call   _TinyDPMIDOSAlloc( uint_16 __paras );
 void        tiny_call   _TinyDPMIDOSFree( uint_16 __sel );
 uint_32     tiny_call   _TinyDPMIBase( uint_16 __sel );
 void __far *tiny_call   _TinyDPMIGetProtectVect( uint_8 __intr );
@@ -950,7 +950,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         _INT_21         \
         "rcl    eax,1"  \
         "ror    eax,1"  \
-        parm caller     [ebx] \
+        parm caller     [bx] \
         value           [eax] \
         modify exact    [eax];
 
