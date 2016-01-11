@@ -57,7 +57,7 @@ static button toolList[] = {
     { "NOTONOFF",   SPY_OFFON,                  0,  STR_TIP_OFFON                 }
 };
 
-static void     *toolBar = NULL;
+static toolbar      *toolBar = NULL;
 
 /*
  * addToolButton - add a button to the tool bar

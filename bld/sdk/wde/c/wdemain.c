@@ -630,7 +630,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     LRESULT     ret;
     bool        pass_to_def;
     WdeResInfo  *res_info;
-    WORD        wp;
+    int         wp;
     about_info  ai;
 
     if( WdeCleanupStarted ) {
@@ -1035,7 +1035,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( ret );
 }
 
-bool WdeIsMenuIDValid( HMENU menu, WORD id )
+bool WdeIsMenuIDValid( HMENU menu, int id )
 {
     UINT st;
 

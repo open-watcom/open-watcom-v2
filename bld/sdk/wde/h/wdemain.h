@@ -53,7 +53,7 @@ extern HMENU        WdeGetResMenuHandle( void );
 extern HMENU        WdeGetInitialMenuHandle( void );
 extern void         WdeSetAppMenuToRes( bool );
 extern void         WdeResizeWindows( void );
-extern bool         WdeIsMenuIDValid( HMENU, WORD );
+extern bool         WdeIsMenuIDValid( HMENU, int );
 extern bool         WdeIsDDE( void );
 extern bool         WdeIsFirstInst( void );
 extern void         WdeEnableMenuInput( bool enable );

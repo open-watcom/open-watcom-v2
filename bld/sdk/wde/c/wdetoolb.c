@@ -90,7 +90,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     tbar->last_pos = info->dinfo.area;
     tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar = (toolbar)ToolBarInit( parent );
+    tbar->tbar = ToolBarInit( parent );
 
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
@@ -209,7 +209,7 @@ void WdeHandleStickyToolPress( WdeToolBar *tbar, WPARAM wParam, LPARAM lParam )
         bstate = BUTTON_DOWN;
     }
 
-    WdeSetToolBarItemState( tbar, wParam, bstate );
+    WdeSetToolBarItemState( tbar, LOWORD( wParam ), bstate );
 }
 
 WdeToolBar *WdeFindToolBar( HWND win )
@@ -321,7 +321,7 @@ void WdeShutdownToolBars( void )
     ListFree( WdeToolBarList );
 }
 
-void WdeSetToolBarItemState( WdeToolBar *tbar, UINT id, UINT state )
+void WdeSetToolBarItemState( WdeToolBar *tbar, int id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

@@ -494,8 +494,7 @@ void BarfToolBarData( FILE *f )
         } else if( citem->is_blank ) {
             MyFprintf( f, "addtoolbaritem\n" );
         } else {
-            MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name,
-                       citem->help, citem->cmd );
+            MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name, citem->help, citem->cmd );
         }
         p = p->next;
     }

@@ -32,10 +32,10 @@
 
 typedef struct {
     int         id;
-#ifndef __OS2_PM__
-    DWORD       hint;
-#else
+#ifdef __OS2_PM__
     char        text[HINT_TEXT_LEN];
+#else
+    DWORD       hint;
 #endif
 } a_hint_text_line;
 

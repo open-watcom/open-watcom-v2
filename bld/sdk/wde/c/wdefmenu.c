@@ -123,7 +123,7 @@ void WdeEnableCustCntlTools( HMENU menu )
 
 static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
 {
-    UINT menu_id;
+    int     menu_id;
 
     menu_id = 0;
 
@@ -141,7 +141,7 @@ static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
 
     if( menu_id ) {
         CheckMenuItem( menu, menu_id, flags );
-        WdeSetRibbonItemState( LOWORD( menu_id ), flags == MF_CHECKED );
+        WdeSetRibbonItemState( menu_id, ( flags == MF_CHECKED ) );
     }
 }
 

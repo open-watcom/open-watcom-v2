@@ -296,7 +296,7 @@ void WdeDestroyRibbon( void )
     WdeResizeWindows();
 }
 
-void WdeSetRibbonItemState( WORD item, int state )
+void WdeSetRibbonItemState( int item, int state )
 {
     if( WdeRibbon != NULL ) {
         WdeSetToolBarItemState( WdeRibbon, item, state );

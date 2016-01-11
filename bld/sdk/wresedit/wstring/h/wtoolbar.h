@@ -42,7 +42,6 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef void *toolbar;
 
 typedef struct {
     TOOLDISPLAYINFO dinfo;
@@ -51,7 +50,7 @@ typedef struct {
 } WToolBarInfo;
 
 typedef struct {
-    toolbar         tbar;
+    toolbar         *tbar;
     WToolBarInfo    *info;
     HWND            parent;
     HWND            win;
@@ -61,12 +60,13 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
+
 extern WToolBar     *WCreateToolBar( WToolBarInfo *, HWND );
 extern void         WDestroyToolBar( WToolBar * );
 extern void         WShutdownToolBars( void );
 extern void         WFreeToolBarInfo( WToolBarInfo * );
 extern WToolBarInfo *WAllocToolBarInfo( int );
-extern void         WSetToolBarItemState( WToolBar *, UINT, UINT );
+extern void         WSetToolBarItemState( WToolBar *, int, UINT );
 extern bool         WCloseToolBar( WToolBar * );
 extern void         WFreeToolBar( WToolBar * );
 

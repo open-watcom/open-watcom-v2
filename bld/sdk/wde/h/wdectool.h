@@ -51,8 +51,8 @@ extern bool WdeSetStickyMode( bool );
 extern void WdeToggleStickyTools( void );
 extern bool WdeGetStickyMode( void );
 extern void WdeHandleShowToolsMenu( void );
-extern void WdeSetBaseObject( WORD );
+extern void WdeSetBaseObject( int );
 extern bool WdeCreateControlsToolBar( void );
-extern WORD WdeGetCToolID( void );
+extern int  WdeGetCToolID( void );
 
 #endif

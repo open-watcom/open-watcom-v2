@@ -562,7 +562,7 @@ void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPARAM lPar
     OBJPTR      current_obj;
     bool        fActivate;
     HWND        hwndDeact;
-    WORD        id;
+    int         id;
 
     _wde_touch( wParam );
 

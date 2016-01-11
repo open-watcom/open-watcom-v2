@@ -76,7 +76,7 @@ void WdeCToolHelpHook( HWND hwnd, int id, bool pressed );
 typedef struct {
     char                *up;
     char                *down;
-    WORD                id;
+    int                 id;
     OBJ_ID              obj_id;
     unsigned char       flags;
 } WdeControlBit;
@@ -87,8 +87,8 @@ typedef struct {
 /* static function prototypes                                               */
 /****************************************************************************/
 static void    WdeDestroyControls( void );
-static WORD    WdeGetMenuFromOBJID( OBJ_ID );
-static OBJ_ID  WdeGetOBJIDFromMenu( WORD );
+static int     WdeGetMenuFromOBJID( OBJ_ID );
+static OBJ_ID  WdeGetOBJIDFromMenu( int );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -135,7 +135,7 @@ static WdeControlBit WdeControlBits[] = {
 
 #define NUM_TOOLS (sizeof( WdeControlBits ) / sizeof( WdeControlBit ) - 1)
 
-WORD WdeGetCToolID( void )
+int WdeGetCToolID( void )
 {
     HMENU       menu;
     UINT        state;
@@ -156,7 +156,7 @@ WORD WdeGetCToolID( void )
         }
     }
 
-    return( 0xffff );
+    return( -1 );
 }
 
 bool WdeInitControls( HINSTANCE inst )
@@ -275,11 +275,11 @@ bool WdeSetStickyMode( bool mode )
     return( old_mode );
 }
 
-void WdeSetBaseObject( WORD menu_selection )
+void WdeSetBaseObject( int menu_selection )
 {
     HMENU               menu;
     OBJ_ID              obj_id;
-    WORD                id;
+    int                 id;
     WdeToolBar          *tbar;
 
     if( !WdeGetNumRes() ) {
@@ -291,12 +291,12 @@ void WdeSetBaseObject( WORD menu_selection )
     id = WdeGetCToolID();
     obj_id = -1;
 
-    if( id != (WORD)-1 && id != menu_selection ) {
+    if( id != -1 && id != menu_selection ) {
         CheckMenuItem( menu, id, MF_BYCOMMAND | MF_UNCHECKED );
         WdeSetToolBarItemState( tbar, id, BUTTON_UP );
     }
 
-    if( menu_selection != (WORD)-1 ) {
+    if( menu_selection != -1 ) {
         obj_id = WdeGetOBJIDFromMenu( menu_selection );
         if( obj_id != -1 ) {
             SetBaseObjType( obj_id );
@@ -307,12 +307,12 @@ void WdeSetBaseObject( WORD menu_selection )
     }
 }
 
-WORD WdeGetMenuFromOBJID( OBJ_ID id )
+int WdeGetMenuFromOBJID( OBJ_ID obj_id )
 {
     int i;
 
     for( i = 0; WdeControlBits[i].up != NULL; i++ ) {
-        if( WdeControlBits[i].obj_id == id ) {
+        if( WdeControlBits[i].obj_id == obj_id ) {
             return( WdeControlBits[i].id );
         }
     }
@@ -320,7 +320,7 @@ WORD WdeGetMenuFromOBJID( OBJ_ID id )
     return( -1 );
 }
 
-OBJ_ID WdeGetOBJIDFromMenu( WORD id )
+OBJ_ID WdeGetOBJIDFromMenu( int id )
 {
     int i;
 
@@ -337,7 +337,7 @@ bool WdeCreateControlsToolBar( void )
 {
     RECT        t, r, screen;
     HWND        parent;
-    WORD        id;
+    int         id;
     char        *text;
 
     if( WdeControls != NULL ) {
@@ -410,7 +410,7 @@ bool WdeCreateControlsToolBar( void )
 
     if( WdeGetNumRes() != 0 ) {
         id = WdeGetMenuFromOBJID( GetBaseObjType() );
-        if( id != (WORD)-1 ) {
+        if( id != -1 ) {
             WdeSetToolBarItemState( WdeControls, id, BUTTON_DOWN );
         }
         WdeSetStickyMode( WdeStickyMode );

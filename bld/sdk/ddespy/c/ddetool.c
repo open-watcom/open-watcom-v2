@@ -33,7 +33,7 @@
 #include "wddespy.h"
 
 typedef struct ddetoolinfo {
-    struct toolbar      *hdl;
+    toolbar             *hdl;
     TOOLDISPLAYINFO     info;
     BOOL                fixed;
     RECT                floatrect;

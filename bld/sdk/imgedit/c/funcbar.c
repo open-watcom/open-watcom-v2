@@ -36,7 +36,7 @@
 #define NUM_TOOLS       26
 #define NUM_TOOLS_DDE   23
 
-static void             *functionBar;
+static toolbar          *functionBar;
 static HWND             hFunctionBar = NULL;
 
 static button           toolList[NUM_TOOLS] = {

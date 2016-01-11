@@ -92,7 +92,7 @@ WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
 
     tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar = (toolbar)ToolBarInit( parent );
+    tbar->tbar = ToolBarInit( parent );
 
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
@@ -302,7 +302,7 @@ void WREShutdownToolBars( void )
     ListFree( WREToolBarList );
 }
 
-void WRESetToolBarItemState( WREToolBar *tbar, UINT id, UINT state )
+void WRESetToolBarItemState( WREToolBar *tbar, int id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

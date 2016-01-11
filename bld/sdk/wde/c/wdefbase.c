@@ -617,7 +617,7 @@ BOOL WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
             obj = ListElement( base_obj->children );
             MakeObjectCurrent( obj );
         } else {
-            WdeSetBaseObject ( IDM_SELECT_MODE );
+            WdeSetBaseObject( IDM_SELECT_MODE );
             WdeSetBaseObjectMenu( base_obj->res_info->hash_table != NULL );
 
             memset ( &is, 0, sizeof( WdeInfoStruct ) );

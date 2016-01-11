@@ -91,7 +91,7 @@ WToolBar *WCreateToolBar( WToolBarInfo *info, HWND parent )
 
     tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar = (toolbar)ToolBarInit( parent );
+    tbar->tbar = ToolBarInit( parent );
 
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
@@ -301,7 +301,7 @@ void WShutdownToolBars( void )
     ListFree( WToolBarList );
 }
 
-void WSetToolBarItemState( WToolBar *tbar, UINT id, UINT state )
+void WSetToolBarItemState( WToolBar *tbar, int id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

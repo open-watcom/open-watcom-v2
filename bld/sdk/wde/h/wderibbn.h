@@ -51,6 +51,6 @@ extern bool WdeResizeRibbon( RECT * );
 extern void WdeShowRibbon( void );
 extern void WdeDestroyRibbon( void );
 extern int  WdeGetRibbonHeight( void );
-extern void WdeSetRibbonItemState( WORD, int );
+extern void WdeSetRibbonItemState( int, int );
 
 #endif

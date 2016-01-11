@@ -279,7 +279,7 @@ void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );
 void    AddHotSpotTool( BOOL faddhotspot );
-void    PushToolButton( WORD cmdid );
+void    PushToolButton( int cmdid );
 
 /* ieopen.c */
 void    SetupMenuAfterOpen( void );
