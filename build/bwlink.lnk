@@ -141,6 +141,7 @@ system begin pharlap
     format phar ^
 end
 
+
 system begin os2
     option osname='OS/2 16-bit'
     library os2.lib
@@ -434,4 +435,22 @@ system begin rdosdev
     libpath %OWSRCDIR%/cpplib/library/generic.386/ms_r
     libpath %OWSRCDIR%/fpuemu/386/stub386
     format rdos dev32
+end
+
+system begin ads
+    option osname='AutoCAD Development System'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_s
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
+    libfile %OWSRCDIR%/clib/startup/library/msdos.386/ms_s/adsstart.obj
+    format phar ext ^
+end
+
+system begin tnt
+    option osname='Phar Lap TNT DOS style'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    format windows nt tnt ^
+    runtime dosstyle
 end
