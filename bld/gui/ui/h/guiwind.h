@@ -138,7 +138,7 @@ struct gui_window {
     MENUITEM            *menu;          // pulldown menu under closer
     VBARMENU            *vbarmenu;      // top level menu
     int                 min_pos;        // unused
-    toolbarinfo         *toolbar;       // pointer to toolbar, if exists
+    toolbarinfo         *tbinfo;        // pointer to toolbar, if exists
     statusinfo          *status;        // pointer to status window, if exists
     hintinfo            hint;           // hint text
     char                background;     // character to use to draw background

@@ -724,15 +724,14 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
 
 bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
 {
-    toolbarinfo *bar;
+    toolbarinfo *tbar;
 
-
-    bar = wnd->toolbar;
-    if( bar != NULL ) {
-        if( bar->fixed ) {
-            wnd->toolbar = NULL;
+    tbar = wnd->tbinfo;
+    if( tbar != NULL ) {
+        if( tbar->fixed ) {
+            wnd->tbinfo = NULL;
         } else {
-            bar = NULL;
+            tbar = NULL;
         }
     }
     GUIFreeMenus( wnd );
@@ -742,8 +741,8 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
         if( wnd->vbarmenu != NULL ) {
             uimenubar( wnd->vbarmenu );
         }
-        if( bar ) {
-            wnd->toolbar = bar;
+        if( tbar != NULL ) {
+            wnd->tbinfo = tbar;
             GUIXCreateFixedToolbar( wnd );
         }
         return( true );

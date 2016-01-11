@@ -689,8 +689,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     t_height = 0;
     s_height = 0;
 
-    if( ( wnd->toolbar != NULL ) && ( wnd->toolbar->info.is_fixed ) ) {
-        t_height = _wpi_getheightrect( wnd->toolbar->fixedrect );
+    if( ( wnd->tbinfo != NULL ) && ( wnd->tbinfo->info.is_fixed ) ) {
+        t_height = _wpi_getheightrect( wnd->tbinfo->fixedrect );
     }
 
     if( wnd->status != NULLHANDLE ) {
@@ -820,8 +820,8 @@ static bool IsToolBarCommand( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lpa
 {
 #ifdef __NT__
     wparam=wparam; //lparam=lparam;
-    return( wnd != NULL && wnd->toolbar != NULL && wnd->toolbar->hdl != NULL &&
-            GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->toolbar->hdl ) );
+    return( wnd != NULL && wnd->tbinfo != NULL && wnd->tbinfo->hdl != NULL &&
+            GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->tbinfo->hdl ) );
 #else
     wnd=wnd; wparam=wparam; lparam=lparam;
     return( false );

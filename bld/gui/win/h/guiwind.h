@@ -96,7 +96,7 @@ typedef struct wnd_colour {
 } wnd_colour;
 
 typedef struct toolbarinfo {
-    struct toolbar      *hdl;
+    toolbar             *hdl;
     TOOLDISPLAYINFO     info;
     WPI_RECT            floatrect;
     WPI_RECT            fixedrect;
@@ -131,7 +131,7 @@ typedef struct gui_window {
     HBRUSH              bk_brush;
     WPI_PRES            hdc;
     PAINTSTRUCT         *ps;
-    toolbarinfo         *toolbar;
+    toolbarinfo         *tbinfo;
     gui_create_styles   style;
     gui_scroll_styles   scroll;
     gui_flags           flags;
