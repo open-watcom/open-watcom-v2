@@ -13,12 +13,12 @@ name = plshelp
 !endif
 which = SERVER
 
-pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=cdecl -D_Far=__far -D_Near=__Near -I"$(plsdir)"
+pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=__cdecl -D_far=__far -D_near=__near -D_Far=__far -D_Near=__Near -I"$(plsdir)"
 
 extra_cpp_flags = -DPHARLAP
 extra_c_flags = $(compflags_$[&)
 
-extra_c_flags_dilglue = -3s $(pharlap_c_flags)
+extra_c_flags_dilglue = -3s -zl $(pharlap_c_flags)
 extra_c_flags_dosxlink = $(pharlap_c_flags)
 extra_c_flags_plsacc = $(pharlap_c_flags)
 
