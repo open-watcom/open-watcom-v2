@@ -155,14 +155,14 @@ static void sendNewColour( NewColourOps op )
     } else if( mod_hwnd == CurrentWindow ) {
         sendNewColourCurrentWindow( op );
     } else {
-        mod_style = ( &(WINDOW_FROM_ID( mod_hwnd )->info->text) );
+        mod_style = WIN_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
         if( op == NC_FORE ) {
             mod_style->foreground = INDEX_FROM_XY( cursx, cursy );
         } else {
             mod_style->background = INDEX_FROM_XY( cursx, cursy );
         }
-        StatusWndChangeSysColors( RGBValues[statusw_info.text.background],
-                                  RGBValues[statusw_info.text.foreground],
+        StatusWndChangeSysColors( RGBValues[statusw_info.text_style.background],
+                                  RGBValues[statusw_info.text_style.foreground],
                                   GetSysColor( COLOR_BTNHIGHLIGHT ),
                                   GetSysColor( COLOR_BTNSHADOW ) );
         ReDisplayScreen();

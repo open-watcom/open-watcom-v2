@@ -134,9 +134,9 @@ void Error( char *str, ... )
 
     if( MessageWindow != NO_WINDOW ) {
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
-                            messagew_info.hilight.foreground );
+                            messagew_info.hilight_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
-                            messagew_info.hilight.background );
+                            messagew_info.hilight_style.background );
         va_start( al, str );
         MyVSprintf( tmp, str, al );
         va_end( al );
@@ -145,9 +145,9 @@ void Error( char *str, ... )
         Message1( "%s", tmp );
 
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
-                            messagew_info.text.foreground );
+                            messagew_info.text_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
-                            messagew_info.text.background );
+                            messagew_info.text_style.background );
         MyBeep();
     } else {
         va_start( al, str );
@@ -170,9 +170,9 @@ void ErrorBox( char *str, ... )
 
     if( MessageWindow != NO_WINDOW ) {
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
-                            messagew_info.hilight.foreground );
+                            messagew_info.hilight_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
-                            messagew_info.hilight.background );
+                            messagew_info.hilight_style.background );
         va_start( al, str );
         MyVSprintf( tmp, str, al );
         va_end( al );
@@ -181,9 +181,9 @@ void ErrorBox( char *str, ... )
         Message1Box( "%s", tmp );
 
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
-                            messagew_info.text.foreground );
+                            messagew_info.text_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
-                            messagew_info.text.background );
+                            messagew_info.text_style.background );
         MyBeep();
     } else {
         va_start( al, str );

@@ -595,7 +595,7 @@ vi_rc InitMenu( void )
 
     ws = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight );
+        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight_style );
         ws += cmenu->slen + 2;
     }
 
@@ -629,7 +629,7 @@ static void lightMenu( int sel, int ws, bool on )
     char        ch;
     int         i;
     menu        *cmenu;
-    type_style  s;
+    type_style  style;
 
     if( sel >= menuCnt ) {
         return;
@@ -645,15 +645,15 @@ static void lightMenu( int sel, int ws, bool on )
     for( i = 0; i < cmenu->slen; i++ ) {
         if( i == cmenu->hi._offs && !on ) {
             ch = cmenu->hi._char;
-            s = menubarw_info.hilight;
+            style = menubarw_info.hilight_style;
         } else {
             ch = cmenu->str[i];
-            s = menubarw_info.text;
+            style = menubarw_info.text_style;
             if( on ) {
-                s.foreground = menubarw_info.hilight.foreground;
+                style.foreground = menubarw_info.hilight_style.foreground;
             }
         }
-        SetCharInWindowWithColor( MenuWindow, 1, ws + i, ch, &s );
+        SetCharInWindowWithColor( MenuWindow, 1, ws + i, ch, &style );
     }
 
 } /* lightMenu */

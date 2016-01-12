@@ -93,7 +93,7 @@ static void sendNewFont( void )
         return;
     }
 
-    mod_style = (&(WINDOW_FROM_ID( mod_hwnd )->info->text));
+    mod_style = WIN_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
 
     if( mod_hwnd == CurrentWindow ) {
         sendNewFontCurrentWindow();

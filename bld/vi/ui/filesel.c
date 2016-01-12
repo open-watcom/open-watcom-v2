@@ -160,9 +160,9 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     fcb         *cfcb, *tfcb;
     line        *cline;
     hilst       *ptr;
-    type_style  *text, *hot_key;
+    type_style  *text_style, *hot_key_style;
     window_info *info;
-    type_style  base;
+    type_style  base_style;
     char        tmp[MAX_STR];
 //    bool        disabled;
     vi_rc       rc;
@@ -174,9 +174,9 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    base.foreground = WindowAuxInfo( cWin, WIND_INFO_TEXT_COLOR );
-    base.background = WindowAuxInfo( cWin, WIND_INFO_BACKGROUND_COLOR );
-    base.font = WindowAuxInfo( cWin, WIND_INFO_TEXT_FONT );
+    base_style.foreground = WindowAuxInfo( cWin, WIND_INFO_TEXT_COLOR );
+    base_style.background = WindowAuxInfo( cWin, WIND_INFO_BACKGROUND_COLOR );
+    base_style.font = WindowAuxInfo( cWin, WIND_INFO_TEXT_FONT );
     text_lines = WindowAuxInfo( cWin, WIND_INFO_TEXT_LINES );
 
     /*
@@ -212,14 +212,14 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                         info = &menuw_info;
                     }
                 }
-                text = &info->text;
-                hot_key = &info->hilight;
+                text_style = &info->text_style;
+                hot_key_style = &info->hilight_style;
             } else {
-                text = &base;
+                text_style = &base_style;
                 if( cl == hilite ) {
-                    text = style;
+                    text_style = style;
                 }
-                hot_key = text;
+                hot_key_style = text_style;
             }
 
             /*
@@ -237,15 +237,15 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                     }
                     tmp[k] = 0;
                     strcat( tmp, vals[j + pagetop - 2] );
-                    DisplayLineInWindowWithColor( cWin, j, tmp, text, 0 );
+                    DisplayLineInWindowWithColor( cWin, j, tmp, text_style, 0 );
                 } else {
-                    DisplayLineInWindowWithColor( cWin, j, cline->data, text, leftcol );
+                    DisplayLineInWindowWithColor( cWin, j, cline->data, text_style, leftcol );
                 }
             } else {
-                DisplayLineInWindowWithColor( cWin, j, SingleBlank, text, 0 );
+                DisplayLineInWindowWithColor( cWin, j, SingleBlank, text_style, 0 );
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( cWin, j, 1 + ptr->_offs, ptr->_char, hot_key );
+                SetCharInWindowWithColor( cWin, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
             }
 evil_goto:  if( ptr != NULL ) {
                 ptr += 1;
@@ -516,7 +516,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( drawbord ) {
                 DrawBorder( cWin );
             }
-            displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight), sfd->hilite, sfd->vals, sfd->valoff );
+            displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight_style), sfd->hilite, sfd->vals, sfd->valoff );
         }
         lln = cln;
         redraw = true;

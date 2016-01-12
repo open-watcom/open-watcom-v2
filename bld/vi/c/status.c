@@ -72,7 +72,7 @@ static void StatusLine( int line, char *str, int format )
 
     len = strlen( str );
     width = WindowAuxInfo( StatusWindow, WIND_INFO_TEXT_COLS );
-    style = &statusw_info.text;
+    style = &statusw_info.text_style;
     switch( format ) {
     case FMT_RIGHT:
         blanks = 0;

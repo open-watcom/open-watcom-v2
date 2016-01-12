@@ -479,8 +479,8 @@ void HiliteAColumnRange( linenum line, int scol, int ecol )
     if( scol == 0 ) {
         s = 0;
     }
-    changeColorOfDisplayLine( (int) (line - LeftTopPos.line + 1),
-        s - LeftTopPos.column, e - LeftTopPos.column, &editw_info.hilight );
+    changeColorOfDisplayLine( (int)(line - LeftTopPos.line + 1),
+        s - LeftTopPos.column, e - LeftTopPos.column, &editw_info.hilight_style );
 
 } /* HiliteAColumnRange */
 

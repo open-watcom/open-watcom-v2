@@ -111,10 +111,10 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
             MyFprintf( f, "    border -1\n" );
         }
     }
-    MyFprintf( f, "    text %d %d %d\n", wi->text.foreground, wi->text.background,
-               wi->text.font );
-    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight.foreground,
-               wi->hilight.background, wi->hilight.font );
+    MyFprintf( f, "    text %d %d %d\n", wi->text_style.foreground, wi->text_style.background,
+               wi->text_style.font );
+    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight_style.foreground,
+               wi->hilight_style.background, wi->hilight_style.font );
     if( wi == &editw_info ) {
         MyFprintf( f, "    whitespace %d %d %d\n", SEType[SE_WHITESPACE].foreground,
                    SEType[SE_WHITESPACE].background, SEType[SE_WHITESPACE].font );

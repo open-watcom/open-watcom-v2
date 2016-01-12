@@ -319,7 +319,7 @@ static void displayFiles( void )
     column = 0;
     for( i = start; i <= end; i++ ) {
         parseFileName( i, &buffer[0] );
-        style = (i == lastFilec) ? &w->info->hilight : &w->info->text;
+        style = (i == lastFilec) ? WIN_HILIGHT( w ) : WIN_STYLE( w );
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
         BlankRectIndirect( dirWin, style->background, &rect );
@@ -399,7 +399,7 @@ static void displayFiles( void )
                 MySprintf( tmp2, strFmt, dirc, DirFiles[lastFilec]->name );
                 z = j + strlen( tmp2 );
                 for( k = j; k < z; k++ ) {
-                    SetCharInWindowWithColor( dirWin, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight );
+                    SetCharInWindowWithColor( dirWin, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight_style );
                 }
                 hilite = -1;
             }
@@ -431,8 +431,8 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
 
     if( dirWin == NO_WINDOW ) {
         // ensure uniform font before opening window
-        if( filecw_info.text.font != filecw_info.hilight.font )
-            filecw_info.hilight.font = filecw_info.text.font;
+        if( filecw_info.text_style.font != filecw_info.hilight_style.font )
+            filecw_info.hilight_style.font = filecw_info.text_style.font;
 
         rc = NewWindow2( &dirWin, &filecw_info );
         if( rc != ERR_NO_ERR ) {

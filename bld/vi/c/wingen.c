@@ -60,7 +60,7 @@ vi_rc NewWindow2( window_id *wn, window_info *wi )
 {
     return( NewWindow( wn, wi->x1, wi->y1, wi->x2, wi->y2,
                        wi->has_border, wi->border_color1,
-                       wi->border_color2,  &wi->text ) );
+                       wi->border_color2, &wi->text_style ) );
 
 } /* NewWindow2 */
 #endif

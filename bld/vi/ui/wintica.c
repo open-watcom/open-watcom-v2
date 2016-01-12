@@ -59,11 +59,11 @@ vi_rc WindowTile( int maxx, int maxy )
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             BringUpFile( cinfo, false );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR,
-                             editw_info.text.foreground );
+                             editw_info.text_style.foreground );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR,
-                             editw_info.text.background );
+                             editw_info.text_style.background );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_FONT,
-                             editw_info.text.font );
+                             editw_info.text_style.font );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2,
                              editw_info.border_color2 );
             CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2,

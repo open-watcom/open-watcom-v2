@@ -279,7 +279,7 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
     switch( msg ) {
     case WM_INITDIALOG:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
-        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text.font ), 0L );
+        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
@@ -337,7 +337,7 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
     switch( msg ) {
     case WM_INITDIALOG:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
-        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text.font ), 0L );
+        SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         rc.left = 0;
@@ -439,7 +439,7 @@ static vi_rc doGREP( const char *dirlist )
      */
     rc = NewWindow( &wn, dirw_info.x1, dirw_info.y1 + 4, dirw_info.x2,
         dirw_info.y1 + 6, 1, dirw_info.border_color1, dirw_info.border_color2,
-        &dirw_info.text );
+        &dirw_info.text_style );
     if( rc != ERR_NO_ERR ) {
         MemFree( list );
         return( rc );

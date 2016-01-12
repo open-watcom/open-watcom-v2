@@ -39,10 +39,10 @@
 #include "sstyle.h"
 
 static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
-                      HDC hdc, int max_width, type_style *ts, HBRUSH thisBrush );
+                      HDC hdc, int max_width, type_style *style, HBRUSH thisBrush );
 
 void MyTabbedTextOut( HDC hdc, char **display, int len,
-                      bool funny_italic, POINT *p, type_style *ts, RECT *rect,
+                      bool funny_italic, POINT *p, type_style *style, RECT *rect,
                       window_id id, char *otmp, int y );
 
 bool                AllowDisplay = true;
@@ -132,25 +132,25 @@ void ShiftWindowUpDown( window_id id, int lines )
 
 } /* ShiftWindowUpDown */
 
-bool SetDrawingObjects( HDC hdc, type_style *ts )
+bool SetDrawingObjects( HDC hdc, type_style *style )
 {
     static bool funny_italic = false;
 
     // setup font and colours for next string.
-    thisFore = ts->foreground;
+    thisFore = style->foreground;
     if( lastFore != thisFore ) {
         SetTextColor( hdc, ColorRGB( thisFore ) );
         lastFore = thisFore;
     }
 
-    thisBack = ts->background;
+    thisBack = style->background;
     if( lastBack != thisBack ) {
         SetBkColor( hdc, ColorRGB( thisBack ) );
-        thisBrush = ColorBrush( ts->background );
+        thisBrush = ColorBrush( style->background );
         lastBack = thisBack;
     }
 
-    thisFont = ts->font;
+    thisFont = style->font;
     if( lastFont != thisFont ) {
         SelectObject( hdc, FontHandle( thisFont ) );
         lastFont = thisFont;
@@ -166,7 +166,7 @@ bool SetDrawingObjects( HDC hdc, type_style *ts )
 #ifndef BITBLT_BUFFER_DISPLAY
 
 static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
-                      HDC hdc, int max_width, type_style *ts, HBRUSH brush )
+                      HDC hdc, int max_width, type_style *style, HBRUSH brush )
 {
     // FunnyItalic so draw at bit at begining and end!
     RECT    smallrect;
@@ -178,7 +178,7 @@ static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
 
     // draw bit at the beginning
     smallrect.left = x;
-    width = MyTextExtent( id, ts, display, len );
+    width = MyTextExtent( id, style, display, len );
     if( max_width > width )
         max_width = width;
     smallrect.right = max_width + x;
@@ -198,7 +198,7 @@ void MyTabbedTextOut( HDC hdc,
                       int len,               // number of chars to display
                       bool funny_italic,     // fix up begin and end ?
                       POINT *p,              // reference to current position
-                      type_style *ts,        // current style
+                      type_style *style,     // current style
                       RECT *rect,
                       window_id id,
                       char *otmp,
@@ -225,7 +225,7 @@ void MyTabbedTextOut( HDC hdc,
             if( funny_italic ) {
                 // FunnyItalic so draw at bit at begining and end!
                 funnyFix( rect, p->x, id, *display, tlen,
-                          hdc, FontMaxWidth( thisFont ), ts, thisBrush );
+                          hdc, FontMaxWidth( thisFont ), style, thisBrush );
             }
             TextOut( hdc, 0, 0, *display, tlen );
             *display = tstring;
@@ -260,7 +260,7 @@ void MyTabbedTextOut( HDC hdc,
         if( funny_italic ) {
             // FunnyItalic so draw at bit at begining and end!
             funnyFix( rect, p->x, id, *display, len,
-                      hdc, FontMaxWidth( thisFont ), ts, thisBrush );
+                      hdc, FontMaxWidth( thisFont ), style, thisBrush );
         }
         TextOut( hdc, 0, 0, *display, len );
         *display += len;
@@ -280,9 +280,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     int         ssDifIndex;
     ss_block    *ss_cache, *ss_step;
     int         lastPos;
-
-
-    type_style  *ts;
+    type_style  *style;
     POINT       p;
     bool        funny_italic = false;
     int         prev_col;
@@ -391,14 +389,14 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         while( ss_step->end != BEYOND_TEXT ) {
 
             // setup font and colors for next string.
-            ts = &SEType[ss_step->type];
-            funny_italic = SetDrawingObjects( hdc, ts );
+            style = &SEType[ss_step->type];
+            funny_italic = SetDrawingObjects( hdc, style );
             len = ss_step->end - lastPos;
 
             // MyTabbedTextOut is long and used in 2 places but needs so
             // many arguments maybe it should be inline.
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                             &p, ts, &rect, id, otmp, y );
+                             &p, style, &rect, id, otmp, y );
 
             // save pixel offset where next block is to start
             GetCurrentPositionEx( hdc, &p );
@@ -431,13 +429,13 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
         // now "beyond text" but there still could be more "text"
         // if there is, display the rest of it!
-        ts = &SEType[ss_step->type];
-        funny_italic = SetDrawingObjects( hdc, ts );
+        style = &SEType[ss_step->type];
+        funny_italic = SetDrawingObjects( hdc, style );
         len = strlen( display );
 
         if( *display != '\0' ) {
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                             &p, ts, &rect, id, otmp, y );
+                             &p, style, &rect, id, otmp, y );
         }
 
         // if the previous line was longer than this one, blot it out.
@@ -479,7 +477,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     font_type   lastFont, thisFont;
     vi_color    lastFore, thisFore;
     vi_color    lastBack, thisBack;
-    type_style  *ts;
+    type_style  *style;
     POINT       p;
 
     if( !AllowDisplay || BAD_ID( id ) ) {
@@ -554,18 +552,18 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         SetTextAlign( hdc_mem, TA_UPDATECP );
         lastFore = lastBack = lastFont = -1;
         while( ss_step->end != BEYOND_TEXT ) {
-            ts = &SEType[ss_step->type];
-            thisFore = ts->foreground;
+            style = &SEType[ss_step->type];
+            thisFore = style->foreground;
             if( lastFore != thisFore ) {
                 SetTextColor( hdc_mem, ColorRGB( thisFore ) );
                 lastFore = thisFore;
             }
-            thisBack = ts->background;
+            thisBack = style->background;
             if( lastBack != thisBack ) {
                 SetBkColor( hdc_mem, ColorRGB( thisBack ) );
                 lastBack = thisBack;
             }
-            thisFont = ts->font;
+            thisFont = style->font;
             if( lastFont != thisFont ) {
                 SelectObject( hdc_mem, FontHandle( thisFont ) );
                 lastFont = thisFont;
@@ -580,11 +578,11 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             display += len;
             ss_step++;
         }
-        ts = &SEType[ss_step->type];
+        style = &SEType[ss_step->type];
         if( *display != '\0' ) {
-            SetTextColor( hdc_mem, ColorRGB( ts->foreground ) );
-            SetBkColor( hdc_mem, ColorRGB( ts->background ) );
-            SelectObject( hdc_mem, FontHandle( ts->font ) );
+            SetTextColor( hdc_mem, ColorRGB( style->foreground ) );
+            SetBkColor( hdc_mem, ColorRGB( style->background ) );
+            SelectObject( hdc_mem, FontHandle( style->font ) );
             TextOut( hdc_mem, 0, 0, display, strlen( display ) );
         }
         ss_step->offset = 10000;

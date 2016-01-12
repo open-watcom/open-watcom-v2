@@ -92,11 +92,11 @@ typedef enum window_extra {
 #define WINDOW_TO_ID( x, d )((window *)SET_WNDLONGPTR( x, WIN_WINDOW * MAGIC_SIZE, d ))
 #define DATA_TO_ID( x, d )  ((window_data *)SET_WNDLONGPTR( x, WIN_DATA * MAGIC_SIZE, d ))
 
-#define WIN_STYLE( w )      (&((w)->info->text))
-#define WIN_HILIGHT( w )    (&((w)->info->hilight))
-#define WIN_FONT( w )       ((w)->info->text.font)
-#define WIN_TEXTCOLOR( w )  ((w)->info->text.foreground)
-#define WIN_BACKCOLOR( w )  ((w)->info->text.background)
+#define WIN_STYLE( w )      (&((w)->info->text_style))
+#define WIN_HILIGHT( w )    (&((w)->info->hilight_style))
+#define WIN_FONT( w )       ((w)->info->text_style.font)
+#define WIN_TEXTCOLOR( w )  ((w)->info->text_style.foreground)
+#define WIN_BACKCOLOR( w )  ((w)->info->text_style.background)
 
 extern window_id        EditContainer;
 extern window_id        Root;

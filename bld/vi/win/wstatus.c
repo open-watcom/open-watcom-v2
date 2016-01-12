@@ -81,7 +81,7 @@ static bool Init( window *w, void *parm )
 #if defined( __NT__ )
     StatusWndChangeSysColors( GetSysColor( COLOR_BTNFACE ), GetSysColor( COLOR_BTNTEXT ),
 #else
-    StatusWndChangeSysColors( GetRGB( statusw_info.text.background ), GetRGB( statusw_info.text.foreground ),
+    StatusWndChangeSysColors( GetRGB( statusw_info.text_style.background ), GetRGB( statusw_info.text_style.foreground ),
 #endif
                               GetSysColor( COLOR_BTNHIGHLIGHT ), GetSysColor( COLOR_BTNSHADOW ) );
     if( EditVars.NumStatusSections > 0 ) {

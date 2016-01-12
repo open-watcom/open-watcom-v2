@@ -1154,7 +1154,7 @@ static vi_rc setWText( const char *data )
     if( *token != '\0' ) {
         tc3 = atoi( token );
     }
-    setStyle( &wInfo->text, tc1, tc2, tc3 );
+    setStyle( &wInfo->text_style, tc1, tc2, tc3 );
     /* want an SE_TEXT entry when SS turned off - steal it from here */
     if( wInfo == &editw_info ) {
         setStyle( &SEType[SE_TEXT], tc1, tc2, tc3 );
@@ -1189,7 +1189,7 @@ static vi_rc setWHilite( const char *data )
     if( *token != '\0' ) {
         tc3 = atoi( token );
     }
-    setStyle( &wInfo->hilight, tc1, tc2, tc3 );
+    setStyle( &wInfo->hilight_style, tc1, tc2, tc3 );
     return( ERR_NO_ERR );
 
 } /* setWHilite */
