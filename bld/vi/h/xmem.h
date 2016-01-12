@@ -55,11 +55,13 @@ typedef unsigned long   flat_address;
 #define GDT_SOURCE      2
 #define GDT_TARGET      3
 
+#include "pushpck1.h"
 typedef struct {
     unsigned short  length;
     flat_address    address;
     unsigned short  reserved;
 } descriptor;
+#include "poppck.h"
 
 typedef struct {
     flat_address    offset;
@@ -193,6 +195,7 @@ typedef struct {
     unsigned char       small_block : 1;
 } xms_struct;
 
+#include "pushpck1.h"
 typedef struct {
     unsigned long               size;
     unsigned short              src_handle;
@@ -206,6 +209,7 @@ typedef struct {
         void                    *real;
     } dest_offset;
 } xms_move_descriptor;
+#include "poppck.h"
 
 extern unsigned char _XMSInstalled( void );
 #pragma aux _XMSInstalled = \
