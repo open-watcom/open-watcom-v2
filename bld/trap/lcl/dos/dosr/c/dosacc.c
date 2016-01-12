@@ -76,7 +76,7 @@ typedef enum {
     F_IsMMX     = 0x02,
     F_IsXMM     = 0x04,
     F_DRsOn     = 0x08,
-    F_com_file  = 0x10,
+    F_Com_file  = 0x10,
     F_NoOvlMgr  = 0x20,
     F_BoundApp  = 0x40,
 } FLAGS;
@@ -177,7 +177,6 @@ static word             NumSegments;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
-
 static unsigned_8       RealNPXType;
 static unsigned_8       CPUType;
 
@@ -197,7 +196,7 @@ int out( char *str )
 
 static char hexbuff[80];
 
-char * hex( unsigned long num )
+char *hex( unsigned long num )
 {
     char *p;
 
@@ -271,7 +270,7 @@ trap_retval ReqMap_addr( void )
         ret->out_addr.segment = FP_SEG( segment ) + 1;
     } else {
         ret->out_addr.segment = DOSTaskPSP() + seg;
-        if( (Flags & F_com_file) == 0 ) {
+        if( (Flags & F_Com_file) == 0 ) {
             ret->out_addr.segment += 0x10;
         }
     }
@@ -315,9 +314,9 @@ trap_retval ReqChecksum_mem( void )
 
 static bool IsInterrupt( addr48_ptr addr, unsigned length )
 {
-    unsigned long start, end;
+    dword   start, end;
 
-    start = ((unsigned long)addr.segment << 4) + addr.offset;
+    start = ((dword)addr.segment << 4) + addr.offset;
     end = start + length;
     return( start < 0x400 || end < 0x400 );
 }
@@ -386,13 +385,13 @@ trap_retval ReqRead_io( void )
     acc = GetInPtr(0);
     data = GetOutPtr(0);
     if( acc->len == 1 ) {
-       *( (byte __far *)data ) = In_b( acc->IO_offset );
+       *(byte __far *)data = In_b( acc->IO_offset );
        len = 1;
     } else if( acc->len == 2 ) {
-       *( (word __far *)data ) = In_w( acc->IO_offset );
+       *(word __far *)data = In_w( acc->IO_offset );
        len = 2;
     } else if( Flags & F_Is386 ) {
-       *( (dword __far *)data ) = In_d( acc->IO_offset );
+       *(dword __far *)data = In_d( acc->IO_offset );
        len = 4;
     } else {
        len = 0;
@@ -413,13 +412,13 @@ trap_retval ReqWrite_io( void )
     len = GetTotalSize() - sizeof( *acc );
     ret = GetOutPtr(0);
     if( len == 1 ) {
-        Out_b( acc->IO_offset, *( (byte __far *)data ) );
+        Out_b( acc->IO_offset, *(byte __far *)data );
         ret->len = 1;
     } else if( len == 2 ) {
-        Out_w( acc->IO_offset, *( (word __far *)data ) );
+        Out_w( acc->IO_offset, *(word __far *)data );
         ret->len = 2;
-    } else if ( Flags & F_Is386 ) {
-        Out_d( acc->IO_offset, *( (dword __far *)data ) );
+    } else if( Flags & F_Is386 ) {
+        Out_d( acc->IO_offset, *(dword __far *)data );
         ret->len = 4;
     } else {
         ret->len = 0;
@@ -461,25 +460,24 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
 {
     static dos_exe_header head;
 
-    Flags &= ~F_com_file;
+    Flags &= ~F_Com_file;
     if( TINY_OK( TinyFarRead( handle, &head, sizeof( head ) ) ) ) {
         switch( head.signature ) {
-        case SIMPLE_SIGNATURE: // mp
-        case REX_SIGNATURE: // mq
-        case EXTENDED_SIGNATURE: // 'P3'
+        case SIMPLE_SIGNATURE:      // mp
+        case REX_SIGNATURE:         // mq
+        case EXTENDED_SIGNATURE:    // 'P3'
             return( EXE_PHARLAP_SIMPLE );
-        case DOS_SIGNATURE:
+        case DOS_SIGNATURE:         // 'MZ'
             if( head.reloc_offset == OS2_EXE_HEADER_FOLLOWS )
                 return( EXE_OS2 );
             return( EXE_DOS );
         default:
-            Flags |= F_com_file;
+            Flags |= F_Com_file;
             break;
         }
     }
     return( EXE_UNKNOWN );
 }
-
 
 trap_retval ReqProg_load( void )
 {
@@ -503,7 +501,7 @@ trap_retval ReqProg_load( void )
     os2_exe_header  os2_head;
     tiny_handle_t   handle;
     dword           NEOffset;
-    dword           StartByte;
+    dword           StartPos;
     opcode_type     saved_opcode;
     dword           SegTable;
 
@@ -563,10 +561,10 @@ trap_retval ReqProg_load( void )
                         os2_head.align = 9;
                     TinySeek( handle, SegTable + ( os2_head.entrynum - 1 ) * 8, TIO_SEEK_START );
                     TinyFarRead( handle, &value, sizeof( value ) );
-                    StartByte = ( (dword)value << os2_head.align ) + os2_head.IP;
-                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    StartPos = ( (dword)value << os2_head.align ) + os2_head.IP;
+                    TinySeek( handle, StartPos, TIO_SEEK_START );
                     TinyFarRead( handle, &saved_opcode, sizeof( saved_opcode ) );
-                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    TinySeek( handle, StartPos, TIO_SEEK_START );
                     brk_opcode = BRKPOINT;
                     rc = TinyFarWrite( handle, &brk_opcode, sizeof( brk_opcode ) );
                 } else {
@@ -621,7 +619,7 @@ trap_retval ReqProg_load( void )
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
                     handle = TINY_INFO( rc );
-                    TinySeek( handle, StartByte, TIO_SEEK_START );
+                    TinySeek( handle, StartPos, TIO_SEEK_START );
                     TinyFarWrite( handle, &saved_opcode, sizeof( saved_opcode ) );
                     TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
                     TinyClose( handle );
@@ -665,7 +663,7 @@ trap_retval ReqSet_watch( void )
     watch_point         *curr;
     set_watch_req       *wp;
     set_watch_ret       *wr;
-    int                 i,needed;
+    int                 i, needed;
 
     wp = GetInPtr( 0 );
     wr = GetOutPtr( 0 );
@@ -677,7 +675,7 @@ trap_retval ReqSet_watch( void )
         curr->addr.segment = wp->watch_addr.segment;
         curr->addr.offset = wp->watch_addr.offset;
         curr->value = *(dword __far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
-        curr->linear = ( (unsigned long)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
+        curr->linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
         curr->linear &= ~( curr->len - 1 );
         curr->dregs = ( wp->watch_addr.offset & ( curr->len - 1 ) ) ? 2 : 1;
@@ -807,7 +805,7 @@ static bool SetDebugRegs( void )
             dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
             ++dr;
             if( wp->dregs == 2 ) {
-                dr7 |= SetDRn( dr, wp->linear+4, DRLen( wp->len ) | DR7_BWR );
+                dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
                 ++dr;
             }
             watch386 = TRUE;

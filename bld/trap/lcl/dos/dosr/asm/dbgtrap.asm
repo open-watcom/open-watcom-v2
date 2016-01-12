@@ -89,17 +89,17 @@ REG_GROUP       ends
 
 assume  cs:_text
 
-;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ; These equ must match those in the FLAGS enum in dosacc.c
 F_Is386         equ     0x0001
 
-; These offsets must match the struct in dosacc.c
+; These offsets must match the watch_point struct in dosacc.c
 WP_ADDR         equ     0       ; offset of watch point address
 WP_VALUE        equ     4       ; offset of watch point value
 WP_SIZE         equ     16      ; size of the watch point structure
 ;
-;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 VALID   equ     1234H           ; value used to validate debugger data segment
 
