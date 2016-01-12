@@ -8,13 +8,13 @@ extern unsigned GetDS( void );
 extern unsigned GetCS( void );
 extern unsigned GetSS( void );
 #if defined( _M_I86 )
-#pragma aux GetDS = "mov ax,ds" value[ax];
-#pragma aux GetCS = "mov ax,cs" value[ax];
-#pragma aux GetSS = "mov ax,ss" value[ax];
+#pragma aux GetDS = "mov ax,ds" value [ax];
+#pragma aux GetCS = "mov ax,cs" value [ax];
+#pragma aux GetSS = "mov ax,ss" value [ax];
 #else
-#pragma aux GetDS = "mov eax,ds" value[eax];
-#pragma aux GetCS = "mov eax,cs" value[eax];
-#pragma aux GetSS = "mov eax,ss" value[eax];
+#pragma aux GetDS = "mov eax,ds" value [eax];
+#pragma aux GetCS = "mov eax,cs" value [eax];
+#pragma aux GetSS = "mov eax,ss" value [eax];
 #endif
 
 extern void BreakPoint( void );
