@@ -186,10 +186,10 @@ typedef union {
 } xms_addr;
 
 typedef struct {
-    unsigned short      handles[XMS_MAX_HANDLES];
-    unsigned short      next_handle;
     unsigned long       offset;
     unsigned long       size;
+    unsigned short      handles[XMS_MAX_HANDLES];
+    unsigned short      next_handle;
     unsigned char       inuse       : 1;
     unsigned char       exhausted   : 1;
     unsigned char       small_block : 1;
