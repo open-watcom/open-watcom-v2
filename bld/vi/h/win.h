@@ -31,6 +31,9 @@
 
 #include "winaux.h"
 
+#define DEF_TEXT_STYLE              { WHITE, BLACK, FONT_COURIER }
+#define DEF_HILIGHT_STYLE           { BRIGHT_WHITE, BLACK, FONT_COURIER }
+
 #ifndef __WIN__
 
 #include <stdio.h>

@@ -37,7 +37,7 @@
 
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt );
 
-static type_style errStyle = { 7, 0, 0 };
+static type_style errStyle = DEF_TEXT_STYLE;
 
 #endif
 
