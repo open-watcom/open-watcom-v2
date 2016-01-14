@@ -90,12 +90,11 @@ __FPE2Handler_ label byte
         fwait                           ; wait for 80x87
         fdisi                           ; disable interrupts
         sti                             ; enable CPU interrupts
-ifndef  __NETWARE__
-        call    __GETDS                 ; load DS
-endif
 ifdef __NETWARE__
         push    SS                      ; load DS
         pop     DS                      ; ...
+else
+        call    __GETDS                 ; load DS
 endif
         mov     EDX,ENV_CW[EBP]         ; get control word
         not     EDX                     ; flip the mask bits
