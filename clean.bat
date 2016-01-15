@@ -19,6 +19,7 @@ if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh del %OWSRCDIR%\wmake\%OWOBJDIR%\*.gh
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.err del %OWSRCDIR%\wmake\%OWOBJDIR%\*.err
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.pdb del %OWSRCDIR%\wmake\%OWOBJDIR%\*.pdb
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym del %OWSRCDIR%\wmake\%OWOBJDIR%\*.sym
+if exist %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp del %OWSRCDIR%\wmake\%OWOBJDIR%\*.tmp
 if exist %OWSRCDIR%\wmake\%OWOBJDIR%\%NUL% rmdir %OWSRCDIR%\wmake\%OWOBJDIR%
 REM clean all projects
 cd %OWSRCDIR%
