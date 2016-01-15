@@ -315,7 +315,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * process each line
      */
-    while( SpecialFgets( tmp1, MAX_SRC_LINE - 1, &gf ) >= 0 ) {
+    while( SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf ) >= 0 ) {
 
         /*
          * prepare this line

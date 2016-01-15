@@ -63,7 +63,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     /*
      * get counts
      */
-    if( SpecialFgets( buff, MAX_STR - 1, &gf ) < 0 ) {
+    if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) < 0 ) {
         SpecialFclose( &gf );
         return( ERR_INVALID_DATA_FILE );
     }
