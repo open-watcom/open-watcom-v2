@@ -410,7 +410,7 @@ static bool ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.combo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.combo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }
@@ -530,7 +530,7 @@ static bool ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.dcombo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.dcombo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }

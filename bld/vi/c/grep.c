@@ -219,7 +219,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
         i = SendMessage( list_box, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
     } else {
 #endif
-        i = SendMessage( list_box, LB_GETCURSEL, 0, 0L );
+        i = (int)SendMessage( list_box, LB_GETCURSEL, 0, 0L );
 #ifdef __NT__
     }
 #endif

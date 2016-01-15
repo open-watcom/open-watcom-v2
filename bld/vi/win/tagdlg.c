@@ -63,7 +63,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             EndDialog( hwnd, -1 );
             break;
         case IDOK:
-            i = SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
+            i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( i == LB_ERR ) {
                 MessageBox( hwnd, "No selection", EditorName,
                             MB_ICONEXCLAMATION | MB_OK );
@@ -73,7 +73,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             break;
         case TAGS_LISTBOX:
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
-                i = SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
+                i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
                 EndDialog( hwnd, i );
             }
             break;

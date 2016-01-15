@@ -83,7 +83,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 {
     // int                 i;
     int                 cmd;
-    DWORD               index;
+    int                 index;
     char                snoop[MAX_INPUT_LINE];
 #ifdef __NT__
     BROWSEINFO          bi;
@@ -123,7 +123,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         case SNOOP_EXT:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL, 0, 0L );
+                index = (int)SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }

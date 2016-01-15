@@ -236,7 +236,7 @@ static void fillStyleBox( void )
 static void fillInfoBoxes( HWND hwnd )
 {
     FARPROC         fp;
-    LRESULT         index;
+    int             index;
     HDC             hdc;
     char            typeface[LF_FACESIZE + 1];
     char            size[8];
@@ -247,13 +247,13 @@ static void fillInfoBoxes( HWND hwnd )
 
     hwnd = hwnd;
 
-    index = SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
     if( index != LB_ERR ) {
         SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)oldStyle );
     } else {
         oldStyle[0] = 0;
     }
-    index = SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
     if( index != CB_ERR ) {
         SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)oldSize );
     } else {
@@ -264,7 +264,7 @@ static void fillInfoBoxes( HWND hwnd )
     SendMessage( hwndSize, CB_RESETCONTENT, 0, 0L );
     NStyles = NSizes = 0;
 
-    index = SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         return;
     }
@@ -370,14 +370,14 @@ static void doneWithHwnds( void )
 
 static int setCurLogfont( int overrideSize )
 {
-    LRESULT             index;
+    int                 index;
     char                size[8];
     int                 height;
     HDC                 hdc;
     FARPROC             fp;
 
     if( overrideSize == 0 ) {
-        index = SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
+        index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
         if( index == CB_ERR ) {
             return( 0 );
         }
@@ -390,7 +390,7 @@ static int setCurLogfont( int overrideSize )
     CurLogfont.lfWidth = 0;
     CurLogfont.lfEscapement = 0;
     CurLogfont.lfOrientation = 0;
-    index = SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR )
         return( 0 );
     CurLogfont.lfWeight = ( Style[index] & STYLE_BOLD ) ? FW_BOLD : FW_NORMAL;
@@ -405,7 +405,7 @@ static int setCurLogfont( int overrideSize )
     CurLogfont.lfQuality = PROOF_QUALITY;
     CurLogfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 #endif
-    index = SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         return( 0 );
     }
@@ -494,8 +494,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         /* Hack!  User hit enter, so grab text from combo box edit control
            & attempt to update pick sample.
         */
-        if( (GetFocus() != hwndSizeEdit) ||
-            (SendMessage( hwndSize, CB_GETCURSEL, 0, 0L ) != CB_ERR) ) {
+        if( (GetFocus() != hwndSizeEdit) || (SendMessage( hwndSize, CB_GETCURSEL, 0, 0L ) != CB_ERR) ) {
             break;
         }
 

@@ -49,7 +49,7 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     int                 curr;
     int                 i;
     int                 cmd;
-    DWORD               index;
+    int                 index;
     char                find[MAX_INPUT_LINE];
     history_data        *h;
     char                *ptr;
@@ -97,7 +97,7 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         case REP_LISTBOX:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETCURSEL, 0, 0L );
+                index = (int)SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }

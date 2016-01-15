@@ -305,7 +305,7 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
     int     totallen;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
 
     if( title ) {
         totallen = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
@@ -391,7 +391,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
     dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
-    index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
     if( index == CB_ERR ) {
         MessageBox( hwndDlg, "No item selected", "", MB_ICONINFORMATION | MB_OK );
         return( 1L );
@@ -488,7 +488,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM
             } else if( cmd == CBN_SETFOCUS ) {
                 // if we are getting the focus, something probably changed
                 ctlhwnd = GET_WM_COMMAND_HWND( wparam, lparam );
-                index = SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
+                index = (int)SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
 
                 // this may bump focus back to a bad field
                 if( ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
@@ -503,7 +503,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM
             insertFT( hwndDlg );
             return( TRUE );
         case IDOK:
-            index = SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ), CB_GETCURSEL, 0, 0L );
+            index = (int)SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ), CB_GETCURSEL, 0, 0L );
             if( !ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
                 return( TRUE );
             }
