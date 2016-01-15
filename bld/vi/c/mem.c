@@ -42,12 +42,14 @@
 
 #ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, trmemHandle )
+    #define WHO_PTR             _trmem_who
 #else
     #define MSIZE( x )          _msize( x )
+    #define WHO_PTR             void *
 #endif
 
 #ifdef TRMEM
-    static int                  trmemOutput;
+    static FILE                 *trmemOutput = NULL;
     static _trmem_hdl           trmemHandle;
 #endif
 
@@ -56,7 +58,7 @@ static char     *StaticBuffer = NULL;
 /*
  * getMem - get and clear memory
  */
-static void *getMem( unsigned size, void *who )
+static void *getMem( size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -114,7 +116,7 @@ static fcb *getLRU( int upper_bound )
 /*
  * trySwap - try to swap an fcb
  */
-static void *trySwap( unsigned size, int upper_bound, void *who )
+static void *trySwap( size_t size, int upper_bound, WHO_PTR who )
 {
     void        *tmp = NULL;
     fcb         *tfcb;
@@ -162,7 +164,7 @@ static void tossBoundData( void )
 /*
  * doMemAllocUnsafe - see above
  */
-static void *doMemAllocUnsafe( unsigned size, void *who )
+static void *doMemAllocUnsafe( size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -185,18 +187,18 @@ static void *doMemAllocUnsafe( unsigned size, void *who )
 /*
  * MemAlloc - allocate some memory (always works, or editor aborts)
  */
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( size, (_trmem_who)1 );
+    tmp = doMemAllocUnsafe( size, (WHO_PTR)1 );
 #else
     tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemAllocUnsafe( size, _TRMEM_NO_ROUTINE );
+    tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
@@ -208,16 +210,16 @@ void *MemAlloc( unsigned size )
 /*
  * MemAllocUnsafe - allocate some memory, return null if it fails
  */
-void *MemAllocUnsafe( unsigned size )
+void *MemAllocUnsafe( size_t size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemAllocUnsafe( size, (_trmem_who)2 ) );
+    return( doMemAllocUnsafe( size, (WHO_PTR)2 ) );
 #else
     return( doMemAllocUnsafe( size, _trmem_guess_who() ) );
 #endif
 #else
-    return( doMemAllocUnsafe( size, _TRMEM_NO_ROUTINE ) );
+    return( doMemAllocUnsafe( size, (WHO_PTR)0 ) );
 #endif
 
 } /* MemAllocUnsafe */
@@ -229,7 +231,7 @@ void MemFree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( ptr, (_trmem_who)3, trmemHandle );
+    _trmem_free( ptr, (WHO_PTR)3, trmemHandle );
 #else
     _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -246,7 +248,7 @@ void MemFreePtr( void **ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( *ptr, (_trmem_who)4, trmemHandle );
+    _trmem_free( *ptr, (WHO_PTR)4, trmemHandle );
 #else
     _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -277,13 +279,13 @@ void MemFreeList( int count, char **ptr )
 /*
  * doMemReallocUnsafe - reallocate a block, return NULL if it fails
  */
-static void *doMemReAllocUnsafe( void *ptr, unsigned size, void *who )
+static void *doMemReAllocUnsafe( void *ptr, size_t size, WHO_PTR who )
 {
     void        *tmp;
 
-    unsigned    orig_size;
+    size_t      orig_size;
 #ifdef __WATCOMC__
-    unsigned    tsize;
+    size_t      tsize;
 #endif
 
     if( ptr != NULL ) {
@@ -331,34 +333,34 @@ static void *doMemReAllocUnsafe( void *ptr, unsigned size, void *who )
 
 } /* doMemReAllocUnsafe */
 
-void *MemReAllocUnsafe( void *ptr, unsigned size )
+void *MemReAllocUnsafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemReAllocUnsafe( ptr, size, (_trmem_who)5 ) );
+    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)5 ) );
 #else
     return( doMemReAllocUnsafe( ptr, size, _trmem_guess_who() ) );
 #endif
 #else
-    return( doMemReAllocUnsafe( ptr, size, _TRMEM_NO_ROUTINE ) );
+    return( doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 ) );
 #endif
 }
 
 /*
  * MemReAlloc - reallocate a block, and it will succeed.
  */
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, (_trmem_who)6 );
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 );
 #else
     tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, _TRMEM_NO_ROUTINE );
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
@@ -459,7 +461,10 @@ char *MemStrDup( char *string )
 extern void trmemPrint( void *handle, const char *buff, size_t len )
 /******************************************************************/
 {
-    write( *(int *)handle, buff, len );
+    handle = handle;
+    if( trmemOutput != NULL ) {
+        fwrite( buff, 1, len, trmemOutput );
+    }
 }
 
 #endif
@@ -469,8 +474,8 @@ void FiniMem( void )
 #ifdef TRMEM
     _trmem_prt_list( trmemHandle );
     _trmem_close( trmemHandle );
-    if( trmemOutput != -1 ) {
-        close( trmemOutput );
+    if( trmemOutput != NULL ) {
+        fclose( trmemOutput );
     }
 #endif
 }
@@ -478,11 +483,112 @@ void FiniMem( void )
 void InitMem( void )
 {
 #ifdef TRMEM
-    trmemOutput = open( "trmem.out", O_RDWR | O_CREAT | O_TEXT, PMODE_RW );
+    trmemOutput = fopen( "trmem.out", "w" );
     trmemHandle = _trmem_open( malloc, free, realloc, NULL,
-        &trmemOutput, trmemPrint,
+        NULL, trmemPrint,
         _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
         _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
     // atexit( DumpTRMEM );
 #endif
 }
+
+#ifdef __DOS__
+
+#include "xmem.h"
+
+#if defined( USE_XTD )
+extern xtd_struct XMemCtrl;
+#endif
+#if defined( USE_EMS )
+extern ems_struct EMSCtrl;
+#endif
+#if defined( USE_XMS )
+extern xms_struct XMSCtrl;
+#endif
+#endif
+static char freeBytes[] =  "%s:  %l bytes free (%d%%)";
+static char twoStr[] = "%Y%s";
+extern int maxStatic;
+//extern long __undocnt;
+
+/*
+ * DumpMemory - dump memory avaliable
+ */
+vi_rc DumpMemory( void )
+{
+    int         ln = 1;
+    window_id   wn;
+    window_info *wi;
+    char        tmp[128], tmp2[128];
+#if defined( USE_XMS ) || defined( USE_EMS ) || defined( USE_XTD )
+    long        mem1;
+#endif
+    long        mem2;
+//    vi_rc       rc;
+
+    wi = &filecw_info;
+//    rc = NewWindow2( &wn, wi );
+    NewWindow2( &wn, wi );
+#if defined(__OS2__ )
+    WPrintfLine( wn, ln++, "Mem:  (unlimited) (maxStatic=%d)", maxStatic );
+#else
+    WPrintfLine( wn, ln++, "Mem:  %l bytes memory (%l for editing) (maxStatic=%d)",
+        MaxMemFree, MaxMemFreeAfterInit, maxStatic );
+#endif
+
+    mem2 = (EditVars.MaxSwapBlocks - SwapBlocksInUse) * (long)MAX_IO_BUFFER;
+    MySprintf( tmp, freeBytes, "Dsk", mem2,
+        (int) ((100L * mem2) / ((long)EditVars.MaxSwapBlocks * (long)MAX_IO_BUFFER)) );
+#ifdef _M_I86
+#if defined( USE_XTD )
+    if( XMemCtrl.inuse ) {
+        mem1 = XMemCtrl.amount_left - XMemCtrl.allocated * (long)MAX_IO_BUFFER;
+        MySprintf( tmp2, freeBytes, "XTD", mem1,
+            (int) ((100L * mem1) / XMemCtrl.amount_left) );
+    } else {
+#endif
+        MySprintf( tmp2, "XTD: N/A" );
+#if defined( USE_XTD )
+    }
+#endif
+#else
+    MySprintf( tmp2, "Flat memory addressing" );
+#endif
+    WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
+
+#if defined( USE_EMS )
+    if( EMSCtrl.inuse ) {
+        mem1 = (long)(TotalEMSBlocks - EMSBlocksInUse) * (long)MAX_IO_BUFFER;
+        MySprintf( tmp, freeBytes, "EMS", mem1,
+                (int) ((100L * mem1) / ((long)TotalEMSBlocks * (long)MAX_IO_BUFFER)) );
+    } else {
+#endif
+        MySprintf( tmp, "EMS:  N/A" );
+#if defined( USE_EMS )
+    }
+#endif
+#if defined( USE_XMS )
+    if( XMSCtrl.inuse ) {
+        mem1 = (long)(TotalXMSBlocks - XMSBlocksInUse) * (long)MAX_IO_BUFFER;
+        MySprintf( tmp2, freeBytes, "XMS", mem1,
+            (int) ((100L * mem1) / ((long)TotalXMSBlocks * (long)MAX_IO_BUFFER)) );
+    } else {
+#endif
+        MySprintf( tmp2, "XMS: N/A" );
+#if defined( USE_XMS )
+    }
+#endif
+    WPrintfLine( wn, ln++, twoStr, tmp, tmp2 );
+//    WPrintfLine( wn, ln++, "Reserved %l bytes of DOS memory", MinMemoryLeft );
+
+    WPrintfLine( wn, ln++, "File CB's: %d", FcbBlocksInUse );
+//    WPrintfLine( wn, ln++, "File CB's: %d, Undo blocks=%l(%l bytes)", FcbBlocksInUse,
+//        __undocnt, __undocnt * sizeof( undo ) );
+
+    WPrintfLine( wn, ln + 1, MSG_PRESSANYKEY );
+
+    GetNextEvent( false );
+    CloseAWindow( wn );
+    return( ERR_NO_ERR );
+
+} /* DumpMemory */

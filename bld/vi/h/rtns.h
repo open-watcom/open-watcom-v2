@@ -592,13 +592,13 @@ void    MatchInit( void );
 void    MatchFini( void );
 
 /* mem.c */
-void    *MemAlloc( unsigned );
-void    *MemAllocUnsafe( unsigned );
+void    *MemAlloc( size_t );
+void    *MemAllocUnsafe( size_t );
 void    MemFree( void * );
 void    MemFreePtr( void ** );
 void    MemFreeList( int, char ** );
-void    *MemReAlloc( void *, unsigned );
-void    *MemReAllocUnsafe( void *ptr, unsigned size );
+void    *MemReAlloc( void *, size_t );
+void    *MemReAllocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
