@@ -204,7 +204,7 @@ vi_rc InvokeColSelHook( int sc, int ec )
 
 #ifdef __WIN__
     if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
-        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
     } else {
         lne = MouseY;
     }
@@ -230,9 +230,9 @@ vi_rc InvokeColSelHook( int sc, int ec )
     }
     wordbuff[j] = 0;
 #ifdef __WIN__
-    sc = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+    sc = MyTextExtent( CurrentWindow, WIN_TEXT_STYLE( &EditWindow ),
         &CurrentLine->data[0], sc );
-    ec = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+    ec = MyTextExtent( CurrentWindow, WIN_TEXT_STYLE( &EditWindow ),
         &CurrentLine->data[0], ec );
 #else
     sc = x1 + VirtualColumnOnCurrentLine( sc ) - LeftTopPos.column;
@@ -263,7 +263,7 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
         /* assume we're not in insert mode *ouch* */
         col = PixelFromColumnOnCurrentLine( CurrentPos.column );
-        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_TEXT_FONT( &EditWindow ) );
     } else {
         col = MouseX;
         lne = MouseY;

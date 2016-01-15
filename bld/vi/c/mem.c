@@ -191,12 +191,12 @@ void *MemAlloc( unsigned size )
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemAllocUnsafe( size, 1 );
+    tmp = doMemAllocUnsafe( size, (_trmem_who)1 );
 #else
     tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemAllocUnsafe( size, 0 );
+    tmp = doMemAllocUnsafe( size, _TRMEM_NO_ROUTINE );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
@@ -212,12 +212,12 @@ void *MemAllocUnsafe( unsigned size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemAllocUnsafe( size, 2 ) );
+    return( doMemAllocUnsafe( size, (_trmem_who)2 ) );
 #else
     return( doMemAllocUnsafe( size, _trmem_guess_who() ) );
 #endif
 #else
-    return( doMemAllocUnsafe( size, 0 ) );
+    return( doMemAllocUnsafe( size, _TRMEM_NO_ROUTINE ) );
 #endif
 
 } /* MemAllocUnsafe */
@@ -229,7 +229,7 @@ void MemFree( void *ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( ptr, 3, trmemHandle );
+    _trmem_free( ptr, (_trmem_who)3, trmemHandle );
 #else
     _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -246,7 +246,7 @@ void MemFreePtr( void **ptr )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    _trmem_free( *ptr, 4, trmemHandle );
+    _trmem_free( *ptr, (_trmem_who)4, trmemHandle );
 #else
     _trmem_free( *ptr, _trmem_guess_who(), trmemHandle );
 #endif
@@ -335,12 +335,12 @@ void *MemReAllocUnsafe( void *ptr, unsigned size )
 {
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    return( doMemReAllocUnsafe( ptr, size, 5 ) );
+    return( doMemReAllocUnsafe( ptr, size, (_trmem_who)5 ) );
 #else
     return( doMemReAllocUnsafe( ptr, size, _trmem_guess_who() ) );
 #endif
 #else
-    return( doMemReAllocUnsafe( ptr, size, 0 ) );
+    return( doMemReAllocUnsafe( ptr, size, _TRMEM_NO_ROUTINE ) );
 #endif
 }
 
@@ -353,12 +353,12 @@ void *MemReAlloc( void *ptr, unsigned size )
 
 #ifdef TRMEM
 #ifndef __WATCOMC__
-    tmp = doMemReAllocUnsafe( ptr, size, 6 );
+    tmp = doMemReAllocUnsafe( ptr, size, (_trmem_who)6 );
 #else
     tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
 #endif
 #else
-    tmp = doMemReAllocUnsafe( ptr, size, 0 );
+    tmp = doMemReAllocUnsafe( ptr, size, _TRMEM_NO_ROUTINE );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );

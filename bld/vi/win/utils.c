@@ -228,7 +228,7 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     char        *str;
 
     w = WINDOW_FROM_ID( hwnd );
-    *row = y / FontHeight( WIN_FONT( w ) ) + 1;
+    *row = y / FontHeight( WIN_TEXT_FONT( w ) ) + 1;
 
     if( x < 0 ) {
         *col = 1;
@@ -247,7 +247,7 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         // therefore ss information has not been set!
         // therefore we cant use it to calculate anything of value!
         // best we can do is a good solid guess.
-        avg_width = FontAverageWidth( WIN_FONT( w ) );
+        avg_width = FontAverageWidth( WIN_TEXT_FONT( w ) );
         *col = x / avg_width + 1;
         return;
     }

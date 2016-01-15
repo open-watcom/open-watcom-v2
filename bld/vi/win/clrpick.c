@@ -155,7 +155,7 @@ static void sendNewColour( NewColourOps op )
     } else if( mod_hwnd == CurrentWindow ) {
         sendNewColourCurrentWindow( op );
     } else {
-        mod_style = WIN_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
+        mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
         if( op == NC_FORE ) {
             mod_style->foreground = INDEX_FROM_XY( cursx, cursy );
         } else {

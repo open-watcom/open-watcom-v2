@@ -261,8 +261,8 @@ void StatusLine( int line, char *str, int format )
     if( !AllowDisplay || BAD_ID( StatusWindow ) ) {
         return;
     }
-    hdc = TextGetDC( StatusWindow, WIN_STYLE( &StatusBar ) );
-    font = WIN_FONT( &StatusBar );
+    hdc = TextGetDC( StatusWindow, WIN_TEXT_STYLE( &StatusBar ) );
+    font = WIN_TEXT_FONT( &StatusBar );
     hfont = FontHandle( font );
     StatusWndDrawLine( sw, hdc, hfont, str, (UINT) -1 );
     TextReleaseDC( StatusWindow, hdc );

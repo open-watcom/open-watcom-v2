@@ -83,9 +83,9 @@ void ClearWindow( window_id id )
     }
     w = WINDOW_FROM_ID( id );
     GetClientRect( id, &rect );
-    hdc = TextGetDC( id, WIN_STYLE( w ) );
+    hdc = TextGetDC( id, WIN_TEXT_STYLE( w ) );
     // should clear with SEType[SE_WHITESPACE].background for edit windows
-    FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( w ) ) );
+    FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( w ) ) );
     TextReleaseDC( id, hdc );
 }
 
@@ -108,7 +108,7 @@ void ShiftWindowUpDown( window_id id, int lines )
         return;
     }
     w = WINDOW_FROM_ID( id );
-    height = FontHeight( WIN_FONT( w ) );
+    height = FontHeight( WIN_TEXT_FONT( w ) );
     change = -lines * height;
     DCScroll( -lines );
 

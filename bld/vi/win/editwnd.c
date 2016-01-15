@@ -180,7 +180,7 @@ static void doPaint( window *w, RECT *r, window_data *wd )
         SaveCurrentInfo();
         RestoreInfo( new_info );
     }
-    height = FontHeight( WIN_FONT( w ) );
+    height = FontHeight( WIN_TEXT_FONT( w ) );
     start = r->top / height;
     stop = (r->bottom + height - 1) / height;
     max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
@@ -890,7 +890,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         /* either way we remember to reset extra */
         GetClientRect( hwnd, &wd->extra );
         wd->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-                                         FontHeight( WIN_FONT( &EditWindow ) );
+                                         FontHeight( WIN_TEXT_FONT( &EditWindow ) );
         break;
     default:
         break;
@@ -918,7 +918,7 @@ WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
     wd = DATA_FROM_ID( hwnd );
     GetClientRect( hwnd, &wd->extra );
     wd->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-                                     FontHeight( WIN_FONT( &EditWindow ) );
+                                     FontHeight( WIN_TEXT_FONT( &EditWindow ) );
 
     return( TRUE );
 

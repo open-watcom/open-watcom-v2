@@ -116,7 +116,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         break;
     case WM_PAINT:
         hdc = BeginPaint( hwnd, &ps );
-        FillRect( hdc, &ps.rcPaint, ColorBrush( WIN_BACKCOLOR( &CommandWindow ) ) );
+        FillRect( hdc, &ps.rcPaint, ColorBrush( WIN_TEXT_BACKCOLOR( &CommandWindow ) ) );
         /* this will cause the command window to redraw itself in readstr.c */
         KeyAdd( VI_KEY( ALT_END ) );
         EndPaint( hwnd, &ps );

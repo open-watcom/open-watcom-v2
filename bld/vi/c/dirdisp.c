@@ -206,7 +206,7 @@ static int calcColumns( HWND hwnd )
     w = WINDOW_FROM_ID( hwnd );
     GetClientRect( hwnd, &rect );
     columns = rect.right - rect.left;
-    columns = columns / (NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) ));
+    columns = columns / (NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) ));
     return( columns );
 }
 
@@ -223,8 +223,8 @@ void FileCompleteMouseClick( HWND hwnd, int x, int y, bool dclick )
     /* figure out which file_name the user clicked on */
     columns = calcColumns( hwnd );
     GetClientRect( hwnd, &rect );
-    column_width = NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) );
-    column_height = FontHeight( WIN_FONT( w ) );
+    column_width = NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) );
+    column_height = FontHeight( WIN_TEXT_FONT( w ) );
     left_margin = (rect.right - rect.left - column_width * columns) >> 1;
     if( x < left_margin || x + left_margin > rect.right ) {
         return;
@@ -293,9 +293,9 @@ static void displayFiles( void )
         hasWrapped = false;
     }
 
-    font_height = FontHeight( WIN_FONT( w ) );
+    font_height = FontHeight( WIN_TEXT_FONT( w ) );
     GetClientRect( dirWin, &rect );
-    column_width = NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) );
+    column_width = NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) );
     outer_bound = rect.right;
     left_edge = rect.right - rect.left;
     left_edge -= maxJ * column_width;
@@ -315,11 +315,11 @@ static void displayFiles( void )
     rect.bottom = rect.top + font_height;
     rect.left = 0;
     rect.right = left_edge;
-    BlankRectIndirect( dirWin, WIN_BACKCOLOR( w ), &rect );
+    BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
     column = 0;
     for( i = start; i <= end; i++ ) {
         parseFileName( i, &buffer[0] );
-        style = (i == lastFilec) ? WIN_HILIGHT( w ) : WIN_STYLE( w );
+        style = (i == lastFilec) ? WIN_HILIGHT_STYLE( w ) : WIN_TEXT_STYLE( w );
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
         BlankRectIndirect( dirWin, style->background, &rect );
@@ -329,12 +329,12 @@ static void displayFiles( void )
             /* blat out the rest of the row and continue on */
             rect.left = right_edge;
             rect.right = outer_bound;
-            BlankRectIndirect( dirWin, WIN_BACKCOLOR( w ), &rect );
+            BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
             rect.top = rect.bottom;
             rect.bottom = rect.top + font_height;
             rect.left = 0;
             rect.right = left_edge;
-            BlankRectIndirect( dirWin, WIN_BACKCOLOR( w ), &rect );
+            BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
         }
     }
     oldPage = cPage;

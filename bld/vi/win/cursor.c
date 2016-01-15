@@ -82,8 +82,8 @@ void NewCursor( window_id id, cursor_type ct )
         return;
     }
     w = WINDOW_FROM_ID( id );
-    height = FontHeight( WIN_FONT( w ) );
-    width = FontAverageWidth( WIN_FONT( w ) );
+    height = FontHeight( WIN_TEXT_FONT( w ) );
+    width = FontAverageWidth( WIN_TEXT_FONT( w ) );
     height = (long) height * ct.height / 100L;
     width = (long) width * ct.width / 100L;
     MyHideCaret( id );
@@ -309,7 +309,7 @@ static void setCursorOnScreen( int row, int col )
 
     funny = getCursorInfo( CurrentWindow, row, col, &x, &width );
     w = WINDOW_FROM_ID( CurrentWindow );
-    y = row * FontHeight( WIN_FONT( w ) ) - cursorHeight;
+    y = row * FontHeight( WIN_TEXT_FONT( w ) ) - cursorHeight;
     width = (long) width * cursorType.width / 100L;
     if( cursorWidth != width ) {
         MyHideCaret( CurrentWindow );
@@ -336,7 +336,7 @@ void SetCursorOnLine( window_id id, int col, char *str, type_style *style )
         return;
     }
     w = WINDOW_FROM_ID( id );
-    // y = FontHeight( WIN_FONT( w ) ) - cursorHeight;
+    // y = FontHeight( WIN_TEXT_FONT( w ) ) - cursorHeight;
 
     x = MyTextExtent( id, style, str, col - 1 );
     width = MyTextExtent( id, style, str, col ) - x;
@@ -346,7 +346,7 @@ void SetCursorOnLine( window_id id, int col, char *str, type_style *style )
      */
     width = (long) width * cursorType.width / 100L;
     height = EditVars.InsertCursorType.height;
-    y = FontHeight( WIN_FONT( w ) ) - height;
+    y = FontHeight( WIN_TEXT_FONT( w ) ) - height;
 
     MyHideCaret( id );
     DestroyCaret();

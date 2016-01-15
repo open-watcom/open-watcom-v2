@@ -98,12 +98,12 @@ static void drawRepeatString( void )
         return;
     }
     GetClientRect( repeatWindow, &rect );
-    height = FontHeight( WIN_FONT( &RepeatCountWindow ) );
+    height = FontHeight( WIN_TEXT_FONT( &RepeatCountWindow ) );
     rect.bottom = rect.top + height;
-    hdc = TextGetDC( repeatWindow, WIN_STYLE( &RepeatCountWindow ) );
-    FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &RepeatCountWindow ) ) );
+    hdc = TextGetDC( repeatWindow, WIN_TEXT_STYLE( &RepeatCountWindow ) );
+    FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( &RepeatCountWindow ) ) );
     TextReleaseDC( repeatWindow, hdc );
-    WriteString( repeatWindow, 0, rect.top, WIN_STYLE( &RepeatCountWindow ), repString );
+    WriteString( repeatWindow, 0, rect.top, WIN_TEXT_STYLE( &RepeatCountWindow ), repString );
 
 } /* drawRepeatString */
 

@@ -142,15 +142,15 @@ static void msgString( int line_no, const char *str )
         return;
     }
     GetClientRect( MessageWindow, &rect );
-    height = FontHeight( WIN_FONT( &MessageBar ) );
+    height = FontHeight( WIN_TEXT_FONT( &MessageBar ) );
     rect.top += (line_no - 1) * height;
     rect.bottom = rect.top + height;
-    hdc = TextGetDC( MessageWindow, WIN_STYLE( &MessageBar ) );
-    FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &MessageBar ) ) );
+    hdc = TextGetDC( MessageWindow, WIN_TEXT_STYLE( &MessageBar ) );
+    FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( &MessageBar ) ) );
     TextReleaseDC( MessageWindow, hdc );
-    WriteString( MessageWindow, 0, rect.top, WIN_STYLE( &MessageBar ), str );
+    WriteString( MessageWindow, 0, rect.top, WIN_TEXT_STYLE( &MessageBar ), str );
 }
-   
+
 void Message1( const char *fmt, ... )
 {
     va_list     args;

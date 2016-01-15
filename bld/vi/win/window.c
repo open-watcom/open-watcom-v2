@@ -87,7 +87,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
             r->top = r->bottom - statusHeight;
         } else {
 #endif
-            r->top = r->bottom - (FontHeight( WIN_FONT( w ) ) + 2 * border + 7);
+            r->top = r->bottom - (FontHeight( WIN_TEXT_FONT( w ) ) + 2 * border + 7);
 #ifdef __NT__
         }
 #endif
@@ -112,7 +112,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
 #ifdef __NT__
     }
 #endif
-    r->top = r->bottom - FontHeight( WIN_FONT( w ) ) - 4 * border;
+    r->top = r->bottom - FontHeight( WIN_TEXT_FONT( w ) ) - 4 * border;
     last = r;
 
     /* the command window */
@@ -124,7 +124,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
     r->bottom -= BORDER;
     r->left += BORDER;
     r->right -= BORDER;
-    r->top = r->bottom - FontHeight( WIN_FONT( w ) ) - 4 * border;
+    r->top = r->bottom - FontHeight( WIN_TEXT_FONT( w ) ) - 4 * border;
 
     /* the repeat count window */
     #undef BORDER
@@ -136,7 +136,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
     r->bottom -= BORDER;
     r->left += BORDER;
     r->right -= BORDER;
-    r->top = r->bottom - FontHeight( WIN_FONT( w ) ) - 4 * border;
+    r->top = r->bottom - FontHeight( WIN_TEXT_FONT( w ) ) - 4 * border;
 
     /* the file completion window */
     w = &FileCompleteWindow;
@@ -206,7 +206,7 @@ int WindowAuxInfo( window_id id, int type )
         value = area.bottom;
         break;
     case WIND_INFO_TEXT_LINES:
-        height = FontHeight( WIN_FONT( win ) );
+        height = FontHeight( WIN_TEXT_FONT( win ) );
         // the 4/5 is a rather arbitrary constant chosen so that we don't show
         // less than 20% of a line
         // value = area.bottom - area.top + (height / 5);
@@ -215,7 +215,7 @@ int WindowAuxInfo( window_id id, int type )
         break;
     case WIND_INFO_TEXT_COLS:
         value = area.right - area.left;
-        value /= FontAverageWidth( WIN_FONT( win ) );
+        value /= FontAverageWidth( WIN_TEXT_FONT( win ) );
         break;
     case WIND_INFO_HEIGHT:
         value = area.bottom - area.top;
@@ -224,17 +224,17 @@ int WindowAuxInfo( window_id id, int type )
         value = area.right - area.left;
         break;
     case WIND_INFO_TEXT_COLOR:
-        value = WIN_TEXTCOLOR( win );
+        value = WIN_TEXT_COLOR( win );
         break;
     case WIND_INFO_BACKGROUND_COLOR:
-        value = WIN_BACKCOLOR( win );
+        value = WIN_TEXT_BACKCOLOR( win );
         break;
     case WIND_INFO_HAS_SCROLL_GADGETS:
     case WIND_INFO_HAS_BORDER:
         value = false;
         break;
     case WIND_INFO_TEXT_FONT:
-        value = WIN_FONT( win );
+        value = WIN_TEXT_FONT( win );
         break;
     case WIND_INFO_BORDER_COLOR1:
     case WIND_INFO_BORDER_COLOR2:
