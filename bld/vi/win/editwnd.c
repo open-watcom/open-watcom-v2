@@ -729,7 +729,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     PAINTSTRUCT ps;
     HDC         hdc;
     RECT        rect;
-    window_data *data;
+    window_data *wd;
     HWND        win;
     HWND        tbwin;
     bool        killsel;
@@ -739,21 +739,21 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     w = WINDOW_FROM_ID( hwnd );
     switch( msg ) {
     case WM_CREATE:
-        data = MemAlloc( sizeof( window_data ) );
+        wd = MemAlloc( sizeof( window_data ) );
         WINDOW_TO_ID( hwnd, (LONG_PTR)&EditWindow );
-        DATA_TO_ID( hwnd, (LONG_PTR)data );
+        DATA_TO_ID( hwnd, (LONG_PTR)wd );
         return( 0 );
     case WM_PAINT:
         if( GetUpdateRect( hwnd, &rect, FALSE ) ) {
-            data = DATA_FROM_ID( hwnd );
+            wd = DATA_FROM_ID( hwnd );
             hdc = BeginPaint( hwnd, &ps );
-            if( data->info != NULL ) {
-                doPaint( w, &rect, data );
+            if( wd->info != NULL ) {
+                doPaint( w, &rect, wd );
             } else {
                 BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
             }
             EndPaint( hwnd, &ps );
-            if( IntersectRect( &rect, &rect, &data->extra ) ) {
+            if( IntersectRect( &rect, &rect, &wd->extra ) ) {
                 BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
             }
         }
@@ -845,9 +845,9 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_CLOSE:
         if( !EditFlags.HoldEverything ) {
             PushMode();
-            data = DATA_FROM_ID( hwnd );
+            wd = DATA_FROM_ID( hwnd );
             SendMessage( EditContainer, WM_MDIRESTORE, (UINT)hwnd, 0L );
-            BringUpFile( data->info, true );
+            BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
             }
@@ -858,15 +858,15 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         sendDragMessage( hwnd );
         return( 0 );
     case WM_DESTROY:
-        data = DATA_FROM_ID( hwnd );
-        MemFree( data );
+        wd = DATA_FROM_ID( hwnd );
+        MemFree( wd );
         return( 0 );
     case WM_KILLFOCUS:
         DoneCurrentInsert( true );
         break;
     case WM_SIZE:
-        data = DATA_FROM_ID( hwnd );
-        DCResize( data->info );
+        wd = DATA_FROM_ID( hwnd );
+        DCResize( wd->info );
         if( wparam == SIZE_MINIMIZED ) {
             sinfo = CurrentInfo;
             cinfo = CurrentInfo->next;
@@ -888,8 +888,8 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             }
         }
         /* either way we remember to reset extra */
-        GetClientRect( hwnd, &data->extra );
-        data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
+        GetClientRect( hwnd, &wd->extra );
+        wd->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
                                          FontHeight( WIN_FONT( &EditWindow ) );
         break;
     default:
@@ -904,7 +904,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
  */
 WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
 {
-    window_data         *data;
+    window_data         *wd;
     char                class[MAX_STR];
 
     l = l;
@@ -915,9 +915,9 @@ WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
         return( TRUE );
     }
 
-    data = DATA_FROM_ID( hwnd );
-    GetClientRect( hwnd, &data->extra );
-    data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
+    wd = DATA_FROM_ID( hwnd );
+    GetClientRect( hwnd, &wd->extra );
+    wd->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
                                      FontHeight( WIN_FONT( &EditWindow ) );
 
     return( TRUE );
