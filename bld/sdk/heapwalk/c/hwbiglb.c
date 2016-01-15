@@ -295,16 +295,12 @@ void SetBoxCnt( TextBoxHdl hdl, unsigned cnt ) {
 
     info = (TBinfo *)GetWindowLong( (HWND)hdl, 0 );
     if( info->itemcnt > cnt ) {
-        i = info->itemcnt - 1;
-        while( i >= cnt ) {
+        for( i = info->itemcnt - 1; i >= cnt; --i ) {
             SendMessage( info->boxhwnd, LB_DELETESTRING, i, 0L );
-            i --;
         }
     } else {
-        i = info->itemcnt;
-        while( i < cnt ) {
+        for( i = info->itemcnt; i < cnt; ++i ) {
             SendMessage( info->boxhwnd, LB_ADDSTRING, 0, i );
-            i ++;
         }
     }
     info->itemcnt = cnt;

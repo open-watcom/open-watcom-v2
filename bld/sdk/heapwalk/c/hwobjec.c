@@ -42,12 +42,12 @@ static DWORD    AddTotal;
 
 void ShowSelector( HWND list ) {
 
-    LRESULT     index;
+    int         index;
     char        buf[100];
     WORD        sel;
     char        *msgtitle;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_GET_SELECTOR );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -70,11 +70,11 @@ void ShowSelector( HWND list ) {
 
 BOOL GlobDiscardObj( HWND list ) {
 
-    LRESULT     index;
+    int         index;
     char        buf[100];
     char        *msgtitle;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_DISCARD );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -100,14 +100,14 @@ BOOL GlobDiscardObj( HWND list ) {
 
 BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 
-    LRESULT             index;
+    int                 index;
     GLOBALENTRY         ge;
     GLOBALENTRY         *item;
     BOOL                is_newest;
     char                buf[160];
     MSGID               strid;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                     HeapWalkName, MB_OK | MB_ICONEXCLAMATION );
@@ -247,13 +247,13 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
 void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     int         *items;
-    LRESULT     cnt;
+    int         cnt;
     DWORD       total;
-    LRESULT     i;
+    int         i;
     char        buf[100];
 
     total = 0;
-    cnt = SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0L );
+    cnt = (int)SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0L );
     items = MemAlloc( cnt * sizeof( int ) );
     if( cnt != 0 ) {
         if( items == NULL ) {

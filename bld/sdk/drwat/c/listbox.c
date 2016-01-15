@@ -48,7 +48,8 @@ void SetListBoxFont( LBoxHdl *lb ) {
     HFONT       newfont, oldfont;
     SIZE        sz;
     HDC         hdc;
-    LRESULT     cnt;
+    int         cnt;
+    int         i;
 
     SetMonoFont( lb->hwnd );
     InvalidateRect( lb->hwnd, NULL, TRUE );
@@ -61,20 +62,18 @@ void SetListBoxFont( LBoxHdl *lb ) {
         GetTextExtentPoint( hdc, buf, strlen( buf ), &sz );
         lb->text_width = sz.cx;
     } else {
-        cnt = SendMessage( lb->hwnd, LB_GETCOUNT, 0, 0 );
-        cnt--;
+        cnt = (int)SendMessage( lb->hwnd, LB_GETCOUNT, 0, 0 );
         hdc = GetDC( lb->hwnd );
         newfont = GetMonoFont();
         oldfont = SelectObject( hdc, newfont);
         lb->text_width = 0;
-        while( cnt != -1 ) {
-            SendMessage( lb->hwnd, LB_GETTEXT, cnt, (LPARAM)buf );
+        for( i = 0; i < cnt; ++i ) {
+            SendMessage( lb->hwnd, LB_GETTEXT, i, (LPARAM)buf );
             GetTextExtentPoint( hdc, buf, strlen( buf ), &sz );
             if( sz.cx > lb->text_width ) {
                 lb->text_width = sz.cx;
                 lb->longest_item = cnt;
             }
-            cnt--;
         }
     }
     SelectObject( hdc, oldfont);
@@ -146,16 +145,16 @@ LBoxHdl *CreateListBox( HWND parent ) {
 /*
  * doLBPrintf - printf to a list box
  */
-DWORD doLBPrintf( LBoxHdl *lb, char *str, va_list al )
+int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 {
     char        tmp[256];
     HDC         dc;
     SIZE        sz;
-    LRESULT     item;
+    int         item;
     HFONT       oldfont, newfont;
 
     vsprintf( tmp, str, al );
-    item = SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
+    item = (int)SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
     lb->line_cnt++;
     SendMessage( lb->hwnd, LB_SETCURSEL, item, 0L );
     dc = GetDC( lb->hwnd );
@@ -180,10 +179,10 @@ DWORD doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 } /* LBPrintf */
 
 
-DWORD LBPrintf( LBoxHdl *lb, DWORD msgid, ... )
+int LBPrintf( LBoxHdl *lb, DWORD msgid, ... )
 {
     char        *str;
-    DWORD       ret;
+    int         ret;
     va_list     al;
 
     va_start( al, msgid );
@@ -194,9 +193,9 @@ DWORD LBPrintf( LBoxHdl *lb, DWORD msgid, ... )
     return( ret );
 }
 
-DWORD LBStrPrintf( LBoxHdl *lb, char *str, ... )
+int LBStrPrintf( LBoxHdl *lb, char *str, ... )
 {
-    DWORD       ret;
+    int         ret;
     va_list     al;
 
     va_start( al, str );

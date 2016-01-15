@@ -529,7 +529,8 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_INITDIALOG:
         {
             char    buf[150];
-            LRESULT i, j;
+            LRESULT i;
+            int     j;
 
             info = (SelMemDlgInfo *)lparam;
             SetWindowLong( hwnd, DWL_USER, lparam );
@@ -540,7 +541,7 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             for( i = 0; i < info->list.used; i++ ) {
                 if( info->list.data[i]->mbi.State == MEM_COMMIT ) {
                     FormatMemListEntry( buf, info->list.data[i] );
-                    j = SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+                    j = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
                     SendMessage( lb, LB_SETITEMDATA, j, i );
                 }
             }
@@ -834,10 +835,8 @@ static void fillLogOptions( HWND hwnd ) {
     SetDlgItemText( hwnd, LOG_FILE_NAME, strlwr( LogData.logname ) );
 
     SendDlgItemMessage( hwnd, LOG_MAXFL, EM_LIMITTEXT, BUF_SIZE - 1, 0 );
-    SendDlgItemMessage( hwnd, LOG_DISASM_BACKUP, EM_LIMITTEXT,
-                        BUF_SIZE - 1, 0 );
-    SendDlgItemMessage( hwnd, LOG_DISASM_LINES, EM_LIMITTEXT,
-                        BUF_SIZE - 1, 0 );
+    SendDlgItemMessage( hwnd, LOG_DISASM_BACKUP, EM_LIMITTEXT, BUF_SIZE - 1, 0 );
+    SendDlgItemMessage( hwnd, LOG_DISASM_LINES, EM_LIMITTEXT, BUF_SIZE - 1, 0 );
     SendDlgItemMessage( hwnd, LOG_VIEWER, EM_LIMITTEXT, BUF_SIZE - 1, 0 );
     SendDlgItemMessage( hwnd, LOG_FILE_NAME, EM_LIMITTEXT, BUF_SIZE - 1, 0 );
 }

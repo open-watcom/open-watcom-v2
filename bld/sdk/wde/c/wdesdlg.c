@@ -267,7 +267,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
     LIST            *dlist;
     WdeResDlgItem   *ditem;
     WResID          *id;
-    LRESULT         index;
+    int             index;
     int             count;
 
     if( win == NULL ) {
@@ -302,7 +302,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         }
 
         /* add the name to the list box */
-        index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
+        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
         WRMemFree( name );

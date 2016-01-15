@@ -232,10 +232,10 @@ static BOOL AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
  */
 BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
 
-    LRESULT     top, sel;
+    int     top, sel;
 
-    top = SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
-    sel = SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
+    top = (int)SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
+    sel = (int)SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
     if( sel != LB_ERR && sel < LocalHeapCount ) {
         info->sel = *LocalHeapList[sel];
         info->valid_sel = TRUE;

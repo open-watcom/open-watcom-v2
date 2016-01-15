@@ -315,14 +315,14 @@ static DWORD getThreadId( char *str ) {
 static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
 
     HWND        lb;
-    LRESULT     index;
+    int         index;
     char        save[100];
     ThreadList  thdinfo;
     ThreadPlace place;
     BOOL        rc;
 
     lb = GetDlgItem( hwnd, THREAD_LIST );
-    index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         strcpy( save, "bbbbbbbbbbbb" ); /* just some text that shouldn't
                                            match anything in the listbox */
@@ -347,7 +347,7 @@ static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
 static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
 
     HWND        lb;
-    LRESULT     index;
+    int         index;
     char        buf[100];
     DWORD       threadid;
     ThreadStats thdinfo;
@@ -356,7 +356,7 @@ static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
 #endif
 
     lb = GetDlgItem( hwnd, THREAD_LIST );
-    index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         SetDlgItemText( hwnd, THREAD_TID, "" );
         SetDlgItemText( hwnd, THREAD_SUSPEND_CNT, "" );
@@ -407,7 +407,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadCtlInfo       *info;
-    LRESULT             index;
+    int                 index;
     char                buf[200];
     DWORD               threadid;
     ThreadNode          *thread;
@@ -434,7 +434,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         sprintf( buf, "(%s)", info->procinfo.name );
         SetDlgItemText( hwnd, THREAD_PROC_PATH, buf );
         SendDlgItemMessage( hwnd, THREAD_LIST, LB_SETCURSEL, 0, 0L );
-        index = SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
+        index = (int)SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
         if( index != LB_ERR ) {
             enableChoices( hwnd, TRUE );
         }
@@ -444,8 +444,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         cmd = LOWORD( wparam );
         if( cmd == THREAD_SUSPEND || cmd == THREAD_RESUME ||
             cmd == THREAD_KILL || cmd == THREAD_SET_PRIORITY ) {
-            index = SendDlgItemMessage( hwnd, THREAD_LIST,
-                                        LB_GETCURSEL, 0, 0L );
+            index = (int)SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
             if( index == LB_ERR ) {
                 RCMessageBox( hwnd, STR_NO_SELECTED_THREAD, AppName,
                             MB_OK | MB_ICONEXCLAMATION );

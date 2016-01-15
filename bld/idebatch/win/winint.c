@@ -124,14 +124,14 @@ static void listBoxOut( char *str, ... )
     va_end( al );
 
     len = strlen( buff );
-    for( i=0;i<len;i++ ) {
+    for( i = 0; i < len; i++ ) {
         ch = buff[i];
         if( ch == '\n' ) {
             continue;
         }
-        if( lineOff == MAX_LINE-2 || ch == '\r' ) {
+        if( lineOff == MAX_LINE - 2 || ch == '\r' ) {
             lineBuff[ lineOff ] = 0;
-            pos = SendMessage( listBox, LB_ADDSTRING, 0, (LONG)(LPSTR)lineBuff );
+            pos = (int)SendMessage( listBox, LB_ADDSTRING, 0, (LONG)(LPSTR)lineBuff );
             SendMessage( listBox, LB_SETCURSEL, pos, 0L );
             UpdateWindow( listBox );
             lineOff = 0;

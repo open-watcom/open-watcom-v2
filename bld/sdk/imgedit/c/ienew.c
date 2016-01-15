@@ -203,7 +203,7 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HWND hlistbox;
     char        *mono32x32;
-    LRESULT     index;
+    int         index;
 
     lparam = lparam;
 
@@ -227,7 +227,7 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            index = SendMessage( hlistbox, LB_GETCURSEL, 0, 0L );
+            index = (int)SendMessage( hlistbox, LB_GETCURSEL, 0, 0L );
             if( index == 0 ) {
                 imgWidth = 32;
                 imgHeight = 32;

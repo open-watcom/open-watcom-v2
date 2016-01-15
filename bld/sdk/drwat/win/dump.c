@@ -484,7 +484,7 @@ BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPA
 BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
-    int         i,j;
+    int         i, j;
     FARPROC     fp;
 
     lparam = lparam;
@@ -507,10 +507,10 @@ BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPAR
             FillTaskList( hwnd );
             break;
         case TASKCTL_TASKLIST:
-            i = SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
+            i = (int)SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
             SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
             SetDlgItemText( hwnd, TASKCTL_TASKNAME, str );
-            j = strlen( str )-1;
+            j = strlen( str ) - 1;
             currTask = 0;
             i = 1;
             while( str[j] != '=' ) {

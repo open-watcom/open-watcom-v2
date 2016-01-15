@@ -435,7 +435,7 @@ static void setHorzExtent( DDEWndInfo *info, char *text )
 void RecordMsg( char *buf )
 {
     DDEWndInfo          *info;
-    LRESULT             ret;
+    int                 ret;
     char                *ptr;
     char                *start;
 
@@ -458,7 +458,7 @@ void RecordMsg( char *buf )
     if( start != ptr ) {
         if( ConfigInfo.screen_out ) {
             setHorzExtent( info, start );
-            ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
+            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
         }
         SpyLogOut( start );
     }

@@ -216,9 +216,9 @@ static void ResetFont( GblWndInfo *info ) {
  */
 static DWORD CheckForLocalSelect( GblWndInfo *info ) {
 
-    LRESULT    index;
+    int    index;
 
-    index = SendMessage( info->list.box, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( info->list.box, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         RCMessageBox( NULL, STR_NO_ITEM_SELECTED, HeapWalkName,
                     MB_OK | MB_ICONEXCLAMATION | MB_TASKMODAL );

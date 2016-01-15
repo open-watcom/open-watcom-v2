@@ -60,8 +60,7 @@ void Output( const char *str )
         if( str[i] == '\n' ) {
             tmpStr[ tmpOff ] = 0;
             if( DebugWindow != NULL ) {
-                SendMessage( DebugWindow, LB_ADDSTRING, 0,
-                     (LONG) (LPSTR) tmpStr );
+                SendMessage( DebugWindow, LB_ADDSTRING, 0, (LONG)(LPSTR)tmpStr );
             }
             tmpOff = 0;
         } else {

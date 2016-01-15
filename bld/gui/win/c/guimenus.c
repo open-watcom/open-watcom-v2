@@ -160,7 +160,7 @@ bool GUIIsMenuItemChecked( gui_window *wnd, gui_ctl_id id )
 
     GetStateForMenu( wnd, id, &mstate );
 
-    return( (bool)_wpi_ismenucheckedfromstate( &mstate ) );
+    return( _wpi_ismenucheckedfromstate( &mstate ) );
 }
 
 bool GUIIsMenuItemEnabled( gui_window *wnd, gui_ctl_id id )
@@ -169,7 +169,7 @@ bool GUIIsMenuItemEnabled( gui_window *wnd, gui_ctl_id id )
 
     GetStateForMenu( wnd, id, &mstate );
 
-    return( (bool)_wpi_ismenuenabledfromstate( &mstate ) );
+    return( _wpi_ismenuenabledfromstate( &mstate ) );
 }
 
 void GUISetMenu( gui_window *wnd, HMENU hmenu )

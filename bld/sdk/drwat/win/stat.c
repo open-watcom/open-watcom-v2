@@ -312,7 +312,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
                 char            str[100];
                 int             sel;
 
-                sel = SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
+                sel = (int)SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
                 str[4] = 0;
                 seg = atoi( str );

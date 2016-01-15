@@ -319,7 +319,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
                 char            str[100];
                 int             sel;
 
-                sel = SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
+                sel = (int)SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
                 str[4] = 0;
                 seg = atoi( str );
@@ -343,8 +343,7 @@ static void SwitchRegSets( HWND hwnd, StatData *statdata )
     int         old_index;
     int         new_index;
 
-    new_index = SendDlgItemMessage( hwnd, STAT_REGISTER_COMBO, CB_GETCURSEL,
-            (WPARAM)1, (LPARAM)0 );
+    new_index = (int)SendDlgItemMessage( hwnd, STAT_REGISTER_COMBO, CB_GETCURSEL, 1, 0L );
     old_index = statdata->reg_set_index;
     if( old_index == new_index ) {
         return;

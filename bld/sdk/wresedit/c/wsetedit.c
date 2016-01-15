@@ -137,8 +137,7 @@ bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data );
-        ok = (pos != LB_ERR);
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );
@@ -157,8 +156,7 @@ bool WInsertLBoxWithStr( HWND lbox, box_pos pos, char *str, void *data )
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data );
-        ok = ( new_pos != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );

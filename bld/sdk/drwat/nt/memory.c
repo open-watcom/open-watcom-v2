@@ -54,9 +54,9 @@ static void fillImageInfo( HWND hwnd, DWORD procid ) {
     MemByType   *info;
     char        buf[50];
     char        imagename[_MAX_PATH];
-    DWORD       id;
+    int         id;
 
-    id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0 );
+    id = (int)SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0L );
     SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
     if( !strcmp( imagename, TOTAL_MEM_STR ) ) {
         ok = GetMemInfo( procid, &procinfo );
@@ -154,15 +154,15 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
         sprintf( buf, "%ld KB", data.res.tot / 1024 );
         SetDlgItemText( hwnd, MEM_RES_TOTAL, buf );
         if( !first_time ) {
-            id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0 );
+            id = (int)SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0L );
             if( id != CB_ERR ) {
                 SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
             }
         } else {
             id = CB_ERR;
         }
-        SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_RESETCONTENT, 0, 0 );
-        for( i=0; i < data.modcnt; i++ ) {
+        SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_RESETCONTENT, 0, 0L );
+        for( i = 0; i < data.modcnt; i++ ) {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING,
                                 0, (LPARAM)data.modlist[i] );
         }
@@ -176,8 +176,7 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SELECTSTRING,
                                 -1, (LPARAM)TOTAL_MEM_STR );
         } else {
-            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SETCURSEL,
-                                    id, 0 );
+            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SETCURSEL, id, 0L );
         }
         FreeModuleList( data.modlist, data.modcnt );
     } else {

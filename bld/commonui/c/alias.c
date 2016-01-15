@@ -174,12 +174,12 @@ char *LookupAlias( AliasHdl hdl, unsigned long id )
 /*
  * getIthAlias - get the alias in the given alias list with the given index
  */
-static AnAlias *getIthAlias( AliasHdl hdl, LRESULT i )
+static AnAlias *getIthAlias( AliasHdl hdl, int i )
 {
     AnAlias     *ret;
 
     ret = hdl->data;
-    for( ; i > 0; i-- ) {
+    while( i-- > 0 ) {
         ret = ret->next;
     }
     return( ret );
@@ -212,7 +212,7 @@ WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     size_t      len;
     char        buf[CONST_LEN];
     char        msgbuf[256];
-    LRESULT     sel;
+    int         sel;
     char        *endptr;
     char        *realend;
     char        *alias;
@@ -292,8 +292,8 @@ WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
                 break;
             case ALIAS_ID_LIST:
                 if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
-                    sel = SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETCURSEL, 0, 0L );
-                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, (WPARAM)sel, (LPARAM)buf );
+                    sel = (int)SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETCURSEL, 0, 0L );
+                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, sel, (LPARAM)buf );
                     SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_SETTEXT, 0, (LPARAM)buf );
                     cur = getIthAlias( CurHdl, sel );
                     SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_SETTEXT, 0, (LPARAM)cur->name );

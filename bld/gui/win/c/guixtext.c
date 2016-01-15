@@ -124,7 +124,7 @@ bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
 
 int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 {
-    return( (int) GUIToComboList( wnd, id, LB_GETTOPINDEX, LB_GETTOPINDEX,
+    return( (int)GUIToComboList( wnd, id, LB_GETTOPINDEX, LB_GETTOPINDEX,
                                   (WPI_PARAM1)NULL, (WPI_PARAM2)NULL,
                                   (WPI_MRESULT)-1 ) );
 }
@@ -157,7 +157,7 @@ bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
 
 int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
 {
-    return( (int) GUIToComboList( wnd, id, LB_GETCOUNT, CB_GETCOUNT,
+    return( (int)GUIToComboList( wnd, id, LB_GETCOUNT, CB_GETCOUNT,
                                   (WPI_PARAM1)NULL, (WPI_PARAM2)NULL,
                                   (WPI_MRESULT)NULL ) );
 }
@@ -267,7 +267,7 @@ int GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id )
 {
     int             sel;
 
-    sel = (int) GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL,
+    sel = (int)GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL,
                                 (WPI_PARAM1)NULL, (WPI_PARAM2)NULL,
                                 (WPI_MRESULT)NO_SELECT );
     if( ( sel == LB_ERR ) || ( sel == CB_ERR ) ) {
@@ -300,7 +300,7 @@ char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
     char        *text;
     WPI_PARAM1  p1;
 
-    length = (int) GUIToComboList( wnd, id, LB_GETTEXTLEN, CB_GETLBTEXTLEN,
+    length = (int)GUIToComboList( wnd, id, LB_GETTEXTLEN, CB_GETLBTEXTLEN,
                                    (WPI_PARAM1)choice,
                                    (WPI_PARAM2)NULL, (WPI_MRESULT)NULL );
     if( length > 0 ) {
@@ -332,7 +332,7 @@ bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data 
     }
     return( true );
 #else
-    return( (bool)ret );
+    return( ret != 0 );
 #endif
 }
 

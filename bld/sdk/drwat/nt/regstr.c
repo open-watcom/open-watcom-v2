@@ -330,7 +330,7 @@ static void CheckForRegisterChange( HWND hwnd )
             EndDialog( hwnd, 1 );
         }
     } else {
-        int i = SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_GETCURSEL, 0, 0 );
+        int i = (int)SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_GETCURSEL, 0, 0L );
         if( memcmp( data->curr_value, data->m_list[i].data, mti_target.b.bits / BITS_PER_BYTE ) == 0 ) {
             EndDialog( hwnd, 0 );
         } else {

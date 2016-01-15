@@ -451,11 +451,11 @@ static void fillProcInfo( HWND hwnd, char *buf ) {
     DWORD       procid;
     ProcNode    *proc;
     ProcStats   stats;
-    LRESULT     index;
+    int         index;
     BOOL        error;
 
     error = FALSE;
-    index = SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0 );
+    index = (int)SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         error = TRUE;
         SetDlgItemText( hwnd, PROCCTL_PID, "" );
@@ -487,22 +487,22 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
     LRESULT             curproc;
     LRESULT             topproc;
     LRESULT             tmp;
-    LRESULT             topindex;
-    LRESULT             index;
-    LRESULT             select;
-    LRESULT             itemcnt;
+    int                 topindex;
+    int                 index;
+    int                 select;
+    int                 itemcnt;
     ProcList            info;
     ProcPlace           place;
 
     RefreshInfo();
     lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
-    index = SendMessage( lb, LB_GETTOPINDEX, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETTOPINDEX, 0, 0L );
     if( index == LB_ERR ) {
         topproc = -1;
         curproc = -1;
     } else {
         topproc = SendMessage( lb, LB_GETITEMDATA, index, 0 );
-        index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
+        index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
         curproc = SendMessage( lb, LB_GETITEMDATA, index, 0 );
     }
     SendMessage( lb, LB_RESETCONTENT, 0, 0L );
@@ -515,7 +515,7 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
         } else {
             sprintf( buf, "  Pid %08lX (%s)", info.pid, info.name );
         }
-        index = SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+        index = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
         SendMessage( lb, LB_SETITEMDATA, index, info.pid );
         if( info.pid == curproc ) {
             select = index;
@@ -532,7 +532,7 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
     }
     /* if the old top item no longer exists choose the one before it */
     if( topindex == -1 && topproc != -1 ) {
-        itemcnt = SendMessage( lb, LB_GETCOUNT, 0, 0L );
+        itemcnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0L );
         for( topindex = 0; topindex < itemcnt; topindex++ ) {
             tmp = SendMessage( lb, LB_GETITEMDATA, topindex, 0 );
             if( tmp > topproc ) {
@@ -684,7 +684,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     char                action[ ACTION_BUFSIZE ];
     HWND                lb;
     WORD                cmd;
-    LRESULT             index;
+    int                 index;
     DWORD               procid;
     ProcNode            *procinfo;
     DWORD               rc;
@@ -696,7 +696,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         procDlg = hwnd;
         fillTaskListBox( hwnd, buf );
         SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_SETCURSEL, 0, 0L );
-        index = SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
+        index = (int)SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
         fillProcInfo( hwnd, buf );
         if( index != LB_ERR ) {
             enableProcChoices( hwnd, TRUE );
@@ -715,7 +715,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
            || cmd == PROCCTL_VIEWMEM || cmd == PROCCTL_SET_PRIORITY
            || cmd == PROCCTL_ATTATCH || cmd == PROCCTL_MEM ) {
             lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
-            index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
+            index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
             if( index == LB_ERR ) {
                 RCMessageBox( hwnd, STR_NO_SELECTED_PROCESS, AppName,
                             MB_OK | MB_ICONEXCLAMATION );

@@ -323,12 +323,12 @@ void RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist ) {
  */
 static void viewMem( MemWalkerInfo *info ) {
 
-    LRESULT                     index;
+    int                         index;
     MEMORY_BASIC_INFORMATION    *mbi;
     char                        buf[100];
     BOOL                        ret;
 
-    index = SendMessage( GetListBoxHwnd( info->lbox ), LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( GetListBoxHwnd( info->lbox ), LB_GETCURSEL, 0, 0 );
     mbi = &info->listdata.data[index]->mbi;
     if( mbi->State == MEM_FREE || mbi->State == MEM_RESERVE ) {
         RCMessageBox( GetListBoxHwnd( info->lbox ), STR_MEM_NOT_COMMITTED,
