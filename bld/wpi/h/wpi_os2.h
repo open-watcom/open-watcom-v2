@@ -1319,16 +1319,16 @@ extern void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state,
                                         unsigned *attr_flags );
 
     #define _wpi_ismenucheckedfromstate( pstate ) \
-                                        ( (pstate)->afAttribute & MIA_CHECKED )
+                                        ( ((pstate)->afAttribute & MIA_CHECKED) != 0 )
 
     #define _wpi_ismenuenabledfromstate( pstate ) \
-                                    ( !((pstate)->afAttribute & MIA_DISABLED) )
+                                    ( ((pstate)->afAttribute & MIA_DISABLED) == 0 )
 
     #define _wpi_ismenuseparatorfromstate( pstate ) \
-                                        ( (pstate)->afStyle & MIS_SEPARATOR )
+                                        ( ((pstate)->afStyle & MIS_SEPARATOR) != 0 )
 
     #define _wpi_ismenupopupfromstate( pstate ) \
-                                            ( (pstate)->afStyle & MIS_SUBMENU )
+                                            ( ((pstate)->afStyle & MIS_SUBMENU) != 0 )
 
 extern BOOL _wpi_modifymenu( HMENU hmenu, unsigned id, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,
