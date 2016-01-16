@@ -9,7 +9,6 @@ rcsdll_qnx_i86 = qnxi86
 rcsdll_linux_386 = linux386
 
 rcsdll_win_i86 = wini86
-rcsdll_win_386 = wini86
 
 rcsdll_nt_386 = nt386
 
