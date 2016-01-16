@@ -58,7 +58,7 @@ vi_rc       LastRetCode = ERR_NO_ERR;
 /*
  * MemAlloc - allocate some memory (always works, or editor aborts)
  */
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     return( malloc( size ) );
 }
@@ -90,7 +90,7 @@ void MemFreeList( int count, char **ptr )
 /*
  * MemReAlloc - reallocate a block, and it will succeed.
  */
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 
