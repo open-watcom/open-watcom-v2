@@ -440,7 +440,7 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
+    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
     if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
         MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );

@@ -296,13 +296,13 @@ static void fillInfoBoxes( HWND hwnd )
     }
 
     if( oldStyle[0] ) {
-        index = SendMessage( hwndStyle, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldStyle );
+        index = (int)SendMessage( hwndStyle, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldStyle );
         if( index == LB_ERR ) {
             SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
         }
     }
     if( oldSize[0] ) {
-        index = SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldSize );
+        index = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldSize );
         if( index == CB_ERR ) {
             SendMessage( hwndSize, CB_SETCURSEL, 0, 0L );
         }
@@ -311,14 +311,14 @@ static void fillInfoBoxes( HWND hwnd )
 
 static void setDefaultTypeface( void )
 {
-    LRESULT i;
+    int     i;
     LPSTR   typeName;
 
     // default default
     SendMessage( hwndTypeface, LB_SETCURSEL, 0, 0L );
 
     typeName = FontlfFaceName( SEType[SE_WHITESPACE].font );
-    i = SendMessage( hwndTypeface, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)typeName );
+    i = (int)SendMessage( hwndTypeface, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)typeName );
     if( i != LB_ERR ) {
         SendMessage( hwndTypeface, LB_SETCURSEL, i, 0L );
     }
@@ -327,14 +327,14 @@ static void setDefaultTypeface( void )
 static void setDefaultSizeStyle( void )
 {
     char    buf[20];
-    LRESULT i;
+    int     i;
 
     // default default
     SendMessage( hwndSize, CB_SETCURSEL, 0, 0L );
     SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
 
     sprintf( buf, "%d", abs( FontlfHeight( SEType[SE_WHITESPACE].font ) ) );
-    i = SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)buf );
+    i = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)buf );
     if( i != CB_ERR ) {
         SendMessage( hwndSize, CB_SETCURSEL, i, 0L );
     }
