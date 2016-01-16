@@ -38,9 +38,6 @@
 #include <dos.h>
 #include <malloc.h>
 #include "mem.h"
-#ifndef NO_WPI
-    #include "wpi.h"
-#endif
 
 /*
  * MemStart - set up required stuff for memory manager

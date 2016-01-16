@@ -19,7 +19,6 @@ sys_windowed=1
 extra_c_flags_i86   = -s-zu-zW
 
 extra_c_flags_ldstr    = -dSPECIAL_STRING_LOADING
-extra_c_flags_mem      = -dNO_WPI
 extra_c_flags_heapwalk = -3
 extra_c_flags_segmem2  = -3
 
