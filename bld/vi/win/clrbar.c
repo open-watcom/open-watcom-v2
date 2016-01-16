@@ -56,10 +56,10 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         return( TRUE );
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
-            case IDOK:
-            case IDCANCEL:
-                EndDialog( hwnd, TRUE );
-                return( TRUE );
+        case IDOK:
+        case IDCANCEL:
+            EndDialog( hwnd, TRUE );
+            return( TRUE );
         }
         break;
     case WM_CLOSE:

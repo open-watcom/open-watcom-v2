@@ -406,13 +406,13 @@ void RefreshSSbar( void )
     static FARPROC      proc = NULL;
 
     if( EditFlags.SSbar ) {
-        if( hSSbar != NULL ) {
+        if( !BAD_ID( hSSbar ) ) {
             return;
         }
         proc = MakeDlgProcInstance( SSDlgProc, InstanceHandle );
         hSSbar = CreateDialog( InstanceHandle, "SSBAR", Root, (DLGPROC)proc );
     } else {
-        if( hSSbar == NULL ) {
+        if( BAD_ID( hSSbar ) ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );

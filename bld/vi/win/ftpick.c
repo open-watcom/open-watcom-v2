@@ -148,7 +148,6 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         mod_hwnd = NO_WINDOW;
         CursorOp( COP_NODROP );
     }
-
     return( 0 );
 }
 
