@@ -31,12 +31,11 @@
 
 #include "winaux.h"
 
+
 #define DEF_TEXT_STYLE              { WHITE, BLACK, FONT_COURIER }
 #define DEF_HILIGHT_STYLE           { BRIGHT_WHITE, BLACK, FONT_COURIER }
 
 #ifndef __WIN__
-
-#include <stdio.h>
 
 #define WRITE_SCREEN( a, b )        (*(char_info _FAR *)&(a)) = (*(char_info *)(&b))
 #define WRITE_SCREEN2( a, b )       (*(char_info _FAR *)&(a)) = (*(char_info _FAR *)(&b))

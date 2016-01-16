@@ -352,6 +352,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             tmp = GetNextWord1( tmp1, tmp2 );
             hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
+            tmp3 = tmp;
         }
 #endif
         /*

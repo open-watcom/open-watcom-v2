@@ -40,14 +40,14 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+static bool init( window *, void * );
+static bool fini( window *, void * );
 
 window MessageBar = {
     &messagew_info,
     { 0, 0, 0, 0 },
-    Init,
-    Fini
+    init,
+    fini
 };
 
 static char *ClassName = "MessageWindow";
@@ -55,7 +55,7 @@ static char msgString1[MAX_STR];
 static char msgString2[MAX_STR];
 static void msgString( int, const char * );
 
-static bool Init( window *w, void *parm )
+static bool init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -78,7 +78,7 @@ static bool Init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool Fini( window *w, void *parm )
+static bool fini( window *w, void *parm )
 {
     w = w;
     parm = parm;

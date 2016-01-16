@@ -37,18 +37,18 @@
 #include "wstatus.h"
 #include <assert.h>
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+static bool init( window *, void * );
+static bool fini( window *, void * );
 
 static int      capIndex = -1;
 static short    *sections;
-static void     *sw = NULL;
+static statwnd  *sw = NULL;
 
 window StatusBar = {
     &statusw_info,
     { 0, 0, 0, 0 },
-    Init,
-    Fini
+    init,
+    fini
 };
 
 void StatusWndSetSeparatorsWithArray( short *source, int num )
@@ -69,7 +69,7 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
 
 bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool Init( window *w, void *parm )
+static bool init( window *w, void *parm )
 {
     bool    rc;
 
@@ -90,7 +90,7 @@ static bool Init( window *w, void *parm )
     return( rc );
 }
 
-static bool Fini( window *w, void *parm )
+static bool fini( window *w, void *parm )
 {
     w = w;
     parm = parm;

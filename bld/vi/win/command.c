@@ -44,21 +44,21 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 extern bool ReadingAString;
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+static bool init( window *, void * );
+static bool fini( window *, void * );
 
 window CommandWindow = {
     &cmdlinew_info,
     { 0, 0, 0, 0 },
-    Init,
-    Fini
+    init,
+    fini
 };
 
 window_id CommandId = NO_WINDOW;
 
 static char *className = "CommandWindow";
 
-static bool Init( window *w, void *parm )
+static bool init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -77,7 +77,7 @@ static bool Init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool Fini( window *w, void *parm )
+static bool fini( window *w, void *parm )
 {
     w = w;
     parm = parm;

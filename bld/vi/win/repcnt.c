@@ -40,21 +40,21 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+static bool init( window *, void * );
+static bool fini( window *, void * );
 
 window RepeatCountWindow = {
     &repcntw_info,
     { 0, 0, 0, 0 },
-    Init,
-    Fini
+    init,
+    fini
 };
 
 static char     *className = "RepeatWindow";
 static char     repString[MAX_STR];
 static HWND     repeatWindow;
 
-static bool Init( window *w, void *parm )
+static bool init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -75,15 +75,15 @@ static bool Init( window *w, void *parm )
     wc.lpszClassName = className;
     return( RegisterClass( &wc ) != 0 );
 
-} /* Init */
+} /* init */
 
-static bool Fini( window *w, void *parm )
+static bool fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
     return( true );
 
-} /* Fini */
+} /* fini */
 
 /*
  * drawRepeatString - draw the current repeat string

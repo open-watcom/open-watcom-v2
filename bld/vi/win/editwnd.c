@@ -48,23 +48,23 @@ extern HWND hColorbar, hFontbar, hSSbar;
 
 char *EditWindowClassName = "Buffer Window";
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+static bool init( window *, void * );
+static bool fini( window *, void * );
 
 window EditWindow = {
     &editw_info,
     { 0, 0, 0, 0 },
-    Init,
-    Fini
+    init,
+    fini
 };
 
 long            VScrollBarScale = 1;
 int             HScrollBarScale = MAX_INPUT_LINE;
 
 /*
- * Init - initialization routine for edit windows
+ * init - initialization routine for edit windows
  */
-static bool Init( window *w, void *parm )
+static bool init( window *w, void *parm )
 {
     WNDCLASS    wc;
 
@@ -83,7 +83,7 @@ static bool Init( window *w, void *parm )
     wc.lpszClassName = EditWindowClassName;
     return( RegisterClass( &wc ) != 0 );
 
-} /* Init */
+} /* init */
 
 /*
  * GetEditStyle - get the edit window style
@@ -940,10 +940,10 @@ void ResetExtraRects( void )
 
 } /* ResetExtraRects */
 
-static bool Fini( window *w, void *parm )
+static bool fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
     return( true );
 
-} /* Fini */
+} /* fini */
