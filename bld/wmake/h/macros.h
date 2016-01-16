@@ -47,11 +47,11 @@ extern char         *WrnGetMacroValue( const char *name );
 extern void         DefMacro( const char *name );
 extern char         *DeMacro( TOKEN_T end );
 extern BOOLEAN      ForceDeMacro( void );
-extern char         *PartDeMacro( BOOLEAN ForceDeMacro );
+extern char         *PartDeMacro( BOOLEAN forceDeMacro );
 extern void         UnDefMacro( const char *name );
 extern BOOLEAN      IsMacroName( const char *name );
 extern void         PrintMacros( void );
-extern char         *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForceDeMacro );
+extern char         *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN forceDeMacro );
 extern const char   *procPath( const char *fullpath );
 extern char         *DeMacroSpecial( const char *InString );
 

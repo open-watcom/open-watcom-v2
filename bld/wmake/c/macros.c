@@ -978,7 +978,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 }
 
 
-char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
+char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN forceDeMacro )
 /*************************************************************************
  * This is the same as deMacro except that we retain any leading or trailing
  * ws. Ws is quietly truncated from pathologically long lines.
@@ -1025,7 +1025,7 @@ char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
     InsString( result, TRUE );              // Push graphic string to the stream
 
     if( partDeMacro ) {                     // Expand as far as EOL
-        DeMacroStr = PartDeMacro( ForcedDeMacro );
+        DeMacroStr = PartDeMacro( forceDeMacro );
     } else {
         DeMacroStr = DeMacro( TOK_EOL );
     }
@@ -1127,11 +1127,11 @@ BOOLEAN ForceDeMacro ( void )
 }
 
 
-char *PartDeMacro( BOOLEAN ForcedDeMacro )
+char *PartDeMacro( BOOLEAN forceDeMacro )
 /************************************************
  * the addition of microsoft option needs this option
  * since MACROS are always fully expanded sequentially
- * ForcedDeMacro if set true will force full Demacro
+ * forceDeMacro if set true will force full Demacro
  */
 {
     STRM_T  s;
@@ -1140,7 +1140,7 @@ char *PartDeMacro( BOOLEAN ForcedDeMacro )
     if( Glob.compat_nmake || Glob.compat_posix ) {
         IsPartDeMacro = TRUE;
     }
-    if( ForcedDeMacro ) {
+    if( forceDeMacro ) {
         //remove white spaces at the beginning
         while( isws( s = PreGetCH() ) ) {
         }
