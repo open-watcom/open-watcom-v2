@@ -272,7 +272,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 {
     char        *display, *old;
     char        *tmp, *otmp;
-    dc          c_line;
+    dc_line     *c_line;
     RECT        rect;
     int         height, len;
     int         x, y, indent;
@@ -466,7 +466,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 {
     char        *display, *old;
     char        *tmp, *otmp;
-    dc          c_line;
+    dc_line     *c_line;
     RECT        rect;
     int         width, height, len;
     int         x, y, indent;

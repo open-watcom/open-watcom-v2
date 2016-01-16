@@ -104,7 +104,7 @@ void NewCursor( window_id id, cursor_type ct )
 static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
 {
     ss_block    *ss, *ss_start, *ss_prev;
-    dc          dc_line;
+    dc_line     *dcline;
     int         len;
     int         old_col = 0;
     char        *str;
@@ -122,24 +122,24 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
         *width = 0;
         return( 0 );
     }
-    dc_line = DCFindLine( row, hwnd );
+    dcline = DCFindLine( row, hwnd );
 
-    if( dc_line->display != 0 ){
+    if( dcline->display != 0 ){
         // line has not been drawn yet. Can't set cursor.
         *x = -10;
         *width = 0;
         return( 0 );
     }
 
-    assert( dc_line->valid );
+    assert( dcline->valid );
 
-    if( dc_line->start_col != LeftTopPos.column ) {
+    if( dcline->start_col != LeftTopPos.column ) {
         // not in cache -> not on screen -> not displayed
         *x = -10;
         *width = 0;
         return( 0 );
     }
-    ss_start = ss = dc_line->ss;
+    ss_start = ss = dcline->ss;
     ss_prev = NULL;
 
 
@@ -190,10 +190,10 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
     // setup to figure out where cursor is within text.
     if( ss != ss_start ) {
         ss_prev = ss - 1;
-        str = dc_line->text + ss_prev->end + 1;
+        str = dcline->text + ss_prev->end + 1;
         len = col - ss_prev->end - 1;
     } else {
-        str = dc_line->text;
+        str = dcline->text;
         len = col;
     }
 

@@ -240,7 +240,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     int                 a;
     vi_rc               rc;
     char                *tmp;
-    // dc               c_line;
+//    dc_line             *c_line;
 
     junk = junk;
     if( EditFlags.RealTabs ) {

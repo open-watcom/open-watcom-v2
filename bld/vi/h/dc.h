@@ -36,21 +36,6 @@
 
 #define MIN_CACHE_LINE_LENGTH    100
 
-typedef struct dc_line {
-    // Windows & text mode
-    short       display : 1;    // line needs to be redisplayed
-
-    // Windows only
-    short       valid : 1;      // cache reflects what is on screen
-    ss_block    *ss;
-    ss_flags    flags;
-    int         start_col;
-    char        *text;
-    int         textlen;
-} dc_line;
-
-typedef dc_line *dc;
-
 extern void     DCCreate( void );
 extern void     DCResize( info * );
 extern void     DCScroll( int );
@@ -61,7 +46,7 @@ extern void     DCDisplaySomeLines( int, int );
 extern void     DCDisplayAllLines( void );
 extern void     DCInvalidateSomeLines( int, int );
 extern void     DCInvalidateAllLines( void );
-extern dc       DCFindLine( int, window_id );
-extern void     DCValidateLine( dc, int, char * );
+extern dc_line  *DCFindLine( int, window_id );
+extern void     DCValidateLine( dc_line *, int, char * );
 
 #endif

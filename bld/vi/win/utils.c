@@ -218,7 +218,7 @@ int MyStringExtent( HWND hwnd, type_style *style, char *text )
 void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
 {
     window      *w;
-    dc          dc_line;
+    dc_line     *dcline;
     ss_block    *ss, *ss_start, *ss_prev;
     int         startCols, intoCols;
     int         startPixel, lenBlock;
@@ -241,8 +241,8 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     }
 
     // get line data
-    dc_line = DCFindLine( *row - 1, hwnd );
-    if( dc_line->display != 0 ) {
+    dcline = DCFindLine( *row - 1, hwnd );
+    if( dcline->display != 0 ) {
         // line needs to be displayed
         // therefore ss information has not been set!
         // therefore we cant use it to calculate anything of value!
@@ -251,14 +251,14 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         *col = x / avg_width + 1;
         return;
     }
-    assert( dc_line->valid );
-    if( dc_line->start_col < LeftTopPos.column ) {
+    assert( dcline->valid );
+    if( dcline->start_col < LeftTopPos.column ) {
         // entire line has been scrolled off to left - go to end of that line
         *col = 10000;
         return;
     }
-    assert( dc_line->start_col == LeftTopPos.column );
-    ss_start = ss = dc_line->ss;
+    assert( dcline->start_col == LeftTopPos.column );
+    ss_start = ss = dcline->ss;
 
     // find which block x lies on
     while( ss->offset < x ) {
@@ -285,11 +285,11 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         startPixel = ss_prev->offset;
         startCols = ss_prev->end + 1;
         lenBlock = ss->end - ss_prev->end;
-        str = dc_line->text + startCols;
+        str = dcline->text + startCols;
     } else {
         startPixel = 0;
         startCols = 0;
-        str = dc_line->text;
+        str = dcline->text;
         lenBlock = ss->end + 1;
     }
     // lenBlock must be less than the length of the text
@@ -802,12 +802,13 @@ void DrawRectangleUpDown( HWND hwnd, int which )
 #if 0
 // sanity check on list of ss blocks
 
-static void dumpSSBlocks( ss_block *ss_start, dc dc_line ) {
+static void dumpSSBlocks( ss_block *ss_start, dc_line *dcline )
+{
     ss_block    *ss = ss_start;
     FILE *f = fopen( "C:\\vi.out", "a+t" );
 
     fprintf( f, "Bad SSBlock:: dumping current DC line\n" );
-    fprintf( f, "%s %d %d %d %d\n", dc_line->text, ss->type, ss->end,
+    fprintf( f, "%s %d %d %d %d\n", dcline->text, ss->type, ss->end,
              ss->len, ss->offset );
 
     ss++;

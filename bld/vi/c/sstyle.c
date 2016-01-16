@@ -551,7 +551,7 @@ void SSGetLanguageFlags( ss_flags *flags )
 #ifdef __WIN__
 syntax_element SSGetStyle( int row, int col )
 {
-    dc          c_line;
+    dc_line     *c_line;
     ss_block    *ss;
 
     c_line = DCFindLine( row - 1, CurrentWindow );
