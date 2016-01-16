@@ -71,17 +71,15 @@ typedef struct wind {
     short       text_lines, text_cols;
     char        *title;
     char        *borderdata;
+    int         vert_scroll_pos;
     short       bordercol;
     window_id   id;
-    unsigned    isswapped           : 1;
-    unsigned    accessed            : 1;
-    unsigned    has_border          : 1;
-    unsigned    has_gadgets         : 1;
-    unsigned    min_slot            : 1;
-    unsigned    has_scroll_gadgets  : 1;
-    unsigned    spare7              : 1;
-    unsigned    spare8              : 1;
-    int         vert_scroll_pos;
+    bool        isswapped           : 1;
+    bool        accessed            : 1;
+    bool        has_border          : 1;
+    bool        has_gadgets         : 1;
+    bool        min_slot            : 1;
+    bool        has_scroll_gadgets  : 1;
     signed char overcnt[1];
 } wind;
 
