@@ -38,8 +38,8 @@
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
-                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
-                             DWORD data2 );
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem,
+                             ULONG_PTR data1, ULONG_PTR data2 );
 
 typedef struct hsz_list {
     struct hsz_list     *next;
@@ -71,8 +71,8 @@ static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
  * DDECallback - callback routine for DDE
  */
 WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
-                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, ULONG_PTR data1,
-                             ULONG_PTR data2 )
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem,
+                             ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        tmp[64];
     vi_rc       rc;
