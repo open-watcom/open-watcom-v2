@@ -45,13 +45,13 @@
 typedef struct font {
     HFONT       handle;
     LOGFONT     lf;
-    unsigned    used    : 1;
-    unsigned    fixed   : 1;
     UINT        height;
     UINT        avg_width;
     UINT        max_width;
     UINT        space_width;
-    // bool isFunnyItalic ?
+    bool        used            : 1;
+    bool        fixed           : 1;
+//    bool        isFunnyItalic   : 1; ?
 } font;
 
 LOGFONT Helvetica6 = {
@@ -217,7 +217,7 @@ static void customFont( font *f, LOGFONT *lf )
         }
     }
     f->used = true;
-    f->fixed = lf->lfPitchAndFamily & FIXED_PITCH;
+    f->fixed = ( (lf->lfPitchAndFamily & FIXED_PITCH) != 0 );
     f->handle = CreateFontIndirect( lf );
     hdc = GetDC( Root );
     old_font = SelectObject( hdc, f->handle );

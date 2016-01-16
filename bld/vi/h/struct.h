@@ -72,10 +72,10 @@ typedef struct {
 
 typedef struct {
     vi_key          *data;
-    unsigned char   inuse           : 1;
-    unsigned char   is_base         : 1;
-    unsigned char   was_inuse       : 1;
-    unsigned char   no_input_window : 1;
+    bool            inuse           : 1;
+    bool            is_base         : 1;
+    bool            was_inuse       : 1;
+    bool            no_input_window : 1;
 } key_map;
 
 /* command structure */
@@ -176,13 +176,6 @@ typedef struct linedata {
     unsigned    nolinedata  : 1;    // no data associated with this line (WorkLine has the data instead)
     unsigned    hidden      : 1;    // line is hidden (NYI)
     unsigned    hilite      : 1;    // line need hiliting
-    unsigned    fill10      : 1;
-    unsigned    fill11      : 1;
-    unsigned    fill12      : 1;
-    unsigned    fill13      : 1;
-    unsigned    fill14      : 1;
-    unsigned    fill15      : 1;
-    unsigned    fill16      : 1;
 } linedata;
 
 typedef vi_ushort   linedata_t;
@@ -214,26 +207,21 @@ typedef struct fcb {
     long        offset;                     // offset in swap file
     long        last_swap;                  // time fcb was last swapped
     long        xmemaddr;                   // address of fcb in extended memory
-    unsigned    swapped             : 1;    // fcb is swapped
-    unsigned    in_memory           : 1;    // fcb is in memory
-    unsigned    on_display          : 1;    // lines in fcb are displayed
-    unsigned    non_swappable       : 1;    // fcb is not swappable
-    unsigned    dead                : 1;    // fcb is dead (obsolete)
-    unsigned    was_on_display      : 1;    // fcb was on display (used to save
-                                            // display state when switching files)
-    unsigned    in_extended_memory  : 1;    // fcb is in extended memory
-    unsigned    in_xms_memory       : 1;    // fcb is in XMS memory
-    unsigned    in_ems_memory       : 1;    // fcb is in EMS memory
-    unsigned    nullfcb             : 1;    // fcb is a special one that has no
-                                            // lines associated with it
-    unsigned    globalmatch         : 1;    // a global command matched at least
-                                            // one line in this fcb
-    unsigned    flag12              : 1;
-    unsigned    flag13              : 1;
-    unsigned    flag14              : 1;
-    unsigned    flag15              : 1;
-    unsigned    flag16              : 1;
     short       byte_cnt;                   // number of bytes in lines
+    bool        swapped             : 1;    // fcb is swapped
+    bool        in_memory           : 1;    // fcb is in memory
+    bool        on_display          : 1;    // lines in fcb are displayed
+    bool        non_swappable       : 1;    // fcb is not swappable
+    bool        dead                : 1;    // fcb is dead (obsolete)
+    bool        was_on_display      : 1;    // fcb was on display (used to save
+                                            // display state when switching files)
+    bool        in_extended_memory  : 1;    // fcb is in extended memory
+    bool        in_xms_memory       : 1;    // fcb is in XMS memory
+    bool        in_ems_memory       : 1;    // fcb is in EMS memory
+    bool        nullfcb             : 1;    // fcb is a special one that has no
+                                            // lines associated with it
+    bool        globalmatch         : 1;    // a global command matched at least
+                                            // one line in this fcb
 } fcb;
 #define FCB_SIZE sizeof( fcb )
 
@@ -294,15 +282,15 @@ typedef struct range {
  */
     i_mark          hi_start;
     i_mark          hi_end;
-    unsigned char   highlight   : 1;
-    unsigned char   line_based  : 1;
+    bool            highlight   : 1;
+    bool            line_based  : 1;
 /*
  * Double ACK! Some times we need to treat a range differently depending
  * on whether an operator or a move is using it. This tells us if we should
  * include the last character or not (compare "d/foo" to "/foo"). Puke.
  */
-    unsigned char   fix_range   : 1;
-    unsigned char   selected    : 1;
+    bool            fix_range   : 1;
+    bool            selected    : 1;
 } range;
 
 typedef vi_rc (*insert_rtn)( void );
@@ -406,10 +394,9 @@ typedef struct select_rgn {
     i_mark      start;
     i_mark      end;
     int         start_col_v;
-    unsigned    selected    : 1;
-    unsigned    lines       : 1;
-    unsigned    dragging    : 1;
-    unsigned    empty       : 13;
+    bool        selected    : 1;
+    bool        lines       : 1;
+    bool        dragging    : 1;
 } select_rgn;
 
 /*
@@ -438,51 +425,45 @@ typedef struct fs_info {
 } fs_info;
 
 typedef struct ss_flags_c {
-    unsigned  inCComment      : 1;
-    unsigned  inCPPComment    : 1;
-    unsigned  inString        : 1;
-    unsigned  inPreprocessor  : 1;
-    unsigned  inErrorDir      : 1;
-    unsigned  inIfDir         : 1;
-    unsigned  inPragmaDir     : 1;
-    unsigned  inDeclspec      : 1;
-    unsigned  inDeclspec2     : 1;
-    unsigned  spare           : 7;
+    bool      inCComment        : 1;
+    bool      inCPPComment      : 1;
+    bool      inString          : 1;
+    bool      inPreprocessor    : 1;
+    bool      inErrorDir        : 1;
+    bool      inIfDir           : 1;
+    bool      inPragmaDir       : 1;
+    bool      inDeclspec        : 1;
+    bool      inDeclspec2       : 1;
 } ss_flags_c;
 
 typedef struct ss_flags_f {
-    unsigned  inString    : 1;
-    unsigned  spare       : 15;
+    bool      inString          : 1;
 } ss_flags_f;
 
 typedef struct ss_flags_h {
-    unsigned  inHTMLComment       : 1;
-    unsigned  inHTMLKeyword       : 1;
-    unsigned  inAltHTMLKeyword    : 1;
-    unsigned  inString            : 1;
-    unsigned  spare               : 12;
+    bool      inHTMLComment     : 1;
+    bool      inHTMLKeyword     : 1;
+    bool      inAltHTMLKeyword  : 1;
+    bool      inString          : 1;
 } ss_flags_h;
 
 typedef struct ss_flags_g {
-    unsigned  inGMLComment    : 1;
-    unsigned  inGMLKeyword    : 1;
-    unsigned  inAltGMLKeyword : 1;
-    unsigned  inString        : 1;
-    unsigned  spare           : 12;
+    bool      inGMLComment      : 1;
+    bool      inGMLKeyword      : 1;
+    bool      inAltGMLKeyword   : 1;
+    bool      inString          : 1;
 } ss_flags_g;
 
 typedef struct ss_flags_m {
-    unsigned  inPreproc       : 1;
-    unsigned  inInlineFile    : 1;
-    unsigned  inMacro         : 1;
-    unsigned  spare           : 13;
+    bool      inPreproc         : 1;
+    bool      inInlineFile      : 1;
+    bool      inMacro           : 1;
 } ss_flags_m;
 
 typedef struct ss_flags_p {
-    unsigned  inString        : 1;
-    unsigned  beforeRegExp    : 1;
-    unsigned  doubleRegExp    : 1;
-    unsigned  spare           : 13;
+    bool      inString          : 1;
+    bool      beforeRegExp      : 1;
+    bool      doubleRegExp      : 1;
 } ss_flags_p;
 
 typedef union ss_flags {
@@ -530,16 +511,15 @@ typedef struct ss_block {
 } ss_block;
 
 typedef struct dc_line {
-    // Windows & text mode
-    short       display : 1;    // line needs to be redisplayed
-
-    // Windows only
-    short       valid : 1;      // cache reflects what is on screen
     ss_block    *ss;
     ss_flags    flags;
     int         start_col;
     char        *text;
     int         textlen;
+    // Windows & text mode
+    bool        display : 1;    // line needs to be redisplayed
+    // Windows only
+    bool        valid   : 1;    // cache reflects what is on screen
 } dc_line;
 
 /*

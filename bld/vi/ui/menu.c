@@ -53,10 +53,9 @@ typedef struct menu {
     int             orig_itemcnt;
     char            **list;
     hilst           *hilist;
-    unsigned char   has_file_list   : 1;
-    unsigned char   need_hook       : 1;
-    unsigned char   has_last_files  : 1;
-    unsigned char   spare           : 5;
+    bool            has_file_list   : 1;
+    bool            need_hook       : 1;
+    bool            has_last_files  : 1;
     char            maxwidth;
     char            orig_maxwidth;
     hilst           hi;

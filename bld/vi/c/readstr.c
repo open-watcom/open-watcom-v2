@@ -64,7 +64,7 @@ typedef struct input_buffer {
     int             curr_pos;
     int             left_column;
     int             line;
-    unsigned        overstrike  : 1;
+    bool            overstrike  : 1;
 } input_buffer;
 
 /*

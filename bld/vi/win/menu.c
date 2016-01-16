@@ -44,26 +44,24 @@
 typedef struct item {
     struct item     *next, *prev;
     int             menuid;
-    unsigned char   in_menu     : 1;
-    unsigned char   is_active   : 1;
-    unsigned char   is_checked  : 1;
-    unsigned char   unused      : 5;
     char            *name;
     char            *help;
+    bool            in_menu     : 1;
+    bool            is_active   : 1;
+    bool            is_checked  : 1;
     char            cmd[1];
 } item;
 
 typedef struct menu {
     struct menu     *next, *prev;
     void            *item_head, *item_tail;
-    unsigned char   has_file_list   : 1;
-    unsigned char   need_hook       : 1;
-    unsigned char   has_last_files  : 1;
-    unsigned char   spare           : 5;
     int             num_items;
     int             orig_num_items;
     HMENU           menu_handle;
     char            *help;
+    bool            has_file_list   : 1;
+    bool            need_hook       : 1;
+    bool            has_last_files  : 1;
     char            name[1];
 } menu;
 
