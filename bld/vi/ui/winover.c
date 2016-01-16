@@ -81,7 +81,7 @@ void MarkOverlap( window_id wn )
              * mark the window it belongs to as being overlapped,
              * and mark us as overlapping it
              */
-            if( *img != NO_WINDOW ) {
+            if( !BAD_ID( *img ) ) {
                 wo = AccessWindow( *img );
                 k = (i - wo->x1) + (j - wo->y1) * wo->width;
                 wo->overlap[k] = wn;
@@ -133,7 +133,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
              *
              * if we are not over someone, check for over us
              */
-            if( *whoover != NO_WINDOW ) {
+            if( !BAD_ID( *whoover ) ) {
                 wo = AccessWindow( *whoover );
                 k = (i - wo->x1) + (j - wo->y1) * wo->width;
                 /*
@@ -145,7 +145,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  * as not being overlapped, and restore his
                  * text to the screen
                  */
-                if( *over != NO_WINDOW ) {
+                if( !BAD_ID( *over ) ) {
                     o = AccessWindow( *over );
                     l = (i - o->x1) + (j - o->y1) * o->width;
                     o->whooverlapping[l] = *whoover;
@@ -169,7 +169,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  *
                  * if not, clear the screen
                  */
-                if( *over != NO_WINDOW ) {
+                if( !BAD_ID( *over ) ) {
                     o = AccessWindow( *over );
                     l = (i - o->x1) + (j - o->y1) * o->width;
                     o->whooverlapping[l] = NO_WINDOW;
@@ -256,7 +256,7 @@ window_id WhoIsUnder( int *x, int *y )
     int         win_x, win_y;
 
     id = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];
-    if( id != NO_WINDOW ) {
+    if( !BAD_ID( id ) ) {
         w = Windows[id];
         win_x = (*x) - w->x1;
         win_y = (*y) - w->y1;

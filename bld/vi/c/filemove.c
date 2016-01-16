@@ -243,7 +243,7 @@ void BringUpFile( info *ci, bool runCmds )
     DisplayFileStatus();
     UpdateStatusWindow();
     SetWindowCursor();
-    if( wn != CurrentWindow && wn != NO_WINDOW ) {
+    if( wn != CurrentWindow && !BAD_ID( wn ) ) {
         InactiveWindow( wn );
     }
     ActiveWindow( CurrentWindow );

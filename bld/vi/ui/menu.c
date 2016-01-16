@@ -561,7 +561,7 @@ vi_rc InitMenu( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( MenuWindow != NO_WINDOW ) {
+    if( !BAD_ID( MenuWindow ) ) {
         CloseAWindow( MenuWindow );
         MenuWindow = NO_WINDOW;
     }

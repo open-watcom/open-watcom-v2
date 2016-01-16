@@ -454,7 +454,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     case WM_CLOSE:
         doneWithHwnds();
         DestroyWindow( hwnd );
-        hFontbar = (HWND)NULLHANDLE;
+        hFontbar = NO_WINDOW;
         // update editflags (may have closed from system menu)
         EditFlags.Fontbar = false;
         break;
@@ -521,14 +521,14 @@ void RefreshFontbar( void )
     static FARPROC  proc = NULL;
 
     if( EditFlags.Fontbar ) {
-        if( hFontbar != NULL ) {
+        if( !BAD_ID( hFontbar ) ) {
             return;
         }
         proc = MakeDlgProcInstance( FtDlgProc, InstanceHandle );
         hFontbar = CreateDialog( InstanceHandle, "FTBAR", Root, (DLGPROC)proc );
         SetMenuHelpString( "Ctrl affects all syntax elements" );
     } else {
-        if( hFontbar == NULL ) {
+        if( BAD_ID( hFontbar ) ) {
             return;
         }
         SendMessage( hFontbar, WM_CLOSE, 0, 0L );

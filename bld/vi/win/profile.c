@@ -255,7 +255,7 @@ static void readConfigFile( void )
         if( new_cfgtime > cfgTime ) {
             MySprintf( str, "The configuration file \"%s\" is newer than your .INI file, do you wish to use the new configuration?",
                        cname );
-            rc = MessageBox( (HWND) NULL, str, EditorName, MB_YESNO | MB_TASKMODAL );
+            rc = MessageBox( NO_WINDOW, str, EditorName, MB_YESNO | MB_TASKMODAL );
             if( rc == IDYES ) {
                 cfgTime = new_cfgtime;
             }

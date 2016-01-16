@@ -426,13 +426,13 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     EventList[k].alt_b = eb;
                 }
                 if( !EditFlags.Modeless ) {
-                    if( MenuWindow != NO_WINDOW ) {
+                    if( !BAD_ID( MenuWindow ) ) {
                         UpdateCurrentStatus( CSTATUS_INSERT );
                     }
                     EditFlags.WasOverstrike = false;
                     NewCursor( CurrentWindow, EditVars.InsertCursorType );
                 } else {
-                    if( MenuWindow != NO_WINDOW ) {
+                    if( !BAD_ID( MenuWindow ) ) {
                         UpdateCurrentStatus( CSTATUS_COMMAND );
                     }
                     NewCursor( CurrentWindow, EditVars.NormalCursorType );
@@ -678,7 +678,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_STATUSSTRING:
             ReplaceString( &EditVars.StatusString, fn );
-            if( StatusWindow != NO_WINDOW ) {
+            if( !BAD_ID( StatusWindow ) ) {
                 ClearWindow( StatusWindow );
                 UpdateStatusWindow();
             }

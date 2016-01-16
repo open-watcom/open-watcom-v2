@@ -51,7 +51,7 @@ vi_rc HandleMouseEvent( void )
     vi_rc       rc;
 
     wn = GetMousePosInfo( &win_x, &win_y );
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wn ) ) {
         return( ERR_NO_ERR );
     }
     w = Windows[wn];

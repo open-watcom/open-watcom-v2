@@ -92,11 +92,11 @@ void ShowStartupDialog( void )
  */
 void CloseStartupDialog( void )
 {
-    if( startDlgWindow == NULL ) {
+    if( BAD_ID( startDlgWindow ) ) {
         return;
     }
     DestroyWindow( startDlgWindow );
-    startDlgWindow = (HWND)NULLHANDLE;
+    startDlgWindow = NO_WINDOW;
     (void)FreeProcInstance( startDlgProc );
 
 } /* CloseStartupDialog */

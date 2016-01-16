@@ -589,7 +589,7 @@ HWND GetOwnedWindow( POINT pt )
     hwndElement = WindowFromPoint( pt );
     ScreenToClient( hwndElement, &pt );
     hwndChild = ChildWindowFromPoint( hwndElement, pt );
-    if( hwndChild != NULL ) {
+    if( !BAD_ID( hwndChild ) ) {
         /* must go 2 generations down
            (BufferWindows children of ContainerWindow, child of EditorName)
         */
@@ -597,7 +597,7 @@ HWND GetOwnedWindow( POINT pt )
         hwndElement = hwndChild;
         ScreenToClient( hwndElement, &pt );
         hwndChild = ChildWindowFromPoint( hwndElement, pt );
-        if( hwndChild != NULL) {
+        if( !BAD_ID( hwndChild ) ) {
             hwndElement = hwndChild;
         }
     }
@@ -611,10 +611,10 @@ HWND GetOwnedWindow( POINT pt )
             if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( Root ) ) {
                 return( hwndElement );
             }
-            return( (HWND)NULLHANDLE );
+            return( NO_WINDOW );
         }
     }
-    return( (HWND)NULLHANDLE );
+    return( NO_WINDOW );
 }
 
 int GetNumWindowTypes( void )

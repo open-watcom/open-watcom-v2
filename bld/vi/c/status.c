@@ -49,7 +49,7 @@ vi_rc NewStatusWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( StatusWindow != NO_WINDOW ) {
+    if( !BAD_ID( StatusWindow ) ) {
         CloseAWindow( StatusWindow );
         StatusWindow = NO_WINDOW;
     }
@@ -125,7 +125,7 @@ void UpdateStatusWindow( void )
     int         format;
     char        c;
 
-    if( StatusWindow == NO_WINDOW ||
+    if( BAD_ID( StatusWindow ) ||
         EditFlags.DisplayHold ||
         EditFlags.Quiet ||
         !EditFlags.StatusInfo ||

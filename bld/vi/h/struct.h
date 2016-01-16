@@ -161,10 +161,16 @@ typedef struct {
         typedef const void _NEAR *window_id;
         #define NO_WINDOW   ((window_id)NULL)
     #endif
+    #ifndef NDEBUG
+        #define BAD_ID(id)  ((id) == NO_WINDOW || !IsWindow( id ))
+    #else
+        #define BAD_ID(id)  ((id) == NO_WINDOW)
+    #endif
 #else
     typedef unsigned char   window_id;
     #define MAX_WINDS       UCHAR_MAX
     #define NO_WINDOW       ((window_id)MAX_WINDS)
+    #define BAD_ID(id)      ((id) == NO_WINDOW)
 #endif
 
 /*

@@ -146,7 +146,7 @@ static void sendNewColour( NewColourOps op )
 {
     type_style  *mod_style;
 
-    if( mod_hwnd == NULL ) {
+    if( BAD_ID( mod_hwnd ) ) {
         return;
     }
 
@@ -291,8 +291,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     CursorOp( COP_DROPCLR );
     SetCapture( hwnd );
     haveCapture = true;
-    mod_hwnd = (HWND)NULLHANDLE;
-
+    mod_hwnd = NO_WINDOW;
     return( 0 );
 }
 
@@ -337,13 +336,13 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPCLR );
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_hwnd = NO_WINDOW;
         return( 0 );
     }
 
     // otherwise, figure out what we're over & change element display
     mod_hwnd = GetOwnedWindow( m_pt );
-    if( mod_hwnd != NULL ) {
+    if( !BAD_ID( mod_hwnd ) ) {
         CursorOp( COP_DROPCLR );
     } else {
         CursorOp( COP_NODROP );

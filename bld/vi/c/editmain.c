@@ -446,14 +446,14 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id        repeatWindow = NO_WINDOW;
+static window_id    repeatWindow = NO_WINDOW;
 
 /*
  * KillRepeatWindow - just like it says
  */
 void KillRepeatWindow( void )
 {
-    if( repeatWindow != NO_WINDOW ) {
+    if( !BAD_ID( repeatWindow ) ) {
         CloseAWindow( repeatWindow );
         repeatWindow = NO_WINDOW;
     }
@@ -525,7 +525,7 @@ vi_rc DoDigit( void )
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
-    if( repeatWindow == NO_WINDOW && EditFlags.RepeatInfo ) {
+    if( BAD_ID( repeatWindow ) && EditFlags.RepeatInfo ) {
         rc = NewWindow2( &repeatWindow, &repcntw_info );
         if( rc != ERR_NO_ERR ) {
             DoneRepeat();
@@ -536,7 +536,7 @@ vi_rc DoDigit( void )
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = 0;
-    if( repeatWindow != NO_WINDOW ) {
+    if( BAD_ID( repeatWindow ) ) {
         UpdateRepeatString( RepeatString );
     }
     return( GOT_A_DIGIT );

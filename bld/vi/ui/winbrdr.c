@@ -157,22 +157,22 @@ void DrawBorder( window_id wn )
      */
     what.cinfo_char = wb[WB_TOPLEFT];
     WRITE_SCREEN_DATA( txt[xtl], what );
-    if( over[xtl] == NO_WINDOW ) {
+    if( BAD_ID( over[xtl] ) ) {
         WRITE_SCREEN( Scrn[tl], what );
     }
     what.cinfo_char = wb[WB_TOPRIGHT];
     WRITE_SCREEN_DATA( txt[xtr], what );
-    if( over[xtr] == NO_WINDOW ) {
+    if( BAD_ID( over[xtr] ) ) {
         WRITE_SCREEN( Scrn[tr], what );
     }
     what.cinfo_char = wb[WB_BOTTOMLEFT];
     WRITE_SCREEN_DATA( txt[xbl], what );
-    if( over[xbl] == NO_WINDOW ) {
+    if( BAD_ID( over[xbl] ) ) {
         WRITE_SCREEN( Scrn[bl], what );
     }
     what.cinfo_char = wb[WB_BOTTOMRIGHT];
     WRITE_SCREEN_DATA( txt[xbr], what );
-    if( over[xbr] == NO_WINDOW ) {
+    if( BAD_ID( over[xbr] ) ) {
         WRITE_SCREEN( Scrn[br], what );
     }
 
@@ -184,7 +184,7 @@ void DrawBorder( window_id wn )
     oscr = tl + EditVars.WindMaxWidth;
     for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
             MyVioShowBuf( oscr, 1 );
@@ -202,7 +202,7 @@ void DrawBorder( window_id wn )
     oscr = tr + EditVars.WindMaxWidth;
     for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
             MyVioShowBuf( oscr, 1 );
@@ -237,13 +237,13 @@ void DrawBorder( window_id wn )
         }
         what.cinfo_char = c;
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[tl + i] , what );
         }
 
         k = xbl + i;
         WRITE_SCREEN_DATA( txt[k], what2 );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[bl + i] , what2 );
         }
     }
@@ -254,7 +254,7 @@ void DrawBorder( window_id wn )
     if( w->has_gadgets || w->has_scroll_gadgets ) {
         what.cinfo_char = wb[WB_UPTRIANGLE];
         WRITE_SCREEN_DATA( txt[xtr + w->width], what );
-        if( over[xtr + w->width] == NO_WINDOW ) {
+        if( BAD_ID( over[xtr + w->width] ) ) {
             oscr = tr + EditVars.WindMaxWidth;
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
@@ -263,7 +263,7 @@ void DrawBorder( window_id wn )
         }
         what.cinfo_char = wb[WB_DOWNTRIANGLE];
         WRITE_SCREEN_DATA( txt[xbr - w->width], what );
-        if( over[xbr - w->width] == NO_WINDOW ) {
+        if( BAD_ID( over[xbr - w->width] ) ) {
             oscr = br - EditVars.WindMaxWidth;
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__

@@ -120,7 +120,7 @@ window_id CreateMainWindow( HANDLE inst )
     root = CreateWindow( EditorName, EditorName,
                          WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
                          initX, initY, initWidth, initHeight,
-                         (HWND)NULLHANDLE, (HMENU)NULLHANDLE, inst, NULL );
+                         NO_WINDOW, (HMENU)NULLHANDLE, inst, NULL );
     return( root );
 
 } /* CreateMainWindow */
@@ -182,16 +182,16 @@ void ResizeRoot( void )
     }
     GetClientRect( Root, &root_rect );
     DefaultWindows( &root_rect, &rect );
-    if( MessageWindow != NO_WINDOW ) {
+    if( !BAD_ID( MessageWindow ) ) {
         NewMessageWindow();
-        if( MessageWindow != NO_WINDOW ) {
+        if( !BAD_ID( MessageWindow ) ) {
             InvalidateRect( MessageWindow, NULL, FALSE );
             SendMessage( MessageWindow, WM_PAINT, 0, 0L );
         }
     }
-    if( StatusWindow != NO_WINDOW ) {
+    if( !BAD_ID( StatusWindow ) ) {
         NewStatusWindow();
-        if( StatusWindow != NO_WINDOW ) {
+        if( !BAD_ID( StatusWindow ) ) {
             InvalidateRect( StatusWindow, NULL, FALSE );
             SendMessage( StatusWindow, WM_PAINT, 0, 0L );
         }

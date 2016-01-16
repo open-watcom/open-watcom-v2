@@ -157,24 +157,26 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
         while( cnt1-- != 0 ) {
             what.cinfo_char = *tmp++;
             WRITE_SCREEN_DATA( *txt++, what );
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, what );
             }
+            over++;
             scr++;
             if( ++ss_i > ss->end ) {
                 ss++;
                 what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             }
         }
-        if( write_eol && *(over - 1) == NO_WINDOW ) {
+        if( write_eol && BAD_ID( *(over - 1) ) ) {
             WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
             blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
                 WRITE_SCREEN_DATA( *txt++, blank );
-                if( *over++ == NO_WINDOW ) {
+                if( BAD_ID( *over ) ) {
                     WRITE_SCREEN( *scr, blank );
                 }
+                over++;
                 scr++;
             }
         }
@@ -321,24 +323,26 @@ void DisplayCrossLineInWindow( window_id wn, int line )
     what.cinfo_char = WindowBordersNG[WB_LEFTT];
 
     WRITE_SCREEN_DATA( *txt++, what );
-    if( *over++ == NO_WINDOW ) {
+    if( BAD_ID( *over ) ) {
         WRITE_SCREEN( *scr, what );
     }
+    over++;
     scr++;
 
     what.cinfo_char = WindowBordersNG[WB_TOPBOTTOM];
     for( i = w->x1 + 1; i < w->x2; i++ ) {
         WRITE_SCREEN_DATA( *txt++, what );
-        if( *over++ == NO_WINDOW ) {
+        if( BAD_ID( *over ) ) {
             WRITE_SCREEN( *scr, what );
         }
+        over++;
         scr++;
     }
 
     if( line != w->height - 3 && line != 0 ) {
         what.cinfo_char = WindowBordersNG[WB_RIGHTT];
         WRITE_SCREEN_DATA( *txt, what );
-        if( *over == NO_WINDOW ) {
+        if( BAD_ID( *over ) ) {
             WRITE_SCREEN( *scr, what );
         }
     }
@@ -425,23 +429,25 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( w->overcnt[spl] ) {
         over = w->overlap + sscol + spl * w->width;
         while( cnt1-- != 0 ) {
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
 #endif
             }
+            over++;
             scr++;
         }
         while( cnt2-- != 0 ) {
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
 #endif
             }
+            over++;
             scr++;
         }
     } else {
@@ -557,7 +563,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
      */
     has_mouse = DisplayMouse( false );
     WRITE_SCREEN_DATA( w->text[addr], tmp );
-    if( w->overlap[addr] == NO_WINDOW ) {
+    if( BAD_ID( w->overlap[addr] ) ) {
         WRITE_SCREEN( Scrn[oscr], tmp );
     }
 #ifdef __VIO__

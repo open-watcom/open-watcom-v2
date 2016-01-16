@@ -132,7 +132,7 @@ void Error( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( MessageWindow != NO_WINDOW ) {
+    if( !BAD_ID( MessageWindow ) ) {
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
@@ -168,7 +168,7 @@ void ErrorBox( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( MessageWindow != NO_WINDOW ) {
+    if( !BAD_ID( MessageWindow ) ) {
         WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,

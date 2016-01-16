@@ -85,12 +85,12 @@ void FiniGrepDialog( void )
 {
     BringWindowToTop( Root );
     SetFocus( Root );
-    if( grepHwnd != NULL ) {
+    if( !BAD_ID( grepHwnd ) ) {
         DestroyWindow( grepHwnd );
     }
     (void)FreeProcInstance( grepProc );
     grepProc = NULL;
-    grepHwnd = (HWND)NULLHANDLE;
+    grepHwnd = NO_WINDOW;
 
 } /* FiniGrepDialog */
 
@@ -99,7 +99,7 @@ void FiniGrepDialog( void )
  */
 bool SetGrepDialogFile( const char *str )
 {
-    if( grepHwnd != NULL ) {
+    if( !BAD_ID( grepHwnd ) ) {
         SetDlgItemText( grepHwnd, GREP_CURRENT_FILE, str );
         MessageLoop( false );
     }

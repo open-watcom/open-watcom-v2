@@ -254,7 +254,7 @@ static void sendNewItem( int x, int id )
 {
     int     i;
 
-    if( mod_hwnd == NULL ) {
+    if( BAD_ID( mod_hwnd ) ) {
         return;
     }
     assert( mod_hwnd == StatusWindow );
@@ -292,7 +292,7 @@ static long processLButtonDown( HWND hwnd )
     SetCapture( hwnd );
     haveCapture = true;
     curItemID = GetDlgCtrlID( hwnd );
-    mod_hwnd = (HWND)NULLHANDLE;
+    mod_hwnd = NO_WINDOW;
     return( 0L );
 }
 
@@ -314,7 +314,7 @@ static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPSS );
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_hwnd = NO_WINDOW;
         return( 0L );
     }
 
@@ -323,7 +323,7 @@ static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     if( mod_hwnd == StatusWindow ) {
         CursorOp( COP_DROPSS );
     } else {
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_hwnd = NO_WINDOW;
         CursorOp( COP_NODROP );
     }
     return( 0L );
@@ -379,7 +379,6 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 {
     lparam = lparam;
     wparam = wparam;
-    hwnd = hwnd;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -389,7 +388,7 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         return( TRUE );
     case WM_CLOSE:
         removeSubclasses( hwnd );
-        hSSbar = (HWND)NULLHANDLE;
+        hSSbar = NO_WINDOW;
         // update editflags (may have closed from system menu)
         EditFlags.SSbar = false;
         DestroyWindow( hwnd );

@@ -44,7 +44,7 @@ vi_rc NewMessageWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( MessageWindow != NO_WINDOW ) {
+    if( !BAD_ID( MessageWindow ) ) {
         CloseAWindow( MessageWindow );
         MessageWindow = NO_WINDOW;
     }
@@ -75,7 +75,7 @@ void Message1( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
         return;
     }
     ClearWindow( MessageWindow );
@@ -100,7 +100,7 @@ void Message1Box( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
         return;
     }
     ClearWindow( MessageWindow );
@@ -125,7 +125,7 @@ void Message2( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
         return;
     }
     va_start( al, str );

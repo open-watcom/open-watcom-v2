@@ -41,7 +41,7 @@ int WindowAuxInfo( window_id wn, int type )
     wind        *w;
     int         rc;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wn ) ) {
         return( 1 );
     }
     rc = 0;
@@ -74,7 +74,7 @@ void WindowAuxUpdate( window_id wn, int type, int data )
 {
     wind *w;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wn ) ) {
         return;
     }
 

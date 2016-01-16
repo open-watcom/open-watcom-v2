@@ -89,7 +89,7 @@ static void sendNewFont( void )
 {
     type_style  *mod_style;
 
-    if( mod_hwnd == NULL ) {
+    if( BAD_ID( mod_hwnd ) ) {
         return;
     }
 
@@ -135,17 +135,17 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPFT );
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_hwnd = NO_WINDOW;
         return( 0 );
     }
 
     /* otherwise, figure out what we're over & change element display
     */
     mod_hwnd = GetOwnedWindow( m_pt );
-    if( mod_hwnd != NULL && mod_hwnd != GetToolbarWindow() ) {
+    if( !BAD_ID( mod_hwnd ) && mod_hwnd != GetToolbarWindow() ) {
         CursorOp( COP_DROPFT );
     } else {
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_hwnd = NO_WINDOW;
         CursorOp( COP_NODROP );
     }
 
@@ -202,8 +202,7 @@ static LRESULT setupForDrop( HWND hwnd )
     CursorOp( COP_DROPFT );
     SetCapture( hwnd );
     haveCapture = true;
-    mod_hwnd = (HWND)NULLHANDLE;
-
+    mod_hwnd = NO_WINDOW;
     return( 0 );
 }
 

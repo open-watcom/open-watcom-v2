@@ -170,7 +170,8 @@ vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
         return( ERR_WIND_INVALID );
     }
 
-    if( (new_wn = GimmeWindow()) == NO_WINDOW ) {
+    new_wn = GimmeWindow();
+    if( BAD_ID( new_wn ) ) {
         return( ERR_WIND_NO_MORE_WINDOWS );
     }
 

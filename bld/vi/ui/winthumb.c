@@ -58,7 +58,7 @@ void DrawVerticalThumb( wind *w, char ch )
     oscr = (w->x2) + (w->y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
 
     WRITE_SCREEN_DATA( txt[addr], what );
-    if( over[addr] == NO_WINDOW ) {
+    if( BAD_ID( over[addr] ) ) {
         WRITE_SCREEN( Scrn[oscr], what );
     }
 #ifdef __VIO__

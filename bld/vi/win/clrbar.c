@@ -64,7 +64,7 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
-        hColorbar = (HWND)NULLHANDLE;
+        hColorbar = NO_WINDOW;
         // update editflags (may have closed from system menu)
         EditFlags.Colorbar = false;
         break;
@@ -81,7 +81,7 @@ void RefreshColorbar( void )
     static FARPROC      proc = NULL;
 
     if( EditFlags.Colorbar ) {
-        if( hColorbar != NULL ) {
+        if( !BAD_ID( hColorbar ) ) {
             return;
         }
         // if( proc ){
@@ -91,7 +91,7 @@ void RefreshColorbar( void )
         hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, (DLGPROC)proc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
-        if( hColorbar == NULL ) {
+        if( BAD_ID( hColorbar ) ) {
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );

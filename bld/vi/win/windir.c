@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
 {
     switch( msg ) {
     case WM_KEYDOWN:
-        if( CommandId != NO_WINDOW ) {
+        if( !BAD_ID( CommandId ) ) {
             SetFocus( CommandId );
             SendMessage( CommandId, msg, w, l );
             return( 0 );

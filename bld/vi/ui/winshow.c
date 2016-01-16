@@ -60,9 +60,10 @@ static void reDisplayWindow( window_id wn )
         oscr = w->x1 + j * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
         for( i = w->x1; i <= w->x2; i++ ) {
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, *txt );
             }
+            over++;
             scr++;
             txt++;
         }
@@ -95,7 +96,7 @@ void MoveWindowToFrontDammit( window_id wn, bool scrflag )
 {
     wind        *w;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wn ) ) {
         return;
     }
     w = Windows[wn];
@@ -115,7 +116,7 @@ void InactiveWindow( window_id wn )
     wind        *w;
     vi_color    c;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wn ) ) {
         return;
     }
 
@@ -218,9 +219,10 @@ void ClearWindow( window_id wn )
         over = &(w->overlap[addr]);
         for( i = w->x1 + shift; i <= w->x2 - shift; i++ ) {
             WRITE_SCREEN_DATA( *txt++, what );
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, what );
             }
+            over++;
             scr++;
         }
 #ifdef __VIO__

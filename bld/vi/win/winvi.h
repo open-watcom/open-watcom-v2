@@ -78,12 +78,6 @@ typedef enum window_extra {
     WIN_LAST                    // so we can tell how big this is
 } window_extra;
 
-#ifndef NDEBUG
-    #define BAD_ID( id )    ((id) == NULL || (id) == NO_WINDOW || !IsWindow( id ))
-#else
-    #define BAD_ID( id )    ((id) == NO_WINDOW)
-#endif
-
 // we will always be using SetWindowLongPtr
 #define MAGIC_SIZE          sizeof( LONG_PTR )
 #define EXTRA_WIN_DATA      (WIN_LAST * MAGIC_SIZE)

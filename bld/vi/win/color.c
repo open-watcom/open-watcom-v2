@@ -62,7 +62,7 @@ static void NewColor( vi_color index, long rgb )
     long        nearest;
     HDC         hdc;
 
-    hdc = GetDC( (HWND)NULLHANDLE );
+    hdc = GetDC( NO_WINDOW );
     c = &colorData[index];
     if( c->pen ) {
         DeleteObject( c->pen );
@@ -72,7 +72,7 @@ static void NewColor( vi_color index, long rgb )
     }
     c->rgb = rgb;
     nearest = GetNearestColor( hdc, rgb );
-    ReleaseDC( (HWND)NULLHANDLE, hdc );
+    ReleaseDC( NO_WINDOW, hdc );
     c->pen = CreatePen( PS_SOLID, 1, nearest );
     brush.lbStyle = BS_SOLID;
     brush.lbColor = nearest;
@@ -86,9 +86,9 @@ void InitColors( void )
     PALETTEENTRY    palette[MAX_COLORS], *p;
     HDC             hdc;
 
-    hdc = GetDC( (HWND)NULLHANDLE );
+    hdc = GetDC( NO_WINDOW );
     GetSystemPaletteEntries( hdc, 0, MAX_COLORS, &palette[0] );
-    ReleaseDC( (HWND)NULLHANDLE, hdc );
+    ReleaseDC( NO_WINDOW, hdc );
     p = &palette[0];
     memset( &colorData[0], 0, sizeof( color ) * MAX_COLORS );
     for( i = 0; i < MAX_COLORS; i++, p++ ) {

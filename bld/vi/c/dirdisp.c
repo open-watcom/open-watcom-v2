@@ -150,7 +150,7 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
         return( ERR_FILE_NOT_FOUND );
     }
     if( DirFileCount == 1 ) {
-        if( dirWin != NO_WINDOW ) {
+        if( !BAD_ID( dirWin ) ) {
             ClearWindow( dirWin );
         }
         return( appendExtra( data, newstart,max, DirFiles[0],
@@ -202,7 +202,8 @@ static int calcColumns( HWND hwnd )
     int         columns;
     window      *w;
 
-    if( BAD_ID( hwnd ) ) return( 0 );
+    if( BAD_ID( hwnd ) )
+        return( 0 );
     w = WINDOW_FROM_ID( hwnd );
     GetClientRect( hwnd, &rect );
     columns = rect.right - rect.left;
@@ -285,7 +286,8 @@ static void displayFiles( void )
     type_style  *style;
     char        buffer[FILENAME_MAX];
 
-    if( BAD_ID( dirWin ) ) return;
+    if( BAD_ID( dirWin ) )
+        return;
     w = WINDOW_FROM_ID( dirWin );
 
     if( hasWrapped ) {
@@ -429,7 +431,7 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
         return( rc );
     }
 
-    if( dirWin == NO_WINDOW ) {
+    if( BAD_ID( dirWin ) ) {
         // ensure uniform font before opening window
         if( filecw_info.text_style.font != filecw_info.hilight_style.font )
             filecw_info.hilight_style.font = filecw_info.text_style.font;
@@ -481,7 +483,7 @@ vi_rc ContinueFileComplete( char *data, int start, int max, int what )
  */
 void FinishFileComplete( void )
 {
-    if( dirWin == NO_WINDOW ) {
+    if( BAD_ID( dirWin ) ) {
         return;
     }
     CloseAWindow( dirWin );

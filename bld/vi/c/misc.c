@@ -385,7 +385,7 @@ bool PromptFilesForSave( void )
     info        *cinfo;
     int         i;
     int         num = 0;
-    HWND        hwnd_old = 0;
+    HWND        hwnd_old = NO_WINDOW;
 
     if( !EditFlags.SaveOnBuild ) {
         return( true );
@@ -409,7 +409,7 @@ bool PromptFilesForSave( void )
         }
         RotateFileForward();
     }
-    if( hwnd_old != NULL ) {
+    if( !BAD_ID( hwnd_old ) ) {
         SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
@@ -425,7 +425,7 @@ bool PromptThisFileForSave( const char *filename )
 {
 #ifdef __WIN__
     info        *cinfo;
-    HWND        hwnd_old = 0;
+    HWND        hwnd_old = NO_WINDOW;
 
     while( isspace( *filename ) ) {
         filename++;
@@ -446,7 +446,7 @@ bool PromptThisFileForSave( const char *filename )
             }
         }
     }
-    if( hwnd_old != NULL ) {
+    if( !BAD_ID( hwnd_old ) ) {
         SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }

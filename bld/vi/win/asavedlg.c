@@ -79,7 +79,7 @@ vi_key GetAutosaveResponse( void )
     vi_key      key;
 
     proc = MakeDlgProcInstance( ASaveDlgProc, InstanceHandle );
-    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, (DLGPROC)proc );
+    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     return( key );
