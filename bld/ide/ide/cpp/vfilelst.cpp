@@ -168,20 +168,20 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
 }
 
 
-static LRESULT findMatchingFile( HWND hwnd, const char *fname )
+static int findMatchingFile( HWND hwnd, const char *fname )
 {
-    LRESULT     rc;
+    int         rc;
     WString     fullname;
     HWND        lb;
 
     getFullFname( hwnd, fname, &fullname );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
 //    fullname.toLower();
-    rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
+    rc = (int)SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     if( rc == LB_ERR ) {
         getRelFname( hwnd, fname, &fullname );
 //        fullname.toLower();
-        rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
+        rc = (int)SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     }
     return( rc );
 }
@@ -297,7 +297,7 @@ static void addAllFiles95( HWND hwnd ) {
     HANDLE          find_handle;
     BOOL            found = TRUE;
     char            *fname;
-    
+
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     ext = info->filter;
     n = info->filter_index * 2 - 1;
