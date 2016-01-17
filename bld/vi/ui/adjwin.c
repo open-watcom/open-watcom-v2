@@ -143,7 +143,7 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
 /*
  * dickWithAWindow - resize window based on keys/mouse
  */
-static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
+static void dickWithAWindow( window_id id, bool topcorner, bool move, bool *doresize,
                              windim *wd, bool mouse )
 {
     vi_key      key;
@@ -164,7 +164,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
         DisplayMouse( false );
     }
     *doresize = false;
-    cwd = WINDOW_FROM_ID( wn );
+    cwd = WINDOW_FROM_ID( id );
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     x1 = cwd->x1;
     x2 = cwd->x2;

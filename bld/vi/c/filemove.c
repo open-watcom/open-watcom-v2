@@ -110,13 +110,12 @@ vi_rc NextFileDammit( void )
             }
             QuitEditor( ERR_NO_ERR );
         }
-    }
 #ifndef __WIN__
-    else {
+    } else {
         CloseAWindow( CurrentWindow );
         CurrentWindow = NO_WINDOW;
-    }
 #endif
+    }
     /*
      * now, set up with next file
      */

@@ -123,9 +123,9 @@ vi_rc FcbDump( void )
             cfcb, cfcb->start_line, cfcb->end_line, cfcb->byte_cnt, cfcb->offset,
             cfcb->last_swap, cfcb->xmemaddr );
         WPrintfLine( fw, lc++, "    swp:%d in:%d dsp:%d ded:%d nswp:%d xmem:%d xms:%d.",
-            (int) cfcb->swapped, (int) cfcb->in_memory, (int) cfcb->on_display,
-            (int) cfcb->dead, (int) cfcb->non_swappable, (int) cfcb->in_extended_memory,
-            (int) cfcb->in_xms_memory );
+            (int)cfcb->swapped, (int)cfcb->in_memory, (int)cfcb->on_display,
+            (int)cfcb->dead, (int)cfcb->non_swappable, (int)cfcb->in_extended_memory,
+            (int)cfcb->in_xms_memory );
         WPrintfLine( fw, lc++, "    next=%W,prev=%W", cfcb->next, cfcb->prev );
 
         if( lc > 22 || cfcb->next == NULL ) {
