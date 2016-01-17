@@ -209,26 +209,26 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
 {
     int         i, j;
     HWND        list_box;
-#ifdef __NT__
+  #ifdef __NT__
     LVITEM      lvi;
-#endif
+  #endif
 
     list_box = GetDlgItem( dlg, ID_FILE_LIST );
-#ifdef __NT__
+  #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
-        i = SendMessage( list_box, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
+        i = (int)SendMessage( list_box, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
     } else {
-#endif
+  #endif
         i = (int)SendMessage( list_box, LB_GETCURSEL, 0, 0L );
-#ifdef __NT__
+  #ifdef __NT__
     }
-#endif
+  #endif
     getFile( files[i] );
     if( leave ) {
         EndDialog( dlg, ERR_NO_ERR );
     } else {
         /* remove it from the list box */
-#ifdef __NT__
+  #ifdef __NT__
         if( IsCommCtrlLoaded() ) {
             SendMessage( list_box, LVM_DELETEITEM, i, 0L );
             lvi.stateMask = LVIS_SELECTED;
@@ -237,15 +237,15 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
                 SendMessage( list_box, LVM_SETITEMSTATE, i - 1, (LPARAM)&lvi );
             }
         } else {
-#endif
+  #endif
             j = SendMessage( list_box, LB_DELETESTRING, i, 0L );
             assert( (j + 1) == (*count) );
             if( SendMessage( list_box, LB_SETCURSEL, i, 0L ) == LB_ERR ) {
                 SendMessage( list_box, LB_SETCURSEL, i - 1, 0L );
             }
-#ifdef __NT__
+  #ifdef __NT__
         }
-#endif
+  #endif
         MemFree( files[i] );
         for( j = i; j < *count; j++ ) {
             files[j] = files[j + 1];
@@ -322,7 +322,8 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
 
 } /* GrepListProc */
 
-#ifdef __NT__
+  #ifdef __NT__
+
 WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
@@ -392,24 +393,25 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
     return( FALSE );
 
 } /* GrepListProc95 */
-#endif
+
+  #endif
 
 static vi_rc doGREP( const char *dirlist )
 {
     FARPROC     fp;
     vi_rc       rc;
 
-#ifdef __NT__
+  #ifdef __NT__
     if( LoadCommCtrl() ) {
         fp = MakeDlgProcInstance( GrepListProc95, InstanceHandle );
         rc = DialogBoxParam( InstanceHandle, "GREPLIST95", Root, (DLGPROC)fp, (LPARAM)dirlist );
     } else {
-#endif
+  #endif
         fp = MakeDlgProcInstance( GrepListProc, InstanceHandle );
         rc = DialogBoxParam( InstanceHandle, "GREPLIST", Root, (DLGPROC)fp, (LPARAM)dirlist );
-#ifdef __NT__
+  #ifdef __NT__
     }
-#endif
+  #endif
     FreeProcInstance( fp );
     return( rc );
 }
@@ -608,10 +610,10 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
                  * and the entire string is added to it but only the file
                  * name is added to the list
                  */
-#ifdef __NT__
+  #ifdef __NT__
                 if( IsCommCtrlLoaded() ) {
                     lvi.mask = LVIF_TEXT;
-                    lvi.iItem = SendMessage( wn, LVM_GETITEMCOUNT, 0, 0L );
+                    lvi.iItem = (int)SendMessage( wn, LVM_GETITEMCOUNT, 0, 0L );
                     lvi.iSubItem = 0;
                     lvi.pszText = fn;
                     SendMessage( wn, LVM_INSERTITEM, 0, (LPARAM)&lvi );
@@ -619,12 +621,12 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
                     lvi.pszText = ts;
                     SendMessage( wn, LVM_SETITEM, 0, (LPARAM)&lvi );
                 } else {
-#endif
+  #endif
                     SendMessage( wn, LB_ADDSTRING, 0, (LPARAM)data );
                     MySprintf( data, "%X", fn );
-#ifdef __NT__
+  #ifdef __NT__
                 }
-#endif
+  #endif
 #endif
                 list[*clist] = DupString( data );
                 (*clist)++;

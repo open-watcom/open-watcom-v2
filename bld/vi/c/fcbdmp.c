@@ -200,7 +200,8 @@ vi_rc SanityCheck( void )
     vi_rc       rc;
 
     EditFlags.WatchForBreak = true;
-    if( (rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle )) ) {
+    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     lc = 1;
@@ -294,21 +295,25 @@ vi_rc LineInfo( void )
 vi_rc WalkUndo( void )
 {
 #if !defined( NDEBUG ) && !defined( __WIN__ )
-    int         ln = 1, i, col, fcbcnt, depth = 0;
+    int         ln, col, fcbcnt, depth;
     window_id   fw;
     linenum     lne, lcnt;
     undo        *cundo;
     fcb         *cfcb;
+    vi_rc       rc;
 
     if( UndoStack->current < 0 ) {
         return( ERR_NO_ERR );
     }
-    if( (i = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle )) ) {
+    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    if( rc != ERR_NO_ERR ) {
         return( ERR_NO_ERR );
     }
 
     cundo = UndoStack->stack[UndoStack->current];
 
+    ln = 1;
+    depth = 0;
     for( ;; ) {
         switch( cundo->type ) {
         case START_UNDO_GROUP:
@@ -316,8 +321,7 @@ vi_rc WalkUndo( void )
             if( cundo->data.sdata.depth == 1 ) {
                 lne = cundo->data.sdata.p.line;
                 col = cundo->data.sdata.p.column;
-                WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d): lne=%l, col= %d", depth,
-                    lne, col );
+                WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d): lne=%l, col= %d", depth, lne, col );
             } else {
                 WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d)", depth );
             }
