@@ -427,9 +427,9 @@ typedef unsigned int    ORD;
 #elif __RDOS__
 
 /*      This needs to be fixed so scaling for a mouse also need a larger range!!
-    An improper reference to __GUI__ is used. Fixed for now so it works for RDOS. 
+    An improper reference to __GUI__ is used. Fixed for now so it works for RDOS.
 */
-    
+
 typedef int    ORD;
 
 #else
@@ -516,14 +516,14 @@ typedef struct image_def {      // this gets attached to the graphic field
 } IMAGE_DEF;
 
 
-typedef struct window {
+typedef struct UI_WINDOW {
     SAREA               area;
     SAREA               dirty_area;
     int                 priority;
     void                (_FAR *update)( struct sarea, void * );
     void _FARD          *parm;
-    struct window _FARD *next;
-    struct window _FARD *prev;
+    struct UI_WINDOW    _FARD *next;
+    struct UI_WINDOW    _FARD *prev;
     union {
         IMAGE_DEF __FAR *graphic;
         BUFFER          buffer;
