@@ -675,7 +675,7 @@ vi_rc InitMenu( void )
 {
     menu    *m;
 
-    if( Root ) {
+    if( !BAD_ID( Root ) ) {
         if( rootMenu->menu_handle != NULL ) {
             /* pitch all Windows objects */
             for( m = (menu *)rootMenu->item_head; m != NULL; m = m->next ) {
@@ -700,7 +700,7 @@ void FiniMenu( void )
 {
     menu    *m, *next;
 
-    if( Root ) {
+    if( !BAD_ID( Root ) ) {
         if( rootMenu->menu_handle != NULL ) {
             for( m = (menu *)rootMenu->item_head; m != NULL; m = next ) {
                 next = m->next;

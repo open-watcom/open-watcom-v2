@@ -346,7 +346,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_CLOSE:
         ExitWithPrompt( true, true );
         return( 0 );
-#ifdef __NT__        
+#ifdef __NT__
     case WM_MOUSEWHEEL:
         {
             int     increment;
@@ -374,7 +374,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_DESTROY:
         DestroyToolBar();
         DragAcceptFiles( hwnd, FALSE );
-        EditContainer = 0;
+        EditContainer = NO_WINDOW;
         if( timerID ) {
             KillTimer( hwnd, TIMER_ID );
         }

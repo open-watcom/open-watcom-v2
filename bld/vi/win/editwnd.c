@@ -773,9 +773,9 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             if( win != NULL ) {
                 tbwin = GetToolbarWindow();
                 if( win == Root || win == tbwin || win == CommandId ||
-                    (hColorbar && IsChild( hColorbar, win )) ||
-                    (hFontbar && IsChild( hFontbar, win )) ||
-                    (hSSbar && IsChild( hSSbar, win )) ) {
+                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, win )) ||
+                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, win )) ||
+                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, win )) ) {
                     killsel = false;
                 }
             }

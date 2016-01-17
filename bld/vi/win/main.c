@@ -194,9 +194,9 @@ void MessageLoop( bool block )
             if( !rc ) {
                 exit( msg.wParam );
             }
-            if( (hColorbar == 0 || !IsDialogMessage( hColorbar, &msg )) &&
-                (hSSbar == 0 || !IsDialogMessage( hSSbar, &msg )) &&
-                (hFontbar == 0 || !IsDialogMessage( hFontbar, &msg )) &&
+            if( (BAD_ID( hColorbar ) || !IsDialogMessage( hColorbar, &msg )) &&
+                (BAD_ID( hSSbar ) || !IsDialogMessage( hSSbar, &msg )) &&
+                (BAD_ID( hFontbar ) || !IsDialogMessage( hFontbar, &msg )) &&
                 !TranslateMDISysAccel( EditContainer, &msg ) ) {
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );

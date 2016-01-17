@@ -481,7 +481,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_COLORBAR:
             EditFlags.Colorbar = newset;
   #ifdef __WIN__
-            if( Root == NULL ) {
+            if( BAD_ID( Root ) ) {
                 EditFlags.Colorbar = false;
             } else {
                 RefreshColorbar();
@@ -491,7 +491,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_SSBAR:
             EditFlags.SSbar = newset;
   #ifdef __WIN__
-            if( Root == NULL ) {
+            if( BAD_ID( Root ) ) {
                 EditFlags.SSbar = false;
             } else {
                 RefreshSSbar();
@@ -501,7 +501,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_FONTBAR:
             EditFlags.Fontbar = newset;
   #ifdef __WIN__
-            if( Root == NULL ) {
+            if( BAD_ID( Root ) ) {
                 EditFlags.Fontbar = false;
             } else {
                 RefreshFontbar();

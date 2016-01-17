@@ -179,7 +179,7 @@ int WindowAuxInfo( window_id id, int type )
     int         value, height;
     RECT        area;
 
-    if( id == NULL || !IsWindow( id ) ) {
+    if( BAD_ID( id ) || !IsWindow( id ) ) {
         return( 0 );
     }
     win = WINDOW_FROM_ID( id );
