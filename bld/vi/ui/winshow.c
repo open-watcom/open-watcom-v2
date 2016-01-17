@@ -39,7 +39,7 @@
  */
 static void reDisplayWindow( window_id wn )
 {
-    wind                *w;
+    window              *w;
     char_info           *txt;
     window_id           *over;
     char_info           _FAR *scr;
@@ -95,7 +95,7 @@ void MoveWindowToFront( window_id wn )
  */
 void MoveWindowToFrontDammit( window_id wn, bool scrflag )
 {
-    wind        *w;
+    window      *w;
 
     if( BAD_ID( wn ) ) {
         return;
@@ -114,7 +114,7 @@ void MoveWindowToFrontDammit( window_id wn, bool scrflag )
  */
 void InactiveWindow( window_id wn )
 {
-    wind        *w;
+    window      *w;
     vi_color    c;
 
     if( BAD_ID( wn ) ) {
@@ -147,7 +147,7 @@ void ActiveWindow( window_id a ) { a = a; }
  */
 void WindowTitleAOI( window_id wn, const char *title, bool active )
 {
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( wn );
     MemFree( w->title );
@@ -188,7 +188,7 @@ void WindowTitleInactive( window_id id, const char *name )
  */
 void ClearWindow( window_id wn )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
@@ -241,7 +241,7 @@ void ClearWindow( window_id wn )
  */
 bool InsideWindow( window_id id, int x, int y )
 {
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( id );
     if( !w->has_border ) {

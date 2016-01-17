@@ -89,7 +89,7 @@ bool IsGadgetStringChanged( char *str )
  */
 void DrawBorder( window_id wn )
 {
-    wind                *w;
+    window              *w;
     int                 i, k, stc, etc, ctc;
     int                 tl, bl, tr, br;
     int                 xtl, xbl, xtr, xbr;
@@ -297,7 +297,7 @@ void SetBorderGadgets( window_id wn, bool how )
  */
 void WindowBorderData( window_id wn, const char *data, int col )
 {
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( wn );
     if( w->has_border ) {

@@ -64,7 +64,7 @@ typedef struct char_info {
 /*
  * window structure
  */
-typedef struct wind {
+typedef struct window {
     vi_color    border_color1, border_color2;
     vi_color    text_color, background_color;
     short       x1, y1, x2, y2, width, height;
@@ -84,9 +84,9 @@ typedef struct wind {
     bool        min_slot            : 1;
     bool        has_scroll_gadgets  : 1;
     signed char overcnt[1];
-} wind;
+} window;
 
-extern wind         *Windows[MAX_WINDS];
+extern window       *Windows[MAX_WINDS];
 
 #define THUMB_START         2
 #define NORMAL_ATTR         7
@@ -257,8 +257,8 @@ extern void     FinishWindows( void );
 extern vi_rc        ResetWindow( window_id * );
 extern bool         ValidDimension( int, int, int, int, bool );
 extern window_id    GimmeWindow( void );
-extern wind         *AllocWindow( window_id, int, int, int, int, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
-extern void         FreeWindow( wind * );
+extern window       *AllocWindow( window_id, int, int, int, int, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
+extern void         FreeWindow( window * );
 extern vi_rc        NewWindow( window_id *, int, int, int, int, bool, vi_color, vi_color, type_style * );
 extern void         CloseAWindow( window_id );
 
@@ -266,8 +266,8 @@ extern void         CloseAWindow( window_id );
 extern void     CloseAChildWindow( window_id );
 
 /* winover.c */
-extern void         ResetOverlap( wind * );
-extern bool         TestVisible( wind * );
+extern void         ResetOverlap( window * );
+extern bool         TestVisible( window * );
 extern void         MarkOverlap( window_id );
 extern void         RestoreOverlap( window_id, bool );
 extern bool         TestOverlap( window_id );
@@ -285,15 +285,15 @@ extern vi_rc    MaximizeCurrentWindow( void );
 
 /* winswap.c */
 extern void     SwapAllWindows( void );
-extern void     AccessWindow( wind * );
-extern void     ReleaseWindow( wind *);
+extern void     AccessWindow( window * );
+extern void     ReleaseWindow( window *);
 extern void     WindowSwapFileClose( void );
 
 /* winthumb.c */
 extern void     PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last );
 extern void     PositionHorizontalScrollThumb( window_id, int );
-extern void     DrawVerticalThumb( wind *w, char ch );
-extern vi_rc    PositionToNewThumbPosition( wind *w, int thumb );
+extern void     DrawVerticalThumb( window *w, char ch );
+extern vi_rc    PositionToNewThumbPosition( window *w, int thumb );
 
 /* ui/wintica.c */
 extern vi_rc    WindowTile( int, int );
@@ -320,6 +320,6 @@ extern void     MyHideCaret( window_id );
 extern void     MyKillCaret( window_id );
 extern void     MyRaiseCaret( window_id );
 
-extern viattr_t WindowAttr( wind *, vi_color, vi_color );
+extern viattr_t WindowAttr( window *, vi_color, vi_color );
 
 #endif

@@ -38,7 +38,7 @@
  */
 int WindowAuxInfo( window_id wn, int type )
 {
-    wind        *w;
+    window      *w;
     int         rc;
 
     if( BAD_ID( wn ) ) {
@@ -73,7 +73,7 @@ int WindowAuxInfo( window_id wn, int type )
  */
 void WindowAuxUpdate( window_id wn, int type, int data )
 {
-    wind *w;
+    window  *w;
 
     if( BAD_ID( wn ) ) {
         return;

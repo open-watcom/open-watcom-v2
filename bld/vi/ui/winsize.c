@@ -39,7 +39,7 @@
  */
 vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 {
-    wind        *oldw;
+    window      *oldw;
 //    int         bt, k;
 //    char        *txt, *tptr;
 //    char        *ot;
@@ -83,7 +83,7 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
  */
 vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 {
-    wind        *w;
+    window      *w;
     vi_rc       rc;
 
     w = WINDOW_FROM_ID( wn );

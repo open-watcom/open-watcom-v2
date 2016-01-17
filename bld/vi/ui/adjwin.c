@@ -152,7 +152,7 @@ static void dickWithAWindow( window_id id, bool topcorner, bool move, bool *dore
     int         mrow = 0;
     int         mcol = 0;
     int         dx, dy, bclr;
-    wind        *cwd;
+    window      *w;
 
     /*
      * get original window dimensions, save copy of old border
@@ -164,12 +164,12 @@ static void dickWithAWindow( window_id id, bool topcorner, bool move, bool *dore
         DisplayMouse( false );
     }
     *doresize = false;
-    cwd = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( id );
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
-    x1 = cwd->x1;
-    x2 = cwd->x2;
-    y1 = cwd->y1;
-    y2 = cwd->y2;
+    x1 = w->x1;
+    x2 = w->x2;
+    y1 = w->y1;
+    y2 = w->y2;
     if( move ) {
         bclr = EditVars.MoveColor;
     } else {
@@ -302,7 +302,7 @@ static void dickWithAWindow( window_id id, bool topcorner, bool move, bool *dore
         /*
          * do the resize
          */
-        if( ValidDimension( nx1, ny1, nx2, ny2, cwd->has_border ) ) {
+        if( ValidDimension( nx1, ny1, nx2, ny2, w->has_border ) ) {
             swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
             x1 = nx1; x2 = nx2; y1 = ny1; y2 = ny2;
             swapTmp( Scrn, tmpImage, x1, y1, x2, y2 );

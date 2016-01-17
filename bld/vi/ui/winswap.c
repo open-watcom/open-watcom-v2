@@ -78,7 +78,7 @@ static long buffSize( void )
 /*
  * windowSwap - swap a windows data
  */
-void static windowSwap( wind *w )
+void static windowSwap( window *w )
 {
     int         i, size;
     long        pos;
@@ -111,7 +111,7 @@ void static windowSwap( wind *w )
 void SwapAllWindows( void )
 {
     info        *cinfo;
-    wind        *w;
+    window      *w;
 
     if( windowSwapFileOpen() == ERR_NO_ERR ) {
         if( EditFlags.Verbose ) {
@@ -130,7 +130,7 @@ void SwapAllWindows( void )
 /*
  * fetchWindow - get contents of a window
  */
-static void fetchWindow( wind *w )
+static void fetchWindow( window *w )
 {
     int         size;
     long        pos;
@@ -152,7 +152,7 @@ static void fetchWindow( wind *w )
 /*
  * AccessWindow - get at window data
  */
-void AccessWindow( wind *w )
+void AccessWindow( window *w )
 {
     w->accessed++;
     if( w->isswapped ) {
@@ -164,7 +164,7 @@ void AccessWindow( wind *w )
 /*
  * ReleaseWindow - no longer using window
  */
-void ReleaseWindow( wind *w )
+void ReleaseWindow( window *w )
 {
     w->accessed--;
 

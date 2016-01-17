@@ -337,7 +337,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
  * come up with a correct curses attribute given a color combo and a
  * window.
  */
-viattr_t WindowAttr( wind *w, vi_color foreground, vi_color background )
+viattr_t WindowAttr( window *w, vi_color foreground, vi_color background )
 {
     unsigned long   attr = A_NORMAL;
 

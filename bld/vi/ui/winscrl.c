@@ -38,7 +38,7 @@
  */
 void ShiftWindowUpDown( window_id id, int diff )
 {
-    wind                *w;
+    window              *w;
     int                 start, spl, i, j;
     int                 sline, eline, add;
     char_info           *txt_s, *txt_d;

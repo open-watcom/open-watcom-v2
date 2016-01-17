@@ -177,7 +177,7 @@ void SetPosToMessageLine( void )
  */
 void SetGenericWindowCursor( window_id wn, int l, int c )
 {
-    wind        *w;
+    window      *w;
     int         row, col;
 
     w = WINDOW_FROM_ID( wn );

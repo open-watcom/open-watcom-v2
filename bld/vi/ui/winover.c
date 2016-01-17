@@ -36,7 +36,7 @@
 /*
  * ResetOverlap - set so no overlap of window
  */
-void ResetOverlap( wind *w )
+void ResetOverlap( window *w )
 {
     window_id   *over;
     window_id   *whoover;
@@ -65,7 +65,7 @@ void ResetOverlap( wind *w )
  */
 void MarkOverlap( window_id wn )
 {
-    wind        *w, *wo;
+    window      *w, *wo;
     int         i, j, k;
     window_id   *whoover;
     window_id   *img;
@@ -106,7 +106,7 @@ void MarkOverlap( window_id wn )
  */
 void RestoreOverlap( window_id wn, bool scrflag )
 {
-    wind                *w, *wo, *o;
+    window              *w, *wo, *o;
     int                 i, j, k, l;
     window_id           *whoover;
     window_id           *over;
@@ -209,7 +209,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
  */
 bool TestOverlap( window_id wn )
 {
-    wind        *w;
+    window      *w;
     int         i;
 
     w = WINDOW_FROM_ID( wn );
@@ -226,7 +226,7 @@ bool TestOverlap( window_id wn )
 /*
  * TestVisible - test if a window is visible at all
  */
-bool TestVisible( wind *w )
+bool TestVisible( window *w )
 {
     int i;
 
@@ -245,7 +245,7 @@ bool TestVisible( wind *w )
  */
 bool WindowIsVisible( window_id id )
 {
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( id );
     return( TestVisible( w ) );
@@ -258,7 +258,7 @@ bool WindowIsVisible( window_id id )
 window_id WhoIsUnder( int *x, int *y )
 {
     window_id   id;
-    wind        *w;
+    window      *w;
     int         win_x, win_y;
 
     id = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];

@@ -59,7 +59,7 @@ size_t strlen( const char *__s );
 static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
                                 char *text, int start_col, ss_block *ss )
 {
-    wind                *w;
+    window              *w;
     char_info           *txt;
     window_id           *over;
     char                *tmp, *otmp;
@@ -286,7 +286,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
  */
 void DisplayCrossLineInWindow( window_id wn, int line )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
@@ -359,7 +359,7 @@ void DisplayCrossLineInWindow( window_id wn, int line )
  */
 static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *s )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           _FAR *scr;
     unsigned            oscr;
@@ -517,7 +517,7 @@ void ColorAColumnRange( int row, int scol, int ecol, type_style *style )
  */
 vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style )
 {
-    wind                *w;
+    window              *w;
     int                 addr, start, spl;
     char_info           tmp = {0, 0};
     bool                has_mouse;
@@ -583,7 +583,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
 vi_rc DisplayLineInWindow( window_id wn, int c_line_no, char *text )
 {
     ss_block    ss;
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( wn );
     SEType[SE_UNUSED].foreground = w->text_color;

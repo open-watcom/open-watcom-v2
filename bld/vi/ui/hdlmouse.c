@@ -45,7 +45,7 @@ vi_rc HandleMouseEvent( void )
     int         win_x, win_y;
     window_id   wn;
     info        *cinfo;
-    wind        *w;
+    window      *w;
     int         i;
     bool        diff_word;
     vi_rc       rc;

@@ -36,7 +36,7 @@
 /*
  * DrawVerticalThumb - draw the scroll thumb on the screen
  */
-void DrawVerticalThumb( wind *w, char ch )
+void DrawVerticalThumb( window *w, char ch )
 {
     char_info   what = {0, 0};
     int         addr;
@@ -72,7 +72,7 @@ void DrawVerticalThumb( wind *w, char ch )
  */
 void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
 {
-    wind        *w;
+    window      *w;
     int         height;
     int         newpos;
 
@@ -104,7 +104,7 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
 /*
  * PositionToNewThumbPosition - set new position in file based on thumb
  */
-vi_rc PositionToNewThumbPosition( wind *w, int win_y )
+vi_rc PositionToNewThumbPosition( window *w, int win_y )
 {
     int         height;
     vi_rc       rc;

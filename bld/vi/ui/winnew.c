@@ -40,7 +40,7 @@
  */
 vi_rc ResetWindow( window_id *wn )
 {
-    wind        *w;
+    window      *w;
     char        *tmp;
     vi_rc       rc;
 
@@ -110,17 +110,17 @@ window_id GimmeWindow( void )
 /*
  * AllocWindow - allocate a new window
  */
-wind *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets
-                    , bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
+window *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets,
+                        bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
-    wind        *tmp;
+    window      *tmp;
     int         width, height, size, i;
 
     width = x2 - x1 + 1;
     height = y2 - y1 + 1;
     size = width * height;
 
-    tmp = MemAlloc( offsetof( wind, overcnt ) + height );
+    tmp = MemAlloc( offsetof( window, overcnt ) + height );
     tmp->id = wn;
     tmp->has_gadgets = has_gadgets;
     tmp->accessed = ( accessed ) ? 1 : 0;
@@ -193,7 +193,7 @@ vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
 /*
  * FreeWindow - free data associated with a window
  */
-void FreeWindow( wind *w )
+void FreeWindow( window *w )
 {
     MemFree( w->text );
     MemFree( w->overlap );
@@ -209,7 +209,7 @@ void FreeWindow( wind *w )
  */
 void CloseAWindow( window_id wn )
 {
-    wind        *w;
+    window      *w;
 
     w = WINDOW_FROM_ID( wn );
 
