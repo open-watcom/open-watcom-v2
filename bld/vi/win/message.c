@@ -35,19 +35,15 @@
 #include "utils.h"
 #include "myprtf.h"
 #include "wprocmap.h"
+#include "winifini.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool init( window *, void * );
-static bool fini( window *, void * );
-
 window MessageBar = {
     &messagew_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 static char *ClassName = "MessageWindow";
@@ -55,12 +51,9 @@ static char msgString1[MAX_STR];
 static char msgString2[MAX_STR];
 static void msgString( int, const char * );
 
-static bool init( window *w, void *parm )
+bool MessageBarInit( void )
 {
     WNDCLASS        wc;
-
-    w = w;
-    parm = parm;
 
     msgString1[0] = 0;
     msgString2[0] = 0;
@@ -78,10 +71,8 @@ static bool init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool fini( window *w, void *parm )
+bool MessageBarFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 

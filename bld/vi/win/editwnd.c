@@ -37,6 +37,7 @@
 #include "color.h"
 #include "utils.h"
 #include "wprocmap.h"
+#include "winifini.h"
 // #include "mdisim.h"
 
 
@@ -48,14 +49,9 @@ extern HWND hColorbar, hFontbar, hSSbar;
 
 char *EditWindowClassName = "Buffer Window";
 
-static bool init( window *, void * );
-static bool fini( window *, void * );
-
 window EditWindow = {
     &editw_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 long            VScrollBarScale = 1;
@@ -64,12 +60,9 @@ int             HScrollBarScale = MAX_INPUT_LINE;
 /*
  * init - initialization routine for edit windows
  */
-static bool init( window *w, void *parm )
+bool EditWindowInit( void )
 {
     WNDCLASS    wc;
-
-    w = w;
-    parm = parm;
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wc.lpfnWndProc = GetWndProc( EditWindowProc );
@@ -84,6 +77,12 @@ static bool init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 
 } /* init */
+
+bool EditWindowFini( void )
+{
+    return( true );
+
+} /* fini */
 
 /*
  * GetEditStyle - get the edit window style
@@ -939,11 +938,3 @@ void ResetExtraRects( void )
     }
 
 } /* ResetExtraRects */
-
-static bool fini( window *w, void *parm )
-{
-    w = w;
-    parm = parm;
-    return( true );
-
-} /* fini */

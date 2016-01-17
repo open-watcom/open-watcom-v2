@@ -35,31 +35,24 @@
 #include "utils.h"
 #include "wprocmap.h"
 #include "win.h"
+#include "winifini.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool init( window *, void * );
-static bool fini( window *, void * );
-
 window RepeatCountWindow = {
     &repcntw_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 static char     *className = "RepeatWindow";
 static char     repString[MAX_STR];
 static HWND     repeatWindow;
 
-static bool init( window *w, void *parm )
+bool RepeatCountWindowInit( void )
 {
     WNDCLASS        wc;
-
-    parm = parm;
-    w = w;
 
     repString[0] = 0;
 
@@ -77,10 +70,8 @@ static bool init( window *w, void *parm )
 
 } /* init */
 
-static bool fini( window *w, void *parm )
+bool RepeatCountWindowFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 
 } /* fini */

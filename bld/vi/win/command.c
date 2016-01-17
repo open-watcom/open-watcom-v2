@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "win.h"
 #include "wprocmap.h"
+#include "winifini.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -44,26 +45,19 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 extern bool ReadingAString;
 
-static bool init( window *, void * );
-static bool fini( window *, void * );
-
 window CommandWindow = {
     &cmdlinew_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 window_id CommandId = NO_WINDOW;
 
 static char *className = "CommandWindow";
 
-static bool init( window *w, void *parm )
+bool CommandWindowInit( void )
 {
     WNDCLASS        wc;
 
-    w = w;
-    parm = parm;
     wc.style = 0;
     wc.lpfnWndProc = GetWndProc( CommandWindowProc );
     wc.cbClsExtra = 0;
@@ -77,10 +71,8 @@ static bool init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool fini( window *w, void *parm )
+bool CommandWindowFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 

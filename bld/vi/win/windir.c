@@ -34,29 +34,23 @@
 #include "font.h"
 #include "utils.h"
 #include "wprocmap.h"
+#include "winifini.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool init( window *, void * );
-static bool fini( window *, void * );
-
 window FileCompleteWindow = {
     &filecw_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 static char *ClassName = "FileCompleteWindow";
 
-static bool init( window *w, void *parm )
+bool FileCompleteWindowInit( void )
 {
     WNDCLASS        wc;
 
-    w = w;
-    parm = parm;
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = GetWndProc( FileCompleteWindowProc );
     wc.cbClsExtra = 0;
@@ -70,10 +64,8 @@ static bool init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool fini( window *w, void *parm )
+bool FileCompleteWindowFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 

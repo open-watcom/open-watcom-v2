@@ -35,17 +35,8 @@
 #include "font.h"
 #include "wstatus.h"
 #include "win.h"
+#include "winifini.h"
 
-window *Windows[] = {
-    &StatusBar,
-    &EditWindow,
-    &CommandWindow,
-    &MessageBar,
-    &FileCompleteWindow,
-    &RepeatCountWindow
-};
-
-#define NUM_WINDOWS (sizeof( Windows ) / sizeof( window  * ))
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
@@ -160,25 +151,26 @@ void DefaultWindows( RECT *world, RECT *workspace )
 
 void InitWindows( void )
 {
-    int         i;
-    window      *w;
+    StatusBarInit();
+    EditWindowInit();
+    CommandWindowInit();
+    MessageBarInit();
+    FileCompleteWindowInit();
+    RepeatCountWindowInit();
 
-    for( i = 0; i < NUM_WINDOWS; i++ ) {
-        w = Windows[i];
-        (*w->init)( w, NULL );
-    }
     EditFlags.WindowsStarted = true;
 }
 
 void FiniWindows( void )
 {
-    int         i;
-    window      *w;
+    StatusBarFini();
+    EditWindowFini();
+    CommandWindowFini();
+    MessageBarFini();
+    FileCompleteWindowFini();
+    RepeatCountWindowFini();
 
-    for( i = 0; i < NUM_WINDOWS; i++ ) {
-        w = Windows[i];
-        (*w->fini)( w, NULL );
-    }
+    EditFlags.WindowsStarted = false;
 }
 
 int WindowAuxInfo( window_id id, int type )

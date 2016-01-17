@@ -62,8 +62,6 @@ typedef struct colour {
 typedef struct window {
     window_info *info;
     RECT        area;
-    bool        (*init)( struct window *, void * );
-    bool        (*fini)( struct window *, void * );
 } window;
 
 typedef struct window_data {
