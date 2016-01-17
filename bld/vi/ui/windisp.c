@@ -41,7 +41,7 @@ static void WriteLongLineMarker( window_id wn, type_style *style, char_info *txt
     if( wn != CurrentWindow || !EditFlags.MarkLongLines ) {
         return;
     }
-    info.cinfo_attr = MAKE_ATTR( Windows[wn], style->background, style->foreground );
+    info.cinfo_attr = MAKE_ATTR( WINDOW_FROM_ID( wn ), style->background, style->foreground );
     if( EditVars.EndOfLineChar ) {
         info.cinfo_char = EditVars.EndOfLineChar;
     } else {
@@ -78,7 +78,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     otmp = NULL;
     write_eol = false;
     if( EditFlags.RealTabs ) {
@@ -297,7 +297,7 @@ void DisplayCrossLineInWindow( window_id wn, int line )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     /*
      * find dimensions of line
@@ -373,12 +373,12 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[CurrentWindow];
-    AccessWindow( w );
+    w = WINDOW_FROM_ID( CurrentWindow );
 
     /*
      * find dimensions of line
      */
+    AccessWindow( w );
     if( w->has_border ) {
         if( line < 1 || line > w->height - 2 ) {
             ReleaseWindow( w );
@@ -526,7 +526,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     /*
      * find dimensions of line
@@ -585,7 +585,7 @@ vi_rc DisplayLineInWindow( window_id wn, int c_line_no, char *text )
     ss_block    ss;
     wind        *w;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     SEType[SE_UNUSED].foreground = w->text_color;
     SEType[SE_UNUSED].background = w->background_color;
     SEType[SE_UNUSED].font = FONT_DEFAULT;

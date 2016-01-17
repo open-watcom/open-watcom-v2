@@ -45,7 +45,7 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 //    char        *ot;
 //    int         i, j;
 
-    oldw = Windows[wn];
+    oldw = WINDOW_FROM_ID( wn );
     AccessWindow( oldw );
 
     if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
@@ -72,8 +72,8 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
     DCUpdate();
 
     FreeWindow( oldw );
+    ReleaseWindow( WINDOW_FROM_ID( wn ) );
 
-    ReleaseWindow( Windows[wn] );
     return( ERR_NO_ERR );
 
 } /* ResizeWindow */
@@ -86,7 +86,7 @@ vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, bool s
     wind        *w;
     vi_rc       rc;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     rc = ResizeWindow( wn, w->x1 + x1, w->y1 + y1, w->x2 + x2, w->y2 + y2, scrflag );
     return( rc );
 

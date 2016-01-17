@@ -76,7 +76,7 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
     int         height;
     int         newpos;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     AccessWindow( w );
     if( !w->has_gadgets || !w->has_border ) {
         ReleaseWindow( w );

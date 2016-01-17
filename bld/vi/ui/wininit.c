@@ -70,7 +70,7 @@ void FinishWindows( void )
 
     // Close Down All Straggling Windows
     for( i = 0; i < MAX_WINDS; i++ ) {
-        if( Windows[i] != NULL ) {
+        if( WINDOW_FROM_ID( i ) != NULL ) {
             // CloseAWindow( i );
         }
     }

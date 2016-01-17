@@ -44,7 +44,7 @@ int WindowAuxInfo( window_id wn, int type )
     if( BAD_ID( wn ) ) {
         return( 1 );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     rc = 0;
     switch( type ) {
@@ -78,7 +78,7 @@ void WindowAuxUpdate( window_id wn, int type, int data )
     if( BAD_ID( wn ) ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     switch( type ) {
     case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;

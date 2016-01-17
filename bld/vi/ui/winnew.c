@@ -44,7 +44,7 @@ vi_rc ResetWindow( window_id *wn )
     char        *tmp;
     vi_rc       rc;
 
-    w = Windows[*wn];
+    w = WINDOW_FROM_ID( *wn );
     if( w->title != NULL ) {
         tmp = alloca( strlen( w->title ) + 1 );
         strcpy( tmp, w->title );
@@ -99,7 +99,7 @@ window_id GimmeWindow( void )
     window_id   wn;
 
     for( wn = 0; wn < MAX_WINDS; wn++ ) {
-        if( Windows[wn] == NULL ) {
+        if( WINDOW_FROM_ID( wn ) == NULL ) {
             return( wn );
         }
     }
@@ -152,7 +152,7 @@ wind *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_border
     for( i = 0; i < height; ++i ) {
         tmp->overcnt[i] = 0;
     }
-    Windows[wn] = tmp;
+    WINDOW_TO_ID( wn, tmp );
     return( tmp );
 
 } /* AllocWindow */
@@ -211,7 +211,7 @@ void CloseAWindow( window_id wn )
 {
     wind        *w;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     RestoreOverlap( wn, true );
     if( w->min_slot ) {
@@ -220,6 +220,6 @@ void CloseAWindow( window_id wn )
 
     FreeWindow( w );
 
-    Windows[wn] = NULL;
+    WINDOW_TO_ID( wn, NULL );
 
 } /* CloseAWindow */

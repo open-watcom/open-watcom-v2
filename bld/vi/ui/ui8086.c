@@ -180,7 +180,7 @@ void SetGenericWindowCursor( window_id wn, int l, int c )
     wind        *w;
     int         row, col;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     row = w->y1;
     col = w->x1;

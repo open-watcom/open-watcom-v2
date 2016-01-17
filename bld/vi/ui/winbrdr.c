@@ -106,7 +106,7 @@ void DrawBorder( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     if( !w->has_border ) {
         return;
     }
@@ -288,7 +288,7 @@ void DrawBorder( window_id wn )
  */
 void SetBorderGadgets( window_id wn, bool how )
 {
-   Windows[wn]->has_gadgets = how;
+   WINDOW_FROM_ID( wn )->has_gadgets = how;
 
 } /* SetBorderGadgets */
 
@@ -299,7 +299,7 @@ void WindowBorderData( window_id wn, const char *data, int col )
 {
     wind        *w;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     if( w->has_border ) {
         ReplaceString( &(w->borderdata), data );
         w->bordercol = col;

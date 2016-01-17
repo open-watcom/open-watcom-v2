@@ -48,7 +48,7 @@ void ShiftWindowUpDown( window_id id, int diff )
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
     }
-    w = Windows[id];
+    w = WINDOW_FROM_ID( id );
     AccessWindow( w );
     if( w->has_border ) {
         start = 1;

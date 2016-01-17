@@ -49,12 +49,12 @@ static void reDisplayWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[wn];
-    AccessWindow( w );
+    w = WINDOW_FROM_ID( wn );
 
     /*
      * re-display text area
      */
+    AccessWindow( w );
     txt = w->text;
     over = w->overlap;
     for( j = w->y1; j <= w->y2; j++ ) {
@@ -100,7 +100,7 @@ void MoveWindowToFrontDammit( window_id wn, bool scrflag )
     if( BAD_ID( wn ) ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
 
     RestoreOverlap( wn, scrflag );
     ResetOverlap( w );
@@ -121,7 +121,7 @@ void InactiveWindow( window_id wn )
         return;
     }
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     if( w == NULL ) {
         return;
     }
@@ -149,8 +149,7 @@ void WindowTitleAOI( window_id wn, const char *title, bool active )
 {
     wind        *w;
 
-    w = Windows[wn];
-
+    w = WINDOW_FROM_ID( wn );
     MemFree( w->title );
     if( title == NULL ) {
         w->title = NULL;
@@ -200,12 +199,12 @@ void ClearWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[wn];
-    AccessWindow( w );
+    w = WINDOW_FROM_ID( wn );
 
     /*
      * clear text area
      */
+    AccessWindow( w );
     what.cinfo_char = ' ';
     what.cinfo_attr = MAKE_ATTR( w, w->text_color, w->background_color );
     shift = 0;
@@ -244,7 +243,7 @@ bool InsideWindow( window_id id, int x, int y )
 {
     wind        *w;
 
-    w = Windows[id];
+    w = WINDOW_FROM_ID( id );
     if( !w->has_border ) {
         return( true );
     }

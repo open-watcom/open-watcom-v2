@@ -164,7 +164,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
         DisplayMouse( false );
     }
     *doresize = false;
-    cwd = Windows[wn];
+    cwd = WINDOW_FROM_ID( wn );
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     x1 = cwd->x1;
     x2 = cwd->x2;

@@ -41,6 +41,9 @@
 #define WRITE_SCREEN2( a, b )       (*(char_info _FAR *)&(a)) = (*(char_info _FAR *)(&b))
 #define WRITE_SCREEN_DATA( a, b )   (*(char_info *)&(a)) = (*(char_info *)(&b))
 
+#define WINDOW_FROM_ID( x )         (Windows[x])
+#define WINDOW_TO_ID( x, d )        (Windows[x] = d)
+
 /*
  * character info
  */

@@ -54,7 +54,7 @@ vi_rc HandleMouseEvent( void )
     if( BAD_ID( wn ) ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wn );
     if( !w->has_border ) {
         win_x += 1;
         win_y += 1;

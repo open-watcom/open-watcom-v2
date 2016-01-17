@@ -118,7 +118,7 @@ void SwapAllWindows( void )
             Message1( "Swapping window data" );
         }
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-            w = Windows[cinfo->CurrentWindow];
+            w = WINDOW_FROM_ID( cinfo->CurrentWindow );
             if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
                 windowSwap( w );
             }
