@@ -43,7 +43,7 @@
 #include "uistr.gh"
 #include "wprocmap.h"
 
-#if defined( __WATCOMC__ ) && defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( _M_I86 ) && defined( __WINDOWS__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
