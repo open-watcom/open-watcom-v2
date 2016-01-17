@@ -130,7 +130,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     cnt2 = spend - end;
 
     c_line_no--;
-    w = AccessWindow( wn );
+    AccessWindow( w );
 
     /*
      * initialize
@@ -313,7 +313,7 @@ void DisplayCrossLineInWindow( window_id wn, int line )
     /*
      * initialize
      */
-    w = AccessWindow( wn );
+    AccessWindow( w );
     addr = 1 + (1 + line) * w->width;
     txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
@@ -373,7 +373,8 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( CurrentWindow );
+    w = Windows[CurrentWindow];
+    AccessWindow( w );
 
     /*
      * find dimensions of line
@@ -552,7 +553,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
     /*
      * initialize
      */
-    w = AccessWindow( wn );
+    AccessWindow( w );
     addr = col + start + spl * w->width;
     oscr = w->x1 + start + col + (spl + w->y1) * EditVars.WindMaxWidth;
     tmp.cinfo_attr = MAKE_ATTR( w, style->foreground, style->background );
@@ -582,8 +583,11 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
 vi_rc DisplayLineInWindow( window_id wn, int c_line_no, char *text )
 {
     ss_block    ss;
-    SEType[SE_UNUSED].foreground = Windows[wn]->text_color;
-    SEType[SE_UNUSED].background = Windows[wn]->background_color;
+    wind        *w;
+
+    w = Windows[wn];
+    SEType[SE_UNUSED].foreground = w->text_color;
+    SEType[SE_UNUSED].background = w->background_color;
     SEType[SE_UNUSED].font = FONT_DEFAULT;
     ss.type = SE_UNUSED;
     ss.end = BEYOND_TEXT;

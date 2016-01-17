@@ -282,7 +282,7 @@ extern vi_rc    MaximizeCurrentWindow( void );
 
 /* winswap.c */
 extern void     SwapAllWindows( void );
-extern wind     *AccessWindow( window_id );
+extern void     AccessWindow( wind * );
 extern void     ReleaseWindow( wind *);
 extern void     WindowSwapFileClose( void );
 

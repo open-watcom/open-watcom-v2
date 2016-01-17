@@ -152,16 +152,12 @@ static void fetchWindow( wind *w )
 /*
  * AccessWindow - get at window data
  */
-wind *AccessWindow( window_id id )
+void AccessWindow( wind *w )
 {
-    wind        *w;
-
-    w = Windows[id];
     w->accessed++;
     if( w->isswapped ) {
         fetchWindow( w );
     }
-    return( w );
 
 } /* AccessWindow */
 

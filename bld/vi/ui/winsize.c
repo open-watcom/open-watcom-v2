@@ -45,7 +45,8 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 //    char        *ot;
 //    int         i, j;
 
-    oldw = AccessWindow( wn );
+    oldw = Windows[wn];
+    AccessWindow( oldw );
 
     if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
         ReleaseWindow( oldw );

@@ -106,10 +106,11 @@ void DrawBorder( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    if( !Windows[wn]->has_border ) {
+    w = Windows[wn];
+    if( !w->has_border ) {
         return;
     }
-    w = AccessWindow( wn );
+    AccessWindow( w );
     txt = w->text;
     over = w->overlap;
 

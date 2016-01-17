@@ -168,8 +168,7 @@ static void splitBlock( int i, char *start )
 static void buildNewItem( char *start, int id )
 {
     char    new_ss[MAX_STR];
-    char    *sz_content[] = { "$T", "$D", "Mode: $M",
-                              "Line:$5L", "Col:$3C", "$H" };
+    char    *sz_content[] = { "$T", "$D", "Mode: $M", "Line:$5L", "Col:$3C", "$H" };
     char    *sz_alignment[] = { "$<", "$|", "$>" };
     char    *new_item = "";
     int     type = 0;
@@ -189,9 +188,8 @@ static void buildNewItem( char *start, int id )
     strcat( new_ss, new_item );
     if( type == BUTTON_CONTENT ) {
         // only copy alignments, if any
-        while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
-            if( start[0] == '$' && (start[1] == '<' || start[1] == '|'
-                                                    || start[1] == '>') ) {
+        while( start[0] != '\0' && !(start[0] == '$' && start[1] == '[') ) {
+            if( start[0] == '$' && (start[1] == '<' || start[1] == '|' || start[1] == '>') ) {
                 strncat( new_ss, start, 2 );
                 start++;
             }
@@ -199,9 +197,8 @@ static void buildNewItem( char *start, int id )
         }
     } else {
         // only copy contents, if any
-        while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
-            if( start[0] == '$' && (start[1] == '<' || start[1] == '|'
-                                                    || start[1] == '>') ) {
+        while( start[0] != '\0' && !(start[0] == '$' && start[1] == '[') ) {
+            if( start[0] == '$' && (start[1] == '<' || start[1] == '|' || start[1] == '>') ) {
                 start += 2;
                 continue;
             }
@@ -259,9 +256,10 @@ static void sendNewItem( int x, int id )
     }
     assert( mod_hwnd == StatusWindow );
 
-    i = 0;
-    while( i < EditVars.NumStatusSections && EditVars.StatusSections[i] < x ) {
-        i++;
+    for( i = 0; i < EditVars.NumStatusSections; ++i ) {
+        if( EditVars.StatusSections[i] >= x ) {
+            break;
+        }
     }
 
     assert( curItemID != -1 );

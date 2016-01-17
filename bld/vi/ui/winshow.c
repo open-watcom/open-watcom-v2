@@ -49,7 +49,8 @@ static void reDisplayWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( wn );
+    w = Windows[wn];
+    AccessWindow( w );
 
     /*
      * re-display text area
@@ -199,7 +200,8 @@ void ClearWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( wn );
+    w = Windows[wn];
+    AccessWindow( w );
 
     /*
      * clear text area

@@ -931,7 +931,7 @@ void ResetExtraRects( void )
 {
     FARPROC     proc;
 
-    if( EditContainer != HNULL ) {
+    if( !BAD_ID( EditContainer ) ) {
         proc = MakeWndEnumProcInstance( ResizeExtra, InstanceHandle );
         EnumChildWindows( EditContainer, (WNDENUMPROC)proc, 0L );
         FreeProcInstance( proc );
