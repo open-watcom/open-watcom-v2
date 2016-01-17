@@ -36,9 +36,7 @@
 #include "statwnd.h"
 #include "wstatus.h"
 #include <assert.h>
-
-static bool init( window *, void * );
-static bool fini( window *, void * );
+#include "winifini.h"
 
 static int      capIndex = -1;
 static short    *sections;
@@ -46,9 +44,7 @@ static statwnd  *sw = NULL;
 
 window StatusBar = {
     &statusw_info,
-    { 0, 0, 0, 0 },
-    init,
-    fini
+    { 0, 0, 0, 0 }
 };
 
 void StatusWndSetSeparatorsWithArray( short *source, int num )
@@ -69,12 +65,9 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
 
 bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool init( window *w, void *parm )
+bool StatusBarInit( void )
 {
     bool    rc;
-
-    parm = parm;
-    w = w;
 
     rc = StatusWndInit( InstanceHandle, StatusHookProc, sizeof( LPVOID ), (HCURSOR)NULLHANDLE );
     sw = StatusWndStart();
@@ -90,10 +83,8 @@ static bool init( window *w, void *parm )
     return( rc );
 }
 
-static bool fini( window *w, void *parm )
+bool StatusBarFini( void )
 {
-    w = w;
-    parm = parm;
     StatusWndDestroy( sw );
     StatusWndFini();
     return( true );
