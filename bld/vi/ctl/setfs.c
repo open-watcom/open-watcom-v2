@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +79,7 @@ static int          dlgDataArray_size = 0;
 static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
 {
     int sel;
-    
+
     initial = initial;
     sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGESELECT, CB_GETCURSEL, 0, 0L );
     switch( sel ) {

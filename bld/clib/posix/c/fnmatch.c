@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,12 +146,12 @@ static const char *cclass_match( const char *patt, int c )
             if( state = (*patt == '-') ? 2 : 0 )
                 ++patt;
             break;
-        case 2: 
+        case 2:
             if( *patt == '\\' )
                 ++patt;
             if( lc <= c && c <= *patt )
                 ok = 1;
-            ++patt;     
+            ++patt;
             state = 0;
             break;
         default:

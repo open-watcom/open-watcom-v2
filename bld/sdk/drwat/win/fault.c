@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         SetDlgCourierFont( hwnd, INT_CS_IP );
         SetDlgCourierFont( hwnd, INT_SOURCE_INFO );
         SetDlgCourierFont( hwnd, INT_SOURCE_INFO2 );
-        RCsprintf( buff, STR_FAULT_X_ENCOUNTERED, AppName, 
+        RCsprintf( buff, STR_FAULT_X_ENCOUNTERED, AppName,
                     IntData.InterruptNumber );
         SetWindowText( hwnd, buff );
         SetDlgItemText( hwnd, INT_TASK_NAME, DTTaskEntry.szModule );

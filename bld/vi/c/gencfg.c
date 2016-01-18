@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,7 +217,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     if( buff != NULL ) {
         setvbuf( f, buff, _IOFBF, VBUF_SIZE );
     }
-    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", 
+    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n",
 #if defined( __WIN__ )
     banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
 #else
