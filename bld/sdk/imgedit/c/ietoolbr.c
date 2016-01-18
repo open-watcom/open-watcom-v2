@@ -205,7 +205,7 @@ void InitTools( HWND hparent )
             GetWindowRect( htoolbar, &rect );
             w = _wpi_getwidthrect( rect ) + (TBWidth - w);
             h = _wpi_getheightrect( rect ) + (TBHeight - h);
-            SetWindowPos( htoolbar, HWND_TOP, 0, 0, w, h,
+            SetWindowPos( htoolbar, (HWND)NULL, 0, 0, w, h,
                           SWP_SIZE | SWP_NOZORDER | SWP_NOMOVE );
         }
     }

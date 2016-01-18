@@ -128,7 +128,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
 
     width = info->dinfo.area.right - info->dinfo.area.left;
     height = info->dinfo.area.bottom - info->dinfo.area.top;
-    SetWindowPos( tbar->win, HWND_TOP, 0 ,0 , width, height, SWP_NOMOVE | SWP_NOZORDER );
+    SetWindowPos( tbar->win, (HWND)NULL, 0 ,0 , width, height, SWP_NOMOVE | SWP_NOZORDER );
 
     ShowWindow( tbar->win, SW_SHOWNORMAL );
 

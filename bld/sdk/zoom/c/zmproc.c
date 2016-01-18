@@ -555,8 +555,7 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         EraseMagnifier( dc, info );
         ReleaseDC( NULL, dc );
         GetWndSize( info, &xsize, &ysize );
-        SetWindowPos( hwnd, NULL, 0, 0, xsize, ysize,
-                        SWP_NOZORDER | SWP_NOMOVE );
+        SetWindowPos( hwnd, (HWND)NULL, 0, 0, xsize, ysize, SWP_NOZORDER | SWP_NOMOVE );
         dc = GetDC( NULL );
         DrawMagnifier( dc, info );
         ReleaseDC( NULL, dc );

@@ -172,7 +172,7 @@ static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
     MapDialogRect( hDlg, &t );
     new_height = (height != 0 ? height - (crect.top - prect->top + t.bottom)
                               : crect.bottom - crect.top);
-    SetWindowPos( win, (HWND) NULL, 0, 0, prect->right - crect.left - t.bottom,
+    SetWindowPos( win, (HWND)NULL, 0, 0, prect->right - crect.left - t.bottom,
                   new_height, SWP_NOMOVE | SWP_NOZORDER );
     InvalidateRect( win, NULL, TRUE );
 }
