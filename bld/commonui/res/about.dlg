@@ -1,19 +1,19 @@
 #if !defined( _JAPANESE_ )
 
-About DIALOG 19, 17, 300, 122
+About DIALOG 19, 17, 316, 122
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "OK", IDOK, 174, 98, 40, 14
+    PUSHBUTTON      "OK", IDOK, 206, 98, 40, 14
     ICON            "APPLICON", -1, 10, 10, 18, 20
-    LTEXT           "", ABOUT_NAME, 42, 8, 250, 8
-    LTEXT           "", ABOUT_VERSION, 42, 18, 250, 8
-    LTEXT           [ banner2 "\n" banner2a( FIRST_COPYRIGHT_YEAR ) "\n\n" banner3 "\n" banner3a ], -1, 42, 28, 250, 48
-    CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 78, 292, 2
-    LTEXT           "", ABOUT_INFO1, 8, 88, 158, 8
-    LTEXT           "", ABOUT_INFO2, 8, 98, 159, 8
-    LTEXT           "", ABOUT_INFO3, 8, 108, 158, 8
+    LTEXT           "", ABOUT_NAME, 42, 8, 266, 8
+    LTEXT           "", ABOUT_VERSION, 42, 18, 266, 8
+    LTEXT           [ banner2 "\n" banner2a( FIRST_COPYRIGHT_YEAR ) "\n\n" banner3 "\n" banner3a ], -1, 42, 28, 266, 48
+    CONTROL         "", 102, "Static", SS_BLACKRECT, 4, 78, 308, 2
+    LTEXT           "", ABOUT_INFO1, 8, 88, 190, 8
+    LTEXT           "", ABOUT_INFO2, 8, 98, 190, 8
+    LTEXT           "", ABOUT_INFO3, 8, 108, 190, 8
 END
 
 #else
