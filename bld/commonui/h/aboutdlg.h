@@ -40,7 +40,6 @@ typedef struct {
     LPSTR       title;
     LPSTR       name;
     LPSTR       version;
-    LPSTR       first_cr_year;
 } about_info;
 
 #ifdef _M_I86

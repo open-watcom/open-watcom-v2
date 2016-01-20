@@ -215,9 +215,6 @@ pick(   STR_ABOUT_NAME,
 pick(   STR_ABOUT_VERSION,
         banner1p2( _DDESPY_VERSION_ ),
         banner1p2( _DDESPY_VERSION_ ) )
-pick(   STR_ABOUT_COPYRIGHT_YEAR,
-        "2002",
-        "2002" )
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
         "イベントリストの情報のファイルへの保存." )

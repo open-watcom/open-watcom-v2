@@ -357,9 +357,6 @@ pick(   WRE_ABOUT_NAME,
 pick(   WRE_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )
-pick(   WRE_ABOUT_COPYRIGHT_YEAR,
-        "1984",
-        "1984" )
 pick(   WRE_ABOUT_TITLE,
         "About Open Watcom Resource Editor",
         "About Open Watcom Resource Editor" )

@@ -2,6 +2,8 @@
 #include "about.h"
 #include "banner.h"
 
+#define FIRST_COPYRIGHT_YEAR "1993"
+
 "APPLICON" ICON "wheapwlk.ico"
 
 #ifdef JAPANESE

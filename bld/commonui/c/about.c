@@ -72,18 +72,6 @@ WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         if( pai->version != NULL ) {
             SetDlgItemText( hwnd, ABOUT_VERSION, pai->version );
         }
-        if( pai->first_cr_year != NULL ) {
-#if defined( __WATCOMC__) && !defined( __ALPHA__ )
-            if( _fstrcmp( pai->first_cr_year, CURR_YEAR ) ) {
-#else
-            if( strcmp( pai->first_cr_year, CURR_YEAR ) ) {
-#endif
-                sprintf( buff, banner2a( "%s" ), pai->first_cr_year );
-            } else {
-                strcpy( buff, banner2a( "1984" ) );
-            }
-            SetDlgItemText( hwnd, ABOUT_COPYRIGHT, buff );
-        }
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
         {
             DWORD       flags;

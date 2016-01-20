@@ -822,7 +822,6 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             ai.inst = WREInst;
             ai.name = AllocRCString( WRE_ABOUT_NAME );
             ai.version = AllocRCString( WRE_ABOUT_VERSION );
-            ai.first_cr_year = "1984";
             ai.title = AllocRCString( WRE_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

@@ -218,9 +218,6 @@ pick(   STR_ABOUT_NAME,
 pick(   STR_ABOUT_VERSION,
         banner1p2( _HEAPWALKER_VERSION_ ),
         banner1p2( _HEAPWALKER_VERSION_ ) )
-pick(   STR_ABOUT_COPYRIGHT_YEAR,
-        "1993",
-        "1993" )
 pick(   STR_ABOUT_TITLE,
         "About Open Watcom Heapwalker",
         "About Open Watcom Heapwalker" )

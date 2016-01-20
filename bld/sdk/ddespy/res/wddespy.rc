@@ -3,6 +3,8 @@
 #include "about.h"
 #include "banner.h"
 
+#define FIRST_COPYRIGHT_YEAR "1994"
+
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif

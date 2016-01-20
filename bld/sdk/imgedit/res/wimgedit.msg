@@ -560,9 +560,6 @@ pick(   WIE_ABOUTTEXT,
 pick(   WIE_ABOUTVERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )
-pick(   WIE_ABOUTFIRSTYEAR,
-        "2002",
-        "2002" )
 pick(   WIE_ABOUTTITLE,
         "About Open Watcom Image Editor",
         "About Open Watcom Image Editor" )
