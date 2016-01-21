@@ -605,7 +605,6 @@ void    StaticFree( char * );
 void    StaticStart( void );
 void    StaticFini( void );
 char    *MemStrDup( char * );
-vi_rc   DumpMemory( void );
 void    InitMem( void );
 void    FiniMem( void );
 

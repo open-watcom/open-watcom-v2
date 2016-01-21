@@ -35,6 +35,7 @@
 #include "menu.h"
 #include "ex.h"
 #include "rxsupp.h"
+#include "memdmp.h"
 
 /* strings */
 char _NEAR      MSG_CHARACTERS[] = "characters";
