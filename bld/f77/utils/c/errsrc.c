@@ -117,7 +117,7 @@ static  char    file_prefix[2] = { 0 };
 static  void    ProcArgs( char *args )
 //====================================
 {
-    int     len;
+    size_t  len;
     char    delim = ' ';
     char    c;
     char    *p;
@@ -284,7 +284,7 @@ static  char    UseMessage( char cmp, char target, char used_at ) {
 static  int     ReadInFile( char *buff )
 //======================================
 {
-    int         len;
+    size_t      len;
 
     for( ;; ) {
         if( fgets( buff, BUFF_LEN, MsgFile ) == NULL ) {
@@ -360,6 +360,8 @@ static  word_list       *ProcessWord( char *text )
     char        *w2;
 
     prev_word = NULL;
+    w1 = NULL;
+    w2 = NULL;
     for( curr_word = HeadWord; curr_word != NULL; curr_word = curr_word->link ) {
         w1 = curr_word->word;
         w2 = text;
@@ -429,8 +431,8 @@ static  void    Combine( word_list *word1, word_list *word2 ) {
     msg_word    *curr_word;
     msg_word    *next_word;
     char        *phrase;
-    int         len1;
-    int         len2;
+    size_t      len1;
+    size_t      len2;
     word_list   *this_word;
 
     for( curr_msg = HeadMsg; curr_msg != NULL; curr_msg = curr_msg->link ) {
@@ -502,7 +504,7 @@ static  void    DumpMsg( void )
     int         msg_num;
     int         word_index;
     char        delim;
-    int         msg_len;
+    size_t      msg_len;
 
     if( sw_compiler == 'w' ) {
         fprintf( ErrGrp, "#if !defined( __RT__ )\n\n" );
@@ -672,9 +674,9 @@ static  void    DumpErrWord( void )
     word_list   *cw;
     int         first_word;
     int         phrase_count;
-    int         sum;
+    size_t      sum;
     char        *word;
-    int         len;
+    size_t      len;
     int         chars_per;
 
     fprintf( ErrMsg, "\n\nconst char __FAR ErrWord[] = {\n" );
@@ -720,7 +722,7 @@ static  void    DumpErrWord( void )
     fprintf( ErrMsg, "};\n" );
     fprintf( ErrMsg, "/* Total number of phrases = %d */\n", phrase_count );
     printf( "Total number of phrases = %d\n", phrase_count );
-    printf( "word size * reference count = %d\n", sum );
+    printf( "word size * reference count = %d\n", (int)sum );
 }
 
 
