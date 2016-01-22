@@ -25,40 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  spawn a command with proper screen and keyboard restore
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#include "vi.h"
-#include "stdui.h"
-#include "ctkeyb.h"
-#include "getspcmd.h"
 
-
-const char *InternalCommands[] = { "" };
-
-int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
-
-const char *ExeExtensions[] = { "" };
-
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
-
-void ResetSpawnScreen( void )
-{
-    extern bool UserForcedTermRefresh;
-    _physupdate( NULL );
-    UserForcedTermRefresh = true;
-    return;
-}
-
-long MySpawn( const char *cmd )
-{
-    long rc;
-
-    FiniMouse();
-    ScreenFini();
-    rc = system( cmd );
-    uistart();
-    InitMouse();
-    return( rc );
-}
+extern const char   _NEAR * _NEAR ExeExtensions[];
+extern int          ExeExtensionCount;
+extern const char   _NEAR * _NEAR InternalCommands[];
+extern int          InternalCommandCount;
