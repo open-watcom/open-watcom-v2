@@ -36,6 +36,11 @@
 #include "wprocmap.h"
 
 
+/* Allow Easy Flash Screen suppression */
+//#define NOSPLASH
+
+#ifndef NOSPLASH
+
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
@@ -48,8 +53,6 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     wparam = wparam;
     hwnd = hwnd;
     switch( msg ) {
-    // Allow Easy Flash Screen suppression. W.Briscoe 20041112
-#if 1
         RECT        r;
         int         maxx, maxy;
         int         width;
@@ -67,7 +70,6 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         newy = (maxy - height) / 2;
         SetWindowPos( hwnd, HWND_TOPMOST, newx, newy, 0, 0, SWP_NOSIZE );
         SetDlgItemText( hwnd, STARTUP_VERSION, vers );
-#endif
         return( TRUE );
     }
     return( FALSE );
@@ -77,13 +79,17 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 static HWND     startDlgWindow;
 static FARPROC  startDlgProc;
 
+#endif
+
 /*
  * ShowStartupDialog - show the startup dialog
  */
 void ShowStartupDialog( void )
 {
+#ifndef NOSPLASH
     startDlgProc = MakeDlgProcInstance( StartupProc, InstanceHandle );
     startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, (DLGPROC)startDlgProc );
+#endif
 
 } /* ShowStartupDialog */
 
@@ -93,11 +99,13 @@ void ShowStartupDialog( void )
  */
 void CloseStartupDialog( void )
 {
+#ifndef NOSPLASH
     if( BAD_ID( startDlgWindow ) ) {
         return;
     }
     DestroyWindow( startDlgWindow );
     startDlgWindow = NO_WINDOW;
     (void)FreeProcInstance( startDlgProc );
+#endif
 
 } /* CloseStartupDialog */
