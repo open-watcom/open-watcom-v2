@@ -329,7 +329,7 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
     w.y1 = 0;
     w.x2 = 0;
     w.y2 = 0;
-    dickWithAWindow( CurrentWindow, topcorner, move, &resize, &w, mouse );
+    dickWithAWindow( current_window_id, topcorner, move, &resize, &w, mouse );
     if( resize ) {
         rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );
         if( mouse ) {

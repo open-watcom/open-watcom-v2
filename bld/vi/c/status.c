@@ -50,12 +50,12 @@ vi_rc NewStatusWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( !BAD_ID( StatusWindow ) ) {
-        CloseAWindow( StatusWindow );
-        StatusWindow = NO_WINDOW;
+    if( !BAD_ID( status_window_id ) ) {
+        CloseAWindow( status_window_id );
+        status_window_id = NO_WINDOW;
     }
     if( EditFlags.StatusInfo ) {
-        rc = NewWindow2( &StatusWindow, &statusw_info );
+        rc = NewWindow2( &status_window_id, &statusw_info );
         UpdateStatusWindow();
     }
     return( rc );
@@ -72,7 +72,7 @@ static void StatusLine( int line, char *str, int format )
     type_style  *style;
 
     len = strlen( str );
-    width = WindowAuxInfo( StatusWindow, WIND_INFO_TEXT_COLS );
+    width = WindowAuxInfo( status_window_id, WIND_INFO_TEXT_COLS );
     style = &statusw_info.text_style;
     switch( format ) {
     case FMT_RIGHT:
@@ -88,22 +88,22 @@ static void StatusLine( int line, char *str, int format )
         }
         break;
     default:
-        DisplayLineInWindow( StatusWindow, line, str );
+        DisplayLineInWindow( status_window_id, line, str );
         return;
     }
     i = 1;
     while( i <= blanks ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, ' ', style );
+        SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
         i++;
     }
     j = 0;
     while( j < len && i <= width ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, str[j], style );
+        SetCharInWindowWithColor( status_window_id, line, i, str[j], style );
         j += 1;
         i += 1;
     }
     while( i <= width ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, ' ', style );
+        SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
         i++;
     }
 
@@ -126,7 +126,7 @@ void UpdateStatusWindow( void )
     int         format;
     char        c;
 
-    if( BAD_ID( StatusWindow ) ||
+    if( BAD_ID( status_window_id ) ||
         EditFlags.DisplayHold ||
         EditFlags.Quiet ||
         !EditFlags.StatusInfo ||

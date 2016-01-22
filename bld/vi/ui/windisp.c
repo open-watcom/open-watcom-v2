@@ -39,7 +39,7 @@ static void WriteLongLineMarker( window_id wn, type_style *style, char_info *txt
 {
     char_info   info = {0, 0};
 
-    if( wn != CurrentWindow || !EditFlags.MarkLongLines ) {
+    if( wn != current_window_id || !EditFlags.MarkLongLines ) {
         return;
     }
     info.cinfo_attr = MAKE_ATTR( WINDOW_FROM_ID( wn ), style->background, style->foreground );
@@ -374,7 +374,7 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( CurrentWindow );
+    w = WINDOW_FROM_ID( current_window_id );
 
     /*
      * find dimensions of line

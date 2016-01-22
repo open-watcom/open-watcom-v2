@@ -153,7 +153,7 @@ vi_rc DoHelp( const char *data )
     tmp[0] = toupper( tmp[0] );
     CurrentFile->read_only = false;
     ReplaceString( &(CurrentFile->name), tmp );
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+    SetFileWindowTitle( current_window_id, CurrentInfo, true );
     DisplayFileStatus();
     return( ERR_NO_ERR );
 

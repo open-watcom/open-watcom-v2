@@ -116,7 +116,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
 
     // this section checks if current line is valid.
 
-    assert( hwnd == CurrentInfo->CurrentWindow );
+    assert( hwnd == CurrentInfo->current_window_id );
     if( row < 0 || row >= CurrentInfo->dc_size ) {
         // not on screen -> not displayed
         *x = -10;
@@ -284,7 +284,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
 int PixelFromColumnOnCurrentLine( int vcol )
 {
     int         x, w;
-    getCursorInfo( CurrentWindow, CurrentPos.line - LeftTopPos.line + 1,
+    getCursorInfo( current_window_id, CurrentPos.line - LeftTopPos.line + 1,
                    vcol - LeftTopPos.column, &x, &w );
 
     return( x );
@@ -300,7 +300,7 @@ static void setCursorOnScreen( int row, int col )
     int         width;
     int         funny;
 
-    if( BAD_ID( CurrentWindow ) ) {
+    if( BAD_ID( current_window_id ) ) {
         return;
     }
 
@@ -308,19 +308,19 @@ static void setCursorOnScreen( int row, int col )
         return;
     }
 
-    funny = getCursorInfo( CurrentWindow, row, col, &x, &width );
-    w = WINDOW_FROM_ID( CurrentWindow );
+    funny = getCursorInfo( current_window_id, row, col, &x, &width );
+    w = WINDOW_FROM_ID( current_window_id );
     y = row * FontHeight( WIN_TEXT_FONT( w ) ) - cursorHeight;
     width = (long) width * cursorType.width / 100L;
     if( cursorWidth != width ) {
-        MyHideCaret( CurrentWindow );
+        MyHideCaret( current_window_id );
         DestroyCaret();
-        CreateCaret( CurrentWindow, (HBITMAP)NULLHANDLE, width, cursorHeight );
+        CreateCaret( current_window_id, (HBITMAP)NULLHANDLE, width, cursorHeight );
         cursorWidth = width;
     }
     // adjust position for italic sillyness
     SetCaretPos( x - funny, y );
-    MyShowCaret( CurrentWindow );
+    MyShowCaret( current_window_id );
 
 } /* setCursorOnScreen */
 

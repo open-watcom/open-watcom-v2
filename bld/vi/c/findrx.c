@@ -58,7 +58,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      */
     if( wrapMsgPrinted ) {
         wrapMsgPrinted = false;
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     sline = pos1->line;
     if( flags & FINDFL_WRAP ) {
@@ -150,7 +150,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
      */
     if( wrapMsgPrinted ) {
         wrapMsgPrinted = false;
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     sline = pos1->line;
     rc = CGimmeLinePtr( sline, &cfcb, &cline );

@@ -265,7 +265,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
      * set for start of search
      */
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     SaveCurrentFilePos();
     llineno = n1 - 1;
@@ -307,7 +307,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
             change_resp rsp;
 
             if( !restline ) {
-                ClearWindow( MessageWindow );
+                ClearWindow( message_window_id );
             }
             restline = true;
             GoToLineNoRelCurs( pos.line );

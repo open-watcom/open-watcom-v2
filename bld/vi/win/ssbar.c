@@ -86,8 +86,8 @@ static void totalRedraw( void )
 {
     StatusWndSetSeparatorsWithArray( EditVars.StatusSections, EditVars.NumStatusSections );
     UpdateStatusWindow();
-    InvalidateRect( StatusWindow, NULL, TRUE );
-    UpdateWindow( StatusWindow );
+    InvalidateRect( status_window_id, NULL, TRUE );
+    UpdateWindow( status_window_id );
 }
 
 static void destroyBlock( int i, char *start )
@@ -133,7 +133,7 @@ static void splitBlock( int i, char *start )
     }
 
     if( i == EditVars.NumStatusSections ) {
-        GetWindowRect( StatusWindow, &rect );
+        GetWindowRect( status_window_id, &rect );
         diff = rect.right - EditVars.StatusSections[i - 1];
     } else if( i == 0 ) {
         diff = EditVars.StatusSections[1];
@@ -255,7 +255,7 @@ static void sendNewItem( int x, int id )
     if( BAD_ID( mod_hwnd ) ) {
         return;
     }
-    assert( mod_hwnd == StatusWindow );
+    assert( mod_hwnd == status_window_id );
 
     for( i = 0; i < EditVars.NumStatusSections; ++i ) {
         if( EditVars.StatusSections[i] >= x ) {
@@ -273,7 +273,7 @@ static long processLButtonUp( HWND hwnd, LPARAM lparam )
     if( haveCapture ) {
         MAKE_POINT( m_pt, lparam );
         ClientToScreen( hwnd, &m_pt );
-        ScreenToClient( StatusWindow, &m_pt );
+        ScreenToClient( status_window_id, &m_pt );
         sendNewItem( m_pt.x, curItemID );
         CursorOp( COP_ARROW );
         DrawRectangleUpDown( hwnd, DRAW_UP );
@@ -319,7 +319,7 @@ static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 
     // otherwise, figure out what we're over & set cursor based on that
     mod_hwnd = GetOwnedWindow( m_pt );
-    if( mod_hwnd == StatusWindow ) {
+    if( mod_hwnd == status_window_id ) {
         CursorOp( COP_DROPSS );
     } else {
         mod_hwnd = NO_WINDOW;

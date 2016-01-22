@@ -92,7 +92,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
     if( same_file ) {
         CurrentFile = tmp->CurrentFile;
         CurrentFile->dup_count++;
-        SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+        SetFileWindowTitle( current_window_id, CurrentInfo, true );
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
@@ -160,9 +160,9 @@ static vi_rc createNewFile( const char *name, bool same_file )
         AllocateUndoStacks();
     }
     AllocateMarkList();
-    CurrentWindow = cw;
+    current_window_id = cw;
     CurrentInfo->DuplicateID = CurrentFile->dup_count;
-    CurrentInfo->CurrentWindow = cw;
+    CurrentInfo->current_window_id = cw;
     LangInit( CurrentInfo->fsi.Language );
 #ifdef __WIN__
     {
@@ -172,7 +172,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
     }
 #endif
     DCCreate();
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+    SetFileWindowTitle( current_window_id, CurrentInfo, true );
 
     /*
      * set current file info
@@ -217,8 +217,8 @@ vi_rc NewFile( const char *name, bool same_file )
     if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
         ScreenPage( -1 );
         if( !EditFlags.Starting ) {
-            MoveWindowToFrontDammit( MessageWindow, true );
-            MoveWindowToFrontDammit( CurrentWindow, true );
+            MoveWindowToFrontDammit( message_window_id, true );
+            MoveWindowToFrontDammit( current_window_id, true );
         }
         UpdateCurrentStatus( oldstatus );
         return( rc );
@@ -246,14 +246,14 @@ vi_rc NewFile( const char *name, bool same_file )
      * reset the screen to the display page, display everything
      */
     ScreenPage( -1 );
-    MoveWindowToFrontDammit( CurrentWindow, true );
+    MoveWindowToFrontDammit( current_window_id, true );
     UpdateStatusWindow();
     SetWindowCursor();
     DCDisplayAllLines();
     EditFlags.DuplicateFile = dup;
     DisplayFileStatus();
     SaveCurrentInfo();
-    ActiveWindow( CurrentWindow );
+    ActiveWindow( current_window_id );
     VarAddRandC();
     SetModifiedVar( false );
     UpdateCurrentStatus( oldstatus );
@@ -262,9 +262,9 @@ vi_rc NewFile( const char *name, bool same_file )
     }
 #ifdef __WIN__
     DCUpdateAll();
-    ResetEditWindowCursor( CurrentWindow );
+    ResetEditWindowCursor( current_window_id );
     SetWindowCursorForReal();
-    GotoFile( CurrentWindow );
+    GotoFile( current_window_id );
 #endif
     return( rc );
 

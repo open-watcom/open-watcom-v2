@@ -756,7 +756,7 @@ static vi_rc doFloatMenu( int id, int x, int y )
     }
     p.x = x;
     p.y = y;
-    ClientToScreen( CurrentWindow, &p );
+    ClientToScreen( current_window_id, &p );
     TrackPopupMenu( f, 0, p.x, p.y, 0, Root, NULL );
     DestroyMenu( f );
     return( ERR_NO_ERR );
@@ -1231,7 +1231,7 @@ void SetMenuHelpString( char *str )
 
 vi_rc DoWindowGadgetMenu( void )
 {
-    SendMessage( CurrentWindow, WM_SYSCOMMAND, 0xF100, 0x0000002DL );
+    SendMessage( current_window_id, WM_SYSCOMMAND, 0xF100, 0x0000002DL );
     return( ERR_NO_ERR );
 }
 

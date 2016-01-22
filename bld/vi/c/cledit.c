@@ -224,9 +224,9 @@ vi_rc EditFile( const char *name, bool dammit )
                 }
                 RemoveFromAutoSaveList();
 #ifdef __WIN__
-                CloseAChildWindow( CurrentWindow );
+                CloseAChildWindow( current_window_id );
 #else
-                CloseAWindow( CurrentWindow );
+                CloseAWindow( current_window_id );
 #endif
                 FreeUndoStacks();
                 FreeMarkList();
@@ -234,11 +234,11 @@ vi_rc EditFile( const char *name, bool dammit )
                 MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail,
                          (ss *)CurrentInfo ) );
                 CurrentInfo = NULL;
-                CurrentWindow = NO_WINDOW;
+                current_window_id = NO_WINDOW;
             } else {
                 ci = CurrentInfo;
                 SaveCurrentInfo();
-                wn = CurrentWindow;
+                wn = current_window_id;
             }
 
             /*
@@ -474,7 +474,7 @@ vi_rc OpenWindowOnFile( const char *data )
     if( data[0] == 0 ) {
         data = NULL;
     }
-    wn = CurrentWindow;
+    wn = current_window_id;
     rc = NewFile( data, true );
     if( rc == ERR_NO_ERR ) {
         InactiveWindow( wn );

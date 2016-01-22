@@ -66,7 +66,7 @@ void DCCreate( void )
     dc_line *dcline;
 
     assert( CurrentInfo );
-    nlines = WindowAuxInfo( CurrentInfo->CurrentWindow, WIND_INFO_TEXT_LINES );
+    nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
     CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
         dcline = MemAlloc( nlines * sizeof( dc_line ) );
@@ -89,7 +89,7 @@ void DCResize( info *info )
         // hang on & cache will be initialized in DCCreate in a moment
         return;
     }
-    nlines = WindowAuxInfo( info->CurrentWindow, WIND_INFO_TEXT_LINES );
+    nlines = WindowAuxInfo( info->current_window_id, WIND_INFO_TEXT_LINES );
     dcline = info->dclines;
     dcline += info->dc_size - 1;
     for( extra = nlines - info->dc_size; extra < 0; ++extra ) {
@@ -202,13 +202,13 @@ vi_rc DCUpdate( void )
     }
 
 #ifdef __WIN__
-    MyHideCaret( CurrentWindow );
-    hdc_wnd = GetDC( CurrentWindow );
+    MyHideCaret( current_window_id );
+    hdc_wnd = GetDC( current_window_id );
 #ifdef BITBLT_BUFFER_DISPLAY
     hdc_mem = CreateCompatibleDC( hdc_wnd );
     ws = &(SEType[SE_WHITESPACE]);
     hbitmap = CreateCompatibleBitmap( hdc_wnd,
-                    WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ),
+                    WindowAuxInfo( current_window_id, WIND_INFO_WIDTH ),
                     FontHeight( ws->font ) );
     SelectObject( hdc_mem, hbitmap );
     SelectObject( hdc_mem, ColorBrush( ws->background ) );
@@ -264,12 +264,12 @@ vi_rc DCUpdate( void )
                 displayOffset = 0;
             }
 #ifdef BITBLT_BUFFER_DISPLAY
-            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+            DisplayLineInWindowWithSyntaxStyle( current_window_id, i + 1,
                                 line, line_no, displayText, displayOffset,
                                 hdc_wnd,
                                 hdc_mem );
 #else
-            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+            DisplayLineInWindowWithSyntaxStyle( current_window_id, i + 1,
                                 line, line_no, displayText, displayOffset,
                                 hdc_wnd );
 #endif
@@ -291,8 +291,8 @@ vi_rc DCUpdate( void )
     DeleteDC( hdc_mem );
     DeleteObject( hbitmap );
 #endif
-    ReleaseDC( CurrentWindow, hdc_wnd );
-    MyShowCaret( CurrentWindow );
+    ReleaseDC( current_window_id, hdc_wnd );
+    MyShowCaret( current_window_id );
 #else
     DisplayMouse( hasMouse );
 #endif
@@ -433,7 +433,7 @@ dc_line *DCFindLine( int c_line_no, window_id id )
     dc_line     *dcline;
 
     for( info = InfoHead; info != NULL; info = info->next ) {
-        if( info->CurrentWindow == id ) {
+        if( info->current_window_id == id ) {
             break;
         }
     }

@@ -39,27 +39,27 @@
 vi_rc ReDisplayScreen( void )
 {
     if( EditFlags.Menus ) {
-        MoveWindowToFrontDammit( MenuWindow, true );
+        MoveWindowToFrontDammit( menu_window_id, true );
     }
 
     ReDisplayBuffers( false );
 
-    MoveWindowToFrontDammit( MessageWindow, true );
+    MoveWindowToFrontDammit( message_window_id, true );
 #ifdef __WIN__
-    InvalidateRect( MessageWindow, NULL, TRUE );
-    UpdateWindow( MessageWindow );
+    InvalidateRect( message_window_id, NULL, TRUE );
+    UpdateWindow( message_window_id );
 #endif
     if( EditFlags.StatusInfo ) {
-        MoveWindowToFrontDammit( StatusWindow, true );
+        MoveWindowToFrontDammit( status_window_id, true );
     }
 #ifdef __WIN__
     DCInvalidateAllLines();
-    if( !BAD_ID( CurrentWindow ) ) {
-        InvalidateRect( CurrentWindow, NULL, FALSE );
+    if( !BAD_ID( current_window_id ) ) {
+        InvalidateRect( current_window_id, NULL, FALSE );
     }
-    if( !BAD_ID( StatusWindow ) ) {
-        InvalidateRect( StatusWindow, NULL, TRUE );
-        UpdateWindow( StatusWindow );
+    if( !BAD_ID( status_window_id ) ) {
+        InvalidateRect( status_window_id, NULL, TRUE );
+        UpdateWindow( status_window_id );
     }
 #endif
     SetWindowCursor();
@@ -80,7 +80,7 @@ vi_rc ReDisplayBuffers( bool runFts )
     ocurrinfo = CurrentInfo;
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( cinfo != ocurrinfo ) {
-            if( WindowIsVisible( cinfo->CurrentWindow ) ) {
+            if( WindowIsVisible( cinfo->current_window_id ) ) {
                 BringUpFile( cinfo, runFts );
             }
         }

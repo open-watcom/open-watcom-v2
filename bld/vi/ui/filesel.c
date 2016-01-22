@@ -336,7 +336,7 @@ static bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         }
         return( false );
     }
-    if( isMenu && EditFlags.Menus && id == MenuWindow &&
+    if( isMenu && EditFlags.Menus && id == menu_window_id &&
         LastMouseEvent != MOUSE_PRESS_R ) {
         i = GetMenuIdFromCoord( win_x );
         if( i >= 0 ) {

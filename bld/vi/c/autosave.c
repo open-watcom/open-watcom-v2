@@ -356,7 +356,7 @@ void AutoSaveInit( void )
                     p = SkipLeadingSpaces( p );
                     NewFile( path, false );
                     ReplaceString( &(CurrentFile->name), p );
-                    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+                    SetFileWindowTitle( current_window_id, CurrentInfo, true );
                     FileSPVAR();
                     CurrentFile->modified = true;
                     CurrentFile->check_readonly = true;

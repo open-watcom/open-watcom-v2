@@ -87,7 +87,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
      * set for start of search
      */
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {
@@ -136,7 +136,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
         CurrentFcb->globalmatch = true;
         CurrentLine->u.ld.globmatch = true;
         if( EditFlags.Verbose && EditFlags.EchoOn ) {
-            // WPrintfLine( MessageWindow,1,"Match on line %l",clineno );
+            // WPrintfLine( message_window_id,1,"Match on line %l",clineno );
             Message1( "Match on line %l", pos.line );
         }
     }
@@ -245,7 +245,7 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 void ProcessingMessage( linenum cln )
 {
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        // WPrintfLine( MessageWindow,1,"Processing line %l",cln );
+        // WPrintfLine( message_window_id,1,"Processing line %l",cln );
         Message1( "Processing line %l", cln );
     }
     

@@ -289,7 +289,7 @@ vi_rc FancyGotoLine( void )
 
     if( GetLineDialog( &newline ) ) {
         SetCurrentLine( newline );
-        NewCursor( CurrentWindow, EditVars.NormalCursorType );
+        NewCursor( current_window_id, EditVars.NormalCursorType );
     }
 #endif
     return( ERR_NO_ERR );

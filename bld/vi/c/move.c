@@ -92,7 +92,7 @@ static vi_rc goToLine( linenum lineno, bool relcurs )
     pageshift = false;
     dispall = false;
 
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( nwl < 1 || nwl > text_lines ) {
         tl = text_lines / 2;
         if( !relcurs ) {
@@ -147,9 +147,9 @@ static vi_rc goToLine( linenum lineno, bool relcurs )
 
     if( pageshift ) {
         dispall = false;
-        ShiftWindowUpDown( CurrentWindow, diff );
+        ShiftWindowUpDown( current_window_id, diff );
         if( EditFlags.LineNumbers ) {
-            ShiftWindowUpDown( CurrNumWindow, diff );
+            ShiftWindowUpDown( curr_num_window_id, diff );
         }
         if( diff > 0 ) {
             DCDisplaySomeLines( text_lines - diff, text_lines - 1 );
@@ -187,7 +187,7 @@ void SetCurrentLineNumber( linenum l )
     VarAddRandC();
 
     if( CurrentFile != NULL ) {
-        height = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+        height = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
         last = CurrentFile->fcbs.tail->end_line - height + 1;
         if ( LeftTopPos.line > last ){
              last = LeftTopPos.line;
@@ -195,7 +195,7 @@ void SetCurrentLineNumber( linenum l )
     } else {
         last = 1;
     }
-    PositionVerticalScrollThumb( CurrentWindow, LeftTopPos.line, last );
+    PositionVerticalScrollThumb( current_window_id, LeftTopPos.line, last );
 }
 
 /*
@@ -254,7 +254,7 @@ vi_rc GoToColumn( int colno, int maxcol )
     CurrentPos.column = colno;
     if( !CheckLeftColumn() ) {
         DCDisplayAllLines();
-        PositionHorizontalScrollThumb( CurrentWindow, LeftTopPos.column );
+        PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     }
 
     SetWindowCursor();
@@ -287,7 +287,7 @@ vi_rc SetCurrentLine( linenum lineno )
     CurrentLine = cline;
     CurrentFcb = cfcb;
 
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( lineno < LeftTopPos.line || lineno > (LeftTopPos.line + text_lines - 1) ) {
         LeftTopPos.line = lineno - text_lines / 2;
     }
@@ -393,7 +393,7 @@ bool CheckCurrentColumn( void )
         dispall = !CheckLeftColumn();
         /* changed CurrentPos.column - update horiz scrollbar
         */
-        PositionHorizontalScrollThumb( CurrentWindow, LeftTopPos.column );
+        PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     }
     VarAddGlobalLong( "C", (long) CurrentPos.column );
     return( dispall );
@@ -430,7 +430,7 @@ vi_rc SetCurrentColumn( int newcol )
         newcol = 1;
     }
 
-    text_cols = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS );
+    text_cols = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS );
     if( oldpos < 0 || oldpos >= text_cols ) {
         LeftTopPos.column = newcol - SCROLL_HLINE - 1;
     } else {
@@ -446,7 +446,7 @@ vi_rc SetCurrentColumn( int newcol )
     UpdateCursorDrag();
     VarAddRandC();
 
-    PositionHorizontalScrollThumb( CurrentWindow, LeftTopPos.column );
+    PositionHorizontalScrollThumb( current_window_id, LeftTopPos.column );
     UpdateStatusWindow();
     SetWindowCursor();
     DCDisplayAllLines();
@@ -465,7 +465,7 @@ vi_rc LocateCmd( const char *data )
     int         len;
 
 #ifdef __WIN__
-    if( BAD_ID( CurrentWindow ) ) {
+    if( BAD_ID( current_window_id ) ) {
         return( ERR_INVALID_LOCATE );
     }
 #endif

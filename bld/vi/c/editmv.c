@@ -63,7 +63,7 @@ vi_rc MoveScreenDown( void )
     linenum     lne, cnt, lines, top, x;
 
     CFindLastLine( &lne );
-    lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     x = lne - lines + 1;
     if( x <= 0 ) {
         return( ERR_NO_ERR );
@@ -90,7 +90,7 @@ vi_rc MoveScreenUp( void )
 {
     linenum     lne, cnt, lines, top, nlne;
 
-    lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     CFindLastLine( &lne );
     cnt = GetRepeatCount();
     top = LeftTopPos.line - cnt;
@@ -114,25 +114,25 @@ vi_rc MoveScreenUp( void )
 vi_rc MoveScreenDownPageML( void )
 {
     return MoveScreenML( LeftTopPos.line +
-                         WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) );
+                         WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
 }
 
 vi_rc MoveScreenUpPageML( void )
 {
     return MoveScreenML( LeftTopPos.line -
-                         WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) );
+                         WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) );
 }
 
 vi_rc MoveScreenLeftPageML( void )
 {
     return MoveScreenLeftRightML(
-        LeftTopPos.column - WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS ) + 2 );
+        LeftTopPos.column - WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) + 2 );
 }
 
 vi_rc MoveScreenRightPageML( void )
 {
     return MoveScreenLeftRightML(
-        LeftTopPos.column + WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS ) - 2 );
+        LeftTopPos.column + WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) - 2 );
 }
 
 /*
@@ -148,7 +148,7 @@ vi_rc MovePage( int dir, long repcnt, bool keepselect )
         UnselectRegion();
     }
 
-    tmp = (repcnt * dir * WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES )) - (dir * EditVars.PageLinesExposed);
+    tmp = (repcnt * dir * WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES )) - (dir * EditVars.PageLinesExposed);
 #if 0
     x = CurrentPos.line + tmp;
     top = LeftTopPos.line + tmp;
@@ -231,7 +231,7 @@ vi_rc MovePosition( void )
             return( ERR_INVALID_REDRAW );
         }
     }
-    lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     key = GetNextEvent( false );
     switch( key ) {
     case VI_KEY( DOT ):
@@ -275,7 +275,7 @@ static vi_rc moveHalfPage( int dir )
     ople = EditVars.PageLinesExposed;
     repcnt = GetRepeatCount();
     if( repcnt > 1 ) {
-        ln = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - repcnt;
+        ln = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - repcnt;
         if( ln < 1 ) {
             ln = 1;
         }

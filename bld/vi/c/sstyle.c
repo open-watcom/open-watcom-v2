@@ -555,7 +555,7 @@ syntax_element SSGetStyle( int row, int col )
     dc_line     *c_line;
     ss_block    *ss;
 
-    c_line = DCFindLine( row - 1, CurrentWindow );
+    c_line = DCFindLine( row - 1, current_window_id );
     assert( c_line->valid );
     if( c_line->start_col != LeftTopPos.column ) {
         // text is scrolled off screen - ws remains

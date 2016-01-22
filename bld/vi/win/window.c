@@ -324,16 +324,16 @@ void MoveWindowToFrontDammit( window_id id, bool scrflag )
 
 vi_rc MaximizeCurrentWindow( void )
 {
-    if( !BAD_ID( CurrentWindow ) ) {
-        SendMessage( EditContainer, WM_MDIMAXIMIZE, (UINT)CurrentWindow, 0L );
+    if( !BAD_ID( current_window_id ) ) {
+        SendMessage( EditContainer, WM_MDIMAXIMIZE, (UINT)current_window_id, 0L );
     }
     return( ERR_NO_ERR );
 }
 
 vi_rc MinimizeCurrentWindow( void )
 {
-    if( !BAD_ID( CurrentWindow ) ) {
-        SendMessage( CurrentWindow, WM_SYSCOMMAND, SC_MINIMIZE, 0L );
+    if( !BAD_ID( current_window_id ) ) {
+        SendMessage( current_window_id, WM_SYSCOMMAND, SC_MINIMIZE, 0L );
     }
     return( ERR_NO_ERR );
 }

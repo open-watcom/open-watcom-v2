@@ -156,7 +156,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     }
     InitializeEditor();
     SetSaveConfig();
-    if( !BAD_ID( CurrentWindow ) ) {
+    if( !BAD_ID( current_window_id ) ) {
         SetFocus( Root );
     }
 

@@ -539,10 +539,10 @@ typedef struct info {
     i_mark      LeftTopPos;
     undo_stack  *UndoStack, *UndoUndoStack;
     int         CurrentUndoItem, CurrentUndoUndoItem;
-    window_id   CurrNumWindow;
+    window_id   curr_num_window_id;
     mark        *MarkList;
     bool        linenumflag;
-    window_id   CurrentWindow;
+    window_id   current_window_id;
     int         VirtualColumnDesired;
     select_rgn  SelRgn;
     bool        IsColumnRegion;

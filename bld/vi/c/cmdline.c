@@ -876,7 +876,7 @@ vi_rc RunCommandLine( const char *cmdl )
             } else if( x == 2 ) {
                 Message2( st );
             }
-            // DisplayLineInWindow( MessageWindow, x, st );
+            // DisplayLineInWindow( message_window_id, x, st );
         } else {
             if( x > 2 ) {
                 /* this is obviously a sick individual */
@@ -886,7 +886,7 @@ vi_rc RunCommandLine( const char *cmdl )
             } else if( x == 2 ) {
                 Message2( data );
             }
-            // DisplayLineInWindow( MessageWindow, x, data );
+            // DisplayLineInWindow( message_window_id, x, data );
         }
         break;
 #ifdef VI_RCS

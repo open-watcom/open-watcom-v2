@@ -138,7 +138,7 @@ vi_rc MinimizeCurrentWindow( void )
         }
     }
     rc = CurrentWindowResize( minx1, miny1, minx1 + MIN_WIN_WIDTH - 1, miny1 + 2 );
-    WindowAuxUpdate( CurrentWindow, WIND_INFO_MIN_SLOT, i );
+    WindowAuxUpdate( current_window_id, WIND_INFO_MIN_SLOT, i );
     return( rc );
 
 } /* MinimizeCurrentWindow */

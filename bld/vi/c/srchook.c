@@ -210,10 +210,10 @@ vi_rc InvokeColSelHook( int sc, int ec )
         lne = MouseY;
     }
 #else
-    has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
-    x1 = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 );
+    has_bord = WindowAuxInfo( current_window_id, WIND_INFO_HAS_BORDER );
+    x1 = WindowAuxInfo( current_window_id, WIND_INFO_X1 );
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
-        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
+        lne = WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
         if( has_bord ) {
             ++lne;
         }
@@ -231,9 +231,9 @@ vi_rc InvokeColSelHook( int sc, int ec )
     }
     wordbuff[j] = 0;
 #ifdef __WIN__
-    sc = MyTextExtent( CurrentWindow, WIN_TEXT_STYLE( &EditWindow ),
+    sc = MyTextExtent( current_window_id, WIN_TEXT_STYLE( &EditWindow ),
         &CurrentLine->data[0], sc );
-    ec = MyTextExtent( CurrentWindow, WIN_TEXT_STYLE( &EditWindow ),
+    ec = MyTextExtent( current_window_id, WIN_TEXT_STYLE( &EditWindow ),
         &CurrentLine->data[0], ec );
 #else
     sc = x1 + VirtualColumnOnCurrentLine( sc ) - LeftTopPos.column;
@@ -271,9 +271,9 @@ vi_rc InvokeLineSelHook( linenum s, linenum e )
     }
 #else
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
-        has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
-        lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
-        col = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) + VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column - 1;
+        has_bord = WindowAuxInfo( current_window_id, WIND_INFO_HAS_BORDER );
+        lne = WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) + CurrentPos.line - LeftTopPos.line;
+        col = WindowAuxInfo( current_window_id, WIND_INFO_X1 ) + VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column - 1;
         if( has_bord ) {
             ++lne;
             ++col;

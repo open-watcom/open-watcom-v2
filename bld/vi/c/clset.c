@@ -427,16 +427,16 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     EventList[k].alt_b = eb;
                 }
                 if( !EditFlags.Modeless ) {
-                    if( !BAD_ID( MenuWindow ) ) {
+                    if( !BAD_ID( menu_window_id ) ) {
                         UpdateCurrentStatus( CSTATUS_INSERT );
                     }
                     EditFlags.WasOverstrike = false;
-                    NewCursor( CurrentWindow, EditVars.InsertCursorType );
+                    NewCursor( current_window_id, EditVars.InsertCursorType );
                 } else {
-                    if( !BAD_ID( MenuWindow ) ) {
+                    if( !BAD_ID( menu_window_id ) ) {
                         UpdateCurrentStatus( CSTATUS_COMMAND );
                     }
-                    NewCursor( CurrentWindow, EditVars.NormalCursorType );
+                    NewCursor( current_window_id, EditVars.NormalCursorType );
                     // nomodeless must be line based or it dies!
                     EditFlags.LineBased = true;
                 }
@@ -679,8 +679,8 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_STATUSSTRING:
             ReplaceString( &EditVars.StatusString, fn );
-            if( !BAD_ID( StatusWindow ) ) {
-                ClearWindow( StatusWindow );
+            if( !BAD_ID( status_window_id ) ) {
+                ClearWindow( status_window_id );
                 UpdateStatusWindow();
             }
             if( msgFlag ) {
@@ -768,7 +768,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETVAR_T_FILENAME:
             if( CurrentFile != NULL ) {
                 ReplaceString( &(CurrentFile->name), fn );
-                SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+                SetFileWindowTitle( current_window_id, CurrentInfo, true );
                 if( msgFlag ) {
                     MySprintf( fn, "filename set to %s", CurrentFile->name );
                 }

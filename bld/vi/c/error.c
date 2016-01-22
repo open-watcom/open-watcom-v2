@@ -133,10 +133,10 @@ void Error( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !BAD_ID( MessageWindow ) ) {
-        WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
+    if( !BAD_ID( message_window_id ) ) {
+        WindowAuxUpdate( message_window_id, WIND_INFO_TEXT_COLOR,
                             messagew_info.hilight_style.foreground );
-        WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
         va_start( al, str );
         MyVSprintf( tmp, str, al );
@@ -145,9 +145,9 @@ void Error( char *str, ... )
         SourceError( tmp );
         Message1( "%s", tmp );
 
-        WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_TEXT_COLOR,
                             messagew_info.text_style.foreground );
-        WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.text_style.background );
         MyBeep();
     } else {
@@ -169,10 +169,10 @@ void ErrorBox( char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !BAD_ID( MessageWindow ) ) {
-        WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
+    if( !BAD_ID( message_window_id ) ) {
+        WindowAuxUpdate( message_window_id, WIND_INFO_TEXT_COLOR,
                             messagew_info.hilight_style.foreground );
-        WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
         va_start( al, str );
         MyVSprintf( tmp, str, al );
@@ -181,9 +181,9 @@ void ErrorBox( char *str, ... )
         SourceError( tmp );
         Message1Box( "%s", tmp );
 
-        WindowAuxUpdate( MessageWindow, WIND_INFO_TEXT_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_TEXT_COLOR,
                             messagew_info.text_style.foreground );
-        WindowAuxUpdate( MessageWindow, WIND_INFO_BACKGROUND_COLOR,
+        WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.text_style.background );
         MyBeep();
     } else {

@@ -45,11 +45,11 @@ vi_rc NewMessageWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( !BAD_ID( MessageWindow ) ) {
-        CloseAWindow( MessageWindow );
-        MessageWindow = NO_WINDOW;
+    if( !BAD_ID( message_window_id ) ) {
+        CloseAWindow( message_window_id );
+        message_window_id = NO_WINDOW;
     }
-    return( NewWindow2( &MessageWindow, &messagew_info ) );
+    return( NewWindow2( &message_window_id, &messagew_info ) );
 
 } /* NewMessageWindow */
 
@@ -76,17 +76,17 @@ void Message1( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
     tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 1, tmp );
+        DisplayLineInWindow( message_window_id, 1, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -101,17 +101,17 @@ void Message1Box( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
     tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 1, tmp );
+        DisplayLineInWindow( message_window_id, 1, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -126,7 +126,7 @@ void Message2( const char *str, ... )
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || BAD_ID( MessageWindow ) ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
     va_start( al, str );
@@ -135,7 +135,7 @@ void Message2( const char *str, ... )
     tmp[EditVars.WindMaxWidth - 1] = 0;
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 2, tmp );
+        DisplayLineInWindow( message_window_id, 2, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -187,15 +187,15 @@ void SetWindowCursorForReal( void )
 #ifdef __WIN__
     // for windows assume tabs to be of lenght 1
     if( !EditFlags.RealTabs ){
-        SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+        SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
     } else {
 
-        SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+        SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) );
     }
 #else
-    SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+    SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                             VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
 #endif
 
@@ -237,7 +237,7 @@ bool ColumnInWindow( int col, int *diff )
         *diff = col - 1;
         return( false );
     }
-    text_cols = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS );
+    text_cols = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS );
     if( col > text_cols ) {
         *diff = col - text_cols;
         return( false );
@@ -301,17 +301,17 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + EditVars.LineNumWinWidth, y2, true );
+            rc = ResizeWindow( current_window_id, x1, y1, x2 + EditVars.LineNumWinWidth, y2, true );
         } else {
-            rc = ResizeWindow( CurrentWindow, x1 - EditVars.LineNumWinWidth, y1, x2, y2, true );
+            rc = ResizeWindow( current_window_id, x1 - EditVars.LineNumWinWidth, y1, x2, y2, true );
         }
     } else {
-        rc = ResizeWindow( CurrentWindow, x1, y1, x2, y2, true );
+        rc = ResizeWindow( current_window_id, x1, y1, x2, y2, true );
     }
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( CurrentPos.line >= LeftTopPos.line + text_lines ) {
         ln = LeftTopPos.line + text_lines - 1;
         GoToLineNoRelCurs( ln );
@@ -320,13 +320,13 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
     DCDisplayAllLines();
     SetWindowCursor();
     if( EditFlags.LineNumbers ) {
-        CloseAWindow( CurrNumWindow );
+        CloseAWindow( curr_num_window_id );
         rc = LineNumbersSetup();
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     }
-    PositionVerticalScrollThumb( CurrentWindow, LeftTopPos.line,
+    PositionVerticalScrollThumb( current_window_id, LeftTopPos.line,
                                  CurrentFile->fcbs.tail->end_line );
 
     return( ERR_NO_ERR );
@@ -367,7 +367,7 @@ void ResetAllWindows( void )
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         SaveCurrentInfo();
         BringUpFile( cinfo, false );
-        ResetWindow( &CurrentWindow );
+        ResetWindow( &current_window_id );
     }
 
     if( oldcurr != NULL ) {

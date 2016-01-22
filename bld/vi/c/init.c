@@ -583,11 +583,11 @@ static void doInitializeEditor( int argc, char *argv[] )
 #ifdef __WIN__
     if( lineToGoTo != 0 ) {
         SetCurrentLine( lineToGoTo );
-        NewCursor( CurrentWindow, EditVars.NormalCursorType );
+        NewCursor( current_window_id, EditVars.NormalCursorType );
     }
 #endif
     AutoSaveInit();
-    HalfPageLines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) / 2 - 1;
+    HalfPageLines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) / 2 - 1;
 #if defined( _M_X64 )
     VarAddGlobalStr( "OSX64", "1" );
 #elif defined( _M_IX86 ) && !defined( _M_I86 )
@@ -603,7 +603,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         DisplayFileStatus();
     }
 #endif
-    NewCursor( CurrentWindow, EditVars.NormalCursorType );
+    NewCursor( current_window_id, EditVars.NormalCursorType );
 #if defined( __NT__ ) && !defined( __WIN__ )
     {
         SetConsoleActiveScreenBuffer( OutputHandle );

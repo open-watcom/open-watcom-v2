@@ -87,7 +87,7 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &ps );
-        if( !BAD_ID( MessageWindow ) ) {
+        if( !BAD_ID( message_window_id ) ) {
             msgString( 1, msgString1 );
             msgString( 2, msgString2 );
         }
@@ -130,17 +130,17 @@ static void msgString( int line_no, const char *str )
     RECT    rect;
     HDC     hdc;
 
-    if( !AllowDisplay || BAD_ID( MessageWindow ) ) {
+    if( !AllowDisplay || BAD_ID( message_window_id ) ) {
         return;
     }
-    GetClientRect( MessageWindow, &rect );
+    GetClientRect( message_window_id, &rect );
     height = FontHeight( WIN_TEXT_FONT( &MessageBar ) );
     rect.top += (line_no - 1) * height;
     rect.bottom = rect.top + height;
-    hdc = TextGetDC( MessageWindow, WIN_TEXT_STYLE( &MessageBar ) );
+    hdc = TextGetDC( message_window_id, WIN_TEXT_STYLE( &MessageBar ) );
     FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( &MessageBar ) ) );
-    TextReleaseDC( MessageWindow, hdc );
-    WriteString( MessageWindow, 0, rect.top, WIN_TEXT_STYLE( &MessageBar ), str );
+    TextReleaseDC( message_window_id, hdc );
+    WriteString( message_window_id, 0, rect.top, WIN_TEXT_STYLE( &MessageBar ), str );
 }
 
 void Message1( const char *fmt, ... )
@@ -148,7 +148,7 @@ void Message1( const char *fmt, ... )
     va_list     args;
     char        tmp[MAX_STR];
 
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( args, fmt );
     MyVSprintf( tmp, fmt, args );
     va_end( args );

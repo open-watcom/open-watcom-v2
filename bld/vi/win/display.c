@@ -487,7 +487,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
     // all font heights should be the same
     height = FontHeight( SEType[SE_WHITESPACE].font );
-    width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH );
+    width = WindowAuxInfo( current_window_id, WIND_INFO_WIDTH );
     y = (c_line_no - 1) * height;
     GetClientRect( id, &rect );
     rect.top = y;

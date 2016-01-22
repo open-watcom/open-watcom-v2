@@ -562,9 +562,9 @@ vi_rc InitMenu( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( !BAD_ID( MenuWindow ) ) {
-        CloseAWindow( MenuWindow );
-        MenuWindow = NO_WINDOW;
+    if( !BAD_ID( menu_window_id ) ) {
+        CloseAWindow( menu_window_id );
+        menu_window_id = NO_WINDOW;
     }
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
@@ -573,7 +573,7 @@ vi_rc InitMenu( void )
     menubarw_info.y2 = 0;
     menubarw_info.x1 = 0;
     menubarw_info.x2 = EditVars.WindMaxWidth - 1;
-    rc = NewWindow2( &MenuWindow, &menubarw_info );
+    rc = NewWindow2( &menu_window_id, &menubarw_info );
     if( rc != ERR_NO_ERR ) {
         EditFlags.Menus = false;
         return( rc );
@@ -591,11 +591,11 @@ vi_rc InitMenu( void )
         // disp[CurrentStatusColumn - 7] = 0;
         // strcat( disp, "Mode:" );
     }
-    DisplayLineInWindow( MenuWindow, 1, disp );
+    DisplayLineInWindow( menu_window_id, 1, disp );
 
     ws = 0;
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
-        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight_style );
+        SetCharInWindowWithColor( menu_window_id, 1, ws + START_OFFSET + 1 + cmenu->hi._offs, cmenu->hi._char, &menubarw_info.hilight_style );
         ws += cmenu->slen + 2;
     }
 
@@ -653,7 +653,7 @@ static void lightMenu( int sel, int ws, bool on )
                 style.foreground = menubarw_info.hilight_style.foreground;
             }
         }
-        SetCharInWindowWithColor( MenuWindow, 1, ws + i, ch, &style );
+        SetCharInWindowWithColor( menu_window_id, 1, ws + i, ch, &style );
     }
 
 } /* lightMenu */
@@ -872,8 +872,8 @@ vi_rc DoWindowGadgetMenu( void )
         return( ERR_NO_ERR );
     }
     rc = processMenu( -1, windowGadgetMenu,
-                      WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ),
-                      WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + 1, -1 );
+                      WindowAuxInfo( current_window_id, WIND_INFO_X1 ),
+                      WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) + 1, -1 );
     return( rc );
 
 } /* DoWindowGadgetMenu */

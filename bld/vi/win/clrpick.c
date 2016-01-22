@@ -153,7 +153,7 @@ static void sendNewColour( NewColourOps op )
 
     if( mod_hwnd == GetToolbarWindow() ) {
         sendNewColourToolbar();
-    } else if( mod_hwnd == CurrentWindow ) {
+    } else if( mod_hwnd == current_window_id ) {
         sendNewColourCurrentWindow( op );
     } else {
         mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_hwnd ) );

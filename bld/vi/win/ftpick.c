@@ -96,7 +96,7 @@ static void sendNewFont( void )
 
     mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
 
-    if( mod_hwnd == CurrentWindow ) {
+    if( mod_hwnd == current_window_id ) {
         sendNewFontCurrentWindow();
     } else if( mod_hwnd != GetToolbarWindow() ) {
         /* (toolbar has no font)

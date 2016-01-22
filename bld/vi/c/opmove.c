@@ -146,7 +146,7 @@ vi_rc MovePageMiddle( range *r, long count )
         return( ERR_NO_FILE );
     }
     count = count;
-    ln = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - 1;
+    ln = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
     CFindLastLine( &lne );
     lne = lne - LeftTopPos.line + 1;
     if( ln > lne ) {
@@ -171,7 +171,7 @@ vi_rc MovePageBottom( range *r, long count )
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( IsPastLastLine( LeftTopPos.line + lines ) ) {
         CFindLastLine( &ln );
         amt = ln - LeftTopPos.line - count + 1;
@@ -640,7 +640,7 @@ vi_rc MoveTopOfPage( range *r, long count )
 vi_rc MoveBottomOfPage( range *r, long count )
 {
     int bottom = LeftTopPos.line +
-                 WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - 1;
+                 WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
     count = count;
     return( doMoveToStartEndOfLine( r, bottom - CurrentPos.line, false ) );
 }

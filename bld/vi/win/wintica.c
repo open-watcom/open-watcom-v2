@@ -54,11 +54,11 @@ vi_rc WindowTile( int maxx, int maxy )
         SaveCurrentInfo();
         cwinfo = CurrentInfo;
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-            if( IsIconic( cinfo->CurrentWindow ) ) {
-                ShowWindow( cinfo->CurrentWindow, SW_RESTORE );
+            if( IsIconic( cinfo->current_window_id ) ) {
+                ShowWindow( cinfo->current_window_id, SW_RESTORE );
             }
             BringUpFile( cinfo, false );
-            MoveWindow( cinfo->CurrentWindow, 0, 0, width, height, TRUE );
+            MoveWindow( cinfo->current_window_id, 0, 0, width, height, TRUE );
         }
         BringUpFile( cwinfo, false );
         return( ERR_NO_ERR );

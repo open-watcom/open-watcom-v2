@@ -55,10 +55,10 @@ void SaveInfo( info *ci  )
     ci->CurrentPos = CurrentPos;
     ci->VirtualColumnDesired = VirtualColumnDesired;
     ci->LeftTopPos = LeftTopPos;
-    ci->CurrentWindow = CurrentWindow;
+    ci->current_window_id = current_window_id;
     ci->UndoStack = UndoStack;
     ci->UndoUndoStack = UndoUndoStack;
-    ci->CurrNumWindow = CurrNumWindow;
+    ci->curr_num_window_id = curr_num_window_id;
     ci->linenumflag = EditFlags.LineNumbers;
     ci->MarkList = MarkList;
     ci->SelRgn = SelRgn;
@@ -125,8 +125,8 @@ bool RestoreInfo( info *ci  )
     if( ci == NULL ) {
         ci = &tmpinfo;
         memset( ci, 0, sizeof( tmpinfo ) );
-        ci->CurrentWindow = NO_WINDOW;
-        ci->CurrNumWindow = NO_WINDOW;
+        ci->current_window_id = NO_WINDOW;
+        ci->curr_num_window_id = NO_WINDOW;
         ci->CurrentPos.line = 1;
         ci->CurrentPos.column = 1;
         ci->VirtualColumnDesired = 1;
@@ -175,8 +175,8 @@ bool RestoreInfo( info *ci  )
     CurrentPos = ci->CurrentPos;
     VirtualColumnDesired = ci->VirtualColumnDesired;
     LeftTopPos = ci->LeftTopPos;
-    CurrentWindow = ci->CurrentWindow;
-    CurrNumWindow = ci->CurrNumWindow;
+    current_window_id = ci->current_window_id;
+    curr_num_window_id = ci->curr_num_window_id;
     UndoStack = ci->UndoStack;
     UndoUndoStack = ci->UndoUndoStack;
     MarkList = ci->MarkList;

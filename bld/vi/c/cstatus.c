@@ -87,7 +87,7 @@ status_type UpdateCurrentStatus( status_type st )
                 i = MAX_CSTATUS_STRLEN;
             memcpy( str, currStatus[lastStatus], i );
             for( i = 0; i < MAX_CSTATUS_STRLEN; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1, EditVars.CurrentStatusColumn + i, str[i], &menubarw_info.text_style );
+                SetCharInWindowWithColor( menu_window_id, 1, EditVars.CurrentStatusColumn + i, str[i], &menubarw_info.text_style );
             }
         } else {
 #if 0
@@ -95,7 +95,7 @@ status_type UpdateCurrentStatus( status_type st )
             memset( str, ' ', 15 );
             str[15] = 0;
             for( i = 0; i < 14; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text_style );
+                SetCharInWindowWithColor( menu_window_id, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text_style );
             }
 #endif
         }

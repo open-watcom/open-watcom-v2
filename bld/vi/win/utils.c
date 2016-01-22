@@ -633,8 +633,8 @@ void MoveWindowTopRight( HWND hwnd )
     int     clientWidth, usWidth, usHeight;
     int     xshift, xshiftmax;
 
-    if( !BAD_ID(CurrentWindow) ){
-        GetClientRect( CurrentWindow, &rcClient );
+    if( !BAD_ID(current_window_id) ){
+        GetClientRect( current_window_id, &rcClient );
         GetWindowRect( hwnd, &rcUs );
 
         clientWidth = rcClient.right - rcClient.left;
@@ -643,7 +643,7 @@ void MoveWindowTopRight( HWND hwnd )
 
         pt.x = rcClient.left;
         pt.y = rcClient.top;
-        ClientToScreen( CurrentWindow, &pt );
+        ClientToScreen( current_window_id, &pt );
         xshift = FontAverageWidth( 1 ) * 80;
         xshiftmax = clientWidth - usWidth - 35;
         if( xshift > xshiftmax ) {

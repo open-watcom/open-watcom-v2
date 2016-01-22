@@ -59,13 +59,13 @@ vi_rc WindowTile( int maxx, int maxy )
     if( maxx == 1 && maxy == 1 ) {
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             BringUpFile( cinfo, false );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR,
+            WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_COLOR,
                              editw_info.text_style.foreground );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR,
+            WindowAuxUpdate( current_window_id, WIND_INFO_BACKGROUND_COLOR,
                              editw_info.text_style.background );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_FONT,
+            WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_FONT,
                              editw_info.text_style.font );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2,
+            WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2,
                              editw_info.border_color2 );
             CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2,
                                  editw_info.y2 );
@@ -137,10 +137,10 @@ vi_rc WindowTile( int maxx, int maxy )
                     if( tc > EditVars.MaxTileColors )
                         tc = 0;
                     if( EditVars.TileColors[tc].foreground != -1 && EditVars.TileColors[tc].background != -1 ) {
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR, EditVars.TileColors[tc].foreground );
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_COLOR, EditVars.TileColors[tc].foreground );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
                         /* tile fonts? Nah... sounds real stupid... */
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
                         tc++;
                         break;
                     }

@@ -120,7 +120,7 @@ void DoneCurrentInsert( bool trim )
         doneWithCurrentLine();
         EndUndoGroup( UndoStack );
         if( !EditFlags.Modeless ) {
-            NewCursor( CurrentWindow, EditVars.NormalCursorType );
+            NewCursor( current_window_id, EditVars.NormalCursorType );
             SetWindowCursor();
         }
         EditFlags.EscapedInsertChar = false;
@@ -137,11 +137,11 @@ void UpdateEditStatus( void )
     if( overStrike ) {
         UpdateCurrentStatus( CSTATUS_OVERSTRIKE );
         EditFlags.WasOverstrike = true;
-        NewCursor( CurrentWindow, EditVars.OverstrikeCursorType );
+        NewCursor( current_window_id, EditVars.OverstrikeCursorType );
     } else {
         UpdateCurrentStatus( CSTATUS_INSERT );
         EditFlags.WasOverstrike = false;
-        NewCursor( CurrentWindow, EditVars.InsertCursorType );
+        NewCursor( current_window_id, EditVars.InsertCursorType );
     }
     SetWindowCursor();
 
@@ -196,7 +196,7 @@ static void checkWrapMargin( void )
         if( EditVars.WrapMargin < 0 ) {
             width = -EditVars.WrapMargin;
         } else {
-            width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ) - EditVars.WrapMargin;
+            width = WindowAuxInfo( current_window_id, WIND_INFO_WIDTH ) - EditVars.WrapMargin;
         }
         if( CurrentPos.column > width ) {
             for( i = CurrentPos.column - 1; i >= 0; i-- ) {

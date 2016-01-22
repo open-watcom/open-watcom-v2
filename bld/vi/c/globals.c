@@ -97,11 +97,11 @@ line            *WorkLine = NULL;
 i_mark          CurrentPos = { 1, 1 };
 i_mark          LeftTopPos = { 1, 0 };
 int             VirtualColumnDesired = 1;
-window_id       CurrentWindow = NO_WINDOW;
-window_id       MessageWindow = NO_WINDOW;
-window_id       StatusWindow = NO_WINDOW;
-window_id       MenuWindow = NO_WINDOW;
-window_id       CurrNumWindow = NO_WINDOW;
+window_id       current_window_id = NO_WINDOW;
+window_id       message_window_id = NO_WINDOW;
+window_id       status_window_id = NO_WINDOW;
+window_id       menu_window_id = NO_WINDOW;
+window_id       curr_num_window_id = NO_WINDOW;
 select_rgn      SelRgn;
 
 /*

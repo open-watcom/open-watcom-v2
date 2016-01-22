@@ -160,8 +160,8 @@ static void processMouseMove( WPARAM w, LPARAM l )
     }
 
     StatusWndSetSeparatorsWithArray( sections + 1, EditVars.NumStatusSections );
-    InvalidateRect( StatusWindow, NULL, TRUE );
-    UpdateWindow( StatusWindow );
+    InvalidateRect( status_window_id, NULL, TRUE );
+    UpdateWindow( status_window_id );
 }
 
 static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
@@ -173,7 +173,7 @@ static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
     if( capIndex != -1 ) {
         SetCapture( hwnd );
         sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( short ) );
-        GetClientRect( StatusWindow, &rect );
+        GetClientRect( status_window_id, &rect );
         memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
         sections[0] = 0;
         sections[EditVars.NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH + CURSOR_CORRECT;
@@ -250,14 +250,14 @@ void StatusLine( int line, char *str, int format )
     if( line != 1 ) {
         return;
     }
-    if( !AllowDisplay || BAD_ID( StatusWindow ) ) {
+    if( !AllowDisplay || BAD_ID( status_window_id ) ) {
         return;
     }
-    hdc = TextGetDC( StatusWindow, WIN_TEXT_STYLE( &StatusBar ) );
+    hdc = TextGetDC( status_window_id, WIN_TEXT_STYLE( &StatusBar ) );
     font = WIN_TEXT_FONT( &StatusBar );
     hfont = FontHandle( font );
     StatusWndDrawLine( sw, hdc, hfont, str, (UINT) -1 );
-    TextReleaseDC( StatusWindow, hdc );
+    TextReleaseDC( status_window_id, hdc );
 
 } /* StatusLine */
 

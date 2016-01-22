@@ -183,24 +183,24 @@ void ResizeRoot( void )
     }
     GetClientRect( Root, &root_rect );
     DefaultWindows( &root_rect, &rect );
-    if( !BAD_ID( MessageWindow ) ) {
+    if( !BAD_ID( message_window_id ) ) {
         NewMessageWindow();
-        if( !BAD_ID( MessageWindow ) ) {
-            InvalidateRect( MessageWindow, NULL, FALSE );
-            SendMessage( MessageWindow, WM_PAINT, 0, 0L );
+        if( !BAD_ID( message_window_id ) ) {
+            InvalidateRect( message_window_id, NULL, FALSE );
+            SendMessage( message_window_id, WM_PAINT, 0, 0L );
         }
     }
-    if( !BAD_ID( StatusWindow ) ) {
+    if( !BAD_ID( status_window_id ) ) {
         NewStatusWindow();
-        if( !BAD_ID( StatusWindow ) ) {
-            InvalidateRect( StatusWindow, NULL, FALSE );
-            SendMessage( StatusWindow, WM_PAINT, 0, 0L );
+        if( !BAD_ID( status_window_id ) ) {
+            InvalidateRect( status_window_id, NULL, FALSE );
+            SendMessage( status_window_id, WM_PAINT, 0, 0L );
         }
     }
     height = rect.bottom - rect.top;
     MoveWindow( EditContainer, rect.left, rect.top, rect.right - rect.left, height, TRUE );
     if( CurrentInfo ) {
-        bufHwnd = CurrentInfo->CurrentWindow;
+        bufHwnd = CurrentInfo->current_window_id;
         if( IsWindow( bufHwnd ) && IsZoomed( bufHwnd ) ) {
             ShowWindow( bufHwnd, SW_SHOWMAXIMIZED );
         }
@@ -277,32 +277,32 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_ACTIVATEAPP:
-        if( BAD_ID( CurrentWindow ) ) {
+        if( BAD_ID( current_window_id ) ) {
             break;
         }
         SetFocus( Root );
 #if 0
         if( !wparam ) {
-            InactiveWindow( CurrentWindow );
+            InactiveWindow( current_window_id );
         } else {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
+            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)current_window_id, 0L );
         }
 #endif
         if( wparam ) {
-            ResetEditWindowCursor( CurrentWindow );
+            ResetEditWindowCursor( current_window_id );
         } else {
-            GoodbyeCursor( CurrentWindow );
+            GoodbyeCursor( current_window_id );
         }
         break;
     case WM_MOUSEACTIVATE:
         SetFocus( hwnd );
         return( MA_ACTIVATE );
     case WM_SETFOCUS:
-        if( BAD_ID( CurrentWindow ) ) {
+        if( BAD_ID( current_window_id ) ) {
             break;
         }
-        if( !IsIconic( CurrentWindow ) ) {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
+        if( !IsIconic( current_window_id ) ) {
+            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)current_window_id, 0L );
             DCUpdate();
             SetWindowCursor();
             SetWindowCursorForReal();

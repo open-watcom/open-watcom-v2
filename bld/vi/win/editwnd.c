@@ -115,9 +115,9 @@ void SetWindowTitle( HWND hwnd )
             if( cinfo->CurrentFile->dup_count > 0 ) {
                 MySprintf( buff, "%s [%d]", cinfo->CurrentFile->name,
                            cinfo->DuplicateID );
-                 SetWindowText( cinfo->CurrentWindow, buff );
+                 SetWindowText( cinfo->current_window_id, buff );
             } else {
-                SetWindowText( cinfo->CurrentWindow, cinfo->CurrentFile->name );
+                SetWindowText( cinfo->current_window_id, cinfo->CurrentFile->name );
             }
         }
     }
@@ -183,7 +183,7 @@ static void doPaint( window *w, RECT *r, window_data *wd )
     height = FontHeight( WIN_TEXT_FONT( w ) );
     start = r->top / height;
     stop = (r->bottom + height - 1) / height;
-    max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    max_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( stop + 1 > max_lines ) {
         stop = max_lines - 1;
     }
@@ -349,7 +349,7 @@ static void mouseButtonDown( HWND id, int x, int y, bool shift )
         ClientToRowCol( id, x, y, &row, &col, DIVIDE_BETWEEN );
     }
 
-    if( CurrentWindow != id ) {
+    if( current_window_id != id ) {
         UnselectRegion();
         activateWindow( id );
         jumpToCoord( row, col );
@@ -539,7 +539,7 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
      */
     VScrollBarScale = 1 + last / INT_MAX;
 
-    wlines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    wlines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
 
     /* Reduce number of redraws by checking current range and position
     */
@@ -648,7 +648,7 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     }
     EditFlags.ScrollCommand = false;
 
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     diff = LeftTopPos.line - oldTopOfPage;
     if( diff != 0 ){
         if( abs( diff ) > text_lines / 2 ) {
@@ -759,7 +759,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_MOUSEACTIVATE:
-        if( hwnd != CurrentWindow ) {
+        if( hwnd != current_window_id ) {
             UnselectRegion();
             activateWindow( hwnd );
         }
@@ -788,7 +788,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             // Gaining focus
             MyShowCaret( hwnd );
             ResetEditWindowCursor( hwnd );
-            if( hwnd != CurrentWindow ) {
+            if( hwnd != current_window_id ) {
                 activateWindow( hwnd );
                 MyShowCaret( hwnd );
                 ResetEditWindowCursor( hwnd );
@@ -878,7 +878,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     SetFocus( Root );
                     return( 0 );
                 }
-                if( IsIconic( cinfo->CurrentWindow ) ) {
+                if( IsIconic( cinfo->current_window_id ) ) {
                     cinfo = cinfo->next;
                 } else {
                     SaveInfo( sinfo );

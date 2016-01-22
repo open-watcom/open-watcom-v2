@@ -209,7 +209,7 @@ static void ensureCursorDisplayed( void )
     int         len, wc, diff;
 
     if( EditFlags.Modeless && ( CurrentFile != NULL ) ) {
-        len = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+        len = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
         if( CurrentPos.line < LeftTopPos.line ||
             CurrentPos.line > LeftTopPos.line + len - 1 ) {
             SetCurrentLine( CurrentPos.line );
@@ -386,7 +386,7 @@ void EditMain( void )
             }
             if( doclear ) {
                 if( EditFlags.AutoMessageClear ) {
-                    ClearWindow( MessageWindow );
+                    ClearWindow( message_window_id );
                 }
 #ifndef __WIN__
                 ResetDisplayLine();
@@ -438,7 +438,7 @@ vi_rc AbsoluteNullResponse( void )
 vi_rc NullResponse( void )
 {
     if( !EditFlags.EscapeMessage ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     } else {
         DisplayFileStatus();
     }
