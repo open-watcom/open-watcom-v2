@@ -118,7 +118,7 @@ bool ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 {
     int                 num;
     ctl_elt             *elt;
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
@@ -140,7 +140,7 @@ bool ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 {
     int                 num;
     ctl_elt             *elt;
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
@@ -162,7 +162,7 @@ void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /* this routine must be called for all WM_COMMAND events sent to the
    dialog. */
 {
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
     ctl_elt             *elt;
     int                 num;
     bool                mod;

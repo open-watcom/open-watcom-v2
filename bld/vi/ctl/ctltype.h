@@ -216,7 +216,7 @@ typedef struct {
     ctl_elt             elts[1];        // 'num_ctls' elts
                         // The array of control datas is stored in a continuous
                         // block of memory.
-} clt_def;
+} ctl_def;
 
 
 /////////////////////////////////////////////////////////////////////////////////
