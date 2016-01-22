@@ -60,12 +60,12 @@ void SetCursorBlinkRate( int cbr )
 /*
  * GoodbyeCursor - we are losing focus, so get rid of our cursor
  */
-void GoodbyeCursor( HWND hwnd )
+void GoodbyeCursor( window_id wid )
 {
     if( haveOldBlinkTime ) {
         SetCaretBlinkTime( oldBlinkTime );
     }
-    MyHideCaret( hwnd );
+    MyHideCaret( wid );
     DestroyCaret();
 
 } /* GoodbyeCursor */
@@ -73,21 +73,21 @@ void GoodbyeCursor( HWND hwnd )
 /*
  * NewCursor - create a new cursor for a window
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
     window      *w;
     int         height;
     int         width;
 
-    if( BAD_ID( id ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    w = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( wid );
     height = FontHeight( WIN_TEXT_FONT( w ) );
     width = FontAverageWidth( WIN_TEXT_FONT( w ) );
     height = (long) height * ct.height / 100L;
     width = (long) width * ct.width / 100L;
-    MyHideCaret( id );
+    MyHideCaret( wid );
     DestroyCaret();
     cursorHeight = height;
     cursorWidth = width;
@@ -95,14 +95,14 @@ void NewCursor( window_id id, cursor_type ct )
         oldBlinkTime = GetCaretBlinkTime();
         haveOldBlinkTime = true;
     }
-    CreateCaret( id, (HBITMAP)NULLHANDLE, cursorWidth, cursorHeight );
+    CreateCaret( wid, (HBITMAP)NULLHANDLE, cursorWidth, cursorHeight );
     SetCursorBlinkRate( EditVars.CursorBlinkRate );
-    MyShowCaret( id );
+    MyShowCaret( wid );
     cursorType = ct;
 
 } /* NewCursor */
 
-static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
+static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
 {
     ss_block    *ss, *ss_start, *ss_prev;
     dc_line     *dcline;
@@ -116,14 +116,14 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
 
     // this section checks if current line is valid.
 
-    assert( hwnd == CurrentInfo->current_window_id );
+    assert( wid == CurrentInfo->current_window_id );
     if( row < 0 || row >= CurrentInfo->dc_size ) {
         // not on screen -> not displayed
         *x = -10;
         *width = 0;
         return( 0 );
     }
-    dcline = DCFindLine( row, hwnd );
+    dcline = DCFindLine( row, wid );
 
     if( dcline->display != 0 ){
         // line has not been drawn yet. Can't set cursor.
@@ -239,7 +239,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
             }
 
             // now get the extent of the leading chars ...
-            extent = MyTextExtent( hwnd, this_style, cur_pos, end_str - cur_pos );
+            extent = MyTextExtent( wid, this_style, cur_pos, end_str - cur_pos );
         } else {
             extent = 0;
             cur_pos = str;
@@ -260,15 +260,15 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
             funny = 0;
         } else {
             *x = left + extent;
-            *width = MyTextExtent( hwnd, this_style, cur_pos,
+            *width = MyTextExtent( wid, this_style, cur_pos,
                                    end_str - cur_pos + 1 ) - extent;
             funny = (*width) / 2;
         }
     } else {
         type_style *this_style = &SEType[ss->type];
 
-        *x = MyTextExtent( hwnd, this_style, str, len );
-        *width = MyTextExtent( hwnd, this_style,  str, len + 1 ) - *x;
+        *x = MyTextExtent( wid, this_style, str, len );
+        *width = MyTextExtent( wid, this_style,  str, len + 1 ) - *x;
         if( ss != ss_start ) {
             *x += ss_prev->offset;
         }
@@ -327,43 +327,43 @@ static void setCursorOnScreen( int row, int col )
 /*
  * SetCursorOnLine - set cursor at specified column in single line text string
  */
-void SetCursorOnLine( window_id id, int col, char *str, type_style *style )
+void SetCursorOnLine( window_id wid, int col, char *str, type_style *style )
 {
     window      *w;
     int         x, y;
     int         width, height;
 
-    if( BAD_ID( id ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    w = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( wid );
     // y = FontHeight( WIN_TEXT_FONT( w ) ) - cursorHeight;
 
-    x = MyTextExtent( id, style, str, col - 1 );
-    width = MyTextExtent( id, style, str, col ) - x;
+    x = MyTextExtent( wid, style, str, col - 1 );
+    width = MyTextExtent( wid, style, str, col ) - x;
 
     /* adjust so that Insert cursor is 0 width
      * Also make the overstrike cursor the height of the insert cursor.
      */
-    width = (long) width * cursorType.width / 100L;
+    width = (long)width * cursorType.width / 100L;
     height = EditVars.InsertCursorType.height;
     y = FontHeight( WIN_TEXT_FONT( w ) ) - height;
 
-    MyHideCaret( id );
+    MyHideCaret( wid );
     DestroyCaret();
-    // CreateCaret( id, (HBITMAP)NULLHANDLE, width, cursorHeight );
-    CreateCaret( id, (HBITMAP)NULLHANDLE, width, height );
+    // CreateCaret( wid, (HBITMAP)NULLHANDLE, width, cursorHeight );
+    CreateCaret( wid, (HBITMAP)NULLHANDLE, width, height );
     SetCaretPos( x, y );
-    MyShowCaret( id );
+    MyShowCaret( wid );
 
 } /* SetCursorOnLine */
 
-void SetGenericWindowCursor( window_id id, int row, int col )
+void SetGenericWindowCursor( window_id wid, int row, int col )
 {
     // setCursorOnScreen calls functions which are not generic
     // ie) they only work on the current window! Therefore
     // this routine does not do what the name implies!!!
-    id = id;
+    wid = wid;
 
     setCursorOnScreen( row, col );
 
@@ -372,15 +372,15 @@ void SetGenericWindowCursor( window_id id, int row, int col )
 /*
  * ResetEditWindowCursor - display cursor on setfocus to a buffer
  */
-void ResetEditWindowCursor( window_id id )
+void ResetEditWindowCursor( window_id wid )
 {
     if( !EditFlags.Modeless && !EditFlags.InsertModeActive ) {
-        NewCursor( id, EditVars.NormalCursorType );
+        NewCursor( wid, EditVars.NormalCursorType );
     } else {
         if( EditFlags.WasOverstrike ) {
-            NewCursor( id, EditVars.OverstrikeCursorType );
+            NewCursor( wid, EditVars.OverstrikeCursorType );
         } else {
-            NewCursor( id, EditVars.InsertCursorType );
+            NewCursor( wid, EditVars.InsertCursorType );
         }
     }
 
@@ -392,10 +392,10 @@ void ResetEditWindowCursor( window_id id )
 /*
  * MyShowCaret - ShowCaret w/o additive effects
  */
-void MyShowCaret( window_id id )
+void MyShowCaret( window_id wid )
 {
     if( !caretDisplayed && !caretKilled ) {
-        ShowCaret( id );
+        ShowCaret( wid );
         caretDisplayed = true;
     }
 
@@ -404,30 +404,30 @@ void MyShowCaret( window_id id )
 /*
  * MyHideCaret - HideCaret w/o additive effects
  */
-void MyHideCaret( window_id id )
+void MyHideCaret( window_id wid )
 {
     if( caretDisplayed ) {
-        HideCaret( id );
+        HideCaret( wid );
         caretDisplayed = false;
     }
 
 } /* MyHideCaret */
 
-void MyKillCaret( window_id id )
+void MyKillCaret( window_id wid )
 {
     if( !caretKilled ) {
-        MyHideCaret( id );
-        HideCaret( id );
+        MyHideCaret( wid );
+        HideCaret( wid );
         caretKilled = true;
     }
 }
 
-void MyRaiseCaret( window_id id )
+void MyRaiseCaret( window_id wid )
 {
     if( caretKilled ) {
-        ShowCaret( id );
+        ShowCaret( wid );
         caretKilled = false;
-        MyShowCaret( id );
+        MyShowCaret( wid );
     }
 }
 

@@ -37,15 +37,15 @@
 /*
  * WindowAuxInfo - get info about a window
  */
-int WindowAuxInfo( window_id wn, int type )
+int WindowAuxInfo( window_id wid, int type )
 {
     window      *w;
     int         rc;
 
-    if( BAD_ID( wn ) ) {
+    if( BAD_ID( wid ) ) {
         return( 1 );
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     rc = 0;
     switch( type ) {
@@ -72,14 +72,14 @@ int WindowAuxInfo( window_id wn, int type )
 /*
  * WindowAuxUpdate - update stuff for a window
  */
-void WindowAuxUpdate( window_id wn, int type, int data )
+void WindowAuxUpdate( window_id wid, int type, int data )
 {
     window  *w;
 
-    if( BAD_ID( wn ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     switch( type ) {
     case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;

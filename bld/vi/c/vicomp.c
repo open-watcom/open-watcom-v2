@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <stdarg.h>
-#include <stdlib.h>
 #include "posix.h"
 #include "specio.h"
 

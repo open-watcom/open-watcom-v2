@@ -157,7 +157,7 @@ vi_rc EditFileFromList( void )
     vi_rc       rc;
 
     proc = MakeDlgProcInstance( FileListProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
     return( rc );
 }

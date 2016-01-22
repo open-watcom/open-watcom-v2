@@ -68,7 +68,7 @@ int         Height;
 static int              cursx = 0, cursy = 0;
 static COLORREF         RGBValues[NUM_COLOURS];
 static bool             haveCapture = false;
-static HWND             mod_hwnd;
+static window_id        mod_wid = NO_WINDOW;
 static POINT            m_pt;
 
 static void sendNewColourToolbar( void )
@@ -96,8 +96,8 @@ static void sendNewColourCurrentWindow( NewColourOps op )
     syntax_element  i;
     linenum         line_num;
 
-    ScreenToClient( mod_hwnd, &m_pt );
-    ClientToRowCol( mod_hwnd, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
+    ScreenToClient( mod_wid, &m_pt );
+    ClientToRowCol( mod_wid, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
 
     /* someone is base 0, someone else isn't.  bummer.
      * also col may not be valid, check this
@@ -147,16 +147,16 @@ static void sendNewColour( NewColourOps op )
 {
     type_style  *mod_style;
 
-    if( BAD_ID( mod_hwnd ) ) {
+    if( BAD_ID( mod_wid ) ) {
         return;
     }
 
-    if( mod_hwnd == GetToolbarWindow() ) {
+    if( mod_wid == GetToolbarWindow() ) {
         sendNewColourToolbar();
-    } else if( mod_hwnd == current_window_id ) {
+    } else if( mod_wid == current_window_id ) {
         sendNewColourCurrentWindow( op );
     } else {
-        mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_hwnd ) );
+        mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_wid ) );
         if( op == NC_FORE ) {
             mod_style->foreground = INDEX_FROM_XY( cursx, cursy );
         } else {
@@ -292,7 +292,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     CursorOp( COP_DROPCLR );
     SetCapture( hwnd );
     haveCapture = true;
-    mod_hwnd = NO_WINDOW;
+    mod_wid = NO_WINDOW;
     return( 0 );
 }
 
@@ -337,13 +337,13 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPCLR );
-        mod_hwnd = NO_WINDOW;
+        mod_wid = NO_WINDOW;
         return( 0 );
     }
 
     // otherwise, figure out what we're over & change element display
-    mod_hwnd = GetOwnedWindow( m_pt );
-    if( !BAD_ID( mod_hwnd ) ) {
+    mod_wid = GetOwnedWindow( m_pt );
+    if( !BAD_ID( mod_wid ) ) {
         CursorOp( COP_DROPCLR );
     } else {
         CursorOp( COP_NODROP );

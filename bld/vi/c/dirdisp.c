@@ -41,7 +41,7 @@
 #endif
 #include <assert.h>
 
-static window_id    dirWin = NO_WINDOW;
+static window_id    dir_wid = NO_WINDOW;
 static int          oldFilec, lastFilec;
 static int          oldPage = -1;
 static int          maxJ, perPage, maxPage, cPage;
@@ -54,9 +54,9 @@ static bool hasMouseHandler;
 /*
  * FileCompleteMouseHandler - handle mouse events for file completion
  */
-static bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
+static bool FileCompleteMouseHandler( window_id wid, int win_x, int win_y )
 {
-    if( id != dirWin ) {
+    if( wid != dir_wid ) {
         return( false );
     }
     if( LastMouseEvent != MOUSE_PRESS && LastMouseEvent != MOUSE_DCLICK ) {
@@ -65,7 +65,7 @@ static bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
     if( LastMouseEvent == MOUSE_DCLICK ) {
         isDone = true;
     }
-    if( !InsideWindow( id, win_x, win_y ) ) {
+    if( !InsideWindow( wid, win_x, win_y ) ) {
         return( false );
     }
 
@@ -152,8 +152,8 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
         return( ERR_FILE_NOT_FOUND );
     }
     if( DirFileCount == 1 ) {
-        if( !BAD_ID( dirWin ) ) {
-            ClearWindow( dirWin );
+        if( !BAD_ID( dir_wid ) ) {
+            ClearWindow( dir_wid );
         }
         return( appendExtra( data, newstart,max, DirFiles[0], strlen( DirFiles[0]->name ) ) );
     }
@@ -196,34 +196,34 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
 } /* doFileComplete */
 
 #ifdef __WIN__
-static int calcColumns( HWND hwnd )
+static int calcColumns( window_id wid )
 {
     RECT        rect;
     int         columns;
     window      *w;
 
-    if( BAD_ID( hwnd ) )
+    if( BAD_ID( wid ) )
         return( 0 );
-    w = WINDOW_FROM_ID( hwnd );
-    GetClientRect( hwnd, &rect );
+    w = WINDOW_FROM_ID( wid );
+    GetClientRect( wid, &rect );
     columns = rect.right - rect.left;
     columns = columns / (NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) ));
     return( columns );
 }
 
-void FileCompleteMouseClick( HWND hwnd, int x, int y, bool dclick )
+void FileCompleteMouseClick( window_id wid, int x, int y, bool dclick )
 {
     int         file, column_width, column_height, c;
     int         left_margin, columns;
     RECT        rect;
     window      *w;
 
-    if( BAD_ID( hwnd ) )
+    if( BAD_ID( wid ) )
         return;
-    w = WINDOW_FROM_ID( hwnd );
+    w = WINDOW_FROM_ID( wid );
     /* figure out which file_name the user clicked on */
-    columns = calcColumns( hwnd );
-    GetClientRect( hwnd, &rect );
+    columns = calcColumns( wid );
+    GetClientRect( wid, &rect );
     column_width = NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) );
     column_height = FontHeight( WIN_TEXT_FONT( w ) );
     left_margin = (rect.right - rect.left - column_width * columns) >> 1;
@@ -286,17 +286,17 @@ static void displayFiles( void )
     type_style  *style;
     char        buffer[FILENAME_MAX];
 
-    if( BAD_ID( dirWin ) )
+    if( BAD_ID( dir_wid ) )
         return;
-    w = WINDOW_FROM_ID( dirWin );
+    w = WINDOW_FROM_ID( dir_wid );
 
     if( hasWrapped ) {
-        ClearWindow( dirWin );
+        ClearWindow( dir_wid );
         hasWrapped = false;
     }
 
     font_height = FontHeight( WIN_TEXT_FONT( w ) );
-    GetClientRect( dirWin, &rect );
+    GetClientRect( dir_wid, &rect );
     column_width = NAMEWIDTH * FontAverageWidth( WIN_TEXT_FONT( w ) );
     outer_bound = rect.right;
     left_edge = rect.right - rect.left;
@@ -317,26 +317,26 @@ static void displayFiles( void )
     rect.bottom = rect.top + font_height;
     rect.left = 0;
     rect.right = left_edge;
-    BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
+    BlankRectIndirect( dir_wid, WIN_TEXT_BACKCOLOR( w ), &rect );
     column = 0;
     for( i = start; i <= end; i++ ) {
         parseFileName( i, &buffer[0] );
         style = (i == lastFilec) ? WIN_HILIGHT_STYLE( w ) : WIN_TEXT_STYLE( w );
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
-        BlankRectIndirect( dirWin, style->background, &rect );
-        WriteString( dirWin, rect.left, rect.top, style, &buffer[0] );
+        BlankRectIndirect( dir_wid, style->background, &rect );
+        WriteString( dir_wid, rect.left, rect.top, style, &buffer[0] );
         column = (column + 1) % maxJ;
         if( column == 0 ) {
             /* blat out the rest of the row and continue on */
             rect.left = right_edge;
             rect.right = outer_bound;
-            BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
+            BlankRectIndirect( dir_wid, WIN_TEXT_BACKCOLOR( w ), &rect );
             rect.top = rect.bottom;
             rect.bottom = rect.top + font_height;
             rect.left = 0;
             rect.right = left_edge;
-            BlankRectIndirect( dirWin, WIN_TEXT_BACKCOLOR( w ), &rect );
+            BlankRectIndirect( dir_wid, WIN_TEXT_BACKCOLOR( w ), &rect );
         }
     }
     oldPage = cPage;
@@ -366,7 +366,7 @@ static void displayFiles( void )
         end += cPage;
     }
     if( hasWrapped ) {
-        ClearWindow( dirWin );
+        ClearWindow( dir_wid );
         hasWrapped = false;
     }
 
@@ -391,7 +391,7 @@ static void displayFiles( void )
         strcat( tmp, tmp2 );
         j++;
         if( j == maxJ || i == ( end - 1 ) ) {
-            DisplayLineInWindow( dirWin, l++, tmp );
+            DisplayLineInWindow( dir_wid, l++, tmp );
             if( hilite >= 0 ) {
                 j = hilite * NAMEWIDTH;
                 if( DirFiles[lastFilec]->attr & _A_SUBDIR ) {
@@ -402,7 +402,7 @@ static void displayFiles( void )
                 MySprintf( tmp2, strFmt, dirc, DirFiles[lastFilec]->name );
                 z = j + strlen( tmp2 );
                 for( k = j; k < z; k++ ) {
-                    SetCharInWindowWithColor( dirWin, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight_style );
+                    SetCharInWindowWithColor( dir_wid, l - 1, k + 1, tmp2[k - j], &filecw_info.hilight_style );
                 }
                 hilite = -1;
             }
@@ -432,24 +432,24 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
         return( rc );
     }
 
-    if( BAD_ID( dirWin ) ) {
+    if( BAD_ID( dir_wid ) ) {
         // ensure uniform font before opening window
         if( filecw_info.text_style.font != filecw_info.hilight_style.font )
             filecw_info.hilight_style.font = filecw_info.text_style.font;
 
-        rc = NewWindow2( &dirWin, &filecw_info );
+        rc = NewWindow2( &dir_wid, &filecw_info );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     }
-    WindowTitle( dirWin, "File Completion List" );
+    WindowTitle( dir_wid, "File Completion List" );
 
 #ifdef __WIN__
-    maxJ = calcColumns( dirWin );
+    maxJ = calcColumns( dir_wid );
 #else
-    maxJ = WindowAuxInfo( dirWin, WIND_INFO_TEXT_COLS ) / NAMEWIDTH;
+    maxJ = WindowAuxInfo( dir_wid, WIND_INFO_TEXT_COLS ) / NAMEWIDTH;
 #endif
-    maxl = WindowAuxInfo( dirWin, WIND_INFO_TEXT_LINES ) - 1;
+    maxl = WindowAuxInfo( dir_wid, WIND_INFO_TEXT_LINES ) - 1;
     perPage = ( maxl + 1 ) * maxJ;
     oldPage = -1;
     maxPage = ( DirFileCount + perPage - 1 ) / perPage;
@@ -484,11 +484,11 @@ vi_rc ContinueFileComplete( char *data, int start, int max, int what )
  */
 void FinishFileComplete( void )
 {
-    if( BAD_ID( dirWin ) ) {
+    if( BAD_ID( dir_wid ) ) {
         return;
     }
-    CloseAWindow( dirWin );
-    dirWin = NO_WINDOW;
+    CloseAWindow( dir_wid );
+    dir_wid = NO_WINDOW;
     if( hasMouseHandler ) {
         PopMouseEventHandler();
         hasMouseHandler = false;
@@ -501,7 +501,7 @@ void FinishFileComplete( void )
  */
 void PauseFileComplete( void )
 {
-    WindowTitle( dirWin, NULL );
+    WindowTitle( dir_wid, NULL );
     if( hasMouseHandler ) {
         PopMouseEventHandler();
         hasMouseHandler = false;

@@ -37,7 +37,7 @@
 /*
  * ShiftWindowUpDown - shift the stuff in a window in an up/down direction
  */
-void ShiftWindowUpDown( window_id id, int diff )
+void ShiftWindowUpDown( window_id wid, int diff )
 {
     window              *w;
     int                 start, spl, i, j;
@@ -49,7 +49,7 @@ void ShiftWindowUpDown( window_id id, int diff )
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( wid );
     AccessWindow( w );
     if( w->has_border ) {
         start = 1;

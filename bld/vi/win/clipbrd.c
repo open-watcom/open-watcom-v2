@@ -95,7 +95,7 @@ static void __far *getHugePointer( void __far *ptr, unsigned off )
  */
 static bool openClipboardForRead( void )
 {
-    if( OpenClipboard( Root ) ) {
+    if( OpenClipboard( root_window_id ) ) {
         if( IsClipboardFormatAvailable( CF_TEXT ) ||
             IsClipboardFormatAvailable( CF_OEMTEXT )) {
                 return( true );
@@ -111,7 +111,7 @@ static bool openClipboardForRead( void )
  */
 static bool openClipboardForWrite( void )
 {
-    if( OpenClipboard( Root ) ) {
+    if( OpenClipboard( root_window_id ) ) {
         if( EmptyClipboard() ) {
             return( true );
         }

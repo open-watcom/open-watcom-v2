@@ -201,10 +201,10 @@ bool GetSnoopStringDialog( fancy_find **ff )
     proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
-        rc = DialogBox( InstanceHandle, "SNOOPDLG95", Root, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, (DLGPROC)proc );
     } else {
 #endif
-        rc = DialogBox( InstanceHandle, "SNOOPDLG", Root, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, (DLGPROC)proc );
 #ifdef __NT__
     }
 #endif

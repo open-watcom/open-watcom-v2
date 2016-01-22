@@ -88,7 +88,7 @@ bool IsGadgetStringChanged( char *str )
 /*
  * DrawBorder - display border
  */
-void DrawBorder( window_id wn )
+void DrawBorder( window_id wid )
 {
     window              *w;
     int                 i, k, stc, etc, ctc;
@@ -107,7 +107,7 @@ void DrawBorder( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     if( !w->has_border ) {
         return;
     }
@@ -287,20 +287,20 @@ void DrawBorder( window_id wn )
 /*
  * SetBorderGadgets - set whether or not border has gadgets
  */
-void SetBorderGadgets( window_id wn, bool how )
+void SetBorderGadgets( window_id wid, bool how )
 {
-   WINDOW_FROM_ID( wn )->has_gadgets = how;
+   WINDOW_FROM_ID( wid )->has_gadgets = how;
 
 } /* SetBorderGadgets */
 
 /*
  * WindowBorderData - set up window border data
  */
-void WindowBorderData( window_id wn, const char *data, int col )
+void WindowBorderData( window_id wid, const char *data, int col )
 {
     window      *w;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     if( w->has_border ) {
         ReplaceString( &(w->borderdata), data );
         w->bordercol = col;

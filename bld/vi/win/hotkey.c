@@ -51,7 +51,7 @@ WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         if( key == VI_KEY( F7 ) ||
             key == VI_KEY( F8 ) ||
             key == VI_KEY( F9 ) ) {
-            return( SendMessage( Root, msg, wparam, lparam ) );
+            return( SendMessage( root_window_id, msg, wparam, lparam ) );
         }
         break;
     }

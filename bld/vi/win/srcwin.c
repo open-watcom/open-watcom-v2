@@ -133,31 +133,31 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
         if( !GetDWORD( &cmd, &height ) ){
             return( true );
         }
-        ShowWindow( Root, SW_SHOWNORMAL );
-        MoveWindow( Root, left, top, width, height, TRUE );
+        ShowWindow( root_window_id, SW_SHOWNORMAL );
+        MoveWindow( root_window_id, left, top, width, height, TRUE );
         *result = ERR_NO_ERR;
         return( true );
 
     case T_TAKEFOCUS:
 #ifdef __NT__
-        SetForegroundWindow( Root );
+        SetForegroundWindow( root_window_id );
 #else
-        SetActiveWindow( Root );
+        SetActiveWindow( root_window_id );
 #endif
-        SetFocus( Root );
+        SetFocus( root_window_id );
         *result = ERR_NO_ERR;
         return( true );
 
     case T_MINIMIZE:
-        ShowWindow( Root, SW_SHOWMINNOACTIVE );
+        ShowWindow( root_window_id, SW_SHOWMINNOACTIVE );
         *result = ERR_NO_ERR;
         return( true );
 
     case T_RESTORE:
-        SetFocus( Root );
-        SetActiveWindow( Root );
-        BringWindowToTop( Root );
-        ShowWindow( Root, SW_RESTORE );
+        SetFocus( root_window_id );
+        SetActiveWindow( root_window_id );
+        BringWindowToTop( root_window_id );
+        ShowWindow( root_window_id, SW_RESTORE );
         *result = ERR_NO_ERR;
         return( true );
 
@@ -196,15 +196,15 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
         if( vl != NULL ) {
             cmd = Expand( tmp, cmd, vl );
         }
-        SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        if( MessageBox( Root, cmd, EditorName, MB_OKCANCEL ) == IDOK ) {
+        SetWindowPos( root_window_id, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        if( MessageBox( root_window_id, cmd, EditorName, MB_OKCANCEL ) == IDOK ) {
             *result = ERR_NO_ERR;
-            SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-            SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+            SetWindowPos( root_window_id, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+            SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             return( true );
         }
-        SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( root_window_id, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         *result = ERR_FILE_MODIFIED;
         return( true );
     case T_QUERY_FILE:
@@ -222,21 +222,21 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
         *result = 1;
         rc = EditFile( cmd, false ) == ERR_NO_ERR;
 #ifdef __NT__
-        SetForegroundWindow( Root );
+        SetForegroundWindow( root_window_id );
 #else
-        SetActiveWindow( Root );
+        SetActiveWindow( root_window_id );
 #endif
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( rc );
     case T_LOCATE:
         *result = 1;
         rc = LocateCmd( cmd ) == ERR_NO_ERR;
 #ifdef __NT__
-        SetForegroundWindow( Root );
+        SetForegroundWindow( root_window_id );
 #else
-        SetActiveWindow( Root );
+        SetActiveWindow( root_window_id );
 #endif
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( rc );
     case T_WINHELP:
         if( vl != NULL ) {
@@ -265,22 +265,22 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( Root, str, HELP_KEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( Root, str, HELP_KEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd );
             }
             break;
         case WINHELP_PARTIALKEY:
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( Root, str, HELP_PARTIALKEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( Root, str, HELP_PARTIALKEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd );
             }
             break;
         }

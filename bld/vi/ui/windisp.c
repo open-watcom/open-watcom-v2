@@ -35,14 +35,14 @@
 #include "win.h"
 #include "sstyle.h"
 
-static void WriteLongLineMarker( window_id wn, type_style *style, char_info *txt, char_info _FAR *scr, char old )
+static void WriteLongLineMarker( window_id wid, type_style *style, char_info *txt, char_info _FAR *scr, char old )
 {
     char_info   info = {0, 0};
 
-    if( wn != current_window_id || !EditFlags.MarkLongLines ) {
+    if( wid != current_window_id || !EditFlags.MarkLongLines ) {
         return;
     }
-    info.cinfo_attr = MAKE_ATTR( WINDOW_FROM_ID( wn ), style->background, style->foreground );
+    info.cinfo_attr = MAKE_ATTR( WINDOW_FROM_ID( wid ), style->background, style->foreground );
     if( EditVars.EndOfLineChar ) {
         info.cinfo_char = EditVars.EndOfLineChar;
     } else {
@@ -57,7 +57,7 @@ size_t strlen( const char *__s );
 /*
  * displayLineInWindowGeneric - takes an ss_block directly
  */
-static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
+static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
                                 char *text, int start_col, ss_block *ss )
 {
     window              *w;
@@ -79,7 +79,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     otmp = NULL;
     write_eol = false;
     if( EditFlags.RealTabs ) {
@@ -169,7 +169,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
             }
         }
         if( write_eol && BAD_ID( *(over - 1) ) ) {
-            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
+            WriteLongLineMarker( wid, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
             blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
@@ -192,7 +192,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
             }
         }
         if( write_eol ) {
-            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
+            WriteLongLineMarker( wid, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
             blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
@@ -217,7 +217,7 @@ static vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
 /*
  * DisplayLineInWindowWithColor - do just that
  */
-vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no, char *text, type_style *ts, int start_col )
+vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, char *text, type_style *ts, int start_col )
 {
     ss_block    ss;
 
@@ -227,13 +227,13 @@ vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no, char *text, typ
     ss.type = SE_UNUSED;
     ss.end = BEYOND_TEXT;
 
-    return( displayLineInWindowGeneric( wn, c_line_no, text, start_col, &ss ) );
+    return( displayLineInWindowGeneric( wid, c_line_no, text, start_col, &ss ) );
 }
 
 /*
  * DisplayLineInWindowWithSyntaxStyle - display wrt syntax lang. settings
  */
-vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *line,
+vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *line,
                                         linenum line_no, char *text, int start_col,
                                         unsigned int junk )
 {
@@ -258,7 +258,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     // it should be close considering it mirrors the WINDOWS version.
 
     // get the laguage flags state previous to this line
-    // c_line = DCFindLine( c_line_no - 1, wn );
+    // c_line = DCFindLine( c_line_no - 1, wid );
     // SSGetLanguageFlags( &(c_line->flags) );
 
     // parse the line (generate new flags as well)
@@ -270,7 +270,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     EditFlags.RealTabs = false;
 
     // display the thing
-    rc = displayLineInWindowGeneric( wn, c_line_no, tmp, start_col, ss );
+    rc = displayLineInWindowGeneric( wid, c_line_no, tmp, start_col, ss );
     EditFlags.RealTabs = saveRealTabs;
 
     // now say that it has been displayed and the flags are OK
@@ -285,7 +285,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
 /*
  * DisplayCrossLineInWindow - do just that, using given colors
  */
-void DisplayCrossLineInWindow( window_id wn, int line )
+void DisplayCrossLineInWindow( window_id wid, int line )
 {
     window              *w;
     window_id           *over;
@@ -298,7 +298,7 @@ void DisplayCrossLineInWindow( window_id wn, int line )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * find dimensions of line
@@ -516,7 +516,7 @@ void ColorAColumnRange( int row, int scol, int ecol, type_style *style )
 /*
  * SetCharInWindowWithColor - do just that, using given colors
  */
-vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style )
+vi_rc SetCharInWindowWithColor( window_id wid, int line, int col, char text, type_style *style )
 {
     window              *w;
     int                 addr, start, spl;
@@ -527,7 +527,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * find dimensions of line
@@ -581,17 +581,17 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
 /*
  * DisplayLineInWindow - do as it sounds, use default colors
  */
-vi_rc DisplayLineInWindow( window_id wn, int c_line_no, char *text )
+vi_rc DisplayLineInWindow( window_id wid, int c_line_no, char *text )
 {
     ss_block    ss;
     window      *w;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     SEType[SE_UNUSED].foreground = w->text_color;
     SEType[SE_UNUSED].background = w->background_color;
     SEType[SE_UNUSED].font = FONT_DEFAULT;
     ss.type = SE_UNUSED;
     ss.end = BEYOND_TEXT;
-    return( displayLineInWindowGeneric( wn, c_line_no, text, 0, &ss ) );
+    return( displayLineInWindowGeneric( wid, c_line_no, text, 0, &ss ) );
 
 } /* DisplayLineInWindow */

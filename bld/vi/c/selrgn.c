@@ -207,7 +207,7 @@ void UnselectRegion( void )
 /*
  * UpdateDrag - update selected region
  */
-void UpdateDrag( window_id id, int win_x, int win_y )
+void UpdateDrag( window_id wid, int win_x, int win_y )
 {
     int         nx, ny, height;
     int         moveCursor;
@@ -216,9 +216,9 @@ void UpdateDrag( window_id id, int win_x, int win_y )
     moveCursor = 0;
     height = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
 #ifdef __WIN__
-    if( id == current_window_id && InsideWindow( id, MouseX, MouseY ) ) {
+    if( wid == current_window_id && InsideWindow( wid, MouseX, MouseY ) ) {
 #else
-    if( id == current_window_id && InsideWindow( id, win_x, win_y ) ) {
+    if( wid == current_window_id && InsideWindow( wid, win_x, win_y ) ) {
 #endif
         ny = LeftTopPos.line + win_y - 1;
         if( ny > CurrentFile->fcbs.tail->end_line ) {

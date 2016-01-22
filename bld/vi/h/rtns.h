@@ -838,7 +838,7 @@ void    SetWindowSizes( void );
 void    SetWindowCursor( void );
 void    SetWindowCursorForReal( void );
 vi_rc   CurrentWindowResize( int x1, int y1, int x2, int y2 );
-void    SetFileWindowTitle( window_id cw, info *cinfo, bool hilite );
+void    SetFileWindowTitle( window_id wid, info *cinfo, bool hilite );
 void    ResetAllWindows( void );
 
 /* word.c */

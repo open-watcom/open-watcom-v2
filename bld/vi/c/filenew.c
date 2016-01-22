@@ -41,7 +41,7 @@
 static vi_rc createNewFile( const char *name, bool same_file )
 {
     int         height;
-    window_id   cw;
+    window_id   wid;
     info        *tmp;
     vi_rc       rc;
 
@@ -73,17 +73,17 @@ static vi_rc createNewFile( const char *name, bool same_file )
     /*
      * get new window
      */
-    rc = NewWindow2( &cw, &editw_info );
+    rc = NewWindow2( &wid, &editw_info );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 #ifdef __WIN__
     if( !strncmp( name, "untitled", 8 ) ) {
         // better yet, pass normal/maximize flag to NewWindow2...
-        ShowWindow( cw, SW_SHOWMAXIMIZED );
+        ShowWindow( wid, SW_SHOWMAXIMIZED );
     }
 #endif
-    SetBorderGadgets( cw, EditFlags.WindowGadgets );
+    SetBorderGadgets( wid, EditFlags.WindowGadgets );
 
     /*
      * get new file entry, and read the data
@@ -123,7 +123,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
             MemFree( CurrentInfo );
             CurrentInfo = tmp;
             FileFree( CurrentFile );
-            CloseAWindow( cw );
+            CloseAWindow( wid );
             return( rc );
         }
         if( rc == ERR_FILE_NOT_FOUND ) {
@@ -160,14 +160,14 @@ static vi_rc createNewFile( const char *name, bool same_file )
         AllocateUndoStacks();
     }
     AllocateMarkList();
-    current_window_id = cw;
+    current_window_id = wid;
     CurrentInfo->DuplicateID = CurrentFile->dup_count;
-    CurrentInfo->current_window_id = cw;
+    CurrentInfo->current_window_id = wid;
     LangInit( CurrentInfo->fsi.Language );
 #ifdef __WIN__
     {
         window_data     *wd;
-        wd = DATA_FROM_ID( cw );
+        wd = DATA_FROM_ID( wid );
         wd->info = CurrentInfo;
     }
 #endif

@@ -104,41 +104,41 @@ vi_rc FcbDump( void )
 {
 #if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, fcbcnt = 0;
-    window_id   fw;
+    window_id   wid;
     fcb         *cfcb;
     vi_rc       rc;
 
-    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    rc = NewFullWindow( &wid, 1, LIGHT_GREEN, BLACK, &errStyle );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    WPrintfLine( fw, 1, "File name: %s", CurrentFile->name );
-    WPrintfLine( fw, 2, "File home: %s", CurrentFile->home );
-    WPrintfLine( fw, 3, "File handle: %d,  current position: %l", CurrentFile->handle, CurrentFile->curr_pos );
-    WPrintfLine( fw, 4, "Bytes_pending: %d", (int)CurrentFile->bytes_pending );
-    WPrintfLine( fw, 5, "Modified: %d", (int)CurrentFile->modified );
+    WPrintfLine( wid, 1, "File name: %s", CurrentFile->name );
+    WPrintfLine( wid, 2, "File home: %s", CurrentFile->home );
+    WPrintfLine( wid, 3, "File handle: %d,  current position: %l", CurrentFile->handle, CurrentFile->curr_pos );
+    WPrintfLine( wid, 4, "Bytes_pending: %d", (int)CurrentFile->bytes_pending );
+    WPrintfLine( wid, 5, "Modified: %d", (int)CurrentFile->modified );
     lc = 7;
     for( cfcb = CurrentFile->fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
         fcbcnt++;
-        WPrintfLine( fw, lc++, "%d) %W - (%l,%l) bytes:%d offset:%l lstswp:%l xaddr:%W", fcbcnt,
+        WPrintfLine( wid, lc++, "%d) %W - (%l,%l) bytes:%d offset:%l lstswp:%l xaddr:%W", fcbcnt,
             cfcb, cfcb->start_line, cfcb->end_line, cfcb->byte_cnt, cfcb->offset,
             cfcb->last_swap, cfcb->xmemaddr );
-        WPrintfLine( fw, lc++, "    swp:%d in:%d dsp:%d ded:%d nswp:%d xmem:%d xms:%d.",
+        WPrintfLine( wid, lc++, "    swp:%d in:%d dsp:%d ded:%d nswp:%d xmem:%d xms:%d.",
             (int)cfcb->swapped, (int)cfcb->in_memory, (int)cfcb->on_display,
             (int)cfcb->dead, (int)cfcb->non_swappable, (int)cfcb->in_extended_memory,
             (int)cfcb->in_xms_memory );
-        WPrintfLine( fw, lc++, "    next=%W,prev=%W", cfcb->next, cfcb->prev );
+        WPrintfLine( wid, lc++, "    next=%W,prev=%W", cfcb->next, cfcb->prev );
 
         if( lc > 22 || cfcb->next == NULL ) {
             if( GetKeyboard() == VI_KEY( q ) ) {
                 break;
             }
-            ClearWindow( fw );
+            ClearWindow( wid );
             lc = 1;
         }
     }
 
-    CloseAWindow( fw );
+    CloseAWindow( wid );
 #endif
     return( ERR_NO_ERR );
 
@@ -148,13 +148,13 @@ vi_rc FcbThreadDump( void )
 {
 #if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, fcbcnt = 0;
-    window_id   fw;
+    window_id   wid;
     char        msg[80];
     fcb         *cfcb;
     file        *cfile;
     vi_rc       rc;
 
-    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    rc = NewFullWindow( &wid, 1, LIGHT_GREEN, BLACK, &errStyle );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -171,7 +171,7 @@ vi_rc FcbThreadDump( void )
                     strcpy( msg, "** no file **" );
                 }
         }
-        WPrintfLine( fw, lc++, "%d) %d bytes, belongs to %s, lock=%d%d%d, mem=%d%d%d%d%d",
+        WPrintfLine( wid, lc++, "%d) %d bytes, belongs to %s, lock=%d%d%d, mem=%d%d%d%d%d",
             fcbcnt, cfcb->byte_cnt, msg, abs( cfcb->globalmatch ),
             abs( cfcb->on_display ), abs( cfcb->non_swappable ), abs( cfcb->in_memory ),
             abs( cfcb->in_extended_memory ),abs( cfcb->in_ems_memory ),
@@ -180,12 +180,12 @@ vi_rc FcbThreadDump( void )
             if( GetKeyboard() == VI_KEY( q ) ) {
                 break;
             }
-            ClearWindow( fw );
+            ClearWindow( wid );
             lc = 1;
         }
     }
 
-    CloseAWindow( fw );
+    CloseAWindow( wid );
 #endif
     return( ERR_NO_ERR );
 }
@@ -194,63 +194,63 @@ vi_rc SanityCheck( void )
 {
 #if !defined( NDEBUG ) && !defined( __WIN__ )
     int         lc, tfcbcnt = 0, fcbcnt, sum;
-    window_id   fw;
+    window_id   wid;
     fcb         *cfcb;
     info        *inf;
     linenum     cl, lcnt;
     vi_rc       rc;
 
     EditFlags.WatchForBreak = true;
-    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    rc = NewFullWindow( &wid, 1, LIGHT_GREEN, BLACK, &errStyle );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     lc = 1;
     for( inf = InfoHead; inf != NULL; inf = inf->next ) {
 
-        WPrintfLine( fw, lc++, "File name: %s", inf->CurrentFile->name );
+        WPrintfLine( wid, lc++, "File name: %s", inf->CurrentFile->name );
         fcbcnt = 0;
         cl = 1;
         for( cfcb = inf->CurrentFile->fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
             fcbcnt++;
             tfcbcnt++;
-            WPrintfLine( fw, lc, "At fcb %d", fcbcnt );
+            WPrintfLine( wid, lc, "At fcb %d", fcbcnt );
             FetchFcb( cfcb );
             CheckFcb( cfcb, &sum, &lcnt );
             if( sum != cfcb->byte_cnt ) {
-                WPrintfLine( fw, lc++,
+                WPrintfLine( wid, lc++,
                     "Fcb %d has bad bytecnt: had %d, should have had %d", fcbcnt, sum,
                     cfcb->byte_cnt );
             } else {
                 if( FcbSize( cfcb ) > MAX_IO_BUFFER )
-                    WPrintfLine( fw, lc++, "Fcb %d too big : has %d (max is %d)", fcbcnt,
+                    WPrintfLine( wid, lc++, "Fcb %d too big : has %d (max is %d)", fcbcnt,
                     FcbSize( cfcb ), MAX_IO_BUFFER );
             }
             if( lcnt != (cfcb->end_line-cfcb->start_line + 1) ) {
-                WPrintfLine( fw, lc++,
+                WPrintfLine( wid, lc++,
                     "Fcb %d has invalid lines: count is %l, should be %l", fcbcnt, lcnt,
                     cfcb->end_line-cfcb->start_line + 1 );
             }
             if( cfcb->start_line != cl ) {
-                WPrintfLine( fw, lc++,
+                WPrintfLine( wid, lc++,
                     "Fcb %d has invalid lines: start is %l, should be %l", fcbcnt,
                     cfcb->start_line, cl );
             }
 
             if( cfcb->next == NULL ) {
-                WPrintfLine( fw, lc++, "Check of %s done, %d fcbs processed",
+                WPrintfLine( wid, lc++, "Check of %s done, %d fcbs processed",
                     inf->CurrentFile->name, fcbcnt );
             }
             if( lc > 18 || (inf->next == NULL && cfcb->next == NULL) ) {
                 if( inf->next == NULL ) {
-                    WPrintfLine( fw, lc, "Sanity check done, %d fcbs processed",
+                    WPrintfLine( wid, lc, "Sanity check done, %d fcbs processed",
                         tfcbcnt );
-                    WPrintfLine( fw, lc + 1, MSG_PRESSANYKEY );
+                    WPrintfLine( wid, lc + 1, MSG_PRESSANYKEY );
                 }
                 if( GetKeyboard() == VI_KEY( q ) ) {
                     break;
                 }
-                ClearWindow( fw );
+                ClearWindow( wid );
                 lc = 1;
             }
             cl = cfcb->end_line + 1;
@@ -265,7 +265,7 @@ vi_rc SanityCheck( void )
     EditFlags.WatchForBreak = false;
     EditFlags.BreakPressed = false;
 
-    CloseAWindow( fw );
+    CloseAWindow( wid );
 #endif
     return( ERR_NO_ERR );
 }
@@ -297,7 +297,7 @@ vi_rc WalkUndo( void )
 {
 #if !defined( NDEBUG ) && !defined( __WIN__ )
     int         ln, col, fcbcnt, depth;
-    window_id   fw;
+    window_id   wid;
     linenum     lne, lcnt;
     undo        *cundo;
     fcb         *cfcb;
@@ -306,7 +306,7 @@ vi_rc WalkUndo( void )
     if( UndoStack->current < 0 ) {
         return( ERR_NO_ERR );
     }
-    rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle );
+    rc = NewFullWindow( &wid, 1, LIGHT_GREEN, BLACK, &errStyle );
     if( rc != ERR_NO_ERR ) {
         return( ERR_NO_ERR );
     }
@@ -322,19 +322,19 @@ vi_rc WalkUndo( void )
             if( cundo->data.sdata.depth == 1 ) {
                 lne = cundo->data.sdata.p.line;
                 col = cundo->data.sdata.p.column;
-                WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d): lne=%l, col= %d", depth, lne, col );
+                WPrintfLine( wid, ln++, "START_UNDO_GROUP(%d): lne=%l, col= %d", depth, lne, col );
             } else {
-                WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d)", depth );
+                WPrintfLine( wid, ln++, "START_UNDO_GROUP(%d)", depth );
             }
             break;
 
         case END_UNDO_GROUP:
             depth++;
-            WPrintfLine( fw, ln++, "END_UNDO_GROUP(%d)", depth );
+            WPrintfLine( wid, ln++, "END_UNDO_GROUP(%d)", depth );
             break;
 
         case UNDO_INSERT_LINES:
-            WPrintfLine( fw, ln++, "UNDO_INSERT_LINES %l,%l",
+            WPrintfLine( wid, ln++, "UNDO_INSERT_LINES %l,%l",
                 cundo->data.del_range.start, cundo->data.del_range.end );
             break;
 
@@ -345,7 +345,7 @@ vi_rc WalkUndo( void )
                 lcnt += cfcb->end_line - cfcb->start_line + 1;
                 fcbcnt++;
             }
-            WPrintfLine( fw, ln++, "UNDO_DELETE_FCBS: start=%l lines=%l fcbs=%d",
+            WPrintfLine( wid, ln++, "UNDO_DELETE_FCBS: start=%l lines=%l fcbs=%d",
                 cundo->data.fcbs.head->start_line, lcnt, fcbcnt );
             break;
         }
@@ -354,14 +354,14 @@ vi_rc WalkUndo( void )
             GetKeyboard();
             ln = 1;
             if( cundo != NULL ) {
-                ClearWindow( fw );
+                ClearWindow( wid );
             }
         }
         if( cundo == NULL ) {
             break;
         }
     }
-    CloseAWindow( fw );
+    CloseAWindow( wid );
 #endif
     return( ERR_NO_ERR );
 

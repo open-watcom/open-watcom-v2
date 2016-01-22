@@ -89,7 +89,7 @@ void RefreshColorbar( void )
         //     proc = NULL;
         // }
         proc = MakeDlgProcInstance( ClrDlgProc, InstanceHandle );
-        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, (DLGPROC)proc );
+        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, (DLGPROC)proc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hColorbar ) ) {

@@ -89,7 +89,7 @@ bool GetLineDialog( linenum *line )
     lineStr[0] = '\0';
     lineVal = line;
     proc = MakeDlgProcInstance( GotoLineDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "LINEDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
     SetWindowCursor();
     return( rc );

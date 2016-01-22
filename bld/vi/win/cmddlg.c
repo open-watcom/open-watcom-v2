@@ -132,7 +132,7 @@ bool GetCmdDialog( char *str, int len )
     cmdStr = str;
     cmdLen = len;
     proc = MakeDlgProcInstance( CmdDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "CMDDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     /* this is technically a bug of some kind - if the above command

@@ -44,7 +44,7 @@ static window_info      exwInfo =
 vi_rc EnterExMode( void )
 {
     int         i;
-    window_id   clw;
+    window_id   wid;
     char        *st;
     char        *prompt;
     vi_rc       rc;
@@ -61,7 +61,7 @@ vi_rc EnterExMode( void )
     EditFlags.LineDisplay = true;
     EditFlags.ClockActive = false;
     MyPrintf( "\nEntering EX mode (type vi to return)\n" );
-    rc = NewWindow2( &clw, &exwInfo );
+    rc = NewWindow2( &wid, &exwInfo );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -73,7 +73,7 @@ vi_rc EnterExMode( void )
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( clw, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
+        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;

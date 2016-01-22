@@ -220,7 +220,7 @@ static void customFont( font *f, LOGFONT *lf )
     f->used = true;
     f->fixed = ( (lf->lfPitchAndFamily & FIXED_PITCH) != 0 );
     f->handle = CreateFontIndirect( lf );
-    hdc = GetDC( Root );
+    hdc = GetDC( root_window_id );
     old_font = SelectObject( hdc, f->handle );
     GetTextMetrics( hdc, &tm );
     f->height = tm.tmHeight;
@@ -228,7 +228,7 @@ static void customFont( font *f, LOGFONT *lf )
     f->max_width = tm.tmMaxCharWidth;
     f->space_width = GetTextExtentX( hdc, " ", 1 );
     SelectObject( hdc, old_font );
-    ReleaseDC( Root, hdc );
+    ReleaseDC( root_window_id, hdc );
     memcpy( &f->lf, lf, sizeof( LOGFONT ) );
 }
 
@@ -407,7 +407,7 @@ vi_rc SetFont( const char *data )
         data++;
     }
     if( *data == 0 ) {
-        if( !userPickFont( &l, Root ) ) {
+        if( !userPickFont( &l, root_window_id ) ) {
             return( ERR_NO_ERR );
         }
     } else {

@@ -32,7 +32,6 @@
 #ifndef _POSIX_INCLUDED
 #define _POSIX_INCLUDED
 
-#include <stdlib.h>
 #include "wio.h"
 #if defined( __UNIX__ )
   #include <dirent.h>

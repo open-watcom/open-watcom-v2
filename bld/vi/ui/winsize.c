@@ -38,7 +38,7 @@
 /*
  * ResizeWindow - give a window a new size
  */
-vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindow( window_id wid, int x1, int y1, int x2, int y2, bool scrflag )
 {
     window      *oldw;
 //    int         bt, k;
@@ -46,34 +46,34 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 //    char        *ot;
 //    int         i, j;
 
-    oldw = WINDOW_FROM_ID( wn );
+    oldw = WINDOW_FROM_ID( wid );
     AccessWindow( oldw );
 
     if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
         ReleaseWindow( oldw );
         return( ERR_WIND_INVALID );
     }
-    RestoreOverlap( wn, scrflag );
+    RestoreOverlap( wid, scrflag );
 
-    AllocWindow( wn, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
+    AllocWindow( wid, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
             oldw->border_color1, oldw->border_color2, oldw->text_color, oldw->background_color );
-    MarkOverlap( wn );
+    MarkOverlap( wid );
 
     /*
      * display the new text
      */
-    ClearWindow( wn );
+    ClearWindow( wid );
     if( oldw->title != NULL ) {
-        WindowTitle( wn, oldw->title );
+        WindowTitle( wid, oldw->title );
     } else {
-        DrawBorder( wn );
+        DrawBorder( wid );
     }
     DCResize( CurrentInfo );
     DCDisplayAllLines();
     DCUpdate();
 
     FreeWindow( oldw );
-    ReleaseWindow( WINDOW_FROM_ID( wn ) );
+    ReleaseWindow( WINDOW_FROM_ID( wid ) );
 
     return( ERR_NO_ERR );
 
@@ -82,13 +82,13 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 /*
  * ResizeWindowRelative - resize current window with relative shifts
  */
-vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindowRelative( window_id wid, int x1, int y1, int x2, int y2, bool scrflag )
 {
     window      *w;
     vi_rc       rc;
 
-    w = WINDOW_FROM_ID( wn );
-    rc = ResizeWindow( wn, w->x1 + x1, w->y1 + y1, w->x2 + x2, w->y2 + y2, scrflag );
+    w = WINDOW_FROM_ID( wid );
+    rc = ResizeWindow( wid, w->x1 + x1, w->y1 + y1, w->x2 + x2, w->y2 + y2, scrflag );
     return( rc );
 
 } /* ResizeWindowRelative */

@@ -94,7 +94,7 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         EndPaint( hwnd, &ps );
         return( 0 );
     case WM_SETFOCUS:
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( 0 );
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -103,7 +103,7 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
 
 window_id NewMsgWindow( void )
 {
-    window_id   msg;
+    window_id   wid;
     RECT        *size;
     int         height;
 
@@ -114,14 +114,14 @@ window_id NewMsgWindow( void )
     if( !EditFlags.StatusInfo ) {
         height += 1;
     }
-    msg = CreateWindow( ClassName, "Message",
+    wid = CreateWindow( ClassName, "Message",
                         WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
                         size->left - 1, size->top,
                         size->right - size->left + 2, height,
-                        Root, (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( msg, SW_SHOWNORMAL );
-    UpdateWindow( msg );
-    return( msg );
+                        root_window_id, (HMENU)NULLHANDLE, InstanceHandle, NULL );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }
 
 static void msgString( int line_no, const char *str )
@@ -165,7 +165,7 @@ void Message1Box( const char *fmt, ... )
     MyVSprintf( tmp, fmt, args );
     va_end( args );
     strcpy( msgString1, tmp );
-    MessageBox( Root, tmp, NULL, MB_OK );
+    MessageBox( root_window_id, tmp, NULL, MB_OK );
 }
 
 void Message2( const char *fmt, ... )

@@ -220,7 +220,7 @@ bool GetSetGenDialog( void )
     bool        rc;
 
     proc = MakeDlgProcInstance( SetGenProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETGEN", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct

@@ -212,11 +212,11 @@ static void fillTypefaceBox( HWND hwnd )
 
     /* put typefaces in combo box
     */
-    hdc = GetDC( EditContainer );
+    hdc = GetDC( edit_container_id );
     fp = MakeFontEnumProcInstance( EnumFamTypefaces, InstanceHandle );
     EnumFontFamilies( hdc, NULL, (FONTENUMPROC)fp, 0L );
     FreeProcInstance( fp );
-    ReleaseDC( EditContainer, hdc );
+    ReleaseDC( edit_container_id, hdc );
 
     SendMessage( hwndTypeface, LB_SETCURSEL, 0, 0L );
 }
@@ -274,9 +274,9 @@ static void fillInfoBoxes( HWND hwnd )
 
     SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)typeface );
     fp = MakeFontEnumProcInstance( EnumFamInfo, InstanceHandle );
-    hdc = GetDC( EditContainer );
+    hdc = GetDC( edit_container_id );
     EnumFontFamilies( hdc, typeface, (FONTENUMPROC)fp, (LPARAM)(&isTrueType) );
-    ReleaseDC( EditContainer, hdc );
+    ReleaseDC( edit_container_id, hdc );
     FreeProcInstance( fp );
 
     if( isTrueType ) {
@@ -413,11 +413,11 @@ static int setCurLogfont( int overrideSize )
     SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)CurLogfont.lfFaceName );
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
-    hdc = GetDC( EditContainer );
+    hdc = GetDC( edit_container_id );
     fp = MakeFontEnumProcInstance( SetupFontData, InstanceHandle );
     EnumFontFamilies( hdc, CurLogfont.lfFaceName, (FONTENUMPROC)fp, 0L );
     FreeProcInstance( fp );
-    ReleaseDC( EditContainer, hdc );
+    ReleaseDC( edit_container_id, hdc );
 
     return( 1 );
 }
@@ -526,7 +526,7 @@ void RefreshFontbar( void )
             return;
         }
         proc = MakeDlgProcInstance( FtDlgProc, InstanceHandle );
-        hFontbar = CreateDialog( InstanceHandle, "FTBAR", Root, (DLGPROC)proc );
+        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, (DLGPROC)proc );
         SetMenuHelpString( "Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hFontbar ) ) {

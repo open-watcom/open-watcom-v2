@@ -71,13 +71,13 @@ void DrawVerticalThumb( window *w, char ch )
 /*
  * PositionVerticalScrollThumb - draw the scroll thumb on the screen
  */
-void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
+void PositionVerticalScrollThumb( window_id wid, linenum curr, linenum last )
 {
     window      *w;
     int         height;
     int         newpos;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     AccessWindow( w );
     if( !w->has_gadgets || !w->has_border ) {
         ReleaseWindow( w );
@@ -138,8 +138,8 @@ vi_rc PositionToNewThumbPosition( window *w, int win_y )
 
 } /* PositionToNewThumbPosition */
 
-void PositionHorizontalScrollThumb( window_id id, int left_column )
+void PositionHorizontalScrollThumb( window_id wid, int left_column )
 {
-    id = id;
+    wid = wid;
     left_column = left_column;
 }

@@ -186,7 +186,7 @@ vi_rc SetAColor( const char *data )
     index = atoi( token );
     data = GetNextWord1( data, token );
     if( *token == '\0' ) {
-        if( !chooseColor( index, &rgb, Root ) ) {
+        if( !chooseColor( index, &rgb, root_window_id ) ) {
             return( ERR_NO_ERR );
         }
     } else {

@@ -153,25 +153,25 @@ typedef struct {
 #ifdef __WIN__
     #include "winhdr.h"
     #ifdef HAS_HWND
-        typedef HWND window_id;
-        #define NO_WINDOW   ((window_id)NULL)
+        typedef HWND            window_id;
+        #define NO_WINDOW       ((window_id)NULL)
     #elif defined( __WINDOWS_386__ )
-        typedef unsigned short window_id;
-        #define NO_WINDOW   ((window_id)0)
+        typedef unsigned short  window_id;
+        #define NO_WINDOW       ((window_id)0)
     #else
-        typedef const void _NEAR *window_id;
-        #define NO_WINDOW   ((window_id)NULL)
+        typedef const void      _NEAR *window_id;
+        #define NO_WINDOW       ((window_id)NULL)
     #endif
     #ifndef NDEBUG
-        #define BAD_ID(id)  ((id) == NO_WINDOW || !IsWindow( id ))
+        #define BAD_ID(id)      ((id) == NO_WINDOW || !IsWindow( id ))
     #else
-        #define BAD_ID(id)  ((id) == NO_WINDOW)
+        #define BAD_ID(id)      ((id) == NO_WINDOW)
     #endif
 #else
-    typedef unsigned char   window_id;
-    #define MAX_WINDS       UCHAR_MAX
-    #define NO_WINDOW       ((window_id)MAX_WINDS)
-    #define BAD_ID(id)      ((id) == NO_WINDOW)
+    typedef unsigned char       window_id;
+    #define MAX_WINDS           UCHAR_MAX
+    #define NO_WINDOW           ((window_id)MAX_WINDS)
+    #define BAD_ID(id)          ((id) == NO_WINDOW)
 #endif
 
 /*

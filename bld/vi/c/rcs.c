@@ -306,7 +306,7 @@ vi_rc ViRCSCheckout( vi_rc rc )
                      || RCSSetPause == NULL || RCSCheckout == NULL || RCSFini == NULL ) ) {
   #endif
   #ifdef __WIN__
-        r = _RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
+        r = _RCSInit( (unsigned long)root_window_id, getenv( "WATCOM" ) );
     #if defined( __WINDOWS_386__ )
         DefineUserProc16( GETPROC_USERDEFINED_1, (PROCPTR)Batcher, UDP16_PTR, UDP16_PTR, UDP16_ENDLIST );
         fp = GetProc16( (PROCPTR)Batcher, GETPROC_USERDEFINED_1 );
@@ -354,7 +354,7 @@ vi_rc ViRCSCheckin( vi_rc rc )
       || RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL ) ) {
   #endif
   #ifdef __WIN__
-        r = _RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
+        r = _RCSInit( (unsigned long)root_window_id, getenv( "WATCOM" ) );
     #if defined( __WINDOWS_386__ )
         DefineUserProc16( GETPROC_USERDEFINED_1, (PROCPTR)Batcher, UDP16_PTR, UDP16_PTR, UDP16_ENDLIST );
         fp = GetProc16( (PROCPTR)Batcher, GETPROC_USERDEFINED_1 );

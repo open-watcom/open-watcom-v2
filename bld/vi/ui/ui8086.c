@@ -176,12 +176,12 @@ void SetPosToMessageLine( void )
 /*
  * SetGenericWindowCursor - put cursor in any window at (l,c)
  */
-void SetGenericWindowCursor( window_id wn, int l, int c )
+void SetGenericWindowCursor( window_id wid, int l, int c )
 {
     window      *w;
     int         row, col;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     row = w->y1;
     col = w->x1;

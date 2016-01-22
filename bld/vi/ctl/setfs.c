@@ -531,7 +531,7 @@ bool GetSetFSDialog( void )
     bool        rc;
 
     proc = MakeDlgProcInstance( SetFSProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct

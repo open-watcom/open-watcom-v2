@@ -75,7 +75,7 @@ void InitGrepDialog( void )
 {
     grepProc = MakeDlgProcInstance( GrepDlgProc, InstanceHandle );
     cancelPressed = false;
-    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, (DLGPROC)grepProc );
+    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, (DLGPROC)grepProc );
 
 } /* InitGrepDialog */
 
@@ -84,8 +84,8 @@ void InitGrepDialog( void )
  */
 void FiniGrepDialog( void )
 {
-    BringWindowToTop( Root );
-    SetFocus( Root );
+    BringWindowToTop( root_window_id );
+    SetFocus( root_window_id );
     if( !BAD_ID( grepHwnd ) ) {
         DestroyWindow( grepHwnd );
     }

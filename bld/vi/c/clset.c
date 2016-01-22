@@ -304,16 +304,16 @@ static vi_rc GetNewValueDialog( char *value )
     bool        ret;
     vi_rc       rc;
     char        st[MAX_STR];
-    window_id   clw;
+    window_id   wid;
     static char prompt[] = "New:";
 
-    rc = NewWindow2( &clw, &setvalw_info );
+    rc = NewWindow2( &wid, &setvalw_info );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    WPrintfLine( clw, 1, "Old: %s", value );
-    ret = ReadStringInWindow( clw, 2, prompt, st, MAX_STR - 1, NULL );
-    CloseAWindow( clw );
+    WPrintfLine( wid, 1, "Old: %s", value );
+    ret = ReadStringInWindow( wid, 2, prompt, st, MAX_STR - 1, NULL );
+    CloseAWindow( wid );
     SetWindowCursor();
     KillCursor();
     if( !ret ) {
@@ -482,7 +482,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_COLORBAR:
             EditFlags.Colorbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( Root ) ) {
+            if( BAD_ID( root_window_id ) ) {
                 EditFlags.Colorbar = false;
             } else {
                 RefreshColorbar();
@@ -492,7 +492,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_SSBAR:
             EditFlags.SSbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( Root ) ) {
+            if( BAD_ID( root_window_id ) ) {
                 EditFlags.SSbar = false;
             } else {
                 RefreshSSbar();
@@ -502,7 +502,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_FONTBAR:
             EditFlags.Fontbar = newset;
   #ifdef __WIN__
-            if( BAD_ID( Root ) ) {
+            if( BAD_ID( root_window_id ) ) {
                 EditFlags.Fontbar = false;
             } else {
                 RefreshFontbar();

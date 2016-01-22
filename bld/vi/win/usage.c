@@ -90,7 +90,7 @@ void UsageDialog( char **list, char *msg, int cnt )
     usageCnt = cnt;
 
     proc = MakeDlgProcInstance( UsageProc, InstanceHandle );
-    DialogBox( InstanceHandle, "Usage", Root, (DLGPROC)proc );
+    DialogBox( InstanceHandle, "Usage", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
 } /* UsageDialog */

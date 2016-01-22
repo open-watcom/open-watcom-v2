@@ -47,7 +47,7 @@ vi_rc WindowTile( int maxx, int maxy )
 
     if( maxx == 1 && maxy == 1 ) {
         // Some sort of bizzaro tile thingy
-        GetWindowRect( EditContainer, &rect );
+        GetWindowRect( edit_container_id, &rect );
         height = rect.bottom - rect.top;
         width = rect.right - rect.left;
 
@@ -65,7 +65,7 @@ vi_rc WindowTile( int maxx, int maxy )
     }
     // else
 
-    SendMessage( EditContainer, WM_MDITILE, 0, 0L );
+    SendMessage( edit_container_id, WM_MDITILE, 0, 0L );
     return( ERR_NO_ERR );
 
 } /* WindowTile */
@@ -75,7 +75,7 @@ vi_rc WindowTile( int maxx, int maxy )
  */
 vi_rc WindowCascade( void )
 {
-    SendMessage( EditContainer, WM_MDICASCADE, 0, 0L );
+    SendMessage( edit_container_id, WM_MDICASCADE, 0, 0L );
     return( ERR_NO_ERR );
 
 } /* WindowCascade */

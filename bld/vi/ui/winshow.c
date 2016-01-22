@@ -38,7 +38,7 @@
 /*
  * reDisplayWindow - redisplay the saved window text
  */
-static void reDisplayWindow( window_id wn )
+static void reDisplayWindow( window_id wid )
 {
     window              *w;
     char_info           *txt;
@@ -50,7 +50,7 @@ static void reDisplayWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * re-display text area
@@ -74,7 +74,7 @@ static void reDisplayWindow( window_id wn )
 #endif
     }
 
-    DrawBorder( wn );
+    DrawBorder( wid );
     ReleaseWindow( w );
 
 } /* reDisplayWindow */
@@ -82,47 +82,47 @@ static void reDisplayWindow( window_id wn )
 /*
  * MoveWindowToFront - bring a window forward
  */
-void MoveWindowToFront( window_id wn )
+void MoveWindowToFront( window_id wid )
 {
-    if( !TestOverlap( wn ) ) {
+    if( !TestOverlap( wid ) ) {
         return;
     }
-    MoveWindowToFrontDammit( wn, true );
+    MoveWindowToFrontDammit( wid, true );
 
 } /* MoveWindowToFront */
 
 /*
  * MoveWindowToFrontDammit - bring a window forward
  */
-void MoveWindowToFrontDammit( window_id wn, bool scrflag )
+void MoveWindowToFrontDammit( window_id wid, bool scrflag )
 {
     window      *w;
 
-    if( BAD_ID( wn ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
-    RestoreOverlap( wn, scrflag );
+    RestoreOverlap( wid, scrflag );
     ResetOverlap( w );
-    MarkOverlap( wn );
-    reDisplayWindow( wn );
+    MarkOverlap( wid );
+    reDisplayWindow( wid );
 
 } /* MoveWindowToFrontDammit */
 
 /*
  * InactiveWindow - display a window as inactive
  */
-void InactiveWindow( window_id wn )
+void InactiveWindow( window_id wid )
 {
     window      *w;
     vi_color    c;
 
-    if( BAD_ID( wn ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     if( w == NULL ) {
         return;
     }
@@ -136,21 +136,21 @@ void InactiveWindow( window_id wn )
      */
     c = w->border_color1;
     w->border_color1 = EditVars.InactiveWindowColor;
-    DrawBorder( wn );
+    DrawBorder( wid );
     w->border_color1 = c;
 
 } /* InactiveWindow */
 
-void ActiveWindow( window_id a ) { a = a; }
+void ActiveWindow( window_id wid ) { wid = wid; }
 
 /*
  * WindowTitleAOI - set the title of a window, active or inactive
  */
-void WindowTitleAOI( window_id wn, const char *title, bool active )
+void WindowTitleAOI( window_id wid, const char *title, bool active )
 {
     window      *w;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     MemFree( w->title );
     if( title == NULL ) {
         w->title = NULL;
@@ -158,9 +158,9 @@ void WindowTitleAOI( window_id wn, const char *title, bool active )
         w->title = DupString( title );
     }
     if( active ) {
-        DrawBorder( wn );
+        DrawBorder( wid );
     } else {
-        InactiveWindow( wn );
+        InactiveWindow( wid );
     }
 
 } /* WindowTitleAOI */
@@ -169,25 +169,25 @@ void WindowTitleAOI( window_id wn, const char *title, bool active )
 /*
  * WindowTitle - set window title, active border
  */
-void WindowTitle( window_id id, const char *name )
+void WindowTitle( window_id wid, const char *name )
 {
-    WindowTitleAOI( id, name, true );
+    WindowTitleAOI( wid, name, true );
 
 } /* WindowTitle */
 
 /*
  * WindowTitleInactive - set window title, inactive border
  */
-void WindowTitleInactive( window_id id, const char *name )
+void WindowTitleInactive( window_id wid, const char *name )
 {
-    WindowTitleAOI( id, name, false );
+    WindowTitleAOI( wid, name, false );
 
 } /* WindowTitleInactive */
 
 /*
  * ClearWindow - do just that
  */
-void ClearWindow( window_id wn )
+void ClearWindow( window_id wid )
 {
     window              *w;
     window_id           *over;
@@ -200,7 +200,7 @@ void ClearWindow( window_id wn )
     if( EditFlags.Quiet ) {
         return;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * clear text area
@@ -240,11 +240,11 @@ void ClearWindow( window_id wn )
 /*
  * InsideWindow - test if coordinates are in window or on border
  */
-bool InsideWindow( window_id id, int x, int y )
+bool InsideWindow( window_id wid, int x, int y )
 {
     window      *w;
 
-    w = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( wid );
     if( !w->has_border ) {
         return( true );
     }

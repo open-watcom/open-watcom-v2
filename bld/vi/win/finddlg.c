@@ -64,7 +64,7 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         if( findData.posx == -1 && findData.posy == -1 ) {
             CenterWindowInRoot( hwnd );
         } else {
-            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
+            SetWindowPos( hwnd, NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );
@@ -155,7 +155,7 @@ bool GetFindStringDialog( fancy_find *ff )
     findData.find = ff->find;
     findData.findlen = ff->findlen;
     proc = MakeDlgProcInstance( FindDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FINDDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "FINDDLG", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
     SetWindowCursor();
     if( rc ) {

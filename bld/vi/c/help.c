@@ -85,17 +85,17 @@ vi_rc DoHelp( const char *data )
 
     data = SkipLeadingSpaces( data );
     if( !strcmp( data, "OnHelp" ) ) {
-        WWinHelp( Root, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
+        WWinHelp( root_window_id, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
     } else if( !strcmp( data, "Contents" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_CONTENTS, (HELP_DATA)0 ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
+        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_CONTENTS, (HELP_DATA)0 ) ) {
+            WWinHelp( root_window_id, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
         }
     } else if( !strcmp( data, "Search" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( root_window_id, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     } else {
-        WWinHelp( Root, win_helpfile, HELP_KEY, (HELP_DATA)data );
+        WWinHelp( root_window_id, win_helpfile, HELP_KEY, (HELP_DATA)data );
     }
     return ( ERR_NO_ERR );
 }

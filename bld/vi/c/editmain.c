@@ -447,16 +447,16 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id    repeatWindow = NO_WINDOW;
+static window_id    repeat_window_id = NO_WINDOW;
 
 /*
  * KillRepeatWindow - just like it says
  */
 void KillRepeatWindow( void )
 {
-    if( !BAD_ID( repeatWindow ) ) {
-        CloseAWindow( repeatWindow );
-        repeatWindow = NO_WINDOW;
+    if( !BAD_ID( repeat_window_id ) ) {
+        CloseAWindow( repeat_window_id );
+        repeat_window_id = NO_WINDOW;
     }
 }
 
@@ -504,7 +504,7 @@ long GetRepeatCount( void )
 #ifdef __WIN__
 extern void UpdateRepeatString( char *str );
 #else
-#define UpdateRepeatString( str ) DisplayLineInWindow( repeatWindow, 1, str )
+#define UpdateRepeatString( str ) DisplayLineInWindow( repeat_window_id, 1, str )
 #endif
 
 /*
@@ -526,18 +526,18 @@ vi_rc DoDigit( void )
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
-    if( BAD_ID( repeatWindow ) && EditFlags.RepeatInfo ) {
-        rc = NewWindow2( &repeatWindow, &repcntw_info );
+    if( BAD_ID( repeat_window_id ) && EditFlags.RepeatInfo ) {
+        rc = NewWindow2( &repeat_window_id, &repcntw_info );
         if( rc != ERR_NO_ERR ) {
             DoneRepeat();
             return( rc );
         }
-        WindowTitle( repeatWindow, "Repeat Count" );
+        WindowTitle( repeat_window_id, "Repeat Count" );
     }
 
     RepeatString[RepeatDigits++] = LastEvent;
     RepeatString[RepeatDigits] = 0;
-    if( BAD_ID( repeatWindow ) ) {
+    if( BAD_ID( repeat_window_id ) ) {
         UpdateRepeatString( RepeatString );
     }
     return( GOT_A_DIGIT );

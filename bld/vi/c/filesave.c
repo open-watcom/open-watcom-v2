@@ -108,7 +108,7 @@ static int readOnlyCheck( void )
 
     MySprintf( tmp, "\"%s\" is read-only, overwrite?", CurrentFile->name );
 #ifdef __WIN__
-    if( MessageBox( Root, tmp, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
+    if( MessageBox( root_window_id, tmp, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
         return( ERR_NO_ERR );
     }
     return( ERR_READ_ONLY_FILE );
@@ -364,19 +364,19 @@ bool FilePromptForSaveChanges( file *f )
 
 #ifdef __WIN__
     MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
-    BringWindowToTop( Root );
-    SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    if( MessageBox( Root, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
+    BringWindowToTop( root_window_id );
+    SetWindowPos( root_window_id, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    if( MessageBox( root_window_id, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
         rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
-            MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
+            MessageBox( root_window_id, buffer, EditorName, MB_OK | MB_TASKMODAL );
         } else {
             Modified( false );
         }
     }
-    SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( root_window_id, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 #else
     char    response[MAX_SRC_LINE];
 
@@ -418,12 +418,12 @@ bool FileExitOptionSaveChanges( file *f )
     vi_rc       rc;
 
     MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
-    resp = MessageBox( Root, buffer, EditorName, MB_YESNOCANCEL | MB_TASKMODAL );
+    resp = MessageBox( root_window_id, buffer, EditorName, MB_YESNOCANCEL | MB_TASKMODAL );
     if( resp == IDYES ) {
         rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
-            MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
+            MessageBox( root_window_id, buffer, EditorName, MB_OK | MB_TASKMODAL );
             aborted = true;
         } else {
             NextFileDammit();

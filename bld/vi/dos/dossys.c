@@ -84,11 +84,11 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
     int base, nbase;
 
-    id = id;
+    wid = wid;
     if( EditFlags.Monocolor ) {
         base = 14;
     } else {

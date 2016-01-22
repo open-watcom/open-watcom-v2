@@ -57,9 +57,9 @@ vi_rc NewMessageWindow( void )
 /*
  * NewWindow2 - build a new window, using window_info struct
  */
-vi_rc NewWindow2( window_id *wn, window_info *wi )
+vi_rc NewWindow2( window_id *wid, window_info *wi )
 {
-    return( NewWindow( wn, wi->x1, wi->y1, wi->x2, wi->y2,
+    return( NewWindow( wid, wi->x1, wi->y1, wi->x2, wi->y2,
                        wi->has_border, wi->border_color1,
                        wi->border_color2, &wi->text_style ) );
 
@@ -146,7 +146,7 @@ void Message2( const char *str, ... )
 /*
  * WPrintfLine - printf text on a window line
  */
-vi_rc WPrintfLine( window_id w, int line, char *str, ... )
+vi_rc WPrintfLine( window_id wid, int line, char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -156,7 +156,7 @@ vi_rc WPrintfLine( window_id w, int line, char *str, ... )
     va_end( al );
     tmp[EditVars.WindMaxWidth - 1] = 0;
 
-    return( DisplayLineInWindow( w, line, tmp ) );
+    return( DisplayLineInWindow( wid, line, tmp ) );
 
 } /* WPrintfLine */
 
@@ -206,7 +206,7 @@ void SetWindowCursorForReal( void )
 /*
  * DisplayExtraInfo - display info in extra window
  */
-vi_rc DisplayExtraInfo( window_info *wi, window_id *wn, char _NEAR * _NEAR *data,
+vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, char _NEAR * _NEAR *data,
                       int numopts )
 {
     int     j;
@@ -214,13 +214,13 @@ vi_rc DisplayExtraInfo( window_info *wi, window_id *wn, char _NEAR * _NEAR *data
 
     wi->y2 = wi->y1 + numopts + 1;
 
-    rc = NewWindow2( wn, wi );
+    rc = NewWindow2( wid, wi );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    WindowTitle( *wn, "Special Keys" );
+    WindowTitle( *wid, "Special Keys" );
     for( j = 0; j < numopts; j++ ) {
-        DisplayLineInWindow( *wn, j + 1, data[j] );
+        DisplayLineInWindow( *wid, j + 1, data[j] );
     }
     return( ERR_NO_ERR );
 
@@ -336,7 +336,7 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 /*
  * SetFileWindowTitle - set the title of the current window
  */
-void SetFileWindowTitle( window_id cw, info *cinfo, bool hilite )
+void SetFileWindowTitle( window_id wid, info *cinfo, bool hilite )
 {
     char        *n;
     char        name[MAX_STR];
@@ -347,10 +347,10 @@ void SetFileWindowTitle( window_id cw, info *cinfo, bool hilite )
     } else {
         n = CurrentFile->name;
     }
-    WindowTitleAOI( cw, n, hilite );
+    WindowTitleAOI( wid, n, hilite );
 #ifdef __WIN__
-    SetWindowText( cw, n );
-    UpdateFileTypeIcon( cw, n );
+    SetWindowText( wid, n );
+    UpdateFileTypeIcon( wid, n );
 #endif
 
 } /* SetFileWindowTitle */

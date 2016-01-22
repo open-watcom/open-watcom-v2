@@ -427,13 +427,13 @@ void DCInvalidateAllLines( void )
     DCInvalidateSomeLines( 0, CurrentInfo->dc_size - 1 );
 }
 
-dc_line *DCFindLine( int c_line_no, window_id id )
+dc_line *DCFindLine( int c_line_no, window_id wid )
 {
     info        *info;
     dc_line     *dcline;
 
     for( info = InfoHead; info != NULL; info = info->next ) {
-        if( info->current_window_id == id ) {
+        if( info->current_window_id == wid ) {
             break;
         }
     }

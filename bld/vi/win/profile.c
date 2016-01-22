@@ -179,7 +179,7 @@ static void writeInitialPosition( void )
     if( !EditFlags.SavePosition ) {
         memset( &RootRect, 0, sizeof( RECT ) );
     }
-    if( !IsIconic( Root ) ){
+    if( !IsIconic( root_window_id ) ){
         writeProfileRect( keyInitialPosition, &RootRect );
         writeProfileLong( keyInitialPositionState, RootState );
     }

@@ -200,7 +200,7 @@ vi_rc RotateFileBackwards( void )
 /*
  * GotoFile - bring up file in filelist with given window id
  */
-vi_rc GotoFile( window_id id )
+vi_rc GotoFile( window_id wid )
 {
     info        *cinfo;
 
@@ -209,7 +209,7 @@ vi_rc GotoFile( window_id id )
     }
 
     for( cinfo = InfoHead; cinfo->next != NULL; cinfo = cinfo->next ) {
-        if( cinfo->current_window_id == id ) {
+        if( cinfo->current_window_id == wid ) {
             break;
         }
     }
@@ -223,7 +223,7 @@ vi_rc GotoFile( window_id id )
  */
 void BringUpFile( info *ci, bool runCmds )
 {
-    window_id   wn;
+    window_id   wid;
     static bool recursive = false;
 
     if( recursive ) {
@@ -231,7 +231,7 @@ void BringUpFile( info *ci, bool runCmds )
     }
 
     SourceHook( SRC_HOOK_BUFFOUT, ERR_NO_ERR );
-    wn = current_window_id;
+    wid = current_window_id;
     if( RestoreInfo( ci ) ) {
         LineNumbersSetup();
     }
@@ -243,8 +243,8 @@ void BringUpFile( info *ci, bool runCmds )
     DisplayFileStatus();
     UpdateStatusWindow();
     SetWindowCursor();
-    if( wn != current_window_id && !BAD_ID( wn ) ) {
-        InactiveWindow( wn );
+    if( wid != current_window_id && !BAD_ID( wid ) ) {
+        InactiveWindow( wid );
     }
     ActiveWindow( current_window_id );
     UnselectRegion();

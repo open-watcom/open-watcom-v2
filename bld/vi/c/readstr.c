@@ -164,11 +164,11 @@ static void displayLine( input_buffer *input )
         RECT        rect;
         char        *ptr, *c;
         int         len, x;
-        HWND        id;
+        window_id   wid;
 
-        id = (HWND) input->window.id;
-        MyHideCaret( id );
-        GetClientRect( id, &rect );
+        wid = input->window.id;
+        MyHideCaret( wid );
+        GetClientRect( wid, &rect );
         // BlankRectIndirect( input->window.id, input->window.style.background, &rect );
         c = input->cache;
         for( len = 0, ptr = input->buffer; *ptr; ptr++, len++ ) {
@@ -177,11 +177,11 @@ static void displayLine( input_buffer *input )
             }
             c++;
         }
-        x = MyTextExtent( id, &input->window.style, input->cache, len );
-        WriteString( id, x, 0, &input->window.style, display + len );
-        rect.left = MyTextExtent( id, &input->window.style, display, strlen( display ) );
-        BlankRectIndirect( id, input->window.style.background, &rect );
-        MyShowCaret( id );
+        x = MyTextExtent( wid, &input->window.style, input->cache, len );
+        WriteString( wid, x, 0, &input->window.style, display + len );
+        rect.left = MyTextExtent( wid, &input->window.style, display, strlen( display ) );
+        BlankRectIndirect( wid, input->window.style.background, &rect );
+        MyShowCaret( wid );
         SetCursorOnLine( input->window.id, cursor_pos, display, &input->window.style );
     }
 #else
@@ -629,11 +629,11 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
 
 static window_id    thisWindow = NO_WINDOW;
 
-static bool mouseHandler( window_id id, int x, int y )
+static bool mouseHandler( window_id wid, int x, int y )
 {
     x = x;
     y = y;
-    if( id != thisWindow ) {
+    if( wid != thisWindow ) {
         if( LastMouseEvent == MOUSE_PRESS ) {
             KeyAdd( VI_KEY( ESC ) );
             AddCurrentMouseEvent();
@@ -646,7 +646,7 @@ static bool mouseHandler( window_id id, int x, int y )
 static void initInput( input_buffer *input )
 {
     type_style      *s;
-    window_id       id;
+    window_id       wid;
 
     memset( input->buffer, 0, input->buffer_length );
     input->curr_pos = 0;
@@ -656,12 +656,12 @@ static void initInput( input_buffer *input )
     input->left_column = 0;
     input->overstrike = true;
     s = &input->window.style;
-    id = input->window.id;
-    thisWindow = id;
-    s->foreground = WindowAuxInfo( id, WIND_INFO_TEXT_COLOR );
-    s->background = WindowAuxInfo( id, WIND_INFO_BACKGROUND_COLOR );
-    s->font = WindowAuxInfo( id, WIND_INFO_TEXT_FONT );
-    input->window.width = WindowAuxInfo( id, WIND_INFO_TEXT_COLS );
+    wid = input->window.id;
+    thisWindow = wid;
+    s->foreground = WindowAuxInfo( wid, WIND_INFO_TEXT_COLOR );
+    s->background = WindowAuxInfo( wid, WIND_INFO_BACKGROUND_COLOR );
+    s->font = WindowAuxInfo( wid, WIND_INFO_TEXT_FONT );
+    input->window.width = WindowAuxInfo( wid, WIND_INFO_TEXT_COLS );
     PushMouseEventHandler( mouseHandler );
     NewCursor( input->window.id, EditVars.NormalCursorType );
     displayLine( input );
@@ -776,7 +776,7 @@ static bool getStringInWindow( input_buffer *input )
 
 } /* getStringInWindow */
 
-bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
+bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
                          int max_len, history_data *history )
 {
     input_buffer        input;
@@ -786,7 +786,7 @@ bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
     input.buffer = str;
     input.buffer_length = max_len;
     input.history = history;
-    input.window.id = id;
+    input.window.id = wid;
     input.window.line = line;
 #ifdef __WIN__
     input.cache = (char *)MemAlloc( max_len );
@@ -803,30 +803,30 @@ bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
 vi_rc PromptForString( char *prompt, char *buffer,
                         int buffer_length, history_data *history )
 {
-    window_id           id;
+    window_id           wid;
     vi_rc               rc;
 
     if( !EditFlags.NoInputWindow ) {
-        rc = NewWindow2( &id, &cmdlinew_info );
+        rc = NewWindow2( &wid, &cmdlinew_info );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     } else {
-        id = NO_WINDOW;
+        wid = NO_WINDOW;
     }
 
     if( !EditFlags.NoInputWindow &&
-        strlen( prompt ) >= WindowAuxInfo( id, WIND_INFO_TEXT_COLS ) ) {
+        strlen( prompt ) >= WindowAuxInfo( wid, WIND_INFO_TEXT_COLS ) ) {
         rc = ERR_PROMPT_TOO_LONG;
     } else {
         rc = NO_VALUE_ENTERED;
-        if( ReadStringInWindow( id, 1, prompt, buffer, buffer_length, history ) ) {
+        if( ReadStringInWindow( wid, 1, prompt, buffer, buffer_length, history ) ) {
             rc = ERR_NO_ERR;
         }
     }
 
     if( !EditFlags.NoInputWindow ) {
-        CloseAWindow( id );
+        CloseAWindow( wid );
         SetWindowCursor();
     } else {
         EditFlags.NoInputWindow = false;

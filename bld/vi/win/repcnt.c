@@ -47,9 +47,9 @@ window RepeatCountWindow = {
     { 0, 0, 0, 0 }
 };
 
-static char     *className = "RepeatWindow";
-static char     repString[MAX_STR];
-static HWND     repeatWindow;
+static char         *className = "RepeatWindow";
+static char         repString[MAX_STR];
+static window_id    repeat_window_id;
 
 bool RepeatCountWindowInit( void )
 {
@@ -86,16 +86,16 @@ static void drawRepeatString( void )
     RECT    rect;
     HDC     hdc;
 
-    if( !AllowDisplay || BAD_ID( repeatWindow ) ) {
+    if( !AllowDisplay || BAD_ID( repeat_window_id ) ) {
         return;
     }
-    GetClientRect( repeatWindow, &rect );
+    GetClientRect( repeat_window_id, &rect );
     height = FontHeight( WIN_TEXT_FONT( &RepeatCountWindow ) );
     rect.bottom = rect.top + height;
-    hdc = TextGetDC( repeatWindow, WIN_TEXT_STYLE( &RepeatCountWindow ) );
+    hdc = TextGetDC( repeat_window_id, WIN_TEXT_STYLE( &RepeatCountWindow ) );
     FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( &RepeatCountWindow ) ) );
-    TextReleaseDC( repeatWindow, hdc );
-    WriteString( repeatWindow, 0, rect.top, WIN_TEXT_STYLE( &RepeatCountWindow ), repString );
+    TextReleaseDC( repeat_window_id, hdc );
+    WriteString( repeat_window_id, 0, rect.top, WIN_TEXT_STYLE( &RepeatCountWindow ), repString );
 
 } /* drawRepeatString */
 
@@ -112,13 +112,13 @@ WINEXPORT LRESULT CALLBACK RepeatWindowProc( HWND hwnd, UINT msg, WPARAM w, LPAR
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &ps );
-        if( !BAD_ID( repeatWindow ) ) {
+        if( !BAD_ID( repeat_window_id ) ) {
             drawRepeatString();
         }
         EndPaint( hwnd, &ps );
         return( 0 );
     case WM_SETFOCUS:
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( 0 );
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -137,16 +137,16 @@ window_id NewRepeatCountWindow( void )
 
     p.x = size->left;
     p.y = size->top;
-    ClientToScreen( Root, &p );
+    ClientToScreen( root_window_id, &p );
 
     repString[0] = 0;
-    repeatWindow = CreateWindow( className, "Repeat Count",
+    repeat_window_id = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,
-        Root, (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( repeatWindow, SW_SHOWNORMAL );
-    UpdateWindow( repeatWindow );
-    return( repeatWindow );
+        root_window_id, (HMENU)NULLHANDLE, InstanceHandle, NULL );
+    ShowWindow( repeat_window_id, SW_SHOWNORMAL );
+    UpdateWindow( repeat_window_id );
+    return( repeat_window_id );
 
 } /* NewRepeatCountWindow */
 
@@ -155,7 +155,7 @@ window_id NewRepeatCountWindow( void )
  */
 void UpdateRepeatString( char *str )
 {
-    ClearWindow( repeatWindow );
+    ClearWindow( repeat_window_id );
     strcpy( repString, str );
     drawRepeatString();
 

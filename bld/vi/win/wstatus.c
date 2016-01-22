@@ -203,7 +203,7 @@ bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         SET_WNDINFO( hwnd, (LONG_PTR)&StatusBar );
         break;
     case WM_SETFOCUS:
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( true );
     case WM_MOUSEMOVE:
         processMouseMove( w, l );
@@ -224,15 +224,15 @@ bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
  */
 window_id NewStatWindow( void )
 {
-    window_id   stat;
+    window_id   wid;
     RECT        size;
 
     size = StatusBar.area;
     size.left -= 1;
     size.right += 1;
     size.bottom += 1;
-    stat = StatusWndCreate( sw, Root, &size, InstanceHandle, NULL );
-    return( stat );
+    wid = StatusWndCreate( sw, root_window_id, &size, InstanceHandle, NULL );
+    return( wid );
 
 } /* NewStatWindow */
 

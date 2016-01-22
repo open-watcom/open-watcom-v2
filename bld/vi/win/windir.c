@@ -74,9 +74,9 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
 {
     switch( msg ) {
     case WM_KEYDOWN:
-        if( !BAD_ID( CommandId ) ) {
-            SetFocus( CommandId );
-            SendMessage( CommandId, msg, w, l );
+        if( !BAD_ID( command_window_id ) ) {
+            SetFocus( command_window_id );
+            SendMessage( command_window_id, msg, w, l );
             return( 0 );
         }
         break;
@@ -102,19 +102,19 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
 window_id NewFileCompleteWindow( void )
 {
     RECT        *size;
-    HWND        dir;
+    window_id   wid;
     POINT       p;
 
     size = &FileCompleteWindow.area;
     p.x = size->left;
     p.y = size->top;
-    ClientToScreen( Root, &p );
-    dir = CreateWindow( ClassName, "File Complete",
+    ClientToScreen( root_window_id, &p );
+    wid = CreateWindow( ClassName, "File Complete",
                         WS_POPUPWINDOW | WS_CLIPSIBLINGS | WS_BORDER,
                         p.x, p.y,
-                        size->right - size->left, size->bottom - size->top, Root,
+                        size->right - size->left, size->bottom - size->top, root_window_id,
                         (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( dir, SW_SHOWNORMAL );
-    UpdateWindow( dir );
-    return( dir );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }

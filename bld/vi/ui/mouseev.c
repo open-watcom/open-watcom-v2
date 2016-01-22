@@ -57,16 +57,16 @@ window_id GetMousePosInfo( int *win_x, int *win_y )
 bool TestMouseEvent( bool usemouse )
 {
     int         win_x, win_y;
-    window_id   id;
+    window_id   wid;
     bool        rc;
 
     if( hookHead == NULL ) {
         return( usemouse );
     }
 
-    id = GetMousePosInfo( &win_x, &win_y );
+    wid = GetMousePosInfo( &win_x, &win_y );
 
-    rc = hookHead->cb( id, win_x, win_y );
+    rc = hookHead->cb( wid, win_x, win_y );
     if( !usemouse ) {
         return( false );
     }

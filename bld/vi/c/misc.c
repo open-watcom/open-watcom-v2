@@ -402,8 +402,8 @@ bool PromptFilesForSave( void )
             CurrentFile->modified ) {
 
             /* we have a modified file, so bring to the front */
-            BringWindowToTop( Root );
-            hwnd_old = SetFocus( Root );
+            BringWindowToTop( root_window_id );
+            hwnd_old = SetFocus( root_window_id );
 
             // file modified -- so prompt for save
             FilePromptForSaveChanges( CurrentFile );
@@ -411,7 +411,7 @@ bool PromptFilesForSave( void )
         RotateFileForward();
     }
     if( !BAD_ID( hwnd_old ) ) {
-        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
 #endif
@@ -439,8 +439,8 @@ bool PromptThisFileForSave( const char *filename )
                 BringUpFile( cinfo, true );
 
                 /* we have a modified file, so bring to the front */
-                BringWindowToTop( Root );
-                hwnd_old = SetFocus( Root );
+                BringWindowToTop( root_window_id );
+                hwnd_old = SetFocus( root_window_id );
 
                 // file modified -- so prompt for save
                 FilePromptForSaveChanges( CurrentFile );
@@ -448,7 +448,7 @@ bool PromptThisFileForSave( const char *filename )
         }
     }
     if( !BAD_ID( hwnd_old ) ) {
-        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
 #else
@@ -539,7 +539,7 @@ void ExitWithVerify( void )
     }
     if( modified ) {
 #ifdef __WIN__
-        if( MessageBox( Root, "Files are modified, really exit?",
+        if( MessageBox( root_window_id, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
             BringUpFile( InfoHead, true );
             EditFlags.QuitAtLastFileExit = true;
@@ -619,7 +619,7 @@ void ExitWithVerify( void )
     }
     if( modified ) {
 #ifdef __WIN__
-        i = MessageBox( Root, "Files are modified, really exit?",
+        i = MessageBox( root_window_id, "Files are modified, really exit?",
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
             QuitEditor( ERR_NO_ERR );
@@ -899,7 +899,7 @@ vi_rc ToggleFontbar( void )
 bool GenericQueryBool( char *str )
 {
 #ifdef __WIN__
-    return( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK );
+    return( MessageBox( root_window_id, str, EditorName, MB_OKCANCEL ) == IDOK );
 #else
     #define BUFLEN 10
     char buffer[BUFLEN];

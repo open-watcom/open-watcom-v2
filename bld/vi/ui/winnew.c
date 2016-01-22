@@ -39,27 +39,27 @@
 /*
  * ResetWindow - close a window an re-create it
  */
-vi_rc ResetWindow( window_id *wn )
+vi_rc ResetWindow( window_id *wid )
 {
     window      *w;
     char        *tmp;
     vi_rc       rc;
 
-    w = WINDOW_FROM_ID( *wn );
+    w = WINDOW_FROM_ID( *wid );
     if( w->title != NULL ) {
         tmp = alloca( strlen( w->title ) + 1 );
         strcpy( tmp, w->title );
     } else {
         tmp = NULL;
     }
-    CloseAWindow( *wn );
-    rc = NewWindow2( wn, &editw_info );
+    CloseAWindow( *wid );
+    rc = NewWindow2( wid, &editw_info );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    SetBorderGadgets( *wn, EditFlags.WindowGadgets );
+    SetBorderGadgets( *wid, EditFlags.WindowGadgets );
     if( tmp != NULL ) {
-        WindowTitle( *wn, tmp );
+        WindowTitle( *wid, tmp );
     }
     DCDisplayAllLines();
     return( ERR_NO_ERR );
@@ -97,11 +97,11 @@ bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
  */
 window_id GimmeWindow( void )
 {
-    window_id   wn;
+    window_id   wid;
 
-    for( wn = 0; wn < MAX_WINDS; wn++ ) {
-        if( WINDOW_FROM_ID( wn ) == NULL ) {
-            return( wn );
+    for( wid = 0; wid < MAX_WINDS; wid++ ) {
+        if( WINDOW_FROM_ID( wid ) == NULL ) {
+            return( wid );
         }
     }
     return( NO_WINDOW );
@@ -111,7 +111,7 @@ window_id GimmeWindow( void )
 /*
  * AllocWindow - allocate a new window
  */
-window *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets,
+window *AllocWindow( window_id wid, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets,
                         bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
     window      *tmp;
@@ -122,7 +122,7 @@ window *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_bord
     size = width * height;
 
     tmp = MemAlloc( offsetof( window, overcnt ) + height );
-    tmp->id = wn;
+    tmp->id = wid;
     tmp->has_gadgets = has_gadgets;
     tmp->accessed = ( accessed ) ? 1 : 0;
     tmp->text = MemAlloc( size * sizeof( char_info ) );
@@ -153,7 +153,7 @@ window *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_bord
     for( i = 0; i < height; ++i ) {
         tmp->overcnt[i] = 0;
     }
-    WINDOW_TO_ID( wn, tmp );
+    WINDOW_TO_ID( wid, tmp );
     return( tmp );
 
 } /* AllocWindow */
@@ -161,35 +161,44 @@ window *AllocWindow( window_id wn, int x1, int y1, int x2, int y2, bool has_bord
 /*
  * NewWindow - build a new window
  */
-vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
+vi_rc NewWindow( window_id *wid, int x1, int y1, int x2, int y2, bool has_border,
                vi_color bc1, vi_color bc2, type_style *s )
 {
-    window_id   new_wn;
+    window_id   new_wid;
     bool        has_mouse;
 
     if( !ValidDimension( x1, y1, x2, y2, has_border ) ) {
         return( ERR_WIND_INVALID );
     }
 
-    new_wn = GimmeWindow();
-    if( BAD_ID( new_wn ) ) {
+    new_wid = GimmeWindow();
+    if( BAD_ID( new_wid ) ) {
         return( ERR_WIND_NO_MORE_WINDOWS );
     }
 
     has_mouse = DisplayMouse( false );
 
-    AllocWindow( new_wn, x1, y1, x2, y2, has_border, false, false, bc1, bc2, s->foreground, s->background );
+    AllocWindow( new_wid, x1, y1, x2, y2, has_border, false, false, bc1, bc2, s->foreground, s->background );
 
-    MarkOverlap( new_wn );
+    MarkOverlap( new_wid );
 
-    ClearWindow( new_wn );
-    DrawBorder( new_wn );
+    ClearWindow( new_wid );
+    DrawBorder( new_wid );
 
-    *wn = new_wn;
+    *wid = new_wid;
     DisplayMouse( has_mouse );
     return( ERR_NO_ERR );
 
 } /* NewWindow */
+
+/*
+ * NewFullWindow - build a new full window
+ */
+vi_rc NewFullWindow( window_id *wid, bool has_border, vi_color bc1, vi_color bc2, type_style *s )
+{
+    return( NewWindow( wid, 0, 0, 79, 24, has_border, bc1, bc2, s ) );
+
+} /* NewFullWindow */
 
 /*
  * FreeWindow - free data associated with a window
@@ -208,19 +217,19 @@ void FreeWindow( window *w )
 /*
  * CloseAWindow - close down specified window
  */
-void CloseAWindow( window_id wn )
+void CloseAWindow( window_id wid )
 {
     window      *w;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
 
-    RestoreOverlap( wn, true );
+    RestoreOverlap( wid, true );
     if( w->min_slot ) {
         MinSlots[w->min_slot - 1] = 0;
     }
 
     FreeWindow( w );
 
-    WINDOW_TO_ID( wn, NULL );
+    WINDOW_TO_ID( wid, NULL );
 
 } /* CloseAWindow */

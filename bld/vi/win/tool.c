@@ -131,13 +131,13 @@ static void newToolBarWindow( void )
 
     userClose = false;
 
-    GetWindowRect( EditContainer, &rect );
+    GetWindowRect( edit_container_id, &rect );
     width = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
     tl.x = rect.left;
     tl.y = 0;
-    ScreenToClient( Root, &tl );
+    ScreenToClient( root_window_id, &tl );
 
     if( fixedToolBar ) {
         // make it float
@@ -165,7 +165,7 @@ static void newToolBarWindow( void )
 
     ToolBarDisplay( toolBar, &dinfo );
 
-    MoveWindow( EditContainer, tl.x, tl.y, width, height, TRUE );
+    MoveWindow( edit_container_id, tl.x, tl.y, width, height, TRUE );
     ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
     UpdateWindow( ToolBarWindow( toolBar ) );
     fixedToolBar = !fixedToolBar;
@@ -260,7 +260,7 @@ static void createToolBar( RECT *rect )
     dinfo.background = LoadBitmap( InstanceHandle, "BUTTONPATTERN" );
     dinfo.use_tips = 1;
     buttonPattern = dinfo.background;
-    toolBar = ToolBarInit( Root );
+    toolBar = ToolBarInit( root_window_id );
 #if defined( __NT__ )
     ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
 #else
@@ -351,7 +351,7 @@ void NewToolBar( RECT *rect )
     covered = *rect;
     covered.bottom = rect->top;
     covered.top = 0;
-    InvalidateRect( EditContainer, &covered, FALSE );
+    InvalidateRect( edit_container_id, &covered, FALSE );
 
 } /* NewToolBar */
 

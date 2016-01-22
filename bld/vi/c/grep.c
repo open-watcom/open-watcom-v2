@@ -160,7 +160,7 @@ static vi_rc getFile( const char *fname )
     return( rc );
 }
 
-static int initList( window_id w, const char *dirlist, char **list )
+static int initList( window_id wid, const char *dirlist, char **list )
 {
     char        dir[MAX_STR];
     int         clist;
@@ -176,14 +176,14 @@ static int initList( window_id w, const char *dirlist, char **list )
     EditFlags.WatchForBreak = true;
     dirlist = GetNextWord1( dirlist, dir );
     if( *dir == '\0' ) {
-        fileGrep( EditVars.GrepDefault, list, &clist, w );
+        fileGrep( EditVars.GrepDefault, list, &clist, wid );
     } else {
         do {
             if( IsDirectory( dir ) ) {
                 strcat( dir, FILE_SEP_STR );
                 strcat( dir, EditVars.GrepDefault );
             }
-            fileGrep( dir, list, &clist, w );
+            fileGrep( dir, list, &clist, wid );
             if( EditFlags.BreakPressed ) {
                 break;
             }
@@ -405,11 +405,11 @@ static vi_rc doGREP( const char *dirlist )
   #ifdef __NT__
     if( LoadCommCtrl() ) {
         fp = MakeDlgProcInstance( GrepListProc95, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", Root, (DLGPROC)fp, (LPARAM)dirlist );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
     } else {
   #endif
         fp = MakeDlgProcInstance( GrepListProc, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST", Root, (DLGPROC)fp, (LPARAM)dirlist );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
   #ifdef __NT__
     }
   #endif
@@ -423,7 +423,7 @@ static vi_rc doGREP( const char *dirlist )
 static vi_rc doGREP( const char *dirlist )
 {
     int         i, clist, n = 0;
-    window_id   wn, optwin;
+    window_id   wid, owid;
     char        **list;
     window_info tw, wi;
     vi_key      evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), VI_KEY( DUMMY ) };
@@ -440,21 +440,21 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * create info. window
      */
-    rc = NewWindow( &wn, dirw_info.x1, dirw_info.y1 + 4, dirw_info.x2,
-        dirw_info.y1 + 6, 1, dirw_info.border_color1, dirw_info.border_color2,
+    rc = NewWindow( &wid, dirw_info.x1, dirw_info.y1 + 4, dirw_info.x2,
+        dirw_info.y1 + 6, true, dirw_info.border_color1, dirw_info.border_color2,
         &dirw_info.text_style );
     if( rc != ERR_NO_ERR ) {
         MemFree( list );
         return( rc );
     }
-    WindowTitle( wn, "File Being Searched" );
+    WindowTitle( wid, "File Being Searched" );
 
 
-    clist = initList( wn, dirlist, list );
+    clist = initList( wid, dirlist, list );
     /*
      * got list of matches, so lets select an item, shall we?
      */
-    CloseAWindow( wn );
+    CloseAWindow( wid );
     rc = ERR_NO_ERR;
     if( clist ) {
 
@@ -479,7 +479,7 @@ static vi_rc doGREP( const char *dirlist )
         memcpy( &wi, &extraw_info, sizeof( window_info ) );
         wi.x1 = 0;
         wi.x2 = 13;
-        rc = DisplayExtraInfo( &wi, &optwin, EditOpts, NumEditOpts );
+        rc = DisplayExtraInfo( &wi, &owid, EditOpts, NumEditOpts );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
@@ -502,7 +502,7 @@ static vi_rc doGREP( const char *dirlist )
             si.event = VI_KEY( DUMMY );
             si.show_lineno = show_lineno;
             si.cln = n + 1;
-            si.eiw = optwin;
+            si.eiw = owid;
 
             rc = SelectItem( &si );
             n = si.num;
@@ -534,9 +534,9 @@ static vi_rc doGREP( const char *dirlist )
             if( clist == 0 ) {
                 break;
             }
-            MoveWindowToFrontDammit( optwin, false );
+            MoveWindowToFrontDammit( owid, false );
         }
-        CloseAWindow( optwin );
+        CloseAWindow( owid );
 
     } else if( rc == ERR_NO_ERR ) {
         Message1( "String \"%s\" not found", sString );
@@ -555,7 +555,7 @@ static vi_rc doGREP( const char *dirlist )
 /*
  * fileGrep - search a single dir and build list of files
  */
-static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
+static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
 {
     char        fn[FILENAME_MAX], data[FILENAME_MAX], ts[FILENAME_MAX];
     char        path[FILENAME_MAX];
@@ -590,7 +590,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
 #ifdef __WIN__
             EditFlags.BreakPressed = SetGrepDialogFile( fn );
 #else
-            DisplayLineInWindow( wn, 1, fn );
+            DisplayLineInWindow( wid, 1, fn );
 #endif
             if( EditFlags.BreakPressed ) {
                 return;
@@ -614,16 +614,16 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wn )
   #ifdef __NT__
                 if( IsCommCtrlLoaded() ) {
                     lvi.mask = LVIF_TEXT;
-                    lvi.iItem = (int)SendMessage( wn, LVM_GETITEMCOUNT, 0, 0L );
+                    lvi.iItem = (int)SendMessage( wid, LVM_GETITEMCOUNT, 0, 0L );
                     lvi.iSubItem = 0;
                     lvi.pszText = fn;
-                    SendMessage( wn, LVM_INSERTITEM, 0, (LPARAM)&lvi );
+                    SendMessage( wid, LVM_INSERTITEM, 0, (LPARAM)&lvi );
                     lvi.iSubItem = 1;
                     lvi.pszText = ts;
-                    SendMessage( wn, LVM_SETITEM, 0, (LPARAM)&lvi );
+                    SendMessage( wid, LVM_SETITEM, 0, (LPARAM)&lvi );
                 } else {
   #endif
-                    SendMessage( wn, LB_ADDSTRING, 0, (LPARAM)data );
+                    SendMessage( wid, LB_ADDSTRING, 0, (LPARAM)data );
                     MySprintf( data, "%X", fn );
   #ifdef __NT__
                 }

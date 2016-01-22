@@ -51,7 +51,7 @@ window CommandWindow = {
     { 0, 0, 0, 0 }
 };
 
-window_id CommandId = NO_WINDOW;
+window_id command_window_id = NO_WINDOW;
 
 static char *className = "CommandWindow";
 
@@ -81,10 +81,11 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
 {
     PAINTSTRUCT ps;
     HDC         hdc;
+    window_id   wid;
 
     switch( msg ) {
     case WM_CREATE:
-        CommandId = hwnd;
+        command_window_id = hwnd;
         SET_WNDINFO( hwnd, (LONG_PTR)&CommandWindow );
         break;
     case WM_SETFOCUS:
@@ -95,7 +96,8 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        if( w && ((HWND) w == Root || GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
+        wid = (window_id)w;
+        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_id ) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );
@@ -115,7 +117,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         EndPaint( hwnd, &ps );
         break;
     case WM_DESTROY:
-        CommandId = NO_WINDOW;
+        command_window_id = NO_WINDOW;
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -134,11 +136,11 @@ window_id NewCommandWindow( void )
 
     p.x = size->left;
     p.y = size->top;
-    ClientToScreen( Root, &p );
+    ClientToScreen( root_window_id, &p );
     cmd = CreateWindow( className, "Prompt",
         WS_POPUPWINDOW | WS_CLIPSIBLINGS,
         p.x, p.y,
-        size->right - size->left, bottom - size->top, Root,
+        size->right - size->left, bottom - size->top, root_window_id,
         (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( cmd, SW_SHOWNORMAL );
     UpdateWindow( cmd );

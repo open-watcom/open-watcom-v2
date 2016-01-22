@@ -409,7 +409,7 @@ void RefreshSSbar( void )
             return;
         }
         proc = MakeDlgProcInstance( SSDlgProc, InstanceHandle );
-        hSSbar = CreateDialog( InstanceHandle, "SSBAR", Root, (DLGPROC)proc );
+        hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, (DLGPROC)proc );
     } else {
         if( BAD_ID( hSSbar ) ) {
             return;

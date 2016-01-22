@@ -124,7 +124,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     *result[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
-    of.hwndOwner = Root;
+    of.hwndOwner = root_window_id;
     of.lpstrFilter = (LPSTR) filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = filemask;
@@ -172,7 +172,7 @@ vi_rc SelectFileSave( char *result )
     strcpy( result, CurrentFile->name );
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
-    of.hwndOwner = Root;
+    of.hwndOwner = root_window_id;
     of.lpstrFilter = (LPSTR) filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;

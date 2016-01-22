@@ -676,7 +676,7 @@ vi_rc InitMenu( void )
 {
     menu    *m;
 
-    if( !BAD_ID( Root ) ) {
+    if( !BAD_ID( root_window_id ) ) {
         if( rootMenu->menu_handle != NULL ) {
             /* pitch all Windows objects */
             for( m = (menu *)rootMenu->item_head; m != NULL; m = m->next ) {
@@ -691,7 +691,7 @@ vi_rc InitMenu( void )
                 makeMenu( rootMenu, m );
             }
         }
-        SetMenu( Root, rootMenu->menu_handle );
+        SetMenu( root_window_id, rootMenu->menu_handle );
     }
     return( ERR_NO_ERR );
 
@@ -701,7 +701,7 @@ void FiniMenu( void )
 {
     menu    *m, *next;
 
-    if( !BAD_ID( Root ) ) {
+    if( !BAD_ID( root_window_id ) ) {
         if( rootMenu->menu_handle != NULL ) {
             for( m = (menu *)rootMenu->item_head; m != NULL; m = next ) {
                 next = m->next;
@@ -757,7 +757,7 @@ static vi_rc doFloatMenu( int id, int x, int y )
     p.x = x;
     p.y = y;
     ClientToScreen( current_window_id, &p );
-    TrackPopupMenu( f, 0, p.x, p.y, 0, Root, NULL );
+    TrackPopupMenu( f, 0, p.x, p.y, 0, root_window_id, NULL );
     DestroyMenu( f );
     return( ERR_NO_ERR );
 
@@ -814,7 +814,7 @@ vi_rc MenuCommand( int menuid )
     }
     rc = HandleToolCommand( menuid );
     if( rc != MENU_COMMAND_NOT_HANDLED ) {
-        // SetFocus( Root ); // can't do this -- we have an ideactivate button
+        // SetFocus( root_window_id ); // can't do this -- we have an ideactivate button
         return( rc );
     } else {
         rc = specialMenuCommand( menuid );

@@ -126,26 +126,26 @@ extern char         MinSlots[MAX_MIN_SLOTS];
 extern void     DefaultWindows( RECT *world, RECT *workspace );
 extern void     InitWindows( void );
 extern void     FiniWindows( void );
-extern int      WindowAuxInfo( window_id id, int type );
-extern vi_rc    NewWindow2( window_id *id, window_info *info );
-extern void     CloseAWindow( window_id id );
-extern void     CloseAChildWindow( window_id id );
-extern bool     InsideWindow( window_id id, int x, int y );
-extern void     InactiveWindow( window_id id );
-extern void     ActiveWindow( window_id id );
-extern void     MoveWindowToFront( window_id id );
-extern void     MoveWindowToFrontDammit( window_id id, bool );
+extern int      WindowAuxInfo( window_id wid, int type );
+extern vi_rc    NewWindow2( window_id *wid, window_info *info );
+extern void     CloseAWindow( window_id wid );
+extern void     CloseAChildWindow( window_id wid );
+extern bool     InsideWindow( window_id wid, int x, int y );
+extern void     InactiveWindow( window_id wid );
+extern void     ActiveWindow( window_id wid );
+extern void     MoveWindowToFront( window_id wid );
+extern void     MoveWindowToFrontDammit( window_id wid, bool );
 extern vi_rc    MaximizeCurrentWindow( void );
 extern vi_rc    MinimizeCurrentWindow( void );
 extern void     FinishWindows( void );
 
 /* win/display.c */
 extern void     ScreenPage( int page );
-extern void     WindowTitleAOI( window_id id, const char *title, bool active );
-extern void     WindowTitle( window_id id, const char *title );
-extern void     ClearWindow( window_id id );
-extern vi_rc    DisplayLineInWindow( window_id id, int line, char *text );
-extern void     ShiftWindowUpDown( window_id id, int lines );
+extern void     WindowTitleAOI( window_id wid, const char *title, bool active );
+extern void     WindowTitle( window_id wid, const char *title );
+extern void     ClearWindow( window_id wid );
+extern vi_rc    DisplayLineInWindow( window_id wid, int line, char *text );
+extern void     ShiftWindowUpDown( window_id wid, int lines );
 extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
 extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *, RECT *, window_id, char *, int );
 extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
@@ -159,13 +159,13 @@ extern void     SwapAllWindows( void );
 extern void     SetMouseSpeed( int i );
 extern void     GetClockStart( void );
 extern void     GetSpinStart( void );
-extern void     WindowAuxUpdate( window_id id, int x, int y );
-extern void     DrawBorder( window_id id );
+extern void     WindowAuxUpdate( window_id wid, int x, int y );
+extern void     DrawBorder( window_id wid );
 extern void     PushMouseEventHandler( mouse_callback cb );
 extern void     PopMouseEventHandler( void );
-extern void     WindowBorderData( window_id id, const char *c, int x );
-extern vi_rc    ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, bool flags );
-extern vi_rc    ResizeWindow( window_id id, int p1, int p2, int p3, int p4, bool flags );
+extern void     WindowBorderData( window_id wid, const char *c, int x );
+extern vi_rc    ResizeWindowRelative( window_id wid, int p1, int p2, int p3, int p4, bool flags );
+extern vi_rc    ResizeWindow( window_id wid, int p1, int p2, int p3, int p4, bool flags );
 extern void     RestoreInterrupts( void );
 extern void     WindowSwapFileClose( void );
 extern void     FiniMouse( void );
@@ -174,37 +174,36 @@ extern vi_rc    ResizeCurrentWindowWithKeys( void );
 extern vi_rc    MoveCurrentWindowWithKeys( void );
 extern drive_type DoGetDriveType( int i );
 extern void     ClearScreen( void );
-extern vi_rc    ResetWindow( window_id *id );
-extern bool     WindowIsVisible( window_id id );
+extern vi_rc    ResetWindow( window_id *wid );
+extern bool     WindowIsVisible( window_id wid );
 extern void     ScreenInit( void );
 extern void     SetInterrupts( void );
 extern void     ChkExtendedKbd( void );
 extern void     InitMouse( void );
-extern void     SetBorderGadgets( window_id id, bool how );
-extern void     NewWindow( void );
+extern void     SetBorderGadgets( window_id wid, bool how );
 extern vi_rc    GetNewValueDialog( char * );
-extern void     DisplayCrossLineInWindow( window_id id, int line );
-extern int      SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style );
-extern void     DisplayLineWithHilite( window_id id, int line, char *text, int start, int end, int ignore );
+extern void     DisplayCrossLineInWindow( window_id wid, int line );
+extern int      SetCharInWindowWithColor( window_id wid, int line, int col, char text, type_style *style );
+extern void     DisplayLineWithHilite( window_id wid, int line, char *text, int start, int end, int ignore );
 extern void     SetPosToMessageLine( void );
 extern void     HideCursor( void );
 
 /* win/editwnd.c */
-extern void     PositionVerticalScrollThumb( window_id id, linenum top, linenum last );
-extern void     PositionHorizontalScrollThumb( window_id id, int left );
+extern void     PositionVerticalScrollThumb( window_id wid, linenum top, linenum last );
+extern void     PositionHorizontalScrollThumb( window_id wid, int left );
 
 /* win/wintica.c */
 extern vi_rc    WindowTile( int, int );
 extern vi_rc    WindowCascade( void );
 
 /* win/cursor.c */
-extern void     SetCursorOnLine( window_id id, int col, char *str, type_style *style );
-extern void     SetGenericWindowCursor( window_id id, int row, int col );
-extern void     ResetEditWindowCursor( window_id id );
-extern void     MyShowCaret( window_id id );
-extern void     MyHideCaret( window_id id );
-extern void     MyKillCaret( window_id id );
-extern void     MyRaiseCaret( window_id id );
+extern void     SetCursorOnLine( window_id wid, int col, char *str, type_style *style );
+extern void     SetGenericWindowCursor( window_id wid, int row, int col );
+extern void     ResetEditWindowCursor( window_id wid );
+extern void     MyShowCaret( window_id wid );
+extern void     MyHideCaret( window_id wid );
+extern void     MyKillCaret( window_id wid );
+extern void     MyRaiseCaret( window_id wid );
 
 /* win/main.c */
 extern void     StartWindows( void );
@@ -261,6 +260,7 @@ extern window_id    GimmeWindow( void );
 extern window       *AllocWindow( window_id, int, int, int, int, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
 extern void         FreeWindow( window * );
 extern vi_rc        NewWindow( window_id *, int, int, int, int, bool, vi_color, vi_color, type_style * );
+extern vi_rc        NewFullWindow( window_id *, bool, vi_color, vi_color, type_style * );
 extern void         CloseAWindow( window_id );
 
 /* window.c */
@@ -291,7 +291,7 @@ extern void     ReleaseWindow( window *);
 extern void     WindowSwapFileClose( void );
 
 /* winthumb.c */
-extern void     PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last );
+extern void     PositionVerticalScrollThumb( window_id wid, linenum curr, linenum last );
 extern void     PositionHorizontalScrollThumb( window_id, int );
 extern void     DrawVerticalThumb( window *w, char ch );
 extern vi_rc    PositionToNewThumbPosition( window *w, int thumb );
@@ -308,7 +308,7 @@ extern void     MoveWindowToFront( window_id );
 extern void     MoveWindowToFrontDammit( window_id, bool );
 extern void     InactiveWindow( window_id );
 extern void     ActiveWindow( window_id );
-extern void     WindowTitleAOI( window_id wn, const char *title, bool active );
+extern void     WindowTitleAOI( window_id wid, const char *title, bool active );
 extern void     WindowTitleInactive( window_id, const char * );
 extern void     WindowTitle( window_id, const char * );
 extern void     ClearWindow( window_id );

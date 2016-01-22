@@ -44,8 +44,8 @@
 #include "clibext.h"
 
 
-window_id       Root;
-window_id       EditContainer;
+window_id       _NEAR root_window_id;
+window_id       edit_container_id;
 HINSTANCE       InstanceHandle;
 char            _NEAR EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
@@ -79,10 +79,10 @@ void StartWindows( void )
     if( showHow == SW_SHOWNORMAL && RootState == SIZE_MAXIMIZED ) {
         showHow = SW_SHOWMAXIMIZED;
     }
-    ShowWindow( Root, showHow );
-    UpdateWindow( Root );
-    ShowWindow( EditContainer, SW_SHOWNORMAL );
-    UpdateWindow( EditContainer );
+    ShowWindow( root_window_id, showHow );
+    UpdateWindow( root_window_id );
+    ShowWindow( edit_container_id, SW_SHOWNORMAL );
+    UpdateWindow( edit_container_id );
 }
 
 void FiniInstance( void )
@@ -133,8 +133,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 #ifdef __WINDOWS__
     if( prev != NULL && !HasShare() ) {
         MessageBox( NO_WINDOW, "SHARE.EXE must be loaded before starting Windows in order to run multiple instances of the editor", EditorName, MB_OK );
-        GetInstanceData( prev, (unsigned char _NEAR *)&Root, sizeof( Root ) );
-        SetFocus( Root );
+        GetInstanceData( prev, (unsigned char _NEAR *)&root_window_id, sizeof( root_window_id ) );
+        SetFocus( root_window_id );
         return( 0 );
     }
 #endif
@@ -157,7 +157,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     InitializeEditor();
     SetSaveConfig();
     if( !BAD_ID( current_window_id ) ) {
-        SetFocus( Root );
+        SetFocus( root_window_id );
     }
 
     SetWindowCursorForReal();
@@ -179,9 +179,9 @@ void MessageLoop( bool block )
     UINT        rc;
 
     if( block ) {
-        if( !PeekMessage( &msg, (HWND)NULLHANDLE, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
+        if( !PeekMessage( &msg, NO_WINDOW, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
             CloseStartupDialog();
-            rc = GetMessage( &msg, (HWND)NULLHANDLE, 0, 0 );
+            rc = GetMessage( &msg, NO_WINDOW, 0, 0 );
             if( !rc ) {
                 exit( msg.wParam );
             }
@@ -190,15 +190,15 @@ void MessageLoop( bool block )
         }
     }
     if( !EditFlags.KeyOverride ) {
-        while( PeekMessage( &msg, (HWND)NULLHANDLE, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
-            rc = GetMessage( &msg, (HWND)NULLHANDLE, 0, 0 );
+        while( PeekMessage( &msg, NO_WINDOW, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
+            rc = GetMessage( &msg, NO_WINDOW, 0, 0 );
             if( !rc ) {
                 exit( msg.wParam );
             }
             if( (BAD_ID( hColorbar ) || !IsDialogMessage( hColorbar, &msg )) &&
                 (BAD_ID( hSSbar ) || !IsDialogMessage( hSSbar, &msg )) &&
                 (BAD_ID( hFontbar ) || !IsDialogMessage( hFontbar, &msg )) &&
-                !TranslateMDISysAccel( EditContainer, &msg ) ) {
+                !TranslateMDISysAccel( edit_container_id, &msg ) ) {
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );
                 if( EditFlags.KeyOverride ) {

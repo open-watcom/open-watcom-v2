@@ -91,8 +91,8 @@ typedef enum window_extra {
 #define WIN_TEXT_COLOR(w)       ((w)->info->text_style.foreground)
 #define WIN_TEXT_BACKCOLOR(w)   ((w)->info->text_style.background)
 
-extern window_id        EditContainer;
-extern window_id        Root;
+extern window_id        edit_container_id;
+extern window_id        _NEAR root_window_id;
 extern HINSTANCE        InstanceHandle;
 extern bool             AllowDisplay;
 extern window           StatusBar;
@@ -105,6 +105,6 @@ extern RECT             ToolBarFloatRect;
 extern RECT             RootRect;
 extern int              RootState;
 extern char             _NEAR EditorName[];
-extern window_id        CommandId;
+extern window_id        command_window_id;
 
 #endif

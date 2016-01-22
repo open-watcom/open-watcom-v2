@@ -99,7 +99,7 @@ int PickATag( int clist, char **list, const char *tagname )
     tagList = list;
 
     proc = MakeDlgProcInstance( TagListProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, (DLGPROC)proc, (LPARAM)tagname );
+    rc = DialogBoxParam( InstanceHandle, "TAGS", root_window_id, (DLGPROC)proc, (LPARAM)tagname );
     FreeProcInstance( proc );
     return( rc );
 

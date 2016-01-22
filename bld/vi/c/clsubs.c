@@ -65,11 +65,11 @@ static int      MB_posy = -1;
 WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam )
 {
     char        className[10];
-    HWND        hWnd;
+    window_id   wid;
 
     if( ncode == HCBT_ACTIVATE || ncode == HCBT_MOVESIZE ) {
-        hWnd = (HWND)wparam;
-        GetClassName( hWnd, className, 10 );
+        wid = (window_id)wparam;
+        GetClassName( wid, className, 10 );
         if( strcmp( className, "#32770" ) == 0 ) {
             if( ncode == HCBT_MOVESIZE ) {
                 LPRECT  pos = (LPRECT)lparam;
@@ -78,7 +78,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
                 MB_posy = pos->top;
             } else {
                 if( MB_posx != -1 || MB_posy != -1 ) {
-                    SetWindowPos( hWnd, (HWND)NULLHANDLE, MB_posx, MB_posy, 0, 0,
+                    SetWindowPos( wid, NULLHANDLE, MB_posx, MB_posy, 0, 0,
                         SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
                 }
             }
@@ -87,7 +87,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
     return( CallNextHookEx( hhookMB, ncode, wparam, lparam ) );
 }
 
-static int MyMessageBox( window_id hWnd, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
+static int MyMessageBox( window_id wid, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
 {
     FARPROC     fp;
     int         rc;
@@ -98,7 +98,7 @@ static int MyMessageBox( window_id hWnd, char _FAR *lpText, char _FAR *lpCaption
 #else
     hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, InstanceHandle, GetCurrentTask() );
 #endif
-    rc = MessageBox( hWnd, lpText, lpCaption, uType );
+    rc = MessageBox( wid, lpText, lpCaption, uType );
     UnhookWindowsHookEx( hhookMB );
     FreeProcInstance( fp );
     return( rc );
@@ -110,7 +110,7 @@ static change_resp ChangePrompt( void )
 #ifdef __WIN__
     int     i;
 
-    i = MyMessageBox( Root, "Change this occurence?", "Replace Text",
+    i = MyMessageBox( root_window_id, "Change this occurence?", "Replace Text",
                       MB_ICONQUESTION | MB_YESNOCANCEL );
     if( i == IDNO ) {
         return( CHANGE_NO );

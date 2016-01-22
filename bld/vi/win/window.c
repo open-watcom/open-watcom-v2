@@ -174,17 +174,17 @@ void FiniWindows( void )
     EditFlags.WindowsStarted = false;
 }
 
-int WindowAuxInfo( window_id id, int type )
+int WindowAuxInfo( window_id wid, int type )
 {
     window      *win;
     int         value, height;
     RECT        area;
 
-    if( BAD_ID( id ) || !IsWindow( id ) ) {
+    if( BAD_ID( wid ) || !IsWindow( wid ) ) {
         return( 0 );
     }
-    win = WINDOW_FROM_ID( id );
-    GetClientRect( id, &area );
+    win = WINDOW_FROM_ID( wid );
+    GetClientRect( wid, &area );
     switch( type ) {
     case WIND_INFO_X1:
         value = area.left;
@@ -237,38 +237,38 @@ int WindowAuxInfo( window_id id, int type )
     return( value );
 }
 
-vi_rc NewWindow2( window_id *id, window_info *info )
+vi_rc NewWindow2( window_id *wid, window_info *info )
 {
     if( info == &editw_info ) {
-        *id = NewEditWindow();
+        *wid = NewEditWindow();
     } else if( info == &cmdlinew_info ) {
-        *id = NewCommandWindow();
+        *wid = NewCommandWindow();
     } else if( info == &statusw_info ) {
-        *id = NewStatWindow();
+        *wid = NewStatWindow();
     } else if( info == &messagew_info ) {
-        *id = NewMsgWindow();
+        *wid = NewMsgWindow();
     } else if( info == &filecw_info ) {
-        *id = NewFileCompleteWindow();
+        *wid = NewFileCompleteWindow();
     } else if( info == &repcntw_info ) {
-        *id = NewRepeatCountWindow();
+        *wid = NewRepeatCountWindow();
     } else {
-        *id = NO_WINDOW;
+        *wid = NO_WINDOW;
         return( ERR_WIND_INVALID );
     }
     return( ERR_NO_ERR );
 }
 
-void CloseAWindow( window_id id )
+void CloseAWindow( window_id wid )
 {
-    if( !BAD_ID( id ) ) {
-        DestroyWindow( id );
+    if( !BAD_ID( wid ) ) {
+        DestroyWindow( wid );
     }
 }
 
-void CloseAChildWindow( window_id id )
+void CloseAChildWindow( window_id wid )
 {
-    if( !BAD_ID( id ) ) {
-        SendMessage( EditContainer, WM_MDIDESTROY, (UINT)id, 0L );
+    if( !BAD_ID( wid ) ) {
+        SendMessage( edit_container_id, WM_MDIDESTROY, (UINT)wid, 0L );
     }
 }
 
@@ -278,54 +278,54 @@ void CloseAChildWindow( window_id id )
  * selection stuff this is not a problem.
  */
 
-bool InsideWindow( window_id id, int x, int y )
+bool InsideWindow( window_id wid, int x, int y )
 {
     POINT       pt;
     RECT        rect;
 
     pt.x = x;
     pt.y = y;
-    GetClientRect( id, &rect );
+    GetClientRect( wid, &rect );
     return( PtInRect( &rect, pt ) );
 }
 
-void InactiveWindow( window_id id )
+void InactiveWindow( window_id wid )
 {
     // not needed under real MDI
-    id = id;
+    wid = wid;
     return;
 }
 
-void ActiveWindow( window_id id )
+void ActiveWindow( window_id wid )
 {
-    if( !BAD_ID( id ) ) {
-        SetActiveWindow( id );
+    if( !BAD_ID( wid ) ) {
+        SetActiveWindow( wid );
         SetWindowCursor();
         SetWindowCursorForReal();
     }
 }
 
-void MoveWindowToFront( window_id id )
+void MoveWindowToFront( window_id wid )
 {
-    if( !BAD_ID( id ) ) {
-        BringWindowToTop( id );
-        ActiveWindow( id );
+    if( !BAD_ID( wid ) ) {
+        BringWindowToTop( wid );
+        ActiveWindow( wid );
     }
 }
 
-void MoveWindowToFrontDammit( window_id id, bool scrflag )
+void MoveWindowToFrontDammit( window_id wid, bool scrflag )
 {
     scrflag = scrflag;
-    if( BAD_ID( id ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    MoveWindowToFront( id );
+    MoveWindowToFront( wid );
 }
 
 vi_rc MaximizeCurrentWindow( void )
 {
     if( !BAD_ID( current_window_id ) ) {
-        SendMessage( EditContainer, WM_MDIMAXIMIZE, (UINT)current_window_id, 0L );
+        SendMessage( edit_container_id, WM_MDIMAXIMIZE, (UINT)current_window_id, 0L );
     }
     return( ERR_NO_ERR );
 }
@@ -349,8 +349,8 @@ void FinishWindows( void )
     if( IsWindow( hSSbar ) ) {
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
     }
-    if( IsWindow( Root ) ) {
-        DestroyWindow( Root );
+    if( IsWindow( root_window_id ) ) {
+        DestroyWindow( root_window_id );
     }
     FiniWindows();
     FiniInstance();

@@ -99,7 +99,7 @@ vi_rc EditFile( const char *name, bool dammit )
     char        *fn, **list, *currfn;
     int         i, cnt, ocnt;
     int         j, len;
-    window_id   wn = NO_WINDOW;
+    window_id   wid = NO_WINDOW;
     char        cdir[FILENAME_MAX];
     info        *ci, *il;
     bool        usedir = false;
@@ -238,7 +238,7 @@ vi_rc EditFile( const char *name, bool dammit )
             } else {
                 ci = CurrentInfo;
                 SaveCurrentInfo();
-                wn = current_window_id;
+                wid = current_window_id;
             }
 
             /*
@@ -295,7 +295,7 @@ vi_rc EditFile( const char *name, bool dammit )
                     break;
                 }
                 if( !dammit ) {
-                    InactiveWindow( wn );
+                    InactiveWindow( wid );
                 }
                 if( EditFlags.BreakPressed ) {
                     break;
@@ -348,7 +348,7 @@ static char _NEAR *_NEAR fileOpts[] =  {
 vi_rc EditFileFromList( void )
 {
     int         i, tmp, j, n = 0, fcnt;
-    window_id   optwin;
+    window_id   wid;
     bool        repeat = true;
     info        *cinfo;
     char        **list, modchar;
@@ -364,7 +364,7 @@ vi_rc EditFileFromList( void )
     memcpy( &wi, &extraw_info, sizeof( window_info ) );
     wi.x1 = 2;
     wi.x2 = 19;
-    rc = DisplayExtraInfo( &wi, &optwin, fileOpts, NUM_OPTS );
+    rc = DisplayExtraInfo( &wi, &wid, fileOpts, NUM_OPTS );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -375,7 +375,7 @@ vi_rc EditFileFromList( void )
          * set up for this pass
          */
         repeat = false;
-        MoveWindowToFrontDammit( optwin, false );
+        MoveWindowToFrontDammit( wid, false );
         SaveCurrentInfo();
 
         /*
@@ -418,7 +418,7 @@ vi_rc EditFileFromList( void )
         si.event = VI_KEY( DUMMY );
         si.show_lineno = show_lineno;
         si.cln = n + 1;
-        si.eiw = optwin;
+        si.eiw = wid;
         rc = SelectItem( &si );
         n = si.num;
         if( rc == ERR_NO_ERR ) {
@@ -456,7 +456,7 @@ vi_rc EditFileFromList( void )
     /*
      * get rid of option stuff
      */
-    CloseAWindow( optwin );
+    CloseAWindow( wid );
     return( rc );
 
 } /* EditFileFromList */
@@ -468,16 +468,16 @@ vi_rc EditFileFromList( void )
 vi_rc OpenWindowOnFile( const char *data )
 {
     vi_rc       rc;
-    window_id   wn;
+    window_id   wid;
 
     data = SkipLeadingSpaces( data );
     if( data[0] == 0 ) {
         data = NULL;
     }
-    wn = current_window_id;
+    wid = current_window_id;
     rc = NewFile( data, true );
     if( rc == ERR_NO_ERR ) {
-        InactiveWindow( wn );
+        InactiveWindow( wid );
         DCDisplayAllLines();
     }
     return( rc );

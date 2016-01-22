@@ -51,17 +51,18 @@ void SaveInfo( info *ci  )
     if( ci == NULL ) {
         return;
     }
-    ci->CurrentFile = CurrentFile;
-    ci->CurrentPos = CurrentPos;
+    ci->CurrentFile         = CurrentFile;
+    ci->CurrentPos          = CurrentPos;
     ci->VirtualColumnDesired = VirtualColumnDesired;
-    ci->LeftTopPos = LeftTopPos;
-    ci->current_window_id = current_window_id;
-    ci->UndoStack = UndoStack;
-    ci->UndoUndoStack = UndoUndoStack;
-    ci->curr_num_window_id = curr_num_window_id;
-    ci->linenumflag = EditFlags.LineNumbers;
-    ci->MarkList = MarkList;
-    ci->SelRgn = SelRgn;
+    ci->LeftTopPos          = LeftTopPos;
+    ci->current_window_id   = current_window_id;
+    ci->UndoStack           = UndoStack;
+    ci->UndoUndoStack       = UndoUndoStack;
+    ci->curr_num_window_id  = curr_num_window_id;
+    ci->linenumflag         = EditFlags.LineNumbers;
+    ci->MarkList            = MarkList;
+    ci->SelRgn              = SelRgn;
+
     ci->fsi.Language        = CurrentInfo->fsi.Language;
     ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
     ci->fsi.CMode           = EditFlags.CMode;
@@ -83,8 +84,8 @@ void SaveInfo( info *ci  )
     ci->fsi.GrepDefault     = EditVars.GrepDefault;
     CTurnOffFileDisplayBits();
 #ifdef __WIN__
-    ci->VScrollBarScale = VScrollBarScale;
-    ci->HScrollBarScale = HScrollBarScale;
+    ci->VScrollBarScale     = VScrollBarScale;
+    ci->HScrollBarScale     = HScrollBarScale;
 #endif
 } /* SaveInfo */
 
@@ -121,19 +122,20 @@ static void cRestoreFileDisplayBits( void )
 bool RestoreInfo( info *ci  )
 {
     info        tmpinfo;
+
     CurrentInfo = ci;
     if( ci == NULL ) {
         ci = &tmpinfo;
         memset( ci, 0, sizeof( tmpinfo ) );
-        ci->current_window_id = NO_WINDOW;
-        ci->curr_num_window_id = NO_WINDOW;
-        ci->CurrentPos.line = 1;
-        ci->CurrentPos.column = 1;
+        ci->current_window_id   = NO_WINDOW;
+        ci->curr_num_window_id  = NO_WINDOW;
+        ci->CurrentPos.line     = 1;
+        ci->CurrentPos.column   = 1;
         ci->VirtualColumnDesired = 1;
-        ci->LeftTopPos.line = 1;
-        ci->LeftTopPos.column = 0;
-        CurrentLine = NULL;
-        CurrentFcb = NULL;
+        ci->LeftTopPos.line     = 1;
+        ci->LeftTopPos.column   = 0;
+        CurrentLine             = NULL;
+        CurrentFcb              = NULL;
 
         ci->fsi.Language        = LANG_NONE;
         ci->fsi.HardTab         = EditVars.HardTab;
@@ -166,20 +168,20 @@ bool RestoreInfo( info *ci  )
         ci->fsi.GrepDefault     = EditVars.GrepDefault;
 #endif
     }
-    CurrentFile = ci->CurrentFile;
-    SelRgn = ci->SelRgn;
+    CurrentFile                 = ci->CurrentFile;
+    SelRgn                      = ci->SelRgn;
 #ifdef __WIN__
-    VScrollBarScale = ci->VScrollBarScale;
-    HScrollBarScale = ci->HScrollBarScale;
+    VScrollBarScale             = ci->VScrollBarScale;
+    HScrollBarScale             = ci->HScrollBarScale;
 #endif
-    CurrentPos = ci->CurrentPos;
-    VirtualColumnDesired = ci->VirtualColumnDesired;
-    LeftTopPos = ci->LeftTopPos;
-    current_window_id = ci->current_window_id;
-    curr_num_window_id = ci->curr_num_window_id;
-    UndoStack = ci->UndoStack;
-    UndoUndoStack = ci->UndoUndoStack;
-    MarkList = ci->MarkList;
+    CurrentPos                  = ci->CurrentPos;
+    VirtualColumnDesired        = ci->VirtualColumnDesired;
+    LeftTopPos                  = ci->LeftTopPos;
+    current_window_id           = ci->current_window_id;
+    curr_num_window_id          = ci->curr_num_window_id;
+    UndoStack                   = ci->UndoStack;
+    UndoUndoStack               = ci->UndoUndoStack;
+    MarkList                    = ci->MarkList;
     SetMarkContext();
     EditFlags.CMode             = ci->fsi.CMode;
     EditFlags.CRLFAutoDetect    = ci->fsi.CRLFAutoDetect;
@@ -224,7 +226,7 @@ bool RestoreInfo( info *ci  )
         SetModifiedVar( false );
     } else{
         SetModifiedVar( CurrentFile->modified );
-        if( (unsigned) ci->linenumflag != EditFlags.LineNumbers ) {
+        if( (unsigned)ci->linenumflag != EditFlags.LineNumbers ) {
             return( true );
         }
     }

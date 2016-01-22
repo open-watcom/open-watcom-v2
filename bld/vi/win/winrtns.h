@@ -94,7 +94,7 @@ void        FiniProfile( void );
 void        StatusDisplay( char * );
 
 // Cursor.c
-void        GoodbyeCursor( HWND );
+void        GoodbyeCursor( window_id );
 
 // Snoop.c
 bool        GetSnoopStringDialog( fancy_find **ff );

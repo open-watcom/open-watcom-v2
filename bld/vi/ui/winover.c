@@ -64,14 +64,14 @@ void ResetOverlap( window *w )
 /*
  * MarkOverlap - mark who a "new" window has overlapped
  */
-void MarkOverlap( window_id wn )
+void MarkOverlap( window_id wid )
 {
     window      *w, *wo;
     int         i, j, k;
     window_id   *whoover;
     window_id   *img;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     AccessWindow( w );
     whoover = w->whooverlapping;
 
@@ -87,12 +87,12 @@ void MarkOverlap( window_id wn )
                 wo = WINDOW_FROM_ID( *img );
                 AccessWindow( wo );
                 k = (i - wo->x1) + (j - wo->y1) * wo->width;
-                wo->overlap[k] = wn;
+                wo->overlap[k] = wid;
                 wo->overcnt[j - wo->y1]++;
                 ReleaseWindow( wo );
             }
             *whoover = *img;
-            *img = wn;
+            *img = wid;
             img++;
             whoover++;
         }
@@ -105,7 +105,7 @@ void MarkOverlap( window_id wn )
  * RestoreOverlap - restore overlap information from a window that is
  *                  "going away" - either relocating or dying
  */
-void RestoreOverlap( window_id wn, bool scrflag )
+void RestoreOverlap( window_id wid, bool scrflag )
 {
     window              *w, *wo, *o;
     int                 i, j, k, l;
@@ -118,7 +118,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
     if( EditFlags.Quiet ) {
         scrflag = false;
     }
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     AccessWindow( w );
     whoover = w->whooverlapping;
     over = w->overlap;
@@ -208,12 +208,12 @@ void RestoreOverlap( window_id wn, bool scrflag )
 /*
  * TestOverlap - test if window is overlapped at all
  */
-bool TestOverlap( window_id wn )
+bool TestOverlap( window_id wid )
 {
     window      *w;
     int         i;
 
-    w = WINDOW_FROM_ID( wn );
+    w = WINDOW_FROM_ID( wid );
     for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] ) {
             return( true );
@@ -244,11 +244,11 @@ bool TestVisible( window *w )
 /*
  * WindowIsVisible - check if given window id is visible
  */
-bool WindowIsVisible( window_id id )
+bool WindowIsVisible( window_id wid )
 {
     window      *w;
 
-    w = WINDOW_FROM_ID( id );
+    w = WINDOW_FROM_ID( wid );
     return( TestVisible( w ) );
 
 } /* WindowIsVisible */
@@ -258,18 +258,18 @@ bool WindowIsVisible( window_id id )
  */
 window_id WhoIsUnder( int *x, int *y )
 {
-    window_id   id;
+    window_id   wid;
     window      *w;
     int         win_x, win_y;
 
-    id = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];
-    if( !BAD_ID( id ) ) {
-        w = WINDOW_FROM_ID( id );
+    wid = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];
+    if( !BAD_ID( wid ) ) {
+        w = WINDOW_FROM_ID( wid );
         win_x = (*x) - w->x1;
         win_y = (*y) - w->y1;
         *x = win_x;
         *y = win_y;
     }
-    return( id );
+    return( wid );
 
 } /* WhoIsUnder */

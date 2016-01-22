@@ -64,7 +64,7 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         if( findData.posx == -1 && findData.posy == -1 ) {
             CenterWindowInRoot( hwnd );
         } else {
-            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
+            SetWindowPos( hwnd, NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, REP_FIND, &EditVars.FindHist );
@@ -163,7 +163,7 @@ bool GetReplaceStringDialog( fancy_find *ff )
     findData.replace = ff->replace;
     findData.replacelen = ff->replacelen;
     proc = MakeDlgProcInstance( RepDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "REPDLG", Root, (DLGPROC)proc ) != 0;
+    rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, (DLGPROC)proc ) != 0;
     FreeProcInstance( proc );
     SetWindowCursor();
 
