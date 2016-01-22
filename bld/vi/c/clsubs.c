@@ -78,7 +78,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
                 MB_posy = pos->top;
             } else {
                 if( MB_posx != -1 || MB_posy != -1 ) {
-                    SetWindowPos( wid, NULLHANDLE, MB_posx, MB_posy, 0, 0,
+                    SetWindowPos( wid, (HWND)NULLHANDLE, MB_posx, MB_posy, 0, 0,
                         SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
                 }
             }
