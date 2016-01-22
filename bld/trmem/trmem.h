@@ -201,47 +201,41 @@ extern _trmem_who  _trmem_whoami( void );
 #ifdef __WATCOMC__
 #if defined( __386__ )
     #pragma aux _trmem_guess_who = \
-        0x8b 0x45 0x04      /*      mov     eax,+4[ebp]         */ \
-        parm caller         [] \
-        value               [eax] \
-        modify exact        [eax];
+        "mov eax,[ebp+4]" \
+        parm caller [] value [eax] \
+        modify exact [eax];
 
     #pragma aux _trmem_whoami = \
-        0xe8 0x00 0x00 0x00 0x00 /* call    near L1             */ \
-        0x58                /* L1:  pop     eax                 */ \
-        parm caller         [] \
-        value               [eax] \
-        modify exact        [eax];
+        "call near ptr L1" \
+    "L1: pop  eax" \
+        parm caller [] value [eax] \
+        modify exact [eax];
 
 #elif defined( _M_I86SM ) || defined( _M_I86CM )
     #pragma aux _trmem_guess_who = \
-        0x8b 0x46 0x02      /*      mov     ax,+2[bp]           */ \
-        parm caller         [] \
-        value               [ax] \
-        modify exact        [ax];
+        "mov ax,[bp+2]" \
+        parm caller [] value [ax] \
+        modify exact [ax];
 
     #pragma aux _trmem_whoami = \
-        0xe8 0x00 0x00      /*      call    near L1             */ \
-        0x58                /*L1:   pop     ax                  */ \
-        parm caller         [] \
-        value               [ax] \
-        modify exact        [ax];
+        "call near ptr L1" \
+    "L1: pop  ax" \
+        parm caller [] value [ax] \
+        modify exact [ax];
 
 #elif defined( _M_I86LM ) || defined( _M_I86MM ) || defined( _M_I86HM )
     #pragma aux _trmem_guess_who = \
-        0x8b 0x56 0x04      /*      mov     dx,+4[bp]           */ \
-        0x8b 0x46 0x02      /*      mov     ax,+2[bp]           */ \
-        parm caller         [] \
-        value               [dx ax] \
-        modify exact        [dx ax];
+        "mov dx,[bp+4]" \
+        "mov ax,[bp+2]" \
+        parm caller [] value [dx ax] \
+        modify exact [dx ax];
 
     #pragma aux _trmem_whoami = \
-        0xe8 0x00 0x00      /*      call    near L1             */ \
-        0x58                /*L1:   pop     ax                  */ \
-        0x8c 0xca           /*      mov     dx,cs               */ \
-        parm caller         [] \
-        value               [dx ax] \
-        modify exact        [dx ax];
+        "call near ptr L1" \
+    "L1: pop  ax" \
+        "mov  dx,cs" \
+        parm caller [] value [dx ax] \
+        modify exact [dx ax];
 
 #endif
 #endif
