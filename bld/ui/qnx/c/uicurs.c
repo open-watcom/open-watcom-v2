@@ -91,25 +91,15 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( row, col, type, attr )
-/*********************************************/
-
-register        ORD*                    row;
-register        ORD*                    col;
-register        int*                    type;
-register        int*                    attr;
+void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+/****************************************************************/
 {
     _uigetcursor(row, col, type, attr);
 }
 
 
-void UIAPI uisetcursor( row, col, typ, attr )
-/********************************************/
-
-register        ORD                     row;
-register        ORD                     col;
-register        int                     typ;
-register        int                     attr;
+void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
+/***********************************************************/
 {
     _uisetcursor(row, col, typ, attr);
 }

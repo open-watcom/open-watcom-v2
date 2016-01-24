@@ -39,7 +39,7 @@ typedef struct veditline {
         int             fldlen;      /* length of field on vscreen           */
         int             scroll;      /* index of first visible character     */
         int             length;      /* length of buffer                     */
-        char _FARD      *buffer;     /* buffer of characters editted         */
+        char      _FARD *buffer;     /* buffer of characters editted         */
         int             index;       /* cursor position in buffer            */
         ATTR            attr;        /* attribute for output to vscreen      */
         unsigned        dirty:1;     /* boolean: user changed buffer         */

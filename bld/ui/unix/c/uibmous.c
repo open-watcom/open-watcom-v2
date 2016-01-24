@@ -69,9 +69,8 @@ static void uisetmouseoff( void )
     }
 }
 
-static void uisetmouseon( register MOUSEORD row,
-                          register MOUSEORD col )
-/***********************************************/
+static void uisetmouseon( MOUSEORD row, MOUSEORD col )
+/****************************************************/
 {
     char                *new;
     SAREA               area;
@@ -94,11 +93,11 @@ static void uisetmouseon( register MOUSEORD row,
     }
 }
 
-void UIAPI uisetmouse( register MOUSEORD row,
-                        register MOUSEORD col )
-/*********************************************/
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
+/*************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }

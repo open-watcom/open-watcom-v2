@@ -41,12 +41,12 @@ typedef struct vfield {
 } VFIELD;
 
 typedef struct vfieldedit {
-        VFIELD _FARD    *fieldlist;     /* first vfield in linked list of vfields  */
-        VFIELD _FARD    *curfield;      /* current vfield (might be NULL)          */
-        VFIELD _FARD    *prevfield;     /* last vfield (might be NULL)             */
+        VFIELD    _FARD *fieldlist;     /* first vfield in linked list of vfields  */
+        VFIELD    _FARD *curfield;      /* current vfield (might be NULL)          */
+        VFIELD    _FARD *prevfield;     /* last vfield (might be NULL)             */
         ATTR            enter;          /* attribute used to echo current field    */
         ATTR            exit;           /* used when cursor leaves current field   */
-        char _FARD      *buffer;        /* buffer of characters being editted      */
+        char      _FARD *buffer;        /* buffer of characters being editted      */
                                         /*                           SET  RESET    */
         unsigned        oktomodify:1;   /* user can edit buffer      app   app     */
         unsigned        hidden:1;       /* echo only cursor on XXX   app   app     */

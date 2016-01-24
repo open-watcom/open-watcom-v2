@@ -49,8 +49,8 @@ static          BYTE                OldCursorType;
 #define START_NORMAL_CURSOR 12
 #define END_NORMAL_CURSOR   14
 
-void UIAPI uioffcursor()
-/***********************/
+void UIAPI uioffcursor( void )
+/****************************/
 {
     if( UIData->cursor_on ) {
         HideInputCursor();
@@ -59,8 +59,8 @@ void UIAPI uioffcursor()
     UIData->cursor_type = C_OFF;
 }
 
-void UIAPI uioncursor()
-/**********************/
+void UIAPI uioncursor( void )
+/***************************/
 {
     BYTE startline;     /* first cursor scan line */
     BYTE endline;       /* last cursor scan line  */
@@ -88,8 +88,8 @@ void UIAPI uioncursor()
     UIData->cursor_on = TRUE;
 }
 
-static void newcursor()
-/*********************/
+static void newcursor( void )
+/***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
         uioffcursor();
@@ -98,12 +98,8 @@ static void newcursor()
     }
 }
 
-void UIAPI uigetcursor( row, col, type, attr )
-/*********************************************/
-    ORD*             row;
-    ORD*             col;
-    int*             type;
-    int*             attr;
+void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+/****************************************************************/
 {
     BYTE startline;
     BYTE endline;
@@ -133,12 +129,8 @@ void UIAPI uigetcursor( row, col, type, attr )
     //NYI:  Read the attribute
 }
 
-void UIAPI uisetcursor( row, col, typ, attr )
-/********************************************/
-register        ORD               row;
-register        ORD               col;
-register        int               typ;
-register        int               attr;
+void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
+/***********************************************************/
 {
     if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row )  ||
         ( col != UIData->cursor_col )  || ( attr != UIData->cursor_attr ) ) {
@@ -154,8 +146,8 @@ register        int               attr;
     }
 }
 
-static void savecursor()
-/**********************/
+static void savecursor( void )
+/****************************/
 {
     BYTE startline;
     BYTE endline;
@@ -181,8 +173,8 @@ static void savecursor()
 
 }
 
-static void swapcursor()
-/**********************/
+static void swapcursor( void )
+/****************************/
 {
     _swap( UIData->cursor_type, OldCursorType );
     _swap( UIData->cursor_col,  OldCursorCol  );
@@ -191,24 +183,23 @@ static void swapcursor()
     UIData->cursor_on = TRUE;
 }
 
-void UIAPI uiswapcursor()
-/************************/
+void UIAPI uiswapcursor( void )
+/*****************************/
 {
     swapcursor();
     newcursor();
 }
 
-void UIAPI uiinitcursor()
-/************************/
+void UIAPI uiinitcursor( void )
+/*****************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
     uioffcursor();
 }
 
-void UIAPI uifinicursor()
-/************************/
+void UIAPI uifinicursor( void )
+/*****************************/
 {
     uioncursor();
 }
-

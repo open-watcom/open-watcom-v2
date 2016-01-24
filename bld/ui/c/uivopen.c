@@ -54,8 +54,8 @@ static void update( SAREA area, VSCREEN *vptr )
 }
 
 
-VSCREEN* UIAPI uivopen( register VSCREEN *vptr )
-/***********************************************/
+VSCREEN* UIAPI uivopen( VSCREEN *vptr )
+/*************************************/
 {
     unsigned char           *box;
     ATTR                    attr;

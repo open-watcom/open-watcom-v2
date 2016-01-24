@@ -70,13 +70,8 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
 }
 
 
-void UIAPI uivtextput( register VSCREEN        *vptr,
-                        register ORD            row,
-                        register ORD            col,
-                        register ATTR           attr,
-                        register const char     *string,
-                        register int            len )
-/***************************************************/
+void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, int len )
+/**********************************************************************************************/
 {
     if( len == 0 && string != NULL ) {
         len = strlen( string );
@@ -85,12 +80,8 @@ void UIAPI uivtextput( register VSCREEN        *vptr,
 }
 
 
-void UIAPI uivrawput( register VSCREEN *vptr,
-                       register ORD     row,
-                       register ORD     col,
-                       register PIXEL   *pixels,
-                       register int     len )
-/*******************************************/
+void UIAPI uivrawput( VSCREEN *vptr, ORD row, ORD col, PIXEL *pixels, int len )
+/*****************************************************************************/
 {
     SAREA           dirty_area;
 
