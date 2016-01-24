@@ -131,6 +131,7 @@
 .fnc clock_gettime              clkget.gml      DOS     W WIN32
 .fnc clock_nanosleep            clkns.gml       DOS     W WIN32
 .fnc clock_settime              clkset.gml      DOS     W WIN32
+.fnc clone                      clone.gml       DOS     W WIN32
 .fnc close                      close.gml       DOS QNX W WIN32
 .fn8 _close                     close.gml       DOS       WIN32
 .fnc closedir                   closedir.gml    DOS QNX W WIN32

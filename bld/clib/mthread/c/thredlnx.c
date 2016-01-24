@@ -34,6 +34,7 @@
 #include <signal.h>
 #include <float.h>
 #include <unistd.h>
+#include <sched.h>
 #include <process.h>
 #include "rtdata.h"
 #include "liballoc.h"
@@ -43,23 +44,48 @@
 #include "cthread.h"
 #include "linuxsys.h"
 
+struct __lnx_thread {
+    thread_fn *start_addr;
+    void *args;
+};
+
+static int __cloned_lnx_start_fn(void *thrvoiddata)
+{
+struct __lnx_thread *thrdata = (struct __lnx_thread *)thrvoiddata;
+    
+    thrdata->start_addr(thrdata->args);
+    
+    free(thrvoiddata);
+    
+    sys_exit(0);
+    return 0;
+}
+
 int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                     unsigned stack_size, void *arglist )
 /******************************************************/
 {
     pid_t pid;
+    struct __lnx_thread *thrdata;
 
     if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
         return( -1L );
     }
-    pid = clone( CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, (void*)((int)stack_bottom + stack_size) );
-    if( pid ) {
-        return( (int)pid );
-    } else {
-        start_addr(arglist);
-        _endthread();
-        return 0;
+
+    thrdata = (struct __lnx_thread *)malloc(sizeof(struct __lnx_thread));
+    if(thrdata == NULL) {
+        _RWD_errno = ENOMEM;
+        return -1;
     }
+    thrdata->start_addr = start_addr;
+    thrdata->args = arglist;
+    
+    pid = clone( __cloned_lnx_start_fn,  
+                 (void*)((int)stack_bottom + stack_size),
+                 CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, 
+                 thrdata );
+
+    return( (int)pid );
 }
 
 void __CEndThread( void )

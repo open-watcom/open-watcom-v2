@@ -119,7 +119,6 @@ _WCRTLINK extern void   _WCNEAR *sbrk(int incr);
 :segment QNX
 #endif
 :endsegment
-_WCRTLINK extern pid_t  clone( int __flags, void *__child_stack );
 _WCRTLINK extern int    close( int __fildes );
 _WCRTLINK extern int    dup( int __fildes );
 :include ext.sp
