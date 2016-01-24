@@ -31,12 +31,13 @@
 
 #include "variety.h"
 #include <dos.h>
+#include "tinyio.h"
 
 
 extern  int     DoBDosCall( unsigned ax, unsigned dx );
 #if defined(__386__)
     #pragma aux DoBDosCall =    \
-        "int 21h"               \
+        _INT_21                 \
         parm caller [eax] [edx] \
         value       [eax]       \
         modify      [ebx ecx edx esi edi];

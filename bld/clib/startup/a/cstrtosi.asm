@@ -289,22 +289,20 @@ __null_FPE_rtn endp
 ;__Int16        endp
 
 public  __Int21
-public  __Int21_
 __Int21 proc    near
-__Int21_:push   ebp                     ; save ebp
+        push    ebp                     ; save ebp
         call    fword ptr __INT21ADDR   ; call extender
         pop     ebp                     ; restore ebp
         ret                             ; return
 __Int21 endp
 
 ;public __Int31
-;public __Int31_
-;__Int31        proc    near
-;__Int31_:push  ebp                     ; save ebp
-;       call    fword ptr __INT31ADDR   ; call extender
-;       pop     ebp                     ; restore ebp
-;       ret                             ; return
-;__Int31        endp
+;__Int31 proc    near
+;        push    ebp                     ; save ebp
+;        call    fword ptr __INT31ADDR   ; call extender
+;        pop     ebp                     ; restore ebp
+;        ret                             ; return
+;__Int31 endp
 
 _TEXT   ends
 

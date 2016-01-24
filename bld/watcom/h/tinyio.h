@@ -844,6 +844,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #if ( defined( __WINDOWS_386__ )  ||  defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
  extern  void   __Int21( void );
+ #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"
 #else
  #define _INT_21        _INT 0x21
@@ -851,6 +852,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #if defined( __OSI__ ) && defined( __CALL31__ )
  extern  void   __Int31( void );
+ #pragma aux __Int31 "*"
  #define _INT_31        "call __Int31"
 #else
  #define _INT_31        _INT 0x31

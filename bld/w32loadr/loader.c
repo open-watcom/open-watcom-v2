@@ -66,6 +66,7 @@ typedef unsigned long   DWORD;
 extern  char    _end;
 
 extern  int     __fInt21( void );
+#pragma aux __fInt21 "*"
 
 static DWORD   BaseAddr;
 static DWORD   CodeLoadAddr;

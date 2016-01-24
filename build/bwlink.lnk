@@ -454,3 +454,12 @@ system begin tnt
     format windows nt tnt ^
     runtime dosstyle
 end
+
+system begin x32r
+    option osname='FlashTek (register calling convention)'
+    libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
+    option stack=4k,align=4k,internalrelocs
+    library x32b.lib
+    format os2 lx ^
+end

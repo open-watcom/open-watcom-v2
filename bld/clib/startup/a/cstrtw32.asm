@@ -392,9 +392,8 @@ __GETDS proc near
 __GETDS endp
 
 public  __Int21
-public  __Int21_
 __Int21 proc    near
-__Int21_:push   ebp                     ; save ebp
+        push    ebp                     ; save ebp
         mov     ds,_LocalPtr            ; load extenders data segment
         call    fword ptr es:__INT21ADDR; call extender
         pop     ebp                     ; restore ebp
