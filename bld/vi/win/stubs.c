@@ -65,7 +65,7 @@ void FiniMouse( void ) {}
 void ScreenFini( void ) {}
 vi_rc ResizeCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
 vi_rc MoveCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
-drive_type DoGetDriveType( int i ) { i=i; return( DRIVE_NONE ); }
+drive_type DoGetDriveType( int i ) { i=i; return( DRIVE_TYPE_NONE ); }
 void ClearScreen( void ) {}
 vi_rc ResetWindow( window_id *wid ) { wid=wid; return( ERR_NO_ERR ); }
 bool WindowIsVisible( window_id wid ) { wid=wid; return( true ); }

@@ -843,7 +843,7 @@ vi_rc RunCommandLine( const char *cmdl )
             break;
         }
         y2 = atoi( st );
-        rc = CurrentWindowResize( x, y, x2, y2 );
+        rc = ResizeCurrentWindow( x, y, x2, y2 );
         break;
 
     case PCL_T_ECHO:

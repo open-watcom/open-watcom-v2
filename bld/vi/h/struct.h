@@ -143,9 +143,11 @@ typedef struct {
 /*
  * window dimension
  */
+typedef short           windim;
+
 typedef struct {
-    short       x1, y1, x2, y2;
-} windim;
+    windim      x1, y1, x2, y2;
+} winarea;
 
 /*
  * window id

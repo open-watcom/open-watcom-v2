@@ -291,9 +291,9 @@ void SetWindowSizes( void )
 } /* SetWindSizes */
 
 /*
- * CurrentWindowResize - as it sounds
+ * ResizeCurrentWindow - as it sounds
  */
-vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
+vi_rc ResizeCurrentWindow( int x1, int y1, int x2, int y2 )
 {
     int         text_lines;
     linenum     ln;
@@ -331,7 +331,7 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 
     return( ERR_NO_ERR );
 
-} /* CurrentWindowResize */
+} /* ResizeCurrentWindow */
 
 /*
  * SetFileWindowTitle - set the title of the current window

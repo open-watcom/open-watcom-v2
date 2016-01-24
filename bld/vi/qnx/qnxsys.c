@@ -248,7 +248,7 @@ void TurnOffCapsLock( void )
 drive_type DoGetDriveType( int drv )
 {
     drv = drv;
-    return( DRIVE_NONE );
+    return( DRIVE_TYPE_NONE );
 
 } /* DoGetDriveType */
 

@@ -47,9 +47,9 @@
 #define GET_BOOL_PREFIX(b)  ((b) ? "" : "no")
 
 typedef enum {
-    DRIVE_NONE,
-    DRIVE_IS_REMOVABLE,
-    DRIVE_IS_FIXED
+    DRIVE_TYPE_NONE,
+    DRIVE_TYPE_IS_REMOVABLE,
+    DRIVE_TYPE_IS_FIXED
 } drive_type;
 
 typedef enum {
@@ -66,7 +66,7 @@ typedef enum {
     #define _A_SUBDIR       0x10    /* Subdirectory */
     #define _A_ARCH         0x20    /* Archive file */
 #endif
-    
+
 #if defined( __UNIX__ )
     #define FILE_SEP            '/'
     #define FILE_SEP_STR        "/"

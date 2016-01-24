@@ -239,12 +239,12 @@ drive_type DoGetDriveType( int drv )
     path[3] = 0;
     type = GetDriveType( path );
     if( type == 1 ) {
-        return( DRIVE_NONE );
+        return( DRIVE_TYPE_NONE );
     }
     if( type == DRIVE_REMOVABLE ) {
-        return( DRIVE_IS_REMOVABLE );
+        return( DRIVE_TYPE_IS_REMOVABLE );
     }
-    return( DRIVE_IS_FIXED );
+    return( DRIVE_TYPE_IS_FIXED );
 
 } /* DoGetDriveType */
 

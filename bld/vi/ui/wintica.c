@@ -67,7 +67,7 @@ vi_rc WindowTile( int maxx, int maxy )
                              editw_info.text_style.font );
             WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2,
                              editw_info.border_color2 );
-            CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2,
+            ResizeCurrentWindow( editw_info.x1, editw_info.y1, editw_info.x2,
                                  editw_info.y2 );
         }
         BringUpFile( cwinfo, false );
@@ -147,7 +147,7 @@ vi_rc WindowTile( int maxx, int maxy )
                 }
             }
 
-            rc = CurrentWindowResize( xstart, ystart, xstart + xx + xstep - 1,
+            rc = ResizeCurrentWindow( xstart, ystart, xstart + xx + xstep - 1,
                                      ystart + yy + ystep - 1 );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
@@ -223,7 +223,7 @@ vi_rc WindowCascade( void )
     for( i = 0; i < cnt; i++ ) {
 
         BringUpFile( cinfo, false );
-        rc = CurrentWindowResize( xstart, ystart, xend, yend );
+        rc = ResizeCurrentWindow( xstart, ystart, xend, yend );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }

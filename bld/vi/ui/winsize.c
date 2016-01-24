@@ -137,7 +137,7 @@ vi_rc MinimizeCurrentWindow( void )
             minx1 = 0;
         }
     }
-    rc = CurrentWindowResize( minx1, miny1, minx1 + MIN_WIN_WIDTH - 1, miny1 + 2 );
+    rc = ResizeCurrentWindow( minx1, miny1, minx1 + MIN_WIN_WIDTH - 1, miny1 + 2 );
     WindowAuxUpdate( current_window_id, WIND_INFO_MIN_SLOT, i );
     return( rc );
 
@@ -152,12 +152,12 @@ vi_rc MaximizeCurrentWindow( void )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2 - EditVars.LineNumWinWidth, editw_info.y2 );
+            rc = ResizeCurrentWindow( editw_info.x1, editw_info.y1, editw_info.x2 - EditVars.LineNumWinWidth, editw_info.y2 );
         } else {
-            rc = CurrentWindowResize( editw_info.x1 + EditVars.LineNumWinWidth, editw_info.y1, editw_info.x2, editw_info.y2 );
+            rc = ResizeCurrentWindow( editw_info.x1 + EditVars.LineNumWinWidth, editw_info.y1, editw_info.x2, editw_info.y2 );
         }
     } else {
-        rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2 );
+        rc = ResizeCurrentWindow( editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2 );
     }
     return( rc );
 

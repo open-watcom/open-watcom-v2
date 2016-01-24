@@ -145,7 +145,7 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
  * dickWithAWindow - resize window based on keys/mouse
  */
 static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *doresize,
-                             windim *wd, bool mouse )
+                             winarea *wd, bool mouse )
 {
     vi_key      key;
     bool        done = false;
@@ -321,7 +321,7 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
 static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 {
     bool        resize;
-    windim      w;
+    winarea     w;
     vi_rc       rc;
 
     resize = false;
@@ -331,7 +331,7 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
     w.y2 = 0;
     dickWithAWindow( current_window_id, topcorner, move, &resize, &w, mouse );
     if( resize ) {
-        rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );
+        rc = ResizeCurrentWindow( w.x1, w.y1, w.x2, w.y2 );
         if( mouse ) {
             DisplayMouse( true );
         }

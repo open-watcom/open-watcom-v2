@@ -251,14 +251,14 @@ drive_type DoGetDriveType( int drv )
     for( i = 'A'; i <= 'Z'; i++ ) {
         if( drv == i ) {
             if( map & 1 ) {
-                return( DRIVE_IS_FIXED );
+                return( DRIVE_TYPE_IS_FIXED );
             } else {
-                return( DRIVE_NONE );
+                return( DRIVE_TYPE_NONE );
             }
         }
         map >>= 1;
     }
-    return( DRIVE_NONE ); // to quiet the compiler
+    return( DRIVE_TYPE_NONE ); // to quiet the compiler
 
 } /* DoGetDriveType */
 
