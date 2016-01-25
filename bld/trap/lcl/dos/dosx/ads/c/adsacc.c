@@ -858,7 +858,7 @@ trap_retval ReqGet_message_text( void )
     if( IntNum == -1 ) {
         err_txt[0] = '\0';
     } else {
-        if( except < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
+        if( IntNum < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
             strcpy( err_txt, ExceptionMsgs[except] );
         } else {
             strcpy( err_txt, TRP_EXC_unknown );
