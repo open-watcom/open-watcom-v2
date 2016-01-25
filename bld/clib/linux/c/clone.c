@@ -42,14 +42,21 @@
 
 #include <stdio.h>
 
+
+#define STACK_PTR(x,p) (((void **)x)+p)
+
+
 /* Our function handling the call to the user-specified function after
- * cloning.  Note that it has been expressly defined as stdcall in order
- * to force Watcom to pass arguments on the stack rather than any other
- * available method.  Stack-based calling is _essential_ right here.
+ * cloning.  Note that it has been expressly defined by #pragma aux
+ * in order to force Watcom to pass arguments on the stack and on
+ * function exit properly cleanup stack.
  */
-static void __stdcall __callfn( int (*__fn)(void *), void *args, void *tls )
+
+#pragma aux __callfn parm routine [];
+
+static void __callfn( int (*__fn)(void *), void *args, void *tls )
 {
-int ret;
+    int ret;
 
     /* If tls has been specified, we need to set it via a
      * system call for the child now.
@@ -71,17 +78,10 @@ _WCRTLINK pid_t clone(int (*__fn)(void *), void *__child_stack, int __flags,
 {
     syscall_res res;
 
-    /* Child variables */
-    pid_t local_pid;
-    intptr_t *ptr;
-    
     /* Optional arguments based on the presence of certain flags */
     pid_t *ppid;
     pid_t *ctid;
     void *tls;    /* Could be a struct user_desc * */
-    
-    /* Emulated call function with no arguments */
-    void __stdcall (*__callfn_fake)();
     
     /* The number of optional args expected */
     int n;
@@ -115,35 +115,29 @@ _WCRTLINK pid_t clone(int (*__fn)(void *), void *__child_stack, int __flags,
     /* Store what we need in our stack space.  Once clone occurs, our
      * stack should be positioned just beyond these three arguments.
      */
-    __child_stack = (void *)((char *)__child_stack-3*sizeof(void *));
-    ptr = (intptr_t *)__child_stack;
-    *ptr = (intptr_t)__fn;
-    ptr = (intptr_t *)((char *)__child_stack+sizeof(intptr_t));
-    *ptr = (intptr_t)args;
-    ptr = (intptr_t *)((char *)__child_stack+2*sizeof(intptr_t));
-    *ptr = (intptr_t)tls;
-    
+    __child_stack = STACK_PTR( __child_stack, -3 );
+    *STACK_PTR( __child_stack, 0 ) = __fn;
+    *STACK_PTR( __child_stack, 1 ) = args;
+    *STACK_PTR( __child_stack, 2 ) = tls;
+
     /* Call the actual clone operation */
     res = sys_call5( SYS_clone, (u_long)__flags, (u_long)__child_stack, (u_long)ppid, (u_long)ctid, (u_long)NULL);
 
     if(!__syscall_iserror(res)) {
-        local_pid = (pid_t)res;
         
         /* If we're the child... */
-        if(local_pid == 0) {
+        if(__syscall_val( pid_t, res ) == 0) {
         
             /* The arguments for __callfn are actually on the stack, but
              * we don't have access to them at this point.  What we can
              * do is trick the compiler.  We'll typecast __callfn into
              * a function that takes no arguments.  When we call this
-             * fake function, it will actually call __callfn.  Since
-             * we've defined __callfn to be stdcall, it should pull its
-             * arguments off the stack.  We didn't pass any, but the
+             * fake function, it will actually call __callfn.
+             * __callfn should pull its arguments off the stack.
+             * We didn't pass any, but the
              * proper ones are already waiting on our stack.
              */
-            __callfn_fake = (void __stdcall (*)())__callfn;
-            __callfn_fake();
-
+            ((void (*)(void))__callfn)();
         }
     }
     
