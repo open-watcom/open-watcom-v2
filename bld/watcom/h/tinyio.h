@@ -530,6 +530,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 
 /* handle small/large data models */
 #if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
+
 #define TinyAccess              _nTinyAccess
 #define TinyBufferedInput       _nTinyBufferedInput
 #define TinyOpen                _nTinyOpen
@@ -555,6 +556,7 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyFCBDeleteFile       _nTinyFCBDeleteFile
 #define TinyAbsWrite            _nTinyAbsWrite
 #define TinyAbsRead             _nTinyAbsRead
+#define TinyMemAlloc            _TinyMemAlloc
 #define TinyDPMIAlloc(x)        _TinyDPMIAlloc((x) >> 16, (x))
 #define TinyDPMIRealloc(addr,x) _TinyDPMIRealloc(addr, (x) >> 16, (x))
 #define TinyDPMIFree(x)         _TinyDPMIFree((x) >> 16, (x))
@@ -564,9 +566,9 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyDPMISimulateRealInt _TinyDPMISimulateRealInt
 #define TinyDPMICallRealIntFrame _TinyDPMICallRealIntFrame
 #define TinyDPMICallRealFarFrame _TinyDPMICallRealFarFrame
-#define TinyMemAlloc            _TinyMemAlloc
 
 #else
+
 #define TinyAccess              _fTinyAccess
 #define TinyBufferedInput       _fTinyBufferedInput
 #define TinyOpen                _fTinyOpen
@@ -717,6 +719,7 @@ void *      tiny_call   _TinyDPMIAlloc( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyDPMIRealloc( void *__addr, uint_16 __hiw, uint_16 __low );
 void        tiny_call   _TinyDPMIFree( uint_16 __hiw, uint_16 __low );
 void *      tiny_call   _TinyCBAlloc( uint_32 );
+uint_32                 _TinyMemAlloc( uint_32 __size );
 uint_32     tiny_call   _TinyDPMIDOSAlloc( uint_16 __paras );
 void        tiny_call   _TinyDPMIDOSFree( uint_16 __sel );
 uint_32     tiny_call   _TinyDPMIBase( uint_16 __sel );
@@ -752,7 +755,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetLimit( uint_16 __sel, uint_32 );
 tiny_ret_t  tiny_call   _TinyDPMISetRights( uint_16 __sel, uint_16 );
 tiny_ret_t  tiny_call   _TinyDPMIGetDescriptor( uint_16 __sel, void __far * );
 tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
-uint_32                 _TinyMemAlloc( uint_32 __size );
 
 /*
  * machine code instructions
@@ -842,7 +844,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 
 #define _INT            0xcd
 
-#if ( defined( __WINDOWS_386__ )  ||  defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
+#if ( defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"
