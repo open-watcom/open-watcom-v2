@@ -304,7 +304,9 @@ cppflags_all    = $(mode_cppflags)
 !endif
 
 cppflags_win    = -DSTRICT
+!ifndef $(proj_name)_nodoslfn
 cppflags_dos    = -D__WATCOM_LFN__
+!endif
 
 ##########################
 # C/C++ COMPILERS SETINGS
