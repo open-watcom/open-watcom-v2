@@ -492,8 +492,7 @@ int init_trie( void )
     }
 
     for( i = 0; i < NUM_IN_TERM_INFO_MAPPINGS; ++i ) {
-        str = InTerminfo[i].str;
-        if( !TrieAdd( InTerminfo[i].ev, ( str ? str : "" ) ) ) {
+        if( !TrieAdd( InTerminfo[i].ev, InTerminfo[i].str ) ) {
             TrieFini();
             return( FALSE );
         }

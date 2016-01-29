@@ -215,16 +215,21 @@ static void GPM_parse( void )
     last_col = gpm_buf.x - 1;
     last_row = gpm_buf.y - 1;
     /* clip */
-    if( last_col < 0 ) last_col = 0;
-    if( last_col >= UIData->width ) last_col = UIData->width - 1;
-    if( last_row < 0 ) last_row = 0;
-    if( last_row >= UIData->height ) last_row = UIData->height - 1;
+    if( last_col < 0 )
+        last_col = 0;
+    if( last_col >= UIData->width )
+        last_col = UIData->width - 1;
+    if( last_row < 0 )
+        last_row = 0;
+    if( last_row >= UIData->height )
+        last_row = UIData->height - 1;
     type = gpm_buf.tail.gpm_w1.type & 0xf;
     if( variety == 0 ) {
-        if( type == GPM_DRAG || type == GPM_DOWN || type == GPM_UP )
+        if( type == GPM_DRAG || type == GPM_DOWN || type == GPM_UP ) {
             variety = 1;
-        else
+        } else {
             variety = 2;
+        }
     }
     if( variety == 2 )
         type = gpm_buf.tail.gpm_w2.type & 0xf;
@@ -233,15 +238,17 @@ static void GPM_parse( void )
             last_status |= MOUSE_PRESS;
         if( gpm_buf.button & GPM_B_MIDDLE )
             last_status |= MOUSE_PRESS_MIDDLE;
-        if( gpm_buf.button & GPM_B_RIGHT )
+        if( gpm_buf.button & GPM_B_RIGHT ) {
             last_status |= MOUSE_PRESS_RIGHT;
+        }
     } else if( type == GPM_UP ) {
         if( gpm_buf.button & GPM_B_LEFT )
             last_status &= ~MOUSE_PRESS;
         if( gpm_buf.button & GPM_B_MIDDLE )
             last_status &= ~MOUSE_PRESS_MIDDLE;
-        if( gpm_buf.button & GPM_B_RIGHT )
+        if( gpm_buf.button & GPM_B_RIGHT ) {
             last_status &= ~MOUSE_PRESS_RIGHT;
+        }
     }
 }
 
@@ -371,35 +378,35 @@ void tm_saveevent( void )
         return;
     }
     switch( MouseType ) {
-        case M_XT:
-            for( i = 0; i < 3; ++i ) {
-                c = nextc( 10 );
-                if( c == -1 ) {
-                    tm_error();
-                    return;
-                }
-                buf[i] = c;
-            }
-            if( i == MAXBUF ) tm_error();
-            buf[i+1] = '\0';
-            break;
-#ifdef __LINUX__
-        case M_GPM: {
-            /* start with the old gpm structure without wdx/wdy */
-            static size_t gpm_buf_size = sizeof gpm_buf - 4;
-            i = read( UIMouseHandle, &gpm_buf, gpm_buf_size );
-            if( i < gpm_buf_size ) {
-                if( i == 4 )
-                    gpm_buf_size = 28;
+    case M_XT:
+        for( i = 0; i < 3; ++i ) {
+            c = nextc( 10 );
+            if( c == -1 ) {
                 tm_error();
                 return;
             }
-            break;
+            buf[i] = c;
         }
-#endif
-        default :
-            break;
+        if( i == MAXBUF ) tm_error();
+        buf[i + 1] = '\0';
+        break;
+#ifdef __LINUX__
+    case M_GPM: {
+        /* start with the old gpm structure without wdx/wdy */
+        static size_t gpm_buf_size = sizeof( gpm_buf ) - 4;
+        i = read( UIMouseHandle, &gpm_buf, gpm_buf_size );
+        if( i < gpm_buf_size ) {
+            if( i == 4 )
+                gpm_buf_size = 28;
+            tm_error();
+            return;
+        }
+        break;
     }
+#endif
+    default :
+        break;
+    }        
     new_sample = 1;
 }
 

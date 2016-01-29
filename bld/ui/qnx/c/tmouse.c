@@ -200,7 +200,7 @@ static int tm_stop( void )
     return( 0 );
 }
 
-static void DoMouseInit( int type, char *init, char *input )
+static void DoMouseInit( int type, char *init, const char *input )
 {
     struct _osinfo      osinfo;
     MOUSEORD            row;

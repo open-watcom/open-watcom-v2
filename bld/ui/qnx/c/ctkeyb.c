@@ -597,10 +597,10 @@ static int ck_init( void )
         return( FALSE );
     case TIX_NOFILE:
         if( UIConCtrl != NULL ) {
-            for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( &ConEscapes[i] ) + 1 ) {
-                ev = ConEscapes[i+0] + (ConEscapes[i+1] << 8);
+            for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
+                ev = ConEscapes[i + 0] + (ConEscapes[i + 1] << 8);
                 i += 2;
-                if( !TrieAdd( ev, &ConEscapes[i] ) ) {
+                if( !TrieAdd( ev, ConEscapes + i ) ) {
                     return( FALSE );
                 }
             }
@@ -643,7 +643,6 @@ static int ck_save( void )
 static int init_trie( void )
 {
     charoffset  *coffs;         // start of char-offset table
-    char        *str;
     char        buff[2];
     int         i;
 
@@ -661,8 +660,7 @@ static int init_trie( void )
     for( i = 0; i < NUM_ELTS( InTerminfo ); ++i ) {
         coffs = (charoffset *)&__cur_term->_strs;
         coffs = (void *)((char *)coffs + InTerminfo[i].offset );
-        str = &__cur_term->_strtab[*coffs];
-        if( !TrieAdd( InTerminfo[i].ev, str ) ) {
+        if( !TrieAdd( InTerminfo[i].ev, __cur_term->_strtab + *coffs ) ) {
             TrieFini();
             return( FALSE );
         }
