@@ -68,17 +68,6 @@ extern void __far __Win16Thunk4();
 extern void __far __Win16Thunk5();
 extern void __far __Win16Thunk6();
 extern void __far __Call16();
-#if 0
-#pragma aux Invoke16BitFunction "*";
-#pragma aux __Int21 "*";
-#pragma aux __Win16Thunk1 "*";
-#pragma aux __Win16Thunk2 "*";
-#pragma aux __Win16Thunk3 "*";
-#pragma aux __Win16Thunk4 "*";
-#pragma aux __Win16Thunk5 "*";
-#pragma aux __Win16Thunk6 "*";
-#pragma aux __Call16 "*";
-#endif
 
 extern rtns Glue[];
 extern short MaxGlueRoutines;

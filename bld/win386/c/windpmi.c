@@ -40,8 +40,6 @@
 #define MAX_CACHE       48
 #define MAX_SELECTORS   8192
 
-#define Align64K( x ) ( ((x) + 0xffffL) & ~0xffffL )
-
 typedef struct {
     WORD        sel;
     WORD        limit;

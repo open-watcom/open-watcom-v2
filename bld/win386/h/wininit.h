@@ -30,6 +30,5 @@
 
 
 extern int  Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow );
-extern void CodeRelocate( DWORD __far *reloc, WORD cnt );
 extern void Cleanup( void );
 extern int  Fini( int strcnt, ... );

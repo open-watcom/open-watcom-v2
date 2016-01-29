@@ -78,7 +78,7 @@ struct  fpu_area {
     unsigned long       data_operand_offset;
     unsigned short      operand_selector;
     unsigned short      unused5;
-    unsigned short      fpregs[5*8];
+    unsigned short      fpregs[5 * 8];
 };
 
 
@@ -121,11 +121,8 @@ extern WORD     _F000H;
 extern BYTE     _no87;
 
 extern void     FAR __CallBack( void );
-void GetDataSelectorInfo( void );
-WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len );
-void CodeRelocate( DWORD __far *reloc, WORD cnt );
 
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
+static void     CodeRelocate( DWORD __far *reloc, WORD cnt );
 
 static char     outOfSelectors[] = "Out of selectors";
 
@@ -500,7 +497,7 @@ extern void RelocateWORD( short, long, short );
 /*
  * CodeRelocate - relocate a given chunk of code
  */
-void CodeRelocate( DWORD __far *reloc, WORD cnt )
+static void CodeRelocate( DWORD __far *reloc, WORD cnt )
 {
     WORD        i;
     DWORD       tmp;
