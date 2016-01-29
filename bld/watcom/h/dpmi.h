@@ -164,8 +164,6 @@ typedef enum {
     DPMI_WATCH_READWRITE
 } dpmi_watch_type;
 
-typedef long dpmi_watch_handle;
-
 typedef struct {
     uint_32     linear;
     uint_32     handle;
@@ -247,10 +245,10 @@ extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern void     _DPMISetSegmentBaseAddress( uint_16, uint_32 );
 extern int_16   _DPMISetSegmentLimit( uint_16, uint_32 );
 extern void     _DPMISetDescriptorAccessRights( uint_16, uint_16 );
-extern int_16   _fDPMIAllocateMemoryBlock( long __far *, long );
-extern int_16   _nDPMIAllocateMemoryBlock( long *, long );
-extern int_16   _fDPMIResizeMemoryBlock( long __far *, long, long );
-extern int_16   _nDPMIResizeMemoryBlock( long *, long, long );
+extern int_16   _fDPMIAllocateMemoryBlock( dpmi_mem_block __far *, long );
+extern int_16   _nDPMIAllocateMemoryBlock( dpmi_mem_block *, long );
+extern int_16   _fDPMIResizeMemoryBlock( dpmi_mem_block __far *, long, long );
+extern int_16   _nDPMIResizeMemoryBlock( dpmi_mem_block *, long, long );
 extern int_16   _DPMIFreeMemoryBlock( uint_32 );
 extern int_16   _DPMILockLinearRegion( uint_32, uint_32 );
 extern int_16   _DPMIUnlockLinearRegion( uint_32, uint_32 );

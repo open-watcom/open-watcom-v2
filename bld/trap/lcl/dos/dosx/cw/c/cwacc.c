@@ -267,7 +267,7 @@ void SetHBRK( void )
     // Install hardware break points.
     for( i = 0; i < 4; ++i ) {
         if( HBRKTable[i].inuse ) {
-            dpmi_watch_handle   wh;
+            long    wh;
 
             wh = _DPMISetWatch( HBRKTable[i].address, HBRKTable[i].size, HBRKTable[i].type );
             if( wh >= 0 ) {
@@ -730,7 +730,7 @@ trap_retval ReqProg_load( void )
         ch = *src++;
         if( ch == '\0' ) {
             if( len == 1 )
-                break;   
+                break;
             ch = ' ';
         }
         *dst++ = ch;

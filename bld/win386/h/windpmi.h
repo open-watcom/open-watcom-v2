@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#include "dpmi.h"
+
+
 #pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
 extern WORD     DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt);
 extern void     DPMIFreeAlias( WORD sel );
@@ -39,7 +42,7 @@ extern void     PASCAL FAR __DPMIFreeAlias( DWORD desc );
 extern WORD     PASCAL FAR __DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
 extern void     PASCAL FAR __DPMIFreeHugeAlias( DWORD desc, DWORD size );
 extern void     setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type );
-extern WORD     DPMIGet32( DWORD _FAR *addr_data, DWORD len );
+extern WORD     DPMIGet32( dpmi_mem_block _FAR *addr_data, DWORD len );
 extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 extern void     DPMIFree32( DWORD handle );
 extern DWORD    PASCAL FAR __DPMIAlloc( DWORD size );

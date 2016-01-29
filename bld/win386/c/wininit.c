@@ -54,7 +54,6 @@ typedef char __far *va_list[1];
 #include "watcom.h"
 #include "tinyio.h"
 #include "wdebug.h"
-#include "dpmi.h"
 #include "windpmi.h"
 #include "wininit.h"
 
@@ -188,7 +187,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     DWORD               file_header_size;
     BOOL                tried_global_compact;
     DWORD               save_maxmem;
-    DWORD               adata[2];
+    dpmi_mem_block      adata;
 
     flags = GetWinFlags();
     /*
@@ -294,8 +293,8 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     tried_global_compact = FALSE;
     save_maxmem = maxmem;
     for(;;) {
-        i = DPMIGet32( adata, maxmem );
-        if( i != 5 )  break;
+        i = DPMIGet32( &adata, maxmem );
+        if( i == 0 )  break;
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
                 return( Fini( 3,
@@ -319,8 +318,8 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
             }
         }
     }
-    DataHandle = adata[1];
-    BaseAddr   = adata[0] + 0x10000ul;
+    DataHandle = adata.handle;
+    BaseAddr   = adata.linear + 0x10000ul;
 #if FLAT
     i = InitFlatAddrSpace( BaseAddr, 0L );
 #else

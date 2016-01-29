@@ -73,8 +73,8 @@ typedef struct watch_point {
     dword               linear;
     word                dregs;
     word                len;
-    dpmi_watch_handle   handle;
-    dpmi_watch_handle   handle2;
+    long                handle;
+    long                handle2;
 } watch_point;
 
 static struct {
@@ -693,7 +693,8 @@ static bool SetDebugRegs( void )
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         needed += wp->dregs;
     }
-    if( needed > 4 ) return( FALSE );
+    if( needed > 4 )
+        return( FALSE );
     if( IsDPMI ) {
         success = TRUE;
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -709,14 +710,16 @@ static bool SetDebugRegs( void )
             _DBG_Write( "OK 1 = " );
             _DBG_Write16( rc >= 0 );
             _DBG_NewLine();
-            if( rc < 0 ) break;
+            if( rc < 0 )
+                break;
             wp->handle = rc;
             if( wp->dregs == 2 ) {
                 rc = DPMISetWatch( wp->linear+4, wp->len, DPMI_WATCH_WRITE );
                 _DBG_Write( "OK 2 = " );
                 _DBG_Write16( rc >= 0 );
                 _DBG_NewLine();
-                if( rc <= 0 ) break;
+                if( rc <= 0 )
+                    break;
                 wp->handle2 = rc;
             }
             success = TRUE;

@@ -32,7 +32,6 @@
 #include <stddef.h>
 #include <windows.h>
 #include "winext.h"
-#include "dpmi.h"
 #include "windpmi.h"
 
 #define MAX_CACHE       48
@@ -290,10 +289,9 @@ void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
 /*
  * DPMIGet32 - get a 32-bit segment
  */
-WORD DPMIGet32( DWORD _FAR *addr_data, DWORD len )
+WORD DPMIGet32( dpmi_mem_block _FAR *adata, DWORD len )
 {
     int         rc;
-    long        adata[2];
 
     /*
      * the return codes 4 and 5 are the same as WINMEM32.DLL's return
@@ -311,8 +309,6 @@ WORD DPMIGet32( DWORD _FAR *addr_data, DWORD len )
     if( rc ) {
         return( 5 );
     }
-    addr_data[0] = adata[0];
-    addr_data[1] = adata[1];
     return( 0 );
 
 } /* DPMIGet32 */
@@ -385,28 +381,28 @@ void DPMIFree32( DWORD handle )
  */
 DWORD FAR PASCAL __DPMIAlloc( DWORD size )
 {
-    int         rc;
-    DWORD       adata[2];
-    memblk      *p;
+    int             rc;
+    dpmi_mem_block  adata;
+    memblk          *p;
 
     for(;;) {
-        rc = DPMIGet32( adata, size );
+        rc = DPMIGet32( &adata, size );
         if( rc != 0 ) {
-            adata[0] = DataSelectorBase;        // cause NULL to be returned
+            adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }
         p = (memblk *)LocalAlloc( LMEM_FIXED, sizeof(memblk) );
         if( p == NULL ) {
-            DPMIFreeMemoryBlock( adata[1] );
-            adata[0] = DataSelectorBase;        // cause NULL to be returned
+            DPMIFreeMemoryBlock( adata.handle );
+            adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }
         p->next = MemBlkList;
-        p->handle = adata[1];
-        p->addr   = adata[0];
+        p->handle = adata.handle;
+        p->addr   = adata.linear;
         p->size   = size;
         MemBlkList = p;
-        if( WrapAround || adata[0] >= DataSelectorBase ) break;
+        if( WrapAround || adata.linear >= DataSelectorBase ) break;
         // if we are on NT or OS/2, try again until we get a memory
         // block with address higher than our DataSelectorBase 05-jul-95
     }
@@ -427,7 +423,7 @@ DWORD FAR PASCAL __DPMIAlloc( DWORD size )
             LocalFree( (HLOCAL)p );
         }
     }
-    return( adata[0] - DataSelectorBase ); // return address of memory block
+    return( adata.linear - DataSelectorBase ); // return address of memory block
 }
 
 /*
