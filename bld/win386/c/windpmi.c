@@ -34,6 +34,7 @@
 #include <windows.h>
 #include "winext.h"
 #include "_windpmi.h"
+#include "windpmi.h"
 #include "windata.h"
 
 

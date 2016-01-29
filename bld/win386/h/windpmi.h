@@ -30,20 +30,22 @@
 ****************************************************************************/
 
 
-#include "dpmi.h"
+#ifdef __WINDOWS__
+  #ifdef _M_I86
+    #define WINFAR16        __far
+    #define WINDPMIFN(x)    __pascal __far __ ## x
+  #else
+    #define WINFAR16
+    #define WINDPMIFN(x)    __pascal x
+  #endif
 
+extern unsigned long    WINDPMIFN( DPMIAlloc )( unsigned long );
+extern unsigned short   WINDPMIFN( DPMIFree )( unsigned long );
+extern unsigned short   WINDPMIFN( DPMIGetAlias )( unsigned long, unsigned long WINFAR16 * );
+extern void             WINDPMIFN( DPMIFreeAlias )( unsigned long );
+extern unsigned short   WINDPMIFN( DPMIGetHugeAlias )( unsigned long, unsigned long WINFAR16 *, unsigned long );
+extern void             WINDPMIFN( DPMIFreeHugeAlias )( unsigned long, unsigned long );
+// not implemented functions
+extern unsigned short   WINDPMIFN( DPMIResizeDS )( unsigned long );
 
-#pragma aux DPMIGetAliases parm[dx ax] [es si] [cx] value[ax];
-extern WORD     DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt);
-extern void     DPMIFreeAlias( WORD sel );
-extern WORD     DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size );
-extern void     DPMIFreeHugeAlias( DWORD desc, DWORD size );
-extern void     setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type );
-extern WORD     DPMIGet32( dpmi_mem_block _FAR *addr_data, DWORD len );
-extern WORD     InitFlatAddrSpace( DWORD baseaddr, DWORD len );
-extern void     DPMIFree32( DWORD handle );
-extern void     FreeDPMIMemBlocks( void );
-extern void     GetDataSelectorInfo( void );
-extern int      InitSelectorCache( void );
-extern void     FiniSelectorCache( void );
-extern void     FiniSelList( void );
+#endif
