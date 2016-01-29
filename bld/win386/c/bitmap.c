@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "_bitmap.h"
 
 /*

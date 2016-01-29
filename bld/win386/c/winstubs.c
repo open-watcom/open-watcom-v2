@@ -36,7 +36,7 @@
 #include <dos.h>
 #include <windows.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "winstubs.h"
 #include "windata.h"
 

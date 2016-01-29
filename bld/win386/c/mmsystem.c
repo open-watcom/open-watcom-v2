@@ -37,7 +37,7 @@
 #include <malloc.h>
 #include <dos.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "winstubs.h"
 #include "_mmsyste.h"
 

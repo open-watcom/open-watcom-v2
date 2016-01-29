@@ -33,7 +33,7 @@
 #include <stddef.h>
 #include <windows.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "windata.h"
 
 

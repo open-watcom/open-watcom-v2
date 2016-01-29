@@ -55,7 +55,7 @@ typedef char __far *va_list[1];
 #include "watcom.h"
 #include "tinyio.h"
 #include "wdebug.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "wininit.h"
 #include "windata.h"
 

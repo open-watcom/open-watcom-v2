@@ -35,7 +35,7 @@
 #include <windows.h>
 #include <toolhelp.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "_toolhlp.h"
 
 #pragma aux BackPatch_toolhelp parm [ax]
