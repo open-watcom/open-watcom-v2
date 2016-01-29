@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,20 +34,11 @@
 #include <windows.h>
 #include "winext.h"
 #include "windpmi.h"
+#include "windata.h"
+
 
 #define MAX_CACHE       48
 #define MAX_SELECTORS   8192
-
-extern DWORD    StackSize;
-extern DWORD    SaveSP;
-extern WORD     DataSelector;
-extern WORD     StackSelector;
-extern WORD     Int21Selector;
-extern addr_48  CodeEntry;
-extern DWORD    CodeSelectorBase;
-extern DWORD    DataSelectorBase;
-extern DWORD    DataHandle;
-extern WORD     DPL;
 
 #define Align64K( x ) ( ((x) + 0xffffL) & ~0xffffL )
 
@@ -73,7 +65,7 @@ static DWORD                    StackBase, StackBase_64K;
 static alias_cache_entry        aliasCache[ MAX_CACHE ];
 static WORD                     currSelCount;
 static char                     SelBitArray[MAX_SELECTORS/8];
-memblk                          *MemBlkList;
+static memblk                   *MemBlkList;
 
 static unsigned char BitMask[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 /*

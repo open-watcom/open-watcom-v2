@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +57,7 @@ typedef char __far *va_list[1];
 #include "wdebug.h"
 #include "windpmi.h"
 #include "wininit.h"
+#include "windata.h"
 
 // define FLAT to 1 to get flat address space for entire memory
 #define FLAT    1
@@ -107,7 +109,7 @@ struct wstart_vars {
 };
 #include "poppck.h"
 
-extern DWORD __far deadbeef;
+extern DWORD    __far deadbeef;
 extern WORD     InDebugger;
 extern WORD     _A000H;
 extern WORD     _B000H;
@@ -116,24 +118,7 @@ extern WORD     _C000H;
 extern WORD     _D000H;
 extern WORD     _E000H;
 extern WORD     _F000H;
-extern WORD     DataSelector;
-extern WORD     StackSelector;
-extern DWORD    DataHandle;
-extern DWORD    CodeSelectorBase;
-extern DWORD    DataSelectorBase;
-extern WORD     MyDataSelector;
-extern DWORD    BaseAddr;
-extern DWORD    CodeLoadAddr;
-extern addr_48  CodeEntry;
-extern addr_48  _32BitCallBackAddr;
-extern DWORD    _DLLEntryAddr;
-extern DWORD    _WEPAddr;
-extern DWORD    ReturnCode;
-extern DWORD    SaveSP;
-extern DWORD    StackSize;
-extern DWORD    EDataAddr;              // end of loaded code+data
 extern BYTE     _no87;
-extern WORD     DPL,Has87,HasWGod;
 
 extern void     FAR __CallBack( void );
 void GetDataSelectorInfo( void );

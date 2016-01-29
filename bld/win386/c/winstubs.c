@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "winext.h"
 #include "windpmi.h"
 #include "winstubs.h"
+#include "windata.h"
 
 /*
  * GetAlias - get a 16 bit alias to 32 bit memory
