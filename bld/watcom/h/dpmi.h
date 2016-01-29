@@ -50,8 +50,8 @@
 #define __DX    dx
 #endif
 
-#define DOS_SEG( a ) ((unsigned short) (a & 0Xffff))
-#define DOS_SEL( a ) ((unsigned short) (a >> 16L))
+#define DOS_SEG( a ) ((uint_16)(a & 0Xffff))
+#define DOS_SEL( a ) ((uint_16)(a >> 16L))
 
 /*
  * access right definitions
@@ -66,45 +66,45 @@
 #define ACCESS_DATA 2
 
 typedef struct {
-unsigned long edi;
-unsigned long esi;
-unsigned long ebp;
-unsigned long reserved;
-unsigned long ebx;
-unsigned long edx;
-unsigned long ecx;
-unsigned long eax;
-unsigned short flags;
-unsigned short es;
-unsigned short ds;
-unsigned short fs;
-unsigned short gs;
-unsigned short ip;
-unsigned short cs;
-unsigned short sp;
-unsigned short ss;
+    uint_32     edi;
+    uint_32     esi;
+    uint_32     ebp;
+    uint_32     reserved;
+    uint_32     ebx;
+    uint_32     edx;
+    uint_32     ecx;
+    uint_32     eax;
+    uint_16     flags;
+    uint_16     es;
+    uint_16     ds;
+    uint_16     fs;
+    uint_16     gs;
+    uint_16     ip;
+    uint_16     cs;
+    uint_16     sp;
+    uint_16     ss;
 } rm_call_struct;
 
 typedef struct {
-unsigned long largest_free;
-unsigned long max_unlocked_page_alloc;
-unsigned long max_locked_page_alloc;
-unsigned long linear_addr_space_in_pages;
-unsigned long total_unlocked_pages;
-unsigned long free_pages;
-unsigned long physical_pages;
-unsigned long free_linear_addr_space_in_pages;
-unsigned long size_of_page_file_in_pages;
-unsigned long fill[4];
+    uint_32     largest_free;
+    uint_32     max_unlocked_page_alloc;
+    uint_32     max_locked_page_alloc;
+    uint_32     linear_addr_space_in_pages;
+    uint_32     total_unlocked_pages;
+    uint_32     free_pages;
+    uint_32     physical_pages;
+    uint_32     free_linear_addr_space_in_pages;
+    uint_32     size_of_page_file_in_pages;
+    uint_32     fill[4];
 } dpmi_mem;
 
 typedef struct {
-char major_version;
-char minor_version;
-short flags;
-char processor_type;
-char master_pic_base_interrupt;
-char slave_pic_base_interrupt;
+    uint_8      major_version;
+    uint_8      minor_version;
+    int_16      flags;
+    uint_8      processor_type;
+    uint_8      master_pic_base_interrupt;
+    uint_8      slave_pic_base_interrupt;
 } version_info;
 #define VERSION_80386   0x0001
 
@@ -126,36 +126,36 @@ typedef enum {
 } dsc_flags;
 
 typedef struct {
-    unsigned_8  accessed : 1;
-    unsigned_8  rdwr     : 1;
-    unsigned_8  exp_down : 1;
-    unsigned_8  execute  : 1;
-    unsigned_8  mustbe_1 : 1;
-    unsigned_8  dpl      : 2;
-    unsigned_8  present  : 1;
+    uint_8  accessed : 1;
+    uint_8  rdwr     : 1;
+    uint_8  exp_down : 1;
+    uint_8  execute  : 1;
+    uint_8  mustbe_1 : 1;
+    uint_8  dpl      : 2;
+    uint_8  present  : 1;
 } dsc_type;
 
 typedef struct {
-    unsigned_8           : 4;
-    unsigned_8  useravail: 1;
-    unsigned_8  mustbe_0 : 1;
-    unsigned_8  use32    : 1;
-    unsigned_8  page_gran: 1;
+    uint_8           : 4;
+    uint_8  useravail: 1;
+    uint_8  mustbe_0 : 1;
+    uint_8  use32    : 1;
+    uint_8  page_gran: 1;
 } dsc_xtype;
 
 typedef struct {
-    unsigned_16         lim_0_15;
-    unsigned_16         base_0_15;
-    unsigned_8          base_16_23;
-    dsc_type            type;
+    uint_16         lim_0_15;
+    uint_16         base_0_15;
+    uint_8          base_16_23;
+    dsc_type        type;
     union {
         struct {
-            unsigned_8  lim_16_19: 4;
-            unsigned_8           : 4;
+            uint_8  lim_16_19: 4;
+            uint_8           : 4;
         };
-        dsc_xtype xtype;
+        dsc_xtype   xtype;
     };
-    unsigned_8          base_24_31;
+    uint_8          base_24_31;
 } descriptor;
 
 typedef enum {
@@ -165,6 +165,11 @@ typedef enum {
 } dpmi_watch_type;
 
 typedef long dpmi_watch_handle;
+
+typedef struct {
+    uint_32     linear;
+    uint_32     handle;
+} dpmi_mem_block;
 
 #define DPMISetWatch                            _DPMISetWatch
 #define DPMIClearWatch                          _DPMIClearWatch
@@ -221,54 +226,54 @@ typedef long dpmi_watch_handle;
 #define DPMIResizeMemoryBlock                   _fDPMIResizeMemoryBlock
 #endif
 
-extern void _DPMIFreeRealModeCallBackAddress( void __far * proc );
-extern void __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
-extern void __far *_DPMIGetRealModeInterruptVector( char iv );
-extern int  _DPMISetPMInterruptVector( char iv, void __far * ptr );
-extern void _DPMISetPMExceptionVector( char iv, void __far * ptr );
-extern void __far *_DPMIGetPMExceptionVector( char iv );
-extern void __far *_DPMIGetPMInterruptVector( char iv );
-extern int  _DPMISetRealModeInterruptVector( char iv, void __far * ptr );
-extern short _DPMIModeDetect( void );
-extern void _DPMIIdle( void );
-extern void _DPMIGetVersion( version_info __far * );
-extern void _fDPMIGetVersion( version_info __far * );
-extern void _nDPMIGetVersion( version_info * );
-extern long _DPMIAllocateLDTDescriptors( short );
-extern short _DPMISegmentToDescriptor( short );
-extern void _DPMIFreeLDTDescriptor( short );
-extern short _DPMIGetNextSelectorIncrementValue( void );
-extern long _DPMIGetSegmentBaseAddress( short );
-extern void _DPMISetSegmentBaseAddress( short, long );
-extern unsigned short _DPMISetSegmentLimit( short, long );
-extern void _DPMISetDescriptorAccessRights( short, short );
-extern short _fDPMIAllocateMemoryBlock( long __far *, long );
-extern short _nDPMIAllocateMemoryBlock( long *, long );
-extern short _fDPMIResizeMemoryBlock( long __far *, long, long );
-extern short _nDPMIResizeMemoryBlock( long *, long, long );
-extern short _DPMIFreeMemoryBlock( long );
-extern short _DPMILockLinearRegion( long, long );
-extern short _DPMIUnlockLinearRegion( long, long );
-extern int   _DPMIGetDescriptor( unsigned short, descriptor __far * );
-extern int   _DPMISetDescriptor( unsigned short, descriptor __far * );
-extern long _DPMICreateCodeSegmentAliasDescriptor( short );
-extern short _nDPMIGetFreeMemoryInformation( dpmi_mem * );
-extern short _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
-extern int _DPMISimulateRealModeInterrupt( char interrupt, char flags,
-                        unsigned short words_to_copy, rm_call_struct __far *call_st );
-extern long _DPMIAllocateDOSMemoryBlock( short para );
-extern void _DPMIFreeDOSMemoryBlock( short sel );
-extern void __far  *_DPMIRawPMtoRMAddr( void );
-extern unsigned long    _DPMIRawRMtoPMAddr( void );
-extern void __far  *_DPMISaveRMStateAddr( void );
-extern unsigned long     _DPMISavePMStateAddr( void );
-extern unsigned short      _DPMISaveStateSize( void );
-extern void __far *_DPMIGetVendorSpecificAPI( char __far * );
+extern void     _DPMIFreeRealModeCallBackAddress( void __far * proc );
+extern void     __far *_DPMIAllocateRealModeCallBackAddress( void __far * proc, rm_call_struct __far *cs );
+extern void     __far *_DPMIGetRealModeInterruptVector( uint_8 iv );
+extern int      _DPMISetPMInterruptVector( uint_8 iv, void __far * ptr );
+extern void     _DPMISetPMExceptionVector( uint_8 iv, void __far * ptr );
+extern void     __far *_DPMIGetPMExceptionVector( uint_8 iv );
+extern void     __far *_DPMIGetPMInterruptVector( uint_8 iv );
+extern int      _DPMISetRealModeInterruptVector( uint_8 iv, void __far * ptr );
+extern int_16   _DPMIModeDetect( void );
+extern void     _DPMIIdle( void );
+extern void     _DPMIGetVersion( version_info __far * );
+extern void     _fDPMIGetVersion( version_info __far * );
+extern void     _nDPMIGetVersion( version_info * );
+extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
+extern uint_16  _DPMISegmentToDescriptor( uint_16 );
+extern void     _DPMIFreeLDTDescriptor( uint_16 );
+extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
+extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
+extern void     _DPMISetSegmentBaseAddress( uint_16, uint_32 );
+extern int_16   _DPMISetSegmentLimit( uint_16, uint_32 );
+extern void     _DPMISetDescriptorAccessRights( uint_16, uint_16 );
+extern int_16   _fDPMIAllocateMemoryBlock( long __far *, long );
+extern int_16   _nDPMIAllocateMemoryBlock( long *, long );
+extern int_16   _fDPMIResizeMemoryBlock( long __far *, long, long );
+extern int_16   _nDPMIResizeMemoryBlock( long *, long, long );
+extern int_16   _DPMIFreeMemoryBlock( uint_32 );
+extern int_16   _DPMILockLinearRegion( uint_32, uint_32 );
+extern int_16   _DPMIUnlockLinearRegion( uint_32, uint_32 );
+extern int      _DPMIGetDescriptor( uint_16, descriptor __far * );
+extern int      _DPMISetDescriptor( uint_16, descriptor __far * );
+extern int_32   _DPMICreateCodeSegmentAliasDescriptor( uint_16 );
+extern int_16   _nDPMIGetFreeMemoryInformation( dpmi_mem * );
+extern int_16   _fDPMIGetFreeMemoryInformation( dpmi_mem __far * );
+extern int      _DPMISimulateRealModeInterrupt( uint_8 interrupt, uint_8 flags,
+                        uint_16 words_to_copy, rm_call_struct __far *call_st );
+extern int_32   _DPMIAllocateDOSMemoryBlock( uint_16 para );
+extern void     _DPMIFreeDOSMemoryBlock( uint_16 sel );
+extern void     __far *_DPMIRawPMtoRMAddr( void );
+extern uint_32  _DPMIRawRMtoPMAddr( void );
+extern void     __far *_DPMISaveRMStateAddr( void );
+extern uint_32  _DPMISavePMStateAddr( void );
+extern uint_16  _DPMISaveStateSize( void );
+extern void     __far *_DPMIGetVendorSpecificAPI( char __far * );
 
-extern dpmi_watch_handle _DPMISetWatch( unsigned long linear, char len, dpmi_watch_type type );
-extern void _DPMIClearWatch( short handle );
-extern short _DPMITestWatch( short handle );
-extern void _DPMIResetWatch( short handle );
+extern int_32   _DPMISetWatch( uint_32 linear, uint_8 len, dpmi_watch_type type );
+extern void     _DPMIClearWatch( uint_16 handle );
+extern int_16   _DPMITestWatch( uint_16 handle );
+extern void     _DPMIResetWatch( uint_16 handle );
 
 #pragma aux _DPMIModeDetect = \
         "mov    ax,1686h"   \
