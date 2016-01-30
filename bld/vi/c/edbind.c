@@ -186,6 +186,7 @@ static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long t
             tocopy = 0;
         }
     }
+    free( copy );
     close( h );
 
     /*
@@ -276,7 +277,7 @@ static char *SkipLeadingSpaces( const char *buff )
 /*
  * MyAlloc - allocate memory, failing if cannot
  */
-static void *MyAlloc( unsigned size )
+static void *MyAlloc( size_t size )
 {
     void        *tmp;
 
