@@ -87,6 +87,7 @@ Get16Alias:
         call    DPMIGetAliases_         ; get alias
         mov     es, _DataSelector       ; reload es
         ret                             ; return
+
 L0b:    movzx   eax,ax                  ; zero extend the value
 L0a:    push    eax                     ; push aliased pointer
         jmp     cx                      ; return
@@ -195,6 +196,7 @@ map2flat:or     dx,dx                   ; check for NULL pointer
         add     ecx,esi                 ; add offset to base
         mov     eax,ecx                 ; to get 32-bit flat address
         jmp     short mapdone           ; ...
+
 nullptr:sub     eax,eax                 ; NULL pointer
 mapdone:pop     ecx                     ; restore 32-bit stack pointer
         mov     word ptr _EntryStackSave,SP     ; save current sp
@@ -223,6 +225,7 @@ __Win16Thunk4_ proc far
         add     bx,offset _FunctionTable; ...
         call    cs:__ThunkTable[bp]        ; call appropriate thunk routine
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
+
 __Win16Thunk4_ endp
 
 GetNestedAliases proc near
@@ -335,6 +338,7 @@ __Win16Thunk6_ proc far
         pop     ax                      ; ...
         pop     dx                      ; ...
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
+
 __Win16Thunk6_ endp
 
 _TEXT   ends
