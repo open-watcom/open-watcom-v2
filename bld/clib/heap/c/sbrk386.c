@@ -40,7 +40,7 @@
 #include "rterrno.h"
 #include "rtdata.h"
 #ifdef __WINDOWS_386__
- #include "tinyio.h"
+ #include "windpmi.h"
 #else
  #include "extender.h"
  #if !defined(__OS2__)
@@ -50,10 +50,7 @@
 #include "thread.h"
 
 
-#ifdef __WINDOWS_386__
- extern void * __pascal DPMIAlloc( unsigned long );
-#else
-
+#ifndef __WINDOWS_386__
 extern  int                     SetBlock( unsigned short selector, int size );
 #pragma aux SetBlock            = \
         "push   es"             \
@@ -110,7 +107,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     return( (void _WCNEAR *)-1 );
 #elif defined(__WINDOWS_386__)                          /* 26-may-93 */
     increment = ( increment + 0x0fff ) & ~0x0fff;
-    return DPMIAlloc( increment );
+    return( (void *)DPMIAlloc( increment ) );
 #elif defined(__CALL21__)                               /* 10-aug-93 */
     increment = ( increment + 0x0fff ) & ~0x0fff;
     return (void *)TinyMemAlloc( increment );

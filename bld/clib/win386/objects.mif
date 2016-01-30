@@ -66,3 +66,7 @@
 !inject wincb32.obj                                                             w32
 
 !include ../../../../objlist.mif
+
+alloc16_opts = -I"$(win386_dir)/h"
+alloch16_opts = -I"$(win386_dir)/h"
+mmsystem_opts = -I"$(win386_dir)/h"

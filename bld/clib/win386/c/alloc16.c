@@ -32,18 +32,26 @@
 
 #include "variety.h"
 #include "cover.h"
-#include "alloc.h"
+#include "windpmi.h"
+
+
+extern void ClearFS_GS( void );
+#pragma aux ClearFS_GS = \
+    "xor eax,eax"   \
+    "mov fs,eax"    \
+    "mov gs,eax"    \
+    modify [eax];
 
 DWORD AllocAlias16( void *offset )
 {
     DWORD       ptr;
 
-    if( DPMIGetAlias( (DWORD) offset, &ptr ) ) return( 0 );
+    if( DPMIGetAlias( (DWORD)offset, &ptr ) )
+        return( 0 );
     return( ptr );
 
 } /* AllocAlias16 */
 
-#pragma aux FreeAlias16 modify [fs gs];
 void FreeAlias16( DWORD alias )
 {
 

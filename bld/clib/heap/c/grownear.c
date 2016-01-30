@@ -36,6 +36,8 @@
 #include <malloc.h>
 #if defined(__WINDOWS_286__) || defined(__NT__)
   #include <windows.h>
+#elif defined(__WINDOWS_386__)
+  #include "windpmi.h"
 #elif defined(__OS2__)
   #include <wos2.h>
 #elif defined(__RDOS__)
@@ -59,10 +61,6 @@
 #define BLKSIZE_ALIGN_MASK      0xFFFF  // 64kB
 #else
 #define BLKSIZE_ALIGN_MASK      0x0FFF  // 4kB
-#endif
-
-#if defined(__WINDOWS_386__)
-extern void * __pascal DPMIAlloc( unsigned long );
 #endif
 
 static frlptr __LinkUpNewMHeap( mheapptr );
@@ -153,7 +151,7 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             dpmi = ((struct dpmi_hdr *)mhp) - 1;
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-            size = mhp->len + sizeof(struct dpmi_hdr) + TAG_SIZE;
+            size = mhp->len + sizeof( struct dpmi_hdr ) + TAG_SIZE;
             size += ( req_size - (p1->len-TAG_SIZE) );
             size += BLKSIZE_ALIGN_MASK;
             size &= ~BLKSIZE_ALIGN_MASK;
@@ -292,7 +290,7 @@ static void *RationalAlloc( size_t size )
         DOS_block = TinyAllocBlock( size >> 4 );
         TinyFreeBlock( save_DOS_block );
         if( TINY_OK( DOS_block ) ) {
-            dpmi = (struct dpmi_hdr *) TinyDPMIBase( DOS_block );
+            dpmi = (struct dpmi_hdr *)TinyDPMIBase( DOS_block );
             dpmi->dos_seg_value = DOS_block;
             mhp = (mheapptr)( dpmi + 1 );
             mhp->len = size - sizeof( struct dpmi_hdr );
@@ -411,12 +409,12 @@ static int __CreateNewNHeap( unsigned amount )
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
   #if defined(__WINDOWS_286__)
-    brk_value = (unsigned) LocalAlloc( LMEM_FIXED, amount );
+    brk_value = (unsigned)LocalAlloc( LMEM_FIXED, amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
   #elif defined(__WINDOWS_386__)
-    brk_value = (unsigned) DPMIAlloc( amount );
+    brk_value = (unsigned)DPMIAlloc( amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
@@ -436,7 +434,7 @@ static int __CreateNewNHeap( unsigned amount )
         brk_value = (unsigned)p;
     }
   #elif defined(__NT__)
-    brk_value = (unsigned) VirtualAlloc( NULL, amount, MEM_COMMIT,
+    brk_value = (unsigned)VirtualAlloc( NULL, amount, MEM_COMMIT,
                                         PAGE_EXECUTE_READWRITE );
     //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, amount );
     if( brk_value == 0 ) {

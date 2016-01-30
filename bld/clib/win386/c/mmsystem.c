@@ -32,10 +32,10 @@
 
 #define INCLUDE_MMSYSTEM_H
 #include "variety.h"
-#include "cover.h"
-#include "alloc.h"
 #include <stddef.h>
 #include <malloc.h>
+#include "cover.h"
+#include "windpmi.h"
 
 
 extern HMMIO PASCAL __mmioOpen(LPSTR szFileName, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlags);

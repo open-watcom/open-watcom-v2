@@ -34,7 +34,7 @@
 #include "cover.h"
 #include <string.h>
 #include <dos.h>
-#include "alloc.h"
+
 
 void *MapAliasToFlat( DWORD alias )
 {
