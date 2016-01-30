@@ -88,9 +88,9 @@ static void removeFromSelList( WORD sel )
 } /* removeFromSelList */
 
 /*
- * DPMIGetAliases - get alias descriptors for some memory
+ * _DPMIGetAliases - get alias descriptors for some memory
  */
-WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
+WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 {
     long                rc;
     WORD                sel,i;
@@ -181,9 +181,21 @@ WORD DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
 
     return( 0 );
 
-} /* DPMIGetAliases */
+} /* _DPMIGetAliases */
 
-void DPMIFreeAlias( WORD sel )
+/*
+ * _DPMIGetAlias - get alias descriptor for some memory
+ */
+WORD _DPMIGetAlias( DWORD offset, DWORD __far *res )
+{
+    return( _DPMIGetAliases( offset, res, 1 ) );
+
+} /* _DPMIGetAlias */
+
+/*
+ * _DPMIFreeAlias - free alias descriptor
+ */
+void _DPMIFreeAlias( WORD sel )
 {
     alias_cache_entry   *ace;
 
@@ -201,17 +213,17 @@ void DPMIFreeAlias( WORD sel )
     removeFromSelList( sel );
     DPMIFreeLDTDescriptor( sel );
 
-} /* DPMIFreeAlias */
+} /* _DPMIFreeAlias */
 
-WORD DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
+WORD _DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
 {
     DWORD       no64k;
 
     no64k = Align64K( size );
-    return( DPMIGetAliases( offset, res, 1 + (WORD)( no64k / 0x10000L ) ) );
+    return( _DPMIGetAliases( offset, res, 1 + (WORD)( no64k / 0x10000L ) ) );
 }
 
-void DPMIFreeHugeAlias( DWORD desc, DWORD size )
+void _DPMIFreeHugeAlias( DWORD desc, DWORD size )
 {
     DWORD       no64k;
     WORD        cnt,sel,i;
@@ -234,22 +246,22 @@ void DPMIFreeHugeAlias( DWORD desc, DWORD size )
  */
 unsigned short __pascal __far __DPMIGetAlias( unsigned long offset, unsigned long __far *res )
 {
-    return( DPMIGetAliases( offset, res, 1 ) );
+    return( _DPMIGetAlias( offset, res ) );
 }
 
 void __pascal __far __DPMIFreeAlias( unsigned long desc )
 {
-    DPMIFreeAlias( desc );
+    _DPMIFreeAlias( desc );
 }
 
 unsigned short __pascal __far __DPMIGetHugeAlias( unsigned long offset, unsigned long __far *res, unsigned long size )
 {
-    return( DPMIGetHugeAlias( offset, res, size ) );
+    return( _DPMIGetHugeAlias( offset, res, size ) );
 }
 
 void __pascal __far __DPMIFreeHugeAlias( unsigned long desc, unsigned long size )
 {
-    DPMIFreeHugeAlias( desc, size );
+    _DPMIFreeHugeAlias( desc, size );
 }
 
 /*
@@ -329,9 +341,9 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 } /* InitFlatAddrSpace */
 
 /*
- * DPMIGet32 - get a 32-bit segment
+ * _DPMIGet32 - get a 32-bit segment
  */
-WORD DPMIGet32( dpmi_mem_block _FAR *adata, DWORD len )
+WORD _DPMIGet32( dpmi_mem_block _FAR *adata, DWORD len )
 {
     int         rc;
 
@@ -353,19 +365,19 @@ WORD DPMIGet32( dpmi_mem_block _FAR *adata, DWORD len )
     }
     return( 0 );
 
-} /* DPMIGet32 */
+} /* _DPMIGet32 */
 
 /*
- * DPMIFree32 - free a 32-bit handle
+ * _DPMIFree32 - free a 32-bit handle
  */
-void DPMIFree32( DWORD handle )
+void _DPMIFree32( DWORD handle )
 {
     DPMIFreeLDTDescriptor( DataSelector );
     DPMIFreeLDTDescriptor( StackSelector );
     DPMIFreeLDTDescriptor( CodeEntry.seg );
     DPMIFreeMemoryBlock( handle );
 
-} /* DPMIFree32 */
+} /* _DPMIFree32 */
 
 /*
  * __DPMIAlloc - allocate a new block of memory
@@ -376,7 +388,7 @@ unsigned long __pascal __far __DPMIAlloc( unsigned long size )
     memblk          *p;
 
     for( ;; ) {
-        if( DPMIGet32( &adata, size ) ) {
+        if( _DPMIGet32( &adata, size ) ) {
             adata.linear = DataSelectorBase;        // cause NULL to be returned
             break;
         }

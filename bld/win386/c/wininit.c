@@ -274,7 +274,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
     tried_global_compact = FALSE;
     save_maxmem = maxmem;
-    while( (i = DPMIGet32( &adata, maxmem )) != 0 ) {
+    while( (i = _DPMIGet32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
                 return( Fini( 3,
@@ -329,14 +329,14 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
     currsize = size - file_header_size;
     _TinySeek( handle, exelen + file_header_size, TIO_SEEK_START );
-    i = DPMIGetAliases( CodeLoadAddr, (LPDWORD) &aliasptr, 0 );
+    i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
         return( Fini( 3,(char _FAR *)"Error ",
                 dwordToStr( i ),
                 (char _FAR *)" getting alias for read" ) );
     }
     dataptr = aliasptr;
-    sel = ((DWORD) dataptr) >> 16;
+    sel = ((DWORD)dataptr) >> 16;
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
 
@@ -449,7 +449,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
         dataptr->gluertns[j].seg =  (WORD) FP_SEG( Glue[j].rtn );
         dataptr->gluertns[j].off = (DWORD) FP_OFF( Glue[j].rtn );
     }
-    DPMIFreeAlias( sel );
+    _DPMIFreeAlias( sel );
 
     /*
      * check for FPU and WGod
@@ -524,7 +524,7 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
-        DPMIFree32( DataHandle );
+        _DPMIFree32( DataHandle );
     }
 
     /*
