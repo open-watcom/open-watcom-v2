@@ -1253,10 +1253,10 @@ static vi_rc setWDimension( const char *data )
     if( x >= EditVars.WindMaxWidth || y >= EditVars.WindMaxHeight ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
-    wInfo->x1 = x1;
-    wInfo->y1 = y1;
-    wInfo->x2 = x2;
-    wInfo->y2 = y2;
+    wInfo->area.x1 = x1;
+    wInfo->area.y1 = y1;
+    wInfo->area.x2 = x2;
+    wInfo->area.y2 = y2;
     return( ERR_NO_ERR );
 
 } /* setWDimension */

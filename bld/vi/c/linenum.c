@@ -44,7 +44,7 @@ vi_rc LineNumbersSetup( void )
     vi_rc       rc;
 
     if( EditFlags.LineNumbers ) {
-        if( editw_info.x2 - editw_info.x1 < EditVars.LineNumWinWidth ) {
+        if( editw_info.area.x2 - editw_info.area.x1 < EditVars.LineNumWinWidth ) {
             return( ERR_CANNOT_OPEN_LINENUM_WIND );
         }
         if( !linenumw_info.has_border ) {
@@ -55,22 +55,22 @@ vi_rc LineNumbersSetup( void )
         memcpy( &wi, &linenumw_info, sizeof( window_info ) );
         x1 = WindowAuxInfo( current_window_id, WIND_INFO_X1 );
         x2 = WindowAuxInfo( current_window_id, WIND_INFO_X2 );
-        wi.y1 = WindowAuxInfo( current_window_id, WIND_INFO_Y1 );
-        wi.y2 = WindowAuxInfo( current_window_id, WIND_INFO_Y2 );
+        wi.area.y1 = WindowAuxInfo( current_window_id, WIND_INFO_Y1 );
+        wi.area.y2 = WindowAuxInfo( current_window_id, WIND_INFO_Y2 );
         if( !EditFlags.LineNumsOnRight ) {
             rc = ResizeWindowRelative( current_window_id, EditVars.LineNumWinWidth, 0, 0, 0, false );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            wi.x1 = x1;
-            wi.x2 = x1 + EditVars.LineNumWinWidth - 1 - j;
+            wi.area.x1 = x1;
+            wi.area.x2 = x1 + EditVars.LineNumWinWidth - 1 - j;
         } else {
             rc = ResizeWindowRelative( current_window_id, 0, 0, -EditVars.LineNumWinWidth, 0, false );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            wi.x1 = x2 - EditVars.LineNumWinWidth + 1;
-            wi.x2 = x2 - j;
+            wi.area.x1 = x2 - EditVars.LineNumWinWidth + 1;
+            wi.area.x2 = x2 - j;
         }
         rc = NewWindow2( &curr_num_window_id, &wi );
         if( rc != ERR_NO_ERR ) {
@@ -78,7 +78,7 @@ vi_rc LineNumbersSetup( void )
         }
     } else {
         CloseAWindow( curr_num_window_id );
-        rc = ResizeWindow( current_window_id, editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2, false );
+        rc = ResizeWindow( current_window_id, editw_info.area.x1, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }

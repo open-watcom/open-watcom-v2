@@ -569,10 +569,10 @@ vi_rc InitMenu( void )
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
     }
-    menubarw_info.y1 = 0;
-    menubarw_info.y2 = 0;
-    menubarw_info.x1 = 0;
-    menubarw_info.x2 = EditVars.WindMaxWidth - 1;
+    menubarw_info.area.y1 = 0;
+    menubarw_info.area.y2 = 0;
+    menubarw_info.area.x1 = 0;
+    menubarw_info.area.x2 = EditVars.WindMaxWidth - 1;
     rc = NewWindow2( &menu_window_id, &menubarw_info );
     if( rc != ERR_NO_ERR ) {
         EditFlags.Menus = false;
@@ -757,10 +757,10 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
                 x1 -= (diff + xwid);
             }
         }
-        menuw_info.x1 = x1;
-        menuw_info.x2 = x2;
-        menuw_info.y1 = y1;
-        menuw_info.y2 = y2;
+        menuw_info.area.x1 = x1;
+        menuw_info.area.x2 = x2;
+        menuw_info.area.y1 = y1;
+        menuw_info.area.y2 = y2;
 
         /*
          * go get a selected item from the menu

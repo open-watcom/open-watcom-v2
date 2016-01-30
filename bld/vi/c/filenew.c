@@ -105,7 +105,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
-        height = editw_info.y2 - editw_info.y1 + 1;
+        height = editw_info.area.y2 - editw_info.area.y1 + 1;
 
         CurrentFile = FileAlloc( name );
         rc = OpenFcbData( CurrentFile );

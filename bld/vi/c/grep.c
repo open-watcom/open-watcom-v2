@@ -440,8 +440,8 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * create info. window
      */
-    rc = NewWindow( &wid, dirw_info.x1, dirw_info.y1 + 4, dirw_info.x2,
-        dirw_info.y1 + 6, true, dirw_info.border_color1, dirw_info.border_color2,
+    rc = NewWindow( &wid, dirw_info.area.x1, dirw_info.area.y1 + 4, dirw_info.area.x2,
+        dirw_info.area.y1 + 6, true, dirw_info.border_color1, dirw_info.border_color2,
         &dirw_info.text_style );
     if( rc != ERR_NO_ERR ) {
         MemFree( list );
@@ -462,14 +462,14 @@ static vi_rc doGREP( const char *dirlist )
          * define display window dimensions
          */
         memcpy( &tw, &dirw_info, sizeof( window_info ) );
-        tw.x1 = 14;
-        tw.x2 = EditVars.WindMaxWidth - 2;
-        i = tw.y2 - tw.y1 + 1;
+        tw.area.x1 = 14;
+        tw.area.x2 = EditVars.WindMaxWidth - 2;
+        i = tw.area.y2 - tw.area.y1 + 1;
         if( tw.has_border ) {
             i -= 2;
         }
         if( clist < i ) {
-            tw.y2 -= ( i - clist );
+            tw.area.y2 -= ( i - clist );
         }
         show_lineno = ( clist > i );
 
@@ -477,8 +477,8 @@ static vi_rc doGREP( const char *dirlist )
          * build options window
          */
         memcpy( &wi, &extraw_info, sizeof( window_info ) );
-        wi.x1 = 0;
-        wi.x2 = 13;
+        wi.area.x1 = 0;
+        wi.area.x2 = 13;
         rc = DisplayExtraInfo( &wi, &owid, EditOpts, NumEditOpts );
         if( rc != ERR_NO_ERR ) {
             return( rc );

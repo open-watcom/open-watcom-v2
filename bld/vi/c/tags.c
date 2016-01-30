@@ -127,14 +127,14 @@ static int PickATag( int clist, char **list, const char *tagname )
     char        title[MAX_STR];
 
     memcpy( &tw, &dirw_info, sizeof( window_info ) );
-    tw.x1 = 12;
-    tw.x2 = EditVars.WindMaxWidth - 12;
-    i = tw.y2 - tw.y1 + 1;
+    tw.area.x1 = 12;
+    tw.area.x2 = EditVars.WindMaxWidth - 12;
+    i = tw.area.y2 - tw.area.y1 + 1;
     if( tw.has_border ) {
         i -= 2;
     }
     if( clist < i ) {
-        tw.y2 -= i - clist;
+        tw.area.y2 -= i - clist;
     }
     show_lineno = ( clist > i );
     MySprintf( title, "Pick A File For Tag \"%s\"", tagname );

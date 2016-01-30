@@ -357,7 +357,7 @@ typedef struct {
     vi_color    border_color1, border_color2;
     type_style  text_style;
     type_style  hilight_style;
-    short       x1, y1, x2, y2;
+    winarea     area;
     bool        has_border;
 } window_info;
 

@@ -458,7 +458,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
      */
     cln = sfd->cln;
     endline = sfd->f->fcbs.tail->end_line;
-    farx = sfd->wi->x2;
+    farx = sfd->wi->area.x2;
     if( sfd->show_lineno ) {
         farx++;
     }
@@ -499,7 +499,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( redraw ) {
             if( sfd->show_lineno ) {
                 MySprintf(tmp, "%l/%l", cln, endline );
-                i = sfd->wi->x2 - sfd->wi->x1;
+                i = sfd->wi->area.x2 - sfd->wi->area.x1;
                 WindowBorderData( cwid, tmp, i - strlen( tmp ) );
                 drawbord = true;
             }

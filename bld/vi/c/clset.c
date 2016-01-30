@@ -1162,17 +1162,17 @@ vi_rc Set( const char *name )
         }
   #ifndef __WIN__
         tc = getSetInfo( &vals, &list, &longest );
-        tmp = setw_info.y2;
-        i = setw_info.y2 - setw_info.y1 + 1;
+        tmp = setw_info.area.y2;
+        i = setw_info.area.y2 - setw_info.area.y1 + 1;
         if( setw_info.has_border ) {
             i -= 2;
         }
         if( tc < i ) {
-            setw_info.y2 -= (i - tc);
+            setw_info.area.y2 -= (i - tc);
         }
         rc = SelectItemAndValue( &setw_info, "Settings", list,
                           tc, SettingSelected, 1, vals, longest + 3 );
-        setw_info.y2 = tmp;
+        setw_info.area.y2 = tmp;
         MemFreeList( tc, vals );
         MemFreeList( tc, list );
         ReDisplayScreen();

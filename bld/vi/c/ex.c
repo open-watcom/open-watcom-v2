@@ -54,8 +54,8 @@ vi_rc EnterExMode( void )
         return( ERR_NO_ERR );
     }
     i = EditVars.WindMaxHeight - 1;
-    exwInfo.y1 = exwInfo.y2 = i;
-    exwInfo.x2 = EditVars.WindMaxWidth - 1;
+    exwInfo.area.y1 = exwInfo.area.y2 = i;
+    exwInfo.area.x2 = EditVars.WindMaxWidth - 1;
     SetPosToMessageLine();
     EditFlags.ExMode = true;
     EditFlags.LineDisplay = true;

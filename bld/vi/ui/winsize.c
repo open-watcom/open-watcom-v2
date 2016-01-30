@@ -152,12 +152,12 @@ vi_rc MaximizeCurrentWindow( void )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeCurrentWindow( editw_info.x1, editw_info.y1, editw_info.x2 - EditVars.LineNumWinWidth, editw_info.y2 );
+            rc = ResizeCurrentWindow( editw_info.area.x1, editw_info.area.y1, editw_info.area.x2 - EditVars.LineNumWinWidth, editw_info.area.y2 );
         } else {
-            rc = ResizeCurrentWindow( editw_info.x1 + EditVars.LineNumWinWidth, editw_info.y1, editw_info.x2, editw_info.y2 );
+            rc = ResizeCurrentWindow( editw_info.area.x1 + EditVars.LineNumWinWidth, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2 );
         }
     } else {
-        rc = ResizeCurrentWindow( editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2 );
+        rc = ResizeCurrentWindow( editw_info.area.x1, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2 );
     }
     return( rc );
 

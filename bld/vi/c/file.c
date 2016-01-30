@@ -355,7 +355,7 @@ vi_rc DisplayFileStatus( void )
         Message1( "No file currently loaded" );
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }
-    free_len = messagew_info.x2 - messagew_info.x1;
+    free_len = messagew_info.area.x2 - messagew_info.area.x1;
     if( free_len > MAX_STR ) {
         free_len = MAX_STR;
     }
@@ -368,7 +368,7 @@ vi_rc DisplayFileStatus( void )
         strcat( data, st );
     } else {
         // go to short version
-        free_len = messagew_info.x2 - messagew_info.x1;
+        free_len = messagew_info.area.x2 - messagew_info.area.x1;
         if( free_len > MAX_STR ) {
             free_len = MAX_STR;
         }

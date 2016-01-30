@@ -59,7 +59,7 @@ vi_rc NewMessageWindow( void )
  */
 vi_rc NewWindow2( window_id *wid, window_info *wi )
 {
-    return( NewWindow( wid, wi->x1, wi->y1, wi->x2, wi->y2,
+    return( NewWindow( wid, wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2,
                        wi->has_border, wi->border_color1,
                        wi->border_color2, &wi->text_style ) );
 
@@ -212,7 +212,7 @@ vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, char _NEAR * _NEAR *dat
     int     j;
     vi_rc   rc;
 
-    wi->y2 = wi->y1 + numopts + 1;
+    wi->area.y2 = wi->area.y1 + numopts + 1;
 
     rc = NewWindow2( wid, wi );
     if( rc != ERR_NO_ERR ) {
@@ -255,38 +255,38 @@ void SetWindowSizes( void )
     VarAddGlobalLong( "SH", EditVars.WindMaxHeight );
     EditVars.SpinX = EditVars.WindMaxWidth - 15;
     EditVars.ClockX = EditVars.WindMaxWidth - 9;
-    filecw_info.x2 = EditVars.WindMaxWidth - 5;
-    filecw_info.y2 = EditVars.WindMaxHeight - 8;
-    repcntw_info.y1 = EditVars.WindMaxHeight - 5;
-    repcntw_info.y2 = EditVars.WindMaxHeight - 3;
+    filecw_info.area.x2 = EditVars.WindMaxWidth - 5;
+    filecw_info.area.y2 = EditVars.WindMaxHeight - 8;
+    repcntw_info.area.y1 = EditVars.WindMaxHeight - 5;
+    repcntw_info.area.y2 = EditVars.WindMaxHeight - 3;
 #ifdef __WIN__
-    editw_info.x2 = EditVars.WindMaxWidth - 1;
-    editw_info.y2 = EditVars.WindMaxHeight - 3;
-    cmdlinew_info.x1 = 2;
-    cmdlinew_info.x2 = EditVars.WindMaxWidth - 3;
-    cmdlinew_info.y1 = EditVars.WindMaxHeight - 7;
-    cmdlinew_info.y2 = EditVars.WindMaxHeight - 5;
-    messagew_info.x2 = EditVars.WindMaxWidth - 1;
-    messagew_info.y1 = EditVars.WindMaxHeight - 2;
-    messagew_info.y2 = EditVars.WindMaxHeight - 1;
+    editw_info.area.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.area.y2 = EditVars.WindMaxHeight - 3;
+    cmdlinew_info.area.x1 = 2;
+    cmdlinew_info.area.x2 = EditVars.WindMaxWidth - 3;
+    cmdlinew_info.area.y1 = EditVars.WindMaxHeight - 7;
+    cmdlinew_info.area.y2 = EditVars.WindMaxHeight - 5;
+    messagew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.area.y1 = EditVars.WindMaxHeight - 2;
+    messagew_info.area.y2 = EditVars.WindMaxHeight - 1;
 #else
-    editw_info.x2 = EditVars.WindMaxWidth - 1;
-    editw_info.y2 = EditVars.WindMaxHeight - 2;
-    cmdlinew_info.x1 = 0;
-    cmdlinew_info.x2 = EditVars.WindMaxWidth - 1;
-    cmdlinew_info.y1 = EditVars.WindMaxHeight - 1;
-    cmdlinew_info.y2 = EditVars.WindMaxHeight - 1;
-    messagew_info.x2 = EditVars.WindMaxWidth - 1;
-    messagew_info.y1 = EditVars.WindMaxHeight - 1;
-    messagew_info.y2 = EditVars.WindMaxHeight - 1;
+    editw_info.area.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.area.y2 = EditVars.WindMaxHeight - 2;
+    cmdlinew_info.area.x1 = 0;
+    cmdlinew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    cmdlinew_info.area.y1 = EditVars.WindMaxHeight - 1;
+    cmdlinew_info.area.y2 = EditVars.WindMaxHeight - 1;
+    messagew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.area.y1 = EditVars.WindMaxHeight - 1;
+    messagew_info.area.y2 = EditVars.WindMaxHeight - 1;
 #endif
-    dirw_info.x2 = EditVars.WindMaxWidth - 12;
-    dirw_info.y2 = EditVars.WindMaxHeight - 7;
-    setw_info.y2 = EditVars.WindMaxHeight - 4;
-    filelistw_info.x2 = EditVars.WindMaxWidth - 2;
-    filelistw_info.y2 = EditVars.WindMaxHeight - 7;
-    statusw_info.y1 = EditVars.WindMaxHeight - 2;
-    statusw_info.y2 = EditVars.WindMaxHeight - 1;
+    dirw_info.area.x2 = EditVars.WindMaxWidth - 12;
+    dirw_info.area.y2 = EditVars.WindMaxHeight - 7;
+    setw_info.area.y2 = EditVars.WindMaxHeight - 4;
+    filelistw_info.area.x2 = EditVars.WindMaxWidth - 2;
+    filelistw_info.area.y2 = EditVars.WindMaxHeight - 7;
+    statusw_info.area.y1 = EditVars.WindMaxHeight - 2;
+    statusw_info.area.y2 = EditVars.WindMaxHeight - 1;
 
 } /* SetWindSizes */
 

@@ -362,8 +362,8 @@ vi_rc EditFileFromList( void )
      * set up options for file list
      */
     memcpy( &wi, &extraw_info, sizeof( window_info ) );
-    wi.x1 = 2;
-    wi.x2 = 19;
+    wi.area.x1 = 2;
+    wi.area.x2 = 19;
     rc = DisplayExtraInfo( &wi, &wid, fileOpts, NUM_OPTS );
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -392,13 +392,13 @@ vi_rc EditFileFromList( void )
             MySprintf( list[j], "%c %s", modchar, cinfo->CurrentFile->name );
         }
         fcnt = j;
-        tmp = filelistw_info.y2;
-        i = filelistw_info.y2 - filelistw_info.y1 + 1;
+        tmp = filelistw_info.area.y2;
+        i = filelistw_info.area.y2 - filelistw_info.area.y1 + 1;
         if( filelistw_info.has_border ) {
             i -= 2;
         }
         if( j < i ) {
-            filelistw_info.y2 -= ( i - j );
+            filelistw_info.area.y2 -= ( i - j );
         }
         show_lineno = true;
 
@@ -448,7 +448,7 @@ vi_rc EditFileFromList( void )
             }
         }
 
-        filelistw_info.y2 = tmp;
+        filelistw_info.area.y2 = tmp;
         MemFreeList( fcnt, list );
 
     }
