@@ -232,21 +232,22 @@ void DPMIFreeHugeAlias( DWORD desc, DWORD size )
 /*
  * __DPMI fns are the ones called by the 32-bit application
  */
-WORD FAR PASCAL __DPMIGetAlias( DWORD offset, DWORD __far *res )
+unsigned short __pascal __far __DPMIGetAlias( unsigned long offset, unsigned long __far *res )
 {
     return( DPMIGetAliases( offset, res, 1 ) );
 }
-void PASCAL FAR __DPMIFreeAlias( DWORD desc )
+
+void __pascal __far __DPMIFreeAlias( unsigned long desc )
 {
-    DPMIFreeAlias( desc >> 16 );
+    DPMIFreeAlias( desc );
 }
 
-WORD FAR PASCAL __DPMIGetHugeAlias( DWORD offset, DWORD __far *res, DWORD size )
+unsigned short __pascal __far __DPMIGetHugeAlias( unsigned long offset, unsigned long __far *res, unsigned long size )
 {
     return( DPMIGetHugeAlias( offset, res, size ) );
 }
 
-void PASCAL FAR __DPMIFreeHugeAlias( DWORD desc, DWORD size )
+void __pascal __far __DPMIFreeHugeAlias( unsigned long desc, unsigned long size )
 {
     DPMIFreeHugeAlias( desc, size );
 }
@@ -369,7 +370,7 @@ void DPMIFree32( DWORD handle )
 /*
  * __DPMIAlloc - allocate a new block of memory
  */
-DWORD FAR PASCAL __DPMIAlloc( DWORD size )
+unsigned long __pascal __far __DPMIAlloc( unsigned long size )
 {
     dpmi_mem_block  adata;
     memblk          *p;
@@ -418,7 +419,7 @@ DWORD FAR PASCAL __DPMIAlloc( DWORD size )
 /*
  * __DPMIFree - free a block of memory allocated by __DPMIAlloc
  */
-WORD FAR PASCAL __DPMIFree( DWORD addr )
+unsigned short __pascal __far __DPMIFree( unsigned long addr )
 {
     memblk      *p;
     memblk      *prev;

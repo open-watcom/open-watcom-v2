@@ -105,7 +105,7 @@ struct wstart_vars {
     addr_48     _DLLEntryAddr;
     addr_48     _WEPAddr;
     void        (FAR *_16BitCallBackAddr)();
-    addr_48     gluertns[5];
+    addr_48     gluertns[9];
 };
 #include "poppck.h"
 
@@ -274,9 +274,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
     tried_global_compact = FALSE;
     save_maxmem = maxmem;
-    for(;;) {
-        i = DPMIGet32( &adata, maxmem );
-        if( i == 0 )  break;
+    while( (i = DPMIGet32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
                 return( Fini( 3,
