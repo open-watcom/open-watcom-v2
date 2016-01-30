@@ -255,7 +255,7 @@ void PASCAL FAR __DPMIFreeHugeAlias( DWORD desc, DWORD size )
 /*
  * setLimitAndAddr - set the limit and address of a 32-bit selector
  */
-void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
+static void setLimitAndAddr( WORD sel, DWORD addr, DWORD len, WORD type )
 {
 
     DPMISetSegmentBaseAddress( sel, addr );
