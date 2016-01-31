@@ -34,11 +34,11 @@
 #define INCL_BASE
 #include <os2.h>
 
-static bool mouseHasTwoButtons = false;
-static HMOU mouseHandle;
-static int  lastStatus;
-static int  lastRow;
-static int  lastCol;
+static bool     mouseHasTwoButtons = false;
+static HMOU     mouseHandle;
+static int      lastStatus;
+static windim   lastRow;
+static windim   lastCol;
 
 /*
  * SetMouseSpeed - set mouse movement speed
@@ -52,7 +52,7 @@ void SetMouseSpeed( int speed )
 /*
  * SetMousePosition - set the mouse position
  */
-void SetMousePosition( int row, int col )
+void SetMousePosition( windim row, windim col )
 {
     lastRow = MouseRow = row;
     lastCol = MouseCol = col;
@@ -62,7 +62,7 @@ void SetMousePosition( int row, int col )
 /*
  * PollMouse - poll the mouse for it's state
  */
-void PollMouse( int *status, int *row, int *col )
+void PollMouse( int *status, windim *row, windim *col )
 {
     struct      _MOUEVENTINFO   meinfo;
     struct      _MOUQUEINFO     mqinfo;
@@ -87,8 +87,8 @@ void PollMouse( int *status, int *row, int *col )
                         lastStatus |= MOUSE_MIDDLE_BUTTON_DOWN;
                     }
                 }
-                lastRow  = meinfo.row;
-                lastCol  = meinfo.col;
+                lastRow = meinfo.row;
+                lastCol = meinfo.col;
             }
         }
     }

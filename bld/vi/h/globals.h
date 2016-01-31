@@ -54,8 +54,8 @@ extern unsigned short   MouseRow;
 extern unsigned short   MouseCol;
 extern unsigned short   MouseStatus;
 #else
-extern int              MouseRow;
-extern int              MouseCol;
+extern windim           MouseRow;
+extern windim           MouseCol;
 extern int              MouseStatus;
 #endif
 extern vi_mouse_event   LastMouseEvent;

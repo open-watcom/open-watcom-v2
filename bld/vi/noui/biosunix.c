@@ -41,4 +41,4 @@ unsigned short BIOSGetCursor( unsigned char page ) { return 0; }
 int KeyboardInit( void ) { return 0; }
 unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return VI_KEY( NULL ); }
 bool BIOSKeyboardHit( void ) { return 0; }
-void MyVioShowBuf( unsigned offset, unsigned nchars ) {}
+void MyVioShowBuf( size_t offset, unsigned nchars ) {}

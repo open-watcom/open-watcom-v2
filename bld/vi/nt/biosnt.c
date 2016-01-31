@@ -100,8 +100,8 @@ static const map events[] = {
 extern COORD    BSize;
 extern int      PageCnt;
 extern int      CurrMouseStatus;
-extern int      CurrMouseCol;
-extern int      CurrMouseRow;
+extern windim   CurrMouseCol;
+extern windim   CurrMouseRow;
 
 void BIOSGetColorPalette( void *a )
 {
@@ -320,11 +320,11 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     SMALL_RECT  sr;
     COORD       bcoord;
-    unsigned    oend;
+    size_t      oend;
 
     if( PageCnt > 0 || nchars == 0 ) {
         return;

@@ -47,7 +47,7 @@ void SetMouseSpeed( int speed )
 /*
  * SetMousePosition - set the mouse position
  */
-void SetMousePosition( int row, int col )
+void SetMousePosition( windim row, windim col )
 {
     MouseRow = row;
     MouseCol = col;
@@ -58,7 +58,7 @@ void SetMousePosition( int row, int col )
 /*
  * PollMouse - poll the mouse for it's state
  */
-void PollMouse( int *status, int *row, int *col )
+void PollMouse( int *status, windim *row, windim *col )
 {
     mouse_status        ms;
 

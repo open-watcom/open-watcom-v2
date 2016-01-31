@@ -211,7 +211,7 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned nchars )
+void MyVioShowBuf( size_t offset, unsigned nchars )
 {
     BIOSUpdateScreen( offset, nchars );
 }

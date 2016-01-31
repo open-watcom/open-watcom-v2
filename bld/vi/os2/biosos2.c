@@ -182,7 +182,7 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     if( PageCnt > 0 ) {
         return;

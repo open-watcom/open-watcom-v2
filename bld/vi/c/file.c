@@ -317,7 +317,7 @@ static int getFileInfoString( char *st, bool is_small )
     return( strlen( st ) );
 }
 
-static void make_short_name( char *name, int len, char *buffer )
+static void make_short_name( char *name, size_t len, char *buffer )
 {
     char    *start;
     char    *end;
@@ -348,7 +348,7 @@ static void make_short_name( char *name, int len, char *buffer )
 vi_rc DisplayFileStatus( void )
 {
     char        st[MAX_STR], data[MAX_STR];
-    int         free_len;
+    size_t      free_len;
     long        pc;
 
     if( CurrentFile == NULL ) {

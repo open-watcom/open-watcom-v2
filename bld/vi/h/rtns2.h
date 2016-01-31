@@ -34,7 +34,7 @@
 extern void         PositionScrollThumb( void );
 
 /* biosos2.c */
-extern void         MyVioShowBuf( unsigned, unsigned );
+extern void         MyVioShowBuf( size_t, unsigned );
 
 /* biosqnx.c */
 extern vi_rc        KeyboardInit( void );

@@ -68,7 +68,8 @@ typedef struct char_info {
 typedef struct window {
     vi_color    border_color1, border_color2;
     vi_color    text_color, background_color;
-    short       x1, y1, x2, y2, width, height;
+    winarea     area;
+    windim      width, height;
     char_info   *text;
     window_id   *overlap;
     window_id   *whooverlapping;
@@ -151,7 +152,6 @@ extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *,
 extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
 
 /* win/stubs.c */
-extern void     RedrawMouse( int p1, int p2 );
 extern bool     DisplayMouse( bool p1 );
 extern void     TurnOffCapsLock( void );
 extern vi_rc    HandleMouseEvent( void );
@@ -164,8 +164,8 @@ extern void     DrawBorder( window_id wid );
 extern void     PushMouseEventHandler( mouse_callback cb );
 extern void     PopMouseEventHandler( void );
 extern void     WindowBorderData( window_id wid, const char *c, int x );
-extern vi_rc    ResizeWindowRelative( window_id wid, int p1, int p2, int p3, int p4, bool flags );
-extern vi_rc    ResizeWindow( window_id wid, int p1, int p2, int p3, int p4, bool flags );
+extern vi_rc    ResizeWindowRelative( window_id wid, windim p1, windim p2, windim p3, windim p4, bool flags );
+extern vi_rc    ResizeWindow( window_id wid, windim p1, windim p2, windim p3, windim p4, bool flags );
 extern void     RestoreInterrupts( void );
 extern void     WindowSwapFileClose( void );
 extern void     FiniMouse( void );
@@ -183,7 +183,7 @@ extern void     InitMouse( void );
 extern void     SetBorderGadgets( window_id wid, bool how );
 extern vi_rc    GetNewValueDialog( char * );
 extern void     DisplayCrossLineInWindow( window_id wid, int line );
-extern int      SetCharInWindowWithColor( window_id wid, int line, int col, char text, type_style *style );
+extern int      SetCharInWindowWithColor( window_id wid, windim line, windim col, char text, type_style *style );
 extern void     DisplayLineWithHilite( window_id wid, int line, char *text, int start, int end, int ignore );
 extern void     SetPosToMessageLine( void );
 extern void     HideCursor( void );
@@ -246,7 +246,7 @@ extern vi_rc    DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, line
 extern void     DisplayCrossLineInWindow( window_id, int );
 extern void     HiliteAColumnRange( linenum, int, int );
 extern void     ColorAColumnRange( int, int, int, type_style * );
-extern vi_rc    SetCharInWindowWithColor( window_id, int, int, char, type_style * );
+extern vi_rc    SetCharInWindowWithColor( window_id, windim, windim, char, type_style * );
 extern vi_rc    DisplayLineInWindow( window_id, int, char * );
 
 /* ui/wininit.c */
@@ -255,11 +255,11 @@ extern void     FinishWindows( void );
 
 /* winnew.c */
 extern vi_rc        ResetWindow( window_id * );
-extern bool         ValidDimension( int, int, int, int, bool );
+extern bool         ValidDimension( windim, windim, windim, windim, bool );
 extern window_id    GimmeWindow( void );
-extern window       *AllocWindow( window_id, int, int, int, int, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
+extern window       *AllocWindow( window_id, windim, windim, windim, windim, bool, bool, bool, vi_color, vi_color, vi_color, vi_color );
 extern void         FreeWindow( window * );
-extern vi_rc        NewWindow( window_id *, int, int, int, int, bool, vi_color, vi_color, type_style * );
+extern vi_rc        NewWindow( window_id *, windim, windim, windim, windim, bool, vi_color, vi_color, type_style * );
 extern vi_rc        NewFullWindow( window_id *, bool, vi_color, vi_color, type_style * );
 extern void         CloseAWindow( window_id );
 
@@ -273,14 +273,14 @@ extern void         MarkOverlap( window_id );
 extern void         RestoreOverlap( window_id, bool );
 extern bool         TestOverlap( window_id );
 extern bool         WindowIsVisible( window_id );
-extern window_id    WhoIsUnder( int *, int * );
+extern window_id    WhoIsUnder( windim *, windim * );
 
 /* winscrl.c */
 extern void     ShiftWindowUpDown( window_id, int );
 
 /* winsize.c */
-extern vi_rc    ResizeWindow( window_id, int, int, int, int, bool );
-extern vi_rc    ResizeWindowRelative( window_id, int, int, int, int, bool );
+extern vi_rc    ResizeWindow( window_id, windim, windim, windim, windim, bool );
+extern vi_rc    ResizeWindowRelative( window_id, windim, windim, windim, windim, bool );
 extern vi_rc    MinimizeCurrentWindow( void );
 extern vi_rc    MaximizeCurrentWindow( void );
 

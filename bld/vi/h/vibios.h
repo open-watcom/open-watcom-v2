@@ -43,7 +43,7 @@ extern void             BIOSNewCursor( unsigned char top, unsigned char bottom )
 extern char             BIOSGetRowCount( void );
 extern unsigned long    BIOSGetVideoMode( void );
 // screen update functions
-extern void             BIOSUpdateScreen( unsigned, unsigned );
+extern void             BIOSUpdateScreen( size_t, unsigned );
 // keyboard functions
 extern int              BIOSKeyboardInit( void );
 extern unsigned         BIOSTestKeyboard( void );

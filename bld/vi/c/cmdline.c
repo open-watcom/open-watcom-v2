@@ -1200,11 +1200,10 @@ static vi_rc setWHilite( const char *data )
  */
 static vi_rc setWDimension( const char *data )
 {
-    int         x1, y1, x2, y2;
+    long        x1, y1, x2, y2;
     char        token[MAX_STR];
     jmp_buf     jmpaddr;
     int         i;
-    int         x, y;
 
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
@@ -1245,18 +1244,16 @@ static vi_rc setWDimension( const char *data )
     if( x1 < 0 || y1 < 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
-    x = x2 - x1;
-    y = y2 - y1;
-    if( x < 0 || y < 0 ) {
+    if( x2 < x1 || y2 < y1 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
-    if( x >= EditVars.WindMaxWidth || y >= EditVars.WindMaxHeight ) {
+    if( x2 >= x1 + EditVars.WindMaxWidth || y2 >= y1 + EditVars.WindMaxHeight ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
-    wInfo->area.x1 = x1;
-    wInfo->area.y1 = y1;
-    wInfo->area.x2 = x2;
-    wInfo->area.y2 = y2;
+    wInfo->area.x1 = (windim)x1;
+    wInfo->area.y1 = (windim)y1;
+    wInfo->area.x2 = (windim)x2;
+    wInfo->area.y2 = (windim)y2;
     return( ERR_NO_ERR );
 
 } /* setWDimension */

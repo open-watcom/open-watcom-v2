@@ -183,24 +183,26 @@ static void getExitAttr( void )
  */
 void ScreenInit( void )
 {
-    unsigned long       x;
-    U_INT               y;
+    unsigned_32     mode;
 
-    x = BIOSGetVideoMode();
-    y = (U_INT) x;
-    EditVars.WindMaxWidth = (y >> 8);
-    y &= 0xff;
-    VideoPage = (U_INT) (x >> 24);
+    mode = BIOSGetVideoMode();
+    EditVars.WindMaxWidth = (mode >> 8) & 0xFF;
+    VideoPage = mode >> 24;
 
     /*
      * mode _ get apropos screen ptr
      */
-    if( y == 0x07 ) {
-        EditFlags.Monocolor = true;
-    } else if( y == 0x00 || y == 0x02 ) {
+    switch( (unsigned char)mode ) {
+    case 0x00:
+    case 0x02:
         EditFlags.BlackAndWhite = true;
-    } else {
+        break;
+    case 0x07:
+        EditFlags.Monocolor = true;
+        break;
+    default:
         EditFlags.Color = true;
+        break;
     }
     ScreenPage( 0 );
     EditVars.WindMaxHeight = BIOSGetRowCount() + 1;

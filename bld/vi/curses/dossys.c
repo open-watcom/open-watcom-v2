@@ -117,7 +117,7 @@ void MyBeep( void )
  */
 void ScreenInit( void )
 {
-    int size;
+    size_t size;
 
     CursesWindow = initscr();
     EditVars.WindMaxWidth = COLS;
@@ -279,7 +279,7 @@ void SetCursorBlinkRate( int cbr )
 
 } /* SetCursorBlinkRate */
 
-void MyVioShowBuf( unsigned short offset, unsigned short nchars )
+void MyVioShowBuf( size_t offset, unsigned short nchars )
 {
     int         line, column;
     char_info   _FAR *info;

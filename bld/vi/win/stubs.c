@@ -33,12 +33,13 @@
 #include "vi.h"
 #include <dos.h>
 #include "win.h"
+#include "mouse.h"
 
 #if defined( __WATCOMC__ )
 #pragma off( unreferenced );
 #endif
 
-void RedrawMouse( int p1, int p2 ) { p1=p1;p2=p2;}
+void RedrawMouse( windim p1, windim p2 ) { p1=p1;p2=p2;}
 bool DisplayMouse( bool p1 ) { p1=p1; return( false ); }
 void TurnOffCapsLock( void ) {}
 vi_rc HandleMouseEvent( void ) { return( ERR_NO_ERR ); }
@@ -51,11 +52,11 @@ void DrawBorder( window_id wid ) { wid=wid; }
 void PushMouseEventHandler( mouse_callback cb ) { cb=cb; }
 void PopMouseEventHandler( void ) {}
 void WindowBorderData( window_id wid, const char *c, int x ) { wid=wid;c=c;x=x; }
-vi_rc ResizeWindowRelative( window_id wid, int p1, int p2, int p3, int p4, bool flags ) {
+vi_rc ResizeWindowRelative( window_id wid, windim p1, windim p2, windim p3, windim p4, bool flags ) {
     wid=wid;p1=p1;p2=p2;p3=p3;p4=p4;flags=flags;
     return( ERR_NO_ERR );
 }
-vi_rc ResizeWindow( window_id wid, int p1, int p2, int p3, int p4, bool flags ) {
+vi_rc ResizeWindow( window_id wid, windim p1, windim p2, windim p3, windim p4, bool flags ) {
     wid=wid;p1=p1;p2=p2;p3=p3;p4=p4;flags=flags;
     return( ERR_NO_ERR );
 }
@@ -76,7 +77,7 @@ void InitMouse( void ) {}
 void SetBorderGadgets( window_id wid, bool how ) { wid=wid;how=how; }
 vi_rc GetNewValueDialog( char *value ) { value=value; return( ERR_NO_ERR ); }
 void DisplayCrossLineInWindow( window_id wid, int line ) { wid=wid;line=line; }
-int SetCharInWindowWithColor( window_id wid, int line, int col, char text, type_style *style ) {
+int SetCharInWindowWithColor( window_id wid, windim line, windim col, char text, type_style *style ) {
     wid=wid;line=line;col=col;text=text;style=style;
     return( ERR_NO_ERR );
 }

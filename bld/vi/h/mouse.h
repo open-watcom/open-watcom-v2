@@ -75,20 +75,20 @@ extern vi_rc        HandleMouseEvent( void );
 
 /* mouse.c */
 extern vi_mouse_event GetMouseEvent( void );
-extern void         RedrawMouse( int row, int col );
+extern void         RedrawMouse( windim row, windim col );
 extern bool         DisplayMouse( bool flag );
 
 /* mouseev.c */
-extern window_id    GetMousePosInfo( int *win_x, int *win_y );
+extern window_id    GetMousePosInfo( windim *win_x, windim *win_y );
 extern bool         TestMouseEvent( bool );
 extern void         PushMouseEventHandler( mouse_callback cb );
 extern void         PopMouseEventHandler( void );
 
 /* system dependant, <sys>mouse.c */
 extern void         SetMouseSpeed( int speed );
-extern void         SetMousePosition( int row, int col );
+extern void         SetMousePosition( windim row, windim col );
 extern void         ShowMouse( int on );
-extern void         PollMouse( int *status, int *row, int *col );
+extern void         PollMouse( int *status, windim *row, windim *col );
 extern void         InitMouse( void );
 extern void         FiniMouse( void );
 

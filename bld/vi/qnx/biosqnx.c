@@ -436,7 +436,7 @@ void StopKeyboard( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
