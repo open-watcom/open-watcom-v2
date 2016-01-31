@@ -44,7 +44,7 @@ static void reDisplayWindow( window_id wid )
     char_info           *txt;
     window_id           *over;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 j, i;
 
     if( EditFlags.Quiet ) {
@@ -58,10 +58,10 @@ static void reDisplayWindow( window_id wid )
     AccessWindow( w );
     txt = w->text;
     over = w->overlap;
-    for( j = w->y1; j <= w->y2; j++ ) {
-        oscr = w->x1 + j * EditVars.WindMaxWidth;
+    for( j = w->area.y1; j <= w->area.y2; j++ ) {
+        oscr = w->area.x1 + j * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
-        for( i = w->x1; i <= w->x2; i++ ) {
+        for( i = w->area.x1; i <= w->area.x2; i++ ) {
             if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, *txt );
             }
@@ -193,7 +193,7 @@ void ClearWindow( window_id wid )
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 j, i, shift, addr;
     char_info           what = {0, 0};
 
@@ -214,12 +214,12 @@ void ClearWindow( window_id wid )
         shift = 1;
         addr = w->width + shift;
     }
-    for( j = w->y1 + shift; j <= w->y2 - shift; j++ ) {
-        oscr = w->x1 + shift + j * EditVars.WindMaxWidth;
+    for( j = w->area.y1 + shift; j <= w->area.y2 - shift; j++ ) {
+        oscr = w->area.x1 + shift + j * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
         txt = &(w->text[addr]);
         over = &(w->overlap[addr]);
-        for( i = w->x1 + shift; i <= w->x2 - shift; i++ ) {
+        for( i = w->area.x1 + shift; i <= w->area.x2 - shift; i++ ) {
             WRITE_SCREEN_DATA( *txt++, what );
             if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, what );

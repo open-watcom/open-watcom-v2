@@ -40,9 +40,11 @@ static char_info    *tmpImage;
 /*
  * drawTmpBorder - display border
  */
-static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
+static void drawTmpBorder( int color, windim x1, windim y1, windim x2, windim y2 )
 {
-    int                 i, tl, bl, tr, br, height, width, k;
+    windim              i;
+    size_t              tl, bl, tr, br, k;
+    windim              height, width;
     char_info           what = {0, 0};
 
     height = y2 - y1 + 1;
@@ -96,10 +98,11 @@ static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
 /*
  * swapTmp - exchange border and tmpImage
  */
-static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
-                     int x2, int y2 )
+static void swapTmp( char_info _FAR *src, char_info _FAR *dest, windim x1, windim y1, windim x2, windim y2 )
 {
-    int i, tl, bl, tr, br, height, width, k;
+    windim  i;
+    size_t  tl, bl, tr, br, k;
+    windim  height, width;
 
     height = y2 - y1 + 1;
     width = x2 - x1 + 1;
@@ -149,10 +152,12 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
 {
     vi_key      key;
     bool        done = false;
-    int         x1, x2, y1, y2, nx1, nx2, ny1, ny2;
+    windim      x1, x2, y1, y2;
+    windim      nx1, nx2, ny1, ny2;
     int         mrow = 0;
     int         mcol = 0;
-    int         dx, dy, bclr;
+    windim      dx, dy;
+    int         bclr;
     window      *w;
 
     /*
@@ -167,10 +172,10 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
     *doresize = false;
     w = WINDOW_FROM_ID( wid );
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
-    x1 = w->x1;
-    x2 = w->x2;
-    y1 = w->y1;
-    y2 = w->y2;
+    x1 = w->area.x1;
+    x2 = w->area.x2;
+    y1 = w->area.y1;
+    y2 = w->area.y2;
     if( move ) {
         bclr = EditVars.MoveColor;
     } else {

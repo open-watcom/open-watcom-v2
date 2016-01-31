@@ -49,10 +49,10 @@ int WindowAuxInfo( window_id wid, int type )
 
     rc = 0;
     switch( type ) {
-    case WIND_INFO_X1: rc = w->x1; break;
-    case WIND_INFO_Y1: rc = w->y1; break;
-    case WIND_INFO_X2: rc = w->x2; break;
-    case WIND_INFO_Y2: rc = w->y2; break;
+    case WIND_INFO_X1: rc = w->area.x1; break;
+    case WIND_INFO_Y1: rc = w->area.y1; break;
+    case WIND_INFO_X2: rc = w->area.x2; break;
+    case WIND_INFO_Y2: rc = w->area.y2; break;
     case WIND_INFO_TEXT_LINES: rc = w->text_lines; break;
     case WIND_INFO_TEXT_COLS: rc = w->text_cols; break;
     case WIND_INFO_HEIGHT: rc = w->height; break;

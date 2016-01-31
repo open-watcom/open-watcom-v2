@@ -43,7 +43,7 @@ void DrawVerticalThumb( window *w, char ch )
     int         addr;
     char_info   *txt;
     window_id   *over;
-    unsigned    oscr;
+    size_t      oscr;
 
     if( w->vert_scroll_pos < THUMB_START || EditFlags.Quiet ) {
         return;
@@ -56,7 +56,7 @@ void DrawVerticalThumb( window *w, char ch )
     what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
 
     addr = w->width - 1 + w->vert_scroll_pos * w->width;
-    oscr = (w->x2) + (w->y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
+    oscr = (w->area.x2) + (w->area.y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
 
     WRITE_SCREEN_DATA( txt[addr], what );
     if( BAD_ID( over[addr] ) ) {
@@ -83,7 +83,7 @@ void PositionVerticalScrollThumb( window_id wid, linenum curr, linenum last )
         ReleaseWindow( w );
         return;
     }
-    height = w->y2 - w->y1 - THUMB_START * 2;
+    height = w->area.y2 - w->area.y1 - THUMB_START * 2;
     if( height <= 0 ) {
         newpos = 0;
     } else if( curr == 1 ) {
@@ -118,7 +118,7 @@ vi_rc PositionToNewThumbPosition( window *w, int win_y )
     if( win_y < 0 ) {
         return( ERR_NO_ERR );
     }
-    height = w->y2 - w->y1 - THUMB_START * 2;
+    height = w->area.y2 - w->area.y1 - THUMB_START * 2;
     if( win_y > height ) {
         return( ERR_NO_ERR );
     }

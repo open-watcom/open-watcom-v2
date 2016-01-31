@@ -39,8 +39,8 @@
  */
 static void allocImage( void )
 {
-    int     i;
-    int     size;
+    size_t  i;
+    size_t  size;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
     ScreenImage = MemAlloc( size * sizeof( window_id ) );
@@ -79,7 +79,7 @@ void FinishWindows( void )
     // Close down the windowing system.
 
     if( EditFlags.ZapColors ) {
-        int     j, total;
+        size_t  j, total;
 
         if( !EditFlags.Quiet && Scrn != NULL ) {
             total = EditVars.WindMaxWidth * EditVars.WindMaxHeight;

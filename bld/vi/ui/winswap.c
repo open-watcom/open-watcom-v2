@@ -64,12 +64,12 @@ static vi_rc windowSwapFileOpen( void )
 /*
  * buffSize - compute the size of a i/o buffer for a window
  */
-static long buffSize( void )
+static size_t buffSize( void )
 {
-    long        tmp;
+    size_t      tmp;
 
-    tmp = (long)EditVars.WindMaxWidth * (long)EditVars.WindMaxHeight * 4L;
-    tmp = tmp / 512;
+    tmp = (size_t)EditVars.WindMaxWidth * (size_t)EditVars.WindMaxHeight * 4L;
+    tmp /= 512;
     tmp++;
     tmp *= 512;
     return( tmp );

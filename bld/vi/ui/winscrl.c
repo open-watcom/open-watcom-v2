@@ -44,7 +44,7 @@ void ShiftWindowUpDown( window_id wid, int diff )
     int                 sline, eline, add;
     char_info           *txt_s, *txt_d;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
@@ -77,7 +77,7 @@ void ShiftWindowUpDown( window_id wid, int diff )
     for( ;; ) {
         txt_s = &(w->text[i * w->width + start]);
         txt_d = &(w->text[(i - diff) * w->width + start]);
-        oscr = w->x1 + start + (w->y1 + i - diff) * EditVars.WindMaxWidth;
+        oscr = w->area.x1 + start + (w->area.y1 + i - diff) * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
         for( j = 0; j < w->text_cols; j++ ) {
             WRITE_SCREEN( scr[j], txt_s[j] );

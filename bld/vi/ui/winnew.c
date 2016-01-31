@@ -69,9 +69,9 @@ vi_rc ResetWindow( window_id *wid )
 /*
  * Valid Dimension - see if a window has a valid dim or not
  */
-bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
+bool ValidDimension( windim x1, windim y1, windim x2, windim y2, bool has_border )
 {
-    int lb;
+    windim  lb;
 
     if( !has_border ) {
         lb = 0;
@@ -111,11 +111,13 @@ window_id GimmeWindow( void )
 /*
  * AllocWindow - allocate a new window
  */
-window *AllocWindow( window_id wid, int x1, int y1, int x2, int y2, bool has_border, bool has_gadgets,
+window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool has_border, bool has_gadgets,
                         bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
     window      *tmp;
-    int         width, height, size, i;
+    windim      width, height;
+    int         size;
+    int         i;
 
     width = x2 - x1 + 1;
     height = y2 - y1 + 1;
@@ -128,10 +130,10 @@ window *AllocWindow( window_id wid, int x1, int y1, int x2, int y2, bool has_bor
     tmp->text = MemAlloc( size * sizeof( char_info ) );
     tmp->overlap = MemAlloc( size * sizeof( window_id ) );
     tmp->whooverlapping = MemAlloc( size * sizeof( window_id ) );
-    tmp->x1 = x1;
-    tmp->x2 = x2;
-    tmp->y1 = y1;
-    tmp->y2 = y2;
+    tmp->area.x1 = x1;
+    tmp->area.x2 = x2;
+    tmp->area.y1 = y1;
+    tmp->area.y2 = y2;
     tmp->has_border = has_border;
     tmp->border_color1 = bc1;
     tmp->border_color2 = bc2;
@@ -161,7 +163,7 @@ window *AllocWindow( window_id wid, int x1, int y1, int x2, int y2, bool has_bor
 /*
  * NewWindow - build a new window
  */
-vi_rc NewWindow( window_id *wid, int x1, int y1, int x2, int y2, bool has_border,
+vi_rc NewWindow( window_id *wid, windim x1, windim y1, windim x2, windim y2, bool has_border,
                vi_color bc1, vi_color bc2, type_style *s )
 {
     window_id   new_wid;

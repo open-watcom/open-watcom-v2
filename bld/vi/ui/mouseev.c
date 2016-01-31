@@ -43,7 +43,7 @@ static mouse_hook  *hookHead;
 /*
  * GetMousePosInfo - get position of mouse in window
  */
-window_id GetMousePosInfo( int *win_x, int *win_y )
+window_id GetMousePosInfo( windim *win_x, windim *win_y )
 {
     *win_x = MouseCol;
     *win_y = MouseRow;
@@ -56,7 +56,7 @@ window_id GetMousePosInfo( int *win_x, int *win_y )
  */
 bool TestMouseEvent( bool usemouse )
 {
-    int         win_x, win_y;
+    windim      win_x, win_y;
     window_id   wid;
     bool        rc;
 

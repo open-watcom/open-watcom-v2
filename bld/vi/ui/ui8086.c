@@ -183,8 +183,8 @@ void SetGenericWindowCursor( window_id wid, int l, int c )
 
     w = WINDOW_FROM_ID( wid );
 
-    row = w->y1;
-    col = w->x1;
+    row = w->area.y1;
+    col = w->area.x1;
 
     row += l;
     col += c;

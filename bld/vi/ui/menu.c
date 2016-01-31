@@ -42,7 +42,7 @@
 typedef struct menu_item {
     struct menu_item    *next, *prev;
     hilst               hi;
-    char                slen;
+    unsigned char       slen;
     char                *cmd;
     char                str[1];
 } menu_item;
@@ -57,10 +57,10 @@ typedef struct menu {
     bool            has_file_list   : 1;
     bool            need_hook       : 1;
     bool            has_last_files  : 1;
-    char            maxwidth;
-    char            orig_maxwidth;
+    unsigned char   maxwidth;
+    unsigned char   orig_maxwidth;
     hilst           hi;
-    char            slen;
+    unsigned char   slen;
     char            str[1];
 } menu;
 
@@ -242,7 +242,7 @@ vi_rc StartMenu( const char *data )
     menu        *tmp;
     char        ch;
     int         hioff;
-    int         len;
+    size_t      len;
     bool        new;
     bool        need_hook;
     menu        **predef_menu;
@@ -283,7 +283,7 @@ vi_rc StartMenu( const char *data )
     strcpy( tmp->str, str );
     tmp->hi._char = ch;
     tmp->hi._offs = hioff;
-    tmp->slen = len;
+    tmp->slen = (unsigned char)len;
     tmp->need_hook = need_hook;
     currMenu = tmp;
     return( ERR_NO_ERR );
@@ -352,8 +352,8 @@ vi_rc ViEndMenu( void )
 vi_rc MenuItem( const char *data )
 {
     char        str[MAX_STR];
-    int         len;
-    int         size;
+    size_t      len;
+    size_t      size;
     char        ch;
     menu_item   *tmp;
     int         hioff;
@@ -367,13 +367,13 @@ vi_rc MenuItem( const char *data )
     len = strlen( str );
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
     tmp = MemAlloc( size );
-    tmp->slen = len;
+    tmp->slen = (unsigned char)len;
     tmp->hi._char = ch;
     tmp->hi._offs = hioff;
     strcpy( tmp->str, str );
     tmp->cmd = &(tmp->str[len + 1]);
     strcpy( tmp->cmd, data );
-    if( len > currMenu->maxwidth ) {
+    if( currMenu->maxwidth < len ) {
         currMenu->maxwidth = len;
     }
 
@@ -393,7 +393,8 @@ vi_rc DoItemDelete( const char *data )
     char        mname[MAX_STR];
     char        str[MAX_STR];
     menu_item   *cmi, *dmi;
-    int         i, id, mwid;
+    int         i, id;
+    windim      maxwidth;
 
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
@@ -412,14 +413,14 @@ vi_rc DoItemDelete( const char *data )
         return( ERR_INVALID_MENU );
     }
     i = 0;
-    mwid = 0;
+    maxwidth = 0;
     dmi = NULL;
     for( cmi = cmenu->itemhead; cmi != NULL; cmi = cmi->next ) {
         if( i == id ) {
             dmi = cmi;
         } else {
-            if( cmi->slen > mwid ) {
-                mwid = cmi->slen;
+            if( maxwidth < cmi->slen ) {
+                maxwidth = cmi->slen;
             }
         }
         i++;
@@ -429,7 +430,7 @@ vi_rc DoItemDelete( const char *data )
     }
 
     cmenu->itemcnt--;
-    cmenu->maxwidth = mwid;
+    cmenu->maxwidth = maxwidth;
     DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi );
     MemFree( dmi );
     initMenuList( cmenu );
@@ -680,7 +681,7 @@ static int currentID;
 /*
  * processMenu - process selected menu
  */
-static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
+static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, windim rmaxwidth )
 {
     int         i, ws;
     char        result[80];
@@ -688,14 +689,14 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
     selectitem  si;
     menu        *tmenu;
     menu_item   *cmi;
-    int         x1, y1, x2, y2;
-    int         diff;
-    int         xwid;
+    windim      x1, y1, x2, y2;
+    windim      diff;
+    windim      maxwidth;
     vi_rc       rc;
 
-    xwid = rxwid;
-    if( xwid < 0 ) {
-        xwid = 0;
+    maxwidth = rmaxwidth;
+    if( maxwidth < 0 ) {
+        maxwidth = 0;
     }
 
     for( ;; ) {
@@ -723,10 +724,10 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         y1 = ypos;
         if( menuw_info.has_border ) {
             x2 = x1 + cmenu->maxwidth + 1;
-            y2 = y1 + (int) cmenu->itemcnt + 1;
+            y2 = y1 + (windim)cmenu->itemcnt + 1;
         } else {
             x2 = x1 + cmenu->maxwidth - 1;
-            y2 = y1 + (int) cmenu->itemcnt - 1;
+            y2 = y1 + (windim)cmenu->itemcnt - 1;
         }
 
         /*
@@ -746,15 +747,15 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
                 diff = y2 - y1;
                 y2 = y1;
                 y1 -= diff;
-                if( xwid > 0 || rxwid == -1 ) {
+                if( maxwidth > 0 || rmaxwidth == -1 ) {
                     y1 -= 2;
                     y2 -= 2;
                 }
             }
             if( x2 >= EditVars.WindMaxWidth ) {
                 diff = x2 - x1;
-                x2 = x1 - xwid;
-                x1 -= (diff + xwid);
+                x2 = x1 - maxwidth;
+                x1 -= (diff + maxwidth);
             }
         }
         menuw_info.area.x1 = x1;

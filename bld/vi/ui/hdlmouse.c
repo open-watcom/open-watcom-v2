@@ -43,7 +43,7 @@ static bool dragThumb;
  */
 vi_rc HandleMouseEvent( void )
 {
-    int         win_x, win_y;
+    windim      win_x, win_y;
     window_id   wid;
     info        *cinfo;
     window      *w;

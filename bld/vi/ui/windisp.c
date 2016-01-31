@@ -65,7 +65,7 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     window_id           *over;
     char                *tmp, *otmp;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 addr, start, end, a, spend;
     int                 cnt1, cnt2, startc, spl;
     char_info           blank = {0, 0};
@@ -139,7 +139,7 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     addr = startc + spl * w->width;
     txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
-    oscr = w->x1 + startc + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + startc + (spl + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
 #ifdef __VIO__
     tbytes = cnt1 + cnt2;
@@ -291,7 +291,7 @@ void DisplayCrossLineInWindow( window_id wid, int line )
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 addr, i;
     char_info           what = {0, 0};
 
@@ -318,7 +318,7 @@ void DisplayCrossLineInWindow( window_id wid, int line )
     addr = 1 + (1 + line) * w->width;
     txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
-    oscr = w->x1 + (1 + line + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + (1 + line + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
     what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
     what.cinfo_char = WindowBordersNG[WB_LEFTT];
@@ -331,7 +331,7 @@ void DisplayCrossLineInWindow( window_id wid, int line )
     scr++;
 
     what.cinfo_char = WindowBordersNG[WB_TOPBOTTOM];
-    for( i = w->x1 + 1; i < w->x2; i++ ) {
+    for( i = w->area.x1 + 1; i < w->area.x2; i++ ) {
         WRITE_SCREEN_DATA( *txt++, what );
         if( BAD_ID( *over ) ) {
             WRITE_SCREEN( *scr, what );
@@ -363,7 +363,7 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     window              *w;
     window_id           *over;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     char_info           what = {0, 0};
 #ifdef __VIO__
     unsigned            onscr;
@@ -417,7 +417,7 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     /*
      * initialize
      */
-    oscr = w->x1 + sscol + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + sscol + (spl + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
 #ifdef __VIO__
     onscr = 0;
@@ -516,13 +516,14 @@ void ColorAColumnRange( int row, int scol, int ecol, type_style *style )
 /*
  * SetCharInWindowWithColor - do just that, using given colors
  */
-vi_rc SetCharInWindowWithColor( window_id wid, int line, int col, char text, type_style *style )
+vi_rc SetCharInWindowWithColor( window_id wid, windim line, windim col, char text, type_style *style )
 {
     window              *w;
-    int                 addr, start, spl;
+    size_t              addr;
+    windim              start, spl;
     char_info           tmp = {0, 0};
     bool                has_mouse;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
@@ -556,7 +557,7 @@ vi_rc SetCharInWindowWithColor( window_id wid, int line, int col, char text, typ
      */
     AccessWindow( w );
     addr = col + start + spl * w->width;
-    oscr = w->x1 + start + col + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + start + col + ( spl + w->area.y1 ) * EditVars.WindMaxWidth;
     tmp.cinfo_attr = MAKE_ATTR( w, style->foreground, style->background );
     tmp.cinfo_char = text;
 

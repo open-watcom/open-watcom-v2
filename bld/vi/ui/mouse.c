@@ -41,8 +41,8 @@
 
 static long         mouseTime;
 static int          lastButton;
-static int          oldRow = -1;
-static int          oldCol = -1;
+static windim       oldRow = -1;
+static windim       oldCol = -1;
 static viattr_t     oldAttr;
 static bool         mouseOn;
 static bool         mouseRepeat;
@@ -99,7 +99,7 @@ vi_mouse_event GetMouseEvent( void )
     return( MOUSE_NONE );
 #else
     int             status;
-    int             row, col;
+    windim          row, col;
     bool            moved;
     vi_mouse_event  me;
     int             button;
@@ -171,15 +171,15 @@ vi_mouse_event GetMouseEvent( void )
 
     return( mapButtonEvents( me, button ) );
 #endif
-    
+
 } /* GetMouseEvent */
 
 /*
  * drawMouseCursor - draw mouse at specified row, col
  */
-static void drawMouseCursor( int row, int col )
+static void drawMouseCursor( windim row, windim col )
 {
-    unsigned    oscr;
+    size_t      oscr;
 
     if( mouseOn ) {
         oscr = row * EditVars.WindMaxWidth + col;
@@ -203,7 +203,7 @@ static void drawMouseCursor( int row, int col )
  */
 static void eraseMouseCursor( void )
 {
-    unsigned    oscr;
+    size_t      oscr;
 
     if( mouseOn && oldRow >= 0 ) {
         oscr = oldRow * EditVars.WindMaxWidth + oldCol;
@@ -218,7 +218,7 @@ static void eraseMouseCursor( void )
 /*
  * RedrawMouse - redraw the mouse, at specified position
  */
-void RedrawMouse( int row, int col )
+void RedrawMouse( windim row, windim col )
 {
     if( oldRow == row && oldCol == col || EditFlags.HasSystemMouse ) {
         return;

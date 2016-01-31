@@ -38,7 +38,7 @@
 /*
  * ResizeWindow - give a window a new size
  */
-vi_rc ResizeWindow( window_id wid, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
     window      *oldw;
 //    int         bt, k;
@@ -82,13 +82,13 @@ vi_rc ResizeWindow( window_id wid, int x1, int y1, int x2, int y2, bool scrflag 
 /*
  * ResizeWindowRelative - resize current window with relative shifts
  */
-vi_rc ResizeWindowRelative( window_id wid, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindowRelative( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
     window      *w;
     vi_rc       rc;
 
     w = WINDOW_FROM_ID( wid );
-    rc = ResizeWindow( wid, w->x1 + x1, w->y1 + y1, w->x2 + x2, w->y2 + y2, scrflag );
+    rc = ResizeWindow( wid, w->area.x1 + x1, w->area.y1 + y1, w->area.x2 + x2, w->area.y2 + y2, scrflag );
     return( rc );
 
 } /* ResizeWindowRelative */
