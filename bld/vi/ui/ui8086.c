@@ -63,10 +63,10 @@ static bool     colorChanged[MAX_COLOR_REGISTERS];
  */
 static void getCursor( int *row, int *col )
 {
-    int x;
+    unsigned short  x;
 
     x = BIOSGetCursor( VideoPage );
-    *row = (x >> 8);
+    *row = ( x >> 8 );
     *col = x & 0xff;
 
 } /* getCursor */

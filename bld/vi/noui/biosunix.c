@@ -36,8 +36,8 @@ long BIOSGetColorRegister( short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}
 void BIOSSetBlinkAttr() {}
 void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
-void BIOSSetCursor( char page, char row, char col ) {}
-short BIOSGetCursor( char page ) { return 0; }
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col ) {}
+unsigned short BIOSGetCursor( unsigned char page ) { return 0; }
 int KeyboardInit( void ) { return 0; }
 unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return VI_KEY( NULL ); }
 bool BIOSKeyboardHit( void ) { return 0; }

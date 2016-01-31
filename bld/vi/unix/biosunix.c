@@ -43,7 +43,7 @@ void BIOSSetNoBlinkAttr( void ) {}
 void BIOSSetBlinkAttr( void ) {}
 void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     int             type, attr;
     unsigned char   oldrow, oldcol;
@@ -53,14 +53,14 @@ void BIOSSetCursor( char page, char row, char col )
     _uisetcursor( row, col, type, attr );
 }
 
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
     unsigned char   row, col;
     int             type, attr;
 
     page = page;
     _uigetcursor( &row, &col, &type, &attr );
-    return( (row << 8) | col );
+    return( ( row << 8 ) | col );
 }
 
 static unsigned short vi_keys[EV_FIRST_UNUSED];

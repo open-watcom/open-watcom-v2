@@ -313,15 +313,15 @@ void MyVioShowBuf( unsigned short offset, unsigned short nchars )
 // unsigned long   BIOSGetVideoMode( void );
 // long            BIOSGetColorRegister( short );
 
-short BIOSGetCursor( char type )
+unsigned short BIOSGetCursor( unsigned char type )
 {
     int x, y;
 
     getyx( CursesWindow, x, y );
-    return( (y << 16) | x );
+    return( ( y << 8 ) | ( x & 0xFF ) );
 }
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     wmove( CursesWindow, row, col );
     refresh();

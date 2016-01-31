@@ -196,21 +196,22 @@ void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
 
 static unsigned short _crow, _ccol, _ctype;
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
 
     union _console_msg {
-            struct _console_write       write;
-            struct _console_write_reply write_reply;
+        struct _console_write       write;
+        struct _console_write_reply write_reply;
     } msg;
 
     page = page;
     _crow = row;
     _ccol = col;
 
-    if( QNXCon == NULL ) return;
+    if( QNXCon == NULL )
+        return;
     msg.write.type = _CONSOLE_WRITE;
     msg.write.handle = QNXCon->handle;
     msg.write.console = QNXConsole;
@@ -229,16 +230,16 @@ void BIOSSetCursor( char page, char row, char col )
 
 } /* BIOSSetCursor */
 
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
     page = page;
-    return( (short)((unsigned short)_crow * 256 + _crow ) );
+    return( ( _crow << 8 ) + ( _crow & 0xFF ) );
 
 } /* BIOSGetCursor */
 
-void BIOSNewCursor( char top, char bottom )
+void BIOSNewCursor( unsigned char top, unsigned char bottom )
 {
-    if( bottom-top > 5 ) {
+    if( bottom - top > 5 ) {
         _ctype = CURSOR_BLOCK;
     } else {
         _ctype = CURSOR_UNDERLINE;
@@ -440,8 +441,8 @@ void BIOSUpdateScreen( unsigned offset, unsigned nchars )
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
     union _console_msg {
-            struct _console_write       write;
-            struct _console_write_reply write_reply;
+        struct _console_write       write;
+        struct _console_write_reply write_reply;
     }                   msg;
 
     if( PageCnt > 0 ) {

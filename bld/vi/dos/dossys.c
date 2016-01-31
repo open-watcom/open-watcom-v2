@@ -86,7 +86,7 @@ void PopDirectory( void )
  */
 void NewCursor( window_id wid, cursor_type ct )
 {
-    int base, nbase;
+    unsigned char   base, nbase;
 
     wid = wid;
     if( EditFlags.Monocolor ) {
@@ -94,8 +94,8 @@ void NewCursor( window_id wid, cursor_type ct )
     } else {
         base = 16;
     }
-    nbase = (base * (int)(100 - ct.height)) / 100;
-    BIOSNewCursor( (char) nbase, base - 1 );
+    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
+    BIOSNewCursor( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -169,8 +169,8 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    short       cursor;
-    short       x, y;
+    unsigned short  cursor;
+    unsigned short  x, y;
 
     cursor = BIOSGetCursor( VideoPage );
     x = cursor >> 8;

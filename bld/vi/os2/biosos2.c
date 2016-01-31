@@ -121,32 +121,30 @@ void BIOSSetBlinkAttr( void )
     setIntensity( 1 );
 }
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     page = page;
     VioSetCurPos( row, col, 0);
 
 } /* BIOSSetCursor */
 
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
     USHORT      r, c;
-    short       res;
 
     page = page;
     VioGetCurPos( &r, &c, 0 );
-    res = (r << 8) + c;
-    return( res );
+    return( ( r << 8 ) + ( c & 0xFF ) );
 
 } /* BIOSGetCursor */
 
-void BIOSNewCursor( char ch, char notused )
+void BIOSNewCursor( unsigned char top, unsigned char bottom )
 {
     VIOCURSORINFO       vioCursor;
 
-    notused = notused;
+    bottom = bottom;
     VioGetCurType( &vioCursor, 0 );
-    vioCursor.yStart = ch;
+    vioCursor.yStart = top;
     VioSetCurType( &vioCursor, 0);
 
 } /* BIOSNewCursor */

@@ -36,9 +36,9 @@ extern void             BIOSGetColorPalette( void _FAR * );
 extern void             BIOSSetBlinkAttr( void );
 extern void             BIOSSetNoBlinkAttr( void );
 // screen cursor functions
-extern short            BIOSGetCursor( char );
-extern void             BIOSSetCursor( char, char, char );
-extern void             BIOSNewCursor( char, char );
+extern unsigned short   BIOSGetCursor( unsigned char );
+extern void             BIOSSetCursor( unsigned char, unsigned char, unsigned char );
+extern void             BIOSNewCursor( unsigned char top, unsigned char bottom );
 // screen info functions
 extern char             BIOSGetRowCount( void );
 extern unsigned long    BIOSGetVideoMode( void );
