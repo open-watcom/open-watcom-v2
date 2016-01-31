@@ -42,8 +42,8 @@ typedef struct ss {
 } ss;
 
 typedef struct {
-    char        height;
-    char        width;
+    unsigned char   height;
+    unsigned char   width;
 } cursor_type;
 
 typedef struct {
