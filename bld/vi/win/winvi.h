@@ -62,7 +62,7 @@ typedef struct colour {
  */
 typedef struct window {
     window_info *info;
-    RECT        area;
+    RECT        def_area;
 } window;
 
 typedef struct window_data {

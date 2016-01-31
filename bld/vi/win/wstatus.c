@@ -227,7 +227,7 @@ window_id NewStatWindow( void )
     window_id   wid;
     RECT        size;
 
-    size = StatusBar.area;
+    size = StatusBar.def_area;
     size.left -= 1;
     size.right += 1;
     size.bottom += 1;

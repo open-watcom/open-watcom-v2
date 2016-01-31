@@ -107,7 +107,7 @@ window_id NewMsgWindow( void )
     RECT        *size;
     int         height;
 
-    size = &MessageBar.area;
+    size = &MessageBar.def_area;
     msgString1[0] = 0;
     msgString2[0] = 0;
     height = size->bottom - size->top;

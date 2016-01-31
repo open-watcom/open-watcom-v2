@@ -133,7 +133,7 @@ window_id NewRepeatCountWindow( void )
     RECT        *size;
     POINT       p;
 
-    size = &RepeatCountWindow.area;
+    size = &RepeatCountWindow.def_area;
 
     p.x = size->left;
     p.y = size->top;

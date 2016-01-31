@@ -105,7 +105,7 @@ window_id NewFileCompleteWindow( void )
     window_id   wid;
     POINT       p;
 
-    size = &FileCompleteWindow.area;
+    size = &FileCompleteWindow.def_area;
     p.x = size->left;
     p.y = size->top;
     ClientToScreen( root_window_id, &p );

@@ -65,7 +65,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
     if( EditFlags.StatusInfo ) {
         /* first we do the status bar */
         w = &StatusBar;
-        r = &w->area;
+        r = &w->def_area;
         *r = *world;
 
         /*
@@ -92,7 +92,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
 
     /* next the message bar */
     w = &MessageBar;
-    r = &w->area;
+    r = &w->def_area;
     // let these windows share a common border, except when Win32 common controls
     // are used
     *r = *last;
@@ -110,7 +110,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
     /* the command window */
     #define BORDER  25
     w = &CommandWindow;
-    r = &w->area;
+    r = &w->def_area;
     // put it right over top of the message bar
     *r = *world;
     r->bottom -= BORDER;
@@ -122,7 +122,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
     #undef BORDER
     #define BORDER  20
     w = &RepeatCountWindow;
-    r = &w->area;
+    r = &w->def_area;
     // put it right over top of the message bar
     *r = *world;
     r->bottom -= BORDER;
@@ -132,7 +132,7 @@ void DefaultWindows( RECT *world, RECT *workspace )
 
     /* the file completion window */
     w = &FileCompleteWindow;
-    r = &w->area;
+    r = &w->def_area;
     #undef BORDER
     #define BORDER  50
     *r = *world;

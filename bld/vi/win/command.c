@@ -131,7 +131,7 @@ window_id NewCommandWindow( void )
     POINT       p;
     int         bottom;
 
-    size = &CommandWindow.area;
+    size = &CommandWindow.def_area;
     bottom = size->bottom;
 
     p.x = size->left;
