@@ -837,7 +837,7 @@ bool    ColumnInWindow( int, int * );
 void    SetWindowSizes( void );
 void    SetWindowCursor( void );
 void    SetWindowCursorForReal( void );
-vi_rc   ResizeCurrentWindow( int x1, int y1, int x2, int y2 );
+vi_rc   ResizeCurrentWindow( windim x1, windim y1, windim x2, windim y2 );
 void    SetFileWindowTitle( window_id wid, info *cinfo, bool hilite );
 void    ResetAllWindows( void );
 

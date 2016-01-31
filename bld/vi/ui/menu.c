@@ -681,9 +681,10 @@ static int currentID;
 /*
  * processMenu - process selected menu
  */
-static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, windim rmaxwidth )
+static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim rmaxwidth )
 {
-    int         i, ws;
+    int         i;
+    windim      ws;
     char        result[80];
     int         resint, allowrl, *arl;
     selectitem  si;
@@ -882,7 +883,7 @@ vi_rc DoWindowGadgetMenu( void )
 /*
  * DoFloatMenu - handle floating menus
  */
-vi_rc DoFloatMenu( int id, int slen, int x1, int y1 )
+vi_rc DoFloatMenu( int id, int slen, windim x1, windim y1 )
 {
     vi_rc       rc;
 

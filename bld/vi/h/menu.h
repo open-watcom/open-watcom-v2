@@ -50,7 +50,7 @@ extern vi_rc    DoMenu( void );
 extern int      GetMenuIdFromCoord( int x );
 extern int      GetCurrentMenuId( void );
 extern vi_rc    SetToMenuId( int id );
-extern vi_rc    DoFloatMenu( int id, int slen, int x1, int y1 );
+extern vi_rc    DoFloatMenu( int id, int slen, windim x1, windim y1 );
 extern vi_rc    ActivateFloatMenu( const char * );
 extern vi_rc    DoWindowGadgetMenu( void );
 extern bool     IsMenuHotKey( vi_key );

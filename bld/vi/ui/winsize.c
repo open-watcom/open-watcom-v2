@@ -85,11 +85,9 @@ vi_rc ResizeWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, b
 vi_rc ResizeWindowRelative( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
     window      *w;
-    vi_rc       rc;
 
     w = WINDOW_FROM_ID( wid );
-    rc = ResizeWindow( wid, w->area.x1 + x1, w->area.y1 + y1, w->area.x2 + x2, w->area.y2 + y2, scrflag );
-    return( rc );
+    return( ResizeWindow( wid, w->area.x1 + x1, w->area.y1 + y1, w->area.x2 + x2, w->area.y2 + y2, scrflag ) );
 
 } /* ResizeWindowRelative */
 
@@ -118,7 +116,7 @@ static int getMinSlot( void )
 vi_rc MinimizeCurrentWindow( void )
 {
     int     i, j;
-    int     minx1, miny1;
+    windim  minx1, miny1;
     vi_rc   rc;
 
     i = getMinSlot();
@@ -148,17 +146,17 @@ vi_rc MinimizeCurrentWindow( void )
  */
 vi_rc MaximizeCurrentWindow( void )
 {
-    vi_rc   rc;
+    windim  x1, x2;
 
+    x1 = editw_info.area.x1;
+    x2 = editw_info.area.x2;
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeCurrentWindow( editw_info.area.x1, editw_info.area.y1, editw_info.area.x2 - EditVars.LineNumWinWidth, editw_info.area.y2 );
+            x2 -= EditVars.LineNumWinWidth;
         } else {
-            rc = ResizeCurrentWindow( editw_info.area.x1 + EditVars.LineNumWinWidth, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2 );
+            x1 += EditVars.LineNumWinWidth;
         }
-    } else {
-        rc = ResizeCurrentWindow( editw_info.area.x1, editw_info.area.y1, editw_info.area.x2, editw_info.area.y2 );
     }
-    return( rc );
+    return( ResizeCurrentWindow( x1, editw_info.area.y1, x2, editw_info.area.y2 ) );
 
 } /* MaximizeCurrentWindow */

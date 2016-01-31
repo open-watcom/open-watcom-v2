@@ -293,7 +293,7 @@ void SetWindowSizes( void )
 /*
  * ResizeCurrentWindow - as it sounds
  */
-vi_rc ResizeCurrentWindow( int x1, int y1, int x2, int y2 )
+vi_rc ResizeCurrentWindow( windim x1, windim y1, windim x2, windim y2 )
 {
     int         text_lines;
     linenum     ln;
@@ -301,13 +301,12 @@ vi_rc ResizeCurrentWindow( int x1, int y1, int x2, int y2 )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindow( current_window_id, x1, y1, x2 + EditVars.LineNumWinWidth, y2, true );
+            x2 += EditVars.LineNumWinWidth;
         } else {
-            rc = ResizeWindow( current_window_id, x1 - EditVars.LineNumWinWidth, y1, x2, y2, true );
+            x1 -= EditVars.LineNumWinWidth;
         }
-    } else {
-        rc = ResizeWindow( current_window_id, x1, y1, x2, y2, true );
     }
+    rc = ResizeWindow( current_window_id, x1, y1, x2, y2, true );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
