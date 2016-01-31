@@ -401,7 +401,7 @@ void TurnOffCapsLock( void )
 
 } /* TurnOffCapsLock */
 
-extern short CheckRemovable( char );
+extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
         "mov    ax,4408h" \
         "int    21h"      \
@@ -418,7 +418,7 @@ extern short CheckRemovable( char );
  */
 drive_type DoGetDriveType( int drv )
 {
-    return( CheckRemovable( drv - 'A' + 1 ) );
+    return( (drive_type)CheckRemovable( (unsigned char)( drv - 'A' + 1 ) ) );
 
 } /* DoGetDriveType */
 

@@ -238,7 +238,7 @@ drive_type DoGetDriveType( int drv )
     path[2] = '\\';
     path[3] = 0;
     type = GetDriveType( path );
-    if( type == 1 ) {
+    if( type == DRIVE_NO_ROOT_DIR ) {
         return( DRIVE_TYPE_NONE );
     }
     if( type == DRIVE_REMOVABLE ) {
