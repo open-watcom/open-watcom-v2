@@ -37,13 +37,13 @@
 extern int      PageCnt;
 extern bool     UserForcedTermRefresh;
 
-void BIOSGetColorPalette( void *a ) {}
-long BIOSGetColorRegister( short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr( void ) {}
-void BIOSSetBlinkAttr( void ) {}
-void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
+void    BIOSGetColorPalette( void *a ) {}
+uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
+void    BIOSSetNoBlinkAttr( void ) {}
+void    BIOSSetBlinkAttr( void ) {}
+void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
 
-void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
+void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     int             type, attr;
     unsigned char   oldrow, oldcol;

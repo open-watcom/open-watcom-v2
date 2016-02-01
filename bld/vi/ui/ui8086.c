@@ -206,12 +206,12 @@ void HideCursor( void )
  */
 static void getColorRegister( vi_color reg, rgb *c )
 {
-    long        res;
+    uint_32     res;
 
     res = BIOSGetColorRegister( colorPalette[reg] );
-    c->red = ((char *)(&res))[1] << 2;
-    c->blue = ((char *)(&res))[2] << 2;
-    c->green = ((char *)(&res))[3] << 2;
+    c->red = (res >> (8 - 2)) & 0xFC;
+    c->blue = (res >> (16 - 2)) & 0xFC;
+    c->green = (res >> (24 - 2)) & 0xFC;
 
 } /* getColorRegister */
 

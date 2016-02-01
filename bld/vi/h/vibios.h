@@ -30,8 +30,8 @@
 
 
 // screen color/attrib functions
-extern void             BIOSSetColorRegister( short, char, char, char );
-extern long             BIOSGetColorRegister( short );
+extern void             BIOSSetColorRegister( unsigned short, unsigned char, unsigned char, unsigned char );
+extern uint_32          BIOSGetColorRegister( unsigned short );
 extern void             BIOSGetColorPalette( void _FAR * );
 extern void             BIOSSetBlinkAttr( void );
 extern void             BIOSSetNoBlinkAttr( void );
@@ -41,7 +41,7 @@ extern void             BIOSSetCursor( unsigned char, unsigned char, unsigned ch
 extern void             BIOSNewCursor( unsigned char top, unsigned char bottom );
 // screen info functions
 extern char             BIOSGetRowCount( void );
-extern unsigned long    BIOSGetVideoMode( void );
+extern uint_32          BIOSGetVideoMode( void );
 // screen update functions
 extern void             BIOSUpdateScreen( size_t, unsigned );
 // keyboard functions

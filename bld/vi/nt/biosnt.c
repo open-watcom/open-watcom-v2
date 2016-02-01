@@ -108,7 +108,7 @@ void BIOSGetColorPalette( void *a )
     a = a;
 }
 
-long BIOSGetColorRegister( short a )
+uint_32 BIOSGetColorRegister( unsigned short a )
 {
     a = a;
     return( 0 );
@@ -122,7 +122,7 @@ void BIOSSetBlinkAttr( void )
 {
 }
 
-void BIOSSetColorRegister( short reg, char r, char g, char b )
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
 {
     reg = reg; r = r; g = g; b =b;
 }

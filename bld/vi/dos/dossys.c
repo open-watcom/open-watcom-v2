@@ -183,7 +183,7 @@ static void getExitAttr( void )
  */
 void ScreenInit( void )
 {
-    unsigned_32     mode;
+    uint_32     mode;
 
     mode = BIOSGetVideoMode();
     EditVars.WindMaxWidth = (mode >> 8) & 0xFF;

@@ -188,10 +188,10 @@ static struct map events[] = {
 
 #pragma off (unreferenced);
 void BIOSGetColorPalette( void __far *a ) {}
-long BIOSGetColorRegister( short a ) { return( 0 ); }
+uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}
 void BIOSSetBlinkAttr() {}
-void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
 #pragma on (unreferenced);
 
 static unsigned short _crow, _ccol, _ctype;
