@@ -272,7 +272,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                     error = const_index;
                 step = 1;
             } else {
-                if( !has_sign && minus) {
+                if( !has_sign && minus ) {
                     has_sign = TRUE;
                     if( index < const_index ) {
                         // round up to signed
