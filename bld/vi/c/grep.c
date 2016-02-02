@@ -153,7 +153,7 @@ static vi_rc getFile( const char *fname )
     } else {
         strcpy( dir, origString );
     }
-    ReplaceString( &(EditVars.FindHist.data[EditVars.FindHist.curr % EditVars.FindHist.max] ), origString );
+    ReplaceString( EditVars.FindHist.data + ( EditVars.FindHist.curr % EditVars.FindHist.max ), origString );
     EditVars.FindHist.curr += 1;
     ColorFind( dirptr, FINDFL_NOERROR );
     SetLastFind( origString );
@@ -435,7 +435,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * prepare list array
      */
-    list = (char **) MemAlloc( sizeof( char *) * MAX_FILES );
+    list = (char **)MemAlloc( sizeof( char *) * MAX_FILES );
 
     /*
      * create info. window
@@ -723,7 +723,7 @@ static vi_rc fSearch( const char *fn, char *r )
                 buffloc++;
                 bytes--;
                 strloc++;
-                if( ! (*strloc) ) {
+                if( *strloc == '\0' ) {
                     close( handle );
                     j = 0;
                     if( buffloc - strlen( sString ) < buff ) {
@@ -740,8 +740,7 @@ static vi_rc fSearch( const char *fn, char *r )
                         }
                         // copy the part of the string NOT in buff
                         for( ;; ) {
-                            if( j == MAX_DISP || *res == CR || *res == LF ||
-                                res == &context_display[MAX_DISP] ) {
+                            if( j == MAX_DISP || *res == CR || *res == LF || res == &context_display[MAX_DISP] ) {
                                 r[j] = 0;
                                 break;
                             }
@@ -763,8 +762,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     }
                     // now copy the string ( all that is in buff )
                     for( ;; ) {
-                        if( j == MAX_DISP || *res == CR || *res == LF ||
-                            res == &buff[bytecnt] ) {
+                        if( j == MAX_DISP || *res == CR || *res == LF || res == &buff[bytecnt] ) {
                             r[j] = 0;
                             break;
                         }

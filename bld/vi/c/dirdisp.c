@@ -85,7 +85,7 @@ static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
     int     i;
     vi_rc   rc;
 
-    for( i = start; i <start + len; i++ ) {
+    for( i = start; i < start + len; i++ ) {
         if( i >= max ) {
             break;
         }

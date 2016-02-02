@@ -104,8 +104,7 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 
     MyFprintf( f, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, true ) );
     if( !colour_only ) {
-        MyFprintf( f, "    dimension %d %d %d %d\n", wi->area.x1, wi->area.y1,
-                   wi->area.x2, wi->area.y2 );
+        MyFprintf( f, "    dimension %d %d %d %d\n", wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2 );
         if( wi->has_border ) {
             MyFprintf( f, "    border 1 %d %d\n", wi->border_color1, wi->border_color2 );
         } else {
