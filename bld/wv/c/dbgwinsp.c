@@ -71,11 +71,11 @@ extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
 
 
-static a_window *WndFindExisting( wnd_class wndcls )
+static a_window *WndFindExisting( wnd_class wndclass )
 {
     a_window    *wnd;
 
-    wnd = WndFindClass( NULL, wndcls );
+    wnd = WndFindClass( NULL, wndclass );
     if( wnd != NULL ) {
         WndRestoreToFront( wnd );
     }
@@ -375,13 +375,13 @@ extern  void    WndInspect( const char *item )
     }
 }
 
-a_window *WndClassInspect( wnd_class wndcls )
+a_window *WndClassInspect( wnd_class wndclass )
 {
     a_window    *wnd;
 
-    wnd = WndFindExisting( wndcls );
+    wnd = WndFindExisting( wndclass );
     if( wnd == NULL ) {
-        wnd = WndOpenTab[wndcls]();
+        wnd = WndOpenTab[wndclass]();
     }
     return( wnd );
 }

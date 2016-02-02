@@ -481,14 +481,14 @@ void MadRegChangeOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon )
+extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndclass, gui_resource *icon )
 {
     reg_window  *reg;
     a_window    *wnd;
 
     reg = WndMustAlloc( sizeof( reg_window ) );
     reg->kind = kind;
-    wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndcls, reg, icon );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndclass, reg, icon );
     if( wnd == NULL )
         return( NULL );
     return( wnd );

@@ -170,7 +170,7 @@ typedef struct type_display {
 } type_display;
 
 typedef enum {
-    #define pick(e,name,wndcls,icon)    e,
+    #define pick(e,name,wndclass,icon)  e,
     #include "_dbgvar.h"
     #undef pick
     NUM_VAR_TYPE

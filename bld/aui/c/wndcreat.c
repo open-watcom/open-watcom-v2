@@ -89,7 +89,7 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     wnd->u.button_down.row = (char)-1;
     wnd->gui = NULL;
     wnd->info = info->info;
-    wnd->class = info->class;
+    wnd->wndclass = info->wndclass;
     wnd->extra = info->extra;
     wnd->title_size = info->title_size;
     wnd->rows = 1;      // just so it's not zero in init code
@@ -179,7 +179,7 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 {
     memset( info, 0, sizeof( *info ) );
     info->title = "";
-    info->class = WND_NO_CLASS;
+    info->wndclass = WND_NO_CLASS;
     info->style = ( GUI_GADGETS & ~GUI_CURSOR ) | GUI_CHANGEABLE_FONT;
     info->scroll = GUI_HSCROLL+GUI_VSCROLL+
                    GUI_HDRAG+GUI_VDRAG+
@@ -189,7 +189,7 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 
 
 extern WNDCREATE        WndCreate;
-extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class class,
+extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass,
                               void *extra )
 {
     wnd_create_struct   info;
@@ -197,7 +197,7 @@ extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class class,
     WndInitCreateStruct( &info );
     info.title = title;
     info.info = wndinfo;
-    info.class = class;
+    info.wndclass = wndclass;
     info.extra = extra;
     return( WndCreateWithStruct( &info ) );
 }

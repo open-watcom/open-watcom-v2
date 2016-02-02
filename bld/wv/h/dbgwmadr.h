@@ -30,4 +30,4 @@
 
 
 extern void         MadRegChangeOptions( a_window *wnd );
-extern a_window     *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon );
+extern a_window     *WndMadRegOpen( mad_type_kind kind, wnd_class wndclass, gui_resource *icon );

@@ -803,7 +803,7 @@ wnd_info FileInfo = {
 
 a_window        *DoWndFileOpen( const char *name, void *viewhndl,
                                         cue_handle *ch, bool track,
-                                        bool erase, wnd_class wndcls )
+                                        bool erase, wnd_class wndclass )
 {
     file_window *file;
     a_window    *wnd;
@@ -826,7 +826,7 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     file->eof = UINT_MAX;
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
-    wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndcls, file, &SrcIcon );
+    wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndclass, file, &SrcIcon );
     if( ch != NULL ) {
         FileSetDotAddr( wnd, CueAddr( ch ) );
         FileSetTitle( wnd, file->mod );

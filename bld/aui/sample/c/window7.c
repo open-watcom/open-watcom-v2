@@ -85,7 +85,7 @@ a_window *W7Open( void )
     info.scroll |= GUI_VTRACK;
     info.title = "Numbers";
     info.info = &W7Info;
-    info.class = 0;
+    info.wndclass = 0;
     info.extra = NULL;
     return( WndCreateWithStruct( &info ) );
 }

@@ -146,7 +146,7 @@ typedef struct wnd_line_piece {
 typedef struct wnd_create_struct {
     struct wnd_info     *info;
     char                *title;
-    wnd_class           class;
+    wnd_class           wndclass;
     void                *extra;
     gui_create_styles   style;
     gui_scroll_styles   scroll;
@@ -212,8 +212,8 @@ typedef struct {
 #define WndMidCharX( wnd ) __WND_FIELD( wnd, mid_char_x )
 #define WndTop( wnd ) __WND_FIELD( wnd, top )
 #define WndSetTop( wnd, x ) __WND_FIELD( wnd, top ) = x
-#define WndHasClass( wnd ) ( __WND_FIELD( wnd, class ) != WND_NO_CLASS )
-#define WndClass( wnd ) __WND_FIELD( wnd, class )
+#define WndHasClass( wnd ) ( __WND_FIELD( wnd, wndclass ) != WND_NO_CLASS )
+#define WndClass( wnd ) __WND_FIELD( wnd, wndclass )
 #define WndTitleSize( wnd ) (__WND_FIELD( wnd, title_size ))
 #define WndRows( wnd ) (__WND_FIELD( wnd, rows )-__WND_FIELD( wnd, title_size ))
 #define WndMaxRow( wnd ) __WND_FIELD( wnd, max_row )
@@ -252,7 +252,7 @@ typedef struct aui_private_window_structure {
     char                    button_down_screen_row;
     unsigned char           keyindex;
     unsigned char           keypiece;
-    wnd_class               class;
+    wnd_class               wndclass;
     wnd_switches            switches;
     int                     vscroll_pending;
     int                     hscroll_pending;
@@ -431,7 +431,7 @@ extern void             WndEndFreshAll( void );
 extern void             WndZapped( a_window * );
 
 extern a_window         *WndFindClass( a_window *, wnd_class );
-extern void             WndForAllClass( wnd_class class, void (*rtn)( a_window * ) );
+extern void             WndForAllClass( wnd_class wndclass, void (*rtn)( a_window * ) );
 
 typedef void aui_spawn_funcP( void * );
 typedef void aui_spawn_func( void );

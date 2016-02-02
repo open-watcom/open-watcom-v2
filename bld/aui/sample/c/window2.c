@@ -270,7 +270,7 @@ a_window *W2Open( void )
     info.scroll &= ~GUI_VDRAG;
     info.title = "window with a title";
     info.info = &W2Info;
-    info.class = CLASS_W2;
+    info.wndclass = CLASS_W2;
     info.extra = w2;
     wnd = WndCreateWithStruct( &info );
     if( wnd != NULL ) {

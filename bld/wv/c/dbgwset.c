@@ -99,14 +99,14 @@ extern void DClickConf( void )
 
 extern void InputSet( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     a_window    *wnd;
 
-    wndcls = ReqWndName();
+    wndclass = ReqWndName();
     ReqEOC();
-    wnd = WndFindClass( NULL, wndcls );
+    wnd = WndFindClass( NULL, wndclass );
     if( wnd == NULL ) {
-        GetCmdEntry( WndNameTab, (int)wndcls, TxtBuff );
+        GetCmdEntry( WndNameTab, (int)wndclass, TxtBuff );
         Error( ERR_NONE, LIT_DUI( ERR_WIND_NOT_OPEN ), TxtBuff );
     }
     WndRestoreToFront( wnd );
@@ -424,7 +424,7 @@ static unsigned MapKey( const char *start, unsigned len )
 }
 
 
-wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
+wnd_macro *MacAddDel( unsigned key, wnd_class wndclass, cmd_list *cmds )
 {
     wnd_macro           **owner,*curr;
     bool                is_main;
@@ -434,7 +434,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
         curr = *owner;
         if( curr == NULL )
             break;
-        if( curr->key == key && curr->wndcls == wndcls )
+        if( curr->key == key && curr->wndclass == wndclass )
             break;
         owner = &curr->link;
     }
@@ -446,7 +446,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
             }
             curr->key = key;
-            curr->wndcls = wndcls;
+            curr->wndclass = wndclass;
             curr->link = NULL;
             curr->menu = NULL;
             *owner = curr;
@@ -455,7 +455,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
             FreeCmdList( curr->cmd );
         }
         curr->cmd = cmds;
-        curr->menu = AddMenuAccel( KeyName( key ), cmds->buff, wndcls, &is_main );
+        curr->menu = AddMenuAccel( KeyName( key ), cmds->buff, wndclass, &is_main );
         if( curr->menu == NULL ) {
             curr->type = MACRO_COMMAND;
         } else if( is_main ) {
@@ -478,7 +478,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndcls, cmd_list *cmds )
 
 extern void MacroSet( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     cmd_list    *cmds;
     unsigned    key;
     const char  *start;
@@ -489,7 +489,7 @@ extern void MacroSet( void )
     int         i;
 
 
-    wndcls = ReqWndName();
+    wndclass = ReqWndName();
     key = 0;
     if( ScanItem( true, &start, &len ) ) {
         key = MapKey( start, len );
@@ -514,7 +514,7 @@ extern void MacroSet( void )
     } else {
         cmds = NULL;
     }
-    MacAddDel( key, wndcls, cmds );
+    MacAddDel( key, wndclass, cmds );
 }
 
 extern  void    MacroConf( void )
@@ -524,7 +524,7 @@ extern  void    MacroConf( void )
     char        *fmt;
 
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
-        GetCmdEntry( WndNameTab, mac->wndcls, wnd_name );
+        GetCmdEntry( WndNameTab, mac->wndclass, wnd_name );
         if( TxtBuff[0] == NULLCHAR )
             break;
         fmt = isspace( mac->key ) ? "%s {%s} {" : "%s %s {";

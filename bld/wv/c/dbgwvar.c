@@ -106,19 +106,19 @@ static gui_menu_struct VarMenu[] = {
 #define REASONABLE_NAME_WIDTH   30
 
 static char **VarNames[] = {
-    #define pick(e,name,wndcls,icon)    name,
+    #define pick(e,name,wndclass,icon)    name,
     #include "_dbgvar.h"
     #undef pick
 };
 
 static wnd_class VarWndClass[] = {
-    #define pick(e,name,wndcls,icon)    wndcls,
+    #define pick(e,name,wndclass,icon)    wndclass,
     #include "_dbgvar.h"
     #undef pick
 };
 
 static gui_resource *VarIcons[] = {
-    #define pick(e,name,wndcls,icon)    icon,
+    #define pick(e,name,wndclass,icon)    icon,
     #include "_dbgvar.h"
     #undef pick
 };
@@ -830,12 +830,12 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 
-static bool VarDoClass( wnd_class wndcls, bool (*rtn)( var_info*, void* ), void *cookie )
+static bool VarDoClass( wnd_class wndclass, bool (*rtn)( var_info*, void* ), void *cookie )
 {
     a_window    *wnd;
 
-    for( wnd = WndFindClass( NULL, wndcls );
-         wnd != NULL; wnd = WndFindClass( wnd, wndcls ) ) {
+    for( wnd = WndFindClass( NULL, wndclass );
+         wnd != NULL; wnd = WndFindClass( wnd, wndclass ) ) {
         if( rtn( WndVarInfo( wnd ), cookie ) ) return( true );
     }
     return( false );

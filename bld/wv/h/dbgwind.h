@@ -85,7 +85,7 @@ typedef struct wnd_macro {
         struct wnd_macro        *link;
         void                    *cmd;
         unsigned                key;
-        wnd_class               wndcls;
+        wnd_class               wndclass;
         int                     menu_item;
         gui_menu_struct         *menu;
         macro_type              type;

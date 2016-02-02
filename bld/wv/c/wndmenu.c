@@ -274,7 +274,7 @@ void AccelMenuItem( gui_menu_struct *menu, bool is_main )
 }
 
 static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
-                  gui_menu_struct **parent, int *num_siblings, wnd_class wndcls )
+                  gui_menu_struct **parent, int *num_siblings, wnd_class wndclass )
 {
     gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
@@ -305,7 +305,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         ReqEOC();
         AccelMenuItem( child, true );
     } else {
-        info = WndInfoTab[wndcls];
+        info = WndInfoTab[wndclass];
         if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, info->popupmenu, info->num_popups );
         }
@@ -320,7 +320,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         if( add_to_menu )
             return( false );
         wnd = WndFindActive();
-        if( WndClass( wnd ) != wndcls )
+        if( WndClass( wnd ) != wndclass )
             Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
         ReqEOC();
         AccelMenuItem( child, false );
@@ -464,7 +464,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 }
 
 
-gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndcls, bool *is_main )
+gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndclass, bool *is_main )
 {
     const char          *old;
     gui_menu_struct     *menu,*parent;
@@ -473,7 +473,7 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndcl
     old = ReScan( cmd );
     menu = NULL;
     if( ScanCmd( GetCmdName( CMD_ACCEL ) ) == 0 ) {
-        *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndcls );
+        *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndclass );
     }
     ReScan( old );
     if( menu == NULL || !ScanEOC() ) return( NULL );

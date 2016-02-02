@@ -93,7 +93,7 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
     WndInitWndMain( &info );
     info.title = title;
     info.info = &NoInfo;
-    info.class = WND_NO_CLASS;
+    info.wndclass = WND_NO_CLASS;
     info.extra = NULL;
     WndSetWndMainSize( &info );
     WndMain = WndCreateWithStructAndMenuRes( &info, resource_menu );

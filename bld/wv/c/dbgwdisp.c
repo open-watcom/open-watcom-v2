@@ -132,10 +132,10 @@ extern  char    *GetWndFont( a_window *wnd )
 }
 
 
-static void SetFont( wnd_class wndcls, char *font )
+static void SetFont( wnd_class wndclass, char *font )
 {
-    GUIMemFree( WndFontInfo[wndcls] );
-    WndFontInfo[wndcls] = font;
+    GUIMemFree( WndFontInfo[wndclass] );
+    WndFontInfo[wndclass] = font;
 }
 
 
@@ -191,10 +191,10 @@ void InitFont( void )
 
 void FiniFont( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
 
-    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
-        SetFont( wndcls, NULL );
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        SetFont( wndclass, NULL );
     }
 }
 
@@ -213,36 +213,36 @@ static char *GUIDupStrLen( const char *str, size_t len )
 
 void ProcFont( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     const char  *start;
     size_t      len;
-    wnd_class   wndcls1;
+    wnd_class   wndclass1;
 
-    wndcls = ReqWndName();
+    wndclass = ReqWndName();
     if( !ScanItem( false, &start, &len ) )
         return;
     ReqEOC();
-    if( wndcls == WND_ALL ) {
-        for( wndcls1 = 0; wndcls1 < WND_NUM_CLASSES; ++wndcls1 ) {
-            SetFont( wndcls1, NULL );
+    if( wndclass == WND_ALL ) {
+        for( wndclass1 = 0; wndclass1 < WND_NUM_CLASSES; ++wndclass1 ) {
+            SetFont( wndclass1, NULL );
         }
     }
-    SetFont( wndcls, GUIDupStrLen( start, len ) );
+    SetFont( wndclass, GUIDupStrLen( start, len ) );
     _SwitchOn( SW_PENDING_REPAINT );
 }
 
 
 
-static void PrintFont( wnd_class wndcls, char *def )
+static void PrintFont( wnd_class wndclass, char *def )
 {
     char        wndname[ 20 ];
     char        *font;
 
-    font = WndFontInfo[wndcls];
+    font = WndFontInfo[wndclass];
     if( font == NULL )
         return;
     if( def == NULL || strcmp( font, def ) != 0 ) {
-        GetCmdEntry( WndNameTab, wndcls, wndname );
+        GetCmdEntry( WndNameTab, wndclass, wndname );
         Format( TxtBuff, "%s %s {%s}", GetCmdName( CMD_FONT ), wndname, font );
         WndDlgTxt( TxtBuff );
     }
@@ -251,34 +251,34 @@ static void PrintFont( wnd_class wndcls, char *def )
 
 void ConfigFont( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
 
     PrintFont( WND_ALL, NULL );
-    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
-        if( wndcls == WND_ALL )
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        if( wndclass == WND_ALL )
             continue;
-        PrintFont( wndcls, WndFontInfo[WND_ALL] );
+        PrintFont( wndclass, WndFontInfo[WND_ALL] );
     }
 }
 
 
 void FontChange( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     char        *text;
 
     text = GUIGetFontFromUser( WndFontInfo[WND_ALL] );
     if( text == NULL )
         return;
-    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
-        SetFont( wndcls, NULL );
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        SetFont( wndclass, NULL );
     }
     SetFont( WND_ALL, text );
     _SwitchOn( SW_PENDING_REPAINT );
 }
 
 
-static void ProcSize( wnd_class wndcls )
+static void ProcSize( wnd_class wndclass )
 {
     gui_rect    size;
     disp_optn   optn;
@@ -316,7 +316,7 @@ static void ProcSize( wnd_class wndcls )
     } else {
         coord_specified = false;
     }
-    WndPosToRect( &WndPosition[wndcls], &def_rect, &WndScreen );
+    WndPosToRect( &WndPosition[wndclass], &def_rect, &WndScreen );
     size.x = range( size.x, 0, WndScreen.x, def_rect.x );
     size.y = range( size.y, 0, WndScreen.y, def_rect.y );
     if( size.x + size.width > WndScreen.x ) size.width = WndScreen.x - size.x;
@@ -324,26 +324,26 @@ static void ProcSize( wnd_class wndcls )
     size.width = range( size.width, min.x, WndScreen.x, def_rect.width );
     size.height = range( size.height, min.y, WndScreen.y, def_rect.height );
     if( coord_specified ) {
-        WndRectToPos( &size, &WndPosition[wndcls], &WndScreen );
+        WndRectToPos( &size, &WndPosition[wndclass], &WndScreen );
     }
-    if( wndcls == WND_CURRENT ) {
+    if( wndclass == WND_CURRENT ) {
         wnd = WndFindActive();
     } else {
-        wnd = WndFindClass( NULL, wndcls );
+        wnd = WndFindClass( NULL, wndclass );
     }
     switch( optn ) {
     case OPEN:
     case NEW:
         if( optn == NEW || wnd == NULL ) {
-            WndOpenTab[wndcls]();
+            WndOpenTab[wndclass]();
         } else {
             WndRestoreToFront( wnd );
-            WndPosToRect( &WndPosition[wndcls], &size, WndMainClientSize() );
+            WndPosToRect( &WndPosition[wndclass], &size, WndMainClientSize() );
             WndResizeWindow( wnd, &size );
         }
         break;
     case CLOSE:
-        if( wndcls == WND_ALL ) {
+        if( wndclass == WND_ALL ) {
             for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
                 next = WndNext( wnd );
                 if( WndHasClass( wnd ) ) WndClose( wnd );
@@ -355,15 +355,15 @@ static void ProcSize( wnd_class wndcls )
         }
         break;
     case MINIMIZE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndcls]();
+        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
         WndMinimizeWindow( wnd );
         break;
     case MAXIMIZE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndcls]();
+        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
         WndMaximizeWindow( wnd );
         break;
     case RESTORE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndcls]();
+        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
         WndRestoreWindow( wnd );
         break;
     }
@@ -439,7 +439,7 @@ static void PushRefresh( void )
 
 void ProcDisplay( void )
 {
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     unsigned    old;
 
     if( ScanEOC() ) {
@@ -456,17 +456,17 @@ void ProcDisplay( void )
         ProcStatus();
         break;
     default:
-        wndcls = ReqWndName();
-        ProcSize( wndcls );
+        wndclass = ReqWndName();
+        ProcSize( wndclass );
     }
     NewCurrRadix( old );
 }
 
 
-static  void    PrintPosition( disp_optn optn, wnd_class wndcls,
+static  void    PrintPosition( disp_optn optn, wnd_class wndclass,
                                gui_rect *rect, char *buff, char *buff2 )
 {
-    GetCmdEntry( WndNameTab, wndcls, buff );
+    GetCmdEntry( WndNameTab, wndclass, buff );
     GetCmdEntry( DispOptions, optn, buff2 );
     Format( TxtBuff, "%s %s /%s %d,%d,%d,%d", GetCmdName( CMD_DISPLAY ), buff, buff2,
                      rect->x, rect->y, rect->width, rect->height );
@@ -482,7 +482,7 @@ void ConfigDisp( void )
     char        buff2[20];
     a_window    *head, *next;
     int         h;
-    wnd_class   wndcls;
+    wnd_class   wndclass;
     gui_rect    rect;
 
     ReqEOC();
@@ -503,17 +503,17 @@ void ConfigDisp( void )
                 buff, buff2, h );
         WndDlgTxt( TxtBuff );
     }
-    for( wndcls = 0; wndcls < WND_NUM_CLASSES; ++wndcls ) {
-        if( wndcls == WND_ALL )
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        if( wndclass == WND_ALL )
             continue;
-        if( WndFindClass( NULL, wndcls ) != NULL )
+        if( WndFindClass( NULL, wndclass ) != NULL )
             continue;
-        WndPosToRect( &WndPosition[wndcls], &rect, &WndScreen );
+        WndPosToRect( &WndPosition[wndclass], &rect, &WndScreen );
         if( rect.width == 0 )
             continue;
         if( rect.height == 0 )
             continue;
-        PrintPosition( CLOSE, wndcls, &rect, buff, buff2 );
+        PrintPosition( CLOSE, wndclass, &rect, buff, buff2 );
     }
     head = WndNext( NULL );
     if( head == NULL )
@@ -527,8 +527,8 @@ void ConfigDisp( void )
         wnd = next;
     }
     for( ;; ) {
-        wndcls = WndClass( wnd );
-        switch( wndcls ) {
+        wndclass = WndClass( wnd );
+        switch( wndclass ) {
         case WND_NO_CLASS:
         case WND_ALL:
             break;
@@ -536,16 +536,16 @@ void ConfigDisp( void )
         case WND_FILE:
         case WND_MEMORY:
             WndResizeHook( wnd );
-            WndPosToRect( &WndPosition[wndcls], &rect, &WndScreen );
-            PrintPosition( CLOSE, wndcls, &rect, buff, buff2 );
+            WndPosToRect( &WndPosition[wndclass], &rect, &WndScreen );
+            PrintPosition( CLOSE, wndclass, &rect, buff, buff2 );
             break;
         case WND_VARIABLE:
         case WND_TMPFILE:
             break;
         default:
             WndResizeHook( wnd );
-            WndPosToRect( &WndPosition[wndcls], &rect, &WndScreen );
-            PrintPosition( OPEN, wndcls, &rect, buff, buff2 );
+            WndPosToRect( &WndPosition[wndclass], &rect, &WndScreen );
+            PrintPosition( OPEN, wndclass, &rect, buff, buff2 );
             break;
         }
         if( wnd == head ) break;

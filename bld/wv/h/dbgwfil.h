@@ -44,7 +44,7 @@ extern void     FileReset( a_window *wnd );
 extern bool     SrcMoveDot( a_window *wnd, address addr );
 extern a_window *SrcWndFind( a_window *wnd, address addr, bool track );
 extern bool     SrcHasFileOpen( a_window *wnd );
-extern a_window *DoWndFileOpen( const char *name, void *viewhndl, cue_handle *ch, bool track, bool erase, wnd_class wndcls );
+extern a_window *DoWndFileOpen( const char *name, void *viewhndl, cue_handle *ch, bool track, bool erase, wnd_class wndclass );
 extern a_window *DoWndSrcOpen( cue_handle *ch, bool track );
 extern a_window *WndSrcOpen( void );
 extern void     ProcView( void );

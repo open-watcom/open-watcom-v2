@@ -246,7 +246,7 @@ a_window *W1Open( void )
     WndInitCreateStruct( &info );
     info.info = &W1Info;
     info.extra = WndMustAlloc( sizeof( w1_window ) );
-    info.class = CLASS_W1;
+    info.wndclass = CLASS_W1;
     info.title = "Words";
     info.style |= GUI_INIT_INVISIBLE;
     wnd = WndCreateWithStruct( &info );
