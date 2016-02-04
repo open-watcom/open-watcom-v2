@@ -274,7 +274,7 @@ void AccelMenuItem( gui_menu_struct *menu, bool is_main )
 }
 
 static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
-                  gui_menu_struct **parent, int *num_siblings, wnd_class wndclass )
+                  gui_menu_struct **parent, int *num_siblings, wnd_class_wv wndclass )
 {
     gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
@@ -464,7 +464,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 }
 
 
-gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndclass, bool *is_main )
+gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main )
 {
     const char          *old;
     gui_menu_struct     *menu,*parent;

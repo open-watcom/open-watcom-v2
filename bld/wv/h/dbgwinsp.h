@@ -46,5 +46,5 @@ extern a_window *WndModInspect( mod_handle mod );
 extern void     WndModListInspect( mod_handle mod );
 extern void     WndInspectExprSP( const char *item );
 extern void     WndInspect( const char *item );
-extern a_window *WndClassInspect( wnd_class wndclass );
+extern a_window *WndClassInspect( wnd_class_wv wndclass );
 extern void     WndVarInspect( const char *buff );

@@ -33,6 +33,6 @@ extern wnd_attr         WndMapTabAttr( wnd_attr wndattr );
 extern void             ProcPaint( void );
 extern void             ProcPendingPaint( void );
 extern void             FiniPaint( void );
-extern gui_colour_set   *GetWndColours( wnd_class wndclass );
+extern gui_colour_set   *GetWndColours( wnd_class_wv wndclass );
 extern void             ConfigPaint( void );
 extern void             InitPaint( void );

@@ -803,7 +803,7 @@ wnd_info FileInfo = {
 
 a_window        *DoWndFileOpen( const char *name, void *viewhndl,
                                         cue_handle *ch, bool track,
-                                        bool erase, wnd_class wndclass )
+                                        bool erase, wnd_class_wv wndclass )
 {
     file_window *file;
     a_window    *wnd;

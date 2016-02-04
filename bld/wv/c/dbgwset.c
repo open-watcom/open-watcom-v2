@@ -99,8 +99,8 @@ extern void DClickConf( void )
 
 extern void InputSet( void )
 {
-    wnd_class   wndclass;
-    a_window    *wnd;
+    wnd_class_wv    wndclass;
+    a_window        *wnd;
 
     wndclass = ReqWndName();
     ReqEOC();
@@ -424,7 +424,7 @@ static unsigned MapKey( const char *start, unsigned len )
 }
 
 
-wnd_macro *MacAddDel( unsigned key, wnd_class wndclass, cmd_list *cmds )
+wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
 {
     wnd_macro           **owner,*curr;
     bool                is_main;
@@ -478,15 +478,15 @@ wnd_macro *MacAddDel( unsigned key, wnd_class wndclass, cmd_list *cmds )
 
 extern void MacroSet( void )
 {
-    wnd_class   wndclass;
-    cmd_list    *cmds;
-    unsigned    key;
-    const char  *start;
-    size_t      len;
-    bool        scanned;
-    char        *p;
-    const char  *q;
-    int         i;
+    wnd_class_wv    wndclass;
+    cmd_list        *cmds;
+    unsigned        key;
+    const char      *start;
+    size_t          len;
+    bool            scanned;
+    char            *p;
+    const char      *q;
+    int             i;
 
 
     wndclass = ReqWndName();

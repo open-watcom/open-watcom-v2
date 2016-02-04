@@ -292,7 +292,7 @@ static void set_dlg_attr( gui_dlg_attr dlgattr, gui_colour fore, gui_colour back
 
 static void set_wndclass_attr( wnd_attr wndattr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
 {
-    wnd_class       wndclass;
+    wnd_class_wv    wndclass;
 
     set[wndattr].fore = fore;
     set[wndattr].back = back;
@@ -316,15 +316,16 @@ static void set_wndclass_attr( wnd_attr wndattr, gui_colour_set *set, gui_colour
 
 void ProcPaint( void )
 {
-    wnd_class           wndclass;
+    wnd_class_wv        wndclass;
     gui_colour          fore;
     gui_colour          back;
     gui_colour_set      *set;
     bool                dialog;
     int                 attr;
+    bool		        nowndclass;
 
     dialog = false;
-    wndclass = WND_NO_CLASS;
+    nowndclass = true;
     if( ScanStatus() ) {
         attr = 0;
     } else if( ScanCmd( "DIalog\0" ) == 0 ) {
@@ -332,6 +333,7 @@ void ProcPaint( void )
         attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
     } else {
         wndclass = ReqWndName();
+        nowndclass = false;
         attr = ScanAttr( AttrMap, ArraySize( AttrMap ) );
     }
     fore = ScanColour();
@@ -340,7 +342,7 @@ void ProcPaint( void )
     ReqEOC();
     if( attr < 0 )
         return;
-    if( wndclass == WND_NO_CLASS ) {
+    if( nowndclass ) {
         if( dialog ) {
             GUIGetDialogColours( WndDlgColours );
             set_dlg_attr( (gui_dlg_attr)attr, fore, back );
@@ -393,7 +395,7 @@ void ProcPendingPaint( void )
 
 void FiniPaint( void )
 {
-    wnd_class   wndclass;
+    wnd_class_wv    wndclass;
 
     for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
         if( WndClassColour[wndclass] != NULL ) {
@@ -403,10 +405,8 @@ void FiniPaint( void )
     }
 }
 
-extern gui_colour_set *GetWndColours( wnd_class wndclass )
+extern gui_colour_set *GetWndColours( wnd_class_wv wndclass )
 {
-    if( wndclass == WND_NO_CLASS ) 
-        return( WndColours );
     if( WndClassColour[wndclass] != NULL ) 
         return( WndClassColour[wndclass] );
     if( WndClassColour[WND_ALL] != NULL ) 
@@ -500,14 +500,14 @@ static void PrintDialogColours( void )
 }
 
 
-static void PrintColours( wnd_class wndclass, gui_colour_set *set, gui_colour_set *def )
+static void PrintColours( wnd_class_wv wndclass, gui_colour_set *set, gui_colour_set *def )
 {
-    char        wndname[20];
-    char        attr[30];
-    char        fore[20];
-    char        back[20];
-    int         i;
-    wnd_class   wndclass1;
+    char            wndname[20];
+    char            attr[30];
+    char            fore[20];
+    char            back[20];
+    int             i;
+    wnd_class_wv    wndclass1;
 
     GetCmdEntry( WndNameTab, wndclass, wndname );
     for( i = 0; i < ArraySize( AttrMap ); ++i ) {
@@ -525,7 +525,7 @@ static void PrintColours( wnd_class wndclass, gui_colour_set *set, gui_colour_se
 void ConfigPaint( void )
 {
     gui_colour_set  *def;
-    wnd_class       wndclass;
+    wnd_class_wv    wndclass;
 
     def = WndClassColour[WND_ALL];
     if( def == NULL ) {

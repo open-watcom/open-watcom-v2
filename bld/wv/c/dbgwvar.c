@@ -111,7 +111,7 @@ static char **VarNames[] = {
     #undef pick
 };
 
-static wnd_class VarWndClass[] = {
+static wnd_class_wv VarWndClass[] = {
     #define pick(e,name,wndclass,icon)    wndclass,
     #include "_dbgvar.h"
     #undef pick
@@ -830,7 +830,7 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 
-static bool VarDoClass( wnd_class wndclass, bool (*rtn)( var_info*, void* ), void *cookie )
+static bool VarDoClass( wnd_class_wv wndclass, bool (*rtn)( var_info*, void* ), void *cookie )
 {
     a_window    *wnd;
 

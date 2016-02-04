@@ -35,7 +35,7 @@ extern void         InputSet( void );
 extern void         InputConf( void );
 extern char         LookUpCtrlKey( unsigned key );
 extern char         *KeyName( unsigned key );
-extern wnd_macro    *MacAddDel( unsigned key, wnd_class wndclass, cmd_list *cmds );
+extern wnd_macro    *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds );
 extern void         MacroSet( void );
 extern void         MacroConf( void );
 extern void         FiniMacros( void );

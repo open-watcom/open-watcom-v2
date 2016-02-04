@@ -306,9 +306,9 @@ wnd_info FuncInfo = {
 
 extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
-    func_window *func;
-    wnd_class   wndclass;
-    const char  *title;
+    func_window     *func;
+    wnd_class_wv    wndclass;
+    const char      *title;
 
     func = WndMustAlloc( sizeof( func_window ) );
     func->mod = mod;

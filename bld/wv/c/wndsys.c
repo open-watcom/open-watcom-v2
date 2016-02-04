@@ -347,7 +347,7 @@ void WndDebug( void )
 }
 
 
-void WndRedraw( wnd_class wndclass )
+void WndRedraw( wnd_class_wv wndclass )
 {
     a_window    *wnd;
 
@@ -555,7 +555,7 @@ void WndSetOpenNoShow( void )
 }
 
 extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class wndclass, void *extra,
+                                    wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
@@ -618,7 +618,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 }
 
 extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class wndclass, void *extra, gui_resource *icon )
+                               wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
 }

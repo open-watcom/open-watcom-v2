@@ -71,7 +71,7 @@ extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
 
 
-static a_window *WndFindExisting( wnd_class wndclass )
+static a_window *WndFindExisting( wnd_class_wv wndclass )
 {
     a_window    *wnd;
 
@@ -375,7 +375,7 @@ extern  void    WndInspect( const char *item )
     }
 }
 
-a_window *WndClassInspect( wnd_class wndclass )
+a_window *WndClassInspect( wnd_class_wv wndclass )
 {
     a_window    *wnd;
 

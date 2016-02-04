@@ -176,7 +176,6 @@ void FingOpen( void )
     WndInitCreateStruct( &info );
     info.title = NULL;
     info.info = &FingInfo;
-    info.wndclass = WND_NO_CLASS;
     info.extra = NULL;
     if( GUIIsGUI() ) {
         WndGetGadgetSize( GADGET_SPLASH, &BitmapSize );

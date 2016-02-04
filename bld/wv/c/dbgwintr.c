@@ -132,8 +132,8 @@ extern wnd_info *WndInfoTab[];
 
 void XDumpMenus( void )
 {
-    wnd_class   wndclass;
-    char        *p;
+    wnd_class_wv    wndclass;
+    char            *p;
 
     ReqEOC();
     for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {

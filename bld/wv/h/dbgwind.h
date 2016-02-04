@@ -60,12 +60,13 @@ typedef enum wnd_controls {
 
 #define MAX_TAB         80
 
-enum {
+typedef enum {
     #define pick( a,b,c,d,e,f ) b,
     #include "wndnames.h"
     #undef pick
-    WND_NUM_CLASSES
-};
+    WND_NUM_CLASSES,
+    WND_NOCLASS = WND_NO_CLASS
+} wnd_class_wv;
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
@@ -82,13 +83,13 @@ typedef enum macro_type {
 } macro_type;
 
 typedef struct wnd_macro {
-        struct wnd_macro        *link;
-        void                    *cmd;
-        unsigned                key;
-        wnd_class               wndclass;
-        int                     menu_item;
-        gui_menu_struct         *menu;
-        macro_type              type;
+    struct wnd_macro        *link;
+    void                    *cmd;
+    unsigned                key;
+    wnd_class_wv            wndclass;
+    int                     menu_item;
+    gui_menu_struct         *menu;
+    macro_type              type;
 } wnd_macro;
 
 #define pick( a,b,c,d,e,f ) extern wnd_metrics e;

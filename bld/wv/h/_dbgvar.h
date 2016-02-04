@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-/*    enum           name                                wnd_class      icon     */
+/*    enum           name                                wnd_class_wv   icon     */
 pick( VAR_VARIABLE,  LITREF_ENG( Empty ),                WND_VARIABLE,  &VarIcon )
 pick( VAR_WATCH,     LITREF_DUI( WindowWatches ),        WND_WATCH,     &WatIcon )
 pick( VAR_LOCALS,    LITREF_ENG( Empty ),                WND_LOCALS,    &LocIcon )
