@@ -103,7 +103,7 @@ extern  char            *Squish( file_parse *parse, char *into );
 
 dbg_switches            DbgSwitches;
 char                    *TxtBuff;
-char                    Buff[ BUFF_LEN ];
+char                    Buff[BUFF_LEN];
 char                    NullStr[] = { '\0' };
 int                     MaxOnLine = { 0 };
 int                     Typing = { 0 };
@@ -126,33 +126,33 @@ COPYPTR CopySpecs;
 #define REAL_CODE( err ) (GetSystemErrCode(err)&0xffff)
 
 const char *HelpText[] = {
-"",
-"Commands which accept special file names are:",
-"",
-"      copy    [/s] src_spec [dst_spec] [/s] - copy files (/s=recursive)",
-"      dir     [/w] dir_spec [/w]            - directory (/w=wide)",
-"      cd      dir_spec                      - set current directory",
-"      chdir   dir_spec                      - set current directory",
-"      md      dir_spec                      - create directory",
-"      mkdir   dir_spec                      - create directory",
-"      rd      [/s] dir_spec [/s]            - delete directory",
-"      rmdir   [/s] dir_spec [/s]            - delete directory",
-"      type    dir_spec                      - type a file",
-"      del     [/s] file_spec [/s]           - erase files (/s= recursive)",
-"      erase   [/s] file_spec [/s]           - erase files (/s= recursive)",
-"      ren     src_spec dst_spec             - rename files",
-"      drive:                                - set drive and XXLcle",
-"      exit                                  - leave rfx",
-"",
-" Special file names are the same as DOS file names except",
-" they may be preceded by a XXLcle specifier of the form:",
-"      @[XXLcle]",
-"      - where: XXLcle = 'l' for XXLcl machine, 'r' for XXRem machine",
-"      - if a file name starts with an '@', then double it e.g. '@@file'",
-" Note:",
-"      If [dst_spec] is omitted from the copy command, it defaults to the",
-"      current directory on the machine NOT specified by [src_spec]",
-NULL
+    "",
+    "Commands which accept special file names are:",
+    "",
+    "      copy    [/s] src_spec [dst_spec] [/s] - copy files (/s=recursive)",
+    "      dir     [/w] dir_spec [/w]            - directory (/w=wide)",
+    "      cd      dir_spec                      - set current directory",
+    "      chdir   dir_spec                      - set current directory",
+    "      md      dir_spec                      - create directory",
+    "      mkdir   dir_spec                      - create directory",
+    "      rd      [/s] dir_spec [/s]            - delete directory",
+    "      rmdir   [/s] dir_spec [/s]            - delete directory",
+    "      type    dir_spec                      - type a file",
+    "      del     [/s] file_spec [/s]           - erase files (/s= recursive)",
+    "      erase   [/s] file_spec [/s]           - erase files (/s= recursive)",
+    "      ren     src_spec dst_spec             - rename files",
+    "      drive:                                - set drive and XXLcle",
+    "      exit                                  - leave rfx",
+    "",
+    " Special file names are the same as DOS file names except",
+    " they may be preceded by a XXLcle specifier of the form:",
+    "      @[XXLcle]",
+    "      - where: XXLcle = 'l' for XXLcl machine, 'r' for XXRem machine",
+    "      - if a file name starts with an '@', then double it e.g. '@@file'",
+    " Note:",
+    "      If [dst_spec] is omitted from the copy command, it defaults to the",
+    "      current directory on the machine NOT specified by [src_spec]",
+    NULL
 };
 
 char * ErrMessages[] = {
@@ -199,14 +199,14 @@ char * ErrMessages[] = {
 
 
 static char * Day[] = {
-        "Sun  ",
-        "Mon  ",
-        "Tue  ",
-        "Wed  ",
-        "Thu  ",
-        "Fri  ",
-        "Sat  "
-        };
+    "Sun  ",
+    "Mon  ",
+    "Tue  ",
+    "Wed  ",
+    "Thu  ",
+    "Fri  ",
+    "Sat  "
+};
 
 
 /* Forward declarations */
@@ -323,7 +323,7 @@ void GrabHandlers( void )
 static void CheckError( void )
 {
     char    *p;
-    char    buff[ 256 ];
+    char    buff[256];
 
     if( ErrorStatus != 0 ) {
         p = SysErrMsg( ErrorStatus, buff );
@@ -411,9 +411,9 @@ static void DItoD( long s, char *d ) {
 
 static void ItoD( unsigned int i, char *b ) {
 
-    b[ 1 ] = i % 10 + '0';
+    b[1] = i % 10 + '0';
     i /= 10;
-    b[ 0 ] = i % 10 + '0';
+    b[0] = i % 10 + '0';
 }
 
 
@@ -446,7 +446,7 @@ static void SetDrv( int drive, object_loc loc )
 }
 
 static error_idx RemoveDir( const char *name, object_loc loc )
-/**********************************************/
+/************************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteRmDir( name ) );
@@ -456,7 +456,7 @@ static error_idx RemoveDir( const char *name, object_loc loc )
 }
 
 static error_idx SetDir( const char *name, object_loc loc )
-/*******************************************/
+/*********************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteSetCWD( name ) );
@@ -466,7 +466,7 @@ static error_idx SetDir( const char *name, object_loc loc )
 }
 
 static error_idx GetDir( int drive, char *name, object_loc loc )
-/************************************************/
+/**************************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
     if( loc == LOC_REMOTE ) {
@@ -477,13 +477,13 @@ static error_idx GetDir( int drive, char *name, object_loc loc )
 }
 
 static error_idx Erase( const char *name, object_loc loc )
-/******************************************/
+/********************************************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
 static error_idx MakeDir( const char *name, object_loc loc )
-/********************************************/
+/**********************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteMkDir( name ) );
@@ -494,7 +494,7 @@ static error_idx MakeDir( const char *name, object_loc loc )
 
 
 static long GetAttrs( const char *fn, object_loc loc )
-/**************************************/
+/****************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteGetFileAttr( fn ) );
@@ -504,7 +504,7 @@ static long GetAttrs( const char *fn, object_loc loc )
 }
 
 static int IsDevice( const char *fn, object_loc loc )
-/*************************************/
+/***************************************************/
 {
     unsigned h;
 
@@ -519,7 +519,7 @@ static int IsDevice( const char *fn, object_loc loc )
 
 
 static error_idx FindFirst( const char *name, object_loc loc, int attr )
-/********************************************************/
+/**********************************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteFindFirst( name, &Info, sizeof( Info ), attr ) );
@@ -529,7 +529,7 @@ static error_idx FindFirst( const char *name, object_loc loc, int attr )
 }
 
 static int FindNext( object_loc loc )
-/*********************/
+/***********************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteFindNext( &Info, sizeof( Info ) ) );
@@ -539,7 +539,7 @@ static int FindNext( object_loc loc )
 }
 
 static error_idx Rename( const char *f1, const char *f2, object_loc loc )
-/*********************************************************/
+/***********************************************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteRename( f1, f2 ) );
@@ -549,7 +549,7 @@ static error_idx Rename( const char *f1, const char *f2, object_loc loc )
 }
 
 long FreeSpace( char drive, object_loc loc )
-/***********************************/
+/******************************************/
 {
     if( loc == LOC_REMOTE ) {
         return( RemoteGetFreeSpace( drive ) );
@@ -618,7 +618,7 @@ static void Prompt( void )
                 break;
             case 'd':
                 LocalDate( &year, &month, &day, &weekday );
-                strcpy( Buff, Day[ weekday ] );
+                strcpy( Buff, Day[weekday] );
                 ItoD( month, Buff+5 );
                 Buff[7] = '-';
                 ItoD( day, Buff+8 );
@@ -782,7 +782,7 @@ int ProcessCmd( const char *cmd ) {
     argc = 0;
     p = strtok( cmd_tokens, " " );
     while( p != NULL ) {
-        argv[ argc ] = p;
+        argv[argc] = p;
         ++argc;
         p = strtok( NULL, " " );
     }
@@ -797,32 +797,32 @@ int ProcessCmd( const char *cmd ) {
 int ProcessArgv( int argc, char **argv, const char *cmd ) {
 
     ErrorStatus = 0;
-    strlwr( argv[ 0 ] );
-    if( strcmp( argv[ 0 ], "copy" ) == 0 ) {
+    strlwr( argv[0] );
+    if( strcmp( argv[0], "copy" ) == 0 ) {
         ProcCopy( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "dir" ) == 0 ) {
+    } else if( strcmp( argv[0], "dir" ) == 0 ) {
         ProcDir( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "md"    ) == 0
-            || strcmp( argv[ 0 ], "mkdir" ) == 0 ) {
+    } else if( strcmp( argv[0], "md"    ) == 0
+            || strcmp( argv[0], "mkdir" ) == 0 ) {
         ProcMakeDir( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "del"    ) == 0
-            || strcmp( argv[ 0 ], "erase" ) == 0 ) {
+    } else if( strcmp( argv[0], "del"    ) == 0
+            || strcmp( argv[0], "erase" ) == 0 ) {
         ProcErase( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "rd"    ) == 0
-            || strcmp( argv[ 0 ], "rmdir" ) == 0 ) {
+    } else if( strcmp( argv[0], "rd"    ) == 0
+            || strcmp( argv[0], "rmdir" ) == 0 ) {
         ProcDelDir( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "exit" ) == 0 ) {
+    } else if( strcmp( argv[0], "exit" ) == 0 ) {
         return( -1 );
-    } else if( strcmp( argv[ 0 ], "cd"    ) == 0
-            || strcmp( argv[ 0 ], "chdir" ) == 0 ) {
+    } else if( strcmp( argv[0], "cd"    ) == 0
+            || strcmp( argv[0], "chdir" ) == 0 ) {
         ProcCD( argc - 1, argv + 1, true );
-    } else if( strcmp( argv[ 0 ], "ren" ) == 0 ) {
+    } else if( strcmp( argv[0], "ren" ) == 0 ) {
         ProcRename( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "type" ) == 0 ) {
+    } else if( strcmp( argv[0], "type" ) == 0 ) {
         ProcType( argc - 1, argv + 1 );
-    } else if( strcmp( argv[ 0 ], "?" ) == 0 ) {
+    } else if( strcmp( argv[0], "?" ) == 0 ) {
         Help();
-    } else if( strcmp( argv[ 0 ], "" ) == 0 ) {
+    } else if( strcmp( argv[0], "" ) == 0 ) {
     } else if( ProcDrive( argc, argv ) == 0 ) {
         if( cmd != NULL ) {
             system( cmd );
@@ -845,25 +845,25 @@ static error_idx   Renamef( const char *fn1, object_loc f1loc, const char *fn2, 
     fn1 = _FileParse( fn1, &Parse1 );
     fn2 = _FileParse( fn2, &Parse2 );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
-    if( Parse1.drive[ 0 ] == '\0' ) {
-        Parse1.drive[ 0 ] = GetDrv( f1loc );
-        Parse1.drive[ 1 ] = ':';
+    if( Parse1.drive[0] == '\0' ) {
+        Parse1.drive[0] = GetDrv( f1loc );
+        Parse1.drive[1] = ':';
     }
-    if( Parse2.drive[ 0 ] == '\0' ) {
+    if( Parse2.drive[0] == '\0' ) {
         CopyStr( Parse1.drive, Parse2.drive );
     }
-    if( Parse2.path[ 0 ] == '\0' ) {
+    if( Parse2.path[0] == '\0' ) {
         CopyStr( Parse1.path, Parse2.path );
     }
     if( f1loc != f2loc ) {
         SysSetErr( IO_DIFF_DEV );
         return( 0 );
     }
-    if( toupper( Parse1.drive[ 0 ] ) != toupper( Parse2.drive[ 0 ] ) ) {
+    if( toupper( Parse1.drive[0] ) != toupper( Parse2.drive[0] ) ) {
         SysSetErr( IO_DIFF_DEV );
         return( 0 );
     }
-    if( Parse2.name[ 0 ] == '\0' ) {
+    if( Parse2.name[0] == '\0' ) {
         SysSetErr( IO_DUP_OR_NOT_FOUND );
         return( 0 );
     }
@@ -910,9 +910,9 @@ void ProcRename( int argc, char **argv )
     src = NULL;
     for( i = 0; i < argc; ++i ) {
         if( src == NULL ) {
-            src = argv[ i ];
+            src = argv[i];
         } else if( dst == NULL ) {
-            dst = argv[ i ];
+            dst = argv[i];
         } else {
             WhatDidYouSay();
             return;
@@ -989,28 +989,28 @@ static void WrtCopy( const char *src, const char *dst, object_loc src_loc, objec
     int         len;
 
     memset( Buff, ' ', 80 );
-    Buff[ 0 ] = '\r';
+    Buff[0] = '\r';
     len = strlen( src );
     strncpy( Buff + 1, src, len );
     len += 2;
     if( len > MaxOnLine ) {
         MaxOnLine = len;
     }
-    Buff[ MaxOnLine ] = '\r';
+    Buff[MaxOnLine] = '\r';
     if( src_loc == LOC_REMOTE ) {
         RemoteWriteConsole( Buff, MaxOnLine );
     } else if( !Typing ) {
         WriteStream( STD_ERR, Buff, MaxOnLine );
     }
     memset( Buff, ' ', 80 );
-    Buff[ 0 ] = '\r';
+    Buff[0] = '\r';
     len = strlen( dst );
     strncpy( Buff + 1, dst, len );
     len += 2;
     if( len > MaxOnLine ) {
         MaxOnLine = len;
     }
-    Buff[ MaxOnLine ] = '\r';
+    Buff[MaxOnLine] = '\r';
     if( dst_loc == LOC_REMOTE ) {
         RemoteWriteConsole( Buff, MaxOnLine );
     } else if( !Typing ) {
@@ -1098,7 +1098,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
         endpath = Squish( &Parse1, Name1 );
         for(;;) {
             if( Info.attr & IO_SUBDIRECTORY ) {
-                if( Info.name[ 0 ] != '.' ) {
+                if( Info.name[0] != '.' ) {
                     CopyStr( endpath, Name3 );
                     CopyStr( Name3, CopyStr( "\\", CopyStr( Info.name,endpath ) ) );
                     endpath = Squish( &Parse2, Name2 );
@@ -1121,7 +1121,9 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                     endpath = Squish( &Parse1, Name1 );
                 }
             }
-            if( FindNext( f1loc ) != 0 ) break;
+            if( FindNext( f1loc ) != 0 ) {
+                break;
+            }
         }
     }
 }
@@ -1139,10 +1141,10 @@ static error_idx   CopyASpec( const char *f1, const char *f2, object_loc f1loc, 
     f2 = _FileParse( f2, &Parse2 );
     FinishName( f2, &Parse2, f2loc, 1 );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
-    if( Parse2.name[ 0 ] == '\0' )
+    if( Parse2.name[0] == '\0' )
         return( IO_FILE_NOT_FOUND );
     dst_cluster = 0xFFFF;
-    if( ( f1loc == f2loc ) && ( Parse1.drive[ 0 ] == Parse2.drive[ 0 ] ) ) {
+    if( ( f1loc == f2loc ) && ( Parse1.drive[0] == Parse2.drive[0] ) ) {
         Squish( &Parse2, Name2 );
         retc = FindFirst( Name2, f2loc, IO_SUBDIRECTORY );
         if( retc == 0 ) {
@@ -1210,7 +1212,9 @@ static void WildCopy( int recursive )
         }
         if( recursive ) {
             RRecurse( list->src, list->dst, list->src_loc, list->dst_loc );
-            if( ErrorStatus != 0 ) return;
+            if( ErrorStatus != 0 ) {
+                return;
+            }
         }
         if( list == NULL && first && none_in_root ) {
             TransSetErr( errcod );
@@ -1237,12 +1241,12 @@ void ProcCopy( int argc, char **argv )
     FilesCopied = 0;
     DirectoriesMade = 0;
     for( i = 0; i < argc; ++i ) {
-        if( Option( argv[ i ], 's' ) ) {
+        if( Option( argv[i], 's' ) ) {
             recursive = 1;
         } else if( src == NULL ) {
-            src = argv[ i ];
+            src = argv[i];
         } else if( dst == NULL ) {
-            dst = argv[ i ];
+            dst = argv[i];
         } else {
             WhatDidYouSay();
             return;
@@ -1312,7 +1316,7 @@ void ProcType( int argc, char **argv )
         WhatDidYouSay();
         return;
     }
-    src = RealName( argv[ 0 ], &src_loc );
+    src = RealName( argv[0], &src_loc );
     AddCopySpec( src, "con", src_loc, -1 );
     Typing = 1;
     WildCopy( 0 );
@@ -1345,22 +1349,22 @@ static dir_handle      *DirOpenf( const char *fspec, int fnloc )
     h->location = fnloc;
     fspec = _FileParse( fspec, &parse );
     append = NULL;
-    if( parse.name[ 0 ] == '\0' ) {
-        if( parse.ext[ 0 ] == '\0' ) {
-            if( parse.slash || parse.path[ 0 ] == '\0' ) {
+    if( parse.name[0] == '\0' ) {
+        if( parse.ext[0] == '\0' ) {
+            if( parse.slash || parse.path[0] == '\0' ) {
                 append = "*.*";
             } else {
                 append = "\\*.*";
             }
         } else {
-            parse.name[ 0 ] = '*';
-            parse.name[ 1 ] = '\0';
+            parse.name[0] = '*';
+            parse.name[1] = '\0';
         }
     } else {
         retl = GetAttrs( fspec, fnloc );
         if( retl >= 0 && ( retl & IO_SUBDIRECTORY ) != 0 ) {    /* 11-jun-90 */
             append = "\\*.*";
-        } else if( parse.ext[ 0 ] == '\0' ) {
+        } else if( parse.ext[0] == '\0' ) {
             CopyStr( ".*", parse.ext );
         }
     }
@@ -1411,7 +1415,7 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     unsigned int        hour;
 
     Fill( buff, 39, ' ' );
-    buff[ 39 ] = '\0';
+    buff[39] = '\0';
     if( dir->attr & IO_SUBDIRECTORY ) {
         *CopyStr( dir->name, buff ) = ' ';
         if( wide ) {                    /* 11-jun-90 */
@@ -1444,19 +1448,20 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     ItoD( ( date >> 5 ) & 0x000F, buff + 23 ); /* month */
     ItoD( date & 0x0001F, buff + 26 );         /* day */
     ItoD( ( date >> 9 ) + 1980, buff + 29 );
-    buff[ 28 ] = '-';
-    buff[ 25 ] = '-';
+    buff[28] = '-';
+    buff[25] = '-';
     time = dir->time;
     hour = time >> 11;
     if( hour <= 11 ) {
-        buff[ 38 ] = 'a';
+        buff[38] = 'a';
     } else {
         hour -= 12;
-        buff[ 38 ] = 'p';
+        buff[38] = 'p';
     }
-    if( hour == 0 ) hour = 12;
+    if( hour == 0 )
+        hour = 12;
     ItoD( hour, buff + 33 );
-    buff[ 35 ] = ':';
+    buff[35] = ':';
     ItoD( ( time >> 5 ) & 0x003F, buff + 36 );
 }
 
@@ -1466,8 +1471,8 @@ int     GetFreeSpace( dir_handle *h, object_loc loc )
     char                drive;
 
     path = h->path;
-    if( path[ 1 ] == ':' ) {
-        drive = tolower( path[ 0 ] ) - 'a' + 1;
+    if( path[1] == ':' ) {
+        drive = tolower( path[0] ) - 'a' + 1;
     } else {
         drive = 0;
     }
@@ -1490,12 +1495,12 @@ void ProcDir( int argc, char **argv )
     pause = 0;
     src = NULL;
     for( i = 0; i < argc; ++i ) {
-        if( Option( argv[ i ], 'w' ) ) {
+        if( Option( argv[i], 'w' ) ) {
             wide = 1;
-        } else if( Option( argv[ i ], 'p' ) ) {
+        } else if( Option( argv[i], 'p' ) ) {
             pause = 1;
         } else if( src == NULL ) {
-            src = argv[ i ];
+            src = argv[i];
         } else {
             WhatDidYouSay();
             return;
@@ -1510,13 +1515,13 @@ void ProcDir( int argc, char **argv )
     if( io != NULL ) {
         i = 0;
         line = 0;
-        for( ;; ) {
-            if( CtrlCHit() ) break;
+        while( !CtrlCHit() ) {
             DirReadf( io, Buff, wide );
-            if( Buff[0] == '\0' ) break;
+            if( Buff[0] == '\0' )
+                break;
             ++i;
             if( wide ) {
-                Buff[ 14 ] = '\0';
+                Buff[14] = '\0';
             }
             if( wide == 0 ) {
                 WriteText( STD_OUT, Buff, strlen( Buff ) );
@@ -1598,7 +1603,7 @@ void ProcCD( int argc, char **argv, int crlf )
         Buff[1] = ':';
         Buff[2] = '\\';
         WriteStream( STD_OUT, Buff, 3 );
-        GetDir( Buff[ 0 ] - 'A' + 1, Buff, src_loc );
+        GetDir( Buff[0] - 'A' + 1, Buff, src_loc );
         WriteStream( STD_OUT, Buff, strlen( Buff ) );
         if( crlf ) {
             WriteNL( STD_OUT );
@@ -1642,7 +1647,7 @@ static error_idx   Scratchf( const char *fn, int fnloc )
         SysSetErr( IO_FILE_NOT_FOUND );
     } else {
         endptr = Parse1.drive;
-        if( Parse1.drive[ 0 ] != '\0' ) {
+        if( Parse1.drive[0] != '\0' ) {
             endptr += 2;
         }
         endptr = CopyStr( Parse1.path, endptr );
@@ -1670,7 +1675,9 @@ static void BuildDFSList( void )
         next_last = CopySpecs;
         for( curr = CopySpecs; curr != last; curr = curr->next ) {
             RRecurse( curr->src, curr->dst, curr->src_loc, curr->dst_loc );
-            if( ErrorStatus != 0 ) return;
+            if( ErrorStatus != 0 ) {
+                return;
+            }
         }
     }
 }
@@ -1686,10 +1693,10 @@ void ProcErase( int argc, char **argv )
     recursive = 0;
     src = NULL;
     for( i = 0; i < argc; ++i ) {
-        if( Option( argv[ i ], 's' ) ) {
+        if( Option( argv[i], 's' ) ) {
             recursive = 1;
         } else if( src == NULL ) {
-            src = argv[ i ];
+            src = argv[i];
         } else {
             WhatDidYouSay();
             return;
@@ -1709,7 +1716,8 @@ void ProcErase( int argc, char **argv )
     while( CopySpecs != NULL ) {
         ErrorStatus = 0;
         Scratchf( CopySpecs->src, CopySpecs->src_loc );
-        if( ErrorStatus == 0 ) erased_one = true;
+        if( ErrorStatus == 0 )
+            erased_one = true;
         FreeCopySpec( CopySpecs );
     }
     if( erased_one ) {
@@ -1735,10 +1743,10 @@ void ProcDelDir( int argc, char **argv )
     recursive = 0;
     src = NULL;
     for( i = 0; i < argc; ++i ) {
-        if( Option( argv[ i ], 's' ) ) {
+        if( Option( argv[i], 's' ) ) {
             recursive = 1;
         } else if( src == NULL ) {
-            src = argv[ i ];
+            src = argv[i];
         } else {
             WhatDidYouSay();
             return;
@@ -1781,11 +1789,13 @@ int ProcDrive( int argc, char **argv )
     object_loc  src_loc;
     int         len;
 
-    if( argc != 1 ) return( 0 );
-    src = argv[ 0 ];
+    if( argc != 1 )
+        return( 0 );
+    src = argv[0];
     src = RealName( src, &src_loc );
     len = strlen( src ) - 1;
-    if( src[ len ] != ':' ) return( 0 );
+    if( src[len] != ':' )
+        return( 0 );
     if( len == 0 ) {
         DefaultLocation = src_loc;
         return( 1 );
@@ -1821,56 +1831,55 @@ const char    *_FileParse( const char *name, file_parse *file )
 
     Fill( (char *)file, sizeof( file_parse ), 0 );
     dosname = name;
-    if( dosname[ 1 ] == ':' ) {
-        file->drive[ 0 ] = *dosname;
-        file->drive[ 1 ] = ':';
-        file->drive[ 2 ] = '\0';
+    if( dosname[1] == ':' ) {
+        file->drive[0] = *dosname;
+        file->drive[1] = ':';
+        file->drive[2] = '\0';
     }
     curr = dosname + strlen( dosname ) - 1;
     extlen = 0;
-    p = curr;
-    for(;;) {
-        if( p < dosname ) break;
+    for( p = curr; p >= dosname; --p ) {
         ch = *p;
-        if( ch == '/' ) break;
-        if( ch == '\\' ) break;
-        if( ch == ':' ) break;
+        if( ch == '/' )
+            break;
+        if( ch == '\\' )
+            break;
+        if( ch == ':' )
+            break;
         ++extlen;
         if( ch == '.' ) {
             CopyStrMax( p, file->ext, MAX_EXT );
             curr = p - 1;
             break;
         }
-        --p;
     }
     file->slash = 0;
-    p = curr;
-    for(;;) {
-        if( p < dosname ) break;
+    for( p = curr; p >= dosname; --p ) {
         ch = *p;
         if( ch == '/' || ch == '\\' || ch == ':' ) {
             file->slash = 1;
             break;
         }
-        if( ch == ':' ) break;
-        if( ch == '.' ) break;
-        --p;
+        if( ch == ':' )
+            break;
+        if( ch == '.' ) {
+            break;
+        }
     }
     *CopyMax( p + 1, file->name, curr - p, MAX_NAME ) = '\0';
     curr = p;
-    p = curr;
-    for(;;) {
-        if( p < dosname ) break;
+    for( p = curr; p >= dosname; --p ) {
         ch = *p;
-        if( ch == ':' ) break;
-        --p;
+        if( ch == ':' ) {
+            break;
+        }
     }
     p1 = CopyMax( p + 1, file->path, curr - p, MAX_PATH );
     if( extlen == 1 ) {
-        if( file->name[ 0 ] == '\0' ) {
+        if( file->name[0] == '\0' ) {
             *p1++ = '.';
             file->slash = 0;
-            file->ext[ 0 ] = '\0';
+            file->ext[0] = '\0';
         }
     }
     *p1 = '\0';
@@ -1930,9 +1939,9 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
 
     endptr = &(parse->path[strlen( parse->path )]);
     parse->device = 0;
-    if( parse->name[ 0 ] == '\0' ) {
-        if( parse->ext[ 0 ] == '\0' ) {
-            if( parse->slash || parse->path[ 0 ] == '\0' ) {
+    if( parse->name[0] == '\0' ) {
+        if( parse->ext[0] == '\0' ) {
+            if( parse->slash || parse->path[0] == '\0' ) {
                 CopyStr( "*", parse->name );
                 CopyStr( ".*", parse->ext );
             } else {
@@ -1942,8 +1951,8 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
                 CopyStr( ".*", parse->ext );
             }
         } else {
-            parse->name[ 0 ] = '*';
-            parse->name[ 1 ] = '\0';
+            parse->name[0] = '*';
+            parse->name[1] = '\0';
         }
     } else if( IsDevice( fn, loc ) ) {
         parse->device = 1;
@@ -1955,13 +1964,13 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
             endptr = CopyStr( "\\", endptr );
             CopyStr( "*", parse->name );
             CopyStr( ".*", parse->ext );
-        } else if( ( parse->ext[ 0 ] == '\0' ) && addext ) {
+        } else if( ( parse->ext[0] == '\0' ) && addext ) {
             CopyStr( ".*", parse->ext );
         }
     }
-    if( !parse->device && parse->drive[ 0 ] == '\0' ) {
-        parse->drive[ 0 ] = GetDrv( loc );
-        parse->drive[ 1 ] = ':';
+    if( !parse->device && parse->drive[0] == '\0' ) {
+        parse->drive[0] = GetDrv( loc );
+        parse->drive[1] = ':';
     }
 }
 
