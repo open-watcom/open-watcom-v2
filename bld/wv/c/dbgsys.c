@@ -50,7 +50,7 @@
 
 static const char SystemOps[] = { "Remote\0Local\0" };
 
-void DoSystem( const char *cmd, size_t len, int loc )
+void DoSystem( const char *cmd, size_t len, object_loc loc )
 {
     long        rc;
 //    error_idx   ret;
@@ -59,9 +59,9 @@ void DoSystem( const char *cmd, size_t len, int loc )
 #endif
 
     DUISysStart();
-    if( loc == 0 && _IsOn( SW_REMOTE_FILES ) )
-        loc = 1;
-    if( loc > 0 ) {
+    if( loc == LOC_DEFAULT && _IsOn( SW_REMOTE_FILES ) )
+        loc = LOC_REMOTE;
+    if( loc == LOC_REMOTE ) {
 //        ret = RemoteFork( cmd, len );
         RemoteFork( cmd, len );
         rc = 0;
@@ -88,17 +88,17 @@ void ProcSystem( void )
 {
     const char  *start;
     size_t      len;
-    int         loc;
+    object_loc  loc;
 
-    loc = 0;
+    loc = LOC_DEFAULT;
     if( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( SystemOps ) ) {
         case 0:
-            loc = 1;
+            loc = LOC_REMOTE;
             break;
         case 1:
-            loc = -1;
+            loc = LOC_LOCAL;
             break;
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );

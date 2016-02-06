@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,8 @@
 ****************************************************************************/
 
 
-extern void DoSystem( const char *cmd, size_t len, int loc );
+#include "objloc.h"
+
+
+extern void DoSystem( const char *cmd, size_t len, object_loc loc );
 extern void ProcSystem( void );

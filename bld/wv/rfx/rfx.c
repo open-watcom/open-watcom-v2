@@ -85,11 +85,11 @@ enum {
 #define BUFF_LEN        4096
 
 typedef struct copyspec {
-        struct copyspec *next;
-        char            *src;
-        int             src_loc;
-        char            *dst;
-        int             dst_loc;
+    struct copyspec *next;
+    char            *src;
+    object_loc      src_loc;
+    char            *dst;
+    object_loc      dst_loc;
 } COPYSPEC, *COPYPTR;
 
 extern  bool            InitTrap( const char * );
@@ -98,7 +98,7 @@ extern  void            FiniTrap( void );
 extern  void            InitInt( void );
 extern  void            FiniInt( void );
 extern  int             CtrlCHit( void );
-extern  long            FreeSpace( char drive, int loc );
+extern  long            FreeSpace( char drive, object_loc loc );
 
 extern  const char      *_FileParse( const char *name, file_parse *file );
 extern  char            *Squish( file_parse *parse, char *into );
@@ -110,7 +110,7 @@ char                    NullStr[] = { '\0' };
 int                     MaxOnLine = { 0 };
 int                     Typing = { 0 };
 error_idx               ErrorStatus = { 0 };
-int                     DefaultLocation = { 0 };
+object_loc              DefaultLocation = LOC_DEFAULT;
 static  file_parse      Parse1;
 static  file_parse      Parse2;
 static  file_parse      Parse3;
@@ -213,8 +213,8 @@ static char * Day[] = {
 
 /* Forward declarations */
 extern  void    Replace( const char *frum, const char *to, char *into );
-extern  void    FinishName( const char *fn, file_parse *parse, int loc, int addext );
-extern  int     GetFreeSpace( dir_handle *h, int loc );
+extern  void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
+extern  int     GetFreeSpace( dir_handle *h, object_loc loc );
 extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len );
 
 void    FreeCopySpec( COPYPTR junk );
@@ -273,34 +273,34 @@ char *StrCopy( const char *src, char *dest )
     return( dest );
 }
 
-static const char *RealRFXName( const char *name, int *loc )
+static const char *RealRFXName( const char *name, object_loc *loc )
 {
     open_access op;
 
     name = RealFName( name, &op );
     if( op & OP_LOCAL ) {
-        *loc = -1;
+        *loc = LOC_LOCAL;
     } else if( op & OP_REMOTE ) {
-        *loc = 1;
+        *loc = LOC_REMOTE;
     } else {
-        *loc = 0;
+        *loc = LOC_DEFAULT;
     }
     return( name );
 }
 
-static open_access RFX2Acc( int loc )
+static open_access RFX2Acc( object_loc loc )
 {
-    if( loc == 0 )
+    if( loc == LOC_DEFAULT )
         loc = DefaultLocation;
-    if( loc < 0 )
+    if( loc == LOC_LOCAL )
         return( OP_LOCAL );
     return( OP_REMOTE );
 }
 
-static const char *RealName( const char *name, int * loc )
+static const char *RealName( const char *name, object_loc *loc )
 {
     name = RealRFXName( name, loc );
-    if( *loc == 0 ) {
+    if( *loc == LOC_DEFAULT ) {
         *loc = DefaultLocation;
     }
     if( *name == '\0' )
@@ -423,21 +423,21 @@ static void ItoD( unsigned int i, char *b ) {
 /* ACTUAL OS CALLS                                                        */
 /**************************************************************************/
 
-static char GetDrv( int loc )
-/********************/
+static char GetDrv( object_loc loc )
+/**********************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteGetDrv() + 'A' );
     } else {
         return( LocalGetDrv() + 'A' );
     }
 }
 
-static void SetDrv( int drive, int loc )
-/*******************************/
+static void SetDrv( int drive, object_loc loc )
+/*********************************************/
 {
     drive = toupper( drive );
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         RemoteSetDrv( drive - 'A' );
     } else {
         LocalSetDrv( drive - 'A' );
@@ -447,47 +447,47 @@ static void SetDrv( int drive, int loc )
     }
 }
 
-static error_idx RemoveDir( const char *name, int loc )
+static error_idx RemoveDir( const char *name, object_loc loc )
 /**********************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteRmDir( name ) );
     } else {
         return( LocalRmDir( name ) );
     }
 }
 
-static error_idx SetDir( const char *name, int loc )
+static error_idx SetDir( const char *name, object_loc loc )
 /*******************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteSetCWD( name ) );
     } else {
         return( LocalSetCWD( name ) );
     }
 }
 
-static error_idx GetDir( int drive, char *name, int loc )
+static error_idx GetDir( int drive, char *name, object_loc loc )
 /************************************************/
 {
     /* drive=0 means current drive A:=1, B:=2, etc. */
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteGetCwd( drive, name ) );
     } else {
         return( LocalGetCwd( drive, name ) );
     }
 }
 
-static error_idx Erase( const char *name, int loc )
+static error_idx Erase( const char *name, object_loc loc )
 /******************************************/
 {
     return( FileRemove( name, RFX2Acc( loc ) ) );
 }
 
-static error_idx MakeDir( const char *name, int loc )
+static error_idx MakeDir( const char *name, object_loc loc )
 /********************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteMkDir( name ) );
     } else {
         return( LocalMkDir( name ) );
@@ -495,17 +495,17 @@ static error_idx MakeDir( const char *name, int loc )
 }
 
 
-static long GetAttrs( const char *fn, int loc )
+static long GetAttrs( const char *fn, object_loc loc )
 /**************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteGetFileAttr( fn ) );
     } else {
         return( LocalGetFileAttr( fn ) );
     }
 }
 
-static int IsDevice( const char *fn, int loc )
+static int IsDevice( const char *fn, object_loc loc )
 /*************************************/
 {
     unsigned h;
@@ -520,57 +520,57 @@ static int IsDevice( const char *fn, int loc )
 }
 
 
-static error_idx FindFirst( const char *name, int loc, int attr )
+static error_idx FindFirst( const char *name, object_loc loc, int attr )
 /********************************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteFindFirst( name, &Info, sizeof( Info ), attr ) );
     } else {
         return( LocalFindFirst( name, &Info, sizeof( Info ), attr ) );
     }
 }
 
-static int FindNext( int loc )
+static int FindNext( object_loc loc )
 /*********************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteFindNext( &Info, sizeof( Info ) ) );
     } else {
         return( LocalFindNext( &Info, sizeof( Info ) ) );
     }
 }
 
-static error_idx Rename( const char *f1, const char *f2, int loc )
+static error_idx Rename( const char *f1, const char *f2, object_loc loc )
 /*********************************************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteRename( f1, f2 ) );
     } else {
         return( LocalRename( f1, f2 ) );
     }
 }
 
-long FreeSpace( char drive, int loc )
+long FreeSpace( char drive, object_loc loc )
 /***********************************/
 {
-    if( loc == 1 ) {
+    if( loc == LOC_REMOTE ) {
         return( RemoteGetFreeSpace( drive ) );
     } else {
         return( LocalGetFreeSpace( drive ) );
     }
 }
 
-static void SameDate( handle src, int src_loc, handle dst, int dst_loc )
-/***************************************************************/
+static void SameDate( handle src, object_loc src_loc, handle dst, object_loc dst_loc )
+/************************************************************************************/
 {
     int     time, date;
 
-    if( src_loc == 1 ) {
+    if( src_loc == LOC_REMOTE ) {
         RemoteDateTime( GetSystemHandle( src ), &time, &date, 0 );
     } else {
         LocalDateTime( GetSystemHandle( src ), &time, &date, 0 );
     }
-    if( dst_loc == 1 ) {
+    if( dst_loc == LOC_REMOTE ) {
         RemoteDateTime( GetSystemHandle( dst ), &time, &date, 1 );
     } else {
         LocalDateTime( GetSystemHandle( dst ), &time, &date, 1 );
@@ -729,7 +729,7 @@ int main( int argc, char **argv )
     InitInt();
     CopySpecs = NULL;
     MaxOnLine = 0;
-    DefaultLocation = -1;
+    DefaultLocation = LOC_LOCAL;
     if( argc == 2 ) {
         Interactive();
     } else {
@@ -838,7 +838,7 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
 /* RENAME                                                                 */
 /**************************************************************************/
 
-static error_idx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2loc )
+static error_idx   Renamef( const char *fn1, object_loc f1loc, const char *fn2, object_loc f2loc )
 {
     error_idx   retc;
     error_idx   err;
@@ -903,7 +903,7 @@ static error_idx   Renamef( const char *fn1, int f1loc, const char *fn2, int f2l
 
 void ProcRename( int argc, char **argv )
 {
-    int         src_loc, dst_loc;
+    object_loc  src_loc, dst_loc;
     const char  *src;
     const char  *dst;
     int         i;
@@ -926,7 +926,7 @@ void ProcRename( int argc, char **argv )
     }
     src = RealName( src, &src_loc );
     dst = RealRFXName( dst, &dst_loc );
-    if( dst_loc == 0 )
+    if( dst_loc == LOC_DEFAULT )
         dst_loc = src_loc;
     if( *dst == '\0' )
         dst = ".";
@@ -937,7 +937,7 @@ void ProcRename( int argc, char **argv )
 /* COPY                                                                   */
 /**************************************************************************/
 
-static void AddCopySpec( const char *src, const char *dst, int src_loc, int dst_loc )
+static void AddCopySpec( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
     COPYPTR     new;
 
@@ -974,7 +974,7 @@ static int HasWildCards( const char * src )
 }
 
 
-static int IsDir( const char *src, int src_loc )
+static int IsDir( const char *src, object_loc src_loc )
 {
     long rc;
 
@@ -986,7 +986,7 @@ static int IsDir( const char *src, int src_loc )
 }
 
 
-static void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc )
+static void WrtCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
     int         len;
 
@@ -999,7 +999,7 @@ static void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc 
         MaxOnLine = len;
     }
     Buff[ MaxOnLine ] = '\r';
-    if( src_loc == 1 ) {
+    if( src_loc == LOC_REMOTE ) {
         RemoteWriteConsole( Buff, MaxOnLine );
     } else if( !Typing ) {
         WriteStream( STD_ERR, Buff, MaxOnLine );
@@ -1013,27 +1013,27 @@ static void WrtCopy( const char *src, const char *dst, int src_loc, int dst_loc 
         MaxOnLine = len;
     }
     Buff[ MaxOnLine ] = '\r';
-    if( dst_loc == 1 ) {
+    if( dst_loc == LOC_REMOTE ) {
         RemoteWriteConsole( Buff, MaxOnLine );
     } else if( !Typing ) {
         WriteStream( STD_ERR, Buff, MaxOnLine );
     }
 }
 
-static void FiniCopy( handle in, const char *src_name, int src_loc,
-               handle out, const char *dst_name, int dst_loc )
+static void FiniCopy( handle in, const char *src_name, object_loc src_loc,
+               handle out, const char *dst_name, object_loc dst_loc )
 {
     SameDate( in, src_loc, out, dst_loc );
     FileClose( in );
     FileClose( out );
-    if( dst_loc == -1 ) {
+    if( dst_loc == LOC_LOCAL ) {
         LocalSetFileAttr( dst_name, GetAttrs( src_name, src_loc ) );
     }
     ++FilesCopied;
 }
 
 
-static error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_loc )
+static error_idx DoCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
     handle      in, out;
     unsigned    len;
@@ -1079,7 +1079,7 @@ static error_idx DoCopy( const char *src, const char *dst, int src_loc, int dst_
     return( StashErrCode( IO_OK, OP_LOCAL ) );
 }
 
-static void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
+static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, object_loc f2loc )
 {
     error_idx   retc;
     long        retl;
@@ -1128,7 +1128,7 @@ static void    RRecurse( const char *f1, const char *f2, int f1loc, int f2loc )
     }
 }
 
-static error_idx   CopyASpec( const char *f1, const char *f2, int f1loc, int f2loc )
+static error_idx   CopyASpec( const char *f1, const char *f2, object_loc f1loc, object_loc f2loc )
 {
     error_idx   retc;
     char        *endptr;
@@ -1227,7 +1227,7 @@ static void WildCopy( int recursive )
 void ProcCopy( int argc, char **argv )
 {
     int         recursive;
-    int         src_loc, dst_loc;
+    object_loc  src_loc, dst_loc;
     const char  *src, *dst;
     int         i;
     char        name[80];
@@ -1257,7 +1257,13 @@ void ProcCopy( int argc, char **argv )
     src = RealName( src, &src_loc );
     if( dst == NULL ) {
         dst = ".";
-        dst_loc = -src_loc;
+        if( src_loc == LOC_LOCAL ) {
+            dst_loc = LOC_REMOTE;
+        } else if( src_loc == LOC_REMOTE ) {
+            dst_loc = LOC_LOCAL;
+        } else {
+            dst_loc = LOC_DEFAULT;
+        }
     } else {
         dst = RealName( dst, &dst_loc );
     }
@@ -1300,7 +1306,7 @@ void ProcCopy( int argc, char **argv )
 
 void ProcType( int argc, char **argv )
 {
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
 
     src = NULL;
@@ -1456,7 +1462,7 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     ItoD( ( time >> 5 ) & 0x003F, buff + 36 );
 }
 
-int     GetFreeSpace( dir_handle *h, int loc )
+int     GetFreeSpace( dir_handle *h, object_loc loc )
 {
     char                *path;
     char                drive;
@@ -1475,7 +1481,7 @@ void ProcDir( int argc, char **argv )
 {
     int         wide;
     int         pause;
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
     dir_handle  *io;
     int         count;
@@ -1554,12 +1560,12 @@ void ProcDir( int argc, char **argv )
 
 void ProcCD( int argc, char **argv, int crlf )
 {
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
 
     if( argc == 1 ) {
         src = RealRFXName( argv[0], &src_loc );
-        if( src_loc == 0 ) {
+        if( src_loc == LOC_DEFAULT ) {
             src_loc = DefaultLocation;
         }
     } else {
@@ -1570,7 +1576,7 @@ void ProcCD( int argc, char **argv, int crlf )
         }
     }
     if( *src == '\0' ) {
-        if( src_loc == 1 ) {
+        if( src_loc == LOC_REMOTE ) {
             WriteStream( STD_OUT, "@R", 2 );
         } else {
             WriteStream( STD_OUT, "@L", 2 );
@@ -1585,7 +1591,7 @@ void ProcCD( int argc, char **argv, int crlf )
             WriteNL( STD_OUT );
         }
     } else if ( ( src[1] == ':' ) && ( src[2] == '\0' ) ) {
-        if( src_loc == 1 ) {
+        if( src_loc == LOC_REMOTE ) {
             WriteStream( STD_OUT, "@R", 2 );
         } else {
             WriteStream( STD_OUT, "@L", 2 );
@@ -1610,7 +1616,7 @@ void ProcCD( int argc, char **argv, int crlf )
 
 void ProcMakeDir( int argc, char **argv )
 {
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
 
     if( argc == 1 ) {
@@ -1673,7 +1679,7 @@ static void BuildDFSList( void )
 
 void ProcErase( int argc, char **argv )
 {
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
     int         recursive;
     int         i;
@@ -1721,7 +1727,7 @@ void ProcErase( int argc, char **argv )
 
 void ProcDelDir( int argc, char **argv )
 {
-    int         src_loc;
+    object_loc  src_loc;
     const char  *src;
     char        *tmp;
     int         recursive;
@@ -1774,7 +1780,7 @@ void ProcDelDir( int argc, char **argv )
 int ProcDrive( int argc, char **argv )
 {
     const char  *src;
-    int         src_loc;
+    object_loc  src_loc;
     int         len;
 
     if( argc != 1 ) return( 0 );
@@ -1919,7 +1925,7 @@ void    Replace( const char *frum, const char *to, char *into )
     *into = '\0';
 }
 
-void    FinishName( const char *fn, file_parse *parse, int loc, int addext )
+void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addext )
 {
     char        *endptr;
     long        rc;
