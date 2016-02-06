@@ -378,7 +378,7 @@ error_idx RemoteFindClose( void )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-unsigned RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len )
+size_t RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len )
 {
     in_mx_entry           in[2];
     mx_entry              out[2];

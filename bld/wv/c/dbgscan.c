@@ -230,7 +230,7 @@ static walk_result      FindTypeName( mad_type_handle th, void *d )
 static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
 {
     struct type_name    data;
-    unsigned            len;
+    size_t              len;
 
     len = strlen( prefix );
     if( memicmp( TokenStart, prefix, len ) != 0 ) {
@@ -685,8 +685,8 @@ static bool ScanId( void )
 
 static bool ScanKeyword( const char *table )
 {
-    int   namelen;
-    int   keylen;
+    size_t  namelen;
+    size_t  keylen;
 
     namelen = ScanPtr - TokenStart;
     for( ; *table != NULLCHAR; table += (keylen + 3) ) {

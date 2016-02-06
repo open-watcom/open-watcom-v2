@@ -405,11 +405,11 @@ static void VarDisplayAliasNode( var_node *v, type_display *to )
     }
 }
 
-char *VarDisplayType( var_node *v, char *buff, unsigned buff_len )
-/****************************************************************/
+char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
+/**************************************************************/
 {
-    int         len;
-    int         tag_len;
+    size_t      len;
+    size_t      tag_len;
     symbol_type tag;
     char        *tag_name;
 
@@ -1400,7 +1400,7 @@ static void ChkTxtBuffOverflow( char *newbuff )
 }
 
 
-static void InsertTxt( char *buff, const char *txt, unsigned len )
+static void InsertTxt( char *buff, const char *txt, size_t len )
 /*
     See VarBuildName
 */
@@ -1481,7 +1481,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
 */
 {
     char                *name;
-    unsigned            len;
+    size_t              len;
     char                buff[20];
     char                *end;
     char                prio;
@@ -1749,7 +1749,7 @@ bool VarPrintText( var_info *i, char *buff, wv_spawn_func *rtn, int len )
 
 static bool PrintAString( var_info *i, char *buff, unsigned buff_len, bool force )
 {
-    int         len;
+    size_t      len;
     bool        ok;
 
     FreezeStack();
@@ -1760,8 +1760,8 @@ static bool PrintAString( var_info *i, char *buff, unsigned buff_len, bool force
     if( !ok ) return( false );
     buff[0] = '"';
     len = strlen( buff );
-    buff[ len ] = '"';
-    buff[ len+1 ] = '\0';
+    buff[len] = '"';
+    buff[len + 1] = '\0';
     return( true );
 }
 

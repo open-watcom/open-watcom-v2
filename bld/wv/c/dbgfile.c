@@ -337,7 +337,7 @@ bool IsAbsolutePath( const char *path )
 char *AppendPathDelim( char *path, open_access loc )
 {
     file_components     *info;
-    unsigned            len;
+    size_t              len;
     char                *end;
 
     info = PathInfo( path, loc );

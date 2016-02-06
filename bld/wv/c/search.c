@@ -102,7 +102,7 @@ int FSearch( unsigned handle, char *str, char *buff_start,
     unsigned long       size;
     unsigned long       offset;
     unsigned long       match_pos;
-    unsigned            str_len;
+    size_t              str_len;
     status              stat;
     buffer              buff;
 

@@ -287,8 +287,9 @@ const char *MyStrTrimLen( const char *start, unsigned *len )
 char *GetCmdPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value = strcspn( cmd, delimit );
+    size_t  pos_value;
 
+    pos_value = strcspn( cmd, delimit );
     if( pos_value == strlen( cmd ) ) {
         result = malloc( sizeof( char ) * ( strlen( cmd ) + 1 ) );
         strncpy( result, cmd, strlen( cmd ) );
@@ -310,14 +311,15 @@ char *GetCmdPart( const char *cmd )
 char *GetParamPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value = strcspn( cmd, delimit );
+    size_t  pos_value;
 
+    pos_value = strcspn( cmd, delimit );
     if( pos_value == strlen( cmd ) ) {
         result = malloc( sizeof( char ) * 1 );
         strncpy( result, "\0" , 1 );
     } else {
         result = malloc( sizeof( char ) * ( strlen( cmd ) - pos_value + 1 ) );
-        strncpy( result, &cmd[pos_value+1], strlen( cmd ) - pos_value + 1 );
+        strncpy( result, &cmd[pos_value + 1], strlen( cmd ) - pos_value + 1 );
         result[strlen( cmd ) - pos_value] = '\0';
     }
     MyStrTrim( result );
@@ -356,9 +358,11 @@ char *GetSecondQuotedPart( const char *cmd )
 
 bool IsCmdEqualCmd( const char *cmd, const char *e_cmd, const char *e_short_cmd )
 {
-    bool comparefull  = !(strlen( cmd ) != strlen( e_cmd ));
-    bool compareshort = !(strlen( cmd ) != strlen( e_short_cmd ));
+    bool    comparefull;
+    bool    compareshort;
 
+    comparefull = (strlen( cmd ) == strlen( e_cmd ));
+    compareshort = (strlen( cmd ) == strlen( e_short_cmd ));
     /* if the length of the command does not match then we'll ignore the command */
     if( (!comparefull) && (!compareshort) ) {
         return( false );
@@ -601,7 +605,7 @@ void AddSourcePathsToDebugger( const char *srcpath )
     const char  *path;
     const char  *end;
     const char  *s;
-    unsigned    len;
+    size_t      len;
 
     path = srcpath;
     while( (end = strchr( path, ';' )) != NULL ) {

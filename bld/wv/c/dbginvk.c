@@ -278,7 +278,7 @@ void Invoke( const char *invfile, int len, char_ring *parmlist )
 
 void ProfileInvoke( char *name )
 {
-    unsigned    len;
+    size_t      len;
 #if defined(__UNIX__)
     handle      hndl;
 #endif

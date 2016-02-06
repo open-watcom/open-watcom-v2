@@ -178,7 +178,7 @@ bool InitCmd( void )
 void FindLocalDebugInfo( const char *name )
 {
     char        *buff, *symfile;
-    unsigned    len;
+    size_t      len;
     handle      local;
 
     len = strlen( name );
@@ -417,10 +417,10 @@ static image_entry *DoCreateImage( const char *exe, const char *symfile )
 {
     image_entry         *image;
     image_entry         **owner;
-    unsigned            len;
+    size_t              len;
 
 
-    len = (exe==NULL) ? 0 : strlen( exe );
+    len = ( exe == NULL ) ? 0 : strlen( exe );
     _ChkAlloc( image, sizeof( *image ) + len, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     if( image == NULL )
         return( NULL );
@@ -984,9 +984,9 @@ void FiniMappableAddr( mappable_addr *loc )
 }
 
 
-unsigned GetProgName( char *where, unsigned len )
+size_t GetProgName( char *where, size_t len )
 {
-    unsigned    l;
+    size_t      l;
 
     /*
         Before, we did a:
@@ -1023,9 +1023,9 @@ static bool ArgNeedsQuotes( const char *src )
     }
 }
 
-static void AddString( char **dstp, unsigned *lenp, const char *src )
+static void AddString( char **dstp, size_t *lenp, const char *src )
 {
-    unsigned    len;
+    size_t      len;
 
     len = strlen( src );
     if( len > *lenp )
@@ -1076,7 +1076,7 @@ void SetSymFileName( const char *file )
 
 
 static void DoResNew( bool have_parms, const char *cmd,
-                     unsigned clen, const char *parms, unsigned plen )
+                     size_t clen, const char *parms, size_t plen )
 {
     char                *new;
 
@@ -1098,17 +1098,17 @@ static void DoResNew( bool have_parms, const char *cmd,
 
 extern void LoadNewProg( const char *cmd, const char *parms )
 {
-    unsigned clen,plen;
+    size_t      clen, plen;
     char        prog[FILENAME_MAX];
 
     clen = strlen( cmd );
     plen = strlen( parms );
     GetProgName( prog, sizeof( prog ) );
     if( stricmp( cmd, prog ) == 0 ) {
-        DoResNew( plen != 0, cmd, clen, parms, plen+1 );
+        DoResNew( plen != 0, cmd, clen, parms, plen + 1 );
     } else {
         BPsDeac();
-        DoResNew( plen != 0, cmd, clen, parms, plen+1 );
+        DoResNew( plen != 0, cmd, clen, parms, plen + 1 );
         VarFreeScopes();
     }
 }
@@ -1212,7 +1212,7 @@ static unsigned ArgLen( const char *p )
 }
 
 
-static void DoReStart( bool have_parms, unsigned clen, const char *start, unsigned len )
+static void DoReStart( bool have_parms, size_t clen, const char *start, size_t len )
 {
     DoResNew( have_parms, TaskCmd, clen, start, len );
 }
@@ -1278,8 +1278,8 @@ static void ProgNew( void )
     char        *new;
     const char  *symfile;
     size_t      len;
-    unsigned    clen;
-    unsigned    plen;
+    size_t      clen;
+    size_t      plen;
     bool        have_parms;
     bool        old;
     bool        progstarthook;
@@ -1511,7 +1511,7 @@ OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
 
 bool SymUserModLoad( const char *fname, address *loadaddr )
 {
-    unsigned    fname_len;
+    size_t      fname_len;
     image_entry *image;
     map_entry   **owner;
     map_entry   *curr;

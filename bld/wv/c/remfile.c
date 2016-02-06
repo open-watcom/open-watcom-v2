@@ -157,7 +157,7 @@ bool HaveRemoteFiles( void )
 }
 
 //NYI: The 'bool executable' should be changed to allow different file types
-unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
+size_t RemoteStringToFullName( bool executable, const char *name, char *res,
                                  trap_elen res_len )
 {
     in_mx_entry         in[2];

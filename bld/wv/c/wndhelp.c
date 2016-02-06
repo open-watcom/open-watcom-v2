@@ -66,7 +66,7 @@ static void LocateHelpFile( void )
     char                buff[1024];
 #endif
 
-    h = LocalFullPathOpen( HELPNAME, strlen( HELPNAME ), "ihp", TxtBuff, TXT_LEN );
+    h = LocalFullPathOpen( HELPNAME, sizeof( HELPNAME ) - 1, "ihp", TxtBuff, TXT_LEN );
     if( h != NIL_HANDLE ) {
         FileClose( h );
         return;

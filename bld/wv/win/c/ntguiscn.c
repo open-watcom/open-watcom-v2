@@ -68,11 +68,11 @@ unsigned ConfigScreen( void )
     return( 0 );
 }
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
+size_t GetSystemDir( char *buff, size_t buff_len )
 {
     buff[ 0 ] = '\0';
     GetWindowsDirectory( buff, buff_len );
-    return( (unsigned)strlen( buff ) );
+    return( strlen( buff ) );
 }
 
 void InitScreen( void )

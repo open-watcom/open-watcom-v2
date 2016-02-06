@@ -94,7 +94,7 @@ void SymCompFini( void )
 void SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *plast )
 {
     unsigned            first,last;
-    unsigned            len;
+    size_t              len;
 
     len = strlen( match );
     for( first = 0; first < NameListNumRows( list ); ++first ) {

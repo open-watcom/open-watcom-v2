@@ -986,7 +986,7 @@ static int IsDir( const char *src, object_loc src_loc )
 
 static void WrtCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
-    int         len;
+    size_t      len;
 
     memset( Buff, ' ', 80 );
     Buff[0] = '\r';
@@ -1787,7 +1787,7 @@ int ProcDrive( int argc, char **argv )
 {
     const char  *src;
     object_loc  src_loc;
-    int         len;
+    size_t      len;
 
     if( argc != 1 )
         return( 0 );
@@ -1890,9 +1890,9 @@ const char    *_FileParse( const char *name, file_parse *file )
     return( dosname );
 }
 
-void    CopyStrMax( const char *src, char *dst, unsigned max_len )
+void    CopyStrMax( const char *src, char *dst, size_t max_len )
 {
-    unsigned    len;
+    size_t      len;
 
     len = strlen( src );
     if( len > max_len ) {

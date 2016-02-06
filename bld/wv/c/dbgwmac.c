@@ -271,7 +271,7 @@ static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
     if( p != NULL ) {
         *p++ = '}';
         *p++ = '\0';
-        cmds = AllocCmdList( TxtBuff, p-TxtBuff );
+        cmds = AllocCmdList( TxtBuff, p - TxtBuff );
         MacAddDel( wndmac->mac->key, wndmac->mac->wndclass, cmds );
     }
     return( true );

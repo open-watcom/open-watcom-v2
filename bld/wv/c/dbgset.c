@@ -399,7 +399,7 @@ void LangSetFini( void )
 void NewLang( const char *lang )
 {
     char       *new_lang;
-    unsigned    len;
+    size_t     len;
 
     if( lang == NULL )
         return;

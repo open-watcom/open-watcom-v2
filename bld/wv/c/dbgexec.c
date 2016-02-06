@@ -118,7 +118,7 @@ static void SetThreadStates( void )
 static void AddMessageText( char *str )
 /*************************************/
 {
-    unsigned    len;
+    size_t      len;
 
     if( MsgText == NULL ) {
         len = 0;
@@ -134,7 +134,8 @@ bool SetMsgText( char *message, unsigned *conditions )
 {
     char        *equal,*comma1,*comma2;
     address     addr,buff_addr;
-    long        buff_len,sym_len;
+    long        buff_len;
+    size_t      sym_len;
     long        num_returns;
     cmd_list    *cmds;
 
@@ -162,7 +163,7 @@ bool SetMsgText( char *message, unsigned *conditions )
         message += sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1;
         NoCRLF( message );
         if( InCall == 0 ) {
-            cmds = AllocCmdList( "go/keep", strlen( "go/keep" ) );
+            cmds = AllocCmdList( "go/keep", sizeof( "go/keep" ) - 1 );
             PushCmdList( cmds );
             TypeInpStack( INP_HOOK );
             FreeCmdList( cmds );
@@ -198,8 +199,8 @@ bool SetMsgText( char *message, unsigned *conditions )
         CnvNearestAddr( addr, TxtBuff, TXT_LEN );
         sym_len = strlen( TxtBuff ) + 1;
         if( sym_len > buff_len ) {
-            TxtBuff[buff_len - 1] = '\0';
-            sym_len = buff_len;
+            sym_len = (size_t)buff_len;
+            TxtBuff[sym_len - 1] = '\0';
         }
         ProgPoke( buff_addr, TxtBuff, sym_len );
         return( false );

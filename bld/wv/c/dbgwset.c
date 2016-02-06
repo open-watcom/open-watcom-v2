@@ -365,7 +365,7 @@ char *KeyName( unsigned key )
 static key_desc StripOff( const char **start, unsigned *len,
                           const char *test, key_desc desc )
 {
-    unsigned    tlen;
+    size_t      tlen;
 
     tlen = strlen( test );
     if( strnicmp( *start, test, tlen ) == 0 ) {
@@ -377,7 +377,7 @@ static key_desc StripOff( const char **start, unsigned *len,
 }
 
 
-static unsigned MapKey( const char *start, unsigned len )
+static unsigned MapKey( const char *start, size_t len )
 {
     key_name            *k;
     key_desc            desc;

@@ -59,10 +59,11 @@ char *StrCopy( char const *src, char *dest )
 char *StrTrim( char *str )
 {
     char        *p;
-    unsigned    len;
+    size_t      len;
 
     len = strlen( str );
-    if( len == 0 ) return( str );
+    if( len == 0 )
+        return( str );
     p = str + len - 1;
     while( *p == ' ' ) {
         --p;

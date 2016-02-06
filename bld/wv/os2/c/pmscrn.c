@@ -103,12 +103,12 @@ unsigned ConfigScreen( void )
 }
 
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
-/****************************************************/
+size_t GetSystemDir( char *buff, size_t buff_len )
+/************************************************/
 {
     // inst
     PRFPROFILE                  prof;
-    unsigned                    i;
+    size_t                      i;
 
     prof.cchUserName = 0L;
     prof.cchSysName = 0L;
@@ -133,7 +133,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
         }
     }
     buff[i] = '\0';
-    return( (unsigned)strlen( buff ) );
+    return( strlen( buff ) );
 } /* _wpi_getinidirectory */
 
 /*

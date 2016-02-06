@@ -433,7 +433,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
 static bool UserType( type_handle *th )
 {
     unsigned            i;
-    unsigned            len;
+    size_t              len;
     sym_info            info;
 
 

@@ -83,7 +83,7 @@ void LogFini( void )
 
 void LogLine( const char *str )
 {
-    int   len;
+    size_t  len;
 
     if( LogHndl == NIL_HANDLE )
         return;
@@ -101,7 +101,7 @@ void LogLine( const char *str )
 #ifdef DEADCODE
 void LogPut( const char *str )
 {
-    int   len;
+    size_t  len;
 
     if( LogHndl == NIL_HANDLE )
         return;
