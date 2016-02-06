@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,9 +96,6 @@ typedef struct copyspec {
 extern  bool            InitTrap( const char * );
 extern  bool            InitRFXSupp( void );
 extern  void            FiniTrap( void );
-extern  void            InitInt( void );
-extern  void            FiniInt( void );
-extern  int             CtrlCHit( void );
 extern  long            FreeSpace( char drive, object_loc loc );
 
 extern  const char      *_FileParse( const char *name, file_parse *file );

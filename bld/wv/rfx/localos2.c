@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +325,7 @@ int LocalFindNext( void *info, unsigned info_len )
 /*
   SIGNAL HANDLING
 */
-static volatile int interruptOccurred;
+static volatile bool    interruptOccurred;
 
 #ifdef _M_I86
 static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_num )
@@ -333,7 +334,7 @@ static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_nu
     USHORT action;
 
     signal_argument = signal_argument;
-    interruptOccurred = 1;
+    interruptOccurred = true;
     switch( signal_num ) {
     case SIG_CTRLBREAK:
         DosSetSigHandler( doInterrupt, &handler, &action,
@@ -354,7 +355,7 @@ void InitInt( void )
     USHORT action;
 #endif
 
-    interruptOccurred = 0;
+    interruptOccurred = false;
 #ifdef _M_I86
     DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLC);
     DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLBREAK);
@@ -366,15 +367,15 @@ void FiniInt( void )
 {
 }
 
-int CtrlCHit( void )
+bool CtrlCHit( void )
 {
-    int hit;
+    bool    hit;
 
 #ifdef _M_I86
     DosHoldSignal( HLDSIG_DISABLE );
 #endif
     hit = interruptOccurred;
-    interruptOccurred = 0;
+    interruptOccurred = false;
 #ifdef _M_I86
     DosHoldSignal( HLDSIG_ENABLE );
 #endif
