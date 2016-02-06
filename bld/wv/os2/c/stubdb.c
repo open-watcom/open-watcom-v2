@@ -965,12 +965,12 @@ bool DUIScreenOption( const char *start, unsigned len, int pass )
 }
 
 #if defined( __GUI__ )
-unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
+unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen out_num, mx_entry_p out_mx )
 {
     return( TrapAccess( in_num, in_mx, out_num, out_mx ) );
 }
 
-unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     return( TrapSimpAccess( in_len, in_data, out_len, out_data ) );
 }

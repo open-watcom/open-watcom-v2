@@ -66,7 +66,7 @@ long RemoteGetFileDate( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -91,7 +91,7 @@ bool RemoteSetFileDate( const char *name, long date )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );

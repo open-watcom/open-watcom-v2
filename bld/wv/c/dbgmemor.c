@@ -50,7 +50,7 @@
 
 //MAD: convert this stuff to work off of mad_type_handle's ?
 
-static unsigned Sizes[IT_MAX] = {
+static trap_elen    Sizes[IT_MAX] = {
     0,
     #define pick(e,s,t,n) s,
     #include "_dbgitem.h"
@@ -89,7 +89,7 @@ size_t ProgPeekWrap( address addr, char * buff, size_t length )
     return( peek1 + peek2 );
 }
 
-static item_type ItemType( unsigned size )
+static item_type ItemType( trap_elen size )
 {
     item_type   i;
 
@@ -102,7 +102,7 @@ static item_type ItemType( unsigned size )
 }
 
 
-unsigned ItemSize( item_type typ )
+trap_elen ItemSize( item_type typ )
 {
     return( Sizes[typ & IT_TYPE_MASK] );
 }
@@ -110,8 +110,9 @@ unsigned ItemSize( item_type typ )
 
 static bool ItemGet( address *addr, item_mach *item, item_type typ )
 {
-    unsigned    size = Sizes[typ & IT_TYPE_MASK];
+    trap_elen   size;
 
+    size = Sizes[typ & IT_TYPE_MASK];
     if( typ & IT_DEC )
         addr->mach.offset -= size;
     if( typ & IT_IO ) {
@@ -139,8 +140,9 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
 
 static bool ItemPut( address *addr, const item_mach *item, item_type typ )
 {
-    unsigned    size = Sizes[typ & IT_TYPE_MASK];
+    trap_elen   size;
 
+    size = Sizes[typ & IT_TYPE_MASK];
     if( typ & IT_DEC )
         addr->mach.offset -= size;
     if( typ & IT_IO ) {

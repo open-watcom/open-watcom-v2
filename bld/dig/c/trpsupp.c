@@ -183,7 +183,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 }
 
 
-unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_mx, mx_entry_p mx_out  )
+unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out  )
 {
     trap_retval     result;
 
@@ -203,7 +203,7 @@ unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_m
     return( result );
 }
 
-unsigned TrapSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned TrapSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     in_mx_entry     in[1];
     mx_entry        out[1];

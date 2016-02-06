@@ -46,8 +46,8 @@ extern int              CloseTrapTraceFile( void );
 extern char             *LoadDumbTrap( trap_version * );
 extern char             *LoadTrap( const char *, char *, trap_version * );
 extern void             TrapSetFailCallBack( void (*func)(void) );
-extern unsigned         TrapAccess( unsigned, in_mx_entry_p, unsigned, mx_entry_p );
-extern unsigned         TrapSimpAccess( unsigned, in_data_p, unsigned, out_data_p );
+extern unsigned         TrapAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
+extern unsigned         TrapSimpAccess( trap_elen, in_data_p, trap_elen, out_data_p );
 extern void             KillTrap(void);
 extern trap_load_func   TrapLoad;
 

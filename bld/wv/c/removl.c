@@ -52,12 +52,13 @@ bool InitOvlSupp( void )
     return( SuppOvlId != 0 );
 }
 
-unsigned RemoteOvlSectSize( void )
+trap_elen RemoteOvlSectSize( void )
 {
     ovl_state_size_req  acc;
     ovl_state_size_ret  ret;
 
-    if( SuppOvlId == 0 ) return( 0 );
+    if( SuppOvlId == 0 )
+        return( 0 );
     SUPP_OVL_SERVICE( acc, REQ_OVL_STATE_SIZE );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.size );

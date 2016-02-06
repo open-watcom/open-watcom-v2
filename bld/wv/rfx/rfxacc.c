@@ -69,9 +69,9 @@ error_idx RemoteRename( const char * from, const char *to )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = from;
-    in[1].len = strlen( from ) + 1;
+    in[1].len = (trap_elen)( strlen( from ) + 1 );
     in[2].ptr = to;
-    in[2].len = strlen( to ) + 1;
+    in[2].len = (trap_elen)( strlen( to ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 3, in, 1, out );
@@ -89,7 +89,7 @@ error_idx RemoteMkDir( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -107,7 +107,7 @@ error_idx RemoteRmDir( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -146,7 +146,7 @@ error_idx RemoteSetCWD( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -164,7 +164,7 @@ long RemoteGetFileAttr( const char * name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -187,7 +187,7 @@ error_idx RemoteSetFileAttr( const char * name, long attrib )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -326,7 +326,7 @@ error_idx RemoteGetCwd( int drv, char *where )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+error_idx RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -338,7 +338,7 @@ error_idx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, i
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = pattern;
-    in[1].len = strlen( pattern ) + 1;
+    in[1].len = (trap_elen)( strlen( pattern ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = info;
@@ -348,7 +348,7 @@ error_idx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, i
 }
 
 
-int RemoteFindNext( void *info, unsigned info_len )
+int RemoteFindNext( void *info, trap_elen info_len )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -378,7 +378,7 @@ error_idx RemoteFindClose( void )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_len )
+unsigned RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len )
 {
     in_mx_entry           in[2];
     mx_entry              out[2];
@@ -389,7 +389,7 @@ unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_l
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = fullname;

@@ -35,6 +35,7 @@
 #include "dbgio.h"
 #include "digtypes.h"
 #include "digcli.h"
+#include "trptypes.h"
 #include "remcore.h"
 
 

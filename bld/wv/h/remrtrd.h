@@ -31,7 +31,7 @@
 
 extern bool InitRunThreadSupp( void );
 extern bool HaveRemoteRunThread( void );
-extern bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize );
+extern bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, trap_elen maxsize );
 extern dtid_t RemoteGetNextRunThread( dtid_t tid );
 extern void RemotePollRunThread( void );
 extern void RemoteUpdateRunThread( thread_state *thd );

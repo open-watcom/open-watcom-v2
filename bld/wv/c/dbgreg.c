@@ -288,11 +288,11 @@ static void FreeState( save_state *state )
     --NumStateEntries;
 }
 
-unsigned        CurrRegSize = 0;
+trap_elen       CurrRegSize = 0;
 
 void ResizeRegData( void )
 {
-    unsigned            new_size;
+    trap_elen           new_size;
     bool                found_dbgregs;
     save_state          *state;
     save_state          *old;
@@ -351,7 +351,8 @@ static save_state *AllocState( void )
 
     size = sizeof( *state ) + CurrRegSize;
     _Alloc( state, size );
-    if( state == NULL ) return( NULL );
+    if( state == NULL )
+        return( NULL );
     memset( state, 0, size );
     if( OvlSize != 0 ) {
         _Alloc( state->s.ovl, OvlSize );
@@ -450,7 +451,9 @@ void CopyMachState( machine_state *from, machine_state *to )
     to->tid = from->tid;
     to->mad = from->mad;
     memcpy( &to->mr, &from->mr, CurrRegSize );
-    if( to->ovl != NULL ) memcpy( to->ovl, from->ovl, OvlSize );
+    if( to->ovl != NULL ) {
+        memcpy( to->ovl, from->ovl, OvlSize );
+    }
 }
 
 machine_state *AllocMachState( void )
@@ -483,17 +486,26 @@ void CollapseMachState( void )
 {
     machine_state       *curr, *prev;
 
-    if( StateCurr == NULL ) return;
-    if( !StateCurr->valid ) return;
-    if( StateCurr->mem != NULL ) return;
-    if( StateCurr->prev == NULL ) return;
-    if( StateCurr->prev->mem != NULL ) return;
-    if( StateCurr->s.mad != StateCurr->prev->s.mad ) return;
+    if( StateCurr == NULL )
+        return;
+    if( !StateCurr->valid )
+        return;
+    if( StateCurr->mem != NULL )
+        return;
+    if( StateCurr->prev == NULL )
+        return;
+    if( StateCurr->prev->mem != NULL )
+        return;
+    if( StateCurr->s.mad != StateCurr->prev->s.mad )
+        return;
     curr = &StateCurr->s;
-    if( !StateCurr->prev->valid ) return;
+    if( !StateCurr->prev->valid )
+        return;
     prev = &StateCurr->prev->s;
-    if( prev->tid != curr->tid ) return;
-    if( memcmp( &prev->mr, &curr->mr, CurrRegSize ) != 0 ) return;
+    if( prev->tid != curr->tid )
+        return;
+    if( memcmp( &prev->mr, &curr->mr, CurrRegSize ) != 0 )
+        return;
     StateCurr->valid = false;
     StateCurr = StateCurr->prev;
     StateLast = StateCurr;

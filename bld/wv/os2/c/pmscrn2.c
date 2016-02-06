@@ -272,7 +272,7 @@ void PopErrBox( const char *buff )
                   MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
+unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen out_num, mx_entry_p out_mx )
 {
     unsigned    result;
     ULONG       ulCount;
@@ -289,7 +289,7 @@ unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned o
     }
 }
 
-unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     unsigned    result;
     ULONG       ulCount;

@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-extern bool     InitOvlSupp( void );
-extern unsigned RemoteOvlSectSize( void );
-extern bool     RemoteOvlSectPos( unsigned sect, mem_block *where );
-extern void     RemoteSectTblRead( byte *ovl );
-extern void     RemoteSectTblWrite( const byte *ovl );
-extern bool     RemoteOvlTransAddr( address *addr );
-extern bool     RemoteOvlRetAddr( address *addr, unsigned ovl_level );
+extern bool         InitOvlSupp( void );
+extern trap_elen    RemoteOvlSectSize( void );
+extern bool         RemoteOvlSectPos( unsigned sect, mem_block *where );
+extern void         RemoteSectTblRead( byte *ovl );
+extern void         RemoteSectTblWrite( const byte *ovl );
+extern bool         RemoteOvlTransAddr( address *addr );
+extern bool         RemoteOvlRetAddr( address *addr, unsigned ovl_level );

@@ -57,7 +57,7 @@
 
 //extern void             TrapErrTranslate( char *, int );
 
-unsigned int            MaxPacketLen;
+trap_elen           MaxPacketLen;
 
 //NYI: We don't know the size of the incoming err msg.
 #define MAX_ERR_MSG_SIZE        (TXT_LEN/2)
@@ -173,7 +173,7 @@ trap_shandle GetSuppId( char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );

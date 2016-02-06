@@ -32,4 +32,4 @@
 
 extern bool InitEnvSupp( void );
 extern bool RemoteSetEnvironmentVariable( char *name, char *value );
-extern bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len );
+extern bool RemoteGetEnvironmentVariable( char *name, char *res, trap_elen res_len );

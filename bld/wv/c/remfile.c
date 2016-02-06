@@ -52,7 +52,7 @@
 #include "trpld.h"
 
 
-extern unsigned         MaxPacketLen;
+extern trap_elen        MaxPacketLen;
 
 static trap_shandle     SuppFileId = 0;
 
@@ -158,7 +158,7 @@ bool HaveRemoteFiles( void )
 
 //NYI: The 'bool executable' should be changed to allow different file types
 unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
-                                 unsigned res_len )
+                                 trap_elen res_len )
 {
     in_mx_entry         in[2];
     mx_entry            out[2];
@@ -199,7 +199,7 @@ unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
         break;
     }
 #endif
-    in[1].len = strlen( in[1].ptr ) + 1;
+    in[1].len = (trap_elen)( strlen( in[1].ptr ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = res;
@@ -240,7 +240,7 @@ sys_handle RemoteOpen( const char *name, open_access mode )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -278,7 +278,7 @@ static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
     file_write_req          acc;
     file_write_ret          ret;
     unsigned                total;
-    unsigned                buff_len;
+    trap_elen               buff_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
     acc.handle = hdl;
@@ -326,7 +326,7 @@ static unsigned doWriteConsole( const void *buff, unsigned len )
     file_write_console_req  acc;
     file_write_console_ret  ret;
     unsigned                total;
-    unsigned                buff_len;
+    trap_elen               buff_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
     in[0].ptr = &acc;
@@ -380,7 +380,7 @@ static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
     file_read_req       acc;
     file_read_ret       ret;
     unsigned            total;
-    unsigned            buff_len;
+    trap_elen           buff_len;
     unsigned            got_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
@@ -502,7 +502,7 @@ error_idx RemoteErase( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -511,7 +511,7 @@ error_idx RemoteErase( const char *name )
 }
 
 #if !defined( BUILD_RFX )
-error_idx RemoteFork( const char *cmd, size_t len )
+error_idx RemoteFork( const char *cmd, trap_elen len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

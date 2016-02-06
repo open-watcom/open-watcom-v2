@@ -61,7 +61,7 @@ bool HaveRemoteRunThread( void )
     return( SuppRunThreadId != 0 );
 }
 
-bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize )
+bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, trap_elen maxsize )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];

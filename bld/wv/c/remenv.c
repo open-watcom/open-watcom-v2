@@ -67,9 +67,9 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     in[2].ptr = value;
-    in[2].len = strlen( value ) + 1;
+    in[2].len = (trap_elen)( strlen( value ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 3, in, 1, out );
@@ -81,7 +81,7 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     }
 }
 
-bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
+bool RemoteGetEnvironmentVariable( char *name, char *res, trap_elen res_len )
 {
     in_mx_entry         in[2];
     mx_entry            out[2];
@@ -94,7 +94,7 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = res;

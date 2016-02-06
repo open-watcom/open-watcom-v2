@@ -51,8 +51,8 @@
 #include "dbginit.h"
 
 
-extern unsigned         MaxPacketLen;
-extern unsigned         CurrRegSize;
+extern trap_elen        MaxPacketLen;
+extern trap_elen        CurrRegSize;
 
 //NYI: We don't know the size of the incoming err msg. Now assume max is 80.
 #define MAX_ERR_MSG_SIZE        80
@@ -84,7 +84,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
     read_mem_req        acc;
     bool                int_tbl;
     size_t              left;
-    size_t              piece;
+    trap_elen           piece;
     size_t              got;
 
     if( size == 0 ) return( 0 );
@@ -96,7 +96,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
     left = size;
     for( ;; ) {
         if( piece > left )
-            piece = left;
+            piece = (trap_elen)left;
         acc.len = piece;
 
         int_tbl = IsInterrupt( &(acc.mem_addr), size );
@@ -174,7 +174,7 @@ size_t ProgPoke( address addr, const void *data, size_t len )
     write_mem_ret       ret;
     bool                int_tbl;
     size_t              left;
-    size_t              piece;
+    trap_elen           piece;
 
     SectLoad( addr.sect_id );
     acc.req = REQ_WRITE_MEM;
@@ -211,7 +211,7 @@ size_t ProgPoke( address addr, const void *data, size_t len )
 }
 
 
-unsigned long ProgChkSum( address addr, unsigned len )
+unsigned long ProgChkSum( address addr, trap_elen len )
 {
 
     checksum_mem_req    acc;
@@ -226,7 +226,7 @@ unsigned long ProgChkSum( address addr, unsigned len )
     return( ret.result );
 }
 
-unsigned PortPeek( unsigned port, void *data, unsigned size )
+trap_retval PortPeek( unsigned port, void *data, trap_elen size )
 {
     read_io_req         acc;
 
@@ -236,7 +236,7 @@ unsigned PortPeek( unsigned port, void *data, unsigned size )
     return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
 }
 
-unsigned PortPoke( unsigned port, const void *data, unsigned size )
+trap_retval PortPoke( unsigned port, const void *data, trap_elen size )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -260,7 +260,7 @@ static void ReadRegs( machine_state *state )
     read_regs_req       acc;
 
     acc.req = REQ_READ_REGS;
-    TrapSimpAccess( sizeof(acc), &acc, CurrRegSize, &state->mr );
+    TrapSimpAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
     MADRegistersHost( &state->mr );
     if( state->ovl != NULL ) {
         RemoteSectTblRead( state->ovl );
@@ -300,9 +300,9 @@ void WriteDbgRegs( void )
     WriteRegs( DbgRegs );
 }
 
-unsigned ArgsLen( const char *args )
+trap_elen ArgsLen( const char *args )
 {
-    unsigned    len = 0;
+    trap_elen   len = 0;
 
     while( *args++ != ARG_TERMINATE ) {
         len++;
@@ -440,7 +440,7 @@ bool Redirect( bool input, char *hndlname )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = FileLoc( hndlname, &loc );
-    in[1].len = strlen( in[1].ptr ) + 1;
+    in[1].len = (trap_elen)( strlen( in[1].ptr ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -498,7 +498,7 @@ unsigned RemoteReadUserKey( unsigned wait )
     return( ret.key );
 }
 
-unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, unsigned buff_len )
+unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, trap_elen buff_len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -520,7 +520,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, unsigned buff
     return( ret.handle );
 }
 
-unsigned RemoteGetMsgText( char *buff, unsigned buff_len )
+unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
 {
     in_mx_entry                 in[1];
     mx_entry                    out[2];
@@ -540,8 +540,8 @@ unsigned RemoteGetMsgText( char *buff, unsigned buff_len )
 }
 
 unsigned RemoteMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *inp,
-                        unsigned out_size, void *outp )
+                        trap_elen in_size,  const void *inp,
+                        trap_elen out_size, void *outp )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[2];

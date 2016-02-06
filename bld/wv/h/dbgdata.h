@@ -93,7 +93,7 @@ global int              SkipCount;
 global input_stack      *InpStack;
 global system_config    SysConfig;
 global unsigned         CheckSize;
-global unsigned         OvlSize;
+global trap_elen        OvlSize;
 
 global const char       *CmdStart;
 global thread_state     *HeadThd;

@@ -920,7 +920,7 @@ static address PokePgmStack( location_list *ll, unsigned long size )
 }
 
 
-static unsigned MakeSCB( item_mach *item, address addr, item_type typ )
+static trap_elen MakeSCB( item_mach *item, address addr, item_type typ )
 {
     unsigned len;
 

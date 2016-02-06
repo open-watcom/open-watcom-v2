@@ -40,6 +40,6 @@ extern error_idx        RemoteSetFileAttr( const char * , long );
 extern long             RemoteGetFreeSpace( int );
 extern error_idx        RemoteDateTime( sys_handle , int *, int *, int );
 extern error_idx        RemoteGetCwd( int, char * );
-extern error_idx        RemoteFindFirst( const char *, void *, unsigned , int );
-extern int              RemoteFindNext( void *, unsigned );
+extern error_idx        RemoteFindFirst( const char *, void *, trap_elen , int );
+extern int              RemoteFindNext( void *, trap_elen );
 extern error_idx        RemoteFindClose( void );
