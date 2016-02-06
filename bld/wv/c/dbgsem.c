@@ -341,7 +341,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
             if( value < 0 || value >= ExprSP->info.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
-            LocationAdd( &ExprSP->v.string.loc, value*8 );
+            LocationAdd( &ExprSP->v.string.loc, value * 8 );
             ExprSP->info.size -= value;
             ExprSP->v.string.ss_offset = value;
         } else {
@@ -1211,8 +1211,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
         if( CurrGet.li.scope.len == 0 ) {
             CurrGet.li.scope = CurrGet.li.name;
         } else {
-            CurrGet.li.scope.len = (CurrGet.li.name.start-CurrGet.li.scope.start)
-                                        + CurrGet.li.name.len;
+            CurrGet.li.scope.len = ( CurrGet.li.name.start - CurrGet.li.scope.start ) + CurrGet.li.name.len;
         }
         break;
     }

@@ -136,7 +136,7 @@ rules
         PurgePgmStack
         @assignment
     ;
-    
+
 !ifdef CPP
 
     get_dtor >>bool:
@@ -154,7 +154,7 @@ rules
         ScanRestore
         >>false
     ;
-    
+
     get_operator >>bool:
         [
         | ET_OPERATOR:
@@ -180,7 +180,7 @@ rules
                 >>false
               | *:
           ]
-            
+
         ]
         >>true
     ;
@@ -195,8 +195,7 @@ rules
             >>true
         ]
     ;
-       
-    
+
 !endif
 
 
@@ -391,7 +390,7 @@ rules
             #err_illegal_type_spec
         ]
     ;
-    
+
 !else
 
    push_scalar_type:
@@ -426,7 +425,7 @@ rules
             #err_illegal_type_spec
         ]
     ;
-    
+
    push_scalar_type_old:        %OBSOLETE
         [BitsGet
           | bits_void:
@@ -1184,7 +1183,7 @@ rules
         #err_loc_and_want_name
       ]
     ;
-    
+
     handle_scoping:
       {
         [

@@ -506,7 +506,7 @@ static bool ScanCmdLnDelim( void )
         if( *ScanPtr == *ptr ) break;
         if( *ptr == NULLCHAR ) return( false );
     }
-    CurrToken = FIRST_CMDLN_DELIM + (ptr - CmdLnDelimTab);
+    CurrToken = FIRST_CMDLN_DELIM + ( ptr - CmdLnDelimTab );
     if( *ScanPtr != NULLCHAR ) {
         ++ScanPtr;
     }
