@@ -75,7 +75,7 @@ static void CalcIndents( a_window *wnd )
     for( img = DbgImageList; img != NULL; img = img->link ) {
         curr = WndExtentX( wnd, img->image_name );
         if( curr > max_image ) max_image = curr;
-        curr = WndExtentX( wnd, ImgSymName( img, false ) );
+        curr = WndExtentX( wnd, ImgSymFileName( img, false ) );
         if( curr > max_symbol ) max_symbol = curr;
     }
     Indents[PIECE_SYMBOL] = max_image + 2*WndMaxCharX( wnd );
@@ -124,19 +124,19 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_IMAGE_ADD_SYMBOLS:
         // nyi - change sym_file
         if( img->deferred_symbols ) {
-            ReLoadSymInfo( img );
+            ReLoadImgSymInfo( img );
         } else {
-            new_name = DupStr( ImgSymName( img, true ) );
+            new_name = DupStr( ImgSymFileName( img, true ) );
             if( !SymBrowse( &new_name ) ) {
                 _Free( new_name );
             } else {
-                UnLoadSymInfo( img, true );
-                old_name = img->sym_name;
-                img->sym_name = new_name;
-                if( ReLoadSymInfo( img ) ) {
+                UnLoadImgSymInfo( img, true );
+                old_name = img->symfile_name;
+                img->symfile_name = new_name;
+                if( ReLoadImgSymInfo( img ) ) {
                     _Free( old_name );
                 } else {
-                    img->sym_name = old_name;
+                    img->symfile_name = old_name;
                     _Free( new_name );
                 }
             }
@@ -144,7 +144,7 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         ImgInit( wnd );
         break;
     case MENU_IMAGE_DEL_SYMBOLS:
-        UnLoadSymInfo( img, true );
+        UnLoadImgSymInfo( img, true );
         ImgInit( wnd );
         break;
     case MENU_IMAGE_SHOW_FUNCTIONS:
@@ -219,7 +219,7 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
             line->use_prev_attr = false;
             return( true );
         case PIECE_SYMBOL:
-            line->text = ImgSymName( img, false );
+            line->text = ImgSymFileName( img, false );
             return( true );
         case PIECE_DIP:
             if( img->dip_handle == NO_MOD ) {

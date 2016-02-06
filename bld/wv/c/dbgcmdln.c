@@ -403,9 +403,9 @@ static void ProcOptList( int pass )
             break;
         case OPT_LOCALINFO:
             if( pass == 2 ) {
-                char *file = GetFileName( pass );
-                FindLocalDebugInfo( file );
-                _Free( file );
+                char *symfile = GetFileName( pass );
+                FindLocalDebugInfo( symfile );
+                _Free( symfile );
             }
             break;
         case OPT_INVOKE:

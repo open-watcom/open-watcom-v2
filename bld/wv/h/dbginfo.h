@@ -85,7 +85,7 @@ typedef struct image_entry      image_entry;
 struct image_entry {
     image_entry         *link;
     map_entry           *map_list;
-    char                *sym_name;
+    char                *symfile_name;
     unsigned long       system_handle;
     mod_handle          dip_handle;
     void                (*mapper)( image_entry *, addr_ptr *, addr_off *, addr_off * );

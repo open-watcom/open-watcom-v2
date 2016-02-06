@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern char     *ImgSymName( image_entry *img, bool always );
+extern char     *ImgSymFileName( image_entry *img, bool always );
 extern void     ImgSort( void );
