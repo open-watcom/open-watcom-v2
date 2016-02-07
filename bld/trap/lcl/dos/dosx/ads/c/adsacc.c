@@ -82,17 +82,18 @@ char                    UtilBuff[BUFF_SIZE];
 #define ADSSTACK_SIZE      4096
 char                    ADSStack[ADSSTACK_SIZE];
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
     word        dregs;
     word        len;
-} watch;
+} watch_point;
 
 #define MAX_WP  8
-watch   WatchPoints[MAX_WP];
-int     WatchCount;
+
+watch_point WatchPoints[MAX_WP];
+int         WatchCount;
 
 #define _DBG3( x ) // MyOut x
 #define _DBG2( x ) // MyOut x
@@ -570,7 +571,7 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_watch( void )
 {
-    watch           *curr;
+    watch_point     *wp;
     set_watch_req   *acc;
     set_watch_ret   *ret;
     int             i, needed;
@@ -582,14 +583,13 @@ trap_retval ReqSet_watch( void )
     ret->err = 1;
     if( WatchCount < MAX_WP ) {
         ret->err = 0;
-        curr = WatchPoints + WatchCount;
-        curr->addr = acc->watch_addr;
-        ReadMemory( &acc->watch_addr, (byte *)&curr->value, 4 );
-        ++WatchCount;
-        curr->linear = GetLinear( curr->addr.segment, curr->addr.offset );
-        curr->len = acc->size;
-        curr->dregs = ( curr->linear & ( curr->len - 1 ) ) ? 2 : 1;
-        curr->linear &= ~( curr->len - 1 );
+        wp = WatchPoints + WatchCount++;
+        wp->addr = acc->watch_addr;
+        ReadMemory( &acc->watch_addr, (byte *)&wp->value, 4 );
+        wp->linear = GetLinear( wp->addr.segment, wp->addr.offset );
+        wp->len = acc->size;
+        wp->dregs = ( wp->linear & ( wp->len - 1 ) ) ? 2 : 1;
+        wp->linear &= ~( wp->len - 1 );
         needed = 0;
         for( i = 0; i < WatchCount; ++i ) {
             needed += WatchPoints[i].dregs;
@@ -597,7 +597,7 @@ trap_retval ReqSet_watch( void )
         if( needed <= 4 )
             ret->multiplier |= USING_DEBUG_REG;
         _DBG0(("addr %4.4x:%8.8lx " "linear %8.8x " "len %d " "needed %d "
-            ,curr->addr.segment, curr->addr.offset, curr->linear, curr->len, needed));
+            ,wp->addr.segment, wp->addr.offset, wp->linear, wp->len, needed));
     }
     return( sizeof( *ret ) );
 }
@@ -656,7 +656,7 @@ static bool SetDebugRegs()
     int         needed;
     int         i;
     int         dr;
-    watch       *wp;
+    watch_point *wp;
 
     needed = 0;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -679,7 +679,7 @@ static bool SetDebugRegs()
 
 static unsigned ProgRun( bool step )
 {
-    watch       *wp;
+    watch_point *wp;
     long        trace;
     int         i;
     dword       value;

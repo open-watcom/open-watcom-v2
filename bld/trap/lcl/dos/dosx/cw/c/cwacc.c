@@ -143,12 +143,12 @@ typedef struct hbrk_t {
     unsigned        installed :1;
 } hbrk_t;
 
-typedef struct watch_t {
+typedef struct watch_point {
     unsigned_32     address;
     unsigned_32     check;
     unsigned_8      length;
     unsigned        inuse     :1;
-} watch_t;
+} watch_point;
 
 void dos_print( char *s );
 #pragma aux dos_print = \
@@ -227,7 +227,7 @@ bool                FakeBreak = FALSE;
 
 static unsigned_8   RealNPXType;
 static hbrk_t       HBRKTable[4];
-static watch_t      WatchPoints[MAX_WATCHES];
+static watch_point  WatchPoints[MAX_WATCHES];
 static mod_t        *ModHandles = NULL;
 static int          NumModHandles = 0;
 

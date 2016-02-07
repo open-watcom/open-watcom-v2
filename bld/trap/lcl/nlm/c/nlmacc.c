@@ -194,17 +194,17 @@ int   get_app_type       ( void );
 /* from SERVNAME.C */
 extern char ServPref[];
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
     short       dregs;
     short       len;
-} watch;
+} watch_point;
 
 #define MAX_WP  32
-watch   WatchPoints[ MAX_WP ];
-int     WatchCount;
+watch_point WatchPoints[ MAX_WP ];
+int         WatchCount;
 
 /*
 //  Code to release all waiters on a semaphore and delete it
@@ -1393,7 +1393,7 @@ trap_retval ReqSet_watch( void )
     dword           l;
     set_watch_req   *acc;
     set_watch_ret   *ret;
-    watch           *curr;
+    watch_point     *wp;
     int             i, needed;
     int             dreg_avail[4];
 
@@ -1403,14 +1403,14 @@ trap_retval ReqSet_watch( void )
     ret->multiplier = 2000;
     if( WatchCount < MAX_WP && ReadMemory( &acc->watch_addr, 4UL, &l ) == 0 ) {
         ret->err = 0;
-        curr = WatchPoints + WatchCount;
-        curr->addr.segment = acc->watch_addr.segment;
-        curr->addr.offset = acc->watch_addr.offset;
-        curr->linear = acc->watch_addr.offset;
-        curr->len = acc->size;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = ( curr->addr.offset & (curr->len-1) ) ? 2 : 1;
-        curr->value = l;
+        wp = WatchPoints + WatchCount;
+        wp->addr.segment = acc->watch_addr.segment;
+        wp->addr.offset = acc->watch_addr.offset;
+        wp->linear = acc->watch_addr.offset;
+        wp->len = acc->size;
+        wp->linear &= ~(wp->len-1);
+        wp->dregs = ( wp->addr.offset & (wp->len-1) ) ? 2 : 1;
+        wp->value = l;
         ++WatchCount;
         needed = 0;
         for( i = 0; i < WatchCount; ++i ) {
@@ -1513,7 +1513,7 @@ static bool SetDebugRegs( void )
 {
     int         i;
     unsigned    address;
-    watch       *wp;
+    watch_point *wp;
 
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         address = wp->addr.offset;
@@ -1530,7 +1530,7 @@ static bool SetDebugRegs( void )
 
 static trap_elen ProgRun( bool step )
 {
-    watch       *wp;
+    watch_point *wp;
     int         i;
     dword       value;
     prog_go_ret *ret;
