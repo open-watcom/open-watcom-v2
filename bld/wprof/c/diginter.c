@@ -155,8 +155,8 @@ void DIGCLIENT DIGCliRemove( const char * name, dig_open mode )
 }
 
 unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
     enum x86_addr_characteristics       *d;
 

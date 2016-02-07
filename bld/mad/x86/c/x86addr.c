@@ -138,7 +138,6 @@ unsigned AddrCharacteristics( address a )
 {
     unsigned_8  character;
 
-    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS,
-                0, NULL, sizeof( character ), &character );
+    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS, 0, NULL, sizeof( character ), &character );
     return( character );
 }

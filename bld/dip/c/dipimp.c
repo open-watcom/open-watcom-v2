@@ -268,10 +268,11 @@ mad_handle DCCurrMAD( void )
 }
 
 unsigned        DCMachineData( address a, unsigned info_type,
-                                unsigned in_size,  void *in,
-                                unsigned out_size, void *out )
+                                dig_elen in_size,  void *in,
+                                dig_elen out_size, void *out )
 {
-    if( Client->sizeof_struct < offsetof(dip_client_routines,DIGCliMachineData) ) return( 0 );
+    if( Client->sizeof_struct < offsetof(dip_client_routines,DIGCliMachineData) )
+        return( 0 );
     return( Client->DIGCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 

@@ -369,16 +369,6 @@ typedef unsigned_8 type_modifier; enum {
     TM_FLAG_DEREF       = 0x10
 };
 
-#include "digpck.h"
-
-typedef struct dip_type_info {
-    unsigned long       size;
-    type_kind           kind;
-    type_modifier       modifier;
-} dip_type_info;
-
-typedef int         dig_fhandle;
-
 typedef unsigned_8  dig_seek; enum {
     DIG_ORG,
     DIG_CUR,
@@ -403,7 +393,6 @@ enum archtypes {
     #undef pick_mad
     MAD_MAX
 };
-typedef unsigned_16             mad_handle;
 
 enum ostypes {                  //NYI: redo these for PIL
     #define pick_mad(enum,desc) enum,
@@ -411,6 +400,25 @@ enum ostypes {                  //NYI: redo these for PIL
     #undef pick_mad
     MAD_OS_MAX
 };
+
+enum {
+    MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
+    MAP_FLAT_DATA_SELECTOR      = (unsigned_16)-2,
+};
+
+typedef unsigned_16     dig_elen;
+
+typedef int             dig_fhandle;
+
+typedef unsigned_16     mad_handle;
+
+#include "digpck.h"
+
+typedef struct dip_type_info {
+    unsigned long       size;
+    type_kind           kind;
+    type_modifier       modifier;
+} dip_type_info;
 
 typedef struct {                //NYI: redo this for PIL
     unsigned_8          cpu;
@@ -422,10 +430,6 @@ typedef struct {                //NYI: redo this for PIL
     mad_handle          mad;
 } system_config;
 
-enum {
-    MAP_FLAT_CODE_SELECTOR      = (unsigned_16)-1,
-    MAP_FLAT_DATA_SELECTOR      = (unsigned_16)-2,
-};
-
 #include "digunpck.h"
+
 #endif

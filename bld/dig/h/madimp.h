@@ -274,7 +274,7 @@ typedef struct mad_client_routines {
 
     void                (DIGCLIENT *MADCliNotify)( mad_notify_type, void const * );
 
-    unsigned            (DIGCLIENT *MADCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
+    unsigned            (DIGCLIENT *MADCliMachineData)( address, unsigned, dig_elen, void const*, dig_elen, void * );
 
     mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
     mad_status          (DIGCLIENT *MADCliMemExpr)( char const *expr, unsigned radix, address * );
@@ -317,7 +317,7 @@ size_t          MCRadixPrefix( unsigned radix, char *buff, size_t buff_size );
 
 void            MCNotify( mad_notify_type, void * );
 
-unsigned        MCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
+unsigned        MCMachineData( address, unsigned, dig_elen, void *, dig_elen, void * );
 
 mad_status      MCAddrToString( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
 mad_status      MCMemExpr( const char *expr, unsigned radix, address * );

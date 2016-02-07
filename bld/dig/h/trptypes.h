@@ -75,7 +75,7 @@ typedef struct {
 } trap_version;
 
 typedef unsigned_8  access_req;
-typedef unsigned_16 trap_elen;
+typedef dig_elen    trap_elen;
 typedef unsigned_32 trap_error;
 typedef unsigned_32 trap_mhandle;   /* module handle */
 typedef unsigned_32 trap_phandle;   /* process handle */

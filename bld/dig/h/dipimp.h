@@ -238,7 +238,7 @@ typedef struct dip_client_routines {
     void                (DIGCLIENT *status)( dip_status );
 
     mad_handle          (DIGCLIENT *curr_mad)( void );
-    unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
+    unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, dig_elen, void const*, dig_elen, void * );
 } dip_client_routines;
 
 #include "digunpck.h"
@@ -281,6 +281,6 @@ void            DCStatus( dip_status );
 
 mad_handle      DCCurrMAD(void);
 
-unsigned        DCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
+unsigned        DCMachineData( address, unsigned, dig_elen, void *, dig_elen, void * );
 
 #endif
