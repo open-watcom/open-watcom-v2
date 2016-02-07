@@ -113,9 +113,9 @@ nulldevice = nul
 default_windowing = $(%OWDEFAULT_WINDOWING)
 !endif
 
-!ifndef __UNIX__
+tools_root      = $(%OWTOOLROOT)
 
-tools_root      = $(%TOOLDR)\tools
+!ifndef __UNIX__
 
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
@@ -138,8 +138,6 @@ plsdir=$(tools_root)\dilib
 adsdir=$(tools_root)\adslib
 
 !else
-
-tools_root      = $(%TOOLDR)/tools
 
 # The NOVELLNDK environment variable should be added during install. If not, the default location is
 # C:\NOVELL\NDK\NWSDK.
