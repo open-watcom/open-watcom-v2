@@ -74,7 +74,7 @@ static void setATBit( thread_info *ti, set_t set )
                     (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
                     sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
             if( ti->brk_opcode != BRKPOINT ) {
-                opcode_type brk_opcode = BRK_POINT;
+                opcode_type brk_opcode = BRKPOINT;
                 WriteProcessMemory( ProcessInfo.process_handle,
                     (LPVOID)ti->brk_addr, (LPVOID)&brk_opcode, sizeof( brk_opcode ),
                     (LPDWORD)&bytes );
