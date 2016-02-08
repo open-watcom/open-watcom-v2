@@ -47,6 +47,7 @@
 #include "dbgio.h"
 #include "trpfile.h"
 #include "filermt.h"
+#include "filelcl.h"
 #include "trapglbl.h"
 #include "remfile.h"
 #include "trpld.h"
@@ -271,13 +272,13 @@ sys_handle RemoteOpen( const char *name, open_access mode )
     }
 }
 
-static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
+static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
 {
     in_mx_entry             in[2];
     mx_entry                out[1];
     file_write_req          acc;
     file_write_ret          ret;
-    unsigned                total;
+    size_t                  total;
     trap_elen               buff_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
@@ -291,8 +292,8 @@ static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
     buff_len = MaxPacketLen - sizeof( acc );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( buff_len > len )
+            buff_len = (trap_elen)len;
         in[1].ptr = buff;
         in[1].len = buff_len;
         TrapAccess( 2, in, 1, out );
@@ -305,13 +306,13 @@ static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
         total += ret.len;
         if( ret.len != buff_len )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + ret.len;
+        len -= ret.len;
     }
     return( total );
 }
 
-unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
+size_t RemoteWrite( sys_handle hdl, const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -319,13 +320,13 @@ unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
     return( doWrite( hdl, buff, len ) );
 }
 
-static unsigned doWriteConsole( const void *buff, unsigned len )
+static size_t doWriteConsole( const void *buff, size_t len )
 {
     in_mx_entry             in[2];
     mx_entry                out[1];
     file_write_console_req  acc;
     file_write_console_ret  ret;
-    unsigned                total;
+    size_t                  total;
     trap_elen               buff_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
@@ -357,7 +358,7 @@ static unsigned doWriteConsole( const void *buff, unsigned len )
     return( total );
 }
 
-unsigned RemoteWriteConsole( const void *buff, unsigned len )
+size_t RemoteWriteConsole( const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -365,7 +366,7 @@ unsigned RemoteWriteConsole( const void *buff, unsigned len )
     return( doWriteConsole( buff, len ) );
 }
 
-unsigned RemoteWriteConsoleNL( void )
+size_t RemoteWriteConsoleNL( void )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -373,15 +374,15 @@ unsigned RemoteWriteConsoleNL( void )
     return( doWriteConsole( RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
 }
 
-static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
+static size_t doRead( sys_handle hdl, void *buff, size_t len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
     file_read_req       acc;
     file_read_ret       ret;
-    unsigned            total;
+    size_t              total;
     trap_elen           buff_len;
-    unsigned            got_len;
+    trap_elen           read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
     acc.handle = hdl;
@@ -394,28 +395,28 @@ static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
     buff_len = MaxPacketLen - sizeof( file_read_req );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( buff_len > len )
+            buff_len = (trap_elen)len;
         out[1].ptr = buff;
         out[1].len = buff_len;
         acc.len = buff_len;
         CONV_LE_16( acc.len );
-        got_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
+        read_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
             return( ERR_RETURN );
         }
-        total += got_len;
-        if( got_len != buff_len )
+        total += read_len;
+        if( read_len != buff_len )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + read_len;
+        len -= read_len;
     }
     return( total );
 }
 
-unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
+size_t RemoteRead( sys_handle hdl, void *buff, size_t len )
 {
     int         locfile;
 
@@ -425,7 +426,7 @@ unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
     /* Try reading from local copy first */
     locfile = GetCachedHandle( hdl );
     if( locfile != -1 )
-        return( read( locfile, buff, len ) );
+        return( LocalRead( locfile, buff, len ) );
 
     return( doRead( hdl, buff, len ) );
 }

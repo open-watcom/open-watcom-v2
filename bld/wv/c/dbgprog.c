@@ -1137,7 +1137,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
 {
     handle              floc;
     handle              frem;
-    unsigned            len;
+    size_t              read_len;
     char                *buff;
     unsigned            bsize;
     unsigned long       copylen;
@@ -1177,10 +1177,12 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     SeekStream( floc, 0, DIO_SEEK_ORG );
     delete_file = false;
     copied = 0;
-    while( ( len = ReadStream( floc, buff, bsize ) ) != 0 ) {
-        WriteStream( frem, buff, len );
+    while( ( read_len = ReadStream( floc, buff, bsize ) ) != 0 ) {
+        if( read_len == ERR_RETURN )
+            break;
+        WriteStream( frem, buff, read_len );
         DUICopyCopied( cookie, copied );
-        copied += len;
+        copied += read_len;
         if( copied >= copylen )
             break;
         if( DUICopyCancelled( cookie ) ) {

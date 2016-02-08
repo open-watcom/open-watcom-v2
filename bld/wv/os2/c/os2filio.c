@@ -121,30 +121,57 @@ sys_handle LocalOpen( const char *name, open_access access )
     return( hdl );
 }
 
-unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
+size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
-    USHORT      read;
+    USHORT      read_len;
     USHORT      ret;
+    size_t      total;
+    unsigned    buff_len;
 
-    ret = DosRead( filehndl, ptr, len, &read );
-    if( ret != 0 ) {
-        StashErrCode( ret, OP_LOCAL );
-        return( ERR_RETURN );
+    buff_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( buff_len > len )
+            buff_len = (unsigned)len;
+        ret = DosRead( filehndl, ptr, buff_len, &read_len );
+        if( ret != 0 ) {
+            StashErrCode( ret, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        total += read_len;
+        if( read_len != buff_len )
+            break;
+        ptr = (char *)ptr + read_len;
+        len -= read_len;
     }
-    return( read );
+    return( total );
 }
 
-unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
+size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
-    USHORT  written;
-    USHORT  ret;
+    USHORT      write_len;
+    USHORT      ret;
+    size_t      total;
+    unsigned    buff_len;
 
-    ret = DosWrite( filehndl, (PVOID)ptr, len, &written );
-    if( ret != 0 ) {
-        StashErrCode( ret, OP_LOCAL );
-        return( ERR_RETURN );
+    buff_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( buff_len > len )
+            buff_len = (unsigned)len;
+        ret = DosWrite( filehndl, (PVOID)ptr, buff_len, &write_len );
+        ret = write( filehndl, ptr, buff_len );
+        if( ret != 0 ) {
+            StashErrCode( ret, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        total += write_len;
+        if( write_len != buff_len )
+            break;
+        ptr = (char *)ptr + write_len;
+        len -= write_len;
     }
-    return( written );
+    return( total );
 }
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )

@@ -63,9 +63,9 @@ typedef unsigned_8 open_access; enum {
 extern unsigned         ReadStream( handle, void *, unsigned );
 extern unsigned         ReadText( handle, void *, unsigned );
 
-extern unsigned         WriteStream( handle, const void *, unsigned );
-extern unsigned         WriteNL( handle );
-extern unsigned         WriteText( handle, const void *, unsigned );
+extern size_t           WriteStream( handle, const void *, size_t );
+extern size_t           WriteNL( handle );
+extern size_t           WriteText( handle, const void *, size_t );
 
 extern unsigned long    SeekStream( handle, long, seek_method );
 
@@ -100,7 +100,7 @@ extern bool             FindWritable( char const *, char * );
 extern bool             FindWritable( char const *src, char *dst );
 #endif
 
-extern void             WriteToPgmScreen( const void *buff, unsigned len );
+extern void             WriteToPgmScreen( const void *buff, size_t len );
 extern void             SysFileInit( void );
 #if !defined( BUILD_RFX )
 extern void             PathFini( void );

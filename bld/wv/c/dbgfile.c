@@ -146,7 +146,7 @@ static handle FindFreeHandle( void )
     return( NIL_HANDLE );
 }
 
-unsigned ReadStream( handle h, void *b, unsigned l )
+size_t ReadStream( handle h, void *b, size_t l )
 {
     sys_handle  sys;
 
@@ -163,7 +163,7 @@ unsigned ReadText( handle h, void *b, unsigned l )
     return( ReadStream( h, b, l ) );
 }
 
-unsigned WriteStream( handle h, const void *b, unsigned l )
+size_t WriteStream( handle h, const void *b, size_t l )
 {
     sys_handle  sys;
 
@@ -175,7 +175,7 @@ unsigned WriteStream( handle h, const void *b, unsigned l )
     }
 }
 
-unsigned WriteNL( handle h )
+size_t WriteNL( handle h )
 {
     char    *nl;
 
@@ -187,7 +187,7 @@ unsigned WriteNL( handle h )
     return( WriteStream( h, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
 }
 
-unsigned WriteText( handle h, const void *b, unsigned len )
+size_t WriteText( handle h, const void *b, size_t len )
 {
     len = WriteStream( h, b, len );
     WriteNL( h );
@@ -256,7 +256,7 @@ error_idx FileRemove( char const *name, open_access loc )
     }
 }
 
-void WriteToPgmScreen( const void *buff, unsigned len )
+void WriteToPgmScreen( const void *buff, size_t len )
 {
 #if !defined( BUILD_RFX )
     DUIWndUser();

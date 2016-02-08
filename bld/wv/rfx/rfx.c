@@ -1034,8 +1034,8 @@ static void FiniCopy( handle in, const char *src_name, object_loc src_loc,
 static error_idx DoCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
     handle      in, out;
-    unsigned    len;
-    unsigned    written;
+    size_t      read_len;
+    size_t      write_len;
     error_idx   retc;
 
     WrtCopy( src, dst, src_loc, dst_loc );
@@ -1052,22 +1052,22 @@ static error_idx DoCopy( const char *src, const char *dst, object_loc src_loc, o
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
-        len = ReadStream( in, Buff, BUFF_LEN );
-        if( len == ERR_RETURN ) {
+        read_len = ReadStream( in, Buff, BUFF_LEN );
+        if( read_len == ERR_RETURN ) {
             retc = GetLastErr();
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( retc );
         }
-        if( len == 0 )
+        if( read_len == 0 )
             break;
-        written = WriteStream( out, Buff, len );
-        if( written == ERR_RETURN ) {
+        write_len = WriteStream( out, Buff, read_len );
+        if( write_len == ERR_RETURN ) {
             retc = GetLastErr();
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( retc );
         }
-        if( written != len ) {
-            if( (written == (len - 1)) && (Buff[written] == 0x1A) )
+        if( write_len != read_len ) {
+            if( ( write_len == ( read_len - 1 ) ) && ( Buff[write_len] == 0x1A ) )
                 break;
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );

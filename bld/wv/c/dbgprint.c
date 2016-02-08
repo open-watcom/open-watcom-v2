@@ -63,7 +63,6 @@
 #define MAX_WIDTH       40
 #define NAME_WIDTH      25
 
-extern void             WriteToPgmScreen( const void *, unsigned );
 extern void             GraphicDisplay( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 
