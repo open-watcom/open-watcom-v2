@@ -89,9 +89,7 @@ extern void         tr_mem_check( void );
 #define _galloc_fn tr_gmem_alloc
 #define _grealloc_fn tr_gmem_realloc
 
-#endif  // !TRACK_MEM
-
-#ifndef TRACK_MEM
+#else  // !TRACK_MEM
 
 #define tr_mem_open( inst, title )
 #define tr_mem_close()
@@ -117,7 +115,7 @@ extern void         tr_mem_check( void );
 #define _galloc_fn gmem_alloc
 #define _grealloc_fn gmem_realloc
 
-#endif
+#endif  // !TRACK_MEM
 
 #define _free_check( x ) if( (x) != NULL ) _free( (x) )
 #define _gfree_check( x ) if( (x) != NULL ) _gfree( (x) )
