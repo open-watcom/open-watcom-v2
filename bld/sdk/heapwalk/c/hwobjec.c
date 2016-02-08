@@ -151,8 +151,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 }
 
 
-BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     HWND        parent;
     RECT        area;
@@ -258,23 +257,21 @@ void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     items = MemAlloc( cnt * sizeof( int ) );
     if( cnt != 0 ) {
         if( items == NULL ) {
-            ErrorBox( HeapWalkMainWindow, STR_CANT_COMPLETE_ADD,
-                      MB_OK | MB_ICONINFORMATION );
+            ErrorBox( HeapWalkMainWindow, STR_CANT_COMPLETE_ADD, MB_OK | MB_ICONINFORMATION );
             return;
         }
         SendMessage( lbhwnd, LB_GETSELITEMS, cnt, (LPARAM)items );
         for( i = 0; i < cnt; i++ ) {
-            total += HeapList[ items[i] ]->info.ge.dwBlockSize;
+            total += HeapList[items[i]]->info.ge.dwBlockSize;
         }
     }
-    sprintf( buf, "%lu", cnt );
+    sprintf( buf, "%d", cnt );
     SetStaticText( dialog, ADD_CNT, buf );
     sprintf( buf, "%lu", total );
     SetStaticText( dialog, ADD_TOTAL, buf );
 }
 
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     DWORD       size;
     DWORD       info;
