@@ -40,7 +40,11 @@
 
 bool GUISetWindowText( gui_window *wnd, const char *data )
 {
+#if defined( __OS2__ ) && defined( _M_I86 )
+     _wpi_setwindowtext( GUIGetParentFrameHWND( wnd ), (char *)data );
+#else
      _wpi_setwindowtext( GUIGetParentFrameHWND( wnd ), data );
+#endif
      GUIChangeMDITitle( wnd );
      return( true );
 }
