@@ -53,6 +53,7 @@
 #include "dbgprint.h"
 #include "remcore.h"
 #include "dbgreg.h"
+#include "dbgio.h"
 
 
 #define BUFLEN  UTIL_LEN

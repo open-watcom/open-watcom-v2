@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <limits.h>
 #define INCL_ERRORS
 #define INCL_BASE
 #include <os2.h>
@@ -106,7 +107,7 @@ sys_handle LocalOpen( const char *name, open_access access )
     openflags = 0;
     if( access & OP_CREATE ) openflags |= 0x10;
     openflags |= (access & OP_TRUNC) ? 0x02 : 0x01;
-    rc = DosOpen( name,         /* name */
+    rc = DosOpen( (char *)name, /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
@@ -160,7 +161,6 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
         if( buff_len > len )
             buff_len = (unsigned)len;
         ret = DosWrite( filehndl, (PVOID)ptr, buff_len, &write_len );
-        ret = write( filehndl, ptr, buff_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
@@ -199,7 +199,7 @@ error_idx LocalErase( const char *name )
 {
     USHORT      ret;
 
-    ret = DosDelete( name, 0 );
+    ret = DosDelete( (char *)name, 0 );
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 

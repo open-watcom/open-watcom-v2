@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <limits.h>
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"

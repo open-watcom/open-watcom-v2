@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <limits.h>
 #define INCL_ERRORS
 #define INCL_BASE
 #include <os2.h>

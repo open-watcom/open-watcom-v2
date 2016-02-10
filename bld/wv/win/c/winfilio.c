@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <limits.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
