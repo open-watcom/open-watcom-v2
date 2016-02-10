@@ -58,6 +58,7 @@
     #define INCL_WINPOINTERS
     #define INCL_WINSCROLLBARS
     #define INCL_WINSTATICS
+    #define INCL_WINSYS
   #endif
 #endif
 
