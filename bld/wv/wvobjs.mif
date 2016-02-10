@@ -219,7 +219,7 @@ dui_objs_linux    = lnxscrn.obj helpio.obj
 dui_objs_qnx386   = qnxscrn.obj helpio.obj
 dui_objs_rdos386  = rdosscrn.obj helpio.obj
 !ifeq sys_windowed 1
-dui_objs_os2i86   = pmscrn2.obj
+dui_objs_os2i86   = pmscrn.obj
 dui_objs_os2386   = pmscrn2.obj
 dui_objs_nt       = ntguiscn.obj ntdbgpb.obj
 dui_objs_win      = wguiscrn.obj
