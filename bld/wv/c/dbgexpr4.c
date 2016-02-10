@@ -893,14 +893,16 @@ static address AllocPgmStack( unsigned size )
     address     addr;
     address     new;
 
-    if( _IsOn( SW_STACK_GROWS_UP ) )
-        size = -size;
     addr = GetRegSP();
     new = addr;
-    new.mach.offset -= (int)size;
-    PgmStackUsage[NestedCallLevel] += size;
-    if( _IsOff( SW_STACK_GROWS_UP ) )
+    if( _IsOn( SW_STACK_GROWS_UP ) ) {
+        new.mach.offset += size;
+        PgmStackUsage[NestedCallLevel] -= size;
+    } else {
+        new.mach.offset -= size;
+        PgmStackUsage[NestedCallLevel] += size;
         addr.mach.offset = new.mach.offset;
+    }
     SetRegSP( new );
     return( addr );
 }
