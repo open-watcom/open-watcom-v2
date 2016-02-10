@@ -47,7 +47,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     dip_init_func       *init_func;
     dip_status          status;
 
-    if( DosLoadModule( NULL, 0, path, &dll ) != 0 ) {
+    if( DosLoadModule( NULL, 0, (char *)path, &dll ) != 0 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
     status = DS_ERR|DS_INVALID_DIP;
