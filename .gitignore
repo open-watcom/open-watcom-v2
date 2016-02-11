@@ -199,7 +199,7 @@
 /bld/wipfc/stamp-h1
 /bld/wipfc/wipfc
 #
-/bld/wipfc/linuxx64/.deps/*
+/bld/wipfc/linuxx64/.deps
 /bld/wipfc/linuxx64/config.h
 /bld/wipfc/linuxx64/config.status
 /bld/wipfc/linuxx64/Makefile
