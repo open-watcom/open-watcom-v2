@@ -158,7 +158,7 @@ size_t ReadStream( handle h, void *b, size_t l )
     }
 }
 
-unsigned ReadText( handle h, void *b, unsigned l )
+size_t ReadText( handle h, void *b, size_t l )
 {
     return( ReadStream( h, b, l ) );
 }

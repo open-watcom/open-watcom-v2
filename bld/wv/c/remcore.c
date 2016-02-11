@@ -85,38 +85,35 @@ static size_t MemRead( address addr, void *ptr, size_t size )
     bool                int_tbl;
     size_t              left;
     trap_elen           piece;
-    size_t              got;
+    trap_retval         read_len;
 
-    if( size == 0 ) return( 0 );
+    if( size == 0 )
+        return( 0 );
     SectLoad( addr.sect_id );
     acc.req = REQ_READ_MEM;
     AddrFix( &addr );
     acc.mem_addr = addr.mach;
     piece = MaxPacketLen;
     left = size;
-    for( ;; ) {
+    while( left > 0 ) {
         if( piece > left )
             piece = (trap_elen)left;
         acc.len = piece;
-
-        int_tbl = IsInterrupt( &(acc.mem_addr), size );
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece );
         if( int_tbl )
             RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        got = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
+        read_len = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
         if( int_tbl )
             GrabHandlers();
-
-        left -= got;
-        if( left == 0 )
+        left -= read_len;
+        if( read_len != piece )
             break;
-        if( got != piece )
-            break;
-        addr.mach.offset += piece;
+        addr.mach.offset += read_len;
         acc.mem_addr = addr.mach;
-        ptr = (char *)ptr + piece;
+        ptr = (char *)ptr + read_len;
     }
     return( size - left );
 }
@@ -131,10 +128,12 @@ void InitCache( address addr, size_t size )
 {
     void *ptr;
 
-    if( size == 0 ) return;
+    if( size == 0 )
+        return;
     FiniCache();
     _Alloc( ptr, size );
-    if( ptr == NULL ) return;
+    if( ptr == NULL )
+        return;
     Cache.data = ptr;
     Cache.addr = addr;
     Cache.len = MemRead( addr, ptr, size );
@@ -147,12 +146,17 @@ bool HaveCache( void )
 
 static bool ReadCache( address addr, char *data, size_t len )
 {
-    if( Cache.data == NULL ) return( false );
-    if( !SameAddrSpace( Cache.addr, addr ) ) return( false );
-    if( len > Cache.len ) return( false );
-    if( Cache.addr.mach.offset > addr.mach.offset ) return( false );
+    if( Cache.data == NULL )
+        return( false );
+    if( !SameAddrSpace( Cache.addr, addr ) )
+        return( false );
+    if( len > Cache.len )
+        return( false );
+    if( Cache.addr.mach.offset > addr.mach.offset )
+        return( false );
     addr.mach.offset -= Cache.addr.mach.offset;
-    if( Cache.len - len < addr.mach.offset ) return( false );
+    if( Cache.len - len < addr.mach.offset )
+        return( false );
     memcpy( data, &Cache.data[addr.mach.offset], len );
     return( true );
 }
@@ -186,26 +190,28 @@ size_t ProgPoke( address addr, const void *data, size_t len )
     out[0].len = sizeof( ret );
     piece = MaxPacketLen - sizeof( acc );
     left = len;
-    for( ;; ) {
+    while( left > 0 ) {
         if( piece > left )
-            piece = left;
+            piece = (trap_elen)left;
         in[1].ptr = data;
         in[1].len = piece;
 
-        int_tbl = IsInterrupt( &(acc.mem_addr), len );
-        if( int_tbl ) RestoreHandlers();
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece );
+        if( int_tbl )
+            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         TrapAccess( 2, in, 1, out );
         CONV_LE_16( ret.len );
-        if( int_tbl ) GrabHandlers();
+        if( int_tbl )
+            GrabHandlers();
 
         left -= ret.len;
-        if( left == 0 ) break;
-        if( ret.len != piece ) break;
-        addr.mach.offset += piece;
+        if( ret.len != piece )
+            break;
+        addr.mach.offset += ret.len;
         acc.mem_addr = addr.mach;
-        data = (char *)data + piece;
+        data = (char *)data + ret.len;
     }
     return( len - left );
 }
@@ -391,7 +397,7 @@ bool KillProgOvlay( void )
     FreeThreads();
     GetSysConfig();
     ClearMachineDataCache();
-    return( ( ret.err == 0 ) ? true : false );
+    return( ( ret.err == 0 ) );
 }
 
 
@@ -444,7 +450,7 @@ bool Redirect( bool input, char *hndlname )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( ret.err == 0 ? true : false );
+    return( ( ret.err == 0 ) );
 }
 
 
@@ -551,9 +557,9 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
     machine_data_cache          *new;
 
     if( info_type == MData->info
-     && addr.mach.offset >= MData->addr.mach.offset
-     && addr.mach.offset <  MData->end
-     && SameAddrSpace( addr, MData->addr ) ) {
+      && addr.mach.offset >= MData->addr.mach.offset
+      && addr.mach.offset <  MData->end
+      && SameAddrSpace( addr, MData->addr ) ) {
         memcpy( outp, MData->data, out_size );
         return( out_size );
     }
@@ -569,12 +575,14 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
     out[1].ptr = outp;
     out[1].len = out_size;
     len = TrapAccess( 2, in, 2, out );
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     len -= sizeof( ret );
     if( len > MData->len ) {
         new = MData;
         _Realloc( new, len + sizeof( *MData ) );
-        if( new == NULL ) return( len );
+        if( new == NULL )
+            return( len );
         MData = new;
     }
     memcpy( MData->data, outp, len );
@@ -613,7 +621,7 @@ void RemoteRestoreBreak( address addr, dword value )
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-bool RemoteSetWatch( address addr, unsigned size, unsigned long *mult )
+bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
 {
     set_watch_req       acc;
     set_watch_ret       ret;
@@ -627,7 +635,7 @@ bool RemoteSetWatch( address addr, unsigned size, unsigned long *mult )
     return( (ret.multiplier & USING_DEBUG_REG) != 0 );
 }
 
-void RemoteRestoreWatch( address addr, unsigned size )
+void RemoteRestoreWatch( address addr, uint_8 size )
 {
     clear_watch_req     acc;
 
@@ -673,7 +681,8 @@ void CheckSegAlias( void )
         TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
         CONV_LE_16( ret.seg );
         CONV_LE_16( ret.alias );
-        if( ret.seg == 0 ) break;
+        if( ret.seg == 0 )
+            break;
         AddAliasInfo( ret.seg, ret.alias );
         acc.seg = ret.seg;
     }

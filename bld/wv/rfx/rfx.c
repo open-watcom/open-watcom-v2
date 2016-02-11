@@ -598,7 +598,7 @@ static void Prompt( void )
     if( prompt == NULL )
         prompt = "$n$g";
     OutName();
-    while( *prompt ) {
+    while( *prompt != '\0' ) {
         if( *prompt == '$' ) {
             ++prompt;
             switch( *prompt ) {
@@ -672,8 +672,8 @@ static void Prompt( void )
 
 static void Interactive( void )
 {
-    char *p;
-    int interactive;
+    char    *p;
+    bool    interactive;
 
     interactive = LocalInteractive( STD_IN );
     if( interactive ) {
@@ -980,7 +980,7 @@ static int IsDir( const char *src, object_loc src_loc )
     if( rc < 0 ) {
         return( 0 );
     }
-    return( ( rc & IO_SUBDIRECTORY ) != 0 );
+    return( (rc & IO_SUBDIRECTORY) != 0 );
 }
 
 

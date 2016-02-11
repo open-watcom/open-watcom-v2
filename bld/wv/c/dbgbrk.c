@@ -1058,7 +1058,7 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
     unsigned long       mult;
     brkp                *wp;
     mad_type_info       mti;
-    unsigned            size;
+    uint_8              size;
 
     if( !IS_BP_EXECUTE( th ) ) {
         MADTypeInfo( th, &mti );
@@ -1634,7 +1634,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
             if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
                 MADTypeInfo( bp->th, &mti );
                 if( ItemGetMAD( &bp->loc.addr, &item, IT_NIL, bp->th ) ) {
-                    
+
                     /*
                      * If the breakpoint fires here because of a write, but the value hasn't changed then
                      * the breakpoint does not fire off!!!! The SupportsExactBreakpoints actually enables
@@ -1642,13 +1642,13 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                      * or minus a few bytes...
                      *
                      */
-                    
+
                     if( _IsOn( SW_BREAK_ON_WRITE ) && IsExactBreakpointsSupported() ) {
 
                         bool    drop_hit = false;
-                        
+
                         if( ( UserTmpBrk.status.b.active ) || ( DbgTmpBrk.status.b.active ) ) {
-                        
+
                             if( HaveHitBP( &UserTmpBrk ) ) {
                                 drop_hit = true;
                             }
@@ -1659,8 +1659,8 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                                 drop_hit = true;
                             }
                         }
-                        
-                        if( !drop_hit ) 
+
+                        if( !drop_hit )
                             hit = true;
                     } else {
                         if( ( memcmp( &bp->item, &item, mti.b.bits / BITS_PER_BYTE ) != 0 ) || !bp->status.b.has_value ) {
@@ -1889,7 +1889,7 @@ address GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool ex
 
     if( mod == NO_MOD || row < 0 )
         return( NilAddr );
-    switch( LineCue( mod, file_id, row+1, 0, ch ) ) {
+    switch( LineCue( mod, file_id, row + 1, 0, ch ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:

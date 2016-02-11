@@ -1035,7 +1035,7 @@ static void AddString( char **dstp, size_t *lenp, const char *src )
     *lenp -= len;
 }
 
-static unsigned PrepProgArgs( char *where, unsigned len )
+static size_t PrepProgArgs( char *where, size_t len )
 {
     char        *src;
     char        *dst;
@@ -1059,7 +1059,7 @@ static unsigned PrepProgArgs( char *where, unsigned len )
     return( dst - where );
 }
 
-unsigned GetProgArgs( char *where, unsigned len )
+size_t GetProgArgs( char *where, size_t len )
 {
     len = PrepProgArgs( where, len );
     _SwitchOff( SW_TRUE_ARGV );

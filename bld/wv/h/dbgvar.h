@@ -253,7 +253,7 @@ extern type_display     *VarDisplayFindParent( type_display *curr );
 extern void             VarDisplayOnTop( var_node *v, bool on );
 extern bool             VarDisplayedOnTop( var_node *v );
 extern void             VarDisplayUpdate( var_info *i );
-extern char             *VarDisplayType( var_node *v, char *buff, unsigned buff_len );
+extern char             *VarDisplayType( var_node *v, char *buff, size_t buff_len );
 
 extern type_display     *VarDisplayAddStruct( const char *name );
 extern type_display     *VarDisplayAddField( type_display *parent, const char *name );

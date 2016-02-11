@@ -35,7 +35,7 @@ extern int              AddCachedHandle( int local, sys_handle remote );
 extern int              DelCachedHandle( int local );
 extern bool             InitFileSupp( void );
 extern bool             HaveRemoteFiles( void );
-extern unsigned         RemoteStringToFullName( bool executable, const char *name, char *res, trap_elen res_len );
+extern size_t           RemoteStringToFullName( bool executable, const char *name, char *res, trap_elen res_len );
 #if !defined( BUILD_RFX )
 extern error_idx        RemoteFork( const char *cmd, trap_elen len );
 #endif

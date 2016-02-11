@@ -69,21 +69,25 @@ void LocalErrMsg( sys_error code, char *buff )
         s += 3;
         for( ;; ) {
             ch = *s++;
-            if( ch == ':' ) break;
+            if( ch == ':' )
+                break;
             if( ch < '0' || ch > '9' ) {
                 s = buff;
                 break;
             }
         }
     }
-    while( *s == ' ' ) ++s;
-    for( ;; ) {
-        ch = *s++;
-        if( ch == '\0' ) break;
-        if( ch == '\n' ) ch = ' ';
-        if( ch != '\r' ) *d++ = ch;
+    while( *s == ' ' )
+        ++s;
+    while( (ch = *s++) != '\0' ) {
+        if( ch == '\n' )
+            ch = ' ';
+        if( ch != '\r' ) {
+            *d++ = ch;
+        }
     }
-    while( d > buff && d[-1] == ' ' ) --d;
+    while( d > buff && d[-1] == ' ' )
+        --d;
     *d = '\0';
 }
 
@@ -105,7 +109,8 @@ sys_handle LocalOpen( const char *name, open_access access )
     }
     openmode |= 0x20c0;
     openflags = 0;
-    if( access & OP_CREATE ) openflags |= 0x10;
+    if( access & OP_CREATE )
+        openflags |= 0x10;
     openflags |= (access & OP_TRUNC) ? 0x02 : 0x01;
     rc = DosOpen( (char *)name, /* name */
                 &hdl,           /* handle to be filled in */
@@ -127,20 +132,20 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     USHORT      read_len;
     USHORT      ret;
     size_t      total;
-    unsigned    buff_len;
+    unsigned    piece;
 
-    buff_len = INT_MAX;
+    piece = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (unsigned)len;
-        ret = DosRead( filehndl, ptr, buff_len, &read_len );
+        if( piece > len )
+            piece = (unsigned)len;
+        ret = DosRead( filehndl, ptr, piece, &read_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
         }
         total += read_len;
-        if( read_len != buff_len )
+        if( read_len != piece )
             break;
         ptr = (char *)ptr + read_len;
         len -= read_len;
@@ -153,20 +158,20 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     USHORT      write_len;
     USHORT      ret;
     size_t      total;
-    unsigned    buff_len;
+    unsigned    piece;
 
-    buff_len = INT_MAX;
+    piece = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (unsigned)len;
-        ret = DosWrite( filehndl, (PVOID)ptr, buff_len, &write_len );
+        if( piece > len )
+            piece = (unsigned)len;
+        ret = DosWrite( filehndl, (PVOID)ptr, piece, &write_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
         }
         total += write_len;
-        if( write_len != buff_len )
+        if( write_len != piece )
             break;
         ptr = (char *)ptr + write_len;
         len -= write_len;

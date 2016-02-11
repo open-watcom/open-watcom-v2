@@ -362,7 +362,7 @@ char *KeyName( unsigned key )
     return( NULL );
 }
 
-static key_desc StripOff( const char **start, unsigned *len,
+static key_desc StripOff( const char **start, size_t *len,
                           const char *test, key_desc desc )
 {
     size_t      tlen;

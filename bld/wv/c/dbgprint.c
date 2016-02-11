@@ -148,7 +148,9 @@ static void EndBuff( void )
 static void PrtStr( const char *start, unsigned len )
 {
     PrtNeed( len );
-    for( ; len > 0; --len ) PrtChar( *start++ );
+    for( ; len > 0; --len ) {
+        PrtChar( *start++ );
+    }
 }
 
 
@@ -158,13 +160,13 @@ static void PrtStr( const char *start, unsigned len )
 
 static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff, int len )
 {
-    char        internal[ 65 ];
+    char        internal[65];
     char        *ptr;
     unsigned    dig;
     unsigned_64 big_radix;
     unsigned_64 remainder;
 
-    ptr = &internal[ 64 ];
+    ptr = &internal[64];
     U32ToU64( radix, &big_radix );
     while( (len > 0) || (U64Test( value ) != 0) ) {
         U64Div( value, &big_radix, value, &remainder );
@@ -175,7 +177,7 @@ static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff
     }
     len = &internal[64] - ptr;
     memcpy( buff, ptr + 1, len );
-    buff[ len ] = NULLCHAR;
+    buff[len] = NULLCHAR;
     return( buff + len );
 }
 
@@ -256,7 +258,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
 #if 1
         {
             unsigned len = 1;
-            /* If we are printing hex, expand to both nibbles */            
+            /* If we are printing hex, expand to both nibbles */
             if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radix == 16 || radix == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
                 len = ExprSP->info.size * 2;
             ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
@@ -301,7 +303,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
 
 static void PrintAddress( char fmt )
 {
-    char        buff[ BUFLEN ];
+    char        buff[BUFLEN];
     char        *ptr;
     address     addr;
 
@@ -326,7 +328,7 @@ static void PrintAddress( char fmt )
 static void PrintDouble( char format, xreal *val )
 {
     char        *start, *ptr, *back;
-    char        buff[ MAX_WIDTH+1 ];
+    char        buff[MAX_WIDTH + 1];
     bool        found_dot;
 
     switch( tolower( format ) ) {
@@ -340,17 +342,18 @@ static void PrintDouble( char format, xreal *val )
         LDToS( buff, val, 16, 0, MAX_WIDTH, 1, 0, format - 2, 'G' );
         break;
     }
-    buff[ MAX_WIDTH ] = NULLCHAR;
+    buff[MAX_WIDTH] = NULLCHAR;
     for( start = buff; *start == ' '; ++start )
         ;
     found_dot = false;
-    ptr = start;
-    for( ;; ) {
-        if( *ptr == '\0' ) break;
-        if( *ptr == 'e' ) break;
-        if( *ptr == 'E' ) break;
-        if( *ptr == '.' ) found_dot = true;
-        ++ptr;
+    for( ptr = start; *ptr != '\0'; ++ptr ) {
+        if( *ptr == 'e' )
+            break;
+        if( *ptr == 'E' )
+            break;
+        if( *ptr == '.' ) {
+            found_dot = true;
+        }
     }
     back = ptr;
     if( found_dot ) {
@@ -471,7 +474,8 @@ static void DoPrintString( bool force )
     }
     p = buff;
     while( count-- > 0 ) {
-        if( *p == '\0' ) break;
+        if( *p == '\0' )
+            break;
         if( !force ) {
             if( count == 0 ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
@@ -504,30 +508,29 @@ static void PrintCharBlock( void )
     unsigned_16 *unicode_start;
     unsigned    len;
     int         overflow = 0;
-    
+
     PrtChar( '\'' );
     ascii_start = ExprSP->v.string.loc.e[0].u.p;
     len = ExprSP->info.size;
-    
+
     /*
      *  If the memory required to display the string is larger than what we have to display, then
      *  we adjust things so we can display them with a hint that the string is longer than can be displayed
      */
-    
+
     if(len + 2 > BUFLEN){   /* or UTIL_LEN/TXT_LEN? */
-        len = BUFLEN-7; /* 'string'....<NUL> */
+        len = BUFLEN - 7;   /* 'string'....<NUL> */
         overflow = 1;
     }
-    
+
     switch( ExprSP->info.modifier ) {
     case TM_NONE:
     case TM_ASCII:
         PrtNeed( len );
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *ascii_start == NULLCHAR ) break;
+        for( ; len > 0; --len ) {
+            if( *ascii_start == NULLCHAR )
+                break;
             PrtChar( *ascii_start++ );
-            --len;
         }
         break;
     case TM_EBCIDIC:
@@ -537,11 +540,10 @@ static void PrintCharBlock( void )
         unicode_start = (unsigned_16 *)ascii_start;
         len /= 2;
         PrtNeed( len );
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *unicode_start == NULLCHAR ) break;
+        for( ; len > 0; --len ) {
+            if( *unicode_start == NULLCHAR )
+                break;
             PrtChar( *unicode_start++ );
-            --len;
         }
         break;
     }

@@ -75,8 +75,11 @@ static void NoCRLF( char *str )
     char *p;
 
     for( p = str; *p != '\0'; ++p ) {
-        if( *p == '\r' ) *p = ' ';
-        if( *p == '\n' ) *p = ' ';
+        if( *p == '\r' )
+            *p = ' ';
+        if( *p == '\n' ) {
+            *p = ' ';
+        }
     }
 }
 
@@ -90,7 +93,9 @@ void SetProgState( unsigned run_conditions )
         DbgRegs->tid = RemoteSetThread( 0 );
         CheckForNewThreads( true );
     }
-    if( run_conditions & COND_ALIASING ) CheckSegAlias();
+    if( run_conditions & COND_ALIASING ) {
+        CheckSegAlias();
+    }
 }
 
 static void SetThreadStates( void )
@@ -143,7 +148,8 @@ bool SetMsgText( char *message, unsigned *conditions )
                 sizeof( DEBUGGER_THREADID_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_THREADID_COMMAND ) - 1;
         equal = strchr( message, '=' );
-        if( equal == NULL ) return( true );
+        if( equal == NULL )
+            return( true );
         *equal = '\0';
         CheckForNewThreads( false );
         NoCRLF( equal + 1 );
@@ -184,10 +190,12 @@ bool SetMsgText( char *message, unsigned *conditions )
                 sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1 ) == 0 ) {
         message += sizeof( DEBUGGER_LOOKUP_COMMAND ) - 1;
         comma1 = strchr( message, ',' );
-        if( comma1 == NULL ) return( true );
+        if( comma1 == NULL )
+            return( true );
         *comma1++ = '\0';
         comma2 = strchr( comma1, ',' );
-        if( comma2 == NULL ) return( true );
+        if( comma2 == NULL )
+            return( true );
         *comma2++ = '\0';
         NoCRLF( comma2 );
         if( !DlgScanDataAddr( message, &addr ) )
@@ -272,7 +280,7 @@ typedef enum {
 static unsigned DoRun( bool step )
 {
     unsigned     conditions;
-    
+
     if( HaveRemoteAsync() ) {
         conditions = MakeAsyncRun( step );
         if( conditions & COND_RUNNING ) {
@@ -296,7 +304,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     bool                already_stopping;
     bool                force_stop;
 
-    if( !want_wps ) ++InCall;
+    if( !want_wps )
+        ++InCall;
     tracing = TraceStart( tracing );
     WriteDbgRegs();
     first_time = true;
@@ -321,7 +330,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
             how = TraceHow( true );
             break;
         }
-        if( how == MTRH_STOP ) break;
+        if( how == MTRH_STOP )
+            break;
         switch( how ) {
         case MTRH_BREAK:
             DbgUpdate( UP_CSIP_JUMPED );
@@ -330,7 +340,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         case MTRH_SIMULATE:
         case MTRH_STEP:
         case MTRH_STEPBREAK:
-            if( _IsOff( SW_TOUCH_SCREEN_BUFF ) ) break;
+            if( _IsOff( SW_TOUCH_SCREEN_BUFF ) )
+                break;
             /* fall through */
         default:
             if( !(ScrnState & USR_SCRN_ACTIVE) && do_flip ) {
@@ -423,7 +434,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
             conditions |= COND_USER;
             break;
         }
-        if( conditions & COND_STOPPERS ) break;
+        if( conditions & COND_STOPPERS )
+            break;
         switch( es ) {
         case ES_STEP_ONE:
             es = ES_FORCE_BREAK;
@@ -446,7 +458,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     DUIPlayDead( false );
     SetProgState( run_conditions );
     _SwitchOff( SW_KNOW_EMULATOR );
-    if( !want_wps ) --InCall;
+    if( !want_wps )
+        --InCall;
     return( conditions );
 }
 
@@ -469,7 +482,8 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
     if( conditions & COND_EXCEPTION ) {
         RecordMsgText( &conditions ); // get the 'access violation, etc' message
         p = StrCopy( LIT_ENG( Task_Exception ), TxtBuff );
-        if( MsgText != NULL ) StrCopy( MsgText, p );
+        if( MsgText != NULL )
+            StrCopy( MsgText, p );
         MsgText = DbgRealloc( MsgText, strlen( TxtBuff ) + 1 );
         StrCopy( TxtBuff, MsgText );
         DUIMsgBox( MsgText );
@@ -504,8 +518,10 @@ unsigned Execute( bool tracing, bool do_flip )
     bool        stack_cmds;
     static unsigned executing = 0;
 
-    if( !CheckStackPos() ) return( COND_USER );
-    if( !AdvMachState( ACTION_EXECUTE ) ) return( COND_USER );
+    if( !CheckStackPos() )
+        return( COND_USER );
+    if( !AdvMachState( ACTION_EXECUTE ) )
+        return( COND_USER );
 
     if( executing == 0 ) {
         ++executing;
@@ -515,17 +531,22 @@ unsigned Execute( bool tracing, bool do_flip )
 
     /* get rid of useless pending input information */
     for( ;; ) {
-        if( CurrToken != T_LINE_SEPARATOR ) break;
-        if( InpStack == NULL ) break;
-        if( InpStack->type & (INP_HOLD|INP_STOP_PURGE) ) break;
-        if( InpStack->rtn( InpStack->handle, INP_RTN_EOL ) ) continue;
+        if( CurrToken != T_LINE_SEPARATOR )
+            break;
+        if( InpStack == NULL )
+            break;
+        if( InpStack->type & (INP_HOLD|INP_STOP_PURGE) )
+            break;
+        if( InpStack->rtn( InpStack->handle, INP_RTN_EOL ) )
+            continue;
         PopInpStack();
     }
     _SwitchOff( SW_TRAP_CMDS_PUSHED );
     conditions = ExecProg( tracing, do_flip, true );
     SetCodeDot( GetRegIP() );
     stack_cmds = true;
-    if( tracing && (conditions & COND_BREAK) ) stack_cmds = false;
+    if( tracing && (conditions & COND_BREAK) )
+        stack_cmds = false;
     if( ReportTrap( conditions, stack_cmds ) ) {
         _SwitchOn( SW_TRAP_CMDS_PUSHED );
     }

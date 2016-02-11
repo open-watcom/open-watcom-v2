@@ -279,7 +279,7 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     file_write_req          acc;
     file_write_ret          ret;
     size_t                  total;
-    trap_elen               buff_len;
+    trap_elen               piece;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
     acc.handle = hdl;
@@ -289,13 +289,13 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( acc );
+    piece = MaxPacketLen - sizeof( acc );
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (trap_elen)len;
+        if( piece > len )
+            piece = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = buff_len;
+        in[1].len = piece;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -304,7 +304,7 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != buff_len )
+        if( ret.len != piece )
             break;
         buff = (char *)buff + ret.len;
         len -= ret.len;
@@ -327,7 +327,7 @@ static size_t doWriteConsole( const void *buff, size_t len )
     file_write_console_req  acc;
     file_write_console_ret  ret;
     size_t                  total;
-    trap_elen               buff_len;
+    trap_elen               piece;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
     in[0].ptr = &acc;
@@ -335,13 +335,13 @@ static size_t doWriteConsole( const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( acc );
+    piece = MaxPacketLen - sizeof( acc );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( piece > len )
+            piece = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = buff_len;
+        in[1].len = piece;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -350,10 +350,10 @@ static size_t doWriteConsole( const void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != buff_len )
+        if( ret.len != piece )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + ret.len;
+        len -= ret.len;
     }
     return( total );
 }
@@ -381,7 +381,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     file_read_req       acc;
     file_read_ret       ret;
     size_t              total;
-    trap_elen           buff_len;
+    trap_elen           piece;
     trap_elen           read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
@@ -392,14 +392,14 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( file_read_req );
+    piece = MaxPacketLen - sizeof( file_read_req );
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (trap_elen)len;
+        if( piece > len )
+            piece = (trap_elen)len;
         out[1].ptr = buff;
-        out[1].len = buff_len;
-        acc.len = buff_len;
+        out[1].len = piece;
+        acc.len = piece;
         CONV_LE_16( acc.len );
         read_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
         CONV_LE_32( ret.err );
@@ -408,7 +408,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += read_len;
-        if( read_len != buff_len )
+        if( read_len != piece )
             break;
         buff = (char *)buff + read_len;
         len -= read_len;

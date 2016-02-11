@@ -64,8 +64,10 @@ sys_handle LocalOpen( const char *name, open_access access )
     } else {
         openmode = O_WRONLY;
     }
-    if( access & OP_CREATE ) openmode |= O_CREAT;
-    if( access & OP_TRUNC ) openmode |= O_TRUNC;
+    if( access & OP_CREATE )
+        openmode |= O_CREAT;
+    if( access & OP_TRUNC )
+        openmode |= O_TRUNC;
     ret = open( name, openmode | O_BINARY, 0666 );
     if( (int)ret == -1 ) {
         StashErrCode( errno, OP_LOCAL );
@@ -79,22 +81,22 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
     int         ret;
     size_t      total;
-    unsigned    buff_len;
+    unsigned    piece;
     unsigned    read_len;
 
-    buff_len = INT_MAX;
+    piece = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (unsigned)len;
-        ret = read( filehndl, ptr, buff_len );
+        if( piece > len )
+            piece = (unsigned)len;
+        ret = read( filehndl, ptr, piece );
         if( ret < 0 ) {
             StashErrCode( errno, OP_LOCAL );
             return( ERR_RETURN );
         }
         read_len = (unsigned)ret;
         total += read_len;
-        if( read_len != buff_len )
+        if( read_len != piece )
             break;
         ptr = (char *)ptr + read_len;
         len -= read_len;
@@ -106,22 +108,22 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
     int         ret;
     size_t      total;
-    unsigned    buff_len;
+    unsigned    piece;
     unsigned    write_len;
 
-    buff_len = INT_MAX;
+    piece = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( buff_len > len )
-            buff_len = (unsigned)len;
-        ret = write( filehndl, ptr, buff_len );
+        if( piece > len )
+            piece = (unsigned)len;
+        ret = write( filehndl, ptr, piece );
         if( ret < 0 ) {
             StashErrCode( errno, OP_LOCAL );
             return( ERR_RETURN );
         }
         write_len = (unsigned)ret;
         total += write_len;
-        if( write_len != buff_len )
+        if( write_len != piece )
             break;
         ptr = (char *)ptr + write_len;
         len -= write_len;

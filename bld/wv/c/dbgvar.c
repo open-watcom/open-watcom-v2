@@ -1686,7 +1686,7 @@ void VarExpandRowNoCollapse( var_info *i, var_node *v, int row )
                 Warn( LIT_ENG( No_Visible_Members ) );
             }
         }
-    } 
+    }
 }
 
 
@@ -1830,16 +1830,13 @@ void VarDisplaySetHex( var_node *v )
 
 void VarDisplaySetArrayHex( var_node *v )
 {
-    var_node *  next_v;
-    
+    var_node    *next_v;
+
     if( NULL == v )
         return;
-        
-    next_v = v->expand;
-            
-    while( next_v ) {
+
+    for( next_v = v->expand; next_v != NULL; next_v = next_v->next ) {
         VarSetType( next_v, CurrRadix != 16, 0, 0, 0, 0 );
-        next_v = next_v->next;
     }
 }
 
@@ -1855,16 +1852,13 @@ void VarDisplaySetDecimal( var_node *v )
 
 void VarDisplaySetArrayDec( var_node *v )
 {
-    var_node *  next_v;
-    
+    var_node    *next_v;
+
     if( NULL == v )
         return;
-        
-    next_v = v->expand;
-            
-    while( next_v ) {
+
+    for( next_v = v->expand; next_v != NULL; next_v = next_v->next ) {
         VarSetType( next_v, 0, CurrRadix != 10, 0, 0, 0 );
-        next_v = next_v->next;
     }
 }
 
@@ -2657,7 +2651,7 @@ bool VarParentIsArray( var_node * v )
 {
     var_node            *vparent = v;
     dip_type_info       tinfo;
-    
+
     while( vparent->parent != NULL ) {
         if( vparent->parent->node_type != NODE_INHERIT ) {
             vparent = vparent->parent;
@@ -2665,10 +2659,10 @@ bool VarParentIsArray( var_node * v )
         }
         vparent = vparent->parent;
     }
-    
+
     if( ( vparent == v ) || ( NULL == vparent ) )
         return false;
-    
+
     TypeInfo( vparent->th, NULL, &tinfo );
 
     return ( tinfo.kind == TK_ARRAY || vparent->fake_array );

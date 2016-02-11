@@ -60,8 +60,8 @@ typedef unsigned_8 open_access; enum {
 #define STD_OUT         1
 #define STD_ERR         2
 
-extern unsigned         ReadStream( handle, void *, unsigned );
-extern unsigned         ReadText( handle, void *, unsigned );
+extern size_t           ReadStream( handle, void *, size_t );
+extern size_t           ReadText( handle, void *, size_t );
 
 extern size_t           WriteStream( handle, const void *, size_t );
 extern size_t           WriteNL( handle );

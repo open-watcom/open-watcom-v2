@@ -232,7 +232,8 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     case SR_NONE:
         return( NULL );
     case SR_CLOSEST:
-        if( cao == CAO_NO_PLUS ) return( NULL );
+        if( cao == CAO_NO_PLUS )
+            return( NULL );
         SymLocation( sym, NULL, &ll );
         sym_offset = addr.mach.offset - ll.e[0].u.addr.mach.offset;
         if( cao == CAO_NORMAL_PLUS ) {
@@ -246,9 +247,11 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     }
     name_width = QualifiedSymName( sym, NULL, 0, uniq );
     str_width = name_width + off_width;
-    if( max == 0 ) max = str_width;
+    if( max == 0 )
+        max = str_width;
     if( str_width > max ) { /* won't fit */
-        if( off_width != 0 ) return( NULL );
+        if( off_width != 0 )
+            return( NULL );
         QualifiedSymName( sym, p, max - 1, uniq );
         p += max - 1;
         *p++ = '>';
@@ -383,7 +386,7 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 
     cmds = DbgMustAlloc( sizeof( cmd_list ) + len );
     cmds->use = 1;
-    cmds->buff[ len ] = NULLCHAR;
+    cmds->buff[len] = NULLCHAR;
     memcpy( cmds->buff, start, len );
     return( cmds );
 }
@@ -395,16 +398,20 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 
 void FreeCmdList( cmd_list *cmds )
 {
-    if( cmds == NULL ) return;
+    if( cmds == NULL )
+        return;
     cmds->use--;
-    if( cmds->use == 0 ) _Free( cmds );
+    if( cmds->use == 0 ) {
+        _Free( cmds );
+    }
 }
 
 /* Lock List -- increment use count */
 
 void LockCmdList( cmd_list *cmds )
 {
-    if( cmds == NULL ) return;
+    if( cmds == NULL )
+        return;
     cmds->use++;
 }
 
@@ -450,10 +457,11 @@ input_type SetInpStack( input_type new )
 void PopInpStack( void )
 {
     input_stack *old;
-    char        buff[ TXT_LEN ];
+    char        buff[TXT_LEN];
 
     old = InpStack;
-    if( old == NULL ) return;
+    if( old == NULL )
+        return;
     if( old->lang != NULL ) {
         StrCopy( old->lang, buff );
         _Free( old->lang );
@@ -503,8 +511,10 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 
 void CopyInpFlags( void )
 {
-    if( InpStack == NULL ) return;
-    if( InpStack->link == NULL ) return;
+    if( InpStack == NULL )
+        return;
+    if( InpStack->link == NULL )
+        return;
     InpStack->type |= InpStack->link->type & (INP_HOOK+INP_BREAK_POINT);
 }
 
@@ -573,11 +583,12 @@ void PushCmdText( char *cmds )
 
 bool PurgeInpStack( void )
 {
-    for( ;; ) {
-        if( InpStack == NULL ) return( true );
-        if( InpStack->type & INP_STOP_PURGE ) return( false );
+    while( InpStack != NULL ) {
+        if( InpStack->type & INP_STOP_PURGE )
+            return( false );
         PopInpStack();
     }
+    return( true );
 }
 
 OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )

@@ -67,7 +67,7 @@
 #include "dbginit.h"
 
 
-extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
+extern wnd_posn         WndPosition[WND_NUM_CLASSES];
 extern a_window         *WndMain;
 extern gui_rect         WndMainRect;
 
@@ -309,8 +309,9 @@ void WndStop( void )
 
 void WndUser( void )
 {
-    if( !(ScrnState & USR_SCRN_ACTIVE) ) {
-        if( !(ScrnState & USR_SCRN_VISIBLE) ) RemoteSetUserScreen();
+    if( (ScrnState & USR_SCRN_ACTIVE) == 0 ) {
+        if( (ScrnState & USR_SCRN_VISIBLE) == 0 )
+            RemoteSetUserScreen();
         ScrnState |= USR_SCRN_ACTIVE | USR_SCRN_VISIBLE;
         GUIGMouseOff();
         if( UserScreen() ) {
@@ -333,8 +334,9 @@ void WndDebug( void )
         }
         _SwitchOff( SW_MIGHT_HAVE_LOST_DISPLAY );
     }
-    if( !(ScrnState & DBG_SCRN_ACTIVE) ) {
-        if( !(ScrnState & DBG_SCRN_VISIBLE) ) RemoteSetDebugScreen();
+    if( (ScrnState & DBG_SCRN_ACTIVE) == 0 ) {
+        if( (ScrnState & DBG_SCRN_VISIBLE) == 0 )
+            RemoteSetDebugScreen();
         ScrnState |= DBG_SCRN_ACTIVE | DBG_SCRN_VISIBLE;
         if( DebugScreen() ) {
             ScrnState |= USR_SCRN_VISIBLE;
@@ -362,9 +364,13 @@ void WndRedraw( wnd_class_wv wndclass )
 static void ProcessMacro( wnd_macro *mac )
 {
     if( mac->type == MACRO_MAIN_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, true );
+        if( mac->menu != NULL ) {
+            AccelMenuItem( mac->menu, true );
+        }
     } else if( mac->type == MACRO_POPUP_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, false );
+        if( mac->menu != NULL ) {
+            AccelMenuItem( mac->menu, false );
+        }
     } else {
         PushCmdList( mac->cmd );
     }
@@ -390,7 +396,8 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
 
     curr = child;
     for( i = 0; i < size; ++i ) {
-        if( AmpEqual( curr->label, ch ) ) return( curr );
+        if( AmpEqual( curr->label, ch ) )
+            return( curr );
         ++curr;
     }
 #ifdef DO_WE_REALLY_WANT_THIS
@@ -399,7 +406,9 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     for( i = 0; i < size; ++i ) {
         if( curr->num_child_menus != NULL ) {
             sub = FindLocalMenu( ch, curr->child, curr->num_child_menus );
-            if( sub != NULL ) return( sub );
+            if( sub != NULL ) {
+                return( sub );
+            }
         }
         ++curr;
     }
@@ -432,11 +441,14 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
         ProcessMacro( all );
         return( true );
     }
-    if( wnd == NULL ) return( false );
+    if( wnd == NULL )
+        return( false );
     ch = LookUpCtrlKey( key );
-    if( ch == 0 ) return( false );
+    if( ch == 0 )
+        return( false );
     menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );//
-    if( menu == NULL ) return( false );
+    if( menu == NULL )
+        return( false );
     AccelMenuItem( menu, false );
     return( true );
 }
@@ -476,8 +488,8 @@ void FiniGadget( void )
     int                 i;
 
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndFree( WndGadgetHint[ i ] );
-        WndGadgetHint[ i ] = NULL;
+        WndFree( WndGadgetHint[i] );
+        WndGadgetHint[i] = NULL;
     }
 }
 
@@ -489,7 +501,7 @@ void InitGadget( void )
     WndGadgetInit();
     MaxGadgetLength = 0;
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[ i ] );
+        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[i] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
         if( GUIGetHotSpotSize( i, &size ) && size.x > MaxGadgetLength ) {
@@ -582,9 +594,12 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     p = TxtBuff;
     info.title = p;
     for( ;; ++title ) {
-        if( *title == '&' ) continue;
+        if( *title == '&' )
+            continue;
         *p = *title;
-        if( *p++ == '\0' ) break;
+        if( *p++ == '\0' ) {
+            break;
+        }
     }
     info.info = wndinfo;
     info.wndclass = wndclass;
@@ -595,14 +610,18 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 #if defined(__GUI__) && defined(__OS2__)
     info.style &= ~GUI_CHANGEABLE_FONT;
 #endif
-    if( _IsOn( SW_DETACHABLE_WINDOWS ) ) info.style |= GUI_POPUP;
-    if( !vdrag ) info.scroll &= ~GUI_VDRAG;
+    if( _IsOn( SW_DETACHABLE_WINDOWS ) )
+        info.style |= GUI_POPUP;
+    if( !vdrag )
+        info.scroll &= ~GUI_VDRAG;
     wnd = WndCreateWithStruct( &info );
-    if( wnd == NULL ) return( wnd );
+    if( wnd == NULL )
+        return( wnd );
     WndSetFontInfo( wnd, GetWndFont( wnd ) );
     WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE+WSW_MENU_ACCURATE_ROW );
     WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR+WSW_CACHE_LINES );
-    if( !WndHasCurrent( wnd ) ) WndFirstCurrent( wnd );
+    if( !WndHasCurrent( wnd ) )
+        WndFirstCurrent( wnd );
     if( _IsOff( SW_OPEN_NO_SHOW ) ) {
         WndForcePaint( wnd );
         if( info.rect.width == 0 || info.rect.height == 0 ) {
@@ -641,14 +660,15 @@ static char **RXErrTxt[] = {
 
 extern void WndRXError( int num )
 {
-    Error( ERR_NONE, *RXErrTxt[ num - 1 ] );
+    Error( ERR_NONE, *RXErrTxt[num - 1] );
 }
 
 #if defined(__GUI__)
 static bool GetInitName( char *name, char *buff, unsigned buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );
-    if( buff_len == 0 ) return( false );
+    if( buff_len == 0 )
+        return( false );
     buff += buff_len;
     *buff++ = '\\';
     buff = StrCopy( name, buff );
@@ -661,9 +681,11 @@ void SaveMainScreen( char *name )
     handle      f;
     char        buff[FILENAME_MAX];
 
-    if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
+    if( !GetInitName( name, buff, sizeof( buff ) ) )
+        return;
     f = FileOpen( buff, OP_WRITE|OP_CREATE );
-    if( f == NIL_HANDLE ) return;
+    if( f == NIL_HANDLE )
+        return;
     WriteStream( f, &WndMainRect, sizeof( WndMainRect ) );
     FileClose( f );
 }
@@ -673,9 +695,11 @@ void RestoreMainScreen( char *name )
     handle      f;
     char        buff[FILENAME_MAX];
 
-    if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
+    if( !GetInitName( name, buff, sizeof( buff ) ) )
+        return;
     f = FileOpen( buff, OP_READ );
-    if( f == NIL_HANDLE ) return;
+    if( f == NIL_HANDLE )
+        return;
     ReadStream( f, &WndMainRect, sizeof( WndMainRect ) );
     FileClose( f );
 }

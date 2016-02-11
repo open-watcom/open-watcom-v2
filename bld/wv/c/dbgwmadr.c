@@ -119,8 +119,7 @@ static bool RegResize( a_window *wnd )
 
     RegFindData( reg->kind, &reg->data );
     reg->count = 0;
-    for( ;; ) {
-        if( !GetDisplayPiece( &disp, reg, DbgRegs, reg->count ) ) break;
+    while( GetDisplayPiece( &disp, reg, DbgRegs, reg->count ) ) {
         reg->count++;
     }
 
@@ -156,8 +155,11 @@ static bool RegResize( a_window *wnd )
     reg->up = MADRegSetDisplayGrouping( reg->data );
     if( reg->up == 0 ) {
         reg->up = WndWidth( wnd ) / ( max_extent + max_descript );
-        if( reg->up < 1 ) reg->up = 1;
-        if( reg->up > reg->count ) reg->up = reg->count;
+        if( reg->up < 1 )
+            reg->up = 1;
+        if( reg->up > reg->count ) {
+            reg->up = reg->count;
+        }
     }
     reg->rows = ( reg->count + reg->up - 1 ) / reg->up;
 
@@ -223,7 +225,6 @@ static bool RegResize( a_window *wnd )
 }
 
 
-static WNDNUMROWS RegNumRows;
 static int RegNumRows( a_window *wnd )
 {
     return( WndReg( wnd )->rows );
@@ -234,9 +235,11 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 {
     int         i;
 
-    if( row == WND_NO_ROW ) return( -1 );
+    if( row == WND_NO_ROW )
+        return( -1 );
     i = row * reg->up + piece;
-    if( i >= reg->count ) i = -1;
+    if( i >= reg->count )
+        i = -1;
     return( i );
 }
 
@@ -269,13 +272,18 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     mad_modify_list const   *possible;
     int                     num_possible;
 
-    if( row < 0 ) return;
+    if( row < 0 )
+        return;
     piece >>= 1;
     i = GetRegIdx( reg, row, piece );
-    if( i == -1 ) return;
-    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) ) return;
-    if( disp.reginfo == NULL ) return;
-    if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK ) return;
+    if( i == -1 )
+        return;
+    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) )
+        return;
+    if( disp.reginfo == NULL )
+        return;
+    if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK )
+        return;
     old = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
     MADRegFullName( disp.reginfo, ".", TxtBuff, TXT_LEN );
     RegValue( &value, disp.reginfo, DbgRegs );
@@ -287,7 +295,9 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     } else {
         for( i = 0; i < num_possible; ++i ) {
             MADTypeInfo( possible[i].type, &tinfo );
-            if( memcmp( &value, possible[i].data, tinfo.b.bits / BITS_PER_BYTE ) == 0 ) break;
+            if( memcmp( &value, possible[i].data, tinfo.b.bits / BITS_PER_BYTE ) == 0 ) {
+                break;
+            }
         }
         if( num_possible == 2 ) {
             if( i == 0 ) {
@@ -360,11 +370,15 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
     reg_display_piece   disp;
 
     column = piece >> 1;
-    if( column >= reg->up ) return( false );
+    if( column >= reg->up )
+        return( false );
     i = GetRegIdx( reg, row, column );
-    if( i >= reg->count ) return( false );
-    if( i == -1 ) return( false );
-    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) ) return( false );
+    if( i >= reg->count )
+        return( false );
+    if( i == -1 )
+        return( false );
+    if( !GetDisplayPiece( &disp, reg, DbgRegs, i ) )
+        return( false );
     line->text = TxtBuff;
     if( piece & 1 ) {
         line->indent = reg->indents[column].value;
@@ -395,7 +409,6 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static WNDREFRESH RegRefresh;
 static void     RegRefresh( a_window *wnd )
 {
     int                 row,rows;
@@ -420,7 +433,8 @@ static void     RegRefresh( a_window *wnd )
     for( row = 0; row < rows; ++row ) {
         for( reg_num = 0; reg_num < reg->up; ++reg_num ) {
             i = GetRegIdx( reg, row, reg_num );
-            if( i == -1 ) break;
+            if( i == -1 )
+                break;
             if( reg->info[i].standout || ( reg->info[i].info != NULL &&
                 MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) != MS_OK ) ) {
                 WndPieceDirty( wnd, row, reg_num*2+1 );
@@ -429,7 +443,6 @@ static void     RegRefresh( a_window *wnd )
     }
 }
 
-static WNDCALLBACK RegEventProc;
 static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
