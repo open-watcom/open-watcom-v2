@@ -34,5 +34,5 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
         cpp/table.hpp cpp/title.hpp cpp/ul.hpp cpp/warning.hpp cpp/xmp.hpp
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
-        helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/entit932.txt \
-        helper/entit934.txt helper/entit938.txt helper/entity.txt
+        helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
+        helper/enti0934.txt helper/enti0938.txt helper/entity.txt

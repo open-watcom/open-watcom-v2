@@ -229,8 +229,8 @@ noinst_HEADERS = cpp/compiler.hpp cpp/document.hpp cpp/env.hpp cpp/ipfbuff.hpp \
 
 wipfcdir = $datadir/wipfc
 dist_wipfc_DATA = helper/de_DE.nls helper/en_GB.nls helper/en_US.nls helper/fr_CA.nls \
-        helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/entit932.txt \
-        helper/entit934.txt helper/entit938.txt helper/entity.txt
+        helper/fr_FR.nls helper/ja_JA.nls helper/xx_YY.nls helper/enti0932.txt \
+        helper/enti0934.txt helper/enti0938.txt helper/entity.txt
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -280,7 +280,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in:  $(am__configure_deps) 
+$(srcdir)/config.h.in:  $(am__configure_deps)
 	cd $(top_srcdir) && $(AUTOHEADER)
 	rm -f stamp-h1
 	touch $@
@@ -310,7 +310,7 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-wipfc$(EXEEXT): $(wipfc_OBJECTS) $(wipfc_DEPENDENCIES) 
+wipfc$(EXEEXT): $(wipfc_OBJECTS) $(wipfc_DEPENDENCIES)
 	@rm -f wipfc$(EXEEXT)
 	$(CXXLINK) $(wipfc_OBJECTS) $(wipfc_LDADD) $(LIBS)
 
