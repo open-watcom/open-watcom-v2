@@ -51,7 +51,7 @@ extern void             RemoteSetDebugScreen( void );
 extern unsigned         RemoteReadUserKey( unsigned wait );
 extern unsigned long    RemoteGetLibName( unsigned long lib_hdl, char *buff, trap_elen buff_len );
 extern unsigned         RemoteGetMsgText( char *buff, trap_elen buff_len );
-extern unsigned         RemoteMachineData( address addr, unsigned info_type, dig_elen in_size, const void *inp, dig_elen out_size, void *outp );
+extern unsigned         RemoteMachineData( address addr, uint_8 info_type, dig_elen in_size, const void *inp, dig_elen out_size, void *outp );
 extern dword            RemoteSetBreak( address addr );
 extern void             RemoteRestoreBreak( address addr, dword value );
 extern bool             RemoteSetWatch( address addr, uint_8 size, unsigned long *mult );

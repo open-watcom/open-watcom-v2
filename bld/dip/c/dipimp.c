@@ -267,7 +267,7 @@ mad_handle DCCurrMAD( void )
     return( Client->curr_mad() );
 }
 
-unsigned        DCMachineData( address a, unsigned info_type,
+unsigned        DCMachineData( address a, dig_info_type info_type,
                                 dig_elen in_size,  void *in,
                                 dig_elen out_size, void *out )
 {

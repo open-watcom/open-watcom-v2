@@ -216,7 +216,7 @@ void            MCNotify( mad_notify_type nt, void *d )
     MadClient->MADCliNotify( nt, d );
 }
 
-unsigned        MCMachineData( address a, unsigned info_type, dig_elen in_size,  void *in, dig_elen out_size, void *out )
+unsigned        MCMachineData( address a, dig_info_type info_type, dig_elen in_size,  void *in, dig_elen out_size, void *out )
 {
     return( MadClient->MADCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }

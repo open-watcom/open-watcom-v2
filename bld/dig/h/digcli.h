@@ -43,6 +43,6 @@ unsigned        DIGCLIENT DIGCliWrite( dig_fhandle, const void *, unsigned );
 void            DIGCLIENT DIGCliClose( dig_fhandle );
 void            DIGCLIENT DIGCliRemove( const char *, dig_open );
 
-unsigned        DIGCLIENT DIGCliMachineData( address, unsigned, dig_elen, const void *, dig_elen, void * );
+unsigned        DIGCLIENT DIGCliMachineData( address, dig_info_type, dig_elen, const void *, dig_elen, void * );
 
 #endif

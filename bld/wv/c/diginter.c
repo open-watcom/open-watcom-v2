@@ -88,9 +88,9 @@ void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
     FileRemove( name, mode );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {
-    return( RemoteMachineData( addr, info_type, in_size, in, out_size, out ) );
+    return( RemoteMachineData( addr, (uint_8)info_type, in_size, in, out_size, out ) );
 }

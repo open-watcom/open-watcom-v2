@@ -407,6 +407,7 @@ enum {
 };
 
 typedef unsigned_16     dig_elen;
+typedef unsigned        dig_info_type;
 
 typedef int             dig_fhandle;
 

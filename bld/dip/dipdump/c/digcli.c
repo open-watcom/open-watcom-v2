@@ -152,7 +152,7 @@ void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
     mode = mode;
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {
