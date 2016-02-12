@@ -34,6 +34,10 @@
 
 #include "watcom.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void I32ToI64( signed_32, signed_64 * );
 void U32ToU64( unsigned_32, unsigned_64 * );
 
@@ -175,5 +179,9 @@ int  U64Cnv16( unsigned_64 *res, char c );
 // is the I64 a I32?
 #define I64IsI32(x) (((x).u._32[I64HI32]==0)&&(((int_32)((x).u._32[I64LO32]))>=0) \
                    ||((x).u._32[I64HI32]==-1)&&(((int_32)((x).u._32[I64LO32]))<0))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
