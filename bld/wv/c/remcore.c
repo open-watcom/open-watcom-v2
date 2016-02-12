@@ -74,7 +74,7 @@ typedef struct {
 static cache_block              Cache;
 static machine_data_cache       *MData = NULL;
 
-static bool IsInterrupt( addr_ptr *addr, unsigned size )
+static bool IsInterrupt( addr_ptr *addr, trap_elen size )
 {
     return( MADAddrInterrupt( addr, size, &DbgRegs->mr ) == MS_OK );
 }

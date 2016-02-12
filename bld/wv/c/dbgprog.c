@@ -539,7 +539,7 @@ static bool ProcImgSymInfo( image_entry *image )
     char        buff[TXT_LEN];
     char        *symfile_name;
     const char  *nopath;
-    unsigned    len;
+    size_t      len;
 
     image->deferred_symbols = false;
     if( _IsOff( SW_LOAD_SYMS ) )

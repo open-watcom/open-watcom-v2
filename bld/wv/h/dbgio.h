@@ -85,7 +85,7 @@ extern sys_error        GetSystemErrCode( error_idx );
 extern const char       *SkipPathInfo( char const *, open_access );
 extern const char       *ExtPointer( char const *, open_access );
 extern char             *AppendPathDelim( char *, open_access );
-extern unsigned         MakeFileName( char *result, const char *name, const char *ext, open_access loc );
+extern size_t           MakeFileName( char *result, const char *name, const char *ext, open_access loc );
 extern const char       *RealFName( char const *name, open_access *loc );
 extern bool             IsAbsolutePath( const char *path );
 extern char             *AppendPathDelim( char *path, open_access loc );

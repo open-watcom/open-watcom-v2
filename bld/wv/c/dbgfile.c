@@ -392,7 +392,7 @@ const char  *ExtPointer( char const *path, open_access loc )
 }
 
 
-unsigned MakeFileName( char *result, const char *name, const char *ext, open_access loc )
+size_t MakeFileName( char *result, const char *name, const char *ext, open_access loc )
 {
     file_components     *info;
     char                *p;

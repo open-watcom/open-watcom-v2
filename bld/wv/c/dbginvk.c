@@ -264,7 +264,7 @@ void Invoke( const char *invfile, int len, char_ring *parmlist )
 
     hndl = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
     if( hndl == NIL_HANDLE ) {
-        MakeFileName( TxtBuff, invfile, "dbg", 0 );
+        MakeFileName( TxtBuff, invfile, "dbg", OP_LOCAL );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
