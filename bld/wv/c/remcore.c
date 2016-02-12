@@ -105,7 +105,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        read_len = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
+        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
         if( int_tbl )
             GrabHandlers();
         left -= read_len;

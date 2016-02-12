@@ -355,7 +355,7 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
                 WndMenuEnable( wnd, MENU_VAR_HEX, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_DECIMAL, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_CHAR, !pointer );
-            } 
+            }
         }
         /* Enable even if already expanded */
         if( VarExpandable( class ) ) {
@@ -391,9 +391,11 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     array_info          ainfo;
     char                *name;
     bool                need_reset;
-    var_window          *var = WndVar( wnd );
-    piece               =piece;
+    var_window          *var;
 
+    piece=piece;
+
+    var = WndVar( wnd );
     need_reset = VarErrState();
     v = VarFindRow( &var->i, row );
     if( v == NULL && VarError ) {
@@ -558,7 +560,7 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             int expand_row = row;
             int num_rows = VarNumRows( wnd );
             var_node * v_sibling = NULL;
-            
+
             /*
              *  If we are a root node, then we have no sibling. If we have a parent, then we may have a sibling but we may
              *  also by the last leaf node of our parent so we need to check out to see who our parents next sibling is and
@@ -566,37 +568,37 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
              */
             if( v->parent ) {
                 var_node * v_iter = v->parent->expand;
-                
+
                 while( v_iter ) {
-                    
+
                     if( v_iter == v ){
                         v_sibling = v_iter->next;
-                        break;   
+                        break;
                     }
-                    v_iter = v_iter->next;   
+                    v_iter = v_iter->next;
                 }
-                
+
                 if( NULL == v_sibling ) {   /* last element, but may be more following. track grandparent */
                     if( v->parent->parent ) {
                         var_node * v_iter = v->parent->parent->expand;
-                
+
                         while( v_iter ) {
                             if( v_iter == v->parent ) {
                                 v_sibling = v_iter->next;
-                                break;   
+                                break;
                             }
-                            v_iter = v_iter->next;   
+                            v_iter = v_iter->next;
                         }
                     }
-                }    
+                }
             }
-            
+
             for( ; expand_row < num_rows; expand_row++ ) {
-                
+
                 var_node * v_next = VarFindRowNode( &var->i, expand_row );
                 if( v_next == v_sibling )
                     break;
-                    
+
                 ExpandRowIfPossible( wnd, expand_row, VAR_PIECE_GADGET );
                 num_rows = VarNumRows( wnd );
             }

@@ -382,7 +382,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     file_read_ret       ret;
     size_t              total;
     trap_elen           piece;
-    trap_elen           read_len;
+    trap_retval         read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
     acc.handle = hdl;
@@ -401,7 +401,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
         out[1].len = piece;
         acc.len = piece;
         CONV_LE_16( acc.len );
-        read_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
+        read_len = (trap_retval)TrapAccess( 1, in, 2, out ) - sizeof( ret );
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
