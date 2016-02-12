@@ -54,7 +54,8 @@ typedef unsigned_8 open_access; enum {
 
 #define NIL_HANDLE      ((handle)-1)
 
-#define ERR_RETURN      ((unsigned)-1)
+#define ERR_RETURN      ((size_t)-1)
+#define ERR_SEEK        ((unsigned long)-1L)
 
 #define STD_IN          0
 #define STD_OUT         1

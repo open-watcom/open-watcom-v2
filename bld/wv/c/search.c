@@ -110,8 +110,8 @@ int FSearch( unsigned handle, char *str, char *buff_start,
     buff.size  = buff_size;
     buff.start = buff_start;
     str_len = strlen( str );
-    match_pos = -1UL;
-    offset = 0UL;
+    match_pos = ERR_SEEK;
+    offset = 0L;
     for( size = SeekStream( handle, 0L, DIO_SEEK_END ) >> 1; size > 0; size >>= 1 ) {
         FilePos = offset + size;
         SeekStream( handle, FilePos, DIO_SEEK_ORG );
@@ -127,7 +127,8 @@ int FSearch( unsigned handle, char *str, char *buff_start,
             offset += size;
         }
     }
-    if( match_pos == -1UL ) return( 0 );
+    if( match_pos == ERR_SEEK )
+        return( 0 );
     SeekStream( handle, match_pos, DIO_SEEK_ORG );
     return( 1 );
 }

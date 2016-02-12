@@ -148,7 +148,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     ret = lseek( hdl, len, method );
     if( ret == (off_t)-1 ) {
         StashErrCode( errno, OP_LOCAL );
-        return( -1UL );
+        return( ERR_SEEK );
     }
     return( ret );
 }

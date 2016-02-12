@@ -458,7 +458,7 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( -1UL );
+        return( ERR_SEEK );
     } else {
         return( ret.pos );
     }

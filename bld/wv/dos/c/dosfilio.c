@@ -141,7 +141,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method 
     ret = TinyLSeek( hdl, npos, method, (u32_stk_ptr)&pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-        return( -1UL );
+        return( ERR_SEEK );
     }
     return( pos );
 }

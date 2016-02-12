@@ -193,7 +193,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     ret = DosSetFilePtr( hdl, len, method, &new );
     if( ret != 0 ) {
         StashErrCode( ret, OP_LOCAL );
-        return( -1U );
+        return( ERR_SEEK );
     }
     return( new );
 }

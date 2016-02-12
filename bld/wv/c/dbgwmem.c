@@ -258,7 +258,6 @@ static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-static WNDREFRESH MemRefresh;
 static  void MemRefresh( a_window *wnd )
 {
     mem_window  *mem = WndMem( wnd );
@@ -383,7 +382,6 @@ static  void    MemUpdateCursor( a_window *wnd )
 }
 
 
-static  WNDMODIFY MemModify;
 static  void    MemModify( a_window *wnd, int row, int piece )
 {
     address     addr;
@@ -596,7 +594,6 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, int size
     }
 }
 
-static WNDGETLINE MemGetLine;
 static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     char            buff[16];
@@ -816,7 +813,6 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static WNDREFRESH StkRefresh;
 static  void StkRefresh( a_window *wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
@@ -824,7 +820,6 @@ static  void StkRefresh( a_window *wnd )
 }
 
 
-static  WNDSCROLL       MemScroll;
 static  int     MemScroll( a_window *wnd, int lines )
 {
     int             tomove;
@@ -900,7 +895,6 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-static WNDCALLBACK MemEventProc;
 static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem = WndMem( wnd );
@@ -923,7 +917,7 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             mem->u.f.offset = 0;
             if( mem->u.f.filehndl != NIL_HANDLE ) {
                 mem->u.f.size = SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_END );
-                if( mem->u.f.size == -1UL )
+                if( mem->u.f.size == ERR_SEEK )
                     mem->u.f.size = 0;
                 SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_ORG );
             }
