@@ -6,6 +6,10 @@
 
 :include readonly.sp
 
+:segment CNAME
+:include cpponly.sp
+
+:endsegment
 :include owrtlink.sp
 
 :include cpluspro.sp
