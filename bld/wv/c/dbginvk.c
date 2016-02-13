@@ -71,23 +71,26 @@ void ImplicitConf( void )
  * InvRead -- read from an invoke file
  */
 
-static int InvRead( invokes *inv, unsigned *save_point )
+static int InvRead( invokes *inv, size_t *save_point )
 {
     int         ch;
-    unsigned    left;
-    int         size;
+    size_t      left;
+    size_t      size;
 
-    if( inv->flags & AT_EOF ) return( KEY_EOF );
+    if( inv->flags & AT_EOF )
+        return( KEY_EOF );
     for( ;; ) {
         if( inv->in_off < inv->in_size ) {
-            ch = inv->in_buff[ inv->in_off++ ];
-            if( ch == '\r' ) continue;
+            ch = inv->in_buff[inv->in_off++];
+            if( ch == '\r' )
+                continue;
             return( ch );
         }
         left = inv->in_size - *save_point;
         memmove( &inv->in_buff[0], &inv->in_buff[*save_point], left );
         size = ReadText( inv->inv_input, &inv->in_buff[left], IN_BUFF_SIZE - left );
-        if( size <= 0 ) break;
+        if( size == ERR_RETURN || size == 0 )
+            break;
         inv->in_size = size + left;
         inv->in_off = left;
         *save_point = 0;
@@ -108,7 +111,7 @@ static int InvGetKey( invokes *inv )
     char_ring   *next;
     int         ch;
     unsigned    parm;
-    unsigned    save;
+    size_t      save;
     static      char inv_num[5];
 
     for( ;; ) {
@@ -156,7 +159,8 @@ static bool GetInvkCmd( invokes *inv )
     char        *buff;
     bool        eatwhite;
 
-    if( inv == NULL ) return( false );
+    if( inv == NULL )
+        return( false );
     cmd = inv->buff;
     buff = inv->buff;
     ch = '\0';
@@ -164,18 +168,23 @@ static bool GetInvkCmd( invokes *inv )
     eatwhite = false;
     for( ;; ) {
         ch = InvGetKey( inv );
-        if( inv->flags & AT_EOF ) return( false );
-        if( ( ch == ' ' || ch == '\t' ) && eatwhite ) continue;
+        if( inv->flags & AT_EOF )
+            return( false );
+        if( ( ch == ' ' || ch == '\t' ) && eatwhite )
+            continue;
         eatwhite = false;
-        if( ch == '}' ) --unmatched;
-        if( ch == '{' ) ++unmatched;
+        if( ch == '}' )
+            --unmatched;
+        if( ch == '{' )
+            ++unmatched;
         if( ch == '\n' ) {
             inv->line++;
-            if( unmatched <= 0 ) break;
+            if( unmatched <= 0 )
+                break;
             eatwhite = true;
             ch = '\r';
         }
-        if( cmd >= &buff[ inv->buff_size ] ) {
+        if( cmd >= &buff[inv->buff_size] ) {
             _Alloc( buff, inv->buff_size + CMD_LEN + 1 );
             if( buff != NULL ) {
                 memcpy( buff, inv->buff, inv->buff_size );
@@ -188,7 +197,7 @@ static bool GetInvkCmd( invokes *inv )
                 continue;
             }
         }
-        *cmd = ( char ) ch;
+        *cmd = (char)ch;
         cmd++;
     }
     *cmd = NULLCHAR;
@@ -230,18 +239,19 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
  * Invoke -- invoke a file
  */
 
-static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
+static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
     _Alloc( inv, sizeof( invokes ) + strlen( name ) );
     if( inv != NULL ) {
         inv->buff_size = CMD_LEN;
-        _Alloc( inv->buff, inv->buff_size+1 ); /* extra for NULLCHAR */
+        _Alloc( inv->buff, inv->buff_size + 1 ); /* extra for NULLCHAR */
     }
     if( inv == NULL || inv->buff == NULL ) {
-        if( inv != NULL ) _Free( inv );
-        FileClose( hndl );
+        if( inv != NULL )
+            _Free( inv );
+        FileClose( fh );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
@@ -250,7 +260,7 @@ static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
     inv->in_off = 0;
     inv->flags = 0;
     inv->redirect = NULL;
-    inv->inv_input = hndl;
+    inv->inv_input = fh;
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
@@ -258,17 +268,17 @@ static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
     TypeInpStack( INP_CMD_FILE );
 }
 
-void Invoke( const char *invfile, int len, char_ring *parmlist )
+void Invoke( const char *invfile, size_t len, char_ring *parmlist )
 {
-    handle      hndl;
+    file_handle     fh;
 
-    hndl = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
-    if( hndl == NIL_HANDLE ) {
+    fh = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
+    if( fh == NIL_HANDLE ) {
         MakeFileName( TxtBuff, invfile, "dbg", OP_LOCAL );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
-    DoInvoke( hndl, TxtBuff, parmlist );
+    DoInvoke( fh, TxtBuff, parmlist );
 }
 
 
@@ -280,7 +290,7 @@ void ProfileInvoke( char *name )
 {
     size_t      len;
 #if defined(__UNIX__)
-    handle      hndl;
+    file_handle fh;
 #endif
 
     len = strlen( name );
@@ -297,9 +307,9 @@ void ProfileInvoke( char *name )
         strcpy( &name[1], EXENAME );
         strcat( name, "rc" );
         strlwr( name );
-        hndl = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );
-        if( hndl != NIL_HANDLE ) {
-            DoInvoke( hndl, TxtBuff, NULL );
+        fh = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );
+        if( fh != NIL_HANDLE ) {
+            DoInvoke( fh, TxtBuff, NULL );
             return;
         }
 #endif
@@ -334,12 +344,12 @@ void ProcInvoke( void )
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
         memcpy( path->name, start, len );
-        path->name[ len ] = NULLCHAR;
+        path->name[len] = NULLCHAR;
         path->next = NULL;
         *owner = path;
         owner = &path->next;
     }
-    Invoke( fstart, (int)flen, parmlist );
+    Invoke( fstart, flen, parmlist );
 }
 
 

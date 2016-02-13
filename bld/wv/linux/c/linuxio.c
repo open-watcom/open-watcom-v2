@@ -153,21 +153,21 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     return( ret );
 }
 
-error_idx LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle filehndl )
 {
     if( close( filehndl ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-error_idx LocalErase( const char *name )
+error_handle LocalErase( const char *name )
 {
     if( unlink( name ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-sys_handle LocalHandleSys( handle h )
+sys_handle LocalHandleSys( file_handle fh )
 {
-    return( h );
+    return( (sys_handle)fh );
 }

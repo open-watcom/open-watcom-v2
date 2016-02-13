@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-extern error_idx        LocalErase( char const * );
+extern error_handle     LocalErase( char const * );
 extern void             LocalErrMsg( sys_error, char * );
 extern size_t           LocalRead( sys_handle, void *, size_t );
 extern size_t           LocalWrite( sys_handle, const void *, size_t );
 extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       LocalOpen( char const *, open_access );
-extern error_idx        LocalClose( sys_handle );
-extern sys_handle       LocalHandleSys( handle );
+extern error_handle     LocalClose( sys_handle );
+extern sys_handle       LocalHandleSys( file_handle );
 extern long             LocalGetFileDate( const char *name );
 extern bool             LocalSetFileDate( const char *name, long date );
 

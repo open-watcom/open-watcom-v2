@@ -46,14 +46,16 @@
 static walk_result MemRefDisp( address a, mad_type_handle th,
                         mad_memref_kind mk, void *d )
 {
-    char                *p = TxtBuff;
+    char                *p;
     item_mach           item;
     size_t              max;
 
     d = d;
-    if( mk & MMK_IMPLICIT ) return( WR_CONTINUE );
+    if( mk & MMK_IMPLICIT )
+        return( WR_CONTINUE );
+    p = TxtBuff;
     if( p[0] != '\0' ) {
-        p = &p[strlen( p )];
+        p += strlen( p );
         *p++ = ' ';
     }
     p = StrAddr( &a, p, TXT_LEN - ( p - TxtBuff ) );

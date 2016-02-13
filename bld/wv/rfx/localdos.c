@@ -47,7 +47,7 @@ extern void __buffered_keyboard_input( char * );
         parm caller [ds dx] \
         modify [ax];
 
-static error_idx DOSErrCode( tiny_ret_t rc )
+static error_handle DOSErrCode( tiny_ret_t rc )
 {
     if( TINY_OK( rc ) )
         return( 0 );
@@ -118,26 +118,26 @@ void LocalGetBuff( char *buff, unsigned size )
     *buff = '\0';
 }
 
-error_idx LocalRename( const char *from, const char *to )
-/*******************************************************/
+error_handle LocalRename( const char *from, const char *to )
+/**********************************************************/
 {
     return( DOSErrCode( TinyRename( from, to )) );
 }
 
-error_idx LocalMkDir( const char *name )
-/**************************************/
+error_handle LocalMkDir( const char *name )
+/*****************************************/
 {
     return( DOSErrCode( TinyMakeDir( name )) );
 }
 
-error_idx LocalRmDir( const char *name )
-/**************************************/
+error_handle LocalRmDir( const char *name )
+/*****************************************/
 {
     return( DOSErrCode( TinyRemoveDir( name )) );
 }
 
-error_idx LocalSetDrv( int drv )
-/******************************/
+error_handle LocalSetDrv( int drv )
+/*********************************/
 {
     TinySetCurrDrive( drv );
     return( 0 );
@@ -149,8 +149,8 @@ int LocalGetDrv( void )
     return( TinyGetCurrDrive() );
 }
 
-error_idx LocalSetCWD( const char *name )
-/***************************************/
+error_handle LocalSetCWD( const char *name )
+/******************************************/
 {
     return( DOSErrCode( TinyChangeDir( name )) );
 }
@@ -173,8 +173,8 @@ long LocalGetFreeSpace( int drv )
     return( TinyFreeSpace( drv ) );
 }
 
-error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
-/*********************************************************************/
+error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+/************************************************************************/
 {
     tiny_ftime_t *ptime;
     tiny_fdate_t *pdate;
@@ -194,14 +194,14 @@ error_idx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     return( DOSErrCode( rc) );
 }
 
-error_idx LocalGetCwd( int drv, char *where )
-/*******************************************/
+error_handle LocalGetCwd( int drv, char *where )
+/**********************************************/
 {
     return( DOSErrCode( TinyGetCWDir( where, drv )) );
 }
 
-error_idx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/****************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/*******************************************************************************************/
 {
     info_len = info_len;
     TinySetDTA( info );
@@ -216,8 +216,8 @@ int LocalFindNext( void *info, unsigned info_len )
     return( TinyFindNext() );
 }
 
-error_idx LocalSetFileAttr( const char *name, long attr )
-/*******************************************************/
+error_handle LocalSetFileAttr( const char *name, long attr )
+/**********************************************************/
 {
     return( DOSErrCode( TinySetFileAttr( name, attr )) );
 }

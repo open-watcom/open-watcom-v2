@@ -70,10 +70,15 @@ static char_ring *LclPath;
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
 
+#define SYSHANDLE(h)    SysHandles[h & ~REMOTE_IND]
+#define SYSERROR(e)     SysErrors[(e & ~REMOTE_IND) - 1]
+#define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
+#define SETREMOTE(x)    x |= REMOTE_IND
+
 static sys_handle       SysHandles[MAX_OPENS];
 static sys_error        SysErrors[MAX_ERRORS];
-static error_idx        ErrRover;
-static error_idx        LastErr;
+static error_handle     ErrRover;
+static error_handle     LastErr;
 
 const char  *RealFName( char const *name, open_access *loc )
 {
@@ -136,109 +141,111 @@ static file_components *PathInfo( char const *path, open_access loc )
     return( info );
 }
 
-static handle FindFreeHandle( void )
+static file_handle FindFreeHandle( void )
 {
-    handle      i;
+    file_handle     fh;
 
-    for( i = 0; i < MAX_OPENS; ++i ) {
-        if( SysHandles[i] == NIL_SYS_HANDLE ) return( i );
+    for( fh = 0; fh < MAX_OPENS; ++fh ) {
+        if( SYSHANDLE( fh ) == NIL_SYS_HANDLE ) {
+            return( fh );
+        }
     }
     return( NIL_HANDLE );
 }
 
-size_t ReadStream( handle h, void *b, size_t l )
+size_t ReadStream( file_handle fh, void *b, size_t l )
 {
     sys_handle  sys;
 
-    sys = SysHandles[h & ~REMOTE_IND];
-    if( h & REMOTE_IND ) {
+    sys = SYSHANDLE( fh );
+    if( ISREMOTE( fh ) ) {
         return( RemoteRead( sys, b, l ) );
     } else {
         return( LocalRead( sys, b, l ) );
     }
 }
 
-size_t ReadText( handle h, void *b, size_t l )
+size_t ReadText( file_handle fh, void *b, size_t l )
 {
-    return( ReadStream( h, b, l ) );
+    return( ReadStream( fh, b, l ) );
 }
 
-size_t WriteStream( handle h, const void *b, size_t l )
+size_t WriteStream( file_handle fh, const void *b, size_t l )
 {
     sys_handle  sys;
 
-    sys = SysHandles[h & ~REMOTE_IND];
-    if( h & REMOTE_IND ) {
+    sys = SYSHANDLE( fh );
+    if( ISREMOTE( fh ) ) {
         return( RemoteWrite( sys, b, l ) );
     } else {
         return( LocalWrite( sys, b, l ) );
     }
 }
 
-size_t WriteNL( handle h )
+size_t WriteNL( file_handle fh )
 {
     char    *nl;
 
-    if( h & REMOTE_IND ) {
+    if( ISREMOTE( fh ) ) {
         nl = RemFile.newline;
     } else {
         nl = LclFile.newline;
     }
-    return( WriteStream( h, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
+    return( WriteStream( fh, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
 }
 
-size_t WriteText( handle h, const void *b, size_t len )
+size_t WriteText( file_handle fh, const void *b, size_t len )
 {
-    len = WriteStream( h, b, len );
-    WriteNL( h );
+    len = WriteStream( fh, b, len );
+    WriteNL( fh );
     return( len );   /* not including the newline sequence */
 }
 
-unsigned long SeekStream( handle h, long p, seek_method m )
+unsigned long SeekStream( file_handle fh, long p, seek_method m )
 {
     sys_handle  sys;
 
-    sys = SysHandles[h & ~REMOTE_IND];
-    if( h & REMOTE_IND ) {
+    sys = SYSHANDLE( fh );
+    if( ISREMOTE( fh ) ) {
         return( RemoteSeek( sys, p, m ) );
     } else {
         return( LocalSeek( sys, p, m ) );
     }
 }
 
-handle FileOpen( const char *name, open_access o )
+file_handle FileOpen( const char *name, open_access o )
 {
     sys_handle  sys;
-    handle      h;
+    file_handle fh;
 
     if( o & OP_SEARCH ) {
         return( PathOpen( name, strlen( name ), "" ) );
     }
     name = FileLoc( name, &o );
-    h = FindFreeHandle();
-    if( h == NIL_HANDLE )
+    fh = FindFreeHandle();
+    if( fh == NIL_HANDLE )
         return( NIL_HANDLE );
     if( o & OP_REMOTE ) {
-        h |= REMOTE_IND;
+        SETREMOTE( fh );
         sys = RemoteOpen( name, o );
     } else {
         sys = LocalOpen( name, o );
     }
     if( sys == NIL_SYS_HANDLE )
         return( NIL_HANDLE );
-    SysHandles[ h & ~REMOTE_IND ] = sys;
+    SYSHANDLE( fh ) = sys;
     if( o & OP_APPEND )
-        SeekStream( h, 0, DIO_SEEK_END );
-    return( h );
+        SeekStream( fh, 0, DIO_SEEK_END );
+    return( fh );
 }
 
-error_idx FileClose( handle h )
+error_handle FileClose( file_handle fh )
 {
     sys_handle  sys;
 
-    sys = SysHandles[h & ~REMOTE_IND];
-    SysHandles[h & ~REMOTE_IND] = NIL_SYS_HANDLE;
-    if( h & REMOTE_IND ) {
+    sys = SYSHANDLE( fh );
+    SYSHANDLE( fh ) = NIL_SYS_HANDLE;
+    if( ISREMOTE( fh ) ) {
         return( RemoteClose( sys ) );
     } else {
         return( LocalClose( sys ) );
@@ -246,7 +253,7 @@ error_idx FileClose( handle h )
 }
 
 
-error_idx FileRemove( char const *name, open_access loc )
+error_handle FileRemove( char const *name, open_access loc )
 {
     name = FileLoc( name, &loc );
     if( loc & OP_REMOTE ) {
@@ -264,61 +271,60 @@ void WriteToPgmScreen( const void *buff, size_t len )
     RemoteWriteConsole( buff, len );
 }
 
-open_access FileHandleInfo( handle h )
+open_access FileHandleInfo( file_handle fh )
 {
-    if( h & REMOTE_IND )
+    if( ISREMOTE( fh ) )
         return( OP_REMOTE );
     return( OP_LOCAL );
 }
 
-char *SysErrMsg( error_idx code, char *buff )
+char *SysErrMsg( error_handle errh, char *buff )
 {
-    sys_error   sys;
+    sys_error   syserr;
 
-    sys = SysErrors[(code & ~REMOTE_IND) - 1];
-    if( code & REMOTE_IND ) {
-        RemoteErrMsg( sys, buff );
+    syserr = SYSERROR( errh );
+    if( ISREMOTE( errh ) ) {
+        RemoteErrMsg( syserr, buff );
     } else {
-        LocalErrMsg( sys, buff );
+        LocalErrMsg( syserr, buff );
     }
-    return( &buff[strlen( buff )] );
+    return( buff + strlen( buff ) );
 }
 
-error_idx StashErrCode( sys_error sys, open_access loc )
+error_handle StashErrCode( sys_error syserr, open_access loc )
 {
-    error_idx   code;
+    error_handle    errh;
 
-    if( sys == 0 )
+    if( syserr == 0 )
         return( 0 );
     if( ++ErrRover >= MAX_ERRORS )
         ErrRover = 0;
-    code = ErrRover;
-    SysErrors[code] = sys;
-    ++code;
+    errh = ErrRover + 1;
+    SYSERROR( errh ) = syserr;
     if( loc & OP_REMOTE )
-        code |= REMOTE_IND;
-    LastErr = code;
-    return( code );
+        SETREMOTE( errh );
+    LastErr = errh;
+    return( errh );
 }
 
 /* for RFX */
-error_idx GetLastErr( void )
+error_handle GetLastErr( void )
 {
     return( LastErr );
 }
 
 /* for RFX */
-sys_error GetSystemErrCode( error_idx code )
+sys_error GetSystemErrCode( error_handle errh )
 {
-    if( code == 0 )
+    if( errh == 0 )
         return( 0 );
-    return( SysErrors[(code & ~REMOTE_IND) - 1] );
+    return( SYSERROR( errh ) );
 }
 
 /* for RFX */
-sys_handle GetSystemHandle( handle h )
+sys_handle GetSystemHandle( file_handle fh )
 {
-    return( SysHandles[ h & ~REMOTE_IND ] );
+    return( SYSHANDLE( fh ) );
 }
 
 bool IsAbsolutePath( const char *path )
@@ -342,7 +348,7 @@ char *AppendPathDelim( char *path, open_access loc )
 
     info = PathInfo( path, loc );
     len = strlen( path );
-    end = &path[len];
+    end = path + len;
     if( len == 0 || !CHECK_PATH_SEP( end[-1], info ) ) {
         *end++ = info->path_separator[0];
     }
@@ -376,9 +382,8 @@ const char  *ExtPointer( char const *path, open_access loc )
     const char          *end;
     char                c;
 
-    end = path + strlen( path );
+    p = end = path + strlen( path );
     info = PathInfo( path, loc );
-    p = end;
     for( ;; ) {
         c = *--p;
         if( p < path )
@@ -442,24 +447,24 @@ static size_t MakeNameWithPath( open_access loc,
 }
 
 
-handle LclStringToFullName( const char *name, size_t len, char *full )
+file_handle LclStringToFullName( const char *name, size_t len, char *full )
 {
     char_ring   *curr;
-    handle      hndl;
+    file_handle fh;
     size_t      plen;
 
     // check open file in current directory or in full path
     MakeNameWithPath( OP_LOCAL, NULL, 0, name, len, full );
-    hndl = FileOpen( full, OP_READ );
-    if( hndl != NIL_HANDLE )
-        return( hndl );
+    fh = FileOpen( full, OP_READ );
+    if( fh != NIL_HANDLE )
+        return( fh );
     // check open file in debugger directory list
     for( curr = LclPath; curr != NULL; curr = curr->next ) {
         plen = strlen( curr->name );
         MakeNameWithPath( OP_LOCAL, curr->name, plen, name, len, full );
-        hndl = FileOpen( full, OP_READ );
-        if( hndl != NIL_HANDLE ) {
-            return( hndl );
+        fh = FileOpen( full, OP_READ );
+        if( fh != NIL_HANDLE ) {
+            return( fh );
         }
     }
     return( NIL_HANDLE );
@@ -469,7 +474,7 @@ handle LclStringToFullName( const char *name, size_t len, char *full )
 /*
  *
  */
-static handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
+static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
                                     char *result, size_t max_result, bool force_local )
 {
     char        buffer[TXT_LEN];
@@ -479,7 +484,7 @@ static handle FullPathOpenInternal( const char *name, size_t name_len, const cha
     bool        have_ext;
     bool        have_path;
     file_components *file;
-    handle      f;
+    file_handle fh;
     char        c;
 
     loc = 0;
@@ -515,33 +520,33 @@ static handle FullPathOpenInternal( const char *name, size_t name_len, const cha
     *p = NULLCHAR;
     if( loc & OP_REMOTE ) {
         RemoteStringToFullName( false, buffer, result, max_result );
-        f = FileOpen( result, OP_READ | OP_REMOTE );
+        fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
         StrCopy( buffer, result );
-        f = FileOpen( buffer, OP_READ );
+        fh = FileOpen( buffer, OP_READ );
     } else {
-        f = LclStringToFullName( buffer, p - buffer, result );
+        fh = LclStringToFullName( buffer, p - buffer, result );
     }
-    if( f == NIL_HANDLE ) {
+    if( fh == NIL_HANDLE ) {
         strcpy( result, buffer );
     } else {
         p1 = RealFName( result, &loc );
         memmove( result, p1, strlen( p1 ) + 1 );
     }
-    return( f );
+    return( fh );
 }
 
-handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+file_handle FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     return( FullPathOpenInternal( name, name_len, ext, result, max_result, false ) );
 }
 
-handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+file_handle LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     return( FullPathOpenInternal( name, name_len, ext, result, max_result, true ) );
 }
 
-static handle PathOpenInternal( const char *name, size_t name_len, const char *ext, bool force_local )
+static file_handle PathOpenInternal( const char *name, size_t name_len, const char *ext, bool force_local )
 {
     char        result[TXT_LEN];
 
@@ -552,12 +557,12 @@ static handle PathOpenInternal( const char *name, size_t name_len, const char *e
     }
 }
 
-handle PathOpen( const char *name, size_t name_len, const char *ext )
+file_handle PathOpen( const char *name, size_t name_len, const char *ext )
 {
     return( PathOpenInternal( name, name_len, ext, false ) );
 }
 
-handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
+file_handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
 {
     return( PathOpenInternal( name, name_len, ext, true ) );
 }
@@ -565,21 +570,21 @@ handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
 #if !defined( BUILD_RFX )
 static bool IsWritable( char const *name, open_access loc )
 {
-    handle      h;
+    file_handle     fh;
 
-    h = FileOpen( name, OP_READ | loc );
-    if( h == NIL_HANDLE ) {
-        h = FileOpen( name, OP_WRITE | OP_CREATE | loc );
-        if( h != NIL_HANDLE ) {
-            FileClose( h );
+    fh = FileOpen( name, OP_READ | loc );
+    if( fh == NIL_HANDLE ) {
+        fh = FileOpen( name, OP_WRITE | OP_CREATE | loc );
+        if( fh != NIL_HANDLE ) {
+            FileClose( fh );
             FileRemove( name, loc );
             return( true );
         }
     } else {
-        FileClose( h );
-        h = FileOpen( name, OP_WRITE | loc );
-        if( h != NIL_HANDLE ) {
-            FileClose( h );
+        FileClose( fh );
+        fh = FileOpen( name, OP_WRITE | loc );
+        if( fh != NIL_HANDLE ) {
+            FileClose( fh );
             return( true );
         }
     }
@@ -616,14 +621,14 @@ bool FindWritable( char const *src, char *dst )
 
 void SysFileInit( void )
 {
-    unsigned    i;
+    file_handle     fh;
 
-    for( i = 0; i < MAX_OPENS; ++i ) {
-        SysHandles[i] = NIL_SYS_HANDLE;
+    for( fh = 0; fh < MAX_OPENS; ++fh ) {
+        SYSHANDLE( fh ) = NIL_SYS_HANDLE;
     }
-    SysHandles[STD_IN ] = LocalHandleSys( STD_IN  );
-    SysHandles[STD_OUT] = LocalHandleSys( STD_OUT );
-    SysHandles[STD_ERR] = LocalHandleSys( STD_ERR );
+    SYSHANDLE( STD_IN ) = LocalHandleSys( STD_IN  );
+    SYSHANDLE( STD_OUT ) = LocalHandleSys( STD_OUT );
+    SYSHANDLE( STD_ERR ) = LocalHandleSys( STD_ERR );
 }
 
 #if !defined( BUILD_RFX )
@@ -728,23 +733,23 @@ void PathInit( void )
 dig_fhandle DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char        dummy[TXT_LEN];
-    handle      f;
+    file_handle fh;
 
     if( buff == NULL ) {
         buff = dummy;
         buff_size = sizeof( dummy );
     }
-    f = FullPathOpenInternal( name, name_len, ext, buff, buff_size, false );
-    return( ( f == NIL_HANDLE ) ? DIG_NIL_HANDLE : f );
+    fh = FullPathOpenInternal( name, name_len, ext, buff, buff_size, false );
+    return( ( fh == NIL_HANDLE ) ? DIG_NIL_HANDLE : fh );
 }
 
-unsigned DIGPathClose( dig_fhandle h )
+unsigned DIGPathClose( dig_fhandle fh )
 {
-    return( FileClose( h ) );
+    return( FileClose( fh ) );
 }
 
-long DIGGetSystemHandle( dig_fhandle h )
+long DIGGetSystemHandle( dig_fhandle fh )
 {
-    return( SysHandles[h & ~REMOTE_IND] );
+    return( SYSHANDLE( fh ) );
 }
 #endif

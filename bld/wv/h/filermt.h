@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-extern error_idx        RemoteErase( char const * );
+extern error_handle     RemoteErase( char const * );
 extern void             RemoteErrMsg( sys_error, char * );
 extern size_t           RemoteRead( sys_handle, void *, size_t );
 extern size_t           RemoteWrite( sys_handle, const void *, size_t );
 extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       RemoteOpen( char const *, open_access );
-extern error_idx        RemoteClose( sys_handle );
+extern error_handle     RemoteClose( sys_handle );
 extern size_t           RemoteWriteConsole( const void *, size_t );
 extern size_t           RemoteWriteConsoleNL( void );
 extern long             RemoteGetFileDate( const char *name );

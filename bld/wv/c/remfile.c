@@ -165,16 +165,16 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
     mx_entry            out[2];
     file_string_to_fullpath_req acc;
     file_string_to_fullpath_ret ret;
-    handle              h;
+    file_handle         fh;
 #ifdef __NT__
     char short_filename[MAX_PATH + 1] = "";
 #endif
 
     if( SuppFileId == 0 ) {
-        h = LclStringToFullName( name, strlen( name ), res );
-        if( h == NIL_HANDLE )
+        fh = LclStringToFullName( name, strlen( name ), res );
+        if( fh == NIL_HANDLE )
             return( 0 );
-        FileClose( h );
+        FileClose( fh );
         return( strlen( res ) );
     }
     SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
@@ -464,7 +464,7 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     }
 }
 
-error_idx RemoteClose( sys_handle hdl )
+error_handle RemoteClose( sys_handle hdl )
 {
     file_close_req      acc;
     file_close_ret      ret;
@@ -490,7 +490,7 @@ error_idx RemoteClose( sys_handle hdl )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteErase( const char *name )
+error_handle RemoteErase( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -512,7 +512,7 @@ error_idx RemoteErase( const char *name )
 }
 
 #if !defined( BUILD_RFX )
-error_idx RemoteFork( const char *cmd, trap_elen len )
+error_handle RemoteFork( const char *cmd, trap_elen len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

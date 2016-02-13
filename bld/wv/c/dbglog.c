@@ -39,7 +39,7 @@
 #include "dbgmain.h"
 
 
-static handle       LogHndl;
+static file_handle  LogHndl;
 
 
 /*
@@ -123,7 +123,8 @@ static void OpenLog( open_access mode )
     } else if( !ScanItem( true, &start, &len ) ) {
         Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     } else {
-        if( len > TXT_LEN ) len = TXT_LEN;
+        if( len > TXT_LEN )
+            len = TXT_LEN;
         ReqEOC();
         memcpy( TxtBuff, start, len );
         TxtBuff[len] = NULLCHAR;

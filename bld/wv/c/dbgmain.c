@@ -178,7 +178,7 @@ OVL_EXTERN void ProcNil( void )
  *
  */
 
-void ReportTask( task_status task, error_idx code )
+void ReportTask( task_status task, error_handle errh )
 {
     switch( task ) {
     case TASK_NEW:
@@ -188,7 +188,7 @@ void ReportTask( task_status task, error_idx code )
         break;
     case TASK_NOT_LOADED:
         _SwitchOff( SW_HAVE_TASK );
-        Format( TxtBuff, LIT_ENG( Task_Not_Loaded ), code );
+        Format( TxtBuff, LIT_ENG( Task_Not_Loaded ), errh );
         DUIMsgBox( TxtBuff );
         RingBell();
         RingBell();

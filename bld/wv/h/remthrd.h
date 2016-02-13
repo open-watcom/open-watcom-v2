@@ -32,7 +32,7 @@
 
 extern bool     InitThreadSupp( void );
 extern dtid_t   RemoteGetNextThread( dtid_t tid, unsigned *state );
-extern dtid_t   RemoteSetThreadWithErr( dtid_t tid, error_idx *erridx );
+extern dtid_t   RemoteSetThreadWithErr( dtid_t tid, error_handle *errh );
 extern long     RemoteFreezeThread( dtid_t tid );
 extern long     RemoteThawThread( dtid_t tid );
 extern void     RemoteThdName( dtid_t tid, char *name );

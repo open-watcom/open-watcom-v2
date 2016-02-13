@@ -128,7 +128,7 @@ static bool             Done;
 /* Constants Used in this File */
 
 /*
-Whenever you add a short cut command, please the 
+Whenever you add a short cut command, please the
 corresponding help command in the process_cmd_help function
 */
 static const char   *WDB_CMD_QUIT = "quit";
@@ -287,18 +287,17 @@ const char *MyStrTrimLen( const char *start, unsigned *len )
 char *GetCmdPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value;
+    size_t  pos;
+    size_t  len;
 
-    pos_value = strcspn( cmd, delimit );
-    if( pos_value == strlen( cmd ) ) {
-        result = malloc( sizeof( char ) * ( strlen( cmd ) + 1 ) );
-        strncpy( result, cmd, strlen( cmd ) );
-        result[strlen( cmd )] = '\0';
-    } else {
-        result = malloc( sizeof( char )*( pos_value + 1 ) );
-        strncpy( result, cmd, pos_value );
-        result[pos_value] = '\0';
+    pos = strcspn( cmd, delimit );
+    len = strlen( cmd );
+    if( len > pos ) {
+        len = pos;
     }
+    result = malloc( sizeof( char ) * ( len + 1 ) );
+    strncpy( result, cmd, len );
+    result[len] = '\0';
     MyStrTrim( result );
     return( result );
 }
@@ -311,16 +310,19 @@ char *GetCmdPart( const char *cmd )
 char *GetParamPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value;
+    size_t  pos;
+    size_t  len;
 
-    pos_value = strcspn( cmd, delimit );
-    if( pos_value == strlen( cmd ) ) {
+    pos = strcspn( cmd, delimit );
+    len = strlen( cmd );
+    if( pos == len ) {
         result = malloc( sizeof( char ) * 1 );
         strncpy( result, "\0" , 1 );
     } else {
-        result = malloc( sizeof( char ) * ( strlen( cmd ) - pos_value + 1 ) );
-        strncpy( result, &cmd[pos_value + 1], strlen( cmd ) - pos_value + 1 );
-        result[strlen( cmd ) - pos_value] = '\0';
+        len -= pos;
+        result = malloc( sizeof( char ) * ( len + 1 ) );
+        strncpy( result, cmd + pos + 1, len + 1 );
+        result[len] = '\0';
     }
     MyStrTrim( result );
     return( result );
@@ -361,8 +363,8 @@ bool IsCmdEqualCmd( const char *cmd, const char *e_cmd, const char *e_short_cmd 
     bool    comparefull;
     bool    compareshort;
 
-    comparefull = (strlen( cmd ) == strlen( e_cmd ));
-    compareshort = (strlen( cmd ) == strlen( e_short_cmd ));
+    comparefull = ( strlen( cmd ) == strlen( e_cmd ) );
+    compareshort = ( strlen( cmd ) == strlen( e_short_cmd ) );
     /* if the length of the command does not match then we'll ignore the command */
     if( (!comparefull) && (!compareshort) ) {
         return( false );
@@ -392,7 +394,7 @@ bool IsCmdEqualCmd2( const char *cmd, const char *e_cmd )
 }
 
 /*for setting a breakpoint in a file,
-we need to check is the file is in the 
+we need to check is the file is in the
 module list. then from the module we get the cuFileID
 and cuMod. Then using the cuFileID, cuMod and line number
 we can find the breakoint address associated with the file
@@ -600,7 +602,7 @@ void ShowSourceDirectories( void )
 the global src path variable*/
 void AddSourcePathsToDebugger( const char *srcpath )
 {
-    // if possible replace strtok with other 
+    // if possible replace strtok with other
     // efficient tokenizer
     const char  *path;
     const char  *end;
@@ -671,7 +673,7 @@ and delete the bps one at a time
 */
 bool DeleteBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -693,7 +695,7 @@ and enable the bps one at a time
 */
 bool DisableBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -715,7 +717,7 @@ and enable the bps one at a time
 */
 bool EnableBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -752,7 +754,7 @@ bool ProcessCmdPrint( const char *param )
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_PRINT );
         return( true );
-    } 
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
@@ -775,7 +777,7 @@ bool ProcessCmdRun( const char *param )
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_RUN );
         return( true );
-    } 
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( false );
@@ -957,7 +959,7 @@ bool ProcessCmdEnable( const char *param )
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_ENABLE );
         return( true );
-    } 
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
         return( false );

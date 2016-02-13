@@ -40,7 +40,7 @@
 #define _SMAlloc( pointer, size )       _Alloc( pointer, size )
 #define _SMFree( pointer )              _Free( pointer )
 
-#define sm_file_handle                  handle
+#define sm_file_handle                  file_handle
 #define sm_mod_handle                   mod_handle
 #define sm_cue_fileid                   cue_fileid
 

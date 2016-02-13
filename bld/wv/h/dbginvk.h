@@ -37,13 +37,13 @@ typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
 typedef struct invokes {
     char_ring           *prmlst;
     char                *redirect;
-    unsigned int        inv_input;
-    unsigned int        buff_size;
+    file_handle         inv_input;
+    size_t              buff_size;
     unsigned            number;
     unsigned            line;
     inv_flags           flags;
-    unsigned char       in_off;
-    unsigned char       in_size;
+    size_t              in_off;
+    size_t              in_size;
     char                in_buff[IN_BUFF_SIZE];
     char                *buff;
     char                name[1];
@@ -52,7 +52,7 @@ typedef struct invokes {
 
 extern void ImplicitSet( void );
 extern void ImplicitConf( void );
-extern void Invoke( const char *invfile, int len, char_ring *parmlist );
+extern void Invoke( const char *invfile, size_t len, char_ring *parmlist );
 extern void ProfileInvoke( char *name );
 extern void ProcInvoke( void );
 extern void CreateInvokeFile( const char *name, void(*rtn)(void) );

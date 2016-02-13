@@ -31,7 +31,7 @@
 
 extern char *GetCmdName( wd_cmd cmd );
 extern void DebugInit( void );
-extern void ReportTask( task_status task, error_idx code );
+extern void ReportTask( task_status task, error_handle errh );
 extern void ChkBreak( void );
 extern void ProcACmd( void );
 extern void DebugMain( void );

@@ -48,4 +48,4 @@ extern void         OptMemAddr( memory_expr def_seg, address *def_val );
 extern void         SetTokens( bool parse_tokens );
 extern void         LangInit( void );
 extern void         LangFini( void );
-extern bool         LangLoad( const char *lang, unsigned langlen );
+extern bool         LangLoad( const char *lang, size_t langlen );

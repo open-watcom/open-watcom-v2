@@ -52,17 +52,17 @@ static const char SystemOps[] = { "Remote\0Local\0" };
 
 void DoSystem( const char *cmd, size_t len, object_loc loc )
 {
-    long        rc;
-//    error_idx   ret;
+    long            rc;
+//    error_handle    errh;
 #if defined( __DOS__ ) && defined( _M_I86 )
-    bool        chk;
+    bool            chk;
 #endif
 
     DUISysStart();
     if( loc == LOC_DEFAULT && _IsOn( SW_REMOTE_FILES ) )
         loc = LOC_REMOTE;
     if( loc == LOC_REMOTE ) {
-//        ret = RemoteFork( cmd, len );
+//        errh = RemoteFork( cmd, len );
         RemoteFork( cmd, len );
         rc = 0;
     } else {

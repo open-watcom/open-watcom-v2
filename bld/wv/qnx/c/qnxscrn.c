@@ -205,7 +205,7 @@ static bool TryQConsole( void )
     if( qnx_sid_query( PROC_PID, psinfo.sid, &info ) != psinfo.sid ) {
         StartupErr( "unable to obtain console name" );
     }
-    ptr = &info.tty_name[ strlen( info.tty_name ) ];
+    ptr = info.tty_name + strlen( info.tty_name );
     for( ;; ) {
         --ptr;
         if( *ptr < '0' || *ptr > '9' ) {
@@ -451,7 +451,7 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         break;
     case OPT_XCONFIG:
         WantEquals();
-        p = &XConfig[ strlen( XConfig ) ];
+        p = XConfig + strlen( XConfig );
         *p++ = ' ';
         GetRawItem( p );
         if( pass == 1 )

@@ -37,4 +37,4 @@ extern void     FiniMemWindow( void );
 extern a_window *DoWndMemOpen( address addr, mad_type_handle type );
 extern a_window *WndMemOpen( void );
 extern a_window *WndStkOpen( void );
-extern a_window *DoWndBinOpen( const char *title, handle filehndl );
+extern a_window *DoWndBinOpen( const char *title, file_handle filehndl );

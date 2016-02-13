@@ -678,30 +678,30 @@ static bool GetInitName( char *name, char *buff, unsigned buff_len )
 
 void SaveMainScreen( char *name )
 {
-    handle      f;
+    file_handle fh;
     char        buff[FILENAME_MAX];
 
     if( !GetInitName( name, buff, sizeof( buff ) ) )
         return;
-    f = FileOpen( buff, OP_WRITE|OP_CREATE );
-    if( f == NIL_HANDLE )
+    fh = FileOpen( buff, OP_WRITE|OP_CREATE );
+    if( fh == NIL_HANDLE )
         return;
-    WriteStream( f, &WndMainRect, sizeof( WndMainRect ) );
-    FileClose( f );
+    WriteStream( fh, &WndMainRect, sizeof( WndMainRect ) );
+    FileClose( fh );
 }
 
 void RestoreMainScreen( char *name )
 {
-    handle      f;
+    file_handle fh;
     char        buff[FILENAME_MAX];
 
     if( !GetInitName( name, buff, sizeof( buff ) ) )
         return;
-    f = FileOpen( buff, OP_READ );
-    if( f == NIL_HANDLE )
+    fh = FileOpen( buff, OP_READ );
+    if( fh == NIL_HANDLE )
         return;
-    ReadStream( f, &WndMainRect, sizeof( WndMainRect ) );
-    FileClose( f );
+    ReadStream( fh, &WndMainRect, sizeof( WndMainRect ) );
+    FileClose( fh );
 }
 
 void WndSetWndMainSize( wnd_create_struct *info )

@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-extern bool InitRunThreadSupp( void );
-extern bool HaveRemoteRunThread( void );
-extern bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, trap_elen maxsize );
-extern dtid_t RemoteGetNextRunThread( dtid_t tid );
-extern void RemotePollRunThread( void );
-extern void RemoteUpdateRunThread( thread_state *thd );
-extern void RemoteRunThdName( dtid_t tid, char *name );
-extern dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_idx *erridx );
-extern dtid_t RemoteSetRunThread( dtid_t tid );
-extern void RemoteStopThread( thread_state *thd );
-extern void RemoteSignalStopThread( thread_state *thd );
+extern bool     InitRunThreadSupp( void );
+extern bool     HaveRemoteRunThread( void );
+extern bool     RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, trap_elen maxsize );
+extern dtid_t   RemoteGetNextRunThread( dtid_t tid );
+extern void     RemotePollRunThread( void );
+extern void     RemoteUpdateRunThread( thread_state *thd );
+extern void     RemoteRunThdName( dtid_t tid, char *name );
+extern dtid_t   RemoteSetRunThreadWithErr( dtid_t tid, error_handle *errh );
+extern dtid_t   RemoteSetRunThread( dtid_t tid );
+extern void     RemoteStopThread( thread_state *thd );
+extern void     RemoteSignalStopThread( thread_state *thd );

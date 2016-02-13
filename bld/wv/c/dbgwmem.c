@@ -112,7 +112,7 @@ typedef struct mem_window {
             mem_backout *backout;
         } m;
         struct {
-            handle      filehndl;
+            file_handle fh;
             long        offset;
             long        size;
         } f;
@@ -130,7 +130,7 @@ typedef struct mem_window {
     wnd_row     cursor_row;
     int         cursor_piece;
     int         shadow_piece;
-    mad_type_handle     init_type;      //MAD: what if active MAD changes?
+    mad_type_handle init_type;      //MAD: what if active MAD changes?
     unsigned    file    : 1;
     unsigned    stack   : 1;
 } mem_window;
@@ -582,9 +582,9 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, int size
 
     if( mem->file ) {
         offset += mem->u.f.offset;
-        new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
+        new = SeekStream( mem->u.f.fh, offset, DIO_SEEK_ORG );
         if( new != offset ) return( false );
-        len = ReadStream( mem->u.f.filehndl, buff, size );
+        len = ReadStream( mem->u.f.fh, buff, size );
         return( len >= size );
     } else {
         if( mem->u.m.contents == NULL ) return( false );
@@ -841,10 +841,10 @@ static  int     MemScroll( a_window *wnd, int lines )
         if( tomove >= 0 && offset < mem->u.f.offset || tomove < 0 && offset > mem->u.f.offset ) {
             offset = 0;
         }
-        new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
+        new = SeekStream( mem->u.f.fh, offset, DIO_SEEK_ORG );
         if( new != offset )
             return( 0 );
-        if( ReadStream( mem->u.f.filehndl, TxtBuff, 1 ) != 1 )
+        if( ReadStream( mem->u.f.fh, TxtBuff, 1 ) != 1 )
             return( 0 );
         mem->u.f.offset = offset;
         WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
@@ -915,11 +915,11 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         MemSetType( wnd, mem->piece_type ); /* stashed here by Open routine */
         if( mem->file ) {
             mem->u.f.offset = 0;
-            if( mem->u.f.filehndl != NIL_HANDLE ) {
-                mem->u.f.size = SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_END );
+            if( mem->u.f.fh != NIL_HANDLE ) {
+                mem->u.f.size = SeekStream( mem->u.f.fh, 0L, DIO_SEEK_END );
                 if( mem->u.f.size == ERR_SEEK )
                     mem->u.f.size = 0;
-                SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_ORG );
+                SeekStream( mem->u.f.fh, 0L, DIO_SEEK_ORG );
             }
         } else {
             mem->u.m.follow = NULL;
@@ -935,13 +935,15 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         WndFixedThumb( wnd );
         return( true );
     case GUI_DESTROY :
-        if( mem->file && mem->u.f.filehndl != NIL_HANDLE ) {
-            FileClose( mem->u.f.filehndl );
+        if( mem->file && mem->u.f.fh != NIL_HANDLE ) {
+            FileClose( mem->u.f.fh );
         }
         if( !mem->file ) {
             WndFree( mem->u.m.contents );
             WndFree( mem->u.m.follow );
-            while( mem->u.m.backout != NULL ) MemFreeBackout( mem );
+            while( mem->u.m.backout != NULL ) {
+                MemFreeBackout( mem );
+            }
         }
         WndFree( mem );
         return( true );
@@ -1043,7 +1045,7 @@ a_window        *WndStkOpen( void )
 }
 
 
-a_window        *DoWndBinOpen( const char *title, handle filehndl )
+a_window        *DoWndBinOpen( const char *title, file_handle fh )
 {
     mem_window  *mem;
     a_window    *wnd;
@@ -1053,7 +1055,7 @@ a_window        *DoWndBinOpen( const char *title, handle filehndl )
     mem->stack = false;
     mem->init_type = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
-    mem->u.f.filehndl = filehndl;
+    mem->u.f.fh = fh;
     wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }

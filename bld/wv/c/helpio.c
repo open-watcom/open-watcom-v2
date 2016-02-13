@@ -41,30 +41,30 @@ HELPIO long int HelpFileLen( HelpFp fp )
     unsigned long   old;
     long            len;
 
-    old = SeekStream( (handle)fp, 0, DIO_SEEK_CUR );
-    len = SeekStream( (handle)fp, 0, DIO_SEEK_END );
-    SeekStream( (handle)fp, old, DIO_SEEK_ORG );
+    old = SeekStream( (file_handle)fp, 0, DIO_SEEK_CUR );
+    len = SeekStream( (file_handle)fp, 0, DIO_SEEK_END );
+    SeekStream( (file_handle)fp, old, DIO_SEEK_ORG );
     return( len );
 }
 
 HELPIO int HelpRead( HelpFp fp, void *buf, int len )
 {
-    return( ReadStream( (handle)fp, buf, len ) );
+    return( ReadStream( (file_handle)fp, buf, len ) );
 }
 
 HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
 {
-    return( WriteStream( (handle)fp, buf, len ) );
+    return( WriteStream( (file_handle)fp, buf, len ) );
 }
 
 HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where ) {
 
-    return( SeekStream( (handle)fp, offset, seekTypeConvTable[ where ] ) );
+    return( SeekStream( (file_handle)fp, offset, seekTypeConvTable[ where ] ) );
 }
 
 HELPIO long int HelpTell( HelpFp fp )
 {
-    return( SeekStream( (handle)fp, 0, DIO_SEEK_CUR ) );
+    return( SeekStream( (file_handle)fp, 0, DIO_SEEK_CUR ) );
 }
 
 HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
@@ -77,21 +77,21 @@ HELPIO HelpFp HelpOpen( const char *path, unsigned long mode )
 
 HELPIO int HelpClose( HelpFp fp )
 {
-    FileClose( (handle)fp );
+    FileClose( (file_handle)fp );
     return( 0 );
 }
 
 HELPIO int HelpAccess( const char *path, int mode )
 {
-    handle      fp;
+    file_handle fh;
     int         rc;
 
     mode=mode;
-    fp = FileOpen( path, OP_READ );
+    fh = FileOpen( path, OP_READ );
     rc = -1;
-    if( fp != NIL_HANDLE ) {
+    if( fh != NIL_HANDLE ) {
         rc = 0;
-        FileClose( fp );
+        FileClose( fh );
     }
     return( rc );
 }

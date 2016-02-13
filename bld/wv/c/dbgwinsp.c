@@ -135,16 +135,17 @@ static mod_handle       FindFileMod( const char *file )
 
 extern void WndFileInspect( const char *file, bool binary )
 {
-    handle              filehndl;
+    file_handle         fh;
     void                *viewhndl;
     mod_handle          mod;
     DIPHDL( cue, ch );
 
     viewhndl = NULL;
     if( binary ) {
-        filehndl = FileOpen( file, OP_READ );
-        if( filehndl == NIL_HANDLE ) Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
-        DoWndBinOpen( file, filehndl );
+        fh = FileOpen( file, OP_READ );
+        if( fh == NIL_HANDLE )
+            Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
+        DoWndBinOpen( file, fh );
     } else {
         mod = LookupModName( NO_MOD, file, strlen( file ) );
         if( mod == NO_MOD ) {
@@ -156,7 +157,8 @@ extern void WndFileInspect( const char *file, bool binary )
             viewhndl = FOpenSource( file, NO_MOD, 0 );
             ch = NULL;
         }
-        if( viewhndl == NULL ) Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
+        if( viewhndl == NULL )
+            Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
         DoWndFileOpen( file, viewhndl, ch, false, false, WND_FILE );
     }
 }

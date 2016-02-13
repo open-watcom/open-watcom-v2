@@ -143,7 +143,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method 
     return( pos );
 }
 
-error_idx LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle filehndl )
 {
     tiny_ret_t  ret;
 
@@ -154,7 +154,7 @@ error_idx LocalClose( sys_handle filehndl )
     return( 0 );
 }
 
-error_idx LocalErase( const char *name )
+error_handle LocalErase( const char *name )
 {
     tiny_ret_t  ret;
 
@@ -165,7 +165,7 @@ error_idx LocalErase( const char *name )
     return( 0 );
 }
 
-sys_handle LocalHandleSys( handle h )
+sys_handle LocalHandleSys( file_handle fh )
 {
-    return( h );
+    return( (sys_handle)fh );
 }

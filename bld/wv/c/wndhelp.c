@@ -61,14 +61,14 @@ void FiniHelp( void )
 #if !defined(__GUI__)
 static void LocateHelpFile( void )
 {
-    handle              h;
+    file_handle     fh;
 #if !defined(__UNIX__)
-    char                buff[1024];
+    char            buff[1024];
 #endif
 
-    h = LocalFullPathOpen( HELPNAME, sizeof( HELPNAME ) - 1, "ihp", TxtBuff, TXT_LEN );
-    if( h != NIL_HANDLE ) {
-        FileClose( h );
+    fh = LocalFullPathOpen( HELPNAME, sizeof( HELPNAME ) - 1, "ihp", TxtBuff, TXT_LEN );
+    if( fh != NIL_HANDLE ) {
+        FileClose( fh );
         return;
     }
 #if !defined(__UNIX__)
@@ -76,9 +76,9 @@ static void LocateHelpFile( void )
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
     StrCopy( ".ihp", StrCopy( HELPNAME, StrCopy( "\\", StrCopy( buff, TxtBuff ) ) ) );
-    h = FileOpen( TxtBuff, OP_READ );
-    if( h != NIL_HANDLE ) {
-        FileClose( h );
+    fh = FileOpen( TxtBuff, OP_READ );
+    if( fh != NIL_HANDLE ) {
+        FileClose( fh );
         return;
     }
 #endif

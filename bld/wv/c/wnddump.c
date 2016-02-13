@@ -43,20 +43,20 @@
 #include "wnddump.h"
 
 
-typedef void WRITERTN( handle, const char * );
+typedef void WRITERTN( file_handle, const char * );
 
-static void WriteFile( handle file, const char *buff )
+static void WriteFile( file_handle fh, const char *buff )
 {
-    WriteText( file, buff, strlen( buff ) );
+    WriteText( fh, buff, strlen( buff ) );
 }
 
-static void WriteLog( handle dummy, const char *buff )
+static void WriteLog( file_handle fh, const char *buff )
 {
-    dummy = dummy;
+    fh = fh;
     WndDlgTxt( buff );
 }
 
-static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
+static void DoWndDump( a_window *wnd, WRITERTN *rtn, file_handle fh )
 {
     int                 row;
     int                 piece;
@@ -91,7 +91,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
         *p++ = '=';
     }
     *p = '\0';
-    rtn( file, TxtBuff );
+    rtn( fh, TxtBuff );
     for( row = -WndTitleSize( wnd );; ++row ) {
         p = buff;
         chars_written = 0;
@@ -112,7 +112,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
         }
         if( piece == 0 )
             break;
-        rtn( file, buff );
+        rtn( fh, buff );
     }
     MaxGadgetLength = gadget_len;
     if( font != NULL )
@@ -123,16 +123,16 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
 
 static void DoWndDumpFile( const char *name, a_window *wnd )
 {
-    handle              file;
+    file_handle     fh;
 
     if( wnd == NULL )
         return;
-    file = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
-    if( file == NIL_HANDLE ) {
+    fh = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
+    if( fh == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), name );
     }
-    DoWndDump( wnd, WriteFile, file );
-    FileClose( file );
+    DoWndDump( wnd, WriteFile, fh );
+    FileClose( fh );
 }
 
 void WndDumpPrompt( a_window *wnd )

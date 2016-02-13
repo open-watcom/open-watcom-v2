@@ -37,5 +37,5 @@ extern bool             InitFileSupp( void );
 extern bool             HaveRemoteFiles( void );
 extern size_t           RemoteStringToFullName( bool executable, const char *name, char *res, trap_elen res_len );
 #if !defined( BUILD_RFX )
-extern error_idx        RemoteFork( const char *cmd, trap_elen len );
+extern error_handle     RemoteFork( const char *cmd, trap_elen len );
 #endif

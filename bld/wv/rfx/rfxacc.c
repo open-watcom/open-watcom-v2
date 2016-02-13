@@ -58,7 +58,7 @@ bool InitRFXSupp( void )
 }
 
 
-error_idx RemoteRename( const char * from, const char *to )
+error_handle RemoteRename( const char * from, const char *to )
 {
     in_mx_entry         in[3];
     mx_entry            out[1];
@@ -78,7 +78,7 @@ error_idx RemoteRename( const char * from, const char *to )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteMkDir( const char *name )
+error_handle RemoteMkDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -96,7 +96,7 @@ error_idx RemoteMkDir( const char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteRmDir( const char *name )
+error_handle RemoteRmDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -114,7 +114,7 @@ error_idx RemoteRmDir( const char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteSetDrv( int drv )
+error_handle RemoteSetDrv( int drv )
 {
     rfx_setdrive_req    acc;
     rfx_setdrive_ret    ret;
@@ -135,7 +135,7 @@ int RemoteGetDrv( void )
     return( ret.drive );
 }
 
-error_idx RemoteSetCWD( const char *name )
+error_handle RemoteSetCWD( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -175,7 +175,7 @@ long RemoteGetFileAttr( const char * name )
     return( ret.attribute );
 }
 
-error_idx RemoteSetFileAttr( const char * name, long attrib )
+error_handle RemoteSetFileAttr( const char * name, long attrib )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -280,7 +280,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-error_idx RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
+error_handle RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 {
     if( set ) {
         rfx_setdatetime_req     acc;
@@ -307,7 +307,7 @@ error_idx RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 //NYI: Assume max cwd lenght is 80
 #define MAX_STRING_LEN  80
 
-error_idx RemoteGetCwd( int drv, char *where )
+error_handle RemoteGetCwd( int drv, char *where )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -326,7 +326,7 @@ error_idx RemoteGetCwd( int drv, char *where )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_idx RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
+error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -368,7 +368,7 @@ int RemoteFindNext( void *info, trap_elen info_len )
     return( ret.err );
 }
 
-error_idx RemoteFindClose( void )
+error_handle RemoteFindClose( void )
 {
     rfx_findclose_req   acc;
     rfx_findclose_ret   ret;

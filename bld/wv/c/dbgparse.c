@@ -266,13 +266,13 @@ void LangFini( void )
     ParseTableSize = 0;
 }
 
-static unsigned ReadSection( handle filehndl, unsigned off )
+static unsigned ReadSection( file_handle fh, unsigned off )
 {
     unsigned_16 len;
     unsigned    last;
     void        *new;
 
-    if( ReadStream( filehndl, &len, sizeof( len ) ) != sizeof( len ) ) {
+    if( ReadStream( fh, &len, sizeof( len ) ) != sizeof( len ) ) {
         return( 0 );
     }
     CONV_LE_16( len );
@@ -285,42 +285,42 @@ static unsigned ReadSection( handle filehndl, unsigned off )
         ParseTable = new;
         ParseTableSize = last;
     }
-    if( ReadStream( filehndl, &ParseTable[off], len ) != len ) {
+    if( ReadStream( fh, &ParseTable[off], len ) != len ) {
         return( 0 );
     }
     return( off + len );
 }
 
-static bool ReadAllSections( handle filehndl )
+static bool ReadAllSections( file_handle fh )
 {
     unsigned    key_off;
     unsigned    delim_off;
 
     /* read rules */
-    key_off = ReadSection( filehndl, 0 );
+    key_off = ReadSection( fh, 0 );
     if( key_off == 0 )
         return( false );
     /* read keywords */
-    delim_off = ReadSection( filehndl, key_off );
+    delim_off = ReadSection( fh, key_off );
     if( delim_off == 0 )
         return( false );
     /* read delimiters */
-    if( ReadSection( filehndl, delim_off ) == 0 )
+    if( ReadSection( fh, delim_off ) == 0 )
         return( false );
     ParseTokens.keywords = &ParseTable[key_off];
     ParseTokens.delims = &ParseTable[delim_off];
     return( true );
 }
 
-bool LangLoad( const char *lang, unsigned langlen )
+bool LangLoad( const char *lang, size_t langlen )
 {
-    handle      filehndl;
+    file_handle fh;
     bool        ret;
 
-    filehndl = LocalPathOpen( lang, langlen, "prs" );
-    if( filehndl == NIL_HANDLE )
+    fh = LocalPathOpen( lang, langlen, "prs" );
+    if( fh == NIL_HANDLE )
         return( false );
-    ret = ReadAllSections( filehndl );
-    FileClose( filehndl );
+    ret = ReadAllSections( fh );
+    FileClose( fh );
     return( ret );
 }

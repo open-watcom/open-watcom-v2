@@ -421,13 +421,13 @@ static void     MacMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_MAC_TD:
         FiniMacros();
         old = ReScan( LIT_ENG( Empty ) );
-        Invoke( TDDBG, strlen( TDDBG ), NULL );
+        Invoke( TDDBG, sizeof( TDDBG ) - 1, NULL );
         ReScan( old );
         break;
     case MENU_MAC_WD:
         FiniMacros();
         old = ReScan( LIT_ENG( Empty ) );
-        Invoke( WDDBG, strlen( WDDBG ), NULL );
+        Invoke( WDDBG, sizeof( WDDBG ) - 1, NULL );
         ReScan( old );
         break;
     default:

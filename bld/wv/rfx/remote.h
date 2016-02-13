@@ -29,17 +29,17 @@
 ****************************************************************************/
 
 
-extern error_idx        RemoteRename( const char *, const char * );
-extern error_idx        RemoteMkDir( const char * );
-extern error_idx        RemoteRmDir( const char * );
-extern error_idx        RemoteSetDrv( int );
+extern error_handle     RemoteRename( const char *, const char * );
+extern error_handle     RemoteMkDir( const char * );
+extern error_handle     RemoteRmDir( const char * );
+extern error_handle     RemoteSetDrv( int );
 extern int              RemoteGetDrv( void );
-extern error_idx        RemoteSetCWD( const char * );
+extern error_handle     RemoteSetCWD( const char * );
 extern long             RemoteGetFileAttr( const char * );
-extern error_idx        RemoteSetFileAttr( const char * , long );
+extern error_handle     RemoteSetFileAttr( const char * , long );
 extern long             RemoteGetFreeSpace( int );
-extern error_idx        RemoteDateTime( sys_handle , int *, int *, int );
-extern error_idx        RemoteGetCwd( int, char * );
-extern error_idx        RemoteFindFirst( const char *, void *, trap_elen , int );
+extern error_handle     RemoteDateTime( sys_handle , int *, int *, int );
+extern error_handle     RemoteGetCwd( int, char * );
+extern error_handle     RemoteFindFirst( const char *, void *, trap_elen , int );
 extern int              RemoteFindNext( void *, trap_elen );
-extern error_idx        RemoteFindClose( void );
+extern error_handle     RemoteFindClose( void );

@@ -74,7 +74,6 @@ extern void             StdInNew( void );
 extern void             StdOutNew( void );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             SymInfoMvHdl( handle, handle );
 extern void             SetNoSectSeg( void );
 extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
@@ -179,17 +178,17 @@ void FindLocalDebugInfo( const char *name )
 {
     char        *buff, *symfile;
     size_t      len;
-    handle      local;
+    file_handle fh;
 
     len = strlen( name );
     _AllocA( buff, len + 1 + 4 + 2 );
     _AllocA( symfile, len + 1 + 4 );
     strcpy( buff, "@l" );
     // If a .sym file is present, use it in preference to the executable
-    local = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symfile, len + 4 );
-    if( local != NIL_HANDLE ) {
+    fh = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symfile, len + 4 );
+    if( fh != NIL_HANDLE ) {
         strcat( buff, symfile );
-        FileClose( local );
+        FileClose( fh );
     } else {
         strcat( buff, name );
     }
@@ -199,15 +198,15 @@ void FindLocalDebugInfo( const char *name )
 static void DoDownLoadCode( void )
 /********************************/
 {
-    handle local;
+    file_handle     fh;
 
     if( !DownLoadTask )
         return;
-    local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
-    if( local == NIL_HANDLE ) {
+    fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
+    if( fh == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
     }
-    FileClose( local );
+    FileClose( fh );
     FindLocalDebugInfo( TxtBuff );
     CopyToRemote( TxtBuff, SkipPathInfo( TxtBuff, OP_LOCAL ), true, NULL );
 }
@@ -487,7 +486,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, handle h,
+static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
                         unsigned start, unsigned end )
 {
     char        buff[TXT_LEN];
@@ -503,7 +502,7 @@ static bool CheckLoadDebugInfo( image_entry *image, handle h,
         if( prio > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( h, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( fh, sizeof( image_entry * ), prio );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -534,7 +533,7 @@ static bool CheckLoadDebugInfo( image_entry *image, handle h,
  */
 static bool ProcImgSymInfo( image_entry *image )
 {
-    handle      h;
+    file_handle fh;
     unsigned    last;
     char        buff[TXT_LEN];
     char        *symfile_name;
@@ -546,27 +545,27 @@ static bool ProcImgSymInfo( image_entry *image )
         return( NO_MOD );
     if( image->symfile_name != NULL ) {
         last = DIP_PRIOR_MAX;
-        h = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
-        if( h == NIL_HANDLE ) {
+        fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
+        if( fh == NIL_HANDLE ) {
             nopath = SkipPathInfo( image->symfile_name, OP_REMOTE );
-            h = PathOpen( nopath, strlen( nopath ), "sym" );
-            if( h == NIL_HANDLE ) {
+            fh = PathOpen( nopath, strlen( nopath ), "sym" );
+            if( fh == NIL_HANDLE ) {
                 /* try the sym file without an added extension */
-                h = FileOpen( image->symfile_name, OP_READ );
+                fh = FileOpen( image->symfile_name, OP_READ );
             }
         }
     } else {
         last = DIP_PRIOR_EXPORTS - 1;
-        h = FileOpen( image->image_name, OP_READ );
-        if( h == NIL_HANDLE ) {
-            h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+        fh = FileOpen( image->image_name, OP_READ );
+        if( fh == NIL_HANDLE ) {
+            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
         }
     }
-    if( h != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, last ) ) {
+    if( fh != NIL_HANDLE ) {
+        if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last ) ) {
             return( true );
         }
-        FileClose( h );
+        FileClose( fh );
     }
     if( image->symfile_name != NULL )
         return( false );
@@ -577,18 +576,18 @@ static bool ProcImgSymInfo( image_entry *image )
     _Alloc( image->symfile_name, len + 1 );
     if( image->symfile_name != NULL ) {
         memcpy( image->symfile_name, buff, len + 1 );
-        h = FileOpen( image->symfile_name, OP_READ );
-        if( h == NIL_HANDLE ) {
-            h = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
+        fh = FileOpen( image->symfile_name, OP_READ );
+        if( fh == NIL_HANDLE ) {
+            fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
         }
-        if( h == NIL_HANDLE ) {
-            h = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
+        if( fh == NIL_HANDLE ) {
+            fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
         }
-        if( h != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
+        if( fh != NIL_HANDLE ) {
+            if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
                 return( true );
             }
-            FileClose( h );
+            FileClose( fh );
         }
         _Free( image->symfile_name );
     }
@@ -597,12 +596,12 @@ static bool ProcImgSymInfo( image_entry *image )
         if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
             image->deferred_symbols = true;
         } else {
-            h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
-            if( h != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, h, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+            if( fh != NIL_HANDLE ) {
+                if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
                     return( true );
                 }
-                FileClose( h );
+                FileClose( fh );
             }
         }
     }
@@ -671,7 +670,7 @@ bool ReMapAddress( mappable_addr *loc )
 
 static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
 {
-    mod_handle  himage,mod;
+    mod_handle  himage, mod;
     bool        ok;
     address     addr;
     DIPHDL( cue, ch );
@@ -855,17 +854,17 @@ static void WndNewProg( void )
     HookNotify( false, HOOK_NEW_MODULE );
 }
 
-static int DoLoadProg( const char *task, const char *symfile, error_idx *error )
+static int DoLoadProg( const char *task, const char *symfile, error_handle *errh )
 {
     open_access         loc;
     const char          *name;
     unsigned            len;
     static char         fullname[2048];
     image_entry         *image;
-    handle              local;
+    file_handle         fh;
     unsigned long       system_handle;
 
-    *error = 0;
+    *errh = 0;
 #ifdef __NT__
     task = CheckForPowerBuilder( task );
 #endif
@@ -874,10 +873,10 @@ static int DoLoadProg( const char *task, const char *symfile, error_idx *error )
     name = FileLoc( task, &loc );
     if( DownLoadTask ) {
         strcpy( fullname, name );
-        local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
-        if( local != NIL_HANDLE ) {
+        fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
+        if( fh != NIL_HANDLE ) {
             strcpy( fullname, TxtBuff );
-            FileClose( local );
+            FileClose( fh );
         }
     } else {
         len = RemoteStringToFullName(true, name, fullname, sizeof(fullname));
@@ -889,8 +888,8 @@ static int DoLoadProg( const char *task, const char *symfile, error_idx *error )
     if( DownLoadTask ) {
         name = SkipPathInfo( name, OP_LOCAL );
     }
-    *error = DoLoad( name, &system_handle );
-    if( *error != 0 ) {
+    *errh = DoLoad( name, &system_handle );
+    if( *errh != 0 ) {
         FreeImage( image );
         return( TASK_NOT_LOADED );
     }
@@ -907,7 +906,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_idx *error )
 
 void LoadProg( void )
 {
-    error_idx           error = 0;
+    error_handle        errh = 0;
     int                 ret;
     unsigned long       system_handle;
     static char         NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };
@@ -918,7 +917,7 @@ void LoadProg( void )
     if( !DownLoadCode() ) {
         ret =  TASK_NOT_LOADED;
     } else {
-        ret = DoLoadProg( TaskCmd, SymFileName, &error );
+        ret = DoLoadProg( TaskCmd, SymFileName, &errh );
     }
     if( ret != TASK_NEW ) {
         CreateImage( NULL, NULL );
@@ -929,11 +928,8 @@ void LoadProg( void )
     SetupMachState();
     WndNewProg();
     RecordStart();
-    ReportTask( ret, error );
+    ReportTask( ret, errh );
 }
-
-
-
 
 /*
  * ReleaseProgOvlay -- release segment that was allocated for the user program
@@ -1114,17 +1110,17 @@ extern void LoadNewProg( const char *cmd, const char *parms )
 }
 
 
-static unsigned long SizeMinusDebugInfo( handle floc, bool strip )
-/****************************************************************/
+static unsigned long SizeMinusDebugInfo( file_handle fh, bool strip )
+/*******************************************************************/
 {
     TISTrailer          trailer;
     unsigned long       copylen;
 
-    copylen = SeekStream( floc, 0, DIO_SEEK_END );
+    copylen = SeekStream( fh, 0, DIO_SEEK_END );
     if( !strip )
         return( copylen );
-    SeekStream( floc, -sizeof( trailer ), DIO_SEEK_END );
-    if( ReadStream( floc, &trailer, sizeof( trailer ) ) != sizeof( trailer ) )
+    SeekStream( fh, -sizeof( trailer ), DIO_SEEK_END );
+    if( ReadStream( fh, &trailer, sizeof( trailer ) ) != sizeof( trailer ) )
         return( copylen );
     if( trailer.signature != TIS_TRAILER_SIGNATURE )
         return( copylen );
@@ -1135,8 +1131,8 @@ static unsigned long SizeMinusDebugInfo( handle floc, bool strip )
 static bool CopyToRemote( const char *local, const char *remote, bool strip, void *cookie )
 /*****************************************************************************************/
 {
-    handle              floc;
-    handle              frem;
+    file_handle         fh_lcl;
+    file_handle         fh_rem;
     size_t              read_len;
     char                *buff;
     unsigned            bsize;
@@ -1155,15 +1151,15 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     if( remdate != -1 && lcldate != -1 && remdate == lcldate )
         return( true );
     strip = strip; // nyi - strip debug info here
-    floc = FileOpen( local, OP_READ );
-    if( floc == NIL_HANDLE ) {
+    fh_lcl = FileOpen( local, OP_READ );
+    if( fh_lcl == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), local );
         return( false );
     }
-    frem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
-    if( frem == NIL_HANDLE ) {
+    fh_rem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
+    if( fh_rem == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
-        FileClose( floc );
+        FileClose( fh_lcl );
         return( false );
     }
     bsize = 0x8000;
@@ -1172,15 +1168,15 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
         bsize = 128;
         buff = DbgMustAlloc( bsize );
     }
-    copylen = SizeMinusDebugInfo( floc, strip );
+    copylen = SizeMinusDebugInfo( fh_lcl, strip );
     DUICopySize( cookie, copylen );
-    SeekStream( floc, 0, DIO_SEEK_ORG );
+    SeekStream( fh_lcl, 0, DIO_SEEK_ORG );
     delete_file = false;
     copied = 0;
-    while( ( read_len = ReadStream( floc, buff, bsize ) ) != 0 ) {
+    while( ( read_len = ReadStream( fh_lcl, buff, bsize ) ) != 0 ) {
         if( read_len == ERR_RETURN )
             break;
-        WriteStream( frem, buff, read_len );
+        WriteStream( fh_rem, buff, read_len );
         DUICopyCopied( cookie, copied );
         copied += read_len;
         if( copied >= copylen )
@@ -1190,8 +1186,8 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
             break;
         }
     }
-    FileClose( floc );
-    FileClose( frem );
+    FileClose( fh_lcl );
+    FileClose( fh_rem );
     _Free( buff );
     if( delete_file ) {
         RemoteErase( remote );

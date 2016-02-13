@@ -524,7 +524,7 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         break;
     case OPT_XCONFIG:
         WantEquals();
-        p = &XConfig[ strlen( XConfig ) ];
+        p = XConfig + strlen( XConfig );
         *p++ = ' ';
         GetRawItem( p );
         if( pass == 1 )

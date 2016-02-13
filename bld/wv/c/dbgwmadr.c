@@ -144,10 +144,10 @@ static bool RegResize( a_window *wnd )
         }
         info->max_extent = space + disp.max_value * WndAvgCharX( wnd );
         info->standout = false;
-        if( info->max_extent > max_extent ) {
+        if( max_extent < info->max_extent ) {
             max_extent = info->max_extent;
         }
-        if( info->max_descript > max_descript ) {
+        if( max_descript < info->max_descript ) {
             max_descript = info->max_descript;
         }
     }
@@ -174,10 +174,10 @@ static bool RegResize( a_window *wnd )
         reg->indents[i].value = 0;
         // Calc max widths for column
         for( j = i; j < reg->count; j += reg->up ) {
-            if( reg->info[j].max_extent > reg->indents[i].value ) {
+            if( reg->indents[i].value < reg->info[j].max_extent ) {
                 reg->indents[i].value = reg->info[j].max_extent;
             }
-            if( reg->info[j].max_descript > reg->indents[i].descript ) {
+            if( reg->indents[i].descript < reg->info[j].max_descript ) {
                 reg->indents[i].descript = reg->info[j].max_descript;
             }
         }

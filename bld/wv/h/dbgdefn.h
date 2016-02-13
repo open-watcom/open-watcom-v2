@@ -61,7 +61,9 @@ typedef struct machine_state    machine_state;
 
 /* Global Definitions */
 
-typedef unsigned                error_idx;
+typedef unsigned                error_handle;
+
+typedef int                     file_handle;
 
 typedef unsigned_8 debug_level; enum {
     #define pick( a,b ) a,
