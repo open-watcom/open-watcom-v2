@@ -57,21 +57,22 @@ typedef union  mad_registers    mad_registers;
 #define MAD_NIL_TYPE_HANDLE ((mad_type_handle)-1)
 
 typedef unsigned_16 mad_status; enum {
-                MS_OK,
-                MS_FAIL,
-                MS_UNSUPPORTED,
-                MS_MODIFIED,
-                MS_MODIFIED_SIGNIFICANTLY,
-                MS_UNREGISTERED_MAD,
-                MS_INVALID_MAD,
-                MS_INVALID_MAD_VERSION,
-                MS_INVALID_STATE,
-                MS_FOPEN_FAILED,
-                MS_FREAD_FAILED,
-                MS_FSEEK_FAILED,
-                MS_NO_MEM,
-                MS_LAST,
-                MS_ERR=0x4000 };
+    MS_OK,
+    MS_FAIL,
+    MS_UNSUPPORTED,
+    MS_MODIFIED,
+    MS_MODIFIED_SIGNIFICANTLY,
+    MS_UNREGISTERED_MAD,
+    MS_INVALID_MAD,
+    MS_INVALID_MAD_VERSION,
+    MS_INVALID_STATE,
+    MS_FOPEN_FAILED,
+    MS_FREAD_FAILED,
+    MS_FSEEK_FAILED,
+    MS_NO_MEM,
+    MS_LAST,
+    MS_ERR      = 0x4000
+};
 
 typedef unsigned_8 mad_address_format; enum {
     MAF_OFFSET,
@@ -109,12 +110,12 @@ typedef unsigned_8 mad_endianness; enum {
 typedef struct {
     mad_type_kind       kind;
     unsigned_8          handler_code;
-    unsigned_16         bits;
+    dig_size_bits       bits;
 } mad_type_info_basic;
 
 typedef struct {
     mad_type_info_basic         b;
-    unsigned                    sign_pos;
+    dig_size_bits               sign_pos;
     mad_numeric_representation  nr;
     mad_endianness              endian;
 } mad_type_info_integer;
@@ -146,14 +147,13 @@ typedef union {
 } mad_type_info;
 
 
-typedef struct mad_reg_info     mad_reg_info;
-struct mad_reg_info {
+typedef struct {
     const char                  *name;
     mad_type_handle             type;
-    unsigned short              bit_start;
+    dig_size_bits               bit_start;
     unsigned_8                  bit_size;
     unsigned_8                  flags;
-};
+} mad_reg_info;
 
 typedef unsigned_8 mad_special_reg; enum {
     MSR_IP,

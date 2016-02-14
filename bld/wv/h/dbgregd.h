@@ -39,14 +39,14 @@ typedef unsigned long           dtid_t;
 struct machine_state {
     byte                *ovl;
     dtid_t              tid;
-    mad_handle          mad;
+    dig_mad             mad;
     unsigned            : 0;    /* for alignment */
     mad_registers       mr;     /* variable size */
 };
 
 typedef unsigned_8 thread_state_enum; enum {
                   /* states for clients that freeze execution */
-    THD_THAW,                  
+    THD_THAW,
     THD_FREEZE,
                   /* states for clients that only freeze debugged threads */
     THD_WAIT,                   /* waiting for a timeout      */
@@ -54,7 +54,7 @@ typedef unsigned_8 thread_state_enum; enum {
     THD_KEYBOARD,               /* waiting for keyboard input */
     THD_BLOCKED,                /* blocked on a resource      */
     THD_RUN,                    /* running or ready to run    */
-    THD_DEBUG,                  /* thread is in a debug-state */   
+    THD_DEBUG,                  /* thread is in a debug-state */
                   /* special dead state */
     THD_DEAD = 0x40
 };

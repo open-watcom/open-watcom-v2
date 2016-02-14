@@ -234,22 +234,22 @@ void    GetMADTypeDefault( mad_type_kind mtk, mad_type_info *mti )
 
 void ReportMADFailure( mad_status ms )
 {
-    mad_handle  old;
+    dig_mad     mad_old;
     char        buff[TXT_LEN];
 
     if( SysConfig.mad == MAD_NIL ) {
         /* we're in deep do do */
         StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    old = SysConfig.mad;
-    MADNameFile( old, buff, sizeof( buff ) );
+    mad_old = SysConfig.mad;
+    MADNameFile( mad_old, buff, sizeof( buff ) );
     SysConfig.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
-    MADRegister( old, NULL, NULL );
+    MADRegister( mad_old, NULL, NULL );
     _SwitchOn( SW_ERROR_RETURNS );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), old );
+        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), mad_old );
         break;
     case MS_INVALID_MAD_VERSION:
         Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
@@ -370,34 +370,34 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
 }
 
 struct find_mad {
-    const char  *name;
-    unsigned    len;
-    mad_handle  mad;
+    const char      *name;
+    unsigned        len;
+    dig_mad         mad;
 };
 
-static walk_result FindTheMad( mad_handle mh, void *d )
+static walk_result FindTheMad( dig_mad mad, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];
 //    char                *p;
 
-    MADNameFile( mh, buff, sizeof( buff ) );
+    MADNameFile( mad, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mh;
+        fd->mad = mad;
         return( WR_STOP );
     }
-    MADNameDescription( mh, buff, sizeof( buff ) );
+    MADNameDescription( mad, buff, sizeof( buff ) );
     NormalizeString( buff );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mh;
+        fd->mad = mad;
         return( WR_STOP );
     }
     return( WR_CONTINUE );
 }
 
-mad_handle FindMAD( const char *name, unsigned len )
+dig_mad FindMAD( const char *name, unsigned len )
 {
     struct find_mad     data;
 

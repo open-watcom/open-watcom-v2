@@ -201,21 +201,21 @@ void FiniMADInfo( void )
 
 void ReportMADFailure( mad_status ms )
 {
-    mad_handle  old;
+    dig_mad     mad_old;
     char        buff[256];
 
     if( CurrSIOData->config.mad == MAD_NIL ) {
         /* we're in deep do do */
         fatal( LIT( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    old = CurrSIOData->config.mad;
-    MADNameFile( old, buff, sizeof( buff ) );
+    mad_old = CurrSIOData->config.mad;
+    MADNameFile( mad_old, buff, sizeof( buff ) );
     CurrSIOData->config.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
-    MADRegister( old, NULL, NULL );
+    MADRegister( mad_old, NULL, NULL );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        ErrorMsg( LIT( LMS_UNREGISTERED_MAD ), old );
+        ErrorMsg( LIT( LMS_UNREGISTERED_MAD ), mad_old );
         break;
     case MS_INVALID_MAD:
         ErrorMsg( LIT( LMS_INVALID_MAD ), buff );
@@ -241,7 +241,7 @@ void ReportMADFailure( mad_status ms )
     }
 }
 
-void SetCurrentMAD( mad_handle mad )
+void SetCurrentMAD( dig_mad mad )
 {
     mad_status          ms;
 

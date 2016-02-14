@@ -42,15 +42,15 @@ extern void             FiniDbgInfo( void );
 extern bool             IsInternalMod( mod_handle mod );
 extern bool             IsInternalModName( const char *start, size_t len );
 
-extern void         DIGCLIENT DIPCliImageUnload( mod_handle mh );
-extern void         DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d );
-extern sym_handle   *DIGCLIENT DIPCliSymCreate( void *d );
-extern dip_status   DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci, location_list *ll );
-extern dip_status   DIGCLIENT DIPCliAssignLocation( location_list *dst, location_list *src, unsigned long size );
-extern dip_status   DIGCLIENT DIPCliSameAddrSpace( address a, address b );
-extern void         DIGCLIENT DIPCliAddrSection( address *addr );
-extern void         DIGCLIENT DIPCliStatus( dip_status status );
-extern mad_handle   DIGCLIENT DIPCliCurrMAD( void );
+extern void             DIGCLIENT DIPCliImageUnload( mod_handle mh );
+extern void             DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d );
+extern sym_handle       *DIGCLIENT DIPCliSymCreate( void *d );
+extern dip_status       DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci, location_list *ll );
+extern dip_status       DIGCLIENT DIPCliAssignLocation( location_list *dst, location_list *src, unsigned long size );
+extern dip_status       DIGCLIENT DIPCliSameAddrSpace( address a, address b );
+extern void             DIGCLIENT DIPCliAddrSection( address *addr );
+extern void             DIGCLIENT DIPCliStatus( dip_status status );
+extern dig_mad          DIGCLIENT DIPCliCurrMAD( void );
 
 extern dip_status   DIGREGISTER WVTypeAddRef( imp_image_handle *ii, imp_type_handle *it );
 extern dip_status   DIGREGISTER WVTypeRelease( imp_image_handle *ii, imp_type_handle *it );

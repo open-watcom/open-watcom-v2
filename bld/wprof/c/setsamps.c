@@ -56,7 +56,7 @@ extern mod_handle   WPDipLoadInfo(int f_handle,char *f_name,void *image,int imag
 extern void         ReplaceExt(char *path,char *addext);
 extern void         ErrorMsg(char *msg,... );
 extern image_info   *AddrImage(address *addr);
-extern void         SetCurrentMAD( mad_handle );
+extern void         SetCurrentMAD( dig_mad );
 
 extern sio_data     *SIOData;
 extern sio_data     *CurrSIOData;

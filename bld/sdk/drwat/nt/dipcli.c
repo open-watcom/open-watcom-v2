@@ -269,8 +269,8 @@ void DIGCLIENT DIPCliStatus( dip_status stat ) {
 /*
  * DIPCliCurrMAD
  */
-mad_handle DIGCLIENT DIPCliCurrMAD( void )
-/****************************************/
+dig_mad DIGCLIENT DIPCliCurrMAD( void )
+/*************************************/
 {
     return( SysConfig.mad );
 }

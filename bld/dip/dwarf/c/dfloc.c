@@ -491,12 +491,12 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
         tmp.e[0].u.addr.mach.offset = offset;
         tmp.e[0].bit_length = size * 8;
     } else {
-        mad_handle    kind;
+        dig_mad       mad;
         int           areg;
         int           start;
 
-        kind =  DCCurrMAD();
-        switch( kind ) {
+        mad =  DCCurrMAD();
+        switch( mad ) {
         case MAD_X86:
             areg = CLRegX86[offset].ci;
             start = CLRegX86[offset].start;
@@ -608,10 +608,10 @@ static bool Frame( void *_d, uint_32 *where )
 {
     loc_handle  *d = _d;
     location_list ll;
-//    mad_handle  kind;
+//    dig_mad     mad;
 
 // Get frame location
-//    kind =  DCCurrMAD();
+//    mad =  DCCurrMAD();
     DCCurrMAD();
     d->ret = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
     if( d->ret != DS_OK ) {
@@ -629,13 +629,13 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
     loc_handle  *d = _d;
     location_list ll;
     location_list tmp;
-    mad_handle  kind;
+    dig_mad     mad;
     int         areg;
     int         start;
     unsigned    size;
 
-    kind =  DCCurrMAD();
-    switch( kind ) {
+    mad =  DCCurrMAD();
+    switch( mad ) {
     case MAD_X86:
         areg = CLRegX86[reg].ci;
         start = CLRegX86[reg].start;
@@ -699,7 +699,7 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
         DCStatus( d->ret );
         return( FALSE );
     }
-    if( kind == MAD_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
+    if( mad == MAD_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
         d->ret = SafeDCItemLocation( d->lc, CI_STACK, &ll );
         if( d->ret != DS_OK ) {
             DCStatus( d->ret );

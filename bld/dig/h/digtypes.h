@@ -411,7 +411,9 @@ typedef unsigned        dig_info_type;
 
 typedef int             dig_fhandle;
 
-typedef unsigned_16     mad_handle;
+typedef unsigned_16     dig_size_bits;
+
+typedef unsigned_16     dig_mad;
 
 #include "digpck.h"
 
@@ -428,7 +430,7 @@ typedef struct {                //NYI: redo this for PIL
     unsigned_8          osminor;
     unsigned_8          os;
     unsigned_8          huge_shift;
-    mad_handle          mad;
+    dig_mad             mad;
 } system_config;
 
 #include "digunpck.h"
