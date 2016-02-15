@@ -119,28 +119,28 @@ vi_rc FindTag( const char *tag )
  */
 static int PickATag( int clist, char **list, const char *tagname )
 {
-    window_info tw;
+    window_info wi;
     int         i;
     bool        show_lineno;
     selectitem  si;
     vi_rc       rc;
     char        title[MAX_STR];
 
-    memcpy( &tw, &dirw_info, sizeof( window_info ) );
-    tw.area.x1 = 12;
-    tw.area.x2 = EditVars.WindMaxWidth - 12;
-    i = tw.area.y2 - tw.area.y1 + 1;
-    if( tw.has_border ) {
+    memcpy( &wi, &dirw_info, sizeof( window_info ) );
+    wi.area.x1 = 12;
+    wi.area.x2 = EditVars.WindMaxWidth - 12;
+    i = wi.area.y2 - wi.area.y1 + 1;
+    if( wi.has_border ) {
         i -= 2;
     }
     if( clist < i ) {
-        tw.area.y2 -= i - clist;
+        wi.area.y2 -= i - clist;
     }
     show_lineno = ( clist > i );
     MySprintf( title, "Pick A File For Tag \"%s\"", tagname );
 
     memset( &si, 0, sizeof( si ) );
-    si.wi = &tw;
+    si.wi = &wi;
     si.title = title;
     si.list = list;
     si.maxlist = clist;

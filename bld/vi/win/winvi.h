@@ -61,7 +61,7 @@ typedef struct colour {
  * This structure is mostly an artifact without any real use now...
  */
 typedef struct window {
-    window_info *info;
+    window_info *wi;
     RECT        def_area;
 } window;
 
@@ -85,11 +85,11 @@ typedef enum window_extra {
 #define WINDOW_TO_ID( x, d )((window *)SET_WNDLONGPTR( x, WIN_WINDOW * MAGIC_SIZE, d ))
 #define DATA_TO_ID( x, d )  ((window_data *)SET_WNDLONGPTR( x, WIN_DATA * MAGIC_SIZE, d ))
 
-#define WIN_TEXT_STYLE(w)       (&((w)->info->text_style))
-#define WIN_HILIGHT_STYLE(w)    (&((w)->info->hilight_style))
-#define WIN_TEXT_FONT(w)        ((w)->info->text_style.font)
-#define WIN_TEXT_COLOR(w)       ((w)->info->text_style.foreground)
-#define WIN_TEXT_BACKCOLOR(w)   ((w)->info->text_style.background)
+#define WIN_TEXT_STYLE(w)       (&((w)->wi->text_style))
+#define WIN_HILIGHT_STYLE(w)    (&((w)->wi->hilight_style))
+#define WIN_TEXT_FONT(w)        ((w)->wi->text_style.font)
+#define WIN_TEXT_COLOR(w)       ((w)->wi->text_style.foreground)
+#define WIN_TEXT_BACKCOLOR(w)   ((w)->wi->text_style.background)
 
 extern window_id        edit_container_id;
 extern window_id        _NEAR root_window_id;

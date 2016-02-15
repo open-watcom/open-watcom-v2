@@ -41,7 +41,7 @@
 void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
 {
     char        *tmpname;
-    int         len;
+    size_t      len;
     struct stat st;
 
     tmpname = malloc( strlen( path ) + strlen( nd->d_name ) + 3 );
@@ -108,8 +108,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     time_t      tt;
     size_t      size1;
 
-    size = strlen( file->name ) + 4;
-    size1 = size;
+    size1 = strlen( file->name ) + 4;
     if( size1 < NAMEWIDTH + 1 )
         size1 = NAMEWIDTH + 1;
     tmp = malloc( size1 );

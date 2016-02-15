@@ -423,9 +423,9 @@ static vi_rc doGREP( const char *dirlist )
 static vi_rc doGREP( const char *dirlist )
 {
     int         i, clist, n = 0;
-    window_id   wid, owid;
+    window_id   wid;
     char        **list;
-    window_info tw, wi;
+    window_info wi_disp, wi_opts;
     vi_key      evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), VI_KEY( DUMMY ) };
     int         s, e, cnt;
     bool        show_lineno;
@@ -461,25 +461,25 @@ static vi_rc doGREP( const char *dirlist )
         /*
          * define display window dimensions
          */
-        memcpy( &tw, &dirw_info, sizeof( window_info ) );
-        tw.area.x1 = 14;
-        tw.area.x2 = EditVars.WindMaxWidth - 2;
-        i = tw.area.y2 - tw.area.y1 + 1;
-        if( tw.has_border ) {
+        memcpy( &wi_disp, &dirw_info, sizeof( window_info ) );
+        wi_disp.area.x1 = 14;
+        wi_disp.area.x2 = EditVars.WindMaxWidth - 2;
+        i = wi_disp.area.y2 - wi_disp.area.y1 + 1;
+        if( wi_disp.has_border ) {
             i -= 2;
         }
         if( clist < i ) {
-            tw.area.y2 -= ( i - clist );
+            wi_disp.area.y2 -= ( i - clist );
         }
         show_lineno = ( clist > i );
 
         /*
          * build options window
          */
-        memcpy( &wi, &extraw_info, sizeof( window_info ) );
-        wi.area.x1 = 0;
-        wi.area.x2 = 13;
-        rc = DisplayExtraInfo( &wi, &owid, EditOpts, NumEditOpts );
+        memcpy( &wi_opts, &extraw_info, sizeof( window_info ) );
+        wi_opts.area.x1 = 0;
+        wi_opts.area.x2 = 13;
+        rc = DisplayExtraInfo( &wi_opts, &wid, EditOpts, NumEditOpts );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
@@ -493,7 +493,7 @@ static vi_rc doGREP( const char *dirlist )
                 n = clist - 1;
             }
             memset( &si, 0, sizeof( si ) );
-            si.wi = &tw;
+            si.wi = &wi_disp;
             si.title = "Files With Matches";
             si.list = list;
             si.maxlist = clist;
@@ -502,7 +502,7 @@ static vi_rc doGREP( const char *dirlist )
             si.event = VI_KEY( DUMMY );
             si.show_lineno = show_lineno;
             si.cln = n + 1;
-            si.eiw = owid;
+            si.eiw = wid;
 
             rc = SelectItem( &si );
             n = si.num;
@@ -534,9 +534,9 @@ static vi_rc doGREP( const char *dirlist )
             if( clist == 0 ) {
                 break;
             }
-            MoveWindowToFrontDammit( owid, false );
+            MoveWindowToFrontDammit( wid, false );
         }
-        CloseAWindow( owid );
+        CloseAWindow( wid );
 
     } else if( rc == ERR_NO_ERR ) {
         Message1( "String \"%s\" not found", sString );

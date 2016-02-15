@@ -267,7 +267,7 @@ bool ViRCSFini( void )
 WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie )
 {
     char    *p;
-    int     len;
+    size_t  len;
     int     rc;
 
     cookie = cookie;

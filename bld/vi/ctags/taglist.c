@@ -47,10 +47,10 @@ static long     total = 0;
  */
 static void addToTagList( char *res )
 {
-    int         len;
+    size_t      len;
 
     len = strlen( res ) + 1;
-    tagList = realloc( tagList, (TagCount + 1) * sizeof( char * ) );
+    tagList = realloc( tagList, ( TagCount + 1 ) * sizeof( char * ) );
     if( tagList == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }

@@ -114,7 +114,7 @@ window_id GimmeWindow( void )
 window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool has_border, bool has_gadgets,
                         bool accessed, vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
-    window      *tmp;
+    window      *w;
     windim      width, height;
     int         size;
     int         i;
@@ -123,40 +123,40 @@ window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, 
     height = y2 - y1 + 1;
     size = width * height;
 
-    tmp = MemAlloc( offsetof( window, overcnt ) + height );
-    tmp->id = wid;
-    tmp->has_gadgets = has_gadgets;
-    tmp->accessed = ( accessed ) ? 1 : 0;
-    tmp->text = MemAlloc( size * sizeof( char_info ) );
-    tmp->overlap = MemAlloc( size * sizeof( window_id ) );
-    tmp->whooverlapping = MemAlloc( size * sizeof( window_id ) );
-    tmp->area.x1 = x1;
-    tmp->area.x2 = x2;
-    tmp->area.y1 = y1;
-    tmp->area.y2 = y2;
-    tmp->has_border = has_border;
-    tmp->border_color1 = bc1;
-    tmp->border_color2 = bc2;
-    tmp->text_color = tc;
-    tmp->background_color = bgc;
-    tmp->width = width;
-    tmp->height = height;
-    tmp->text_lines = height;
-    tmp->text_cols = width;
+    w = MemAlloc( offsetof( window, overcnt ) + height );
+    w->id = wid;
+    w->has_gadgets = has_gadgets;
+    w->accessed = ( accessed ) ? 1 : 0;
+    w->text = MemAlloc( size * sizeof( char_info ) );
+    w->overlap = MemAlloc( size * sizeof( window_id ) );
+    w->whooverlapping = MemAlloc( size * sizeof( window_id ) );
+    w->area.x1 = x1;
+    w->area.x2 = x2;
+    w->area.y1 = y1;
+    w->area.y2 = y2;
+    w->has_border = has_border;
+    w->border_color1 = bc1;
+    w->border_color2 = bc2;
+    w->text_color = tc;
+    w->background_color = bgc;
+    w->width = width;
+    w->height = height;
+    w->text_lines = height;
+    w->text_cols = width;
     if( has_border ) {
-        tmp->text_lines -= 2;
-        tmp->text_cols -= 2;
-        tmp->vert_scroll_pos = THUMB_START;
+        w->text_lines -= 2;
+        w->text_cols -= 2;
+        w->vert_scroll_pos = THUMB_START;
     }
     for( i = 0; i < size; ++i ) {
-        tmp->overlap[i] = NO_WINDOW;
-        tmp->whooverlapping[i] = NO_WINDOW;
+        w->overlap[i] = NO_WINDOW;
+        w->whooverlapping[i] = NO_WINDOW;
     }
     for( i = 0; i < height; ++i ) {
-        tmp->overcnt[i] = 0;
+        w->overcnt[i] = 0;
     }
-    WINDOW_TO_ID( wid, tmp );
-    return( tmp );
+    WINDOW_TO_ID( wid, w );
+    return( w );
 
 } /* AllocWindow */
 

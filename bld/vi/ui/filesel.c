@@ -162,7 +162,7 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     line        *cline;
     hilst       *ptr;
     type_style  *text_style, *hot_key_style;
-    window_info *info;
+    window_info *wi;
     type_style  base_style;
     char        tmp[MAX_STR];
 //    bool        disabled;
@@ -201,20 +201,20 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                 if( InvokeMenuHook( CurrentMenuNumber, cl ) == -1 ) {
 //                    disabled = true;
                     if( cl == hilite ) {
-                        info = &activegreyedmenu_info;
+                        wi = &activegreyedmenu_info;
                     } else {
-                        info = &greyedmenu_info;
+                        wi = &greyedmenu_info;
                     }
                 } else {
 //                    disabled = false;
                     if( cl == hilite ) {
-                        info = &activemenu_info;
+                        wi = &activemenu_info;
                     } else {
-                        info = &menuw_info;
+                        wi = &menuw_info;
                     }
                 }
-                text_style = &info->text_style;
-                hot_key_style = &info->hilight_style;
+                text_style = &wi->text_style;
+                hot_key_style = &wi->hilight_style;
             } else {
                 text_style = &base_style;
                 if( cl == hilite ) {

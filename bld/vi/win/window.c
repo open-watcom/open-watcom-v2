@@ -176,14 +176,14 @@ void FiniWindows( void )
 
 int WindowAuxInfo( window_id wid, int type )
 {
-    window      *win;
+    window      *w;
     int         value, height;
     RECT        area;
 
     if( BAD_ID( wid ) || !IsWindow( wid ) ) {
         return( 0 );
     }
-    win = WINDOW_FROM_ID( wid );
+    w = WINDOW_FROM_ID( wid );
     GetClientRect( wid, &area );
     switch( type ) {
     case WIND_INFO_X1:
@@ -199,7 +199,7 @@ int WindowAuxInfo( window_id wid, int type )
         value = area.bottom;
         break;
     case WIND_INFO_TEXT_LINES:
-        height = FontHeight( WIN_TEXT_FONT( win ) );
+        height = FontHeight( WIN_TEXT_FONT( w ) );
         // the 4/5 is a rather arbitrary constant chosen so that we don't show
         // less than 20% of a line
         // value = area.bottom - area.top + (height / 5);
@@ -208,7 +208,7 @@ int WindowAuxInfo( window_id wid, int type )
         break;
     case WIND_INFO_TEXT_COLS:
         value = area.right - area.left;
-        value /= FontAverageWidth( WIN_TEXT_FONT( win ) );
+        value /= FontAverageWidth( WIN_TEXT_FONT( w ) );
         break;
     case WIND_INFO_HEIGHT:
         value = area.bottom - area.top;
@@ -217,17 +217,17 @@ int WindowAuxInfo( window_id wid, int type )
         value = area.right - area.left;
         break;
     case WIND_INFO_TEXT_COLOR:
-        value = WIN_TEXT_COLOR( win );
+        value = WIN_TEXT_COLOR( w );
         break;
     case WIND_INFO_BACKGROUND_COLOR:
-        value = WIN_TEXT_BACKCOLOR( win );
+        value = WIN_TEXT_BACKCOLOR( w );
         break;
     case WIND_INFO_HAS_SCROLL_GADGETS:
     case WIND_INFO_HAS_BORDER:
         value = false;
         break;
     case WIND_INFO_TEXT_FONT:
-        value = WIN_TEXT_FONT( win );
+        value = WIN_TEXT_FONT( w );
         break;
     case WIND_INFO_BORDER_COLOR1:
     case WIND_INFO_BORDER_COLOR2:
@@ -237,19 +237,19 @@ int WindowAuxInfo( window_id wid, int type )
     return( value );
 }
 
-vi_rc NewWindow2( window_id *wid, window_info *info )
+vi_rc NewWindow2( window_id *wid, window_info *wi )
 {
-    if( info == &editw_info ) {
+    if( wi == &editw_info ) {
         *wid = NewEditWindow();
-    } else if( info == &cmdlinew_info ) {
+    } else if( wi == &cmdlinew_info ) {
         *wid = NewCommandWindow();
-    } else if( info == &statusw_info ) {
+    } else if( wi == &statusw_info ) {
         *wid = NewStatWindow();
-    } else if( info == &messagew_info ) {
+    } else if( wi == &messagew_info ) {
         *wid = NewMsgWindow();
-    } else if( info == &filecw_info ) {
+    } else if( wi == &filecw_info ) {
         *wid = NewFileCompleteWindow();
-    } else if( info == &repcntw_info ) {
+    } else if( wi == &repcntw_info ) {
         *wid = NewRepeatCountWindow();
     } else {
         *wid = NO_WINDOW;
