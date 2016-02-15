@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern wnd_attr         WndMapTabAttr( wnd_attr wndattr );
+extern wnd_attr_wv      WndMapTabAttr( wnd_attr_wv wndattr );
 extern void             ProcPaint( void );
 extern void             ProcPendingPaint( void );
 extern void             FiniPaint( void );

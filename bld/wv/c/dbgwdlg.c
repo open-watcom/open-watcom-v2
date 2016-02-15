@@ -50,7 +50,7 @@ typedef struct dlg_entry {
     struct dlg_entry        *prev;
     struct dlg_entry        *next;
     unsigned                line;
-    wnd_attr                wndattr;
+    wnd_attr_wv             wndattr;
     char                    data[1];
 } dlg_entry;
 
@@ -61,7 +61,7 @@ static unsigned         DlgListLineNum = 0;
 static unsigned         DlgLines = 0;
 
 
-static void DlgListPush( const char *buff, size_t len, wnd_attr wndattr )
+static void DlgListPush( const char *buff, size_t len, wnd_attr_wv wndattr )
 {
     dlg_entry   *entry;
 
@@ -106,7 +106,7 @@ bool DlgInfoRelease( void )
     return( true );
 }
 
-static void WndDlgLine( const char *buff, wnd_attr wndattr )
+static void WndDlgLine( const char *buff, wnd_attr_wv wndattr )
 {
     size_t  len;
 
@@ -118,7 +118,7 @@ static void WndDlgLine( const char *buff, wnd_attr wndattr )
 }
 
 
-static bool WndDlgTxtAttr( const char *buff, wnd_attr wndattr )
+static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 {
     char        ch, *p;
     bool        multi = false;

@@ -47,9 +47,9 @@ extern const char       WndNameTab[];
 static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
-wnd_attr WndPlainAttr    = WND_PLAIN;
-wnd_attr WndSelectedAttr = WND_SELECTED;
-wnd_attr WndCursorAttr   = WND_SELECTED;
+wnd_attr_wv WndPlainAttr    = WND_PLAIN;
+wnd_attr_wv WndSelectedAttr = WND_SELECTED;
+wnd_attr_wv WndCursorAttr   = WND_SELECTED;
 
 static gui_colour_set   WndDlgColours[] = {
     #define pick(e,f,b)     { f, b },
@@ -230,14 +230,14 @@ static colour_map ColourMap[] = {
     { GUI_BRIGHT_WHITE,         CLR_BRIGHT+CLR_WHITE },
 };
 
-wnd_attr WndMapTabAttr( wnd_attr wndattr )
+wnd_attr_wv WndMapTabAttr( wnd_attr_wv wndattr )
 {
     if( wndattr == WND_STANDOUT )
         return( WND_STANDOUT_TABSTOP );
     return( WND_TABSTOP );
 }
 
-wnd_attr WndTabStopAttr = WND_TABSTOP;
+wnd_attr_wv WndTabStopAttr = WND_TABSTOP;
 
 static int ScanAttr( attr_map *map, int size )
 {
@@ -290,7 +290,7 @@ static void set_dlg_attr( gui_dlg_attr dlgattr, gui_colour fore, gui_colour back
     }
 }
 
-static void set_wndclass_attr( wnd_attr wndattr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
+static void set_wndclass_attr( wnd_attr_wv wndattr, gui_colour_set *set, gui_colour fore, gui_colour back, bool wndall )
 {
     wnd_class_wv    wndclass;
 
@@ -322,7 +322,7 @@ void ProcPaint( void )
     gui_colour_set      *set;
     bool                dialog;
     int                 attr;
-    bool		        nowndclass;
+    bool                nowndclass;
 
     dialog = false;
     nowndclass = true;
@@ -362,7 +362,7 @@ void ProcPaint( void )
             memcpy( set, WndColours, sizeof( WndColours ) );
             WndClassColour[wndclass] = set;
         }
-        set_wndclass_attr( (wnd_attr)attr, set, fore, back, ( wndclass == WND_ALL ) );
+        set_wndclass_attr( (wnd_attr_wv)attr, set, fore, back, ( wndclass == WND_ALL ) );
         _SwitchOn( SW_PENDING_REPAINT );
     }
 }
