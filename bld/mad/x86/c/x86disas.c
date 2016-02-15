@@ -605,7 +605,7 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     mad_type_handle     th;
     int                 i;
 
-    th = (mad_type_handle)-1;
+    th = MAD_NIL_TYPE_HANDLE;
     switch( dd->ins.type ) {
     case DI_X86_ret:
     case DI_X86_ret2:
@@ -638,7 +638,7 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     default:
         break;
     }
-    if( th != (mad_type_handle)-1 ) {
+    if( th != MAD_NIL_TYPE_HANDLE ) {
         wr = wk( GetRegSP( mr ), th, MMK_VOLATILE | MMK_IMPLICIT | MMK_READ, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
