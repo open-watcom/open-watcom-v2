@@ -184,6 +184,16 @@ system begin os2_dll
     format os2 dll ^
 end
 
+system begin os2_pm
+    option osname='OS/2 16-bit Presentation Manager'
+    library os2.lib
+    libpath %OWSRCDIR%/clib/library/os2.286/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/fpuemu/i86/os2i86
+    libpath %OWSRCDIR%/os2api/os2286/lib
+    format os2 pm ^
+end
+
 system begin os2v2
     option osname='OS/2 32-bit'
     libpath %OWSRCDIR%/clib/library/os2.386/mf_r
