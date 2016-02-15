@@ -228,14 +228,13 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     a_list_info     *box;
     unsigned        maxline;
 
-    box = uicalloc( 1, sizeof( a_list_info ) );
+    box = uimalloc( sizeof( a_list_info ) );
     if( box == NULL ) {
         return( NULL );
     }
     if( list->get == NULL ) {
         list->get = uigetlistelement;
     }
-
     box->vs     = vs;
     box->area   = *area;
     box->line   = list->choice;

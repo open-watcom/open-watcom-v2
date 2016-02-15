@@ -105,10 +105,11 @@ VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
 {
     VSCREEN             *s;
 
-    s = uicalloc( 1, sizeof( VSCREEN ) );
+    s = uimalloc( sizeof( VSCREEN ) );
     if( s == NULL ) {
         return( s );
     }
+    s->event = EV_NO_EVENT;
     s->area = *area;
     s->flags = flags;
     s->col = 0;
@@ -120,7 +121,7 @@ VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
         unsigned    len;
         char        *str;
         len = strlen( title );
-        str = uicalloc( 1, len + 1 );
+        str = uimalloc( len + 1 );
         memcpy( str, title, len );
         str[len] = '\0';
         s->title = str;

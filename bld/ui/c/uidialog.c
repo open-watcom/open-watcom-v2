@@ -529,10 +529,13 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, in
     a_dialog            *ui_dlg_info;
 
     lines[ 0 ] = NULL;
-    ui_dlg_info = uicalloc( 1, sizeof( a_dialog ) );
+    ui_dlg_info = uimalloc( sizeof( a_dialog ) );
     if( ui_dlg_info == NULL ) {
         return( NULL );
     }
+    ui_dlg_info->field = 0;
+    ui_dlg_info->edit_data = NULL;
+    ui_dlg_info->moving = false;
     ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ ATTR_NORMAL ],
                            lines, rows, cols, rpos, cpos );
     uireinitdialog( ui_dlg_info, fields );

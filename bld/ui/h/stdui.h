@@ -635,7 +635,6 @@ extern      void            uibarf( void );
 extern      void            uiblankarea( SAREA );
 extern      void            uiblankscreen( void );
 extern      void            uiblankattr( ATTR );
-extern      void            *uicalloc( size_t , size_t );
 extern      bool            uichecklist( EVENT, EVENT _FARD * );
 extern      void            uiclose( VSCREEN _FARD * );
 extern      void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );

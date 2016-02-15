@@ -80,7 +80,7 @@ int             KeyTrieDepth = 1;
 
 static eTrie    KeyTrie;
 
-int TrieInit(void)
+int TrieInit( void )
 {
 
     KeyTrie.child = uimalloc( TRIE_TOP * sizeof( eNode ) );
@@ -205,10 +205,13 @@ int TrieAdd( EVENT event, const char *str )
 
         if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
-            trie->child[i].trie = uicalloc( 1, sizeof( eTrie ) );
+            trie->child[i].trie = uimalloc( sizeof( eTrie ) );
             if( trie->child[i].trie == NULL ) {
                 return( FALSE );
             }
+            trie->child[i].trie->child = NULL;
+            trie->child[i].trie->num_child = 0;
+            trie->child[i].trie->alc_child = 0;
         }
 
         // go down a level, and work on the next char

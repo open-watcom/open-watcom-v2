@@ -108,10 +108,11 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, ORD len,
     unsigned            l;
     a_ui_edit         *edit;
 
-    edit = uicalloc( 1, sizeof( a_ui_edit ) );
+    edit = uimalloc( sizeof( a_ui_edit ) );
     if( edit == NULL ) {
         return( NULL );
     }
+    edit->edit_maxlen = 0;
     edit->next = UIEdit;
     UIEdit = edit;
 
