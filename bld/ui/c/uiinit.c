@@ -78,6 +78,7 @@ void UIAPI uistop( void )
     forceevfini();
     closebackground();
     finibios();
+    UIMemClose();
 }
 
 void UIAPI uifini( void )
@@ -89,7 +90,6 @@ void UIAPI uifini( void )
     finimouse();
 #endif
     uistop();
-    UIMemClose();
 }
 
 
