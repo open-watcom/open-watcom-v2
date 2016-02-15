@@ -67,7 +67,7 @@ bool                    ToldWinHandle = false;
 ULONG                   PumpMessageSem;
 ULONG                   PumpMessageDoneSem;
 #define STACK_SIZE      10000
-static char             Stack[STACK_SIZE];
+static unsigned char    Stack[STACK_SIZE];
 
 
 void WndInitWndMain( wnd_create_struct *info )
@@ -172,7 +172,7 @@ void InitScreen( void )
     RestoreMainScreen( "WDPM" );
     DosSemSet( &PumpMessageSem );
     DosSemSet( &PumpMessageDoneSem );
-    DosCreateThread( (PFNTHREAD)PumpMessageQueue, &tid, Stack+STACK_SIZE );
+    DosCreateThread( (PFNTHREAD)PumpMessageQueue, &tid, Stack + STACK_SIZE );
     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }
 
@@ -249,24 +249,14 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void __far *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-
-void uifarfree( void __far *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
     return( true );
 }
+
 void PopErrBox( const char *buff )
 {
-    WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
+    WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, (char *)buff,
                    LIT_ENG( Debugger_Startup_Error ), 1001,
                    MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
@@ -305,16 +295,20 @@ unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_el
 
 void SetNumLines( int num )
 {
-    if( num < 10 || num > 999 )
-        num = 0;
-    DbgLines = num;
+    if( num < 10 )
+        num = 10;
+    if( num > 99 )
+        num = 99;
+    NumLines = num;
 }
 
 void SetNumColumns( int num )
 {
-    if( num < 10 || num > 999 )
-        num = 0;
-    DbgColumns = num;
+    if( num < 10 )
+        num = 10;
+    if( num > 255 )
+        num = 255;
+    NumColumns = num;
 }
 
 bool ScreenOption( const char *start, unsigned len, int pass )

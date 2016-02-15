@@ -98,13 +98,14 @@ void MemInit( void )
     }
 }
 
-void *ExtraAlloc( size_t size )
+LP_VOID ExtraAlloc( size_t size )
 {
     tiny_ret_t ret;
     unsigned   num_para;
 
     num_para = (size + 0xf) >> 4;
-    if( num_para == 0 ) num_para = 0x1000;
+    if( num_para == 0 )
+        num_para = 0x1000;
     ret = TinyAllocBlock( num_para );
     if( TINY_ERROR( ret ) ) {
         return( malloc( size ) );
@@ -112,32 +113,16 @@ void *ExtraAlloc( size_t size )
     return( MK_FP( TINY_INFO( ret ), 0 ) );
 }
 
-void ExtraFree( void * ptr )
+void ExtraFree( LP_VOID ptr )
 {
     unsigned    seg;
 
-    if( ptr == NULL ) return;
+    if( ptr == NULL )
+        return;
     seg = FP_SEG( ptr );
     if( seg <= FP_SEG( SyMemEnd ) && seg >= FP_SEG( SyMemBeg ) ) {
         free( ptr );
     } else {
         TinyFreeBlock( FP_SEG( ptr ) );
-    }
-}
-
-
-void *ExtraRealloc( void *p, size_t size )
-{
-    unsigned    seg;
-    unsigned   num_para;
-
-    seg = FP_SEG( p );
-    if( seg <= FP_SEG( SyMemEnd ) && seg >= FP_SEG( SyMemBeg ) ) {
-        return( realloc( p, size ) );
-    } else {
-        num_para = (size + 0xf) >> 4;
-        if( num_para == 0 ) num_para = 0x1000;
-        TinySetBlock( num_para, seg );
-        return( p );
     }
 }

@@ -30,6 +30,8 @@
 
 
 #include "dbglit.h"
+#include <stdlib.h>
+#include <stdio.h>
 #ifdef __WATCOMC__
  /* it's important that <malloc> is included up here */
  #define __fmemneed foo
@@ -52,15 +54,16 @@
  #define TRMemRealloc(p,x)      realloc(p,x)
  #define TRMemFree(p)           free(p)
 #endif
-#include <stdlib.h>
-#include <stdio.h>
 #include "dip.h"
 #include "strutil.h"
 #include "dbginit.h"
+#if defined( __CHAR__ ) && !defined( __NOUI__ )
+#include "stdui.h"
+#endif
 
 
 #if defined( __DOS__ ) && defined( __386__ )
-#if !defined(__OSI__)
+#if !defined( __OSI__ )
 extern int _d16ReserveExt( int );
 #pragma aux _d16ReserveExt =    "mov cx,ax" \
                                 "shr eax,16" \
@@ -216,7 +219,6 @@ void *DbgAlloc( size_t size )
     return( TRMemAlloc( size ) );
 }
 
-
 void *DbgMustAlloc( size_t size )
 {
     void        *ptr;
@@ -232,7 +234,6 @@ void *DbgRealloc( void *chunk, size_t size )
 {
     return( TRMemRealloc( chunk, size ) );
 }
-
 
 void DbgFree( void *ptr )
 {
@@ -357,27 +358,98 @@ void MemInit( void )
     MemExpand();
 }
 
-#if defined( _M_I86 ) && defined( __OS2__ )
-void __FAR *ExtraAlloc( size_t size )
-#elif defined( _M_I86 ) && defined( __WINDOWS__ )
-void __far *ExtraAlloc( size_t size )
+#if defined( __CHAR__ ) && !defined( __NOUI__ )
+
+#if defined( __DOS__ )
+
+#if defined( _M_I86 )
+
+extern LP_VOID  ExtraAlloc( size_t size );
+extern void     ExtraFree( LP_VOID ptr );
+
+LP_VOID uifaralloc( size_t size )
+{
+    return( ExtraAlloc( size ) );
+}
+
+void uifarfree( LP_VOID ptr )
+{
+    ExtraFree( ptr );
+}
+
 #else
-void *ExtraAlloc( size_t size )
-#endif
+
+#include <i86.h>
+
+void __far *uifaralloc( size_t size )
 {
     return( TRMemAlloc( size ) );
 }
 
-#if defined( _M_I86 ) && defined( __OS2__ )
-void ExtraFree( void __FAR *ptr )
-#elif defined( _M_I86 ) && defined( __WINDOWS__ )
-void ExtraFree( void __far *ptr )
-#else
-void ExtraFree( void *ptr )
+void uifarfree( void __far *ptr )
+{
+    if( ptr != NULL ) {
+        TRMemFree( (void *)FP_OFF( ptr ) );
+    }
+}
+
 #endif
+
+#elif defined( __LINUX__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+
+void *uifaralloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void uifarfree( void *ptr )
 {
     if( ptr != NULL ) {
         TRMemFree( ptr );
     }
 }
+
+#elif defined( __OS2__ )
+
+#define INCL_SUB
+#include <os2.h>
+
+PVOID uifaralloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void uifarfree( PVOID ptr )
+{
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
+}
+
+#endif
+
+
+void UIMemOpen( void ) {}
+
+void UIMemClose( void ) {}
+
+void *uimalloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void *uirealloc( void *chunk, size_t size )
+{
+    return( TRMemRealloc( chunk, size ) );
+}
+
+void uifree( void *ptr )
+{
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
+}
+
+#endif
+
 #endif

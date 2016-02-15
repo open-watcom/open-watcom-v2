@@ -117,16 +117,6 @@ void FiniScreen( void )
     uistop();
 }
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
     return( false );

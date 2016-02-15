@@ -44,7 +44,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
     bool        output;
     char        c;
 
-    if( DosScanEnv( name, &env ) != 0 )
+    if( DosScanEnv( (char *)name, (char __far * __far *)&env ) != 0 )
         return( 0 );
 
     output = false;

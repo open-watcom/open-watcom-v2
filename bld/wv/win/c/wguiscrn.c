@@ -162,17 +162,7 @@ void SaveMainWindowPos( void )
 {
     SaveMainScreen( "WDWIN" );
 }
-#if 0
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
 
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-#endif
 bool SysGUI( void )
 {
     return( true );

@@ -294,16 +294,6 @@ static void GetDispConfig( void )
  *                                                                           *
 \*****************************************************************************/
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 void uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
