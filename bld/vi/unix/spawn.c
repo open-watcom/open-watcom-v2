@@ -56,7 +56,7 @@ long MySpawn( const char *cmd )
     long rc;
 
     FiniMouse();
-    ScreenFini();
+    uistop();
     rc = system( cmd );
     uistart();
     InitMouse();

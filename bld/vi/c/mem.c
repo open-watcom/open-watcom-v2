@@ -456,6 +456,63 @@ char *MemStrDup( char *string )
     return( rptr );
 }
 
+#if defined( __LINUX__ )
+void UIMemOpen( void ) {}
+
+void UIMemClose( void ) {}
+
+void *uimalloc( size_t size )
+{
+    void        *tmp;
+
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    tmp = doMemAllocUnsafe( size, (WHO_PTR)1 );
+#else
+    tmp = doMemAllocUnsafe( size, _trmem_guess_who() );
+#endif
+#else
+    tmp = doMemAllocUnsafe( size, (WHO_PTR)0 );
+#endif
+    if( tmp == NULL ) {
+        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( tmp );
+}
+
+void *uirealloc( void *ptr, size_t size )
+{
+    void        *tmp;
+
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)6 );
+#else
+    tmp = doMemReAllocUnsafe( ptr, size, _trmem_guess_who() );
+#endif
+#else
+    tmp = doMemReAllocUnsafe( ptr, size, (WHO_PTR)0 );
+#endif
+    if( tmp == NULL ) {
+        AbandonHopeAllYeWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( tmp );
+}
+
+void uifree( void *ptr )
+{
+#ifdef TRMEM
+#ifndef __WATCOMC__
+    _trmem_free( ptr, (WHO_PTR)3, trmemHandle );
+#else
+    _trmem_free( ptr, _trmem_guess_who(), trmemHandle );
+#endif
+#else
+    free( ptr );
+#endif
+}
+#endif
+
 
 #ifdef TRMEM
 

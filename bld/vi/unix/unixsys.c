@@ -112,7 +112,7 @@ void ScreenInit( void )
  */
 void ScreenFini( void )
 {
-    uifini();
+    uistop();
 
 } /* ScreenFini */
 
