@@ -104,7 +104,7 @@ gui_resource WndGadgetArray[] = {
 int         WndGadgetHintSize = ArraySize( WndGadgetHint );
 int         WndGadgetArraySize = ArraySize( WndGadgetArray );
 int         WndGadgetSecondary = GADGET_FIRST_SECONDARY;
-wnd_attr_wv WndGadgetAttr = WND_HOTSPOT;
+wnd_attr    WndGadgetAttr = WND_HOTSPOT;
 int         MaxGadgetLength;
 
 static const char WindowNameTab[] =

@@ -47,9 +47,10 @@ extern const char       WndNameTab[];
 static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
-wnd_attr_wv WndPlainAttr    = WND_PLAIN;
-wnd_attr_wv WndSelectedAttr = WND_SELECTED;
-wnd_attr_wv WndCursorAttr   = WND_SELECTED;
+wnd_attr WndPlainAttr    = WND_PLAIN;
+wnd_attr WndSelectedAttr = WND_SELECTED;
+wnd_attr WndCursorAttr   = WND_SELECTED;
+wnd_attr WndTabStopAttr  = WND_TABSTOP;
 
 static gui_colour_set   WndDlgColours[] = {
     #define pick(e,f,b)     { f, b },
@@ -230,14 +231,12 @@ static colour_map ColourMap[] = {
     { GUI_BRIGHT_WHITE,         CLR_BRIGHT+CLR_WHITE },
 };
 
-wnd_attr_wv WndMapTabAttr( wnd_attr_wv wndattr )
+wnd_attr WndMapTabAttr( wnd_attr wndattr )
 {
-    if( wndattr == WND_STANDOUT )
+    if( (wnd_attr_wv)wndattr == WND_STANDOUT )
         return( WND_STANDOUT_TABSTOP );
     return( WND_TABSTOP );
 }
-
-wnd_attr_wv WndTabStopAttr = WND_TABSTOP;
 
 static int ScanAttr( attr_map *map, int size )
 {
@@ -407,9 +406,9 @@ void FiniPaint( void )
 
 extern gui_colour_set *GetWndColours( wnd_class_wv wndclass )
 {
-    if( WndClassColour[wndclass] != NULL ) 
+    if( WndClassColour[wndclass] != NULL )
         return( WndClassColour[wndclass] );
-    if( WndClassColour[WND_ALL] != NULL ) 
+    if( WndClassColour[WND_ALL] != NULL )
         return( WndClassColour[WND_ALL] );
     return( WndColours );
 }
