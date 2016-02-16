@@ -67,5 +67,5 @@ bool intern isscreen( BUFFER * bptr )
 void UIAPI uisetsnow( bool snow )
 /********************************/
 {
-    UIData->no_snow = ~snow;
+    UIData->no_snow = !snow;
 }
