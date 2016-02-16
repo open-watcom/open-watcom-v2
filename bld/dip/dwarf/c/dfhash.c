@@ -85,14 +85,14 @@ static void StrFini( str_ctl *ctl )
 }
 
 
-static char *StrAlloc( str_ctl *ctl, unsigned len )
-/*************************************************/
+static char *StrAlloc( str_ctl *ctl, size_t len )
+/***********************************************/
 {
     char    *ptr;
 
     if( ctl->rem < len ) {
         str_blk     *new;
-        unsigned    size;
+        size_t      size;
 
         size =  NAME_STRBLK;
         if( size < len ) {

@@ -231,7 +231,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     char                *buff;
     const char          *src;
     char                *dst;
-    unsigned            len;
+    size_t              len;
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 

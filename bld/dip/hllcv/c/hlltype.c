@@ -1134,7 +1134,7 @@ search_result hllTypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     virt_mem            array_vm;
     unsigned_32         *array_p;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
@@ -1208,7 +1208,7 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
 {
     struct search_data  *sd = d;
     const char          *name;
-    unsigned            name_len;
+    size_t              name_len;
     imp_sym_handle      *is;
     search_result       sr;
     numeric_leaf        val;

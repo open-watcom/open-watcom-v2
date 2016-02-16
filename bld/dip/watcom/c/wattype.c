@@ -495,7 +495,7 @@ static const char *FindAName( struct name_state *state, const char *p,
                         type_or_enum which, lookup_item *li )
 {
     const char  *name;
-    unsigned    len;
+    size_t      len;
     int         (*comp)(void const*,void const*,size_t);
     unsigned    index;
     unsigned    i;
@@ -1642,7 +1642,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     int                 (*comp)(void const*,void const*,size_t);
     imp_sym_handle      *is;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     typeinfo            typeld;
 
     PushLoad( &typeld );

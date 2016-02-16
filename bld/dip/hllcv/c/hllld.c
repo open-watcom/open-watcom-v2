@@ -88,7 +88,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
     unsigned                block_count;
     unsigned                i;
     unsigned                left;
-    unsigned                block_size;
+    size_t                  block_size;
     unsigned                num;
 
     /*

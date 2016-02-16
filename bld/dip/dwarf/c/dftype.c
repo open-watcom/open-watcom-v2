@@ -1023,7 +1023,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
     type_wlk_lookup *d = _d;
     imp_sym_handle  *is;
     char            *name;
-    unsigned        len;
+    size_t          len;
 
     name =  DRGetName( var );
     if( name == NULL ){
@@ -1109,7 +1109,7 @@ static bool AEnumMemLookup( dr_handle var, int index, void *_d )
     type_wlk_lookup *d = _d;
     imp_sym_handle  *is;
     char            *name;
-    unsigned        len;
+    size_t          len;
 
     index = index;
     name =  DRGetName( var );

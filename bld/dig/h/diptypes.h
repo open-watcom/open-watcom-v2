@@ -204,7 +204,7 @@ typedef struct {
 
 typedef struct {
     const char  *start;
-    unsigned    len;
+    size_t      len;
 } lookup_token;
 
 typedef unsigned_8 symbol_type; enum {

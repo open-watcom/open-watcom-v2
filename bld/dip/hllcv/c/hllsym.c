@@ -1029,24 +1029,24 @@ next_seg:
     }
 }
 
-static unsigned long CalcHash( const char *name, unsigned len )
+static unsigned long CalcHash( const char *name, size_t len )
 {
     unsigned_32         end;
     unsigned_32         sum;
-    unsigned            i;
+    int                 i;
 
 #define B_toupper( b )  ((b) & 0xdf)
 #define D_toupper( d )  ((d) & 0xdfdfdfdf)
 
     end = 0;
-    for( i = len & 0x3; i != 0; --i ) {
-        end |= B_toupper( name[ len - 1 ] );
+    for( i = len & 0x3; i > 0; --i ) {
+        end |= B_toupper( name[len - 1] );
         end <<= 8;
-        len -= 1;
+        --len;
     }
     len /= 4;
     sum = 0;
-    for( i = 0; i < len; ++i ) {
+    while( len-- > 0 ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
         sum = _lrotl( sum, 4 );
         name += 4;
@@ -1148,7 +1148,7 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 
 
 dip_status hllSymFindMatchingSym( imp_image_handle *ii,
-                                  const char *name, unsigned len, unsigned idx,
+                                  const char *name, size_t len, unsigned idx,
                                   imp_sym_handle *is )
 {
 #if 0
@@ -2158,7 +2158,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
     struct search_data  *sd = d;
     lookup_item         *li;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_sym_handle      *new;
     s_all               *p;
 
@@ -2228,7 +2228,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     unsigned long       hash;
     struct search_data  data;
     imp_sym_handle      *scope_is;
-    unsigned            len;
+    size_t              len;
 
     data.d = d;
     data.found = 0;
@@ -2316,7 +2316,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     symbol_type         save_type;
     search_result       sr;
     char                *new;
-    unsigned            new_len;
+    size_t              new_len;
 
     save_type = li->type;
     save_name = li->name;

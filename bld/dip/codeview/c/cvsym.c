@@ -865,30 +865,30 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
     }
 }
 
-static unsigned long CalcHash( const char *name, unsigned len )
+static unsigned long CalcHash( const char *name, size_t len )
 {
     unsigned_32         end;
     unsigned_32         sum;
-    unsigned            i;
+    int                 i;
 
 #define B_toupper( b )  ((b) & 0xdf)
 #define D_toupper( d )  ((d) & 0xdfdfdfdf)
 
     end = 0;
-    for( i = len & 0x3; i != 0; --i ) {
-        end |= B_toupper( name[ len - 1 ] );
+    for( i = len & 0x3; i > 0; --i ) {
+        end |= B_toupper( name[len - 1] );
         end <<= 8;
-        len -= 1;
+        --len;
     }
     len /= 4;
     sum = 0;
-    for( i = 0; i < len; ++i ) {
+    while( len-- > 0 ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )        
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
         sum = _lrotl( sum, 4 );
 #else
         sum = (sum << 4) | (sum >> 28);
-#endif        
+#endif
         name += 4;
     }
     return( sum ^ end );
@@ -897,7 +897,7 @@ static unsigned long CalcHash( const char *name, unsigned len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *ii,
-                int case_sense, const char *name, unsigned name_len,
+                int case_sense, const char *name, size_t name_len,
                 unsigned long hash, imp_sym_handle *is,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -998,7 +998,7 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 }
 
 dip_status SymFindMatchingSym( imp_image_handle *ii,
-                const char *name, unsigned name_len, unsigned idx, imp_sym_handle *is )
+                const char *name, size_t name_len, unsigned idx, imp_sym_handle *is )
 {
     unsigned long       hash;
     search_result       sr;
@@ -1208,9 +1208,9 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
     return( is->im );
 }
 
-static unsigned ImpSymName( imp_image_handle *ii,
+static size_t ImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     const char          *name;
     size_t              len;
@@ -1774,7 +1774,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     unsigned long       hash;
     struct search_data  data;
     imp_sym_handle      *scope_is;
-    unsigned            len;
+    size_t              len;
 
     data.d = d;
     data.found = 0;
@@ -1866,7 +1866,7 @@ static search_result   DoImpLookupSym( imp_image_handle *ii,
     symbol_type         save_type;
     search_result       sr;
     char                *new;
-    unsigned            new_len;
+    size_t              new_len;
 
     lc = lc;
     save_type = li->type;

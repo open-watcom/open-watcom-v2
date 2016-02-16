@@ -1545,12 +1545,12 @@ static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
 
 typedef struct {
     const char  *p;
-    unsigned    len;
+    size_t      len;
 } strvi;
 
 typedef struct {
     char        *p;
-    unsigned    len;
+    size_t      len;
 } strvo;
 
 static unsigned StrVCopy( strvo *dst, strvi *src )
@@ -1616,7 +1616,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 /*****************************************************************/
 {
     char                buff[256];
-    unsigned            len;
+    size_t              len;
     search_result       sr;
     hash_look_data      data;
     name_wlk            wlk;

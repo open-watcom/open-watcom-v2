@@ -688,7 +688,7 @@ static walk_result CheckOneSym( imp_image_handle *ii, sym_walk_info swi,
 {
     struct lookup_data  *ld = d;
     imp_sym_handle      *new;
-    unsigned            len;
+    size_t              len;
 
     if( swi != SWI_SYMBOL ) {
         return( ld->static_only ? WR_STOP : WR_CONTINUE );
@@ -706,9 +706,9 @@ static walk_result CheckOneSym( imp_image_handle *ii, sym_walk_info swi,
 static search_result CheckScopeName( struct lookup_data *ld )
 {
     char        scope[MAX_NAME];
-    unsigned    pk_len;
-    unsigned    i;
-    unsigned    j;
+    size_t      pk_len;
+    size_t      i;
+    size_t      j;
     enum {
         SEP_NO,
         SEP_MAYBE,
@@ -772,7 +772,7 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
     ji_ptr              clazz;
     imp_sym_handle      *new;
     search_result       sr;
-    unsigned            len;
+    size_t              len;
     char                *p;
 
     if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_JAVA ) {

@@ -200,7 +200,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     unsigned                    block_count;
     unsigned                    i;
     unsigned                    left;
-    unsigned                    block_size;
+    size_t                      block_size;
     unsigned                    num;
 
     if( DCSeek( ii->sym_file, off, DIG_ORG ) != off ) {
@@ -250,15 +250,18 @@ static dip_status LoadMapping( imp_image_handle *ii )
 {
     cv_directory_entry  *cde;
     cv_sst_seg_map      *map;
-    unsigned            size;
+    size_t              size;
 
     cde = FindDirEntry( ii, IMH_GBL, sstSegMap );
-    if( cde == NULL ) return( DS_ERR|DS_INFO_INVALID );
+    if( cde == NULL )
+        return( DS_ERR|DS_INFO_INVALID );
     map = VMBlock( ii, cde->lfo, cde->cb );
-    if( map == NULL ) return( DS_ERR|DS_FAIL );
+    if( map == NULL )
+        return( DS_ERR|DS_FAIL );
     size = map->cSegLog * sizeof( map->segdesc[0] );
     ii->mapping = DCAlloc( size );
-    if( ii->mapping == NULL ) return( DS_ERR|DS_NO_MEM );
+    if( ii->mapping == NULL )
+        return( DS_ERR|DS_NO_MEM );
     map = VMBlock( ii, cde->lfo, cde->cb ); /* malloc might have unloaded */
     memcpy( ii->mapping, &map->segdesc[0], size );
     ii->map_count = map->cSegLog;
