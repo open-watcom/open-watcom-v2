@@ -57,4 +57,4 @@
 
 #define SMReadStream( fp, buff, len )   ReadStream( fp, buff, len )
 
-#define SMFileRemote( fp )              ( (FileHandleInfo( hndl->file_ptr ) & OP_REMOTE) != 0 )
+#define SMFileRemote( fp )              ( (FileHandleInfo( fp ) & OP_REMOTE) != 0 )
