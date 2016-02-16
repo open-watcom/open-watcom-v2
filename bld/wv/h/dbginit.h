@@ -46,5 +46,5 @@ extern void             PopErrBox( const char *buff );
 extern long             _fork( const char *cmd, size_t len );
 #ifdef __GUI__
 extern void             TellWinHandle( void );
-extern unsigned         GetSystemDir( char *, unsigned );
+extern size_t           GetSystemDir( char *, size_t );
 #endif
