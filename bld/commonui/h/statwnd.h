@@ -77,6 +77,8 @@
 #define STATUS_FORMAT_LEFT      '<'
 #define STATUS_NEXT_BLOCK       '['
 
+#define DT_ESC_CONTROLLED       ((UINT)-1)
+
 typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 typedef struct {

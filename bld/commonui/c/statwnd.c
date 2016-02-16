@@ -691,7 +691,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
         getRect( sw, &rect, curr_block );
         makeInsideRect( &rect );
         bptr = (char *)str;
-        if( flags == (UINT)-1  ) {
+        if( flags == DT_ESC_CONTROLLED  ) {
             flags = DT_VCENTER | DT_LEFT;
             bptr = buff;
             while( *str != '\0' ) {
@@ -733,7 +733,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
 #ifdef __NT__
     } else {
         bptr = (char *)str;
-        if( flags == (UINT)-1 ) {
+        if( flags == DT_ESC_CONTROLLED ) {
             bptr = buff;
             while( *str != '\0' ) {
                 if( *str == STATUS_ESC_CHAR ) {
