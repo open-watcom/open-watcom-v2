@@ -183,7 +183,7 @@ BOOL InitStatusLine( HWND parent )
     if( text != NULL ) {
         sprintf( text, "%s%s%s%s", leftBlock, PosText, nextBlock, SizeText );
         pres = _wpi_getpres( statusBarWnd );
-        StatusWndDrawLine( statusBar, pres, SmallFont, text, -1 );
+        StatusWndDrawLine( statusBar, pres, SmallFont, text, DT_ESC_CONTROLLED );
         _wpi_releasepres( statusBarWnd, pres );
         MemFree( text );
     }
@@ -219,7 +219,7 @@ void SetPosInStatus( WPI_POINT *pt, WPI_POINT *pointsize, HWND hwnd )
 
         sprintf( PositionText, SetPosText, leftBlock, x, y );
         pres = _wpi_getpres( statusBarWnd );
-        StatusWndDrawLine( statusBar, pres, SmallFont, PositionText, -1 );
+        StatusWndDrawLine( statusBar, pres, SmallFont, PositionText, DT_ESC_CONTROLLED );
         _wpi_releasepres( statusBarWnd, pres );
     }
 
@@ -268,7 +268,7 @@ void SetSizeInStatus( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT
     pos.y = endpt->y / pointsize->y;
     sprintf( PositionSizeText, SetSizeText, leftBlock, pos.x, pos.y, nextBlock, width, height );
     pres = _wpi_getpres( statusBarWnd );
-    StatusWndDrawLine( statusBar, pres, SmallFont, PositionSizeText, -1 );
+    StatusWndDrawLine( statusBar, pres, SmallFont, PositionSizeText, DT_ESC_CONTROLLED );
     _wpi_releasepres( statusBarWnd, pres );
 
 } /* SetSizeInStatus */
@@ -371,7 +371,7 @@ void SetHotSpot( img_node *node )
     }
 
     pres = _wpi_getpres( statusBarWnd );
-    StatusWndDrawLine( statusBar, pres, SmallFont, HotSpotText, -1 );
+    StatusWndDrawLine( statusBar, pres, SmallFont, HotSpotText, DT_ESC_CONTROLLED );
     _wpi_releasepres( statusBarWnd, pres );
 
 } /* SetHotSpot */
@@ -405,7 +405,7 @@ void DisplayImageText( img_node *node )
     }
 
     pres = _wpi_getpres( statusBarWnd );
-    StatusWndDrawLine( statusBar, pres, SmallFont, ImageText, -1 );
+    StatusWndDrawLine( statusBar, pres, SmallFont, ImageText, DT_ESC_CONTROLLED );
     _wpi_releasepres( statusBarWnd, pres );
 
 } /* DisplayImageText */
@@ -422,7 +422,7 @@ void ClearImageText( void )
     strcat( text, "    " );
 
     pres = _wpi_getpres( statusBarWnd );
-    StatusWndDrawLine( statusBar, pres, SmallFont, text, -1 );
+    StatusWndDrawLine( statusBar, pres, SmallFont, text, DT_ESC_CONTROLLED );
     _wpi_releasepres( statusBarWnd, pres );
 
 } /* ClearImageText */
@@ -531,7 +531,7 @@ void SetHintText( char *msg )
             strcat( text, " " );
         }
         pres = _wpi_getpres( statusBarWnd );
-        StatusWndDrawLine( statusBar, pres, SmallFont, text, -1 );
+        StatusWndDrawLine( statusBar, pres, SmallFont, text, DT_ESC_CONTROLLED );
         _wpi_releasepres( statusBarWnd, pres );
         MemFree( text );
     }

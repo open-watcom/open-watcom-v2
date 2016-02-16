@@ -308,7 +308,7 @@ bool WDisplayStatusText( WStatBar *wsb )
 
     hdc = GetDC( wsb->win );
     if( hdc != (HDC)NULL ) {
-        StatusWndDrawLine( wsb->stat, hdc, WStatusFont, wsb->text, -1 );
+        StatusWndDrawLine( wsb->stat, hdc, WStatusFont, wsb->text, DT_ESC_CONTROLLED );
         ReleaseDC( wsb->win, hdc );
     }
 

@@ -256,7 +256,7 @@ void StatusLine( int line, char *str, int format )
     hdc = TextGetDC( status_window_id, WIN_TEXT_STYLE( &StatusBar ) );
     font = WIN_TEXT_FONT( &StatusBar );
     hfont = FontHandle( font );
-    StatusWndDrawLine( sw, hdc, hfont, str, (UINT) -1 );
+    StatusWndDrawLine( sw, hdc, hfont, str, DT_ESC_CONTROLLED );
     TextReleaseDC( status_window_id, hdc );
 
 } /* StatusLine */
