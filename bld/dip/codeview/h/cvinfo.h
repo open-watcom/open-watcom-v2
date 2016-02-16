@@ -141,7 +141,7 @@ extern dip_status               ImpTypeBase( imp_image_handle *, imp_type_handle
 extern dip_status               TypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
 extern dip_status               SymFillIn( imp_image_handle *, imp_sym_handle *, virt_mem );
-extern dip_status               SymFindMatchingSym( imp_image_handle *, const char *, unsigned, unsigned, imp_sym_handle * );
+extern dip_status               SymFindMatchingSym( imp_image_handle *, const char *, size_t, unsigned, imp_sym_handle * );
 extern dip_status               ImpSymLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status               ImpSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               ImpSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
