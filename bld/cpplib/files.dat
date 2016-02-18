@@ -129,12 +129,12 @@ type="l"    dir="lib386/os2"    usr="plbsdllx.lib"  conda="os2targ 3s"
 
 [ DEFAULT cond="cplusplus" where="c jc" desc="C++ Runtime 32-bit DLL Libraries" ]
 # ---------- run-time DLL libraries (flat) -----------
-type="d"    dir="binnt"         usr="plbr20.dll"    conda="wnttarg 3r"      wherea="ac"
-type="s"    dir="binnt"         usr="plbr20.sym"    conda="wnttarg 3r"      wherea="ac"
-type="d"    dir="binnt"         usr="plbs20.dll"    conda="wnttarg 3s"      wherea="ac"
-type="s"    dir="binnt"         usr="plbs20.sym"    conda="wnttarg 3s"      wherea="ac"
+type="d"    dir="binnt"         usr="plbr??.dll"    conda="wnttarg 3r"      wherea="ac"
+type="s"    dir="binnt"         usr="plbr??.sym"    conda="wnttarg 3r"      wherea="ac"
+type="d"    dir="binnt"         usr="plbs??.dll"    conda="wnttarg 3s"      wherea="ac"
+type="s"    dir="binnt"         usr="plbs??.sym"    conda="wnttarg 3s"      wherea="ac"
 
-type="d"    dir="binp/dll"      usr="plbr20.dll"    conda="os2targ 3r"
-type="s"    dir="binp/dll"      usr="plbr20.sym"    conda="os2targ 3r"
-type="d"    dir="binp/dll"      usr="plbs20.dll"    conda="os2targ 3s"
-type="s"    dir="binp/dll"      usr="plbs20.sym"    conda="os2targ 3s"
+type="d"    dir="binp/dll"      usr="plbr??.dll"    conda="os2targ 3r"
+type="s"    dir="binp/dll"      usr="plbr??.sym"    conda="os2targ 3r"
+type="d"    dir="binp/dll"      usr="plbs??.dll"    conda="os2targ 3s"
+type="s"    dir="binp/dll"      usr="plbs??.sym"    conda="os2targ 3s"

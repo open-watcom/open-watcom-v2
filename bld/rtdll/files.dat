@@ -1,4 +1,38 @@
 # RTDLL piece of lang.dat
-[ DEFAULT where="c jc" desc="C/C++ DLL Runtime Libraries" ]
+#######################################
+# 32-bit run-time DLL import libraries
+#
+[ DEFAULT type="l" dir="lib386/nt" cond="wnttarg" where="c f77 jc jf77 ac" desc="C/C++ DLL Runtime Libraries" ]
+#usr="wr7rdll.lib"   conda="3r"
+#usr="wr7sdll.lib"   conda="3s"
+#usr="wrtrdll.lib"   conda="3r"
+#usr="wrtsdll.lib"   conda="3s"
 
-[ DEFAULT type="l" where="c jc" desc="C/C++ DLL Runtime Libraries" ]
+[ DEFAULT type="l" dir="lib386/os2" cond="os2targ" where="c f77 jc jf77" desc="C/C++ DLL Runtime Libraries" ]
+#usr="wr7rdll.lib"   conda="3r"
+#usr="wr7sdll.lib"   conda="3s"
+#usr="wrtrdll.lib"   conda="3r"
+#usr="wrtsdll.lib"   conda="3s"
+
+################################
+# 32-bit run-time DLL libraries
+#
+[ DEFAULT dir="binnt" cond="wnttarg" where="c f77 jc jf77 ac" desc="C/C++ DLL Runtime Libraries" ]
+#type="d"    usr="wr7r??.dll"    conda="3r"
+#type="s"    usr="wr7r??.sym"    conda="3r"
+#type="d"    usr="wr7s??.dll"    conda="3s"
+#type="s"    usr="wr7s??.sym"    conda="3s"
+#type="d"    usr="wrtr??.dll"    conda="3r"
+#type="s"    usr="wrtr??.sym"    conda="3r"
+#type="d"    usr="wrts??.dll"    conda="3s"
+#type="s"    usr="wrts??.sym"    conda="3s"
+
+[ DEFAULT dir="binp/dll" cond="os2targ" where="c f77 jc jf77" desc="C/C++ DLL Runtime Libraries" ]
+#type="d"    usr="wr7r??.dll"    conda="3r"
+#type="s"    usr="wr7r??.sym"    conda="3r"
+#type="d"    usr="wr7s??.dll"    conda="3s"
+#type="s"    usr="wr7s??.sym"    conda="3s"
+#type="d"    usr="wrtr??.dll"    conda="3r"
+#type="s"    usr="wrtr??.sym"    conda="3r"
+#type="d"    usr="wrts??.dll"    conda="3s"
+#type="s"    usr="wrts??.sym"    conda="3s"

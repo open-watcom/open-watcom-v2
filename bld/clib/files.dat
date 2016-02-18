@@ -129,13 +129,13 @@ type="l"    usr="clbsdll.lib"   conda="3s"      desc="C DLL Runtime Libraries"
 # 32-bit run-time DLL libraries
 #
 [ DEFAULT dir="binnt" cond="wnttarg" where="c f77 jc jf77 ac" ]
-type="d"    usr="clbr20.dll"    conda="3r"      desc="C DLL Runtime Libraries"
-type="s"    usr="clbr20.sym"    conda="3r"      desc="C DLL Runtime Libraries"
-type="d"    usr="clbs20.dll"    conda="3s"      desc="C DLL Runtime Libraries"
-type="s"    usr="clbs20.sym"    conda="3s"      desc="C DLL Runtime Libraries"
+type="d"    usr="clbr??.dll"    conda="3r"      desc="C DLL Runtime Libraries"
+type="s"    usr="clbr??.sym"    conda="3r"      desc="C DLL Runtime Libraries"
+type="d"    usr="clbs??.dll"    conda="3s"      desc="C DLL Runtime Libraries"
+type="s"    usr="clbs??.sym"    conda="3s"      desc="C DLL Runtime Libraries"
 
 [ DEFAULT dir="binp/dll" cond="os2targ" where="c f77 jc jf77" ]
-type="d"    usr="clbr20.dll"    conda="3r"      desc="C DLL Runtime Libraries"
-type="s"    usr="clbr20.sym"    conda="3r"      desc="C DLL Runtime Libraries"
-type="d"    usr="clbs20.dll"    conda="3s"      desc="C DLL Runtime Libraries"
-type="s"    usr="clbs20.sym"    conda="3s"      desc="C DLL Runtime Libraries"
+type="d"    usr="clbr??.dll"    conda="3r"      desc="C DLL Runtime Libraries"
+type="s"    usr="clbr??.sym"    conda="3r"      desc="C DLL Runtime Libraries"
+type="d"    usr="clbs??.dll"    conda="3s"      desc="C DLL Runtime Libraries"
+type="s"    usr="clbs??.sym"    conda="3s"      desc="C DLL Runtime Libraries"
