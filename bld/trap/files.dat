@@ -3,27 +3,27 @@
 #
 # DOS
 [ DEFAULT type="s" dir="binw" cond="doshost" where="c f77 jc jf77" ]
-usr="net.trp"   old="bin" keys="!newdb"       desc="NETBIOS trap file"
-usr="net??.trp"           keys="newdb"        desc="NETBIOS trap file"
-usr="nmp.trp"   old="bin" keys="!newdb"
-usr="nmp??.trp"           keys="newdb"
-usr="nov.trp"   old="bin" keys="!newdb"
-usr="nov??.trp"           keys="newdb"
-usr="par.trp"   old="bin" keys="!newdb"
-usr="par??.trp"           keys="newdb"
-usr="ser.trp"   old="bin" keys="!newdb"
-usr="ser??.trp"           keys="newdb"
-usr="win.trp"   old="bin" keys="!newdb"
-usr="win??.trp"           keys="newdb"
+usr="net.trp"   old="bin" keys="!newdbg"      desc="NETBIOS trap file"
+usr="net??.trp"           keys="newdbg"       desc="NETBIOS trap file"
+usr="nmp.trp"   old="bin" keys="!newdbg"
+usr="nmp??.trp"           keys="newdbg"
+usr="nov.trp"   old="bin" keys="!newdbg"
+usr="nov??.trp"           keys="newdbg"
+usr="par.trp"   old="bin" keys="!newdbg"
+usr="par??.trp"           keys="newdbg"
+usr="ser.trp"   old="bin" keys="!newdbg"
+usr="ser??.trp"           keys="newdbg"
+usr="win.trp"   old="bin" keys="!newdbg"
+usr="win??.trp"           keys="newdbg"
 [ DEFAULT type="s" dir="binw" cond="dostarg" where="c f77 jc jf77" ]
-usr="cw.trp"    old="bin" keys="!newdb"       desc="Debugging trap file for CauseWay"
-usr="cw??.trp"            keys="newdb"        desc="Debugging trap file for CauseWay"
-usr="pls.trp"   old="bin" keys="!newdb"       desc="Debugging trap file for Phar Lap"
-usr="pls??.trp"           keys="newdb"        desc="Debugging trap file for Phar Lap"
-usr="rsi.trp"   old="bin" keys="!newdb"       desc="Debugging trap file for DOS/4GW"
-usr="rsi??.trp"           keys="newdb"        desc="Debugging trap file for DOS/4GW"
-usr="std.trp"   old="bin" keys="!newdb"       desc="Debugging trap file for 16-bit DOS debugging"
-usr="std??.trp"           keys="newdb"        desc="Debugging trap file for 16-bit DOS debugging"
+usr="cw.trp"    old="bin" keys="!newdbg"      desc="Debugging trap file for CauseWay"
+usr="cw??.trp"            keys="newdbg"       desc="Debugging trap file for CauseWay"
+usr="pls.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for Phar Lap"
+usr="pls??.trp"           keys="newdbg"       desc="Debugging trap file for Phar Lap"
+usr="rsi.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for DOS/4GW"
+usr="rsi??.trp"           keys="newdbg"       desc="Debugging trap file for DOS/4GW"
+usr="std.trp"   old="bin" keys="!newdbg"      desc="Debugging trap file for 16-bit DOS debugging"
+usr="std??.trp"           keys="newdbg"       desc="Debugging trap file for 16-bit DOS debugging"
 [ DEFAULT dir="binw" cond="dostarg" where="c f77 jc jf77" ]
 type="e" usr="netserv.exe"       old="bin"
 type="e" usr="nmpserv.exe"       old="bin"
@@ -41,19 +41,19 @@ type="e" usr="rsihelp.exp"       old="bin"       desc="Debugger help file for DO
 
 # Windows 3.x
 [ DEFAULT type="d" dir="binw" cond="winhost" where="c f77 jc jf77" ]
-usr="net.dll"   keys="!newdb"
-usr="net??.dll" keys="newdb"
-usr="nmp.dll"   keys="!newdb"
-usr="nmp??.dll" keys="newdb"
-usr="nov.dll"   keys="!newdb"
-usr="nov??.dll" keys="newdb"
-usr="par.dll"   keys="!newdb"
-usr="par??.dll" keys="newdb"
-usr="tcp.dll"   keys="!newdb"
-usr="tcp??.dll" keys="newdb"
+usr="net.dll"   keys="!newdbg"
+usr="net??.dll" keys="newdbg"
+usr="nmp.dll"   keys="!newdbg"
+usr="nmp??.dll" keys="newdbg"
+usr="nov.dll"   keys="!newdbg"
+usr="nov??.dll" keys="newdbg"
+usr="par.dll"   keys="!newdbg"
+usr="par??.dll" keys="newdbg"
+usr="tcp.dll"   keys="!newdbg"
+usr="tcp??.dll" keys="newdbg"
 [ DEFAULT type="d" dir="binw" cond="wintarg" where="c f77 jc jf77" ]
-usr="std.dll"   keys="!newdb"
-usr="std??.dll" keys="newdb"
+usr="std.dll"   keys="!newdbg"
+usr="std??.dll" keys="newdbg"
 [ DEFAULT dir="binw" cond="wintarg" where="c f77 jc jf77" ]
 type="d" usr="wint32.dll"
 type="e" usr="novservw.exe"
@@ -67,23 +67,23 @@ type="e" usr="nmpservw.exe"
 # OS/2
 #
 [ DEFAULT type="d" dir="binp" cond="os2host" where="c f77 jc jf77" ]
-usr="net.d32"   keys="!newdb"
-usr="net??.d32" keys="newdb"
-usr="nmp.d32"   keys="!newdb"
-usr="nmp??.d32" keys="newdb"
-#usr="nov.d32"   keys="!newdb"
-#usr="nov??.d32" keys="newdb"
-usr="par.d32"   keys="!newdb"
-usr="par??.d32" keys="newdb"
-usr="ser.d32"   keys="!newdb"
-usr="ser??.d32" keys="newdb"
-usr="tcp.d32"   keys="!newdb"
-usr="tcp??.d32" keys="newdb"
-usr="vdm.d32"   keys="!newdb"
-usr="vdm??.d32" keys="newdb"
+usr="net.d32"   keys="!newdbg"
+usr="net??.d32" keys="newdbg"
+usr="nmp.d32"   keys="!newdbg"
+usr="nmp??.d32" keys="newdbg"
+#usr="nov.d32"   keys="!newdbg"
+#usr="nov??.d32" keys="newdbg"
+usr="par.d32"   keys="!newdbg"
+usr="par??.d32" keys="newdbg"
+usr="ser.d32"   keys="!newdbg"
+usr="ser??.d32" keys="newdbg"
+usr="tcp.d32"   keys="!newdbg"
+usr="tcp??.d32" keys="newdbg"
+usr="vdm.d32"   keys="!newdbg"
+usr="vdm??.d32" keys="newdbg"
 [ DEFAULT type="d" dir="binp" cond="os2targ" where="c f77 jc jf77" ]
-usr="std.d32"   keys="!newdb"
-usr="std??.d32" keys="newdb"
+usr="std.d32"   keys="!newdbg"
+usr="std??.d32" keys="newdbg"
 [ DEFAULT type="e" dir="binp" cond="os2host winhost IsOS2DosBox & |" where="c f77 jc jf77" ]
 usr="nmpbind.exe"
 [ DEFAULT dir="binp" cond="os2targ" where="c f77 jc jf77" ]
@@ -102,19 +102,19 @@ type="e" usr="wdpmhelp.exe"
 # Windows NT - 386
 #
 [ DEFAULT type="d" dir="binnt" cond="wnthost wnt64host |" where="c f77 jc jf77" ]
-usr="nov.dll"   keys="!newdb"
-usr="nov??.dll" keys="newdb"
-usr="par.dll"   keys="!newdb"
-usr="par??.dll" keys="newdb"
-usr="ser.dll"   keys="!newdb"
-usr="ser??.dll" keys="newdb"
-usr="tcp.dll"   keys="!newdb"
-usr="tcp??.dll" keys="newdb"
-usr="vdm.dll"   keys="!newdb"
-usr="vdm??.dll" keys="newdb"
+usr="nov.dll"   keys="!newdbg"
+usr="nov??.dll" keys="newdbg"
+usr="par.dll"   keys="!newdbg"
+usr="par??.dll" keys="newdbg"
+usr="ser.dll"   keys="!newdbg"
+usr="ser??.dll" keys="newdbg"
+usr="tcp.dll"   keys="!newdbg"
+usr="tcp??.dll" keys="newdbg"
+usr="vdm.dll"   keys="!newdbg"
+usr="vdm??.dll" keys="newdbg"
 [ DEFAULT type="d" dir="binnt" cond="wnttarg" where="c f77 jc jf77" ]
-usr="std.dll"   keys="!newdb"
-usr="std??.dll" keys="newdb"
+usr="std.dll"   keys="!newdbg"
+usr="std??.dll" keys="newdbg"
 [ DEFAULT type="e" dir="binnt" cond="wnttarg" where="c f77 jc jf77" ]
 usr="novserv.exe"
 usr="parserv.exe"
@@ -127,13 +127,13 @@ usr="dbgport.sys"
 # Windows NT - AXP
 #
 [ DEFAULT type="d" dir="axpnt" cond="alphahost" where="ac" ]
-usr="tcp.dll"   keys="!newdb"
-usr="tcp??.dll" keys="newdb"
-usr="nov.dll"   keys="!newdb"
-usr="nov??.dll" keys="newdb"
+usr="tcp.dll"   keys="!newdbg"
+usr="tcp??.dll" keys="newdbg"
+usr="nov.dll"   keys="!newdbg"
+usr="nov??.dll" keys="newdbg"
 [ DEFAULT type="d" dir="axpnt" cond="alphatarg" where="ac" ]
-usr="std.dll"   keys="!newdb"
-usr="std??.dll" keys="newdb"
+usr="std.dll"   keys="!newdbg"
+usr="std??.dll" keys="newdbg"
 [ DEFAULT type="e" dir="axpnt" cond="alphatarg" where="ac" ]
 usr="novserv.exe"
 usr="tcpserv.exe"
@@ -141,29 +141,29 @@ usr="tcpserv.exe"
 #######################
 # Windows NT - X64
 #
-[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="no_ntx64" ]
-usr="nov.dll"   keys="!newdb"
-usr="nov??.dll" keys="newdb"
-#usr="par.dll"   keys="!newdb"
-#usr="par??.dll" keys="newdb"
-usr="ser.dll"   keys="!newdb"
-usr="ser??.dll" keys="newdb"
-usr="tcp.dll"   keys="!newdb"
-usr="tcp??.dll" keys="newdb"
-#usr="vdm.dll"   keys="!newdb"
-#usr="vdm??.dll" keys="newdb"
+[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" ]
+usr="nov.dll"   keys="no_ntx64 !newdbg"
+usr="nov??.dll" keys="no_ntx64 newdbg"
+#usr="par.dll"   keys="no_ntx64 !newdbg"
+#usr="par??.dll" keys="no_ntx64 newdbg"
+usr="ser.dll"   keys="no_ntx64 !newdbg"
+usr="ser??.dll" keys="no_ntx64 newdbg"
+usr="tcp.dll"   keys="no_ntx64 !newdbg"
+usr="tcp??.dll" keys="no_ntx64 newdbg"
+#usr="vdm.dll"   keys="no_ntx64 !newdbg"
+#usr="vdm??.dll" keys="no_ntx64 newdbg"
 
 #######################
 # Linux - 386
 #
 [ DEFAULT type="e" dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
-usr="tcp.trp"   keys="!newdb"
-usr="tcp??.trp" keys="newdb"
-usr="par.trp"   keys="!newdb"
-usr="par??.trp" keys="newdb"
+usr="tcp.trp"   keys="!newdbg"
+usr="tcp??.trp" keys="newdbg"
+usr="par.trp"   keys="!newdbg"
+usr="par??.trp" keys="newdbg"
 [ DEFAULT type="e" dir="binl" cond="lnxtarg" where="c f77 jc jf77" ]
-usr="std.trp"   keys="!newdb"
-usr="std??.trp" keys="newdb"
+usr="std.trp"   keys="!newdbg"
+usr="std??.trp" keys="newdbg"
 [ DEFAULT type="e" dir="binl" cond="lnxtarg" where="c f77 jc jf77" ]
 usr="tcpserv"
 usr="parserv"
@@ -171,11 +171,11 @@ usr="parserv"
 #######################
 # Linux - X64
 #
-[ DEFAULT type="e" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-usr="tcp.so"   keys="!newdb"
-usr="tcp??.so" keys="newdb"
-usr="par.so"   keys="!newdb"
-usr="par??.so" keys="newdb"
+[ DEFAULT type="e" dir="binl64" cond="lnx64host" where="c f77 jc jf77" ]
+usr="tcp.so"   keys="no_lx64 !newdbg"
+usr="tcp??.so" keys="no_lx64 newdbg"
+usr="par.so"   keys="no_lx64 !newdbg"
+usr="par??.so" keys="no_lx64 newdbg"
 
 #######################
 # Novell - 386
@@ -194,8 +194,8 @@ usr="novserv4.nlm"
 # RDOS - 386
 #
 [ DEFAULT type="d" dir="rdos" cond="rdostarg" where="c f77 jc jf77" ]
-usr="std.dll"   keys="!newdb"
-usr="std??.dll" keys="newdb"
+usr="std.dll"   keys="!newdbg"
+usr="std??.dll" keys="newdbg"
 [ DEFAULT type="e" dir="rdos" cond="rdostarg" where="c f77 jc jf77" ]
 usr="tcpserv.exe"
 usr="serserv.exe"

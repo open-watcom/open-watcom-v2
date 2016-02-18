@@ -4,107 +4,107 @@
 # DOS and Windows 3.x
 #
 [ DEFAULT type="s" dir="binw" cond="doshost" where="c f77 jc jf77" ]
-usr="madx86.mad"    keys="!newdb"
-usr="madx86??.mad"  keys="newdb"
+usr="madx86.mad"    keys="!newdbg"
+usr="madx86??.mad"  keys="newdbg"
 # It seems rather unlikely anyone would want to cross debug from DOS...
-#usr="madaxp.mad"    keys="!newdb"
-#usr="madaxp??.mad"  keys="newdb"
-#usr="madppc.mad"    keys="!newdb"
-#usr="madppc??.mad"  keys="newdb"
-#usr="madmps.mad"    keys="!newdb"
-#usr="madmps??.mad"  keys="newdb"
+#usr="madaxp.mad"    keys="!newdbg"
+#usr="madaxp??.mad"  keys="newdbg"
+#usr="madppc.mad"    keys="!newdbg"
+#usr="madppc??.mad"  keys="newdbg"
+#usr="madmps.mad"    keys="!newdbg"
+#usr="madmps??.mad"  keys="newdbg"
 
 [ DEFAULT type="d" dir="binw" cond="winhost" where="c f77 jc jf77" ]
-usr="madx86.dll"    keys="!newdb"
-usr="madx86??.dll"  keys="newdb"
-usr="madaxp.dll"    keys="!newdb"
-usr="madaxp??.dll"  keys="newdb"
-usr="madppc.dll"    keys="!newdb"
-usr="madppc??.dll"  keys="newdb"
-usr="madmps.dll"    keys="!newdb"
-usr="madmps??.dll"  keys="newdb"
+usr="madx86.dll"    keys="!newdbg"
+usr="madx86??.dll"  keys="newdbg"
+usr="madaxp.dll"    keys="!newdbg"
+usr="madaxp??.dll"  keys="newdbg"
+usr="madppc.dll"    keys="!newdbg"
+usr="madppc??.dll"  keys="newdbg"
+usr="madmps.dll"    keys="!newdbg"
+usr="madmps??.dll"  keys="newdbg"
 
 #######################
 # OS/2
 #
 [ DEFAULT type="d" dir="binp" cond="os2host" where="c f77 jc jf77" ]
-usr="madx86.d32"    keys="!newdb"
-usr="madx86??.d32"  keys="newdb"
-usr="madaxp.d32"    keys="!newdb"
-usr="madaxp??.d32"  keys="newdb"
-usr="madppc.d32"    keys="!newdb"
-usr="madppc??.d32"  keys="newdb"
-usr="madmps.d32"    keys="!newdb"
-usr="madmps??.d32"  keys="newdb"
+usr="madx86.d32"    keys="!newdbg"
+usr="madx86??.d32"  keys="newdbg"
+usr="madaxp.d32"    keys="!newdbg"
+usr="madaxp??.d32"  keys="newdbg"
+usr="madppc.d32"    keys="!newdbg"
+usr="madppc??.d32"  keys="newdbg"
+usr="madmps.d32"    keys="!newdbg"
+usr="madmps??.d32"  keys="newdbg"
 
 #######################
 # Windows NT - 386
 #
 [ DEFAULT type="d" dir="binnt" cond="wnthost wnt64host |" where="c f77 jc jf77" ]
-usr="madx86.dll"    keys="!newdb"
-usr="madx86??.dll"  keys="newdb"
-usr="madaxp.dll"    keys="!newdb"
-usr="madaxp??.dll"  keys="newdb"
-usr="madppc.dll"    keys="!newdb"
-usr="madppc??.dll"  keys="newdb"
-usr="madmps.dll"    keys="!newdb"
-usr="madmps??.dll"  keys="newdb"
+usr="madx86.dll"    keys="!newdbg"
+usr="madx86??.dll"  keys="newdbg"
+usr="madaxp.dll"    keys="!newdbg"
+usr="madaxp??.dll"  keys="newdbg"
+usr="madppc.dll"    keys="!newdbg"
+usr="madppc??.dll"  keys="newdbg"
+usr="madmps.dll"    keys="!newdbg"
+usr="madmps??.dll"  keys="newdbg"
 
 #######################
 # Windows NT - AXP
 #
 [ DEFAULT type="d" dir="axpnt" cond="alphahost" where="ac" ]
-usr="madx86.dll"    keys="!newdb"
-usr="madx86??.dll"  keys="newdb"
-usr="madaxp.dll"    keys="!newdb"
-usr="madaxp??.dll"  keys="newdb"
-usr="madppc.dll"    keys="!newdb"
-usr="madppc??.dll"  keys="newdb"
-usr="madmps.dll"    keys="!newdb"
-usr="madmps??.dll"  keys="newdb"
+usr="madx86.dll"    keys="!newdbg"
+usr="madx86??.dll"  keys="newdbg"
+usr="madaxp.dll"    keys="!newdbg"
+usr="madaxp??.dll"  keys="newdbg"
+usr="madppc.dll"    keys="!newdbg"
+usr="madppc??.dll"  keys="newdbg"
+usr="madmps.dll"    keys="!newdbg"
+usr="madmps??.dll"  keys="newdbg"
 
 #######################
 # Windows NT - X64
 #
-[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" keys="no_ntx64" ]
-usr="madx86.dll"    keys="!newdb"
-usr="madx86??.dll"  keys="newdb"
-usr="madaxp.dll"    keys="!newdb"
-usr="madaxp??.dll"  keys="newdb"
-usr="madppc.dll"    keys="!newdb"
-usr="madppc??.dll"  keys="newdb"
-usr="madmps.dll"    keys="!newdb"
-usr="madmps??.dll"  keys="newdb"
+[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c f77 jc jf77" ]
+usr="madx86.dll"    keys="no_ntx64 !newdbg"
+usr="madx86??.dll"  keys="no_ntx64 newdbg"
+usr="madaxp.dll"    keys="no_ntx64 !newdbg"
+usr="madaxp??.dll"  keys="no_ntx64 newdbg"
+usr="madppc.dll"    keys="no_ntx64 !newdbg"
+usr="madppc??.dll"  keys="no_ntx64 newdbg"
+usr="madmps.dll"    keys="no_ntx64 !newdbg"
+usr="madmps??.dll"  keys="no_ntx64 newdbg"
 
 #######################
 # Linux - 386
 #
 [ DEFAULT type="s" dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
-usr="madx86.mad"    keys="!newdb"
-usr="madx86??.mad"  keys="newdb"
-usr="madaxp.mad"    keys="!newdb"
-usr="madaxp??.mad"  keys="newdb"
-usr="madppc.mad"    keys="!newdb"
-usr="madppc??.mad"  keys="newdb"
-usr="madmps.mad"    keys="!newdb"
-usr="madmps??.mad"  keys="newdb"
+usr="madx86.mad"    keys="!newdbg"
+usr="madx86??.mad"  keys="newdbg"
+usr="madaxp.mad"    keys="!newdbg"
+usr="madaxp??.mad"  keys="newdbg"
+usr="madppc.mad"    keys="!newdbg"
+usr="madppc??.mad"  keys="newdbg"
+usr="madmps.mad"    keys="!newdbg"
+usr="madmps??.mad"  keys="newdbg"
 
 #######################
 # Linux - x64
 #
-[ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-usr="madx86.mad"    keys="!newdb"
-usr="madx86??.mad"  keys="newdb"
-usr="madaxp.mad"    keys="!newdb"
-usr="madaxp??.mad"  keys="newdb"
-usr="madppc.mad"    keys="!newdb"
-usr="madppc??.mad"  keys="newdb"
-usr="madmps.mad"    keys="!newdb"
-usr="madmps??.mad"  keys="newdb"
+[ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" ]
+usr="madx86.mad"    keys="no_lx64 !newdbg"
+usr="madx86??.mad"  keys="no_lx64 newdbg"
+usr="madaxp.mad"    keys="no_lx64 !newdbg"
+usr="madaxp??.mad"  keys="no_lx64 newdbg"
+usr="madppc.mad"    keys="no_lx64 !newdbg"
+usr="madppc??.mad"  keys="no_lx64 newdbg"
+usr="madmps.mad"    keys="no_lx64 !newdbg"
+usr="madmps??.mad"  keys="no_lx64 newdbg"
 
 #######################
 # RDOS - 386
 #
 [ DEFAULT type="d" dir="rdos" cond="rdoshost" where="c f77 jc jf77" ]
-usr="madx86.dll"    keys="!newdb"
-usr="madx86??.dll"  keys="newdb"
+usr="madx86.dll"    keys="!newdbg"
+usr="madx86??.dll"  keys="newdbg"
