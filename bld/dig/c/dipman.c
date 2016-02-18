@@ -112,15 +112,16 @@ static const unsigned_8 MgrHdlOverhead[MAX_HK] = {
     sizeof( sym_handle )
 };
 
-#define strx(x) # x
+#define STRXX(x)    #x
+#define STRX(x)     STRXX(x)
 
 char DIPDefaults[] = {
 #ifdef USE_FILENAME_VERSION
-    "dwarf"  strx( USE_FILENAME_VERSION ) "\0"
-    "watcom" strx( USE_FILENAME_VERSION ) "\0"
-    "codevi" strx( USE_FILENAME_VERSION ) "\0"
-    "mapsym" strx( USE_FILENAME_VERSION ) "\0"
-    "export" strx( USE_FILENAME_VERSION ) "\0"
+    "dwarf"  STRX( USE_FILENAME_VERSION ) "\0"
+    "watcom" STRX( USE_FILENAME_VERSION ) "\0"
+    "codevi" STRX( USE_FILENAME_VERSION ) "\0"
+    "mapsym" STRX( USE_FILENAME_VERSION ) "\0"
+    "export" STRX( USE_FILENAME_VERSION ) "\0"
 #else
     "dwarf\0"
     "watcom\0"
