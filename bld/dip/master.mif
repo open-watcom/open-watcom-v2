@@ -42,13 +42,16 @@ objs = dipimp.obj $(imp_objs)
 !include deftarg.mif
 !include dllbase.mif
 
-!ifeq name dwarf
+!ifdef dwarf
 !include $(dwarfr_dir)/client.mif
 !endif
 
 .c: ../c;../../c;$(extra_srcs)
 
 extra_cpp_flags = -D__DIP__ $(extra_cppflags)
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 
 extra_c_flags   = -s
 
@@ -86,7 +89,7 @@ xname = $(name)$(ext_lib_shared)
 objs += $(imp_objs_watcom)
 !endif
 
-!ifeq name dwarf
+!ifdef dwarf
 imp_libs += $(dwarfr_lib)
 !endif
 

@@ -1,3 +1,8 @@
+!ifdef %USE_FILENAME_VERSION
+name = hllcv$(bld_ver)
+!else
+name = hllcv
+!endif
 
 imp_objs = &
         hllmisc.obj &
@@ -9,8 +14,6 @@ imp_objs = &
         hllvirt.obj &
         hllloc.obj &
         demangle.obj
-
-name = hllcv
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c

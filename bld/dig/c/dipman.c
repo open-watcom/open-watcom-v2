@@ -114,11 +114,19 @@ static const unsigned_8 MgrHdlOverhead[MAX_HK] = {
 
 
 char DIPDefaults[] = {
+#ifdef USE_FILENAME_VERSION
+    "dwarf" USE_FILENAME_VERSION "\0"
+    "watcom" USE_FILENAME_VERSION "\0"
+    "codevi" USE_FILENAME_VERSION "\0"
+    "mapsym" USE_FILENAME_VERSION "\0"
+    "export" USE_FILENAME_VERSION "\0"
+#else
     "dwarf\0"
     "watcom\0"
     "codeview\0"
     "mapsym\0"
     "export\0"
+#endif
     "\0"
 };
 

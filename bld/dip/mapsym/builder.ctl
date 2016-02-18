@@ -3,6 +3,8 @@
 
 set PROJDIR=<CWD>
 set PROJNAME=mapsym
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+set PROJNAME=mapsym<OWBLDVER>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,33 +20,33 @@ set PROJNAME=mapsym
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/mapsym.dip         <OWRELROOT>/binw/
-#    <CCCMD> dos386/mapsym.sym         <OWRELROOT>/binw/mapsym.dsy
+    <CCCMD> dos386/<PROJNAME>.dip         <OWRELROOT>/binw/
+#    <CCCMD> dos386/<PROJNAME>.sym         <OWRELROOT>/binw/<PROJNAME>.dsy
 
-    <CCCMD> wini86/mapsym.dll         <OWRELROOT>/binw/
-#    <CCCMD> wini86/mapsym.sym         <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.dll         <OWRELROOT>/binw/
+#    <CCCMD> wini86/<PROJNAME>.sym         <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/mapsym.dll         <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/mapsym.sym         <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/mapsym.d32         <OWRELROOT>/binp/
-    <CCCMD> os2386/mapsym.sym         <OWRELROOT>/binp/
+#    <CCCMD> os2i86/<PROJNAME>.dll         <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/<PROJNAME>.sym         <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/<PROJNAME>.d32         <OWRELROOT>/binp/
+    <CCCMD> os2386/<PROJNAME>.sym         <OWRELROOT>/binp/
 
-    <CCCMD> nt386/mapsym.dll          <OWRELROOT>/binnt/
-    <CCCMD> nt386/mapsym.sym          <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.dll          <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.sym          <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/mapsym.dip       <OWRELROOT>/binl/
-    <CCCMD> linux386/mapsym.sym       <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.dip       <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.sym       <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/mapsym.dll          <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/mapsym.sym          <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.dll          <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.sym          <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/mapsym.dip         <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/mapsym.sym         <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/<PROJNAME>.dip         <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/<PROJNAME>.sym         <OWRELROOT>/qnx/sym/
 
-    <CCCMD> rdos386/mapsym.dll        <OWRELROOT>/rdos/
-    <CCCMD> rdos386/mapsym.sym        <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.dll        <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.sym        <OWRELROOT>/rdos/
 
-    <CCCMD> ntx64/mapsym.dll          <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/<PROJNAME>.dll          <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

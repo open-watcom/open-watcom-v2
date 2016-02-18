@@ -1,3 +1,8 @@
+!ifdef %USE_FILENAME_VERSION
+name = codevi$(bld_ver)
+!else
+name = codeview
+!endif
 
 imp_objs = &
         cvmisc.obj &
@@ -9,8 +14,6 @@ imp_objs = &
         cvvirt.obj &
         cvloc.obj &
         demangle.obj
-
-name = codeview
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c

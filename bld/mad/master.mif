@@ -38,6 +38,7 @@ ext_rdos_386  = .dll
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include dllbase.mif
 
 !include $(disasm_dir)/dis.mif
 

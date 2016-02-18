@@ -3,84 +3,127 @@
 #######################
 # DOS and Windows 3.x
 #
-[ DEFAULT dir="binw" cond="doshost" where="c jc f77 jf77" ]
-type="s" usr="codeview.dip"
-type="s" usr="dwarf.dip"
-type="s" usr="export.dip"
-type="s" usr="mapsym.dip"
-type="s" usr="watcom.dip"
+[ DEFAULT type="s" dir="binw" cond="doshost" where="c jc f77 jf77" ]
+usr="codeview.dip"     keys="!newdb"
+usr="codevi??.dip"     keys="newdb"
+usr="dwarf.dip"        keys="!newdb"
+usr="dwarf??.dip"      keys="newdb"
+usr="export.dip"       keys="!newdb"
+usr="export??.dip"     keys="newdb"
+usr="mapsym.dip"       keys="!newdb"
+usr="mapsym??.dip"     keys="newdb"
+usr="watcom.dip"       keys="!newdb"
+usr="watcom??.dip"     keys="newdb"
 
-[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" ]
-type="d" usr="codeview.dll"
-type="d" usr="dwarf.dll"
-type="d" usr="export.dll"
-type="d" usr="mapsym.dll"
-type="d" usr="watcom.dll"
+[ DEFAULT type="d" dir="binw" cond="winhost" where="c jc f77 jf77" ]
+usr="codeview.dll"     keys="!newdb"
+usr="codevi??.dll"     keys="newdb"
+usr="dwarf.dll"        keys="!newdb"
+usr="dwarf??.dll"      keys="newdb"
+usr="export.dll"       keys="!newdb"
+usr="export??.dll"     keys="newdb"
+usr="mapsym.dll"       keys="!newdb"
+usr="mapsym??.dll"     keys="newdb"
+usr="watcom.dll"       keys="!newdb"
+usr="watcom??.dll"     keys="newdb"
 
 #######################
 # OS/2
 #
-[ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
-type="d" usr="codeview.d32"
-type="d" usr="dwarf.d32"
-type="d" usr="export.d32"
-type="d" usr="mapsym.d32"
-type="d" usr="watcom.d32"
+[ DEFAULT type="d" dir="binp" cond="os2host" where="c jc f77 jf77" ]
+usr="codeview.d32"     keys="!newdb"
+usr="codevi??.d32"     keys="newdb"
+usr="dwarf.d32"        keys="!newdb"
+usr="dwarf??.d32"      keys="newdb"
+usr="export.d32"       keys="!newdb"
+usr="export??.d32"     keys="newdb"
+usr="mapsym.d32"       keys="!newdb"
+usr="mapsym??.d32"     keys="newdb"
+usr="watcom.d32"       keys="!newdb"
+usr="watcom??.d32"     keys="newdb"
 
 #######################
 # Windows NT - 386
 #
-[ DEFAULT dir="binnt" cond="wnthost wnt64host |" where="c jc f77 jf77" ]
-type="d" usr="codeview.dll"
-type="d" usr="dwarf.dll"
-type="d" usr="export.dll"
-type="d" usr="mapsym.dll"
-type="d" usr="watcom.dll"
+[ DEFAULT type="d" dir="binnt" cond="wnthost wnt64host |" where="c jc f77 jf77" ]
+usr="codeview.dll"     keys="!newdb"
+usr="codevi??.dll"     keys="newdb"
+usr="dwarf.dll"        keys="!newdb"
+usr="dwarf??.dll"      keys="newdb"
+usr="export.dll"       keys="!newdb"
+usr="export??.dll"     keys="newdb"
+usr="mapsym.dll"       keys="!newdb"
+usr="mapsym??.dll"     keys="newdb"
+usr="watcom.dll"       keys="!newdb"
+usr="watcom??.dll"     keys="newdb"
 
 #######################
 # Windows NT - AXP
 #
-[ DEFAULT dir="axpnt" cond="alphahost" where="ac" ]
-type="d" usr="codeview.dll"
-type="d" usr="dwarf.dll"
-type="d" usr="export.dll"
-type="d" usr="mapsym.dll"
-type="d" usr="watcom.dll"
+[ DEFAULT type="d" dir="axpnt" cond="alphahost" where="ac" ]
+usr="codeview.dll"     keys="!newdb"
+usr="codevi??.dll"     keys="newdb"
+usr="dwarf.dll"        keys="!newdb"
+usr="dwarf??.dll"      keys="newdb"
+usr="export.dll"       keys="!newdb"
+usr="export??.dll"     keys="newdb"
+usr="mapsym.dll"       keys="!newdb"
+usr="mapsym??.dll"     keys="newdb"
+usr="watcom.dll"       keys="!newdb"
+usr="watcom??.dll"     keys="newdb"
 
 #######################
 # Windows NT - X64
 #
-[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
-type="d" usr="codeview.dll"
-type="d" usr="dwarf.dll"
-type="d" usr="export.dll"
-type="d" usr="mapsym.dll"
-type="d" usr="watcom.dll"
+[ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
+usr="codeview.dll"     keys="!newdb"
+usr="codevi??.dll"     keys="newdb"
+usr="dwarf.dll"        keys="!newdb"
+usr="dwarf??.dll"      keys="newdb"
+usr="export.dll"       keys="!newdb"
+usr="export??.dll"     keys="newdb"
+usr="mapsym.dll"       keys="!newdb"
+usr="mapsym??.dll"     keys="newdb"
+usr="watcom.dll"       keys="!newdb"
+usr="watcom??.dll"     keys="newdb"
 
 #######################
 # Linux - 386
 #
-[ DEFAULT dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
-type="s" usr="codeview.dip"
-type="s" usr="dwarf.dip"
-type="s" usr="export.dip"
-type="s" usr="mapsym.dip"
-type="s" usr="watcom.dip"
+[ DEFAULT type="s" dir="binl" cond="lnxhost lnx64host |" where="c f77 jc jf77" ]
+usr="codeview.dip"     keys="!newdb"
+usr="codevi??.dip"     keys="newdb"
+usr="dwarf.dip"        keys="!newdb"
+usr="dwarf??.dip"      keys="newdb"
+usr="export.dip"       keys="!newdb"
+usr="export??.dip"     keys="newdb"
+usr="mapsym.dip"       keys="!newdb"
+usr="mapsym??.dip"     keys="newdb"
+usr="watcom.dip"       keys="!newdb"
+usr="watcom??.dip"     keys="newdb"
 
 #######################
 # Linux - X64
 #
-[ DEFAULT dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-type="s" usr="codeview.so"
-type="s" usr="dwarf.so"
-type="s" usr="export.so"
-type="s" usr="mapsym.so"
-type="s" usr="watcom.so"
+[ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
+usr="codeview.so"     keys="!newdb"
+usr="codevi??.so"     keys="newdb"
+usr="dwarf.so"        keys="!newdb"
+usr="dwarf??.so"      keys="newdb"
+usr="export.so"       keys="!newdb"
+usr="export??.so"     keys="newdb"
+usr="mapsym.so"       keys="!newdb"
+usr="mapsym??.so"     keys="newdb"
+usr="watcom.so"       keys="!newdb"
+usr="watcom??.so"     keys="newdb"
 
 #######################
 # RDOS
 #
-[ DEFAULT dir="rdos" cond="rdoshost" where="c f77 jc jf77" ]
-type="d" usr="dwarf.dll"
-type="d" usr="mapsym.dll"
-type="d" usr="watcom.dll"
+[ DEFAULT type="d" dir="rdos" cond="rdoshost" where="c f77 jc jf77" ]
+usr="dwarf.dll"        keys="!newdb"
+usr="dwarf??.dll"      keys="newdb"
+usr="mapsym.dll"       keys="!newdb"
+usr="mapsym??.dll"     keys="newdb"
+usr="watcom.dll"       keys="!newdb"
+usr="watcom??.dll"     keys="newdb"

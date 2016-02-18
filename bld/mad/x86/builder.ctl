@@ -3,6 +3,8 @@
 
 set PROJDIR=<CWD>
 set PROJNAME=madx86
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+set PROJNAME=madx86<OWBLDVER>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,33 +20,33 @@ set PROJNAME=madx86
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/mad*.mad     <OWRELROOT>/binw/
-#    <CCCMD> dos386/madx86.sym   <OWRELROOT>/binw/madx86.dsy
+    <CCCMD> dos386/<PROJNAME>.mad     <OWRELROOT>/binw/
+#    <CCCMD> dos386/<PROJNAME>.sym   <OWRELROOT>/binw/<PROJNAME>.dsy
 
-    <CCCMD> wini86/mad*.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/mad*.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/<PROJNAME>.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/mad*.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/mad*.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/mad*.d32     <OWRELROOT>/binp/
-    <CCCMD> os2386/mad*.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/<PROJNAME>.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/<PROJNAME>.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/<PROJNAME>.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/<PROJNAME>.sym     <OWRELROOT>/binp/
 
-    <CCCMD> nt386/mad*.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/mad*.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/mad*.mad   <OWRELROOT>/binl/
-    <CCCMD> linux386/mad*.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.mad   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.sym   <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/mad*.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/mad*.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/mad*.mad     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/mad*.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/<PROJNAME>.mad     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/<PROJNAME>.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> rdos386/mad*.dll    <OWRELROOT>/rdos/
-    <CCCMD> rdos386/mad*.sym    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.dll    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.sym    <OWRELROOT>/rdos/
 
-    <CCCMD> ntx64/mad*.dll      <OWRELROOT>/binnt64/
+    <CCCMD> ntx64/<PROJNAME>.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============
