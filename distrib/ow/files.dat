@@ -2,8 +2,6 @@
 # files in each project
 # ---------------------------------------------------------------
 
-[ LOG filelist ]
-
 [ INCLUDE <OWSRCDIR>/hdr/files.dat ]
 [ INCLUDE <OWSRCDIR>/sdk/files.dat ]
 [ INCLUDE <OWSRCDIR>/wasm/files.dat ]
