@@ -72,6 +72,7 @@ static bool     UndefWarn;
 static unsigned ParmCount;
 static ctl_file *Product = NULL;
 static ctl_file *KeyList = NULL;
+static char     Product_ver[3];
 
 /* Defaults for all output values */
 static char     *DefType   = NULL;
@@ -117,7 +118,8 @@ static char **getvalue( char **argv, char *buff )
 
 static void Usage( void )
 {
-    printf( "Usage: langdat [-c <ctl_file>]* [-l <log_file>] [-v] [-u] [-q] <product>\n" );
+    printf( "Usage: langdat [-c <ctl_file>]* [-k <key value>]* [-l <log_file>]\n"
+            "               [-r <version number>] [-v] [-u] [-q] <product>\n" );
     exit( 0 );
 }
 
@@ -144,6 +146,12 @@ static void ProcessOptions( char *argv[] )
                     Fatal( "-l option specified twice\n" );
                 }
                 OpenLog( parm_buff );
+                break;
+            case 'r':
+                argv = getvalue( argv, parm_buff );
+                Product_ver[0] = parm_buff[0];
+                Product_ver[1] = parm_buff[1];
+                Product_ver[2] = '\0';
                 break;
             case 'v':
                 ++VerbLevel;
@@ -379,26 +387,60 @@ static char *NextWord( char *p )
     return( FirstWord( p + strlen( p ) + 1 ) );
 }
 
-static bool ContainsWord( const char *str, ctl_file *word_list )
+bool checkWord( char *p, ctl_file *word_list )
+{
+    ctl_file    *w;
+    bool        not_op;
+
+    not_op = ( *p == '!' );
+    if( not_op )
+        ++p;
+    for( w = word_list; w != NULL; w = w->next ) {
+        if( strcmp( p, w->name ) == 0 ) {
+            return( !not_op );
+        }
+    }
+    return( not_op );
+}
+
+static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
 {
     char        *s_copy;
     char        *p;
     size_t      len;
-    ctl_file    *w;
+    bool        found;
 
     len = strlen( str ) + 1;
     s_copy = Alloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
-        for( w = word_list; w != NULL; w = w->next ) {
-            if( !strcmp( p, w->name ) ) {
-                free( s_copy );
-                return( true );
-            }
+        found = checkWord( p, word_list );
+        if( found && !and_op || !found && and_op ) {
+            free( s_copy );
+            return( !and_op );
         }
     }
     free( s_copy );
-    return( false );
+    return( and_op );
+}
+
+static void set_product_version( char *filename )
+{
+    char    *filever;
+
+    filever = strstr( filename, "??" );
+    if( filever != NULL ) {
+        if( Product_ver[0] == '\0' ) {
+            strcpy( filever, filever + 2 );
+        } else {
+            *filever++ = Product_ver[0];
+            if( Product_ver[1] == '\0' ) {
+                strcpy( filever, filever + 1 );
+            } else {
+                *filever = Product_ver[1];
+            }
+        }
+    }
 }
 
 #define DEFVAL(x)   ((x==NULL)?"":x)
@@ -513,9 +555,11 @@ static void ProcessLine( const char *line )
         if( keys == NULL ) {
             keys = "";
         }
+        set_product_version( usr );
+        set_product_version( rel );
         /* Check if 'where' matches specified product */
-        if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product ) )
-          && ( *keys == '\0' || ContainsWord( keys, KeyList ) ) ) {
+        if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product, false ) )
+          && ( *keys == '\0' || ContainsWord( keys, KeyList, true ) ) ) {
             Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
@@ -773,6 +817,7 @@ int main( int argc, char *argv[] )
     char        *p;
 
     argc = argc;
+    Product_ver[0] = '\0';
     ProcessOptions( argv + 1 );
     if( Product == NULL ) {
         printf( "langdat warning: no product specified, processing all entries\n" );
