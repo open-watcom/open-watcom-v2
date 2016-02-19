@@ -67,6 +67,17 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 {
     pid_t pid;
     struct __lnx_thread *thrdata;
+    unsigned flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND
+		| CLONE_THREAD | CLONE_SYSVSEM 
+		| CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID | CLONE_DETACHED;
+    
+    if(stack_size == 0 && stack_bottom == NULL) {
+        stack_size = 4*1024; /* Docs and other platforms suggest this is
+                              * the OpenWatcom default
+                              */
+                              
+        stack_bottom = malloc(stack_size);
+    }
 
     if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
         return( -1 );
@@ -82,7 +93,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     pid = clone( (int(*)(void *))__cloned_lnx_start_fn,  
                  (void*)((int)stack_bottom + stack_size),
-                 CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, 
+                 flags, 
                  thrdata );
 
     return( (int)pid );

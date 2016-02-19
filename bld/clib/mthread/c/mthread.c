@@ -874,7 +874,7 @@ void __InitMultipleThread( void )
         _ReleaseNHeap = &__ReleaseNHeap;
         _ReleaseFHeap = &__ReleaseFHeap;
     #endif
-    #if defined( __NT__ )
+    #if defined( __NT__ ) || defined( __LINUX__ )
         _AccessFList  = &__AccessFList;
         _ReleaseFList = &__ReleaseFList;
     #endif

@@ -56,11 +56,11 @@
   #define TID                   pid_t
   #define GetCurrentThreadId()  (getpid())
 #elif defined( __LINUX__ )
-  // TODO: Include for Linux threading!
   #include <sys/types.h>
+  #include <process.h>
   #include <unistd.h>
-  #define TID                   size_t
-  #define GetCurrentThreadId()  (0)
+  #define TID                   pid_t
+  #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )
   #include <rdos.h>
   #define TID                   int
