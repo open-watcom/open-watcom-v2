@@ -14,6 +14,8 @@
 
 :segment LINUX
 
+:include timespec.sp
+
 typedef struct {
     int value;
 } sem_t;
@@ -26,6 +28,7 @@ _WCRTLINK extern int sem_getvalue( sem_t *__sem, int *__value );
 _WCRTLINK extern int sem_post( sem_t *__sem );
 _WCRTLINK extern int sem_trywait( sem_t *__sem );
 _WCRTLINK extern int sem_wait( sem_t *__sem );
+_WCRTLINK extern int sem_timedwait( sem_t *__sem, const struct timespec *__abstime );
 #endif
 
 :endsegment
