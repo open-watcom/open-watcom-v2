@@ -87,6 +87,7 @@
 !inject sigact.obj                                                                              l32 lpc lmp
 !inject siginter.obj                                                                            l32 lpc lmp
 !inject signal.obj                                                                              l32 lpc lmp
+!inject sigpend.obj                                                                             l32 lpc lmp
 !inject sigpmask.obj                                                                            l32 lpc lmp
 !inject sigsusp.obj                                                                             l32 lpc lmp
 !inject sigtdwai.obj                                                                            l32 lpc lmp
