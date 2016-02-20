@@ -91,18 +91,10 @@ name = $(srv)
 !include defrule.mif
 !include deftarg.mif
 
-!ifeq release 1
 !ifdef test
 xname=z$(name)
 !else
 xname=$(name)
-!endif
-!else
-!ifdef test
-xname=t$(name)
-!else
-xname=d$(name)
-!endif
 !endif
 
 !ifeq which SERVER
@@ -158,14 +150,6 @@ extra_a_flags_misc7386 = -fpi87
 # lflags stuff
 ###############
 
-!ifeq release 0
-default_targ    = d
-!else
-default_targ    = w
-!endif
-
-first : $(default_targ)
-
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
 
@@ -173,10 +157,7 @@ jtrperr_h = _jerr.gh
 extra_deps += nversion.tmp
 !endif
 
-w : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
-        @%make $(target)
-
-d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
+all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
         @%make $(target)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
