@@ -533,7 +533,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
 #if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
     case MENU_MAIN_FILE_SYSTEM:
-        DoSystem( NULL, 0, 0 );
+        DoSystem( NULL, 0, LOC_DEFAULT );
         break;
 #endif
     case MENU_MAIN_FILE_OPTIONS:

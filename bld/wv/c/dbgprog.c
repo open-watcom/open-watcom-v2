@@ -879,7 +879,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
             FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName(true, name, fullname, sizeof(fullname));
+        len = RemoteStringToFullName( true, name, fullname, sizeof( fullname ) );
         fullname[len] = '\0';
     }
     image = CreateImage( fullname, symfile );

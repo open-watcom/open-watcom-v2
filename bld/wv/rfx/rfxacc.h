@@ -45,4 +45,4 @@ extern error_handle RemoteGetCwd( int drv, char *where );
 extern error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib );
 extern int          RemoteFindNext( void *info, trap_elen info_len );
 extern error_handle RemoteFindClose( void );
-extern unsigned     RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len );
+extern size_t       RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len );

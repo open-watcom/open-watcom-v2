@@ -63,7 +63,7 @@ void DoSystem( const char *cmd, size_t len, object_loc loc )
         loc = LOC_REMOTE;
     if( loc == LOC_REMOTE ) {
 //        errh = RemoteFork( cmd, len );
-        RemoteFork( cmd, len );
+        RemoteFork( cmd, (trap_elen)len );
         rc = 0;
     } else {
         RemoteSuspend();

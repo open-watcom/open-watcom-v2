@@ -289,7 +289,7 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = MaxPacketLen - sizeof( acc );
+    piece = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
         if( piece > len )
@@ -335,7 +335,7 @@ static size_t doWriteConsole( const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = MaxPacketLen - sizeof( acc );
+    piece = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
         if( piece > len )
@@ -392,7 +392,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = MaxPacketLen - sizeof( file_read_req );
+    piece = (trap_elen)( MaxPacketLen - sizeof( file_read_req ) );
     total = 0;
     while( len > 0 ) {
         if( piece > len )

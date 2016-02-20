@@ -219,7 +219,7 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     if( mk & MMK_VOLATILE )
         new->_volatile = true;
     /* can keep in target form */
-    new->size = ProgPeek( a, &new->data[0], bytes );
+    new->size = (byte)ProgPeek( a, &new->data[0], bytes );
     return( WR_CONTINUE );
 }
 
@@ -585,7 +585,9 @@ size_t ChangeMem( address addr, const void * to, size_t size )
     const unsigned_8    *p;
     unsigned            amount;
     size_t              left;
+    addr_off            save_offset;
 
+    save_offset = addr.mach.offset;
     p = to;
     amount = MAX_DELTA_BYTES;
     left = size;
@@ -606,7 +608,7 @@ size_t ChangeMem( address addr, const void * to, size_t size )
         p += amount;
         left -= amount;
     }
-    addr.mach.offset -= size;
+    addr.mach.offset = save_offset;
     return( ProgPoke( addr, to, size ) );
 }
 

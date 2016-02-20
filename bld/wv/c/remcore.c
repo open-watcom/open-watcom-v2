@@ -67,7 +67,7 @@ typedef struct {
     address     addr;
     addr48_off  end;
     unsigned    info;
-    unsigned    len;
+    size_t      len;
     unsigned_8  data[1];        /* variable sized */
 } machine_data_cache;
 

@@ -1317,7 +1317,7 @@ void ProcType( int argc, char **argv )
         return;
     }
     src = RealName( argv[0], &src_loc );
-    AddCopySpec( src, "con", src_loc, -1 );
+    AddCopySpec( src, "con", src_loc, LOC_LOCAL );
     Typing = 1;
     WildCopy( 0 );
     Typing = 0;
@@ -1332,7 +1332,7 @@ static  void    DirClosef( dir_handle *h )
     DbgFree( h );
 }
 
-static dir_handle      *DirOpenf( const char *fspec, int fnloc )
+static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 {
     dir_handle      *h;
     error_handle    errh;
@@ -1634,7 +1634,7 @@ void ProcMakeDir( int argc, char **argv )
 /* ERASE/DELETE                                                           */
 /**************************************************************************/
 
-static error_handle   Scratchf( const char *fn, int fnloc )
+static error_handle   Scratchf( const char *fn, object_loc fnloc )
 {
     error_handle    errh;
     char            *endptr;
