@@ -64,11 +64,10 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dbgwtogl.h"
-
-
-extern char             *AddrToString( address *, mad_address_format, char *, unsigned );
+#include "dbgmad.h"
 
 #include "menudef.h"
+
 
 static gui_menu_struct AsmShowMenu[] = {
     #include "masmshow.h"

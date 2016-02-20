@@ -63,8 +63,7 @@
 
 #include "clibext.h"
 
-search_result           LineCue( mod_handle, cue_fileid,
-                          unsigned long line, unsigned column, cue_handle *ch );
+
 extern void             MemNewAddr( a_window *wnd, address addr );
 
 extern stack_entry      *ExprSP;
