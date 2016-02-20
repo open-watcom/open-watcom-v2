@@ -64,7 +64,7 @@ static struct {
         ((addr_info *)((char *)blk->info+(off)))
 
 /*
- * the top bit in the num field is used as a flag to identify data
+ * the top bit in the count field is used as a flag to identify data
  * therefore it must be discarded when determining the number of
  * addr_info structures present.
  */
@@ -146,12 +146,12 @@ static dip_status SectFindAddrInfo( section_info *inf, address addr,
     seg_info        *end;
     addr_info       *info;
     addr_off        curr_off;
-    unsigned        num;
+    unsigned        count;
     address         base;
     info_block      *blk;
 
     base.sect_id = inf->sect_id;
-    base.indirect = 1;
+    base.indirect = true;
     for( blk = inf->addr_info; blk != NULL; blk = blk->next ) {
         ptr = GET_SEG_INFO( blk, 0 );
         end = GET_SEG_INFO( blk, blk->size );
@@ -168,7 +168,7 @@ static dip_status SectFindAddrInfo( section_info *inf, address addr,
             if( curr_off > addr.mach.offset )
                 goto next_block;
             info = ptr->addr;
-            for( num = GET_SEG_COUNT( ptr ); num != 0; --num ) {
+            for( count = GET_SEG_COUNT( ptr ); count != 0; --count ) {
                 curr_off += info->size;
                 if( curr_off > addr.mach.offset ) {
                     if( info->mod == (word)-1 )
@@ -200,7 +200,7 @@ static dip_status FindAddrInfo( imp_image_handle *ii, address addr,
         if( addr.sect_id == inf->sect_id || IS_NONSECT( addr.mach.segment ) ) {
             if( SectFindAddrInfo( inf, addr, im, code ) == DS_OK ) {
                 code->start.sect_id = inf->sect_id;
-                code->start.indirect = 1;
+                code->start.indirect = true;
                 return( DS_OK );
             }
         }
@@ -218,21 +218,21 @@ address FindModBase( imp_image_handle *ii, imp_mod_handle im )
     seg_info            *ptr;
     seg_info            *end;
     addr_info           *info;
-    unsigned            num;
+    unsigned            count;
     address             base;
     section_info        *inf;
     info_block          *blk;
 
     inf = ii->sect;
     base.sect_id = inf->sect_id;
-    base.indirect = 1;
+    base.indirect = true;
     for( blk = inf->addr_info; blk != NULL; blk = blk->next ) {
         ptr = GET_SEG_INFO( blk, 0 );
         end = GET_SEG_INFO( blk, blk->size );
         do {
             base.mach = ptr->base;
             info = ptr->addr;
-            for( num = GET_SEG_COUNT( ptr ); num != 0; --num ) {
+            for( count = GET_SEG_COUNT( ptr ); count != 0; --count ) {
                 if( IDX2IMH( info->mod ) == im )
                     return( base );
                 base.mach.offset += info->size;
@@ -279,7 +279,7 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im, unsigned long o
     for( ptr = GET_SEG_INFO( blk, 0 ); (next = NEXT_SEG_INFO( ptr )) <= (seg_info *)info; ptr = next )
         ;
     SegBlockCache.block.start.mach = ptr->base;
-    SegBlockCache.block.start.indirect = 1;
+    SegBlockCache.block.start.indirect = true;
     for( curr = ptr->addr; curr != info; ++curr ) {
         SegBlockCache.block.start.mach.offset += curr->size;
     }

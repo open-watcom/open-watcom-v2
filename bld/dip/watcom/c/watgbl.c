@@ -43,7 +43,7 @@
 
 #define HL_END                  ((hash_link)-1)
 #define MAKE_LP( la, off )      ((gbl_link *)((byte *)(la) + (off)))
-#define MK_ADDR( a, ma, sect )  {a.mach=ma;a.sect_id=sect;a.indirect=1;}
+#define MK_ADDR( a, ma, sect )  {a.mach=ma;a.sect_id=sect;a.indirect=true;}
 
 #if defined(__DOS__) && !defined(__386__)
 #define SYM_TAB_SIZE  128       /* for DOS */
@@ -336,8 +336,7 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is, addr_ptr 
 }
 
 
-search_result LookupGblAddr( imp_image_handle *ii, address addr,
-                        imp_sym_handle *is )
+search_result LookupGblAddr( imp_image_handle *ii, address addr, imp_sym_handle *is )
 {
     section_info        *inf;
     info_block          *curr;

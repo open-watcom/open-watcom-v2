@@ -228,7 +228,7 @@ static void NewBase( const char *ptr, lclinfo *local )
     if( (GETU8( ptr ) & CLASS_MASK) == NEW_BASE ) {
         local->base_off = ptr - local->start - 1;
         local->code_base.sect_id = local->inf->sect_id;
-        local->code_base.indirect = 1;
+        local->code_base.indirect = true;
         switch( GETU8( ptr ) & SUBCLASS_MASK ) {
         case ADD_PREV_SEG:
             ptr += 1;

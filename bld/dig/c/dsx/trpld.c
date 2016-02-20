@@ -409,7 +409,7 @@ static char *ReadInTrap( tiny_handle_t fh )
     }
 
     hdrsize = hdr.hdr_size * 16;
-    imagesize = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdrsize;
+    imagesize = ( hdr.file_size * 0x200 ) - (-hdr.mod_size & 0x1ff) - hdrsize;
     TrapMem.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( imagesize ) + hdr.min_16 );
     if( TrapMem.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
@@ -417,8 +417,7 @@ static char *ReadInTrap( tiny_handle_t fh )
     TinySeek( fh, hdrsize, TIO_SEEK_SET );
 
     memset( &read, 0, sizeof( read ) );
-    offset = 0;
-    for( ;; ) {
+    for( offset = 0; offset < imagesize; offset += (unsigned_16)read.eax ) {
         read.ss = RMData.segm.rm;
         read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
         read.edx = offset;
@@ -437,20 +436,17 @@ static char *ReadInTrap( tiny_handle_t fh )
             return( TC_ERR_CANT_LOAD_TRAP );
         }
 #endif
-        offset += (unsigned_16)read.eax;
-        if( offset == imagesize ) break;
     }
     TinySeek( fh, hdr.reloc_offset, TIO_SEEK_SET );
-    for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0;
-         --hdr.num_relocs, ++relocnb ) {
+    for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
             if( TINY_ERROR( TinyRead( fh, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment,
-                      relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
+        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset )
+                += TrapMem.segm.rm;
     }
     return( NULL );
 }

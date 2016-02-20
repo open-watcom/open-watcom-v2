@@ -292,7 +292,7 @@ static void SearchSection( imp_image_handle *ii, struct search_info *close, addr
         if( info == NULL )
             continue;
         if( close->have == SR_NONE
-                || info->code_offset+block.start.mach.offset>close->off ) {
+                || info->code_offset + block.start.mach.offset > close->off ) {
             close->found = true;
             close->ic.seg_bias = BIAS( seg );
             close->ic.info_bias = BIAS( info );

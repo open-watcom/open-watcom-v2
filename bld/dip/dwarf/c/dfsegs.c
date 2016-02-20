@@ -133,47 +133,51 @@ exit_rtn:
 
 }
 
-typedef struct{
+typedef struct {
     unsigned_16 item_size;
     unsigned_16 hi;
     seg_entry   *base;
-    word        key;
+    addr_seg    key;
     unsigned_16 last;
-}seg_cmp;
+} seg_cmp;
 
 
-static  int  BlkSegSearch( seg_cmp *cmp  ){
+static  int  BlkSegSearch( seg_cmp *cmp )
 // return > 0 and low index
 //       == 0 and  = index
 //       <  0 and  index == 0 off low end
-    seg_entry    *curr;
-    seg_entry    *base;
+{
+    seg_entry   *curr;
+    seg_entry   *base;
     unsigned_16 item_size;
     unsigned_16 lo;
     unsigned_16 mid;
     unsigned_16 hi;
-    long        diff;
 
     hi = cmp->hi;
     item_size = cmp->item_size;
     base = cmp->base;
     lo = 0;
-    for(;;){
+    for( ;; ) {
         mid = MIDIDX16( lo, hi );
-        curr = INFO_ITEM( base, mid ); // compare keys
-        diff = (long)cmp->key - (long)curr->real;
-        if( mid == lo )break;
-        if( diff < 0 ){       // key < mid
+        curr = INFO_ITEM( base, mid );          // compare keys
+        if( mid == lo )
+            break;
+        if( cmp->key < curr->real ) {           // key < mid
             hi = mid;
-        }else if( diff > 0 ){ // key > mid
+        } else if( cmp->key > curr->real ) {    // key > mid
             lo = mid;
-        }else{                // key == mid
+        } else {                                // key == mid
             break;
         }
     }
     cmp->last = mid;
     cmp->base = curr;
-    return( diff );
+    if( cmp->key < curr->real )
+        return( -1 );
+    if( cmp->key > curr->real )
+        return( 1 );
+    return( 0 );
 }
 
 
@@ -196,7 +200,7 @@ seg_entry *FindRealSeg( seg_list *ctl, addr_seg seg )
     info = NULL;
     for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         cmp.base = blk->info;
-        if( BlkSegSearch( &cmp )== 0 ){
+        if( BlkSegSearch( &cmp ) == 0 ){
             info = cmp.base;
             break;
         }
@@ -215,7 +219,6 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
     unsigned_16     blk_count;
     unsigned_16     item_size;
 
-
     item_size = ctl->item_size;
     blk_count = ctl->count % SEG_PER_BLK;
     if( blk_count == 0 ){  /* first block may be short */
@@ -224,7 +227,8 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
     for( blk = ctl->head; blk != NULL; blk = blk->next ) {
         info = blk->info;
         while( blk_count > 0 ){
-            if( !wlk( d, info  ) )goto end_wlk;
+            if( !wlk( d, info  ) )
+                goto end_wlk;
             info = INFO_ITEM( info, 1 );
             --blk_count;
         }
@@ -241,10 +245,12 @@ static int  SegCmp( void const *_seg1, void const *_seg2 )
 {
     seg_entry const *seg1 = _seg1;
     seg_entry const *seg2 = _seg2;
-    int diff;
 
-    diff = (int)seg1->real - (int)seg2->real;
-    return( diff );
+    if( seg1->real < seg2->real )
+        return( -1 );
+    if( seg1->real > seg2->real )
+        return( 1 );
+    return( 0 );
 }
 
 void    SortSegReal( seg_list *ctl )
@@ -273,4 +279,3 @@ void    SortSegReal( seg_list *ctl )
         blk = blk->next;
     }
 }
-
