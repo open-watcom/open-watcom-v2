@@ -40,11 +40,11 @@
 
 #define NO_LINE         ((word)-1)
 
-#define NEXT_SEG( ptr ) (V2Lines ? ((line_segment *)&((ptr)->v2.line[(ptr)->v2.num])) \
-                                 : ((line_segment *)&((ptr)->v3.line[(ptr)->v3.num])))
-#define LINE_SEG( ptr ) (V2Lines ? (ptr)->v2.segment : (ptr)->v3.segment)
-#define LINE_NUM( ptr ) (V2Lines ? (ptr)->v2.num : (ptr)->v3.num)
-#define LINE_LINE( ptr) (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
+#define NEXT_SEG( ptr )     (V2Lines ? ((line_segment *)((ptr)->v2.line+(ptr)->v2.count)) \
+                                     : ((line_segment *)((ptr)->v3.line+(ptr)->v3.count)))
+#define LINE_SEG( ptr )     (V2Lines ? (ptr)->v2.segment : (ptr)->v3.segment)
+#define LINE_COUNT( ptr )   (V2Lines ? (ptr)->v2.count : (ptr)->v3.count)
+#define LINE_LINE( ptr)     (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
 
 #define MIDIDX16(lo,hi) ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi) / 2))
 
@@ -53,84 +53,90 @@ typedef union {
     v3_line_segment     v3;
 } line_segment;
 
+typedef struct search_info {
+    imp_cue_handle      ic;
+    line_number         line;
+    addr_off            off;
+    search_result       have;
+    bool                found;
+    const void          *special_table;
+    enum { ST_UNKNOWN, ST_NO, ST_YES } have_spec_table;
+} search_info;
+
 static line_segment     *LinStart;
 static line_segment     *LinEnd;
-static byte             V2Lines;
+static bool             V2Lines;
 
-
-static int  CueFind( const char *base, cue_idx cue, cue_state *ret )
+static bool CueFind( const char *base, line_number cue, cue_state *ret )
 {
     const cue_state *curr;
-    long            diff;
     unsigned_16     lo;
     unsigned_16     mid;
-    int             ok;
+    bool            ok;
     unsigned_16     hi;
 
     if( base == NULL )
         return( 0 );
     hi = GETU16( base );
     base =  base + 2;
-    cue -= PRIMARY_RANGE;
-    ok = 0;
+    ok = false;
     lo = 0;
     for( ;; ) {
         mid = MIDIDX16( lo, hi );
         curr = ((const cue_state *)base) + mid;      // compare keys
-        diff = (long)cue - (long)curr->cue;
         if( mid == lo )
             break;
-        if( diff < 0 ) {        // key < mid
+        if( cue < curr->cue ) {         // key < mid
             hi = mid;
-        } else if( diff > 0 ) { // key > mid
+        } else if( cue > curr->cue ) {  // key > mid
             lo = mid;
-        } else {                // key == mid
+        } else {                        // key == mid
             break;
         }
     }
-    if( diff >= 0 ) {
-        ok = 1;
+    if( cue >= curr->cue ) {
+        ok = true;
     }
     *ret = *curr;
-    ret->line += diff;
+    ret->line += cue - curr->cue;
     ret->fno += 2;      /* 0 => no file, 1 => primary file */
     return( ok );
 }
 
-static unsigned long SpecCueLine( imp_image_handle *ii, imp_cue_handle *ic, unsigned cue_id )
+static line_number SpecCueLine( imp_image_handle *ii, imp_cue_handle *ic, line_number cue )
 {
     cue_state           info;
-    unsigned long       ret;
+    line_number         line;
     const char          *start;
     const char          *base;
 
-    ret = 0;
+    line = 0;
     start = FindSpecCueTable( ii, ic->im, &base );
     if( start != NULL ) {
-        if( CueFind( start, cue_id, &info ) ){
-            ret = info.line;
+        if( CueFind( start, cue, &info ) ){
+            line = info.line;
         }
         InfoSpecUnlock( base );
     }
-    return( ret );
+    return( line );
 }
 
-static unsigned SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic, unsigned cue_id )
+static cue_fileid SpecCueFileId( imp_image_handle *ii, imp_cue_handle *ic, line_number cue )
 {
     cue_state           info;
-    unsigned long       ret;
+    cue_fileid          fno;
     const char          *start;
     const char          *base;
 
-    ret = 0;
+    fno = 0;
     start = FindSpecCueTable( ii, ic->im, &base );
     if( start != NULL ) {
-        if( CueFind( start, cue_id, &info ) ){
-            ret = info.fno;
+        if( CueFind( start, cue, &info ) ){
+            fno = info.fno;
         }
         InfoSpecUnlock( base );
     }
-    return( ret );
+    return( fno );
 }
 
 static size_t SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
@@ -193,16 +199,6 @@ static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im, word ent
     return( DS_OK );
 }
 
-struct search_info {
-    imp_cue_handle      ic;
-    unsigned            num;
-    addr_off            off;
-    search_result       have;
-    byte                found;
-    const void          *special_table;
-    enum { ST_UNKNOWN, ST_NO, ST_YES } have_spec_table;
-};
-
 
 static line_info *FindLineOff( addr_off off, addr_off adj,
                         const char *start, const char *end,
@@ -226,7 +222,7 @@ static line_info *FindLineOff( addr_off off, addr_off adj,
         } else if( off > chk ) {
             low = target + 1;
         } else {                  /* exact match */
-            if( ln_ptr[target].line_number >= PRIMARY_RANGE ) {
+            if( ln_ptr[target].line >= PRIMARY_RANGE ) {
                 /* a special cue - have to make sure we have the table */
                 if( close->have_spec_table == ST_UNKNOWN ) {
                     if( FindSpecCueTable( ii, close->ic.im, &dummy ) != NULL ) {
@@ -236,10 +232,10 @@ static line_info *FindLineOff( addr_off off, addr_off adj,
                     }
                 }
                 if( close->have_spec_table == ST_YES ) {
-                    return( &ln_ptr[target] );
+                    return( ln_ptr + target );
                 }
             } else {
-                return( &ln_ptr[target] );
+                return( ln_ptr + target );
             }
             /* if it's a special & we don't have the table, ignore entry */
             high = target - 1;
@@ -247,7 +243,7 @@ static line_info *FindLineOff( addr_off off, addr_off adj,
     }
     if( high < 0 )
         return( NULL );
-    if( ln_ptr[high].line_number >= PRIMARY_RANGE ) {
+    if( ln_ptr[high].line >= PRIMARY_RANGE ) {
         /* a special cue - have to make sure we have the table */
         if( close->have_spec_table == ST_UNKNOWN ) {
             if( FindSpecCueTable( ii, close->ic.im, &dummy ) != NULL ) {
@@ -262,13 +258,13 @@ static line_info *FindLineOff( addr_off off, addr_off adj,
                 --high;
                 if( high < 0 )
                     return( NULL );
-                if( ln_ptr[high].line_number < PRIMARY_RANGE ) {
+                if( ln_ptr[high].line < PRIMARY_RANGE ) {
                     break;
                 }
             }
         }
     }
-    return( &ln_ptr[high] );
+    return( ln_ptr + high );
 }
 
 #define BIAS( p )       ((byte *)(p) - (byte *)LinStart)
@@ -281,19 +277,23 @@ static void SearchSection( imp_image_handle *ii, struct search_info *close, addr
     line_info           *info;
     mem_block           block;
 
-    close->found = 0;
+    close->found = false;
     for( seg = LinStart; seg < LinEnd; seg = next ) {
         next = NEXT_SEG( seg );
         block = FindSegBlock( ii, close->ic.im, LINE_SEG( seg ) );
-        if( DCSameAddrSpace( block.start, addr ) != DS_OK ) continue;
-        if( block.start.mach.offset > addr.mach.offset ) continue;
-        if( block.start.mach.offset + block.len <= addr.mach.offset ) continue;
+        if( DCSameAddrSpace( block.start, addr ) != DS_OK )
+            continue;
+        if( block.start.mach.offset > addr.mach.offset )
+            continue;
+        if( block.start.mach.offset + block.len <= addr.mach.offset )
+            continue;
         info = FindLineOff( addr.mach.offset, block.start.mach.offset,
                             (const char *)LINE_LINE( seg ), (const char *)next, close, ii );
-        if( info == NULL ) continue;
+        if( info == NULL )
+            continue;
         if( close->have == SR_NONE
                 || info->code_offset+block.start.mach.offset>close->off ) {
-            close->found = 1;
+            close->found = true;
             close->ic.seg_bias = BIAS( seg );
             close->ic.info_bias = BIAS( info );
             close->off = block.start.mach.offset + info->code_offset;
@@ -314,17 +314,15 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
 
     close.ic.im = im;
     close.have = SR_NONE;
-    close.ic.entry = 0;
     close.have_spec_table = ST_UNKNOWN;
     close.off = 0;
-    for( ;; ) {
-        if( GetLineInfo( ii, close.ic.im, close.ic.entry ) != DS_OK )
-            break;
+    for( close.ic.entry = 0; GetLineInfo( ii, close.ic.im, close.ic.entry ) == DS_OK; ++close.ic.entry ) {
         SearchSection( ii, &close, addr );
-        if( close.found ) save_entry = close.ic.entry;
-        if( close.have == SR_EXACT )
+        if( close.found )
+            save_entry = close.ic.entry;
+        if( close.have == SR_EXACT ) {
             break;
-        ++close.ic.entry;
+        }
     }
     *ic = close.ic;
     ic->entry = save_entry;
@@ -332,37 +330,40 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
     return( close.have );
 }
 
-static void ScanSection( struct search_info *close, unsigned file_id, unsigned line )
+static void ScanSection( struct search_info *close, cue_fileid file_id, line_number search_line )
 {
     line_info           *curr;
     line_segment        *ptr;
     line_segment        *next;
-    unsigned            num;
+    line_number         line;
     cue_state           spec;
 
-    close->found = 0;
+    close->found = false;
     for( ptr = LinStart; ptr < LinEnd; ptr = next ) {
         next = NEXT_SEG( ptr );
-        if( line == 0 ) {
-            line = LINE_LINE( ptr )[0].line_number;
+        if( search_line == 0 ) {
+            search_line = LINE_LINE( ptr )[0].line;
         }
         for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
             spec.fno = 1;
-            num = curr->line_number;
-            if( num >= PRIMARY_RANGE ) {
-                if( !CueFind( close->special_table, num, &spec ) ) {
+            line = curr->line;
+            if( line >= PRIMARY_RANGE ) {
+                if( !CueFind( close->special_table, line - PRIMARY_RANGE, &spec ) ) {
                     continue;
                 }
-                num = spec.line;
+                line = spec.line;
             }
-            if( spec.fno != file_id ) continue;
-            if( num > line ) continue;
-            if( num <= close->num ) continue;
-            close->found = 1;
+            if( spec.fno != file_id )
+                continue;
+            if( line > search_line )
+                continue;
+            if( line <= close->line )
+                continue;
+            close->found = true;
             close->ic.seg_bias = BIAS( ptr );
             close->ic.info_bias = BIAS( curr );
-            close->num = num;
-            if( num == line ) {
+            close->line = line;
+            if( line == search_line ) {
                 close->have = SR_EXACT;
                 return;
             }
@@ -384,18 +385,15 @@ search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
         file = 1;
     close.ic.im = im;
     close.have = SR_NONE;
-    close.num = 0;
-    close.ic.entry = 0;
+    close.line = 0;
     close.special_table = FindSpecCueTable( ii, im, &base );
-    for( ;; ) {
-        if( GetLineInfo( ii, im, close.ic.entry ) != DS_OK )
-            break;
+    for( close.ic.entry = 0; GetLineInfo( ii, im, close.ic.entry ) == DS_OK; ++close.ic.entry ) {
         ScanSection( &close, file, line );
         if( close.found )
             save_entry = close.ic.entry;
-        if( close.have == SR_EXACT )
+        if( close.have == SR_EXACT ) {
             break;
-        ++close.ic.entry;
+        }
     }
     *ic = close.ic;
     ic->entry = save_entry;
@@ -408,19 +406,19 @@ search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
 unsigned long DIGENTRY DIPImpCueLine( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
-    unsigned    num;
+    line_number line;
 
     LinStart = NULL;
-    num = 0;
+    line = 0;
     if( ic->entry != NO_LINE && GetLineInfo( ii, ic->im, ic->entry ) == DS_OK ) {
         info = UNBIAS( ic->info_bias );
-        num = info->line_number;
+        line = info->line;
         UnlockLine();
-        if( num >= PRIMARY_RANGE ) {
-            return( SpecCueLine( ii, ic, num ) );
+        if( line >= PRIMARY_RANGE ) {
+            return( SpecCueLine( ii, ic, line - PRIMARY_RANGE ) );
         }
     }
-    return( num );
+    return( line );
 }
 
 unsigned DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
@@ -458,15 +456,13 @@ walk_result DIGENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
 
     //NYI: handle special cues
     ic->im = im;
-    ic->entry = 0;
-    for( ;; ) {
-        if( GetLineInfo( ii, im, ic->entry ) != DS_OK ) break;
+    for( ic->entry = 0; GetLineInfo( ii, im, ic->entry ) == DS_OK; ++ic->entry ) {
         for( ptr = LinStart; ptr < LinEnd; ptr = next ) {
             next = NEXT_SEG( ptr );
             ic->seg_bias = BIAS( ptr );
             for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
                 ic->info_bias = BIAS( curr );
-                if( curr->line_number < PRIMARY_RANGE ) {
+                if( curr->line < PRIMARY_RANGE ) {
                     wr = wk( ii, ic, d );
                     UnlockLine();
                     return( wr );
@@ -474,7 +470,6 @@ walk_result DIGENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
             }
         }
         UnlockLine();
-        ++ic->entry;
     }
     if( ic->entry == 0 ) {
         /* Module with no line cues. Fake one up. */
@@ -493,15 +488,15 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
 cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
-    unsigned    num;
+    line_number line;
 
     LinStart = NULL;
     if( ic->entry != NO_LINE && GetLineInfo( ii, ic->im, ic->entry ) == DS_OK ) {
         info = UNBIAS( ic->info_bias );
-        num = info->line_number;
+        line = info->line;
         UnlockLine();
-        if( num >= PRIMARY_RANGE ) {
-            return( SpecCueFileId( ii, ic, num ) );
+        if( line >= PRIMARY_RANGE ) {
+            return( SpecCueFileId( ii, ic, line - PRIMARY_RANGE ) );
         }
     }
     return( 1 );
@@ -531,12 +526,8 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
     word                num_entries;
     dip_status          status;
 
-    status = DS_OK;
     num_entries = ModPointer( ii, ic->im )->di[DMND_LINES].u.entries;
-    for( ;; ) {
-        status = GetLineInfo( ii, ic->im, ic->entry );
-        if( status != DS_OK )
-            return( status );
+    while( (status = GetLineInfo( ii, ic->im, ic->entry )) == DS_OK ) {
         seg = UNBIAS( ic->seg_bias );
         info = UNBIAS( ic->info_bias );
         ++info;
@@ -564,6 +555,7 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
         ic->seg_bias = BIAS( seg );
         ic->info_bias = BIAS( info );
     }
+    return( status );
 }
 
 static line_segment *FindPrevSeg( line_segment *seg )
@@ -588,10 +580,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
     dip_status          status;
 
     LinStart = NULL;
-    for( ;; ) {
-        status = GetLineInfo( ii, ic->im, ic->entry );
-        if( status != DS_OK )
-            return( status );
+    while( (status = GetLineInfo( ii, ic->im, ic->entry )) == DS_OK ) {
         seg = UNBIAS( ic->seg_bias );
         info = UNBIAS( ic->info_bias );
         --info;
@@ -605,7 +594,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
             if( seg == LinStart )
                 break;
             seg = FindPrevSeg( seg );
-            info = &LINE_LINE( seg )[LINE_NUM( seg ) - 1];
+            info = LINE_LINE( seg ) + LINE_COUNT( seg ) - 1;
         }
         if( ic->entry == 0 ) {
             num_entries = ModPointer( ii, ic->im )->di[DMND_LINES].u.entries;
@@ -614,7 +603,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
             if( status != DS_OK )
                 return( status );
             seg = FindPrevSeg( seg );
-            info = &LINE_LINE( seg )[LINE_NUM( seg ) - 1];
+            info = LINE_LINE( seg ) + LINE_COUNT( seg ) - 1;
             ic->seg_bias = BIAS( seg );
             ic->info_bias = BIAS( info );
             UnlockLine();
@@ -628,6 +617,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
         ic->seg_bias = BIAS( seg );
         ic->info_bias = BIAS( info );
     }
+    return( status );
 }
 
 dip_status DIGENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
@@ -641,21 +631,21 @@ dip_status DIGENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
     //NYI: handle special cues
     *aic = *ic;
     ok = DS_OK;
-    while( adj > 0 ) {
+    for( ; adj > 0; --adj ) {
         status = AdjForward( ii, aic );
         if( status & DS_ERR )
             return( status );
-        if( status != DS_OK )
+        if( status != DS_OK ) {
             ok = status;
-        --adj;
+        }
     }
-    while( adj < 0 ) {
+    for( ; adj < 0; ++adj ) {
         status = AdjBackward( ii, aic );
         if( status & DS_ERR )
             return( status );
-        if( status != DS_OK )
+        if( status != DS_OK ) {
             ok = status;
-        ++adj;
+        }
     }
     return( ok );
 }
@@ -664,9 +654,17 @@ int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     ii = ii;
-    if( ic1->im != ic2->im )
-        return( ic1->im - ic2->im );
-    if( ic1->entry != ic2->entry )
-        return( ic1->entry - ic2->entry );
-    return( ic1->info_bias - ic2->info_bias );
+    if( ic1->im < ic2->im )
+        return( -1 );
+    if( ic1->im > ic2->im )
+        return( 1 );
+    if( ic1->entry < ic2->entry )
+        return( -1 );
+    if( ic1->entry > ic2->entry )
+        return( 1 );
+    if( ic1->info_bias < ic2->info_bias )
+        return( -1 );
+    if( ic1->info_bias > ic2->info_bias )
+        return( 1 );
+    return( 0 );
 }

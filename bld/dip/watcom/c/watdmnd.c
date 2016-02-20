@@ -45,14 +45,14 @@ int __nullarea;
 #endif
 
 typedef struct demand_ctrl {
-        struct demand_ctrl      *link;
-        pointer_int             *owner;
-        void                    (*clear)(void *, void *);
-        pointer_int             save;
-        unsigned                size;
-        unsigned                locks;
-        unsigned                time_stamp;
-        char                    buff[1];
+    struct demand_ctrl      *link;
+    pointer_int             *owner;
+    void                    (*clear)(void *, void *);
+    pointer_int             save;
+    unsigned                size;
+    unsigned                locks;
+    unsigned                time_stamp;
+    char                    buff[1];
 } demand_ctrl;
 
 
@@ -86,7 +86,7 @@ unsigned InfoSize( imp_image_handle *ii, imp_mod_handle im,
     section_info        *inf;
     dword               real_entry;
 
-    dmnd = &ModPointer( ii, im )->di[dk];
+    dmnd = ModPointer( ii, im )->di + dk;
     if( entry >= dmnd->u.entries )
         return( 0 );
     real_entry = dmnd->info_off + entry;
@@ -155,7 +155,7 @@ dip_status InitDemand( imp_image_handle *ii )
 
     d.max_size = 0;
     MyWalkModList( ii, WlkDmnd, &d );
-    if( d.max_size >= (0x10000UL - sizeof( demand_ctrl )) ) {
+    if( d.max_size >= ( 0x10000UL - sizeof( demand_ctrl ) ) ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
@@ -226,7 +226,9 @@ void InfoUnlock( void )
     for( section = DemandList; section != NULL; section = section->link ) {
         section->locks = 0;
     }
-    if( LastDemand != NULL ) LastDemand->locks = 0;
+    if( LastDemand != NULL ) {
+        LastDemand->locks = 0;
+    }
 }
 
 
@@ -252,7 +254,7 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
             section->time_stamp = 0;
         }
     }
-    info = &ModPointer( ii, im )->di[dk];
+    info = ModPointer( ii, im )->di + dk;
     if( entry >= info->u.entries )
         return( NULL );
     real_entry = info->info_off + entry;

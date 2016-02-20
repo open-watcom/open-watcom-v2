@@ -70,7 +70,7 @@ void LocationAdd( location_list *ll, long sbits )
         bits %= 8;
     }
     num = 0;
-    le = &ll->e[0];
+    le = ll->e;
     for( ;; ) {
         if( le->bit_length == 0 )
             break;
@@ -81,7 +81,7 @@ void LocationAdd( location_list *ll, long sbits )
     }
     if( num != 0 ) {
         ll->num -= num;
-        memcpy( &ll->e[0], le, ll->num * sizeof( ll->e[0] ) );
+        memcpy( ll->e, le, ll->num * sizeof( ll->e[0] ) );
     }
     add = bits / 8;
     bits = bits % 8;
@@ -412,7 +412,7 @@ dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char 
         ++e;
     }
     ok = DS_OK;
-    sp = &LocStack[LocStkPtr-1];
+    sp = LocStack + LocStkPtr - 1;
     start = sp;
     while( e < end ) {
         e = ParseLocEntry( ii, e, &loc );
@@ -443,13 +443,13 @@ dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char 
             sp->u.ll.flags = 0;
             j = 0;
             for( i = 0; i < loc.multi_reg.numregs; ++i ) {
-                reg = &RegTable[loc.multi_reg.regs[i]];
+                reg = RegTable + loc.multi_reg.regs[i];
                 ok = DCItemLocation( lc, reg->ci, &tmp.ll );
                 if( ok != DS_OK ) {
                     DCStatus( ok );
                     goto done;
                 }
-                memcpy( &sp->u.ll.e[j], &tmp.ll.e[0],
+                memcpy( sp->u.ll.e + j, tmp.ll.e,
                         tmp.ll.num * sizeof( tmp.ll.e[0] ) );
                 sp->u.ll.e[j].bit_start += reg->start;
                 sp->u.ll.e[j].bit_length = reg->len;
@@ -477,7 +477,8 @@ do_ind:
             if( sp->type == LS_NUM ) {
                 tmp.num = sp->u.num;
                 ok = DCItemLocation( lc, CI_DEF_ADDR_SPACE, &sp->u.ll );
-                if( ok != DS_OK ) goto done;
+                if( ok != DS_OK )
+                    goto done;
                 sp->u.ll.e[0].u.addr.mach.offset = tmp.num;
             }
             LocationCreate( &tmp.ll, LT_INTERNAL, &item );
@@ -511,7 +512,7 @@ do_ind:
             sp->u.num &= (unsigned_32) 0xffff;
             break;
         case OPERATOR + LOP_MK_FP:
-            op1 = &sp[0];
+            op1 = sp;
             --sp;
             if( sp->type == LS_NUM ) {
                 tmp.addr = NilAddr;
@@ -547,7 +548,7 @@ do_ind:
             sp[-loc.op.stk] = tmp.lse;
             break;
         case OPERATOR + LOP_ADD:
-            op1 = &sp[0];
+            op1 = sp;
             --sp;
             if( op1->type == LS_ADDR ) {
                 /* get the address into sp */

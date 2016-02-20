@@ -55,7 +55,7 @@ extern dip_status       SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is
 extern type_kind        GblTypeClassify( unsigned kind );
 extern walk_result      WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
                                 IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
-extern dip_status       Link2GblHdl( imp_image_handle *ii, void *gbl,
+extern dip_status       Link2GblHdl( imp_image_handle *ii, gbl_info *gbl,
                                 imp_sym_handle *is );
 extern search_result    SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
                                 imp_mod_handle im, lookup_item *li, void *d );

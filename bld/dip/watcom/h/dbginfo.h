@@ -92,6 +92,8 @@
 
 #include "pushpck1.h"
 
+typedef word        line_number;
+
 typedef struct {
     word            signature;      /* == 0x8386                    */
     byte            exe_major_ver;  /* == 2 or 3                    */
@@ -134,20 +136,20 @@ typedef struct {
 } _WCUNALIGNED mod_info;
 
 typedef struct {
-    word            line_number;
+    line_number     line;
     dword           code_offset;    /* offset from segment base */
 } _WCUNALIGNED line_info;
 
 typedef struct {
     word            segment;        /* offset from addr info class */
-    word            num;
-    line_info       line[1];        /* repeated 'num' times */
+    word            count;
+    line_info       line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v2_line_segment;
 
 typedef struct {
-    dword       segment;        /* offset from addr info class */
-    word        num;
-    line_info   line[1];        /* repeated 'num' times */
+    dword           segment;        /* offset from addr info class */
+    word            count;
+    line_info       line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v3_line_segment;
 
 typedef struct {
@@ -162,10 +164,10 @@ typedef struct {
 #define GBL_KIND_CODE           0x04
 
 typedef struct {
-    addr48_ptr          addr;
-    word                mod;    /* module index number for V3 */
-    byte                kind;
-    char                name[1];
+    addr48_ptr      addr;
+    word            mod;    /* module index number for V3 */
+    byte            kind;
+    char            name[1];
 } _WCUNALIGNED v3_gbl_info;
 
 
@@ -177,10 +179,10 @@ typedef struct {
 
 typedef struct {
     addr48_ptr      base;
-    word            num;
-    addr_info       addr[1];
+    word            count;
+    addr_info       addr[1];    /* repeated 'count' times */
 } _WCUNALIGNED seg_info;
 
-#define SEG_NUM_MASK    0x7fff
+#define SEG_COUNT_MASK  0x7fff
 
 #include "poppck.h"

@@ -89,12 +89,15 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) return( SR_NONE );
+        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) {
+            return( SR_NONE );
+        }
     } else {
         is->im = im;
     }
     sr = LookupLclAddr( ii, addr, is );
-    if( sr != SR_NONE ) return( sr );
+    if( sr != SR_NONE )
+        return( sr );
     return( LookupGblAddr( ii, addr, is ) );
 }
 
@@ -153,13 +156,18 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
     case SN_OBJECT:
         switch( is->type ) {
         case SH_LCL:
-            if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK ) break;
+            if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK )
+                break;
             return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK ) break;
-            if( ll.num != 1 || ll.e[0].type != LT_ADDR ) break;
-            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE ) break;
-            if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT ) break;
+            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK )
+                break;
+            if( ll.num != 1 || ll.e[0].type != LT_ADDR )
+                break;
+            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+                break;
+            if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
+                break;
             is = &gbl_is;
             /* fall through */
         case SH_GBL:
@@ -212,7 +220,8 @@ static search_result SearchFileScope( imp_image_handle *ii,
     switch( li->type ) {
     case ST_NONE:
         sr = SearchLclMod( ii, im, li, d );
-        if( sr != SR_NONE ) return( sr );
+        if( sr != SR_NONE )
+            return( sr );
         return( SearchEnumName( ii, im, li, d ) );
     case ST_DESTRUCTOR:
     case ST_OPERATOR:
@@ -240,7 +249,8 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }
-    if( li->type == ST_NAMESPACE ) return( SR_NONE );
+    if( li->type == ST_NAMESPACE )
+        return( SR_NONE );
     sym_li = *li;
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
@@ -411,7 +421,8 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
 dip_status DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
     imp_sym_handle *is, location_context *lc, location_list *ll, unsigned parm )
 {
-    if( is->type != SH_LCL ) return( DS_FAIL );
+    if( is->type != SH_LCL )
+        return( DS_FAIL );
     return( SymHdl2LclParmLoc( ii, is, lc, ll, parm ) );
 }
 
@@ -487,7 +498,7 @@ dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
     return( DS_FAIL );
 }
 
-static int GblCmp( void *g1, void *g2 )
+static int GblCmp( gbl_info *g1, gbl_info *g2 )
 {
 #if defined(__COMPACT__) || defined(__LARGE__) || defined( __HUGE__ )
     unsigned    s1;
@@ -495,7 +506,8 @@ static int GblCmp( void *g1, void *g2 )
 
     s1 = FP_SEG( g1 );
     s2 = FP_SEG( g2 );
-    if( s1 != s2 ) return( s1 - s2 );
+    if( s1 != s2 )
+        return( s1 - s2 );
     return( FP_OFF( g1 ) - FP_OFF( g2 ) );
 #else
     return( (char*)g1 - (char*)g2 );

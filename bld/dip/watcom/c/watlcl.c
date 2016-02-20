@@ -583,7 +583,7 @@ dip_status SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-void SetGblLink( imp_sym_handle *is, void *link )
+void SetGblLink( imp_sym_handle *is, gbl_info *link )
 {
     is->u.lcl.gbl_link = link;
 }

@@ -465,7 +465,7 @@ size_t DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
         *buff = '\0';
         return( 0 );
     }
-    start = &name[ len ];
+    start = name + len;
     ++name;
     end = start + 1;
     if( *start == ')' ) {
@@ -518,7 +518,7 @@ size_t PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
         --buff_size;
         if( buff_size > len )
             buff_size = len;
-        memcpy( buff, &name[1], buff_size );
+        memcpy( buff, name + 1, buff_size );
         buff[buff_size] = '\0';
     }
     return( len );

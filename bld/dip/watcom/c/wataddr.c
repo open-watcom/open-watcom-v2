@@ -56,13 +56,12 @@ static struct {
 
 #define SEG_NOT_FOUND       0xffff
 #define GET_SEG_INFO( blk, off )   \
-        ((seg_info *)((char *)blk->info+(unsigned)(off)))
+        ((seg_info *)((char *)blk->info+(off)))
 #define NEXT_SEG_INFO( ptr )        \
-        ((seg_info *) ( (char *)&ptr->addr[0] +     \
-                        GET_NUM_SEGS( ptr ) * sizeof( addr_info ) ))
+        ((seg_info *)((char *)ptr->addr+GET_SEG_COUNT(ptr)*sizeof(addr_info)))
 
 #define GET_ADDR_INFO( blk, off )  \
-        ((addr_info *)((char *)blk->info+(unsigned)(off)))
+        ((addr_info *)((char *)blk->info+(off)))
 
 /*
  * the top bit in the num field is used as a flag to identify data
@@ -70,8 +69,7 @@ static struct {
  * addr_info structures present.
  */
 
-#define GET_NUM_SEGS( ptr ) \
-        ( ( ( seg_info * ) ptr )->num & SEG_NUM_MASK )
+#define GET_SEG_COUNT( ptr )    (((seg_info *)ptr)->count & SEG_COUNT_MASK)
 
 
 /*
@@ -86,9 +84,9 @@ void AdjustAddrInit( void )
 
 void AdjustAddrs( section_info *inf )
 {
-    seg_info *          ptr;
-    seg_info *          end;
-    addr_info *         curr;
+    seg_info            *ptr;
+    seg_info            *end;
+    addr_info           *curr;
     unsigned            i;
     info_block          *blk;
     addr_off            off;
@@ -104,11 +102,11 @@ void AdjustAddrs( section_info *inf )
     place.mach.offset = 0;
     for( blk = inf->addr_info; blk != NULL; blk = blk->next ) {
         end = GET_SEG_INFO( blk, blk->size );
-        for( ptr=GET_SEG_INFO(blk,0); ptr < end; ptr = NEXT_SEG_INFO(ptr) ) {
+        for( ptr = GET_SEG_INFO( blk, 0 ); ptr < end; ptr = NEXT_SEG_INFO( ptr ) ) {
             AddressMap( inf->ctl, &ptr->base );
             off = ptr->base.offset;
             curr = ptr->addr;
-            for( i = GET_NUM_SEGS( ptr ); i != 0; --i, ++curr ) {
+            for( i = GET_SEG_COUNT( ptr ); i != 0; --i, ++curr ) {
                 if( curr->mod != (word)-1 ) {
                     if( inf->ctl->v2 ) {
                         curr->mod = ModOff2Idx( inf, curr->mod );
@@ -118,7 +116,7 @@ void AdjustAddrs( section_info *inf )
                 off += curr->size;
             }
             last = ptr->base.segment + ((off + 0x0f) >> 4);
-            if( ptr->num & ~SEG_NUM_MASK ) {
+            if( ptr->count & ~SEG_COUNT_MASK ) {
                 if( ptr->base.segment < NonSectStart ) {
                     NonSectStart = ptr->base.segment;
                 }
@@ -144,13 +142,13 @@ void AdjustAddrs( section_info *inf )
 static dip_status SectFindAddrInfo( section_info *inf, address addr,
                                 imp_mod_handle *im, mem_block *code )
 {
-    seg_info *     ptr;
-    seg_info *     end;
-    addr_info *    info;
-    addr_off         curr_off;
-    unsigned         num;
-    address          base;
-    info_block          *blk;
+    seg_info        *ptr;
+    seg_info        *end;
+    addr_info       *info;
+    addr_off        curr_off;
+    unsigned        num;
+    address         base;
+    info_block      *blk;
 
     base.sect_id = inf->sect_id;
     base.indirect = 1;
@@ -170,7 +168,7 @@ static dip_status SectFindAddrInfo( section_info *inf, address addr,
             if( curr_off > addr.mach.offset )
                 goto next_block;
             info = ptr->addr;
-            for( num = GET_NUM_SEGS( ptr ); num != 0; --num ) {
+            for( num = GET_SEG_COUNT( ptr ); num != 0; --num ) {
                 curr_off += info->size;
                 if( curr_off > addr.mach.offset ) {
                     if( info->mod == (word)-1 )
@@ -234,7 +232,7 @@ address FindModBase( imp_image_handle *ii, imp_mod_handle im )
         do {
             base.mach = ptr->base;
             info = ptr->addr;
-            for( num = GET_NUM_SEGS( ptr ); num != 0; --num ) {
+            for( num = GET_SEG_COUNT( ptr ); num != 0; --num ) {
                 if( IDX2IMH( info->mod ) == im )
                     return( base );
                 base.mach.offset += info->size;
@@ -250,8 +248,7 @@ address FindModBase( imp_image_handle *ii, imp_mod_handle im )
  * FindSegBlock -- return the mem_block for a segment
  */
 
-mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
-                         unsigned long offset )
+mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im, unsigned long offset )
 {
     seg_info            *ptr;
     seg_info            *next;
@@ -259,16 +256,15 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
     addr_info           *curr;
     section_info        *inf;
     info_block          *blk;
+    mem_block           block;
 
     if( offset == 0 ) {
-        mem_block       block;
-
         block.start = NilAddr;
         return( block );
     }
     if( SegBlockCache.ii == ii
-     && SegBlockCache.im == im
-     && SegBlockCache.off == offset ) {
+      && SegBlockCache.im == im
+      && SegBlockCache.off == offset ) {
         return( SegBlockCache.block );
     }
     SegBlockCache.ii = ii;
@@ -276,21 +272,12 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
     SegBlockCache.off = offset;
     inf = FindInfo( ii, im );
     SegBlockCache.block.start.sect_id = inf->sect_id;
-    blk = inf->addr_info;
-    for( ;; ) {
-        if( offset < blk->size )
-            break;
+    for( blk = inf->addr_info; blk->size <= offset; blk = blk->next ) {
         offset -= blk->size;
-        blk = blk->next;
     }
-    info = GET_ADDR_INFO( blk, (unsigned)offset );
-    ptr = GET_SEG_INFO( blk, 0 );
-    for( ;; ) {
-        next = NEXT_SEG_INFO( ptr );
-        if( (seg_info *)info < next )
-            break;
-        ptr = next;
-    }
+    info = GET_ADDR_INFO( blk, (size_t)offset );
+    for( ptr = GET_SEG_INFO( blk, 0 ); (next = NEXT_SEG_INFO( ptr )) <= (seg_info *)info; ptr = next )
+        ;
     SegBlockCache.block.start.mach = ptr->base;
     SegBlockCache.block.start.indirect = 1;
     for( curr = ptr->addr; curr != info; ++curr ) {
@@ -301,20 +288,17 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
 }
 
 
-unsigned AddrInfoSplit( info_block *curr, section_info *inf )
+unsigned AddrInfoSplit( info_block *blk, section_info *inf )
 {
-    seg_info *  start;
-    seg_info *  seg;
-    seg_info *  next;
-    seg_info *  end;
+    seg_info    *start;
+    seg_info    *seg;
+    seg_info    *next;
+    seg_info    *end;
 
     inf = inf;
-    start = GET_SEG_INFO( curr, 0 );
-    end = GET_SEG_INFO( curr, curr->size );
-    seg = start;
-    for( ;; ) {
-        if( ((byte *)end - (byte *)seg) < sizeof( seg_info ) )
-            break;
+    start = GET_SEG_INFO( blk, 0 );
+    end = GET_SEG_INFO( blk, blk->size );
+    for( seg = start; ((byte *)end - (byte *)seg) >= sizeof( seg_info ); seg = next ) {
         next = NEXT_SEG_INFO( seg );
         if( next >= end ) {
             break;

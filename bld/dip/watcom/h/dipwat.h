@@ -35,6 +35,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dbginfo.h"
@@ -46,21 +47,21 @@
 #define IDX2IMH(x)          ((imp_mod_handle)(x) + IMH_BASE)
 #define IMH2IDX(x)          ((word)(x - IMH_BASE))
 
-struct type_pos {
+typedef struct type_pos {
     word                entry;
     unsigned short      offset;
-};
+} type_pos;
 
-struct imp_sym_handle {
+typedef struct imp_sym_handle {
     imp_mod_handle      im;
     union {
         /* for SH_GBL */
-        void            *gbl;
+        gbl_info        *gbl;
         /* for SH_LCL */
         struct {
             unsigned short base;
             unsigned short offset;
-            void           *gbl_link;
+            gbl_info       *gbl_link;
         }               lcl;
         /* for SH_MBR, SH_TYP, SH_CST */
         struct {
@@ -77,9 +78,9 @@ struct imp_sym_handle {
         SH_TYP,
         SH_CST
     }   type;
-};
+} imp_sym_handle;
 
-struct imp_type_handle {
+typedef struct imp_type_handle {
     imp_mod_handle      im;
     struct type_pos     t;
     union {
@@ -92,19 +93,19 @@ struct imp_type_handle {
         }               s;
         unsigned        all;
     }                   f;
-};
+} imp_type_handle;
 
-struct subrange_info {
+typedef struct subrange_info {
     long                lo_bound;
     long                hi_bound;
-};
+} subrange_info;
 
-struct imp_cue_handle {
+typedef struct imp_cue_handle {
     imp_mod_handle      im;
     word                entry;
     unsigned short      seg_bias;
     unsigned short      info_bias;
-};
+} imp_cue_handle;
 
 typedef struct info_block {
     void                *link;
@@ -123,7 +124,7 @@ typedef struct section_info {
     word                        sect_id;
 } section_info;
 
-struct imp_image_handle {
+typedef struct imp_image_handle {
     struct section_info         *sect;
     unsigned                    num_sects;
     dig_fhandle                 sym_file;
@@ -131,8 +132,8 @@ struct imp_image_handle {
     char                        *lang;
     addr_seg                    *map_segs;
     addr_ptr                    *real_segs;
-    unsigned                    v2              : 1;
-};
+    bool                        v2;
+} imp_image_handle;
 
 typedef enum {
     NEED_NOTHING        = 0x00,
@@ -141,11 +142,11 @@ typedef enum {
     EMPTY_EXPR          = 0x04
 } location_info;
 
-extern address          NilAddr;
-
 typedef walk_result (INT_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
-walk_result     MyWalkModList( imp_image_handle *, INT_MOD_WKR *, void * );
 
+extern address          NilAddr;
 extern dip_imp_routines ImpInterface;
+
+extern walk_result     	MyWalkModList( imp_image_handle *, INT_MOD_WKR *, void * );
 
 #endif

@@ -278,7 +278,7 @@ static dip_status FindTypeCache( imp_image_handle *ii, imp_mod_handle im,
     type_cache  *cache;
 
     for( i = 0; i < TYPE_CACHE_SIZE; ++i ) {
-        cache = &TypeCache[ i ];
+        cache = TypeCache + i;
         if( cache->ii == ii && cache->im == im && cache->index == index ) {
             it->im = im;
             it->f.all = 0;
@@ -296,8 +296,8 @@ static void SetTypeCache( imp_image_handle *ii, imp_mod_handle im,
 {
     type_cache  *cache;
 
-    cache = &TypeCache[ TypeCacheRover++ ];
-    TypeCacheRover &= (TYPE_CACHE_SIZE-1);
+    cache = TypeCache + TypeCacheRover++;
+    TypeCacheRover &= TYPE_CACHE_SIZE - 1;
     cache->ii = ii;
     cache->im = im;
     cache->index = index;
@@ -311,7 +311,9 @@ void ClearTypeCache( imp_image_handle *ii )
     int         i;
 
     for( i = 0; i < TYPE_CACHE_SIZE; ++i ) {
-        if( TypeCache[i].ii == ii ) TypeCache[i].ii = NULL;
+        if( TypeCache[i].ii == ii ) {
+            TypeCache[i].ii = NULL;
+        }
     }
 }
 
@@ -404,9 +406,9 @@ static byte GetRealTypeHandle( imp_image_handle *ii, imp_type_handle *it )
         p = Type->start + it->t.offset;
         if( GETU8( p + 1 ) != NAME_TYPE + TYPE_NAME ) {
             if( is_char
-             && GETU8( p ) >= 7
-             && GETU8( p + 1 ) == NAME_TYPE + TYPE_SCALAR
-             && CharName( p + 3, GETU8( p ) - 3 ) ) {
+              && GETU8( p ) >= 7
+              && GETU8( p + 1 ) == NAME_TYPE + TYPE_SCALAR
+              && CharName( p + 3, GETU8( p ) - 3 ) ) {
                 it->f.s.chr = 1;
             }
             return( GETU8( p + 1 ) );
@@ -449,7 +451,8 @@ static dip_status DoFindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
             base = *it;
             for( ;; ) {
                 p = Type->start + base.t.offset;
-                if( (GETU8( p + 1 ) & CLASS_MASK) != ARRAY_TYPE ) break;
+                if( (GETU8( p + 1 ) & CLASS_MASK) != ARRAY_TYPE )
+                    break;
                 p = BaseTypePtr( p );
                 GetIndex( p, &index );
                 FindRawTypeHandle( ii, base.im, index, &base );
@@ -515,14 +518,16 @@ static const char *FindAName( struct name_state *state, const char *p,
             } else {
                 state->curr_idx--;
             }
-            if( (which & ET_ENUM) == 0 ) continue;
+            if( (which & ET_ENUM) == 0 )
+                continue;
             break;
         case NAME_TYPE:
             if( (GETU8( p + 1 ) & SUBCLASS_MASK) == TYPE_EOF ) {
                 state->hit_eof = 1;
                 return( NULL );
             }
-            if( (which & ET_TYPE) == 0 ) continue;
+            if( (which & ET_TYPE) == 0 )
+                continue;
             switch( GETU8( p + 1 ) & SUBCLASS_MASK ) {
             case TYPE_SCALAR:
                 type = ST_TYPE;
@@ -813,7 +818,8 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
             ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
             GetTypeInfo( ii, &tmp, lc, ti, ndims );
             it->f.s.col_major = save_major;
-            if( ndims != NULL ) ++*ndims;
+            if( ndims != NULL )
+                ++*ndims;
             ti->size *= info.num_elts;
             ti->modifier = TM_NONE;
             ti->kind = TK_ARRAY;
@@ -1351,7 +1357,8 @@ dip_status SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
         count = GETU16( p + 2 );
         for( ;; ) {
             if( count == 0 ) {
-                if( pending == NULL ) return( DS_FAIL );
+                if( pending == NULL )
+                    return( DS_FAIL );
                 ok = LoadType( ii, is->im, pending->entry );
                 if( ok != DS_OK ) {
                     PopLoad();
@@ -1457,7 +1464,8 @@ dip_status SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
         break;
     case STRUCT_TYPE+ST_FIELD_LOC:
     case STRUCT_TYPE+ST_BIT_LOC:
-        if( info & (NEED_BASE|EMPTY_EXPR) ) PushBaseLocation( ll );
+        if( info & (NEED_BASE|EMPTY_EXPR) )
+            PushBaseLocation( ll );
         ok = EvalLocation( ii, lc, p + 3, ll );
         if( ok != DS_OK ) {
             PopLoad();
@@ -1508,7 +1516,8 @@ dip_status SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is,
     p = BaseTypePtr( p );
     GetIndex( p, &index );
     ret = FindRawTypeHandle( ii, is->im, index, &tmp );
-    if( ret != DS_OK ) return( ret );
+    if( ret != DS_OK )
+        return( ret );
     kind = GetRealTypeHandle( ii, &tmp ) & CLASS_MASK;
     PopLoad();
     switch( kind ) {
@@ -1564,7 +1573,8 @@ dip_status DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     count = GETU16( p + 2 );
     for( ;; ) {
         if( count == 0 ) {
-            if( pending == NULL ) return( DS_FAIL );
+            if( pending == NULL )
+                return( DS_FAIL );
             ok = LoadType( ii, oit->im, pending->entry );
             if( ok != DS_OK ) {
                 PopLoad();
@@ -1665,7 +1675,8 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     count = GETU16( p + 2 );
     for( ;; ) {
         if( count == 0 ) {
-            if( pending == NULL ) break;
+            if( pending == NULL )
+                break;
             if( LoadType( ii, it->im, pending->entry ) != DS_OK ) {
                 PopLoad();
                 return( WR_STOP );
@@ -1758,7 +1769,8 @@ do_walk:
                 --count;
             }
             if( list == NULL ) {
-                if( pending == NULL ) break;
+                if( pending == NULL )
+                    break;
                 wk( ii, SWI_INHERIT_END, NULL, d );
                 if( LoadType( ii, it->im, pending->entry ) != DS_OK ) {
                     PopLoad();
@@ -1794,7 +1806,9 @@ do_walk:
                 is->u.typ.t.entry = Type->entry;
                 is->name_off = (byte)( NamePtr( p ) - p );
                 wr = wk( ii, SWI_SYMBOL, is, d );
-                if( wr != WR_CONTINUE ) break;
+                if( wr != WR_CONTINUE ) {
+                    break;
+                }
             }
             new_entry = list->prev;
             list->prev = used;
@@ -1826,7 +1840,8 @@ const char *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im, const cha
     unsigned            size;
 
     PushLoad( &typeld );
-    if( LoadType( ii, im, 0 ) != DS_OK ) goto missing;
+    if( LoadType( ii, im, 0 ) != DS_OK )
+        goto missing;
     for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
         if( GETU8( p + 1 ) == (NAME_TYPE+TYPE_CUE_TABLE) ) {
             offset = GETU32( p + 2 );

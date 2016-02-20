@@ -41,12 +41,11 @@
 
 static void FreeInfBlks( info_block *blk )
 {
-    info_block          *tmp;
+    info_block          *next;
 
-    while( blk != NULL ) {
-        tmp = blk;
-        blk = blk->next;
-        DCFree( tmp );
+    for( ; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
 }
 
@@ -233,7 +232,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     unsigned long       curr;
     unsigned            num_segs;
     unsigned            num_sects;
-    byte                v2;
+    bool                v2;
     char                *new;
 
     end = DCSeek( ii->sym_file, DCSEEK_POSBACK( sizeof( header ) ), DIG_END );
@@ -254,10 +253,10 @@ static dip_status DoPermInfo( imp_image_handle *ii )
         return( DS_FAIL );
     switch( header.exe_major_ver ) {
     case EXE_MAJOR_VERSION:
-        v2 = 0;
+        v2 = false;
         break;
     case OLD_EXE_MAJOR_VERSION:
-        v2 = 1;
+        v2 = true;
         break;
     default:
         DCStatus( DS_ERR|DS_INFO_BAD_VERSION );
@@ -294,9 +293,9 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     ii->v2 = v2;
     ii->lang = new;
     ii->num_segs = num_segs;
-    ii->map_segs = (void *)&new[header.lang_size];
-    ii->real_segs = (void *)(ii->map_segs + num_segs);
-    ii->sect = (void *)(ii->real_segs + num_segs);
+    ii->map_segs = (void *)( new + header.lang_size );
+    ii->real_segs = (void *)( ii->map_segs + num_segs );
+    ii->sect = (void *)( ii->real_segs + num_segs );
     ii->num_sects = 0;
     DCSeek( ii->sym_file, curr - header.lang_size - header.segment_size, DIG_ORG );
     if( DCRead( ii->sym_file, ii->lang, header.lang_size ) != header.lang_size ) {
@@ -373,12 +372,12 @@ void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     for( i = 0; i < ii->num_segs; ++i ) {
         ii->real_segs[i].offset = 0;
         ii->real_segs[i].segment = ii->map_segs[i];
-        DCMapAddr( &ii->real_segs[i], d );
+        DCMapAddr( ii->real_segs + i, d );
     }
     AdjustAddrInit();
     for( i = 0; i < ii->num_sects; ++i ) {
-        AdjustAddrs( &ii->sect[i] );
-        AdjustSyms(  &ii->sect[i] );
+        AdjustAddrs( ii->sect + i );
+        AdjustSyms(  ii->sect + i );
     }
 }
 
