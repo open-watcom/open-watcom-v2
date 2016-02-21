@@ -354,7 +354,7 @@ static error_handle TransSetErr( error_handle errh )
     return( errh );
 }
 
-static error_handle SysSetErr( sys_error err )
+static error_handle SysSetLclErr( sys_error err )
 {
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
 }
@@ -441,7 +441,7 @@ static void SetDrv( int drive, object_loc loc )
         LocalSetDrv( drive - 'A' );
     }
     if( GetDrv( loc ) != drive ) {
-        SysSetErr( IO_BAD_DRIVE );
+        SysSetLclErr( IO_BAD_DRIVE );
     }
 }
 
@@ -856,21 +856,21 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         CopyStr( Parse1.path, Parse2.path );
     }
     if( f1loc != f2loc ) {
-        SysSetErr( IO_DIFF_DEV );
+        SysSetLclErr( IO_DIFF_DEV );
         return( 0 );
     }
     if( toupper( Parse1.drive[0] ) != toupper( Parse2.drive[0] ) ) {
-        SysSetErr( IO_DIFF_DEV );
+        SysSetLclErr( IO_DIFF_DEV );
         return( 0 );
     }
     if( Parse2.name[0] == '\0' ) {
-        SysSetErr( IO_DUP_OR_NOT_FOUND );
+        SysSetLclErr( IO_DUP_OR_NOT_FOUND );
         return( 0 );
     }
     endpath = Squish( &Parse1, Name1 );
     errh = FindFirst( Name1, f1loc, 0 );
     if( errh != 0 ) {
-        SysSetErr( IO_FILE_NOT_FOUND );
+        SysSetLclErr( IO_FILE_NOT_FOUND );
         return( errh );
     }
     for(;;) {
@@ -886,7 +886,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         if( errh != 0 ) {
             errh1 = errh;
             if( REAL_CODE( errh1 ) == IO_FILE_NOT_FOUND ) {
-                SysSetErr( IO_DUP_OR_NOT_FOUND );
+                SysSetLclErr( IO_DUP_OR_NOT_FOUND );
             } else {
                 TransSetErr( errh1 );
             }
@@ -1112,7 +1112,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                         errh = MakeDir( Name2, f2loc );
                         if( errh != 0 ) {
                             Error( "Unable to make directory" );
-                            SysSetErr( IO_NO_ACCESS );
+                            SysSetLclErr( IO_NO_ACCESS );
                             return;
                         }
                         ++DirectoriesMade;
@@ -1342,7 +1342,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 
     h = (dir_handle *)DbgAlloc( sizeof( dir_handle ) );
     if( h == NULL ) {
-        SysSetErr( IO_FIND_ERROR );
+        SysSetLclErr( IO_FIND_ERROR );
         return( NULL );
     }
     h->status = RFX_OK;
@@ -1379,14 +1379,14 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     if( GetFreeSpace( h, fnloc ) ) {
         errh = FindFirst( h->path, h->location, IO_SUBDIRECTORY );
         if( errh != 0 ) {
-            SysSetErr( IO_FIND_ERROR );
+            SysSetLclErr( IO_FIND_ERROR );
             DirClosef( h );
             return( NULL );
         } else {
             return( h );
         }
     } else {
-        SysSetErr( IO_BAD_DRIVE );
+        SysSetLclErr( IO_BAD_DRIVE );
         DirClosef( h );
         return( NULL );
     }
@@ -1553,7 +1553,7 @@ void ProcDir( int argc, char **argv )
         DItoD( io->free, Buff + 26 );
         WriteText( STD_OUT, Buff, sizeof( MSG ) - 1 );
     } else {
-        SysSetErr( IO_FILE_NOT_FOUND );
+        SysSetLclErr( IO_FILE_NOT_FOUND );
     }
 }
 
@@ -1644,7 +1644,7 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
     Squish( &Parse1, Name1 );
     errh = FindFirst( Name1, fnloc, 0 );
     if( errh != 0 ) {
-        SysSetErr( IO_FILE_NOT_FOUND );
+        SysSetLclErr( IO_FILE_NOT_FOUND );
     } else {
         endptr = Parse1.drive;
         if( Parse1.drive[0] != '\0' ) {
@@ -1721,9 +1721,9 @@ void ProcErase( int argc, char **argv )
         FreeCopySpec( CopySpecs );
     }
     if( erased_one ) {
-        SysSetErr( IO_OK );
+        SysSetLclErr( IO_OK );
     } else {
-        SysSetErr( IO_FILE_NOT_FOUND );
+        SysSetLclErr( IO_FILE_NOT_FOUND );
     }
 }
 
