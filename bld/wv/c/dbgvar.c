@@ -197,9 +197,12 @@ type_display *VarDisplayFindParent( type_display *curr )
 {
     type_display        *alias;
 
-    if( curr->parent != NULL ) return( curr->parent );
+    if( curr->parent != NULL )
+        return( curr->parent );
     for( alias = curr->alias; alias != curr; alias = alias->alias ) {
-        if( alias->parent != NULL ) return( alias->parent );
+        if( alias->parent != NULL ) {
+            return( alias->parent );
+        }
     }
     return( NULL );
 }
@@ -208,7 +211,8 @@ void VarDisplayDirty( type_display *curr )
 /****************************************/
 {
     while( curr != NULL ) {
-        if( curr->dirty ) return;
+        if( curr->dirty )
+            return;
         curr->dirty = true;
         curr = VarDisplayFindParent( curr );
     }
@@ -223,7 +227,8 @@ void VarDisplayInit( void )
 bool VarDisplayedOnTop( var_node *v )
 /***********************************/
 {
-    if( v->display_type == NULL ) return( false );
+    if( v->display_type == NULL )
+        return( false );
     return( v->display_type->on_top );
 }
 
@@ -260,7 +265,8 @@ static void VarDisplayFree( type_display *junk )
 {
     type_display        *prev;
 
-    for( prev = junk; prev->alias != junk; prev = prev->alias ) ;
+    for( prev = junk; prev->alias != junk; prev = prev->alias )
+        ;
     prev->alias = junk->alias;
     DbgFree( junk );
 }
@@ -372,7 +378,8 @@ static type_display *VarDisplayAddFieldSym( type_display *parent, sym_handle *fi
     int         len;
 
     len = SymName( field, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
-    if( len == 0 ) return( NULL );
+    if( len == 0 )
+        return( NULL );
     return( VarDisplayAddField( parent, TxtBuff ) );
 }
 
@@ -382,9 +389,12 @@ void VarDisplayAlias( type_display *type, type_display *to )
     type_display        *curr;
 
     // if already there, do nothing
-    if( to == type || to == NULL ) return;
+    if( to == type || to == NULL )
+        return;
     for( curr = type->alias; curr != type; curr = curr->alias ) {
-        if( curr == to ) return;
+        if( curr == to ) {
+            return;
+        }
     }
     // ok, it's a new one - hook it in
     curr = type->alias;
@@ -414,7 +424,7 @@ char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
     char        *tag_name;
 
     if( v->node_type == NODE_INHERIT ) {
-        if( VarNodeExpr( v )[0] != '\0' ) {
+        if( VarNodeExpr( v )[0] != NULLCHAR ) {
             return( StrCopy( VarNodeExpr( v ), buff ) );
         } else {
             StrCopy( LIT_ENG( Unknown_type ), buff );
@@ -440,7 +450,7 @@ char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
     case VARGADGET_POINTS:
         *buff++ = ' ';
         *buff++ = '*';
-        *buff = '\0';
+        *buff = NULLCHAR;
         break;
     }
     return( buff );
@@ -572,11 +582,17 @@ static void VarNodeSetBits( sym_handle *sh, var_node *v )
 
     SymInfo( sh, NULL, &sinfo );
     v->bits = 0;
-    if( sinfo.kind == SK_CODE || sinfo.kind == SK_PROCEDURE ) v->bits |= VARNODE_CODE;
-    if( sinfo.is_private ) v->bits |= VARNODE_PRIVATE;
-    if( sinfo.is_protected ) v->bits |= VARNODE_PROTECTED;
-    if( sinfo.compiler ) v->bits |= VARNODE_COMPILER;
-    if( sinfo.is_static && sinfo.is_member ) v->bits |= VARNODE_STATIC;
+    if( sinfo.kind == SK_CODE || sinfo.kind == SK_PROCEDURE )
+        v->bits |= VARNODE_CODE;
+    if( sinfo.is_private )
+        v->bits |= VARNODE_PRIVATE;
+    if( sinfo.is_protected )
+        v->bits |= VARNODE_PROTECTED;
+    if( sinfo.compiler )
+        v->bits |= VARNODE_COMPILER;
+    if( sinfo.is_static && sinfo.is_member ) {
+        v->bits |= VARNODE_STATIC;
+    }
 }
 
 typedef struct {
@@ -631,7 +647,9 @@ static void     PushFirstField( void *th )
 
     done = false;
     WalkSymList( SS_TYPE, th, DoPushFirstField, &done );
-    if( !done ) Suicide();
+    if( !done ) {
+        Suicide();
+    }
 }
 
 typedef struct {
@@ -644,9 +662,11 @@ OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void 
 {
     dot_named_field_info *info = _info;
 
-    if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
+    if( swi != SWI_SYMBOL )
+        return( WR_CONTINUE );
     SymName( sh, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
-    if( strcmp( TxtBuff, info->name ) != 0 ) return( WR_CONTINUE );
+    if( strcmp( TxtBuff, info->name ) != 0 )
+        return( WR_CONTINUE );
     DoGivenField( sh );
     CheckRValue();
     info->done = true;
@@ -661,7 +681,9 @@ static void     DotNamedField( void *th, void *name )
     info.done = false;
     info.name = name;
     WalkSymList( SS_TYPE, th, DoDotNamedField, &info );
-    if( !info.done ) Suicide();
+    if( !info.done ) {
+        Suicide();
+    }
 }
 
 static void     PushSubScript( long index )
@@ -689,7 +711,8 @@ static void     PushPointStackFirstField( void )
     DoPoints( TK_NONE );
     for( ;; ) {
         ExprValue( ExprSP );
-        if( ExprSP->info.kind != TK_STRUCT ) break;
+        if( ExprSP->info.kind != TK_STRUCT )
+            break;
         PushFirstField( ExprSP->th );
     }
 }
@@ -726,7 +749,8 @@ static var_node *VarFindParentStruct( var_node *v )
 /************************************************/
 {
     while( v->parent != NULL ) {
-        if( v->parent->node_type != NODE_INHERIT ) return( v->parent );
+        if( v->parent->node_type != NODE_INHERIT )
+            return( v->parent );
         v = v->parent;
     }
     return( NULL );
@@ -738,7 +762,8 @@ static bool             FindField( sym_handle *field, var_node *vfield )
     var_node            *vstruct;
 
     vstruct = VarFindParentStruct( vfield );
-    if( TypeKind( vstruct->th ) != TK_STRUCT ) return( false );
+    if( TypeKind( vstruct->th ) != TK_STRUCT )
+        return( false );
     d.expand = vstruct->expand;
     d.vfield = vfield;
     d.field = field;
@@ -794,10 +819,12 @@ static int ExpandArray( var_info *i, var_node *v,
         Warn( buff );
     }
     for( element = start; element <= end; ++element ) {
-        if( elts == 0 ) break;
+        if( elts == 0 )
+            break;
         --elts;
         new = NewNode( i, 0 );
-        if( new == NULL ) break;
+        if( new == NULL )
+            break;
         new->node_type = NODE_SUBSCR;
         new->parent = v;
         new->s = v->s;
@@ -842,7 +869,8 @@ static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
     switch( swi ) {
     case SWI_SYMBOL:
         new = NewNode( d->i, 0 );
-        if( new == NULL ) return( WR_STOP );
+        if( new == NULL )
+            return( WR_STOP );
         VarNodeSetBits( sh, new );
         new->node_type = NODE_FIELD;
         new->parent = d->v;
@@ -856,7 +884,8 @@ static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
             len = TypeName( th, 0, &tag, NULL, 0 );
         }
         new = NewNode( d->i, len );
-        if( new == NULL ) return( WR_STOP );
+        if( new == NULL )
+            return( WR_STOP );
         if( sh != NULL ) {
             VarNodeSetBits( sh, new );
         }
@@ -891,7 +920,8 @@ static bool PointerToChar( void )
     case TK_POINTER:
     case TK_ARRAY:
         TypeBase( ExprSP->th, type, NULL, NULL );
-        if( TypeKind( type ) == TK_CHAR ) return( true );
+        if( TypeKind( type ) == TK_CHAR )
+            return( true );
         break;
     }
     return( false );
@@ -900,9 +930,11 @@ static bool PointerToChar( void )
 static bool PointerToStruct( void )
 /*********************************/
 {
-    if( !CheckPointerValid() ) return( false );
+    if( !CheckPointerValid() )
+        return( false );
 
-    if( Spawn( PushPoints ) != 0 ) return( false );
+    if( Spawn( PushPoints ) != 0 )
+        return( false );
     ExprValue( ExprSP );
     if( ExprSP->info.kind != TK_STRUCT ) {
         PopEntry();
@@ -928,15 +960,18 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     alloc_field_info    d;
     array_info          ainfo;
 
-    if( v->old_expand != NULL ) VarNodeFini( v->old_expand );
+    if( v->old_expand != NULL )
+        VarNodeFini( v->old_expand );
     v->old_expand = NULL;
     ExprValue( ExprSP );
-    if( ExprSP->th == NULL ) return( false );
+    if( ExprSP->th == NULL )
+        return( false );
     ok = true;
     switch( ExprSP->info.kind ) {
     case TK_STRUCT:
         ok = SpawnP( PushFirstField, ExprSP->th ) == 0;
-        if( ok ) PopEntry();
+        if( ok )
+            PopEntry();
         break;
     case TK_POINTER:
     case TK_ARRAY:
@@ -1014,7 +1049,8 @@ static void ArrayParms( var_node *v, array_info *ainfo )
 static var_node *VarFirstNodeInScope( var_info *i, scope_state *s );
 static var_node *DoVarNextNode( var_info *i, var_node *v )
 {
-    if( v->next != NULL ) return( v->next );
+    if( v->next != NULL )
+        return( v->next );
     if( v->node_type == NODE_ROOT && v->s != NULL && v->s->outer != NULL ) {
         return( VarFirstNodeInScope( i, v->s->outer ) );
     }
@@ -1043,11 +1079,12 @@ static var_node *VarNextNode( var_info *i, var_node *v )
     Find the next var node (not going down expansions).
 */
 {
-    for( ;; ) {
-        v = DoVarNextNode( i, v );
-        if( v == NULL ) return( v );
-        if( !VarNodeHidden( i, v ) ) return( v );
+    while( (v = DoVarNextNode( i, v )) != NULL ) {
+        if( !VarNodeHidden( i, v ) ) {
+            break;
+        }
     }
+    return( v );
 }
 
 static bool VarInheritOpen( var_node *v )
@@ -1063,7 +1100,8 @@ static bool VarInheritOpen( var_node *v )
 var_node *VarExpandNode( var_node *v )
 /*******************************************/
 {
-    if( v->node_type == NODE_INHERIT && !VarInheritOpen( v ) ) return( NULL );
+    if( v->node_type == NODE_INHERIT && !VarInheritOpen( v ) )
+        return( NULL );
     return( v->expand );
 }
 
@@ -1072,19 +1110,20 @@ var_node *VarFirstExpandNode( var_info *i, var_node *v )
     Find the var's first expansion node.
 */
 {
-    v = VarExpandNode( v );
-    for( ;; ) {
-        if( v == NULL ) return( v );
-        if( !VarNodeHidden( i, v ) ) return( v );
-        v = v->next;
+    for( v = VarExpandNode( v ); v != NULL; v = v->next ) {
+        if( !VarNodeHidden( i, v ) ) {
+            break;
+        }
     }
+    return( v );
 }
 
 static var_node *DoVarFirstNode( scope_state *s )
 {
-    while( s != NULL ) {
-        if( s->v != NULL ) return( s->v );
-        s = s->outer;
+    for( ; s != NULL; s = s->outer ) {
+        if( s->v != NULL ) {
+            return( s->v );
+        }
     }
     return( NULL );
 }
@@ -1098,8 +1137,10 @@ static var_node *VarFirstNodeInScope( var_info *i, scope_state *s )
     var_node    *v;
 
     v = DoVarFirstNode( s );
-    if( v == NULL ) return( v );
-    if( !VarNodeHidden( i, v ) ) return( v );
+    if( v == NULL )
+        return( v );
+    if( !VarNodeHidden( i, v ) )
+        return( v );
     return( VarNextNode( i, v ) );
 }
 
@@ -1111,12 +1152,18 @@ var_node *VarFirstNode( var_info *i )
 static  var_node        *DoVarNextRowNode( var_node *v )
 {
     var_node    *parent;
-    if( VarExpandNode( v ) != NULL ) return( VarExpandNode( v ) );
-    if( v->next != NULL ) return( v->next );
+
+    if( VarExpandNode( v ) != NULL )
+        return( VarExpandNode( v ) );
+    if( v->next != NULL )
+        return( v->next );
     for( parent = v->parent; parent != NULL; parent = parent->parent ) {
-        if( parent->next != NULL ) return( parent->next );
+        if( parent->next != NULL ) {
+            return( parent->next );
+        }
     }
-    if( v->s->outer != NULL ) return( DoVarFirstNode( v->s->outer ) );
+    if( v->s->outer != NULL )
+        return( DoVarFirstNode( v->s->outer ) );
     return( NULL );
 }
 
@@ -1125,22 +1172,25 @@ var_node        *VarNextRowNode( var_info *i, var_node *v )
     Find the var_node that should be associated with a given row of the window
 */
 {
-    for( ;; ) {
-        v = DoVarNextRowNode( v );
-        if( v == NULL ) return( v );
-        if( !VarNodeHidden( i, v ) ) return( v );
+    while( (v = DoVarNextRowNode( v )) != NULL ) {
+        if( !VarNodeHidden( i, v ) ) {
+            break;
+        }
     }
+    return( v );
 }
 
 var_node *VarNextVisibleSibling( var_info *i, var_node *v )
 /*********************************************************/
 {
-    if( v->node_type == NODE_ROOT ) return( NULL );
-    for( ;; ) {
-        v = v->next;
-        if( v == NULL ) return( v );
-        if( !VarNodeHidden( i, v ) ) return( v );
+    if( v->node_type == NODE_ROOT )
+        return( NULL );
+    while( (v = v->next) != NULL ) {
+        if( !VarNodeHidden( i, v ) ) {
+            break;
+        }
     }
+    return( v );
 }
 
 static void     VarScanForward( void *_v )
@@ -1173,7 +1223,8 @@ static void     VarScanForward( void *_v )
                 if( expand==NULL && CurrRow!=TargRow ) {
                     v->popped = true; // just skip field
                 } else {
-                    if( !FindField( field, v ) ) Suicide();
+                    if( !FindField( field, v ) )
+                        Suicide();
                     if( v->display_type == NULL ) {
                         DupStack();
                         ExprValue( ExprSP );
@@ -1246,7 +1297,8 @@ static void     VarScanForward( void *_v )
         if( expand != NULL ) {
             v->buried = true;
             VarScanForward( expand );
-            if( VarFound != NULL ) return;
+            if( VarFound != NULL )
+                return;
             v->buried = false;
         }
         if( v->node_type != NODE_INHERIT && !v->popped ) {
@@ -1268,9 +1320,11 @@ var_node        *VarFindRowNode( var_info *i, int row )
     var_node    *v;
 
     for( v = VarFirstNode( i ); v != NULL; v = VarNextRowNode( i, v ) ) {
-        if( --row < 0 ) return( v );
+        if( --row < 0 ) {
+            break;
+        }
     }
-    return( NULL );
+    return( v );
 }
 
 
@@ -1316,13 +1370,16 @@ var_node        *VarFindRoot( var_info *i, int row, int *skipped )
     var_node    *v,*next;
 
     *skipped = 0;
-    for( v = VarFirstNode( i ) ;; v = next ) {
+    for( v = VarFirstNode( i ); ; v = next ) {
         CheckExprStackTimeStamp( v, i->exprsp_timestamp );
-        if( v->pushed ) break;
+        if( v->pushed )
+            break;
         next = VarNextNode( i, v );
-        if( next == NULL ) break;
+        if( next == NULL )
+            break;
         count = VarCount( i, VarFirstExpandNode( i, v ) ) + 1;
-        if( *skipped + count > row ) break;
+        if( *skipped + count > row )
+            break;
         *skipped += count;
     }
     return( v );
@@ -1342,8 +1399,10 @@ static var_node *DoVarFindRow( var_info *i, int row )
     CurrRow = -1;
     VarFound = NULL;
     ExprStackTimeStamp = i->exprsp_timestamp;
-    if( VarFirstNode( i ) == NULL ) return( NULL );
-    if( row >= VarRowTotal( i ) ) return( NULL );
+    if( VarFirstNode( i ) == NULL )
+        return( NULL );
+    if( row >= VarRowTotal( i ) )
+        return( NULL );
     v = VarFindRoot( i, row, &skipped );
     TargRow -= skipped;
     if( SpawnP( VarScanForward, v ) != 0 ) {
@@ -1365,7 +1424,8 @@ var_node        *VarFindRow( var_info *i, int row )
     var_node    *found;
 
     VarError = false;
-    if( row < 0 ) return( NULL );
+    if( row < 0 )
+        return( NULL );
     found = DoVarFindRow( i, row );
     if( found != NULL && ( found->popped || found->buried ) ) {
         VarKillExprSPCache( i );
@@ -1396,7 +1456,9 @@ static void ChkTxtBuffOverflow( char *newbuff )
     See VarBuildName
 */
 {
-    if( newbuff - TxtBuff >= TXT_LEN )  Error( ERR_NONE, LIT_ENG( ERR_EXPR_TOO_LONG ) );
+    if( newbuff - TxtBuff >= TXT_LEN ) {
+        Error( ERR_NONE, LIT_ENG( ERR_EXPR_TOO_LONG ) );
+    }
 }
 
 
@@ -1434,7 +1496,7 @@ static char AddToName( tokens token, const char *fldname, int namelen, char ppri
     TokenName( token, &tstr, &tlen );
     SetTokens( false );
     prio = *tstr++;
-    if( pprio < prio && TxtBuff[0] != '\0' ) {
+    if( pprio < prio && TxtBuff[0] != NULLCHAR ) {
         AddToName( T_SSL_SPEC_PAREN, NULL, 0, 127 );
     }
     buff = TxtBuff;
@@ -1461,9 +1523,10 @@ static char AddToName( tokens token, const char *fldname, int namelen, char ppri
 void VarBaseName( var_node *v )
 /*****************************/
 {
-    TxtBuff[0]='\0';
+    TxtBuff[0] = NULLCHAR;
     if( v->is_sym_handle ) {
-        if( SymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) ) return;
+        if( SymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) )
+            return;
         SymName( VarNodeHdl( v ), NULL, SN_SOURCE, TxtBuff, TXT_LEN );
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
@@ -1526,7 +1589,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 prio = AddToName( T_SSL_SPEC_FIELD_SELECT, name, len, prio );
             }
             if( just_end_bit ) {
-                TxtBuff[0] = '\0';
+                TxtBuff[0] = NULLCHAR;
                 InsertTxt( TxtBuff, name, len );
             }
             break;
@@ -1538,7 +1601,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
             ArrayParms( v, &ainfo );
             end = CnvLongDec( v->path->element+ainfo.low_bound, buff, sizeof( buff ) );
             if( just_end_bit ) {
-                *TxtBuff = '\0';
+                *TxtBuff = NULLCHAR;
             }
             prio = AddToName( T_SSL_SPEC_ARRAY, buff, end-buff, prio );
             break;
@@ -1594,7 +1657,8 @@ static var_node *MakeNewNode( var_info *i, const void *name, unsigned len )
     var_node    *v;
 
     v = NewNode( i, len );
-    if( v == NULL ) return( v );
+    if( v == NULL )
+        return( v );
     v->parent = NULL;
     v->node_type = NODE_ROOT;
     v->s = i->s;
@@ -1627,7 +1691,7 @@ var_node *VarAdd1( var_info *i, const void *name,
     if( is_sym_handle ) {
         VarNodeSetBits( VarNodeHdl( v ), v );
     } else {
-        VarNodeExpr( v )[len] = '\0';
+        VarNodeExpr( v )[len] = NULLCHAR;
     }
     v->is_sym_handle = is_sym_handle;
     *owner = v;
@@ -1757,11 +1821,12 @@ static bool PrintAString( var_info *i, char *buff, unsigned buff_len, bool force
     ok = VarPrintText( i, buff + 1,
                     force ? ForcePrintString : PrintString, buff_len - 2 );
     UnFreezeStack( true );
-    if( !ok ) return( false );
+    if( !ok )
+        return( false );
     buff[0] = '"';
     len = strlen( buff );
-    buff[len] = '"';
-    buff[len + 1] = '\0';
+    buff[len++] = '"';
+    buff[len] = NULLCHAR;
     return( true );
 }
 
@@ -1932,7 +1997,8 @@ int VarFindRootRow( var_info *i, var_node *v, int row )
     var_node    *sibling;
     int         new_row;
 
-    if( v->parent == NULL ) return( row );
+    if( v->parent == NULL )
+        return( row );
     new_row = row-1;
     for( sibling = VarFirstExpandNode( i, v->parent ); sibling != v; sibling = VarNextNode( i, sibling ) ) {
         new_row -= VarCount( i, VarFirstExpandNode( i, sibling ) ) + 1;
@@ -1967,7 +2033,8 @@ var_gadget_type VarGetGadget( var_node *v )
     type_kind   class;
     var_node *vstruct;
 
-    if( v->gadget_valid ) return( v->gadget );
+    if( v->gadget_valid )
+        return( v->gadget );
     if( v->node_type == NODE_INHERIT ) {
         vstruct = VarFindParentStruct( v );
         if( vstruct != NULL && !VarDisplayIsHidden( vstruct, VARNODE_INHERIT ) ) {
@@ -2033,11 +2100,11 @@ static void VarPrintValue( char *buff, unsigned len, var_info *i,
 static char *Append( char *end, char *p, char *str )
 /**************************************************/
 {
-    while( p < end ) {
+    for( ; p < end; ++p ) {
         *p = *str;
-        if( *str == '\0' ) return( p );
+        if( *str == NULLCHAR )
+            break;
         ++str;
-        ++p;
     }
     return( p );
 }
@@ -2051,10 +2118,11 @@ static char *VarDisplayTop( char *p, char *end, var_info *i, type_display *type 
     comma = false;
     for( type = type->fields; type != NULL; type = type->next ) {
         if( type->on_top ) {
-            if( comma ) p = Append( end, p, ", " );
+            if( comma )
+                p = Append( end, p, ", " );
             FreezeStack();
             DupStack();
-            dotted = SpawnPP( DotNamedField, ExprSP->th, type->name ) == 0;
+            dotted = ( SpawnPP( DotNamedField, ExprSP->th, type->name ) == 0 );
             if( !dotted ) {
                 UnFreezeStack( true );
                 continue;
@@ -2084,7 +2152,7 @@ char *VarGetValue( var_info *i, var_node *v )
         return( v->value );
     if( v->node_type == NODE_INHERIT ) {
         p = StrCopy( "(", TxtBuff );
-        if( VarNodeExpr( v )[0] != '\0' ) {
+        if( VarNodeExpr( v )[0] != NULLCHAR ) {
             p = StrCopy( VarNodeExpr( v ), p );
         } else {
             p = StrCopy( LIT_ENG( inherited_members ), p );
@@ -2166,10 +2234,14 @@ void VarSetValue( var_node *v, const char *value )
 
 static bool SameScope( scope_block *scope, scope_state *s )
 {
-    if( s->unmapped ) return( false );
-    if( AddrComp( scope->start, s->scope.addr ) != 0 ) return( false );
-    if( scope->len != s->scope_len ) return( false );
-    if( scope->unique != s->scope_unique ) return( false );
+    if( s->unmapped )
+        return( false );
+    if( AddrComp( scope->start, s->scope.addr ) != 0 )
+        return( false );
+    if( scope->len != s->scope_len )
+        return( false );
+    if( scope->unique != s->scope_unique )
+        return( false );
     return( true );
 }
 
@@ -2179,15 +2251,12 @@ static scope_state **FindScope( var_info *i, scope_block *scope, mod_handle mod 
     scope_state         **owner;
     scope_state         *s;
 
-    owner = &i->s;
-    for( ;; ) {
-        s = *owner;
-        if( s == NULL ) return( NULL );
+    for( owner = &i->s; (s = *owner) != NULL; owner = &s->next ) {
         if( mod == s->mod && SameScope( scope, s ) ) {
             return( owner );
         }
-        owner = &s->next;
     }
+    return( NULL );
 }
 
 
@@ -2320,7 +2389,8 @@ bool VarDeleteAScope( var_info *i, void *cookie )
     scope_state *s, *oldest, *outer;
 
     cookie=cookie;
-    if( i->mem_lock ) return( false );
+    if( i->mem_lock )
+        return( false );
     oldest = NULL;
     for( s = i->s->next; s != NULL; s = s->next ) {
         if( oldest == NULL || s->scope_timestamp < oldest->scope_timestamp ) {
@@ -2349,14 +2419,17 @@ bool VarUnMap( var_info *i, void *image )
 
     for( s = i->s; s != NULL; s = next ) {
         next = s->next;
-        if( s->unmapped ) continue;
+        if( s->unmapped )
+            continue;
         mod = s->mod;
         if( mod != NO_MOD ) {
             VarFreeScopeList( i, s );
             continue;
         }
-        if( DeAliasAddrMod( s->scope.addr, &mod ) == SR_NONE ) continue;
-        if( image != ImageEntry( mod ) ) continue;
+        if( DeAliasAddrMod( s->scope.addr, &mod ) == SR_NONE )
+            continue;
+        if( image != ImageEntry( mod ) )
+            continue;
         if( UnMapAddress( &s->scope, image ) ) {
             s->unmapped = true;
         } else {
@@ -2375,7 +2448,8 @@ bool VarReMap( var_info *i, void *image )
 
     for( s = i->s; s != NULL; s = next ) {
         next = s->next;
-        if( !s->unmapped ) continue;
+        if( !s->unmapped )
+            continue;
         switch( ReMapImageAddress( &s->scope, image ) ) {
         case REMAP_REMAPPED:
             info.i = i;
@@ -2465,7 +2539,8 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
             if( havescope ) {
                 for( ;; ) {
                     _AllocA( new, sizeof( *new ) );
-                    if( ScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE ) break;
+                    if( ScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE )
+                        break;
                     new->next = nested;
                     nested = new;
                 }
@@ -2478,7 +2553,8 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
             }
             VarRestoreWndFromScope( wnd_handle );
         }
-        if( outer != NULL ) *addr = outer->scope.addr;
+        if( outer != NULL )
+            *addr = outer->scope.addr;
         break;
     }
     return( repaint );
@@ -2549,25 +2625,30 @@ void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty, void 
         v = VarFindRow( i, row );
         if( v == NULL ) {
             v = VarFindRowNode( i, row );
-            if( v == NULL ) break;
+            if( v == NULL ) {
+                break;
+            }
         } else {
             ExprValue( ExprSP );
         }
 
         gadget = VarGetGadget( v );
-        if( gadget != v->gadget ) dirty( wnd, row );
+        if( gadget != v->gadget )
+            dirty( wnd, row );
         VarSetGadget( v, gadget );
 
         on_top = VarGetOnTop( v );
-        if( on_top != v->on_top ) dirty( wnd, row );
+        if( on_top != v->on_top )
+            dirty( wnd, row );
         VarSetOnTop( v, on_top );
 
         value = VarGetValue( i, v );
         standout = false;
         if( v->value != NULL ) {
-            standout = strcmp( value, v->value ) != 0;
+            standout = ( strcmp( value, v->value ) != 0 );
         }
-        if( v->value == NULL || v->standout || standout ) dirty( wnd, row );
+        if( v->value == NULL || v->standout || standout )
+            dirty( wnd, row );
         v->standout = standout;
         VarSetValue( v, value );
         VarDoneRow( i );
@@ -2603,9 +2684,12 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
     var_node    *row_v;
     var_node    *v;
 
-    if( piece >= VAR_PIECE_LAST ) return( NULL );
-    if( VarFirstNode( i ) == NULL ) return( NULL );
-    if( row >= VarRowTotal( i ) ) return( NULL );
+    if( piece >= VAR_PIECE_LAST )
+        return( NULL );
+    if( VarFirstNode( i ) == NULL )
+        return( NULL );
+    if( row >= VarRowTotal( i ) )
+        return( NULL );
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
         VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
@@ -2636,7 +2720,8 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
             i->exprsp_cache_is_error = VarError;
         }
         if( v == NULL ) {
-            if( !VarError ) return( NULL );
+            if( !VarError )
+                return( NULL );
             v = row_v;
         }
         VarNodeInvalid( v );
@@ -2666,10 +2751,10 @@ bool VarParentIsArray( var_node * v )
     }
 
     if( ( vparent == v ) || ( NULL == vparent ) )
-        return false;
+        return( false );
 
     TypeInfo( vparent->th, NULL, &tinfo );
 
-    return ( tinfo.kind == TK_ARRAY || vparent->fake_array );
+    return( tinfo.kind == TK_ARRAY || vparent->fake_array );
 }
 

@@ -94,15 +94,15 @@ void LocalGetBuff( char *buff, unsigned size )
     hStdin = GetStdHandle( STD_INPUT_HANDLE );
     if( !ReadFile( hStdin, buff, size, &cRead, NULL ) ) {
         buff[0] = '\r';
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
         return;
     }
     /* Kill the trailing \r\n. */
     if( cRead > 2)
-        buff[cRead - 2] = '\0';
+        buff[cRead - 2] = NULLCHAR;
     else {
         buff[0] = '\r';
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
     }
 }
 

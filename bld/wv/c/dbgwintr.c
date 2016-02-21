@@ -65,7 +65,7 @@ void MenuCopy( char *dst, const char *from, char *to )
 
     ampchar = 0;
     ampdumped = false;
-    while( *from ) {
+    while( *from != NULLCHAR ) {
         if( *from == '&' ) {
             ++from;
             ampchar = *from;
@@ -91,7 +91,7 @@ void MenuCopy( char *dst, const char *from, char *to )
         *to++ = ampchar;
         *to++ = ')';
     }
-    *to++ = '\0';
+    *to++ = NULLCHAR;
 }
 
 
@@ -103,7 +103,8 @@ void MenuDump( int indent, int num_popups, gui_menu_struct *child )
     while( --num_popups >= 0 ) {
         p = TxtBuff;
         i = indent;
-        while( --i >= 0 ) *p++ = ' ';
+        while( i-- > 0 )
+            *p++ = ' ';
         if( child->style & GUI_SEPARATOR ) {
             StrCopy( "---------", p );
         } else {
@@ -112,14 +113,14 @@ void MenuDump( int indent, int num_popups, gui_menu_struct *child )
         WndDlgTxt( TxtBuff );
         if( child->hinttext && child->hinttext[0] ) {
             p = TxtBuff;
-            i = indent;
-            while( --i >= 0 ) *p++ = ' ';
+            for( i = indent; i > 0; --i )
+                *p++ = ' ';
             p = StrCopy( "- ", p );
             p = StrCopy( child->hinttext, p );
             WndDlgTxt( TxtBuff );
         }
         if( child->num_child_menus != 0 ) {
-            MenuDump( indent+4, child->num_child_menus, child->child );
+            MenuDump( indent + 4, child->num_child_menus, child->child );
         }
         ++child;
     }
@@ -149,7 +150,7 @@ void XDumpMenus( void )
 
 static void XTimeSymComp( void )
 {
-    int         i,num;
+    int         i, num;
 
     num = ReqExpr();
     ReqEOC();

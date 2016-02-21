@@ -107,9 +107,9 @@ void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
     double      value = LDToD( v );
 
     sprintf( buff, "%.*g", a, value );
-    if( buff[0] == '0' && buff[1] == '\0' ) {
+    if( buff[0] == '0' && buff[1] == NULLCHAR ) {
         buff[1] = '.';
-        buff[2] = '\0';
+        buff[2] = NULLCHAR;
     }
 // Brian!!! NYI NYI NYI
 //  _FtoS( buff, &value, a, b, c, d, e, format, exp_char );

@@ -120,7 +120,7 @@ long _fork( const char *cmd, size_t len )
 {
     char        *dst;
     char        *args;
-    unsigned    cmd_len;
+    size_t      cmd_len;
     RESULTCODES res;
     USHORT      rc;
     HFILE       savestdin;
@@ -131,7 +131,8 @@ long _fork( const char *cmd, size_t len )
     char        buff[256];
 
     cmd_len = EnvLkup( "COMSPEC", buff, sizeof( buff ) );
-    if( cmd_len == 0 ) return( ERROR_FILE_NOT_FOUND );
+    if( cmd_len == 0 )
+        return( ERROR_FILE_NOT_FOUND );
     while( len != 0 && *cmd == ' ' ) {
         ++cmd;
         --len;
@@ -142,9 +143,9 @@ long _fork( const char *cmd, size_t len )
         dst = StrCopy( "/C ", dst );
         _fmemcpy( dst, cmd, len );
         dst += len;
-        *dst++ = '\0';
+        *dst++ = NULLCHAR;
     }
-    *dst = '\0';
+    *dst = NULLCHAR;
 
     savestdin = 0xffff;
     savestdout = 0xffff;

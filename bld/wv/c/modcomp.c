@@ -61,7 +61,7 @@ extern void ModComplete( gui_window *gui, gui_ctl_id id )
 
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
-    ModListInit( &list, *match == '\0' ? NULL : match );
+    ModListInit( &list, *match == NULLCHAR ? NULL : match );
     ModListAddModules( &list, NO_MOD, false );
     switch( ModListNumRows( &list ) ) {
     case 0:

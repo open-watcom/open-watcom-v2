@@ -136,7 +136,7 @@ size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
         if( buff_len > len )
             buff_len = len;
         memcpy( buff, *strings[mstr], buff_len );
-        buff[buff_len] = '\0';
+        buff[buff_len] = NULLCHAR;
     }
     return( len );
 }
@@ -161,7 +161,7 @@ size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t
         if( buff_len > len )
             buff_len = len;
         memcpy( buff, start, buff_len );
-        buff[buff_len] = '\0';
+        buff[buff_len] = NULLCHAR;
     }
     return( len );
 }
@@ -314,7 +314,7 @@ static size_t NormalizeString( char *p )
 
 //    start = p;
     d = p;
-    while( *p != '\0' ) {
+    while( *p != NULLCHAR ) {
         switch( *p ) {
         case ' ':
         case '\t':
@@ -328,7 +328,7 @@ static size_t NormalizeString( char *p )
         }
         ++p;
     }
-    *d = '\0';
+    *d = NULLCHAR;
     return( d - p );
 }
 

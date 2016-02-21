@@ -68,7 +68,7 @@ static void DlgListPush( const char *buff, size_t len, wnd_attr_wv wndattr )
     entry = DbgMustAlloc( sizeof( dlg_entry ) + len + 1 );
     SET_SYM_NAME_LEN( entry->data, len );
     memcpy( SYM_NAME_NAME( entry->data ), buff, len );
-    SYM_NAME_NAME( entry->data )[len] = '\0';
+    SYM_NAME_NAME( entry->data )[len] = NULLCHAR;
     entry->wndattr = wndattr;
     entry->next = NULL;
     entry->prev = DlgListBot;
@@ -123,19 +123,15 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
     char        ch, *p;
     bool        multi = false;
 
-    for( ;; ) {
-        p = strchr( buff, '\n' );
-        if( p == NULL )
-            break;
+    for( ; (p = strchr( buff, '\n' )) != NULL; buff = p + 1 ) {
         ch = *p;
-        *p = '\0';
+        *p = NULLCHAR;
         LogLine( buff );
         WndDlgLine( buff, wndattr );
         multi = true;
         *p = ch;
-        buff = p + 1;
     }
-    if( !multi || buff[0] != '\0' ) {
+    if( !multi || buff[0] != NULLCHAR ) {
         LogLine( buff );
         WndDlgLine( buff, wndattr );
     }
@@ -194,7 +190,7 @@ void WndDlgFini( void )
 {
     dlg_entry   *old;
 
-    while( DlgListTop ) {
+    while( DlgListTop != NULL ) {
         old = DlgListTop;
         DlgListTop = DlgListTop->next;
         _Free( old );

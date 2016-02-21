@@ -87,7 +87,7 @@ int ModCompare( mod_handle const *a, mod_handle const *b )
 
     namea = TxtBuff;
     nameb = TxtBuff + TXT_LEN / 2;
-    namea[0] = nameb[0] = '\0';
+    namea[0] = nameb[0] = NULLCHAR;
     ModName( *a, namea, TXT_LEN/2 );
     ModName( *b, nameb, TXT_LEN/2 );
     return( stricmp( namea, nameb ) );
@@ -153,20 +153,23 @@ void    ModListFree( module_list *list )
 
 int     ModListNumRows( const module_list *list )
 {
-    if( list->sort == NULL ) return( 0 );
+    if( list->sort == NULL )
+        return( 0 );
     return( list->numrows );
 }
 
 mod_handle ModListMod( const module_list *list, int i )
 {
-    if( list->sort == NULL || i >= list->numrows ) return( NO_MOD );
+    if( list->sort == NULL || i >= list->numrows )
+        return( NO_MOD );
     return( list->sort[i] );
 }
 
 void ModListName( const module_list *list, int i, char *buff )
 {
-    buff[0] = '\0';
-    if( list->sort == NULL || i >= list->numrows ) return;
+    buff[0] = NULLCHAR;
+    if( list->sort == NULL || i >= list->numrows )
+        return;
     ModName( list->sort[i], buff, TXT_LEN );
 }
 

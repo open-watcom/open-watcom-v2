@@ -74,17 +74,16 @@ typedef struct {
     item_mach   value;
     address     addr;
     int         type;
-    unsigned    value_known     : 1;
+    bool        value_known     : 1;
 } io_location;
 
 typedef struct {
     int         num_rows;
     io_location *list;
 } io_window;
-#define WndIO( wnd ) ( (io_window*)WndExtra( wnd ) )
+#define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
 
 
-static WNDNUMROWS IONumRows;
 static int IONumRows( a_window *wnd )
 {
     return( WndIO( wnd )->num_rows );
@@ -99,7 +98,7 @@ static void IOAddNewAddr( a_window *wnd, address *addr, int type )
 
     row = io->num_rows;
     io->num_rows++;
-    io->list = WndMustRealloc( io->list, io->num_rows*sizeof( io_location ) );
+    io->list = WndMustRealloc( io->list, io->num_rows * sizeof( io_location ) );
     curr = &io->list[row];
     curr->type = PIECE_TYPE( type );
     curr->addr = *addr;
@@ -186,14 +185,14 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  WNDMODIFY       IOModify;
 static void     IOModify( a_window *wnd, int row, int piece )
 {
     if( row < 0 ) {
         IOMenuItem( wnd, MENU_IO_NEW_ADDRESS, row, piece );
         return;
     }
-    if( row >= IONumRows( wnd ) ) return;
+    if( row >= IONumRows( wnd ) )
+        return;
     switch( piece ) {
     case PIECE_READ:
         IOMenuItem( wnd, MENU_IO_READ, row, piece );
@@ -207,7 +206,6 @@ static void     IOModify( a_window *wnd, int row, int piece )
     }
 }
 
-static WNDGETLINE IOGetLine;
 static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
@@ -217,7 +215,8 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *li
     mad_radix   old_radix, new_radix;
     size_t      max;
 
-    if( row >= io->num_rows ) return( false );
+    if( row >= io->num_rows )
+        return( false );
     curr = &io->list[row];
 //    ret = true;
     line->text = TxtBuff;
@@ -244,7 +243,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *li
             for( i = 0; i < IOData.info[curr->type].item_width; ++i ) {
                 TxtBuff[i] = '?';
             }
-            TxtBuff[i] = '\0';
+            TxtBuff[i] = NULLCHAR;
         }
         NewCurrRadix( old_radix );
         return( true );
@@ -254,7 +253,6 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *li
 }
 
 
-static WNDREFRESH IORefresh;
 static void     IORefresh( a_window *wnd )
 {
     WndNoSelect( wnd );
@@ -299,7 +297,6 @@ void FiniIOWindow( void )
     MemFiniTypes( &IOData );
 }
 
-static WNDCALLBACK IOEventProc;
 static bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
@@ -349,7 +346,8 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
     io_window   *io;
     int         i;
 
-    if( IOData.num_types == 0 ) return( NULL );
+    if( IOData.num_types == 0 )
+        return( NULL );
     io = WndMustAlloc( sizeof( io_window ) );
     io->list = WndMustAlloc( sizeof( io_location ) );
     io->num_rows = 1;
@@ -357,7 +355,9 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
     io->list->type = PIECE_TYPE( MENU_IO_FIRST_TYPE );
     if( type != MAD_NIL_TYPE_HANDLE ) {
         for( i = 0; i < IOData.num_types; i++ ) {
-            if( IOData.info[i].type == type ) break;
+            if( IOData.info[i].type == type ) {
+                break;
+            }
         }
         if( i != IOData.num_types ) {
             io->list->type = i;
@@ -377,6 +377,7 @@ extern a_window *WndIOOpen( void )
     io->list = NULL;
     io->num_rows = 0;
     wnd = DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );
-    if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
+    if( wnd != NULL )
+        WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

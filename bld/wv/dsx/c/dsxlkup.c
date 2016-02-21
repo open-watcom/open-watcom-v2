@@ -34,6 +34,7 @@
 #include "watcom.h"
 #include "bool.h"
 #include "dpmi.h"
+#include "dbgdefn.h"
 #include "dsxutil.h"
 #include "envlkup.h"
 #ifdef __OSI__
@@ -57,21 +58,21 @@ const char *DOSEnvFind( const char *name )
     do {
         p = name;
         do {
-            if( *p == '\0' && *env == '=' ) {
+            if( *p == NULLCHAR && *env == '=' ) {
                 return( env + 1 );
             }
         } while( *env++ == *p++ );
-        while( *env++ != '\0' )
+        while( *env++ != NULLCHAR )
             ;
-    } while( *env != '\0' );
+    } while( *env != NULLCHAR );
     return( NULL );
 #endif
 }
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  *env;
-    unsigned    len;
+    size_t      len;
     bool        output;
     char        c;
 
@@ -84,7 +85,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         --buff_len;
         output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -93,7 +94,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
 }

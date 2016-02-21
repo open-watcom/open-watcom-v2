@@ -140,12 +140,12 @@ void InitTrap( const char *parms )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    buff[0] = '\0';
+    buff[0] = NULLCHAR;
     out[1].ptr = buff;
     out[1].len = MAX_ERR_MSG_SIZE;
     TrapAccess( 1, in, 2, out );
     MaxPacketLen = ret.max_msg_size;
-    if( buff[0] != '\0' ) {
+    if( buff[0] != NULLCHAR ) {
         KillTrap();
         InitTrapError = true;
         StartupErr( buff );

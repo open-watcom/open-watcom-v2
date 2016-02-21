@@ -46,9 +46,9 @@
 extern char             *AddrLineNum( address *addr, char *buff );
 
 enum {
-    #ifdef OPENER_GADGET
-        PIECE_OPENER,
-    #endif
+#ifdef OPENER_GADGET
+    PIECE_OPENER,
+#endif
     PIECE_ACTIVE,
     PIECE_ADDR,
     PIECE_SOURCE,
@@ -57,9 +57,9 @@ enum {
 typedef struct break_window {
     gui_ord     addr_indent;
     gui_ord     source_indent;
-    unsigned    toggled_break   : 1;
+    bool        toggled_break   : 1;
 } break_window;
-#define WndBreak( wnd ) ( (break_window*)WndExtra( wnd ) )
+#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
 
 #include "menudef.h"
@@ -73,14 +73,13 @@ static brkp     *BrkGetBP( int row )
     brkp        *bp;
     int         count;
 
+    if( row < 0 )
+        return( NULL );
     count = 0;
-    bp = BrkList;
-    if( row < 0 ) return( NULL );
-    for( ;; ) {
-        if( bp == NULL ) break;
-        if( count == row ) break;
+    for( bp = BrkList; bp != NULL; bp = bp->next ) {
+        if( count == row )
+            break;
         ++count;
-        bp = bp->next;
     }
     return( bp );
 }
@@ -179,12 +178,13 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     brkp                *bp;
-    break_window        *wndbreak = WndBreak( wnd );
+    break_window        *wndbreak;
     bool                curr;
 
-    wnd = wnd;
+    wndbreak = WndBreak( wnd );
     bp = BrkGetBP( row );
-    if( bp == NULL ) return( false );
+    if( bp == NULL )
+        return( false );
     line->text = TxtBuff;
     line->tabstop = false;
     switch( piece ) {
@@ -202,9 +202,9 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
     }
 #endif
     case PIECE_ACTIVE:
-        #ifdef OPENER_GADGET
-            line->indent = MaxGadgetLength + WndAvgCharX( wnd );
-        #endif
+#ifdef OPENER_GADGET
+        line->indent = MaxGadgetLength + WndAvgCharX( wnd );
+#endif
         curr = AddrComp( bp->loc.addr, Context.execution ) == 0;
         FileBreakGadget( wnd, line, curr, bp );
         return( true );
@@ -229,22 +229,24 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
 static void     BrkInit( a_window *wnd )
 {
     gui_ord             length,max;
-    break_window        *wndbreak = WndBreak( wnd );
+    break_window        *wndbreak;
     brkp                *bp;
     int                 count;
 
+    wndbreak = WndBreak( wnd );
     max = 0;
     count = 0;
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         GetBPAddr( bp, TxtBuff );
         length = WndExtentX( wnd, TxtBuff );
-        if( length > max ) max = length;
+        if( max < length )
+            max = length;
         ++count;
     }
     length = MaxGadgetLength + WndAvgCharX( wnd );
-    #ifdef OPENER_GADGET
-        length += length;
-    #endif
+#ifdef OPENER_GADGET
+    length += length;
+#endif
     wndbreak->addr_indent = length;
 
     length += max + 2*WndMaxCharX( wnd );
@@ -264,7 +266,7 @@ static void     BrkRefresh( a_window *wnd )
     brkp        *bp;
     int         row;
 
-    if( ( UpdateFlags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) & BrkInfo.flags ) {
+    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) {
         BrkInit( wnd );
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
@@ -275,7 +277,7 @@ static void     BrkRefresh( a_window *wnd )
             ++row;
         }
     }
-    #ifdef OPENER_GADGET
+#ifdef OPENER_GADGET
     {
         int             i;
         brkp            *bp;
@@ -290,7 +292,7 @@ static void     BrkRefresh( a_window *wnd )
             }
         }
     }
-    #endif
+#endif
 }
 
 

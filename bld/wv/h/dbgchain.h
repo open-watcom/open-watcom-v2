@@ -35,7 +35,7 @@ typedef struct call_chain {
     char        *source_line;
     char        *symbol;
     unsigned    sym_len;
-    unsigned    open : 1;
+    bool        open : 1;
 } call_chain;
 
 typedef struct traceback {

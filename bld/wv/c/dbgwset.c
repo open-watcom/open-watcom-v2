@@ -341,14 +341,14 @@ char *KeyName( unsigned key )
     }
     if( key <= 255 && isprint( key ) ) {
         buff[0] = key;
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
         return( buff );
     }
     for( alt = CtrlKeyNames; alt->name != 0; ++alt ) {
         if( alt->key == key ) {
             p = AddOn( buff, CTRL );
             *p++ = alt->name;
-            *p = '\0';
+            *p = NULLCHAR;
             return( buff );
         }
     }
@@ -356,7 +356,7 @@ char *KeyName( unsigned key )
         if( alt->key == key ) {
             p = AddOn( buff, ALT );
             *p++ = alt->name;
-            *p = '\0';
+            *p = NULLCHAR;
             return( buff );
         }
     }
@@ -430,14 +430,10 @@ wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
     wnd_macro           **owner,*curr;
     bool                is_main;
 
-    owner = &WndMacroList;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL )
+    for( owner = &WndMacroList; (curr = *owner) != NULL; owner = &curr->link ) {
+        if( curr->key == key && curr->wndclass == wndclass ) {
             break;
-        if( curr->key == key && curr->wndclass == wndclass )
-            break;
-        owner = &curr->link;
+        }
     }
     if( cmds != NULL ) {
         if( curr == NULL ) {
@@ -510,7 +506,7 @@ extern void MacroSet( void )
             if( *q != '\r' ) *p++ = *q;
             ++q;
         }
-        *p = '\0';
+        *p = NULLCHAR;
         cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
     } else {
         cmds = NULL;

@@ -88,20 +88,20 @@ typedef struct var_node {
     node_class          node_type;      // NODE_ROOT, NODE_SUBSCR or NODE_FIELD
     struct type_display *display_type;  // how should we display this node
 
-    unsigned            pushed : 1;     // has this expression been pushed on ExprSP?
-    unsigned            popped : 1;     // has this expression been popped off ExprSP?
-    unsigned            buried : 1;     // versus on the top of the stack
-    unsigned            is_string : 1;  // is this a natural character string
+    unsigned            pushed          : 1;    // has this expression been pushed on ExprSP?
+    unsigned            popped          : 1;    // has this expression been popped off ExprSP?
+    unsigned            buried          : 1;    // versus on the top of the stack
+    unsigned            is_string       : 1;    // is this a natural character string
 
-    unsigned            have_type : 1;  // is ->th valid?
-    unsigned            is_sym_handle : 1; // versus a character string
-    unsigned            fake_array : 1; // not really an array but expanded as such
-    unsigned            value_valid :1; // are the gadget/str fields accurate?
+    unsigned            have_type       : 1;    // is ->th valid?
+    unsigned            is_sym_handle   : 1;    // versus a character string
+    unsigned            fake_array      : 1;    // not really an array but expanded as such
+    unsigned            value_valid     : 1;    // are the gadget/str fields accurate?
 
-    unsigned            gadget_valid :1;// are the gadget/str fields accurate?
-    unsigned            standout : 1;   // draw in standout attribute?
-    unsigned            on_top :1;      // draw the on_top indicator?
-    unsigned            on_top_valid :1;// is the on_top field valid?
+    unsigned            gadget_valid    : 1;    // are the gadget/str fields accurate?
+    unsigned            standout        : 1;    // draw in standout attribute?
+    unsigned            on_top          : 1;    // draw the on_top indicator?
+    unsigned            on_top_valid    : 1;    // is the on_top field valid?
 
     var_type_bits       bits;           // class of var (inherited, etc)
     var_display_bits    display;        // how to display the sucker
@@ -117,16 +117,16 @@ typedef struct var_node {
 #define VarNodeHdl( v ) ((sym_handle*)((v)->u.__hdl))
 
 typedef struct scope_state {
-    struct scope_state  *next;          // link for memory cleanup
-    struct scope_state  *outer;         // a scope surrounding this one
-    mappable_addr       scope;          // the scope handle (for locals window)
-    addr_off            scope_len;      //
+    struct scope_state  *next;              // link for memory cleanup
+    struct scope_state  *outer;             // a scope surrounding this one
+    mappable_addr       scope;              // the scope handle (for locals window)
+    addr_off            scope_len;          //
     unsigned long       scope_unique;
-    mod_handle          mod;            // the module (for filescope variables window)
-    var_node            *v;             // the variable nodes
-    long                scope_timestamp;// LRU timestamp used for garbage collection
-    int                 wnd_data[3];    // window can save stuff here
-    unsigned            unmapped : 1;   // is this scope unmapped (are we in the process of restarting the program)
+    mod_handle          mod;                // the module (for filescope variables window)
+    var_node            *v;                 // the variable nodes
+    long                scope_timestamp;    // LRU timestamp used for garbage collection
+    int                 wnd_data[3];        // window can save stuff here
+    bool                unmapped        : 1;// is this scope unmapped (are we in the process of restarting the program)
 } scope_state;
 
 typedef struct {
@@ -136,10 +136,10 @@ typedef struct {
     scope_state         *s;             // the current scope for this window
 //  var_type_bits       hide;
     int                 name_end_row;
-    unsigned            ok_to_cache_exprsp: 1;// should we leave ExprSP around?
-    unsigned            exprsp_cache_is_error: 1;// was the last thing the expression processor gave us an error?
-    unsigned            mem_lock : 1;   // don't garbage collect from this window. We're using it's data structures
-    unsigned            members : 1;   // show members without this->?
+    bool                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
+    bool                exprsp_cache_is_error   : 1;    // was the last thing the expression processor gave us an error?
+    bool                mem_lock                : 1;    // don't garbage collect from this window. We're using it's data structures
+    bool                members                 : 1;    // show members without this->?
 } var_info;
 
 #define VAR_NO_ROW -1
@@ -154,19 +154,19 @@ enum {
 };
 
 typedef struct type_display {
-    struct type_display         *next;          // pointer to next in our list
-    struct type_display         *fields;        // pointer to a list of fields
-    struct type_display         *parent;        // pointer to a fields parent
-    struct type_display         *alias;         // pointer to a list of same types
-    var_display_bits            display;        // how to display this field
-    var_type_bits               hide;           // what to hide
-    unsigned                    autoexpand : 1; // automatically expand this type?
-    unsigned                    on_top : 1;     // show as the unexpanded value
-    unsigned                    has_top : 1;    // has a subfields to show as unexpanded value
-    unsigned                    is_struct : 1;  // is this field a struct
-    unsigned                    is_field : 1;   // is this field a struct
-    unsigned                    dirty : 1;      // is this field dirty
-    char                        name[1];        // MUST BE LAST FIELD
+    struct type_display         *next;              // pointer to next in our list
+    struct type_display         *fields;            // pointer to a list of fields
+    struct type_display         *parent;            // pointer to a fields parent
+    struct type_display         *alias;             // pointer to a list of same types
+    var_display_bits            display;            // how to display this field
+    var_type_bits               hide;               // what to hide
+    bool                        autoexpand  : 1;    // automatically expand this type?
+    bool                        on_top      : 1;    // show as the unexpanded value
+    bool                        has_top     : 1;    // has a subfields to show as unexpanded value
+    bool                        is_struct   : 1;    // is this field a struct
+    bool                        is_field    : 1;    // is this field a struct
+    bool                        dirty       : 1;    // is this field dirty
+    char                        name[1];            // MUST BE LAST FIELD
 } type_display;
 
 typedef enum {

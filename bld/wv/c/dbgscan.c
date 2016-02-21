@@ -200,17 +200,15 @@ static walk_result      FindTypeName( mad_type_handle th, void *d )
     unsigned            len;
 
     GetMADTypeNameForCmd( th, TxtBuff, TXT_LEN );
-    p = nd->start;
-    q = TxtBuff;
-    for( ;; ) {
-        if( tolower( *p ) != tolower( *q ) ) break;
-        if( *q == '\0' ) break;
-        ++p;
-        ++q;
+    for( p = nd->start, q = TxtBuff; tolower( *p ) == tolower( *q ); ++p, ++q ) {
+        if( *q == NULLCHAR ) {
+            break;
+        }
     }
-    if( isalnum( *p ) ) return( WR_CONTINUE );
+    if( isalnum( *p ) )
+        return( WR_CONTINUE );
     len = q - TxtBuff;
-    if( *q == '\0' ) {
+    if( *q == NULLCHAR ) {
         /* an exact match */
         nd->len = len;
         nd->th = th;
@@ -271,24 +269,21 @@ mad_string ScanCall( void )
     const mad_string    *type;
     char                buff[NAM_LEN];
 
-    type = MADCallTypeList();
-    for( ;; ) {
-        if( *type == MAD_MSTR_NIL ) return( MAD_MSTR_NIL );
+    for( type = MADCallTypeList(); *type != MAD_MSTR_NIL; ++type ) {
         MADCliString( *type, buff, sizeof( buff ) );
-        q = buff;
-        p = TokenStart;
-        for( ;; ) {
+        for( q = buff, p = TokenStart; ; ++p, ++q ) {
             if( !isalnum( *p ) ) {
-                if( p == TokenStart ) return( MAD_MSTR_NIL );
+                if( p == TokenStart )
+                    return( MAD_MSTR_NIL );
                 ReScan( p );
                 return( *type );
             }
-            if( tolower( *p ) != tolower( *q ) ) break;
-            ++p;
-            ++q;
+            if( tolower( *p ) != tolower( *q ) ) {
+                break;
+            }
         }
-        ++type;
     }
+    return( MAD_MSTR_NIL );
 }
 
 /*
@@ -486,8 +481,8 @@ static bool ScanExprDelim( const char *table )
             ScanPtr = ptr;
             return( true );
         }
-        for( ; *table != NULLCHAR ; table++ ) {
-            ;
+        while( *table != NULLCHAR ) {
+            table++;
         }
     }
     return( false );
@@ -498,9 +493,10 @@ static bool ScanCmdLnDelim( void )
 {
     const char  *ptr;
 
-    for( ptr = CmdLnDelimTab; ; ptr++ ) {
-        if( *ScanPtr == *ptr ) break;
-        if( *ptr == NULLCHAR ) return( false );
+    for( ptr = CmdLnDelimTab; *ScanPtr != *ptr; ptr++ ) {
+        if( *ptr == NULLCHAR ) {
+            return( false );
+        }
     }
     CurrToken = FIRST_CMDLN_DELIM + ( ptr - CmdLnDelimTab );
     if( *ScanPtr != NULLCHAR ) {
@@ -565,9 +561,7 @@ static bool GetNum( unsigned base )
     ok = false;
     U32ToU64( base, &big_base );
     U64Clear( num );
-    for( ; ; ) {
-        dig = GetDig( base );
-        if( dig < 0 ) break;
+    while( (dig = GetDig( base )) >= 0 ) {
         U32ToU64( dig, &big_dig );
         U64Mul( &num, &big_base, &num );
         U64Add( &num, &big_dig, &num );
@@ -660,9 +654,7 @@ static bool ScanId( void )
 
     c = *ScanPtr;
     if( c == NAME_ESC ) {
-        for( ;; ) {
-            c = *++ScanPtr;
-            if( c == NULLCHAR ) break;
+        while( (c = *++ScanPtr) != NULLCHAR ) {
             if( c == NAME_ESC ) {
                 ++ScanPtr;
                 break;
@@ -731,7 +723,8 @@ void AddActualChar( char data )
     }
     walk1 = hold;
     walk2 = StringStart;
-    for( --len; len > 0; --len )  *walk1++ = *walk2++;
+    for( --len; len > 0; --len )
+        *walk1++ = *walk2++;
     *walk1 = data;
     _Free( StringStart );
     StringStart = hold;
@@ -947,7 +940,7 @@ char *AddHexSpec( char *p )
     FindRadixSpec( 16, &pref, &len );
     memcpy( p, pref, len );
     p += len;
-    *p = '\0';
+    *p = NULLCHAR;
     return( p );
 }
 

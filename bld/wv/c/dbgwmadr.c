@@ -218,7 +218,7 @@ static bool RegResize( a_window *wnd )
         p += len;
         *p++ = ')';
     }
-    *p++ = '\0';
+    *p++ = NULLCHAR;
     WndSetTitle( wnd, TxtBuff );
 
     return( true );
@@ -400,7 +400,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
     } else {
         line->indent = reg->indents[column].descript;
         strcpy( TxtBuff, disp.descript );
-        if( TxtBuff[0] != '\0' ) {
+        if( TxtBuff[0] != NULLCHAR ) {
             strcat( TxtBuff, ":" );
         }
         line->tabstop = false;

@@ -90,7 +90,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, file_handle fh )
     for( i = 0; i < 7; ++i ) {
         *p++ = '=';
     }
-    *p = '\0';
+    *p = NULLCHAR;
     rtn( fh, TxtBuff );
     for( row = -WndTitleSize( wnd );; ++row ) {
         p = buff;
@@ -157,7 +157,7 @@ void WndDumpFile( a_window *wnd )
         WndDumpPrompt( wnd );
     } else {
         memcpy( TxtBuff, start, len );
-        TxtBuff[len] = '\0';
+        TxtBuff[len] = NULLCHAR;
         DoWndDumpFile( TxtBuff, wnd );
     }
 }

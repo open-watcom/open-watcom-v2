@@ -83,22 +83,22 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
     tiny_ret_t  ret;
     size_t      total;
-    unsigned    piece;
+    unsigned    piece_len;
     unsigned    read_len;
 
-    piece = INT_MAX;
+    piece_len = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (unsigned)len;
-        ret = TinyRead( filehndl, ptr, piece );
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = TinyRead( filehndl, ptr, piece_len );
         if( TINY_ERROR( ret ) ) {
             StashErrCode( TINY_INFO( ret ), OP_LOCAL );
             return( ERR_RETURN );
         }
         read_len = TINY_INFO( ret );
         total += read_len;
-        if( read_len != piece )
+        if( read_len != piece_len )
             break;
         ptr = (char *)ptr + read_len;
         len -= read_len;
@@ -110,22 +110,22 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
     tiny_ret_t  ret;
     size_t      total;
-    unsigned    piece;
+    unsigned    piece_len;
     unsigned    write_len;
 
-    piece = INT_MAX;
+    piece_len = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (unsigned)len;
-        ret = TinyWrite( filehndl, ptr, piece );
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = TinyWrite( filehndl, ptr, piece_len );
         if( TINY_ERROR( ret ) ) {
             StashErrCode( TINY_INFO( ret ), OP_LOCAL );
             return( ERR_RETURN );
         }
         write_len = TINY_INFO( ret );
         total += write_len;
-        if( write_len != piece )
+        if( write_len != piece_len )
             break;
         ptr = (char *)ptr + write_len;
         len -= write_len;

@@ -168,7 +168,8 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
     if( menu_accel ) {
         for( p = menu; *p; ++p ) {
             if( *p == '&' ) {
-                if( tolower( p[1] ) == menu_accel ) return( true );
+                if( tolower( p[1] ) == menu_accel )
+                    return( true );
                 break;
             }
         }
@@ -177,9 +178,12 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
         --len;
     }
     while( --len >= 0 ) {
-        if( *menu == '&' ) ++menu;
-        if( tolower( *menu ) != tolower( *str ) ) return( false );
-        if( *menu == '\0' ) return( false );
+        if( *menu == '&' )
+            ++menu;
+        if( tolower( *menu ) != tolower( *str ) )
+            return( false );
+        if( *menu == NULLCHAR )
+            return( false );
         ++menu;
         ++str;
     }
@@ -191,12 +195,15 @@ static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
     const char          *start;
     size_t              len;
 
-    if( !ScanItem( true, &start, &len ) ) return( NULL );
+    if( !ScanItem( true, &start, &len ) )
+        return( NULL );
     while( --size >= 0 ) {
-        if( StrAmpEqual( start, menu->label, len ) ) break;
+        if( StrAmpEqual( start, menu->label, len ) )
+            break;
         ++menu;
     }
-    if( size < 0 ) return( NULL );
+    if( size < 0 )
+        return( NULL );
     return( menu );
 }
 
@@ -209,12 +216,14 @@ char *GetMenuLabel( unsigned size,
 
     while( size != 0 ) {
         if( menu->id == id ) {
-            for( cp = menu->label; *cp != '\0'; ++cp ) {
-                if( *cp == '&' && strip_amp ) continue;
-                if( *cp == '\t' ) break;
+            for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
+                if( *cp == '&' && strip_amp )
+                    continue;
+                if( *cp == '\t' )
+                    break;
                 *buff++ = *cp;
             }
-            *buff = '\0';
+            *buff = NULLCHAR;
             return( buff );
         }
         if( menu->num_child_menus != 0 ) {
@@ -443,7 +452,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
     size_t              len;
 
     if( menu == NULL ) return;
-    for( cp = menu->label; *cp != '\0'; ++cp ) {
+    for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
         if( *cp == '\t' ) {
             break;
         }

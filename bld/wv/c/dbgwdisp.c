@@ -205,7 +205,7 @@ static char *GUIDupStrLen( const char *str, size_t len )
     dup = GUIMemAlloc( len + 1 );
     if( dup != NULL ) {
         memcpy( dup, str, len );
-        dup[len] = '\0';
+        dup[len] = NULLCHAR;
     }
     return( dup );
 }
@@ -519,13 +519,8 @@ void ConfigDisp( void )
     if( head == NULL )
         return;
     // traverse in reverse order so that windows get created in correct order
-    wnd = head;
-    for( ;; ) {
-        next = WndNext( wnd );
-        if( next == NULL )
-            break;
-        wnd = next;
-    }
+    for( wnd = head; (next = WndNext( wnd )) != NULL; wnd = next )
+        ;
     for( ;; ) {
         if( WndHasClass( wnd ) ) {
             wndclass = WndClass( wnd );
@@ -551,13 +546,8 @@ void ConfigDisp( void )
         }
         if( wnd == head )
             break;
-        scan = head;
-        for( ;; ) {
-            next = WndNext( scan );
-            if( next == wnd )
-                break;
-            scan = next;
-        }
+        for( scan = head; (next = WndNext( scan )) != wnd; scan = next )
+            ;
         wnd = scan;
     }
 }

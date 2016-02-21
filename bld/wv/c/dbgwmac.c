@@ -91,9 +91,9 @@ typedef struct {
     unsigned            size;
     gui_menu_struct     *menu;
     wnd_macro           *mac;
-    unsigned            press_key : 1;
-    unsigned            creating : 1;
-    unsigned            changing : 1;
+    bool                press_key : 1;
+    bool                creating  : 1;
+    bool                changing  : 1;
 } mac_window;
 #define WndMac( wnd ) ( (mac_window *)WndExtra( wnd ) )
 
@@ -151,12 +151,16 @@ static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
     MacAddDel( mac->key, mac->wndclass, NULL );
     curr = MacAddDel( key, wndclass, cmds );
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {
-        if( *owner == curr ) break;
+        if( *owner == curr ) {
+            break;
+        }
     }
     *owner = curr->link;
     i = 0;
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {
-        if( i == row ) break;
+        if( i == row ) {
+            break;
+        }
         ++i;
     }
     curr->link = *owner;
@@ -249,9 +253,11 @@ static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
     cmd_list            *cmds;
 
     WndInstallClickHook( NULL );
-    if( wnd == NULL || WndClass( wnd ) != WND_MACRO ) return( false );
+    if( wnd == NULL || WndClass( wnd ) != WND_MACRO )
+        return( false );
     wndmac = WndMac( wnd );
-    if( wndmac->mac == NULL ) return( false );
+    if( wndmac->mac == NULL )
+        return( false );
     p = StrCopy( GetCmdName( CMD_ACCEL ), TxtBuff );
     *p++ = ' ';
     if( wndmac->mac->type == MACRO_MAIN_MENU ) {
@@ -270,7 +276,7 @@ static bool MacPopupClicked( a_window *wnd, gui_ctl_id id )
     }
     if( p != NULL ) {
         *p++ = '}';
-        *p++ = '\0';
+        *p++ = NULLCHAR;
         cmds = AllocCmdList( TxtBuff, p - TxtBuff );
         MacAddDel( wndmac->mac->key, wndmac->mac->wndclass, cmds );
     }
@@ -457,7 +463,8 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
     char                *p;
 
     if( wndmac->press_key ) {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         line->tabstop = false;
         if( row > WndTop( wnd ) + WndRows( wnd ) - 1 ) {
             return( false );
@@ -477,12 +484,14 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
         switch( row ) {
         case 0:
             line->tabstop = false;
-            if( piece >= PIECE_LAST ) return( false );
+            if( piece >= PIECE_LAST )
+                return( false );
             line->indent = Indents[piece];
             line->text = *Titles[piece];
             return( true );
         case 1:
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             SetUnderLine( wnd, line );
             return( true );
         default:
@@ -515,7 +524,7 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
             case MACRO_COMMAND:
                 cmds = mac->cmd;
                 line->text = cmds->buff;
-                if( line->text[0] == '\0' ) {
+                if( line->text[0] == NULLCHAR ) {
                     line->text = LIT_ENG( Quest_Marks );
                 }
                 break;
@@ -560,16 +569,23 @@ static void MacReSize( a_window *wnd )
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         size = WndExtentX( wnd, KeyName( mac->key ) );
-        if( size < MIN_KEY_SIZE( wnd ) ) size = MIN_KEY_SIZE( wnd );
-        if( size > max[PIECE_KEY] ) max[PIECE_KEY] = size;
+        if( size < MIN_KEY_SIZE( wnd ) )
+            size = MIN_KEY_SIZE( wnd );
+        if( size > max[PIECE_KEY] ) {
+            max[PIECE_KEY] = size;
+        }
     }
     for( i = 0; i < ArraySize( WhatList ); ++i ) {
         size = WndExtentX( wnd, *WhatList[i] );
-        if( size > max[PIECE_WHAT] ) max[PIECE_WHAT] = size;
+        if( size > max[PIECE_WHAT] ) {
+            max[PIECE_WHAT] = size;
+        }
     }
     for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
         size = WndExtentX( wnd, *WndDisplayNames[wndclass] );
-        if( size > max[PIECE_WHERE] ) max[PIECE_WHERE] = size;
+        if( size > max[PIECE_WHERE] ) {
+            max[PIECE_WHERE] = size;
+        }
     }
     Indents[PIECE_KEY] = WndAvgCharX( wnd );
     Indents[PIECE_WHERE] = Indents[PIECE_KEY] +
@@ -580,7 +596,6 @@ static void MacReSize( a_window *wnd )
                         max[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
-static WNDREFRESH MacRefresh;
 static void     MacRefresh( a_window *wnd )
 {
     MacReSize( wnd );
@@ -588,7 +603,6 @@ static void     MacRefresh( a_window *wnd )
     WndRepaint( wnd );
 }
 
-static WNDCALLBACK MacEventProc;
 static bool MacEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );

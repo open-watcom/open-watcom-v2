@@ -377,7 +377,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
         stopvalue = XCPT_CONTINUE_STOP;
     }
 
-    while( 1 ) {
+    for( ;; ) {
 
         buff->Value = value;
         buff->Cmd = cmd;
@@ -558,9 +558,7 @@ DebugIt( void *crap )
     W = SW.hwnd;
     A = WinQueryAnchorBlock( W );
     Q = WinQueueFromID( A, Buff.Pid, Buff.Tid );
-    for( ;; ) {
-        hmq = WinQuerySendMsg( A, 0, Q, &qmsg );
-        if( hmq == 0 ) break;
+    while( (hmq = WinQuerySendMsg( A, 0, Q, &qmsg )) != 0 ) {
 //      printf( "SND hwnd=%8.8x msg=%d\n", qmsg.hwnd, qmsg.msg );
         WinReplyMsg( A, hmq, Q, 1 );
     }
@@ -580,5 +578,7 @@ DebugIt( void *crap )
 //    }
 //    Go = 0;
 //  while( !ThreadGone ) DosSleep( 1 );
-   for( ;; ) DosSleep( 100 );
+   for( ;; ) {
+       DosSleep( 100 );
+   }
 }

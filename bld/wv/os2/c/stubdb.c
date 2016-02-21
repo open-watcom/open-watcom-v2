@@ -164,9 +164,7 @@ static void DumpLocals( void )
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
         VarOkToCache( &Locals, true );
     }
-    for( row = 0;; ++row ) {
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit );
-        if( v == NULL ) break;
+    for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
         v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth, &inherit );
         v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth, &inherit );
         switch( v->gadget ) {
@@ -265,7 +263,7 @@ void DlgCmd( void )
     printf( "DBG>" );
     fflush( stdout );   // not really necessary
     gets( buff );
-    if( buff[0] != '\0' && buff[1] == '\0' ) {
+    if( buff[0] != NULLCHAR && buff[1] == NULLCHAR ) {
         switch( tolower( buff[0] ) ) {
         case 'u':
             WndAsmInspect( GetCodeDot() );
@@ -349,8 +347,8 @@ extern char *DUILoadString( int id )
 
     size = WinLoadString( 0, NULLHANDLE, id, sizeof( buff ), buff );
 //    size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    buff[size]='\0';
-    ret = DbgAlloc( size+1 );
+    buff[size] = NULLCHAR;
+    ret = DbgAlloc( size + 1 );
     strcpy( ret, buff );
     return( ret );
 }
@@ -842,7 +840,7 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
 
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL ) return( false );
-    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }
@@ -852,7 +850,7 @@ bool DUIIsDBCS( void )
     return( false );
 }
 
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }

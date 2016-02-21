@@ -102,10 +102,10 @@ void LocalGetBuff( char *buff, unsigned size )
     length.cchIn = 0;
     if( KbdStringIn( buff, &length, 0, 0 ) ) {
         buff[0] = '\r';
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
         return;
     }
-    buff[length.cchIn] = '\0';
+    buff[length.cchIn] = NULLCHAR;
 }
 
 error_handle LocalRename( const char *from, const char *to )

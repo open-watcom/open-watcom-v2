@@ -54,13 +54,13 @@ typedef struct location_context {
     machine_state       *regs;
     type_handle         *th;
     sym_handle          *sh;
-    unsigned            have_frame              : 1;
-    unsigned            have_stack              : 1;
-    unsigned            have_object             : 1;
-    unsigned            maybe_have_frame        : 1;
-    unsigned            maybe_have_object       : 1;
-    unsigned            up_stack_level          : 1;
     unsigned            use;
+    bool                have_frame              : 1;
+    bool                have_stack              : 1;
+    bool                have_object             : 1;
+    bool                maybe_have_frame        : 1;
+    bool                maybe_have_object       : 1;
+    bool                up_stack_level          : 1;
 } location_context;
 
 typedef struct sym_list {
@@ -90,8 +90,8 @@ struct image_entry {
     mod_handle          dip_handle;
     void                (*mapper)( image_entry *, addr_ptr *, addr_off *, addr_off * );
     address             def_addr_space;
-    unsigned            nofree : 1;
-    unsigned            deferred_symbols : 1;
+    bool                nofree           : 1;
+    bool                deferred_symbols : 1;
     char                image_name[1];          /* variable sized */
 };
 

@@ -95,20 +95,21 @@ again:
     for( ;; ) {
         *p++ = ch = *cmds++;
         if( ch == '{' ) {
-            *p = '\0';
+            *p = NULLCHAR;
             DUIDlgTxt( TxtBuff );
             indent += INDENT_AMOUNT;
             goto again;
         } else if( ch == '}' ) {
-            *--p = '\0';
+            *--p = NULLCHAR;
             for( ;; ) {
-                if( p == TxtBuff ) break;
+                if( p == TxtBuff )
+                    break;
                 --p;
                 if( *p != ' ' ) {
                     ++p;
                     break;
                 }
-                *p = '\0';
+                *p = NULLCHAR;
             }
             if( p != TxtBuff ) DUIDlgTxt( TxtBuff );
             p = TxtBuff;
@@ -116,13 +117,13 @@ again:
                 *p++ = ' ';
             }
             *p++ = '}';
-            *p = '\0';
+            *p = NULLCHAR;
             DUIDlgTxt( TxtBuff );
             indent -= INDENT_AMOUNT;
             goto again;
         } else if( ch == '\r' ) {
             --p;
-        } else if( ch == '\0' ) {
+        } else if( ch == NULLCHAR ) {
             if( p != TxtBuff ) {
                 DUIDlgTxt( TxtBuff );
             }

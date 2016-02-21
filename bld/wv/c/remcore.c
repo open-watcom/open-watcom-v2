@@ -84,7 +84,7 @@ static size_t MemRead( address addr, void *ptr, size_t size )
     read_mem_req        acc;
     bool                int_tbl;
     size_t              left;
-    trap_elen           piece;
+    trap_elen           piece_len;
     trap_retval         read_len;
 
     if( size == 0 )
@@ -93,23 +93,23 @@ static size_t MemRead( address addr, void *ptr, size_t size )
     acc.req = REQ_READ_MEM;
     AddrFix( &addr );
     acc.mem_addr = addr.mach;
-    piece = MaxPacketLen;
+    piece_len = MaxPacketLen;
     left = size;
     while( left > 0 ) {
-        if( piece > left )
-            piece = (trap_elen)left;
-        acc.len = piece;
-        int_tbl = IsInterrupt( &(acc.mem_addr), piece );
+        if( piece_len > left )
+            piece_len = (trap_elen)left;
+        acc.len = piece_len;
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
         if( int_tbl )
             RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
+        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece_len, ptr );
         if( int_tbl )
             GrabHandlers();
         left -= read_len;
-        if( read_len != piece )
+        if( read_len != piece_len )
             break;
         addr.mach.offset += read_len;
         acc.mem_addr = addr.mach;
@@ -178,7 +178,7 @@ size_t ProgPoke( address addr, const void *data, size_t len )
     write_mem_ret       ret;
     bool                int_tbl;
     size_t              left;
-    trap_elen           piece;
+    trap_elen           piece_len;
 
     SectLoad( addr.sect_id );
     acc.req = REQ_WRITE_MEM;
@@ -188,15 +188,15 @@ size_t ProgPoke( address addr, const void *data, size_t len )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    piece = MaxPacketLen - sizeof( acc );
+    piece_len = MaxPacketLen - sizeof( acc );
     left = len;
     while( left > 0 ) {
-        if( piece > left )
-            piece = (trap_elen)left;
+        if( piece_len > left )
+            piece_len = (trap_elen)left;
         in[1].ptr = data;
-        in[1].len = piece;
+        in[1].len = piece_len;
 
-        int_tbl = IsInterrupt( &(acc.mem_addr), piece );
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
         if( int_tbl )
             RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
@@ -207,7 +207,7 @@ size_t ProgPoke( address addr, const void *data, size_t len )
             GrabHandlers();
 
         left -= ret.len;
-        if( ret.len != piece )
+        if( ret.len != piece_len )
             break;
         addr.mach.offset += ret.len;
         acc.mem_addr = addr.mach;

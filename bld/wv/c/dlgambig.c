@@ -71,7 +71,7 @@ static const char *SymPickText( const void *data_handle, int item )
         len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
     }
     image_name = ModImageName( SymMod( SL2SH( sym ) ) );
-    if( *image_name != '\0' ) {
+    if( *image_name != NULLCHAR ) {
         Format( &TxtBuff[len], " [%s]", image_name );
     }
     return( TxtBuff );

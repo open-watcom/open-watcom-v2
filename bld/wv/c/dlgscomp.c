@@ -60,7 +60,7 @@ extern char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff
     GUIDlgBuffGetText( gui, id, TxtBuff, TXT_LEN );
     StrTrim( TxtBuff );
     match = TxtBuff - 1;
-    for( p = TxtBuff; *p != '\0'; ++p ) {
+    for( p = TxtBuff; *p != NULLCHAR; ++p ) {
         if( *p == ' ' ) {
             match = p;
         }
@@ -82,7 +82,7 @@ extern void SymComplete( gui_window *gui, gui_ctl_id id )
     SortedNames = SymCompInit( true, true, false, false, NO_MOD );
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
-    if( match != NULL && match[0] != '\0' ) {
+    if( match != NULL && match[0] != NULLCHAR ) {
         SymCompMatches( SortedNames, match, &first, &last );
         num = last - first;
     } else {

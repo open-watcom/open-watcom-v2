@@ -232,7 +232,7 @@ char *StrLTrim( char *s )
         char    *t = s;
 
         /* find the first non-space character */
-        while( *t != '\0' && isspace( (unsigned char) *t )) {
+        while( *t != NULLCHAR && isspace( (unsigned char) *t )) {
             ++t;
         }
         len = strlen( t ) + 1;
@@ -251,7 +251,7 @@ char *StrRTrim( char *s )
             if( 0 == len ) {
                 done = 1;
             } else if( isspace( (unsigned char)s[len - 1] ) ) {
-                s[len - 1] = '\0';
+                s[len - 1] = NULLCHAR;
             } else {
                 done = 1;
             }
@@ -297,7 +297,7 @@ char *GetCmdPartByChar( const char *cmd, const char *delimit )
     }
     result = malloc( sizeof( char ) * ( len + 1 ) );
     strncpy( result, cmd, len );
-    result[len] = '\0';
+    result[len] = NULLCHAR;
     MyStrTrim( result );
     return( result );
 }
@@ -322,7 +322,7 @@ char *GetParamPartByChar( const char *cmd, const char *delimit )
         len -= pos;
         result = malloc( sizeof( char ) * ( len + 1 ) );
         strncpy( result, cmd + pos + 1, len + 1 );
-        result[len] = '\0';
+        result[len] = NULLCHAR;
     }
     MyStrTrim( result );
     return( result );
@@ -498,10 +498,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
     int         depth, inherited;
     var_node    *v;
 
-    for( row = 0; ; ++row ) {
-        v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_GADGET, &depth , &inherited );
-        if( v == NULL )
-            break;
+    for( row = 0; (v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_GADGET, &depth , &inherited )) != NULL; ++row ) {
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_NAME, &depth , &inherited );
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_VALUE, &depth , &inherited );
         switch( v->gadget ) {
@@ -759,7 +756,7 @@ bool ProcessCmdPrint( const char *param )
         ShowDebuggerError( "program not loaded." );
         return( false );
     }
-    if( param[0] == '\0' ) {
+    if( param[0] == NULLCHAR ) {
         ShowDebuggerError( "no variable/expression specified." );
         return( false );
     }
@@ -824,7 +821,7 @@ bool ProcessCmdLoad( const char *param )
     printf( "\nProgram : %s", program_name );
     printf( "\nParam : %s\n", program_param );
 #endif
-    if( program_name[0] == '\0' ) {
+    if( program_name[0] == NULLCHAR ) {
         ShowDebuggerError( "no program not load." );
         do_return = false ;
     }
@@ -881,13 +878,13 @@ bool ProcessCmdBreakpoint( const char *param )
 #endif
 
     /* if the filename or the missing then throw an error */
-    if( file_name[0] == '\0' ) {
+    if( file_name[0] == NULLCHAR ) {
         ShowDebuggerError( "file name not provided." );
         free( file_name );
         free( line_number_str );
         return( false );
     }
-    if( line_number_str[0] == '\0' ) {
+    if( line_number_str[0] == NULLCHAR ) {
         ShowDebuggerError( "line number not provided." );
         free( file_name );
         free( line_number_str );
@@ -1271,7 +1268,7 @@ bool ProcessDebuggerCmd( char *cmd )
     bool    result = false;
 
     /*if the user hits enter*/
-    if( ( cmd == NULL ) || ( cmd[0] == '\0' ) )
+    if( ( cmd == NULL ) || ( cmd[0] == NULLCHAR ) )
         return( true );
 
     cmd = MyStrTrim( cmd );
@@ -1417,7 +1414,7 @@ void DlgCmd( void )
         ShowDebuggerPrompt();
         gets( buff );
         MyStrTrim( buff );
-        buff[strlen( buff )] = '\0';
+        buff[strlen( buff )] = NULLCHAR;
         if( !ProcessDebuggerCmd( buff ) ) {
             break;
         }
@@ -1431,8 +1428,8 @@ extern char *DUILoadString( int id )
     int         size;
 
     size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    buff[size]='\0';
-    ret = DbgAlloc( size+1 );
+    buff[size] = NULLCHAR;
+    ret = DbgAlloc( size + 1 );
     strcpy( ret, buff );
     return( ret );
 }
@@ -1843,7 +1840,7 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
 
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL ) return( false );
-    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }
@@ -1853,7 +1850,7 @@ bool DUIIsDBCS( void )
     return( false );
 }
 
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }

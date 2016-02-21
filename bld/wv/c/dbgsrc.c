@@ -133,7 +133,8 @@ char *SourceName( char_ring *src )
 
 char_ring *NextSourceSpec( char_ring *curr )
 {
-    if( curr == NULL ) return( SrcSpec );
+    if( curr == NULL )
+        return( SrcSpec );
     return( curr->next );
 }
 
@@ -208,11 +209,12 @@ void *OpenSrcFile( cue_handle *ch )
     _AllocA( buff, len );
     CueFile( ch, buff, len );
     hndl = FOpenSource( buff, CueMod( ch ), CueFileId( ch ) );
-    if( hndl != NULL ) return( hndl );
+    if( hndl != NULL )
+        return( hndl );
     for( path = SrcSpec; path != NULL; path = path->next ) {
         used_star = false;
         d = TxtBuff;
-        for( p = path->name; *p != '\0'; ++p ) {
+        for( p = path->name; *p != NULLCHAR; ++p ) {
             if( *p == '*' ) {
                 used_star = true;
                 d += ModName( CueMod( ch ), d, TXT_LEN );
@@ -222,22 +224,24 @@ void *OpenSrcFile( cue_handle *ch )
         }
         *d = NULLCHAR;
         if( !used_star ) {
-            #if 0
+#if 0
                 /*
                     John can't remember why he put this code in, and it
                     screws up when the user sets a source path of ".".
                     If we find some case where it's required, we'll have to
                     think harder about things.
                 */
-            if( *ExtPointer( TxtBuff, 0 ) != '\0' ) {
-                *SkipPathInfo( TxtBuff, 0 ) = '\0';
+            if( *ExtPointer( TxtBuff, 0 ) != NULLCHAR ) {
+                *SkipPathInfo( TxtBuff, 0 ) = NULLCHAR;
             }
-            #endif
+#endif
             d = AppendPathDelim( TxtBuff, 0 );
             if( !IsAbsolutePath( buff ) ) {
                 StrCopy( buff, d );
                 hndl = FOpenSource( TxtBuff, CueMod( ch ), CueFileId( ch ) );
-                if( hndl != NULL ) return( hndl );
+                if( hndl != NULL ) {
+                    return( hndl );
+                }
             }
             /*
                 We have a small problem here. We want to strip off the
@@ -256,7 +260,9 @@ void *OpenSrcFile( cue_handle *ch )
             *d = NULLCHAR;
         }
         hndl = FOpenSource( TxtBuff, CueMod( ch ), CueFileId( ch ) );
-        if( hndl != NULL ) return( hndl );
+        if( hndl != NULL ) {
+            return( hndl );
+        }
     }
     return( NULL );
 }

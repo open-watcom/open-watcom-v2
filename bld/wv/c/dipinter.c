@@ -328,7 +328,7 @@ static size_t DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im, ch
         if( max > len )
             max = len;
         memcpy( name, InternalName, max );
-        name[max] = '\0';
+        name[max] = NULLCHAR;
     }
     return( len );
 }
@@ -489,7 +489,7 @@ static size_t DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
         if( max > len )
             max = len;
         memcpy( name, p, max );
-        name[max] = '\0';
+        name[max] = NULLCHAR;
     }
     return( len );
 }
@@ -953,23 +953,19 @@ void InitDbgInfo( void )
     dip = DipFiles;
     if( *dip == NULL ) {
         dip_count = 0;
-        p = DIPDefaults;
-        for( ;; ) {
-            if( *p == NULLCHAR ) break;
-            if( CheckDIPLoad( p, true ) ) ++dip_count;
-            p += strlen( p ) + 1;
+        for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
+            if( CheckDIPLoad( p, true ) ) {
+                ++dip_count;
+            }
         }
         if( dip_count == 0 ) {
             DIPFini();
             d = StrCopy( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
-            p = DIPDefaults;
-            for( ;; ) {
-                if( *p == NULLCHAR ) break;
+            for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
                 d = StrCopy( p, d );
                 *d++ = ',';
-                p += strlen( p ) + 1;
             }
             --d;
             *d++ = ')';
@@ -981,7 +977,7 @@ void InitDbgInfo( void )
             CheckDIPLoad( *dip, false );
             _Free( *dip );
             *dip = NULL;
-        } while( *++dip );
+        } while( *++dip != NULLCHAR );
     }
 }
 
@@ -1000,6 +996,7 @@ bool IsInternalModName( const char *start, size_t len )
 {
     if( len != sizeof( InternalName ) - 1 )
         return( false );
-    if( memicmp( start, InternalName, len ) != 0 ) return( false );
+    if( memicmp( start, InternalName, len ) != 0 )
+        return( false );
     return( true );
 }

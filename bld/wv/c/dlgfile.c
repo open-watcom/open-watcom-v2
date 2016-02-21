@@ -166,7 +166,7 @@ static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags
     bool        rc;
 
     if( *last == NULL ) {
-        TxtBuff[0] = '\0';
+        TxtBuff[0] = NULLCHAR;
     } else {
         strcpy( TxtBuff, *last );
     }
@@ -211,14 +211,14 @@ bool WndShutDownHook( void )
         return( false );
     }
     WritableConfig();
-    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != '\0' ) {
+    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != NULLCHAR ) {
         SaveConfigToFile( LastCfg );
         SaveMainWindowPos();
     }
     FiniHelp();
-    #if defined(__GUI__) && defined(__OS2__)
-        KillProgOvlay(); // must be done before windows are shut down
-    #endif
+#if defined(__GUI__) && defined(__OS2__)
+    KillProgOvlay(); // must be done before windows are shut down
+#endif
     return( true );
 }
 

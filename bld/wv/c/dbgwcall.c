@@ -157,7 +157,7 @@ static void     CallInit( a_window *wnd )
         WndRepaint( wnd );
     } else {
         row = curr->total_depth;
-        if( prev->total_depth > row ) {
+        if( row < prev->total_depth ) {
             row = prev->total_depth;
         }
         while( --row >= curr->clean_size ) {
@@ -170,7 +170,7 @@ static void     CallInit( a_window *wnd )
         if( chain[i].sym_len == 0 ) {
             chain[i].sym_len = WndExtentX( wnd, chain[i].symbol );
         }
-        if( chain[i].sym_len > call->max_sym_len ) {
+        if( call->max_sym_len < chain[i].sym_len ) {
             call->max_sym_len = chain[i].sym_len;
         }
     }

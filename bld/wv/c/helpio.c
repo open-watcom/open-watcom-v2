@@ -99,12 +99,12 @@ HELPIO int HelpAccess( const char *path, int mode )
 HELPIO char *HelpGetCWD( char *buf, int size )
 {
     size=size;
-    buf[0] = '\0';
+    buf[0] = NULLCHAR;
     return( buf );
 }
 
 HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf )
 {
     name=name;env_var=env_var;
-    buf[0] = '\0';
+    buf[0] = NULLCHAR;
 }

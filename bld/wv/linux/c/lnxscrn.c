@@ -167,12 +167,12 @@ static bool TryXWindows( void )
     for( ;; ) {
         while( isspace( *p ) )
             ++p;
-        while( !isspace( *p ) && *p != '\0' )
+        while( !isspace( *p ) && *p != NULLCHAR )
             ++p;
-        if( *p == '\0' )
+        if( *p == NULLCHAR )
             break;
         ++argc;
-        *p++ = '\0';
+        *p++ = NULLCHAR;
     }
     end = p;
     _AllocA( argv, ( argc + 16 ) * sizeof( *argv ) );
@@ -244,7 +244,7 @@ static bool TryVC( void )
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if ( len < 0 )
         return( false );
-    tty_name[len] = '\0';
+    tty_name[len] = NULLCHAR;
     if( DbgConsole == 0 ) {
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )

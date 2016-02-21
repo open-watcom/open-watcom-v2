@@ -516,19 +516,14 @@ static void PendingAdd( mad_window_toggles wt, dig_mad mad,
     pending_toggle_list **owner;
     pending_toggle_list *new;
 
-    owner = &PendToggleList[wt];
-    for( ;; ) {
-        new = *owner;
-        if( new == NULL )
-            break;
-        owner = &new->next;
-    }
+    for( owner = &PendToggleList[wt]; (new = *owner) != NULL; owner = &new->next )
+        ;
     new = DbgMustAlloc( sizeof( *new ) + len );
     *owner = new;
     new->next = NULL;
     new->mad = mad;
     memcpy( new->toggle, name, len );
-    new->toggle[len] = '\0';
+    new->toggle[len] = NULLCHAR;
 }
 
 
@@ -575,23 +570,20 @@ static bool DoOneToggle( mad_window_toggles wt )
         break;
     }
     bit = 1;
-    toggles = GetMADToggleList( rsd );
-    for( ;; ) {
-        if( toggles->on == MAD_MSTR_NIL ) return( false );
+    for( toggles = GetMADToggleList( rsd ); toggles->on != MAD_MSTR_NIL; ++toggles ) {
         GetMADNormalizedString( toggles->on, TxtBuff, TXT_LEN );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, bit, 0 );
-            break;
+            return( true );
         }
         GetMADNormalizedString( toggles->off, TxtBuff, TXT_LEN );
         if( TxtBuff[0] != NULLCHAR && strnicmp( start, TxtBuff, len ) == 0 ) {
             DoMADToggle( rsd, 0, bit );
-            break;
+            return( true );
         }
         bit <<= 1;
-        ++toggles;
     }
-    return( true );
+    return( false );
 }
 
 void PendingToggles( void )
@@ -603,10 +595,7 @@ void PendingToggles( void )
 
     scan = ScanPos();
     for( wt = 0; wt < MWT_LAST; ++wt ) {
-        owner = &PendToggleList[wt];
-        for( ;; ) {
-            curr = *owner;
-            if( curr == NULL ) break;
+        for( owner = &PendToggleList[wt]; (curr = *owner) != NULL; ) {
             if( curr->mad == SysConfig.mad ) {
                 ReScan( curr->toggle );
                 DoOneToggle( wt );
@@ -636,16 +625,12 @@ static bool OneToggle( mad_window_toggles wt )
     ReScan( scan );
     if( !ScanItem( true, &name, &len ) )
         return( false );
-    scan = name;
-    for( ;; ) {
-        if( scan > &name[len] )
-            break;
+    for( scan = name; scan <= name + len; ++scan ) {
         if( *scan == '/' ) {
             len = scan - name;
             ReScan( scan );
             break;
         }
-        ++scan;
     }
     if( CurrToken != T_DIV )
         return( false );
@@ -698,7 +683,7 @@ static char *DumpAToggle( char *p, dig_mad mad, char *toggle )
 {
     if( toggle[0] != NULLCHAR ) {
         MADNameDescription( mad, p, TXT_LEN - ( p - TxtBuff ) );
-        for( ; *p != '\0'; ++p ) {
+        for( ; *p != NULLCHAR; ++p ) {
             if( *p == ' ' ) {
                 break;
             }
@@ -791,7 +776,7 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
             ptr = DumpAToggle( ptr, curr->mad, curr->toggle );
         }
     }
-    *ptr = '\0';
+    *ptr = NULLCHAR;
     ConfigLine( TxtBuff );
 }
 
@@ -1044,7 +1029,7 @@ static void SupportSet( void )
             new->next = SupportRtns;
             SupportRtns = new;
             memcpy( new->name, start, len );
-            new->name[len] = '\0';
+            new->name[len] = NULLCHAR;
         }
         ++count;
     }
@@ -1075,13 +1060,14 @@ static void SupportConf( void )
 
 static bool SupportName( char *name, char *pattern )
 {
-    for( ;; ) {
-        if( *name == '\0' && *pattern == '\0' ) return( true );
-        if( *pattern == '*' ) return( true );
-        if( *name != *pattern ) return( false );
-        ++name;
-        ++pattern;
+    for( ; *name != NULLCHAR || *pattern != NULLCHAR; ++name, ++pattern ) {
+        if( *pattern == '*' )
+            return( true );
+        if( *name != *pattern ) {
+            return( false );
+        }
     }
+    return( true );
 }
 
 bool IsSupportRoutine( sym_handle *sym )
@@ -1091,7 +1077,9 @@ bool IsSupportRoutine( sym_handle *sym )
 
     QualifiedSymName( sym, name, sizeof( name ), true );
     for( curr = SupportRtns; curr != NULL; curr = curr->next ) {
-        if( SupportName( name, curr->name ) ) return( true );
+        if( SupportName( name, curr->name ) ) {
+            return( true );
+        }
     }
     return( false );
 }

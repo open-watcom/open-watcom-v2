@@ -364,8 +364,9 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( false );
-    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    if( viewhndl == NULL )
+        return( false );
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }
@@ -375,7 +376,7 @@ bool DUIIsDBCS( void )
     return( GUIIsDBCS() );
 }
 
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }

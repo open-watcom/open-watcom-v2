@@ -53,7 +53,7 @@ gui_menu_struct GlobMenu[] = {
 typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
-    unsigned            d2_only : 1;
+    bool                d2_only : 1;
 } glob_window;
 
 #define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )
@@ -118,7 +118,8 @@ bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
-    if( row >= NameListNumRows( NameList( glob ) ) ) return( false );
+    if( row >= NameListNumRows( NameList( glob ) ) )
+        return( false );
     switch( piece ) {
     case PIECE_NAME:
         NameListName( NameList( glob ), row, TxtBuff, SN_QUALIFIED );
@@ -133,9 +134,10 @@ void GlobNewMod( a_window *wnd, mod_handle mod )
 {
     glob_window *glob = WndGlob( wnd );
 
-    if( glob->mod == mod ) return;
-    glob->mod = mod;
-    GlobInit( wnd );
+    if( glob->mod != mod ) {
+        glob->mod = mod;
+        GlobInit( wnd );
+    }
 }
 
 

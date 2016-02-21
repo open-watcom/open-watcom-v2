@@ -103,10 +103,11 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *ti
 
     for( ;; ) {
         dlg( title, buff, buff_len );
-        if( buff[0] == '\0' )
+        if( buff[0] == NULLCHAR )
             return( false );
         rc = rtn( buff, value );
-        if( rc ) return( true );
+        if( rc )
+            return( true );
         PrevError( TxtBuff );
     }
 }
@@ -132,8 +133,8 @@ bool    DlgAnyExpr( const char *title, char *buff, unsigned buff_len )
 
 static void InitAddr( char *new, address *value, unsigned max )
 {
-    if( IS_NIL_ADDR( (*value) ) ) {
-        new[0] = '\0';
+    if( IS_NIL_ADDR( *value ) ) {
+        new[0] = NULLCHAR;
     } else {
         UniqStrAddr( value, new, max );
     }
@@ -159,7 +160,7 @@ bool    DlgGivenAddr( const char *title, address *value )
 {
     char        new[EXPR_LEN];
 
-    new[0] = '\0';
+    new[0] = NULLCHAR;
     return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanGivenAddr ) );
 }
 
@@ -168,7 +169,7 @@ bool    DlgModName( const char *title, mod_handle *mod )
     char        new[EXPR_LEN];
 
     if( *mod == NO_MOD ) {
-        new[0] = '\0';
+        new[0] = NULLCHAR;
     } else {
         ModName( *mod, new, EXPR_LEN );
     }
@@ -179,7 +180,7 @@ bool DlgString( const char *title, char *buff )
 {
     char        new[EXPR_LEN];
 
-    new[0] = '\0';
+    new[0] = NULLCHAR;
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
@@ -193,7 +194,8 @@ bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
     MADTypeInfo( th, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
     ok = DlgAnyExpr( title, buff, sizeof( buff ) );
-    if( !ok ) return( false );
+    if( !ok )
+        return( false );
     ToItemMAD( ExprSP, value, &mti );
     PopEntry();
     return( true );

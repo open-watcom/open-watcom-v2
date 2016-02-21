@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "machtype.h"
 #include "bool.h"
+#include "machtype.h"
 
 /* Functions declared as OVL_EXTERN are used only within the module
  * they are declared in however pointers to them are used.  In order

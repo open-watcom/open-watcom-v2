@@ -123,7 +123,7 @@ static bool TryXWindows( void )
     }
     fcntl( pip[0], F_SETFD, (int)FD_CLOEXEC );
     searchenv( "qnxterm", "PATH", xqsh_name );
-    if( xqsh_name[0] == '\0' ) {
+    if( xqsh_name[0] == NULLCHAR ) {
         StartupErr( "qnxterm executable not in PATH" );
     }
     argc = 0;
@@ -131,12 +131,12 @@ static bool TryXWindows( void )
     for( ;; ) {
         while( isspace( *p ) )
             ++p;
-        while( !isspace( *p ) && *p != '\0' )
+        while( !isspace( *p ) && *p != NULLCHAR )
             ++p;
-        if( *p == '\0' )
+        if( *p == NULLCHAR )
             break;
         ++argc;
-        *p++ = '\0';
+        *p++ = NULLCHAR;
     }
     end = p;
     _AllocA( argv, (argc + 10) * sizeof( *argv ) );
@@ -179,7 +179,7 @@ static bool TryXWindows( void )
         StartupErr( "console helper process unable to initialize" );
     }
     close( pip[0] );
-    buff[len] = '\0';
+    buff[len] = NULLCHAR;
     DbgConHandle = open( buff, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );

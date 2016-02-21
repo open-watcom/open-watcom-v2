@@ -497,15 +497,13 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
     printf( "Debugger request: REQ_PERFORM_SUPPLEMENTARY_SERVICE\n" );
     printf( "    ID: 0x%.08x", prq->id );
 
-    ServiceNameAndId *lookup = services;
-    while( lookup ) {
+    ServiceNameAndId *lookup;
+    for( lookup = services; lookup != NULL; lookup = lookup->next ) {
         if( prq->id == lookup->service_id ) {
             printf( " [%s]", lookup->service_name );
             break;
         }
-        lookup = lookup->next;
     }
-
     last_service = lookup;
 
     printf( "\n" );

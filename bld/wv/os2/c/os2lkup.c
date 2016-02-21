@@ -37,10 +37,10 @@
 #include "envlkup.h"
 
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  __far *env;
-    unsigned    len;
+    size_t      len;
     bool        output;
     char        c;
 
@@ -52,7 +52,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         --buff_len;
         output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -61,7 +61,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
 }

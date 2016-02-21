@@ -197,7 +197,7 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         if( name != NULL ) {
             name += name_len;
             *name++ = '`';
-            *name = '\0';
+            *name = NULLCHAR;
             max -= name_len + 1;
         }
         len++;
@@ -372,7 +372,7 @@ static char *Rtrm( char *p )
         --p;
     } while( *p == ' ' && p >= op );
     ++p;
-    *p = '\0';
+    *p = NULLCHAR;
     return( p );
 }
 

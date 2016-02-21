@@ -104,7 +104,7 @@ extern  char            *Squish( file_parse *parse, char *into );
 dbg_switches            DbgSwitches;
 char                    *TxtBuff;
 char                    Buff[BUFF_LEN];
-char                    NullStr[] = { '\0' };
+char                    NullStr[] = { NULLCHAR };
 int                     MaxOnLine = { 0 };
 int                     Typing = { 0 };
 error_handle            ErrorStatus = { 0 };
@@ -265,7 +265,7 @@ static void Usage( void )
 
 char *StrCopy( const char *src, char *dest )
 {
-    while( (*dest = *src++) != 0 ) {
+    while( (*dest = *src++) != NULLCHAR ) {
         ++dest;
     }
     return( dest );
@@ -301,7 +301,7 @@ static const char *RealName( const char *name, object_loc *loc )
     if( *loc == LOC_DEFAULT ) {
         *loc = DefaultLocation;
     }
-    if( *name == '\0' )
+    if( *name == NULLCHAR )
         return( "." );
     return( name );
 }
@@ -329,7 +329,7 @@ static void CheckError( void )
         p = SysErrMsg( ErrorStatus, buff );
         WriteText( STD_ERR, buff, p - buff );
     }
-    while( CopySpecs ) {
+    while( CopySpecs != NULL ) {
         FreeCopySpec( CopySpecs );
     }
 }
@@ -390,7 +390,7 @@ static char *Fill( void *d, int len, char filler ) {
 
 static char *CopyStr( const char *src, char *dst )
 {
-    while( (*dst = *src) != '\0' ) {
+    while( (*dst = *src) != NULLCHAR ) {
         ++src;
         ++dst;
     }
@@ -598,7 +598,7 @@ static void Prompt( void )
     if( prompt == NULL )
         prompt = "$n$g";
     OutName();
-    while( *prompt != '\0' ) {
+    while( *prompt != NULLCHAR ) {
         if( *prompt == '$' ) {
             ++prompt;
             switch( *prompt ) {
@@ -700,7 +700,7 @@ static void Interactive( void )
             p = Buff;
             while( *p != '\r' )
                 ++p;
-            *p = '\0';
+            *p = NULLCHAR;
         }
         CtrlCHit();
         if( ProcessCmd( Buff ) != 0 ) {
@@ -761,7 +761,7 @@ static void CopyCmd( const char *src, char *dst )
             *dst++ = ' ';
         }
         *dst = *src;
-        if( *dst == '\0' )
+        if( *dst == NULLCHAR )
             break;
         ++src; ++dst;
     }
@@ -777,7 +777,7 @@ int ProcessCmd( const char *cmd ) {
 
     CopyCmd( cmd, cmd_tokens );
     WriteNL( STD_ERR );
-    if( cmd_tokens[0] == '\0' )
+    if( cmd_tokens[0] == NULLCHAR )
         return( 0 );
     argc = 0;
     p = strtok( cmd_tokens, " " );
@@ -839,20 +839,19 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
 static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn2, object_loc f2loc )
 {
     error_handle    errh;
-    error_handle    errh1;
     char            *endpath;
 
     fn1 = _FileParse( fn1, &Parse1 );
     fn2 = _FileParse( fn2, &Parse2 );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
-    if( Parse1.drive[0] == '\0' ) {
+    if( Parse1.drive[0] == NULLCHAR ) {
         Parse1.drive[0] = GetDrv( f1loc );
         Parse1.drive[1] = ':';
     }
-    if( Parse2.drive[0] == '\0' ) {
+    if( Parse2.drive[0] == NULLCHAR ) {
         CopyStr( Parse1.drive, Parse2.drive );
     }
-    if( Parse2.path[0] == '\0' ) {
+    if( Parse2.path[0] == NULLCHAR ) {
         CopyStr( Parse1.path, Parse2.path );
     }
     if( f1loc != f2loc ) {
@@ -863,7 +862,7 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         SysSetLclErr( IO_DIFF_DEV );
         return( 0 );
     }
-    if( Parse2.name[0] == '\0' ) {
+    if( Parse2.name[0] == NULLCHAR ) {
         SysSetLclErr( IO_DUP_OR_NOT_FOUND );
         return( 0 );
     }
@@ -873,9 +872,11 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         SysSetLclErr( IO_FILE_NOT_FOUND );
         return( errh );
     }
-    for(;;) {
-        if( CtrlCHit() )
-            return( IO_INTERRUPT );
+    for( ;; ) {
+        if( CtrlCHit() ) {
+            errh = SysSetLclErr( IO_INTERRUPT );
+            break;
+        }
         CopyStr( Info.name, endpath );
         _FileParse( Name1, &Parse3 );
         Replace( Parse1.name, Parse2.name, Parse3.name );
@@ -884,13 +885,12 @@ static error_handle   Renamef( const char *fn1, object_loc f1loc, const char *fn
         Squish( &Parse3, Name2 );
         errh = Rename( Name1, Name2, f1loc );
         if( errh != 0 ) {
-            errh1 = errh;
-            if( REAL_CODE( errh1 ) == IO_FILE_NOT_FOUND ) {
+            if( REAL_CODE( errh ) == IO_FILE_NOT_FOUND ) {
                 SysSetLclErr( IO_DUP_OR_NOT_FOUND );
             } else {
-                TransSetErr( errh1 );
+                TransSetErr( errh );
             }
-            return( errh );
+            break;
         }
         if( FindNext( f1loc ) != 0 ) {
             break;
@@ -926,7 +926,7 @@ void ProcRename( int argc, char **argv )
     dst = RealRFXName( dst, &dst_loc );
     if( dst_loc == LOC_DEFAULT )
         dst_loc = src_loc;
-    if( *dst == '\0' )
+    if( *dst == NULLCHAR )
         dst = ".";
     Renamef( src, src_loc, dst, dst_loc );
 }
@@ -1018,12 +1018,12 @@ static void WrtCopy( const char *src, const char *dst, object_loc src_loc, objec
     }
 }
 
-static void FiniCopy( file_handle fhin, const char *src_name, object_loc src_loc,
-               file_handle fhout, const char *dst_name, object_loc dst_loc )
+static void FiniCopy( file_handle fh_in, const char *src_name, object_loc src_loc,
+               file_handle fh_out, const char *dst_name, object_loc dst_loc )
 {
-    SameDate( fhin, src_loc, fhout, dst_loc );
-    FileClose( fhin );
-    FileClose( fhout );
+    SameDate( fh_in, src_loc, fh_out, dst_loc );
+    FileClose( fh_in );
+    FileClose( fh_out );
     if( dst_loc == LOC_LOCAL ) {
         LocalSetFileAttr( dst_name, GetAttrs( src_name, src_loc ) );
     }
@@ -1033,47 +1033,47 @@ static void FiniCopy( file_handle fhin, const char *src_name, object_loc src_loc
 
 static error_handle DoCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
 {
-    file_handle     fhin, fhout;
+    file_handle     fh_in, fh_out;
     size_t          read_len;
     size_t          write_len;
     error_handle    errh;
 
     WrtCopy( src, dst, src_loc, dst_loc );
-    fhin = FileOpen( src, OP_READ | RFX2Acc( src_loc ) );
-    if( fhin == NIL_HANDLE )
-        return( IO_FILE_NOT_FOUND );
-    fhout = FileOpen( dst, OP_WRITE | OP_CREATE | RFX2Acc( dst_loc ) );
-    if( fhout == NIL_HANDLE ) {
-        FileClose( fhin );
+    fh_in = FileOpen( src, OP_READ | RFX2Acc( src_loc ) );
+    if( fh_in == NIL_HANDLE )
+        return( StashErrCode( IO_FILE_NOT_FOUND, OP_LOCAL ) );
+    fh_out = FileOpen( dst, OP_WRITE | OP_CREATE | RFX2Acc( dst_loc ) );
+    if( fh_out == NIL_HANDLE ) {
+        FileClose( fh_in );
         return( StashErrCode( IO_NO_ACCESS, OP_LOCAL ) );
     }
     for( ;; ) {
         if( CtrlCHit() ) {
-            FiniCopy( fhin, src, src_loc, fhout, dst, dst_loc );
+            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
             return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
-        read_len = ReadStream( fhin, Buff, BUFF_LEN );
+        read_len = ReadStream( fh_in, Buff, BUFF_LEN );
         if( read_len == ERR_RETURN ) {
             errh = GetLastErr();
-            FiniCopy( fhin, src, src_loc, fhout, dst, dst_loc );
+            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
             return( errh );
         }
         if( read_len == 0 )
             break;
-        write_len = WriteStream( fhout, Buff, read_len );
+        write_len = WriteStream( fh_out, Buff, read_len );
         if( write_len == ERR_RETURN ) {
             errh = GetLastErr();
-            FiniCopy( fhin, src, src_loc, fhout, dst, dst_loc );
+            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
             return( errh );
         }
         if( write_len != read_len ) {
             if( ( write_len == ( read_len - 1 ) ) && ( Buff[write_len] == 0x1A ) )
                 break;
-            FiniCopy( fhin, src, src_loc, fhout, dst, dst_loc );
+            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );
         }
     }
-    FiniCopy( fhin, src, src_loc, fhout, dst, dst_loc );
+    FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
     return( StashErrCode( IO_OK, OP_LOCAL ) );
 }
 
@@ -1106,7 +1106,7 @@ static void    RRecurse( const char *f1, const char *f2, object_loc f1loc, objec
                     endptr = CopyStr( Info.name, endpath );
                     CopyStr( Name3, CopyStr( "\\", endptr ) );
                     ch = *endptr;
-                    *endptr = '\0';
+                    *endptr = NULLCHAR;
                     retl = GetAttrs( Name2, f2loc );
                     if( retl < 0 || ( retl & IO_SUBDIRECTORY ) == 0 ) {
                         errh = MakeDir( Name2, f2loc );
@@ -1141,8 +1141,8 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
     f2 = _FileParse( f2, &Parse2 );
     FinishName( f2, &Parse2, f2loc, 1 );
     Copy( &Parse1, &Parse3, sizeof( file_parse ) );
-    if( Parse2.name[0] == '\0' )
-        return( IO_FILE_NOT_FOUND );
+    if( Parse2.name[0] == NULLCHAR )
+        return( StashErrCode( IO_FILE_NOT_FOUND, OP_LOCAL ) );
     dst_cluster = 0xFFFF;
     if( ( f1loc == f2loc ) && ( Parse1.drive[0] == Parse2.drive[0] ) ) {
         Squish( &Parse2, Name2 );
@@ -1275,7 +1275,7 @@ void ProcCopy( int argc, char **argv )
         endp = name + strlen( name );
         if( endp[-1] == ':' || endp[-1] == '\\' ) {
             *endp = '.';
-            *++endp = '\0';
+            *++endp = NULLCHAR;
         }
         if( HasWildCards( dst ) == 0 ) {
             i = 0;
@@ -1349,22 +1349,22 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     h->location = fnloc;
     fspec = _FileParse( fspec, &parse );
     append = NULL;
-    if( parse.name[0] == '\0' ) {
-        if( parse.ext[0] == '\0' ) {
-            if( parse.slash || parse.path[0] == '\0' ) {
+    if( parse.name[0] == NULLCHAR ) {
+        if( parse.ext[0] == NULLCHAR ) {
+            if( parse.slash || parse.path[0] == NULLCHAR ) {
                 append = "*.*";
             } else {
                 append = "\\*.*";
             }
         } else {
             parse.name[0] = '*';
-            parse.name[1] = '\0';
+            parse.name[1] = NULLCHAR;
         }
     } else {
         retl = GetAttrs( fspec, fnloc );
         if( retl >= 0 && ( retl & IO_SUBDIRECTORY ) != 0 ) {    /* 11-jun-90 */
             append = "\\*.*";
-        } else if( parse.ext[0] == '\0' ) {
+        } else if( parse.ext[0] == NULLCHAR ) {
             CopyStr( ".*", parse.ext );
         }
     }
@@ -1396,7 +1396,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 static void    DirReadf( dir_handle *h, char *buff, bool wide )
 {
     if( h->status == RFX_EOF ) {
-        *buff = '\0';
+        *buff = NULLCHAR;
     } else {
         FormatDTA( buff, &Info, wide );
         if( FindNext( h->location ) != 0 ) {
@@ -1415,7 +1415,7 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     unsigned int        hour;
 
     Fill( buff, 39, ' ' );
-    buff[39] = '\0';
+    buff[39] = NULLCHAR;
     if( dir->attr & IO_SUBDIRECTORY ) {
         *CopyStr( dir->name, buff ) = ' ';
         if( wide ) {                    /* 11-jun-90 */
@@ -1426,13 +1426,13 @@ void    FormatDTA( char *buff, trap_dta *dir, bool wide )
     } else {
         b = buff;
         d = dir->name;
-        while( *d != '.' && *d != '\0' ) {
+        while( *d != '.' && *d != NULLCHAR ) {
             *b++ = *d++;
         }
         if( *d == '.' ) {
             d++;
             b = buff + 9;
-            while( *d != '\0' ) {
+            while( *d != NULLCHAR ) {
                 *b++ = *d++;
             }
         }
@@ -1517,11 +1517,11 @@ void ProcDir( int argc, char **argv )
         line = 0;
         while( !CtrlCHit() ) {
             DirReadf( io, Buff, wide );
-            if( Buff[0] == '\0' )
+            if( Buff[0] == NULLCHAR )
                 break;
             ++i;
             if( wide ) {
-                Buff[14] = '\0';
+                Buff[14] = NULLCHAR;
             }
             if( wide == 0 ) {
                 WriteText( STD_OUT, Buff, strlen( Buff ) );
@@ -1578,7 +1578,7 @@ void ProcCD( int argc, char **argv, int crlf )
             WhatDidYouSay();
         }
     }
-    if( *src == '\0' ) {
+    if( *src == NULLCHAR ) {
         if( src_loc == LOC_REMOTE ) {
             WriteStream( STD_OUT, "@R", 2 );
         } else {
@@ -1593,7 +1593,7 @@ void ProcCD( int argc, char **argv, int crlf )
         if( crlf ) {
             WriteNL( STD_OUT );
         }
-    } else if ( ( src[1] == ':' ) && ( src[2] == '\0' ) ) {
+    } else if ( ( src[1] == ':' ) && ( src[2] == NULLCHAR ) ) {
         if( src_loc == LOC_REMOTE ) {
             WriteStream( STD_OUT, "@R", 2 );
         } else {
@@ -1647,7 +1647,7 @@ static error_handle   Scratchf( const char *fn, object_loc fnloc )
         SysSetLclErr( IO_FILE_NOT_FOUND );
     } else {
         endptr = Parse1.drive;
-        if( Parse1.drive[0] != '\0' ) {
+        if( Parse1.drive[0] != NULLCHAR ) {
             endptr += 2;
         }
         endptr = CopyStr( Parse1.path, endptr );
@@ -1767,7 +1767,7 @@ void ProcDelDir( int argc, char **argv )
     while( CopySpecs != NULL ) {
         tmp = strstr( CopySpecs->src, "\\*.*" );
         if( tmp != NULL ) {
-            *tmp = '\0';
+            *tmp = NULLCHAR;
             errh = RemoveDir( CopySpecs->src, CopySpecs->src_loc );
             if( errh != 0 ) {
                 TransSetErr( errh );
@@ -1834,7 +1834,7 @@ const char    *_FileParse( const char *name, file_parse *file )
     if( dosname[1] == ':' ) {
         file->drive[0] = *dosname;
         file->drive[1] = ':';
-        file->drive[2] = '\0';
+        file->drive[2] = NULLCHAR;
     }
     curr = dosname + strlen( dosname ) - 1;
     extlen = 0;
@@ -1866,7 +1866,7 @@ const char    *_FileParse( const char *name, file_parse *file )
             break;
         }
     }
-    *CopyMax( p + 1, file->name, curr - p, MAX_NAME ) = '\0';
+    *CopyMax( p + 1, file->name, curr - p, MAX_NAME ) = NULLCHAR;
     curr = p;
     for( p = curr; p >= dosname; --p ) {
         ch = *p;
@@ -1876,13 +1876,13 @@ const char    *_FileParse( const char *name, file_parse *file )
     }
     p1 = CopyMax( p + 1, file->path, curr - p, MAX_PATH );
     if( extlen == 1 ) {
-        if( file->name[0] == '\0' ) {
+        if( file->name[0] == NULLCHAR ) {
             *p1++ = '.';
             file->slash = 0;
-            file->ext[0] = '\0';
+            file->ext[0] = NULLCHAR;
         }
     }
-    *p1 = '\0';
+    *p1 = NULLCHAR;
     strupr( file->drive );
     strupr( file->path );
     strupr( file->name );
@@ -1897,7 +1897,7 @@ void    CopyStrMax( const char *src, char *dst, size_t max_len )
     len = strlen( src );
     if( len > max_len ) {
         Copy( src, dst, max_len );
-        dst[max_len] = '\0';
+        dst[max_len] = NULLCHAR;
     } else {
         StrCopy( src, dst );
     }
@@ -1905,17 +1905,17 @@ void    CopyStrMax( const char *src, char *dst, size_t max_len )
 
 void    Replace( const char *frum, const char *to, char *into )
 {
-    while( *to != '\0' ) {
+    while( *to != NULLCHAR ) {
         switch( *to ) {
         case '?':
-            if( *frum != '?' && *frum != '*' && *frum != '\0' ) {
+            if( *frum != '?' && *frum != '*' && *frum != NULLCHAR ) {
                 *into++ = *frum;
-            } else if( *into != '\0' ) {
+            } else if( *into != NULLCHAR ) {
                 into++;
             }
             break;
         case '*':
-            while( *into != '\0' ) {
+            while( *into != NULLCHAR ) {
                 ++into;
             }
             return;
@@ -1925,11 +1925,11 @@ void    Replace( const char *frum, const char *to, char *into )
             break;
         }
         ++to;
-        if( *frum != '\0' ) {
+        if( *frum != NULLCHAR ) {
             ++frum;
         }
     }
-    *into = '\0';
+    *into = NULLCHAR;
 }
 
 void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addext )
@@ -1939,20 +1939,20 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
 
     endptr = parse->path + strlen( parse->path );
     parse->device = 0;
-    if( parse->name[0] == '\0' ) {
-        if( parse->ext[0] == '\0' ) {
-            if( parse->slash || parse->path[0] == '\0' ) {
+    if( parse->name[0] == NULLCHAR ) {
+        if( parse->ext[0] == NULLCHAR ) {
+            if( parse->slash || parse->path[0] == NULLCHAR ) {
                 CopyStr( "*", parse->name );
                 CopyStr( ".*", parse->ext );
             } else {
                 *endptr++ = '\\';
-                *endptr++ = '\0';
+                *endptr++ = NULLCHAR;
                 CopyStr( "*", parse->name );
                 CopyStr( ".*", parse->ext );
             }
         } else {
             parse->name[0] = '*';
-            parse->name[1] = '\0';
+            parse->name[1] = NULLCHAR;
         }
     } else if( IsDevice( fn, loc ) ) {
         parse->device = 1;
@@ -1964,11 +1964,11 @@ void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addex
             endptr = CopyStr( "\\", endptr );
             CopyStr( "*", parse->name );
             CopyStr( ".*", parse->ext );
-        } else if( ( parse->ext[0] == '\0' ) && addext ) {
+        } else if( ( parse->ext[0] == NULLCHAR ) && addext ) {
             CopyStr( ".*", parse->ext );
         }
     }
-    if( !parse->device && parse->drive[0] == '\0' ) {
+    if( !parse->device && parse->drive[0] == NULLCHAR ) {
         parse->drive[0] = GetDrv( loc );
         parse->drive[1] = ':';
     }

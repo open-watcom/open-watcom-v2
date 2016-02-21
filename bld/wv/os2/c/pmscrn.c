@@ -132,7 +132,7 @@ size_t GetSystemDir( char *buff, size_t buff_len )
             }
         }
     }
-    buff[i] = '\0';
+    buff[i] = NULLCHAR;
     return( strlen( buff ) );
 } /* _wpi_getinidirectory */
 

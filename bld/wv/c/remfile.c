@@ -193,7 +193,7 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
         // convert long file name to short "DOS" compatible form
         {
             GetShortPathNameA( name, short_filename, MAX_PATH );
-            if( *short_filename != '\0' ) {
+            if( *short_filename != NULLCHAR ) {
                 in[1].ptr = short_filename;
             }
         }
@@ -279,7 +279,7 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     file_write_req          acc;
     file_write_ret          ret;
     size_t                  total;
-    trap_elen               piece;
+    trap_elen               piece_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
     acc.handle = hdl;
@@ -289,13 +289,13 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = (trap_elen)( MaxPacketLen - sizeof( acc ) );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (trap_elen)len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = piece;
+        in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -304,7 +304,7 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != piece )
+        if( ret.len != piece_len )
             break;
         buff = (char *)buff + ret.len;
         len -= ret.len;
@@ -327,7 +327,7 @@ static size_t doWriteConsole( const void *buff, size_t len )
     file_write_console_req  acc;
     file_write_console_ret  ret;
     size_t                  total;
-    trap_elen               piece;
+    trap_elen               piece_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
     in[0].ptr = &acc;
@@ -335,13 +335,13 @@ static size_t doWriteConsole( const void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = (trap_elen)( MaxPacketLen - sizeof( acc ) );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (trap_elen)len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = piece;
+        in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -350,7 +350,7 @@ static size_t doWriteConsole( const void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != piece )
+        if( ret.len != piece_len )
             break;
         buff = (char *)buff + ret.len;
         len -= ret.len;
@@ -381,7 +381,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     file_read_req       acc;
     file_read_ret       ret;
     size_t              total;
-    trap_elen           piece;
+    trap_elen           piece_len;
     trap_retval         read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
@@ -392,14 +392,14 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    piece = (trap_elen)( MaxPacketLen - sizeof( file_read_req ) );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( file_read_req ) );
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (trap_elen)len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         out[1].ptr = buff;
-        out[1].len = piece;
-        acc.len = piece;
+        out[1].len = piece_len;
+        acc.len = piece_len;
         CONV_LE_16( acc.len );
         read_len = (trap_retval)TrapAccess( 1, in, 2, out ) - sizeof( ret );
         CONV_LE_32( ret.err );
@@ -408,7 +408,7 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
             return( ERR_RETURN );
         }
         total += read_len;
-        if( read_len != piece )
+        if( read_len != piece_len )
             break;
         buff = (char *)buff + read_len;
         len -= read_len;

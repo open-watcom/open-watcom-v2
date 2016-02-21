@@ -117,15 +117,14 @@ bool InitCmd( void )
             while( *curr == ' ' || *curr == '\t' )
                 ++curr;
             start = curr;
-            while( *curr != ' ' && *curr != '\t' && *curr != '\0' )
+            while( *curr != ' ' && *curr != '\t' && *curr != NULLCHAR )
                 ++curr;
             _Alloc( parm, curr - start + 1 );
             if( parm == NULL )
                 return( false );
             SymFileName = parm;
-            while( start < curr ) {
+            while( start < curr )
                 *parm++ = *start++;
-            }
             *parm = NULLCHAR;
             while( *curr == ' ' || *curr == '\t' )
                 ++curr;
@@ -138,9 +137,8 @@ bool InitCmd( void )
     }
     total = 0;
     for( argc = 0; (curr = GetCmdArg( argc )) != NULL; ++argc ) {
-        while( *curr++ != NULLCHAR ) {
+        while( *curr++ != NULLCHAR )
             ++total;
-        }
         ++total;
     }
     _Alloc( TaskCmd, total + 2 );
@@ -497,9 +495,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
     prio = start;
     for( ;; ) {
         prio = DIPPriority( prio );
-        if( prio == 0 )
-            return( false );
-        if( prio > end )
+        if( prio == 0 || prio > end )
             return( false );
         DIPStatus = DS_OK;
         image->dip_handle = DIPLoadInfo( fh, sizeof( image_entry * ), prio );
@@ -571,7 +567,7 @@ static bool ProcImgSymInfo( image_entry *image )
         return( false );
     _AllocA( symfile_name, strlen( image->image_name ) + 1 );
     strcpy( symfile_name, image->image_name );
-    symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = '\0';
+    symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
     len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
     _Alloc( image->symfile_name, len + 1 );
     if( image->symfile_name != NULL ) {
@@ -880,7 +876,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
         }
     } else {
         len = RemoteStringToFullName( true, name, fullname, sizeof( fullname ) );
-        fullname[len] = '\0';
+        fullname[len] = NULLCHAR;
     }
     image = CreateImage( fullname, symfile );
     if( image == NULL )
@@ -1007,16 +1003,14 @@ static bool ArgNeedsQuotes( const char *src )
 
     if( *src == NULLCHAR )
         return( true );
-    for( ;; ) {
-        ch = *src;
-        if( ch == NULLCHAR )
-            return( false );
+    for( ; (ch = *src) != NULLCHAR; ++src ) {
         if( ch == ' ' )
             return( true );
-        if( ch == '\t' )
+        if( ch == '\t' ) {
             return( true );
-        ++src;
+        }
     }
+    return( false );
 }
 
 static void AddString( char **dstp, size_t *lenp, const char *src )
@@ -1037,9 +1031,8 @@ static size_t PrepProgArgs( char *where, size_t len )
     char        *dst;
 
     --len;      /* leave room for NULLCHAR */
-    src = TaskCmd + strlen( TaskCmd ) + 1;
     dst = where;
-    while( *src != ARG_TERMINATE ) {
+    for( src = TaskCmd + strlen( TaskCmd ) + 1; *src != ARG_TERMINATE; src += strlen( src ) + 1 ) {
         if( dst != where )
             AddString( &dst, &len, " " );
         if( _IsOn( SW_TRUE_ARGV ) && ArgNeedsQuotes( src ) ) {
@@ -1049,7 +1042,6 @@ static size_t PrepProgArgs( char *where, size_t len )
         } else {
             AddString( &dst, &len, src );
         }
-        src += strlen( src ) + 1;
     }
     *dst = NULLCHAR;
     return( dst - where );
@@ -1173,7 +1165,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     SeekStream( fh_lcl, 0, DIO_SEEK_ORG );
     delete_file = false;
     copied = 0;
-    while( ( read_len = ReadStream( fh_lcl, buff, bsize ) ) != 0 ) {
+    while( (read_len = ReadStream( fh_lcl, buff, bsize )) != 0 ) {
         if( read_len == ERR_RETURN )
             break;
         WriteStream( fh_rem, buff, read_len );
@@ -1425,7 +1417,7 @@ OVL_EXTERN void SymFileNew( void )
     }
     ReScan( temp );
     memcpy( TxtBuff, fname, fname_len );
-    TxtBuff[fname_len] = '\0';
+    TxtBuff[fname_len] = NULLCHAR;
     image = DoCreateImage( NULL, TxtBuff );
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {

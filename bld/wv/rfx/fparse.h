@@ -38,10 +38,10 @@
 #define MAX_FILE_NAME   (MAX_DRIVE+MAX_PATH+MAX_EXT+MAX_NAME)
 
 typedef struct file_parse {
-        char            drive[MAX_DRIVE+1];
-        char            path[MAX_PATH+1];
-        char            name[MAX_NAME+1];
-        char            ext[MAX_EXT+1];
-        unsigned        slash : 1;
-        unsigned        device : 1;
+    char            drive[MAX_DRIVE + 1];
+    char            path[MAX_PATH + 1];
+    char            name[MAX_NAME + 1];
+    char            ext[MAX_EXT + 1];
+    bool            slash   : 1;
+    bool            device  : 1;
 } file_parse;

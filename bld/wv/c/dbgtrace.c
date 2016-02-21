@@ -77,15 +77,15 @@ typedef struct {
      int                type;           /* trace type */
      address            savecode;       /* old Code{Loc/Dot} */
      address            saveaddr;       /* original CS:IP */
-     unsigned           state : 3;      /* is there a trace active */
-     unsigned           stop_on_call : 1;/* we've returned -- stop on call */
-     unsigned           stop_now : 1;   /* did we execute a call since ^ set ?*/
-     unsigned           trace_out : 1;  /* want to trace out of a call */
-     unsigned           doing_call : 1;  /* are we doing a call instruction? */
-     unsigned           in_thunk : 1;   /* inside a THUNK routine */
-     unsigned           in_dll_thunk : 1;       /* inside a DLL THUNK routine */
-     unsigned           give_it_up : 1; /* inside a DLL THUNK routine */
-     unsigned           unwinding : 1;  /* unwinding from a recursive breakpoint ? */
+     unsigned           state        : 3;   /* is there a trace active */
+     unsigned           stop_on_call : 1;   /* we've returned -- stop on call */
+     unsigned           stop_now     : 1;   /* did we execute a call since ^ set ?*/
+     unsigned           trace_out    : 1;   /* want to trace out of a call */
+     unsigned           doing_call   : 1;   /* are we doing a call instruction? */
+     unsigned           in_thunk     : 1;   /* inside a THUNK routine */
+     unsigned           in_dll_thunk : 1;   /* inside a DLL THUNK routine */
+     unsigned           give_it_up   : 1;   /* inside a DLL THUNK routine */
+     unsigned           unwinding    : 1;   /* unwinding from a recursive breakpoint ? */
      dtid_t             etid;           /* thread id that we're tracing */
      address            curraddr;       /* current address being traced */
      mad_disasm_control prev_control;   /* control information for prev ins */

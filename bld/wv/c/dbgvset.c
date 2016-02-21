@@ -241,7 +241,7 @@ static char *ScanName( void )
 
     ScanItem( true, &start, &len );
     memcpy( TxtBuff, start, len );
-    TxtBuff[len] = '\0';
+    TxtBuff[len] = NULLCHAR;
     return( TxtBuff );
 }
 

@@ -47,14 +47,6 @@
 #include "dbgwsrch.h"
 
 
-extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
-extern bool             DlgSearchAll(char**,void*);
-
-#include "menudef.h"
-static gui_menu_struct SrchMenu[] = {
-    #include "menusrch.h"
-};
-
 enum {
     PIECE_OPENER,
     PIECE_MODULE,
@@ -66,7 +58,7 @@ typedef struct {
     char        *source_line;
     mod_handle  mod;
     cue_fileid  file_id;
-    unsigned    open : 1;
+    bool        open : 1;
 } found_item;
 
 typedef struct srch_window      srch_window;
@@ -79,7 +71,7 @@ typedef struct a_cue {
     char                name[1];
 } a_cue;
 
-struct srch_window {
+typedef struct srch_window {
     void        *rx;
     char        *expr;
     int         max_mod_name;
@@ -90,12 +82,21 @@ struct srch_window {
     void        *cookie;
     a_cue       *file_list;
     bool        ignore_case : 1;
-    bool        use_rx : 1;
+    bool        use_rx      : 1;
+} srch_window;
+
+#define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
+
+extern wnd_info SrchInfo;
+
+extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
+extern bool             DlgSearchAll(char**,void*);
+
+#include "menudef.h"
+static gui_menu_struct SrchMenu[] = {
+    #include "menusrch.h"
 };
 
-#define WndSrch( wnd ) ( (srch_window*)WndExtra( wnd ) )
-
-static WNDNUMROWS SrchNumRows;
 static int SrchNumRows( a_window *wnd )
 {
     return( WndSrch( wnd )->num_rows );
@@ -127,14 +128,12 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
     int         len;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( WR_CONTINUE );
+    if( viewhndl == NULL )
+        return( WR_CONTINUE );
     CueFile( ch, TxtBuff, TXT_LEN );
     WndStatusText( TxtBuff );
-    for( i = 1;; ++i ) {
-        len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN );
-        if( len < 0 )
-            break;
-        TxtBuff[len] = '\0';
+    for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) >= 0; ++i ) {
+        TxtBuff[len] = NULLCHAR;
         pos = TxtBuff;
         endpos = NULL;
         if( WndRXFind( srch->rx, &pos, &endpos ) ) {
@@ -148,7 +147,8 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             found[srch->num_rows].source_line = DupStr( TxtBuff );
             srch->num_rows++;
             len = ModName( CueMod( ch ), NULL, 0 );
-            if( len > srch->max_mod_name ) srch->max_mod_name = len;
+            if( srch->max_mod_name < len )
+                srch->max_mod_name = len;
             break;
         }
     }
@@ -178,7 +178,8 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
     srch->file_list = SortLinkedList( srch->file_list,
                 offsetof( a_cue, next ), CueCompare, WndAlloc, WndFree );
     for( file = srch->file_list; file != NULL; file = file->next ) {
-        if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 ) continue;
+        if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 )
+            continue;
         SearchSrcFile( srch, file->ch );
     }
     for( file = srch->file_list; file != NULL; file = next ) {
@@ -237,12 +238,12 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     piece=piece;
     switch( id ) {
     case MENU_INITIALIZE:
-        WndMenuEnable( wnd, MENU_SEARCH_SOURCE,
-                row != WND_NO_ROW && row <= srch->num_rows );
+        WndMenuEnable( wnd, MENU_SEARCH_SOURCE, ( row != WND_NO_ROW && row <= srch->num_rows ) );
         break;
     case MENU_SEARCH_SOURCE:
-        new = WndModInspect( srch->found[row].mod );
-        if( new == NULL ) break;
+        new = WndModInspect( srch->found[ row ].mod );
+        if( new == NULL )
+            break;
         WndSetSrchIgnoreCase( srch->ignore_case );
         WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT_ENG( Empty ) );
         WndSetSrchItem( new, srch->expr );
@@ -252,15 +253,16 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static WNDGETLINE SrchGetLine;
 static  bool    SrchGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
 
-    if( row >= srch->num_rows ) return( false );
-    if( srch->found == NULL ) return( false );
+    if( row >= srch->num_rows )
+        return( false );
+    if( srch->found == NULL )
+        return( false );
     found = &srch->found[row];
     switch( piece ) {
     case PIECE_OPENER:
@@ -277,7 +279,8 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
         line->indent += ( srch->max_mod_name + 2 ) * WndAvgCharX( wnd );
         line->tabstop = false;
         line->use_prev_attr = true;
-        if( found->source_line == NULL ) return( false );
+        if( found->source_line == NULL )
+            return( false );
         line->text = found->source_line;
         return( true );
     default:
@@ -287,8 +290,6 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
 
 
 
-extern wnd_info SrchInfo;
-static WNDREFRESH SrchRefresh;
 static void     SrchRefresh( a_window *wnd )
 {
     srch_window *srch = WndSrch( wnd );
@@ -310,7 +311,6 @@ static void     SrchRefresh( a_window *wnd )
 }
 
 
-static WNDCALLBACK SrchEventProc;
 static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );

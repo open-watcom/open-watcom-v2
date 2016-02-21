@@ -75,22 +75,22 @@ static bool             AlreadyWarnedUndo;
 
 
 #define MAX_DELTA_BITS  8
-#define MAX_DELTA_BYTES ((1<<MAX_DELTA_BITS)-1)
+#define MAX_DELTA_BYTES ((1 << MAX_DELTA_BITS) - 1)
 
 typedef struct memory_delta {
     struct memory_delta *next;
     address             addr;
-    unsigned            size            : MAX_DELTA_BITS;
-    unsigned            after_set       : 1;
-    unsigned            _volatile       : 1;
+    size_t              size;
+    bool                after_set       : 1;
+    bool                _volatile       : 1;
     unsigned_8          data[1]; /* variable sized */
 } memory_delta;
 
 typedef struct save_state {
     struct save_state   *prev;
     struct save_state   *next;
-    unsigned            valid           : 1;
-    unsigned            lost_mem_state  : 1;
+    bool                valid           : 1;
+    bool                lost_mem_state  : 1;
     memory_delta        *mem;
     int                 action;
     machine_state       s;      /* variable sized */
@@ -184,17 +184,18 @@ address GetRegBP( void )
 }
 
 
-static memory_delta *NewMemDelta( address addr, unsigned bytes )
+static memory_delta *NewMemDelta( address addr, size_t bytes )
 {
     memory_delta *new;
 
-    _Alloc( new, (sizeof( *new )-1) + 2*bytes );
-    if( new == NULL ) return( NULL );
-    memset( new, 0, sizeof( *new ) );
-    new->addr = addr;
-    new->next = StateCurr->mem;
-    new->size = bytes;
-    StateCurr->mem = new;
+    _Alloc( new, sizeof( *new ) - 1 + 2 * bytes );
+    if( new != NULL ) {
+        memset( new, 0, sizeof( *new ) );
+        new->addr = addr;
+        new->next = StateCurr->mem;
+        new->size = bytes;
+        StateCurr->mem = new;
+    }
     return( new );
 }
 
@@ -203,11 +204,11 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
 {
     mad_type_info       mti;
     memory_delta        *new;
-    unsigned            bytes;
+    size_t              bytes;
 
 
     d = d;
-    if( (mk & (MMK_VOLATILE|MMK_WRITE)) == 0 )
+    if( (mk & (MMK_VOLATILE | MMK_WRITE)) == 0 )
         return( WR_CONTINUE );
     MADTypeInfo( th, &mti );
     bytes = mti.b.bits / BITS_PER_BYTE;
@@ -240,13 +241,13 @@ void SetMemAfter( bool tracing )
     memory_delta        **owner;
     memory_delta        *curr;
 
-    if( !tracing ) return;
-    if( StateCurr->lost_mem_state ) return;
-    owner = &StateCurr->mem;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) break;
-        if( curr->after_set ) break;
+    if( !tracing )
+        return;
+    if( StateCurr->lost_mem_state )
+        return;
+    for( owner = &StateCurr->mem; (curr = *owner) != NULL; ) {
+        if( curr->after_set )
+            break;
         if( ProgPeek( curr->addr, curr->data + curr->size, curr->size ) != curr->size ) {
             StateCurr->lost_mem_state = true;
         }
@@ -265,13 +266,11 @@ void SetMemAfter( bool tracing )
 static void FreeMemDelta( save_state *state )
 {
     memory_delta        *mem;
-    memory_delta        *junk;
+    memory_delta        *next;
 
-    mem = state->mem;
-    while( mem != NULL ) {
-        junk = mem;
-        mem = mem->next;
-        _Free( junk );
+    for( mem = state->mem; mem != NULL; mem = next ) {
+        next = mem->next;
+        _Free( mem );
     }
     state->mem = NULL;
 }
@@ -283,8 +282,10 @@ static void FreeState( save_state *state )
     _Free( state->s.ovl );
     FreeMemDelta( state );
     _Free( state );
-    if( DbgRegs == &state->s ) DbgRegs = NULL;
-    if( PrevRegs == &state->s ) PrevRegs = NULL;
+    if( DbgRegs == &state->s )
+        DbgRegs = NULL;
+    if( PrevRegs == &state->s )
+        PrevRegs = NULL;
     --NumStateEntries;
 }
 
@@ -314,17 +315,22 @@ void ResizeRegData( void )
                 memset( state, 0, sizeof( save_state ) + new_size );
                 memcpy( state, old, sizeof( save_state ) );
             }
-            if( old == StateCurr ) StateCurr = state;
-            if( old == StateLast ) StateLast = state;
+            if( old == StateCurr )
+                StateCurr = state;
+            if( old == StateLast )
+                StateLast = state;
             state->prev->next = state;
             state->next->prev = state;
             if( &old->s == DbgRegs ) {
                 found_dbgregs = true;
                 DbgRegs = &state->s;
             }
-            if( &old->s == PrevRegs ) PrevRegs = &state->s;
+            if( &old->s == PrevRegs )
+                PrevRegs = &state->s;
             state = state->next;
-            if( state == StateCurr ) break;
+            if( state == StateCurr ) {
+                break;
+            }
         }
         if( !found_dbgregs ) {
             /* just a machine state on it's own */
@@ -336,7 +342,8 @@ void ResizeRegData( void )
             } else {
                 memset( ms, 0, sizeof( machine_state ) + new_size );
                 memcpy( ms, DbgRegs, sizeof( machine_state ) );
-                if( DbgRegs == PrevRegs ) PrevRegs = ms;
+                if( DbgRegs == PrevRegs )
+                    PrevRegs = ms;
                 DbgRegs = ms;
             }
         }
@@ -370,11 +377,9 @@ void ClearMachState( void )
 {
     save_state  *state, *next;
 
-    state = StateCurr->next->next;
-    while( state != StateCurr ) {
+    for( state = StateCurr->next->next; state != StateCurr; state = next ) {
         next = state->next;
         FreeState( state );
-        state = next;
     }
     OvlSize = 0;
     state = StateCurr;
@@ -428,7 +433,8 @@ void SetupMachState( void )
     save_state      *state;
 
     OvlSize = RemoteOvlSectSize();
-    if( OvlSize == 0 ) return;
+    if( OvlSize == 0 )
+        return;
     state = StateCurr;
     do {
         _Free( state->s.ovl );
@@ -519,7 +525,9 @@ bool CheckStackPos( void )
 {
     if( StackPos != 0 ) {
         if( _IsOff( SW_IN_REPLAY_MODE ) ) {
-            if( !DlgUpTheStack() ) return( false );
+            if( !DlgUpTheStack() ) {
+                return( false );
+            }
         }
         SetRegIP( Context.execution );
         SetRegSP( Context.stack );
@@ -539,10 +547,14 @@ bool AdvMachState( int action )
     new = StateCurr;
     while( new != StateLast ) {
         new = new->next;
-        if( new->lost_mem_state ) warn = true;
+        if( new->lost_mem_state ) {
+            warn = true;
+        }
     }
     if( StateCurr != StateLast && _IsOff( SW_IN_REPLAY_MODE ) ) {
-        if( !DlgBackInTime( warn ) ) return( false );
+        if( !DlgBackInTime( warn ) ) {
+            return( false );
+        }
     }
     new = StateCurr;
     while( new != StateLast ) {
@@ -583,30 +595,30 @@ size_t ChangeMem( address addr, const void * to, size_t size )
 {
     memory_delta        *curr;
     const unsigned_8    *p;
-    unsigned            amount;
+    size_t              piece_len;
     size_t              left;
     addr_off            save_offset;
 
     save_offset = addr.mach.offset;
     p = to;
-    amount = MAX_DELTA_BYTES;
+    piece_len = MAX_DELTA_BYTES;
     left = size;
-    for( ; left != 0; ) {
-        if( amount > left )
-            amount = (unsigned)left;
-        curr = NewMemDelta( addr, amount );
+    while( left > 0 ) {
+        if( piece_len > left )
+            piece_len = left;
+        curr = NewMemDelta( addr, piece_len );
         if( curr == NULL ) {
             StateCurr->lost_mem_state = true;
         } else {
-            if( ProgPeek( addr, curr->data, amount ) != amount ) {
+            if( ProgPeek( addr, curr->data, piece_len ) != piece_len ) {
                 StateCurr->lost_mem_state = true;
             }
             curr->after_set = true;
-            memcpy( curr->data + amount, p, amount );
+            memcpy( curr->data + piece_len, p, piece_len );
         }
-        addr.mach.offset += amount;
-        p += amount;
-        left -= amount;
+        addr.mach.offset += piece_len;
+        p += piece_len;
+        left -= piece_len;
     }
     addr.mach.offset = save_offset;
     return( ProgPoke( addr, to, size ) );
@@ -618,13 +630,11 @@ static void ReverseMemList( save_state * state )
     memory_delta        *next;
     memory_delta        *reverse;
 
-    curr = state->mem;
     reverse = NULL;
-    while( curr != NULL ) {
+    for( curr = state->mem; curr != NULL; curr = next ) {
          next = curr->next;
          curr->next = reverse;
          reverse = curr;
-         curr = next;
     }
     state->mem = reverse;
 }
@@ -648,11 +658,9 @@ static unsigned RedoLevel( void )
     save_state  *state;
 
     count = 0;
-    state = StateCurr;
-    for( ;; ) {
-        state = state->prev;
-        if( state == StateLast ) break;
-        if( !state->valid ) break;
+    for( state = StateCurr; (state = state->prev) != StateLast; ) {
+        if( !state->valid )
+            break;
         ++count;
     }
     return( count );
@@ -676,13 +684,15 @@ bool MachStateInfoRelease( void )
         state = next;
     } while( state != StateCurr );
     if( !freed ) {
-        if( StateLast->next != StateCurr ) {;
+        if( StateLast->next != StateCurr ) {
             FreeState( StateLast->next );
             freed = true;
         }
     }
-    if( PrevRegs == NULL ) PrevRegs = &StateCurr->s;
-    if(  DbgRegs == NULL )  DbgRegs = &StateCurr->s;
+    if( PrevRegs == NULL )
+        PrevRegs = &StateCurr->s;
+    if( DbgRegs == NULL )
+        DbgRegs = &StateCurr->s;
     return( freed );
 }
 #endif
@@ -757,7 +767,8 @@ void PosMachState( int rel_pos )
     bool                lost_mem_state;
 
     new = StateCurr;
-    if( rel_pos == 0 ) return;
+    if( rel_pos == 0 )
+        return;
     if( rel_pos > 0 ) {
         adv = UndoLevel();
         if( rel_pos > adv ) {
@@ -785,7 +796,8 @@ void PosMachState( int rel_pos )
             RemoteSetThread( new->s.tid );
         }
     }
-    if( rel_pos == 0 ) return;
+    if( rel_pos == 0 )
+        return;
     stack_pos = GetStackPos();
     MoveStackPos( -stack_pos );
     if( rel_pos > 0 ) {
@@ -909,15 +921,18 @@ char *GetActionString( int action )
 char *GetUndoString( void )
 /*************************/
 {
-    if( StateCurr == NULL ) return( NULL );
+    if( StateCurr == NULL )
+        return( NULL );
     return( GetActionString( StateCurr->action ) );
 }
 
 char *GetRedoString( void )
 /*************************/
 {
-    if( StateCurr == NULL ) return( NULL );
-    if( UndoLevel() == 0 ) return( GetActionString( ACTION_NONE ) );
+    if( StateCurr == NULL )
+        return( NULL );
+    if( UndoLevel() == 0 )
+        return( GetActionString( ACTION_NONE ) );
     return( GetActionString( StateCurr->next->action ) );
 }
 
@@ -965,7 +980,8 @@ void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
         li.name.start = NamePos();
         li.name.len = NameLen();
         ri = LookupRegName( NULL, &li );
-        if( ri == NULL ) break;
+        if( ri == NULL )
+            break;
         Scan();
         _AllocA( new, sizeof( *new ) );
         /* build the list backwards because the location list wants
@@ -973,16 +989,17 @@ void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
         new->ri = ri;
         new->prev = list;
         list = new;
-        if( !multiple ) break;
+        if( !multiple ) {
+            break;
+        }
     }
     ti->size = 0;
     ll->num = 0;
     ll->flags = 0;
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->prev ) {
         ti->size += list->ri->bit_size / BITS_PER_BYTE;
         RegLocation( DbgRegs, list->ri, &reg_loc );
         LocationAppend( ll, &reg_loc );
-        list = list->prev;
     }
     //MAD: hmmm.... get typing info out of list->ri->type?
     switch( ti->size ) {
@@ -1028,7 +1045,8 @@ void RegNewValue( const mad_reg_info *reginfo,
     dip_type_info               dst_ti,src_ti;
     size_t                      max;
 
-    if( !AdvMachState( ACTION_MODIFY_REGISTER ) ) return;
+    if( !AdvMachState( ACTION_MODIFY_REGISTER ) )
+        return;
     RegLocation( DbgRegs, reginfo, &dst_ll );
     MadTypeToDipTypeInfo( reginfo->type, &dst_ti );
     PushLocation( &dst_ll, &dst_ti );

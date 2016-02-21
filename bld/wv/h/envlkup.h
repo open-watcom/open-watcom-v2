@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
+extern size_t EnvLkup( const char *name, char *buff, size_t buff_len );

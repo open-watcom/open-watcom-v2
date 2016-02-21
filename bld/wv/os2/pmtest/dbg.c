@@ -375,7 +375,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
         stopvalue = XCPT_CONTINUE_STOP;
     }
 
-    while( 1 ) {
+    for( ;; ) {
 
         buff->Value = value;
         buff->Cmd = cmd;
@@ -508,9 +508,13 @@ HMQ     the_q;
     }
 #endif
     WinThreadAssocQueue( Hab, the_q );
-    while( 1 ) {
-        if( !WinGetMsg( Hab, &qmsg, 0L, 0, 0 ) ) break;
+    for( ;; ) {
+        if( !WinGetMsg( Hab, &qmsg, 0L, 0, 0 ) ) {
+            break;
+        }
     }
     WinThreadAssocQueue( Hab, 0 );
-    for( ;; ) DosSleep( 100 );
+    for( ;; ) {
+        DosSleep( 100 );
+    }
 }

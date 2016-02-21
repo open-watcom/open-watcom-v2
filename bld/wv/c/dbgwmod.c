@@ -61,23 +61,22 @@ enum {
 };
 
 typedef struct {
-    unsigned    open : 1;
-    unsigned    source : 1;
+    bool        open : 1;
+    bool        source : 1;
 } modinfo;
 
 typedef struct {
     module_list ___list;
     mod_handle  handle;
-    unsigned    all_modules : 1;
     modinfo     *info;
     gui_ord     max_modlen;
+    bool        all_modules : 1;
 } mod_window;
 
 #define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )
 #define ModList( mod ) ( &((mod)->___list) )
 
 
-static WNDNUMROWS ModNumRows;
 static int ModNumRows( a_window *wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
@@ -94,7 +93,9 @@ static void ModCalcIndent( a_window *wnd )
     for( i = 0; i < size; ++i ) {
         ModListName( ModList( mod ), i, TxtBuff );
         extent = WndExtentX( wnd, TxtBuff );
-        if( extent > max_extent ) max_extent = extent;
+        if( extent > max_extent ) {
+            max_extent = extent;
+        }
     }
     mod->max_modlen = max_extent + WndMidCharX( wnd );
     WndNoSelect( wnd );
@@ -177,7 +178,6 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  WNDMODIFY       ModModify;
 static void     ModModify( a_window *wnd, int row, int piece )
 {
     if( piece == PIECE_SOURCE ) {
@@ -194,7 +194,6 @@ static void     ModModify( a_window *wnd, int row, int piece )
 }
 
 
-static WNDGETLINE ModGetLine;
 static  bool    ModGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -230,11 +229,11 @@ static void ModSetCurrent( a_window *wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
-    wnd_row     row;
-    int         piece;
+    wnd_row     curr_row;
+    int         curr_piece;
 
-    WndGetCurrent( wnd, &row, &piece );
-    if( row != WND_NO_ROW && ModListMod( ModList( mod ), row ) == ContextMod ) {
+    WndGetCurrent( wnd, &curr_row, &curr_piece );
+    if( curr_row != WND_NO_ROW && ModListMod( ModList( mod ), curr_row ) == ContextMod ) {
         return;
     }
     for( i = 0; i < ModListNumRows( ModList( mod ) ); ++i ) {
@@ -248,13 +247,13 @@ extern void ModNewHandle( a_window *wnd, mod_handle handle )
 {
     mod_window  *mod = WndMod( wnd );
 
-    if( mod->handle == handle ) return;
+    if( mod->handle == handle )
+        return;
     mod->handle = handle;
     ModInit( wnd );
     ModSetCurrent( wnd );
 }
 
-static WNDREFRESH ModRefresh;
 static void     ModRefresh( a_window *wnd )
 {
     int         i;
@@ -283,7 +282,6 @@ static void ModSetOptions( a_window *wnd )
     ModInit( wnd );
 }
 
-static WNDCALLBACK ModEventProc;
 static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );

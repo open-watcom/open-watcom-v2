@@ -268,10 +268,7 @@ void MemFini( void )
     if( getenv( "TRMEMFILE" ) == NULL )
         return;
     h_info._pentry = NULL;
-    for( ;; ) {
-        status = _heapwalk( &h_info );
-        if( status != _HEAPOK )
-            break;
+    while( (status = _heapwalk( &h_info )) == _HEAPOK ) {
 #ifndef NDEBUG
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",

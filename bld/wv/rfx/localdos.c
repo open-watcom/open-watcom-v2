@@ -115,7 +115,7 @@ void LocalGetBuff( char *buff, unsigned size )
     for( len = new_buff[1]; len != 0; --len ) {
         *(buff++) = *(p++);
     }
-    *buff = '\0';
+    *buff = NULLCHAR;
 }
 
 error_handle LocalRename( const char *from, const char *to )

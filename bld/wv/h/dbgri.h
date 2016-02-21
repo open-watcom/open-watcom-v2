@@ -34,10 +34,10 @@ typedef struct {
     location_list       ll;
     dip_type_info       ti;
     unsigned            ref_size        : 3;
-    unsigned            ref_far         : 1;
-    unsigned            rl_passed_in    : 1;
-    unsigned            scb             : 1;
-    unsigned            want_base_type  : 1;
+    bool                ref_far         : 1;
+    bool                rl_passed_in    : 1;
+    bool                scb             : 1;
+    bool                want_base_type  : 1;
 } return_info;
 
 extern void     InitReturnInfo( sym_handle *, return_info * );

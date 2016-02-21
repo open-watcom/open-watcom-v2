@@ -380,7 +380,7 @@ static void ProcessMacro( wnd_macro *mac )
 static bool AmpEqual( const char *label, char ch )
 {
     ch = tolower( ch );
-    while( label[0] != '\0' ) {
+    while( label[0] != NULLCHAR ) {
         if( label[0] == '&' && ch == tolower( label[1] ) )
             return( true );
         ++label;
@@ -597,7 +597,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
         if( *title == '&' )
             continue;
         *p = *title;
-        if( *p++ == '\0' ) {
+        if( *p++ == NULLCHAR ) {
             break;
         }
     }
@@ -664,7 +664,7 @@ extern void WndRXError( int num )
 }
 
 #if defined(__GUI__)
-static bool GetInitName( char *name, char *buff, unsigned buff_len )
+static bool GetInitName( char *name, char *buff, size_t buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );
     if( buff_len == 0 )

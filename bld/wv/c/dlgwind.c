@@ -46,7 +46,7 @@
 
 
 typedef struct dlg_window_set {
-    unsigned        cancel : 1;
+    bool            cancel : 1;
 } dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )

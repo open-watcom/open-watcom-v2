@@ -65,7 +65,7 @@ bool XchkOpen( where_parm where, char *f_buff )
         *f_buff++ = '\\';
         rc = TinyFarGetCWDir( f_buff, 0 );
         if( TINY_OK( rc ) ) {
-            while( *f_buff != 0 )
+            while( *f_buff != NULLCHAR )
                 ++f_buff;
             if( f_buff[-1] == '\\' ) {
                 --f_buff;

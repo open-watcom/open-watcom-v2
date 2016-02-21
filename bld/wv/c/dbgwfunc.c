@@ -59,9 +59,9 @@ typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
     gui_ord             max_name;
-    unsigned            is_global : 1;
-    unsigned            toggled_break : 1;
-    unsigned            d2_only : 1;
+    bool                is_global     : 1;
+    bool                toggled_break : 1;
+    bool                d2_only       : 1;
 } func_window;
 
 #define WndFunc( wnd ) ( (func_window*)WndExtra( wnd ) )
@@ -81,8 +81,10 @@ static  void    FuncModify( a_window *wnd, int row, int piece )
     func_window *func = WndFunc( wnd );
 
     if( piece == PIECE_BREAK ) {
-        if( row < 0 ) return;
-        if( row >= NameListNumRows( NameList( func ) ) ) return;
+        if( row < 0 )
+            return;
+        if( row >= NameListNumRows( NameList( func ) ) )
+            return;
         addr = NameListAddr( NameList( func ), row );
         func->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
@@ -123,7 +125,9 @@ static void CalcIndent( a_window *wnd )
     for( row = 0; row < rows; ++row ) {
         FuncGetSourceName( wnd, row );
         len = WndExtentX( wnd, TxtBuff );
-        if( len > max ) max = len;
+        if( len > max ) {
+            max = len;
+        }
     }
     WndFunc( wnd )->max_name = max;
 }
@@ -150,7 +154,9 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     func_window *func = WndFunc( wnd );
 
     piece=piece;
-    addr = ( row == WND_NO_ROW ) ? NilAddr : NameListAddr( NameList( func ), row );
+    addr = NilAddr;
+    if( row != WND_NO_ROW )
+        NameListAddr( NameList( func ), row );
     switch( id ) {
     case MENU_INITIALIZE:
         if( IS_NIL_ADDR( addr ) ) {
@@ -186,7 +192,8 @@ static  bool    FuncGetLine( a_window *wnd, int row, int piece,
     address     addr;
     func_window *func = WndFunc( wnd );
 
-    if( row >= NameListNumRows( NameList( func ) ) ) return( false );
+    if( row >= NameListNumRows( NameList( func ) ) )
+        return( false );
     addr = NameListAddr( NameList( func ), row );
     switch( piece ) {
     case PIECE_BREAK:
@@ -213,7 +220,8 @@ static  bool    FuncGetLine( a_window *wnd, int row, int piece,
 
 extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
 {
-    if( WndFunc( wnd )->mod == mod ) return;
+    if( WndFunc( wnd )->mod == mod )
+        return;
     FuncNoMod( wnd );
     FuncSetMod( wnd, mod );
     WndZapped( wnd );

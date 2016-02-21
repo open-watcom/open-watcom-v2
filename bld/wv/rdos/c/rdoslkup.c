@@ -37,7 +37,7 @@
 #include "envlkup.h"
 
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     int handle;
     int size;
@@ -47,7 +47,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         size = RdosFindEnvVar( handle, name, buff );
         RdosCloseEnv( handle );
     } else {
-        size = 2048 - 1;    // reserve 1 byte for '\0'
+        size = 2048 - 1;    // reserve 1 byte for NULLCHAR
     }
 
     return( size );     

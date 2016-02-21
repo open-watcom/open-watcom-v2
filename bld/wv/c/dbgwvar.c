@@ -69,8 +69,8 @@ typedef struct {
     gui_ord             last_width;     // how wide were we last resize?
     gui_ord             name_end;       // the length of the longest name
     var_type            vtype;          // type of window : locals, expression, etc
-    unsigned            initialized : 1;        // is it just opened
-    unsigned            show_whole_expr : 1;// show foo->bar versus just .bar
+    bool                initialized : 1;        // is it just opened
+    bool                show_whole_expr : 1;// show foo->bar versus just .bar
 } var_window;
 
 #define scroll( s ) s->wnd_data[0]
@@ -190,8 +190,10 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     v = VarFindRow( &var->i, row );
     if( v == NULL ) {
         v = VarFindRowNode( &var->i, row );
-        if( v == NULL ) return;
-        if( piece != VAR_PIECE_GADGET && piece != VAR_PIECE_NAME ) return;
+        if( v == NULL )
+            return;
+        if( piece != VAR_PIECE_GADGET && piece != VAR_PIECE_NAME )
+            return;
         if( v->expand != NULL || v->node_type == NODE_INHERIT ) {
             VarExpandRow( &var->i, v, row );
             WndNewCurrent( wnd, row, VAR_PIECE_NAME );
@@ -269,13 +271,14 @@ static bool VarEdit( a_window *wnd, var_node *v )
     var_window  *var = WndVar( wnd );
 
     if( v == NULL ) {
-        TxtBuff[0] = '\0';
+        TxtBuff[0] = NULLCHAR;
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
     VarRepaint( wnd );
     DlgNewWithSym( LIT_ENG( New_Expression ), TxtBuff, TXT_LEN );
-    if( TxtBuff[0] == '\0' ) return( false );
+    if( TxtBuff[0] == NULLCHAR )
+        return( false );
     VarAddNodeToScope( &var->i, v, TxtBuff );
     VarRepaint( wnd );
     return( true );
@@ -288,7 +291,8 @@ static void VarMoveToRoot( a_window *wnd, int row, var_node *v )
     int         new_row;
 
     new_row = VarFindRootRow( &var->i, v, row );
-    if( new_row == row ) return;
+    if( new_row == row )
+        return;
     WndMoveCurrent( wnd, new_row, VAR_PIECE_NAME );
 }
 #endif
@@ -464,12 +468,14 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarRepaint( wnd );
         break;
     case MENU_VAR_STRING:
-        if( v->expand != NULL ) VarDeExpand( v );
+        if( v->expand != NULL )
+            VarDeExpand( v );
         VarDisplaySetString( v );
         VarRepaint( wnd );
         break;
     case MENU_VAR_POINTER:
-        if( v->expand != NULL ) VarDeExpand( v );
+        if( v->expand != NULL )
+            VarDeExpand( v );
         VarDisplaySetPointer( v );
         VarRepaint( wnd );
         break;
@@ -548,7 +554,8 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarEdit( wnd, v );
         break;
     case MENU_VAR_NEW_EXPRESSION:
-        if( !VarEdit( wnd, NULL ) ) break;
+        if( !VarEdit( wnd, NULL ) )
+            break;
         WndScrollBottom( wnd );
         break;
     case MENU_VAR_DELETE:
@@ -567,39 +574,36 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
              *  also by the last leaf node of our parent so we need to check out to see who our parents next sibling is and
              *  stop there.
              */
-            if( v->parent ) {
-                var_node * v_iter = v->parent->expand;
+            if( v->parent != NULL ) {
+                var_node    *v_iter;
 
-                while( v_iter ) {
-
+                for( v_iter = v->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
                     if( v_iter == v ){
                         v_sibling = v_iter->next;
                         break;
                     }
-                    v_iter = v_iter->next;
                 }
 
                 if( NULL == v_sibling ) {   /* last element, but may be more following. track grandparent */
-                    if( v->parent->parent ) {
-                        var_node * v_iter = v->parent->parent->expand;
+                    if( v->parent->parent != NULL ) {
+                        var_node    *v_iter;
 
-                        while( v_iter ) {
+                        for( v_iter = v->parent->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
                             if( v_iter == v->parent ) {
                                 v_sibling = v_iter->next;
                                 break;
                             }
-                            v_iter = v_iter->next;
                         }
                     }
                 }
             }
 
             for( ; expand_row < num_rows; expand_row++ ) {
+                var_node    *v_next;
 
-                var_node * v_next = VarFindRowNode( &var->i, expand_row );
+                v_next = VarFindRowNode( &var->i, expand_row );
                 if( v_next == v_sibling )
                     break;
-
                 ExpandRowIfPossible( wnd, expand_row, VAR_PIECE_GADGET );
                 num_rows = VarNumRows( wnd );
             }
@@ -642,7 +646,8 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
 
     if( piece >= VAR_PIECE_LAST ) {
         v = VarGetDisplayPiece( &var->i, row, VAR_PIECE_NAME, &depth, &inherited );
-        if( v == NULL ) return( false );
+        if( v == NULL )
+            return( false );
         line->text = "";
         line->tabstop = false;
         line->static_text = true;
@@ -651,9 +656,11 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         }
         outdent = piece - VAR_PIECE_LAST + 1;
         line->indent = MaxGadgetLength + ( INDENT_AMOUNT * ( inherited - outdent ) ) * WndAvgCharX( wnd );
-        if( outdent > inherited ) return( false );
+        if( outdent > inherited )
+            return( false );
         if( outdent == 1 ) {
-            if( v->parent == NULL ) return( false );
+            if( v->parent == NULL )
+                return( false );
             if( VarNextVisibleSibling( &var->i, v ) != NULL ) {
                 line->draw_line_hook = true;
             } else {
@@ -671,12 +678,14 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         return( true );
     }
     v = VarGetDisplayPiece( &var->i, row, piece, &depth, &inherited );
-    if( v == NULL ) return( false );
+    if( v == NULL )
+        return( false );
     line->tabstop = true;
     switch( piece ) {
     case VAR_PIECE_GADGET:
         line->tabstop = false;
-        if( WndDoingSearch ) break;
+        if( WndDoingSearch )
+            break;
         if( v->gadget == VARGADGET_NONE ) {
             line->text = LIT_ENG( Empty );
         } else {
@@ -705,7 +714,8 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
 //        on_rhs = true;
         indent = var->last_width - WndExtentX( wnd, line->text );
         good_size = REASONABLE_NAME_WIDTH * WndAvgCharX( wnd );
-        if( indent < 0 ) indent = 0;
+        if( indent < 0 )
+            indent = 0;
         if( indent >= good_size ) {
             indent = good_size;
 //            on_rhs = false;
@@ -819,7 +829,8 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         old_width = var->last_width;
         VarSetWidth( wnd );
         delta = old_width - var->last_width;
-        if( delta < 0 ) delta = -delta;
+        if( delta < 0 )
+            delta = -delta;
         if( delta >= 50 ) { // BIG kludge. To be removed
             VarRepaint( wnd );
         }
@@ -839,7 +850,9 @@ static bool VarDoClass( wnd_class_wv wndclass, bool (*rtn)( var_info*, void* ), 
 
     for( wnd = WndFindClass( NULL, wndclass );
          wnd != NULL; wnd = WndFindClass( wnd, wndclass ) ) {
-        if( rtn( WndVarInfo( wnd ), cookie ) ) return( true );
+        if( rtn( WndVarInfo( wnd ), cookie ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -850,7 +863,9 @@ static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
     int         i;
 
     for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
-        if( VarDoClass( VarWndClass[i], rtn, cookie ) ) return( true );
+        if( VarDoClass( VarWndClass[i], rtn, cookie ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -932,7 +947,8 @@ static  a_window        *DoWndVarOpen( var_type vtype )
     var = WndMustAlloc( sizeof( var_window ) );
     var->vtype = vtype;
     wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
-    if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
+    if( wnd != NULL )
+        WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }
 
@@ -964,11 +980,13 @@ OVL_EXTERN  void    DoGraphicDisplay( void )
 
     wnd = WndVarOpen();
     while( !ScanEOC() ) {
-        if( CurrToken == T_COMMA ) Scan();
+        if( CurrToken == T_COMMA )
+            Scan();
         name = ScanPos();
         ChkExpr();
         len = ScanPos() - name;
-        if( CurrToken != T_COMMA ) ReqEOC();
+        if( CurrToken != T_COMMA )
+            ReqEOC();
         WndVarAdd( wnd, name, len, false );
     }
     WndFirstCurrent( wnd );

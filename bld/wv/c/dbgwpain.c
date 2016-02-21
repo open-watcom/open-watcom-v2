@@ -430,12 +430,13 @@ static void GetAttrName( attr_map *map, int i, char *buff )
             blank = false;
         }
         bits >>= 1;
-        if( bits == 0 ) break;
+        if( bits == 0 )
+            break;
         if( blank ) {
             *p++ = ' ';
         }
     }
-    *p = '\0';
+    *p = NULLCHAR;
 }
 
 
@@ -463,7 +464,7 @@ static void GetColourName( gui_colour colour, char *buff )
         }
         bits >>= 1;
     }
-    *p = '\0';
+    *p = NULLCHAR;
 }
 
 

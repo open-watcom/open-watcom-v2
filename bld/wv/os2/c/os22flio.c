@@ -65,15 +65,12 @@ void LocalErrMsg( sys_error code, char *buff )
         GetDOSErrMsg( code, buff );
         return;
     }
-    buff[msg_len] = '\0';
+    buff[msg_len] = NULLCHAR;
     s = d = buff;
     if( s[0] == 'S' && s[1] == 'Y' && s[2] == 'S' ) {
         /* Got the SYSxxxx: at the front. Take it off. */
         s += 3;
-        for( ; ; ) {
-            ch = *s++;
-            if( ch == ':' )
-                break;
+        while( (ch = *s++) != ':' ) {
             if( ch < '0' || ch > '9' ) {
                 s = buff;
                 break;
@@ -82,10 +79,7 @@ void LocalErrMsg( sys_error code, char *buff )
     }
     while( *s == ' ' )
         ++s;
-    for( ; ; ) {
-        ch = *s++;
-        if( ch == '\0' )
-            break;
+    while( (ch = *s++) != NULLCHAR ) {
         if( ch == '\n' )
             ch = ' ';
         if( ch != '\r' ) {
@@ -94,7 +88,7 @@ void LocalErrMsg( sys_error code, char *buff )
     }
     while( d > buff && d[-1] == ' ' )
         --d;
-    *d = '\0';
+    *d = NULLCHAR;
 }
 
 sys_handle LocalOpen( const char *name, open_access access )
@@ -138,20 +132,20 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     ULONG       read_len;
     APIRET      ret;
     size_t      total;
-    unsigned    piece;
+    unsigned    piece_len;
 
-    piece = INT_MAX;
+    piece_len = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (unsigned)len;
-        ret = DosRead( filehndl, ptr, piece, &read_len );
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = DosRead( filehndl, ptr, piece_len, &read_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
         }
         total += read_len;
-        if( read_len != piece )
+        if( read_len != piece_len )
             break;
         ptr = (char *)ptr + read_len;
         len -= read_len;
@@ -164,20 +158,20 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     ULONG       write_len;
     APIRET      ret;
     size_t      total;
-    unsigned    piece;
+    unsigned    piece_len;
 
-    piece = INT_MAX;
+    piece_len = INT_MAX;
     total = 0;
     while( len > 0 ) {
-        if( piece > len )
-            piece = (unsigned)len;
-        ret = DosWrite( filehndl, (PVOID)ptr, piece, &write_len );
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = DosWrite( filehndl, (PVOID)ptr, piece_len, &write_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
         }
         total += write_len;
-        if( write_len != piece )
+        if( write_len != piece_len )
             break;
         ptr = (char *)ptr + write_len;
         len -= write_len;

@@ -45,7 +45,7 @@ typedef struct {
 typedef enum { EXACT, MATCH, LOW, HIGH } status;
 
 
-static char GetLine( unsigned handle, buffer *buff, unsigned str_len )
+static bool GetLine( unsigned handle, buffer *buff, unsigned str_len )
 {
     unsigned    keep;
     char        old;
@@ -57,13 +57,16 @@ static char GetLine( unsigned handle, buffer *buff, unsigned str_len )
             memcpy( buff->start, buff->ptr, keep );
             buff->end = ReadStream( handle, buff->start+keep, buff->size-keep )
                                 + buff->start + keep;
-            if( buff->start + str_len >= buff->end ) return( 0 );
+            if( buff->start + str_len >= buff->end )
+                return( false );
             buff->ptr = buff->start;
         }
         old = *buff->ptr;
         buff->ptr += 1;
         ++FilePos;
-        if( old == '\n' ) return( 1 );
+        if( old == '\n' ) {
+            return( true );
+        }
     }
 }
 
@@ -86,13 +89,15 @@ static status FindTag( unsigned handle, buffer *buff, char *str,
 {
     unsigned    diff;
 
-    for( ;; ) {
-        if( !GetLine( handle, buff, str_len ) ) return( HIGH );
+    while( GetLine( handle, buff, str_len ) ) {
         diff = Match( str, buff->ptr );
-        if( diff >= prefix_len ) break;
+        if( diff >= prefix_len ) {
+            if( diff == str_len )
+                return( ( buff->ptr[diff] <= ' ' ) ? EXACT : MATCH );
+            return( ( buff->ptr[diff] > str[diff] ) ? HIGH : LOW );
+        }
     }
-    if( diff == str_len ) return( (buff->ptr[diff] <= ' ') ? EXACT : MATCH );
-    return( (buff->ptr[diff] > str[diff]) ? HIGH : LOW );
+    return( HIGH )
 }
 
 

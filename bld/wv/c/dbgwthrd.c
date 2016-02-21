@@ -70,9 +70,11 @@ static thread_state     *GetThreadRow( int row )
 
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
-        if( num++ == row ) return( thd );
+        if( num++ == row ) {
+            break;
+        }
     }
-    return( NULL );
+    return( thd );
 }
 
 static WNDNUMROWS TrdNumRows;
@@ -83,7 +85,8 @@ static int TrdNumRows( a_window *wnd )
 
     wnd=wnd;
     num = 0;
-    for( thd = HeadThd; thd != NULL; thd = thd->link ) ++num;
+    for( thd = HeadThd; thd != NULL; thd = thd->link )
+        ++num;
     return( num );
 }
 
