@@ -58,8 +58,8 @@ extern unsigned char    NECBIOSGetMode(void);
 0XB4 0X0B       /* mov    ah,b                          */      \
 0XCD 0X18       /* int    18                            */      \
 0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        parm caller [ax]                                      \
+        modify [bx];
 
 
 #define         NEC_20_LINES        0x01

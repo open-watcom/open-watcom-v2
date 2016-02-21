@@ -98,8 +98,8 @@ extern display_configuration BIOSDevCombCode( void );
 0X74 0X02       /* jz     *+2                           */      \
 0X29 0XDB       /* sub    bx,bx                         */      \
 0X5D            /* pop    bp                            */      \
-                value   [ bx ]                                  \
-                modify  [ ax ];
+                value   [bx]                                  \
+                modify  [ax];
 
 extern char        BIOSGetMode( void );
 #pragma aux BIOSGetMode =                                       \
@@ -107,8 +107,8 @@ extern char        BIOSGetMode( void );
 0XB4 0X0F       /* mov    ah,f                          */      \
 0XCd 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        parm caller [ax]                                      \
+        modify [bx];
 
 extern signed long BIOSEGAInfo( void );
 #pragma aux BIOSEGAInfo =                                       \
@@ -120,7 +120,7 @@ extern signed long BIOSEGAInfo( void );
 0X89 0XD8       /* mov    ax,bx                         */      \
 0X89 0XCA       /* mov    dx,cx                         */      \
 0X5D            /* pop    bp                            */      \
-        parm modify [ bx cx ];
+        parm modify [bx cx];
 
 enum ega_seqencer {
         SEQ_PORT        = 0x3c4,
@@ -234,8 +234,8 @@ enum ega_graphics_controller {
 /*      Fillb( toseg, tooff, val, len );                */      \
 0XF3            /* rep                                  */      \
 0XAA            /* stosb                                */      \
-        parm    caller  [ es ] [ di ] [ ax ] [ cx ]             \
-        modify  [ di es ];
+        parm    caller  [es] [di] [ax] [cx]             \
+        modify  [di es];
 
 
 extern void        Fillb( unsigned, unsigned, unsigned, unsigned );
@@ -292,7 +292,7 @@ extern void        VIDWait( void );
         "out    dx,al"  \
         "inc    dx"     \
         "in     al,dx"  \
-    parm caller [ dx ];
+    parm caller [dx];
 
 
 #pragma aux VIDSetRow =                                         \
@@ -302,7 +302,7 @@ extern void        VIDWait( void );
         "inc    dx"     \
         "mov    al,ah"  \
         "out    dx,al"  \
-    parm caller [ dx ] [ ax ];
+    parm caller [dx] [ax];
 
 #pragma aux VIDWait =                                           \
 0XEB 0X00       /* jmp    ip                            */      \

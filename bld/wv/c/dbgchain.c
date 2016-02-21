@@ -70,10 +70,10 @@ static void FreeChainInfo( traceback *curr, int start, int end )
     int         i;
 
     for( i = start; i < end; ++i ) {
-        DbgFree( curr->chain[ i ].source_line );
-        DbgFree( curr->chain[ i ].symbol );
-        curr->chain[ i ].source_line = NULL;
-        curr->chain[ i ].symbol = NULL;
+        DbgFree( curr->chain[i].source_line );
+        DbgFree( curr->chain[i].symbol );
+        curr->chain[i].source_line = NULL;
+        curr->chain[i].symbol = NULL;
     }
 }
 
@@ -106,7 +106,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
     curr = tb->curr;
     prev = tb->prev;
     for( i = 0; i < prev->total_depth; ++i ) {
-        chain = &prev->chain[ i ];
+        chain = &prev->chain[i];
         if( AddrComp( chain->lc.execution, execution ) != 0 ) continue;
         if( AddrComp( chain->lc.frame, frame ) != 0 ) continue;
         new_size = curr->current_depth + prev->total_depth - i;
@@ -114,7 +114,7 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
             if( !ReAllocChain( curr, new_size ) ) return( false );
         }
         curr->clean_size = prev->total_depth - i;
-        memcpy( &curr->chain[ curr->current_depth ], chain,
+        memcpy( &curr->chain[curr->current_depth], chain,
                 curr->clean_size * sizeof( call_chain ) );
         curr->current_depth = new_size;
         while( i < prev->total_depth ) {
@@ -154,7 +154,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
         }
     }
     if( EarlyOut( tb, execution, entry->lc.frame ) ) return( false );
-    chain = &curr->chain[ curr->current_depth ];
+    chain = &curr->chain[curr->current_depth];
     chain->lc = entry->lc;
     chain->lc.execution = execution;
     chain->open = false;
@@ -221,7 +221,7 @@ call_chain *GetCallChain( cached_traceback *tb, int row )
 
     curr = tb->curr;
     if( row >= 0 && row < curr->total_depth ) {
-        return( &curr->chain[ curr->total_depth - 1 - row ] );
+        return( &curr->chain[curr->total_depth - 1 - row] );
     } else {
         return( NULL );
     }

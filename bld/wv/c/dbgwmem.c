@@ -165,9 +165,11 @@ static unsigned MemCurrOffset( a_window *wnd )
     mem_window  *mem = WndMem( wnd );
 
     WndGetCurrent( wnd, &row, &piece );
-    if( row < 0 ) return( 0 );
+    if( row < 0 )
+        return( 0 );
     --piece;
-    if( piece >= mem->items_per_line ) piece -= mem->items_per_line;
+    if( piece >= mem->items_per_line )
+        piece -= mem->items_per_line;
     return( ( row * mem->items_per_line + piece ) * mem->item_size );
 }
 
@@ -325,10 +327,10 @@ static  void    MemSetType( a_window *wnd, unsigned idx )
     if( mem->stack ) {
         mem->items_per_line = 1;
     } else {
-        mem->items_per_line = MemData.info[ mem->piece_type ].items_per_line;
+        mem->items_per_line = MemData.info[mem->piece_type].items_per_line;
     }
-    mem->item_size = MemData.info[ mem->piece_type ].item_size;
-    mem->item_width = MemData.info[ mem->piece_type ].item_width;
+    mem->item_size = MemData.info[mem->piece_type].item_size;
+    mem->item_width = MemData.info[mem->piece_type].item_width;
 }
 
 
@@ -390,34 +392,35 @@ static  void    MemModify( a_window *wnd, int row, int piece )
         char      str[TXT_LEN];
     } item;
     bool        is_char;
-    unsigned    old;
+    mad_radix   old_radix;
     unsigned    item_size;
     mem_window  *mem = WndMem( wnd );
 
     --piece;
-    if( !CanModify( wnd, row, piece ) ) return;
+    if( !CanModify( wnd, row, piece ) )
+        return;
     if( piece >= mem->items_per_line ) {
-        is_char = true;
         piece -= mem->items_per_line;
+        is_char = true;
     } else {
         is_char = false;
     }
     addr = AddrAddWrap( mem->u.m.addr,
-                        (row*mem->items_per_line+piece)*mem->item_size );
+                           ( row * mem->items_per_line + piece ) * mem->item_size );
     StrAddr( &addr, TxtBuff, TXT_LEN );
-    ProgPeekWrap( addr, (void*)&item, mem->item_size );
-    old = NewCurrRadix( MemData.info[ mem->piece_type ].piece_radix );
+    ProgPeekWrap( addr, (void *)&item, mem->item_size );
+    old_radix = NewCurrRadix( MemData.info[mem->piece_type].piece_radix );
     item_size = mem->item_size;
     if( is_char ) {
         if( DlgString( TxtBuff, item.str ) ) {
             ChangeMemUndoable( addr, &item, strlen( item.str ) );
         }
     } else {
-        if( DlgMadTypeExpr( TxtBuff, &item.i, MemData.info[ mem->piece_type ].type ) ) {
+        if( DlgMadTypeExpr( TxtBuff, &item.i, MemData.info[mem->piece_type].type ) ) {
             ChangeMemUndoable( addr, &item, item_size );
         }
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 
@@ -570,7 +573,7 @@ static void SetBreakWrite( a_window *wnd )
 
     addr = AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) );
     StrAddr( &addr, buff, TXT_LEN );
-    if( !BreakWrite( addr, MemData.info[ mem->piece_type ].type, buff ) ) {
+    if( !BreakWrite( addr, MemData.info[mem->piece_type].type, buff ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_WATCH_SIZE ) );
     }
 }
@@ -601,7 +604,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     mem_window      *mem = WndMem( wnd );
     address         addr;
     char            *p;
-    unsigned        old, new;
+    mad_radix       old_radix, new_radix;
     size_t          max;
     char            ch;
 
@@ -611,7 +614,7 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         switch( row ) {
         case 0:
             line->tabstop = false;
-            line->indent = HeadTab[ mem->file ]( wnd, piece );
+            line->indent = HeadTab[mem->file]( wnd, piece );
             line->attr = WND_STANDOUT;
             if( line->indent == (gui_ord)-1 ) return( false );
             return( true );
@@ -682,19 +685,22 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     }
     line->indent += mem->address_end + WndAvgCharX( wnd );
     offset *= mem->item_size;
-    if( mem->total_size != 0 && offset >= mem->total_size ) return( false );
-    if( !GetBuff( mem, offset, buff, mem->item_size ) ) return( false );
+    if( mem->total_size != 0 && offset >= mem->total_size )
+        return( false );
+    if( !GetBuff( mem, offset, buff, mem->item_size ) )
+        return( false );
     if( piece >= mem->items_per_line ) {
         ch = buff[0];
-        if( !isprint( ch ) ) ch = '.';
+        if( !isprint( ch ) )
+            ch = '.';
         TxtBuff[0] = ch;
         TxtBuff[1] = '\0';
     } else {
-        new = MemData.info[ mem->piece_type ].piece_radix;
-        old = NewCurrRadix( new );
+        new_radix = MemData.info[mem->piece_type].piece_radix;
+        old_radix = NewCurrRadix( new_radix );
         max = TXT_LEN;
-        MADTypeHandleToString( new, MemData.info[ mem->piece_type ].type, &buff, TxtBuff, &max );
-        NewCurrRadix( old );
+        MADTypeHandleToString( new_radix, MemData.info[mem->piece_type].type, &buff, TxtBuff, &max );
+        NewCurrRadix( old_radix );
     }
     return( true );
 }
@@ -717,7 +723,7 @@ static void MemResize( a_window *wnd )
     } else {
         mult = 1;
     }
-    for( mem->items_per_line = MemData.info[ mem->piece_type ].items_per_line;
+    for( mem->items_per_line = MemData.info[mem->piece_type].items_per_line;
          mem->items_per_line > 1; --mem->items_per_line ) {
         MemGetLine( wnd, 0, mem->items_per_line*mult, &line );
         line.indent += WndExtentX( wnd, line.text );
@@ -865,24 +871,24 @@ void InitMemWindow( void )
     MemInitTypes( MAS_MEMORY | MTK_ALL, &MemData );
     MemTypeMenu = WndMustAlloc( MemData.num_types * sizeof( *MemTypeMenu ) );
     for( i = 0; i < MemData.num_types; ++i ) {
-        MemTypeMenu[ i ].id = MENU_MEMORY_FIRST_TYPE + i;
-        MemTypeMenu[ i ].style = GUI_ENABLED | WND_MENU_ALLOCATED;
-        MemTypeMenu[ i ].label = DupStr( MemData.labels[ i ] );
-        MemTypeMenu[ i ].hinttext = DupStr( LIT_ENG( Empty ) );
-        MemTypeMenu[ i ].num_child_menus = 0;
-        MemTypeMenu[ i ].child = NULL;
+        MemTypeMenu[i].id = MENU_MEMORY_FIRST_TYPE + i;
+        MemTypeMenu[i].style = GUI_ENABLED | WND_MENU_ALLOCATED;
+        MemTypeMenu[i].label = DupStr( MemData.labels[i] );
+        MemTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
+        MemTypeMenu[i].num_child_menus = 0;
+        MemTypeMenu[i].child = NULL;
     }
     for( i = 0; i < ArraySize( MemMenu ); ++i ) {
-        if( MemMenu[ i ].id == MENU_MEMORY_TYPE ) {
-            MemMenu[ i ].child = MemTypeMenu;
-            MemMenu[ i ].num_child_menus = MemData.num_types;
+        if( MemMenu[i].id == MENU_MEMORY_TYPE ) {
+            MemMenu[i].child = MemTypeMenu;
+            MemMenu[i].num_child_menus = MemData.num_types;
             break;
         }
     }
     MemByteType = 0;
     for( i = 0; i < MemData.num_types; ++i ) {
-        if( MemData.info[ i ].item_size == 1 &&
-            MemData.info[ i ].piece_radix == 16 ) {
+        if( MemData.info[i].item_size == 1 &&
+            MemData.info[i].piece_radix == 16 ) {
             MemByteType = i;
             break;
         }
@@ -906,7 +912,7 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( mem->init_type != MAD_NIL_TYPE_HANDLE ) {
             mem->piece_type = MemByteType;
             for( i = 0; i < MemData.num_types; i++ ) {
-                if( MemData.info[ i ].type == mem->init_type ) break;
+                if( MemData.info[i].type == mem->init_type ) break;
             }
             if( i != MemData.num_types ) {
                 mem->piece_type = i;

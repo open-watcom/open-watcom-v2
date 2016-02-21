@@ -334,7 +334,7 @@ char *KeyName( unsigned key )
     for( k = KeyNames; k->key != 0; ++k ) {
         if( k->key == key ) {
             p = AddOn( buff, k->desc );
-            StrCopy( KeyNamePieces[ k->desc & ~STATE ], p );
+            StrCopy( KeyNamePieces[k->desc & ~STATE], p );
             return( buff );
         }
     }

@@ -266,7 +266,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     item_mach               value;
     reg_window              *reg = WndReg( wnd );
     bool                    ok;
-    unsigned                old;
+    mad_radix               old_radix;
     reg_display_piece       disp;
     mad_type_info           tinfo;
     mad_modify_list const   *possible;
@@ -284,7 +284,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
         return;
     if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK )
         return;
-    old = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
+    old_radix = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
     MADRegFullName( disp.reginfo, ".", TxtBuff, TXT_LEN );
     RegValue( &value, disp.reginfo, DbgRegs );
     if( num_possible == 1 ) {
@@ -312,7 +312,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
             RegNewValue( disp.reginfo, possible[i].data, possible[i].type );
         }
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
@@ -340,7 +340,7 @@ static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         }
         break;
     case MENU_REGISTER_INSPECT:
-        if( MADRegInspectAddr( reg->info[ i ].info, &DbgRegs->mr, &addr ) == MS_OK ) {
+        if( MADRegInspectAddr( reg->info[i].info, &DbgRegs->mr, &addr ) == MS_OK ) {
             PushAddr( addr );
             WndInspectExprSP( "" );
         }
@@ -365,7 +365,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
     int                 i;
     reg_window          *reg = WndReg( wnd );
     size_t              max = TXT_LEN;
-    unsigned            old,new;
+    mad_radix           old_radix, new_radix;
     item_mach           value;
     reg_display_piece   disp;
 
@@ -385,12 +385,12 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
         if( reg->info[i].info == NULL ) {
             strcpy( TxtBuff, "   " );
         } else {
-            new = MADTypePreferredRadix( disp.disp_type );
-            old = NewCurrRadix( new );
+            new_radix = MADTypePreferredRadix( disp.disp_type );
+            old_radix = NewCurrRadix( new_radix );
             RegValue( &value, reg->info[i].info, DbgRegs );
             max = reg->info[i].max_value + 1;
-            MADTypeHandleToString( new, disp.disp_type, &value, TxtBuff, &max );
-            NewCurrRadix( old );
+            MADTypeHandleToString( new_radix, disp.disp_type, &value, TxtBuff, &max );
+            NewCurrRadix( old_radix );
             reg->info[i].standout = false;
             if( MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) == MS_MODIFIED_SIGNIFICANTLY ) {
                 reg->info[i].standout = true;

@@ -46,7 +46,7 @@
 
 
 typedef struct dlg_command {
-    char            cmd[ TXT_LEN ];
+    char            cmd[TXT_LEN];
 } dlg_command;
 
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );

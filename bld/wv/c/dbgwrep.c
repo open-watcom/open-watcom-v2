@@ -57,7 +57,7 @@ enum {
     PIECE__LAST
 };
 
-static gui_ord          Indents[ PIECE__LAST ];
+static gui_ord          Indents[PIECE__LAST];
 
 
 #include "menudef.h"
@@ -139,8 +139,8 @@ static void RepRefresh( a_window *wnd )
     }
     max_addr += WndMaxCharX( wnd );
     max_cue += WndMaxCharX( wnd );
-    if( Indents[ PIECE_SOURCE ] != max_addr ||
-        Indents[ PIECE_COMMAND ] != max_addr + max_cue ) {
+    if( Indents[PIECE_SOURCE] != max_addr ||
+        Indents[PIECE_COMMAND] != max_addr + max_cue ) {
         WndRepaint( wnd );
     } else {
         row = count;
@@ -149,9 +149,9 @@ static void RepRefresh( a_window *wnd )
         }
     }
     LastEventCount = count;
-    Indents[ PIECE_ADDRESS ] = 0;
-    Indents[ PIECE_SOURCE ] = max_addr;
-    Indents[ PIECE_COMMAND ] = max_addr + max_cue;
+    Indents[PIECE_ADDRESS] = 0;
+    Indents[PIECE_SOURCE] = max_addr;
+    Indents[PIECE_COMMAND] = max_addr + max_cue;
 }
 
 
@@ -196,7 +196,7 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
     if( ev == NULL ) return( false );
     line->tabstop = false;
     if( piece >= PIECE__LAST ) return( false );
-    line->indent = Indents[ piece ];
+    line->indent = Indents[piece];
     switch( piece ) {
     case PIECE_ADDRESS:
         line->tabstop = true;

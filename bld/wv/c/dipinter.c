@@ -919,7 +919,7 @@ char *DIPMsgText( dip_status status )
 {
     status &= ~DS_ERR;
     if( status > DS_INVALID_OPERATOR ) status = DS_FAIL;
-    return( *DIPErrTxt[ status ] );
+    return( *DIPErrTxt[status] );
 }
 
 static bool CheckDIPLoad( char *dip, bool defaults )

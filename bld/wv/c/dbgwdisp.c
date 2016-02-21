@@ -235,7 +235,7 @@ void ProcFont( void )
 
 static void PrintFont( wnd_class_wv wndclass, char *def )
 {
-    char        wndname[ 20 ];
+    char        wndname[20];
     char        *font;
 
     font = WndFontInfo[wndclass];
@@ -440,14 +440,14 @@ static void PushRefresh( void )
 void ProcDisplay( void )
 {
     wnd_class_wv    wndclass;
-    unsigned        old;
+    mad_radix       old_radix;
 
     if( ScanEOC() ) {
         while( HookPendingPush() );
         PushRefresh();
         return;
     }
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     switch( ScanCmd( MiscTab ) ) {
     case MISC_TOOL:
         ProcTool();
@@ -459,7 +459,7 @@ void ProcDisplay( void )
         wndclass = ReqWndName();
         ProcSize( wndclass );
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 

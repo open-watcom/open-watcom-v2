@@ -67,8 +67,8 @@ global int              ExprAddrDepth;
 global unsigned         NestedCallLevel;
 global int              PgmStackUsage[MAX_NESTED_CALL];
 
-global unsigned char    DefRadix;
-global unsigned char    CurrRadix;
+global mad_radix        DefRadix;
+global mad_radix        CurrRadix;
 
 global unsigned         InvCount;
 

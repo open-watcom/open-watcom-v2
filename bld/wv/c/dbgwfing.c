@@ -118,7 +118,7 @@ static  bool    FingGetLine( a_window *wnd, int row, int piece,
             return( false );
         }
     }
-    line->text = AboutMessage[ row ];
+    line->text = AboutMessage[row];
     line->indent = ( Width - WndExtentX( wnd, line->text ) ) / 2;
     return( true );
 }
@@ -181,7 +181,7 @@ void FingOpen( void )
         WndGetGadgetSize( GADGET_SPLASH, &BitmapSize );
         Width = Height = 0;
         for( i = 0; i < FingMessageSize; ++i ) {
-            extent = WndExtentX( WndMain, AboutMessage[ i ] );
+            extent = WndExtentX( WndMain, AboutMessage[i] );
             if( extent > Width ) Width = extent;
         }
         if( BitmapSize.x >= Width ) Width = BitmapSize.x;

@@ -113,7 +113,7 @@ void ProcSysOptInit( void )
 
     ptr = MK_FP( _psp, 0x80 );
     len = *ptr;
-    ptr[ len + 1 ] = NULLCHAR;
+    ptr[len + 1] = NULLCHAR;
     cmdStart = 0x81;
 }
 

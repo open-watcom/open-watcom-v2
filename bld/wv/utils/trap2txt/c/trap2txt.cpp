@@ -500,7 +500,7 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
     ServiceNameAndId *lookup = services;
     while( lookup ) {
         if( prq->id == lookup->service_id ) {
-            printf( " [ %s ]", lookup->service_name );
+            printf( " [%s]", lookup->service_name );
             break;
         }
         lookup = lookup->next;

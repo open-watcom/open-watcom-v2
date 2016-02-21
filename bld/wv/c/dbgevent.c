@@ -92,7 +92,7 @@ void ShowReplay( void )
 {
     event_record        *ev;
     for( ev = EventList; ev != NULL; ev = ev->next ) {
-        Format( TxtBuff, "%s %d {%s}", GetCmdName( CMD_RECORD ), ev->rad, ev->cmd->buff );
+        Format( TxtBuff, "%s %d {%s}", GetCmdName( CMD_RECORD ), ev->radix, ev->cmd->buff );
         DUIDlgTxt( TxtBuff );
     }
 }
@@ -130,7 +130,7 @@ static void AddEvent( const char *start, size_t len, address ip )
     new->cmd = AllocCmdList( start, len );
     new->ip = ip;
     new->after_asynch = false;
-    new->rad = CurrRadix;
+    new->radix = CurrRadix;
     if( _IsOn( SW_HAD_ASYNCH_EVENT ) ) {
         if( _IsOn( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
             new->after_asynch = true;
@@ -143,18 +143,18 @@ void ProcRecord( void )
 {
     const char  *start;
     size_t      len;
-    unsigned    rad;
-    unsigned    old;
+    mad_radix   new_radix;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
-    rad = ReqExpr();
-    NewCurrRadix( old );
+    old_radix = NewCurrRadix( 10 );
+    new_radix = (mad_radix)ReqExpr();
+    NewCurrRadix( old_radix );
     if( !ScanEOC() ) {
         if( ScanItem( false, &start, &len ) ) {
             ReqEOC();
-            old = NewCurrRadix( rad );
+            old_radix = NewCurrRadix( new_radix );
             AddEvent( start, len, NilAddr );
-            NewCurrRadix( old );
+            NewCurrRadix( old_radix );
         }
     }
 }
@@ -173,7 +173,7 @@ OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
     case INP_RTN_FINI:
         return( true );
     case INP_RTN_EOL:
-        NewCurrRadix( (unsigned)(pointer_int)parm );
+        NewCurrRadix( (mad_radix)(pointer_int)parm );
         return( false );
     default:
         return( false );
@@ -181,9 +181,9 @@ OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
 }
 
 
-static void PushRadChange( unsigned rad )
+static void PushRadixChange( mad_radix radix )
 {
-    PushInpStack( (inp_data_handle)(pointer_int)rad, DoneRadix, false );
+    PushInpStack( (inp_data_handle)(pointer_int)radix, DoneRadix, false );
     TypeInpStack( INP_NO_CMD );
 }
 
@@ -200,14 +200,16 @@ void ReplayTo( event_record *ev )
         for( ;; ) {
             PushCmdList( ev->cmd );
             TypeInpStack( INP_REPLAYED );
-            PushRadChange( ev->rad );
+            PushRadixChange( ev->radix );
             TypeInpStack( INP_REPLAYED );
-            if( ev == EventList ) break;
-            for( prev = EventList; prev->next != ev; prev = prev->next ) ;
+            if( ev == EventList )
+                break;
+            for( prev = EventList; prev->next != ev; prev = prev->next )
+                ;
             ev = prev;
         }
     }
-    PushRadChange( CurrRadix );
+    PushRadixChange( CurrRadix );
     TypeInpStack( INP_REPLAYED );
     RecordFini();
 }

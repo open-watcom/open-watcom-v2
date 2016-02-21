@@ -739,7 +739,7 @@ static void DoProcBreak( void )
         if( cmd < 0 ) {
             TypePoint( EXPR_DATA );
         } else {
-            BPJmpTab[ cmd ].rtn( BPJmpTab[ cmd ].type );
+            BPJmpTab[cmd].rtn( BPJmpTab[cmd].type );
         }
     } else if( ScanEOC() ) {
         ShowBPs();
@@ -836,16 +836,16 @@ static brkp *PointBreak( memory_expr def_seg, address *addr )
 {
     unsigned    index;
     brkp        *bp;
-    unsigned    old;
+    mad_radix   old_radix;
 
     if( addr != NULL ) {
         *addr = NilAddr;
     }
     if( CurrToken == T_SHARP ) {
         Scan();
-        old = NewCurrRadix( 10 );
+        old_radix = NewCurrRadix( 10 );
         index = ReqExpr(); // always decimal
-        NewCurrRadix( old );
+        NewCurrRadix( old_radix );
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
             if( bp->index == index ) {
                 break;
@@ -1313,7 +1313,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
     bool            active;
     int             index;
     mad_type_info   mti;
-    unsigned        old;
+    mad_radix       old_radix;
     bool            unmapped;
     bool            mapaddress;
     bool            symaddress;
@@ -1373,9 +1373,9 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
             ReqComma();
             break;
         case B_INDEX:
-            old = NewCurrRadix( 10 );
+            old_radix = NewCurrRadix( 10 );
             index = ReqExpr();
-            NewCurrRadix( old );
+            NewCurrRadix( old_radix );
             ReqComma();
             break;
             /* fall thru */

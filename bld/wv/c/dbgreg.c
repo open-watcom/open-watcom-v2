@@ -219,7 +219,7 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     if( mk & MMK_VOLATILE )
         new->_volatile = true;
     /* can keep in target form */
-    new->size = (byte)ProgPeek( a, &new->data[0], bytes );
+    new->size = (byte)ProgPeek( a, new->data, bytes );
     return( WR_CONTINUE );
 }
 
@@ -247,12 +247,12 @@ void SetMemAfter( bool tracing )
         curr = *owner;
         if( curr == NULL ) break;
         if( curr->after_set ) break;
-        if( ProgPeek( curr->addr, &curr->data[curr->size], curr->size ) != curr->size ) {
+        if( ProgPeek( curr->addr, curr->data + curr->size, curr->size ) != curr->size ) {
             StateCurr->lost_mem_state = true;
         }
         curr->after_set = true;
         if( !curr->_volatile
-          && memcmp( &curr->data[0], &curr->data[curr->size], curr->size ) == 0 ) {
+          && memcmp( curr->data, curr->data + curr->size, curr->size ) == 0 ) {
             /* don't need the sucker */
             *owner = curr->next;
             _Free( curr );
@@ -598,11 +598,11 @@ size_t ChangeMem( address addr, const void * to, size_t size )
         if( curr == NULL ) {
             StateCurr->lost_mem_state = true;
         } else {
-            if( ProgPeek( addr, &curr->data[0], amount ) != amount ) {
+            if( ProgPeek( addr, curr->data, amount ) != amount ) {
                 StateCurr->lost_mem_state = true;
             }
             curr->after_set = true;
-            memcpy( &curr->data[amount], p, amount );
+            memcpy( curr->data + amount, p, amount );
         }
         addr.mach.offset += amount;
         p += amount;
@@ -794,7 +794,7 @@ void PosMachState( int rel_pos )
             curr = curr->next;
             ReverseMemList( curr );
             for( mem = curr->mem; mem != NULL; mem = mem->next ) {
-                ProgPoke( mem->addr, &mem->data[mem->size], mem->size );
+                ProgPoke( mem->addr, mem->data + mem->size, mem->size );
             }
             ReverseMemList( curr );
         } while( curr != new );
@@ -817,7 +817,7 @@ void PosMachState( int rel_pos )
         if( !lost_mem_state ) {
             do {
                 for( mem = curr->mem; mem != NULL; mem = mem->next ) {
-                    ProgPoke( mem->addr, &mem->data[0], mem->size );
+                    ProgPoke( mem->addr, mem->data, mem->size );
                 }
                 curr = curr->prev;
             } while( curr != new );
@@ -854,26 +854,26 @@ void LastStackPos( void )
 void ProcRegister( void )
 {
     int         val;
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 10 );
-    val = (int) ReqExpr();
+    old_radix = SetCurrRadix( 10 );
+    val = (int)ReqExpr();
     ReqEOC();
     if( val != 0 ) {
         PosMachState( val );
     }
-    SetCurrRadix( old );
+    SetCurrRadix( old_radix );
 }
 
 
 void ProcUndo( void )
 {
     int         val;
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 10 );
-    val = (int) ReqExpr();
-    SetCurrRadix( old );
+    old_radix = SetCurrRadix( 10 );
+    val = (int)ReqExpr();
+    SetCurrRadix( old_radix );
     ReqEOC();
     if( val != 0 ) {
         PosMachState( -val );
@@ -924,11 +924,11 @@ char *GetRedoString( void )
 void ProcStackPos( void )
 {
     int         val;
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 10 );
-    val = (int) ReqExpr();
-    SetCurrRadix( old );
+    old_radix = SetCurrRadix( 10 );
+    val = (int)ReqExpr();
+    SetCurrRadix( old_radix );
     ReqEOC();
     MoveStackPos( val - StackPos );
 }

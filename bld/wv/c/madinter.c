@@ -95,10 +95,10 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
+mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address *a )
 {
     const char  *old_scan;
-    unsigned    old_radix;
+    mad_radix   old_radix;
 
     old_radix = SetCurrRadix( radix );
     old_scan = ReScan( expr );
@@ -148,7 +148,7 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
     return( MS_FAIL );
 }
 
-size_t          DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, size_t buff_len )
+size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
 {
     const char          *start;
     size_t              len;

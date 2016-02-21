@@ -76,15 +76,15 @@ typedef         walk_result (MAD_TYPE_WALKER)( mad_type_handle, void * );
 walk_result     MADTypeWalk( mad_type_kind, MAD_TYPE_WALKER *, void * );
 
 mad_string      MADTypeName( mad_type_handle );
-unsigned        MADTypePreferredRadix( mad_type_handle );
+mad_radix       MADTypePreferredRadix( mad_type_handle );
 mad_type_handle MADTypeForDIPType( const dip_type_info * );
 void            MADTypeInfo( mad_type_handle, mad_type_info * );
 mad_status      MADTypeInfoForHost( mad_type_kind, int size, mad_type_info * );
 mad_type_handle MADTypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );
 
 mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      MADTypeToString( unsigned radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
-mad_status      MADTypeHandleToString( unsigned radix, mad_type_handle, const void *data, char *buff, size_t *buff_size_p );
+mad_status      MADTypeToString( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
+mad_status      MADTypeHandleToString( mad_radix radix, mad_type_handle, const void *data, char *buff, size_t *buff_size_p );
 
 
 /*
@@ -148,11 +148,11 @@ mad_status              MADCallUpStackLevel( mad_call_up_data *mcud, const addre
 unsigned                MADDisasmDataSize( void );
 unsigned                MADDisasmNameMax( void );
 mad_status              MADDisasm( mad_disasm_data *, address *, int adj );
-size_t                  MADDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, size_t buff_size );
+size_t                  MADDisasmFormat( mad_disasm_data *, mad_disasm_piece, mad_radix radix, char *buff, size_t buff_size );
 unsigned                MADDisasmInsSize( mad_disasm_data * );
 mad_status              MADDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      MADDisasmControl( mad_disasm_data *, const mad_registers * );
-mad_status              MADDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *, address * );
+mad_status              MADDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *, address * );
 mad_status              MADDisasmInsNext( mad_disasm_data *, const mad_registers *, address * );
 
 typedef                 walk_result (MAD_MEMREF_WALKER)( address, mad_type_handle, mad_memref_kind, void * );

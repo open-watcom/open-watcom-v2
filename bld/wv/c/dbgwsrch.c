@@ -134,7 +134,7 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
         len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN );
         if( len < 0 )
             break;
-        TxtBuff[ len ] = '\0';
+        TxtBuff[len] = '\0';
         pos = TxtBuff;
         endpos = NULL;
         if( WndRXFind( srch->rx, &pos, &endpos ) ) {
@@ -142,10 +142,10 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             if( found == NULL )
                 break;
             srch->found = found;
-            found[ srch->num_rows ].mod = CueMod( ch );
-            found[ srch->num_rows ].file_id = CueFileId( ch );
-            found[ srch->num_rows ].open = false;
-            found[ srch->num_rows ].source_line = DupStr( TxtBuff );
+            found[srch->num_rows].mod = CueMod( ch );
+            found[srch->num_rows].file_id = CueFileId( ch );
+            found[srch->num_rows].open = false;
+            found[srch->num_rows].source_line = DupStr( TxtBuff );
             srch->num_rows++;
             len = ModName( CueMod( ch ), NULL, 0 );
             if( len > srch->max_mod_name ) srch->max_mod_name = len;
@@ -205,7 +205,7 @@ static  void    SrchFreeFound( srch_window *srch )
     int         i;
 
     for( i = 0; i < srch->num_rows; ++i ) {
-        WndFree( srch->found[ i ].source_line );
+        WndFree( srch->found[i].source_line );
     }
     WndFree( srch->found );
     srch->found = NULL;
@@ -241,7 +241,7 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
                 row != WND_NO_ROW && row <= srch->num_rows );
         break;
     case MENU_SEARCH_SOURCE:
-        new = WndModInspect( srch->found[ row ].mod );
+        new = WndModInspect( srch->found[row].mod );
         if( new == NULL ) break;
         WndSetSrchIgnoreCase( srch->ignore_case );
         WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT_ENG( Empty ) );
@@ -261,7 +261,7 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
 
     if( row >= srch->num_rows ) return( false );
     if( srch->found == NULL ) return( false );
-    found = &srch->found[ row ];
+    found = &srch->found[row];
     switch( piece ) {
     case PIECE_OPENER:
         found->open = OpenGadget( wnd, line, found->mod, true );
@@ -302,7 +302,7 @@ static void     SrchRefresh( a_window *wnd )
         SrchInit( wnd );
     } else {
         for( i = 0; i < srch->num_rows; ++i ) {
-            found = &srch->found[ i ];
+            found = &srch->found[i];
             found->open = CheckOpenGadget( wnd, i, found->open,
                            found->mod, true, PIECE_OPENER );
         }

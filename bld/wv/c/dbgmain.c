@@ -126,9 +126,9 @@ void DebugInit( void )
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
     SET_NIL_ADDR( NilAddr );
-    TxtBuff  = &DbgBuffers[0];
+    TxtBuff  = DbgBuffers;
     *TxtBuff = '\0';
-    NameBuff = &DbgBuffers[TXT_LEN+1];
+    NameBuff = DbgBuffers + TXT_LEN + 1;
     *NameBuff = '\0';
     CurrRadix = DefRadix = 10;
     DbgLevel = MIX;
@@ -264,7 +264,7 @@ void ProcACmd( void )
                 ProcNil();
             }
         } else {
-            (*CmdJmpTab[ cmd ])();
+            (*CmdJmpTab[cmd])();
         }
         break;
     }

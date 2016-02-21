@@ -34,7 +34,7 @@ typedef struct event_record {
     struct event_record *next;
     address             ip;
     cmd_list            *cmd;
-    unsigned char       rad;
+    mad_radix           radix;
     bool                after_asynch;
     char                *cue;
     char                *addr_string;

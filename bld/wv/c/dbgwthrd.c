@@ -158,7 +158,7 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
 {
     thread_state        *thd = GetThreadRow( row );
 
-    line->indent = Indents[ piece ] * WndAvgCharX( wnd );
+    line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
         switch( row ) {

@@ -203,13 +203,13 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
 
 void ReqMemAddr( memory_expr def_seg, address *out_val )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 16 );
+    old_radix = SetCurrRadix( 16 );
     _SwitchOff( SW_EXPR_IS_CALL );
     EvalExpr( 0 );   /* memory expression */
     MakeMemoryAddr( true, def_seg, out_val );
-    SetCurrRadix( old );
+    SetCurrRadix( old_radix );
 }
 
 
@@ -218,13 +218,13 @@ void ReqMemAddr( memory_expr def_seg, address *out_val )
  */
 void CallExpr( address *out_val )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 16 );
+    old_radix = SetCurrRadix( 16 );
     _SwitchOn( SW_EXPR_IS_CALL );
     EvalExpr( 0 ); /* call expression */
     MakeMemoryAddr( true, EXPR_CODE, out_val );
-    SetCurrRadix( old );
+    SetCurrRadix( old_radix );
 }
 
 

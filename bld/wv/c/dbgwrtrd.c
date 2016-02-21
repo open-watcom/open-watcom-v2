@@ -195,13 +195,13 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
 {
     thread_state        *thd = GetThreadRow( row );
 
-    line->indent = Indents[ piece ] * WndAvgCharX( wnd );
+    line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
         switch( row ) {
         case 0:
             if( piece < PieceCount ) {
-                line->text = HeaderArr[ piece ];
+                line->text = HeaderArr[piece];
                 return( true );
             } 
             return( false );
@@ -217,7 +217,7 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
         line->tabstop = false;
         line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
-        switch( InfoType[ piece ] ) {
+        switch( InfoType[piece] ) {
         case RUN_THREAD_INFO_TYPE_NAME:
             line->tabstop = true;
             line->use_prev_attr = false;

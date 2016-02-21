@@ -419,7 +419,7 @@ address SetBreakPointInFile( char *filename,int line_num )
     ModListAddModules( &list, NO_MOD, false );
     mod_nums = ModListNumRows( &list );
     for( row = 0; row < mod_nums; ++row ) {
-        ModListName( &list, row, &mod_name[0] );
+        ModListName( &list, row, mod_name );
         if( IsCmdEqualCmd2( mod_name, filename ) ) {
             ShowDebuggerMsg( mod_name );
             mod_address = ModFirstAddr( ModListMod ( &list, row ) );
@@ -455,7 +455,7 @@ void ShowModuleList( void )
     ModListAddModules( &list, NO_MOD, false );
     mod_nums = ModListNumRows( &list );
     for( row = 0; row < mod_nums; ++row ){
-        ModListName( &list, row, &mod_name[0]);
+        ModListName( &list, row, mod_name );
         ShowDebuggerMsg( mod_name );
     }
     printf( "\nNumber of Modules  Found = %d", mod_nums );
@@ -1843,7 +1843,7 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
 
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL ) return( false );
-    buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
     FDoneSource( viewhndl );
     return( true );
 }

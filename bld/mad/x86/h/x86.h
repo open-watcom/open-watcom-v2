@@ -92,7 +92,7 @@ struct x86_reg_info {
 
 struct mad_disasm_data {
     address             addr;
-    unsigned            radix;
+    mad_radix           radix;
     dis_dec_ins         ins;
     unsigned            characteristics;
 };
@@ -131,7 +131,7 @@ extern mad_status               GetDisasmPrev( address *a );
 extern void                     InitCache( address start, unsigned len );
 extern size_t                   RegDispType( mad_type_handle, const void *, char *buff, size_t buff_size );
 extern unsigned                 AddrCharacteristics( address );
-extern char                     *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, size_t len );
+extern char                     *CnvRadix( unsigned long value, mad_radix radix, char base, char *buff, size_t len );
 
 extern mad_status               DisasmInit( void );
 extern void                     DisasmFini( void );

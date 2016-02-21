@@ -1042,7 +1042,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
     DIPHDL( cue, ch );
     sym_list    *sym;
     address     addr;
-    unsigned    old;
+    mad_radix   old_radix;
     const char  *save_scan;
     const char  *mod_name;
     unsigned    mod_len;
@@ -1169,11 +1169,11 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
 
             result = true;
             CurrGet.kind = GET_LNUM;
-            old = SetCurrRadix( 10 );
+            old_radix = SetCurrRadix( 10 );
             tmp = IntNumVal();
             CurrGet.li.name.len = U32FetchTrunc( tmp );
             Scan();
-            SetCurrRadix( old );
+            SetCurrRadix( old_radix );
         }
         break;
     case 10: /* GetDtorName >>bool */

@@ -338,7 +338,7 @@ static a_window *WndVarNewWindow( const char *item )
     WndVarAdd( wnd, item, strlen( item ), true );
     WndFirstCurrent( wnd );
     WndForcePaint( wnd );
-    WndShrinkToMouse( wnd, WndMetrics[ WND_WATCH ] );
+    WndShrinkToMouse( wnd, WndMetrics[WND_WATCH] );
     WndShowWindow( wnd );
     return( wnd );
 }

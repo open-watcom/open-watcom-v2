@@ -70,7 +70,7 @@ unsigned ConfigScreen( void )
 
 size_t GetSystemDir( char *buff, size_t buff_len )
 {
-    buff[ 0 ] = '\0';
+    buff[0] = '\0';
     GetWindowsDirectory( buff, buff_len );
     return( strlen( buff ) );
 }

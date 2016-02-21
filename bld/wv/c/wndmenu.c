@@ -173,7 +173,7 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
             }
         }
     }
-    while( len > 0 && str[ len-1 ] == ' ' ) {
+    while( len > 0 && str[len-1] == ' ' ) {
         --len;
     }
     while( --len >= 0 ) {

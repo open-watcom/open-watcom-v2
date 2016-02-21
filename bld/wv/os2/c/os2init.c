@@ -128,7 +128,7 @@ long _fork( const char *cmd, size_t len )
     HFILE       console;
     HFILE       new;
     USHORT      act;
-    char        buff[ 256 ];
+    char        buff[256];
 
     cmd_len = EnvLkup( "COMSPEC", buff, sizeof( buff ) );
     if( cmd_len == 0 ) return( ERROR_FILE_NOT_FOUND );

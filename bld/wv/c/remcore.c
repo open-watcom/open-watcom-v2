@@ -663,8 +663,8 @@ void RemoteSplitCmd( char *cmd, char **end, char **parm )
     TrapAccess( 2, in, 1, out );
     CONV_LE_16( ret.cmd_end );
     CONV_LE_16( ret.parm_start );
-    *end = &cmd[ ret.cmd_end ];
-    *parm = &cmd[ ret.parm_start ];
+    *end = &cmd[ret.cmd_end];
+    *parm = &cmd[ret.parm_start];
 }
 
 

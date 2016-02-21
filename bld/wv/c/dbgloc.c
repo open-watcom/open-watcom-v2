@@ -62,7 +62,7 @@ void LocationCreate( location_list *ll, location_type lt, void *d )
 
 void LocationAppend( location_list *ll, location_list *new )
 {
-    memcpy(&ll->e[ll->num],&new->e[0],new->num*sizeof(new->e[0]));
+    memcpy( ll->e + ll->num, new->e, new->num * sizeof( new->e[0] ) );
     ll->num += new->num;
     ll->flags |= new->flags;
 }
@@ -93,21 +93,24 @@ void LocationAdd( location_list *ll, long sbits )
         bits %= 8;
     }
     num = 0;
-    le = &ll->e[0];
+    le = ll->e;
     for( ;; ) {
-        if( le->bit_length == 0 ) break;
-        if( le->bit_length > bits ) break;
+        if( le->bit_length == 0 )
+            break;
+        if( le->bit_length > bits )
+            break;
         bits -= le->bit_length;
         ++num;
     }
     if( num != 0 ) {
         ll->num -= num;
-        memcpy( &ll->e[0], le, ll->num * sizeof( ll->e[0] ) );
+        memcpy( ll->e, le, ll->num * sizeof( ll->e[0] ) );
     }
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr = AddrAdd( ll->e[0].u.addr, add );
     } else {
@@ -120,12 +123,16 @@ void LocationTrunc( location_list *ll, unsigned bits )
 {
     unsigned    i;
 
-    if( bits == 0 ) return;
+    if( bits == 0 )
+        return;
     i = 0;
     for( ;; ) {
-        if( i >= ll->num ) return;
-        if( ll->e[i].bit_length == 0 ) break;
-        if( ll->e[i].bit_length > bits ) break;
+        if( i >= ll->num )
+            return;
+        if( ll->e[i].bit_length == 0 )
+            break;
+        if( ll->e[i].bit_length > bits )
+            break;
         bits -= ll->e[i].bit_length;
         ++i;
     }

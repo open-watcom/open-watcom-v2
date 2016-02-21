@@ -119,24 +119,24 @@ extern unsigned MouseSaveSize();
 0X29 0XDB       /* sub    bx,bx                         */      \
 0XB8 0X15 0X00  /* mov    ax,0015                       */      \
 0XCD 0X33       /* int    33                            */      \
-                value [ bx ]                                    \
-                modify [ ax ];
+                value [bx]                                    \
+                modify [ax];
 
 
 extern void MouseSaveState();
 #pragma aux MouseSaveState =                                    \
 0XB8 0X16 0X00  /* mov    ax,0016                       */      \
 0XCD 0X33       /* int    33                            */      \
-                parm [ es ] [ dx ]                              \
-                modify [ ax ];
+                parm [es] [dx]                              \
+                modify [ax];
 
 
 extern void MouseRestoreState();
 #pragma aux MouseRestoreState =                                 \
 0XB8 0X17 0X00  /* mov    ax,0017                       */      \
 0XCD 0X33       /* int    33                            */      \
-                parm [ es ] [ dx ]                              \
-                modify [ ax ];
+                parm [es] [dx]                              \
+                modify [ax];
 
 
 extern display_configuration BIOSDevCombCode();
@@ -148,8 +148,8 @@ extern display_configuration BIOSDevCombCode();
 0X74 0X02       /* jz     *+2                           */      \
 0X29 0XDB       /* sub    bx,bx                         */      \
 0X5D            /* pop    bp                            */      \
-                value   [ bx ]                                  \
-                modify  [ ax ];
+                value   [bx]                                  \
+                modify  [ax];
 
 
 static display_configuration HWDisplay;
@@ -196,8 +196,8 @@ enum {
 0XB8 0X07 0X0E  /* mov    ax,0E07                       */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        parm caller [ax]                                      \
+        modify [bx];
 
 extern void DoRingBell( void );
 
@@ -325,7 +325,7 @@ static void GetDispConfig( void )
 
 static bool ChkForColour( hw_display_type display )
 {
-    if( ColourAdapters[ display ] <= 0 ) return( false );
+    if( ColourAdapters[display] <= 0 ) return( false );
     ScrnMode = MD_COLOUR;
     return( true );
 
@@ -355,7 +355,7 @@ static bool ChkColour( void )
 
 static bool ChkForMono( hw_display_type display )
 {
-    if( ColourAdapters[ display ] >= 0 ) return( false );
+    if( ColourAdapters[display] >= 0 ) return( false );
     ScrnMode = MD_MONO;
     return( true );
 }

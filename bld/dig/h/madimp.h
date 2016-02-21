@@ -67,12 +67,12 @@ typedef struct mad_imp_routines {
 
     walk_result         (DIGENTRY *MITypeWalk)( mad_type_kind, MI_TYPE_WALKER *, void * );
     mad_string          (DIGENTRY *MITypeName)( mad_type_handle );
-    unsigned            (DIGENTRY *MITypePreferredRadix)( mad_type_handle );
+    mad_radix           (DIGENTRY *MITypePreferredRadix)( mad_type_handle );
     mad_type_handle     (DIGENTRY *MITypeForDIPType)( const dip_type_info * );
     void                (DIGENTRY *MITypeInfo)( mad_type_handle, mad_type_info * );
     mad_type_handle     (DIGENTRY *MITypeDefault)( mad_type_kind, mad_address_format, const mad_registers *, const address * );
     mad_status          (DIGENTRY *MITypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-    mad_status          (DIGENTRY *MITypeToString)( unsigned radix, const mad_type_info *, const void *, char *buff, size_t *buff_size_p );
+    mad_status          (DIGENTRY *MITypeToString)( mad_radix radix, const mad_type_info *, const void *, char *buff, size_t *buff_size_p );
 
     unsigned            (DIGENTRY *MIRegistersSize)( void );
     mad_status          (DIGENTRY *MIRegistersHost)( mad_registers * );
@@ -105,11 +105,11 @@ typedef struct mad_imp_routines {
     unsigned            (DIGENTRY *MIDisasmDataSize)( void );
     unsigned            (DIGENTRY *MIDisasmNameMax)( void );
     mad_status          (DIGENTRY *MIDisasm)( mad_disasm_data *, address *, int );
-    size_t              (DIGENTRY *MIDisasmFormat)( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, size_t buff_size );
+    size_t              (DIGENTRY *MIDisasmFormat)( mad_disasm_data *, mad_disasm_piece, mad_radix radix, char *buff, size_t buff_size );
     unsigned            (DIGENTRY *MIDisasmInsSize)( mad_disasm_data * );
     mad_status          (DIGENTRY *MIDisasmInsUndoable)( mad_disasm_data * );
     mad_disasm_control  (DIGENTRY *MIDisasmControl)( mad_disasm_data *, mad_registers const * );
-    mad_status          (DIGENTRY *MIDisasmInspectAddr)( const char *start, unsigned len, unsigned radix, mad_registers const *, address * );
+    mad_status          (DIGENTRY *MIDisasmInspectAddr)( const char *start, unsigned len, mad_radix radix, mad_registers const *, address * );
     walk_result         (DIGENTRY *MIDisasmMemRefWalk)( mad_disasm_data *, MI_MEMREF_WALKER *, mad_registers const *, void * );
     const mad_toggle_strings    *(DIGENTRY *MIDisasmToggleList)( void );
     unsigned            (DIGENTRY *MIDisasmToggle)( unsigned on, unsigned off );
@@ -159,13 +159,13 @@ mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *, unsigned, const mad_
 walk_result     DIGENTRY MITypeWalk( mad_type_kind, MI_TYPE_WALKER *, void * );
 
 mad_string      DIGENTRY MITypeName( mad_type_handle );
-unsigned        DIGENTRY MITypePreferredRadix( mad_type_handle );
+mad_radix       DIGENTRY MITypePreferredRadix( mad_type_handle );
 mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info * );
 void            DIGENTRY MITypeInfo( mad_type_handle, mad_type_info * );
 mad_type_handle DIGENTRY MITypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );
 
 mad_status      DIGENTRY MITypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *, const void *, char *buff, size_t *buff_size_p );
+mad_status      DIGENTRY MITypeToString( mad_radix radix, const mad_type_info *, const void *, char *buff, size_t *buff_size_p );
 
 
 /*
@@ -224,11 +224,11 @@ mad_status              DIGENTRY MICallUpStackLevel( mad_call_up_data *, const a
 unsigned                DIGENTRY MIDisasmDataSize( void );
 unsigned                DIGENTRY MIDisasmNameMax( void );
 mad_status              DIGENTRY MIDisasm( mad_disasm_data *, address *, int );
-size_t                  DIGENTRY MIDisasmFormat( mad_disasm_data *, mad_disasm_piece, unsigned radix, char *buff, size_t buff_size );
+size_t                  DIGENTRY MIDisasmFormat( mad_disasm_data *, mad_disasm_piece, mad_radix radix, char *buff, size_t buff_size );
 unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data * );
 mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data * );
 mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *, const mad_registers * );
-mad_status              DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *, address * );
+mad_status              DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *, address * );
 mad_status              DIGENTRY MIDisasmInsNext( mad_disasm_data *, const mad_registers *, address * );
 
 walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *, MI_MEMREF_WALKER *, const mad_registers *, void * );
@@ -270,14 +270,14 @@ typedef struct mad_client_routines {
 
     size_t              (DIGCLIENT *MADCliString)( mad_string, char *buff, size_t buff_size );
     mad_status          (DIGCLIENT *MADCliAddString)( mad_string, const char * );
-    size_t              (DIGCLIENT *MADCliRadixPrefix)( unsigned radix, char *buff, size_t buff_size );
+    size_t              (DIGCLIENT *MADCliRadixPrefix)( mad_radix radix, char *buff, size_t buff_size );
 
     void                (DIGCLIENT *MADCliNotify)( mad_notify_type, void const * );
 
     unsigned            (DIGCLIENT *MADCliMachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
 
     mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
-    mad_status          (DIGCLIENT *MADCliMemExpr)( char const *expr, unsigned radix, address * );
+    mad_status          (DIGCLIENT *MADCliMemExpr)( char const *expr, mad_radix radix, address * );
 
     void                (DIGCLIENT *MADCliAddrSection)( address * );
     mad_status          (DIGCLIENT *MADCliAddrOvlReturn)( address * );
@@ -286,7 +286,7 @@ typedef struct mad_client_routines {
 
     mad_status          (DIGCLIENT *MADCliTypeInfoForHost)( mad_type_kind, int size, mad_type_info * );
     mad_status          (DIGCLIENT *MADCliTypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-    mad_status          (DIGCLIENT *MADCliTypeToString)( unsigned radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
+    mad_status          (DIGCLIENT *MADCliTypeToString)( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
 } mad_client_routines;
 
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
@@ -313,14 +313,14 @@ size_t          MCWriteMem( address, size_t size, void *buff );
 
 size_t          MCString( mad_string, char *buff, size_t buff_size );
 mad_status      MCAddString( mad_string, const char * );
-size_t          MCRadixPrefix( unsigned radix, char *buff, size_t buff_size );
+size_t          MCRadixPrefix( mad_radix radix, char *buff, size_t buff_size );
 
 void            MCNotify( mad_notify_type, void * );
 
 unsigned        MCMachineData( address, dig_info_type, dig_elen, void *, dig_elen, void * );
 
 mad_status      MCAddrToString( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
-mad_status      MCMemExpr( const char *expr, unsigned radix, address * );
+mad_status      MCMemExpr( const char *expr, mad_radix radix, address * );
 
 void            MCAddrSection( address * );
 mad_status      MCAddrOvlReturn( address * );
@@ -329,7 +329,7 @@ system_config   *MCSystemConfig( void );
 
 mad_status      MCTypeInfoForHost( mad_type_kind, int size, mad_type_info * );
 mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-mad_status      MCTypeToString( unsigned radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
+mad_status      MCTypeToString( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
 
 void            MCStatus( mad_status );
 

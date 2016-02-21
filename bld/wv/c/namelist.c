@@ -149,7 +149,7 @@ static a_symbol *NameGetRow( name_list *name, int i )
 
     if( name->skip ) {
         idx = i / SKIP_ENTRIES;
-        curr = name->skip[ idx ];
+        curr = name->skip[idx];
         i -= idx * SKIP_ENTRIES;
     } else {
         curr = name->list;
@@ -205,7 +205,7 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
         i = 0;
         for( curr = name->list; curr != NULL; curr = curr->next ) {
             if( i % SKIP_ENTRIES == 0 ) {
-                name->skip[ i / SKIP_ENTRIES ] = curr;
+                name->skip[i / SKIP_ENTRIES] = curr;
             }
             ++i;
         }

@@ -101,7 +101,7 @@ void InitTrap( const char *parms )
     connect_ret         ret;
     char                *error;
     trap_version        ver;
-    char                buff[ TXT_LEN ];
+    char                buff[TXT_LEN];
 
 #ifdef ENABLE_TRAP_LOGGING
     OpenTrapTraceFile();

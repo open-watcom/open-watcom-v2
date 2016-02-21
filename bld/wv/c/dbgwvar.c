@@ -684,7 +684,7 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
                      GADGET_CLOSED, GADGET_POINTS, GADGET_UNPOINTS,
                      GADGET_BAD_POINTS, GADGET_INHERIT_OPEN,
                      GADGET_INHERIT_CLOSED };
-            SetGadgetLine( wnd, line, gadgets[ v->gadget ] );
+            SetGadgetLine( wnd, line, gadgets[v->gadget] );
             if( v->gadget == VARGADGET_BADPOINTS ) {
                 line->attr = WND_PLAIN;
             }
@@ -849,7 +849,7 @@ static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
     int         i;
 
     for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
-        if( VarDoClass( VarWndClass[ i ], rtn, cookie ) ) return( true );
+        if( VarDoClass( VarWndClass[i], rtn, cookie ) ) return( true );
     }
     return( false );
 }

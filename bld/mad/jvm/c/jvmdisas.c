@@ -185,7 +185,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, unsigned buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -335,7 +335,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 /*
         Given a string, convert that to an address to be examined.
 */
-mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a)
+mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a)
 {
     //NYI:
     return( MS_FAIL );

@@ -53,6 +53,7 @@ typedef struct mad_disasm_data  mad_disasm_data;
 typedef struct mad_trace_data   mad_trace_data;
 typedef struct mad_call_up_data mad_call_up_data;
 typedef union  mad_registers    mad_registers;
+typedef unsigned_16             mad_radix;
 
 #define MAD_NIL_TYPE_HANDLE ((mad_type_handle)-1)
 

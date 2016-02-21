@@ -41,7 +41,7 @@ struct imp_mad_state_data {
 
 struct mad_disasm_data {
     address             addr;
-    unsigned            radix;
+    mad_radix           radix;
 };
 
 struct mad_trace_data {

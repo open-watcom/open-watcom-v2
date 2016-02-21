@@ -74,9 +74,9 @@ extern int _d16ReserveExt( int );
                                 "ror eax,16" \
                                 "mov ax,dx" \
                                 "ror eax,16" \
-                                parm [ eax ] \
-                                value [ eax ] \
-                                modify [ ebx ecx edx ]
+                                parm [eax] \
+                                value [eax] \
+                                modify [ebx ecx edx]
 #endif
 #endif
 

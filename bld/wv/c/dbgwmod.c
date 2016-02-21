@@ -207,7 +207,7 @@ static  bool    ModGetLine( a_window *wnd, int row, int piece,
     line->tabstop = false;
     switch( piece ) {
     case PIECE_SOURCE:
-        info = &mod->info[ row ];
+        info = &mod->info[row];
         info->source = ModHasSourceInfo( handle );
         info->open = OpenGadget( wnd, line, handle, info->source );
         return( true );
@@ -266,7 +266,7 @@ static void     ModRefresh( a_window *wnd )
     }
     if( UpdateFlags & UP_OPEN_CHANGE ) {
         for( i = 0; i < ModListNumRows( ModList( mod ) ); ++i ) {
-            info = &mod->info[ i ];
+            info = &mod->info[i];
             info->open = CheckOpenGadget( wnd, i, info->open,
                                           ModListMod( ModList( mod ), i ),
                                           info->source, PIECE_SOURCE );

@@ -244,7 +244,7 @@ static bool TryVC( void )
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if ( len < 0 )
         return( false );
-    tty_name[ len ] = '\0';
+    tty_name[len] = '\0';
     if( DbgConsole == 0 ) {
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
@@ -253,7 +253,7 @@ static bool TryVC( void )
             return( false );
         close( DbgConHandle );
     }
-    ptr = &tty_name[ len ];
+    ptr = &tty_name[len];
     for( ;; ) {
         --ptr;
         if( *ptr < '0' || *ptr > '9' ) {

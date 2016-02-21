@@ -59,7 +59,7 @@ HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
 
 HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where ) {
 
-    return( SeekStream( (file_handle)fp, offset, seekTypeConvTable[ where ] ) );
+    return( SeekStream( (file_handle)fp, offset, seekTypeConvTable[where] ) );
 }
 
 HELPIO long int HelpTell( HelpFp fp )

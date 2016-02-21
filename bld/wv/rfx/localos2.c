@@ -105,7 +105,7 @@ void LocalGetBuff( char *buff, unsigned size )
         buff[1] = '\0';
         return;
     }
-    buff[ length.cchIn ] = '\0';
+    buff[length.cchIn] = '\0';
 }
 
 error_handle LocalRename( const char *from, const char *to )

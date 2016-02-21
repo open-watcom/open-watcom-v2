@@ -48,11 +48,11 @@
                           cputs( "\n\rPress a key\n\r" );       \
                           getch();                              \
                         }
-#define _debug16( s, n ){ char buff[ 5 ];               \
+#define _debug16( s, n ){ char buff[5];               \
                           cputs( s );                   \
                           _debug( itoa( n, buff, 16 ) );\
                         }
-#define _debug32( s, n ){ char buff[ 9 ];               \
+#define _debug32( s, n ){ char buff[9];               \
                           cputs( s );                   \
                           _debug( ltoa( n, buff, 16 ) );\
                         }
@@ -73,15 +73,15 @@ static struct SREGS     RMRegs;
 static struct SREGS     PMRegs;
 static struct SREGS     SaveRegs;
 static unsigned         StateSize;
-static char             RMStateMem[ MAX_STATE_SIZE ];
-static char             RMStack[ RM_STACK_SIZE ];
+static char             RMStateMem[MAX_STATE_SIZE];
+static char             RMStack[RM_STACK_SIZE];
 static void             __far *OldRMStackPtr;
 static void             __far *OldRMHandler;
 static void             __far *SavePMState;
 static void             __far *RawRMtoPMAddr;
 static void             __far *RawPMtoRMAddr;
-static void             __far *RMVTable[ NB_VECTORS ];
-static void             __far *PMVTable[ NB_VECTORS ];
+static void             __far *RMVTable[NB_VECTORS];
+static void             __far *PMVTable[NB_VECTORS];
 
 extern void             StoreDTs( DTreg *, unsigned *, DTreg * );
 extern void __far       *GetPModeAddr( unsigned * );
@@ -136,8 +136,8 @@ static void save_vects( void __far **rmvtable, void __far **pmvtable )
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        rmvtable[ intnb ] = (void __far *)TinyDPMIGetRealVect( intnb );
-        pmvtable[ intnb ] = TinyDPMIGetProtectVect( intnb );
+        rmvtable[intnb] = (void __far *)TinyDPMIGetRealVect( intnb );
+        pmvtable[intnb] = TinyDPMIGetProtectVect( intnb );
     }
     fhandle = open( "vtable", O_BINARY | O_CREAT | O_TRUNC | O_WRONLY,
                     S_IREAD | S_IWRITE );
@@ -157,9 +157,9 @@ static void restore_vects( void __far **rmvtable, void __far **pmvtable )
     int                 intnb;
 
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
-        TinyDPMISetRealVect( intnb, FP_SEG( rmvtable[ intnb ] ),
-                             FP_OFF( rmvtable[ intnb ] ) );
-        TinyDPMISetProtectVect( intnb, pmvtable[ intnb ] );
+        TinyDPMISetRealVect( intnb, FP_SEG( rmvtable[intnb] ),
+                             FP_OFF( rmvtable[intnb] ) );
+        TinyDPMISetProtectVect( intnb, pmvtable[intnb] );
     }
 }
 
@@ -170,7 +170,7 @@ static void interrupt rm_66_handler( unsigned pmcs, unsigned pmds )
     PMRegs.ds = pmds;
     PMRegs.ss = pmds;
     PMRegs.es = 0;
-    SwitchStacks( &RMStack[ RM_STACK_SIZE ], &OldRMStackPtr );
+    SwitchStacks( &RMStack[RM_STACK_SIZE], &OldRMStackPtr );
     SaveState( SAVE_STATE, RMStateMem, SavePMState );
     _debug( "Hi from rm_66_handler" );
     PMProcCalled = 0;

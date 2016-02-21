@@ -1081,9 +1081,9 @@ static void DoResNew( bool have_parms, const char *cmd,
     ReleaseProgOvlay( false );
     BPsUnHit();
     memcpy( new, cmd, clen );
-    new[ clen ] = NULLCHAR;
-    memcpy( &new[ clen + 1 ], parms, plen );
-    new[ clen + plen + 1 ] = ARG_TERMINATE;
+    new[clen] = NULLCHAR;
+    memcpy( new + clen + 1, parms, plen );
+    new[clen + plen + 1] = ARG_TERMINATE;
     _Free( TaskCmd );
     TaskCmd = new;
     if( have_parms )
@@ -1226,10 +1226,10 @@ static void ResNew( void )
     clen = strlen( TaskCmd );
     if( ScanItem( false, &start, &len ) ) {
         memcpy( TxtBuff, start, len );
-        TxtBuff[ len++ ] = NULLCHAR;
+        TxtBuff[len++] = NULLCHAR;
         have_parms = true;
     } else {
-        start = &TaskCmd[ clen + 1 ];
+        start = TaskCmd + clen + 1;
         len = ArgLen( start );
         have_parms = false;
     }
@@ -1308,14 +1308,14 @@ static void ProgNew( void )
                 new = DbgMustAlloc( start - symfile + 1 );
                 SymFileName = new;
                 memcpy( new, symfile, start - symfile );
-                new[ start - symfile ] = NULLCHAR;
+                new[start - symfile] = NULLCHAR;
                 SKIP_SPACES;
             }
         }
         cmd = TxtBuff;
         memcpy( cmd, start, len );
-        cmd[ len++ ] = NULLCHAR;
-        cmd[ len ] = ARG_TERMINATE;
+        cmd[len++] = NULLCHAR;
+        cmd[len] = ARG_TERMINATE;
         RemoteSplitCmd( cmd, &end, &parm );
         clen = end - cmd;
         plen = len - (parm - cmd);
@@ -1323,7 +1323,7 @@ static void ProgNew( void )
     } else {
         cmd = TaskCmd;
         clen = strlen( TaskCmd );
-        parm = &TaskCmd[ clen + 1 ];
+        parm = TaskCmd + clen + 1;
         plen = ArgLen( parm );
         have_parms = false;
     }
@@ -1425,7 +1425,7 @@ OVL_EXTERN void SymFileNew( void )
     }
     ReScan( temp );
     memcpy( TxtBuff, fname, fname_len );
-    TxtBuff[ fname_len ] = '\0';
+    TxtBuff[fname_len] = '\0';
     image = DoCreateImage( NULL, TxtBuff );
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {

@@ -424,7 +424,7 @@ void ProcError( void )
     ScanItem( false, &start, &len );
     ReqEOC();
     memcpy( TxtBuff, start, len );
-    TxtBuff[ len ] = NULLCHAR;
+    TxtBuff[len] = NULLCHAR;
     Error( ERR_NONE, LIT_ENG( ERR_GENERIC ), TxtBuff );
 }
 
@@ -702,7 +702,7 @@ void ProcThread( void )
     dtid_t              tid;
     bool                all;
     thread_state        *thd;
-    unsigned            old;
+    mad_radix           old_radix;
 
     cmd = -1;
     tcmd = T_BAD;
@@ -733,10 +733,10 @@ void ProcThread( void )
     } else {
         if( cmd < 0 )
             tcmd = T_CHANGE;
-        old = SetCurrRadix( 16 );
+        old_radix = SetCurrRadix( 16 );
         tid = ReqExpr();
         all = false;
-        SetCurrRadix( old );
+        SetCurrRadix( old_radix );
     }
     ReqEOC();
     if( all ) {

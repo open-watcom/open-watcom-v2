@@ -56,11 +56,11 @@
 #include "clibext.h"
 
 
-typedef struct rad_str {
-    struct   rad_str *next;
-    unsigned char    radval;
-    char             radstr[1];         /* first byte is length */
-} rad_str;
+typedef struct radix_str {
+    struct radix_str *next;
+    mad_radix        value;
+    char             string[1];         /* first byte is length */
+} radix_str;
 
 static const char CmdLnDelimTab[] = {
     #define pick(t,c)   c
@@ -69,52 +69,51 @@ static const char CmdLnDelimTab[] = {
 };
 
 typedef union {
-        unsigned_64     int_val;
-        xreal           real_val;
+    unsigned_64     int_val;
+    xreal           real_val;
 } token_value;
 
 
-static  rad_str         *RadStrs;
+bool            scan_string = false;
+char            *StringStart = NULL;
+unsigned        StringLength = 0;
+unsigned        ScanCCharNum = true;
+
+static  radix_str       *RadixStrs;
 static  const char      *ScanPtr;
 static  token_value     TokenVal;
 static  const char      *TokenStart;
 static  token_table     *ExprTokens;
-        bool            scan_string = false;
-        char            *StringStart = NULL;
-        unsigned        StringLength = 0;
-        unsigned        ScanCCharNum = true;
 
-
-static void SetRadixSpec( const char *str, size_t len, unsigned radix, bool clear )
+static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool clear )
 {
 
-    rad_str   *pref;
-    rad_str  **owner;
+    radix_str   *radixstr;
+    radix_str   **owner;
 
-    owner = &RadStrs;
-    pref = RadStrs;
-    while( pref != NULL ) {
-        if( SYM_NAME_LEN( pref->radstr ) == len
-          && memicmp( SYM_NAME_NAME( pref->radstr ), str, len ) == 0 )
+    owner = &RadixStrs;
+    for( radixstr = RadixStrs; radixstr != NULL; radixstr = radixstr->next ) {
+        if( SYM_NAME_LEN( radixstr->string ) == len
+          && memicmp( SYM_NAME_NAME( radixstr->string ), str, len ) == 0 )
             break;
-        if( SYM_NAME_LEN( pref->radstr ) < len )
+        if( SYM_NAME_LEN( radixstr->string ) < len )
             break;
-        owner = &pref->next;
-        pref = pref->next;
+        owner = &radixstr->next;
     }
-    if( pref == NULL || SYM_NAME_LEN( pref->radstr ) != len ) {
-        if( clear ) return;
-        pref = DbgMustAlloc( sizeof( rad_str ) + len );
-        memcpy( SYM_NAME_NAME( pref->radstr ), str, len );
-        SET_SYM_NAME_LEN( pref->radstr, len );
-        pref->next = *owner;
-        *owner = pref;
+    if( radixstr == NULL || SYM_NAME_LEN( radixstr->string ) != len ) {
+        if( clear )
+            return;
+        radixstr = DbgMustAlloc( sizeof( radix_str ) + len );
+        memcpy( SYM_NAME_NAME( radixstr->string ), str, len );
+        SET_SYM_NAME_LEN( radixstr->string, len );
+        radixstr->next = *owner;
+        *owner = radixstr;
     } else if( clear ) {
-        *owner = pref->next;
-        _Free( pref );
+        *owner = radixstr->next;
+        _Free( radixstr );
         return;
     }
-    pref->radval = radix;
+    radixstr->value = value;
 }
 
 
@@ -127,7 +126,7 @@ void InitScan( void )
     ScanPtr = LIT_ENG( Empty );
     TokenStart = ScanPtr;
     CurrToken = T_LINE_SEPARATOR;
-    RadStrs = NULL;
+    RadixStrs = NULL;
     SetRadixSpec( "0x", 2, 16, false );
     SetRadixSpec( "0n", 2, 10, false );
 }
@@ -135,12 +134,11 @@ void InitScan( void )
 
 void FiniScan( void )
 {
-    rad_str     *old;
+    radix_str   *radixstr;
 
-    while( RadStrs != NULL ) {
-        old = RadStrs;
-        RadStrs = RadStrs->next;
-        _Free( old );
+    while( (radixstr = RadixStrs) != NULL ) {
+        RadixStrs = RadixStrs->next;
+        _Free( radixstr );
     }
 }
 
@@ -340,7 +338,7 @@ bool TokenName( tokens token, const char **start, size_t *len )
         return( true );
     }
     if( token < LAST_CMDLN_DELIM ) {
-        *start = &CmdLnDelimTab[ token - FIRST_CMDLN_DELIM ];
+        *start = CmdLnDelimTab + token - FIRST_CMDLN_DELIM;
         *len = sizeof( char );
         return( true );
     }
@@ -590,14 +588,14 @@ static bool GetNum( unsigned base )
 
 static bool ScanNumber( void )
 {
-    rad_str     *pref;
+    radix_str   *radixstr;
     bool        ret;
     const char  *hold_scan;
 
     ret = false;
     hold_scan = ScanPtr;
     if( ScanCCharNum && (*ScanPtr == '\'') ) {
-        if( ScanPtr[ 1 ] != NULLCHAR && ScanPtr[ 2 ] == '\'' ) {
+        if( ScanPtr[1] != NULLCHAR && ScanPtr[2] == '\'' ) {
             U32ToU64( ScanPtr[1], &TokenVal.int_val );
             ScanPtr += 3;
             CurrToken = T_INT_NUM;
@@ -605,16 +603,16 @@ static bool ScanNumber( void )
         }
     } else {
         CurrToken = T_BAD_NUM; /* assume we'll find a bad number */
-        for( pref = RadStrs; pref != NULL; pref = pref->next ) {
-            if( memicmp( ScanPtr, SYM_NAME_NAME( pref->radstr ), SYM_NAME_LEN( pref->radstr ) ) == 0 ) {
+        for( radixstr = RadixStrs; radixstr != NULL; radixstr = radixstr->next ) {
+            if( memicmp( ScanPtr, SYM_NAME_NAME( radixstr->string ), SYM_NAME_LEN( radixstr->string ) ) == 0 ) {
                 ret = true;
-                ScanPtr += SYM_NAME_LEN( pref->radstr );
+                ScanPtr += SYM_NAME_LEN( radixstr->string );
                 hold_scan = ScanPtr;
-                if( GetNum( pref->radval ) ) {
+                if( GetNum( radixstr->value ) ) {
                     CurrToken = T_INT_NUM;
                     return( true );
                 }
-                ScanPtr -= SYM_NAME_LEN( pref->radstr );
+                ScanPtr -= SYM_NAME_LEN( radixstr->string );
             }
         }
         if( isdigit( *ScanPtr ) && GetNum( CurrRadix ) ) {
@@ -860,13 +858,13 @@ xreal RealNumVal( void )
  * NewCurrRadix - use when you know there's no scanning in progress
  */
 
-unsigned NewCurrRadix( unsigned rad )
+mad_radix NewCurrRadix( mad_radix radix )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = CurrRadix;
-    CurrRadix = rad;
-    return( old );
+    old_radix = CurrRadix;
+    CurrRadix = radix;
+    return( old_radix );
 }
 
 
@@ -874,13 +872,13 @@ unsigned NewCurrRadix( unsigned rad )
  * SetCurrRadix - set the current number radix
  */
 
-unsigned SetCurrRadix( unsigned rad )
+mad_radix SetCurrRadix( mad_radix radix )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( rad );
+    old_radix = NewCurrRadix( radix );
     ReScan( TokenStart );
-    return( old );
+    return( old_radix );
 }
 
 
@@ -890,7 +888,7 @@ void RestoreRadix( void )
 }
 
 
-void DefaultRadixSet( unsigned radix )
+void DefaultRadixSet( mad_radix radix )
 {
     DefRadix = radix;
     CurrRadix = radix;
@@ -903,18 +901,18 @@ void DefaultRadixSet( unsigned radix )
 
 void RadixSet( void )
 {
-    unsigned   radix;
-    unsigned   old;
+    unsigned   value;
+    mad_radix  old_radix;
 
-    old = SetCurrRadix( 10 ); /* radix sets are always base 10 */
-    radix = ReqExpr();
+    old_radix = SetCurrRadix( 10 ); /* radix sets are always base 10 */
+    value = ReqExpr();
     ReScan( TokenStart );
     ReqEOC();
-    if( radix < 2 || radix > 36 ) {
-        Error( ERR_NONE, LIT_ENG( ERR_BAD_RADIX ), radix );
+    if( value < 2 || value > 36 ) {
+        Error( ERR_NONE, LIT_ENG( ERR_BAD_RADIX ), value );
     }
-    SetCurrRadix( old );
-    DefaultRadixSet( radix );
+    SetCurrRadix( old_radix );
+    DefaultRadixSet( (mad_radix)value );
 }
 
 
@@ -925,16 +923,16 @@ void RadixConf( void )
 }
 
 
-void FindRadixSpec( unsigned char value, const char **start, size_t *len )
+void FindRadixSpec( mad_radix value, const char **start, size_t *len )
 {
-    rad_str     *rad;
+    radix_str   *radixstr;
 
     *start = NULL;
     *len = 0;
-    for( rad = RadStrs; rad != NULL; rad = rad->next ) {
-        if( rad->radval == value ) {
-            *start = SYM_NAME_NAME( rad->radstr );
-            *len   = SYM_NAME_LEN( rad->radstr );
+    for( radixstr = RadixStrs; radixstr != NULL; radixstr = radixstr->next ) {
+        if( radixstr->value == value ) {
+            *start = SYM_NAME_NAME( radixstr->string );
+            *len   = SYM_NAME_LEN( radixstr->string );
             return;
         }
     }
@@ -946,7 +944,8 @@ char *AddHexSpec( char *p )
     const char  *pref;
     size_t      len;
 
-    if( CurrRadix == 16 ) return( p );
+    if( CurrRadix == 16 )
+        return( p );
     FindRadixSpec( 16, &pref, &len );
     memcpy( p, pref, len );
     p += len;

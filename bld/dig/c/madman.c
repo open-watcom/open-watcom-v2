@@ -100,7 +100,7 @@ static mad_status DIGCLIENT MADCliTypeConvert( const mad_type_info *in_t, const 
     return( MADTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
+static mad_status DIGCLIENT MADCliTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     return( MADTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
@@ -627,13 +627,13 @@ mad_string      MADTypeName( mad_type_handle th )
     return( Active->rtns->MITypeName( th ) );
 }
 
-static unsigned DIGREGISTER DummyTypePreferredRadix( mad_type_handle th )
+static mad_radix DIGREGISTER DummyTypePreferredRadix( mad_type_handle th )
 {
     th = th;
     return( 0 );
 }
 
-unsigned        MADTypePreferredRadix( mad_type_handle th )
+mad_radix       MADTypePreferredRadix( mad_type_handle th )
 {
     return( Active->rtns->MITypePreferredRadix( th ) );
 }
@@ -1196,9 +1196,9 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
     return( Active->rtns->MITypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
+static mad_status DIGREGISTER DummyTypeToString( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
-    base = base;
+    radix = radix;
     mti = mti;
     d = d;
     buff_size_p = buff_size_p;
@@ -1209,7 +1209,7 @@ static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_i
 static const char DigitTab[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 //NYI: big endian hosts & targets
-static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length )
+static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_length )
 {
     unsigned            len;
     char                save;
@@ -1242,7 +1242,7 @@ static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length
     return( p );
 }
 
-static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length )
+static char *CvtNum( unsigned long val, mad_radix radix, char *p, int bit_length )
 {
     unsigned_64 tmp;
 
@@ -1250,7 +1250,7 @@ static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length 
     return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
-static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
+static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
     bool                neg;
@@ -1285,7 +1285,7 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
     return( MS_OK );
 }
 
-static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
+static mad_status AddrTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
     char                *p;
@@ -1393,7 +1393,7 @@ static size_t DoStrReal( long_double *value, mad_type_info const *mti, char *buf
     return( len );
 }
 
-static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
+static mad_status FloatTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     size_t              buff_size;
     mad_type_info       host;
@@ -1446,7 +1446,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
 
 #endif
 
-mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
+mad_status MADTypeToString( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     if( mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
         switch( mti->b.kind ) {
@@ -1469,7 +1469,7 @@ mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void
     return( Active->rtns->MITypeToString( radix, mti, d, buff, buff_size_p ) );
 }
 
-mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, char *buff, size_t *buff_size_p )
+mad_status MADTypeHandleToString( mad_radix radix, mad_type_handle th, const void *d, char *buff, size_t *buff_size_p )
 {
     mad_type_info       mti;
 
@@ -2015,7 +2015,7 @@ mad_status              MADDisasm( mad_disasm_data *dd, address *a, int adj )
     return( Active->rtns->MIDisasm( dd, a, adj ) );
 }
 
-static size_t DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
+static size_t DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     dd = dd;
     radix = radix;
@@ -2031,7 +2031,7 @@ static size_t DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_pie
     return( sizeof( ILL_INSTR ) - 1 );
 }
 
-size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
+size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIDisasmFormat( dd, dp, radix, buff, buff_size ) );
 }
@@ -2083,7 +2083,7 @@ mad_status              MADDisasmInsNext( mad_disasm_data *dd, const mad_registe
     return( Active->rtns->MIDisasmInsNext( dd, mr, a ) );
 }
 
-static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     start = start;
     len = len;
@@ -2093,7 +2093,7 @@ static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigne
     return( MS_FAIL );
 }
 
-mad_status              MADDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status              MADDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     return( Active->rtns->MIDisasmInspectAddr( start, len, radix, mr, a ) );
 }

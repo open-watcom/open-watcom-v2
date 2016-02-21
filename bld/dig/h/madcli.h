@@ -40,13 +40,13 @@ size_t          DIGCLIENT MADCliWriteMem( address, size_t size, const void *buff
 
 size_t          DIGCLIENT MADCliString( mad_string, char *buff, size_t buff_size );
 mad_status      DIGCLIENT MADCliAddString( mad_string, const char * );
-size_t          DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, size_t buff_size );
+size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_size );
 
 void            DIGCLIENT MADCliNotify( mad_notify_type, const void * );
 
 
 mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
-mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address * );
+mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address * );
 
 void            DIGCLIENT MADCliAddrSection( address * );
 mad_status      DIGCLIENT MADCliAddrOvlReturn( address * );

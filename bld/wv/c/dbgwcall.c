@@ -167,11 +167,11 @@ static void     CallInit( a_window *wnd )
     call->max_sym_len = 0;
     chain = curr->chain;
     for( i = 0; i < curr->current_depth; ++i ) {
-        if( chain[ i ].sym_len == 0 ) {
-            chain[ i ].sym_len = WndExtentX( wnd, chain[ i ].symbol );
+        if( chain[i].sym_len == 0 ) {
+            chain[i].sym_len = WndExtentX( wnd, chain[i].symbol );
         }
-        if( chain[ i ].sym_len > call->max_sym_len ) {
-            call->max_sym_len = chain[ i ].sym_len;
+        if( chain[i].sym_len > call->max_sym_len ) {
+            call->max_sym_len = chain[i].sym_len;
         }
     }
 }

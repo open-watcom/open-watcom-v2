@@ -72,7 +72,7 @@ static const char *SymPickText( const void *data_handle, int item )
     }
     image_name = ModImageName( SymMod( SL2SH( sym ) ) );
     if( *image_name != '\0' ) {
-        Format( &TxtBuff[ len ], " [%s]", image_name );
+        Format( &TxtBuff[len], " [%s]", image_name );
     }
     return( TxtBuff );
 }

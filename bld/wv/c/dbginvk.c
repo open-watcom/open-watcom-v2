@@ -87,8 +87,8 @@ static int InvRead( invokes *inv, size_t *save_point )
             return( ch );
         }
         left = inv->in_size - *save_point;
-        memmove( &inv->in_buff[0], &inv->in_buff[*save_point], left );
-        size = ReadText( inv->inv_input, &inv->in_buff[left], IN_BUFF_SIZE - left );
+        memmove( inv->in_buff, inv->in_buff + *save_point, left );
+        size = ReadText( inv->inv_input, inv->in_buff + left, IN_BUFF_SIZE - left );
         if( size == ERR_RETURN || size == 0 )
             break;
         inv->in_size = size + left;
@@ -184,7 +184,7 @@ static bool GetInvkCmd( invokes *inv )
             eatwhite = true;
             ch = '\r';
         }
-        if( cmd >= &buff[inv->buff_size] ) {
+        if( cmd >= buff + inv->buff_size ) {
             _Alloc( buff, inv->buff_size + CMD_LEN + 1 );
             if( buff != NULL ) {
                 memcpy( buff, inv->buff, inv->buff_size );
@@ -304,7 +304,7 @@ void ProfileInvoke( char *name )
 #if defined(__UNIX__)
         /* under QNX and Linux, look for .wdrc first */
         name[0] = '.';
-        strcpy( &name[1], EXENAME );
+        strcpy( name + 1, EXENAME );
         strcat( name, "rc" );
         strlwr( name );
         fh = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );

@@ -203,7 +203,7 @@ mad_trace_how TraceHow( bool force_into )
         TraceState.in_dll_thunk = false;
         kind = MTRK_OUT;
     } else {
-        kind = MTRKind[ TraceState.type ];
+        kind = MTRKind[TraceState.type];
     }
     if( !force_into && DbgTmpBrk.status.b.active ) {
         how = MTRH_BREAK;

@@ -53,12 +53,12 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
         i = data->num_types;
         MADTypeInfo( th, &tinfo );
         MADCliString( MADTypeName( th ), TxtBuff, TXT_LEN );
-        data->labels[ i ] = DupStr( TxtBuff );
-        data->info[ i ].type = th;
-        data->info[ i ].item_width = GetMADMaxFormatWidth( th );
-        data->info[ i ].item_size = tinfo.b.bits / BITS_PER_BYTE;
-        data->info[ i ].piece_radix = MADTypePreferredRadix( th );
-        ipl = 80 / ( data->info[ i ].item_width + 1 ); // kludge
+        data->labels[i] = DupStr( TxtBuff );
+        data->info[i].type = th;
+        data->info[i].item_width = GetMADMaxFormatWidth( th );
+        data->info[i].item_size = tinfo.b.bits / BITS_PER_BYTE;
+        data->info[i].piece_radix = MADTypePreferredRadix( th );
+        ipl = 80 / ( data->info[i].item_width + 1 ); // kludge
         if( ipl > 16 ) {
             ipl = 16;
         } else if( ipl > 8 ) {
@@ -70,7 +70,7 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
         } else {
             ipl = 1;
         }
-        data->info[ i ].items_per_line = ipl;
+        data->info[i].items_per_line = ipl;
     }
     data->num_types++;
     return( WR_CONTINUE );

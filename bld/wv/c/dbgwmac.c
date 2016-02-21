@@ -478,8 +478,8 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
         case 0:
             line->tabstop = false;
             if( piece >= PIECE_LAST ) return( false );
-            line->indent = Indents[ piece ];
-            line->text = *Titles[ piece ];
+            line->indent = Indents[piece];
+            line->text = *Titles[piece];
             return( true );
         case 1:
             if( piece != 0 ) return( false );
@@ -493,7 +493,7 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
         if( mac == NULL )
             return( false );
         line->tabstop = true;
-        line->indent = Indents[ piece ];
+        line->indent = Indents[piece];
         switch( piece ) {
         case PIECE_KEY:
             p = StrCopy( KeyName( mac->key ), TxtBuff );
@@ -507,7 +507,7 @@ static  bool MacGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line
             StrCopy( *WndDisplayNames[mac->wndclass], TxtBuff );
             return( true );
         case PIECE_WHAT:
-            line->text = *WhatList[ mac->type ];
+            line->text = *WhatList[mac->type];
             return( true );
         case PIECE_TEXT:
             p = TxtBuff;
@@ -556,28 +556,28 @@ static void MacReSize( a_window *wnd )
     int             i;
 
     for( piece = 0; piece < PIECE_LAST; ++piece ) {
-        max[ piece ] = WndExtentX( wnd, *Titles[ piece ] );
+        max[piece] = WndExtentX( wnd, *Titles[piece] );
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         size = WndExtentX( wnd, KeyName( mac->key ) );
         if( size < MIN_KEY_SIZE( wnd ) ) size = MIN_KEY_SIZE( wnd );
-        if( size > max[ PIECE_KEY ] ) max[ PIECE_KEY ] = size;
+        if( size > max[PIECE_KEY] ) max[PIECE_KEY] = size;
     }
     for( i = 0; i < ArraySize( WhatList ); ++i ) {
-        size = WndExtentX( wnd, *WhatList[ i ] );
-        if( size > max[ PIECE_WHAT ] ) max[ PIECE_WHAT ] = size;
+        size = WndExtentX( wnd, *WhatList[i] );
+        if( size > max[PIECE_WHAT] ) max[PIECE_WHAT] = size;
     }
     for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
         size = WndExtentX( wnd, *WndDisplayNames[wndclass] );
-        if( size > max[ PIECE_WHERE ] ) max[ PIECE_WHERE ] = size;
+        if( size > max[PIECE_WHERE] ) max[PIECE_WHERE] = size;
     }
-    Indents[ PIECE_KEY ] = WndAvgCharX( wnd );
-    Indents[ PIECE_WHERE ] = Indents[ PIECE_KEY ] +
-                        max[ PIECE_KEY ] + 2 * WndAvgCharX( wnd );
-    Indents[ PIECE_WHAT ] = Indents[ PIECE_WHERE ] +
-                        max[ PIECE_WHERE ] + 2 * WndAvgCharX( wnd );
-    Indents[ PIECE_TEXT ] =  Indents[ PIECE_WHAT ] +
-                        max[ PIECE_WHAT ] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_KEY] = WndAvgCharX( wnd );
+    Indents[PIECE_WHERE] = Indents[PIECE_KEY] +
+                        max[PIECE_KEY] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_WHAT] = Indents[PIECE_WHERE] +
+                        max[PIECE_WHERE] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_TEXT] =  Indents[PIECE_WHAT] +
+                        max[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
 static WNDREFRESH MacRefresh;

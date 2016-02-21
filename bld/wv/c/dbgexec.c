@@ -157,12 +157,12 @@ bool SetMsgText( char *message, unsigned *conditions )
         return( false );
     } else if( memcmp( message, DEBUGGER_SETTRUE_COMMAND,
                 sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1 ) == 0 ) {
-        unsigned old = NewCurrRadix( 16 );
+        mad_radix old_radix = NewCurrRadix( 16 );
         NoCRLF( message );
         if( DlgScanDataAddr( message + sizeof( DEBUGGER_SETTRUE_COMMAND ) - 1, &addr ) ) {
             ProgPoke( addr, "\x1", 1 );
         }
-        NewCurrRadix( old );
+        NewCurrRadix( old_radix );
         return( false );
     } else if( memcmp( message, DEBUGGER_EXECUTE_COMMAND,
                 sizeof( DEBUGGER_EXECUTE_COMMAND ) - 1 ) == 0 ) {

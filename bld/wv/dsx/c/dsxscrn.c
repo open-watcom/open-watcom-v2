@@ -258,7 +258,7 @@ extern display_configuration BIOSDevCombCode( void );
         "jz short end"          \
         "xor    bx,bx"          \
    "end: pop    ebp"            \
-        modify exact [ax bx] value [ bx ];
+        modify exact [ax bx] value [bx];
 
 extern void DoRingBell( void );
 #pragma aux DoRingBell =        \
@@ -428,7 +428,7 @@ static void GetDispConfig( void )
 
 static bool ChkForColour( hw_display_type display )
 {
-    if( ColourAdapters[ display ] <= 0 ) {
+    if( ColourAdapters[display] <= 0 ) {
         return( false );
     }
     ScrnMode = MD_COLOUR;
@@ -459,7 +459,7 @@ static bool ChkColour( void )
 
 static bool ChkForMono( hw_display_type display )
 {
-    if( ColourAdapters[ display ] >= 0 ) {
+    if( ColourAdapters[display] >= 0 ) {
         return( false );
     }
     ScrnMode = MD_MONO;
@@ -798,25 +798,25 @@ static void SwapSave( void )
         SetupEGA();
         if( FlipMech == FLIP_CHEAPSWAP ) {
             _graph_write( GRA_READ_MAP, RMS_MAP_0 );
-            _fmemcpy( &RegenSave[0], EGA_VIDEO_BUFF, PageSize );
+            _fmemcpy( RegenSave, EGA_VIDEO_BUFF, PageSize );
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
-            _fmemcpy( &RegenSave[PageSize], EGA_VIDEO_BUFF, PageSize );
+            _fmemcpy( RegenSave + PageSize, EGA_VIDEO_BUFF, PageSize );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
             _fmemcpy( MK_PM( SwapSeg.segm.rm, 0 ), EGA_VIDEO_BUFF, 8*1024 );
             if( VirtScreen != NULL ) {
-                _fmemcpy( &RegenSave[PageSize * 2], VirtScreen,  PageSize );
+                _fmemcpy( RegenSave + PageSize * 2, VirtScreen,  PageSize );
             }
         } else {
             _graph_write( GRA_READ_MAP, RMS_MAP_0 );
-            _fmemcpy( &RegenSave[0*_64K], EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 0 * _64K, EGA_VIDEO_BUFF, _64K );
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
-            _fmemcpy( &RegenSave[1*_64K], EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 1 * _64K, EGA_VIDEO_BUFF, _64K );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-            _fmemcpy( &RegenSave[2*_64K], EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 2 * _64K, EGA_VIDEO_BUFF, _64K );
             _graph_write( GRA_READ_MAP, RMS_MAP_3 );
-            _fmemcpy( &RegenSave[3*_64K], EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 3 * _64K, EGA_VIDEO_BUFF, _64K );
             if( VirtScreen != NULL ) {
-                _fmemcpy( &RegenSave[4*_64K], VirtScreen,  PageSize );
+                _fmemcpy( RegenSave + 4 * _64K, VirtScreen,  PageSize );
             }
         }
         _graph_write( GRA_READ_MAP, RMS_MAP_0 );
@@ -827,11 +827,11 @@ static void SwapSave( void )
         SetChrSet( DbgChrSet );
         break;
     case DISP_MONOCHROME:
-        _fmemcpy( &RegenSave[0], MONO_VIDEO_BUFF, RegenSize() );
+        _fmemcpy( RegenSave, MONO_VIDEO_BUFF, RegenSize() );
         SetMode( DbgBiosMode );
         break;
     default:
-        _fmemcpy( &RegenSave[0], COLOUR_VIDEO_BUFF, RegenSize() );
+        _fmemcpy( RegenSave, COLOUR_VIDEO_BUFF, RegenSize() );
         SetMode( DbgBiosMode );
         break;
     }
@@ -844,13 +844,13 @@ static uint_8 RestoreEGA_VGA( void )
     if( FlipMech == FLIP_CHEAPSWAP ) {
         SetupEGA();
         _seq_write( SEQ_MAP_MASK, MSK_MAP_0 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[0], PageSize );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave, PageSize );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[PageSize], PageSize );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + PageSize, PageSize );
         mode = SaveScrn.mode & 0x7f;
         if( ( mode < 4 ) || ( mode == 7 ) ) {
             if( VirtScreen != NULL ) {
-                _fmemcpy( VirtScreen, &RegenSave[PageSize * 2], PageSize );
+                _fmemcpy( VirtScreen, RegenSave + PageSize * 2, PageSize );
                 _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
                 _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.segm.rm, 0 ), 8*1024 );
                 DoSetMode( SaveScrn.mode | 0x80 );
@@ -867,17 +867,17 @@ static uint_8 RestoreEGA_VGA( void )
         /* stupid thing doesn't respect the no-clear bit in DBCS mode */
         DoSetMode( SaveScrn.mode );
         if( VirtScreen != NULL ) {
-            _fmemcpy( VirtScreen, &RegenSave[4*_64K], PageSize );
+            _fmemcpy( VirtScreen, RegenSave + 4 * _64K, PageSize );
         }
         SetupEGA();
         _seq_write( SEQ_MAP_MASK, MSK_MAP_0 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[0*_64K], _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 0 * _64K, _64K );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[1*_64K], _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 1 * _64K, _64K );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[2*_64K], _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 2 * _64K, _64K );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_3 );
-        _fmemcpy( EGA_VIDEO_BUFF, &RegenSave[3*_64K], _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 3 * _64K, _64K );
     }
     SetRegenClear();
     return( mode );
@@ -903,11 +903,11 @@ static void SwapRestore( void )
         break;
     case DISP_MONOCHROME:
         SetMode( SaveScrn.mode );
-        _fmemcpy( MONO_VIDEO_BUFF, &RegenSave[0], RegenSize() );
+        _fmemcpy( MONO_VIDEO_BUFF, RegenSave, RegenSize() );
         break;
     default:
         SetMode( SaveScrn.mode );
-        _fmemcpy( COLOUR_VIDEO_BUFF, &RegenSave[0], RegenSize() );
+        _fmemcpy( COLOUR_VIDEO_BUFF, RegenSave, RegenSize() );
         break;
     }
 }
@@ -1076,9 +1076,9 @@ extern bool UsrScrnMode( void )
     bool                usr_vis;
 
     if( StartScrn.strt.attr && ( DbgBiosMode == StartScrn.mode ) ) {
-        UIData->attrs[ ATTR_NORMAL ] = StartScrn.strt.attr;
-        UIData->attrs[ ATTR_BRIGHT ] = StartScrn.strt.attr ^ 8;
-        UIData->attrs[ ATTR_REVERSE ] = ( ( StartScrn.strt.attr & 7 ) << 4 ) |
+        UIData->attrs[ATTR_NORMAL] = StartScrn.strt.attr;
+        UIData->attrs[ATTR_BRIGHT] = StartScrn.strt.attr ^ 8;
+        UIData->attrs[ATTR_REVERSE] = ( ( StartScrn.strt.attr & 7 ) << 4 ) |
                                         ( StartScrn.strt.attr & 0x70 ) >> 4;
     }
     if( FlipMech != FLIP_TWO ) {

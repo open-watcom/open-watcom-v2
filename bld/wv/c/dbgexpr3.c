@@ -724,7 +724,7 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     entry->info.kind = k;
     entry->info.modifier = m;
     entry->info.size = s;
-    if( !ConvFunc[ ConvIdx( &entry->info ) ]( entry, from ) ) {
+    if( !ConvFunc[ConvIdx( &entry->info )]( entry, from ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     entry->th = NULL;
@@ -791,7 +791,7 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     if( lclass == ERR || rclass == ERR ) {
         Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
     }
-    result_class = BinResult[ lclass ][ rclass ];
+    result_class = BinResult[lclass][rclass];
     if( result_class == ERR ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
@@ -800,7 +800,7 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     } else if( right->info.kind == TK_ENUM ) {
         result_info = &right->info;
     } else {
-        result_info = &ResultInfo[ result_class ];
+        result_info = &ResultInfo[result_class];
     }
     promote_left = false;
     if( lclass != result_class ) {

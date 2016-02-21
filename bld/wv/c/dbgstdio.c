@@ -47,7 +47,7 @@ static void StdioRedirect( bool input )
 
     ScanItem( true, &start, &len );
     memcpy( buff, start, len );
-    buff[ len ] = NULLCHAR;
+    buff[len] = NULLCHAR;
     ReqEOC();
     if( !Redirect( input, buff ) ) {
         if( len == 0 ) {

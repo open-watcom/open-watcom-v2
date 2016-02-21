@@ -213,8 +213,8 @@ static bool TryQConsole( void )
         }
     }
     if( DbgConsole != 0 ) {
-        ptr[ 1 ] = '0' + DbgConsole / 10;
-        ptr[ 2 ] = '0' + DbgConsole % 10;
+        ptr[1] = '0' + DbgConsole / 10;
+        ptr[2] = '0' + DbgConsole % 10;
         ptr += 2;
     }
     ptr[1] = NULLCHAR;

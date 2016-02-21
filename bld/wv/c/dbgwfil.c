@@ -166,11 +166,11 @@ static void Centre( a_window *wnd, unsigned line )
 static void GotoLine( a_window *wnd )
 {
     long        line;
-    unsigned    old;
+    mad_radix   old_radix;
     wnd_row     row;
     int         piece;
 
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     WndGetCurrent( wnd, &row, &piece );
     if( row < 0 || row == WND_NO_ROW ) {
         line = WndTop( wnd );
@@ -184,7 +184,7 @@ static void GotoLine( a_window *wnd )
         Centre( wnd, line );
         WndNewCurrent( wnd, line, PIECE_SOURCE );
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 

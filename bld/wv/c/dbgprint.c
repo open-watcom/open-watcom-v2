@@ -64,6 +64,8 @@
 #define MAX_WIDTH       40
 #define NAME_WIDTH      25
 
+#define FMT2RADIX(x)   (((x)<0)?(mad_radix)-(x):(mad_radix)(x))
+
 extern void             GraphicDisplay( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 
@@ -158,7 +160,7 @@ static void PrtStr( const char *start, unsigned len )
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff, int len )
+static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buff, int len )
 {
     char        internal[65];
     char        *ptr;
@@ -182,11 +184,11 @@ static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff
 }
 
 
-static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class sign_type, char *buff, unsigned len )
+static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class sign_type, char *buff, unsigned len )
 {
     char        *ptr;
     const char  *prefix;
-    size_t      pref_len;
+    size_t      prefix_len;
 
     if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
         *buff = '-';
@@ -194,17 +196,16 @@ static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class si
         U64Neg( &num, &num );
     }
     prefix = NULL;
-    if( radix != DefRadix ) {
-        if( radix < 0 )
-            radix = -radix;
-        FindRadixSpec( radix, &prefix, &pref_len );
+    prefix_len = 0;
+    if( radixfmt != DefRadix ) {
+        FindRadixSpec( FMT2RADIX( radixfmt ), &prefix, &prefix_len );
     }
     ptr = buff;
     if( prefix != NULL ) {
-        memcpy( ptr, prefix, pref_len );
-        ptr = buff + pref_len;
+        memcpy( ptr, prefix, prefix_len );
+        ptr = buff + prefix_len;
     }
-    return( CnvRadix( &num, radix, base_letter, ptr, len ) );
+    return( CnvRadix( &num, FMT2RADIX( radixfmt ), base_letter, ptr, len ) );
 }
 
 
@@ -212,7 +213,7 @@ static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class si
  * PrintRadix -- print expression in given radix
  */
 
-static void PrintRadix( int radix, char base_letter, sign_class sign_type )
+static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
 {
     char                buff[BUFLEN];
     char                *ptr;
@@ -223,7 +224,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
     mad_type_handle     mth;
 
     if( sign_type == NUM_CHECK ) {
-        if( radix != 10 && radix != -10 ) {
+        if( radixfmt != 10 && radixfmt != -10 ) {
             sign_type = NUM_UNSIGNED;
         } else {
             switch( ExprSP->info.kind ) {
@@ -259,10 +260,10 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
         {
             unsigned len = 1;
             /* If we are printing hex, expand to both nibbles */
-            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radix == 16 || radix == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
+            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radixfmt == 16 || radixfmt == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
                 len = ExprSP->info.size * 2;
             ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
-            ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type, ptr, len );
+            ptr = FmtNum( ExprSP->v.uint, radixfmt, base_letter, sign_type, ptr, len );
         }
 #endif
         break;
@@ -280,7 +281,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
         MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
         MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
         buff_len = sizeof( buff );
-        MADTypeToString( ( radix < 0 ) ? -radix : radix, &mti, &item, ptr, &buff_len );
+        MADTypeToString( FMT2RADIX( radixfmt ), &mti, &item, ptr, &buff_len );
         ptr += buff_len;
         break;
     case TK_REAL:
@@ -288,7 +289,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
             signed_64   tmp;
 
             I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
-            ptr = FmtNum( tmp, ( radix < 0 ) ? -radix : radix, base_letter, NUM_SIGNED, ptr, 1 );
+            ptr = FmtNum( tmp, FMT2RADIX( radixfmt ), base_letter, NUM_SIGNED, ptr, 1 );
         }
         break;
     default:

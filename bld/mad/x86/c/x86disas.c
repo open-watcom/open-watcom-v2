@@ -137,7 +137,7 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, size_t buff_size )
+size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -722,7 +722,7 @@ static char *StrCopy( const char *s, char *d )
     return( d );
 }
 
-mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;
@@ -769,7 +769,7 @@ mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsign
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, size_t len )
+char *CnvRadix( unsigned long value, mad_radix radix, char base, char *buff, size_t len )
 {
     char        internal[33];
     char        *ptr;

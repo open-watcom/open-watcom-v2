@@ -180,7 +180,7 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     image_entry         *img;
 
     wnd=wnd;
-    line->indent = Indents[ piece ];
+    line->indent = Indents[piece];
     if( row < 0 ) {
         row += TITLE_SIZE;
         switch( row ) {

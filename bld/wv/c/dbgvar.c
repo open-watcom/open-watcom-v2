@@ -1627,7 +1627,7 @@ var_node *VarAdd1( var_info *i, const void *name,
     if( is_sym_handle ) {
         VarNodeSetBits( VarNodeHdl( v ), v );
     } else {
-        VarNodeExpr( v )[ len ] = '\0';
+        VarNodeExpr( v )[len] = '\0';
     }
     v->is_sym_handle = is_sym_handle;
     *owner = v;
@@ -1940,22 +1940,25 @@ int VarFindRootRow( var_info *i, var_node *v, int row )
     return( new_row );
 }
 
-unsigned VarNewDisplayRadix( var_display_bits display )
-/*****************************************************/
+mad_radix VarNewDisplayRadix( var_display_bits display )
+/******************************************************/
 {
-    if( ( display & VARDISP_HEX ) ) return( NewCurrRadix( 16 ) );
-    if( ( display & VARDISP_DECIMAL ) ) return( NewCurrRadix( 10 ) );
+    if( ( display & VARDISP_HEX ) )
+        return( NewCurrRadix( 16 ) );
+    if( ( display & VARDISP_DECIMAL ) )
+        return( NewCurrRadix( 10 ) );
     return( CurrRadix );
 }
 
-unsigned VarNewCurrRadix( var_node *v )
+mad_radix VarNewCurrRadix( var_node *v )
 {
     return( VarNewDisplayRadix( v->display ) );
 }
 
 bool VarGetOnTop( var_node *v )
 {
-    if( v->on_top_valid ) return( v->on_top );
+    if( v->on_top_valid )
+        return( v->on_top );
     return( VarDisplayedOnTop( v ) );
 }
 
@@ -2009,8 +2012,9 @@ static void VarPrintValue( char *buff, unsigned len, var_info *i,
 /********************************************************************/
 {
     char        buff2[TXT_LEN];
-    unsigned    old = VarNewDisplayRadix( display );
+    mad_radix   old_radix;
 
+    old_radix = VarNewDisplayRadix( display );
     if( ( display & VARDISP_STRING ) ) {
         PrintAString( i, buff, len, true );
     } else if( is_string ) {
@@ -2023,7 +2027,7 @@ static void VarPrintValue( char *buff, unsigned len, var_info *i,
     } else {
         VarPrintText( i, buff, PrintValue, len );
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 static char *Append( char *end, char *p, char *str )
@@ -2071,7 +2075,7 @@ static char *VarDisplayTop( char *p, char *end, var_info *i, type_display *type 
 
 char *VarGetValue( var_info *i, var_node *v )
 {
-    unsigned            old;
+    mad_radix           old_radix;
     char                *value;
     char                buff[TXT_LEN];
     char                *p, *end;
@@ -2087,7 +2091,7 @@ char *VarGetValue( var_info *i, var_node *v )
         p = StrCopy( ")", p );
         return( TxtBuff );
     }
-    old = VarNewCurrRadix( v );
+    old_radix = VarNewCurrRadix( v );
     if( VarError ) {
         value = LIT_ENG( Quest_Marks );
     } else {
@@ -2144,7 +2148,7 @@ char *VarGetValue( var_info *i, var_node *v )
             break;
         }
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
     return( value );
 }
 

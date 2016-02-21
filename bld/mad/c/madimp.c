@@ -206,7 +206,7 @@ mad_status      MCAddString( mad_string id, const char *buff )
     return( MadClient->MADCliAddString( id, buff ) );
 }
 
-size_t          MCRadixPrefix( unsigned radix, char *buff, size_t buff_size )
+size_t          MCRadixPrefix( mad_radix radix, char *buff, size_t buff_size )
 {
     return( MadClient->MADCliRadixPrefix( radix, buff, buff_size ) );
 }
@@ -226,7 +226,7 @@ mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk
     return( MadClient->MADCliAddrToString( a, th, lk, buff, buff_size ) );
 }
 
-mad_status      MCMemExpr( const char *expr, unsigned radix, address *a )
+mad_status      MCMemExpr( const char *expr, mad_radix radix, address *a )
 {
     return( MadClient->MADCliMemExpr( expr, radix, a ) );
 }
@@ -256,7 +256,7 @@ mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, cons
     return( MadClient->MADCliTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-mad_status      MCTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
+mad_status      MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     return( MadClient->MADCliTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
