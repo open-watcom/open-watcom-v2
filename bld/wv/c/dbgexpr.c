@@ -735,14 +735,11 @@ void ExprPurge( void )
 {
     stack_entry *stk_ptr, *next_ptr;
 
-    stk_ptr = ExprSP;
-    while( stk_ptr->dn != NULL ) {
-        stk_ptr = stk_ptr->dn;
-    }
-    while( !(stk_ptr->flags & SF_END_PURGE) ) {
+    for( stk_ptr = ExprSP; stk_ptr->dn != NULL; stk_ptr = stk_ptr->dn )
+        ;
+    for( ; (stk_ptr->flags & SF_END_PURGE) == 0; stk_ptr = next_ptr ) {
         next_ptr = stk_ptr->up;
         FreeEntry( stk_ptr );
-        stk_ptr = next_ptr;
     }
     stk_ptr->dn = NULL;
     ExprSP = stk_ptr;

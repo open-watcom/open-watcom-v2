@@ -97,7 +97,7 @@ extern void ProcCapture( void )
     p = CnvULongHex( TaskId, p, end - p );
     *p++ = RemFile.ext_separator;
     p = CnvULongDec( FileNum++, p, end - p );
-    *p = '\0';
+    *p = NULLCHAR;
     old = ReScan( FileName+PREFIX_LEN );
     StdOutNew();
     ReScan( old );

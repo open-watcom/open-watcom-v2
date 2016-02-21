@@ -134,13 +134,13 @@ void ProcRemark( void )
     char        c;
 
     RawScanInit();
-    for( ;; ) {
-        c = RawScanChar();
-        if( c == '\0' ) break;
+    while( (c = RawScanChar()) != NULLCHAR ) {
         RawScanAdvance();
         /* The CR character indicates end of line in a multi-line command
            list. */
-        if( c == '\r' ) break;
+        if( c == '\r' ) {
+            break;
+        }
     }
     RawScanFini();
 }
@@ -459,20 +459,22 @@ static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
     default:        p1 = "";              break;
     }
     p1 = StrCopy( p1, p );
-    while( (p1 - p) < 10 ) *p1++ = ' ';
+    while( (p1 - p) < 10 )
+        *p1++ = ' ';
     StrCopy( thd->name, p1 );
 }
 
 
 void MakeThdCurr( thread_state *thd )
 {
-    unsigned    err;
+    error_handle    errh;
 
-    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) )
+        return;
     // NYI - PUI - record the thread change?
     WriteDbgRegs();
-    if( RemoteSetThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    if( RemoteSetThreadWithErr( thd->tid, &errh ) == 0 ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, errh );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -483,11 +485,12 @@ void MakeThdCurr( thread_state *thd )
 
 void MakeRunThdCurr( thread_state *thd )
 {
-    unsigned    err;
+    error_handle    errh;
 
-    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
-    if( RemoteSetRunThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) )
+        return;
+    if( RemoteSetRunThreadWithErr( thd->tid, &errh ) == 0 ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, errh );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -498,12 +501,13 @@ void MakeRunThdCurr( thread_state *thd )
 
 dtid_t RemoteSetThread( dtid_t tid )
 {
-    unsigned            err;
+    error_handle    errh;
 
-    if( HaveRemoteRunThread() )
-        return( RemoteSetRunThreadWithErr( tid, &err ) );
-    else
-        return( RemoteSetThreadWithErr( tid, &err ) );
+    if( HaveRemoteRunThread() ) {
+        return( RemoteSetRunThreadWithErr( tid, &errh ) );
+    } else {
+        return( RemoteSetThreadWithErr( tid, &errh ) );
+    }
 }
 
 
@@ -544,12 +548,10 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
     thread_state    *thd;
     char            name[UTIL_LEN];
 
-    owner =  &HeadThd;
-    for( ;; ) {
-        thd = *owner;
-        if( thd == NULL ) break;
-        if( tid < thd->tid ) break;
-        if( tid == thd->tid ) {
+    for( owner = &HeadThd; (thd = *owner) != NULL; owner = &thd->link ) {
+        if( thd->tid > tid )
+            break;
+        if( thd->tid == tid ) {
             if( _IsOn( SW_THREAD_EXTRA_CHANGED ) ) {
                 *owner = thd->link;
                 state = thd->state & ~THD_DEAD;
@@ -559,14 +561,15 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
             thd->state &= ~THD_DEAD;
             return( thd );
         }
-        owner = &thd->link;
     }
-    if( HaveRemoteRunThread() )
+    if( HaveRemoteRunThread() ) {
         RemoteRunThdName( tid, name );
-    else
+    } else {
         RemoteThdName( tid, name );
+    }
     _Alloc( thd, sizeof( thread_state ) + strlen( name ) );
-    if( thd == NULL ) return( NULL );
+    if( thd == NULL )
+        return( NULL );
     thd->link = *owner;
     *owner = thd;
     strcpy( thd->name, name );
@@ -585,13 +588,15 @@ dtid_t GetNextTID( void )
     thread_state    *thd;
 
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
-    if( IsThdCurr( thd ) ) {
-        thd = thd -> link;
-        break;
+        if( IsThdCurr( thd ) ) {
+            thd = thd -> link;
+            break;
+        }
     }
-    }
-    if( thd == NULL ) thd = HeadThd;
-    if( thd == NULL ) return( 0 );
+    if( thd == NULL )
+        thd = HeadThd;
+    if( thd == NULL )
+        return( 0 );
     return( thd->tid );
 }
 
@@ -601,8 +606,7 @@ void NameThread( dtid_t tid, const char *name )
 {
     thread_state        **owner, *curr, *new;
 
-    for( owner = &HeadThd; *owner != NULL; owner = &curr->link ) {
-        curr = *owner;
+    for( owner = &HeadThd; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->tid == tid ) {
             _Alloc( new, sizeof( thread_state ) + strlen( name ) );
             *new = *curr;
@@ -629,10 +633,7 @@ static void KillDeadThreads( void )
     thread_state    **owner;
     thread_state    *thd;
 
-    owner = &HeadThd;
-    for( ;; ) {
-        thd = *owner;
-        if( thd == NULL ) break;
+    for( owner = &HeadThd; (thd = *owner) != NULL; ) {
         if( thd->state & THD_DEAD ) {
             *owner = thd->link;
             _Free( thd );
@@ -648,12 +649,11 @@ static void RefreshThreads( bool set_exec )
     thread_state        *thd;
     unsigned            state;
 
-    tid = 0;
-    for( ;; ) {
-        tid = RemoteGetNextThread( tid, &state );
-        if( tid == 0 ) break;
+    for( tid = 0; (tid = RemoteGetNextThread( tid, &state )) != 0; ) {
         thd = AddThread( tid, state );
-        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
+        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) {
+            ExecThd = thd;
+        }
     }
 }
 
@@ -662,13 +662,12 @@ static void RefreshRunThreads( bool set_exec )
     dtid_t              tid;
     thread_state        *thd;
 
-    tid = 0;
-    for( ;; ) {
-        tid = RemoteGetNextRunThread( tid );        
-        if( tid == 0 ) break;
+    for( tid = 0; (tid = RemoteGetNextRunThread( tid )) != 0; ) {
         thd = AddThread( tid, 0 );
         RemoteUpdateRunThread( thd );
-        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
+        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) {
+            ExecThd = thd;
+        }
     }
 }
 
@@ -689,8 +688,11 @@ thread_state   *FindThread( dtid_t tid )
 {
     thread_state    *thd;
 
-    for( thd = HeadThd; thd != NULL && thd->tid != tid; thd = thd->link )
-        ;
+    for( thd = HeadThd; thd != NULL; thd = thd->link ) {
+        if( thd->tid == tid ) {
+            break;
+        }
+    }
     return( thd );
 }
 
@@ -757,9 +759,8 @@ void FreeThreads( void )
 {
     thread_state    *thd;
 
-    while( HeadThd != NULL ) {
-        thd = HeadThd->link;
-        _Free( HeadThd );
-        HeadThd = thd;
+    while( (thd = HeadThd) != NULL ) {
+        HeadThd = thd->link;
+        _Free( thd );
     }
 }

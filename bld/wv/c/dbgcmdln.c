@@ -525,7 +525,7 @@ void ProcCmd( void )
 {
     char        buff[TXT_LEN];
     unsigned    screen_mem;
-    unsigned    have_env;
+    size_t      have_env;
     int         pass;
 
     MemSize = MIN_MEM_SIZE;

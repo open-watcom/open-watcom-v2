@@ -1137,10 +1137,8 @@ static brkp *AddPoint( address loc, mad_type_handle th, bool unmapped )
     bp->condition = NULL;
     bp->status.b.use_condition = false;
     bp->error = NULL;
-    owner = &BrkList;
-    while( *owner != NULL ) {
-        owner = &((*owner)->next);
-    }
+    for( owner = &BrkList; *owner != NULL; owner = &((*owner)->next) )
+        ;
     bp->next = NULL;
     *owner = bp;
     DbgUpdate( UP_BREAK_CHANGE );
@@ -1247,7 +1245,7 @@ void SetBPCondition( brkp *bp, const char *condition )
     if( bp->condition != NULL ) {
         _Free( bp->condition );
     }
-    if( condition == NULL || condition[0] == '\0' ) {
+    if( condition == NULL || condition[0] == NULLCHAR ) {
         bp->condition = NULL;
     } else {
         bp->condition = DupStr( condition );
@@ -1263,7 +1261,7 @@ void SetBPPatch( brkp *bp, char *patch )
     if( bp->cmds != NULL ) {
         FreeCmdList( bp->cmds );
     }
-    if( patch == NULL || patch[0] == '\0' ) {
+    if( patch == NULL || patch[0] == NULLCHAR ) {
         bp->cmds = NULL;
     } else {
         bp->cmds = AllocCmdList( TxtBuff, end - TxtBuff );

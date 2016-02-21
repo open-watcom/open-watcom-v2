@@ -127,9 +127,9 @@ void DebugInit( void )
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
     SET_NIL_ADDR( NilAddr );
     TxtBuff  = DbgBuffers;
-    *TxtBuff = '\0';
+    *TxtBuff = NULLCHAR;
     NameBuff = DbgBuffers + TXT_LEN + 1;
-    *NameBuff = '\0';
+    *NameBuff = NULLCHAR;
     CurrRadix = DefRadix = 10;
     DbgLevel = MIX;
     ActiveWindowLevel = MIX;

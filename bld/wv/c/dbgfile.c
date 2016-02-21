@@ -55,11 +55,11 @@
 #include "clibext.h"
 
 
-#define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
-#define CHK_DRV_SEP(c,i)    ((c) != '\0' && (c) == (i)->drv_separator)
+#define CHK_DIR_SEP(c,i)    ((c) != NULLCHAR && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
+#define CHK_DRV_SEP(c,i)    ((c) != NULLCHAR && (c) == (i)->drv_separator)
 
 #define CHECK_PATH_SEP(c,i) (CHK_DIR_SEP((c),i) || CHK_DRV_SEP((c),i))
-#define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != '\0' && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
+#define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != NULLCHAR && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
 static char_ring *LclPath;
 
@@ -363,10 +363,7 @@ const char  *SkipPathInfo( char const *path, open_access loc )
 
     name = path;
     info = PathInfo( path, loc );
-    for( ;; ) {
-        c = *path++;
-        if( c == NULLCHAR )
-            break;
+    while( (c = *path++) != NULLCHAR ) {
         if( CHECK_PATH_SEP( c, info ) ) {
             name = path;
         }
@@ -611,7 +608,9 @@ bool FindWritable( char const *src, char *dst )
         plen = DUIEnvLkup( "HOME", buffer, sizeof( buffer ) );
         if( plen > 0 ) {
             MakeNameWithPath( loc, buffer, plen, name, nlen, dst );
-            if( IsWritable( dst, loc ) ) return( true );
+            if( IsWritable( dst, loc ) ) {
+                return( true );
+            }
         }
     }
     MakeNameWithPath( loc, NULL, 0, name, nlen, dst );
@@ -653,8 +652,8 @@ static void parsePathList( char_ring **owner, char *src )
     while( *owner != NULL )
         owner = &(*owner)->next;
     // add items to the end of list
-    for( start = end = src;; ++end ) {
-        if( *end == LclPathSep || *end == '\0' ) {
+    for( start = end = src; ; ++end ) {
+        if( *end == LclPathSep || *end == NULLCHAR ) {
             while( *start == ' ' ) {
                 ++start;
             }

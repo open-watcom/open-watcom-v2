@@ -805,7 +805,7 @@ void DoScope( void )
     }
     memcpy( p, scope->v.li.name.start, scope->v.li.name.len );
     p += scope->v.li.name.len;
-    *p++ = '\0';
+    *p++ = NULLCHAR;
     memcpy( ScopeBuff, buff, p - buff );
     ExprSP->v.li.scope.start = ScopeBuff;
     ExprSP->v.li.scope.len = p - buff;

@@ -54,16 +54,12 @@ void AddAliasInfo( unsigned seg, unsigned alias )
     alias_info          *curr;
 
     if( alias == 0 ) {
-        owner = &HeadAliasTbl;
-        for( ;; ) {
-            curr = *owner;
-            if( curr == NULL ) break;
+        for( owner = &HeadAliasTbl; (curr = *owner) != NULL; owner = &curr->next ) {
             if( curr->seg == seg ) {
                 (*owner)->next = curr->next;
                 _Free( curr );
                 return;
             }
-            owner = &curr->next;
         }
     } else {
         _Alloc( curr, sizeof( alias_info ) );

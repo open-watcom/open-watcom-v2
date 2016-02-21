@@ -163,7 +163,7 @@ static bool GetInvkCmd( invokes *inv )
         return( false );
     cmd = inv->buff;
     buff = inv->buff;
-    ch = '\0';
+    ch = NULLCHAR;
     unmatched = 0;
     eatwhite = false;
     for( ;; ) {

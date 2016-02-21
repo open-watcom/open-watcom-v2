@@ -54,7 +54,7 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
     if( mk & MMK_IMPLICIT )
         return( WR_CONTINUE );
     p = TxtBuff;
-    if( p[0] != '\0' ) {
+    if( *p != NULLCHAR ) {
         p += strlen( p );
         *p++ = ' ';
     }
@@ -87,8 +87,8 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
 
 bool InsMemRef( mad_disasm_data *dd )
 {
-    TxtBuff[0] = '\0';
+    TxtBuff[0] = NULLCHAR;
     MADDisasmMemRefWalk( dd, MemRefDisp, &DbgRegs->mr, NULL );
-    return( TxtBuff[0] != '\0' );
+    return( TxtBuff[0] != NULLCHAR );
 }
 

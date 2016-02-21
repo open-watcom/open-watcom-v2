@@ -120,7 +120,7 @@ void ConfigHook( void )
         p = GetCmdEntry( HookNames, hook, p );
         *p++ = ' ';
         *p++ = '{';
-        *p++ = '\0';
+        *p++ = NULLCHAR;
         DUIDlgTxt( TxtBuff );
         if( HookCmdLists[hook] != NULL ) {
             ConfigCmdList( HookCmdLists[hook]->buff, 0 );

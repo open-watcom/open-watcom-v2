@@ -74,7 +74,7 @@ static void NoCRLF( char *str )
 {
     char *p;
 
-    for( p = str; *p != '\0'; ++p ) {
+    for( p = str; *p != NULLCHAR; ++p ) {
         if( *p == '\r' )
             *p = ' ';
         if( *p == '\n' ) {
@@ -150,7 +150,7 @@ bool SetMsgText( char *message, unsigned *conditions )
         equal = strchr( message, '=' );
         if( equal == NULL )
             return( true );
-        *equal = '\0';
+        *equal = NULLCHAR;
         CheckForNewThreads( false );
         NoCRLF( equal + 1 );
         NameThread( strtoul( message, NULL, 16 ), equal + 1 );
@@ -192,11 +192,11 @@ bool SetMsgText( char *message, unsigned *conditions )
         comma1 = strchr( message, ',' );
         if( comma1 == NULL )
             return( true );
-        *comma1++ = '\0';
+        *comma1++ = NULLCHAR;
         comma2 = strchr( comma1, ',' );
         if( comma2 == NULL )
             return( true );
-        *comma2++ = '\0';
+        *comma2++ = NULLCHAR;
         NoCRLF( comma2 );
         if( !DlgScanDataAddr( message, &addr ) )
             return( true );
@@ -208,7 +208,7 @@ bool SetMsgText( char *message, unsigned *conditions )
         sym_len = strlen( TxtBuff ) + 1;
         if( sym_len > buff_len ) {
             sym_len = (size_t)buff_len;
-            TxtBuff[sym_len - 1] = '\0';
+            TxtBuff[sym_len - 1] = NULLCHAR;
         }
         ProgPoke( buff_addr, TxtBuff, sym_len );
         return( false );
@@ -218,7 +218,7 @@ bool SetMsgText( char *message, unsigned *conditions )
         comma1 = strchr( message, ',' );
         if( comma1 == NULL )
             return( true );
-        *comma1++ = '\0';
+        *comma1++ = NULLCHAR;
         NoCRLF( comma1 );
         if( !DlgScanDataAddr( message, &addr ) )
             return( true );
@@ -253,7 +253,7 @@ static bool RecordMsgText( unsigned *conditions )
     do {
         flags = RemoteGetMsgText( TxtBuff, TXT_LEN );
         p2 = TxtBuff;
-        for( p=TxtBuff;*p != '\0' ;p++ ) {
+        for( p = TxtBuff; *p != NULLCHAR ;p++ ) {
             if( *p != '\r' && *p != '\n' ) {
                 *p2++ = *p;
             }
@@ -264,7 +264,7 @@ static bool RecordMsgText( unsigned *conditions )
             MsgText = NULL;
         }
         *p2++ = '\n';
-        *p2 = '\0';
+        *p2 = NULLCHAR;
         rc = SetMsgText( TxtBuff, conditions );
     } while( flags & MSG_MORE );
     return( rc );

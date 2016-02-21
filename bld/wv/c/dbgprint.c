@@ -127,7 +127,7 @@ static void PrtChar( unsigned ch )
 
 extern void EndPrintBuff( void )
 {
-    PrtChar( '\0' );
+    PrtChar( NULLCHAR );
 }
 
 
@@ -347,7 +347,7 @@ static void PrintDouble( char format, xreal *val )
     for( start = buff; *start == ' '; ++start )
         ;
     found_dot = false;
-    for( ptr = start; *ptr != '\0'; ++ptr ) {
+    for( ptr = start; *ptr != NULLCHAR; ++ptr ) {
         if( *ptr == 'e' )
             break;
         if( *ptr == 'E' )
@@ -362,7 +362,7 @@ static void PrintDouble( char format, xreal *val )
             ;
         ++ptr;
     }
-    while( (*ptr = *back) != '\0' ) {
+    while( (*ptr = *back) != NULLCHAR ) {
         ++ptr;
         ++back;
     }
@@ -462,7 +462,7 @@ static void DoPrintString( bool force )
 {
     size_t      count;
     address     addr;
-    char        buff[MAX_PRINTSTRING_LEN+10];
+    char        buff[MAX_PRINTSTRING_LEN + 10];
     char        *p;
 
     MakeMemoryAddr( false, EXPR_DATA, &addr );
@@ -473,20 +473,16 @@ static void DoPrintString( bool force )
     if( count == 0 && !force ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
-    p = buff;
-    while( count-- > 0 ) {
-        if( *p == '\0' )
-            break;
-        if( !force ) {
-            if( count == 0 ) {
+    for( p = buff; *p != NULLCHAR; ++p ) {
+        if( count == 0 ) {
+            if( !force ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
             }
+            PrtStr( " ...", 4 );
+            break;
         }
         PrtChar( *p );
-        ++p;
-    }
-    if( count == (size_t)-1L ) {
-        PrtStr( " ...", 4 );
+        --count;
     }
 }
 
@@ -549,7 +545,7 @@ static void PrintCharBlock( void )
         break;
     }
     PrtChar( '\'' );
-    if(overflow && len == 0){
+    if( overflow && len == 0 ){
         PrtStr( " ...",  4 );
     }
 }
@@ -821,16 +817,19 @@ static unsigned ValueToName( char *buff, unsigned len )
     while( U64Test( &d.value ) != 0 ) {
         d.found = false;
         WalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
-        if( !d.found ) return( 0 );
+        if( !d.found )
+            return( 0 );
         U64Not( &d.best_value, &d.best_value );
         U64And( &d.value, &d.best_value, &d.value );
         if( p != buff ) {
-            if( len == 0 ) return( 0 );
+            if( len == 0 )
+                return( 0 );
             *p++ = '+';
             --len;
         }
         name_len = SymName( sh, NULL, SN_SOURCE, p, len );
-        if( name_len > len ) return( 0 );
+        if( name_len > len )
+            return( 0 );
         p += name_len;
         len -= name_len;
     }
@@ -986,7 +985,7 @@ void ProcPrint( void )
     } else {
         if( ScanEOC() ) {
             DlgNewWithSym( LIT_ENG( New_Expression ), PrintBuff, TXT_LEN );
-            if( PrintBuff[0] != '\0' ) {
+            if( PrintBuff[0] != NULLCHAR ) {
                 old = ReScan( PrintBuff );
                 LogPrintList();
                 ReScan( old );

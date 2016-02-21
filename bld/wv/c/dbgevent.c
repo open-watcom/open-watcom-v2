@@ -56,10 +56,9 @@ static event_record **LastOwner;
 static event_record **FindOwner( event_record *of )
 {
     event_record **owner;
-    owner = &EventList;
-    while( *owner != of ) {
-        owner = &((*owner)->next);
-    }
+
+    for( owner = &EventList; *owner != of; owner = &((*owner)->next) )
+        ;
     return( owner );
 }
 
@@ -276,7 +275,7 @@ void RecordCommand( const char *startpos, wd_cmd cmd )
     *p++ = ' ';
     memcpy( p, startpos, endpos - startpos );
     p += endpos - startpos;
-    *p = '\0';
+    *p = NULLCHAR;
     RecordEvent( TxtBuff );
 }
 

@@ -72,7 +72,8 @@ static bool ProcPending( void )
 
 void DoProcPending( void )
 {
-    while( ProcPending() ) ;
+    while( ProcPending() )
+        ;
     _SwitchOn( SW_CMD_INTERACTIVE );
     _SwitchOff( SW_IN_REPLAY_MODE );
 }

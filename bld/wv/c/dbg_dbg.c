@@ -215,7 +215,7 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 
     if( memicmp( ld->name, ri->name, ld->len ) != 0 )
         return( WR_CONTINUE );
-    if( ri->name[ld->len] != '\0' )
+    if( ri->name[ld->len] != NULLCHAR )
         return( WR_CONTINUE );
     ld->ri = ri;
     return( WR_STOP );

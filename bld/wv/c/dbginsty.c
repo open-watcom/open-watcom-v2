@@ -140,12 +140,12 @@ extern  bool    WndEvalInspectExpr( const char *item, bool pop )
     bool        rc;
 
     if( ispunct(item[0]) &&
-      ( item[1] == '\0' || ( ispunct( item[1] ) && item[2] == '\0' ) ) ) {
+      ( item[1] == NULLCHAR || ( ispunct( item[1] ) && item[2] == NULLCHAR ) ) ) {
         // nyi - pui - use SSL
         p = StrCopy( item, StrCopy( "operator", buff ) );
-        if( item[0] == '[' && item[1] == '\0' ) {
+        if( item[0] == '[' && item[1] == NULLCHAR ) {
             StrCopy( "]", p );
-        } else if( item[0] == '(' && item[1] == '\0' ) {
+        } else if( item[0] == '(' && item[1] == NULLCHAR ) {
             StrCopy( ")", p );
         }
         old = ReScan( buff );

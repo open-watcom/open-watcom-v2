@@ -66,10 +66,9 @@ static void FreeList( lookup *curr )
 {
     lookup *next;
 
-    while( curr != NULL ) {
+    for( ; curr != NULL; curr = next ) {
         next = curr->next;
         _Free( curr );
-        curr = next;
     }
 }
 
@@ -263,7 +262,7 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
     for( k = 0; k < tokenlen; k++ )
         ucwhat[k] = toupper( what[k] );
 
-    for( t = tokenlist; (tc = *t) != '\0'; ++t ) {
+    for( t = tokenlist; (tc = *t) != NULLCHAR; ++t ) {
         w = ucwhat;
         for( ;; ) {
             isuppertc = isupper( tc );
@@ -282,12 +281,12 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
                     break;
                 }
             }
-            if( tc == '\0' )
+            if( tc == NULLCHAR )
                 return( tokennum );
             t++;
             tc = *t;
         }
-        while( *t != '\0' )
+        while( *t != NULLCHAR )
             t++;
         tokennum++;
     }

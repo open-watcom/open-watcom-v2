@@ -75,7 +75,8 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
         addr = GetDataDot();
         OptMemAddr( EXPR_DATA, &addr );
     }
-    if( CurrToken == T_COMMA ) Scan();
+    if( CurrToken == T_COMMA )
+        Scan();
     MADTypeInfo( th, &mti );
     while( !ScanEOC() ) {
         if( !( ops & IT_IO ) ) {
@@ -90,7 +91,9 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
             }
             ItemPutMAD( &addr, &item, ops, th );
         }
-        if( CurrToken == T_COMMA ) Scan();
+        if( CurrToken == T_COMMA ) {
+            Scan();
+        }
     }
     if( !(ops & IT_IO) ) {
         DbgUpdate( UP_MEM_CHANGE | UP_CODE_ADDR_CHANGE | UP_REG_CHANGE );

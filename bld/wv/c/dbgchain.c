@@ -107,21 +107,24 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
     prev = tb->prev;
     for( i = 0; i < prev->total_depth; ++i ) {
         chain = &prev->chain[i];
-        if( AddrComp( chain->lc.execution, execution ) != 0 ) continue;
-        if( AddrComp( chain->lc.frame, frame ) != 0 ) continue;
+        if( AddrComp( chain->lc.execution, execution ) != 0 )
+            continue;
+        if( AddrComp( chain->lc.frame, frame ) != 0 )
+            continue;
         new_size = curr->current_depth + prev->total_depth - i;
         if( new_size > curr->allocated_size ) {
-            if( !ReAllocChain( curr, new_size ) ) return( false );
+            if( !ReAllocChain( curr, new_size ) ) {
+                return( false );
+            }
         }
         curr->clean_size = prev->total_depth - i;
         memcpy( &curr->chain[curr->current_depth], chain,
                 curr->clean_size * sizeof( call_chain ) );
         curr->current_depth = new_size;
-        while( i < prev->total_depth ) {
+        for( ; i < prev->total_depth; ++i ) {
             chain->source_line = NULL; // since we copied the ptr
             chain->symbol = NULL; // since we copied the ptr
             ++chain;
-            ++i;
         }
         return( true );
     }
@@ -237,10 +240,7 @@ void ShowCalls( void )
 
     InitTraceBack( &tb );
     UpdateTraceBack( &tb );
-    i = 0;
-    for( ;; ) {
-        chain = GetCallChain( &tb, i++ );
-        if( chain == NULL ) break;
+    for( i = 0; (chain = GetCallChain( &tb, i )) != NULL; ++i ) {
         if( chain->source_line != NULL ) {
             source = chain->source_line;
         } else {
