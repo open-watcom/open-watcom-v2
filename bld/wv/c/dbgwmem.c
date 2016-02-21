@@ -278,21 +278,24 @@ static void MemGetNewAddr( a_window *wnd )
     address     addr;
     long        offset;
     mem_window  *mem = WndMem( wnd );
-    unsigned    old;
+    mad_radix   old_radix;
 
     if( mem->file ) {
         bool    rc;
 
         offset = mem->u.f.offset;
-        old = NewCurrRadix( 10 );
+        old_radix = NewCurrRadix( 10 );
         rc = DlgLongExpr( LIT_DUI( New_Offset ), &offset );
-        NewCurrRadix( old );
-        if( !rc ) return;
-        if( (unsigned long)offset > mem->u.f.size ) return;
+        NewCurrRadix( old_radix );
+        if( !rc )
+            return;
+        if( (unsigned long)offset > mem->u.f.size )
+            return;
         mem->u.f.offset = offset;
     } else {
         addr = mem->u.m.home;
-        if( !DlgDataAddr( LIT_DUI( New_Addr ), &addr ) ) return;
+        if( !DlgDataAddr( LIT_DUI( New_Addr ), &addr ) )
+            return;
         MemValidAddr( addr );
         MemSetStartAddr( wnd, addr, true );
         WndNoCurrent( wnd );
@@ -578,20 +581,22 @@ static void SetBreakWrite( a_window *wnd )
     }
 }
 
-static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, int size )
+static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t size )
 {
     unsigned long   new;
-    int             len;
+    size_t          len;
 
     if( mem->file ) {
         offset += mem->u.f.offset;
         new = SeekStream( mem->u.f.fh, offset, DIO_SEEK_ORG );
         if( new != offset ) return( false );
         len = ReadStream( mem->u.f.fh, buff, size );
-        return( len >= size );
+        return( len == size );
     } else {
-        if( mem->u.m.contents == NULL ) return( false );
-        if( offset + size > mem->u.m.size ) return( false );
+        if( mem->u.m.contents == NULL )
+            return( false );
+        if( offset + size > mem->u.m.size )
+            return( false );
         memcpy( buff, (char*)mem->u.m.contents + offset, size );
         return( true );
     }
@@ -616,11 +621,13 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
             line->tabstop = false;
             line->indent = HeadTab[mem->file]( wnd, piece );
             line->attr = WND_STANDOUT;
-            if( line->indent == (gui_ord)-1 ) return( false );
+            if( line->indent == (gui_ord)-1 )
+                return( false );
             return( true );
 #if 0
         case 1:
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             SetUnderLine( wnd, line );
             return( true );
 #endif
@@ -628,7 +635,8 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
             return( false );
         }
     }
-    if( row >= WndRows( wnd ) ) return( false );
+    if( row >= WndRows( wnd ) )
+        return( false );
     TxtBuff[0] = '\0';
     offset = row * mem->items_per_line;
     if( piece == 0 ) {
@@ -662,8 +670,10 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     }
     --piece;
     if( piece >= mem->items_per_line ) {
-        if( mem->piece_type != MemByteType ) return( false );
-        if( piece >= 2 * mem->items_per_line ) return( false );
+        if( mem->piece_type != MemByteType )
+            return( false );
+        if( piece >= 2 * mem->items_per_line )
+            return( false );
         if( mem->item_width <= 2 ) {
             line->indent = ( mem->item_width * WndAvgCharX(wnd) );
         } else {

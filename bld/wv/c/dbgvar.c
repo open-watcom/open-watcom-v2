@@ -2080,7 +2080,8 @@ char *VarGetValue( var_info *i, var_node *v )
     char                buff[TXT_LEN];
     char                *p, *end;
 
-    if( v->value_valid ) return( v->value );
+    if( v->value_valid )
+        return( v->value );
     if( v->node_type == NODE_INHERIT ) {
         p = StrCopy( "(", TxtBuff );
         if( VarNodeExpr( v )[0] != '\0' ) {

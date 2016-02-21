@@ -105,7 +105,7 @@ extern void MemFiniTypes( mem_type_walk_data *data )
 
 unsigned GetMADMaxFormatWidth( mad_type_handle th )
 {
-    unsigned            old,new;
+    mad_radix           old_radix, new_radix;
     item_mach           tmp;
     size_t              max;
     mad_type_info       mti;
@@ -127,10 +127,10 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
         memset( &tmp, 0, sizeof( tmp ) );
         break;
     }
-    new = MADTypePreferredRadix( th );
-    old = NewCurrRadix( new );
+    new_radix = MADTypePreferredRadix( th );
+    old_radix = NewCurrRadix( new_radix );
     max = 0;
-    MADTypeToString( new, &mti, &tmp, TxtBuff, &max );
-    NewCurrRadix( old );
+    MADTypeToString( new_radix, &mti, &tmp, TxtBuff, &max );
+    NewCurrRadix( old_radix );
     return( max + sign );
 }

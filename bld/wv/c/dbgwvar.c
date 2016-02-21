@@ -177,7 +177,7 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     var_window          *var = WndVar( wnd );
     bool                ok;
     bool                followable;
-    unsigned            old;
+    mad_radix           old_radix;
 
     if( row < 0 ) {
         if( var->vtype == VAR_WATCH || var->vtype == VAR_VARIABLE ) {
@@ -213,7 +213,7 @@ static  void    VarModify( a_window *wnd, int row, int piece )
         if( !VarExpandable( class ) ) {
             char *value = DbgAlloc( TXT_LEN );
             char *title = DbgAlloc( TXT_LEN );
-            old = VarNewCurrRadix( v );
+            old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, false );
             StrCopy( TxtBuff, title );
@@ -223,8 +223,9 @@ static  void    VarModify( a_window *wnd, int row, int piece )
             FreezeStack();
             ok = DlgAnyExpr( title, value, TXT_LEN );
             UnFreezeStack( false );
-            if( ok ) VarDoAssign( &var->i, v, value );
-            NewCurrRadix( old );
+            if( ok )
+                VarDoAssign( &var->i, v, value );
+            NewCurrRadix( old_radix );
             WndRowDirty( wnd, row );
             DbgFree( value );
             DbgFree( title );

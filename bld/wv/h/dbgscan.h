@@ -32,7 +32,7 @@
 extern bool         scan_string;
 extern char         *StringStart;
 extern unsigned     StringLength;
-extern unsigned     ScanCCharNum;
+extern bool         ScanCCharNum;
 
 
 extern void         InitScan( void );

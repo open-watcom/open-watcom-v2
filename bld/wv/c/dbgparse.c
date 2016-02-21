@@ -160,9 +160,7 @@ xreal ReqXRealExpr( void )
 
 unsigned OptExpr( unsigned def_val )
 {
-    if( CurrToken == T_COMMA
-     || CurrToken == T_LEFT_BRACE
-     || ScanEOC() )
+    if( CurrToken == T_COMMA || CurrToken == T_LEFT_BRACE || ScanEOC() )
         return( def_val );
     return( ReqExpr() );
 }

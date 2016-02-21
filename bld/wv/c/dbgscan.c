@@ -62,22 +62,21 @@ typedef struct radix_str {
     char             string[1];         /* first byte is length */
 } radix_str;
 
-static const char CmdLnDelimTab[] = {
-    #define pick(t,c)   c
-    #include "_dbgtok.h"
-    #undef pick
-};
-
 typedef union {
     unsigned_64     int_val;
     xreal           real_val;
 } token_value;
 
-
 bool            scan_string = false;
 char            *StringStart = NULL;
 unsigned        StringLength = 0;
-unsigned        ScanCCharNum = true;
+bool            ScanCCharNum = true;
+
+static const char CmdLnDelimTab[] = {
+    #define pick(t,c)   c
+    #include "_dbgtok.h"
+    #undef pick
+};
 
 static  radix_str       *RadixStrs;
 static  const char      *ScanPtr;
@@ -87,7 +86,6 @@ static  token_table     *ExprTokens;
 
 static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool clear )
 {
-
     radix_str   *radixstr;
     radix_str   **owner;
 
@@ -858,12 +856,12 @@ xreal RealNumVal( void )
  * NewCurrRadix - use when you know there's no scanning in progress
  */
 
-mad_radix NewCurrRadix( mad_radix radix )
+mad_radix NewCurrRadix( mad_radix new_radix )
 {
     mad_radix   old_radix;
 
     old_radix = CurrRadix;
-    CurrRadix = radix;
+    CurrRadix = new_radix;
     return( old_radix );
 }
 
@@ -872,11 +870,11 @@ mad_radix NewCurrRadix( mad_radix radix )
  * SetCurrRadix - set the current number radix
  */
 
-mad_radix SetCurrRadix( mad_radix radix )
+mad_radix SetCurrRadix( mad_radix new_radix )
 {
     mad_radix   old_radix;
 
-    old_radix = NewCurrRadix( radix );
+    old_radix = NewCurrRadix( new_radix );
     ReScan( TokenStart );
     return( old_radix );
 }
@@ -888,10 +886,10 @@ void RestoreRadix( void )
 }
 
 
-void DefaultRadixSet( mad_radix radix )
+void DefaultRadixSet( mad_radix new_radix )
 {
-    DefRadix = radix;
-    CurrRadix = radix;
+    DefRadix = new_radix;
+    CurrRadix = new_radix;
     DbgUpdate( UP_RADIX_CHANGE );
 }
 

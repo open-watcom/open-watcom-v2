@@ -132,7 +132,7 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         break;
     case MENU_IO_DELETE:
         io->num_rows--;
-        memcpy( &io->list[row], &io->list[row+1],
+        memcpy( &io->list[row], &io->list[row + 1],
                 ( io->num_rows - row ) * sizeof( io_location ) );
         WndNoSelect( wnd );
         WndRepaint( wnd );
@@ -231,12 +231,12 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *li
         return( true );
     case PIECE_ADDRESS:
         AddrToIOString( &curr->addr, TxtBuff, TXT_LEN );
-        line->indent = 2*MaxGadgetLength;
+        line->indent = 2 * MaxGadgetLength;
         return( true );
     case PIECE_VALUE:
         new_radix = IOData.info[curr->type].piece_radix;
         old_radix = NewCurrRadix( new_radix );
-        line->indent = 2*MaxGadgetLength + 10 * WndMaxCharX( wnd );
+        line->indent = 2 * MaxGadgetLength + 10 * WndMaxCharX( wnd );
         if( curr->value_known ) {
             max = TXT_LEN;
             MADTypeHandleToString( new_radix, IOData.info[curr->type].type, &curr->value, TxtBuff, &max );

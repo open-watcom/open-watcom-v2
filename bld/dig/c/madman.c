@@ -1211,7 +1211,7 @@ static const char DigitTab[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 //NYI: big endian hosts & targets
 static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_length )
 {
-    unsigned            len;
+    size_t              len;
     char                save;
     int                 digits;
     unsigned_64         rem;

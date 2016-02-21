@@ -1360,7 +1360,7 @@ static size_t FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *buf
     char        *p;
     size_t      len;
 
-    p = &buff1[ MCRadixPrefix( 16, buff1, sizeof( buff1 ) ) ];
+    p = buff1 + MCRadixPrefix( 16, buff1, sizeof( buff1 ) );
     p = CnvRadix( seg, 16, 'A', p, 4 );
     *p++ = ':';
     p += MCRadixPrefix( 16, p, sizeof( buff1 ) - (p - buff1) );

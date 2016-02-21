@@ -84,9 +84,9 @@ unsigned DefaultSize( default_kind dk )
     return( info.size );
 }
 
-static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, int radix, int size )
+static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, mad_radix radix, int size )
 {
-    unsigned            old_radix;
+    mad_radix           old_radix;
     mad_type_info       mti;
 
     old_radix = NewCurrRadix( radix );

@@ -67,7 +67,7 @@ unsigned DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len 
     return( len );
 }
 
-unsigned DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, unsigned buff_len )
+size_t DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
 {
     char    msg[10];
     size_t  len;

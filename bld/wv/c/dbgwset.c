@@ -78,15 +78,16 @@ static unsigned         TabInterval = 8;
 
 extern void DClickSet( void )
 {
-    unsigned    new;
-    unsigned    old;
+    unsigned    value;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 10 );
-    new = ReqExpr();
+    old_radix = SetCurrRadix( 10 );
+    value = ReqExpr();
     ReqEOC();
-    if( new < MIN_DCLICK || new > MAX_DCLICK ) Error( ERR_NONE, LIT_DUI( ERR_BAD_DCLICK ) );
-    WndSetDClick( new );
-    SetCurrRadix( old );
+    if( value < MIN_DCLICK || value > MAX_DCLICK )
+        Error( ERR_NONE, LIT_DUI( ERR_BAD_DCLICK ) );
+    WndSetDClick( value );
+    SetCurrRadix( old_radix );
 }
 
 
@@ -566,15 +567,16 @@ void TabIntervalSet( int new )
 
 extern void TabSet( void )
 {
-    int      new;
-    unsigned    old;
+    int         value;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 10 );
-    new = ReqExpr();
+    old_radix = SetCurrRadix( 10 );
+    value = ReqExpr();
     ReqEOC();
-    if( new < 0 || new > MAX_TAB ) Error( ERR_NONE, LIT_DUI( ERR_BAD_TAB ) );
-    TabIntervalSet( new );
-    SetCurrRadix( old );
+    if( value < 0 || value > MAX_TAB )
+        Error( ERR_NONE, LIT_DUI( ERR_BAD_TAB ) );
+    TabIntervalSet( value );
+    SetCurrRadix( old_radix );
 }
 
 
