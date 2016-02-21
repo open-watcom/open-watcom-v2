@@ -122,7 +122,7 @@ static void dump_line_numbers( mod_info *mi )
         li = (v3_line_segment *) Wbuff;
         coff = 0;
         for( ;; ) {
-            size = (li->num-1)* sizeof( line_info );
+            size = (li->count - 1)* sizeof( line_info );
             Wread( Wbuff + sizeof( v3_line_segment ), size );
             Wdputslc( "      -------------------------------------\n" );
             Wdputs( "      Data " );
@@ -132,11 +132,11 @@ static void dump_line_numbers( mod_info *mi )
             Wdputs( "H, addr info off = " );
             Puthex( li->segment, 8 );
             Wdputs( "H, num = " );
-            Putdec( li->num );
+            Putdec( li->count );
             Wdputslc( "\n" );
-            for( j = 0; j < li->num; j++ ) {
+            for( j = 0; j < li->count; j++ ) {
                 Wdputs( "        number =" );
-                Putdecl( li->line[j].line_number, 5 );
+                Putdecl( li->line[j].line, 5 );
                 Wdputs( ",  code offset = " );
                 Puthex( li->line[j].code_offset, 8 );
                 Wdputslc( "H\n" );
@@ -924,7 +924,7 @@ static void dump_addr_info( section_dbg_header *sdh )
         Wlseek( cpos );
         Wread( Wbuff, sizeof( seg_info ) );
         Wlseek( cpos );
-        len = sizeof( seg_info ) + (si->num-1) * sizeof( addr_info );
+        len = sizeof( seg_info ) + (si->count - 1) * sizeof( addr_info );
         Wread( Wbuff, len );
         Wdputs( " Base:  fileoff = " );
         Puthex( cpos-basepos, 8 );
@@ -934,7 +934,7 @@ static void dump_addr_info( section_dbg_header *sdh )
         Puthex( si->base.offset, 8 );
         Wdputslc( "H\n" );
         seg_off = si->base.offset;
-        for( i = 0; i < si->num; i++ ) {
+        for( i = 0; i < si->count; i++ ) {
             Putdecl( i, 6 );
             Wdputs( ") fileoff = " );
             Puthex( (long) cpos - basepos + sizeof( seg_info) +
