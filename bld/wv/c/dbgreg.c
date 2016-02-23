@@ -65,25 +65,19 @@
 #include "dbgevent.h"
 #include "dbgupdt.h"
 
-
-extern bool             DlgUpTheStack( void );
-extern bool             DlgBackInTime( bool lost_mem_state );
-extern bool             DlgIncompleteUndo( void );
-
-static int              StackPos;
-static bool             AlreadyWarnedUndo;
-
-
 #define MAX_DELTA_BITS  8
 #define MAX_DELTA_BYTES ((1 << MAX_DELTA_BITS) - 1)
+
+/* this type must be able to hold MAX_DELTA_BYTES value */
+typedef byte            mem_delta_size;
 
 typedef struct memory_delta {
     struct memory_delta *next;
     address             addr;
-    size_t              size;
+    mem_delta_size      size;
     bool                after_set       : 1;
     bool                _volatile       : 1;
-    unsigned_8          data[1]; /* variable sized */
+    unsigned_8          data[1]; /* variable sized, two copies before/after */
 } memory_delta;
 
 typedef struct save_state {
@@ -96,14 +90,18 @@ typedef struct save_state {
     machine_state       s;      /* variable sized */
 } save_state;
 
-static  save_state      *StateCurr;
-static  save_state      *StateLast;
-static  int             NumStateEntries = 0;
-
+extern bool             DlgUpTheStack( void );
+extern bool             DlgBackInTime( bool lost_mem_state );
+extern bool             DlgIncompleteUndo( void );
 extern long             GetDataLong( void );
 extern void             FindAddrSectId( address *, int );
 extern char             *Rtrm( char * );
 
+static int              StackPos;
+static bool             AlreadyWarnedUndo;
+static save_state       *StateCurr;
+static save_state       *StateLast;
+static int              NumStateEntries = 0;
 
 void DefAddr( memory_expr def_seg, address *addr )
 {
@@ -184,7 +182,7 @@ address GetRegBP( void )
 }
 
 
-static memory_delta *NewMemDelta( address addr, size_t bytes )
+static memory_delta *NewMemDelta( address addr, mem_delta_size bytes )
 {
     memory_delta *new;
 
@@ -214,13 +212,13 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     bytes = mti.b.bits / BITS_PER_BYTE;
     if( bytes > MAX_DELTA_BYTES )
         return( WR_STOP ); /* don't fit */
-    new = NewMemDelta( a, bytes );
+    new = NewMemDelta( a, (mem_delta_size)bytes );
     if( new == NULL )
         return( WR_STOP );
     if( mk & MMK_VOLATILE )
         new->_volatile = true;
     /* can keep in target form */
-    new->size = (byte)ProgPeek( a, new->data, bytes );
+    new->size = (mem_delta_size)ProgPeek( a, new->data, bytes );
     return( WR_CONTINUE );
 }
 
@@ -591,29 +589,31 @@ bool AdvMachState( int action )
 }
 
 
-size_t ChangeMem( address addr, const void * to, size_t size )
+size_t ChangeMem( address addr, const void *data, size_t size )
 {
     memory_delta        *curr;
     const unsigned_8    *p;
-    size_t              piece_len;
+    mem_delta_size      piece_len;
     size_t              left;
     addr_off            save_offset;
 
     save_offset = addr.mach.offset;
-    p = to;
+    p = data;
     piece_len = MAX_DELTA_BYTES;
     left = size;
     while( left > 0 ) {
         if( piece_len > left )
-            piece_len = left;
+            piece_len = (mem_delta_size)left;
         curr = NewMemDelta( addr, piece_len );
         if( curr == NULL ) {
             StateCurr->lost_mem_state = true;
         } else {
+            /* read original data to memory delta */
             if( ProgPeek( addr, curr->data, piece_len ) != piece_len ) {
                 StateCurr->lost_mem_state = true;
             }
             curr->after_set = true;
+            /* copy new data to memory delta */
             memcpy( curr->data + piece_len, p, piece_len );
         }
         addr.mach.offset += piece_len;
@@ -621,7 +621,7 @@ size_t ChangeMem( address addr, const void * to, size_t size )
         left -= piece_len;
     }
     addr.mach.offset = save_offset;
-    return( ProgPoke( addr, to, size ) );
+    return( ProgPoke( addr, data, size ) );
 }
 
 static void ReverseMemList( save_state * state )

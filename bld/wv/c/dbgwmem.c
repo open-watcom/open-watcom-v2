@@ -787,9 +787,9 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     mem_window  *mem;
 
     --piece;
+    mem = WndMem( wnd );
     if( piece >= mem->items_per_line )
         piece -= mem->items_per_line;
-    mem = WndMem( wnd );
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuEnable( wnd, MENU_MEMORY_MODIFY, CanModify( wnd, row, piece ) );

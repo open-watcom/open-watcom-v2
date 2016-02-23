@@ -57,20 +57,19 @@ static trap_elen    Sizes[IT_MAX] = {
     #undef pick
 };
 
-void ChangeMemUndoable( address addr, const void *item, size_t size )
+void ChangeMemUndoable( address addr, const void *data, size_t size )
 {
     char                *p;
-    const unsigned char *it;
     char                *end;
 
     if( AdvMachState( ACTION_MODIFY_MEMORY ) ) {
-        ChangeMem( addr, item, size );
-        it = item;
+        ChangeMem( addr, data, size );
         end = TxtBuff + TXT_LEN;
         p = Format( TxtBuff, "%s %A", GetCmdName( CMD_MODIFY ), addr );
-        for( ; size > 0; --size ) {
+        for( ; size > 0 && p < end - ( 2 + 8 ); --size ) {
             p = StrCopy( ", ", p );
-            p = CnvULong( *it++, p, end - p );
+            p = CnvULong( *(unsigned char *)data, p, end - p );
+            data = (char *)data + 1;
         }
         RecordEvent( TxtBuff );
         DbgUpdate( UP_MEM_CHANGE );
@@ -108,7 +107,7 @@ trap_elen ItemSize( item_type typ )
 }
 
 
-static bool ItemGet( address *addr, item_mach *item, item_type typ )
+static bool ItemGet( address *addr, void *data, item_type typ )
 {
     trap_elen   size;
 
@@ -116,14 +115,14 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
     if( typ & IT_DEC )
         addr->mach.offset -= size;
     if( typ & IT_IO ) {
-        if( PortPeek( addr->mach.offset, item, size ) != size ) {
+        if( PortPeek( addr->mach.offset, data, size ) != size ) {
             if( typ & IT_ERR ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_READ_PORT ), *addr );
             }
             return( false );
         }
     } else {
-        if( ProgPeek( *addr , item, size ) != size ) {
+        if( ProgPeek( *addr , data, size ) != size ) {
             if( typ & IT_ERR ) {
                 AddrFix( addr );
                 Error( ERR_NONE, LIT_ENG( ERR_NO_READ_MEM ), *addr );
@@ -138,7 +137,7 @@ static bool ItemGet( address *addr, item_mach *item, item_type typ )
 }
 
 
-static bool ItemPut( address *addr, const item_mach *item, item_type typ )
+static bool ItemPut( address *addr, const void *data, item_type typ )
 {
     trap_elen   size;
 
@@ -146,14 +145,14 @@ static bool ItemPut( address *addr, const item_mach *item, item_type typ )
     if( typ & IT_DEC )
         addr->mach.offset -= size;
     if( typ & IT_IO ) {
-        if( PortPoke( addr->mach.offset, item, size ) != size ) {
+        if( PortPoke( addr->mach.offset, data, size ) != size ) {
             if( typ & IT_ERR ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_PORT ), *addr );
             }
             return( false );
         }
     } else {
-        if( ChangeMem( *addr, item, size ) != size ) {
+        if( ChangeMem( *addr, data, size ) != size ) {
             if( typ & IT_ERR ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_MEM ), *addr );
             }
