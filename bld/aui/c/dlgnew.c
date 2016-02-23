@@ -105,15 +105,15 @@ bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
     dlg_new     dlgnew;
 
     int len = strlen( title );
-    if( len < cols )
-        len = cols;
-    if( len > max_cols )
-        len = max_cols;
+    if( cols < len )
+        cols = len;
+    if( cols > max_cols )
+        cols = max_cols;
     dlgnew.buff = buff;
     dlgnew.buff_len = buff_len;
     dlgnew.cancel = true;
 
-    DlgOpen( title, rows, len, controls, num_controls, callback, &dlgnew );
+    DlgOpen( title, rows, cols, controls, num_controls, callback, &dlgnew );
     return( !dlgnew.cancel );
 }
 
