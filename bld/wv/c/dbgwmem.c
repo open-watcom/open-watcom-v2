@@ -134,6 +134,7 @@ typedef struct mem_window {
     bool        file    : 1;
     bool        stack   : 1;
 } mem_window;
+
 #define WndMem( wnd ) ( (mem_window *)WndExtra( wnd ) )
 
 static void MemValidAddr( address addr )
@@ -162,8 +163,9 @@ static unsigned MemCurrOffset( a_window *wnd )
 {
     wnd_row     curr_row;
     int         curr_piece;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     WndGetCurrent( wnd, &curr_row, &curr_piece );
     if( curr_row < 0 )
         return( 0 );
@@ -176,10 +178,11 @@ static unsigned MemCurrOffset( a_window *wnd )
 static gui_ord MemHeader( a_window *wnd, int piece )
 {
     address     addr;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
     gui_ord     len;
     char        buff[TXT_LEN];
 
+    mem = WndMem( wnd );
     if( mem->stack && piece > 0 )
         return( -1 );
     if( mem->file ) {
@@ -209,10 +212,11 @@ static gui_ord MemHeader( a_window *wnd, int piece )
 
 static gui_ord BinHeader( a_window *wnd, int piece )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
     if( piece != 0 )
         return( -1 );
+    mem = WndMem( wnd );
     CnvULongDec( mem->u.f.offset + MemCurrOffset( wnd ), TxtBuff, TXT_LEN );
     return( 0 );
 }
@@ -220,10 +224,11 @@ static gui_ord BinHeader( a_window *wnd, int piece )
 static void MemGetContents( a_window *wnd, bool make_dirty )
 {
     int         size;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
     void        *old;
     int         old_size;
 
+    mem = WndMem( wnd );
     old = mem->u.m.contents;
     old_size = mem->u.m.size;
     size = mem->items_per_line * mem->item_size * WndRows( wnd );
@@ -258,8 +263,9 @@ static void MemGetContents( a_window *wnd, bool make_dirty )
 
 static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     if( new_home )
         mem->u.m.home = addr;
     mem->u.m.addr = addr;
@@ -268,8 +274,9 @@ static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
 
 static  void MemRefresh( a_window *wnd )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     if( !mem->file ) {
         MemGetContents( wnd, true );
     } else {
@@ -324,8 +331,9 @@ extern void MemSetLength( a_window *wnd, unsigned size )
 
 extern void MemSetFollow( a_window *wnd, char *follow )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     WndFree( mem->u.m.follow );
     mem->u.m.follow = follow;
 }
@@ -333,8 +341,9 @@ extern void MemSetFollow( a_window *wnd, char *follow )
 
 static  void    MemSetType( a_window *wnd, unsigned idx )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     mem->piece_type = idx;
     if( mem->stack ) {
         mem->items_per_line = 1;
@@ -358,8 +367,9 @@ static  bool    CanModify( a_window *wnd, int row, int piece )
 
 static void SetNewDataDot( a_window *wnd )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     if( !mem->file ) {
         SetDataDot( AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) ) );
     }
@@ -367,11 +377,12 @@ static void SetNewDataDot( a_window *wnd )
 
 static  void    MemUpdateCursor( a_window *wnd )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
     wnd_row     cursor_row;
     int         cursor_piece;
     int         shadow_piece;
 
+    mem = WndMem( wnd );
     WndGetCurrent( wnd, &cursor_row, &cursor_piece );
     if( cursor_piece > mem->items_per_line ) {
         shadow_piece = cursor_piece - mem->items_per_line;
@@ -409,8 +420,9 @@ static  void    MemModify( a_window *wnd, int row, int piece )
     bool        is_char;
     mad_radix   old_radix;
     unsigned    item_size;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     --piece;
     if( !CanModify( wnd, row, piece ) )
         return;
@@ -443,8 +455,9 @@ static bool MemScrollBytes( a_window *wnd, int tomove, bool new_home )
 {
     address     addr;
     char        ch;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     addr = AddrAddWrap( mem->u.m.addr, tomove );
     if( ProgPeekWrap( addr, &ch, 1 ) != 1 )
         return( false );
@@ -470,8 +483,9 @@ static void MemSetCurrent( a_window *wnd, unsigned offset )
     wnd_row     row;
     int         line_size;
     int         piece;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     line_size = mem->items_per_line * mem->item_size;
     row = offset / line_size;
     piece = ( offset - row * line_size ) / mem->item_size;
@@ -481,8 +495,9 @@ static void MemSetCurrent( a_window *wnd, unsigned offset )
 static void MemBackout( a_window *wnd )
 {
     mem_backout *backout;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     backout = mem->u.m.backout;
     if( backout == NULL )
         return;
@@ -510,8 +525,9 @@ static void MemBackout( a_window *wnd )
 static void MemNewBackout( a_window *wnd )
 {
     mem_backout *backout;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     backout = WndAlloc( sizeof( *backout ) );
     if( backout == NULL )
         return;
@@ -538,9 +554,10 @@ static void MemNewBackout( a_window *wnd )
 static void MemFollow( a_window *wnd )
 {
     address     new_addr;
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
     char        ch;
 
+    mem = WndMem( wnd );
     if( mem->u.m.follow != NULL ) {
         new_addr = mem->u.m.home;
         SetDataDot( new_addr );
@@ -574,8 +591,9 @@ static void MemFollow( a_window *wnd )
 
 static void DoFollow( a_window *wnd, char *fmt )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
+    mem = WndMem( wnd );
     MemNewBackout( wnd );
     WndFree( mem->u.m.follow );
     Format( TxtBuff, fmt, AddrDiff( mem->u.m.addr, mem->u.m.home ) + MemCurrOffset( wnd ) );
@@ -585,10 +603,11 @@ static void DoFollow( a_window *wnd, char *fmt )
 
 static void SetBreakWrite( a_window *wnd )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
     char        buff[TXT_LEN];
     address     addr;
 
+    mem = WndMem( wnd );
     addr = AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) );
     StrAddr( &addr, buff, TXT_LEN );
     if( !BreakWrite( addr, MemData.info[mem->piece_type].type, buff ) ) {
@@ -622,13 +641,14 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
 {
     char            buff[16];
     unsigned long   offset;
-    mem_window      *mem = WndMem( wnd );
+    mem_window      *mem;
     address         addr;
     char            *p;
     mad_radix       old_radix, new_radix;
     size_t          max;
     char            ch;
 
+    mem = WndMem( wnd );
     line->text = TxtBuff;
     if( row < 0 ) {
         row += TITLE_SIZE;
@@ -733,11 +753,12 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
 
 static void MemResize( a_window *wnd )
 {
-    mem_window          *mem = WndMem( wnd );
+    mem_window          *mem;
     int                 mult;
     wnd_line_piece      line;
     unsigned            curr_offset;
 
+    mem = WndMem( wnd );
     curr_offset = MemCurrOffset( wnd );
     if( mem->stack ) {
         MemSetStartAddr( wnd, Context.stack, true );
@@ -763,11 +784,12 @@ static void MemResize( a_window *wnd )
 
 static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
-    mem_window  *mem = WndMem( wnd );
+    mem_window  *mem;
 
     --piece;
     if( piece >= mem->items_per_line )
         piece -= mem->items_per_line;
+    mem = WndMem( wnd );
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuEnable( wnd, MENU_MEMORY_MODIFY, CanModify( wnd, row, piece ) );
@@ -860,10 +882,11 @@ static  int     MemScroll( a_window *wnd, int lines )
     int             tomove;
     unsigned long   offset;
     unsigned long   new;
-    mem_window      *mem = WndMem( wnd );
+    mem_window      *mem;
 
     if( lines >= WND_MAX_ROW )
         return( 0 ); // CTRL-END request
+    mem = WndMem( wnd );
     if( mem->cursor_row != WND_NO_ROW && mem->piece_type == MemByteType ) {
         WndPieceDirty( wnd, mem->cursor_row, mem->shadow_piece );
     }
@@ -931,10 +954,11 @@ void FiniMemWindow( void )
 
 static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    mem_window      *mem = WndMem( wnd );
+    mem_window      *mem;
     int             i;
 
     parm=parm;
+    mem = WndMem( wnd );
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         if( mem->init_type != MAD_NIL_TYPE_HANDLE ) {
