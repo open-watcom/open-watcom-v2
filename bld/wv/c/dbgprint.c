@@ -868,7 +868,7 @@ void PrintValue( void )
         }
         /* fall through */
     case TK_POINTER:
-        if( IS_NIL_ADDR(ExprSP->v.addr) ) {
+        if( IS_NIL_ADDR( ExprSP->v.addr ) ) {
             SetTokens( true );
             if( !TokenName( T_SSL_SPEC_NULL, &tstr, &tlen ) ) {
                 tlen = 0;

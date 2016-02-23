@@ -103,7 +103,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
                 || ExprSP->info.kind == TK_POINTER ) {
             *paddr = ExprSP->v.addr;
         }
-        if( !IS_NIL_ADDR( (*paddr) ) ) {
+        if( !IS_NIL_ADDR( *paddr ) ) {
             AddrFloat( paddr );
             if( DeAliasAddrSym( NO_MOD, *paddr, sh ) != SR_NONE ) {
                 SymInfo( sh, ExprSP->lc, &info );
