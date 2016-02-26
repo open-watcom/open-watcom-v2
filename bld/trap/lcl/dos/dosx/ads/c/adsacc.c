@@ -41,6 +41,7 @@
 #include <stdarg.h>
 #include "tinyio.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "dbg386.h"
 #include "ioports.h"
@@ -102,18 +103,18 @@ int         WatchCount;
 #define _DBG( x )  // MyOut x
 
 struct {
-        dword   cr0;
-        dword   dr0;
-        dword   dr1;
-        dword   dr2;
-        dword   dr3;
-        dword   res1;
-        dword   res2;
-        dword   dr6;
-        dword   dr7;
-        dword   res3;
-        dword   res4;
-        dword   res5;
+    dword   cr0;
+    dword   dr0;
+    dword   dr1;
+    dword   dr2;
+    dword   dr3;
+    dword   res1;
+    dword   res2;
+    dword   dr6;
+    dword   dr7;
+    dword   res3;
+    dword   res4;
+    dword   res5;
 } SysRegs;
 
 extern void GetSysRegs( void * );
@@ -859,7 +860,7 @@ trap_retval ReqGet_message_text( void )
         err_txt[0] = '\0';
     } else {
         if( IntNum < sizeof( ExceptionMsgs ) / sizeof( ExceptionMsgs[0] ) ) {
-            strcpy( err_txt, ExceptionMsgs[except] );
+            strcpy( err_txt, ExceptionMsgs[IntNum] );
         } else {
             strcpy( err_txt, TRP_EXC_unknown );
         }
