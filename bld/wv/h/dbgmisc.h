@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern void         Flip( unsigned wait );
+extern void         Flip( uint_16 wait );
 extern void         ProcFlip( void );
 extern void         ConfigFlip( void );
 extern void         ProcRemark( void );

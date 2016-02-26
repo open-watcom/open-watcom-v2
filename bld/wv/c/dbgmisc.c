@@ -73,7 +73,7 @@ enum {
 };
 
 
-void Flip( unsigned wait )
+void Flip( uint_16 wait )
 {
 //    char        ch;
 
@@ -89,7 +89,7 @@ void Flip( unsigned wait )
 void ProcFlip( void )
 {
     const char  *old;
-    unsigned    wait;
+    uint_16     wait;
 
     wait = 0;
     if( !ScanEOC() ) {
@@ -105,7 +105,7 @@ void ProcFlip( void )
             return;
         default:
             ReScan( old );
-            wait = ReqExpr();
+            wait = (uint_16)ReqExpr();
             ReqEOC();
             break;
         }
@@ -675,7 +675,7 @@ void CheckForNewThreads( bool set_exec )
 {
     if( set_exec ) ExecThd = NULL;
     MarkThreadsDead();
-    if( HaveRemoteRunThread() ) 
+    if( HaveRemoteRunThread() )
         RefreshRunThreads( set_exec );
     else
         RefreshThreads( set_exec );

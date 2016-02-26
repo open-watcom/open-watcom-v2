@@ -232,7 +232,7 @@ unsigned long ProgChkSum( address addr, trap_elen len )
     return( ret.result );
 }
 
-trap_retval PortPeek( unsigned port, void *data, trap_elen size )
+trap_retval PortPeek( unsigned port, void *data, uint_8 size )
 {
     read_io_req         acc;
 
@@ -242,7 +242,7 @@ trap_retval PortPeek( unsigned port, void *data, trap_elen size )
     return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
 }
 
-trap_retval PortPoke( unsigned port, const void *data, trap_elen size )
+trap_retval PortPoke( unsigned port, const void *data, uint_8 size )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -492,7 +492,7 @@ void RemoteSetDebugScreen( void )
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-unsigned RemoteReadUserKey( unsigned wait )
+unsigned RemoteReadUserKey( uint_16 wait )
 {
     read_user_keyboard_req      acc;
     read_user_keyboard_ret      ret;
