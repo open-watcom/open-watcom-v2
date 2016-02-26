@@ -642,22 +642,26 @@ BuildArguments( char **argv, struct execenv *ee)
     return args;
 }
 
-static int SplitParms( char *p, char *args[], unsigned len )
-/**********************************************************/
+static int SplitParms( char *p, const char **args, unsigned len )
+/****************************************************************/
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -665,10 +669,12 @@ static int SplitParms( char *p, char *args[], unsigned len )
         } else {
             endc = ' ';
         }
-        if( args != NULL ) args[i] = p;
+        if( args != NULL )
+            args[i] = p;
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc
                 || *p == '\0'
                 || (endc == ' ' && *p == '\t' ) ) {
@@ -677,7 +683,8 @@ static int SplitParms( char *p, char *args[], unsigned len )
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;
@@ -784,8 +791,8 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = __alloca( (i+3) * sizeof( *args ) );
-        args[ SplitParms( parms, &args[1], len ) + 1 ] = NULL;
+        args = __alloca( ( i + 3 ) * sizeof( *args ) );
+        args[ SplitParms( parms, args + 1, len ) + 1 ] = NULL;
     }
     args[0] = parm_start;
 

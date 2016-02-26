@@ -666,21 +666,25 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, char *args[], unsigned len )
+static int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -688,10 +692,12 @@ static int SplitParms( char *p, char *args[], unsigned len )
         } else {
             endc = ' ';
         }
-        if( args != NULL ) args[i] = p;
+        if( args != NULL )
+            args[i] = p;
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc
                 || *p == '\0'
                 || (endc == ' ' && *p == '\t' ) ) {
@@ -700,7 +706,8 @@ static int SplitParms( char *p, char *args[], unsigned len )
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;
@@ -711,8 +718,7 @@ done:
     return( i );
 }
 
-static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info,
-                            char **name_ret )
+static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **name_ret )
 {
     pid_t       pid;
     pid_t       proc;

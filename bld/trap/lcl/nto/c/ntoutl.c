@@ -69,7 +69,7 @@ void OutNum( unsigned long i )
 unsigned ReadMem( pid_handle procfs_fd, void *ptr, addr_off offv, unsigned size )
 {
     int     length = 0;
-    
+
     if( lseek( procfs_fd, (off_t)offv, SEEK_SET ) == (off_t)offv ) {
         length = read( procfs_fd, ptr, size );
         if( length < 0 ) {
@@ -135,7 +135,7 @@ addr_off GetDynSection( const char *exe_name )
 
 /* Read dynamic linker rendezvous structure from debuggee's address space
  * and return its offset, as well as offset of the dynamic linker breakpoint.
- * Note that it is perfectly valid for this function to fail - that will 
+ * Note that it is perfectly valid for this function to fail - that will
  * happen if the debuggee is statically linked.
  */
 int GetLdInfo( pid_handle pid, addr_off dynsec_off, addr_off *rdebug_off, addr_off *ld_bp_off )
@@ -238,21 +238,25 @@ int MapAddrToLinkVA( pid_handle pid, addr_off addr, addr_off *map_addr )
  * individual components. Useful for passing argv style array to
  * exec().
  */
-int SplitParms( char *p, char *args[], unsigned len )
+int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -265,14 +269,16 @@ int SplitParms( char *p, char *args[], unsigned len )
         }
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc || *p == '\0' || (endc == ' ' && *p == '\t') ) {
                 if( args != NULL ) {
                     *p = '\0';  //NYI: not a good idea, should make a copy
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;

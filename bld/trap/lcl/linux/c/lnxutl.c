@@ -304,21 +304,25 @@ int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lma
  * individual components. Useful for passing argv style array to
  * exec().
  */
-int SplitParms( char *p, char *args[], unsigned len )
+int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -331,14 +335,16 @@ int SplitParms( char *p, char *args[], unsigned len )
         }
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc || *p == '\0' || (endc == ' ' && *p == '\t') ) {
                 if( args != NULL ) {
                     *p = '\0';  //NYI: not a good idea, should make a copy
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;
