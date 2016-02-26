@@ -529,6 +529,7 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         case TK_POINTER:
             {
                 bool rc;
+
                 FreezeStack();
                 VarRepaint( wnd ); // set early so we flush redundant repaints
                 rc = DlgVarExpand( &varx );
@@ -611,7 +612,8 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarRepaint( wnd );
         break;
     }
-    if( need_reset ) VarOldErrState();
+    if( need_reset )
+        VarOldErrState();
     VarDoneRow( &var->i );
 }
 
@@ -860,7 +862,7 @@ static bool VarDoClass( wnd_class_wv wndclass, bool (*rtn)( var_info*, void* ), 
 
 static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
 {
-    int         i;
+    var_type    i;
 
     for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
         if( VarDoClass( VarWndClass[i], rtn, cookie ) ) {

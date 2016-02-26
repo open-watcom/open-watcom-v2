@@ -297,14 +297,16 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     if( ScanCmd( MainTab ) == 0 ) {
         main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         if( main_menu == NULL ) {
-            if( add_to_menu ) return( true );
+            if( add_to_menu )
+                return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
         }
         if( child == NULL ) {
-            if( add_to_menu ) return( true );
+            if( add_to_menu )
+                return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
@@ -415,11 +417,11 @@ void SetTargMenuItems( void )
 
 static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_menus ) )
 {
-    int         i;
+    wnd_class_wv    wndclass;
 
     rtn( WndMainMenu, ArraySize( WndMainMenu ) );
-    for( i = 0; i < WND_NUM_CLASSES; ++i ) {
-        rtn( WndInfoTab[i]->popupmenu, WndInfoTab[i]->num_popups );
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->num_popups );
     }
 }
 
@@ -485,7 +487,8 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wn
         *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndclass );
     }
     ReScan( old );
-    if( menu == NULL || !ScanEOC() ) return( NULL );
+    if( menu == NULL || !ScanEOC() )
+        return( NULL );
     WndMenuSetHotKey( menu, *is_main, key );
     return( menu );
 }

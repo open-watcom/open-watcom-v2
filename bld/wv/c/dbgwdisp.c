@@ -162,12 +162,14 @@ void WndMainResized( void )
     a_window    *wnd;
     gui_rect    rect;
 
-    if( _IsOn( SW_DETACHABLE_WINDOWS ) ) return;
-    WndGetRect( WndMain, &WndMainRect );
-    for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( !WndHasClass( wnd ) ) continue;
-        WndPosToRect( &WndPosition[WndClass( wnd )], &rect, WndMainClientSize() );
-        WndResizeWindow( wnd, &rect );
+    if( _IsOff( SW_DETACHABLE_WINDOWS ) ) {
+        WndGetRect( WndMain, &WndMainRect );
+        for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
+            if( !WndHasClass( wnd ) )
+                continue;
+            WndPosToRect( &WndPosition[WndClass( wnd )], &rect, WndMainClientSize() );
+            WndResizeWindow( wnd, &rect );
+        }
     }
 }
 
@@ -176,8 +178,10 @@ extern  void    WndResizeHook( a_window *wnd )
 {
     gui_rect    rect;
 
-    if( WndIsMaximized( wnd ) || WndIsMinimized( wnd ) ) return;
-    if( !WndHasClass( wnd ) ) return;
+    if( WndIsMaximized( wnd ) || WndIsMinimized( wnd ) )
+        return;
+    if( !WndHasClass( wnd ) )
+        return;
     WndGetRect( wnd, &rect );
     WndRectToPos( &rect, &WndPosition[WndClass( wnd )], WndMainClientSize() );
 }
@@ -355,15 +359,18 @@ static void ProcSize( wnd_class_wv wndclass )
         }
         break;
     case MINIMIZE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
+        if( wnd == NULL )
+            wnd = WndOpenTab[wndclass]();
         WndMinimizeWindow( wnd );
         break;
     case MAXIMIZE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
+        if( wnd == NULL )
+            wnd = WndOpenTab[wndclass]();
         WndMaximizeWindow( wnd );
         break;
     case RESTORE:
-        if( wnd == NULL ) wnd = WndOpenTab[wndclass]();
+        if( wnd == NULL )
+            wnd = WndOpenTab[wndclass]();
         WndRestoreWindow( wnd );
         break;
     }
@@ -373,7 +380,7 @@ static void ProcSize( wnd_class_wv wndclass )
 static void ProcTool( void )
 {
     int         height;
-    disp_optn   optn,type,tmp;
+    disp_optn   optn, type, tmp;
 
     type = FIXED;
     optn = OPEN;

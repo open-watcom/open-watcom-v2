@@ -491,7 +491,8 @@ extern void MacroSet( void )
     if( ScanItem( true, &start, &len ) ) {
         key = MapKey( start, len );
     }
-    if( key == 0 ) Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
+    if( key == 0 )
+        Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
     scanned = ScanItem( true, &start, &len );
     ReqEOC();
     if( scanned ) {

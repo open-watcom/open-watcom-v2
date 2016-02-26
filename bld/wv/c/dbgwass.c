@@ -364,9 +364,9 @@ a_window *AsmWndFind( a_window *wnd, address addr, bool track )
 
 void    AsmFreeSrc( a_window *wnd )
 {
-    if( wnd == NULL )
-        return;
-    WndAsm( wnd )->src = NULL;
+    if( wnd != NULL ) {
+        WndAsm( wnd )->src = NULL;
+    }
 }
 
 #ifdef DEADCODE

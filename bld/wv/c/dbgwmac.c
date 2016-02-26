@@ -158,9 +158,8 @@ static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
     *owner = curr->link;
     i = 0;
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {
-        if( i == row ) {
+        if( i == row )
             break;
-        }
         ++i;
     }
     curr->link = *owner;
@@ -216,7 +215,7 @@ bool MacKeyHit( a_window *wnd, unsigned key )
         }
         wndmac->press_key = false;
         WndZapped( wnd );
-        if ( key == GUI_KEY_ESCAPE )
+        if( key == GUI_KEY_ESCAPE )
             return( true );
         if( wndmac->changing ) {
             wndmac->changing = false;

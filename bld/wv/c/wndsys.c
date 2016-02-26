@@ -570,9 +570,9 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
-    a_window    *wnd;
+    a_window            *wnd;
     wnd_create_struct   info;
-    char        *p;
+    char                *p;
 
     WndInitCreateStruct( &info );
     WndPosToRect( &WndPosition[wndclass], &info.rect, WndMainClientSize() );

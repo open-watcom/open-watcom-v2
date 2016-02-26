@@ -750,8 +750,7 @@ static walk_result DumpToggles( dig_mad mad, void *d )
     return( WR_CONTINUE );
 }
 
-static void ConfWindowSwitches( window_toggle *toggle, int len, const char *settings,
-                        mad_window_toggles wt )
+static void ConfWindowSwitches( window_toggle *toggle, int len, const char *settings, mad_window_toggles wt )
 {
     struct dump_toggles data;
     pending_toggle_list *curr;
@@ -760,11 +759,7 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
 
     ptr = TxtBuff;
     for( i = 0; i < len; ++i ) {
-        ptr = GetCmdEntry( settings,
-                           SwitchIsOn( toggle[i].sw ) ?
-                               toggle[i].on :
-                               toggle[i].off,
-                           ptr );
+        ptr = GetCmdEntry( settings, SwitchIsOn( toggle[i].sw ) ? toggle[i].on : toggle[i].off, ptr );
         *ptr++= ' ';
     }
     if( wt < MWT_LAST ) {
