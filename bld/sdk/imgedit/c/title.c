@@ -73,7 +73,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         if( msecs != 0 ) {
             timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
             if( timer ) {
-                SET_DLGDATA( hwnd, (LONG)timer );
+                SET_DLGDATA( hwnd, timer );
             }
         }
 

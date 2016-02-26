@@ -95,7 +95,7 @@ WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( ConfigDlgInfo ) );
-        SET_DLGDATA( hwnd, (LONG_PTR)info );
+        SET_DLGDATA( hwnd, info );
 #ifdef __NT__
         ctl = GetDlgItem( hwnd, CFG_STICKY );
         ShowWindow( ctl, SW_HIDE );

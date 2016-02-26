@@ -1236,7 +1236,7 @@ LRESULT CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM 
     case WM_INITDIALOG:
         info = (WREResInfo *)lParam;
         info->info_win = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         if( !WREInitResourceWindow( info, 0 ) ) {
             DestroyWindow( hDlg );
         } else {

@@ -308,7 +308,7 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
 
     case WM_INITDIALOG:
         sft = (WRSFT *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)sft );
+        SET_DLGDATA( hDlg, sft );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, sft );
         ret = TRUE;

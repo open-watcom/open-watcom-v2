@@ -1373,7 +1373,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         if( msecs ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
             if( timer ) {
-                SET_DLGDATA( hDlg, (LONG)timer );
+                SET_DLGDATA( hDlg, timer );
             }
         }
 

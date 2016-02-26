@@ -643,7 +643,7 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
 
     case WM_INITDIALOG:
         si = (WdeDialogSelectInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)si );
+        SET_DLGDATA( hDlg, si );
         if( !WdeSetSelectInfo( hDlg, si ) ) {
             EndDialog( hDlg, FALSE );
         }

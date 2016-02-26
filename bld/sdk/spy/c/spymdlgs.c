@@ -357,7 +357,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam,
         str[i] = 0;
         strptr = MemAlloc( strlen( str ) + 1 );
         strcpy( strptr, str );
-        SET_DLGDATA( hwnd, (LONG_PTR)strptr );
+        SET_DLGDATA( hwnd, strptr );
         setMessageName( hwnd, str );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
         id = strtol( &str[SPYOUT_MSG], &endptr, 16 );

@@ -163,7 +163,7 @@ BOOL WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
     switch( message ) {
     case WM_INITDIALOG:
         info = (WREProperyInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRESetPropMemoryFlags( hDlg, info->mflags )
         ret = TRUE;
         break;

@@ -813,7 +813,7 @@ WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam,
     case WM_INITDIALOG:
         einfo = (WAccelEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
+        SET_DLGDATA( hDlg, einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;

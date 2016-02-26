@@ -1093,7 +1093,7 @@ BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
         if( msecs != 0 ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
             if( timer != 0 ) {
-                SET_DLGDATA( hDlg, (LONG)timer );
+                SET_DLGDATA( hDlg, timer );
             }
         }
 

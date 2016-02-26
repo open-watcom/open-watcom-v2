@@ -789,7 +789,7 @@ WINEXPORT BOOL CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam,
     case WM_INITDIALOG:
         einfo = (WStringEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
+        SET_DLGDATA( hDlg, einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_STREDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;

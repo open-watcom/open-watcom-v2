@@ -1380,7 +1380,7 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
 
     case WM_INITDIALOG:
         info = (WREditSymInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         if( info == NULL ) {
             EndDialog( hDlg, FALSE );
             break;
@@ -1560,7 +1560,7 @@ WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LP
     switch( message ) {
     case WM_INITDIALOG:
         info = (WRAddSymInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRSetAddSymInfo( hDlg, info );
         WRSetAddSymOK( hDlg );
         ret = TRUE;

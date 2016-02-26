@@ -150,7 +150,7 @@ WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, 
 
     case WM_INITDIALOG:
         info = (WResRenameInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WSetWinInfo( hDlg, info );
         ret = TRUE;
         break;
