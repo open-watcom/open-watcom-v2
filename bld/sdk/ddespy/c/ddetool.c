@@ -100,9 +100,9 @@ static void resizeForTB( RECT *area, HWND hwnd )
 } /* resizeForTB */
 
 /*
- * MyToolBarProc - hook message handler for the toolbar
+ * myToolBarProc - hook message handler for the toolbar
  */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MINMAXINFO  *minmax;
 //  HWND        toolhwnd;
@@ -167,7 +167,7 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( false );
 
-} /* MyToolBarProc */
+} /* myToolBarProc */
 
 /*
  * GetFixedTBRect
@@ -217,7 +217,7 @@ void MakeDDEToolBar( HWND hwnd )
     ToolBar.info.border_size.x = TOOL_OUTLINE_WIDTH;
     ToolBar.info.border_size.y = TOOL_OUTLINE_HITE;
     GetFixedTBRect( hwnd, &ToolBar.info.area );
-    ToolBar.info.hook = MyToolBarProc;
+    ToolBar.info.hook = myToolBarProc;
     ToolBar.info.helphook = showTBHint;
     ToolBar.info.background = 0;
     ToolBar.info.foreground = 0;

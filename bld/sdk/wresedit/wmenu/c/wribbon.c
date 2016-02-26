@@ -58,8 +58,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern bool WRibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WRibbonHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -127,94 +125,6 @@ static int          WRibbonHeight = 0;
 int WGetRibbonHeight( void )
 {
     return( WRibbonHeight );
-}
-
-bool WInitRibbons( HINSTANCE inst )
-{
-    int i;
-
-    WRibbonInfo = WAllocToolBarInfo( NUM_TOOLS );
-    WSORibbonInfo = WAllocToolBarInfo( NUM_SOTOOLS );
-
-    if( WRibbonInfo == NULL || WSORibbonInfo == NULL ) {
-        return( false );
-    }
-
-    for( i = 0; i < NUM_TOOLS; i++ ) {
-        if( WRibbonNames[i].up != NULL ) {
-            WRibbonInfo->items[i].u.bmp = LoadBitmap( inst, WRibbonNames[i].up );
-            WRibbonInfo->items[i].id = WRibbonNames[i].menu_id;
-            WRibbonInfo->items[i].flags = ITEM_DOWNBMP;
-            if( WRibbonNames[i].down != NULL ) {
-                WRibbonInfo->items[i].depressed = LoadBitmap( inst, WRibbonNames[i].down );
-            } else {
-                WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
-            }
-            if( WRibbonNames[i].tip_id >= 0 ) {
-                LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP );
-            } else {
-                WRibbonInfo->items[i].tip[0] = '\0';
-            }
-        } else {
-            WRibbonInfo->items[i].flags = ITEM_BLANK;
-            WRibbonInfo->items[i].u.blank_space = WRibbonNames[i].menu_id;
-        }
-    }
-
-    for( i = 0; i < NUM_SOTOOLS; i++ ) {
-        if( WSORibbonNames[i].up != NULL ) {
-            WSORibbonInfo->items[i].u.bmp = LoadBitmap( inst, WSORibbonNames[i].up );
-            WSORibbonInfo->items[i].id = WSORibbonNames[i].menu_id;
-            WSORibbonInfo->items[i].flags = ITEM_DOWNBMP;
-            if( WSORibbonNames[i].down != NULL ) {
-                WSORibbonInfo->items[i].depressed =
-                    LoadBitmap( inst, WSORibbonNames[i].down );
-            } else {
-                WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
-            }
-            if( WSORibbonNames[i].tip_id >= 0 ) {
-                LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP );
-            } else {
-                WSORibbonInfo->items[i].tip[0] = '\0';
-            }
-        } else {
-            WSORibbonInfo->items[i].flags = ITEM_BLANK;
-            WSORibbonInfo->items[i].u.blank_space = WSORibbonNames[i].menu_id;
-        }
-    }
-
-    WRibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
-    WRibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
-    WRibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
-    WRibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WRibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
-    WRibbonInfo->dinfo.hook = WRibbonHook;
-    WRibbonInfo->dinfo.helphook = WRibbonHelpHook;
-    WRibbonInfo->dinfo.foreground = NULL;
-    WRibbonInfo->dinfo.background = NULL;
-    WRibbonInfo->dinfo.is_fixed = TRUE;
-    WRibbonInfo->dinfo.use_tips = TRUE;
-
-    WSORibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
-    WSORibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
-    WSORibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
-    WSORibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WSORibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
-    WSORibbonInfo->dinfo.hook = WRibbonHook;
-    WSORibbonInfo->dinfo.helphook = WRibbonHelpHook;
-    WSORibbonInfo->dinfo.foreground = NULL;
-    WSORibbonInfo->dinfo.background = NULL;
-    WSORibbonInfo->dinfo.is_fixed = TRUE;
-    WSORibbonInfo->dinfo.use_tips = TRUE;
-
-    WRibbonHeight = 2 * WRibbonInfo->dinfo.border_size.y +
-                    WRibbonInfo->dinfo.button_size.y +
-                    2 * GetSystemMetrics( SM_CYBORDER );
-
-    WRibbonInfo->dinfo.area.bottom = WRibbonHeight;
-    WSORibbonInfo->dinfo.area.bottom = WRibbonHeight;
-
-    return( true );
 }
 
 void WShutdownRibbons( void )
@@ -343,7 +253,7 @@ void WDestroyRibbon( WMenuEditInfo *einfo )
     }
 }
 
-void WRibbonHelpHook( HWND hwnd, int id, bool pressed )
+static void wRibbonHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wtouch( hwnd );
     if( !pressed ) {
@@ -353,7 +263,7 @@ void WRibbonHelpHook( HWND hwnd, int id, bool pressed )
     }
 }
 
-bool WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+static bool wRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool            ret;
     WMenuEditInfo   *einfo;
@@ -378,4 +288,92 @@ bool WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     }
 
     return( ret );
+}
+
+bool WInitRibbons( HINSTANCE inst )
+{
+    int i;
+
+    WRibbonInfo = WAllocToolBarInfo( NUM_TOOLS );
+    WSORibbonInfo = WAllocToolBarInfo( NUM_SOTOOLS );
+
+    if( WRibbonInfo == NULL || WSORibbonInfo == NULL ) {
+        return( false );
+    }
+
+    for( i = 0; i < NUM_TOOLS; i++ ) {
+        if( WRibbonNames[i].up != NULL ) {
+            WRibbonInfo->items[i].u.bmp = LoadBitmap( inst, WRibbonNames[i].up );
+            WRibbonInfo->items[i].id = WRibbonNames[i].menu_id;
+            WRibbonInfo->items[i].flags = ITEM_DOWNBMP;
+            if( WRibbonNames[i].down != NULL ) {
+                WRibbonInfo->items[i].depressed = LoadBitmap( inst, WRibbonNames[i].down );
+            } else {
+                WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
+            }
+            if( WRibbonNames[i].tip_id >= 0 ) {
+                LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP );
+            } else {
+                WRibbonInfo->items[i].tip[0] = '\0';
+            }
+        } else {
+            WRibbonInfo->items[i].flags = ITEM_BLANK;
+            WRibbonInfo->items[i].u.blank_space = WRibbonNames[i].menu_id;
+        }
+    }
+
+    for( i = 0; i < NUM_SOTOOLS; i++ ) {
+        if( WSORibbonNames[i].up != NULL ) {
+            WSORibbonInfo->items[i].u.bmp = LoadBitmap( inst, WSORibbonNames[i].up );
+            WSORibbonInfo->items[i].id = WSORibbonNames[i].menu_id;
+            WSORibbonInfo->items[i].flags = ITEM_DOWNBMP;
+            if( WSORibbonNames[i].down != NULL ) {
+                WSORibbonInfo->items[i].depressed =
+                    LoadBitmap( inst, WSORibbonNames[i].down );
+            } else {
+                WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
+            }
+            if( WSORibbonNames[i].tip_id >= 0 ) {
+                LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP );
+            } else {
+                WSORibbonInfo->items[i].tip[0] = '\0';
+            }
+        } else {
+            WSORibbonInfo->items[i].flags = ITEM_BLANK;
+            WSORibbonInfo->items[i].u.blank_space = WSORibbonNames[i].menu_id;
+        }
+    }
+
+    WRibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
+    WRibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
+    WRibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
+    WRibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
+    WRibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
+    WRibbonInfo->dinfo.hook = wRibbonHook;
+    WRibbonInfo->dinfo.helphook = wRibbonHelpHook;
+    WRibbonInfo->dinfo.foreground = NULL;
+    WRibbonInfo->dinfo.background = NULL;
+    WRibbonInfo->dinfo.is_fixed = TRUE;
+    WRibbonInfo->dinfo.use_tips = TRUE;
+
+    WSORibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
+    WSORibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
+    WSORibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
+    WSORibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
+    WSORibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
+    WSORibbonInfo->dinfo.hook = wRibbonHook;
+    WSORibbonInfo->dinfo.helphook = wRibbonHelpHook;
+    WSORibbonInfo->dinfo.foreground = NULL;
+    WSORibbonInfo->dinfo.background = NULL;
+    WSORibbonInfo->dinfo.is_fixed = TRUE;
+    WSORibbonInfo->dinfo.use_tips = TRUE;
+
+    WRibbonHeight = 2 * WRibbonInfo->dinfo.border_size.y +
+                    WRibbonInfo->dinfo.button_size.y +
+                    2 * GetSystemMetrics( SM_CYBORDER );
+
+    WRibbonInfo->dinfo.area.bottom = WRibbonHeight;
+    WSORibbonInfo->dinfo.area.bottom = WRibbonHeight;
+
+    return( true );
 }

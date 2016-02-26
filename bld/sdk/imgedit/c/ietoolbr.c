@@ -56,9 +56,9 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 };
 
 /*
- * ToolBarHelpProc
+ * toolBarHelpProc
  */
-void ToolBarHelpProc( HWND hwnd, int id, bool pressed )
+static void toolBarHelpProc( HWND hwnd, int id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -67,12 +67,12 @@ void ToolBarHelpProc( HWND hwnd, int id, bool pressed )
         SetHintText( " " );
     }
 
-} /* ToolBarHelpProc */
+} /* toolBarHelpProc */
 
 /*
- * ToolBarProc - hook function that intercepts messages to the toolbar
+ * toolBarProc - hook function that intercepts messages to the toolbar
  */
-bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool toolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HMENU               hmenu;
     static HMENU        hsysmenu;
@@ -144,7 +144,7 @@ bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     }
     return( false );
 
-} /* ToolBarProc */
+} /* toolBarProc */
 
 /*
  * InitTools - initializes the image editor toolbar
@@ -186,8 +186,8 @@ void InitTools( HWND hparent )
     tdi.area = toolbar_loc;
     tdi.style = TOOLBAR_FLOATNOSIZE_STYLE;
 //    tdi.style = TOOLBAR_FLOAT_STYLE;
-    tdi.hook = ToolBarProc;
-    tdi.helphook = ToolBarHelpProc;
+    tdi.hook = toolBarProc;
+    tdi.helphook = toolBarHelpProc;
     tdi.background = (HBITMAP)0;
     tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = FALSE;

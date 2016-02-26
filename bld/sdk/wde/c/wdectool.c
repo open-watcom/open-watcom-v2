@@ -68,8 +68,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-bool WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
-void WdeCToolHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -158,45 +156,6 @@ int WdeGetCToolID( void )
     }
 
     return( -1 );
-}
-
-bool WdeInitControls( HINSTANCE inst )
-{
-    bool        usingCommonControls;
-    int         i;
-
-    WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
-
-    if( WdeControlsInfo == NULL ) {
-        return( false );
-    }
-
-    usingCommonControls = IsCommCtrlLoaded();
-
-    for( i = 0; i < NUM_TOOLS; i++ ) {
-        if( WdeControlBits[i].flags & WCB_FLAG_COMMON_CONTROL ) {
-            if( !usingCommonControls ) {
-                continue;
-            }
-        }
-        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
-        WdeControlsInfo->items[i].id = WdeControlBits[i].id;
-        WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
-        WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );
-    }
-
-    WdeControlsInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
-    WdeControlsInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
-    WdeControlsInfo->dinfo.border_size.x = TOOL_BORDERX;
-    WdeControlsInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WdeControlsInfo->dinfo.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME;
-    WdeControlsInfo->dinfo.hook = WdeControlsHook;
-    WdeControlsInfo->dinfo.helphook = WdeCToolHelpHook;
-    WdeControlsInfo->dinfo.foreground = NULL;
-    WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
-    WdeControlsInfo->dinfo.is_fixed = FALSE;
-
-    return( true );
 }
 
 void WdeShutdownControls( void )
@@ -433,13 +392,13 @@ void WdeHandleShowToolsMenu( void )
     }
 }
 
-void WdeCToolHelpHook( HWND hwnd, int id, bool pressed )
+static void wdeCToolHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wde_touch( hwnd );
     WdeHandleToolHint( id, pressed );
 }
 
-bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO          *minmax;
     WdeToolBar          *tbar;
@@ -563,4 +522,43 @@ bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     }
 
     return( ret );
+}
+
+bool WdeInitControls( HINSTANCE inst )
+{
+    bool        usingCommonControls;
+    int         i;
+
+    WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
+
+    if( WdeControlsInfo == NULL ) {
+        return( false );
+    }
+
+    usingCommonControls = IsCommCtrlLoaded();
+
+    for( i = 0; i < NUM_TOOLS; i++ ) {
+        if( WdeControlBits[i].flags & WCB_FLAG_COMMON_CONTROL ) {
+            if( !usingCommonControls ) {
+                continue;
+            }
+        }
+        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
+        WdeControlsInfo->items[i].id = WdeControlBits[i].id;
+        WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
+        WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );
+    }
+
+    WdeControlsInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
+    WdeControlsInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
+    WdeControlsInfo->dinfo.border_size.x = TOOL_BORDERX;
+    WdeControlsInfo->dinfo.border_size.y = TOOL_BORDERY;
+    WdeControlsInfo->dinfo.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME;
+    WdeControlsInfo->dinfo.hook = wdeControlsHook;
+    WdeControlsInfo->dinfo.helphook = wdeCToolHelpHook;
+    WdeControlsInfo->dinfo.foreground = NULL;
+    WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
+    WdeControlsInfo->dinfo.is_fixed = FALSE;
+
+    return( true );
 }

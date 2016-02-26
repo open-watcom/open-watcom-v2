@@ -151,9 +151,9 @@ static void addItems( void )
 } /* addItems */
 
 /*
- * FunctionBarHelpProc
+ * functionBarHelpProc
  */
-void FunctionBarHelpProc( HWND hwnd, int id, bool pressed )
+static void functionBarHelpProc( HWND hwnd, int id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -162,12 +162,12 @@ void FunctionBarHelpProc( HWND hwnd, int id, bool pressed )
         SetHintText( " " );
     }
 
-} /* FunctionBarHelpProc */
+} /* functionBarHelpProc */
 
 /*
- * FunctionBarProc - hook function which intercepts messages to the toolbar
+ * functionBarProc - hook function which intercepts messages to the toolbar
  */
-bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
@@ -268,8 +268,8 @@ void InitFunctionBar( HWND hparent )
     tdi.border_size = border;
     tdi.area = functionbar_loc;
     tdi.style = TOOLBAR_FIXED_STYLE;
-    tdi.hook = FunctionBarProc;
-    tdi.helphook = FunctionBarHelpProc;
+    tdi.hook = functionBarProc;
+    tdi.helphook = functionBarHelpProc;
     tdi.background = (HBITMAP)0;
     tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = 1;

@@ -57,8 +57,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-bool WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
-void WdeRibbonHelpHook( HWND hwnd, int id, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -139,53 +137,6 @@ bool WdeInitRibbon( HINSTANCE inst )
     }
 
     return( ret );
-}
-
-bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
-{
-    int i;
-
-    WdeNumRibbonTools = num_tools;
-    WdeRibbonInfo = WdeAllocToolBarInfo( num_tools );
-    if( WdeRibbonInfo == NULL ) {
-        return( false );
-    }
-
-    for( i = 0; i < num_tools; i++ ) {
-        if( tools[i].up ) {
-            WdeRibbonInfo->items[i].u.bmp = LoadBitmap( inst, tools[i].up );
-            WdeRibbonInfo->items[i].id = tools[i].menu_id;
-            WdeRibbonInfo->items[i].flags = tools[i].flags;
-            WdeRibbonInfo->items[i].flags |= ITEM_DOWNBMP;
-            if( tools[i].down ) {
-                WdeRibbonInfo->items[i].depressed = LoadBitmap( inst, tools[i].down );
-            } else {
-                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
-            }
-            if( tools[i].tip_id >= 0 ) {
-                LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP );
-            } else {
-                WdeRibbonInfo->items[i].tip[0] = '\0';
-            }
-        } else {
-            WdeRibbonInfo->items[i].flags = ITEM_BLANK;
-            WdeRibbonInfo->items[i].u.blank_space = tools[i].menu_id;
-        }
-    }
-
-    WdeRibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
-    WdeRibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
-    WdeRibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
-    WdeRibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WdeRibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
-    WdeRibbonInfo->dinfo.hook = WdeRibbonHook;
-    WdeRibbonInfo->dinfo.helphook = WdeRibbonHelpHook;
-    WdeRibbonInfo->dinfo.foreground = NULL;
-    WdeRibbonInfo->dinfo.background = NULL;
-    WdeRibbonInfo->dinfo.is_fixed = TRUE;
-    WdeRibbonInfo->dinfo.use_tips = TRUE;
-
-    return( true );
 }
 
 void WdeShutdownRibbon( void )
@@ -297,21 +248,21 @@ void WdeDestroyRibbon( void )
     WdeResizeWindows();
 }
 
-void WdeSetRibbonItemState( int item, int state )
+void WdeSetRibbonItemState( UINT item, int state )
 {
     if( WdeRibbon != NULL ) {
         WdeSetToolBarItemState( WdeRibbon, item, state );
     }
 }
 
-void WdeRibbonHelpHook( HWND hwnd, int id, bool pressed )
+static void wdeRibbonHelpHook( HWND hwnd, int id, bool pressed )
 {
     _wde_touch( hwnd );
 
     WdeHandleToolHint( id, pressed );
 }
 
-bool WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+static bool wdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool         ret;
 
@@ -333,4 +284,51 @@ bool WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     }
 
     return( ret );
+}
+
+bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
+{
+    int i;
+
+    WdeNumRibbonTools = num_tools;
+    WdeRibbonInfo = WdeAllocToolBarInfo( num_tools );
+    if( WdeRibbonInfo == NULL ) {
+        return( false );
+    }
+
+    for( i = 0; i < num_tools; i++ ) {
+        if( tools[i].up ) {
+            WdeRibbonInfo->items[i].u.bmp = LoadBitmap( inst, tools[i].up );
+            WdeRibbonInfo->items[i].id = tools[i].menu_id;
+            WdeRibbonInfo->items[i].flags = tools[i].flags;
+            WdeRibbonInfo->items[i].flags |= ITEM_DOWNBMP;
+            if( tools[i].down ) {
+                WdeRibbonInfo->items[i].depressed = LoadBitmap( inst, tools[i].down );
+            } else {
+                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
+            }
+            if( tools[i].tip_id >= 0 ) {
+                LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP );
+            } else {
+                WdeRibbonInfo->items[i].tip[0] = '\0';
+            }
+        } else {
+            WdeRibbonInfo->items[i].flags = ITEM_BLANK;
+            WdeRibbonInfo->items[i].u.blank_space = tools[i].menu_id;
+        }
+    }
+
+    WdeRibbonInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
+    WdeRibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
+    WdeRibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
+    WdeRibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
+    WdeRibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
+    WdeRibbonInfo->dinfo.hook = wdeRibbonHook;
+    WdeRibbonInfo->dinfo.helphook = wdeRibbonHelpHook;
+    WdeRibbonInfo->dinfo.foreground = NULL;
+    WdeRibbonInfo->dinfo.background = NULL;
+    WdeRibbonInfo->dinfo.is_fixed = TRUE;
+    WdeRibbonInfo->dinfo.use_tips = TRUE;
+
+    return( true );
 }

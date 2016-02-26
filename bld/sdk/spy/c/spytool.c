@@ -82,9 +82,9 @@ static void addToolButton( button *tb )
 } /* addToolButton */
 
 /*
- * MyToolBarProc - called by toolbar window proc
+ * myToolBarProc - called by toolbar window proc
  */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     hwnd = hwnd;
     msg = msg;
@@ -92,7 +92,7 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     l = l;
     return( false );
 
-} /* MyToolBarProc */
+} /* myToolBarProc */
 
 
 /*
@@ -124,7 +124,7 @@ void CreateSpyTool( HWND parent )
     dinfo.style = TOOLBAR_FIXED_STYLE;
     dinfo.is_fixed = TRUE;
     dinfo.area = r;
-    dinfo.hook = MyToolBarProc;
+    dinfo.hook = myToolBarProc;
     dinfo.helphook = spyToolBarHint;
     dinfo.background = NULL;
     dinfo.use_tips = TRUE;
