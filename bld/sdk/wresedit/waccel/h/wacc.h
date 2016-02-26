@@ -52,7 +52,7 @@ typedef struct WAccelEntry {
     union {
         AccelTableEntry     entry;
         AccelTableEntry32   entry32;
-    };
+    } u;
     struct WAccelEntry *next;
     struct WAccelEntry *prev;
     char  *symbol;
