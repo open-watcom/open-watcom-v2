@@ -102,7 +102,7 @@ static gui_window *GetToolWnd( HWND hwnd )
     return( NULL );
 }
 
-void GUIToolBarHelp( HWND hwnd, int id, bool down )
+static void guiToolBarHelp( HWND hwnd, int id, bool down )
 {
     gui_window          *wnd;
     gui_menu_styles     style;
@@ -115,10 +115,10 @@ void GUIToolBarHelp( HWND hwnd, int id, bool down )
 }
 
 /*
- * GUIToolBarProc - hook message handler for the tool bar.
+ * guiToolBarProc - hook message handler for the tool bar.
  */
 
-bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window              *wnd;
     toolbarinfo             *tbar;
@@ -337,8 +337,8 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         tbar->info.style = TOOLBAR_FLOAT_STYLE;
     }
 
-    tbar->info.hook = GUIToolBarProc;
-    tbar->info.helphook = GUIToolBarHelp;
+    tbar->info.hook = guiToolBarProc;
+    tbar->info.helphook = guiToolBarHelp;
     tbar->info.background = 0;
     tbar->info.foreground = 0;
     tbar->num = num_toolbar_items;

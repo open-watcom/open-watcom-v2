@@ -118,10 +118,33 @@ static void nukeButtons( void )
     toolBarTail = NULL;
 }
 
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
-void ToolBarHelp( HWND hwnd, int id, bool isdown );
+/*
+ * toolBarHelp - update tool bar hint text
+ */
+static void toolBarHelp( HWND hwnd, int id, bool isdown )
+{
+    ss                 *p;
+
+    hwnd = hwnd;
+    SetMenuHelpString( NULL );
+    if( isdown ) {
+        p = toolBarHead;
+        while( p != NULL ) {
+            tool_item *item = (tool_item *)p;
+            if( item->id == id ) {
+                SetMenuHelpString( item->help );
+                break;
+            }
+            p = p->next;
+        }
+    }
+    UpdateStatusWindow();
+
+} /* toolBarHelp */
 
 #if 0
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
+
 static void newToolBarWindow( void )
 {
     RECT                rect;
@@ -160,8 +183,8 @@ static void newToolBarWindow( void )
     dinfo.border_size.x = BORDER_X( ToolBarButtonWidth );
     dinfo.border_size.y = BORDER_Y( ToolBarButtonHeight );
     dinfo.background = buttonPattern;
-    dinfo.hook = MyToolBarProc;
-    dinfo.helphook = ToolBarHelp;
+    dinfo.hook = myToolBarProc;
+    dinfo.helphook = toolBarHelp;
 
     ToolBarDisplay( toolBar, &dinfo );
 
@@ -176,33 +199,9 @@ static void newToolBarWindow( void )
 #endif
 
 /*
- * ToolBarHelp - update tool bar hint text
+ * myToolBarProc - called by toolbar window proc
  */
-void ToolBarHelp( HWND hwnd, int id, bool isdown )
-{
-    ss                 *p;
-
-    hwnd = hwnd;
-    SetMenuHelpString( NULL );
-    if( isdown ) {
-        p = toolBarHead;
-        while( p != NULL ) {
-            tool_item *item = (tool_item *)p;
-            if( item->id == id ) {
-                SetMenuHelpString( item->help );
-                break;
-            }
-            p = p->next;
-        }
-    }
-    UpdateStatusWindow();
-
-} /* ToolBarHelp */
-
-/*
- * MyToolBarProc - called by toolbar window proc
- */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -231,53 +230,7 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     }
     return( false );
 
-} /* MyToolBarProc */
-
-/*
- * createToolBar - create the tool bar
- */
-static void createToolBar( RECT *rect )
-{
-    int                 toolbar_height;
-    TOOLDISPLAYINFO     dinfo;
-
-    fixedToolBar = true;
-    dinfo.button_size.x = EditVars.ToolBarButtonWidth;
-    dinfo.button_size.y = EditVars.ToolBarButtonHeight;
-    dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
-    dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
-    dinfo.style = TOOLBAR_FIXED_STYLE;
-    dinfo.is_fixed = true;
-    toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
-    dinfo.area = *rect;
-    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
-    dinfo.area.top -= 1;
-    dinfo.area.bottom -= 1;
-    dinfo.area.left -= 1;
-    dinfo.area.right += 1;
-    dinfo.hook = MyToolBarProc;
-    dinfo.helphook = ToolBarHelp;
-    dinfo.background = LoadBitmap( InstanceHandle, "BUTTONPATTERN" );
-    dinfo.use_tips = 1;
-    buttonPattern = dinfo.background;
-    toolBar = ToolBarInit( root_window_id );
-#if defined( __NT__ )
-    ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
-#else
-    ToolBarChangeSysColors( GetRGB( EditVars.ToolBarColor ),
-#endif
-                            GetSysColor( COLOR_BTNHIGHLIGHT ),
-                            GetSysColor( COLOR_BTNSHADOW ) );
-    ToolBarDisplay( toolBar, &dinfo );
-    if( toolBar != NULL ) {
-        // CopyRect( &fixedRect, &dinfo.area );
-        // WARNING: These are some pretty stupid arbitrary constants here
-        rect->top = dinfo.area.bottom;
-        ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
-        // UpdateWindow( ToolBarWindow( toolBar ) );
-    }
-
-} /* createToolBar */
+} /* myToolBarProc */
 
 /*
  * getTip - get the string identifier of the tooltip for a given item
@@ -324,36 +277,6 @@ static void addToolBarItem( tool_item *item )
     InvalidateRect( ToolBarWindow( toolBar ), NULL, FALSE );
 
 } /* addToolBarItem */
-
-/*
- * NewToolBar - create a new brand tool bar
- */
-void NewToolBar( RECT *rect )
-{
-    ss          *curr;
-    RECT        covered;
-
-    if( toolBar ) {
-        userClose = false;
-        CloseToolBar();
-        userClose = true;
-    }
-    if( !EditFlags.Toolbar ) {
-        return;
-    }
-    createToolBar( rect );
-    curr = toolBarHead;
-    while( curr != NULL ) {
-        addToolBarItem( (tool_item *)curr );
-        curr = curr->next;
-    }
-    UpdateToolBar( toolBar );
-    covered = *rect;
-    covered.bottom = rect->top;
-    covered.top = 0;
-    InvalidateRect( edit_container_id, &covered, FALSE );
-
-} /* NewToolBar */
 
 /*
  * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help & command)
@@ -501,3 +424,79 @@ void BarfToolBarData( FILE *f )
     }
 
 } /* BarfToolBarData */
+
+/*
+ * createToolBar - create the tool bar
+ */
+static void createToolBar( RECT *rect )
+{
+    int                 toolbar_height;
+    TOOLDISPLAYINFO     dinfo;
+
+    fixedToolBar = true;
+    dinfo.button_size.x = EditVars.ToolBarButtonWidth;
+    dinfo.button_size.y = EditVars.ToolBarButtonHeight;
+    dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
+    dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
+    dinfo.style = TOOLBAR_FIXED_STYLE;
+    dinfo.is_fixed = true;
+    toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
+    dinfo.area = *rect;
+    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
+    dinfo.area.top -= 1;
+    dinfo.area.bottom -= 1;
+    dinfo.area.left -= 1;
+    dinfo.area.right += 1;
+    dinfo.hook = myToolBarProc;
+    dinfo.helphook = toolBarHelp;
+    dinfo.background = LoadBitmap( InstanceHandle, "BUTTONPATTERN" );
+    dinfo.use_tips = 1;
+    buttonPattern = dinfo.background;
+    toolBar = ToolBarInit( root_window_id );
+#if defined( __NT__ )
+    ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
+#else
+    ToolBarChangeSysColors( GetRGB( EditVars.ToolBarColor ),
+#endif
+                            GetSysColor( COLOR_BTNHIGHLIGHT ),
+                            GetSysColor( COLOR_BTNSHADOW ) );
+    ToolBarDisplay( toolBar, &dinfo );
+    if( toolBar != NULL ) {
+        // CopyRect( &fixedRect, &dinfo.area );
+        // WARNING: These are some pretty stupid arbitrary constants here
+        rect->top = dinfo.area.bottom;
+        ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
+        // UpdateWindow( ToolBarWindow( toolBar ) );
+    }
+
+} /* createToolBar */
+
+/*
+ * NewToolBar - create a new brand tool bar
+ */
+void NewToolBar( RECT *rect )
+{
+    ss          *curr;
+    RECT        covered;
+
+    if( toolBar ) {
+        userClose = false;
+        CloseToolBar();
+        userClose = true;
+    }
+    if( !EditFlags.Toolbar ) {
+        return;
+    }
+    createToolBar( rect );
+    curr = toolBarHead;
+    while( curr != NULL ) {
+        addToolBarItem( (tool_item *)curr );
+        curr = curr->next;
+    }
+    UpdateToolBar( toolBar );
+    covered = *rect;
+    covered.bottom = rect->top;
+    covered.top = 0;
+    InvalidateRect( edit_container_id, &covered, FALSE );
+
+} /* NewToolBar */
