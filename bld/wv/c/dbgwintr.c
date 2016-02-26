@@ -46,6 +46,7 @@
 #include "dbgwdlg.h"
 #include "namelist.h"
 #include "symcomp.h"
+#include "dbgwintr.h"
 
 
 extern void             WndUserAdd(char *,unsigned int );
@@ -58,7 +59,7 @@ static void BadCmd( void )
 }
 
 
-void MenuCopy( char *dst, const char *from, char *to )
+static void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
     bool        ampdumped;
@@ -95,7 +96,7 @@ void MenuCopy( char *dst, const char *from, char *to )
 }
 
 
-void MenuDump( int indent, int num_popups, gui_menu_struct *child )
+static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
 {
     char        *p;
     int         i;
@@ -130,8 +131,7 @@ extern gui_menu_struct WndMainMenu[];
 extern int WndNumMenus;
 extern wnd_info *WndInfoTab[];
 
-
-void XDumpMenus( void )
+static void XDumpMenus( void )
 {
     wnd_class_wv    wndclass;
     char            *p;

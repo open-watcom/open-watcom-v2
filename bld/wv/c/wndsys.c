@@ -80,7 +80,6 @@ extern bool             DlgSearchAll( char **, void * );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern void             SetUpdateFlags( update_list );
 
-extern void             XDumpMenus( void );
 static void             WndBadCmd( a_window * );
 
 #include "menudef.h"

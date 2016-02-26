@@ -63,6 +63,7 @@
 #include "dipinter.h"
 #include "dbgdot.h"
 #include "dlgcmd.h"
+#include "dbgwintr.h"
 
 
 extern void             *WndAsmInspect( address addr );

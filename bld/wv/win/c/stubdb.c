@@ -59,6 +59,7 @@
 #include "dbgdot.h"
 #include "ntdbgpb.h"
 #include "dlgcmd.h"
+#include "dbgwintr.h"
 
 
 extern void             *WndAsmInspect(address addr);
@@ -467,11 +468,13 @@ void ProcHelp( void )
     // stub for old UI
     FlushEOC();
 }
+#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
+#endif
 void ProcPaint( void )
 {
     // stub for old UI

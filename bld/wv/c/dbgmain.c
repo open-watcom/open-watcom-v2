@@ -69,6 +69,7 @@
 #include "dbginit.h"
 #include "dbglkup.h"
 #include "dbgio.h"
+#include "dbgwintr.h"
 
 
 // This list of extern functions is in alphabetic order.:
