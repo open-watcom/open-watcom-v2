@@ -1005,7 +1005,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_createdialog( inst, id, hwnd, proc ) \
                                         CreateDialog( inst, id, hwnd, proc )
 
-    #define _wpi_enablewindow( hwnd, bool ) EnableWindow( hwnd, bool )
+    #define _wpi_enablewindow( hwnd, enable ) EnableWindow( hwnd, enable )
 
     #define _wpi_ismenuitemvalid( hwnd, id ) \
                                 ( GetMenuState( hwnd, id, MF_BYCOMMAND ) == -1 )

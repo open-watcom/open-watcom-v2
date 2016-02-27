@@ -1210,7 +1210,7 @@ extern WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format );
             WinLoadDlg( HWND_DESKTOP, hwnd, proc, (inst).mod_handle, \
                                                     (ULONG)id, (PVOID)NULL )
 
-    #define _wpi_enablewindow( hwnd, bool ) WinEnableWindow( hwnd, bool )
+    #define _wpi_enablewindow( hwnd, enable ) WinEnableWindow( hwnd, enable )
 
     #define _wpi_ismenuitemvalid( hwnd, id ) WinIsMenuItemValid( hwnd, id )
 
