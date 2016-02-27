@@ -184,6 +184,7 @@ static void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
     had_cache = WndSetCache( wnd, FALSE );
     WndBegPaint( wnd, start_row, num );
     notify_row = WND_NO_ROW;
+    prev_attr = 0;
     for( row = start_row; row < start_row + num; ++row ) {
         for( piece = 0; ; ++piece ) {
             if( row < wnd->title_size ) {
