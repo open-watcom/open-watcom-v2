@@ -179,10 +179,10 @@ void ReadConfig( void ) {
                                         info.forget_pos, WATCOM_INI );
     info.allowmult = GetPrivateProfileInt( SECT_NAME, MW_1_WND,
                                         info.allowmult, WATCOM_INI );
-    info.data_menuid = GetPrivateProfileInt( SECT_NAME, MW_DISP_TYPE,
-                                        info.data_menuid, WATCOM_INI );
-    info.code_menuid = GetPrivateProfileInt( SECT_NAME, MW_CODE_TYPE,
-                                        info.code_menuid, WATCOM_INI );
+    info.data_type = GetPrivateProfileInt( SECT_NAME, MW_DISP_TYPE,
+                                        info.data_type, WATCOM_INI );
+    info.code_type = GetPrivateProfileInt( SECT_NAME, MW_CODE_TYPE,
+                                        info.code_type, WATCOM_INI );
     SetMemWndConfig( &info );
     InitMonoFont( SECT_NAME, WATCOM_INI, SYSTEM_FIXED_FONT, Instance );
 } /* ReadConfig */
@@ -238,9 +238,9 @@ void SaveConfigFile( BOOL save_all_values ) {
     PutProfileBool( MW_NO_UPDT, info.forget_pos );
     utoa( info.allowmult, buf, 10 );
     WritePrivateProfileString( SECT_NAME, MW_1_WND, buf, WATCOM_INI );
-    utoa( info.data_menuid, buf, 10 );
+    utoa( info.data_type, buf, 10 );
     WritePrivateProfileString( SECT_NAME, MW_DISP_TYPE, buf, WATCOM_INI );
-    utoa( info.code_menuid, buf, 10 );
+    utoa( info.code_type, buf, 10 );
     WritePrivateProfileString( SECT_NAME, MW_CODE_TYPE, buf, WATCOM_INI );
     SaveMonoFont( SECT_NAME, WATCOM_INI );
 }/* SaveConfigFile */

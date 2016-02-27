@@ -334,11 +334,11 @@ static HMENU duplicateMenu( HMENU orig )
 {
     WPI_MENUSTATE       mstate;
     int                 num;
+    int                 pos;
     unsigned            menu_flags;
     unsigned            attr_flags;
-    int                 menuid;
+    unsigned            menuid;
     char                name[MAX_STR];
-    int                 pos;
     HMENU               copy;
     HMENU               sub;
 
@@ -955,7 +955,7 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
                     return( true );
                 }
             } else {
-                if( GetMenuItemID( menu, pos ) == wparam ) {
+                if( GetMenuItemID( menu, pos ) == (UINT)wparam ) {
                     _wpi_sendmessage( currentWindow, WM_COMMAND, wparam, lparam );
                     return( true );
                 }

@@ -100,7 +100,7 @@ WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
-static bool genLine( unsigned char digits, DWORD limit, int type, WORD sel, char *buf, DWORD offset );
+static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type, WORD sel, char *buf, DWORD offset );
 
 typedef enum {
     MT_FREE,
@@ -186,7 +186,7 @@ static void memDumpHeader( int hdl, MemWndInfo *info )
     time_t              tm;
     char                buf[80];
     unsigned            len;
-    int                 type_index;
+    unsigned            type_index;
     char                *rcstr;
 #ifndef __NT__
     GLOBALENTRY         ge;
@@ -365,8 +365,8 @@ void GetMemWndDefault( MemWndConfig *cfg )
     cfg->appname = "";
     cfg->autopos_info = true;
     cfg->forget_pos = false;
-    cfg->disp_type = MEMINFO_BYTE;
-    cfg->code_disp_type = MEMINFO_CODE_16;
+    cfg->data_type = MEMINFO_BYTE;
+    cfg->code_type = MEMINFO_CODE_16;
 
 } /* GetMemWndDefault */
 
@@ -408,7 +408,7 @@ static char *genByte( char ch, char *ptr )
  * genLine - create a line for output of the form:
 XXXXXXXX  dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd  cccccccccccccccc
  */
-static bool genLine( unsigned char digits, DWORD limit, int type,
+static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
                      WORD sel, char *buf, DWORD offset )
 {
     char        *ptr;
@@ -431,7 +431,7 @@ static bool genLine( unsigned char digits, DWORD limit, int type,
 
     sprintf( buf, "%08lX  ", offset );
     ptr = buf + 10;
-    switch( type ) {
+    switch( disp_type ) {
     case MEMINFO_BYTE:
         for( i = 0; i < digits; i++ ) {
             if( offset + i >= limit ) {
@@ -609,7 +609,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
 /*
  * bytesToDisplay
  */
-static unsigned char bytesToDisplay( int width, int type )
+static unsigned char bytesToDisplay( int width, unsigned disp_type )
 {
     int     bytes;
 
@@ -617,7 +617,7 @@ static unsigned char bytesToDisplay( int width, int type )
     if( bytes < NO_DATA_SPACE ) {
         bytes = 0;
     } else {
-        switch( type ) {
+        switch( disp_type ) {
         case MEMINFO_WORD:
             bytes = 2 * ((bytes - NO_DATA_SPACE) / 7);
             break;
@@ -912,7 +912,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
     DWORD               size;
     HBRUSH              wbrush;
     FARPROC             fp;
-    int                 cmd;
+    unsigned            cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
     switch( msg ) {
@@ -1076,9 +1076,9 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
             MemConfigInfo.maximized = info->maximized;
             MemConfigInfo.autopos_info = info->autopos;
             if( ISCODE( info ) ) {
-                MemConfigInfo.code_disp_type = info->disp_type;
+                MemConfigInfo.code_type = info->disp_type;
             } else {
-                MemConfigInfo.disp_type = info->disp_type;
+                MemConfigInfo.data_type = info->disp_type;
             }
             if( !info->maximized ) {
                 GetWindowRect( hwnd, &area );
@@ -1339,23 +1339,23 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     if( isdpmi ) {
         GetADescriptor( seg, &desc );
         if( desc.type == 2 ) {
-            info->disp_type = MemConfigInfo.disp_type;
+            info->disp_type = MemConfigInfo.data_type;
         } else {
-            info->disp_type = MemConfigInfo.code_disp_type;
+            info->disp_type = MemConfigInfo.code_type;
         }
     } else {
         memset( &ge, 0, sizeof( GLOBALENTRY ) );
         ge.dwSize = sizeof( GLOBALENTRY );
         GlobalEntryHandle( &ge, (HGLOBAL)seg );
         if( ge.wType == GT_CODE ) {
-            info->disp_type = MemConfigInfo.code_disp_type;
+            info->disp_type = MemConfigInfo.code_type;
         } else {
-            info->disp_type = MemConfigInfo.disp_type;
+            info->disp_type = MemConfigInfo.data_type;
         }
     }
     info->base = 0;
 #else
-    info->disp_type = MemConfigInfo.disp_type;
+    info->disp_type = MemConfigInfo.data_type;
     info->base = CurBase;
 #endif
     info->offset = info->base;

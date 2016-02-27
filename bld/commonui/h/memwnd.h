@@ -76,7 +76,7 @@ typedef struct memdata {
     DWORD           limit;                  /* limit of this selector */
     DWORD           base;                   /* base offset */
     unsigned        lastline;
-    int             disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
+    unsigned        disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
     unsigned char   bytesdisp;
     DWORD           ins_cnt;
     AsmInfo         *asm;
@@ -104,10 +104,9 @@ typedef struct memconfig {
     int         ypos;                   /* y coordinate of mem window */
     int         xsize;                  /* width of mem window */
     int         ysize;                  /* height of mem window */
-    int         disp_type;              /* display bytes, words, dwords (menu item value) */
-    int         code_disp_type;         /* display 16 or 32 bit code (menu item value) */
-    MultWnd     allowmult;              /* what to do when the user tries
-                                           to open more than one window */
+    unsigned    data_type;              /* display bytes, words, dwords (menu item value) */
+    unsigned    code_type;              /* display 16 or 32 bit code (menu item value) */
+    MultWnd     allowmult;              /* what to do when the user tries to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
     char        *appname;               /* name of calling application */
     bool        init            : 1;    /* for internal use only */
