@@ -252,7 +252,7 @@ static void     AddFile( list **l, char *fname )
     *l = p;
 }
 
-void    main( int argc, char *argv[] ) {
+int     main( int argc, char *argv[] ) {
 //======================================
 
     int         rc;
@@ -328,6 +328,7 @@ void    main( int argc, char *argv[] ) {
     free( Word );
     free( cmd );
     wfl_exit( rc == 0 ? 0 : 1 );
+    return( 0 );
 }
 
 static  int     Parse( int argc, char **argv ) {
@@ -358,11 +359,11 @@ static  int     Parse( int argc, char **argv ) {
     // Skip the first entry - it's the current program's name
     opt_index = 1;
     cmp_opt_index = 0;
-    
+
     while( opt_index < argc ) {
         cmd = argv[opt_index];
         opt = *cmd;
-        
+
         if( ( opt == '-' ) || ( opt == SwitchChars[1] ) ) {
             cmd++;
         } else {
@@ -674,20 +675,20 @@ static int tool_exec( tool_type utl, char *target, char **options )
     int     rc;
     int     pass_argc;
     char    *pass_argv[MAX_OPTIONS+3];
-    
+
     FindToolPath( utl );
-    
+
     pass_argv[0] = tools[utl].name;
-    pass_argc = 1; 
-    
+    pass_argc = 1;
+
     while(options != NULL && options[pass_argc-1] != NULL && pass_argc < MAX_OPTIONS) {
         pass_argv[pass_argc] = options[pass_argc-1];
         pass_argc++;
-    } 
-    
+    }
+
     pass_argv[pass_argc++] = target;
     pass_argv[pass_argc] = NULL;
-    
+
     if( !Flags.quiet ) {
         fputs( "\t", stdout );
         for( pass_argc=0; pass_argv[pass_argc] != NULL; pass_argc++ ) {
@@ -732,7 +733,7 @@ static  int     CompLink( void ) {
     int         i;
     list        *currobj;
     list        *nextobj;
-    
+
     if( Flags.quiet ) {
         Fputnl( "option quiet", Fp );
     }
@@ -864,7 +865,7 @@ static  void    MakeName( char *name, char *ext ) {
 //=================================================
 
     PGROUP  pg;
-    
+
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
         pg.ext = ext;

@@ -475,7 +475,7 @@ typedef struct {
 static void dump_cv4_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
 /**********************************************************************/
 {
-    bool                first = TRUE;
+//    bool                first = TRUE;
     cv_sst_src_lne_seg  src_ln;
     cv_srcln_off_16     lo_16;
 
@@ -491,7 +491,7 @@ static void dump_cv4_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     while( src_ln.cPair-- ) {
         Wread( &lo_16, sizeof( lo_16 ) );
         Dump_header( &lo_16, cv_lnoff16_msg );
-        first = FALSE;
+//        first = FALSE;
     }
     Wdputslc( "\n" );
 }

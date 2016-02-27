@@ -398,7 +398,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     int         curr_row;
     bool        done;
     bool        no_select;
-    bool        select_default;
+//    bool        select_default;
     bool        no_move;
     int         new;
     UI_WINDOW   window;
@@ -444,7 +444,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     done = false;
     new_ev = EV_NO_EVENT;
     while( !done ) {
-        select_default = FALSE;
+//        select_default = FALSE;
         ev = uivgetevent( NULL );
 
         switch( ev ) {

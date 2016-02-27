@@ -69,12 +69,11 @@ static void print_info_title( const char *title )
 static void get_len_prefix_string( char *res, const char *str )
 /*************************************************************/
 {
-    {
-        int     i;      // WTF?!
-        i = 1;
-    }
-    memcpy( res, &str[1], str[0] );
-    res[ *(unsigned_8 *)str ] = 0;
+    unsigned char   len;
+
+    len = *(unsigned char *)str;
+    memcpy( res, str + 1, len );
+    res[len] = '\0';
 
 } /* get_len_prefix_string */
 

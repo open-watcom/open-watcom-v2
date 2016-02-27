@@ -49,7 +49,7 @@ typedef struct {
     char *              name;           // enumerated name
     uint_32             tag;            // tag for this abbreviation
     abbrev_code         valid_mask;     // valid bits for this abbreviation
-    uint_32             data[ MAX_CODES ]; // attr/form pairs
+    uint_32             data[MAX_CODES]; // attr/form pairs
 } abbrev_data;
 
 /*
@@ -612,7 +612,7 @@ typedef struct {
     size_t              data_len;
 } extra_info;
 
-extra_info abbrevExtra[ AB_MAX ];
+extra_info abbrevExtra[AB_MAX];
 
 
 void emitEnum(
@@ -622,14 +622,14 @@ void emitEnum(
 
     fprintf( fp, "enum {\n    AB_PADDING,\n" );
     for( u = 0; u < AB_MAX; ++u ) {
-        fprintf( fp, "    %s,\n", abbrevInfo[ u ].name );
+        fprintf( fp, "    %s,\n", abbrevInfo[u].name );
     }
     fprintf( fp, "    AB_MAX\n};" );
 }
 
 size_t topOfEncoding;
-uint_8 encodingBuf[ AB_MAX * MAX_LEB128 * MAX_CODES ];
-uint_8 tempEncoding[ MAX_LEB128 * MAX_CODES ];
+uint_8 encodingBuf[AB_MAX * MAX_LEB128 * MAX_CODES];
+uint_8 tempEncoding[MAX_LEB128 * MAX_CODES];
 
 #define ANCHOR_NONE ((size_t)-1)
 
@@ -651,7 +651,7 @@ size_t addToEncoding(
     src = 0;
     anchor = ANCHOR_NONE;
     while( dest < topOfEncoding ) {
-        if( encodingBuf[ dest ] != tempEncoding[ src ] ) {
+        if( encodingBuf[dest] != tempEncoding[src] ) {
             src = 0;
             if( anchor == ANCHOR_NONE ) {
                 ++dest;
@@ -675,7 +675,7 @@ size_t addToEncoding(
         At this point we know that src bytes of the source string match
         the last src bytes of the destination string.
     */
-    memcpy( &encodingBuf[ dest ], &tempEncoding[ src ], this_size - src );
+    memcpy( &encodingBuf[dest], &tempEncoding[src], this_size - src );
     topOfEncoding += this_size - src;
     if( anchor == ANCHOR_NONE ) {
         return( dest );
@@ -703,11 +703,11 @@ void emitEncodings(
             Determine what the sequence of bytes is for this abbreviation
         */
         end = tempEncoding;
-        for( data = abbrevInfo[ u ].data; *data; ++data ) {
+        for( data = abbrevInfo[u].data; *data; ++data ) {
             end = ULEB128( end, *data );
         }
-        abbrevExtra[ u ].data_len = end - tempEncoding;
-        abbrevExtra[ u ].data_offset = addToEncoding( end - tempEncoding );
+        abbrevExtra[u].data_len = end - tempEncoding;
+        abbrevExtra[u].data_offset = addToEncoding( end - tempEncoding );
     }
 
     fprintf( fp, "\nstatic const uint_8 encodings[] = {\n    /* 0x00 */ " );
@@ -798,8 +798,7 @@ uint CountBits(
     DJG
 */
 
-uint_32 emitInfo(
-    FILE *                      fp )
+uint_32 emitInfo( FILE *fp )
 {
     uint_32                     total;
     uint                        u;
@@ -815,29 +814,29 @@ uint_32 emitInfo(
     u = 0;
     for(;;) {
         fprintf( fp, "/*%-32s*/{ 0x%08lx, 0x%04x, 0x%02x, 0x%02x, 0x%02x }",
-            abbrevInfo[ u ].name,
-            (unsigned long)abbrevInfo[ u ].valid_mask,
+            abbrevInfo[u].name,
+            (unsigned long)abbrevInfo[u].valid_mask,
             (unsigned)total,
-            abbrevExtra[ u ].data_offset,
-            abbrevExtra[ u ].data_len,
-            abbrevInfo[ u ].tag
+            (unsigned)abbrevExtra[u].data_offset,
+            (unsigned)abbrevExtra[u].data_len,
+            abbrevInfo[u].tag
         );
-        if( abbrevExtra[ u ].data_offset > 0xff ) {
+        if( abbrevExtra[u].data_offset > 0xff ) {
             /* just change the uint_8 data_offset in the above structure */
             fprintf( stderr, "data_offset too large, must increase size of data_offset field\n" );
             exit( 1 );
         }
-        if( abbrevExtra[ u ].data_len > 0xff ) {
+        if( abbrevExtra[u].data_len > 0xff ) {
             /* just change the uint_8 data_len in the above structure */
             fprintf( stderr, "data_len too large, must increase size of data_len field\n" );
             exit( 1 );
         }
-        if( abbrevInfo[ u ].tag > 0xffff ) {
+        if( abbrevInfo[u].tag > 0xffff ) {
             /* just change the uint_16 tag in the above structure */
             fprintf( stderr, "Tag too large, must increase size of tag field\n" );
             exit( 1 );
         }
-        total += 1 << CountBits( abbrevInfo[ u ].valid_mask & ~AB_ALWAYS );
+        total += 1 << CountBits( abbrevInfo[u].valid_mask & ~AB_ALWAYS );
         ++u;
         if( u == AB_MAX ) break;
         if( total > 0xffff ) {
