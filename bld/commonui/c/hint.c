@@ -160,19 +160,21 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
     WORD        flags;
     MSGID       msgid;
 
-    menu = GetMenu( hwnd );
-    flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
-    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wparam, lparam ) == (HMENU)NULL ) {
+    if( MENU_CLOSED( wparam, lparam ) ) {
         updateHintText( wnd, HINT_EMPTY );
-    } else if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-        updateHintText( wnd, HINT_EMPTY );
-    } else if( flags & MF_POPUP ) {
-        //
-        // NYI handle popup message hints
-        //
     } else {
-        msgid = getItemMsg( wnd, GET_WM_MENUSELECT_ITEM( wparam, lparam ) );
-        updateHintText( wnd, msgid );
+        menu = GetMenu( hwnd );
+        flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
+        if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
+            updateHintText( wnd, HINT_EMPTY );
+        } else if( flags & MF_POPUP ) {
+            //
+            // NYI handle popup message hints
+            //
+        } else {
+            msgid = getItemMsg( wnd, GET_WM_MENUSELECT_ITEM( wparam, lparam ) );
+            updateHintText( wnd, msgid );
+        }
     }
 
 } /* HintMenuSelect */

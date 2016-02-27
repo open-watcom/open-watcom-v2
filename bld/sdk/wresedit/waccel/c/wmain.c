@@ -677,14 +677,15 @@ void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
     WORD flags;
 
-    flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
-
-    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wParam, lParam ) == (HMENU)NULL ) {
-        einfo->last_menu_select = -1;
-    } else if( flags & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
+    if( MENU_CLOSED( wParam, lParam ) ) {
         einfo->last_menu_select = -1;
     } else {
-        einfo->last_menu_select = GET_WM_MENUSELECT_ITEM( wParam, lParam );
+        flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
+        if( flags & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
+            einfo->last_menu_select = -1;
+        } else {
+            einfo->last_menu_select = GET_WM_MENUSELECT_ITEM( wParam, lParam );
+        }
     }
 }
 

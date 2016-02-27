@@ -1154,17 +1154,15 @@ void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
 {
     int         flags;
     int         menuid;
-    HMENU       hmenu;
     menu        *cmenu;
     item        *citem;
     bool        found;
     int         i;
 
-    hmenu = (HMENU)GET_WM_MENUSELECT_HMENU( wparam, lparam );
-    menuid = GET_WM_MENUSELECT_ITEM( wparam, lparam );
-    flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
     currMenuHelpString = NULL;
-    if( flags != -1 || hmenu != 0 ) {
+    if( !MENU_CLOSED( wparam, lparam ) ) {
+        menuid = GET_WM_MENUSELECT_ITEM( wparam, lparam );
+        flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
         found = false;
         for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
             if( (flags & MF_POPUP) ) {

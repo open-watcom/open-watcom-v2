@@ -65,22 +65,20 @@ typedef struct {
 } WREPopupHintItem;
 
 typedef struct {
-    int               num;
-    HMENU             menu;
-    WREPopupHintItem *hint_items;
+    int                 num;
+    HMENU               menu;
+    WREPopupHintItem    *hint_items;
 } WREPopupListItem;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WREHintItem      *WREGetHintItem         ( int id );
-static void             WREHandlePopupHint      ( HMENU, HMENU );
-static DWORD            WREGetPopupHint         ( WREPopupListItem *, HMENU );
-static WREPopupListItem *WREFindPopupListItem   ( HMENU menu );
-static bool             WRECreateWREPopupListItem ( int, HMENU,
-                                                    WREPopupHintItem * );
-static bool              WREInitHintItems       ( int, HMENU,
-                                                  WREPopupHintItem * );
+static WREHintItem      *WREGetHintItem( int id );
+static void             WREHandlePopupHint( HMENU, HMENU );
+static DWORD            WREGetPopupHint( WREPopupListItem *, HMENU );
+static WREPopupListItem *WREFindPopupListItem( HMENU menu );
+static bool             WRECreateWREPopupListItem( int, HMENU, WREPopupHintItem * );
+static bool             WREInitHintItems( int, HMENU, WREPopupHintItem * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -145,22 +143,22 @@ void WREHandleMenuSelect ( WPARAM wParam, LPARAM lParam )
     HMENU popup;
     WORD  flags;
 
-    menu  = WREGetMenuHandle();
-    flags = GET_WM_MENUSELECT_FLAGS(wParam,lParam);
-
-    if( ( flags == (WORD)-1 ) &&
-         ( GET_WM_MENUSELECT_HMENU(wParam,lParam) == (HMENU)NULL ) ) {
+    if( MENU_CLOSED( wParam, lParam ) ) {
         WRESetStatusText ( NULL, "", TRUE );
-    } else if ( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-        WRESetStatusText ( NULL, "", TRUE );
-    } else if ( flags & MF_POPUP ) {
-        popup = (HMENU) GET_WM_MENUSELECT_ITEM(wParam,lParam);
-        #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
-        #endif
-        WREHandlePopupHint ( menu, popup );
     } else {
-        WREDisplayHint ( (int) GET_WM_MENUSELECT_ITEM(wParam,lParam) );
+        menu  = WREGetMenuHandle();
+        flags = GET_WM_MENUSELECT_FLAGS(wParam,lParam);
+        if ( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
+            WRESetStatusText ( NULL, "", TRUE );
+        } else if ( flags & MF_POPUP ) {
+            popup = (HMENU)GET_WM_MENUSELECT_ITEM(wParam,lParam);
+#ifdef __NT__
+            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+#endif
+            WREHandlePopupHint ( menu, popup );
+        } else {
+            WREDisplayHint ( (int)GET_WM_MENUSELECT_ITEM(wParam,lParam) );
+        }
     }
 }
 
@@ -270,13 +268,12 @@ void WREFiniHints ( void )
     WREPopupListItem *p;
 
     for ( plist = WREPopupList; plist; plist = ListConsume ( plist ) ) {
-        p = (WREPopupListItem *) ListElement ( plist );
+        p = (WREPopupListItem *)ListElement( plist );
         WRMemFree ( p );
     }
 }
 
-bool WRECreateWREPopupListItem ( int num, HMENU menu,
-                                 WREPopupHintItem *hint_items )
+bool WRECreateWREPopupListItem ( int num, HMENU menu, WREPopupHintItem *hint_items )
 {
     WREPopupListItem *p;
 
@@ -307,9 +304,7 @@ bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
 
     for ( i = 0; i < num; i++ ) {
         popup = menu;
-        for ( j = 0;
-              (j < MAX_NESTED_POPUPS) && (hint_items[i].loc[j] != -1);
-              j++ ) {
+        for ( j = 0; (j < MAX_NESTED_POPUPS) && (hint_items[i].loc[j] != -1); j++ ) {
             popup = GetSubMenu ( popup, hint_items[i].loc[j] );
         }
         hint_items[i].popup = popup;
@@ -317,4 +312,3 @@ bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
 
     return ( TRUE );
 }
-

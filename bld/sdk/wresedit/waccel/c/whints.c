@@ -118,20 +118,21 @@ void WHandleMenuSelect( WStatBar *wsb, HMENU menu, WPARAM wParam,
         return;
     }
 
-    flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
-
-    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wParam, lParam ) == (HMENU)NULL ) {
+    if( MENU_CLOSED( wParam, lParam ) ) {
         WSetStatusText( wsb, NULL, "" );
-    } else if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-        WSetStatusText( wsb, NULL, "" );
-    } else if( flags & MF_POPUP ) {
-        popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
-#ifdef __NT__
-        popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
-#endif
-        WHandlePopupHint( wsb, menu, popup );
     } else {
-        WDisplayHint( wsb, (int)GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+        flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
+        if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
+            WSetStatusText( wsb, NULL, "" );
+        } else if( flags & MF_POPUP ) {
+            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+#ifdef __NT__
+            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+#endif
+            WHandlePopupHint( wsb, menu, popup );
+        } else {
+            WDisplayHint( wsb, (int)GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+        }
     }
 }
 

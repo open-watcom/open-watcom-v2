@@ -193,25 +193,25 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
         return;
     }
 
-    flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
-
     entry = NULL;
-
-    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wParam, lParam ) == (HMENU)NULL ) {
+    if( MENU_CLOSED( wParam, lParam ) ) {
         // we ignore WM_MENUSELECT when a menu is closing
-    } else if( flags & MF_SYSMENU ) {
-        // we ignore WM_MENUSELECT for the system menu
-    } else if( flags & MF_SEPARATOR ) {
-        // we ignore WM_MENUSELECT for separators, for now...
-    } else if( flags & MF_POPUP ) {
-        popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
-#ifdef __NT__
-        popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
-#endif
-        entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, popup );
     } else {
-        id = GET_WM_MENUSELECT_ITEM( wParam, lParam );
-        entry = WFindEntryFromPreviewID( einfo->menu->first_entry, id );
+        flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
+        if( flags & MF_SYSMENU ) {
+            // we ignore WM_MENUSELECT for the system menu
+        } else if( flags & MF_SEPARATOR ) {
+            // we ignore WM_MENUSELECT for separators, for now...
+        } else if( flags & MF_POPUP ) {
+            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+#ifdef __NT__
+            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+#endif
+            entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, popup );
+        } else {
+            id = GET_WM_MENUSELECT_ITEM( wParam, lParam );
+            entry = WFindEntryFromPreviewID( einfo->menu->first_entry, id );
+        }
     }
 
     if( entry == NULL ) {

@@ -434,9 +434,9 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     int                 ysize;
     PAINTSTRUCT         paintinfo;
     MINMAXINFO          *mminfo;
-    HMENU               mh;
+//    HMENU               mh;
     WORD                item;
-    WORD                flags;
+//    WORD                flags;
 
 
     info = (MainWndInfo *)GET_WNDINFO( hwnd );
@@ -447,7 +447,8 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         info->magnif = 5 * ZOOM_FACTOR;
         info->magnifpen = CreatePen( PS_INSIDEFRAME, 1, RGB( 0, 0, 0) );
         info->zoomincrement = 0;
-        mh = GetMenu( hwnd );
+//        mh = GetMenu( hwnd );
+        GetMenu( hwnd );
         if( ConfigInfo.topmost ) {
             SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0,
                           SWP_NOMOVE | SWP_NOSIZE );
@@ -478,24 +479,25 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
                   GET_WM_VSCROLL_CODE( wparam, lparam ), info );
         break;
     case WM_MENUSELECT:
-        mh = GET_WM_MENUSELECT_HMENU( wparam, lparam );
-        flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
-        item = GET_WM_MENUSELECT_ITEM( wparam, lparam );
-        if( flags == (WORD)-1 && mh == 0
-            && info->zoomincrement != 0 ) {
-            info->zoomincrement = 0;
-            KillTimer( hwnd, ZM_TIMER );
+        if( MENU_CLOSED( wparam, lparam ) ) {
+            if( info->zoomincrement != 0 ) {
+                info->zoomincrement = 0;
+                KillTimer( hwnd, ZM_TIMER );
+            }
             break;
-        } else if( item == ZMMENU_ZOOMIN ) {
-            EndScrolling( info );
-            info->zoomincrement = 1;
-            info->zoomincrement *= info->magnif / 4 + 1;
-        } else if( item == ZMMENU_ZOOMOUT ) {
-            EndScrolling( info );
-            info->zoomincrement = -1;
-            info->zoomincrement *= info->magnif / 4 + 1;
         } else {
-            break;
+            item = GET_WM_MENUSELECT_ITEM( wparam, lparam );
+            if( item == ZMMENU_ZOOMIN ) {
+                EndScrolling( info );
+                info->zoomincrement = 1;
+                info->zoomincrement *= info->magnif / 4 + 1;
+            } else if( item == ZMMENU_ZOOMOUT ) {
+                EndScrolling( info );
+                info->zoomincrement = -1;
+                info->zoomincrement *= info->magnif / 4 + 1;
+            } else {
+                break;
+            }
         }
         DoMagnify( hwnd, info );
         SetTimer( hwnd, ZM_TIMER, ZOOM_FREQUENCY, NULL );
@@ -509,7 +511,7 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
             EndScrolling( info );
             break;
         case ZM_REFRESH_TIMER:
-#if(0)
+#if 0
             if( info->scrolling || ( info->looking && !info->new_look ) ) {
                 dc = GetDC( NULL );
                 DrawMagnifier( dc, info );
@@ -521,7 +523,7 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
                 DrawScreen( info->screen, NULL, &Origin, &info->wndsize,
                                 &Origin, &info->magsize );
             }
-#if(0)
+#if 0
             if( info->scrolling || ( info->looking && !info->new_look ) ) {
                 dc = GetDC( NULL );
                 DrawMagnifier( dc, info );
