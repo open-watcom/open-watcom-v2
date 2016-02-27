@@ -50,7 +50,8 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
  */
 BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-    UINT         msecs, timer, start;
+    UINT         msecs, start;
+    UINT_PTR     timer;
     HDC          dc, tdc;
     HBITMAP      old;
     HWND         w666;
@@ -143,7 +144,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         break;
 
     case WM_TIMER:
-        timer = (UINT)GET_DLGDATA( hwnd );
+        timer = (UINT_PTR)GET_DLGDATA( hwnd );
         if( timer ) {
             KillTimer( hwnd, timer );
         }

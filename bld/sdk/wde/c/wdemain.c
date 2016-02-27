@@ -1338,7 +1338,8 @@ void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 
 WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    UINT        msecs, timer, start;
+    UINT        msecs, start;
+    UINT_PTR    timer;
     HDC         dc, tdc;
     HBITMAP     old;
     HWND        w666;
@@ -1449,7 +1450,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         break;
 
     case WM_TIMER:
-        timer = (UINT)GET_DLGDATA( hDlg );
+        timer = (UINT_PTR)GET_DLGDATA( hDlg );
         if( timer ) {
             KillTimer( hDlg, timer );
         }

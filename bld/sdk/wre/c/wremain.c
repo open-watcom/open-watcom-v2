@@ -1058,7 +1058,8 @@ void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 
 BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    UINT        msecs, timer, start;
+    UINT        msecs, start;
+    UINT_PTR    timer;
     HDC         dc, tdc;
     HBITMAP     old;
     HWND        w666;
@@ -1166,7 +1167,7 @@ BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
         break;
 
     case WM_TIMER:
-        timer = (UINT)GET_DLGDATA( hDlg );
+        timer = (UINT_PTR)GET_DLGDATA( hDlg );
         if( timer != 0 ) {
             KillTimer( hDlg, timer );
         }
