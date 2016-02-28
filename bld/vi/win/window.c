@@ -231,8 +231,11 @@ int WindowAuxInfo( window_id wid, int type )
         break;
     case WIND_INFO_BORDER_COLOR1:
     case WIND_INFO_BORDER_COLOR2:
-    default:
         value = -1;
+        break;
+    default:
+        value = 0;
+        break;
     }
     return( value );
 }

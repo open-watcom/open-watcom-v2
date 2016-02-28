@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "vi.h"
 #include "utils.h"
 #include "clrbar.h"

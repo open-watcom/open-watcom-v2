@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "vi.h"
 #ifdef __WATCOMC__
 #include <process.h>

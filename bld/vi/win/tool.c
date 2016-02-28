@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "vi.h"
 #include <malloc.h>
 #include <shellapi.h>
@@ -121,7 +122,7 @@ static void nukeButtons( void )
 /*
  * toolBarHelp - update tool bar hint text
  */
-static void toolBarHelp( HWND hwnd, int id, bool isdown )
+static void toolBarHelp( HWND hwnd, ctl_id id, bool isdown )
 {
     ss                 *p;
 
