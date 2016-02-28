@@ -62,7 +62,7 @@
     HANDLE              handle;
     WIN32_FIND_DATA     finddata;
 
-    if( WIN32_IS_NT && _RWD_osmajor >= 4 ) {
+    if( WIN32_IS_NT4 ) {
         return( GetFileAttributes( lpFileName ) );
     }
     /*** Fail if the filename contains a wildcard ***/
