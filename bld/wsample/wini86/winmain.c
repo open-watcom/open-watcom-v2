@@ -34,13 +34,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
 #include "sampwin.h"
 #include "wsamprc.h"
 #include "wreslang.h"
-#include <commdlg.h>
 
 #define TMPSLEN 256
 #define NOT_OK 1

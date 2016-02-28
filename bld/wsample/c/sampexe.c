@@ -34,16 +34,17 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
-
-#include "sample.h"
-#include "wmsg.h"
-#include "smpstuff.h"
-
 #ifdef __WINDOWS__
-    #include <dos.h>
-    #include <direct.h>
-    #include "sampwin.h"
+#include <dos.h>
+#include "commonui.h"
 #endif
+#include "sample.h"
+#include "smpstuff.h"
+#include "wmsg.h"
+#ifdef __WINDOWS__
+#include "sampwin.h"
+#endif
+
 
 void GetProg( char *cmd, char *eoc )
 {

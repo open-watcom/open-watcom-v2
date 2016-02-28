@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"

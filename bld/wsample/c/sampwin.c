@@ -42,6 +42,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"

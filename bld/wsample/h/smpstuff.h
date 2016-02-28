@@ -31,7 +31,6 @@
 
 typedef unsigned short seg;
 #include "offset.h"
-#include "bool.h"
 
 typedef struct {
     off         offset;

@@ -35,13 +35,13 @@
 #include <io.h>
 #include <dos.h>
 #include <fcntl.h>
+#include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "exeos2.h"
 #include "exedos.h"
 #include "ismod32.h"
-#include <windows.h>
 
 /*
  * accessSegment - access a segment to cause the windows loader to bring it in

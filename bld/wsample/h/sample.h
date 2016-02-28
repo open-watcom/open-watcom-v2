@@ -57,6 +57,7 @@ notes:
 */
 
 #include <sys/types.h>          /* for off_t */
+#include "bool.h"
 #include "digtypes.h"           /* for system config */
 
 #define SAMP_SIGNATURE          0xDEED
