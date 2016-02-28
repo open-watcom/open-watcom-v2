@@ -62,14 +62,14 @@ bool GetLogFontFromString( LOGFONT *l, char *data )
     if( num != 14 ) {
         return( false );
     }
-    l->lfItalic = lfItalic;
-    l->lfUnderline = lfUnderline;
-    l->lfStrikeOut = lfStrikeOut;
-    l->lfCharSet = lfCharSet;
-    l->lfOutPrecision = lfOutPrecision;
-    l->lfClipPrecision = lfClipPrecision;
-    l->lfQuality = lfQuality;
-    l->lfPitchAndFamily = lfPitchAndFamily;
+    l->lfItalic =           ( lfItalic != 0 ) ? TRUE : FALSE ;
+    l->lfUnderline =        ( lfUnderline != 0 ) ? TRUE : FALSE ;
+    l->lfStrikeOut =        ( lfStrikeOut != 0 ) ? TRUE : FALSE ;
+    l->lfCharSet =          ( lfCharSet != 0 ) ? TRUE : FALSE ;
+    l->lfOutPrecision =     ( lfOutPrecision != 0 ) ? TRUE : FALSE ;
+    l->lfClipPrecision =    ( lfClipPrecision != 0 ) ? TRUE : FALSE ;
+    l->lfQuality =          ( lfQuality != 0 ) ? TRUE : FALSE ;
+    l->lfPitchAndFamily =   ( lfPitchAndFamily != 0 ) ? TRUE : FALSE ;
     if( l->lfFaceName[0] == '\"' ) {
         len = strlen( l->lfFaceName );
         for( i = 1; i < len; i++ ) {

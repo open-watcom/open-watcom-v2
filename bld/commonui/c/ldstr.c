@@ -42,7 +42,7 @@
 /*
  * RCsprintf - do sprintf with a format string from a resource
  */
-int RCsprintf( char *buf, MSGID fmtid, ... )
+int RCsprintf( char *buf, msg_id fmtid, ... )
 {
     va_list     al;
     char        *fmtstr;
@@ -60,7 +60,7 @@ int RCsprintf( char *buf, MSGID fmtid, ... )
 /*
  * RCfprintf - do fprintf with a format string from a resource
  */
-void RCfprintf( FILE *fp, MSGID strid, ... )
+void RCfprintf( FILE *fp, msg_id strid, ... )
 {
     va_list     al;
     char        *str;
@@ -76,7 +76,7 @@ void RCfprintf( FILE *fp, MSGID strid, ... )
 /*
  * RCvfprintf - do vfprintf with a format string from a resource
  */
-void RCvfprintf( FILE *fp, MSGID strid, va_list al )
+void RCvfprintf( FILE *fp, msg_id strid, va_list al )
 {
     char        *str;
 
@@ -89,7 +89,7 @@ void RCvfprintf( FILE *fp, MSGID strid, va_list al )
 /*
  * RCMessageBox - display a message box with a string from a resource
  */
-int RCMessageBox( HWND hwnd, MSGID msgid, char *title, UINT type )
+int RCMessageBox( HWND hwnd, msg_id msgid, char *title, UINT type )
 {
     char        *msg;
     int         ret;

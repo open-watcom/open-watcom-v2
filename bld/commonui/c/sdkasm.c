@@ -119,7 +119,7 @@ int_32 GetDataLong( void )
 /*
  * EndOfSegment
  */
-char EndOfSegment( void )
+bool EndOfSegment( void )
 {
     return( CurRtns->EndOfSegment() );
 

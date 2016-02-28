@@ -37,11 +37,11 @@
 #include "ldstr.h"
 
 typedef struct {
-    int         menuid;
-    MSGID       msgid;
+    ctl_id      menuid;
+    msg_id      msgid;
 } MenuItemHint;
 
-void                HintToolBar( statwnd *wnd, int menuid, bool select );
+void                HintToolBar( statwnd *wnd, ctl_id menuid, bool select );
 WORD                SizeHintBar( statwnd *wnd );
 void                HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
 const MenuItemHint  *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt );

@@ -38,7 +38,7 @@ DWORD       GetASelectorLimit( WORD );
 bool        IsValidSelector( WORD );
 void        GetADescriptor( WORD seg, descriptor *desc );
 bool        IsSeg32( WORD seg );
-DWORD       ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
-DWORD       WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
+ULONG_PTR   ReadMem( WORD sel, ULONG_PTR off, LPVOID buff, ULONG_PTR size );
+ULONG_PTR   WriteMem( WORD sel, ULONG_PTR off, LPVOID buff, ULONG_PTR size );
 
 #endif /* _SEGMEM_H_INCLUDED */

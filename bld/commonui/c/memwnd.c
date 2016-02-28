@@ -129,9 +129,9 @@ DWORD GetASelectorLimit( WORD sel )
 /*
  * ReadMem
  */
-DWORD ReadMem( WORD sel, DWORD off, void *buff, DWORD size )
+ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
 {
-    SIZE_T  bytesread;
+    ULONG_PTR   bytesread;
 
     sel = sel;
     bytesread = 0;
@@ -417,10 +417,7 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
     size_t      len;
     unsigned    i;
 #ifdef __NT__
-    DWORD       bytesread;
-
-    bytesread = ReadMem( sel, offset, data, digits );
-    if( bytesread == 0 ) {
+    if( ReadMem( sel, offset, data, digits ) == 0 ) {
         return( false );
     }
     pad_char = ' ';
@@ -682,7 +679,7 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
      * of bytes to display on each line.
      */
     info->bytesdisp = bytesToDisplay( width, info->disp_type );
-    lines = info->limit / info->bytesdisp;
+    lines = (unsigned)( info->limit / info->bytesdisp );
     if( ( ( info->limit - info->base ) % info->bytesdisp ) != 0 ) {
         lines++;
     }
@@ -782,7 +779,7 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
             if( info->limit - info->offset <= info->bytesdisp ) {
                 return;
             } else {
-                info->offset = info->limit - ((info->limit - info->base) % info->bytesdisp);
+                info->offset = info->limit - ( ( info->limit - info->base ) % info->bytesdisp );
                 if( info->offset == info->limit ) {
                     info->offset = info->limit - info->bytesdisp;
                 }
@@ -794,10 +791,10 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
     case SB_THUMBTRACK:
     case SB_THUMBPOSITION:
         offset = scrollPosToOffset( pos, info );
-        offset -= (offset - info->base) % info->bytesdisp;
+        offset -= ( offset - info->base ) % info->bytesdisp;
         info->offset = offset;
         if( offset >= info->limit ) {
-            info->offset = info->limit - ((info->limit - info->base) % info->bytesdisp);
+            info->offset = info->limit - ( ( info->limit - info->base ) % info->bytesdisp );
         }
         if( offset == info->limit ) {
             info->offset = info->limit - info->bytesdisp;

@@ -111,7 +111,7 @@ int_32 MemWndGetDataLong( void )
 /*
  * MemWndEndOfSegment
  */
-char MemWndEndOfSegment( void )
+bool MemWndEndOfSegment( void )
 {
     return( _Offset > Limit );
 
@@ -281,8 +281,8 @@ bool NeedScrollBar( MemWndInfo *info )
  */
 static DWORD genAsmLine( MemWndInfo *info, DWORD ins_cnt, char *buf )
 {
-    instruction         ins;
-    DWORD               offset;
+    instruction     ins;
+    DWORD           offset;
 
     Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;

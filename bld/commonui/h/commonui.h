@@ -49,3 +49,7 @@
         #include <commdlg.h>
     #endif
 #endif
+
+
+typedef unsigned    ctl_id;
+typedef int         msg_id;

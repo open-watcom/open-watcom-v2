@@ -68,7 +68,7 @@ bool InitSrchTable( HANDLE inst, msglist *tbl )
 
     inst = inst;
     for( curmsg = tbl; curmsg->msg != (char *)(pointer_int)-1L; curmsg++ ) {
-        curmsg->msg = AllocRCString( (MSGID)(pointer_int)curmsg->msg );
+        curmsg->msg = AllocRCString( (msg_id)(pointer_int)curmsg->msg );
         if( curmsg->msg == NULL ) {
             return( false );
         }

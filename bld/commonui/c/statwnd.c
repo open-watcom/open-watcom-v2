@@ -504,15 +504,17 @@ HWND StatusWndCreate( statwnd *sw, HWND parent, WPI_RECT *size, WPI_INST hinstan
         if( sw->numSections > 0 ) {
             updateParts( sw );
         }
-    } else if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
-        sw->win = CreateWindow( className, NULL, WS_CHILD, size->left, size->top,
-                                size->right - size->left, size->bottom - size->top, parent,
-                                (HMENU)NULL, hinstance, lpvParam );
-    } else {
+  #ifndef _WIN64
+    } else if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
         sw->win = CreateWindow( className, NULL, WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
                                 size->left, size->top, size->right - size->left,
                                 size->bottom - size->top, parent, (HMENU)NULL, hinstance,
                                 lpvParam );
+  #endif
+    } else {
+        sw->win = CreateWindow( className, NULL, WS_CHILD, size->left, size->top,
+                                size->right - size->left, size->bottom - size->top, parent,
+                                (HMENU)NULL, hinstance, lpvParam );
     }
 #else
     sw->win = CreateWindow( className, NULL, WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
@@ -522,12 +524,16 @@ HWND StatusWndCreate( statwnd *sw, HWND parent, WPI_RECT *size, WPI_INST hinstan
 #endif
     if( sw->win != NULL ) {
 #ifdef __NT__
-       if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #ifndef _WIN64
+       if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+           systemDataFont = (HFONT)GetStockObject( SYSTEM_FONT );
+       } else {
+  #endif
            /* New shell active, Win95 or later */
            systemDataFont = (HFONT)GetStockObject( DEFAULT_GUI_FONT );
-       } else {
-           systemDataFont = (HFONT)GetStockObject( SYSTEM_FONT );
+  #ifndef _WIN64
        }
+  #endif
 #endif
         ShowWindow( sw->win, SW_SHOWNORMAL );
         UpdateWindow( sw->win );

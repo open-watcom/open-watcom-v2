@@ -35,10 +35,9 @@
 
 #include "wpi.h"
 
-typedef int     CMDID;
 
 typedef bool (*toolhook_fn)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-typedef void (*helphook_fn)( HWND, int, bool );
+typedef void (*helphook_fn)( HWND, ctl_id, bool );
 
 typedef struct TOOLDISPLAYINFO {
     WPI_POINT   button_size;        /* size, in pixels, of one tool item */
@@ -70,7 +69,7 @@ typedef struct TOOLITEMINFO {
         HBITMAP bmp;            /* handle to bitmap to display */
         WORD    blank_space;    /* space if item is blank */
     } u;
-    CMDID       id;             /* should be unique for each item */
+    ctl_id      id;             /* should be unique for each item */
     WORD        flags;          /* see list of flags above */
     HBITMAP     depressed;      /* bitmap to show when button is depressed */
     char        tip[MAX_TIP];   /* tool tip string */
@@ -83,7 +82,7 @@ typedef struct tool {
         WORD    blank_space;
     } u;
     HBITMAP     depressed;
-    CMDID       id;
+    ctl_id      id;
     UINT        flags;
     WORD        state;
     WPI_RECT    area;
@@ -116,17 +115,17 @@ typedef struct toolbar {
 toolbar *ToolBarInit( HWND );
 void    ToolBarDisplay( toolbar *, TOOLDISPLAYINFO * );
 void    ToolBarAddItem( toolbar *, TOOLITEMINFO * );
-bool    ToolBarDeleteItem( toolbar *, CMDID id );
+bool    ToolBarDeleteItem( toolbar *, ctl_id id );
 HWND    ToolBarWindow( toolbar * );
-void    ToolBarSetState( toolbar *, CMDID id, WORD state );
-WORD    ToolBarGetState( toolbar *bar, CMDID id );
+void    ToolBarSetState( toolbar *, ctl_id id, WORD state );
+WORD    ToolBarGetState( toolbar *bar, ctl_id id );
 void    ToolBarDestroy ( toolbar *bar );
 void    ToolBarFini( toolbar * );
 void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, HBITMAP bitmap );
 void    UpdateToolBar( toolbar *bar );
-void    ChangeToolButtonBitmap( toolbar *bar, CMDID id, HBITMAP newbmp );
+void    ChangeToolButtonBitmap( toolbar *bar, ctl_id id, HBITMAP newbmp );
 bool    HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-bool    FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
+bool    FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, ctl_id *id );
 #ifndef __OS2_PM__
 void    ToolBarChangeSysColors( COLORREF, COLORREF, COLORREF );
 #endif

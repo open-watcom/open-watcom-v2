@@ -39,7 +39,7 @@
 
 typedef struct {
     HWND                parent;
-    MSGID               curmsg;
+    msg_id              curmsg;
     WORD                hintlen;
     const MenuItemHint  *hints;
 } HintWndInfo;
@@ -49,14 +49,14 @@ typedef struct {
 /*
  * getItemMsg - find the hint message for the specified menu item
  */
-static MSGID getItemMsg( statwnd *wnd, int menuid )
+static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
 {
     WORD                i;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
     const MenuItemHint  *hinttable;
-    MSGID               msgid;
+    msg_id              msgid;
 
     hint = GetHintHwnd( wnd );
     hinfo = GetProp( hint, HINT_PROP_ID );
@@ -79,7 +79,7 @@ static MSGID getItemMsg( statwnd *wnd, int menuid )
 /*
  * updateHintText - updated the text shown when a menu item is selected
  */
-static void updateHintText( statwnd *wnd, MSGID msgid )
+static void updateHintText( statwnd *wnd, msg_id msgid )
 {
     HDC         dc;
     HFONT       font;
@@ -105,9 +105,9 @@ static void updateHintText( statwnd *wnd, MSGID msgid )
 /*
  * HintToolbar - handle the selection or deselection of a menu item
  */
-void HintToolBar( statwnd *wnd, int menuid, bool select )
+void HintToolBar( statwnd *wnd, ctl_id menuid, bool select )
 {
-    MSGID   msgid;
+    msg_id  msgid;
 
     if( select ) {
         msgid = getItemMsg( wnd, menuid );
@@ -158,7 +158,7 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     HMENU       menu;
     WORD        flags;
-    MSGID       msgid;
+    msg_id      msgid;
 
     if( MENU_CLOSED( wparam, lparam ) ) {
         updateHintText( wnd, HINT_EMPTY );
