@@ -207,7 +207,7 @@ extern unsigned uiendlistbox( struct a_list * );
 extern void uipaintlistbox( struct a_list * );
 extern struct a_list_info *uibeglistbox( VSCREEN *, struct sarea *,
                                          struct a_list * );
-extern unsigned uilistsize( struct a_list * );
+extern int  uilistsize( struct a_list * );
 extern UIPICKGETTEXT uigetlistelement;
 extern void uiupdatelistbox( struct a_list * );
 extern void uiupdatecombobox( struct a_combo_box * );
