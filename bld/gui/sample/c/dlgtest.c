@@ -63,7 +63,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_ctl_id  id;
     char        *new;
     char        *text;
-    int         num;
+    gui_ctl_idx num;
 
     ret = true;
     switch( gui_ev ) {

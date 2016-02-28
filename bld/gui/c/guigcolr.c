@@ -72,13 +72,13 @@ static void PickColour( gui_window *wnd, gui_ctl_id list_id )
         GUIAddText( wnd, list_id, ColourNames[i] );
     }
     if(( InitColour >= 0 ) && ( InitColour < GUI_NUM_COLOURS )) {
-        GUISetCurrSelect( wnd, list_id, InitColour );
+        GUISetCurrSelect( wnd, list_id, (gui_ctl_idx)InitColour );
     }
 }
 
 bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour )
 {
-    int result;
+    gui_ctl_idx result;
 
     if( new_colour == NULL ) {
         return( false );

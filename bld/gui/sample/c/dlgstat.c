@@ -232,9 +232,9 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     char        *new;
     unsigned    i;
     char        *text;
-    int         sel;
+    gui_ctl_idx sel;
     int         size;
-    int         num;
+    gui_ctl_idx num;
     gui_rect    rect;
     int         extent, top, start, end;
     gui_rgb     rgb, green;
@@ -256,17 +256,17 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIGetClientRect( gui, &rect );
         InitDialog( gui );
         CheckNumControls( gui, NUM_CONTROLS );
-        for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
-            if( ( Controls[i].style & GUI_CHECKED ) &&
-                !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, GUI_CHECKED );
+        for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
+            if( ( Controls[id].style & GUI_CHECKED ) &&
+                !( Controls[id].style & GUI_AUTOMATIC ) ) {
+                GUISetChecked( gui, id, GUI_CHECKED );
             }
         }
         num = CHECKBOX_CONTROL2;
-        for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
-            if( ( Controls[i].style & GUI_CHECKED ) &&
-                !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, GUI_CHECKED );
+        for( id = CHECKBOX_CONTROL1; id <= num; id++ ) {
+            if( ( Controls[id].style & GUI_CHECKED ) &&
+                !( Controls[id].style & GUI_AUTOMATIC ) ) {
+                GUISetChecked( gui, id, GUI_CHECKED );
             }
         }
 
@@ -348,19 +348,19 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
            // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
             break;
         case OKBUTTON_CONTROL :
-            for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
-                if( GUIIsChecked( gui, i ) ) {
-                    Controls[i].style |= GUI_CHECKED;
+            for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
+                if( GUIIsChecked( gui, id ) ) {
+                    Controls[id].style |= GUI_CHECKED;
                 } else {
-                    Controls[i].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_CHECKED;
                 }
             }
             num = CHECKBOX_CONTROL2;
-            for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
-                if( GUIIsChecked( gui, i ) ) {
-                    Controls[i].style |= GUI_CHECKED;
+            for( id = CHECKBOX_CONTROL1; id <= num; id++ ) {
+                if( GUIIsChecked( gui, id ) ) {
+                    Controls[id].style |= GUI_CHECKED;
                 } else {
-                    Controls[i].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_CHECKED;
                 }
             }
             text = GUIGetText( gui, LISTBOX_CONTROL );

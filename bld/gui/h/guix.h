@@ -86,7 +86,7 @@ extern void GUIFreeWindowMemory( gui_window *, bool from_parent, bool dialog );
 
 extern bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                                      int num_menu_items, gui_menu_struct *menu,
-                                     gui_mouse_track track, gui_ctl_id *curr_item );
+                                     gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                        int num_toolbar_items, gui_toolbar_struct *toolinfo,
                        bool excl, gui_colour_set *plain, gui_colour_set *standout,

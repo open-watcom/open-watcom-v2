@@ -67,7 +67,7 @@ void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
                             bool draw_extent, int bitmap )
 {
     int         nDrawX, nDrawY;
-    UINT        lenx;
+    int         lenx;
     HBRUSH      brush;
     HBRUSH      old_brush;
     HPEN        pen;

@@ -102,7 +102,7 @@ static gui_window *GetToolWnd( HWND hwnd )
     return( NULL );
 }
 
-static void guiToolBarHelp( HWND hwnd, int id, bool down )
+static void guiToolBarHelp( HWND hwnd, ctl_id id, bool down )
 {
     gui_window          *wnd;
     gui_menu_styles     style;

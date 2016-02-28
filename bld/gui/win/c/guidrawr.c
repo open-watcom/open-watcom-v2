@@ -172,6 +172,10 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         coord.x = 1;
         win_style = PS_DASHDOTDOT;
         break;
+    default:
+        coord.x = 0;
+        win_style = 0;
+        break;
     }
     pen = _wpi_createpen( win_style, coord.x, colour );
 

@@ -42,9 +42,9 @@
 #define DLG_MAX_COLS    75
 
 static gui_control_info Controls[] = {
-    DLG_LIST_BOX(       NULL, CTL_PICK_LIST,            1,  1, 29, 10 ),
-    DLG_DEFBUTTON(      NULL, CTL_PICK_OK,              2,  12, 12 ),
-    DLG_BUTTON(         NULL, CTL_PICK_CANCEL,  18,  12, 28 ),
+    DLG_LIST_BOX(   NULL, CTL_PICK_LIST,    1,  1,  29, 10 ),
+    DLG_DEFBUTTON(  NULL, CTL_PICK_OK,      2,  12, 12 ),
+    DLG_BUTTON(     NULL, CTL_PICK_CANCEL,  18, 12, 28 ),
 };
 
 #define NUM_CONTROLS ( sizeof( Controls ) / sizeof( gui_control_info ) )
@@ -85,7 +85,7 @@ bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
     size_t      len;
@@ -105,7 +105,7 @@ int GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN
 }
 
 
-int GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
+gui_ctl_idx GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
 {
     return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
 }

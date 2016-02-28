@@ -72,5 +72,5 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
     if( got_new ) {
         GUIReleaseTheDC( wnd );
     }
-    return( (gui_ord) ( width - 1 ) );
+    return( (gui_ord)( width - 1 ) );
 }

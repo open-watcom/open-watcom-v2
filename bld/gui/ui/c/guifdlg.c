@@ -763,9 +763,9 @@ static bool setDirList( gui_window *gui )
     char                indent[80];
     char                tmp[256];
     const char          **drvlist;
-    int                 i;
+    gui_ctl_idx         i;
     size_t              len;
-    int                 curr,cnt;
+    gui_ctl_idx         curr, cnt;
     const char          **list;
 
     GUIClearList( gui, CTL_DIR_LIST );
@@ -1018,12 +1018,12 @@ static process_rc processFileName( gui_window *gui )
 void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 {
     process_rc  prc;
-    int         sel;
-    int         realsel;
+    gui_ctl_idx sel;
+    gui_ctl_idx realsel;
     char        path[_MAX_PATH];
     char        *optr;
     char        *ptr;
-    int         i;
+    gui_ctl_idx i;
     gui_ctl_id  focusid;
     dlg_info    *dlg = GUIGetExtra( gui );
 
@@ -1061,7 +1061,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         path[0] = 0;
 #endif
         realsel = 0;
-        for( i=0;i<sel;i++ ) {
+        for( i = 0; i < sel; i++ ) {
             ptr = GUIGetListItem( gui, id, i );
             if( ptr == NULL ) {
                 return;
@@ -1071,7 +1071,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
                 ptr++;
             }
             if( *ptr == '-' ) {
-                strcat( path, ptr+1 );
+                strcat( path, ptr + 1 );
                 realsel++;
                 if( i > 0 ) {
                     strcat( path, FILE_SEP );
