@@ -1035,7 +1035,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( ret );
 }
 
-bool WdeIsMenuIDValid( HMENU menu, int id )
+bool WdeIsMenuIDValid( HMENU menu, unsigned id )
 {
     UINT st;
 
@@ -1373,7 +1373,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         msecs = *(UINT *)lParam;
         if( msecs ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
-            if( timer ) {
+            if( timer != 0 ) {
                 SET_DLGDATA( hDlg, timer );
             }
         }
@@ -1451,7 +1451,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
 
     case WM_TIMER:
         timer = (UINT_PTR)GET_DLGDATA( hDlg );
-        if( timer ) {
+        if( timer != 0 ) {
             KillTimer( hDlg, timer );
         }
         EndDialog( hDlg, TRUE );

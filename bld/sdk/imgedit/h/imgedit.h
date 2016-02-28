@@ -280,7 +280,7 @@ void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );
 void    AddHotSpotTool( BOOL faddhotspot );
-void    PushToolButton( int cmdid );
+void    PushToolButton( ctl_id cmdid );
 
 /* ieopen.c */
 void    SetupMenuAfterOpen( void );
@@ -547,7 +547,7 @@ extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, char *file
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
-void    ShowHintText( int id );
+void    ShowHintText( ctl_id id );
 void    InitMenus( HMENU hmenu );
 
 #else
@@ -572,6 +572,6 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO2 *bmi );
 
 /* hinttext.c */
-void    ShowHintText( int id );
+void    ShowHintText( ctl_id id );
 
 #endif

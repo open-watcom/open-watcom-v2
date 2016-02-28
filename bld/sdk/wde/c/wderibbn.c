@@ -255,7 +255,7 @@ void WdeSetRibbonItemState( UINT item, int state )
     }
 }
 
-static void wdeRibbonHelpHook( HWND hwnd, int id, bool pressed )
+static void wdeRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
     _wde_touch( hwnd );
 

@@ -136,7 +136,7 @@ BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     WORD                cmd;
     char                buf[BUF_SIZE];
     char                *title;
-    MSGID               info_str_id;
+    msg_id              info_str_id;
 
     info = (RetCodeInfo *)GetWindowLong( hwnd, DWL_USER );
     switch( msg ) {

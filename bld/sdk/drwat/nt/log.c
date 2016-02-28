@@ -142,7 +142,7 @@ static void finishLogFile( void )
     fclose( logFileHdl );
 }
 
-static void logPrintf( MSGID id, ... ) {
+static void logPrintf( msg_id id, ... ) {
 
     va_list     al;
 
@@ -638,7 +638,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     char        fname[ FNAME_BUFLEN ];
     DWORD       type;
     DWORD       line;
-    MSGID       gptype;
+    msg_id      gptype;
     ProcStats   stats;
 
     logStrPrintf( "\n" );

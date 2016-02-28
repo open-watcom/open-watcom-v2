@@ -50,16 +50,16 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
  */
 BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-    UINT         msecs, start;
-    UINT_PTR     timer;
-    HDC          dc, tdc;
-    HBITMAP      old;
-    HWND         w666;
-    RECT         rect, arect;
-    PAINTSTRUCT  ps;
+    UINT        msecs, start;
+    UINT_PTR    timer;
+    HDC         dc, tdc;
+    HBITMAP     old;
+    HWND        w666;
+    RECT        rect, arect;
+    PAINTSTRUCT ps;
 #ifdef __NT__
-    HINSTANCE    hInstUser;
-    PFNLI        pfnLoadImage;
+    HINSTANCE   hInstUser;
+    PFNLI       pfnLoadImage;
 #endif
 
     static BITMAP    bm;
@@ -73,7 +73,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         msecs = *((UINT *)lparam);
         if( msecs != 0 ) {
             timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
-            if( timer ) {
+            if( timer != 0 ) {
                 SET_DLGDATA( hwnd, timer );
             }
         }
@@ -145,7 +145,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 
     case WM_TIMER:
         timer = (UINT_PTR)GET_DLGDATA( hwnd );
-        if( timer ) {
+        if( timer != 0 ) {
             KillTimer( hwnd, timer );
         }
         EndDialog( hwnd, TRUE );

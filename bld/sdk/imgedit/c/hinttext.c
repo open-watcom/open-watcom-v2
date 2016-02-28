@@ -117,7 +117,7 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( int id )
+void ShowHintText( ctl_id id )
 {
     int         i;
 
@@ -270,7 +270,7 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( int id )
+void ShowHintText( ctl_id id )
 {
     int         i;
 

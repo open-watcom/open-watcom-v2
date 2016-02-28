@@ -68,7 +68,7 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WdeHintItem      *WdeGetHintItem( int id );
+static WdeHintItem      *WdeGetHintItem( ctl_id id );
 static void             WdeHandlePopupHint( HMENU, HMENU );
 static DWORD            WdeGetPopupHint( WdePopupListItem *, HMENU );
 static WdePopupListItem *WdeFindPopupListItem( HMENU menu );
@@ -217,18 +217,19 @@ void WdeHandleMenuSelect( WPARAM wParam, LPARAM lParam )
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
             WdeSetStatusText( NULL, "", TRUE );
         } else if( flags & MF_POPUP ) {
-            popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+#else
+            popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             WdeHandlePopupHint( menu, popup );
         } else {
-            WdeDisplayHint( (int)GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+            WdeDisplayHint( GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
         }
     }
 }
 
-void WdeDisplayHint( int id )
+void WdeDisplayHint( ctl_id id )
 {
     char        *buf;
     char        *mditext;
@@ -253,7 +254,7 @@ void WdeDisplayHint( int id )
     }
 }
 
-WdeHintItem *WdeGetHintItem( int id )
+WdeHintItem *WdeGetHintItem( ctl_id id )
 {
     int i;
 

@@ -392,7 +392,7 @@ void WdeHandleShowToolsMenu( void )
     }
 }
 
-static void wdeCToolHelpHook( HWND hwnd, int id, bool pressed )
+static void wdeCToolHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
     _wde_touch( hwnd );
     WdeHandleToolHint( id, pressed );
@@ -407,7 +407,7 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     char                *text;
     OBJPTR              obj;
     WdeOrderMode        mode;
-    CMDID               cid;
+    ctl_id              cid;
     bool                ignore_msg;
     bool                ret;
 

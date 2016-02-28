@@ -31,7 +31,7 @@
 
 
 #include <stdlib.h>
-#include <wwindows.h>
+#include "commonui.h"
 #include "watcom.h"
 #include "mem.h"
 #include "config.h"

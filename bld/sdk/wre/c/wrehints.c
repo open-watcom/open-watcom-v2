@@ -147,22 +147,23 @@ void WREHandleMenuSelect ( WPARAM wParam, LPARAM lParam )
         WRESetStatusText ( NULL, "", TRUE );
     } else {
         menu  = WREGetMenuHandle();
-        flags = GET_WM_MENUSELECT_FLAGS(wParam,lParam);
+        flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
         if ( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
             WRESetStatusText ( NULL, "", TRUE );
         } else if ( flags & MF_POPUP ) {
-            popup = (HMENU)GET_WM_MENUSELECT_ITEM(wParam,lParam);
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+#else
+            popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             WREHandlePopupHint ( menu, popup );
         } else {
-            WREDisplayHint ( (int)GET_WM_MENUSELECT_ITEM(wParam,lParam) );
+            WREDisplayHint ( GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
         }
     }
 }
 
-void WREDisplayHint( int id )
+void WREDisplayHint( ctl_id id )
 {
     char        *buf;
     char        *mditext;

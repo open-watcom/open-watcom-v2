@@ -100,7 +100,7 @@ void SetMainWndDefault( void )
 static void initMonitoring( HWND hwnd )
 {
     HMENU       mh;
-    int         i;
+    unsigned    i;
 
     mh = GetMenu( hwnd );
     for( i = 0; i < MAX_DDE_MON; i++ ) {
@@ -115,7 +115,7 @@ static void initMonitoring( HWND hwnd )
  * monitorChange - change the check state a menu item to reflect a
  *                 change in the monitoring state
  */
-static void monitorChange( HWND hwnd, int i )
+static void monitorChange( HWND hwnd, unsigned i )
 {
     UINT        action;
     HMENU       mh;
@@ -201,7 +201,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     HDC                 dc;
     HFONT               font;
     about_info          ai;
-    WORD                cmd;
+    unsigned            cmd;
     SIZE                sz;
     HWND                hinthwnd;
     BOOL                alias_state;
@@ -377,7 +377,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
                     hideHintBar( hwnd, info, !ConfigInfo.show_hints );
                 }
                 GetClientRect( hwnd, &area );
-                ResizeListBox( area.right - area.left, area.bottom - area.top,
+                ResizeListBox( (WORD)( area.right - area.left ), (WORD)( area.bottom - area.top ),
                                &info->list );
                 resetFonts( info );
             }

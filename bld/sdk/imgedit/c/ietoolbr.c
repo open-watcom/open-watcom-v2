@@ -40,7 +40,7 @@ int TBWidth = TB_WIDTH;
 int TBHeight = TB_HEIGHT;
 
 static toolbar          *toolBar;
-static int              currentTool;
+static ctl_id           currentTool;
 static BOOL             hotspotPresent = FALSE;
 static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
     { CLPRECT,  CLPRECTD,   NULL, NULL },
@@ -58,7 +58,7 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 /*
  * toolBarHelpProc
  */
-static void toolBarHelpProc( HWND hwnd, int id, bool pressed )
+static void toolBarHelpProc( HWND hwnd, ctl_id id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -77,7 +77,7 @@ static bool toolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 l
     HMENU               hmenu;
     static HMENU        hsysmenu;
     int                 i;
-    int                 id;
+    ctl_id              id;
     WPI_RECT            rctool;
     HWND                hframe;
     IMGED_DIM           left;
@@ -306,7 +306,7 @@ void AddHotSpotTool( BOOL faddhotspot )
 /*
  * PushToolButton - push a button on the toolbar
  */
-void PushToolButton( int cmdid )
+void PushToolButton( ctl_id cmdid )
 {
     if( cmdid != currentTool ) {
         ToolBarSetState( toolBar, currentTool, BUTTON_UP );

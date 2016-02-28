@@ -203,9 +203,10 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
         } else if( flags & MF_SEPARATOR ) {
             // we ignore WM_MENUSELECT for separators, for now...
         } else if( flags & MF_POPUP ) {
-            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+#else
+            popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, popup );
         } else {

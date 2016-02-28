@@ -61,6 +61,6 @@ extern void     WDestroyStatusLine( WStatBar * );
 extern WStatBar *WCreateStatusLine( HWND, HINSTANCE );
 extern bool     WSetStatusText( WStatBar *, const char *, const char * );
 extern bool     WSetStatusReadyText( WStatBar *wsb );
-extern bool     WSetStatusByID( WStatBar *wsb, MSGID id1, MSGID id2 );
+extern bool     WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 );
 
 #endif

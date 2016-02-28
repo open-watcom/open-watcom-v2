@@ -675,13 +675,10 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
 
 void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
-    WORD flags;
-
     if( MENU_CLOSED( wParam, lParam ) ) {
         einfo->last_menu_select = -1;
     } else {
-        flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
-        if( flags & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
+        if( GET_WM_MENUSELECT_FLAGS( wParam, lParam ) & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
             einfo->last_menu_select = -1;
         } else {
             einfo->last_menu_select = GET_WM_MENUSELECT_ITEM( wParam, lParam );

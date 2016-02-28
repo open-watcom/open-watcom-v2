@@ -157,7 +157,7 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     switch( msg ) {
     case WM_USER:
-        WdeHandleToolHint( wParam, (BOOL)lParam );
+        WdeHandleToolHint( LOWORD( wParam ), (BOOL)lParam );
         WdeHandleStickyToolPress( tbar, wParam, lParam );
         break;
 
@@ -191,10 +191,10 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     return( ret );
 }
 
-void WdeHandleToolHint( WPARAM wParam, BOOL pressed )
+void WdeHandleToolHint( ctl_id id, BOOL pressed )
 {
     if( pressed ) {
-        WdeDisplayHint( wParam );
+        WdeDisplayHint( id );
     } else {
         WdeSetStatusText( NULL, "", TRUE );
     }
@@ -322,7 +322,7 @@ void WdeShutdownToolBars( void )
     ListFree( WdeToolBarList );
 }
 
-void WdeSetToolBarItemState( WdeToolBar *tbar, int id, UINT state )
+void WdeSetToolBarItemState( WdeToolBar *tbar, ctl_id id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

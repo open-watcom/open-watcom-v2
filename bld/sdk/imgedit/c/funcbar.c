@@ -153,7 +153,7 @@ static void addItems( void )
 /*
  * functionBarHelpProc
  */
-static void functionBarHelpProc( HWND hwnd, int id, bool pressed )
+static void functionBarHelpProc( HWND hwnd, ctl_id id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -171,7 +171,7 @@ static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARA
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
-    int                 id;
+    ctl_id              id;
 
     hwnd = hwnd;
 

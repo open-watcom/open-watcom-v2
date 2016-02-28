@@ -152,7 +152,7 @@ bool WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         if( lParam ) {
             WSetStatusText( NULL, NULL, "" );
         } else {
-            WDisplayHint( NULL, wParam );
+            WDisplayHint( NULL, LOWORD( wParam ) );
         }
         if( lParam ) {
             bstate = BUTTON_UP;
@@ -302,7 +302,7 @@ void WShutdownToolBars( void )
     ListFree( WToolBarList );
 }
 
-void WSetToolBarItemState( WToolBar *tbar, int id, UINT state )
+void WSetToolBarItemState( WToolBar *tbar, ctl_id id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

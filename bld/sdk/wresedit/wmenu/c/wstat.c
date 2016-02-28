@@ -199,7 +199,7 @@ bool WSetStatusReadyText( WStatBar *wsb )
     return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
 }
 
-bool WSetStatusByID( WStatBar *wsb, MSGID id1, MSGID id2 )
+bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
 {
     char        *str1;
     char        *str2;

@@ -34,13 +34,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-static FARPROC SpyPickInst;
-static HWND LastFramed;
-static BOOL Cancelled;
-static BOOL Picking;
-static HWND PickDialogOK;
-static HWND PickDialogIcon;
-static WORD pickProcCmdId;
+static FARPROC  SpyPickInst;
+static HWND     LastFramed;
+static BOOL     Cancelled;
+static BOOL     Picking;
+static HWND     PickDialogOK;
+static HWND     PickDialogIcon;
+static ctl_id   pickProcCmdId;
 
 /*
  * FrameAWindow - draw a frame around a window
@@ -261,7 +261,7 @@ BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 /*
  * DoPickDialog - start dialog for window selection
  */
-HWND DoPickDialog( WORD cmdid )
+HWND DoPickDialog( ctl_id cmdid )
 {
     pickProcCmdId = cmdid;
     ShowWindow( SpyMainWindow, SW_MINIMIZE );

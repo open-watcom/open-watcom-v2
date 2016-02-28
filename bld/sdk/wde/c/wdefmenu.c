@@ -124,7 +124,7 @@ void WdeEnableCustCntlTools( HMENU menu )
 
 static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
 {
-    int     menu_id;
+    UINT    menu_id;
 
     menu_id = 0;
 

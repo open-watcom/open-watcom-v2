@@ -241,7 +241,7 @@ void WDestroyRibbon( WAccelEditInfo *einfo )
     }
 }
 
-static void wRibbonHelpHook( HWND hwnd, int id, bool pressed )
+static void wRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
     _wtouch( hwnd );
     if( !pressed ) {

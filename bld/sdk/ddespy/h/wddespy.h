@@ -286,7 +286,7 @@ void    ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 /* ddetrack.c */
 void    InitTrackWnd( HWND hwnd );
 BOOL    CreateTrackWnd( void );
-void    DisplayTracking( int i );
+void    DisplayTracking( unsigned i );
 void    TrackStringMsg( MONHSZSTRUCT *info );
 void    TrackLinkMsg( MONLINKSTRUCT *info );
 void    TrackConvMsg( MONCONVSTRUCT *info );
@@ -316,4 +316,4 @@ void    MakeDDEToolBar( HWND hwnd );
 void    DDEToolBarFini( void );
 void    ResizeTB( HWND owner );
 bool    ToggleTB( HWND parent );
-void    DDESetStickyState( int itemid, bool isdown );
+void    DDESetStickyState( ctl_id itemid, bool isdown );

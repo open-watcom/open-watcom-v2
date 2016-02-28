@@ -99,7 +99,7 @@ void SetTrackWndDefault( void )
  */
 void InitTrackWnd( HWND hwnd )
 {
-    int         i;
+    unsigned    i;
     HMENU       mh;
 
     mh = GetMenu( hwnd );
@@ -944,7 +944,7 @@ static bool doConvSort( WORD type, DDETrackInfo *info )
 /*
  * DisplayTracking - toggle a tracking window between displayed and hidden
  */
-void DisplayTracking( int i )
+void DisplayTracking( unsigned i )
 {
     int         action;
     HMENU       mh;

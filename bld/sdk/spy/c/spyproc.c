@@ -164,13 +164,13 @@ void SaveExtra( FILE *f )
  *                to make it so long that the pause is too obvious to the
  *                user
  */
-void setUpForPick( HWND hwnd, WORD cmdid ) {
+void setUpForPick( HWND hwnd, UINT_PTR timerid ) {
 
 #ifdef __WINDOWS__
-    SendMessage( hwnd, WM_TIMER, cmdid, 0 );
+    SendMessage( hwnd, WM_TIMER, timerid, 0 );
 #else
     ShowWindow( hwnd, SW_MINIMIZE );
-    SetTimer( hwnd, cmdid, 300, NULL );
+    SetTimer( hwnd, timerid, 300, NULL );
 #endif
 }
 
@@ -226,7 +226,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     int         check;
     HWND        selwin;
     HWND        hinthwnd;
-    WORD        cmdid = 0;
+    ctl_id      cmdid = 0;
     RECT        area;
     BOOL        pausestate;
     BOOL        spyallstate;

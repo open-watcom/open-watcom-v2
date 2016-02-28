@@ -30,9 +30,8 @@
 
 
 #define _WINDOWS_16_
-#include <windows.h>
-#include <toolhelp.h>
 #include <stdio.h>
+#include "commonui.h"
 #include "bool.h"
 #include "heapwlk.h"
 #include "hwbiglb.h"

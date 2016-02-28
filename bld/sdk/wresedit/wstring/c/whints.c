@@ -63,7 +63,6 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WHintItem    *WGetHintItem( int id );
 static void         WHandlePopupHint( WStatBar *, HMENU, HMENU );
 static DWORD        WGetPopupHint( WPopupHintItem *, int, HMENU );
 static bool         WInitHintItems( int, HMENU, WPopupHintItem * );
@@ -121,28 +120,19 @@ void WHandleMenuSelect( WStatBar *wsb, HMENU menu, WPARAM wParam, LPARAM lParam 
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
             WSetStatusText( wsb, NULL, "" );
         } else if( flags & MF_POPUP ) {
-            popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
+            popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+#else
+            popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
             WHandlePopupHint( wsb, menu, popup );
         } else {
-            WDisplayHint( wsb, (int)GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
+            WDisplayHint( wsb, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
         }
     }
 }
 
-void WDisplayHint( WStatBar *wsb, int id )
-{
-    WHintItem *hint;
-
-    hint = WGetHintItem( id );
-    if( hint != NULL ) {
-        WSetStatusByID( wsb, -1, hint->hint );
-    }
-}
-
-WHintItem *WGetHintItem( int id )
+static WHintItem *WGetHintItem( ctl_id id )
 {
     int i;
 
@@ -153,6 +143,16 @@ WHintItem *WGetHintItem( int id )
     }
 
     return( NULL );
+}
+
+void WDisplayHint( WStatBar *wsb, ctl_id id )
+{
+    WHintItem *hint;
+
+    hint = WGetHintItem( id );
+    if( hint != NULL ) {
+        WSetStatusByID( wsb, -1, hint->hint );
+    }
 }
 
 DWORD WGetPopupHint( WPopupHintItem *items, int num, HMENU popup )

@@ -191,7 +191,7 @@ void WREDestroyRibbon( void )
     WREResizeWindows();
 }
 
-static void wreRibbonHelpHook( HWND hwnd, int id, bool pressed )
+static void wreRibbonHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
     _wre_touch( hwnd );
 

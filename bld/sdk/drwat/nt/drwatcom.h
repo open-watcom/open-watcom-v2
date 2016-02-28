@@ -31,7 +31,7 @@
 
 
 #include <stdlib.h>
-#include <windows.h>
+#include "commonui.h"
 #include "listbox.h"
 #include "font.h"
 #include "procctl.h"

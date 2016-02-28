@@ -153,7 +153,7 @@ bool WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         if( lParam ) {
             WRESetStatusText( NULL, "", TRUE );
         } else {
-            WREDisplayHint( wParam );
+            WREDisplayHint( LOWORD( wParam ) );
         }
         if( lParam ) {
             bstate = BUTTON_UP;
@@ -303,7 +303,7 @@ void WREShutdownToolBars( void )
     ListFree( WREToolBarList );
 }
 
-void WRESetToolBarItemState( WREToolBar *tbar, int id, UINT state )
+void WRESetToolBarItemState( WREToolBar *tbar, ctl_id id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

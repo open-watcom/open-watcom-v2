@@ -612,7 +612,7 @@ static void processConvStruct( char *buf, MONCONVSTRUCT *info )
     char                *task;
     char                *serverconv;
     char                *clientconv;
-    MSGID               fmtstr;
+    msg_id              fmtstr;
 
     server = HSZToString( info->hszSvc );
     topic = HSZToString( info->hszTopic );
@@ -655,7 +655,7 @@ static void processErrStruct( char *buf, MONERRSTRUCT *info )
 static BOOL processHSZStruct( char *buf, MONHSZSTRUCT *info )
 {
     char                *task;
-    MSGID               fmtid;
+    msg_id              fmtid;
     char                *str;
     BOOL                str_alloced;
 #ifdef __NT__
@@ -711,7 +711,7 @@ static void processLinkStruct( char *buf, MONLINKSTRUCT *info )
     char                *task;
     char                *clientconv;
     char                *serverconv;
-    MSGID               fmtid;
+    msg_id              fmtid;
 
     if( info->fNoData ) {
         if( info->fEstablished ) {
@@ -751,7 +751,7 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, BOOL posted )
     char                *task;
     char                *tohwnd;
     char                msg_not_found;
-    MSGID               fmtid;
+    msg_id              fmtid;
 
     task = deAlias( (long)info->hTask, DEALIAS_TASK );
     tohwnd = deAlias( (long)info->hwndTo, DEALIAS_HWND );

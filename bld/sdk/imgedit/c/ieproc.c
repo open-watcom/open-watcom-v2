@@ -214,7 +214,7 @@ static void checkBrushItem( HMENU hmenu, int newitem )
 /*
  * IEIsMenuIDValid
  */
-static BOOL IEIsMenuIDValid( HMENU menu, int id )
+static BOOL IEIsMenuIDValid( HMENU menu, unsigned id )
 {
     UINT st;
 
@@ -253,7 +253,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 {
     static BOOL         window_destroyed = FALSE;
     static HMENU        hmenu;
-    int                 cmdid;
+    ctl_id              cmdid;
     img_node            *node;
     WPI_RECT            rcmain;
 #ifndef __OS2_PM__

@@ -190,7 +190,7 @@ void GetFixedTBRect( HWND hwnd, RECT *rect )
 /*
  * showTBHint
  */
-static void showTBHint( HWND hwnd, int id, bool select )
+static void showTBHint( HWND hwnd, ctl_id id, bool select )
 {
     DDEWndInfo          *info;
 
@@ -339,7 +339,7 @@ bool ToggleTB( HWND parent )
 /*
  * DDESetStickyState - set the state of a sticky toolbar button
  */
-void DDESetStickyState( int itemid, bool isdown )
+void DDESetStickyState( ctl_id itemid, bool isdown )
 {
     if( isdown ) {
         ToolBarSetState( ToolBar.hdl, itemid, BUTTON_DOWN );

@@ -98,7 +98,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 /*
  * spyToolBarHint
  */
-static void spyToolBarHint( HWND hwnd, int id, bool select ) {
+static void spyToolBarHint( HWND hwnd, ctl_id id, bool select ) {
 
     hwnd = hwnd;
     HintToolBar( StatusHdl, id, select );
