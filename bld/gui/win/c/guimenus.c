@@ -215,8 +215,7 @@ static bool GetPopupId( gui_window *wnd, HMENU hmenu, gui_ctl_id *id )
 }
 
 
-static bool InsertPopup( gui_window *wnd, gui_ctl_id id, HMENU popup,
-                         hint_type type )
+static bool InsertPopup( gui_window *wnd, gui_ctl_id id, HMENU popup, hint_type type )
 {
     popup_info  *info;
     HMENU       hmenu;
@@ -311,7 +310,8 @@ HMENU GUIGetHMENU( gui_window *wnd )
     HMENU hmenu;
 
     if( wnd->root_frame == NULLHANDLE ) { /* child window */
-        if( wnd->hwnd_frame == NULLHANDLE ) return( NULLHANDLE );
+        if( wnd->hwnd_frame == NULLHANDLE )
+            return( NULLHANDLE );
         hmenu = _wpi_getsystemmenu( wnd->hwnd_frame );
     } else {
         hmenu = _wpi_getmenu( wnd->root_frame );
@@ -666,8 +666,8 @@ bool GUICreateMenus( gui_window *wnd, int num, gui_menu_struct *menu, HMENU *hme
 bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
                          gui_menu_struct *menu, gui_create_styles style )
 {
-    HMENU       system;
-    int         num;
+    HMENU           system;
+    gui_ctl_idx     num;
 
     if( !( style & GUI_SYSTEM_MENU ) ) {
         return( true );
@@ -901,12 +901,12 @@ bool GUIInsertMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct 
 
 bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu )
 {
-    WPI_MENUSTATE       mstate;
-    HMENU       hmenu;
-    gui_ctl_idx position;
-    HMENU       parent;
-    bool        made_root;
-    bool        ret;
+    WPI_MENUSTATE   mstate;
+    HMENU           hmenu;
+    gui_ctl_idx     position;
+    HMENU           parent;
+    bool            made_root;
+    bool            ret;
 
     ret = false;
     hmenu = GetOrMakeHMENU( wnd, false, &made_root );

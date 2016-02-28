@@ -511,32 +511,29 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     SAREA               bounding;
     bool                ok;
 
-    ok = ( hdr != NULL );
+    if( hdr == NULL )
+        return( NULL ) ;
+    dlg_info = (gui_create_info *)GUIMemAlloc( sizeof( gui_create_info ) );
+    if( dlg_info == NULL )
+        return( NULL ) ;
 
-    if( ok ) {
-        dlg_info = (gui_create_info *)GUIMemAlloc( sizeof( gui_create_info ) );
-        ok = ( dlg_info != NULL );
-    }
+    // initialize the create struct
+    memset( dlg_info, 0, sizeof( gui_create_info ) );
 
-    if( ok ) {
-        // initialize the create struct
-        memset( dlg_info, 0, sizeof( gui_create_info ) );
+    // set the initial text
+    dlg_info->title = hdr->Caption; // NULL text is ok
 
-        // set the initial text
-        dlg_info->title = hdr->Caption; // NULL text is ok
-
-        // set the dialog postion remembering to add the size of the frame
-        GUIGetScreenArea( &bounding );
-        area.width = hdr->Size.width / DLG_X_MULT + 2;
-        area.height = hdr->Size.height / DLG_Y_MULT + 2;
-        area.row = 0;
-        if( bounding.height > area.height )
-            area.row = ( bounding.height - area.height ) / 2;
-        area.col = 0;
-        if( bounding.width > area.width )
-            area.col = ( bounding.width - area.width ) / 2;
-        ok = GUIScreenToScaleRect( &area, &dlg_info->rect );
-    }
+    // set the dialog postion remembering to add the size of the frame
+    GUIGetScreenArea( &bounding );
+    area.width = hdr->Size.width / DLG_X_MULT + 2;
+    area.height = hdr->Size.height / DLG_Y_MULT + 2;
+    area.row = 0;
+    if( bounding.height > area.height )
+        area.row = ( bounding.height - area.height ) / 2;
+    area.col = 0;
+    if( bounding.width > area.width )
+        area.col = ( bounding.width - area.width ) / 2;
+    ok = GUIScreenToScaleRect( &area, &dlg_info->rect );
 
     if( ok ) {
         // set the scroll styles

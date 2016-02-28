@@ -716,11 +716,12 @@ static void CheckNotify( a_dialog *ui_dlg_info, gui_window *wnd )
 static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_event   gui_ev;
-    a_list      *list;
+//    a_list      *list;
     gui_ctl_id  id;
 
     if( ui_dlg_info->curr != NULL ) {
-        list = GUIGetList( ui_dlg_info->curr );
+//        list = GUIGetList( ui_dlg_info->curr );
+        GUIGetList( ui_dlg_info->curr );
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
             switch( ev ) {
@@ -922,19 +923,19 @@ void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
 
 void GUICloseDialog( gui_window *wnd )
 {
-    VFIELD      *fields;
-    a_dialog    *ui_dlg_info;
-    char        *name;
-    dialog_node *dlg_node;
-    bool        colours_set;
+//    VFIELD      *fields;
+//    a_dialog    *ui_dlg_info;
+//    char        *name;
+//    dialog_node *dlg_node;
+//    bool        colours_set;
 
-    dlg_node = GUIGetDlgByWnd( wnd );
-    if( dlg_node != NULL ) {
-        ui_dlg_info = dlg_node->ui_dlg_info;
-        fields = ui_dlg_info->fields;
-        name = dlg_node->name;
-        colours_set = dlg_node->colours_set;
-    }
+//    dlg_node = GUIGetDlgByWnd( wnd );
+//    if( dlg_node != NULL ) {
+//        ui_dlg_info = dlg_node->ui_dlg_info;
+//        fields = ui_dlg_info->fields;
+//        name = dlg_node->name;
+//        colours_set = dlg_node->colours_set;
+//    }
     GUIPopControlEvents();
     uipoplist( /* DlgEvents */ );
     uipoplist( /* GUIUserEvents */ );

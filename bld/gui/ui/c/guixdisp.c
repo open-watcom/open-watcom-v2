@@ -380,6 +380,7 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
     int i;
 
     button_number = 0;
+    space_per_button = 0;
     if( num_buttons > 0 ) {
         space_per_button = cols / num_buttons;
     }
@@ -412,17 +413,19 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     gui_message_return  ret;
     int                 i;
     control_types       controls_to_use;
-    int                 mess_length;
+//    int                 mess_length;
     int                 title_length;
     string_info         *strings;
     int                 num_buttons;
 
     wnd = wnd;
+/*
     if( message != NULL ) {
         mess_length = strlen( message );
     } else {
         mess_length = 0;
     }
+*/
     if( title != NULL ) {
         title_length = strlen( title );
     } else {

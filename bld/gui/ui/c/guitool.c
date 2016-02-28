@@ -88,6 +88,7 @@ extern bool GUIXCreateFixedToolbar( gui_window *wnd )
     menu.style = GUI_ENABLED;
 
     for( i = 0; i < tbar->num_items; i++ ) {
+        with_excl = NULL;
         menu.label = tbar->info[i].label;
         if( menu.label != NULL ) {
             with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + 2 );

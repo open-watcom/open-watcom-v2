@@ -102,6 +102,7 @@ void GUIProcessMenuCurr( MENUITEM *menu )
     }
     type = MENU_HINT;
     top_wnd = GUIGetMenuWindow();
+    menu_wnd = NULL;
     switch( MenuState ) {
     case MENU_NONE :
         menu_wnd = top_wnd;
