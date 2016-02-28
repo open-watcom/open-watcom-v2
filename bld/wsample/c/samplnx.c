@@ -753,7 +753,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
         num_args = SplitParms( full_args, NULL, len );
-        argv = alloca( (num_args + 2)  * sizeof( *argv ) );
+        argv = alloca( ( num_args + 2 ) * sizeof( *argv ) );
         argv[SplitParms( full_args, argv + 1, len ) + 1] = NULL;
         argv[0] = prog;
 
