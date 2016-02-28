@@ -38,9 +38,10 @@
 
 
 #ifdef __NT__
-    #define WIN32_IS_WIN32S     ( _osbuild >= 0x8000  &&  _osmajor < 4 )
-    #define WIN32_IS_WIN95      ( _osbuild >= 0x8000  &&  _osmajor >= 4 )
+    #define WIN32_IS_WIN32S     ( _osbuild >= 0x8000 && _osmajor < 4 )
+    #define WIN32_IS_WIN95      ( _osbuild >= 0x8000 && _osmajor >= 4 )
     #define WIN32_IS_NT         ( _osbuild < 0x8000 )
+    #define WIN32_IS_NT4        ( _osbuild < 0x8000 && _osmajor >= 4 )
 #endif
 
 
