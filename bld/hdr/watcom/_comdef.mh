@@ -62,14 +62,14 @@
   #define _WCHUGE __huge
   #define _WCINTERRUPT __interrupt
   #define _WCUNALIGNED
-  #if defined(__386__)
-   #define _WCI86NEAR
-   #define _WCI86FAR
-   #define _WCI86HUGE
-  #else
+  #if defined(_M_I86)
    #define _WCI86NEAR __near
    #define _WCI86FAR __far
    #define _WCI86HUGE __huge
+  #else
+   #define _WCI86NEAR
+   #define _WCI86FAR
+   #define _WCI86HUGE
   #endif
  #elif defined(__AXP__)
   #define _WCNEAR
