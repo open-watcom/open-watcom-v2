@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define _WINDOWS_16_
 #include "commonui.h"
 #include "pmdbg.h"
 #include "const.h"

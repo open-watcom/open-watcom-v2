@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#define _WINDOWS_16_
 #include <stdio.h>
 #include "commonui.h"
 #include "bool.h"
