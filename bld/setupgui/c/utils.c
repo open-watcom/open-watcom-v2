@@ -287,16 +287,17 @@ bool NTSpawnWait( char *cmd, DWORD *exit_code, HANDLE in, HANDLE out, HANDLE err
 
     memset( &start, 0, sizeof( start ) );
     start.cb = sizeof( start );
-    start.hStdInput = in;
-    start.hStdOutput = GetStdHandle( STD_OUTPUT_HANDLE );
-    start.hStdError = GetStdHandle( STD_ERROR_HANDLE );
-    if( in || out || err ) {
-        start.dwFlags = STARTF_USESTDHANDLES;
-    }
     if( cmd[0] == '-' ) {
         cmd++;
-        start.wShowWindow = SW_HIDE;
+        // set ShowWindow default value for nCmdShow parameter
         start.dwFlags |= STARTF_USESHOWWINDOW;
+        start.wShowWindow = SW_HIDE;
+    }
+    if( in || out || err ) {
+        start.dwFlags |= STARTF_USESTDHANDLES;
+        start.hStdInput = in;
+        start.hStdOutput = GetStdHandle( STD_OUTPUT_HANDLE );
+        start.hStdError = GetStdHandle( STD_ERROR_HANDLE );
     }
     if( !CreateProcess( NULL, cmd, NULL, NULL, TRUE,
                         CREATE_NEW_PROCESS_GROUP + CREATE_NEW_CONSOLE,

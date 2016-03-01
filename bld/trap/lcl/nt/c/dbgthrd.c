@@ -574,7 +574,9 @@ static BOOL StartDebuggee( void )
              */
             memset( &sinfo, 0, sizeof( sinfo ) );
             sinfo.cb = sizeof( sinfo );
-            sinfo.wShowWindow = SW_NORMAL;
+            // set ShowWindow default value for nCmdShow parameter
+            sinfo.dwFlags = STARTF_USESHOWWINDOW;
+            sinfo.wShowWindow = SW_SHOWNORMAL;
             rc = CreateProcess( NULL,           /* application name */
                                 "wowdeb.exe",   /* command line */
                                 NULL,           /* process attributes */
@@ -603,7 +605,9 @@ static BOOL StartDebuggee( void )
     } else {
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.cb = sizeof( sinfo );
-        sinfo.wShowWindow = SW_NORMAL;
+        // set ShowWindow default value for nCmdShow parameter
+        sinfo.dwFlags = STARTF_USESHOWWINDOW;
+        sinfo.wShowWindow = SW_SHOWNORMAL;
         rc = CreateProcess( NULL,               /* application name */
                             Shared.name,        /* command line */
                             NULL,               /* process attributes */

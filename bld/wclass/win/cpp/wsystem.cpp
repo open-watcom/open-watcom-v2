@@ -70,6 +70,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
 
     memset( &info, 0, sizeof( STARTUPINFO ) );
     info.cb = sizeof( STARTUPINFO );
+    // set ShowWindow default value for nCmdShow parameter
+    info.dwFlags = STARTF_USESHOWWINDOW;
     info.wShowWindow = show;
     rc = CreateProcess( NULL,
                         (char *)cmd,
@@ -122,8 +124,9 @@ int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
 
     memset( &start, 0, sizeof( start ) );
     start.cb = sizeof( start );
-    start.wShowWindow = SW_HIDE;
+    // set ShowWindow default value for nCmdShow parameter
     start.dwFlags = STARTF_USESHOWWINDOW;
+    start.wShowWindow = SW_HIDE;
     create_flags = NORMAL_PRIORITY_CLASS;
     create_flags |= CREATE_NEW_CONSOLE;
     if( !CreateProcess( NULL, (char *)cmd, NULL, NULL, TRUE, create_flags, NULL, NULL,

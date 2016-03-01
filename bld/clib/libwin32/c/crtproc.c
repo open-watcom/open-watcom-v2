@@ -114,7 +114,10 @@ BOOL __lib_CreateProcessW( LPWSTR lpCommandLine,
 
         /*** Call the OS ***/
         memset( &mbStartupInfo, 0, sizeof( mbStartupInfo ) );
-        mbStartupInfo.wShowWindow = SW_NORMAL;
+        mbStartupInfo.cb = sizeof( sinfo );
+        // set ShowWindow default value for nCmdShow parameter
+        mbStartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+        mbStartupInfo.wShowWindow = SW_SHOWNORMAL;
         osrc = CreateProcessA( NULL, mbCommandLine, NULL, NULL,
                                bInheritHandles, 0, mbEnvironment, NULL,
                                &mbStartupInfo, lpProcessInformation );

@@ -384,7 +384,10 @@ static void loadProg( char *exe, char *cmdline )
     int                 rc;
 
     memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.wShowWindow = SW_NORMAL;
+    sinfo.cb = sizeof( sinfo );
+    // set ShowWindow default value for nCmdShow parameter
+    sinfo.dwFlags = STARTF_USESHOWWINDOW;
+    sinfo.wShowWindow = SW_SHOWNORMAL;
     rc = CreateProcess( NULL,           /* application name */
                         cmdline,        /* command line */
                         NULL,           /* process attributes */

@@ -73,6 +73,9 @@ static void RunCmd( char *cmd_name )
     sprintf( cmd, "%s /C %s", CmdProc, cmd_name );
     memset( &start, 0, sizeof( start ) );
     start.cb = sizeof( start );
+    // set ShowWindow default value for nCmdShow parameter
+    start.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    start.wShowWindow = SW_HIDE;
     DuplicateHandle( GetCurrentProcess(), redir_write, GetCurrentProcess(), &dup,
                 0, TRUE, DUPLICATE_SAME_ACCESS );
     start.hStdError  = dup;
@@ -80,8 +83,6 @@ static void RunCmd( char *cmd_name )
                 0, TRUE, DUPLICATE_SAME_ACCESS );
     start.hStdOutput = dup;
     start.hStdInput  = NulHdl;
-    start.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-    start.wShowWindow = SW_HIDE;
     if( !CreateProcess( NULL, cmd, NULL, NULL, TRUE, CREATE_NEW_PROCESS_GROUP,
                         NULL, NULL, &start, &info ) ) {
         info.dwProcessId = 0;

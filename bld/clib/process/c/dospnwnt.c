@@ -60,12 +60,13 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
 
     memset( &sinfo, 0, sizeof( sinfo ) );
     sinfo.cb = sizeof( sinfo );
-    
-    if(mode == P_DETACH) 
+    // set ShowWindow default value for nCmdShow parameter
+    sinfo.dwFlags = STARTF_USESHOWWINDOW;
+    if( mode == P_DETACH ) {
         sinfo.wShowWindow = SW_HIDE;
-    else
-        sinfo.wShowWindow = SW_NORMAL;
-    
+    } else {
+        sinfo.wShowWindow = SW_SHOWNORMAL;
+    }
     /* When passing in Unicode environments, the OS may not know which code
      * page to use when translating to MBCS in spawned program's startup
      * code.  Result: Possible corruption of Unicode environment variables.
