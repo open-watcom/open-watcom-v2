@@ -30,7 +30,7 @@
 
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "commonui.h"
 #include <shellapi.h>
 #include <shlobj.h>
 #include "ldstr.h"
