@@ -64,15 +64,15 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
     UINT old_err_mode = SetErrorMode( SEM_NOOPENFILEERRORBOX );
 #ifdef __NT__
-    STARTUPINFO         info;
+    STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
     int                 rc;
 
-    memset( &info, 0, sizeof( STARTUPINFO ) );
-    info.cb = sizeof( STARTUPINFO );
+    memset( &sinfo, 0, sizeof( sinfo ) );
+    sinfo.cb = sizeof( sinfo );
     // set ShowWindow default value for nCmdShow parameter
-    info.dwFlags = STARTF_USESHOWWINDOW;
-    info.wShowWindow = show;
+    sinfo.dwFlags = STARTF_USESHOWWINDOW;
+    sinfo.wShowWindow = show;
     rc = CreateProcess( NULL,
                         (char *)cmd,
                         NULL,
@@ -81,7 +81,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
                         0,
                         NULL,
                         NULL,
-                        &info,
+                        &sinfo,
                         &pinfo );
     if( rc ) {
         CloseHandle( pinfo.hThread );
