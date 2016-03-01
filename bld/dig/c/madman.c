@@ -330,14 +330,14 @@ void            MADUnload( dig_mad mad )
     mad_entry   *me;
 
     me = MADFind( mad );
-    if( me == NULL )
-        return;
-    if( me->rtns != NULL ) {
-        me->rtns->MIFini();
-        me->rtns = NULL;
-    }
-    if( me->sys_hdl != NULL_SYSHDL ) {
-        MADSysUnload( &me->sys_hdl );
+    if( me != NULL ) {
+        if( me->rtns != NULL ) {
+            me->rtns->MIFini();
+            me->rtns = NULL;
+        }
+        if( me->sys_hdl != NULL_SYSHDL ) {
+            MADSysUnload( &me->sys_hdl );
+        }
     }
 }
 
@@ -522,11 +522,11 @@ void            MADAddrAdd( address *a, long b, mad_address_format af )
 static int DIGREGISTER DummyAddrComp( const address *a, const address *b, mad_address_format af )
 {
     af = af;
-    if( a->mach.offset == b->mach.offset )
-        return(  0 );
+    if( a->mach.offset < b->mach.offset )
+        return( -1 );
     if( a->mach.offset >  b->mach.offset )
         return( +1 );
-    return( -1 );
+    return( 0 );
 }
 
 int MADAddrComp( const address *a, const address *b, mad_address_format af )
@@ -1055,8 +1055,7 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *src,
 }
 
 /* Convert native integer to specified representation */
-static mad_status ComposeInt( decomposed_item *v,
-                                const mad_type_info *mti, void *dst )
+static mad_status ComposeInt( decomposed_item *v, const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
     unsigned    i;
@@ -1186,8 +1185,7 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
 {
     mad_status  ms;
 
-    if( in_t->b.handler_code  == MAD_DEFAULT_HANDLING
-     && out_t->b.handler_code == MAD_DEFAULT_HANDLING ) {
+    if( in_t->b.handler_code  == MAD_DEFAULT_HANDLING && out_t->b.handler_code == MAD_DEFAULT_HANDLING ) {
         ms = DoConversion( in_t, in_d, out_t, out_d, seg );
         if( ms == MS_OK ) {
             return( MS_OK );
