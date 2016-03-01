@@ -47,8 +47,7 @@ static char *RegenPos( unsigned row, unsigned col )
 {
     char        *pos;
 
-    pos = (char *)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
+    pos = (char *)( UIData->screen.origin + row * UIData->screen.increment + col ) + 1;
     return( pos );
 }
 

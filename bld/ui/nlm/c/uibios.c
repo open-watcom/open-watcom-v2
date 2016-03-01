@@ -172,7 +172,7 @@ void intern physupdate( SAREA *area )
 
     for( i = area->row ; i < area->row + area->height ; ++i ){
         CopyToScreenMemory( 1, area->width,
-                (BYTE *)&(UIData->screen.origin[i*UIData->width+area->col]),
+                (BYTE *)( UIData->screen.origin + i * UIData->width + area->col ),
                 area->col, i );
     } /* end for */
 

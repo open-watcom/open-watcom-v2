@@ -97,7 +97,7 @@ FILE *ti_fopen( const char *fnam )
 {
     FILE        *res;
     const char  *homeDir;
-    char        fpath[FILENAME_MAX+1];
+    char        fpath[FILENAME_MAX + 1];
 
     if( fnam == NULL || fnam[0] == '\0' ) {
         return( NULL );
@@ -308,8 +308,7 @@ static unsigned get_tix_code( char *buff )
     return( *(unsigned char *)buff + ( *(unsigned char *)( buff + 1 ) << 8 ) );
 }
 
-static const char acs_default[] =
-        "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
+static const char acs_default[] = "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
 
 static char find_acs_map( char c, const char *acs )
 /*************************************************/
@@ -396,7 +395,7 @@ struct charmap {
     unsigned short unicode;
 };
 
-static struct charmap default_tix[] = {
+static const struct charmap default_tix[] = {
     /* keep zero to handle casestrings */
     {0, 0},
 
@@ -444,9 +443,8 @@ static struct charmap default_tix[] = {
     {'=', 0x2261}, /* UI_EQUIVALENT*/
 };
 
-static char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
-static char alt_num_keys[] = "1234567890-=";
-static char esc_str[] = "\033A";
+static const char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
+static const char alt_num_keys[] = "1234567890-=";
 
 /* use above table if no .tix file is found */
 static int do_default( void )
@@ -454,7 +452,11 @@ static int do_default( void )
 {
     unsigned char       c, cmap;
     int                 i;
+    char                esc_str[3];
 
+    esc_str[0] = '\033';
+    esc_str[1] = 'A';
+    esc_str[2] = '\0';
     for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ; i ++ ) {
         cmap = c = default_tix[i].vt100;
         if( (c & 0x80) == 0 ) {
@@ -472,7 +474,7 @@ static int do_default( void )
         ti_char_map[i][0] = cmap;
     }
     for( i = 0; i < sizeof( alt_keys ); i++ ) {
-        if ( alt_keys[i] ) {
+        if( alt_keys[i] ) {
             esc_str[1] = alt_keys[i];
             TrieAdd( 0x110 + i, esc_str );
             if( alt_keys[i] >= 'A' && alt_keys[i] <= 'Z' ) {

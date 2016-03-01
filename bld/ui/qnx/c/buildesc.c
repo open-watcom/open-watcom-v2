@@ -57,7 +57,8 @@ static void trieAdd( unsigned code, const char *input )
     fprintf( out_file, "0x%2.2x, 0x%2.2x,    ", code & 0xff, code >> 8 );
     for( ;; ) {
         fprintf( out_file, "0x%2.2x, ", *input );
-        if( *input == '\0' ) break;
+        if( *input == '\0' )
+            break;
         ++input;
     }
     fprintf( out_file, "\n" );

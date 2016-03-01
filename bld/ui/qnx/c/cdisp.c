@@ -215,13 +215,9 @@ bool intern initmonitor( void )
 
 /* update the physical screen with contents of virtual copy */
 
-static void my_console_write(cc, console, offset, buf, nbytes, row, col, type)
-struct _console_ctrl *cc;
-unsigned char __FAR *buf;
-int console, nbytes;
-unsigned offset;
-int row, col, type;
-        {
+static void my_console_write( struct _console_ctrl *cc, int console, unsigned offset,
+         unsigned char __FAR *buf, int nbytes, int row, int col, int type)
+{
         struct _mxfer_entry sx[2];
         struct _mxfer_entry rx;
         union _console_msg {

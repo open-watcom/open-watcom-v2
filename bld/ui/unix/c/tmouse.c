@@ -153,7 +153,7 @@ static int tm_stop( void )
     return 0;
 }
 
-static void TryOne( int type, char *test, char *init, char *input )
+static void TryOne( int type, char *test, char *init, const char *input )
 {
     MOUSEORD    row;
     MOUSEORD    col;

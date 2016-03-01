@@ -933,6 +933,7 @@ void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
 {
     register    int                     index;
 
+    hot=hot;
     uimenubar( NULL );
     MenuList.titles = menus;
     for( index = 0 ; !MENUENDMARKER( menus[index] ); ++index ) {

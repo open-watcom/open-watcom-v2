@@ -165,7 +165,7 @@ int TrieAdd( EVENT event, const char *str )
     int         i;
     int         depth = 1;
 
-    if( *str == '\0' )
+    if( str == NULL || *str == '\0' )
         return( TRUE );
 
     for( ;; ) {
