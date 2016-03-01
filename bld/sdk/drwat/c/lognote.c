@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdlib.h>
 #include "bool.h"
 #include "drwatcom.h"
