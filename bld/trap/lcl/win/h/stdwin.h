@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#define _WINDOWS_16_
+#define INCLUDE_TOOLHELP_H
 #include <windows.h>
-#include <toolhelp.h>
 #include "trpimp.h"
 #include "trpcomm.h"
 #include "trperr.h"
