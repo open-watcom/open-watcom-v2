@@ -176,7 +176,7 @@ namespace std {
                 break;
             }
             if( isspace( c ) ) {
-                rdbuf()->sputbackc( c );
+                rdbuf()->sputbackc( (char)c );
                 break;
             }
             buf[offset++] = (unsigned char)c;
@@ -610,8 +610,8 @@ namespace std {
 }
 
 static ios::iostate getaline( istream &istrm, char *buf, int len,
+    char delim, int is_get, int &chars_read )
 /***************************************************************/
-    char delim, int is_get, int &chars_read ) {
 // Read characters into buffer "buf".
 // At most "len - 1" characters are read, and a 0 is added at the end.
 // If "delim" is encountered, it is left in the stream and the read is
@@ -629,7 +629,7 @@ static ios::iostate getaline( istream &istrm, char *buf, int len,
 //
 //       Currently we set eofbit only if eof occurs on first character read.
 //       failbit is set if no characters were read.
-
+{
     int           c;
     int           offset;
     ios::iostate  state = 0;
@@ -649,9 +649,9 @@ static ios::iostate getaline( istream &istrm, char *buf, int len,
                 }
                 break;
             }
-            if( c == delim ) {
+            if( c == (int)(unsigned char)delim ) {
                 if( is_get ) {
-                    sb->sputbackc( c );
+                    sb->sputbackc( (char)c );
                 }
                 break;
             }
@@ -667,7 +667,7 @@ static ios::iostate getaline( istream &istrm, char *buf, int len,
     // the IOStreams Handbook suggests that no characters is not
     // an error if the delim was seen, this seems to be what our
     // competitors do.
-    if( (offset == 0) && (c != delim) ) {
+    if( (offset == 0) && (c != (int)(unsigned char)delim) ) {
         state |= ios::failbit;
     }
     // the draft standard says that len-1 characters is an
@@ -750,8 +750,8 @@ namespace std {
             }
             break;
         }
-        if( c == delim ) {
-            src_sb->sputbackc( c );
+        if( c == (int)(unsigned char)delim ) {
+            src_sb->sputbackc( (char)c );
             break;
         }
         ++__last_read_length;
