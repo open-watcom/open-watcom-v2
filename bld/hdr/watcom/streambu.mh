@@ -48,6 +48,8 @@ using std::streambuf;
 
 :include cpplock.sp
 
+#define __char_to_int( __c )    ((int)(unsigned char)(__c))
+
 namespace std {
 
   // **************************** STREAMBUF **********************************
@@ -219,7 +221,7 @@ namespace std {
   inline int streambuf::sgetchar() {
     __lock_it( __b_lock );
     return( (__get_ptr >= __get_end) && (underflow() == EOF) ? EOF
-                                                             : *__get_ptr++ );
+                                                             : __char_to_int( *__get_ptr++ ) );
   }
 
   inline int streambuf::sbumpc() {
@@ -228,13 +230,13 @@ namespace std {
 
   inline int streambuf::snextc() {
     __lock_it( __b_lock );
-    return( (__get_ptr) && (++__get_ptr < __get_end) ? *__get_ptr
+    return( (__get_ptr) && (++__get_ptr < __get_end) ? __char_to_int( *__get_ptr )
                                                      : underflow() );
   }
 
   inline int streambuf::speekc() {
     __lock_it( __b_lock );
-    return( (__get_ptr < __get_end) ? *__get_ptr
+    return( (__get_ptr < __get_end) ? __char_to_int( *__get_ptr )
                                     : underflow() );
   }
 
@@ -268,14 +270,14 @@ namespace std {
 
   inline int streambuf::sputbackc( char __c ) {
     __lock_it( __b_lock );
-    return( (__get_ptr > __get_base) ? (*--__get_ptr = __c)
-                                     : pbackfail( __c ) );
+    return( (__get_ptr > __get_base) ? __char_to_int( *--__get_ptr = __c )
+                                     : pbackfail( __char_to_int( __c ) ) );
   }
 
   inline int streambuf::sputc( int __c ) {
     __lock_it( __b_lock );
     return( (__put_ptr >= __put_end) ? overflow( __c )
-                                     : (*__put_ptr++ = (char)__c) );
+                                     : __char_to_int( *__put_ptr++ = (char)__c ) );
   }
 
   inline int streambuf::sputn( char const *__buf, int __len ) {
