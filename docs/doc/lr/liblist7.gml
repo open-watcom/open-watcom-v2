@@ -1294,11 +1294,12 @@
 .sys select QNX16 QNX32 LNX32 NET32
 .sys _selectpalette DOS16 DOS32 QNX16 QNX32
 .sys _select_receive QNX16 QNX32
-.sys sem_destroy QNX16 QNX32
-.sys sem_init QNX16 QNX32
-.sys sem_post QNX16 QNX32
-.sys sem_trywait QNX16 QNX32
-.sys sem_wait QNX16 QNX32
+.sys sem_destroy QNX16 QNX32 LNX32
+.sys sem_getvalue LNX32
+.sys sem_init QNX16 QNX32 LNX32
+.sys sem_post QNX16 QNX32 LNX32
+.sys sem_trywait QNX16 QNX32 LNX32
+.sys sem_wait QNX16 QNX32 LNX32
 .sys Send NET32 MACRO
 .sys Sendfd MACRO
 .sys Sendfdmx MACRO

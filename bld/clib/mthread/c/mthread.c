@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
+*    Portions Copyright (c) 2016 Open Watcom Contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,8 +41,8 @@
 #endif
 #if defined (_NETWARE_LIBC)
   #include "nw_libc.h"
-#elif defined( __QNX__ )
-  #include "semaqnx.h"
+#elif defined( __QNX__ ) || defined( __LINUX__ )
+  #include "semapsx.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -164,10 +166,8 @@ _WCRTLINK void __CloseSemaphore( semaphore_object *obj )
     if( obj->initialized != 0 ) {
     #if defined( __NETWARE__ )
         obj->semaphore = 0;
-    #elif defined( __QNX__ )
-        __qsem_destroy( &obj->semaphore );
-    #elif defined( __LINUX__ )
-        // TODO: Close the semaphore for Linux!
+    #elif defined( __QNX__ ) || defined( __LINUX__ )
+        __posix_sem_destroy( &obj->semaphore );
     #elif defined( __RDOS__ )
         RdosDeleteSection( obj->semaphore );
         obj->semaphore = 0;
@@ -208,9 +208,9 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
     #if defined( __NT__ )
                 obj->semaphore = __NTGetCriticalSection();
     #elif defined( __QNX__ )
-                __qsem_init( &obj->semaphore, 1, 1 );
+                __posix_sem_init( &obj->semaphore, 1, 1 );
     #elif defined( __LINUX__ )
-                // TODO: Access semaphore under Linux!
+                __posix_sem_init( &obj->semaphore, 0, 1 );
     #elif defined( __RDOS__ )
                 obj->semaphore = RdosCreateSection();
     #elif defined( __RDOSDEV__ )
@@ -236,10 +236,8 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
         obj->initialized = 1;
   #elif defined( __NT__ )
         EnterCriticalSection( obj->semaphore );
-  #elif defined( __QNX__ )
-        __qsem_wait( &obj->semaphore );
-  #elif defined( __LINUX__ )
-        // TODO: Wait for semaphore under Linux!
+  #elif defined( __QNX__ ) || defined( __LINUX__ )
+        __posix_sem_wait( &obj->semaphore );
   #elif defined( __RDOS__ )
         RdosEnterSection( obj->semaphore );
   #elif defined( __RDOSDEV__ )
@@ -275,10 +273,8 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
             obj->semaphore = 0;
   #elif defined( __NT__ )
             LeaveCriticalSection( obj->semaphore );
-  #elif defined( __QNX__ )
-            __qsem_post( &obj->semaphore );
-  #elif defined( __LINUX__ )
-            // TODO: Relase semaphore under Linux!
+  #elif defined( __QNX__ ) || defined( __LINUX__ )
+            __posix_sem_post( &obj->semaphore );
   #elif defined( __RDOS__ )
             RdosLeaveSection( obj->semaphore );
   #elif defined( __RDOSDEV__ )
@@ -835,11 +831,13 @@ void __InitMultipleThread( void )
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
         TlsSetValue( __TlsIndex, __FirstThreadData );
   #elif defined( __QNX__ )
-        __qsem_init( &InitSemaphore.semaphore, 1, 1 );
+        __posix_sem_init( &InitSemaphore.semaphore, 1, 1 );
         InitSemaphore.initialized = 1;
         // first thread data already in magic memory
   #elif defined( __LINUX__ )
-        // TODO: Init semaphores for Linux
+	__posix_sem_init( &InitSemaphore.semaphore, 0, 1 );
+        InitSemaphore.initialized = 1;
+	__AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
   #elif defined( __RDOS__ )
         InitSemaphore.semaphore = RdosCreateSection();
         InitSemaphore.initialized = 1;

@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2016 Open Watcom Contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,18 +25,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linux semaphore post routine
 *
 ****************************************************************************/
 
+#include <semaphore.h>
+#include <stddef.h>
+#include <stdio.h>
+#include "variety.h"
+#include "rterrno.h"
+#include "futex.h"
+#include "atomic.h"
 
-#ifndef _SEMAQNX_H_INCLUDED
-#define _SEMAQNX_H_INCLUDED
+_WCRTLINK int sem_post(sem_t *sem) 
+{
+    if(sem == NULL) {
+        _RWD_errno = EINVAL;
+        return -1;
+    }
 
-extern int __qsem_destroy( sem_t *p );
-extern int __qsem_init( sem_t *p, int i, unsigned j );
-extern int __qsem_wait( sem_t *p );
-extern int __qsem_post( sem_t *p );
-
-#endif
+    __atomic_add(&sem->value, 1);
+    __futex(&sem->value, FUTEX_WAKE_PRIVATE, 1, NULL);
+    return 0;
+}

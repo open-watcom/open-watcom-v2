@@ -80,6 +80,12 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
         $(psplice)
 
 #
+# Special case for non-8.3 Linux header
+#
+semaphore.h: sema4.mh
+        $(splice)
+
+#
 # Special case for cname style headers
 #
 options_complex  = -kCPPCOMPLEX
