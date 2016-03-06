@@ -16,6 +16,7 @@
 #pragma include_alias( <forward_list>,       <forward_>   )
 #pragma include_alias( <functional>,         <function>   )
 #pragma include_alias( <initializer_list>,   <initiali>   )
+#pragma include_alias( <semaphore.h>,        <semaphor.h> )
 #pragma include_alias( <stdexcept>,          <stdexcep>   )
 #pragma include_alias( <stdexcept.h>,        <stdexcep.h> )
 #pragma include_alias( <streambuf>,          <streambu>   )
