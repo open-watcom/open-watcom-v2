@@ -34,6 +34,10 @@
 
 /*** Define some handy macros ***/
 #ifdef __WIDECHAR__
+    #define UNICODE
+    #define _UNICODE
+    #define __UNICODE__
+
     #define DIR_TYPE            struct _wdirent
     #define CHAR_TYPE           wchar_t
     #define UCHAR_TYPE          wchar_t
@@ -47,9 +51,7 @@
     #define IS_ASCII(c)         ( (c & 0xff00) == 0 )
     #define TO_ASCII(c)         ( c )
     #define __F_NAME(n1,n2)     n2
-    #define UNICODE
-    #define _UNICODE
-    #define __UNICODE__
+    #define INTCHAR_EOF         WEOF
 #else
     #define DIR_TYPE            struct dirent
     #define CHAR_TYPE           char
@@ -64,6 +66,7 @@
     #define IS_ASCII(c)         ( 1 )
     #define TO_ASCII(c)         ( (unsigned char)c )
     #define __F_NAME(n1,n2)     n1
+    #define INTCHAR_EOF         EOF
 #endif
 #define CHARSIZE                (sizeof( CHAR_TYPE ))
 
