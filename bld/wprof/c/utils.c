@@ -246,7 +246,7 @@ size_t BigRead( int fh, void * buff, size_t size )
 #define MAX_OS_TRANSFER (32U*1024 - 512)
 #else
 #define MAX_OS_TRANSFER MAX_INT
-#ednif
+#endif
     size_t      total;
     unsigned    read_len;
     unsigned    amount;
