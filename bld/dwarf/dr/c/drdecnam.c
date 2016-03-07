@@ -279,7 +279,7 @@ void DRDecorateLabel( dr_handle die, char *buf )
     FillLoc( &loc, die );
 
     compunit = DWRFindCompileInfo( die );
-    lang = DRGetLanguageAT( compunit->start + COMPILE_UNIT_HDR_SIZE );
+    lang = DRGetLanguageAT( compunit->start + sizeof( compuhdr_prologue ) );
 
     switch( loc.tag ) {
     case DW_TAG_subprogram:
@@ -383,7 +383,7 @@ static BrokenName_T BuildList( dr_handle die, dr_handle parent )
     loc.parent = parent;
 
     compunit = DWRFindCompileInfo( die );
-    lang = DRGetLanguageAT( compunit->start + COMPILE_UNIT_HDR_SIZE );
+    lang = DRGetLanguageAT( compunit->start + sizeof( compuhdr_prologue ) );
 
     switch( lang ) {
     case DR_LANG_CPLUSPLUS:

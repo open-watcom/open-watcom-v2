@@ -135,7 +135,7 @@ extern void DRGetScopeList( dr_scope_trail *container, dr_handle of )
     container->target = of;
     container->head = NULL;
     if( compunit != NULL ) {
-        DWRWalkContaining(  compunit->start + COMPILE_UNIT_HDR_SIZE, of, AContainer, container );
+        DWRWalkContaining(  compunit->start + sizeof( compuhdr_prologue ), of, AContainer, container );
     }
 }
 

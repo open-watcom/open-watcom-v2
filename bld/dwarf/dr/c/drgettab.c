@@ -193,8 +193,8 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     }
     start = DWRCurrNode->sections[DR_DEBUG_LINE].base + stmt_offset;
     finish = start + DWRVMReadDWord( start );
-    op_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
-    start += STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
+    op_base = DWRVMReadByte( start + offsetof( stmt_prologue, opcode_base ) );
+    start += offsetof( stmt_prologue, standard_opcode_lengths );
     oparray = __alloca( op_base - 1 );
     for( index = 0; index < op_base - 1; index++ ) {
         oparray[index] = DWRVMReadByte( start );

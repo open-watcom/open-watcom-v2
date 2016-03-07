@@ -311,15 +311,6 @@ typedef struct {
     unsigned_8      standard_opcode_lengths[DWLINE_OPCODE_BASE - 1];
 } _WCUNALIGNED stmt_prologue;
 
-#define STMT_PROLOGUE_HDR_VERSION               4     // 4
-#define STMT_PROLOGUE_HDR_PROLOGUE_LEN          6     // 4 + 2
-#define STMT_PROLOGUE_HDR_MIN_INS_LEN           10    // 4 + 2 + 4
-#define STMT_PROLOGUE_HDR_DEF_IN_STMT           11    // 4 + 2 + 4 + 1
-#define STMT_PROLOGUE_HDR_LINE_BASE             12    // 4 + 2 + 4 + 1 + 1
-#define STMT_PROLOGUE_HDR_LINE_RANGE            13    // 4 + 2 + 4 + 1 + 1 + 1
-#define STMT_PROLOGUE_HDR_OPCODE_BASE           14    // 4 + 2 + 4 + 1 + 1 + 1 + 1
-#define STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS   15    // 4 + 2 + 4 + 1 + 1 + 1 + 1 + 1
-
 // !!!! WARNING !!!!
 // In Dwarf V4 was specified arange triple structure in different field order
 // { selector, offset, length }.
@@ -372,11 +363,6 @@ typedef struct {
     unsigned_32     abbrev_offset;
     unsigned_8      addr_size;
 } _WCUNALIGNED compuhdr_prologue;
-
-#define COMPILE_UNIT_HDR_VERSION        4     // 4
-#define COMPILE_UNIT_HDR_ABBREV_OFFSET  6     // 4 + 2
-#define COMPILE_UNIT_HDR_ADDR_SIZE      10    // 4 + 2 + 4
-#define COMPILE_UNIT_HDR_SIZE           11    // 4 + 2 + 4 + 1
 
 typedef struct {
     unsigned_32     length;
