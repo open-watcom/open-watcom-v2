@@ -115,7 +115,7 @@ typedef enum {
 typedef unsigned long   wnd_switches;
 
 typedef int             wnd_row;
-typedef unsigned char   wnd_class;
+typedef signed char     wnd_class;
 typedef unsigned long   wnd_update_list;
 
 typedef struct wnd_line_piece {
@@ -317,6 +317,8 @@ extern void             DlgOpen( const char *title, int, int, gui_control_info *
 extern void             ResDlgOpen( GUICALLBACK *, void *, res_name_or_id dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
+extern int              DlgSearch( a_window *wnd, void *history );
+extern bool             DlgSearchAll( char **expr, void *history );
 
 extern a_window         **WndFindOwner( a_window * );
 extern a_window         *WndFirst( void );

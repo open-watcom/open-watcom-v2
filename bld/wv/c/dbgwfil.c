@@ -62,7 +62,6 @@
 #include "dbgwinsp.h"
 
 
-extern int              DlgSearch( a_window *, void * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern unsigned         ExprSize( stack_entry * );
 

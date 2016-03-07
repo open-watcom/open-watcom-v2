@@ -33,7 +33,6 @@
 #include "app.h"
 
 
-extern int DlgSearch( a_window *, void * );
 extern int DlgOptions( void );
 
 extern void DlgCmd( void );
@@ -124,7 +123,6 @@ static const char *FmtNum( const void *data_handle, int item )
 
 static void TimeIt( void )
 {
-    extern wnd_attr     WndPlainAttr;
     char        buff[80];
     int         len;
     long        iters;

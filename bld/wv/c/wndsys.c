@@ -75,8 +75,6 @@ extern bool             UsrScrnMode( void );
 extern bool             UserScreen( void );
 extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
-extern int              DlgSearch( a_window *, void * );
-extern bool             DlgSearchAll( char **, void * );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern void             SetUpdateFlags( update_list );
 

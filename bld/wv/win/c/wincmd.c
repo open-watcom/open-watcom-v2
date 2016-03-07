@@ -41,7 +41,7 @@ static const char SysOptNameTab[] = {
     "Popups\0"
 };
 
-enum { 
+enum {
     OPT_NOSNOW,
     OPT_POPUPS
 };

@@ -90,7 +90,6 @@ typedef struct srch_window {
 extern wnd_info SrchInfo;
 
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
-extern bool             DlgSearchAll(char**,void*);
 
 #include "menudef.h"
 static gui_menu_struct SrchMenu[] = {
