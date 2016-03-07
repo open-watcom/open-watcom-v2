@@ -97,7 +97,7 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
     while( envVar != NULL || argv[OptInd] != NULL ) {
         if( envVar != NULL ) {
             currarg = envVar;
-            while( isspace( ch = currarg[optOff] ) ) {
+            while( isspace( (unsigned char)(ch = currarg[optOff]) ) ) {
                 optOff++;
             }
         } else {
@@ -138,7 +138,7 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
     if( ch == '?' ) {
         Quit( usage, NULL );
     }
-    if( optstr[0] == '#' && isdigit( ch ) ) {
+    if( optstr[0] == '#' && isdigit( (unsigned char)ch ) ) {
         OptArg = &currarg[optOff];
         eatArg( argc, argv, 1 );
         return( '#' );
