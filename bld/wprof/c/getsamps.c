@@ -43,7 +43,7 @@
 
 
 extern void ClearSample(sio_data *curr_sio);
-extern unsigned int BigRead(int ,void *,unsigned int );
+extern size_t BigRead( int, void *, size_t );
 extern void ErrorMsg(char *msg,... );
 extern void SetSampleInfo(sio_data *curr_sio);
 extern bool LoadImageOverlays(void );

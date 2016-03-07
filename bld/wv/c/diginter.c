@@ -68,12 +68,12 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
     return( SeekStream( h, p, k ) );
 }
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void *b , unsigned s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
 {
     return( ReadStream( h, b, s ) );
 }
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, unsigned s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
 {
     return( WriteStream( h, b, s ) );
 }

@@ -82,10 +82,10 @@ static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     return( Buff.fpos );
 }
 
-static unsigned BRead( dig_fhandle h, void *b, unsigned s )
+static size_t BRead( dig_fhandle h, void *b, size_t s )
 {
-    unsigned    got;
-    unsigned    want;
+    size_t      got;
+    size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
@@ -99,18 +99,22 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
     }
     want = s;
     got = Buff.len - Buff.off;
-    if( got > want ) got = want;
+    if( got > want )
+        got = want;
     memcpy( b, &Buff.data[Buff.off], got );
     Buff.off += got;
     want -= got;
     if( want > 0 ) {
-        Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( Buff.len == DCREAD_ERROR ) {
+        size_t  len;
+
+        len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
+        if( len == DCREAD_ERROR ) {
             Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
             return( DCREAD_ERROR );
         }
+        Buff.len = len;
         Buff.fpos += Buff.len;
         b = (unsigned_8 *)b + got;
         memcpy( b, &Buff.data[0], want );
@@ -281,7 +285,7 @@ static dip_status ReadString( dig_fhandle h, char *buf, unsigned *len_ptr )
     if( BRead( h, &str_len, sizeof( str_len ) ) != sizeof( str_len ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
-    if( BRead( h, buf, str_len ) != (unsigned)str_len ) {
+    if( BRead( h, buf, str_len ) != str_len ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     buf[str_len] = '\0';            // NUL terminate string
@@ -297,7 +301,7 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, unsigned co
 {
     dip_status      ds;
     unsigned_16     *sym_tbl;
-    unsigned        tbl_size;
+    size_t          tbl_size;
     sym_symdef      sym;
     sym_symdef_32   sym_32;
     char            name[256];

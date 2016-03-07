@@ -87,10 +87,10 @@ static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     return( Buff.fpos );
 }
 
-static unsigned BRead( dig_fhandle h, void *b, unsigned s )
+static size_t BRead( dig_fhandle h, void *b, size_t s )
 {
-    unsigned    got;
-    unsigned    want;
+    size_t      got;
+    size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
@@ -104,18 +104,22 @@ static unsigned BRead( dig_fhandle h, void *b, unsigned s )
     }
     want = s;
     got = Buff.len - Buff.off;
-    if( got > want ) got = want;
+    if( got > want )
+        got = want;
     memcpy( b, &Buff.data[Buff.off], got );
     Buff.off += got;
     want -= got;
     if( want > 0 ) {
-        Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( Buff.len == DCREAD_ERROR ) {
+        size_t len;
+
+        len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
+        if( len == DCREAD_ERROR ) {
             Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
             return( DCREAD_ERROR );
         }
+        Buff.len = len;
         Buff.fpos += Buff.len;
         b = (unsigned_8 *)b + got;
         memcpy( b, &Buff.data[0], want );
@@ -252,7 +256,7 @@ static dip_status ProcTable( dig_fhandle h, imp_image_handle *ii,
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( len == 0 ) break;
-        if( BRead( h, buff, len + 2 ) != (unsigned)( len + 2 ) ) {
+        if( BRead( h, buff, len + 2 ) != ( len + 2 ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         ord = *(unsigned_16 *)&buff[len];
@@ -572,7 +576,7 @@ static dip_status TryPE( dig_fhandle h, imp_image_handle *ii,
     unsigned            i;
     pe_object           *obj;
     pe_export_directory dir;
-    unsigned            obj_size;
+    size_t              obj_size;
     dip_status          ds;
     unsigned long       pos;
     pe_export_info      *exp;
@@ -658,15 +662,17 @@ static dip_status TryStub( dig_fhandle h, imp_image_handle *ii )
     any_header          head;
 
     switch( BRead( h, &head.mz, sizeof( head.mz ) ) ) {
-    case (unsigned)-1:
+    case DCREAD_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head.mz ):
         break;
     default:
         return( DS_FAIL );
     }
-    if( head.mz.signature != DOS_SIGNATURE ) return( DS_FAIL );
-    if( head.mz.reloc_offset < (OS2_NE_OFFSET+sizeof(off)) ) return( DS_FAIL );
+    if( head.mz.signature != DOS_SIGNATURE )
+        return( DS_FAIL );
+    if( head.mz.reloc_offset < (OS2_NE_OFFSET + sizeof( off )) )
+        return( DS_FAIL );
     if( BSeek( h, OS2_NE_OFFSET, DIG_ORG ) != OS2_NE_OFFSET ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
@@ -708,7 +714,7 @@ static dip_status TryNLM( dig_fhandle h, imp_image_handle *ii )
     char                name[256];
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case (unsigned)-1:
+    case DCREAD_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;
@@ -838,7 +844,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     bool                byte_swap;
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case (unsigned)-1:
+    case DCREAD_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;

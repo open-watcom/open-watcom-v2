@@ -67,7 +67,7 @@ extern char *                   CommentString;
 static orl_sec_offset   routineBase = 0;
 static orl_sec_size     routineSize = 0;
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *buff )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
 {
     sa_disasm   pd = d;
 
@@ -75,7 +75,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *buff )
     if( pd->offs + off + size <= pd->last ) {
         memcpy( buff, pd->data + pd->offs + off, size );
     } else if( pd->offs + off <= pd->last ) {
-        unsigned    valid = pd->last - pd->offs - off + 1;
+        size_t  valid = pd->last - pd->offs - off + 1;
 
         memcpy( buff, pd->data + pd->offs + off, valid );
         memset( (char *)buff + valid, 0xFF, size - valid );

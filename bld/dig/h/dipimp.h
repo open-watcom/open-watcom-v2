@@ -230,8 +230,8 @@ typedef struct dip_client_routines {
 
     dig_fhandle         (DIGCLIENT *open)( char const *, dig_open );
     unsigned long       (DIGCLIENT *seek)( dig_fhandle, unsigned long, dig_seek );
-    unsigned            (DIGCLIENT *read)( dig_fhandle, void *, unsigned );
-    unsigned            (DIGCLIENT *write)( dig_fhandle, void const *, unsigned );
+    size_t              (DIGCLIENT *read)( dig_fhandle, void *, size_t );
+    size_t              (DIGCLIENT *write)( dig_fhandle, void const *, size_t );
     void                (DIGCLIENT *close)( dig_fhandle );
     void                (DIGCLIENT *remove)( char const *, dig_open );
 
@@ -255,7 +255,7 @@ DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 
 #define DCSEEK_POSBACK(x)   ((unsigned long)-(long)(x))
 #define DCSEEK_ERROR        ((unsigned long)-1L)
-#define DCREAD_ERROR        ((unsigned)-1)
+#define DCREAD_ERROR        ((size_t)-1)
 
 void            *DCAlloc( size_t amount );
 void            *DCAllocZ( size_t amount );
@@ -271,9 +271,9 @@ void            DCAddrSection( address * );
 
 dig_fhandle     DCOpen( const char *path, dig_open flags );
 unsigned long   DCSeek( dig_fhandle h, unsigned long p, dig_seek w );
-unsigned        DCRead( dig_fhandle h, void *b, unsigned s );
-dip_status      DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p );
-unsigned        DCWrite( dig_fhandle h, void *b, unsigned s );
+size_t          DCRead( dig_fhandle h, void *b, size_t s );
+dip_status      DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p );
+size_t          DCWrite( dig_fhandle h, void *b, size_t s );
 void            DCClose( dig_fhandle h );
 void            DCRemove( const char *path, dig_open flags );
 

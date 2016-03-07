@@ -223,12 +223,12 @@ unsigned long DCSeek( dig_fhandle h, unsigned long p, dig_seek w )
     return( Client->seek( h, p, w ) );
 }
 
-unsigned DCRead( dig_fhandle h, void *b, unsigned s )
+size_t DCRead( dig_fhandle h, void *b, size_t s )
 {
     return( Client->read( h, b, s ) );
 }
 
-dip_status DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p )
+dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
 {
     if( Client->seek( h, p, DIG_ORG ) != p ) {
         return( DS_ERR | DS_FSEEK_FAILED );
@@ -239,7 +239,7 @@ dip_status DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p )
     return( DS_OK );
 }
 
-unsigned DCWrite( dig_fhandle h, void *b, unsigned s )
+size_t DCWrite( dig_fhandle h, void *b, size_t s )
 {
     return( Client->write( h, b, s ) );
 }

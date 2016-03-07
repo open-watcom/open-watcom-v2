@@ -886,7 +886,7 @@ void InitCache( address start, unsigned len )
     Cache.len = MCReadMem( start, len, Cache.data );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;

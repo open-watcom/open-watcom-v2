@@ -176,7 +176,7 @@ unsigned long   MCSeek( dig_fhandle h, unsigned long p, dig_seek m )
     return( MadClient->MADCliSeek( h, p, m ) );
 }
 
-unsigned        MCRead( dig_fhandle h, void *d, unsigned l )
+size_t          MCRead( dig_fhandle h, void *d, size_t l )
 {
     return( MadClient->MADCliRead( h, d, l ) );
 }

@@ -224,23 +224,24 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
 /*
  * DIPCliRead
  */
-unsigned DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, unsigned size ) {
-
+size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
+{
     DWORD       bytesread;
 
-    if( !ReadFile( (HANDLE)hdl, buf, size, &bytesread, NULL ) ) return( 0 );
+    if( !ReadFile( (HANDLE)hdl, buf, size, &bytesread, NULL ) )
+        return( (size_t)-1 );
     return( bytesread );
 }
 
 /*
  * DIPCliWrite
  */
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, unsigned size ) {
+size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
+{
     DWORD       byteswritten;
 
-    if( !WriteFile( (HANDLE)hdl, buf, size, &byteswritten, NULL ) ) {
-        return( 0 );
-    }
+    if( !WriteFile( (HANDLE)hdl, buf, size, &byteswritten, NULL ) )
+        return( (size_t)-1 );
     return( byteswritten );
 }
 

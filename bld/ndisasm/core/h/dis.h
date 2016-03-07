@@ -49,6 +49,6 @@ extern char                 *DisAddReg( dis_register reg, char *dst, dis_format_
 /*
         Client routines
 */
-extern dis_return   DisCliGetData( void *d, unsigned off, unsigned size, void *data );
+extern dis_return   DisCliGetData( void *d, unsigned off, size_t size, void *data );
 extern unsigned     DisCliGetAlign( void *d, unsigned off, unsigned align );
 extern size_t       DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff, size_t buff_len );

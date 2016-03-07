@@ -122,19 +122,35 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
     return( off );
 }
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void *b , unsigned s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
 {
-    unsigned    rc = read( h, b, s );
+#ifdef _WIN64
+    unsigned    rc = read( h, b, (unsigned)s );
+#else
+    size_t      rc = read( h, b, s );
+#endif
 
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, s, rc ));
+    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+#ifdef _WIN64
+    if( rc == (unsigned)-1 )
+        return( (size_t)-1 );
+#endif
     return( rc );
 }
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, unsigned s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
 {
-    unsigned    rc = write( h, b, s );
+#ifdef _WIN64
+    unsigned    rc = write( h, b, (unsigned)s );
+#else
+    size_t      rc = write( h, b, s );
+#endif
 
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, s, rc ));
+    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+#ifdef _WIN64
+    if( rc == (unsigned)-1 )
+        return( (size_t)-1 );
+#endif
     return( rc );
 }
 

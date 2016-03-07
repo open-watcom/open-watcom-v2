@@ -233,49 +233,45 @@ extern void InitPaths( void )
 #endif
 }
 
-#if defined( __QNX__ )
+size_t BigRead( int fh, void * buff, size_t size )
+/************************************************/
+{
+#if defined( __QNX__ ) || defined( _WIN64 )
+
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
 */
+#if defined( __QNX__ )
 #define MAX_OS_TRANSFER (32U*1024 - 512)
+#else
+#define MAX_OS_TRANSFER MAX_INT
+#ednif
+    size_t      total;
+    unsigned    read_len;
+    unsigned    amount;
 
-STATIC unsigned doread( int file, void * buffer, unsigned len )
-/*************************************************************/
-{
-    unsigned    total;
-    int         h;
-    int         amount;
-
+    amount = MAX_OS_TRANSFER;
     total = 0;
-    for( ;; ) {
-        if( len == 0 ) {
-            return( total );
+    while( size > 0 ) {
+        if( amount > size ) {
+            amount = size;
         }
-        amount = len;
-        if( amount > MAX_OS_TRANSFER ) {
-            amount = MAX_OS_TRANSFER;
+        read_len = read( file, buffer, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( (size_t)-1 );
         }
-        h = read( file, buffer, amount );
-        if( h < 0 ) {
-            return( h );
-        }
-        total += h;
-        if( h != amount ) {
+        total += read_len;
+        if( read_len != amount ) {
             return( total );
         }
         buffer = (char *)buffer + amount;
-        len -= amount;
+        size -= amount;
     }
-}
+    return( total );
 #else
-    #define doread( f, b, l )  read( f, b, l )
+    return( read( fh, buff, size ) );
 #endif
-
-extern unsigned BigRead( int fh, void * buff, unsigned size )
-/***********************************************************/
-{
-    return( doread( fh, buff, size ) );
 }
 
 #if defined( __DOS__ )

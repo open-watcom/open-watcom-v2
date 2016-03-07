@@ -58,14 +58,15 @@ void DisasmFini()
     DisFini( &DH );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
 
     addr = dd->addr;
     addr.mach.offset += off;
-    if( MCReadMem( addr, size, data ) == 0 ) return( DR_FAIL );
+    if( MCReadMem( addr, size, data ) == 0 )
+        return( DR_FAIL );
     return( DR_OK );
 }
 

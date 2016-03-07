@@ -51,7 +51,7 @@
 #include "madregs.h"
 
 
-extern unsigned BigRead(int ,void *,unsigned int );
+extern size_t   BigRead( int, void *, size_t );
 extern bool     IsX86BigAddr( address );
 extern bool     IsX86RealAddr( address );
 
@@ -123,18 +123,27 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
 
 
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void * b , unsigned s )
-/*******************************************************************/
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void * b , size_t s )
+/***************************************************************/
 {
     return( BigRead( h, b, s ) );
 }
 
 
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, unsigned s )
-/*************************************************************************/
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
+/*********************************************************************/
 {
+#ifdef _WIN64
+	unsigned	rc;
+
+    rc = write( h, b, (unsigned)s );
+    if( rc = (unsigned)-1 )
+        return( (size_t)-1 );
+    return( rc );
+#else
     return( write( h, b, s ) );
+#endif
 }
 
 

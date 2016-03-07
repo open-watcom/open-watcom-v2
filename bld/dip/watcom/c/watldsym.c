@@ -89,9 +89,9 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
                             dword size, info_block **owner,
                             unsigned (*split)(info_block *, section_info *) )
 {
-    unsigned            split_size;
+    size_t              split_size;
     info_block          *curr;
-    unsigned            block_size;
+    size_t              block_size;
 
     *owner = NULL;
     if( size == 0 )
@@ -342,7 +342,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
  * InfoRead -- read demand information from disk
  */
 
-dip_status InfoRead( section_info *inf, unsigned long offset, unsigned size, void *buff )
+dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff )
 {
     dig_fhandle  sym_file;
 

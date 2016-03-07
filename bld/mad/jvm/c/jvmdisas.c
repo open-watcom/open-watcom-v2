@@ -64,14 +64,15 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
 
     addr = dd->addr;
     addr.mach.offset += off;
-    if( MCReadMem( addr, size, data ) == 0 ) return( DR_FAIL );
+    if( MCReadMem( addr, size, data ) == 0 )
+        return( DR_FAIL );
     //NYI: this may break in future virgins of Java
     // (maybe turn on a QUICK bit in the disassembler flags?)
 #define opc_invokevirtual_q    203

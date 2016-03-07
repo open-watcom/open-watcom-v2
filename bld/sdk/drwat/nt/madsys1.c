@@ -45,18 +45,20 @@
 #include <windows.h>
 #include "mem.h"
 
-unsigned DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
+size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
 {
     DWORD bytesread;
+
     ReadProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &bytesread );
-    return bytesread;
+    return( bytesread );
 }
 
-unsigned DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
+size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
 {
     DWORD byteswritten;
+
     WriteProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );
-    return byteswritten;
+    return( byteswritten );
 }
 
 #if defined( _M_IX86 )

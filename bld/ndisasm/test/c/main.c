@@ -42,7 +42,7 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     memcpy( data, (char *)d + off, size );
     return( DR_OK );

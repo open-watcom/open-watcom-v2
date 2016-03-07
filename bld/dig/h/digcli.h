@@ -38,8 +38,8 @@ void            DIGCLIENT DIGCliFree( void * );
 
 dig_fhandle     DIGCLIENT DIGCliOpen( const char *, dig_open );
 unsigned long   DIGCLIENT DIGCliSeek( dig_fhandle, unsigned long, dig_seek );
-unsigned        DIGCLIENT DIGCliRead( dig_fhandle, void *, unsigned );
-unsigned        DIGCLIENT DIGCliWrite( dig_fhandle, const void *, unsigned );
+size_t          DIGCLIENT DIGCliRead( dig_fhandle, void *, size_t );
+size_t          DIGCLIENT DIGCliWrite( dig_fhandle, const void *, size_t );
 void            DIGCLIENT DIGCliClose( dig_fhandle );
 void            DIGCLIENT DIGCliRemove( const char *, dig_open );
 

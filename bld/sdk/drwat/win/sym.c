@@ -483,8 +483,8 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
 /*
  * DIPCliRead
  */
-unsigned DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, unsigned size ) {
-
+size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
+{
     DEBUGOUT( "reading" );
     return( read( (int)hdl, buf, size ) );
 }
@@ -492,8 +492,8 @@ unsigned DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, unsigned size ) {
 /*
  * DIPCliWrite
  */
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, unsigned size ) {
-
+size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
+{
     return( write( (int)hdl, buf, size ) );
 }
 
