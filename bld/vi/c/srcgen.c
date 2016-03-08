@@ -159,7 +159,7 @@ void GenTestCond( const char *data )
      * IF expr
      */
     data = SkipLeadingSpaces( data );
-    if( data[0] == 0 ) {
+    if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
 
@@ -201,7 +201,7 @@ static void genExpr( const char *data )
     if( *tmp == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    if( tmp[1] == '=' && tmp[2] == 0 ) {
+    if( tmp[1] == '=' && tmp[2] == '\0' ) {
         switch( tmp[0] ) {
 #ifndef VICOMP
         case '+': oper = EXPR_PLUSEQ; break;
@@ -219,12 +219,12 @@ static void genExpr( const char *data )
             break;
         }
     } else {
-        if( tmp[0] != '=' || tmp[1] != 0 ) {
+        if( tmp[0] != '=' || tmp[1] != '\0' ) {
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
     data = SkipLeadingSpaces( data );
-    if( data[0] == 0 ) {
+    if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
 #ifndef VICOMP
@@ -316,7 +316,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * process each line
      */
-    while( SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf ) >= 0 ) {
+    while( !SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf ) ) {
 
         /*
          * prepare this line
@@ -515,14 +515,14 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_SET:
                 token += SRC_T_NULL + 1;
 #ifdef VICOMP
-                WorkLine->data[0] = 0;
+                WorkLine->data[0] = '\0';
                 Set( tmp );
                 genItem( token, WorkLine->data );
 #else
                 if( EditFlags.CompileScript ) {
                     vi_rc   rc;
 
-                    WorkLine->data[0] = 0;
+                    WorkLine->data[0] = '\0';
                     rc = Set( tmp );
                     if( rc != ERR_NO_ERR ) {
                         Error( GetErrorMsg( rc ) );
@@ -536,7 +536,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 
             default:
                 if( AppendingFlag ) {
-                    if( tmp3[0] == '.' && tmp3[1] == 0 ) {
+                    if( tmp3[0] == '.' && tmp3[1] == '\0' ) {
                         AppendingFlag = false;
                     }
                 } else if( token == TOK_INVALID ) {

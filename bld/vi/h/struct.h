@@ -633,8 +633,9 @@ typedef struct {
  * special file (used to process bound data)
  */
 typedef struct {
-    int length;
-    int maxlines, currline;
+    unsigned    length;
+    unsigned    maxlines;
+    unsigned    currline;
 } gfa;
 
 typedef struct {

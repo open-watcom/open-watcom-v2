@@ -64,7 +64,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     /*
      * get counts
      */
-    if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) < 0 ) {
+    if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
         SpecialFclose( &gf );
         return( ERR_INVALID_DATA_FILE );
     }
@@ -78,9 +78,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
      * read all tokens
      */
     for( i = 0; i < dcnt; i++ ) {
-
-        len = SpecialFgets( buff, sizeof( buff ) - 1, &gf );
-        if( len < 0 ) {
+        if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
             SpecialFclose( &gf );
             return( ERR_INVALID_DATA_FILE );
         }
@@ -90,15 +88,14 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }
-            len = strlen( token );
         } else {
-            memcpy( token, buff, len + 1 );
+            strcpy( token, buff );
         }
-        len++;
+        len = strlen( token );
         buffdata = MemReAlloc( buffdata, size + len + 1 );
-        memcpy( &buffdata[size], token, len );
+        memcpy( buffdata + size, token, len );
         size += len;
-        buffdata[size] = 0;
+        buffdata[size] = '\0';
         if( hasvals ) {
             ptr = GetNextWord1( ptr, token );
             if( *token == '\0' ) {

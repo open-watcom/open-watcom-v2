@@ -124,7 +124,7 @@ char *StrMerge( int cnt, char *str, ... )
 void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -139,7 +139,7 @@ FILE *GetFromEnvAndOpen( const char *path )
     char        tmppath[FILENAME_MAX];
 
     GetFromEnv( path, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         return( fopen( tmppath, "r" ) );
     }
     return( NULL );
@@ -197,7 +197,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
     /*
      * get compiled file name, and make error file
      */
-    if( vn[0] == 0 ) {
+    if( vn[0] == '\0' ) {
         _splitpath( fn, drive, directory, name, NULL );
         _makepath( path, drive, directory, name, "._vi" );
     } else {
@@ -219,7 +219,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
         if( curr->data != NULL ) {
             strcpy( tmp, curr->data );
         } else {
-            tmp[0] = 0;
+            tmp[0] = '\0';
         }
         /*
          * spew out line
@@ -267,18 +267,18 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
+bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
-    int         i;
+    size_t      i;
 
     if( fgets( buff, max, gf->data.f ) == NULL ) {
-        return( -1 );
+        return( true );
     }
     gf->gf.a.currline++;
     for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
         buff[i - 1] = '\0';
     }
-    return( i );
+    return( false );
 
 } /* SpecialFgets */
 
@@ -296,7 +296,7 @@ static vi_rc Compile( const char *fn, const char *data )
     WorkLine->len = -1;
     LastRC = LastRetCode;
     vl.head = vl.tail = NULL;
-    sname[0] = 0;
+    sname[0] = '\0';
     GetNextWord1( data, sname );
     rc = initSource( &vl );
     if( rc == ERR_NO_ERR ) {
