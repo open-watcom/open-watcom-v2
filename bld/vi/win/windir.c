@@ -88,12 +88,12 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), true );
+        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), true );
         break;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), false );
+        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), false );
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );

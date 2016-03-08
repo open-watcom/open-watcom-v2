@@ -489,10 +489,10 @@ static void mouseEvent( HWND hwnd, LPARAM l, bool flag, func f )
     }
     if( EditFlags.InsertModeActive ) {
         PushMode();
-        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
+        f( hwnd, GET_X( l ), GET_Y( l ), flag );
         PopMode();
     } else {
-        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
+        f( hwnd, GET_X( l ), GET_Y( l ), flag );
     }
     DCUpdate();
     SetWindowCursorForReal();
@@ -818,7 +818,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         }
         return( 0 );
     case WM_MOUSEMOVE:
-        mouseMove( wid, (int)(short)LOWORD( lparam ), (int)(short)HIWORD( lparam ), false );
+        mouseMove( wid, GET_X( lparam ), GET_Y( lparam ), false );
         return( 0 );
     case WM_ERASEBKGND:
         return( TRUE );
@@ -907,9 +907,9 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
     char                class[MAX_STR];
 
     l = l;
-    class[0] = 0;
+    class[0] = '\0';
     GetClassName( wid, class, sizeof( class ) );
-    class[sizeof( class ) - 1] = 0;
+    class[sizeof( class ) - 1] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {
         return( TRUE );
     }

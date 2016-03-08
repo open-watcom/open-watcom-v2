@@ -35,3 +35,4 @@
 #define CURSOR_CORRECT      2   // correct for bars drawn slightly to left
 #define MOUSE_ALLOWANCE     3   // how close to center mouse need be to select
 
+extern void     StatusWndSetSeparatorsWithArray( section_size *, int );

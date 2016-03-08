@@ -32,6 +32,7 @@
 
 
 #include "vi.h"
+#include "statwnd.h"
 #include "winaux.h"
 #include "font.h"
 #include "wstatus.h"

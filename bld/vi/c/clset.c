@@ -74,7 +74,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
     int         i, j;
 
     str = tmpstr;
-    *str = 0;
+    *str = '\0';
     if( isbool ) {
         j = (int)((bool *)&EditFlags)[token];
         if( want_boolstr ) {
@@ -319,7 +319,7 @@ static vi_rc GetNewValueDialog( char *value )
     if( !ret ) {
         return( NO_VALUE_ENTERED );
     }
-    if( *st == 0 ) {
+    if( *st == '\0' ) {
         return( NO_VALUE_ENTERED );
     }
     Expand( value, st, NULL );
@@ -553,9 +553,9 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             if( !newset ) {
                 tmp[0] = 'n';
                 tmp[1] = 'o';
-                tmp[2] = 0;
+                tmp[2] = '\0';
             } else {
-                tmp[0] = 0;
+                tmp[0] = '\0';
             }
             MySprintf( fn, "%s%s set", tmp, GetTokenStringCVT( TokensSetFlag, j, settokstr, true ) );
         }
@@ -659,8 +659,8 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( short ) * (EditVars.NumStatusSections + 1) );
-                EditVars.StatusSections[EditVars.NumStatusSections] = k;
+                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( unsigned short ) * (EditVars.NumStatusSections + 1) );
+                EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );
                 if( *fn == '\0' ) {
@@ -733,7 +733,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             }
             break;
         case SETVAR_T_FIGNORE:
-            if( *fn == 0 ) {
+            if( *fn == '\0' ) {
                 MemFreePtr( (void **)&EditVars.FIgnore );
                 EditVars.CurrFIgnore = 0;
                 if( msgFlag ) {
@@ -742,9 +742,9 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             } else {
                 EditVars.FIgnore = MemReAlloc( EditVars.FIgnore, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
                 str[0] = '.';
-                str[1] = 0;
+                str[1] = '\0';
                 strcat( str, fn );
-                str[EXTENSION_LENGTH - 1] = 0;
+                str[EXTENSION_LENGTH - 1] = '\0';
                 strcpy( &EditVars.FIgnore[EXTENSION_LENGTH * EditVars.CurrFIgnore], str );
                 EditVars.CurrFIgnore++;
                 if( msgFlag ) {

@@ -279,10 +279,10 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );
 
-    cursx = (short)( LOWORD( lparam ) / Width );
+    cursx = GET_X( lparam ) / Width;
     if( cursx > NUM_ACROSS - 1 )
         cursx = NUM_ACROSS - 1;
-    cursy = (short)( HIWORD( lparam ) / Height );
+    cursy = GET_Y( lparam ) / Height;
     if( cursy > NUM_DOWN - 1 ) {
         cursy = NUM_DOWN - 1;
     }
@@ -332,8 +332,8 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (short)LOWORD( lparam );
-    m_pt.y = (short)HIWORD( lparam );
+    m_pt.x = GET_X( lparam );
+    m_pt.y = GET_Y( lparam );
     ClientToScreen( hwnd, &m_pt );
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {

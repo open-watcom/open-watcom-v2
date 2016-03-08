@@ -31,12 +31,12 @@
 
 
 #include "vi.h"
+#include "statwnd.h"
 #include "ssbar.h"
 #include "ssbardef.h"
 #include "utils.h"
 #include "subclass.h"
 #include "wstatus.h"
-#include "statwnd.h"
 #include <assert.h>
 #include "wprocmap.h"
 
@@ -102,10 +102,10 @@ static void destroyBlock( int i, char *start )
     }
 
     if( i != EditVars.NumStatusSections ) {
-        memmove( EditVars.StatusSections + i, EditVars.StatusSections + i + 1, (EditVars.NumStatusSections - 1 - i) * sizeof( short ) );
+        memmove( EditVars.StatusSections + i, EditVars.StatusSections + i + 1, (EditVars.NumStatusSections - 1 - i) * sizeof( section_size ) );
     }
     EditVars.NumStatusSections--;
-    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
+    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
 
     strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
     new_ss[start - EditVars.StatusString] = '\0';
@@ -146,8 +146,8 @@ static void splitBlock( int i, char *start )
         return;
     }
     EditVars.NumStatusSections++;
-    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
-    memmove( EditVars.StatusSections + i + 1, EditVars.StatusSections + i, (EditVars.NumStatusSections - 1 - i) * sizeof( short ) );
+    EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
+    memmove( EditVars.StatusSections + i + 1, EditVars.StatusSections + i, (EditVars.NumStatusSections - 1 - i) * sizeof( section_size ) );
     if( i > 0 ) {
         EditVars.StatusSections[i] = EditVars.StatusSections[i - 1] + (diff / 2);
     } else {
@@ -216,7 +216,7 @@ static void buildNewItem( char *start, int id )
 
 static void buildDefaults( void )
 {
-    short   def_sections[] = DEFAULT_STATUSSECTIONS;
+    section_size    def_sections[] = DEFAULT_STATUSSECTIONS;
 
     ReplaceString( &EditVars.StatusString, DEFAULT_STATUSSTRING );
 

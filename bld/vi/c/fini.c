@@ -103,7 +103,7 @@ void Quit( const char **usage_msg, const char *str, ... )
             MyVSprintf( buff, str, al );
             va_end( al );
         } else {
-            buff[0] = 0;
+            buff[0] = '\0';
         }
         CloseStartupDialog();
         UsageDialog( UsageMsg, buff,  sizeof( UsageMsg ) / sizeof( char *) );

@@ -142,7 +142,6 @@ bool    GetSetFSDialog( void );
 bool    GetSetScrDialog( void );
 bool    GetSetGenDialog( void );
 void    CenterWindowInRoot( HWND );
-void    StatusWndSetSeparatorsWithArray( short *, int );
 
 // filetype.c
 void    UpdateFileTypeIcon( HWND hwnd, const char *filename );

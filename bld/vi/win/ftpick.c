@@ -130,8 +130,8 @@ static LRESULT processMouseMove( window_id wid, UINT msg, WPARAM wparam, LPARAM 
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (int)(short)LOWORD( lparam );
-    m_pt.y = (int)(short)HIWORD( lparam );
+    m_pt.x = GET_X( lparam );
+    m_pt.y = GET_Y( lparam );
     ClientToScreen( wid, &m_pt );
     GetWindowRect( GetParent( wid ), &rect );
     if( PtInRect( &rect, m_pt ) ) {

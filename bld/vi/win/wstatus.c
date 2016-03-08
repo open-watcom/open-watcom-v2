@@ -39,16 +39,16 @@
 #include <assert.h>
 #include "winifini.h"
 
-static int      capIndex = -1;
-static short    *sections;
-static statwnd  *sw = NULL;
+static int          capIndex = -1;
+static section_size *sections;
+static statwnd      *sw = NULL;
 
 window StatusBar = {
     &statusw_info,
     { 0, 0, 0, 0 }
 };
 
-void StatusWndSetSeparatorsWithArray( short *source, int num )
+void StatusWndSetSeparatorsWithArray( section_size *source, int num )
 {
     status_block_desc   *list;
     int                 i;
@@ -91,11 +91,11 @@ bool StatusBarFini( void )
     return( true );
 }
 
-static int setCursor( short x )
+static int setCursor( int x )
 {
     int     i;
     for( i = 0; i < EditVars.NumStatusSections; i++ ) {
-        if( abs( x - (EditVars.StatusSections[i]) ) < MOUSE_ALLOWANCE ) {
+        if( abs( x - EditVars.StatusSections[i] ) < MOUSE_ALLOWANCE ) {
             CursorOp( COP_STATMOVE );
             return( i );
         }
@@ -107,10 +107,10 @@ static int setCursor( short x )
 static void processMouseMove( WPARAM w, LPARAM l )
 {
     int         deep, delta, maxmove, movedby, i, next;
-    short       x;
+    int         x;
     int         secIndex;
 
-    x = (short)LOWORD( l ) - CURSOR_CORRECT;
+    x = GET_X( l ) - CURSOR_CORRECT;
     w = w;
 
     if( capIndex == -1 ) {
@@ -169,12 +169,12 @@ static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
     RECT        rect;
 
     w = w;
-    capIndex = setCursor( (short)LOWORD( l ) - CURSOR_CORRECT );
+    capIndex = setCursor( GET_X( l ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( short ) );
+        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( section_size ) );
         GetClientRect( status_window_id, &rect );
-        memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
+        memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
         sections[0] = 0;
         sections[EditVars.NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH + CURSOR_CORRECT;
     }
@@ -186,7 +186,7 @@ static void processLButtonUp( void )
         CursorOp( COP_ARROW );
         ReleaseCapture();
         capIndex = -1;
-        memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( short ) );
+        memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( section_size ) );
         MemFree( sections );
     }
 }

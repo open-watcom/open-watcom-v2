@@ -45,6 +45,11 @@
 #elif defined( __OS2__ )
 #endif
 
+#if !defined( __OS2__ )
+#define GET_X(lp)   (short)LOWORD(lp)
+#define GET_Y(lp)   (short)HIWORD(lp)
+#endif
+
 typedef LPVOID  *LPLPVOID;
 typedef LPSTR   *LPLPSTR;
 typedef UINT    *LPUINT;
