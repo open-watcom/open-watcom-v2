@@ -136,7 +136,7 @@
 !inject regex.h                               hqnx
 !inject sched.h                          hlnx
 !inject search.h                    hdos hlnx hqnx
-!inject semaphor.h                            hqnx
+!inject semaphor.h                       hlnx hqnx
 !inject set              noext hcpp
 !inject setjmp.h                    hdos hlnx hqnx
 !inject setjmpex.h                  hdos

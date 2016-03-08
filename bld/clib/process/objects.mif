@@ -48,7 +48,7 @@
 !inject raisefpe.obj                                                        w16
 !inject raisep.obj                                                                      l32 lpc lmp
 !inject sigfpe.obj   d16 d32                                                w16
-!inject sigjmp.obj                                                  q16 q32
+!inject sigjmp.obj                                                  q16 q32             l32 lpc lmp
 !inject signl.obj    d16 d32                                                w16 w32
 !inject signlo16.obj                                        o16
 !inject signlo32.obj                                            o32

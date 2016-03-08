@@ -41,7 +41,7 @@
 #include "liballoc.h"
 #include "thread.h"
 #include "mthread.h"
-#include "semaqnx.h"
+#include "semapsx.h"
 #include "cthread.h"
 #include "rterrno.h"
 
@@ -74,7 +74,7 @@ static int begin_thread_helper( void *ptr )
     __QNXAddThread( tdata );
     _STACKLOW = (unsigned)td->stack_bottom;
 
-    __qsem_post( &td->event );
+    __posix_sem_post( &td->event );
     _fpreset();
     (*rtn)( arg );
     _endthread();
@@ -103,7 +103,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     td.rtn = start_addr;
     td.argument = arglist;
     td.stack_bottom = stack_bottom;
-    rc = __qsem_init( &td.event, 1, 0 );
+    rc = __posix_sem_init( &td.event, 1, 0 );
     if( rc == -1 ) return( -1 );
     pid = tfork( stack_bottom, stack_size, begin_thread_helper, &td, 0 );
     if( pid != -1 ) {
@@ -112,9 +112,9 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
            before new thread extracts data from "td" (no problem if new
            thread calls _beginthread() since it has its own stack)
         */
-        __qsem_wait( &td.event );
+        __posix_sem_wait( &td.event );
     }
-    __qsem_destroy( &td.event );
+    __posix_sem_destroy( &td.event );
     return( pid );
 }
 

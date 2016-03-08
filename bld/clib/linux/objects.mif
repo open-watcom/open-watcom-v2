@@ -1,5 +1,7 @@
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 #==========================================================================================================
+!inject __atomic.obj                                                                            l32 lpc lmp
+!inject __futex.obj                                                                             l32 lpc lmp
 !inject __lseek.obj                                                                             l32 lpc lmp
 !inject _llseek.obj                                                                             l32 lpc lmp
 !inject access.obj                                                                              l32 lpc lmp
@@ -73,6 +75,10 @@
 !inject schrrint.obj                                                                            l32 lpc lmp
 !inject schyield.obj                                                                            l32 lpc lmp
 !inject select.obj                                                                              l32 lpc lmp
+!inject sem_getv.obj                                                                            l32 lpc lmp
+!inject sem_init.obj                                                                            l32 lpc lmp
+!inject sem_post.obj                                                                            l32 lpc lmp
+!inject sem_wait.obj                                                                            l32 lpc lmp
 !inject setegid.obj                                                                             l32 lpc lmp
 !inject seteuid.obj                                                                             l32 lpc lmp
 !inject setgid.obj                                                                              l32 lpc lmp
