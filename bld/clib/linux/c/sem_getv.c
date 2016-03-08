@@ -29,21 +29,21 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <semaphore.h>
 #include <stddef.h>
-#include "variety.h"
 #include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
 
-_WCRTLINK int sem_getvalue(sem_t *sem, int *value) 
+
+_WCRTLINK int sem_getvalue( sem_t *sem, int *value ) 
 {
-    
-    if(value == NULL) {
+    if( value == NULL ) {
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
-    
     *value = sem->value;
-    return 0;
+    return( 0 );
 }

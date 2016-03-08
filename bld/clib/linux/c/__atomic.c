@@ -35,32 +35,31 @@
 #ifdef __386__
 
 /* Simple wrapper around Intel CMPXCHG */
-static void cmpxchg(volatile int *i, int j, int k);
+static void cmpxchg( volatile int *i, int j, int k );
 #pragma aux cmpxchg = \
     "lock cmpxchg [edx], ecx" \
     parm [edx] [eax] [ecx];
 
 #endif
 
-_WCRTLINK int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
+int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
 {
 
 #ifdef __386__
-    cmpxchg(dest, expected, source);
+    cmpxchg( dest, expected, source );
 #endif
 
-    return *dest == source;
+    return( *dest == source );
 }
 
-_WCRTLINK int __atomic_add( volatile int *dest, int delta )
+int __atomic_add( volatile int *dest, int delta )
 {
-int value;
+    int value;
 
-    for(;;) {
+    for( ;; ) {
         value = *dest;
-        if(__atomic_compare_and_swap(dest, value, value+delta))
-            return value+delta;
+        if( __atomic_compare_and_swap( dest, value, value + delta ) )
+            return( value + delta );
     }
-    
-    return 0;
+    return( 0 );
 }

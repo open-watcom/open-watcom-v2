@@ -32,8 +32,6 @@
 #ifndef _FUTEX_H_INCLUDED
 #define _FUTEX_H_INCLUDED
 
-#include "variety.h"
-
 /* Futex Syscall flags */
 #define FUTEX_WAIT              0
 #define FUTEX_WAKE              1
@@ -69,7 +67,6 @@
 #define FUTEX_CMP_REQUEUE_PI_PRIVATE    (FUTEX_CMP_REQUEUE_PI | \
                                          FUTEX_PRIVATE_FLAG)
 
-extern _WCRTLINK int __futex(volatile int *__address, int __operation, 
-                             int __value, void *__timeout);
+extern int __futex( volatile int *__address, int __operation, int __value, void *__timeout );
 
 #endif /* _FUTEX_H_INCLUDED */

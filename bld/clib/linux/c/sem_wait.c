@@ -29,61 +29,55 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <semaphore.h>
 #include <time.h>
-#include "variety.h"
 #include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
 
+
 static int __decrement_if_positive( volatile int *dest )
 {
-    if(*dest > 0)
-        return __atomic_add(dest, -1) <= 0;
-        
-    return 0;
+    if( *dest > 0 )
+        return( __atomic_add( dest, -1 ) <= 0 );
+    return( 0 );
 }
 
 _WCRTLINK int sem_wait( sem_t *sem ) 
 {
-    if(sem == NULL) {
+    if( sem == NULL ) {
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
-
-    if(__decrement_if_positive(&sem->value))
-        return 0;
-    
+    if( __decrement_if_positive( &sem->value ) )
+        return( 0 );
     do {
-        __futex(&sem->value, FUTEX_WAIT_PRIVATE, 0, NULL);
-    } while(!__decrement_if_positive(&sem->value));
-    
-    return 0;
+        __futex( &sem->value, FUTEX_WAIT_PRIVATE, 0, NULL );
+    } while( !__decrement_if_positive( &sem->value ) );
+    return( 0 );
 }
 
 _WCRTLINK int sem_trywait( sem_t *sem ) 
 {
-struct timespec timer;
-int ret;
-    
-    if(sem == NULL) {
+    struct timespec timer;
+    int             ret;
+
+    if( sem == NULL ) {
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
-    
     timer.tv_sec = 0;
     timer.tv_nsec = 0;
 
-    if(__decrement_if_positive(&sem->value))
-        return 0;
-        
+    if( __decrement_if_positive( &sem->value ) )
+        return( 0 );
     do {
-        ret = __futex(&sem->value, FUTEX_WAIT_PRIVATE, 0, &timer);
-    } while(!__decrement_if_positive(&sem->value));
-
-    if(ret == 0)
-        return 0;
-
+        ret = __futex( &sem->value, FUTEX_WAIT_PRIVATE, 0, &timer );
+    } while( !__decrement_if_positive( &sem->value ) );
+    if( ret == 0 )
+        return( 0 );
     _RWD_errno = EAGAIN;
-    return -1;
+    return( -1 );
 }

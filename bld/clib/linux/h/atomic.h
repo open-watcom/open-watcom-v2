@@ -33,11 +33,9 @@
 #ifndef _ATOMIC_H_INCLUDED
 #define _ATOMIC_H_INCLUDED
 
-#include "variety.h"
-
-extern _WCRTLINK int __atomic_compare_and_swap( volatile int *__dest, int __expected, int __source );
-extern _WCRTLINK int __atomic_add( volatile int *dest, int delta );
-
 #define __atomic_decrement(x)   __atomic_add(x, -1)
+
+extern int __atomic_compare_and_swap( volatile int *__dest, int __expected, int __source );
+extern int __atomic_add( volatile int *dest, int delta );
 
 #endif /* _ATOMIC_H_INCLUDED */

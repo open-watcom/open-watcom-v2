@@ -29,22 +29,23 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <semaphore.h>
 #include <stddef.h>
 #include <stdio.h>
-#include "variety.h"
 #include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
 
-_WCRTLINK int sem_post(sem_t *sem) 
-{
-    if(sem == NULL) {
-        _RWD_errno = EINVAL;
-        return -1;
-    }
 
-    __atomic_add(&sem->value, 1);
-    __futex(&sem->value, FUTEX_WAKE_PRIVATE, 1, NULL);
-    return 0;
+_WCRTLINK int sem_post( sem_t *sem ) 
+{
+    if( sem == NULL ) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
+    __atomic_add( &sem->value, 1 );
+    __futex( &sem->value, FUTEX_WAKE_PRIVATE, 1, NULL );
+    return( 0 );
 }

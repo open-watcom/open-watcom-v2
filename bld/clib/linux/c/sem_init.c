@@ -29,32 +29,35 @@
 *
 ****************************************************************************/
 
+
+#include "variety.h"
 #include <semaphore.h>
 #include <limits.h>
-#include "variety.h"
 #include "rterrno.h"
 
-_WCRTLINK int sem_init(sem_t *sem, int pshared, unsigned int value)
+
+#define SEM_VALUE_MAX   INT_MAX
+
+
+_WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
 {
-    if(value > SEM_VALUE_MAX) {
+    if( value > SEM_VALUE_MAX ) {
         _RWD_errno = EINVAL;
-        return -1;
+        return( -1 );
     }
-    
-    if(pshared != 0) {
+    if( pshared != 0 ) {
         _RWD_errno = ENOSYS;
-        return -1;
+        return( -1 );
     }
-    
     sem->value = value;
-    return 0;
+    return( 0 );
 }
 
-_WCRTLINK int sem_destroy(sem_t *sem) 
+_WCRTLINK int sem_destroy( sem_t *sem )
 {
-    if (sem_trywait(sem) != 0) {
+    if( sem_trywait( sem ) != 0 ) {
         _RWD_errno = EBUSY;
-        return -1;
+        return( -1 );
     }
-    return 0;
+    return( 0 );
 }
