@@ -218,7 +218,7 @@ new.h           : $(new_deps)
 ostream.h       : $(ostream_deps)
 pgchart.h       : $(pgchart_deps)
 search.h        : search.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-semaphor.h      : semaphor.mh  $(limits_deps) ../crwatcnt.sp 
+semaphor.h      : semaphor.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
 setjmp.h        : $(setjmp_deps)
 setjmpex.h      : setjmpex.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus)
 share.h         : share.mh ../crwat.sp ../readonly.sp $(extension)
