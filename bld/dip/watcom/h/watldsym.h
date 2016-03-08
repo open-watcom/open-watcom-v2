@@ -32,7 +32,6 @@
 
 extern void DIGENTRY        DIPImpUnloadInfo( imp_image_handle *ii );
 extern dip_status DIGENTRY  DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii );
-extern dip_status           InfoRead( section_info *inf, unsigned long offset,
-                                    unsigned size, void *buff );
+extern dip_status           InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff );
 extern void DIGENTRY        DIPImpMapInfo( imp_image_handle *ii, void *d );
 extern void                 AddressMap( imp_image_handle *ii, addr_ptr *addr );
