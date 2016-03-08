@@ -31,16 +31,41 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #include <semaphore.h>
 #include <limits.h>
 #include "rterrno.h"
+#include "rtinit.h"
+#include "exitwmsg.h"
 
 
 #define SEM_VALUE_MAX   INT_MAX
 
+extern unsigned is486( void );
+/* Try and flip the ID bit in EFlags */
+#pragma aux is486 =             \
+        ".586"                  \
+        "pushfd"                \
+        "pushfd"                \
+        "pop    eax"            \
+        "xor    eax,0x200000"   \
+        "push   eax"            \
+        "popfd"                 \
+        "pushfd"                \
+        "pop    ebx"            \
+        "popfd"                 \
+        "xor    eax,ebx"        \
+        "shr    eax,21"         \
+        "and    eax,1"          \
+    value [eax] modify [ebx]
+
+static int  __cmpxchg = 0;
 
 _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
 {
+    if( __cmpxchg == 0 )
+        __fatal_runtime_error( "Linux semaphore is not supported on 80386 CPU", EXIT_FAILURE );
+        
     if( value > SEM_VALUE_MAX ) {
         _RWD_errno = EINVAL;
         return( -1 );
@@ -61,3 +86,12 @@ _WCRTLINK int sem_destroy( sem_t *sem )
     }
     return( 0 );
 }
+
+static void __check_cmpxchg( void )
+{
+    if( is486() ) {
+        __cmpxchg = 1;
+    }
+}
+
+AXI( __check_cmpxchg, INIT_PRIORITY_RUNTIME )
