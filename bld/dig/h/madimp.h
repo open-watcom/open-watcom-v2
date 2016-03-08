@@ -256,37 +256,37 @@ typedef struct mad_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *MADCliAlloc)( size_t );
-    void                *(DIGCLIENT *MADCliRealloc)( void *, size_t );
-    void                (DIGCLIENT *MADCliFree)( void * );
+    void                *(DIGCLIENT *Alloc)( size_t );
+    void                *(DIGCLIENT *Realloc)( void *, size_t );
+    void                (DIGCLIENT *Free)( void * );
 
-    dig_fhandle         (DIGCLIENT *MADCliOpen)( char const*, dig_open );
-    unsigned long       (DIGCLIENT *MADCliSeek)( dig_fhandle, unsigned long, dig_seek );
-    size_t              (DIGCLIENT *MADCliRead)( dig_fhandle, void *, size_t );
-    void                (DIGCLIENT *MADCliClose)( dig_fhandle );
+    dig_fhandle         (DIGCLIENT *Open)( char const*, dig_open );
+    unsigned long       (DIGCLIENT *Seek)( dig_fhandle, unsigned long, dig_seek );
+    size_t              (DIGCLIENT *Read)( dig_fhandle, void *, size_t );
+    void                (DIGCLIENT *Close)( dig_fhandle );
 
-    size_t              (DIGCLIENT *MADCliReadMem)( address, size_t size, void *buff );
-    size_t              (DIGCLIENT *MADCliWriteMem)( address, size_t size, void const *buff );
+    size_t              (DIGCLIENT *ReadMem)( address, size_t size, void *buff );
+    size_t              (DIGCLIENT *WriteMem)( address, size_t size, void const *buff );
 
-    size_t              (DIGCLIENT *MADCliString)( mad_string, char *buff, size_t buff_size );
-    mad_status          (DIGCLIENT *MADCliAddString)( mad_string, const char * );
-    size_t              (DIGCLIENT *MADCliRadixPrefix)( mad_radix radix, char *buff, size_t buff_size );
+    size_t              (DIGCLIENT *String)( mad_string, char *buff, size_t buff_size );
+    mad_status          (DIGCLIENT *AddString)( mad_string, const char * );
+    size_t              (DIGCLIENT *RadixPrefix)( mad_radix radix, char *buff, size_t buff_size );
 
-    void                (DIGCLIENT *MADCliNotify)( mad_notify_type, void const * );
+    void                (DIGCLIENT *Notify)( mad_notify_type, void const * );
 
-    unsigned            (DIGCLIENT *MADCliMachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
+    unsigned            (DIGCLIENT *MachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
 
-    mad_status          (DIGCLIENT *MADCliAddrToString)( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
-    mad_status          (DIGCLIENT *MADCliMemExpr)( char const *expr, mad_radix radix, address * );
+    mad_status          (DIGCLIENT *AddrToString)( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
+    mad_status          (DIGCLIENT *MemExpr)( char const *expr, mad_radix radix, address * );
 
-    void                (DIGCLIENT *MADCliAddrSection)( address * );
-    mad_status          (DIGCLIENT *MADCliAddrOvlReturn)( address * );
+    void                (DIGCLIENT *AddrSection)( address * );
+    mad_status          (DIGCLIENT *AddrOvlReturn)( address * );
 
-    system_config       *(DIGCLIENT *MADCliSystemConfig)( void );
+    system_config       *(DIGCLIENT *SystemConfig)( void );
 
-    mad_status          (DIGCLIENT *MADCliTypeInfoForHost)( mad_type_kind, int size, mad_type_info * );
-    mad_status          (DIGCLIENT *MADCliTypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
-    mad_status          (DIGCLIENT *MADCliTypeToString)( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
+    mad_status          (DIGCLIENT *TypeInfoForHost)( mad_type_kind, int size, mad_type_info * );
+    mad_status          (DIGCLIENT *TypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
+    mad_status          (DIGCLIENT *TypeToString)( mad_radix radix, const mad_type_info *, const void *data, char *buff, size_t *buff_size_p );
 } mad_client_routines;
 
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
