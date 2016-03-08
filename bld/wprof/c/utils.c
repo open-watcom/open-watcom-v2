@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include "wio.h"
 #include "common.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
@@ -233,19 +234,20 @@ extern void InitPaths( void )
 #endif
 }
 
-size_t BigRead( int fh, void * buff, size_t size )
-/************************************************/
+size_t BigRead( int fh, void *buffer, size_t size )
+/*************************************************/
 {
 #if defined( __QNX__ ) || defined( _WIN64 )
 
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
+    _WIN64 has max size UINT_MAX
 */
 #if defined( __QNX__ )
 #define MAX_OS_TRANSFER (32U*1024 - 512)
 #else
-#define MAX_OS_TRANSFER MAX_INT
+#define MAX_OS_TRANSFER INT_MAX
 #endif
     size_t      total;
     unsigned    read_len;
@@ -254,10 +256,9 @@ size_t BigRead( int fh, void * buff, size_t size )
     amount = MAX_OS_TRANSFER;
     total = 0;
     while( size > 0 ) {
-        if( amount > size ) {
-            amount = size;
-        }
-        read_len = read( file, buffer, amount );
+        if( amount > size )
+            amount = (unsigned)size;
+        read_len = read( fh, buffer, amount );
         if( read_len == (unsigned)-1 ) {
             return( (size_t)-1 );
         }
@@ -270,7 +271,7 @@ size_t BigRead( int fh, void * buff, size_t size )
     }
     return( total );
 #else
-    return( read( fh, buff, size ) );
+    return( read( fh, buffer, size ) );
 #endif
 }
 
