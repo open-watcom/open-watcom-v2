@@ -705,7 +705,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                     str++;
                     switch( *str ) {
                     case STATUS_NEXT_BLOCK:
-                        *bptr = 0;
+                        *bptr = '\0';
                         outputText( sw, pres, buff, &rect, flags, curr_block );
                         curr_block++;
                         getRect( sw, &rect, curr_block );
@@ -731,7 +731,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                 }
                 str++;
             }
-            *bptr = 0;
+            *bptr = '\0';
             bptr = buff;
         }
         outputText( sw, pres, bptr, &rect, flags, curr_block );
@@ -745,7 +745,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                 if( *str == STATUS_ESC_CHAR ) {
                     str++;
                     if( *str == STATUS_NEXT_BLOCK ) {
-                        *bptr = 0;
+                        *bptr = '\0';
                         if( strlen( buff ) > 0 ) {
                             SendMessage( sw->win, SB_SETTEXT, curr_block, (LPARAM)buff );
                         }
@@ -757,7 +757,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                 }
                 str++;
             }
-            *bptr = 0;
+            *bptr = '\0';
             bptr = buff;
         }
         if( strlen( bptr ) > 0 ) {

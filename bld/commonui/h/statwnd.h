@@ -79,14 +79,15 @@
 
 #define DT_ESC_CONTROLLED       ((UINT)-1)
 
+typedef unsigned short  section_size;
+
 typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 typedef struct {
-    WORD            separator_width;            /* in pixels */
-    WORD            width;                      /* width of block area */
-    unsigned char   width_is_percent    : 1;
-    unsigned char   width_is_pixels     : 1;
-    unsigned char   spare               : 6;
+    section_size    separator_width;            /* in pixels */
+    section_size    width;                      /* width of block area */
+    bool            width_is_percent    : 1;
+    bool            width_is_pixels     : 1;
 } status_block_desc;
 
 typedef struct statwnd statwnd;
