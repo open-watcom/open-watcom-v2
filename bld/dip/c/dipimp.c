@@ -161,12 +161,12 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
 
 void *DCAlloc( size_t amount )
 {
-    return( Client->alloc( amount ) );
+    return( Client->Alloc( amount ) );
 }
 
 void *DCAllocZ( size_t amount )
 {
-    void *p = Client->alloc( amount );
+    void *p = Client->Alloc( amount );
     if( p ) {
         memset( p, 0, amount );
     }
@@ -175,65 +175,65 @@ void *DCAllocZ( size_t amount )
 
 void *DCRealloc( void *p, size_t amount )
 {
-    return( Client->realloc( p, amount ) );
+    return( Client->Realloc( p, amount ) );
 }
 
 void DCFree( void *p )
 {
-    Client->free( p );
+    Client->Free( p );
 }
 
 void DCMapAddr( addr_ptr *a, void *d )
 {
-    Client->map_addr( a, d );
+    Client->MapAddr( a, d );
 }
 
 imp_sym_handle *DCSymCreate( imp_image_handle *ii, void *d )
 {
-    return( Client->sym_create( ii, d ) );
+    return( Client->SymCreate( ii, d ) );
 }
 
 dip_status DCItemLocation( location_context *lc, context_item ci, location_list *ll )
 {
-    return( Client->item_location( lc, ci, ll ) );
+    return( Client->ItemLocation( lc, ci, ll ) );
 }
 
 dip_status DCAssignLocation( location_list *dst, location_list *src, unsigned long len )
 {
-    return( Client->assign_location( dst, src, len ) );
+    return( Client->AssignLocation( dst, src, len ) );
 }
 
 dip_status DCSameAddrSpace( address a, address b )
 {
-    return( Client->same_addr_space( a, b ) );
+    return( Client->SameAddrSpace( a, b ) );
 }
 
 void DCAddrSection( address *a )
 {
-    Client->addr_section( a );
+    Client->AddrSection( a );
 }
 
 dig_fhandle DCOpen( const char *path, dig_open flags )
 {
-    return( Client->open( path, flags ) );
+    return( Client->Open( path, flags ) );
 }
 
 unsigned long DCSeek( dig_fhandle h, unsigned long p, dig_seek w )
 {
-    return( Client->seek( h, p, w ) );
+    return( Client->Seek( h, p, w ) );
 }
 
 size_t DCRead( dig_fhandle h, void *b, size_t s )
 {
-    return( Client->read( h, b, s ) );
+    return( Client->Read( h, b, s ) );
 }
 
 dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
 {
-    if( Client->seek( h, p, DIG_ORG ) != p ) {
+    if( Client->Seek( h, p, DIG_ORG ) != p ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( Client->read( h, b, s ) != s ) {
+    if( Client->Read( h, b, s ) != s ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     return( DS_OK );
@@ -241,39 +241,39 @@ dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
 
 size_t DCWrite( dig_fhandle h, void *b, size_t s )
 {
-    return( Client->write( h, b, s ) );
+    return( Client->Write( h, b, s ) );
 }
 
 void DCClose( dig_fhandle h )
 {
-    Client->close( h );
+    Client->Close( h );
 }
 
 void DCRemove( const char *path, dig_open flags )
 {
-    Client->remove( path, flags );
+    Client->Remove( path, flags );
 }
 
 void DCStatus( dip_status status )
 {
-    Client->status( status );
+    Client->Status( status );
 }
 
 dig_mad DCCurrMAD( void )
 {
     /* check for old client */
-    if( Client->sizeof_struct < offsetof(dip_client_routines,curr_mad) )
+    if( Client->sizeof_struct < offsetof(dip_client_routines,CurrMAD) )
         return( MAD_X86 );
-    return( Client->curr_mad() );
+    return( Client->CurrMAD() );
 }
 
 unsigned        DCMachineData( address a, dig_info_type info_type,
                                 dig_elen in_size,  void *in,
                                 dig_elen out_size, void *out )
 {
-    if( Client->sizeof_struct < offsetof(dip_client_routines,DIGCliMachineData) )
+    if( Client->sizeof_struct < offsetof(dip_client_routines,MachineData) )
         return( 0 );
-    return( Client->DIGCliMachineData( a, info_type, in_size, in, out_size, out ) );
+    return( Client->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
 dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )

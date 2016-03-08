@@ -217,28 +217,28 @@ typedef struct dip_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *alloc)( size_t );
-    void                *(DIGCLIENT *realloc)( void *, size_t );
-    void                (DIGCLIENT *free)( void * );
+    void                *(DIGCLIENT *Alloc)( size_t );
+    void                *(DIGCLIENT *Realloc)( void *, size_t );
+    void                (DIGCLIENT *Free)( void * );
 
-    void                (DIGCLIENT *map_addr)( addr_ptr *, void * );
-    imp_sym_handle      *(DIGCLIENT *sym_create)( imp_image_handle *, void * );
-    dip_status          (DIGCLIENT *item_location)( location_context *, context_item, location_list * );
-    dip_status          (DIGCLIENT *assign_location)( location_list *, location_list *, unsigned long );
-    dip_status          (DIGCLIENT *same_addr_space)( address, address );
-    void                (DIGCLIENT *addr_section)( address * );
+    void                (DIGCLIENT *MapAddr)( addr_ptr *, void * );
+    imp_sym_handle      *(DIGCLIENT *SymCreate)( imp_image_handle *, void * );
+    dip_status          (DIGCLIENT *ItemLocation)( location_context *, context_item, location_list * );
+    dip_status          (DIGCLIENT *AssignLocation)( location_list *, location_list *, unsigned long );
+    dip_status          (DIGCLIENT *SameAddrSpace)( address, address );
+    void                (DIGCLIENT *AddrSection)( address * );
 
-    dig_fhandle         (DIGCLIENT *open)( char const *, dig_open );
-    unsigned long       (DIGCLIENT *seek)( dig_fhandle, unsigned long, dig_seek );
-    size_t              (DIGCLIENT *read)( dig_fhandle, void *, size_t );
-    size_t              (DIGCLIENT *write)( dig_fhandle, void const *, size_t );
-    void                (DIGCLIENT *close)( dig_fhandle );
-    void                (DIGCLIENT *remove)( char const *, dig_open );
+    dig_fhandle         (DIGCLIENT *Open)( char const *, dig_open );
+    unsigned long       (DIGCLIENT *Seek)( dig_fhandle, unsigned long, dig_seek );
+    size_t              (DIGCLIENT *Read)( dig_fhandle, void *, size_t );
+    size_t              (DIGCLIENT *Write)( dig_fhandle, void const *, size_t );
+    void                (DIGCLIENT *Close)( dig_fhandle );
+    void                (DIGCLIENT *Remove)( char const *, dig_open );
 
-    void                (DIGCLIENT *status)( dip_status );
+    void                (DIGCLIENT *Status)( dip_status );
 
-    dig_mad             (DIGCLIENT *curr_mad)( void );
-    unsigned            (DIGCLIENT *DIGCliMachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
+    dig_mad             (DIGCLIENT *CurrMAD)( void );
+    unsigned            (DIGCLIENT *MachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
 } dip_client_routines;
 
 #include "digunpck.h"
