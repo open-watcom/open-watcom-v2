@@ -135,12 +135,27 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
 /*********************************************************************/
 {
 #ifdef _WIN64
-	unsigned	rc;
+    size_t      total;
+    unsigned    write_len;
+    unsigned    amount;
 
-    rc = write( h, b, (unsigned)s );
-    if( rc = (unsigned)-1 )
-        return( (size_t)-1 );
-    return( rc );
+    amount = INT_MAX;
+    total = 0;
+    while( s > 0 ) {
+        if( amount > s )
+            amount = (unsigned)s;
+        write_len = write( h, b, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( (size_t)-1 );
+        }
+        total += write_len;
+        if( write_len != amount ) {
+            return( total );
+        }
+        b = (char *)b + amount;
+        s -= amount;
+    }
+    return( total );
 #else
     return( write( h, b, s ) );
 #endif
