@@ -48,7 +48,7 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 #define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
 #define DEFAULT_STATUSSTRING    "Line:$5L$[Col:$3C$[Mode: $M$[$|$T$[$H"
-#define DEFAULT_STATUSSECTIONS  { 60, 105, 192, 244 }
+#define DEFAULT_STATUSSECTIONS  { 78, 137, 250, 317 }
 
 enum buttonType {
     BUTTON_CONTENT,
