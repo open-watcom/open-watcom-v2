@@ -91,7 +91,7 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         } else {
             strcpy( token, buff );
         }
-        len = strlen( token );
+        len = strlen( token ) + 1;
         buffdata = MemReAlloc( buffdata, size + len + 1 );
         memcpy( buffdata + size, token, len );
         size += len;
