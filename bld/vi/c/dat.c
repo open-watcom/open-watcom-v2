@@ -72,11 +72,14 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     hasvals = fn_alloc( dcnt );
     buffdata = NULL;
     ptr = NULL;
-    size = 0;
 
     /*
      * read all tokens
+     *
+     * create list of tokens separated by '\0'
+     * list is terminated by two '\0' characters
      */
+    size = 0;
     for( i = 0; i < dcnt; i++ ) {
         if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
             SpecialFclose( &gf );
@@ -91,10 +94,14 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         } else {
             strcpy( token, buff );
         }
+        // add space for token terminator
         len = strlen( token ) + 1;
+        // add space for list terminator
         buffdata = MemReAlloc( buffdata, size + len + 1 );
+        // copy token with terminator
         memcpy( buffdata + size, token, len );
         size += len;
+        // write list terminator
         buffdata[size] = '\0';
         if( hasvals ) {
             ptr = GetNextWord1( ptr, token );
