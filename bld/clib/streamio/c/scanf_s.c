@@ -42,7 +42,7 @@ static INTCHAR_TYPE cget_stdin( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
-    if( (c = __F_NAME(getc,getwc)( stdin )) == __F_NAME(EOF,WEOF) ) {
+    if( (c = __F_NAME(getc,getwc)( stdin )) == INTCHAR_EOF ) {
         specs->eoinp = 1;
     }
     return( c );

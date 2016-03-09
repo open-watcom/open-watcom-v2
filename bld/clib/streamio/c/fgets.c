@@ -49,12 +49,12 @@ _WCRTLINK CHAR_TYPE *__F_NAME(fgets,fgetws)( CHAR_TYPE *s, int n, FILE *fp )
     cs = s;
 
     /* don't use macro version of getc: multi-threading issues */
-    while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != __F_NAME(EOF,WEOF) ) {
+    while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != INTCHAR_EOF ) {
         if( (*cs++ = c) == STRING( '\n' ) )
             break;
     }
 
-    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s || ferror( fp )) ) {
+    if( c == INTCHAR_EOF && (cs == s || ferror( fp )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;

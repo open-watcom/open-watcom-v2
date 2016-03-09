@@ -43,7 +43,7 @@ static INTCHAR_TYPE cget_file( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
-    if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == __F_NAME(EOF,WEOF) ) {
+    if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == INTCHAR_EOF ) {
         specs->eoinp = 1;
     }
     return( c );

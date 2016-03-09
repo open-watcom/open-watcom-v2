@@ -45,7 +45,7 @@ _WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
     int                 not_buffered;
     int                 rc;
 
-    _ValidFile( fp, __F_NAME(EOF,WEOF) );
+    _ValidFile( fp, INTCHAR_EOF );
     _AccessFile( fp );
 
     if( _FP_BASE(fp) == NULL ) {
@@ -61,7 +61,7 @@ _WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
     start = s;
     while( c = *s ) {
         s++;
-        if( __F_NAME(fputc,fputwc)( c, fp ) == __F_NAME(EOF,WEOF) ) {
+        if( __F_NAME(fputc,fputwc)( c, fp ) == INTCHAR_EOF ) {
             rc = EOF;
             break;
         }

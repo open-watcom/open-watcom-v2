@@ -40,7 +40,7 @@ _WCRTLINK int __F_NAME(puts,putws)( const CHAR_TYPE *s )
 
     rc = __F_NAME(fputs,fputws)( s, stdout );
     if( rc != EOF ) {
-        if( __F_NAME(fputc,fputwc)( __F_NAME('\n',L'\n'), stdout ) == __F_NAME(EOF,WEOF) ) {
+        if( __F_NAME(fputc,fputwc)( STRING( '\n' ), stdout ) == INTCHAR_EOF ) {
             rc = EOF;
         } else {
             rc++;

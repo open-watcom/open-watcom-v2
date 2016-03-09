@@ -49,22 +49,22 @@
 
 _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
 {
-    if( c == __F_NAME(EOF,WEOF) ) {   /* cannot push EOF */
+    if( c == INTCHAR_EOF ) {    /* cannot push EOF */
         return( c );
     }
-    _ValidFile( fp, __F_NAME(EOF,WEOF) );
+    _ValidFile( fp, INTCHAR_EOF );
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,__F_NAME(EOF,WEOF));
+    ORIENT_STREAM(fp,INTCHAR_EOF);
 
     if( fp->_flag & _DIRTY ) {        /* cannot unget after a put */
         _ReleaseFile( fp );
-        return( __F_NAME(EOF,WEOF) );
+        return( INTCHAR_EOF );
     }
     if(( fp->_flag & _READ ) == 0 ) { /* not open for input */
         _ReleaseFile( fp );
-        return( __F_NAME(EOF,WEOF) );
+        return( INTCHAR_EOF );
     }
     if( _FP_BASE(fp) == NULL ) {      /* no buffer allocated */
         __ioalloc( fp );

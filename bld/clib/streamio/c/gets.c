@@ -43,11 +43,11 @@ _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )
     oflag = stdin->_flag & (_SFERR | _EOF);             /* 06-sep-91 */
     stdin->_flag &= ~(_SFERR | _EOF);
     cs = s;
-    while( (c = __F_NAME((getc),(getwc))( stdin )) != __F_NAME(EOF,WEOF)
+    while( (c = __F_NAME((getc),(getwc))( stdin )) != INTCHAR_EOF
         && c != STRING( '\n' ) ) {
         *cs++ = c;
     }
-    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s || ferror( stdin )) ) {
+    if( c == INTCHAR_EOF  &&  (cs == s || ferror( stdin )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;
