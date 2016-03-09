@@ -203,7 +203,7 @@ FILE *GetFromEnvAndOpen( const char *path )
     char        tmppath[FILENAME_MAX];
 
     GetFromEnv( path, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         return( fopen( tmppath, "r" ) );
     }
     return( NULL );
@@ -216,7 +216,7 @@ FILE *GetFromEnvAndOpen( const char *path )
 void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -241,12 +241,12 @@ void VerifyTmpDir( void )
         i = strlen( EditVars.TmpDir ) - 1;
         if( EditVars.TmpDir[i] == FILE_SEP && i > 2 ) {
             /* this sucks -- we need the '\' IFF it is [drive]:\ */
-            EditVars.TmpDir[i] = 0;
+            EditVars.TmpDir[i] = '\0';
         }
         if( IsDirectory( EditVars.TmpDir ) ) {
             /* strip the following file_sep char for [drive]:\ */
             if( EditVars.TmpDir[i] == FILE_SEP ) {
-                EditVars.TmpDir[i] = 0;
+                EditVars.TmpDir[i] = '\0';
             }
             return;
         }
@@ -275,7 +275,7 @@ char *MakeTmpPath( char *out, const char *in )
 {
     char    *p;
 
-    out[0] = 0;
+    out[0] = '\0';
     if( EditVars.TmpDir == NULL ) {
         char *env_tmpdir = getenv( "tmp" );
         if( env_tmpdir != NULL ) {

@@ -36,7 +36,7 @@
 #include "dosx.h"
 #include "regexp.h"
 
-char        MinSlots[MAX_MIN_SLOTS];
+bool        MinSlots[MAX_MIN_SLOTS];
 #ifdef __CURSES__
 char_info   WindowNormalAttribute = { ' ', 0 };
 #else

@@ -93,9 +93,9 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
                     while( isdigit( *src ) ) {
                         buff[i++] = *src++;
                     }
-                    buff[i] = 0;
+                    buff[i] = '\0';
                     j = atoi( buff ) - 1;
-                    *dst = 0;
+                    *dst = '\0';
                     for( i = VirtualLineLen( dest ); i < j; ++i ) {
                         *dst++ = ' ';
                     }
@@ -202,7 +202,7 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
             dst += len;
         }
     }
-    *dst = 0;
+    *dst = '\0';
     StaticFree( tmp );
     return( splitit );
 

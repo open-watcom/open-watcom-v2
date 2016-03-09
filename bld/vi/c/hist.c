@@ -80,7 +80,7 @@ void LoadHistory( const char *cmd )
         rs = READ_NONE;
         while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
             for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1 ]); --i ) {
-                str[i - 1] = 0;
+                str[i - 1] = '\0';
             }
             if( cnt == 0 ) {
                 cnt = atoi( str );

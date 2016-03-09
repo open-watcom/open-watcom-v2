@@ -57,7 +57,7 @@ WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         font = GetStockObject( SYSTEM_FIXED_FONT );
         SendDlgItemMessage( hwnd, USAGE_LISTBOX, WM_SETFONT, (UINT)font, 0L );
         SendDlgItemMessage( hwnd, USAGE_TEXT, WM_SETFONT, (UINT)font, 0L );
-        if( usageStr[0] != 0 ) {
+        if( usageStr[0] != '\0' ) {
             SetDlgItemText( hwnd, USAGE_TEXT, usageStr );
         }
         for( i = 0; i < usageCnt; i++ ) {

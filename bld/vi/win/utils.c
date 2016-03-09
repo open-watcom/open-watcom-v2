@@ -468,7 +468,7 @@ void PushDirectory( const char *orig )
 {
     unsigned    c;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     _dos_getdrive( &c );
     oldDrive = (char)c;
     if( orig[1] == ':' ) {
@@ -485,7 +485,7 @@ void PopDirectory( void )
 {
     unsigned    total;
 
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     _dos_setdrive( oldDrive, &total );

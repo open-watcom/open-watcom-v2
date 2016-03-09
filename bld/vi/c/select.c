@@ -109,7 +109,7 @@ vi_rc SelectItem( selectitem *si )
     if( rc == ERR_NO_ERR ) {
         if( sfd.sl == -1 || sfd.sl == 0 ) {
             if( si->result != NULL ) {
-                si->result[0] = 0;
+                si->result[0] = '\0';
             }
             si->num = -1;
         } else {

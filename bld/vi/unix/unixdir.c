@@ -169,7 +169,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[9] = 'x';
     }
 
-    tmp[NAMEWIDTH] = 0;
+    tmp[NAMEWIDTH] = '\0';
 
     tt = file->time;
     tm = localtime( &tt );

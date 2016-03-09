@@ -52,12 +52,12 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
     _splitpath( full, drive, directory, name, ext );
-    if( ext[0] != 0 ) {
-        if( drive[0] == 0 && directory[0] == 0 ) {
+    if( ext[0] != '\0' ) {
+        if( drive[0] == '\0' && directory[0] == '\0' ) {
             GetFromEnv( full, path );
         }
     } else {
-        if( drive[0] == 0 && directory[0] == 0 ) {
+        if( drive[0] == '\0' && directory[0] == '\0' ) {
             for( i = 0; i < InternalCommandCount; i++ ) {
                 if( stricmp( full, InternalCommands[i] ) == 0 ) {
                     is_internal = true;
@@ -69,7 +69,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
             for( i = 0; i < ExeExtensionCount; i++ ) {
                 _makepath( full, drive, directory, name, ExeExtensions[i] );
                 GetFromEnv( full, path );
-                if( path[0] != 0 ) {
+                if( path[0] != '\0' ) {
                     break;
                 }
             }

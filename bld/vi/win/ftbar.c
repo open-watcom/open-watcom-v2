@@ -252,13 +252,13 @@ static void fillInfoBoxes( HWND hwnd )
     if( index != LB_ERR ) {
         SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)oldStyle );
     } else {
-        oldStyle[0] = 0;
+        oldStyle[0] = '\0';
     }
     index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
     if( index != CB_ERR ) {
         SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)oldSize );
     } else {
-        oldSize[0] = 0;
+        oldSize[0] = '\0';
     }
 
     SendMessage( hwndStyle, LB_RESETCONTENT, 0, 0L );
@@ -296,13 +296,13 @@ static void fillInfoBoxes( HWND hwnd )
         }
     }
 
-    if( oldStyle[0] ) {
+    if( oldStyle[0] != '\0' ) {
         index = (int)SendMessage( hwndStyle, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldStyle );
         if( index == LB_ERR ) {
             SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
         }
     }
-    if( oldSize[0] ) {
+    if( oldSize[0] != '\0' ) {
         index = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldSize );
         if( index == CB_ERR ) {
             SendMessage( hwndSize, CB_SETCURSEL, 0, 0L );

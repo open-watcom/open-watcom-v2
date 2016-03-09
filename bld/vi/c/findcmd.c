@@ -160,7 +160,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             ff.search_forward = is_forward;
             ff.search_wrap  = lastFindWasWrap;
         } else {
-            st[0] = 0;
+            st[0] = '\0';
         }
         ff.find = st;
         ff.findlen = sizeof( st );
@@ -169,7 +169,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
                 return( RANGE_REQUEST_CANCELLED );
             }
         } else {
-            st[0] = 0;
+            st[0] = '\0';
             EditFlags.NoReplaceSearchString = true;
         }
         is_forward = ff.search_forward;
@@ -312,7 +312,7 @@ vi_rc FancyDoFind( range *r, long count )
  */
 vi_rc DoNextFindForward( range *r, long count )
 {
-    char        st = 0;
+    char        st = '\0';
 
     count = count;
     if( EditFlags.LastSearchWasForward ) {
@@ -328,7 +328,7 @@ vi_rc DoNextFindForward( range *r, long count )
  */
 vi_rc DoNextFindBackwards( range *r, long count )
 {
-    char        st = 0;
+    char        st = '\0';
 
     count = count;
     if( !EditFlags.LastSearchWasForward ) {
@@ -464,7 +464,7 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
      * process results
      */
     if( rc == ERR_NO_ERR ) {
-        if( linedata[pos2.column] == 0 ) {
+        if( linedata[pos2.column] == '\0' ) {
             pos2.column--;
         }
         len = GetCurrRegExpLength();
@@ -506,7 +506,7 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
     /*
      * get next position
      */
-    if( st[0] == 0 ) {
+    if( st[0] == '\0' ) {
         if( lastFind == NULL ) {
             return( ERR_NO_PREVIOUS_SEARCH_STRING );
         }
@@ -663,12 +663,12 @@ vi_rc FancyDoReplace( void )
         ff.search_forward = is_forward;
         ff.search_wrap = lastFindWasWrap;
     } else {
-        find[0] = 0;
+        find[0] = '\0';
     }
     if( lastReplace != NULL ) {
         strcpy( replace, lastReplace );
     } else {
-        replace[0] = 0;
+        replace[0] = '\0';
     }
     ff.find = find;
     ff.findlen = sizeof( find );

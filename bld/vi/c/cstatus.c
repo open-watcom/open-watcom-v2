@@ -81,7 +81,7 @@ status_type UpdateCurrentStatus( status_type st )
 
         if( EditFlags.CurrentStatus ) {
             memset( str, ' ', MAX_CSTATUS_STRLEN );
-            str[MAX_CSTATUS_STRLEN] = 0;
+            str[MAX_CSTATUS_STRLEN] = '\0';
             i = strlen( currStatus[lastStatus] );
             if( i > MAX_CSTATUS_STRLEN )
                 i = MAX_CSTATUS_STRLEN;
@@ -93,7 +93,7 @@ status_type UpdateCurrentStatus( status_type st )
 #if 0
             /* this is real lame - no time to fix it now */
             memset( str, ' ', 15 );
-            str[15] = 0;
+            str[15] = '\0';
             for( i = 0; i < 14; i++ ) {
                 SetCharInWindowWithColor( menu_window_id, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text_style );
             }

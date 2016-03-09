@@ -161,17 +161,17 @@ vi_rc SrcAssign( const char *data, vlist *vl )
                 Expand( tmp1, tmp, vl );
                 j = atoi( tmp1 ) - 1;
                 if( v == NULL ) {
-                    tmp1[0] = 0;
+                    tmp1[0] = '\0';
                     break;
                 }
                 if( j >= v->len || i < 0 ) {
-                    tmp1[0] = 0;
+                    tmp1[0] = '\0';
                 } else {
                     l = 0;
                     for( k = i; k <= j; k++ ) {
                         tmp1[l++] = v->value[k];
                     }
-                    tmp1[l] = 0;
+                    tmp1[l] = '\0';
                 }
                 break;
             case STR_T_STRCHR:

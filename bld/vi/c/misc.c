@@ -54,7 +54,7 @@ static void setPrompt( void )
 {
     char        *tmp;
 
-    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
             oldPrompt = MemAlloc( strlen( tmp ) + 1 );
@@ -68,7 +68,7 @@ static void setPrompt( void )
 
 static void restorePrompt( void )
 {
-    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
         if( oldPrompt != NULL ) {
             MemFree( oldPrompt );
@@ -293,7 +293,7 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
     for( i = 0; i < MAX_ARGS; i++ ) {
         while( isspace( *s ) )
             s++;
-        if( *s == 0 ) {
+        if( *s == '\0' ) {
             argv[i] = NULL;
             break;
         }
@@ -689,7 +689,7 @@ vi_rc EnterHexKey( void )
      */
     ptr = SkipLeadingSpaces( st );
     val = (char)strtol( ptr, NULL, 0 );
-    if( val == 0 ) {
+    if( val == '\0' ) {
         return( ERR_INVALID_VALUE );
     }
 

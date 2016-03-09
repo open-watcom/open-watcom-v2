@@ -257,7 +257,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
             ReDisplayScreen();
             DoVersion();
         }
-        if( word[0] != 0 ) {
+        if( word[0] != '\0' ) {
             rc = EditFile( word, ( tkn == EX_T_VISUAL_DMT ) );
         } else {
             rc = ERR_NO_ERR;

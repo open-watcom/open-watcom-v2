@@ -56,8 +56,8 @@ bool MessageBarInit( void )
 {
     WNDCLASS        wc;
 
-    msgString1[0] = 0;
-    msgString2[0] = 0;
+    msgString1[0] = '\0';
+    msgString2[0] = '\0';
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = GetWndProc( MessageWindowProc );
@@ -108,8 +108,8 @@ window_id NewMsgWindow( void )
     int         height;
 
     size = &MessageBar.def_area;
-    msgString1[0] = 0;
-    msgString2[0] = 0;
+    msgString1[0] = '\0';
+    msgString2[0] = '\0';
     height = size->bottom - size->top;
     if( !EditFlags.StatusInfo ) {
         height += 1;

@@ -471,7 +471,7 @@ vi_rc OpenWindowOnFile( const char *data )
     window_id   wid;
 
     data = SkipLeadingSpaces( data );
-    if( data[0] == 0 ) {
+    if( data[0] == '\0' ) {
         data = NULL;
     }
     wid = current_window_id;

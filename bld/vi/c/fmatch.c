@@ -89,7 +89,7 @@ vi_rc FileMatchInit( const char *wild )
         tomatch[j++] = wild[i];
     }
     tomatch[j++] = '$';
-    tomatch[j] = 0;
+    tomatch[j] = '\0';
 
     cRx = RegComp( tomatch );
     if( RegExpError ) {

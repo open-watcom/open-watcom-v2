@@ -173,7 +173,7 @@ bool VarName( char *new, const char *name, vlist *vl )
     char    tmp[MAX_SRC_LINE];
     size_t  len;
 
-    if( name[0] != '%' || name[1] == 0 ) {
+    if( name[0] != '%' || name[1] == '\0' ) {
         return( false );
     }
     ++name;

@@ -50,7 +50,7 @@ int FileSysNeedsCR( int handle )
 void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     GetCWD2( oldPath, FILENAME_MAX );
 
 } /* PushDirectory */
@@ -60,7 +60,7 @@ void PushDirectory( const char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     ChangeDirectory( CurrentDirectory );

@@ -48,7 +48,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
         len = strlen( tmpname );
         if( tmpname[len - 1] != FILE_SEP ) {
             tmpname[len] = FILE_SEP;
-            tmpname[len + 1] = 0;
+            tmpname[len + 1] = '\0';
         }
         strcat( tmpname, nd->d_name );
         stat( tmpname, &nd->d_stat );
@@ -154,7 +154,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[9] = 'x';
     }
 
-    tmp[NAMEWIDTH]=0;
+    tmp[NAMEWIDTH] = '\0';
 
     tt = file->time;
     tm = localtime( &tt );

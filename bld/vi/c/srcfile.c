@@ -67,12 +67,12 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
         Expand( id, id, vl );
         Expand( type, type, vl );
     }
-    if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
+    if( id[1] != '\0' || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_OPEN );
     }
     i = id[0] - '1';
     t = type[0];
-    if( type[1] != 0 || (t != 'x' && t != 'r' && t != 'a' && t != 'w') ) {
+    if( type[1] != '\0' || (t != 'x' && t != 'r' && t != 'a' && t != 'w') ) {
         return( ERR_SRC_INVALID_OPEN );
     }
 
@@ -144,7 +144,7 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
     if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_READ );
     }
-    if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
+    if( id[1] != '\0' || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_READ );
     }
     i = id[0] - '1';
@@ -157,7 +157,7 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
     if( fi->ft[i] == SRCFILE_FILE ) {
         if( fgets( id, MAX_SRC_LINE, fi->u.f[i] ) != NULL ) {
             for( j = strlen( id ); j && isEOL( id[j - 1] ); --j ) {
-                id[j - 1] = 0;
+                id[j - 1] = '\0';
             }
             VarAddStr( v1, id, vl );
         } else {
@@ -206,7 +206,7 @@ vi_rc SrcWrite( sfile *curr, files *fi, const char *data, vlist *vl )
         Expand( id, id, vl );
         Expand( v1, v1, vl );
     }
-    if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
+    if( id[1] != '\0' || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_WRITE );
     }
     i = id[0] - '1';
@@ -241,7 +241,7 @@ vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, const char *data )
     if( curr->hasvar ) {
         Expand( id, id, vl );
     }
-    if( id[1] != 0 || (id[0] < '1' || id[0] > '9') ) {
+    if( id[1] != '\0' || (id[0] < '1' || id[0] > '9') ) {
         return( ERR_SRC_INVALID_CLOSE );
     }
     i = id[0] - '1';

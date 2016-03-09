@@ -88,7 +88,7 @@ static btype charType( char c, bool big )
         return( BLOCK_THEENDDAMMIT );
     } else if( TestIfCharInRange( c, wordList ) ) {
         return( BLOCK_WORD );
-    } else if( c == 0 ) {
+    } else if( c == '\0' ) {
         return( BLOCK_ENDOFLINE );
     } else if( isspace( c ) ) {
         return( BLOCK_WHITESPACE );
@@ -335,7 +335,7 @@ vi_rc GimmeCurrentWord( char *buffer, int buffer_size, bool big )
             while( i < end.column && j < buffer_size ) {
                 buffer[j++] = line->data[i++];
             }
-            buffer[j] = 0;
+            buffer[j] = '\0';
         }
     }
     return( rc );

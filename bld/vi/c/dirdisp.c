@@ -96,7 +96,7 @@ static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
     } else {
         rc = FILE_COMPLETE;
     }
-    data[i] = 0;
+    data[i] = '\0';
     return( rc );
 
 } /* appendExtra */
@@ -127,7 +127,7 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
         }
         lastFilec = -1;
         buff[k++] = '*';
-        buff[k] = 0;
+        buff[k] = '\0';
         rc = GetSortDir( buff, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );
@@ -254,7 +254,7 @@ static void parseFileName( int i, char *buffer )
         }
         MySprintf( buffer, strFmt, ch, DirFiles[i]->name );
     }
-    buffer[NAMEWIDTH] = 0;
+    buffer[NAMEWIDTH] = '\0';
 }
 
 #define ROW( i )    ((i) / maxJ)
@@ -354,7 +354,7 @@ static void displayFiles( void )
     int         j, i, k, hilite, z;
     int         st, end, l;
 
-    tmp[0] = 0;
+    tmp[0] = '\0';
     j = 0;
 
     st = 0;
@@ -386,7 +386,7 @@ static void displayFiles( void )
                 dirc = ' ';
             }
             MySprintf( tmp2, strFmt, dirc, DirFiles[i]->name );
-            tmp2[NAMEWIDTH] = 0;
+            tmp2[NAMEWIDTH] = '\0';
         }
         strcat( tmp, tmp2 );
         j++;
@@ -407,7 +407,7 @@ static void displayFiles( void )
                 hilite = -1;
             }
             j = 0;
-            tmp[0] = 0;
+            tmp[0] = '\0';
         }
 
     }

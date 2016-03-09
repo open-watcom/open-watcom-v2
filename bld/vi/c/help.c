@@ -120,7 +120,7 @@ vi_rc DoHelp( const char *data )
     data = SkipLeadingSpaces( data );
     token = Tokenize( helpCmds, data, false );
     if( token == TOK_INVALID ) {
-        if( data[0] == 0 ) {
+        if( data[0] == '\0' ) {
             strcpy( tmp, "Topics: " );
             for( i = 0; i < nHelpFiles; i++ ) {
                 if( i != 0 ) {
@@ -136,7 +136,7 @@ vi_rc DoHelp( const char *data )
     }
     hfile = helpFiles[token];
     GetFromEnv( hfile, path );
-    if( path[0] == 0 ) {
+    if( path[0] == '\0' ) {
         Error( "Help file %s not found", hfile );
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }

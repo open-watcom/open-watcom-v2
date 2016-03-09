@@ -51,7 +51,7 @@ void ScanAsm( void )
         while( isspace( *buffptr ) ) {
             buffptr++;
         }
-        if( *buffptr == 0 ) {
+        if( *buffptr == '\0' ) {
             continue;
         }
         i = 0;
@@ -61,7 +61,7 @@ void ScanAsm( void )
         if( i == 0 ) {
             continue;
         }
-        token[i] = 0;
+        token[i] = '\0';
         while( isspace( *buffptr ) ) {
             buffptr++;
         }

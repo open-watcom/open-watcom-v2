@@ -101,7 +101,7 @@ static vi_key getHotKey( const char *str )
     if( str == NULL ) {
         return( 0 );
     }
-    while( *str ) {
+    while( *str != '\0' ) {
         if( *str == HOT_KEY_CHAR ) {
             return( toupper( *(str + 1) ) - 'A' + VI_KEY( ALT_A ) );
         }
@@ -281,7 +281,7 @@ static item *addItemToMenu( menu *m, const char *name, const char *help, const c
     cmd_len = strlen( cmd );
     name_len = strlen( name );
     new = MemAlloc( sizeof( item ) + cmd_len + name_len + strlen( help ) + 2 );
-    if( *name == 0 ) {
+    if( *name == '\0' ) {
         new->menuid = 0;
         new->name = NULL;
         if( append ) {
@@ -511,7 +511,7 @@ vi_rc StartMenu( const char *data )
     GetStringWithPossibleQuote( &data, help );
     data = SkipLeadingSpaces( data );
     need_hook = false;
-    if( data[0] != 0 ) {
+    if( data[0] != '\0' ) {
         need_hook = true;
     }
     /* check for an existing menu with the same name */
@@ -835,7 +835,7 @@ vi_rc MenuCommand( int menuid )
 
 static void tabs_to_slash_t( char *buffer, const char *text )
 {
-    while( *text != 0 ) {
+    while( *text != '\0' ) {
         if( *text == '\t' ) {
             *buffer = '\\';
             buffer++;
@@ -955,7 +955,7 @@ static void initMenuBottom( menu *cmenu, bool add_line )
 
     cmenu->orig_num_items = cmenu->num_items;
     if( add_line ) {
-        help[0] = name[0] = data[0] = 0;
+        help[0] = name[0] = data[0] = '\0';
         addItemToMenu( cmenu, name, help, data, true );
     }
     thisCount = 1;
@@ -1211,7 +1211,7 @@ void GetMenuHelpString( char *res )
         strcpy( res, currMenuHelpString );
     } else {
         res[0] = ' ';
-        res[1] = 0;
+        res[1] = '\0';
     }
 
 } /* GetMenuHelpString */

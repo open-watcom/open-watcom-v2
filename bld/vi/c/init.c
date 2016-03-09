@@ -64,7 +64,7 @@ static char     *keysToPush = NULL;
 #ifdef __WIN__
     static int  lineToGoTo = 0;
 #endif
-static char     goCmd[10] = {0};
+static char     goCmd[10] = {'\0'};
 static bool     wantNoReadEntireFile = false;
 char            *WordDefnDefault = "::..\\\\__09AZaz";
 
@@ -120,10 +120,10 @@ static void checkFlags( int *argc, char *argv[], char *start[],
             lineToGoTo = atoi( OptArg );
 #else
             strncpy( goCmd, OptArg, sizeof( goCmd ) -2 );
-            goCmd[sizeof( goCmd ) - 2] = 0;
+            goCmd[sizeof( goCmd ) - 2] = '\0';
             len = strlen( goCmd );
             goCmd[len] = 'G';
-            goCmd[len + 1] = 0;
+            goCmd[len + 1] = '\0';
 #endif
             break;
 #ifdef __WIN__
@@ -297,8 +297,8 @@ static void doInitializeEditor( int argc, char *argv[] )
     WorkLine->len = -1;
 
     sline = 0;
-    if( cfgFN[0] != 0 ) {
-        c[0] = 0;
+    if( cfgFN[0] != '\0' ) {
+        c[0] = '\0';
         rc = Source( cfgFN, c, &sline );
         if( rc == ERR_FILE_NOT_FOUND ) {
 #ifdef __WIN__
@@ -409,7 +409,7 @@ static void doInitializeEditor( int argc, char *argv[] )
      * start specified file(s)
      */
     cmd[0] = 'e';
-    cmd[1] = 0;
+    cmd[1] = '\0';
 
     arg = argc - 1;
     k = 1;
@@ -545,11 +545,11 @@ static void doInitializeEditor( int argc, char *argv[] )
     for( i = 0; i < startcnt; i++ ) {
         GetFromEnv( startup[i], tmp );
         ReplaceString( &cfgFN, tmp );
-        if( cfgFN[0] != 0 ) {
+        if( cfgFN[0] != '\0' ) {
             if( startup_parms[i] != NULL ) {
                 parm = startup_parms[i];
             } else {
-                c[0] = 0;
+                c[0] = '\0';
                 parm = c;
             }
 #if defined( __NT__ ) && !defined( __WIN__ )
@@ -574,7 +574,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( EditVars.GrepDefault == NULL ) {
         EditVars.GrepDefault = DupString( "*.(c|h)" );
     }
-    if( goCmd[0] != 0 ) {
+    if( goCmd[0] != '\0' ) {
         KeyAddString( goCmd );
     }
     if( keysToPush != NULL ) {

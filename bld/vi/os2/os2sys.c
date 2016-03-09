@@ -61,7 +61,7 @@ void PushDirectory( const char *orig )
     STUPID_UINT         c;
     unsigned long       map;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     DosQCurDisk( &c, &map );
     oldDisk = (char)c;
     if( orig[1] == ':' ) {
@@ -76,7 +76,7 @@ void PushDirectory( const char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     DosSelectDisk( oldDisk );

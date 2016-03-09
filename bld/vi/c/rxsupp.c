@@ -105,7 +105,7 @@ void MakeExpressionNonRegular( char *str )
         }
         foo[j++] = str[i];
     }
-    foo[j] = 0;
+    foo[j] = '\0';
     strcpy( str, foo );
     StaticFree( foo );
 

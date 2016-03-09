@@ -55,7 +55,7 @@ void GetCWD1( char **str )
 void GetCWD2( char *str, int maxlen )
 {
     if( getcwd( str, maxlen - 1 ) == NULL ) {
-        str[0] = 0;
+        str[0] = '\0';
     }
     // Don't lowercase the filename
     //FileLower( str );
@@ -75,7 +75,7 @@ vi_rc ChangeDirectory( const char *dir )
     shift = 0;
     if( dir[1] == ':' ) {
         rc = ChangeDrive( dir[0] );
-        if( rc != ERR_NO_ERR || dir[2] == 0 ) {
+        if( rc != ERR_NO_ERR || dir[2] == '\0' ) {
             return( rc );
         }
         shift = 2;
@@ -169,7 +169,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
      */
     for( i = 0; i < DirFileCount; i++ ) {
         if( DirFiles[i]->attr & _A_SUBDIR ) {
-            if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == 0 ) {
+            if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == '\0' ) {
                 MemFree( DirFiles[i] );
                 for( j = i + 1; j < DirFileCount; j++ ) {
                     DirFiles[j - 1] = DirFiles[j];

@@ -245,7 +245,7 @@ static int getFileInfoString( char *st, bool is_small )
     } else {
         write_crlf = EditFlags.WriteCRLF;
     }
-    st[0] = 0;
+    st[0] = '\0';
     if( !is_small ) {
         if( EditFlags.NewFile ) {
             strcat( st, " [new file]" );

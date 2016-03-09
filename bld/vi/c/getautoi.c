@@ -45,7 +45,7 @@ static vi_rc getBracketLoc( i_mark *pos )
 
     tmp[0] = '\\';
     tmp[1] = ')';
-    tmp[2] = 0;
+    tmp[2] = '\0';
 //    lne = CurrentPos.line;
     RegExpAttrSave( -1, NULL );
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );
@@ -139,7 +139,7 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
         j = InsertTabSpace( indent_amount - 1, buff, &tabme );
         break;
     }
-    buff[j] = 0;
+    buff[j] = '\0';
     return( j );
 
 } /* GetAutoIndentAmount */

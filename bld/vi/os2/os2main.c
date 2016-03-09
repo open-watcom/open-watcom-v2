@@ -45,7 +45,7 @@ static void getEXEName( char *name )
     char tmppath[_MAX_PATH];
 
     _splitpath( name, drive, dir, fname, ext );
-    if( ext[0] != 0 ) {
+    if( ext[0] != '\0' ) {
         EXEName = name;
     } else {
         _makepath( tmppath, drive, dir, fname, ".exe" );

@@ -97,7 +97,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             break;
         }
         if( sfd.sl == -1 ) {
-            result[0] = 0;
+            result[0] = '\0';
             break;
         }
         j = (int) sfd.sl - 1;
@@ -106,7 +106,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
                 GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
                 dd[0] = cline->data[3];
                 dd[1] = ':';
-                dd[2] = 0;
+                dd[2] = '\0';
             } else {
                 strcpy( dd, cdir );
                 if( dd[strlen(dd) - 1] != FILE_SEP ) {
@@ -130,7 +130,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
                 strcat( result, FILE_SEP_STR );
             }
         } else {
-            result[0] = 0;
+            result[0] = '\0';
         }
         strcat( result, DirFiles[j]->name );
         break;
@@ -236,7 +236,7 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                     for( k = i; k < valoff; k++ ) {
                         tmp[k] = ' ';
                     }
-                    tmp[k] = 0;
+                    tmp[k] = '\0';
                     strcat( tmp, vals[j + pagetop - 2] );
                     DisplayLineInWindowWithColor( cwid, j, tmp, text_style, 0 );
                 } else {

@@ -56,10 +56,13 @@ int FileSysNeedsCR( int handle )
     struct _psinfo      ps_info;
     pid_t               dos_pid;
 
-    if( qnx_fd_query( 0, 0, handle, &fd_info ) != handle ) return( 0 );
+    if( qnx_fd_query( 0, 0, handle, &fd_info ) != handle )
+        return( 0 );
     dos_pid = qnx_name_locate( fd_info.nid, "qnx/dosfsys", 0, NULL );
-    if( dos_pid == -1 ) return( 0 );
-    if( qnx_psinfo( PROC_PID, dos_pid, &ps_info, 0, NULL ) != dos_pid ) return( 0 );
+    if( dos_pid == -1 )
+        return( 0 );
+    if( qnx_psinfo( PROC_PID, dos_pid, &ps_info, 0, NULL ) != dos_pid )
+        return( 0 );
     if( ps_info.flags & _PPF_VID ) {
         qnx_vc_detach( dos_pid );
         dos_pid =  ps_info.un.vproc.remote_pid;
@@ -74,7 +77,7 @@ int FileSysNeedsCR( int handle )
 void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     GetCWD2( oldPath, _MAX_PATH );
 
 } /* PushDirectory */
@@ -84,7 +87,7 @@ void PushDirectory( const char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     ChangeDirectory( CurrentDirectory );

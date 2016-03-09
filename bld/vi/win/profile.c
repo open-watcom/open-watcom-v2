@@ -241,7 +241,7 @@ static void readConfigFile( void )
     cfgTime = getProfileLong( keyCfgTime );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
-    if( cname[0] != 0 ) {
+    if( cname[0] != '\0' ) {
         stat( cname, &cfg );
         new_cfgtime = cfg.st_mtime;
         if( cfgTime == 0 ) {

@@ -320,7 +320,7 @@ vi_rc GetSavebufString( char **data )
             strcpy( *data, tmp->u.data );
             break;
         case SAVEBUF_FCBS:
-            **data = 0;
+            **data = '\0';
             for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
                 FetchFcb( cfcb );
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
@@ -418,7 +418,7 @@ void AddLineToSavebuf( char *data, int scol, int ecol )
     for( i = scol; i <= ecol; i++ ) {
         tmp->u.data[i - scol] = data[i];
     }
-    tmp->u.data[len] = 0;
+    tmp->u.data[len] = '\0';
 
 } /* AddLineToSavebuf */
 
@@ -570,7 +570,7 @@ vi_rc DoSavebufNumber( void )
         return( ERR_NO_ERR );
     }
     buff[0] = (char)key;
-    buff[1] = 0;
+    buff[1] = '\0';
     rc = SetSavebufNumber( buff );
     if( rc == ERR_NO_ERR ) {
         rc = GOT_A_SAVEBUF;
@@ -589,7 +589,7 @@ vi_rc SetSavebufNumber( const char *data )
     SavebufNumber = NO_SAVEBUF;
     data = GetNextWord1( data, st );
     if( st[0] != '\0' ) {
-        if( st[1] != 0 ) {
+        if( st[1] != '\0' ) {
             Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }

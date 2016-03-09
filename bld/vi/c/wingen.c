@@ -83,7 +83,7 @@ void Message1( const char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( message_window_id, 1, tmp );
@@ -108,7 +108,7 @@ void Message1Box( const char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( message_window_id, 1, tmp );
@@ -132,7 +132,7 @@ void Message2( const char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp,str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
         DisplayLineInWindow( message_window_id, 2, tmp );
@@ -154,7 +154,7 @@ vi_rc WPrintfLine( window_id wid, int line, char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     return( DisplayLineInWindow( wid, line, tmp ) );
 

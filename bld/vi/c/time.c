@@ -67,10 +67,10 @@ void GetTimeString( char *st )
     st[j] = ' ';
     st[j + 1] = am_pm;
     st[j + 2] = 'm';
-    st[j + 3] = 0;
+    st[j + 3] = '\0';
 #else
     st[j] = am_pm;
-    st[j + 1] = 0;
+    st[j + 1] = '\0';
 #endif
 
 } /* GetTimeString */
@@ -96,7 +96,7 @@ void GetDateTimeString( char *st )
     for( i = 10; i <= 18; i++ ) {
         st[j++] = s[i];
     }
-    st[j] = 0;
+    st[j] = '\0';
 
 } /* GetDateTimeString */
 

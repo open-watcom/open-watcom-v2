@@ -94,7 +94,7 @@ static int trimWorkLine( void )
             len = VirtualLineLen( WorkLine->data );
         }
         WorkLine->len = i + 1;
-        WorkLine->data[i + 1] = 0;
+        WorkLine->data[i + 1] = '\0';
     }
     return( len );
 
@@ -157,7 +157,7 @@ static void addChar( char ch )
 
     if( WorkLine->len == 0 ) {
         WorkLine->data[0] = ch;
-        WorkLine->data[1] = 0;
+        WorkLine->data[1] = '\0';
         WorkLine->len = 1;
         DisplayWorkLine( SSKillsFlags( ch ) );
         return;
@@ -176,7 +176,7 @@ static void addChar( char ch )
         WorkLine->data[CurrentPos.column - 1] = ch;
         if( CurrentPos.column - 1 == WorkLine->len ) {
             WorkLine->len++;
-            WorkLine->data[WorkLine->len] = 0;
+            WorkLine->data[WorkLine->len] = '\0';
         }
     }
 
@@ -295,10 +295,10 @@ vi_rc IMEnter( void )
     if( el > 0 && WorkLine->len > 0 ) {
         memcpy( buff, &WorkLine->data[CurrentPos.column - 1], el + 1 );
         WorkLine->len -= el;
-        WorkLine->data[CurrentPos.column - 1] = 0;
+        WorkLine->data[CurrentPos.column - 1] = '\0';
     } else {
         el = 0;
-        buff[0] = 0;
+        buff[0] = '\0';
     }
 
     len = trimWorkLine();
@@ -773,7 +773,7 @@ static vi_rc getBracketLoc( i_mark *pos )
 
     tmp[0] = '\\';
     tmp[1] = ')';
-    tmp[2] = 0;
+    tmp[2] = '\0';
 //    lne = CurrentPos.line;
     RegExpAttrSave( -1, NULL );
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );

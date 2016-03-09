@@ -250,7 +250,7 @@ vi_rc StartMenu( const char *data )
     GetStringWithPossibleQuote( &data, str );
     data = SkipLeadingSpaces( data );
     need_hook = false;
-    if( data[0] != 0 ) {
+    if( data[0] != '\0' ) {
         need_hook = true;
     }
 
@@ -505,7 +505,7 @@ static void addFileList( menu *cmenu )
 
     cmenu->orig_itemcnt = cmenu->itemcnt;
     cmenu->orig_maxwidth = cmenu->maxwidth;
-    buff[0] = 0;
+    buff[0] = '\0';
     MenuItem( buff );
 
     for( cnt = 1, cinfo = InfoHead; cinfo != NULL && cnt < 10; cinfo = cinfo->next, ++cnt ) {
@@ -581,15 +581,15 @@ vi_rc InitMenu( void )
     }
 
     memset( disp, ' ', sizeof( disp ) - 1 );
-    disp[START_OFFSET] = 0;
+    disp[START_OFFSET] = '\0';
     for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         MySprintf( tmp, "%s  ", cmenu->str );
         strcat( disp, tmp );
     }
     disp[strlen( disp )] = ' ';
     if( EditFlags.CurrentStatus ) {
-        disp[EditVars.CurrentStatusColumn - 1] = 0;
-        // disp[CurrentStatusColumn - 7] = 0;
+        disp[EditVars.CurrentStatusColumn - 1] = '\0';
+        // disp[CurrentStatusColumn - 7] = '\0';
         // strcat( disp, "Mode:" );
     }
     DisplayLineInWindow( menu_window_id, 1, disp );

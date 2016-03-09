@@ -158,7 +158,7 @@ vi_rc SourceHook( hooktype num, vi_rc lastrc )
 {
     char        data[1];
 
-    data[0] = 0;
+    data[0] = '\0';
     srcHookData = data;
     return( srcHook( num, lastrc ) );
 
@@ -229,7 +229,7 @@ vi_rc InvokeColSelHook( int sc, int ec )
     for( i = sc - 1; i <= ec - 1; i++ ) {
         wordbuff[j++] = CurrentLine->data[i];
     }
-    wordbuff[j] = 0;
+    wordbuff[j] = '\0';
 #ifdef __WIN__
     sc = MyTextExtent( current_window_id, WIN_TEXT_STYLE( &EditWindow ),
         &CurrentLine->data[0], sc );

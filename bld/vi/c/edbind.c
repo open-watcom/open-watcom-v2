@@ -216,7 +216,7 @@ static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long t
 static void GetFromEnv( char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -231,7 +231,7 @@ static FILE *GetFromEnvAndOpen( char *inpath )
     char tmppath[_MAX_PATH];
 
     GetFromEnv( inpath, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         MyPrintf( " %s...", tmppath );
         return( fopen( tmppath, "r" ) );
     }
@@ -343,7 +343,7 @@ int main( int argc, char *argv[] )
         Usage( "No executable to bind" );
     }
     _splitpath( argv[1], drive, dir, fname, ext );
-    if( ext[0] == 0 ) {
+    if( ext[0] == '\0' ) {
         _makepath( path, drive, dir, fname, ".exe" );
     } else {
         strcpy( path, argv[1] );

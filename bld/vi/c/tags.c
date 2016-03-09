@@ -183,7 +183,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
         while( !isspace( taglist[tagcnt][i] ) ) {
             i++;
         }
-        taglist[tagcnt][i] = 0;
+        taglist[tagcnt][i] = '\0';
         tagcnt++;
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             break;
@@ -221,7 +221,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
         return( ERR_INVALID_TAG_FOUND );
     }
     p = SkipLeadingSpaces( p );
-    if( p[0] == 0 ) {
+    if( p[0] == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
     strcpy( buff, p );;
@@ -248,8 +248,8 @@ static FILE *SearchForTags( void )
          * Remove trailing filename.
          */
         eop = strrchr(path, '\\');
-        if (eop) {
-            *eop = 0x00;
+        if( eop != NULL ) {
+            *eop = '\0';
         }
     } else {
         GetCWD2( path, FILENAME_MAX );
@@ -269,7 +269,7 @@ static FILE *SearchForTags( void )
         }
 
         if( eop >= path ) {
-            *eop-- = 0x00;
+            *eop-- = '\0';
         }
     } /* while */
 

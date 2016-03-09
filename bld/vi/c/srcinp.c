@@ -63,7 +63,7 @@ static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
     } else {
         resp = GOT_RESPONSE;
         tmp[0] = GetKey( false );
-        tmp[1] = 0;
+        tmp[1] = '\0';
     }
     if( resp == GOT_RESPONSE ) {
         VarAddStr( v1, tmp, vl );

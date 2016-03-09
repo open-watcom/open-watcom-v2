@@ -101,7 +101,7 @@ static bool insertChar( input_buffer *input, int ch )
         len = strlen( input->buffer ) + 1;
         input->buffer[input->curr_pos++] = ch;
         if( input->curr_pos == len ) {
-            input->buffer[input->curr_pos] = 0;
+            input->buffer[input->curr_pos] = '\0';
         }
     } else {
         if( strlen( input->buffer ) >= input->buffer_length - 1 ) {
@@ -156,7 +156,7 @@ static void displayLine( input_buffer *input )
         *dest++ = *buffer++;
         length += 1;
     }
-    *dest = 0;
+    *dest = '\0';
     cursor_pos = input->curr_pos - input->left_column + 1;
     cursor_pos += strlen( input->prompt );
 #ifdef __WIN__
@@ -315,7 +315,7 @@ static bool addHistory( input_buffer *input )
     history_data    *h;
 
     h = input->history;
-    if( h != NULL && input->buffer[0] != 0 ) {
+    if( h != NULL && input->buffer[0] != '\0' ) {
         ReplaceString( &(h->data[h->curr % h->max]), input->buffer );
         h->curr += 1;
         return( true );
@@ -438,9 +438,9 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
     switch( event ) {
     case VI_KEY( CTRL_E ):
     case VI_KEY( CTRL_W ):
-        tmp[0] = 0;
+        tmp[0] = '\0';
         GimmeCurrentWord( tmp, str_max, event == VI_KEY( CTRL_E ) );
-        tmp[str_max] = 0;
+        tmp[str_max] = '\0';
         break;
     case VI_KEY( ALT_L ):
         if( CurrentLine == NULL ) {
@@ -475,7 +475,7 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
             }
         }
         ExpandTabsInABuffer( &CurrentLine->data[i - 1], l, tmp, str_max );
-        tmp[l] = 0;
+        tmp[l] = '\0';
     default:
         return( false );
     }
@@ -734,12 +734,12 @@ static bool getStringInWindow( input_buffer *input )
             break;
         case VI_KEY( CTRL_END ):
             saveStr( input );
-            input->buffer[input->curr_pos] = 0;
+            input->buffer[input->curr_pos] = '\0';
             break;
         case VI_KEY( CTRL_X ):
         case VI_KEY( CTRL_U ):
             saveStr( input );
-            input->buffer[0] = 0;
+            input->buffer[0] = '\0';
             endColumn( input );
             break;
         case VI_KEY( CTRL_INS ):
@@ -790,7 +790,7 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
     input.window.line = line;
 #ifdef __WIN__
     input.cache = (char *)MemAlloc( max_len );
-    input.cache[0] = 0;
+    input.cache[0] = '\0';
 #endif
     rc = getStringInWindow( &input );
 #ifdef __WIN__

@@ -168,7 +168,7 @@ copyloopa:
                         for( i = 0; i < k; i++ ) {
                             tmp[i] = ' ';
                         }
-                        tmp[k] = 0;
+                        tmp[k] = '\0';
                     }
                 }
                 goto copyloop1;
@@ -189,7 +189,7 @@ copyloop2:
         cin = *in;
     }
     if( cFile == NULL ) {
-        *cStr++ = 0;
+        *cStr++ = '\0';
     }
 }
 

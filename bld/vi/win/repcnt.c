@@ -55,7 +55,7 @@ bool RepeatCountWindowInit( void )
 {
     WNDCLASS        wc;
 
-    repString[0] = 0;
+    repString[0] = '\0';
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = GetWndProc( RepeatWindowProc );
@@ -139,7 +139,7 @@ window_id NewRepeatCountWindow( void )
     p.y = size->top;
     ClientToScreen( root_window_id, &p );
 
-    repString[0] = 0;
+    repString[0] = '\0';
     repeat_window_id = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,

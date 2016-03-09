@@ -121,7 +121,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
 
     mask = mask;
     want_all_dirs = want_all_dirs;
-    *result[0] = 0;
+    *result[0] = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = root_window_id;
@@ -213,10 +213,10 @@ char *GetInitialFileName( void )
     vi_rc       rc;
 
     CloseStartupDialog();
-    path[0] = 0;
+    path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     ShowStartupDialog();
-    if( rc == ERR_NO_ERR && path[0] != 0 ) {
+    if( rc == ERR_NO_ERR && path[0] != '\0' ) {
         ptr = DupString( path );
     } else {
         ptr = NULL;

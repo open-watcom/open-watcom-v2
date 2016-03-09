@@ -291,7 +291,7 @@ vi_rc AddBitmapToToolBar( const char *data )
     int                 cmd_len;
     int                 name_len;
 
-    dont_save[0] = 0;
+    dont_save[0] = '\0';
 
     data = SkipLeadingSpaces( data );
     if( strnicmp( data, "temp", 4 ) == 0 ) {
@@ -314,7 +314,7 @@ vi_rc AddBitmapToToolBar( const char *data )
     }
     item->dont_save = ( strlen( dont_save ) != 0 );
 
-    if( file[0] && item->cmd[0] ) {
+    if( file[0] != '\0' && item->cmd[0] != '\0' ) {
         item->bmp = LoadBitmap( InstanceHandle, file );
         if( item->bmp == HNULL ) {
             item->bmp = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );

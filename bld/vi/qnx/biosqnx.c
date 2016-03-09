@@ -308,11 +308,11 @@ void WaitForProxy( void )
 
 } /* WaitForProxy */
 
-static void addConsoleNumber( char * ptr, unsigned number )
+static void addConsoleNumber( char *ptr, unsigned number )
 {
     ptr[0] = (number / 10) + '0';
     ptr[1] = (number % 10) + '0';
-    ptr[2] = 0;
+    ptr[2] = '\0';
 
 } /* addConsoleNumber */
 

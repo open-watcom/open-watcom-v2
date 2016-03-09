@@ -111,7 +111,7 @@ line *LineAlloc( const char *data, int len )
     if( data != NULL ) {
         memcpy( tmp->data, data, len );
     }
-    tmp->data[len] = 0;
+    tmp->data[len] = '\0';
     tmp->len = len;
 
     return( tmp );

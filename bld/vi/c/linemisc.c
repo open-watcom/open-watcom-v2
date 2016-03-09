@@ -42,7 +42,7 @@ int FindStartOfALine( line *cline )
     while( isspace( cline->data[i] ) ) {
         i++;
     }
-    if( cline->data[i] == 0 ) {
+    if( cline->data[i] == '\0' ) {
         return( 1 );
     }
     return( i + 1 );
@@ -85,7 +85,7 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
 
     if( remsp ) {
         while( WorkLine->len > 0 && WorkLine->data[WorkLine->len - 1] == ' ' ) {
-            WorkLine->data[WorkLine->len - 1] = 0;
+            WorkLine->data[WorkLine->len - 1] = '\0';
             WorkLine->len--;
         }
         j = FindStartOfALine( nline ) - 1;

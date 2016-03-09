@@ -55,7 +55,7 @@ static int createLine( char *res, bool *crlf_reached )
 
                     tb = Tab( len + 1, EditVars.HardTab );
                     if( len + tb >= EditVars.MaxLine - 1 ) {
-                        *res = 0;
+                        *res = '\0';
                         buffPtr = buff;
                         return( len );
                     }
@@ -76,18 +76,18 @@ static int createLine( char *res, bool *crlf_reached )
                 }
                 if( c == CTRLZ && !EditFlags.IgnoreCtrlZ ) {
                     buffPtr = buff;
-                    *res = 0;
+                    *res = '\0';
                     return( len );
                 }
-                if( c == LF || c == 0 ) {
+                if( c == LF || c == '\0' ) {
                     buffPtr = buff + 1;
-                    *res = 0;
+                    *res = '\0';
                     return( len );
                 }
             }
         }
         if( len == EditVars.MaxLine - 1 ) {
-            *res = 0;
+            *res = '\0';
             buffPtr = buff;
             return( len );
         }
@@ -119,7 +119,7 @@ static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
     /*
      * this zero makes sure that the file will always have a termination
      */
-    ReadBuffer[cnt] = 0;
+    ReadBuffer[cnt] = '\0';
 
     for( curr = 0; curr < cnt; curr = (int)( buffPtr - ReadBuffer ) ) {
 

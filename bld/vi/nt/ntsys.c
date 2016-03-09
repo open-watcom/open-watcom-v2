@@ -55,7 +55,7 @@ int FileSysNeedsCR( int handle )
 void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldDir[0] = 0;
+    oldDir[0] = '\0';
     GetCWD2( oldDir, _MAX_PATH );
 
 } /* PushDirectory */
@@ -65,7 +65,7 @@ void PushDirectory( const char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldDir[0] != 0 ) {
+    if( oldDir[0] != '\0' ) {
         ChangeDirectory( oldDir );
     }
     ChangeDirectory( CurrentDirectory );
@@ -131,7 +131,7 @@ void ScreenInit( void )
     Scrn = malloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     ScreenPage( 0 );
 
-    tmp[0] = 0;
+    tmp[0] = '\0';
     GetConsoleTitle( tmp, sizeof( tmp ) );
     oldConTitle = DupString( tmp );
     if( !EditFlags.Quiet ) {
@@ -189,7 +189,7 @@ vi_rc ChangeDrive( int drive )
     dir[0] = drive;
     dir[1] = ':';
     dir[2] = '.';
-    dir[3] = 0;
+    dir[3] = '\0';
 
     if( !SetCurrentDirectory( dir ) ) {
         return( ERR_NO_SUCH_DRIVE );
@@ -236,7 +236,7 @@ drive_type DoGetDriveType( int drv )
     path[0] = drv;
     path[1] = ':';
     path[2] = '\\';
-    path[3] = 0;
+    path[3] = '\0';
     type = GetDriveType( path );
     if( type == DRIVE_NO_ROOT_DIR ) {
         return( DRIVE_TYPE_NONE );

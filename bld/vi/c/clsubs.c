@@ -475,7 +475,7 @@ linenum SplitUpLine( linenum cl )
                 for( j = i + 1; j <= WorkLine->len; j++ ) {
                     buff[k++] = WorkLine->data[j];
                 }
-                WorkLine->data[i] = 0;
+                WorkLine->data[i] = '\0';
                 WorkLine->len = i;
                 ReplaceCurrentLine();
                 AddNewLineAroundCurrent( buff, k - 1, INSERT_AFTER );
@@ -487,7 +487,7 @@ linenum SplitUpLine( linenum cl )
             /*
              * at the very end, undo what we did and go back
              */
-            if( WorkLine->data[i] == 0 ) {
+            if( WorkLine->data[i] == '\0' ) {
                 ReplaceCurrentLine();
                 UndoInsert( cl + 1, cl + extra, UndoStack );
                 return( extra );

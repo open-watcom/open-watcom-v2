@@ -227,7 +227,7 @@ void CloseAWindow( window_id wid )
 
     RestoreOverlap( wid, true );
     if( w->min_slot ) {
-        MinSlots[w->min_slot - 1] = 0;
+        MinSlots[w->min_slot - 1] = false;
     }
 
     FreeWindow( w );

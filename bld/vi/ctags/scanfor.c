@@ -52,7 +52,7 @@ void ScanFortran( void )
         while( isspace( *buffptr ) ) {
             buffptr++;
         }
-        if( *buffptr == 0 ) {
+        if( *buffptr == '\0' ) {
             continue;
         }
         if( !MyStricmp( &buffptr, "character" ) ||
@@ -104,7 +104,7 @@ void ScanFortran( void )
         if( i == 0 ) {
             continue;
         }
-        token[i] = 0;
+        token[i] = '\0';
         RecordCurrentLineData();
         AddTag( token );
     }

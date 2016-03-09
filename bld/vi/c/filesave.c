@@ -190,7 +190,7 @@ vi_rc SaveFile( const char *name, linenum start, linenum end, bool dammit )
         existflag = true;
         fn = name;
     }
-    if( fn[0] == 0 ) {
+    if( fn[0] == '\0' ) {
         return( ERR_NO_FILE_NAME );
     }
     if( SameFile( fn, CurrentFile->name ) ) {
@@ -384,9 +384,9 @@ bool FilePromptForSaveChanges( file *f )
     MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
-        case 0:
+        case '\0':
             // if the user hit ENTER then the buffer will be
-            // a string of 0 chars so act as if y had been hit
+            // a string of '\0' chars so act as if y had been hit
         case 'y':
         case 'Y':
             rc = SaveFile( NULL, -1, -1, false );
@@ -439,9 +439,9 @@ bool FileExitOptionSaveChanges( file *f )
     MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
-        case 0:
+        case '\0':
             // if the user hit ENTER then the buffer will be
-            // a string of 0 chars so act as if y had been hit
+            // a string of '\0' chars so act as if y had been hit
         case 'y':
         case 'Y':
             SaveAndExit( NULL );
@@ -496,7 +496,7 @@ vi_rc DoKeyboardSave( void )
     if( CurrentFile != NULL ) {
         _splitpath( CurrentFile->name, NULL, NULL, fname, NULL );
     } else {
-        fname[0] = 0;
+        fname[0] = '\0';
     }
 
     if( strcmp( fname, "untitled" ) == 0 ) {

@@ -267,11 +267,11 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     num = GetNumberOfTokens( TokensSetFlag );
     for( i = 0; i < num; i++ ) {
         str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, true ) );
-        boolstr[0] = 0;
+        boolstr[0] = '\0';
         if( str[0] == '0' ) {
             boolstr[0] = 'n';
             boolstr[1] = 'o';
-            boolstr[2] = 0;
+            boolstr[2] = '\0';
         }
         MyFprintf( f, "set %s%s\n", boolstr, token );
     }

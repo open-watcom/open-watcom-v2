@@ -663,7 +663,7 @@ static vi_rc eSearch( const char *fn, char *res )
     buff = StaticAlloc();
     while( fgets( buff, EditVars.MaxLine, f ) != NULL ) {
         for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
-            buff[i - 1] = 0;
+            buff[i - 1] = '\0';
         }
         i = RegExec( cRx, buff, true );
         if( RegExpError != ERR_NO_ERR ) {
@@ -674,7 +674,7 @@ static vi_rc eSearch( const char *fn, char *res )
             for( i = 0; i < MAX_DISP; i++ ) {
                 res[i] = buff[i];
             }
-            res[i] = 0;
+            res[i] = '\0';
             fclose( f );
             StaticFree( buff );
             return( FGREP_FOUND_STRING );
@@ -741,7 +741,7 @@ static vi_rc fSearch( const char *fn, char *r )
                         // copy the part of the string NOT in buff
                         for( ;; ) {
                             if( j == MAX_DISP || *res == CR || *res == LF || res == &context_display[MAX_DISP] ) {
-                                r[j] = 0;
+                                r[j] = '\0';
                                 break;
                             }
                             r[j++] = *res;
@@ -763,7 +763,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     // now copy the string ( all that is in buff )
                     for( ;; ) {
                         if( j == MAX_DISP || *res == CR || *res == LF || res == &buff[bytecnt] ) {
-                            r[j] = 0;
+                            r[j] = '\0';
                             break;
                         }
                         r[j++] = *res;

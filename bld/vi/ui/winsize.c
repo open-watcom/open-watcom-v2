@@ -99,8 +99,8 @@ static int getMinSlot( void )
     int i;
 
     for( i = 0; i < MAX_MIN_SLOTS; i++ ) {
-        if( MinSlots[i] == 0 ) {
-            MinSlots[i] = 1;
+        if( !MinSlots[i] ) {
+            MinSlots[i] = true;
             return( i + 1 );
         }
     }

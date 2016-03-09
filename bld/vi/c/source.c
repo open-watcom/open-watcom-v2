@@ -310,7 +310,7 @@ static vi_rc initSource( vlist *vl, const char *data )
     /*
      * break up command line parms
      */
-    all[0] = 0;
+    all[0] = '\0';
     for( j = 1; GetStringWithPossibleQuote( &data, tmp ) == ERR_NO_ERR; ++j ) {
         sprintf( name, "%d", j );
         VarAddStr( name, tmp, vl );
@@ -369,7 +369,7 @@ void FileSPVAR( void )
     if( CurrentFile == NULL ) {
         VarAddGlobalStr( "F", "" );
         VarAddGlobalStr( "H", "" );
-        drive[0] = dir[0] = fname[0] = ext[0] = 0;
+        drive[0] = dir[0] = fname[0] = ext[0] = '\0';
     } else {
         VarAddGlobalStr( "F", CurrentFile->name );
         VarAddGlobalStr( "H", CurrentFile->home );
@@ -382,7 +382,7 @@ void FileSPVAR( void )
     strcat( path, dir );
     i = strlen( path ) - 1;
     if( path[i] == FILE_SEP && i > 0 ) {
-        path[i] = 0;
+        path[i] = '\0';
     }
     if( CurrentFile != NULL ) {
         PushDirectory( path );
@@ -390,7 +390,7 @@ void FileSPVAR( void )
         GetCWD2( path, FILENAME_MAX );
         PopDirectory();
     } else {
-        path[0] = 0;
+        path[0] = '\0';
     }
     if( path[strlen(path) - 1] == FILE_SEP ) {
         StrMerge( 2, path, fname, ext );
@@ -470,7 +470,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, c
     /*
      * get compiled file name, and make error file
      */
-    if( vn[0] == 0 ) {
+    if( vn[0] == '\0' ) {
         _splitpath( fn, drive, directory, name, NULL );
         _makepath( path, drive, directory, name, "._vi" );
     } else {

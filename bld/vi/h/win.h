@@ -117,7 +117,7 @@ extern char_info    _FAR *Scrn;
 extern char_info    _FAR *ClockStart;
 extern char_info    _FAR *SpinLoc;
 extern window_id    *ScreenImage;
-extern char         MinSlots[MAX_MIN_SLOTS];
+extern bool         MinSlots[MAX_MIN_SLOTS];
 
 #endif
 

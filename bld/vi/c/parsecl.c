@@ -64,7 +64,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
      * change null command to '.'
      */
     cmdl = SkipLeadingSpaces( cmdl );
-    if( *cmdl == 0 ) {
+    if( *cmdl == '\0' ) {
         cmdl = ".";
     }
 
@@ -239,7 +239,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             }
             tmp = StaticAlloc();
             st[0] = c;
-            st[1] = 0;
+            st[1] = '\0';
             buff = GetNextWord( buff, tmp, st );
             if( c == '?' ) {
                 fl = FINDFL_BACKWARDS | FINDFL_NEXTLINE;
@@ -253,7 +253,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            if( *buff == 0 )
+            if( *buff == '\0' )
                 --buff;
             break;
         case '\'':
@@ -317,7 +317,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
          * check if a number was being scanned
          */
         if( stopnum && numinprog ) {
-            currnum[numptr] = 0;
+            currnum[numptr] = '\0';
             numptr = 0;
             numstack[nument] = atol( currnum );
             numinprog = false;
