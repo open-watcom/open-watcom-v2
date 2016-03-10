@@ -33,7 +33,7 @@ argument exceeds
 .term ENOSYS
 The value of
 .arg flags
-was non-zero.
+was non-zero or semaphores are not supported on this CPU.
 .endterm
 .error end
 .see begin

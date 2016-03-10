@@ -63,9 +63,10 @@ static int  __cmpxchg = 0;
 
 _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
 {
-    if( __cmpxchg == 0 )
-        __fatal_runtime_error( "Linux semaphore is not supported on 80386 CPU", EXIT_FAILURE );
-        
+    if( __cmpxchg == 0 ) {
+        _RWD_errno = ENOSYS;
+        return( -1 );
+    }
     if( value > SEM_VALUE_MAX ) {
         _RWD_errno = EINVAL;
         return( -1 );
