@@ -48,7 +48,7 @@ static slib_callback_t buf_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct buf_limit    *bufinfo;
-    
+
     bufinfo = (struct buf_limit *)specs->_dest;
     if( specs->_output_count < bufinfo->bufsize ) {
         *( bufinfo->bufptr++ ) = op_char;

@@ -42,10 +42,10 @@ static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 {
     INTCHAR_TYPE    c;
 
-    if( (c = *(specs->ptr)) != NULLCHAR ) {
+    if( (c = *(UCHAR_TYPE *)(specs->ptr)) != NULLCHAR ) {
         ++(specs->ptr);
     } else {
-        c = EOF;
+        c = INTCHAR_EOF;
         specs->eoinp = 1;
     }
     return( c );

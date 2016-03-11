@@ -36,7 +36,7 @@
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
-    #include <ctype.h>    
+    #include <ctype.h>
 #endif
 
 
@@ -47,17 +47,17 @@ _WCRTLINK long int __F_NAME(atol,_wtol)( const CHAR_TYPE *p )
 
     __ptr_check( p, 0 );
 
-    while( __F_NAME(isspace,iswspace)( *p ) )
+    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) )
         ++p;
     sign = *p;
-    if( sign == '+' || sign == '-' )
+    if( sign == STRING( '+' ) || sign == STRING( '-' ) )
         ++p;
     value = 0;
-    while( __F_NAME(isdigit,iswdigit)(*p) ) {
-        value = value * 10 + *p - '0';
+    while( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)*p ) ) {
+        value = value * 10 + *p - STRING( '0' );
         ++p;
     }
-    if( sign == '-' )
+    if( sign == STRING( '-' ) )
         value = - value;
     return( value );
 }

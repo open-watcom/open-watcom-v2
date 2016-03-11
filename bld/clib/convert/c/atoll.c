@@ -37,7 +37,7 @@
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
-    #include <ctype.h>    
+    #include <ctype.h>
 #endif
 
 _WCRTLINK long long int __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long int */
@@ -47,15 +47,16 @@ _WCRTLINK long long int __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert
 
     __ptr_check( p, 0 );
 
-    while( __F_NAME(isspace,iswspace)( *p ) )
+    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) )
         ++p;
     sign = *p;
-    if( sign == '+' || sign == '-' ) ++p;
-    while( __F_NAME(isdigit,iswdigit)(*p) ) {
-        value = value * 10 + *p - '0';
+    if( sign == STRING( '+' ) || sign == STRING( '-' ) )
+        ++p;
+    while( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)*p ) ) {
+        value = value * 10 + *p - STRING( '0' );
         ++p;
     }
-    if( sign == '-' )
+    if( sign == STRING( '-' ) )
         value = -value;
     return( value );
 }

@@ -55,6 +55,9 @@
 #include "d2ttime.h"
 #include "thread.h"
 
+
+#define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)( (UCHAR_TYPE)p[0] ) && p[1] == STRING( ':' ))
+
 static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
     DWORD               mode = 0L;
@@ -122,7 +125,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     if( attr & _A_SUBDIR ) {
         mode &= ~S_IFMT;
         mode |= S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
-    } else if( !(mode & S_IFCHR) && !(mode & S_IFIFO) ) {
+    } else if( (mode & S_IFCHR) == 0 && (mode & S_IFIFO) == 0 ) {
         /* name can't be a FIFO or character device and a regular file */
         mode |= S_IFREG;
         /* determine if file is executable, very PC specific */
@@ -158,9 +161,9 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 
     /* reject null string and names that has wildcard */
 #ifdef __WIDECHAR__
-    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR || wcspbrk( path, L"*?" ) != NULL ) {
 #else
-    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL ) {
 #endif
         _RWD_errno = ENOENT;
         return( -1 );
@@ -171,9 +174,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     /*** Determine if 'path' refers to a root directory ***/
     /* FindFirstFile can not be used on root directories! */
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( __F_NAME(isalpha,iswalpha)( fullpath[0] ) && fullpath[1] == STRING( ':' ) &&
-            fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -209,22 +210,22 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 #else
     if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) ) {
 #endif
-        buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
+        buf->st_dev = (CHAR_TYPE)__F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
-        buf->st_dev = __F_NAME(tolower,towlower)( cwd[0] ) - STRING( 'a' );
+        buf->st_dev = (CHAR_TYPE)__F_NAME(tolower,towlower)( (UCHAR_TYPE)cwd[0] ) - STRING( 'a' );
     }
     buf->st_rdev = buf->st_dev;
 
-    #ifdef __INT64__
+#ifdef __INT64__
     {
         INT_TYPE        tmp;
 
         MAKE_INT64(tmp,ffb.nFileSizeHigh,ffb.nFileSizeLow);
         buf->st_size = GET_REALINT64(tmp);
     }
-    #else
-        buf->st_size = ffb.nFileSizeLow;
-    #endif
+#else
+    buf->st_size = ffb.nFileSizeLow;
+#endif
     buf->st_mode = at2mode( ffb.dwFileAttributes, ffb.cFileName, path );
     __MakeDOSDT( &ffb.ftLastWriteTime, &md, &mt );
     buf->st_mtime = _d2ttime( md, mt );

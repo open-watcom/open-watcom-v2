@@ -121,7 +121,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(ltoa,_ltow)( long value, CHAR_TYPE *buffer, int ra
 
     if( radix == 10 ) {
         if( value < 0 ) {
-            *p++ = '-';
+            *p++ = STRING( '-' );
             value = - value;
         }
     }

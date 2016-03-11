@@ -62,6 +62,12 @@
 #define PASCAL_STRING           STRING( 'S' )       /* for Novell */
 #define WIDE_CHAR_STRING        STRING( 'S' )
 
+#ifdef __WIDECHAR__
+    #define TO_UNI(c)   (c)
+#else
+    #define TO_UNI(c)   ((unsigned char)c)
+#endif
+
 #if defined( __QNX_386__ )
     /* for use in QNX 32-bit shared library */
     #pragma aux __prtf "_sl_*" far;
@@ -79,8 +85,10 @@ extern FAR_STRING EFG_PRINTF( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB
 
 #if defined( __WIDECHAR__ )
     #define _FAR_OTHER_STRING             FAR_ASCII_STRING
+    #define _OTHER_NULLCHAR               '\0'
 #else
     #define _FAR_OTHER_STRING             FAR_UNI_STRING
+    #define _OTHER_NULLCHAR               L'\0'
 #endif
 
 
@@ -89,24 +97,20 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *, SPECS __SLIB * );
 static FAR_STRING formstring( CHAR_TYPE *, my_va_list *, SPECS __SLIB *, CHAR_TYPE * );
 static const CHAR_TYPE * getprintspecs( const CHAR_TYPE *, my_va_list *, SPECS __SLIB * );
 #ifdef USE_MBCS_TRANSLATION
-static void write_wide_string( FAR_UNI_STRING str, SPECS *specs,
-                               slib_callback_t *out_putc );
-static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
-                                 slib_callback_t *out_putc );
+static void write_wide_string( FAR_UNI_STRING str, SPECS *specs, slib_callback_t *out_putc );
+static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, slib_callback_t *out_putc );
 #endif
 
 #ifdef SAFE_PRINTF
-    int __F_NAME(__prtf_s,__wprtf_s)
+int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
 #else
-    int __F_NAME(__prtf,__wprtf)
+int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )
 #endif
-                            ( void __SLIB *dest,    /* parm for use by out_putc */
-                        const CHAR_TYPE *format,    /* pointer to format string */
-                        va_list args,               /* pointer to pointer to args*/
-#ifdef SAFE_PRINTF
-                        const char **msg,           /* rt-constraint message */
-#endif
-                        slib_callback_t *out_putc ) /* char output routine */
+/* dest         parm for use by out_putc    */
+/* format       pointer to format string    */
+/* args         pointer to pointer to args  */
+/* msg          rt-constraint message       */
+/* out_putc     char output routine         */
 {
     CHAR_TYPE           buffer[ BUF_SIZE ];
     CHAR_TYPE           null_char = NULLCHAR;
@@ -134,7 +138,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 
             specs._character = *ctl++;
             if( specs._character == NULLCHAR )
-                break;        /* 05-jan-89 */
+                break;
 
             if( specs._character == STRING( 'n' ) ) {
 #ifdef SAFE_PRINTF
@@ -228,7 +232,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                 if( !(specs._flags & SPF_LEFT_ADJUST) ) {
                     if( specs._pad_char == STRING( ' ' ) ) {
                         while( specs._fld_width > 0 ) {
-                            (out_putc)( &specs, ' ' );
+                            (out_putc)( &specs, STRING( ' ' ) );
                             --specs._fld_width;
                         }
                     }
@@ -240,7 +244,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                     --specs._n0;
                 }
                 while( specs._nz0 > 0 ) {
-                    (out_putc)( &specs, '0' );
+                    (out_putc)( &specs, STRING( '0' ) );
                     --specs._nz0;
                 }
                 if( specs._character == STRING( 's' ) ) {
@@ -275,7 +279,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                     }
                 }
                 while( specs._nz1 > 0 ) {
-                    (out_putc)( &specs, '0' );
+                    (out_putc)( &specs, STRING( '0' ) );
                     --specs._nz1;
                 }
                 while( specs._n2 > 0 ) {
@@ -284,12 +288,12 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                     --specs._n2;
                 }
                 while( specs._nz2 > 0 ) {
-                    (out_putc)( &specs, '0' );
+                    (out_putc)( &specs, STRING( '0' ) );
                     --specs._nz2;
                 }
                 if( specs._flags & SPF_LEFT_ADJUST ) {
                     while( specs._fld_width > 0 ) {
-                        (out_putc)( &specs, ' ' );
+                        (out_putc)( &specs, STRING( ' ' ) );
                         --specs._fld_width;
                     }
                 }
@@ -315,7 +319,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         ctl++;
     } else {
         while(( *ctl >= STRING( '0' ) ) && ( *ctl <= STRING( '9' ) )) {
-            specs->_fld_width = specs->_fld_width * 10 + ( *ctl++ - '0' );
+            specs->_fld_width = specs->_fld_width * 10 + ( TO_ASCII( *ctl++ ) - '0' );
         }
     }
     specs->_prec = -1;
@@ -325,11 +329,11 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         if( *ctl == STRING( '*' ) ) {
             specs->_prec = va_arg( pargs->v, int );
             if( specs->_prec < 0 )
-                specs->_prec = -1;    /* 19-jul-90 */
+                specs->_prec = -1;
             ctl++;
         } else {
             while(( *ctl >= STRING( '0' ) ) && ( *ctl <= STRING( '9' ) )) {
-                specs->_prec = specs->_prec * 10 + ( *ctl++ - '0' );
+                specs->_prec = specs->_prec * 10 + ( TO_ASCII( *ctl++ ) - '0' );
             }
         }
         /*
@@ -391,7 +395,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         break;
     case STRING( 'N' ):                   /* 8086 specific flag for NEAR pointer */
         specs->_flags |= SPF_NEAR;
-        ctl++;                                                                                                                                                                                                                      
+        ctl++;
         break;
 #if defined( TSPEC_IS_INT ) || defined( ZSPEC_IS_INT )
     TSPEC_CASE_INT      /* If either STRING( 't' ) or STRING( 'z' ) spec corresponds to 'int',  */
@@ -457,13 +461,12 @@ static int far_other_strlen( FAR_STRING s, int precision )
 #else
     int                 len = 0;
     _FAR_OTHER_STRING   ptr = (_FAR_OTHER_STRING)s;
-
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+  #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
     char                mbBuf[MB_CUR_MAX];
     int                 chBytes;
 
     if( precision == -1 ) {
-        while( *ptr ) {
+        while( *ptr != _OTHER_NULLCHAR ) {
             chBytes = wctomb( mbBuf, *ptr++ );
             if( chBytes != -1 ) {
                 len += chBytes;
@@ -471,37 +474,34 @@ static int far_other_strlen( FAR_STRING s, int precision )
         }
         return( len );
     }
-    while( *ptr && ( len <= precision )) {
+    while( *ptr != _OTHER_NULLCHAR && ( len <= precision )) {
         chBytes = wctomb( mbBuf, *ptr++ );
         if( chBytes != -1 ) {
             len += chBytes;
         }
     }
     return(( len <= precision ) ? len : precision );
-
-#else
-
-    while( *ptr++ && ( len != precision ))
+  #else
+    while( *ptr++ != _OTHER_NULLCHAR && ( len != precision ))
         ++len;
 
     return( len );
-#endif
+  #endif
 #endif
 }
 
 static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 {
-    int     i, len;
+    int         i, len;
+    CHAR_TYPE   buffer[10];
 
-    __F_NAME(itoa,_itow)( value, buf, 16 );
-    len = __F_NAME(strlen,wcslen)( buf );
-    for( i = maxlen - 1; len; --i ) {
-        --len;
-        buf[i] = buf[len];
+    __F_NAME(itoa,_itow)( value, buffer, 16 );
+    len = __F_NAME(strlen,wcslen)( buffer );
+    for( i = maxlen; i-- > 0 && len-- > 0; ) {
+        buf[i] = buffer[len];
     }
-    while( i >= 0 ) {
+    while( i-- > 0 ) {
         buf[i] = STRING( '0' );
-        --i;
     }
     buf[maxlen] = NULLCHAR;
 }
@@ -595,8 +595,8 @@ static void float_format( CHAR_TYPE *buffer, my_va_list *pargs, SPECS __SLIB *sp
     mbSpecs._nz1 = specs->_nz1;
     mbSpecs._n2 = specs->_n2;
     mbSpecs._nz2 = specs->_nz2;
-    mbSpecs._character = (char)specs->_character;
-    mbSpecs._pad_char = (char)specs->_pad_char;
+    mbSpecs._character = TO_ASCII( specs->_character );
+    mbSpecs._pad_char = TO_ASCII( specs->_pad_char );
 #endif
 
 #ifdef __WIDECHAR__
@@ -630,8 +630,8 @@ static void float_format( CHAR_TYPE *buffer, my_va_list *pargs, SPECS __SLIB *sp
     specs->_nz1 = mbSpecs._nz1;
     specs->_n2 = mbSpecs._n2;
     specs->_nz2 = mbSpecs._nz2;
-    specs->_character = (wchar_t) mbSpecs._character;
-    specs->_pad_char = (wchar_t) mbSpecs._pad_char;
+    specs->_character = TO_UNI( mbSpecs._character );
+    specs->_pad_char = TO_UNI( mbSpecs._pad_char );
 #endif
 }
 
@@ -1011,10 +1011,9 @@ processNumericTypes:
         if( specs->_flags & SPF_FAR ) {
             seg_value = va_arg( pargs->v, unsigned ) & 0xFFFF; /* segment */
             /* use "unsigned short" for 386 instead of "unsigned" 21-jul-89 */
-            fmt4hex( seg_value, buffer, sizeof( unsigned short ) * 2 );
-            buffer[sizeof(unsigned short)*2] = ':';
-            fmt4hex( int_value, buffer + sizeof( unsigned short ) * 2 + 1,
-                       sizeof( unsigned ) * 2 );
+            fmt4hex( seg_value, buffer, 4 );
+            buffer[4] = STRING( ':' );
+            fmt4hex( int_value, buffer + 4 + 1, sizeof( unsigned ) * 2 );
         } else {
             fmt4hex( int_value, buffer, sizeof( unsigned ) * 2 );
         }

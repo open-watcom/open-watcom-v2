@@ -59,20 +59,20 @@ static unsigned long nearly_overflowing[] = {
     ULONG_MAX / 34, ULONG_MAX / 35, ULONG_MAX / 36
 };
 
-#define hexstr(p) (p[0] == '0' && (p[1] == 'x' || p[1] == 'X'))
+#define hexstr(p) (p[0] == STRING( '0' ) && (p[1] == STRING( 'x' ) || p[1] == STRING( 'X' )))
 
 
 static int radix_value( CHAR_TYPE c )
 {
-    if( c >= '0'  &&  c <= '9' )
-        return( c - '0' );
-    c = __F_NAME(tolower,towlower)(c);
-    if( c >= 'a'  &&  c <= 'i' )
-        return( c - 'a' + 10 );
-    if( c >= 'j'  &&  c <= 'r' )
-        return( c - 'j' + 19 );
-    if( c >= 's'  &&  c <= 'z' )
-        return( c - 's' + 28 );
+    if( c >= STRING( '0' ) &&  c <= STRING( '9' ) )
+        return( c - STRING( '0' ) );
+    c = __F_NAME(tolower,towlower)( (UCHAR_TYPE)c );
+    if( c >= STRING( 'a' ) &&  c <= STRING( 'i' ) )
+        return( c - STRING( 'a' ) + 10 );
+    if( c >= STRING( 'j' ) &&  c <= STRING( 'r' ) )
+        return( c - STRING( 'j' ) + 19 );
+    if( c >= STRING( 's' ) &&  c <= STRING( 'z' ) )
+        return( c - STRING( 's' ) + 28 );
     return( 37 );
 }
 
@@ -91,26 +91,28 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)nptr;
     p = nptr;
-    while( __F_NAME(isspace,iswspace)(*p) )
+    while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p) )
         ++p;
     sign = *p;
-    if( sign == '+' || sign == '-' )
+    if( sign == STRING( '+' ) || sign == STRING( '-' ) )
         ++p;
     if( base == 0 ) {
-        if( hexstr(p) )
+        if( hexstr( p ) ) {
             base = 16;
-        else if( *p == '0' )
+        } else if( *p == STRING( '0' ) ) {
             base = 8;
-        else
+        } else {
             base = 10;
+        }
     }
-    if( base < 2  ||  base > 36 ) {
+    if( base < 2 || base > 36 ) {
         _RWD_errno = EDOM;
         return( 0 );
     }
     if( base == 16 ) {
-        if( hexstr(p) )
+        if( hexstr( p ) ) {
             p += 2;    /* skip over '0x' */
+        }
     }
     startp = p;
     overflow = 0;
@@ -119,7 +121,7 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
         digit = radix_value( *p );
         if( digit >= base )
             break;
-        if( value > nearly_overflowing[base-2] )
+        if( value > nearly_overflowing[base - 2] )
             overflow = 1;
         prev_value = value;
         value = value * base + digit;
@@ -133,7 +135,7 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
         *endptr = (CHAR_TYPE *)p;
     if( who == 1 ) {
         if( value >= 0x80000000 ) {
-            if( value == 0x80000000  &&  sign == '-' ) {
+            if( value == 0x80000000 && sign == STRING( '-' ) ) {
                 ;  /* OK */
             } else {
                 overflow = 1;
@@ -142,11 +144,13 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
     }
     if( overflow ) {
         _RWD_errno = ERANGE;
-        if( who == 0 )     return( ULONG_MAX );
-        if( sign == '-' )  return( LONG_MIN );
+        if( who == 0 )
+            return( ULONG_MAX );
+        if( sign == STRING( '-' ) )
+            return( LONG_MIN );
         return( LONG_MAX );
     }
-    if( sign == '-' )
+    if( sign == STRING( '-' ) )
         value = - value;
     return( value );
 }

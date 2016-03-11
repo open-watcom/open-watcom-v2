@@ -42,8 +42,8 @@ static void convDec( int num, int off, CHAR_TYPE *buf )
     div_t        tens_units;
 
     tens_units   = div( num, 10 );
-    buf[off]     = ( CHAR_TYPE ) ( tens_units.quot + '0' );
-    buf[off + 1] = ( CHAR_TYPE ) ( tens_units.rem + '0' );
+    buf[off]     = tens_units.quot + STRING( '0' );
+    buf[off + 1] = tens_units.rem + STRING( '0' );
 }
 
 
@@ -95,7 +95,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME( _asctime, __wasctime ) ( const struct tm *tm, CHA
 _WCRTLINK CHAR_TYPE *__F_NAME( asctime, _wasctime ) ( const struct tm *tm )
 {
     _INITRESULT;
-    return( __F_NAME( _asctime, __wasctime ) ( tm, ( CHAR_TYPE* ) _RWD_asctime ) );
+    return( __F_NAME( _asctime, __wasctime ) ( tm, ( CHAR_TYPE* )_RWD_asctime ) );
 }
 
 

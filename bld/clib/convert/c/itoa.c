@@ -108,7 +108,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(itoa,_itow)( int value, CHAR_TYPE *buffer, int rad
 
     if( radix == 10 ) {
         if( value < 0 ) {
-            *p++ = '-';
+            *p++ = STRING( '-' );
             value = - value;
         }
     }

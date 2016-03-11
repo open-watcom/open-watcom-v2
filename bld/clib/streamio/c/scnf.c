@@ -64,13 +64,11 @@
 #define FALSE   0
 
 #ifdef __WIDECHAR__
-    #define TO_SBCS(c)  ((char)(c))
     #define TO_UNI(c)   (c)
 #else
-    #define TO_SBCS(c)  (c)
     #define TO_UNI(c)   ((unsigned char)c)
 #endif
-#define PTR_SBCS(p)     ((FAR_ASCII_STRING)(p))
+#define PTR_ASCII(p)     ((FAR_ASCII_STRING)(p))
 #define PTR_UNI(p)      ((FAR_UNI_STRING)(p))
 
 #define EFG_SCANF (*__EFG_scanf)
@@ -140,8 +138,7 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
     if( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)c ) ) {
         width = 0;
         do {
-            width *= 10;
-            width += ( TO_SBCS( c ) - '0' );
+            width = width * 10 + ( c - STRING( '0' ) );
             c = *++opt_str;
         } while( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)c ) );
         specs->width = width;
@@ -276,12 +273,12 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 char        mbBuf[MB_CUR_MAX];
 
                 if( wctomb( mbBuf, c ) != -1 ) {
-                    *PTR_SBCS( str ) = mbBuf[0];
-                    str = (FAR_STRING)( PTR_SBCS( str ) + 1 );
+                    *PTR_ASCII( str ) = mbBuf[0];
+                    str = (FAR_STRING)( PTR_ASCII( str ) + 1 );
                     if( _ismbblead( mbBuf[0] ) )  {
                         CHECK_ELEMS( maxelem, nelem, -1 );
-                        *PTR_SBCS( str ) = mbBuf[1];
-                        str = (FAR_STRING)( PTR_SBCS( str ) + 1 );
+                        *PTR_ASCII( str ) = mbBuf[1];
+                        str = (FAR_STRING)( PTR_ASCII( str ) + 1 );
                     }
                 } else {
                     return( 0 );
@@ -406,7 +403,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                 // target is SBCS
                 // wide + SBCS
                 // SBCS <- SBCS or SBCS <- UNI
-                *str++ = TO_SBCS( c );
+                *str++ = TO_ASCII( c );
 #endif
             } else {
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
@@ -444,7 +441,7 @@ done:
         if( chsize == 1 ) {
             *str = '\0';
         } else {
-            *PTR_UNI( str ) = 0;
+            *PTR_UNI( str ) = L'\0';
         }
     }
     return( len );
@@ -517,7 +514,8 @@ static int scan_arb( PTR_SCNF_SPECS specs, my_va_list *arg, const CHAR_TYPE **fo
 {
     unsigned            width;
     FAR_STRING          str;
-    int                 len, c, not_flag;
+    int                 len, not_flag;
+    INTCHAR_TYPE        c;
 #if defined( __WIDECHAR__ )
     const CHAR_TYPE     *list;
     CHAR_TYPE           ch;
@@ -623,7 +621,7 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
     if( specs->width-- == 0 )
         goto ugdone;
     if( c == STRING( '+' ) || c == STRING( '-' ) ) {
-        *num_str++ = TO_SBCS( c );
+        *num_str++ = TO_ASCII( c );
         ++pref_len;
         if( (c = cgetw( specs )) == INTCHAR_EOF ) {
             goto done;
@@ -636,9 +634,9 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
     if( __F_NAME(isdigit,iswdigit)( c ) ) {
         digit_found = TRUE;
         do {
-            *num_str++ = TO_SBCS( c );
+            *num_str++ = TO_ASCII( c );
             if( specs->short_var )
-                at.wd.hi = at.wd.hi * 10 + TO_SBCS( c ) - '0';
+                at.wd.hi = at.wd.hi * 10 + c - STRING( '0' );
             ++len;
             if( (c = cgetw( specs )) == INTCHAR_EOF ) {
                 goto done;
@@ -646,14 +644,14 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
         } while( __F_NAME(isdigit,iswdigit)( c ) );
     }
     if( c == STRING( '.' ) ) {
-        *num_str++ = TO_SBCS( c );
+        *num_str++ = TO_ASCII( c );
         ++len;              /* account for the '.' */
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
         if( !digit_found && !__F_NAME(isdigit,iswdigit)(c) )
             goto ugdone;
         while( __F_NAME(isdigit,iswdigit)( c ) ) {
-            *num_str++ = TO_SBCS( c );
+            *num_str++ = TO_ASCII( c );
             ++len;
             if( (c = cgetw( specs )) == INTCHAR_EOF ) {
                 break;
@@ -676,12 +674,12 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
         }
     }
     if( specs->short_var == 0  &&  (c == STRING( 'e' ) || c == STRING( 'E' )) ) {
-        *num_str++ = TO_SBCS( c );
+        *num_str++ = TO_ASCII( c );
         ++len;
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
         if( c == STRING( '+' ) || c == STRING( '-' ) ) {
-            *num_str++ = TO_SBCS( c );
+            *num_str++ = TO_ASCII( c );
             ++len;
             if( (c = cgetw( specs )) == INTCHAR_EOF ) {
                 goto done;
@@ -691,7 +689,7 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
             len = 0;                /* fast way to flag error */
         } else {
             do {
-                *num_str++ = TO_SBCS( c );
+                *num_str++ = TO_ASCII( c );
                 ++len;
                 if( (c = cgetw( specs )) == INTCHAR_EOF ) {
                     goto done;
@@ -741,10 +739,10 @@ done:
 static int radix_value( INTCHAR_TYPE c )
 {
     if( c >= STRING( '0' ) && c <= STRING( '9' ) )
-        return( TO_SBCS( c ) - '0' );
+        return( c - STRING( '0' ) );
     c = __F_NAME(tolower,towlower)( c );
     if( c >= STRING( 'a' ) && c <= STRING( 'f' ) )
-        return( TO_SBCS( c ) - 'a' + 10 );
+        return( c - STRING( 'a' ) + 10 );
     return( 16 );
 }
 
@@ -758,7 +756,7 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
     int                 len;
     int                 pref_len;
     INTCHAR_TYPE        c;
-    char                sign;
+    CHAR_TYPE           sign;
     int                 digit;
     FAR_INT             iptr;
 #if defined( __LONG_LONG_SUPPORT__ )
@@ -780,9 +778,9 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
         goto done;
     if( specs->width-- == 0 )
         goto ugdone;
-    sign = '+';
+    sign = STRING( '+' );
     if( sign_flag && (c == STRING( '+' ) || c == STRING( '-' )) ) {
-        sign = TO_SBCS( c );
+        sign = c;
         ++pref_len;
         if( (c = cgetw( specs )) == INTCHAR_EOF ) {
             goto done;
@@ -874,7 +872,7 @@ ugdone:
 done:
 #if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
-        if( sign == '-' ) {
+        if( sign == STRING( '-' ) ) {
             long_value =- long_value;
         }
         if( len > 0 ) {
@@ -897,7 +895,7 @@ done:
     } else
 #endif
     {
-        if( sign == '-' ) {
+        if( sign == STRING( '-' ) ) {
             value = -value;
         }
         if( len > 0 ) {

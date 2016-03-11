@@ -62,7 +62,7 @@
 #endif
 #include "thread.h"
 
-#define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)(x[0]) && x[1]==STRING(':'))
+#define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)((UCHAR_TYPE)x[0]) && x[1]==STRING(':'))
 #define ALL_ATTRIB      (_A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH)
 
 #ifdef __INT64__
@@ -148,9 +148,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) &&
-            fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -238,7 +236,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
 
     /* process drive number */
     if( HAS_DRIVE( path ) ) {
-        buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
+        buf->st_dev = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
         buf->st_dev = TinyGetCurrDrive();
     }

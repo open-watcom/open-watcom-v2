@@ -56,6 +56,8 @@
 #include "find.h"
 
 
+#define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)( (UCHAR_TYPE)p[0] ) && p[1] == STRING( ':' ))
+
 static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     register unsigned short mode;
@@ -107,9 +109,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( __F_NAME(isalpha,iswalpha)( fullpath[0] )  &&  fullpath[1] == STRING( ':' ) &&
-            fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -126,7 +126,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         int             drv;
 
         /* check if drive letter is valid */
-        drv = __F_NAME(tolower,towlower)( *fullpath ) - STRING( 'a' );
+        drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
         if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
             _RWD_errno = ENOENT;
@@ -215,7 +215,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 #else
     if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) ) {
 #endif
-        buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
+        buf->st_dev = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
         DosQCurDisk( &drive, &drvmap );
         buf->st_dev = drive - 1;
