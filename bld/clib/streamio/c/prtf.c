@@ -84,15 +84,6 @@ extern FAR_STRING EFG_PRINTF( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB
 #endif
 
 
-#if defined( __WINDOWS_386__ )
-    #ifdef __SW_3S
-        #pragma aux slib_callback_t modify [eax edx ecx fs gs];
-    #else
-        #pragma aux slib_callback_t modify [fs gs];
-    #endif
-#endif
-
-
 /* forward references */
 static const CHAR_TYPE *evalflags( const CHAR_TYPE *, SPECS __SLIB * );
 static FAR_STRING formstring( CHAR_TYPE *, my_va_list *, SPECS __SLIB *, CHAR_TYPE * );
