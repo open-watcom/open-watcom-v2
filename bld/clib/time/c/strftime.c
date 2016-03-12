@@ -105,7 +105,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
     amt_left = maxsize;
     save_format = NULL;
     for( ;; ) {
-        p = ( char * ) buffer;
+        p = (char *)buffer;
         if( *format == NULLCHAR ) {
             if( save_format == NULL )
                 break;
@@ -118,7 +118,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
             buffer[1] = NULLCHAR;
         } else {
             ++format;
-            if( (*format == STRING( 'E' )) || (*format == NULLCHAR) ) {
+            if( (*format == STRING( 'E' )) || (*format == STRING( 'O' )) ) {
                 ++format;                      /* ignore E and O modifier */
                 if( *format == NULLCHAR ) {    /* end of formatstring? */
                     break;
@@ -126,14 +126,14 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
             }
             switch( *format ) {
             case STRING( 'a' ):                         /* locale's abbreviated weekday name */
-                p = &awday_name[timeptr->tm_wday * 4];
+                p = awday_name + timeptr->tm_wday * 4;
                 break;
             case STRING( 'A' ):                         /* locale's full weekday name */
                 p = wday_name[timeptr->tm_wday];
                 break;
             case STRING( 'b' ):                         /* locale's abbreviated month name */
             case STRING( 'h' ):
-                p = &amon_name[timeptr->tm_mon * 4];
+                p = amon_name + timeptr->tm_mon * 4;
                 break;
             case STRING( 'B' ):                         /* locale's full month name */
                 p = mon_name[timeptr->tm_mon];
@@ -155,7 +155,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 continue;
 #endif
             case STRING( 'C' ):                         /* century  (00-99) */
-                TwoDigits( buffer, (timeptr->tm_year + 1900) / 100 );
+                TwoDigits( buffer, ( timeptr->tm_year + 1900 ) / 100 );
                 break;
             case STRING( 'd' ):                         /* day of the month (01-31) */
                 TwoDigits( buffer, timeptr->tm_mday );
@@ -174,8 +174,8 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
 #endif
             case STRING( 'e' ):                         /* day of the month ( 1-31) */
                 TwoDigits( buffer, timeptr->tm_mday );
-                if( *buffer == '0' ) {
-                    *buffer = ' ';
+                if( *buffer == STRING( '0' ) ) {
+                    *buffer = STRING( ' ' );
                 }
                 break;
             case STRING( 'F' ):                         /* ISO 8601 date format  */
@@ -184,14 +184,11 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 continue;
             case STRING( 'g' ):                         /* ISO Week-based year   yy */
             case STRING( 'G' ):                         /* ISO Week-based year yyyy */
-                iso_wday_jan01 = ( 8 + ( 6 + timeptr->tm_wday ) % 7
-                                   - timeptr->tm_yday % 7
-                                 ) % 7;
+                iso_wday_jan01 = ( 8 + ( 6 + timeptr->tm_wday ) % 7 - timeptr->tm_yday % 7 ) % 7;
                 if( iso_wday_jan01 == 0 ) {
                     iso_wday_jan01 = 7; /* 1=mon, ... 7=sun */
                 }
-                isoweek = ( 6 + timeptr->tm_yday - ( 6 + timeptr->tm_wday ) % 7
-                          ) / 7 + ( 8 - iso_wday_jan01 ) / 4;
+                isoweek = ( 6 + timeptr->tm_yday - ( 6 + timeptr->tm_wday ) % 7 ) / 7 + ( 8 - iso_wday_jan01 ) / 4;
                 if( isoweek == 0 ) {    /* belongs to previous year */
                     isoyear = timeptr->tm_year + 1899;
                 } else {
@@ -203,7 +200,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                         isoyear = timeptr->tm_year + 1900;
                     }
                 }
-                if( *format == 'g' ) {
+                if( *format == STRING( 'g' ) ) {
                     TwoDigits( buffer, isoyear % 100 );
                 } else {
                     __F_NAME(itoa,_itow)( isoyear, buffer, 10 );
@@ -217,7 +214,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 if( hour > 12 )
                     hour -= 12;
                 if( hour == 0 )
-                    hour = 12;                 /* 24-sep-90 */
+                    hour = 12;
                 TwoDigits( buffer, hour );
                 break;
             case STRING( 'j' ):                         /* day of the year (001-366) */
@@ -225,7 +222,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 __F_NAME(itoa,_itow)( timeptr->tm_yday + 101, buffer, 10 );
                 buffer[0]--;
                 // itoa( timeptr->tm_yday + 1001, buffer, 10 );
-                // p = &buffer[1];         /* only want last 3 digits */
+                // p = buffer + 1;     /* only want last 3 digits */
                 break;
             case STRING( 'm' ):                         /* month (01-12) */
                 TwoDigits( buffer, timeptr->tm_mon + 1 );
@@ -249,7 +246,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 sprintf( buffer, "%.2d:%.2d:%.2d PM", hour, timeptr->tm_min,
                           timeptr->tm_sec );
                 if( timeptr->tm_hour < 12 )
-                    buffer[9] = 'A';
+                    buffer[9] = STRING( 'A' );
                 break;
 #else
                 save_format = format;
@@ -267,24 +264,18 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 p = "\t";
                 break;
             case STRING( 'u' ):                         /* ISO weekday (1-7) Monday = 1,  Sunday = 7 */
-                buffer[0] = timeptr->tm_wday ?
-                                (CHAR_TYPE)( timeptr->tm_wday + '0' ) :
-                                (CHAR_TYPE)( '7' );
-                buffer[1] = '\0';
+                buffer[0] = timeptr->tm_wday ? timeptr->tm_wday + STRING( '0' ) : STRING( '7' );
+                buffer[1] = NULLCHAR;
                 break;
             case STRING( 'U' ):   /* week number of the year (00-53) Sun first day */
-                TwoDigits( buffer, ( timeptr->tm_yday
-                                + 7 - timeptr->tm_wday ) / 7 );
+                TwoDigits( buffer, ( timeptr->tm_yday + 7 - timeptr->tm_wday ) / 7 );
                 break;
             case STRING( 'V' ):                         /* ISO week number Week 1 includes Jan 4th */
-                iso_wday_jan01 = ( 8 + ( 6 + timeptr->tm_wday ) % 7
-                                   - timeptr->tm_yday % 7
-                                 ) % 7;
+                iso_wday_jan01 = ( 8 + ( 6 + timeptr->tm_wday ) % 7 - timeptr->tm_yday % 7 ) % 7;
                 if( iso_wday_jan01 == 0 ) {
                     iso_wday_jan01 = 7; /* 1=mon, ... 7=sun */
-                  }
-                isoweek = ( 6 + timeptr->tm_yday  - ( 6 + timeptr->tm_wday ) % 7
-                          ) / 7 + ( 8 - iso_wday_jan01 ) / 4;
+                }
+                isoweek = ( 6 + timeptr->tm_yday - ( 6 + timeptr->tm_wday ) % 7 ) / 7 + ( 8 - iso_wday_jan01 ) / 4;
                 if( isoweek == 0 ) {    /* belongs to last week of previous year */
 
                     /* if isoweek is zero, date is Jan 1 to 3, and weekday is Fri to Sun */
@@ -307,18 +298,17 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                 TwoDigits( buffer, isoweek );
                 break;
             case STRING( 'w' ):   /* weekday (0-6) Sunday=0 */
-                buffer[0] = (CHAR_TYPE)( timeptr->tm_wday + '0' );
-                buffer[1] = '\0';
+                buffer[0] = timeptr->tm_wday + STRING( '0' );
+                buffer[1] = NULLCHAR;
                 break;
             case STRING( 'W' ):  /* week number of the year (00-53) Mon first day */
-                TwoDigits( buffer, ( timeptr->tm_yday
-                                + 7 - (timeptr->tm_wday + 6) % 7 ) / 7 );
+                TwoDigits( buffer, ( timeptr->tm_yday + 7 - ( timeptr->tm_wday + 6 ) % 7 ) / 7 );
                 break;
             case STRING( 'x' ):   /* locale's appropriate date representation */
 #if 0
                 sprintf( buffer, "%.3s %.3s %.2d, %d",
-                          &awday_name[timeptr->tm_wday * 4],
-                          &amon_name[timeptr->tm_mon * 4],
+                          awday_name + timeptr->tm_wday * 4,
+                          amon_name + timeptr->tm_mon * 4,
                           timeptr->tm_mday,
                           1900 + timeptr->tm_year );
                 break;
@@ -346,19 +336,19 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
             case STRING( 'Y' ):   /* year with century */
                 __F_NAME(itoa,_itow)( timeptr->tm_year + 1900, buffer, 10 );
                 break;
-            case STRING( 'z' ):                         /* timezone offset from UTC */
-            /* OW  has TZ positive offsets for zones WEST of Greenwich,
+            case STRING( 'z' ):   /* timezone offset from UTC */
+                /* OW  has TZ positive offsets for zones WEST of Greenwich,
                   ISO has positive offsets for zones EAST of Grenwich */
-                tzset(); /* get time zone settings */
+                tzset();          /* get time zone settings */
                 if( timeptr->tm_isdst == -1 ) {
-                    buffer[ 0 ] = '\0';        /* timezone unknown */
+                    buffer[0] = NULLCHAR;        /* timezone unknown */
                 } else {
-                    iso_timezone =  _RWD_timezone;
+                    iso_timezone = _RWD_timezone;
                     if( iso_timezone > 0 ) {
-                        buffer[ 0 ] = ( CHAR_TYPE ) ( '-' );
+                        buffer[0] = STRING( '-' );
                     } else {
                         iso_timezone = - _RWD_timezone;
-                        buffer[ 0 ] = ( CHAR_TYPE ) ( '+' );
+                        buffer[0] = STRING( '+' );
                     }
 #if 0
                     /* what about DST ????? C99 standard does not mention it */
@@ -366,15 +356,15 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                         iso_timezone += _RWD_dst_adjust;
                     }
 #endif
-                    TwoDigits( &buffer[1], (iso_timezone / 3600) );    /* hours */
-                    TwoDigits( &buffer[3], (iso_timezone / 60) % 60 ); /* minutes */
+                    TwoDigits( buffer + 1, iso_timezone / 3600 );        /* hours */
+                    TwoDigits( buffer + 3, ( iso_timezone / 60 ) % 60 ); /* minutes */
                 }
                 break;
             case STRING( 'Z' ):   /* time zone name */
                 tzset(); /* get time zone settings */
                 p = _RWD_tzname[timeptr->tm_isdst];
-                break;   /* 31-oct-90 */
-            case STRING( '%'  ):
+                break;
+            case STRING( '%' ):
             default  :
                 buffer[0] = *format;
                 buffer[1] = NULLCHAR;
@@ -385,7 +375,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
         if( p != (char *)buffer ) {
             /*** Convert the MBCS string to wide chars in buffer ***/
             if( mbstowcs( buffer, p, sizeof( buffer ) / sizeof( wchar_t ) ) == (size_t)-1 )
-                buffer[0] = L'\0';
+                buffer[0] = NULLCHAR;
             p = (const char *)buffer;
         }
 #endif
@@ -393,7 +383,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
         piece = __F_NAME(strlen,wcslen)( (const CHAR_TYPE *)p );
         if( piece > amt_left )
             piece = amt_left;
-        memcpy( &s[len], (const CHAR_TYPE *)p, piece * CHARSIZE );
+        memcpy( s + len, (const CHAR_TYPE *)p, piece * CHARSIZE );
         amt_left -= piece;
         len += piece;
     }
@@ -408,8 +398,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
 
 #undef strlen
 
-_WCRTLINK size_t _wstrftime_ms( CHAR_TYPE *s, size_t maxsize, const char *format,
-                  const struct tm *timeptr )
+_WCRTLINK size_t _wstrftime_ms( CHAR_TYPE *s, size_t maxsize, const char *format, const struct tm *timeptr )
 {
     wchar_t     *auto_buf;
     int         length;
