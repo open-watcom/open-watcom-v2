@@ -38,25 +38,33 @@
 #else
     #include <ctype.h>
 #endif
+#include "bool.h"
+
 
 _WCRTLINK int __F_NAME(atoi,_wtoi)( const CHAR_TYPE *p )  /* convert ASCII string to integer */
 {
     int             value;
-    CHAR_TYPE       sign;
+    bool            minus;
 
     __ptr_check( p, 0 );
 
     while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) )
         ++p;
-    sign = *p;
-    if( sign == STRING( '+' ) || sign == STRING( '-' ) )
+    minus = false;
+    switch( *p ) {
+    case STRING( '-' ):
+        minus = true;
+        // fall down
+    case STRING( '+' ):
         ++p;
+        break;
+    }
     value = 0;
     while( __F_NAME(isdigit,iswdigit)( (UCHAR_TYPE)*p ) ) {
         value = value * 10 + *p - STRING( '0' );
         ++p;
     }
-    if( sign == STRING( '-' ) )
+    if( minus )
         value = - value;
     return( value );
 }

@@ -62,12 +62,6 @@
 #define PASCAL_STRING           STRING( 'S' )       /* for Novell */
 #define WIDE_CHAR_STRING        STRING( 'S' )
 
-#ifdef __WIDECHAR__
-    #define TO_UNI(c)   (c)
-#else
-    #define TO_UNI(c)   ((unsigned char)c)
-#endif
-
 #if defined( __QNX_386__ )
     /* for use in QNX 32-bit shared library */
     #pragma aux __prtf "_sl_*" far;
@@ -84,11 +78,13 @@ extern FAR_STRING EFG_PRINTF( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB
 
 
 #if defined( __WIDECHAR__ )
-    #define _FAR_OTHER_STRING             FAR_ASCII_STRING
-    #define _OTHER_NULLCHAR               '\0'
+    #define _OTHER_FAR_STRING           FAR_ASCII_STRING
+    #define _OTHER_NULLCHAR             '\0'
+    #define _OTHER_TO_WIDE(c)           ((unsigned char)c)
 #else
-    #define _FAR_OTHER_STRING             FAR_UNI_STRING
-    #define _OTHER_NULLCHAR               L'\0'
+    #define _OTHER_FAR_STRING           FAR_WIDE_STRING
+    #define _OTHER_NULLCHAR             L'\0'
+    #define _OTHER_TO_WIDE(c)           (c)
 #endif
 
 
@@ -97,7 +93,7 @@ static const CHAR_TYPE *evalflags( const CHAR_TYPE *, SPECS __SLIB * );
 static FAR_STRING formstring( CHAR_TYPE *, my_va_list *, SPECS __SLIB *, CHAR_TYPE * );
 static const CHAR_TYPE * getprintspecs( const CHAR_TYPE *, my_va_list *, SPECS __SLIB * );
 #ifdef USE_MBCS_TRANSLATION
-static void write_wide_string( FAR_UNI_STRING str, SPECS *specs, slib_callback_t *out_putc );
+static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs, slib_callback_t *out_putc );
 static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, slib_callback_t *out_putc );
 #endif
 
@@ -254,7 +250,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                     } else
 #elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_LONG ) {
-                        write_wide_string( (FAR_UNI_STRING)arg, &specs, out_putc );
+                        write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                     } else
 #endif
                     {
@@ -266,7 +262,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                 }
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
                 else if( specs._character == WIDE_CHAR_STRING ) {
-                    write_wide_string( (FAR_UNI_STRING)arg, &specs, out_putc );
+                    write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                 } else
 #elif !defined( __WIDECHAR__ ) && defined( __NETWARE__ )
                 else if( specs._character == WIDE_CHAR_STRING ) {
@@ -319,7 +315,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         ctl++;
     } else {
         while(( *ctl >= STRING( '0' ) ) && ( *ctl <= STRING( '9' ) )) {
-            specs->_fld_width = specs->_fld_width * 10 + ( TO_ASCII( *ctl++ ) - '0' );
+            specs->_fld_width = specs->_fld_width * 10 + ( *ctl++ - STRING( '0' ) );
         }
     }
     specs->_prec = -1;
@@ -333,7 +329,7 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
             ctl++;
         } else {
             while(( *ctl >= STRING( '0' ) ) && ( *ctl <= STRING( '9' ) )) {
-                specs->_prec = specs->_prec * 10 + ( TO_ASCII( *ctl++ ) - '0' );
+                specs->_prec = specs->_prec * 10 + ( *ctl++ - STRING( '0' ) );
             }
         }
         /*
@@ -450,8 +446,8 @@ static int far_strlen( FAR_STRING s, int precision )
 /*
  * far_other_strlen - calculates the length of an ascii string
  *                    for the unicode version
- *                  - calculates the length of a unicode string for
- *                    the standard version
+ *                  - calculates the length of a unicode string
+ *                    for the ascii version
  */
 
 static int far_other_strlen( FAR_STRING s, int precision )
@@ -460,7 +456,7 @@ static int far_other_strlen( FAR_STRING s, int precision )
     return( 0 );  // RDOS doesn't support unicode
 #else
     int                 len = 0;
-    _FAR_OTHER_STRING   ptr = (_FAR_OTHER_STRING)s;
+    _OTHER_FAR_STRING   ptr = (_OTHER_FAR_STRING)s;
   #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
     char                mbBuf[MB_CUR_MAX];
     int                 chBytes;
@@ -630,8 +626,8 @@ static void float_format( CHAR_TYPE *buffer, my_va_list *pargs, SPECS __SLIB *sp
     specs->_nz1 = mbSpecs._nz1;
     specs->_n2 = mbSpecs._n2;
     specs->_nz2 = mbSpecs._nz2;
-    specs->_character = TO_UNI( mbSpecs._character );
-    specs->_pad_char = TO_UNI( mbSpecs._pad_char );
+    specs->_character = _OTHER_TO_WIDE( mbSpecs._character );
+    specs->_pad_char = _OTHER_TO_WIDE( mbSpecs._pad_char );
 #endif
 }
 
@@ -652,7 +648,7 @@ static void SetZeroPad( SPECS __SLIB *specs )
 
 
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-static void write_wide_string( FAR_UNI_STRING str, SPECS *specs,
+static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
                                slib_callback_t *out_putc )
 {
     int     bytes;
@@ -867,8 +863,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
             if( specs->_flags & SPF_LONG )
 #endif
             {
-                length = *( (_FAR_OTHER_STRING)arg );
-                arg = (FAR_STRING)( (_FAR_OTHER_STRING)arg + 1 );
+                length = *( (_OTHER_FAR_STRING)arg );
+                arg = (FAR_STRING)( (_OTHER_FAR_STRING)arg + 1 );
             } else {
                 length = *arg++;
             }

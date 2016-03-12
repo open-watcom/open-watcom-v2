@@ -64,12 +64,12 @@
 #define FALSE   0
 
 #ifdef __WIDECHAR__
-    #define TO_UNI(c)   (c)
+    #define TO_WIDE(c)  (c)
 #else
-    #define TO_UNI(c)   ((unsigned char)c)
+    #define TO_WIDE(c)  ((unsigned char)c)
 #endif
-#define PTR_ASCII(p)     ((FAR_ASCII_STRING)(p))
-#define PTR_UNI(p)      ((FAR_UNI_STRING)(p))
+#define PTR_ASCII(p)    ((FAR_ASCII_STRING)(p))
+#define PTR_WIDE(p)     ((FAR_WIDE_STRING)(p))
 
 #define EFG_SCANF (*__EFG_scanf)
 
@@ -268,8 +268,8 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
             CHECK_ELEMS( maxelem, nelem, -1 );
 #if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
             if( specs->short_var ) {
-                // target is MBCS and src is UNI
-                // MBCS <- UNI
+                // target is MBCS and source is WIDE
+                // MBCS <- WIDE
                 char        mbBuf[MB_CUR_MAX];
 
                 if( wctomb( mbBuf, c ) != -1 ) {
@@ -284,14 +284,14 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                     return( 0 );
                 }
             } else {
-                // target and src are UNI
-                // UNI <- UNI
+                // target and source are WIDE
+                // WIDE <- WIDE
                 *str++ = c;
             }
 #elif defined( USE_MBCS_TRANSLATION )
             if( specs->long_var ) {
-                // target is UNI and src is MBCS
-                // UNI <- MBCS
+                // target is WIDE and source is MBCS
+                // WIDE <- MBCS
                 wchar_t     wc;
                 char        mbBuf[MB_CUR_MAX];
 
@@ -299,19 +299,19 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 if( _ismbblead( mbBuf[0] ) )
                     mbBuf[1] = cget( specs );
                 if( mbtowc( &wc, mbBuf, MB_CUR_MAX ) != -1 ) {
-                    *PTR_UNI( str ) = wc;
-                    str = (FAR_STRING)( PTR_UNI( str ) + 1 );
+                    *PTR_WIDE( str ) = wc;
+                    str = (FAR_STRING)( PTR_WIDE( str ) + 1 );
                 } else {
                     return( 0 );
                 }
             } else {
-                // target and src are SBCS
+                // target and source are SBCS
                 // SBCS <- SBCS
                 *str++ = c;
             }
 #else
-            // target and src are same
-            // SBCS <- SBCS or UNI <- UNI
+            // target and source are same
+            // SBCS <- SBCS or WIDE <- WIDE
             *str++ = c;
 #endif
         }
@@ -386,8 +386,8 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
             CHECK_ELEMS( maxelem, nelem, -1 );
             if( chsize == 1 ) {
 #if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-                // target is SBCS
-                // wide
+                // target is MBCS and source is WIDE
+                // WIDE <- MBCS
                 char        mbBuf[MB_CUR_MAX];
 
                 if( wctomb( mbBuf, c ) != -1 ) {
@@ -400,15 +400,14 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                     return( 0 );
                 }
 #else
-                // target is SBCS
-                // wide + SBCS
-                // SBCS <- SBCS or SBCS <- UNI
+                // target is SBCS and source is WIDE or SBCS
+                // SBCS <- SBCS or SBCS <- WIDE
                 *str++ = TO_ASCII( c );
 #endif
             } else {
 #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
-                // target is UNI
-                // SBCS
+                // target is WIDE and source is MBCS
+                // WIDE <- MBCS
                 wchar_t     wc;
                 char        mbBuf[MB_CUR_MAX];
 
@@ -416,16 +415,16 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                 if( _ismbblead( mbBuf[0] ) )
                     mbBuf[1] = cget( specs );
                 if( mbtowc( &wc, mbBuf, MB_CUR_MAX ) != -1 ) {
-                    *PTR_UNI( str ) = wc;
-                    str = (FAR_ASCII_STRING)( PTR_UNI( str ) + 1 );
+                    *PTR_WIDE( str ) = wc;
+                    str = (FAR_ASCII_STRING)( PTR_WIDE( str ) + 1 );
                 } else {
                     return( 0 );
                 }
 #else
-                // target is UNI
-                // wide + SBCS
-                *PTR_UNI( str ) = TO_UNI( c );
-                str = (FAR_ASCII_STRING)( PTR_UNI( str ) + 1 );
+                // target is WIDE and source is WIDE or SBCS
+                // WIDE <- WIDE or WIDE <- SBCS
+                *PTR_WIDE( str ) = TO_WIDE( c );
+                str = (FAR_ASCII_STRING)( PTR_WIDE( str ) + 1 );
 #endif
             }
         }
@@ -441,7 +440,7 @@ done:
         if( chsize == 1 ) {
             *str = '\0';
         } else {
-            *PTR_UNI( str ) = L'\0';
+            *PTR_WIDE( str ) = L'\0';
         }
     }
     return( len );
@@ -644,7 +643,7 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
         } while( __F_NAME(isdigit,iswdigit)( c ) );
     }
     if( c == STRING( '.' ) ) {
-        *num_str++ = TO_ASCII( c );
+        *num_str++ = '.';
         ++len;              /* account for the '.' */
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
@@ -756,7 +755,7 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
     int                 len;
     int                 pref_len;
     INTCHAR_TYPE        c;
-    CHAR_TYPE           sign;
+    int                 minus;
     int                 digit;
     FAR_INT             iptr;
 #if defined( __LONG_LONG_SUPPORT__ )
@@ -778,12 +777,18 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
         goto done;
     if( specs->width-- == 0 )
         goto ugdone;
-    sign = STRING( '+' );
-    if( sign_flag && (c == STRING( '+' ) || c == STRING( '-' )) ) {
-        sign = c;
-        ++pref_len;
-        if( (c = cgetw( specs )) == INTCHAR_EOF ) {
-            goto done;
+    minus = FALSE;
+    if( sign_flag ) {
+        switch( c ) {
+        case STRING( '-' ):
+            minus = TRUE;
+            // fall down
+        case STRING( '+' ):
+            ++pref_len;
+            if( (c = cgetw( specs )) == INTCHAR_EOF ) {
+                goto done;
+            }
+            break;
         }
     }
     if( base == 0 ) {
@@ -872,7 +877,7 @@ ugdone:
 done:
 #if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
-        if( sign == STRING( '-' ) ) {
+        if( minus ) {
             long_value =- long_value;
         }
         if( len > 0 ) {
@@ -895,7 +900,7 @@ done:
     } else
 #endif
     {
-        if( sign == STRING( '-' ) ) {
+        if( minus ) {
             value = -value;
         }
         if( len > 0 ) {

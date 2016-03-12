@@ -47,6 +47,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
+#include "bool.h"
 #include "rtdata.h"
 #include "liballoc.h"
 #include "osver.h"
@@ -174,7 +175,7 @@ static int spawn_it( FILE *fp, const CHAR_TYPE *command )
 /* Returns non-zero on success */
 
 static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
-                         CHAR_TYPE readOrWrite, CHAR_TYPE textOrBinary )
+                         bool readOrWrite, bool textOrBinary )
 /************************************************************************/
 {
 #if defined( __NT__ )
@@ -191,7 +192,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     HFILE               oldHandle;
 #endif
 
-    if( readOrWrite == 'w' ) {
+    if( !readOrWrite ) {
         /*** Change the standard input handle for process inheritance ***/
 #if defined( __NT__ )
         osHandle = GetStdHandle( STD_INPUT_HANDLE );        /* get old */
@@ -289,39 +290,39 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
 #endif
     FILE *              fp;
     int                 handles[2];
-    CHAR_TYPE           textOrBinary;
-    CHAR_TYPE           readOrWrite;
+    bool                textOrBinary;
+    bool                readOrWrite;
 
 
     /*** Parse the mode string ***/
     switch( mode[0] ) {         /* read or write */
     case STRING( 'r' ):
-        readOrWrite = STRING( 'r' );
+        readOrWrite = true;
         break;
     case STRING( 'w' ):
-        readOrWrite = STRING( 'w' );
+        readOrWrite = false;
         break;
     default:
         return( NULL );
     }
     switch( mode[1] ) {         /* text or binary */
     case STRING( 't' ):
-        textOrBinary = STRING( 't' );
+        textOrBinary = true;
         break;
     case STRING( 'b' ):
-        textOrBinary = STRING( 'b' );
+        textOrBinary = false;
         break;
     default:
-        textOrBinary = ( _RWD_fmode == _O_BINARY ) ? STRING( 'b' ) : STRING( 't' );
+        textOrBinary = ( _RWD_fmode != _O_BINARY );
     }
 
     /*** Create the pipe at the OS level ***/
-    if( _pipe( handles, 0, ( textOrBinary == STRING( 't' ) ) ? _O_TEXT : _O_BINARY ) == -1 ) {
+    if( _pipe( handles, 0, (textOrBinary ? _O_TEXT : _O_BINARY) ) == -1 ) {
         return( NULL );
     }
 
     /*** Make read handle non-inheritable if reading ***/
-    if( readOrWrite == STRING( 'r' ) ) {
+    if( readOrWrite ) {
 #if defined( __NT__ )
         rc = DuplicateHandle( GetCurrentProcess(),
                               (HANDLE)_os_handle(handles[0]),
@@ -331,7 +332,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
         close( handles[0] );        /* don't need this any more */
-        handleMode = _O_RDONLY  |  (( textOrBinary == STRING( 't' ) ) ? _O_TEXT : _O_BINARY);
+        handleMode = _O_RDONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
         handles[0] = _hdopen( (int)osHandle, handleMode );
         if( handles[0] == -1 ) {
             CloseHandle( osHandle );
@@ -363,7 +364,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
         close( handles[1] );        /* don't need this any more */
-        handleMode = _O_WRONLY | (( textOrBinary == STRING( 't' ) ) ? _O_TEXT : _O_BINARY);
+        handleMode = _O_WRONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
         handles[1] = _hdopen( (int)osHandle, handleMode );
         if( handles[1] == -1 ) {
             CloseHandle( osHandle );
@@ -385,7 +386,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     }
 
     /*** Create the pipe's FILE* ***/
-    fp = __F_NAME(fdopen,_wfdopen)( handles[(readOrWrite == STRING( 'r' )) ? 0 : 1], mode );
+    fp = __F_NAME(fdopen,_wfdopen)( handles[(readOrWrite ? 0 : 1)], mode );
     if( fp == NULL ) {
         close( handles[0] );
         close( handles[1] );

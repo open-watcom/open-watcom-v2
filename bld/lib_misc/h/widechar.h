@@ -42,14 +42,13 @@
     #define CHAR_TYPE           wchar_t
     #define UCHAR_TYPE          wchar_t
     #define INTCHAR_TYPE        wint_t
+    #define UINTCHAR_TYPE       wint_t
     #define INT_WC_TYPE         wchar_t
     #define UINT_WC_TYPE        wchar_t
     #define VOID_WC_TYPE        wchar_t
     #define NULLCHAR            0
     #define STRING(a)           L##a
     #define _AToUni(p1,p2)      _atouni(p1,p2)
-    #define IS_ASCII(c)         ( (c & 0xff00) == 0 )
-    #define TO_ASCII(c)         ( c )
     #define __F_NAME(n1,n2)     n2
     #define INTCHAR_EOF         WEOF
 #else
@@ -57,17 +56,19 @@
     #define CHAR_TYPE           char
     #define UCHAR_TYPE          unsigned char
     #define INTCHAR_TYPE        int
+    #define UINTCHAR_TYPE       unsigned
     #define INT_WC_TYPE         int
     #define UINT_WC_TYPE        unsigned
     #define VOID_WC_TYPE        void
     #define NULLCHAR            '\0'
     #define STRING(a)           a
     #define _AToUni(p1,p2)      (p2)
-    #define IS_ASCII(c)         ( 1 )
-    #define TO_ASCII(c)         ( (unsigned char)c )
     #define __F_NAME(n1,n2)     n1
     #define INTCHAR_EOF         EOF
 #endif
+
+#define IS_ASCII(c)             (((c) & ~0xff) == 0)
+#define TO_ASCII(c)             ((unsigned char)(c))
 #define CHARSIZE                (sizeof( CHAR_TYPE ))
 
 #endif

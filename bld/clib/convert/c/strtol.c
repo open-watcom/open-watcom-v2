@@ -39,6 +39,7 @@
     #include <ctype.h>
 #endif
 #include <limits.h>
+#include "bool.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "thread.h"
@@ -77,15 +78,15 @@ static int radix_value( CHAR_TYPE c )
 }
 
 
-static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int base,int who)
+static unsigned long int _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
     const CHAR_TYPE         *p;
     const CHAR_TYPE         *startp;
     int                     digit;
     unsigned long int       value;
     unsigned long int       prev_value;
-    CHAR_TYPE               sign;
-    char                    overflow;   /*overflow is used as a flag so it does not
+    bool                    minus;
+    bool                    overflow;   /*overflow is used as a flag so it does not
                                          *need to be of type CHAR_TYPE */
 
     if( endptr != NULL )
@@ -93,9 +94,15 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
     p = nptr;
     while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p) )
         ++p;
-    sign = *p;
-    if( sign == STRING( '+' ) || sign == STRING( '-' ) )
+    minus = false;
+    switch( *p ) {
+    case STRING( '-' ):
+        minus = true;
+        // fall down
+    case STRING( '+' ):
         ++p;
+        break;
+    }
     if( base == 0 ) {
         if( hexstr( p ) ) {
             base = 16;
@@ -115,42 +122,42 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
         }
     }
     startp = p;
-    overflow = 0;
+    overflow = false;
     value = 0;
     for( ;; ) {
         digit = radix_value( *p );
         if( digit >= base )
             break;
         if( value > nearly_overflowing[base - 2] )
-            overflow = 1;
+            overflow = true;
         prev_value = value;
         value = value * base + digit;
         if( value < prev_value )
-            overflow = 1;
+            overflow = true;
         ++p;
     }
     if( p == startp )
         p = nptr;
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)p;
-    if( who == 1 ) {
+    if( who ) {
         if( value >= 0x80000000 ) {
-            if( value == 0x80000000 && sign == STRING( '-' ) ) {
+            if( value == 0x80000000 && minus ) {
                 ;  /* OK */
             } else {
-                overflow = 1;
+                overflow = true;
             }
         }
     }
     if( overflow ) {
         _RWD_errno = ERANGE;
-        if( who == 0 )
+        if( !who )
             return( ULONG_MAX );
-        if( sign == STRING( '-' ) )
+        if( minus )
             return( LONG_MIN );
         return( LONG_MAX );
     }
-    if( sign == STRING( '-' ) )
+    if( minus )
         value = - value;
     return( value );
 }
@@ -158,11 +165,11 @@ static unsigned long int _stol( const CHAR_TYPE *nptr,CHAR_TYPE **endptr,int bas
 
 _WCRTLINK unsigned long int __F_NAME(strtoul,wcstoul)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
-    return( _stol( nptr, endptr, base, 0 ) );
+    return( _stol( nptr, endptr, base, false ) );
 }
 
 
 _WCRTLINK long int __F_NAME(strtol,wcstol)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
-    return( _stol( nptr, endptr, base, 1 ) );
+    return( _stol( nptr, endptr, base, true ) );
 }
