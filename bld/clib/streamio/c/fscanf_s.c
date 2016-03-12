@@ -73,7 +73,7 @@ _WCRTLINK int __F_NAME(fscanf_s,fwscanf_s)( FILE * __restrict stream,
         _AccessFile( stream );
 
         /*** Deal with stream orientation ***/
-        ORIENT_STREAM(stream,0);
+        ORIENT_STREAM( stream, 0 );
 
         specs.ptr        = (CHAR_TYPE *)stream;
         specs.cget_rtn   = cget_file;

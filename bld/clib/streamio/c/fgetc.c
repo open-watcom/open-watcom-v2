@@ -55,7 +55,7 @@
 
 int __fill_buffer( FILE *fp )
 {
-    if( _FP_BASE(fp) == NULL ) {
+    if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );
     }
     if( fp->_flag & _ISTTY ) {                      /* 20-aug-90 */
@@ -64,7 +64,7 @@ int __fill_buffer( FILE *fp )
         }
     }
     fp->_flag &= ~_UNGET;                           /* 10-mar-90 */
-    fp->_ptr = _FP_BASE(fp);
+    fp->_ptr = _FP_BASE( fp );
 #ifdef __UNIX__
     fp->_cnt = __qread( fileno( fp ), fp->_ptr,
         (fp->_flag & _IONBF) ? 1 : fp->_bufsize );
@@ -115,7 +115,7 @@ _WCRTLINK int fgetc( FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,EOF);
+    ORIENT_STREAM( fp, EOF );
 
     if( (fp->_flag & _READ) == 0 ) {
         _RWD_errno = EBADF;
@@ -197,7 +197,7 @@ _WCRTLINK wint_t fgetwc( FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,WEOF);
+    ORIENT_STREAM( fp, WEOF );
 
     /*** Read the character ***/
     if( !__read_wide_char( fp, &c ) ) {

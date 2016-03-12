@@ -47,7 +47,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )
         && c != STRING( '\n' ) ) {
         *cs++ = c;
     }
-    if( c == INTCHAR_EOF  &&  (cs == s || ferror( stdin )) ) {
+    if( c == INTCHAR_EOF && (cs == s || ferror( stdin )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;

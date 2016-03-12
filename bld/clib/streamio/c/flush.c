@@ -63,8 +63,8 @@ _WCRTLINK int __flush( FILE *fp )
     _AccessFile( fp );
     if( fp->_flag & _DIRTY ) {
         fp->_flag &= ~_DIRTY;
-        if( (fp->_flag & _WRITE) && (_FP_BASE(fp) != NULL) ) {
-            ptr = _FP_BASE(fp);
+        if( (fp->_flag & _WRITE) && (_FP_BASE( fp ) != NULL) ) {
+            ptr = _FP_BASE( fp );
             amount = fp->_cnt;
             while( amount != 0 && ret == 0 ) {
                 len = __qwrite( fileno( fp ), ptr, amount );    /* 02-aug-90 */
@@ -83,8 +83,8 @@ _WCRTLINK int __flush( FILE *fp )
                 amount -= len;
             }
         }
-    } else if( _FP_BASE(fp) != NULL ) {         /* not dirty */
-        /* fseek( fp, ftell(fp), SEEK_SET ); */
+    } else if( _FP_BASE( fp ) != NULL ) {         /* not dirty */
+        /* fseek( fp, ftell( fp ), SEEK_SET ); */
         fp->_flag &= ~_EOF;
         if( !(fp->_flag & _ISTTY) ) {
             offset = fp->_cnt;
@@ -97,7 +97,7 @@ _WCRTLINK int __flush( FILE *fp )
             }
         }
     }
-    fp->_ptr = _FP_BASE(fp);   /* reset ptr to start of buffer */
+    fp->_ptr = _FP_BASE( fp );   /* reset ptr to start of buffer */
     fp->_cnt = 0;
 #if !defined( __NETWARE__ ) && !defined( __OSI__ )
     if( ret == 0  &&  (_FP_EXTFLAGS(fp) & _COMMIT) ) {

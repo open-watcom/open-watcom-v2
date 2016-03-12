@@ -50,7 +50,7 @@ static int __update_buffer( long diff, FILE *fp )
       if diff is within the buffer update the pointers and return 0
       otherwise update the pointers and return 1
     */
-    if( diff <= fp->_cnt  &&  diff >= (_FP_BASE(fp) - fp->_ptr) ) {
+    if( diff <= fp->_cnt  &&  diff >= (_FP_BASE( fp ) - fp->_ptr) ) {
         fp->_flag &= ~(_EOF);
         fp->_ptr += diff;
         fp->_cnt -= diff;
@@ -67,7 +67,7 @@ static int __update_buffer( long diff, FILE *fp )
 static void __reset_buffer( FILE *fp )
 {
     fp->_flag &= ~(_EOF);
-    fp->_ptr = _FP_BASE(fp);
+    fp->_ptr = _FP_BASE( fp );
     fp->_cnt = 0;
 }
 
@@ -107,7 +107,7 @@ _WCRTLINK int fseek( FILE *fp, long offset, int origin )
             if( origin == SEEK_CUR ) {
                 offset -= fp->_cnt;
             }
-            fp->_ptr = _FP_BASE(fp);
+            fp->_ptr = _FP_BASE( fp );
             fp->_cnt = 0;
         }
         fp->_flag &= ~(_EOF|_UNGET);

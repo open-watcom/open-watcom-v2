@@ -64,7 +64,7 @@ _WCRTLINK int __F_NAME(vfscanf,vfwscanf)( FILE *io, const CHAR_TYPE *format, va_
     _AccessFile( io );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(io,0);
+    ORIENT_STREAM( io, 0 );
 
     specs.ptr = (CHAR_TYPE *)io;
     specs.cget_rtn = cget_file;

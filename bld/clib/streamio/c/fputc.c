@@ -55,7 +55,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,EOF);
+    ORIENT_STREAM( fp, EOF );
 
     if( !(fp->_flag & _WRITE) ) {
         _RWD_errno = EBADF;
@@ -63,7 +63,7 @@ _WCRTLINK int fputc( int c, FILE *fp )
         _ReleaseFile( fp );
         return( EOF );
     }
-    if( _FP_BASE(fp) == NULL ) {
+    if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );
     }
     flags = _IONBF;
@@ -130,7 +130,7 @@ _WCRTLINK wint_t fputwc( wint_t c, FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,WEOF);
+    ORIENT_STREAM( fp, WEOF );
 
     /*** Write the character ***/
     if( !__write_wide_char( fp, c ) ) {

@@ -244,7 +244,7 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
 #if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
     _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
 #endif
-    _FP_BASE(fp) = NULL;
+    _FP_BASE( fp ) = NULL;
     if( file_flags & _APPEND ) {
         fseek( fp, 0L, SEEK_END );
     }

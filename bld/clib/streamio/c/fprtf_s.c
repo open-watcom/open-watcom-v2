@@ -73,12 +73,12 @@ int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
         _AccessFile( stream );
 
         /*** Deal with stream orientation ***/
-        ORIENT_STREAM(stream,0);
+        ORIENT_STREAM( stream, 0 );
 
         oflag = stream->_flag & (_SFERR | _EOF);
         stream->_flag &= ~(_SFERR | _EOF);
 
-        if( _FP_BASE(stream) == NULL ) {
+        if( _FP_BASE( stream ) == NULL ) {
             __ioalloc( stream );            /* allocate buffer */
         }
         not_buffered = 0;

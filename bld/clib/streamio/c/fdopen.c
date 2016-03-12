@@ -122,7 +122,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         fp->_flag &= ~(_READ | _WRITE); /* 2-dec-90 */
         fp->_flag |= flags;
         fp->_cnt = 0;
-        _FP_BASE(fp) = NULL;
+        _FP_BASE( fp ) = NULL;
         fp->_bufsize = 0;                   /* was BUFSIZ JBS 91/05/31 */
 #ifndef __NETWARE__
         _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */

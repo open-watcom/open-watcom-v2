@@ -64,7 +64,7 @@ _WCRTLINK int setvbuf( FILE *fp, char *buf, int mode, size_t size )
     if( size != 0 ) {
         fp->_bufsize = size;                        /* JBS 27-aug-90 */
     }
-    _FP_BASE(fp) = (unsigned char *)buf;
+    _FP_BASE( fp ) = (unsigned char *)buf;
     fp->_ptr = (unsigned char *)buf;
     fp->_flag &= ~(_IONBF | _IOLBF | _IOFBF);       /* FWC 14-jul-87 */
     fp->_flag |= mode;

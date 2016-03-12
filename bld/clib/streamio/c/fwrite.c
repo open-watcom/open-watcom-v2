@@ -60,7 +60,7 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
         _ReleaseFile( fp );
         return( n );
     }
-    if( _FP_BASE(fp) == NULL ) {
+    if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );                    /* allocate buffer */
     }
     oflag = fp->_flag & (_SFERR | _EOF);    /* JBS 27-jan-92 */

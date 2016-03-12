@@ -123,7 +123,7 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
         ptr += 2;
     if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
-        int             drv;
+        int     drv;
 
         /* check if drive letter is valid */
         drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );

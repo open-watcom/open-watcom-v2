@@ -554,7 +554,7 @@ static void FixedPoint_Format( CHAR_TYPE *buf, long value, SPECS __SLIB *specs )
                 --buf;
 
             if( *buf != STRING( '9' ) ) {
-                ++ *buf;
+                ++*buf;
                 break;
             }
             *buf = STRING( '0' );

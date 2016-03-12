@@ -48,7 +48,7 @@ _WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
     _ValidFile( fp, INTCHAR_EOF );
     _AccessFile( fp );
 
-    if( _FP_BASE(fp) == NULL ) {
+    if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );                /* allocate buffer */
     }
     not_buffered = 0;

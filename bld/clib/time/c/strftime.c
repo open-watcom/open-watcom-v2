@@ -282,7 +282,7 @@ _WCRTLINK size_t __F_NAME(strftime,wcsftime)( CHAR_TYPE *s, size_t maxsize,
                     /* calculate last week number of previous year ( 52 or 53 ) */
 
                     if( (iso_wday_jan01 == 7) ||
-                        ( (iso_wday_jan01 == 6 ) && !__leapyear( (unsigned) timeptr->tm_year + 1899 ) ) ) {
+                        ( (iso_wday_jan01 == 6 ) && !__leapyear( (unsigned)timeptr->tm_year + 1899 ) ) ) {
                         isoweek= 52; /* if dec 31 is sat, week 52 */
                                      /* if dec 31 is fri, week 52 if no leapyear */
                     } else {

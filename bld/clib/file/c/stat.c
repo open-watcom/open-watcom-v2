@@ -236,7 +236,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
 
     /* process drive number */
     if( HAS_DRIVE( path ) ) {
-        buf->st_dev = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
+        buf->st_dev = (CHAR_TYPE)__F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
         buf->st_dev = TinyGetCurrDrive();
     }

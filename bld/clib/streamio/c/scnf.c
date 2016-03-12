@@ -573,7 +573,7 @@ static int scan_arb( PTR_SCNF_SPECS specs, my_va_list *arg, const CHAR_TYPE **fo
 #endif
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
-            *str++ = c;
+            *str++ = (CHAR_TYPE)c;
         }
         ++len;
     }
@@ -606,7 +606,7 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
     T32             at;
     T32             ft;
 
-    // check and convert float number string (wide, DBCS and SBCS) to SBCS string
+    // check and convert float number string (WIDE, MBCS and SBCS) to SBCS string
     num_str = buf;
     pref_len = len = 0;
     for( ;; ) {
@@ -647,7 +647,7 @@ static int scan_float( PTR_SCNF_SPECS specs, my_va_list *arg )
         ++len;              /* account for the '.' */
         if( (c = cgetw( specs )) == INTCHAR_EOF )
             goto done;
-        if( !digit_found && !__F_NAME(isdigit,iswdigit)(c) )
+        if( !digit_found && !__F_NAME(isdigit,iswdigit)( c ) )
             goto ugdone;
         while( __F_NAME(isdigit,iswdigit)( c ) ) {
             *num_str++ = TO_ASCII( c );
