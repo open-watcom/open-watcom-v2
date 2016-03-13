@@ -41,12 +41,15 @@ _WCRTLINK int memicmp( const void *in_s1, const void *in_s2, size_t len )
         unsigned char           c1;
         unsigned char           c2;
 
-        for( ; len; --len )  {
+        for( ; len > 0; --len )  {
             c1 = *s1;
             c2 = *s2;
-            if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
-            if( c2 >= 'A'  &&  c2 <= 'Z' )  c2 += 'a' - 'A';
-            if( c1 != c2 ) return( c1 - c2 );
+            if( c1 >= 'A' && c1 <= 'Z' )
+                c1 += 'a' - 'A';
+            if( c2 >= 'A' && c2 <= 'Z' )
+                c2 += 'a' - 'A';
+            if( c1 != c2 )
+                return( c1 - c2 );
             ++s1;
             ++s2;
         }

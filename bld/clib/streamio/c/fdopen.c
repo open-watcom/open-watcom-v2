@@ -132,7 +132,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         _FP_PIPEDATA(fp).isPipe = 0;    /* not a pipe */
 #endif
         fp->_handle = handle;               /* BJS 91-07-23 */
-        if( __F_NAME(tolower,towlower)( *access_mode ) == 'a' ) {
+        if( __F_NAME(tolower,towlower)( (UCHAR_TYPE)*access_mode ) == STRING( 'a' ) ) {
             fseek( fp, 0, SEEK_END );
         }
         __chktty( fp );                     /* JBS 31-may-91 */

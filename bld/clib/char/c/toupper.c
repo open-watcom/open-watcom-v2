@@ -39,7 +39,7 @@
 _WCRTLINK INTCHAR_TYPE __F_NAME(toupper,towupper)( INTCHAR_TYPE c )
 {
     if( c >= 'a' && c <= 'z' ) {
-        c = c - 'a' + 'A';
+        c -= STRING( 'a' ) - STRING( 'A' );
     }
     return( c );
 }

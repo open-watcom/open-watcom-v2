@@ -40,21 +40,19 @@ _WCRTLINK int _fstrnicmp( const char _WCFAR *s, const char _WCFAR *t, size_t n )
     unsigned char   c1;
     unsigned char   c2;
 
-    for( ;; ) {
-        if( n == 0 )
-            return( 0 );       /* equal */
+    for( ; n > 0; --n ) {
         c1 = *s;
-        if( c1 >= 'A'  &&  c1 <= 'Z' )
+        if( c1 >= 'A' && c1 <= 'Z' )
             c1 += 'a' - 'A';
         c2 = *t;
-        if( c2 >= 'A'  &&  c2 <= 'Z' )
+        if( c2 >= 'A' && c2 <= 'Z' )
             c2 += 'a' - 'A';
         if( c1 != c2 )
             return( c1 - c2 ); /* less than or greater than */
         if( c1 == '\0' )
-            return( 0 );       /* equal */
+            break;      /* equal */
         ++s;
         ++t;
-        --n;
     }
+    return( 0 );        /* equal */
 }

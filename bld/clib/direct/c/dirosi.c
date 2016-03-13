@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
 #define __OS2__
 #include <stdlib.h>
@@ -43,26 +42,27 @@
 #include "msdos.h"
 #include "_direct.h"
 #include "strdup.h"
+#include "pathmac.h"
 
 #define SEEK_ATTRIB (TIO_HIDDEN | TIO_SYSTEM | TIO_SUBDIRECTORY)
 
 static  int     is_directory( const char *name )
 /**********************************************/
 {
-    if( name[0] == '\0' )
+    if( name[0] == NULLCHAR )
         return( 0 );
-    while( name[1] != '\0' ){
+    while( name[1] != NULLCHAR ) {
         if( name[0] == '*' || name[0] == '?' ) {
             /* with wildcards must be file */
             return( -1 );
         }
         ++name;
     }
-    if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
+    if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ) {
         /* directory, need add "*.*" */
         return( 2 );
     }
-    if( prev_ch == '.' ){
+    if( prev_ch == '.' ) {
         /* directory, need add "\\*.*" */
         return( 1 );
     }
@@ -109,7 +109,7 @@ static DIR_TYPE *__opendir( const char *dirname )
         len = strlen( dirname );
         memcpy( pathname, dirname, len );
         if( i < 2 ) {
-            pathname[len++] = '\\';
+            pathname[len++] = DIR_SEP;
         }
         strcpy( &pathname[len], "*.*" );
         if( ___opendir( pathname, &tmp ) == NULL ) {

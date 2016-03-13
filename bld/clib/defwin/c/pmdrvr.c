@@ -50,26 +50,26 @@ extern void _ResizeWindows( void );
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-int     _SetAboutDlg( char *title, char *text ) {
-//===============================================
-
-        if( title ) {
-            if( DefaultAboutTitle != AboutTitle ) {
-                _MemFree( AboutTitle );
-            }
-            AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
-            if( !AboutTitle ) return( 0 );
-            FARstrcpy( AboutTitle, title );
+int     _SetAboutDlg( char *title, char *text )
+//=============================================
+{
+    if( title ) {
+        if( DefaultAboutTitle != AboutTitle ) {
+            _MemFree( AboutTitle );
         }
-        if( text ) {
-            if( DefaultAboutMsg != AboutMsg ) {
-                _MemFree( AboutMsg );
-            }
-            AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
-            if( !AboutMsg ) return( 0 );
-            FARstrcpy( AboutMsg, text );
+        AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
+        if( !AboutTitle ) return( 0 );
+        FARstrcpy( AboutTitle, title );
+    }
+    if( text ) {
+        if( DefaultAboutMsg != AboutMsg ) {
+            _MemFree( AboutMsg );
         }
-        return( 1 );
+        AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
+        if( !AboutMsg ) return( 0 );
+        FARstrcpy( AboutMsg, text );
+    }
+    return( 1 );
 }
 
 static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 ) {
@@ -84,23 +84,23 @@ static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 ) {
             return( SHORT2FROMMP( mp2 ) );
         }
     } else {
-        #ifdef _MBCS
-            if( SHORT1FROMMP(mp1) == KC_CHAR ) {    /* double-byte char */
-                vk = SHORT1FROMMP( mp2 );
-            } else {                                /* single-byte char */
-                vk = CHAR1FROMMP( mp2 );
-                /* Check for control characters and map them appropriately */
-                if((SHORT1FROMMP(mp1) & KC_CTRL) && iscntrl(toupper(vk) - CTRL_CONST))
-                    vk = toupper(vk) - CTRL_CONST;
-            }
-            return( vk );
-        #else
+#ifdef _MBCS
+        if( SHORT1FROMMP(mp1) == KC_CHAR ) {    /* double-byte char */
+            vk = SHORT1FROMMP( mp2 );
+        } else {                                /* single-byte char */
             vk = CHAR1FROMMP( mp2 );
             /* Check for control characters and map them appropriately */
-            if((SHORT1FROMMP(mp1) & KC_CTRL) && iscntrl(toupper(vk) - CTRL_CONST))
-                vk = toupper(vk) - CTRL_CONST;
-            return( vk );
-        #endif
+            if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+                vk = toupper( vk ) - CTRL_CONST;
+        }
+        return( vk );
+#else
+        vk = CHAR1FROMMP( mp2 );
+        /* Check for control characters and map them appropriately */
+        if((SHORT1FROMMP( mp1 ) & KC_CTRL) && iscntrl( toupper( vk ) - CTRL_CONST ))
+            vk = toupper( vk ) - CTRL_CONST;
+        return( vk );
+#endif
     }
 }
 

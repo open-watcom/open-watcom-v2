@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,33 +24,42 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strxfrm().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "widechar.h"
-#include "variety.h"
-#include <string.h>
 
-/* Transform the string so that two transformed strings can be properly
-   compared in the current locale.
-   We only support the "C" locale, so just copy the string.
-*/
+#ifdef _WIDECHAR_H_INCLUDED
 
-_WCRTLINK size_t __F_NAME(strxfrm,wcsxfrm)( CHAR_TYPE *dst, const CHAR_TYPE *src, size_t n )
-{
-    size_t      len;
+#define EXT_SEP         STRING( '.' )
+#ifdef __UNIX__
+#define DIR_SEP         STRING( '/' )
+#define IS_DIR_SEP(c)   (c == DIR_SEP)
+#else
+#define DRV_SEP         STRING( ':' )
+#define DIR_SEP         STRING( '\\' )
+#define ALT_DIR_SEP     STRING( '/' )
+#define IS_DIR_SEP(c)   (c == ALT_DIR_SEP || c == DIR_SEP)
+#define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)((UCHAR_TYPE)p[0]) && p[1]==DRV_SEP)
+#define IS_ROOTDIR(p)   (HAS_DRIVE(p) && IS_DIR_SEP(p[2]) && p[3]==NULLCHAR)
+#endif
 
-    len = 0;
-    for( ;; ) {
-        if( len < n ) 
-            *dst = *src;
-        if( *src == NULLCHAR )
-            break;
-        ++src;
-        ++dst;
-        ++len;
-    }
-    return( len );
-}
+#else
+
+#define NULLCHAR        '\0'
+#define EXT_SEP         '.'
+#ifdef __UNIX__
+#define DIR_SEP         '/'
+#define IS_DIR_SEP(c)   (c == DIR_SEP)
+#else
+#define DRV_SEP         ':'
+#define DIR_SEP         '\\'
+#define ALT_DIR_SEP     '/'
+#define IS_DIR_SEP(c)   (c == ALT_DIR_SEP || c == DIR_SEP)
+#define HAS_DRIVE(p)    (isalpha((unsigned char)p[0]) && p[1]==DRV_SEP)
+#define IS_ROOTDIR(p)   (HAS_DRIVE(p) && IS_DIR_SEP(p[2]) && p[3]==NULLCHAR)
+#endif
+
+#endif

@@ -58,8 +58,9 @@ int __atomic_add( volatile int *dest, int delta )
 
     for( ;; ) {
         value = *dest;
-        if( __atomic_compare_and_swap( dest, value, value + delta ) )
+        if( __atomic_compare_and_swap( dest, value, value + delta ) ) {
             return( value + delta );
+        }
     }
     return( 0 );
 }

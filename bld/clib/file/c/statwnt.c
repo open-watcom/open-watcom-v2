@@ -54,9 +54,8 @@
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "thread.h"
+#include "pathmac.h"
 
-
-#define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)( (UCHAR_TYPE)p[0] ) && p[1] == STRING( ':' ))
 
 static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {
@@ -129,9 +128,9 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /* name can't be a FIFO or character device and a regular file */
         mode |= S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = __F_NAME(strchr,wcschr)( fname, STRING( '.' ) )) != NULL ) {
+        if( (ext = __F_NAME(strchr,wcschr)( fname, EXT_SEP )) != NULL ) {
             ++ext;
-            if( __F_NAME(strcmp,wcscmp)( ext, STRING( "EXE" ) ) == 0 ) {
+            if( __F_NAME(stricmp,_wcsicmp)( ext, STRING( "exe" ) ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }
@@ -174,19 +173,19 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     /*** Determine if 'path' refers to a root directory ***/
     /* FindFirstFile can not be used on root directories! */
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
 
     ptr = path;
 #ifdef __WIDECHAR__
-    if( path[1] == STRING( ':' ) )
+    if( path[1] == DRV_SEP )
 #else
-    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) )
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP )
 #endif
         ptr += 2;
-    if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
         if( __lib_GetDriveType( fullpath ) == DRIVE_UNKNOWN ) {
             _RWD_errno = ENOENT;
@@ -206,9 +205,9 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 
     /* process drive number */
 #ifdef __WIDECHAR__
-    if( path[1] == STRING( ':' ) ) {
+    if( path[1] == DRV_SEP ) {
 #else
-    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) ) {
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP ) {
 #endif
         buf->st_dev = (CHAR_TYPE)__F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {

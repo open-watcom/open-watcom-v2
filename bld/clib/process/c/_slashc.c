@@ -64,6 +64,6 @@ CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, unsigned char us
 #endif
     }
     switch_c[1] = STRING( 'c' );
-    switch_c[2] = '\0';
+    switch_c[2] = NULLCHAR;
     return( switch_c );
 }

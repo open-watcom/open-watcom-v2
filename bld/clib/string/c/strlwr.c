@@ -44,16 +44,14 @@
     CHAR_TYPE    *p;
     UCHAR_TYPE   c;
 
-    p = str;
-    while( (c = *p) ) {
+    for( p = str; (c = *p) != NULLCHAR; ++p ) {
         if( IS_ASCII( c ) ) {
-            c -= 'A';
-            if( c <= 'Z' - 'A' ) {
-                c += 'a';
+            c -= STRING( 'A' );
+            if( c <= STRING( 'Z' ) - STRING( 'A' ) ) {
+                c += STRING( 'a' );
                 *p = c;
             }
         }
-        ++p;
     }
     return( str );
 }

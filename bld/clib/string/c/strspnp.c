@@ -32,6 +32,7 @@
 #include "widechar.h"
 #include "variety.h"
 #include <string.h>
+#include "pathmac.h"
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(strspnp,_wcsspnp)( const CHAR_TYPE *p1, const CHAR_TYPE *p2 )
@@ -39,8 +40,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strspnp,_wcsspnp)( const CHAR_TYPE *p1, const CHAR
     size_t              index;
 
     index = __F_NAME(strspn,wcsspn)( p1, p2 );
-    if( *(p1+index) != __F_NAME('\0',L'\0') ) {
-        return( (CHAR_TYPE*)(p1+index) );
+    if( *( p1 + index ) != NULLCHAR ) {
+        return( (CHAR_TYPE *)( p1 + index ) );
     } else {
         return( NULL );
     }

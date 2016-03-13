@@ -64,10 +64,10 @@ _WCRTLINK errno_t __F_NAME(freopen_s,_wfreopen_s)(
         __check_constraint_nullptr_msg( msg, stream ) ) {
 
         /* ua.. and uw.. are treated as a.. and w.. */
-        if( (*mode == __F_NAME('u',L'u')) &&
-            ( (*(mode + 1) == __F_NAME('r',L'r')) ||
-              (*(mode + 1) == __F_NAME('w',L'w')) ||
-              (*(mode + 1) == __F_NAME('a',L'a'))) ) {
+        if( (*mode == STRING( 'u' )) &&
+            ((*(mode + 1) == STRING( 'r' )) ||
+             (*(mode + 1) == STRING( 'w' )) ||
+             (*(mode + 1) == STRING( 'a' ))) ) {
             mode++;                         /* ignore u for now */
         }
         *newstreamptr = __F_NAME(freopen,_wfreopen)( filename, mode, stream );

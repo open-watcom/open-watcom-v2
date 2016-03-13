@@ -64,13 +64,17 @@ _WCRTLINK int   __InitDefaultWin()
     HANDLE      inst;
 
     str = __clib_strdup( GetCommandLine() );
-    while( !isspace( *str ) && *str != 0 ) str++;
-    while( isspace( *str ) ) str++;
+    while( !isspace( (unsigned char)*str ) && *str != '\0' )
+        str++;
+    while( isspace( (unsigned char)*str ) )
+        str++;
     inst = GetModuleHandle( NULL );
-    if( !firstInstance( inst ) ) return( FALSE );
-    if( !windowsInit( inst, SW_SHOWDEFAULT ) ) return( FALSE );
+    if( !firstInstance( inst ) )
+        return( FALSE );
+    if( !windowsInit( inst, SW_SHOWDEFAULT ) )
+        return( FALSE );
     _InitFunctionPointers();
-    return( 1 );
+    return( TRUE );
 }
 
 _WCRTLINK void  __FiniDefaultWin() {}

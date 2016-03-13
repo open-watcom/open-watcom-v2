@@ -65,7 +65,7 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
             ++total;
             if( len != 0 ) {
                 --len;
-                *p++ = ' ';
+                *p++ = STRING( ' ' );
             }
         }
 
@@ -77,7 +77,7 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
 
         if( need_quotes && len != 0 ) {
             --len;
-            *p++ = '"';
+            *p++ = STRING( '"' );
         }
         if( len != 0 && i != 0 ) {
             if( i > len )
@@ -88,11 +88,11 @@ _WCRTLINK int (_bgetcmd)( char *buffer, int len )
         }
         if( need_quotes && len != 0 ) {
             --len;
-            *p++ = '"';
+            *p++ = STRING( '"' );
         }
     }
     if( p != NULL ) {
-        *p = '\0';  // terminate string
+        *p = NULLCHAR;  // terminate string
     }
 
     return( total );

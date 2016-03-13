@@ -49,11 +49,16 @@
         c1 = *s;
         c2 = *t;
         if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {
-            if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
-            if( c2 >= 'A'  &&  c2 <= 'Z' )  c2 += 'a' - 'A';
+            if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
+                c1 += STRING( 'a' ) - STRING( 'A' );
+            if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
+                c2 += STRING( 'a' ) - STRING( 'A' );
+            }
         }
-        if( c1 != c2 ) break;
-        if( c1 == NULLCHAR ) break;
+        if( c1 != c2 )
+            break;
+        if( c1 == NULLCHAR )
+            break;
         ++s;
         ++t;
     }

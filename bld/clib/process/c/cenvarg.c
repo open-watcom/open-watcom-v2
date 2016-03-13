@@ -131,7 +131,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
             p = stpcpy( p, envp[i] ) + 1;
         }
     }
-    *p++ = '\0';
+    *p++ = NULLCHAR;
     if( exec ) {
         __F_NAME(strcpy,wcscpy)( p + 2, argv[0] );
     }
@@ -194,10 +194,12 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const 
            file names like "c:\program files\common\tool.exe". Also overcomes
            bug in WinXP SP2 (beta).
         */
-        if( path[0] != '"' ) *p++ = '"';
+        if( path[0] != STRING( '"' ) )
+            *p++ = STRING( '"' );
         p = stpcpy( p, path );
-        if( path[0] != '"' ) *p++ = '"';
-        *p++ = ' ';
+        if( path[0] != STRING( '"' ) )
+            *p++ = STRING( '"' );
+        *p++ = STRING( ' ' );
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
         /* RDOS wants: arguments '\0' */
         path = path;
@@ -213,23 +215,24 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const 
             for(;;) {
                 p = stpcpy( p, *argv );
                 ++argv;
-                if( *argv == NULL ) break;
-                *p++ = ' '; /* put the space between args */
+                if( *argv == NULL )
+                    break;
+                *p++ = STRING( ' ' ); /* put the space between args */
             }
         }
     }
 #if defined( __OS2__ )
-    *p++ = 0;
-    *p = 0;
+    *p++ = NULLCHAR;
+    *p = NULLCHAR;
 #elif defined( __NT__ )
-    *p = 0;
+    *p = NULLCHAR;
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
-    *p = 0;
+    *p = NULLCHAR;
 #else
     if( just_args ) {
-        *p = 0;
+        *p = NULLCHAR;
     } else {
-        *p = '\r';
+        *p = STRING( '\r' );
         buffer[0] = ( p - buffer ) - 1;
     }
 #endif

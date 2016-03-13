@@ -54,9 +54,8 @@
 #include "thread.h"
 #include "os2fil64.h"
 #include "find.h"
+#include "pathmac.h"
 
-
-#define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)( (UCHAR_TYPE)p[0] ) && p[1] == STRING( ':' ))
 
 static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
@@ -109,19 +108,19 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
 
     ptr = path;
 #ifdef __WIDECHAR__
-    if( path[1] == STRING( ':' ) )
+    if( path[1] == DRV_SEP )
 #else
-    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) )
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP )
 #endif
         ptr += 2;
-    if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
         int     drv;
 
@@ -211,9 +210,9 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     /* process drive number */
 #ifdef __WIDECHAR__
-    if( path[1] == STRING( ':' ) ) {
+    if( path[1] == DRV_SEP ) {
 #else
-    if( *_mbsinc( (unsigned char *)path ) == STRING( ':' ) ) {
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP ) {
 #endif
         buf->st_dev = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {

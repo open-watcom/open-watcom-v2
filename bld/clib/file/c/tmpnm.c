@@ -42,6 +42,7 @@
 #include "liballoc.h"
 #include "tmpnm.h"
 #include "thread.h"
+#include "pathmac.h"
 
 /*
     U's     are unique filename letters for the process
@@ -72,9 +73,9 @@ static CHAR_TYPE *__F_NAME(putbits,_wputbits)( CHAR_TYPE *p, unsigned val )
         val &= 0x1f;
     }
     if( val >= 10 ) {
-        *p = val - 10 + 'A';
+        *p = val - 10 + STRING( 'A' );
     } else {
-        *p = val + '0';
+        *p = val + STRING( '0' );
     }
     return( p + 1 );
 }
@@ -87,17 +88,17 @@ static size_t init_name( void )
 #if defined(__UNIX__)
     p = __tmpdir( p );
 #endif
-    *p++ = '_';
+    *p++ = STRING( '_' );
     p = __F_NAME(putbits,_wputbits)( p, getpid() );
 #if defined(__QNX__)
-    *p++ = '.';
+    *p++ = STRING( '.' );
     p = __F_NAME(putbits,_wputbits)( p, (unsigned short)getnid() );
 #endif
-    *p++ = '.';
-    *p++ = 'A';
-    *p++ = 'A';
-    *p++ = 'A' - 1;
-    *p   = '\0';            // JBS 99/10/18 append null char
+    *p++ = EXT_SEP;
+    *p++ = STRING( 'A' );
+    *p++ = STRING( 'A' );
+    *p++ = STRING( 'A' ) - 1;
+    *p   = NULLCHAR;
     return( p - (CHAR_TYPE *)_RWD_tmpnambuf );
 }
 
@@ -112,31 +113,31 @@ _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
                             // JBS 99/10/18 rewrote for thread safety
     _AccessIOB();           // prevent same name in multi-threaded apps
     tmpnmb = (CHAR_TYPE *)_RWD_tmpnambuf;
-    if( (tmpnmb[0] == NULLCHAR) || (tmpnmb[0] != '_') ) {
+    if( (tmpnmb[0] == NULLCHAR) || (tmpnmb[0] != STRING( '_' )) ) {
         i = init_name();    // set to ?.AA@
     } else {
-        i = __F_NAME(strlen,wcslen)( (CHAR_TYPE *)tmpnmb );
+        i = __F_NAME(strlen,wcslen)( tmpnmb );
     }
     // let's go around the loop at most twice
     for( iter = 0; iter < 2; ) {
         //
         //  tmpnambuf now contains something like _PPPPPPP.AAA
         //
-        for(;;) {
+        for( ;; ) {
             --i;
             // if ?.ZZZ then start over with ?.AA@
-            if( tmpnmb[i] == '.' ) {
+            if( tmpnmb[i] == EXT_SEP ) {
                 i = init_name() - 1;
                 iter++;
             }
             // if current extension char is not 'Z' then we can exit loop and increment
-            if( tmpnmb[i] != 'Z' )
+            if( tmpnmb[i] != STRING( 'Z' ) )
                 break;
             // ?.ABZ -> ?.ABA (which will become ?.ACA)
-            tmpnmb[i] = 'A';
+            tmpnmb[i] = STRING( 'A' );
         }
         tmpnmb[i]++;    // next name, e.g., ?.AAA -> ?.AAB
-        if( __F_NAME(access,_waccess)( (CHAR_TYPE *)tmpnmb, 0 ) != 0 ) {
+        if( __F_NAME(access,_waccess)( tmpnmb, 0 ) != 0 ) {
             break;
         }
     }
@@ -144,9 +145,9 @@ _WCRTLINK CHAR_TYPE *__F_NAME(tmpnam,_wtmpnam)( CHAR_TYPE *buf )
     if( iter == 2 )
         tmpnmb[0] = NULLCHAR;
     if( buf != NULL ) {
-        __F_NAME(strcpy,wcscpy)( buf, (CHAR_TYPE *)tmpnmb );
+        __F_NAME(strcpy,wcscpy)( buf, tmpnmb );
     } else {
-        buf = (CHAR_TYPE *)tmpnmb;
+        buf = tmpnmb;
     }
     _ReleaseIOB();          // if it's been copied, we are thread-safe
     if( iter == 2 )

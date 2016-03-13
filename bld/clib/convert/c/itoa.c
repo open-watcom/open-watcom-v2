@@ -33,7 +33,8 @@
 #include "variety.h"
 #include <stdlib.h>
 
-extern const char __based(__segname("_CONST")) __Alphabet[];
+
+#define TO_WIDE(c)  ((CHAR_TYPE)(c))
 
 typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 
@@ -74,6 +75,8 @@ unsigned __udiv( unsigned, uint_stk_ptr );
 #endif
 #endif /* __WATCOMC__ */
 
+extern const char __based(__segname("_CONST")) __Alphabet[];
+
 _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, int radix )
 {
     CHAR_TYPE   *p = buffer;
@@ -96,7 +99,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, in
         ++q;
         value = quot;
     } while( value != 0 );
-    while( (*p++ = (CHAR_TYPE)*--q) )
+    while( (*p++ = TO_WIDE( *--q )) != NULLCHAR )
         ;
     return( buffer );
 }

@@ -41,6 +41,7 @@
 #include "msdos.h"
 #include "_process.h"
 #include "thread.h"
+#include "pathmac.h"
 
 
 _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
@@ -53,15 +54,17 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
     CHAR_TYPE *end;
 
     retval = __F_NAME(execve,_wexecve)( file, argv, envp );
-    if( retval != -1  ||
-        (_RWD_errno != ENOENT && _RWD_errno != EINVAL)) return( retval );
-    if( *file == STRING( '\\' ) || *file == NULLCHAR || file[1] == STRING( ':' ) )
+    if( retval != -1 || _RWD_errno != ENOENT && _RWD_errno != EINVAL )
+        return( retval );
+    if( IS_DIR_SEP( file[0] ) || file[0] == NULLCHAR || file[1] == DRV_SEP )
         return( retval );
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
-    if( p == NULL ) return( retval );
+    if( p == NULL )
+        return( retval );
     file_len = __F_NAME(strlen,wcslen)( file ) + 1;
-    for(;;) {
-        if( *p == NULLCHAR ) break;
+    for( ;; ) {
+        if( *p == NULLCHAR )
+            break;
         end = __F_NAME(strchr,wcschr)( p, STRING( ';' ) );
         if( end == NULL ) {
             end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
@@ -71,16 +74,19 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
             _RWD_doserrno = E_badenv;
             return( -1 );
         }
-        memcpy( buffer, p, (end-p)*sizeof(CHAR_TYPE) );
+        memcpy( buffer, p, ( end - p ) * sizeof( CHAR_TYPE ) );
         p2 = buffer + ( end - p );
-        if( p2[-1] != STRING( '\\' ) ) {
-            *p2++ = STRING( '\\' );
+        if( !IS_DIR_SEP( p2[-1] ) ) {
+            *p2++ = DIR_SEP;
         }
-        memcpy( p2, file, file_len*sizeof(CHAR_TYPE) );
+        memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
         retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
-        if( retval != -1 ) break;
-        if(_RWD_errno != ENOENT && _RWD_errno != EINVAL) break;
-        if( *end != STRING( ';' ) ) break;
+        if( retval != -1 )
+            break;
+        if(_RWD_errno != ENOENT && _RWD_errno != EINVAL)
+            break;
+        if( *end != STRING( ';' ) )
+            break;
         p = end + 1;
     }
     return( retval );

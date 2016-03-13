@@ -40,7 +40,7 @@ _WCRTLINK char _WCFAR *_fstrupr( char _WCFAR *str )
     unsigned char   c;
 
     p = str;
-    while( c = *p ) {
+    while( (c = *p) != '\0' ) {
         c -= 'a';
         if( c <= 'z' - 'a' ) {
             c += 'A';

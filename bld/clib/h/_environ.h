@@ -39,7 +39,7 @@
 #define _TCSDEC(__p)        (__p - 1)
 #define _TCSINC(__p)        (__p + 1)
 #define _TCSCMP(__p1,__p2)  ((*(__p1))-(*(__p2)))
-#define _TCSICMP(__p1,__p2) (__F_NAME(toupper,towupper)(*(__p1))-__F_NAME(toupper,towupper)(*(__p2)))
+#define _TCSICMP(__p1,__p2) (__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p1))-__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p2)))
 #define _TCSTERM(__p)       (*(__p)==NULLCHAR)
 #define _TCSNEXTC(__p)      (*(__p))
 #define _TCSCHR(__p,__c)    __F_NAME(strchr,wcschr)(__p,__c)

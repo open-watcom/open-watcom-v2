@@ -47,23 +47,22 @@
     UCHAR_TYPE      c1;
     UCHAR_TYPE      c2;
 
-    for( ;; ) {
-        if( n == 0 )
-            return( 0 );            /* equal */
+    for( ; n > 0; --n ) {
         c1 = *s;
         c2 = *t;
         if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {
-            if( c1 >= 'A'  &&  c1 <= 'Z' )
-                c1 += 'a' - 'A';
-            if( c2 >= 'A'  &&  c2 <= 'Z' )
-                c2 += 'a' - 'A';
+            if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
+                c1 += STRING( 'a' ) - STRING( 'A' );
+            if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {
+                c2 += STRING( 'a' ) - STRING( 'A' );
+            }
         }
         if( c1 != c2 )
             return( c1 - c2 );      /* less than or greater than */
         if( c1 == NULLCHAR )
-            return( 0 );            /* equal */
+            break;          /* equal */
         ++s;
         ++t;
-        --n;
     }
+    return( 0 );            /* equal */
 }

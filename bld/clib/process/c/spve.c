@@ -47,6 +47,7 @@
 #include "msdos.h"
 #include "_process.h"
 #include "thread.h"
+#include "pathmac.h"
 
 #ifdef __USE_POSIX_HANDLE_STRINGS
     #define _POSIX_HANDLE_CLEANUP   {                                   \
@@ -285,16 +286,16 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
          * on the front of a filename that doesn't have a path or drive
          */
         if( _RWD_osmajor >= 3 ) {
-            if( drive[0] == 0 && dir[0] == 0 ) {
-                dir = ".\\";
+            if( drive[0] == NULLCHAR && dir[0] == NULLCHAR ) {
+                dir = STRING( ".\\" );
             }
         }
 #endif
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
         _RWD_errno = ENOENT;
-        if( ext[0] != '\0' ) {
+        if( ext[0] != NULLCHAR ) {
 #if defined( __OS2__ )
-            if( stricmp( ext, ".cmd" ) == 0 || stricmp( ext, ".bat" ) == 0 ) {
+            if( stricmp( ext, STRING( ".cmd" ) ) == 0 || stricmp( ext, STRING( ".bat" ) ) == 0 ) {
 #else
             if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 ) {
 #endif
@@ -344,9 +345,9 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                     /* try for a .BAT file */
                     _RWD_errno = 0;
 #if defined( __OS2__ )
-                    strcpy( end_of_p, ".cmd" );
+                    strcpy( end_of_p, STRING( ".cmd" ) );
                     if( !file_exists( p ) )
-                        strcpy( end_of_p, ".bat" );
+                        strcpy( end_of_p, STRING( ".bat" ) );
 #else
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
 #endif

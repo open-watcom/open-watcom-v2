@@ -41,6 +41,8 @@
 #include "tinyio.h"
 #include "ostype.h"
 #include "liballoc.h"
+#include "pathmac.h"
+
 
 extern void __GetFullPathName( char *buff, const char *path, size_t size );
 #pragma aux __GetFullPathName = \
@@ -53,9 +55,6 @@ extern void __GetFullPathName( char *buff, const char *path, size_t size );
                             return( NULL );             \
                         }                               \
                         size -= (c);
-
-#define _IS_SLASH( c )  (( (c) == '/' ) || ( (c) == '\\' ))
-
 
 _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
 {
@@ -74,97 +73,98 @@ _WCRTLINK char *_fullpath( char *buff, const char *path, size_t size )
             return( NULL );
         }
     }
-    if( path == NULL || path[0] == '\0' ) {
+    if( path == NULL || path[0] == NULLCHAR ) {
         return( getcwd( buff, size ) );
     }
-    if( __OS == OS_OS2  ||  __OS == OS_NT ) {
+    if( __OS == OS_OS2 || __OS == OS_NT ) {
         __GetFullPathName( buff, path, size );
     } else {
         p = path;
         q = buff;
         _WILL_FIT( 2 );
-        if( isalpha( p[0] ) && p[1] == ':' ) {
-            path_drive_idx = ( tolower( p[0] ) - 'a' ) + 1;
+        if( HAS_DRIVE( p ) ) {
+            path_drive_idx = ( tolower( (unsigned char)p[0] ) - 'a' ) + 1;
             q[0] = p[0];
             q[1] = p[1];
             p += 2;
         } else {
             path_drive_idx = TinyGetCurrDrive() + 1;
             q[0] = 'A' + ( path_drive_idx - 1 );
-            q[1] = ':';
+            q[1] = DRV_SEP;
         }
         q += 2;
-        if( ! _IS_SLASH( p[0] ) ) {
+        if( !IS_DIR_SEP( p[0] ) ) {
             rc = TinyGetCWDir( curr_dir, path_drive_idx );
             if( TINY_ERROR( rc ) ) {
                 _RWD_errno = ENOENT;
                 return( NULL );
             }
             len = strlen( curr_dir );
-            if( curr_dir[0] != '\\' ) {
+            if( curr_dir[0] != DIR_SEP ) {
                 _WILL_FIT( 1 );
-                *(q++) = '\\';
+                *(q++) = DIR_SEP;
             }
             _WILL_FIT( len );
             strcpy( q, curr_dir );
             q += len;
-            if( q[-1] != '\\' ) {
+            if( q[-1] != DIR_SEP ) {
                 _WILL_FIT( 1 );
-                *(q++) = '\\';
+                *(q++) = DIR_SEP;
             }
-            for(;;) {
-                if( p[0] == '\0' ) break;
+            for( ; p[0] != NULLCHAR; ) {
                 if( p[0] != '.' ) {
                     _WILL_FIT( 1 );
                     *(q++) = *(p++);
                     continue;
                 }
                 ++p;
-                if( _IS_SLASH( p[0] ) ) {
+                if( IS_DIR_SEP( p[0] ) ) {
                     /* ignore "./" in directory specs */
-                    if( ! _IS_SLASH( q[-1] ) ) {        /* 14-jan-93 */
-                        *q++ = '\\';
+                    if( !IS_DIR_SEP( q[-1] ) ) {
+                        *q++ = DIR_SEP;
                     }
                     ++p;
                     continue;
                 }
-                if( p[0] == '\0' ) break;
-                if( p[0] == '.' && _IS_SLASH( p[1] ) ) {
+                if( p[0] == NULLCHAR )
+                    break;
+                if( p[0] == '.' && IS_DIR_SEP( p[1] ) ) {
                     /* go up a directory for a "../" */
                     p += 2;
-                    if( ! _IS_SLASH( q[-1] ) ) {
+                    if( !IS_DIR_SEP( q[-1] ) ) {
                         return( NULL );
                     }
                     q -= 2;
-                    for(;;) {
+                    for( ;; ) {
                         if( q < buff ) {
                             return( NULL );
                         }
-                        if( _IS_SLASH( *q ) ) break;
-                        if( *q == ':' ) {
+                        if( IS_DIR_SEP( *q ) )
+                            break;
+                        if( *q == DRV_SEP ) {
                             ++q;
-                            *q = '\\';
+                            *q = DIR_SEP;
                             break;
                         }
                         --q;
                     }
                     ++q;
-                    *q = '\0';
+                    *q = NULLCHAR;
                     continue;
                 }
                 _WILL_FIT( 1 );
                 *(q++) = '.';
             }
-            *q = '\0';
+            *q = NULLCHAR;
         } else {
             len = strlen( p );
             _WILL_FIT( len );
             strcpy( q, p );
         }
         /* force to all backslashes */
-        for( q = buff; *q; ++q ) {
-            if( *q == '/' ) {
-                *q = '\\';
+        for( q = buff; *q != NULLCHAR; ++q ) {
+            if( *q == ALT_DIR_SEP ) {
+                *q = DIR_SEP;
             }
         }
     }

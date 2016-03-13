@@ -61,8 +61,9 @@
 #include "int64.h"
 #endif
 #include "thread.h"
+#include "pathmac.h"
 
-#define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)((UCHAR_TYPE)x[0]) && x[1]==STRING(':'))
+
 #define ALL_ATTRIB      (_A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH)
 
 #ifdef __INT64__
@@ -148,7 +149,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) && fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR ) {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -156,7 +157,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
     ptr = path;
     if( HAS_DRIVE( path ) )
         ptr += 2;
-    if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
         CHAR_TYPE       cwd[_MAX_PATH];
 
@@ -174,7 +175,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
         dta.wr_time   = 0;
         dta.wr_date   = 0;
         dta.size      = 0;
-        dta.name[0]   = NULLCHAR;
+        dta.name[0]   = '\0';
 #ifdef __WATCOM_LFN__
         LFN_SIGN_OF( &dta )   = 0;
         LFN_HANDLE_OF( &dta ) = 0;

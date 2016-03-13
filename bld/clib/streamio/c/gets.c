@@ -40,18 +40,17 @@ _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )
     CHAR_TYPE       *cs;
     unsigned        oflag;
 
-    oflag = stdin->_flag & (_SFERR | _EOF);             /* 06-sep-91 */
+    oflag = stdin->_flag & (_SFERR | _EOF);
     stdin->_flag &= ~(_SFERR | _EOF);
     cs = s;
-    while( (c = __F_NAME((getc),(getwc))( stdin )) != INTCHAR_EOF
-        && c != STRING( '\n' ) ) {
-        *cs++ = c;
+    while( (c = __F_NAME((getc),(getwc))( stdin )) != INTCHAR_EOF && (CHAR_TYPE)c != STRING( '\n' ) ) {
+        *cs++ = (CHAR_TYPE)c;
     }
     if( c == INTCHAR_EOF && (cs == s || ferror( stdin )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;
     }
-    stdin->_flag |= oflag;                              /* 06-sep-91 */
+    stdin->_flag |= oflag;
     return( s );
 }

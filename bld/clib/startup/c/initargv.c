@@ -135,20 +135,21 @@ static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHA
     register enum QUOTE_STATE state;
 
     argc = 0;
-    for(;;) {
-        while( *p == ' ' || *p == '\t' ) {
+    for( ;; ) {
+        while( *p == STRING( ' ' ) || *p == STRING( '\t' ) ) {
             ++p; /* skip over blanks or tabs */
         }
-        if( *p == '\0' ) break;
+        if( *p == NULLCHAR )
+            break;
         /* we are at the start of a parm */
         state = QUOTE_NONE;
-        if( *p == '\"' ) {
+        if( *p == STRING( '\"' ) ) {
             p++;
             state = QUOTE_DELIMITER;
         }
         new = start = p;
-        for(;;) {
-            if( *p == '\"' ) {
+        for( ;; ) {
+            if( *p == STRING( '\"' ) ) {
                 if( !historical ) {
                     p++;
                     if( state == QUOTE_NONE ) {
@@ -163,22 +164,23 @@ static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHA
                     }
                 }
             }
-            if( *p == ' ' || *p == '\t' ) {
+            if( *p == STRING( ' ' ) || *p == STRING( '\t' ) ) {
                 if( state == QUOTE_NONE ) {
                     break;
                 }
             }
-            if( *p == '\0' ) break;
-            if( *p == '\\' ) {
+            if( *p == NULLCHAR )
+                break;
+            if( *p == STRING( '\\' ) ) {
                 if( !historical ) {
-                    if( p[1] == '\"' ) {
+                    if( p[1] == STRING( '\"' ) ) {
                         ++p;
-                        if( p[-2] == '\\' ) {
+                        if( p[-2] == STRING( '\\' ) ) {
                             continue;
                         }
                     }
                 } else {
-                    if( p[1] == '\"' || p[1] == '\\' && state == QUOTE_DELIMITER ) {
+                    if( p[1] == STRING( '\"' ) || p[1] == STRING( '\\' ) && state == QUOTE_DELIMITER ) {
                         ++p;
                     }
                 }
@@ -199,15 +201,15 @@ static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHA
               in which case the scan would be terminated too soon.
             */
 
-            if( *p == '\0' ) {
-                *new = '\0';
+            if( *p == NULLCHAR ) {
+                *new = NULLCHAR;
                 break;
             }
-            *new = '\0';
+            *new = NULLCHAR;
             ++p;
         } else {
             ++argc;
-            if( *p == '\0' ) {
+            if( *p == NULLCHAR ) {
                 break;
             }
             ++p;

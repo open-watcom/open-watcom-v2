@@ -64,15 +64,16 @@ _WCRTLINK errno_t __F_NAME(strncpy_s,wcsncpy_s)( CHAR_TYPE * __restrict s1,
         __check_constraint_overlap_msg( msg, s1, s1max, s2, s2len )) {
 
          for( ; n; --n) {
-             if( *s2 == '\0' ) break;
+             if( *s2 == NULLCHAR )
+                break;
              *s1++ = *s2++;
          }
-         *s1 = '\0';
+         *s1 = NULLCHAR;
          rc = 0;
     } else {
         // Runtime-constraints found, store zero in receiving field
         if( (s1 != NULL) && (s1max > 0) && __lte_rsizmax( s1max ) ) {
-            s1[0] = '\0';
+            s1[0] = NULLCHAR;
         }
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );

@@ -68,7 +68,7 @@ _WCRTLINK int __F_NAME(_vbprintf,_vbwprintf) ( CHAR_TYPE *s, size_t bufsize,
     bufinfo.bufsize = bufsize - 1;
     bufinfo.bufover = 0;
     len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
-    s[len] = '\0';
+    s[len] = NULLCHAR;
     return( len );
 }
 

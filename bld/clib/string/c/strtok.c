@@ -122,18 +122,19 @@ _WCRTLINK char *strtok_r( char *str, const char *charset, char **ptr )
     }
 
     __setbits( vector, charset );
-    for( ; tc = *str; ++str ) {
+    for( ; (tc = *str) != NULLCHAR; ++str ) {
         /* quit if we find any char not in charset */
-        if( GETCHARBIT( vector, tc ) == 0 )
+        if( GETCHARBIT( vector, tc ) == 0 ) {
             break;
+        }
     }
-    if( tc == '\0' )
+    if( tc == NULLCHAR )
         return( NULL );
     p1 = str;
-    for( ; tc = *p1; ++p1 ) {
+    for( ; (tc = *p1) != NULLCHAR; ++p1 ) {
         /* quit when we find any char in charset */
         if( GETCHARBIT( vector, tc ) != 0 ) {
-            *p1 = '\0';             /* terminate the token  */
+            *p1 = NULLCHAR;         /* terminate the token  */
             p1++;                   /* start of next token  */
             *ptr = p1;
             return( str );

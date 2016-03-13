@@ -43,6 +43,8 @@
 #include <ctype.h>
 #include <time.h>
 #include "rtdata.h"
+#include "pathmac.h"
+
 
 static unsigned short at2mode();
 
@@ -66,14 +68,12 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     int                 i;
 
     /* reject null string and names that has wildcard */
-    if( *path == '\0' || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL )
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)"*?" ) != NULL )
         return( -1 );
 
     /*** Determine if 'path' refers to a root directory ***/
     if( _fullpath( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( isalpha( fullpath[0] )  &&  fullpath[1] == ':'  &&
-            fullpath[2] == '\\'  &&  fullpath[3] == '\0' )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     } else {
@@ -83,8 +83,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     ptr = path;
     if( *_mbsinc( (unsigned char *)path ) )
         ptr += 2;
-    if( ( (ptr[0] == '\\' || ptr[0] == '/') && ptr[1] == '\0' ) || isrootdir )
-    {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
         CHAR_TYPE       cwd[_MAX_PATH];
 
@@ -104,7 +103,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         name[0] = NULLCHAR;
     } else {                            /* not a root directory */
         fullp = fullpath + strlen( fullpath ) - 1;
-        while( *fullp != '\\' && *fullp != '/' && fullp != fullpath )
+        while( !IS_DIR_SEP( *fullp ) && fullp != fullpath )
             fullp--;
         *fullp = 0;
         fullp++;
@@ -153,7 +152,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 
     /* process drive number */
     if( *_mbsinc( (unsigned char *)path ) ) {
-        buf->st_dev = tolower( fullpath[0] ) - 'a';
+        buf->st_dev = tolower( (UCHAR_TYPE)fullpath[0] ) - STRING( 'a' );
     } else {
         buf->st_dev = RdosGetCurDrive();
     }

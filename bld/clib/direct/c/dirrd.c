@@ -28,15 +28,17 @@
 *
 ****************************************************************************/
 
-#include "widechar.h"
+
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
 #include "liballoc.h"
 #include <rdos.h>
+#include "pathmac.h"
 
-_WCRTLINK int chdir( const CHAR_TYPE *path )
+
+_WCRTLINK int chdir( const char *path )
 {
     if ( RdosSetCurDir( path ))
         return 0;
@@ -44,7 +46,7 @@ _WCRTLINK int chdir( const CHAR_TYPE *path )
         return 1;
 }
 
-_WCRTLINK CHAR_TYPE *getcwd( CHAR_TYPE *buf, size_t size )
+_WCRTLINK char *getcwd( char *buf, size_t size )
 {
     int drive;
     char *p;
@@ -60,8 +62,8 @@ _WCRTLINK CHAR_TYPE *getcwd( CHAR_TYPE *buf, size_t size )
     drive = RdosGetCurDrive();
 
     cwd[0] = drive + 'A';
-    cwd[1] = ':';
-    cwd[2] = '\\';
+    cwd[1] = DRV_SEP;
+    cwd[2] = DIR_SEP;
 
     if( RdosGetCurDir( drive, &cwd[3] ) )
         return( strncpy( p, cwd, size ) );
@@ -260,7 +262,7 @@ _WCRTLINK struct dirent *opendir( const char *name )
         if( size ) {
             ptr += size - 1;
             while( size ) {
-                if( *ptr == '\\' || *ptr == '/')
+                if( IS_DIR_SEP( *ptr ) )
                     break;
                 ptr--;
             }
@@ -320,7 +322,7 @@ _WCRTLINK int closedir( struct dirent *dirp )
     return( 0 );
 }
 
-_WCRTLINK int mkdir( const CHAR_TYPE *path )
+_WCRTLINK int mkdir( const char *path )
 {
     if( RdosMakeDir( path ))
         return 0;
@@ -328,7 +330,7 @@ _WCRTLINK int mkdir( const CHAR_TYPE *path )
         return -1;
 }
 
-_WCRTLINK int rmdir( const CHAR_TYPE *path )
+_WCRTLINK int rmdir( const char *path )
 {
     if( RdosRemoveDir( path ))
         return 0;
