@@ -44,8 +44,8 @@
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
 
-__segment __fheap = 0;          /* head of segment list in far heap */
-__segment __fheapRover = 0;     /* segment to start search at */
+__segment __fheap = _NULLSEG;          /* head of segment list in far heap */
+__segment __fheapRover = _NULLSEG;     /* segment to start search at */
 
 //   The following variable contains the size of the largest block in a
 //   segment between __fheap and __fheapRover. If we are trying to allocate
@@ -68,13 +68,13 @@ _WCRTLINK void *malloc( size_t amount )
 
 _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
 {
-    unsigned        size;
-    unsigned        offset;
-    unsigned short  seg;
-    unsigned short  prev_seg;
-    struct heapblk _WCFAR *p;
+    unsigned    size;
+    unsigned    offset;
+    __segment   seg;
+    __segment   prev_seg;
+    heapblk     _WCFAR *p;
 
-    if( amt == 0  ||  amt > - (sizeof(struct heapblk) + TAG_SIZE*2) ) {
+    if( amt == 0 || amt > - ( sizeof( heapblk ) + TAG_SIZE * 2 ) ) {
         return( (void _WCFAR *)NULL );
     }
 
@@ -86,19 +86,19 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
     }
 
     _AccessFHeap();
-    for(;;) {
+    for( ;; ) {
         if( size > __LargestSizeB4Rover ) {
             seg = __fheapRover;
         } else {
             __LargestSizeB4Rover = 0;   // force value to be updated
             seg = __fheap;
         }
-        for(;;) {
-            if( seg == 0 ) {
+        for( ;; ) {
+            if( seg == _NULLSEG ) {
                 seg = __AllocSeg( amt );
-                if( seg == 0 )
+                if( seg == _NULLSEG )
                     break;
-                if( __fheap == 0 ) {
+                if( __fheap == _NULLSEG ) {
                     __fheap = seg;
                 } else {
                     p->nextseg = seg;
@@ -106,13 +106,14 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
                     p->prevseg = prev_seg;
                 }
             }
-            for(;;) {
+            for( ;; ) {
                 __fheapRover = seg;
                 offset = __MemAllocator( amt, seg, 0 );
                 if( offset != 0 )
                     goto release_heap;
-                if( __GrowSeg( seg, amt ) == 0 )
+                if( __GrowSeg( seg, amt ) == 0 ) {
                     break;
+                }
             }
             prev_seg = seg;
             p = MK_FP( seg, 0 );
@@ -121,13 +122,15 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
             }
             seg = p->nextseg;
         }
-        if( __fmemneed( amt ) == 0 )
+        if( __fmemneed( amt ) == 0 ) {
             break;
+        }
     }
-    if( seg == 0 ) {
+    if( seg == _NULLSEG ) {
         offset = (unsigned)_nmalloc( amt );
-        if( offset != 0 )
+        if( offset != 0 ) {
             seg = _DGroup();
+        }
     }
 release_heap:
     _ReleaseFHeap();

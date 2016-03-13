@@ -48,14 +48,15 @@ _WCRTLINK void *_expand( void *stg, size_t amount )
 _WCRTLINK void _WCFAR *_fexpand( void _WCFAR *stg, size_t req_size )
 {
     __segment   seg;
-    void _WCNEAR        *tmp;
+    void        _WCNEAR *tmp;
 
     seg = FP_SEG( stg );
     if( seg == _DGroup() ) {
         tmp = _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size );
-        if( tmp == NULL )  return( NULL );
-    } else if( _bexpand( seg,(void __based(void) *)FP_OFF( stg ), req_size )
-                                == _NULLOFF ) {
+        if( tmp == NULL ) {
+            return( NULL );
+        }
+    } else if( _bexpand( seg, (void __based( void ) *)FP_OFF( stg ), req_size ) == _NULLOFF ) {
         return( NULL );
     }
     return( stg );

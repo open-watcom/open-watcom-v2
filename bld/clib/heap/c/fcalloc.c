@@ -38,10 +38,10 @@
 
 _WCRTLINK void _WCFAR *_fcalloc( size_t n, size_t el_size )
 {
-    void _WCFAR     *p;
+    void            _WCFAR *p;
     unsigned long   chk_size;
 
-    chk_size = (unsigned long) n * el_size;
+    chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
 #ifndef __386__
     if( el_size != chk_size ) {

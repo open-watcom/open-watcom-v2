@@ -36,14 +36,13 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void __based(void) *_brealloc( __segment seg,
-                                        void __based(void) *mem,
-                                        size_t size )
+_WCRTLINK void __based( void ) *_brealloc( __segment seg, void __based( void ) *mem, size_t size )
 {
-    void __based(void)  *p;
-    size_t              old_size;
+    void        __based( void ) *p;
+    size_t      old_size;
 
-    if( mem == _NULLOFF )  return( _bmalloc( seg, size ) );
+    if( mem == _NULLOFF )
+        return( _bmalloc( seg, size ) );
     if( size == 0 ) {
         _bfree( seg, mem );
         return( _NULLOFF );

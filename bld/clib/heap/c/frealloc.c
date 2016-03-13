@@ -66,45 +66,46 @@ extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 #if defined(__BIG_DATA__)
 
 _WCRTLINK void *realloc( void *stg, size_t amount )
-    {
-        return( _frealloc( stg, amount ) );
-    }
+{
+    return( _frealloc( stg, amount ) );
+}
 
 #endif
 
 
 _WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
-    {
-        size_t    old_size;
-        void _WCFAR *p;
+{
+    size_t  old_size;
+    void    _WCFAR *p;
 
-        if( stg == NULL ) {
-            return( _fmalloc( req_size ) );
+    if( stg == NULL ) {
+        return( _fmalloc( req_size ) );
+    }
+    if( req_size == 0 ) {
+        _ffree( stg );
+        return( NULL );
+    }
+    old_size = _fmsize( stg );
+    if( FP_SEG( stg ) == _DGroup() ) {
+        p = stg;
+        if( _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size ) == NULL ) {
+            p = NULL;
         }
-        if( req_size == 0 ) {
+    } else {
+        p = _fexpand( stg, req_size );
+    }
+    if( p == NULL ) {       /* couldn't be expanded inline */
+        p = _fmalloc( req_size );
+        if( p != NULL ) {
+            _mymemcpy( p, stg, old_size );
             _ffree( stg );
-            return( NULL );
-        }
-        old_size = _fmsize( stg );
-        if( FP_SEG( stg ) == _DGroup() ) {
-            p = stg;
-            if( _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size ) == NULL )
-                p = NULL;
         } else {
-            p = _fexpand( stg, req_size );
-        }
-        if( p == NULL ) {       /* couldn't be expanded inline */
-            p = _fmalloc( req_size );
-            if( p != NULL ) {
-                _mymemcpy( p, stg, old_size );
-                _ffree( stg );
+            if( FP_SEG( stg ) == _DGroup() ) {
+                _nexpand( (void _WCNEAR *)FP_OFF( stg ), old_size );
             } else {
-                if( FP_SEG( stg ) == _DGroup() ) {
-                    _nexpand( (void _WCNEAR *)FP_OFF( stg ), old_size );
-                } else {
-                    _fexpand( stg, old_size );
-                }
+                _fexpand( stg, old_size );
             }
         }
-        return( p );
     }
+    return( p );
+}

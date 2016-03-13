@@ -39,20 +39,23 @@
 _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
 {
     int         test_heap;
-    struct heapblk __based(seg) *p;
+    heapblk     __based( seg ) *p;
 
-    if( seg == _DGroup() ) return( _nheapset( fill ) );
+    if( seg == _DGroup() )
+        return( _nheapset( fill ) );
     if( seg == _NULLSEG ) {
         p = 0;
-        for( seg = __bheap; seg; ) {
+        for( seg = __bheap; seg != _NULLSEG; seg = p->nextseg ) {
             test_heap = _bheapset( seg, fill );
-            if( test_heap != _HEAPOK )  return( test_heap );
-            seg = p->nextseg;
+            if( test_heap != _HEAPOK ) {
+                return( test_heap );
+            }
         }
         return( _HEAPOK );
     } else {
         test_heap = _bheapchk( seg );
-        if( test_heap != _HEAPOK )  return( test_heap );
+        if( test_heap != _HEAPOK )
+            return( test_heap );
         return( __HeapSet( seg, fill ) );
     }
 }

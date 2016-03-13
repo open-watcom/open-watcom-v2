@@ -37,15 +37,15 @@
 #include "heapacc.h"
 
 
-_WCRTLINK void _bfree( __segment seg, void __based(void) *offset )
-    {
-        _AccessFHeap();
-        if( offset != _NULLOFF ) {
-            if( seg == _DGroup() ) {
-                _nfree( offset );
-            } else {
-                __MemFree( (unsigned)offset, seg, 0 );
-            }
+_WCRTLINK void _bfree( __segment seg, void __based( void ) *offset )
+{
+    _AccessFHeap();
+    if( offset != _NULLOFF ) {
+        if( seg == _DGroup() ) {
+            _nfree( offset );
+        } else {
+            __MemFree( (unsigned)offset, seg, 0 );
         }
-        _ReleaseFHeap();
     }
+    _ReleaseFHeap();
+}

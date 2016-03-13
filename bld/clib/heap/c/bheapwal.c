@@ -41,9 +41,10 @@ _WCRTLINK int _bheapwalk( __segment seg, struct _heapinfo *entry )
 {
     int     heap_status;
 
-    if( seg == _DGroup() ) return( _nheapwalk( entry ) );
+    if( seg == _DGroup() )
+        return( _nheapwalk( entry ) );
     _AccessFHeap();
-    heap_status = __HeapWalk( entry, seg == _NULLSEG ? __bheap : seg, seg );
+    heap_status = __HeapWalk( entry, (seg == _NULLSEG ? __bheap : seg), seg );
     _ReleaseFHeap();
     return( heap_status );
 }

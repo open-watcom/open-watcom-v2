@@ -39,18 +39,18 @@
 
 #if defined(__BIG_DATA__)
 _WCRTLINK int _heapwalk( struct _heapinfo *entry )
-    {
-        return( _fheapwalk( entry ) );
-    }
+{
+    return( _fheapwalk( entry ) );
+}
 #endif
 
 
 _WCRTLINK int _fheapwalk( struct _heapinfo *entry )
-    {
-        int     heap_status;
+{
+    int     heap_status;
 
-        _AccessFHeap();
-        heap_status = __HeapWalk( entry, __fheap, 0 );
-        _ReleaseFHeap();
-        return( heap_status );
-    }
+    _AccessFHeap();
+    heap_status = __HeapWalk( entry, __fheap, 0 );
+    _ReleaseFHeap();
+    return( heap_status );
+}

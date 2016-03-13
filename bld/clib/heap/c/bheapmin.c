@@ -43,6 +43,7 @@ _WCRTLINK int _bheapshrink( __segment seg )
 
 _WCRTLINK int _bheapmin( __segment seg )
 {
-    if( seg == _DGroup() ) return( _nheapshrink() );
+    if( seg == _DGroup() )
+        return( _nheapshrink() );
     return( __HeapMin( seg == _NULLSEG ? __bheap : seg, seg ) );
 }

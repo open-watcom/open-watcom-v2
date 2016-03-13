@@ -39,7 +39,7 @@
 #if defined(__BIG_DATA__)
 _WCRTLINK size_t _msize( void *p )
 {
-    tag *q;
+    tag     *q;
 
     q = (tag *)(((unsigned char *)p) - TAG_SIZE);
     return( ( *q & ~1 ) - TAG_SIZE );
@@ -48,7 +48,7 @@ _WCRTLINK size_t _msize( void *p )
 
 _WCRTLINK size_t _fmsize( void _WCFAR *p )
 {
-    tag _WCFAR *q;
+    tag     _WCFAR *q;
 
     q = (tag _WCFAR *)(((unsigned char _WCFAR *)p) - TAG_SIZE);
     return( ( *q & ~1 ) - TAG_SIZE );
