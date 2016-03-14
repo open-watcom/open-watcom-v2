@@ -57,7 +57,13 @@ include struct.inc
         defp    __doserror1_
         _if     c               ; if error
           and   EAX,0000FFFFh   ; - get rid of any garbage bits
+ifdef __STACK__
+          push  EAX             ; - pass DOS error code on stack
+endif
           call  __set_errno_dos ; - set errno, return -1
+ifdef __STACK__
+          add   esp,4           ; - cleanup stack
+endif
         _else                   ; else
           sub   EAX,EAX         ; - return 0
         _endif                  ; endif
