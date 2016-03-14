@@ -257,50 +257,6 @@ bld_extra_defines = -DINLINETEST
 !  undef use_dll
 !endif
 
-!ifndef log_file
-!  ifdef wasmtest_name
-!    ifdef %WASMTEST_LOG_FILE
-!      define log_file $+$(%WASMTEST_LOG_FILE)$-
-!    else ifdef %WASMTEST_NAME
-!      define log_file $(wasmtest_dir)/$+$(%WASMTEST_NAME)$-.log
-!    else
-!      define log_file $(wasmtest_dir)/$(wasmtest_name).log
-!    endif
-!  else ifdef ctest_name
-!    ifdef %CTEST_LOG_FILE
-!      define log_file $+$(%CTEST_LOG_FILE)$-
-!    else ifdef %CTEST_NAME
-!      define log_file $(ctest_dir)/$+$(%CTEST_NAME)$-.log
-!    else
-!      define log_file $(ctest_dir)/$(ctest_name).log
-!    endif
-!  else ifdef ftest_name
-!    ifdef %FTEST_LOG_FILE
-!      define log_file $+$(%FTEST_LOG_FILE)$-
-!    else ifdef %FTEST_NAME
-!      define log_file $(ftest_dir)/$+$(%FTEST_NAME)$-.log
-!    else
-!      define log_file $(ftest_dir)/$(ftest_name).log
-!    endif
-!  else ifdef plustest_name
-!    ifdef %PLUSTEST_LOG_FILE
-!      define log_file $+$(%PLUSTEST_LOG_FILE)$-
-!    else ifdef %PLUSTEST_NAME
-!      define log_file $(plustest_dir)/$+$(%PLUSTEST_NAME)$-.log
-!    else
-!      define log_file $(plustest_dir)/$(plustest_name).log
-!    endif
-!  else ifdef mathtest_name
-!    ifdef %MATHTEST_LOG_FILE
-!      define log_file $+$(%MATHTEST_LOG_FILE)$-
-!    else ifdef %PLUSTEST_NAME
-!      define log_file $(mathtest_dir)/$+$(%MATHTEST_NAME)$-.log
-!    else
-!      define log_file $(mathtest_dir)/$(mathtest_name).log
-!    endif
-!  endif
-!endif
-
 !ifndef targ_env_386
 !  ifdef wasmtest_name
 !    ifdef %WASMTEST_TARG_ENV_386
