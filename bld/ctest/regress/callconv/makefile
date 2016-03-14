@@ -1,6 +1,6 @@
 ctest_name = callconv
 
-!include testenv.mif
+!include testenv1.mif
 !include source/callconv.mif
 
 test_flags = -we-w0 -Isource

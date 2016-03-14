@@ -1,6 +1,6 @@
 plustest_name = nullptr
 
-!include testenv.mif
+!include testenv1.mif
 
 exes = nullptr.$(exe)
 

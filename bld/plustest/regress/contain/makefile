@@ -2,7 +2,7 @@ plustest_name = contain
 # this is a long test so quit if something goes wrong
 no_continue = yes
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 save_out = $(arch)_1

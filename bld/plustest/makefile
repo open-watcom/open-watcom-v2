@@ -2,7 +2,7 @@
 
 plustest_name = result
 
-!include testenv.mif
+!include testenv1.mif
 
 test_grp_list = &
     arith &

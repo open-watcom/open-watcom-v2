@@ -1,6 +1,6 @@
 ctest_name = positive
 
-!include testenv.mif
+!include testenv1.mif
 !include source/positive.mif
 
 test_flags = -we-w0 -Isource

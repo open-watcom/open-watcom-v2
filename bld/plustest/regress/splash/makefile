@@ -1,6 +1,6 @@
 plustest_name = splash
 
-!include testenv.mif
+!include testenv1.mif
 
 objs = &
 assoc.obj &

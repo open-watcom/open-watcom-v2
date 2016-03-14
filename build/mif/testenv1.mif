@@ -1,0 +1,185 @@
+.EXTENSIONS:
+.EXTENSIONS: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .gcp .c .cpp .for .asm .src .mif
+.mif: ..;$(mif_path)
+
+!include testenv.mif
+
+.ERROR
+    @%append $(%ERROR_FILE) $(%ERROR_MSG)
+
+start : .SYMBOLIC .EXPLICIT
+!ifdef dll_loaded
+!  ifdef wasmtest_name
+!  else ifdef ctest_name
+     @echo using !loaddll $(dll_wcc_$(arch))
+!  else ifdef ftest_name
+     @echo using !loaddll $(dll_wfc_$(arch))
+!  else ifdef plustest_name
+     @echo using !loaddll $(dll_wpp_$(arch))
+!  else ifdef mathtest_name
+     @echo using !loaddll $(dll_wcc_$(arch))
+!  endif
+!endif
+    @echo ==== $(%__CTIME__) $(%__CWD__) ====
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
+    %append $(log_file) TEST $(arch)/$(alt_error)
+
+test.lnk : $(__MAKEFILES__) .EXPLICIT
+    %create $@
+    @%append $@ $(targ_ldb_$(targ_env_$(arch)))
+    @%append $@ $(targ_lnk_$(targ_env_$(arch)))
+    @%append $@ $(lnk_any)
+    @%append $@ $(stack_$(arch))
+
+.c.obj:
+    @set ERROR_MSG=failure to compile $^&
+    @%make set_path_wcc
+    $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @%make set_old_path
+
+.cpp.obj:
+    @set ERROR_MSG=failure to compile $^@
+    @%make set_path_wpp
+    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @%make set_old_path
+
+.gc.obj:
+    @set ERROR_MSG=failure to compile $^&
+    @%make set_path_wcc
+    $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    @%make set_old_path
+    @%append $(%ERROR_FILE) PASS compiling $^&
+
+.gcp.obj:
+    @set ERROR_MSG=failure to compile $^&
+    @%make set_path_wpp
+    $(wpp_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    @%make set_old_path
+    @%append $(%ERROR_FILE) PASS compiling $^&
+
+.for.obj:
+    @set ERROR_MSG=failure to compile $^@
+    @%make set_path_wfc
+    $(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
+    @%make set_old_path
+
+.asm.obj:
+    @set ERROR_MSG=failure to compile $^@
+    %write xxxxxxxx.tmp  -zld -wx -nm=$[@ $(asm_flags_$^&) $[@ -fr=$^&.out -fo=$@
+    -$(wasm_$(arch)) @xxxxxxxx.tmp
+    @%create tmp.tmp
+    @if not exist $^&.out @%create $^&.out
+    @set CHK_CHECK=diff -i -b $^&.out tmp.tmp
+    @if exist $^&.chk @set CHK_CHECK=diff -i -b $^&.out $^&.chk
+    $(%CHK_CHECK)
+    @%append $(%ERROR_FILE) PASS compiling $[@
+    @if not exist $@ @%create $@
+
+# Rule for compiling via preprocessor
+.p.obj:
+    @set ERROR_MSG=failure to preprocess $^@
+    @%make set_path_wcc
+    $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
+    @set ERROR_MSG=failure to compile $[&.i
+    $(wcc_$(arch)) $[&.i $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    @%make set_old_path
+
+.obj.dis:
+    @set ERROR_MSG=failure to decode $[@
+    @$(buildtest_prefix)wdis -l=$@ -a -ff $[@
+    @set ESM_CHECK=%null
+    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
+    $(%ESM_CHECK)
+    @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @set EMP_CHECK=@%null
+    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.dib:
+    @set ERROR_MSG=failure to decode $[@
+    @$(buildtest_prefix)wdis -l=$@ -ff $[@
+    @set ESM_CHECK=%null
+    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dib $^&.esm
+    $(%ESM_CHECK)
+    @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @set EMP_CHECK=@%null
+    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.dum: .SYMBOLIC
+    @set ERROR_MSG=failure to decode $[@
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.ls1:
+    @set ERROR_MSG=failure to decode $[@
+    $(buildtest_prefix)wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed | awk -f $(wasmtest_dir)/fixlst3.awk -v OUTFILE=$^.
+    @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.asm
+    @if exist $(wasmtest_dir)/inline/$^&.chk @set CHK_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.chk
+    $(%CHK_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.obj.lst:
+    @set ERROR_MSG=failure to decode $[@
+    @set ESM_CHECK=@%null
+    @if exist $(wasmtest_dir)/inline/$^&.esm @set ESM_CHECK=diff -i -b $^&.dis $(wasmtest_dir)/inline/$^&.esm
+    -$(buildtest_prefix)wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed $(extra_sed_$^*) >$^&.dis
+    $(%ESM_CHECK)
+    @set EMP_CHECK=@%null
+    @if exist $(wasmtest_dir)/inline/$^&.emp @set EMP_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.emp
+    -$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$@
+    $(%EMP_CHECK)
+    @%append $(%ERROR_FILE) PASS decoding $[@
+
+.c.err:
+!ifdef plustest_name
+    @%make set_path_wpp
+    -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) -fo=.obj
+!else
+    @%make set_path_wcc
+    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) -fo=.obj
+!endif
+    @%make set_old_path
+    @if not exist $@ %write $@ I did not generate errors for $^&
+
+.c.ser:
+!ifdef plustest_name
+    @%make set_path_wpp
+    -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) $(archdep_opts) -fo=.obj
+!else
+    @%make set_path_wcc
+    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
+!endif
+    @%make set_old_path
+    @if not exist $@ %write $@ I did not generate errors for $^&
+
+.obj.$(exe):
+    @set ERROR_MSG=*** failure to link $^&
+    @%make set_path_wlink
+    $(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
+    @%append $(%ERROR_FILE) PASS compiling $^&
+    @set ERROR_MSG=*** failure to execute $^&
+    @%make set_path_rtdll
+!ifdef ftest_name
+    $(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
+!else ifeq plustest_name except
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+!else
+    $(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+!endif
+    @%make set_old_path
+    @%append $(%ERROR_FILE) PASS executing $^&
+!ifdef ftest_name
+    diff $*.out expected/$*.chk >> exec.out
+!endif
+
+./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
+    $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
+
+./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
+    $(bld_cl) $(bld_cl_opts) $<
+
+./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
+    $(bld_cl) $(bld_cl_opts) $<
+

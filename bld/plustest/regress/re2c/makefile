@@ -1,6 +1,6 @@
 plustest_name = re2c
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 test_flags = -d2

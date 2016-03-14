@@ -1,6 +1,6 @@
 ftest_name = positive
 
-!include testenv.mif
+!include testenv1.mif
 !include source/positive.mif
 
 !ifdef test1

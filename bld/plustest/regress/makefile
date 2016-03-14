@@ -1,6 +1,6 @@
 plustest_name = regress
 
-!include testenv.mif
+!include testenv1.mif
 
 test : .symbolic ./chktest.exe
     @set ERROR_FILE=error.out

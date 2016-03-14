@@ -4,7 +4,7 @@ wasmtest_name = result
 
 all_tests = test1 test2 test3 ideal diag
 
-!include testenv.mif
+!include testenv1.mif
 
 test : .symbolic start clean start_test $(all_tests) ./chktest.exe
     @set ERROR_FILE=error.out

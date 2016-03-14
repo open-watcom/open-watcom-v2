@@ -1,6 +1,6 @@
 plustest_name = wclass
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 test_flags_i86 = -d2-ml

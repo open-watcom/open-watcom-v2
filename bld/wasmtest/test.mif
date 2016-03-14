@@ -1,6 +1,6 @@
 alt_error = 00
 
-!include testenv.mif
+!include testenv1.mif
 
 test : .symbolic start clean start_test $(dis_objs) $(objs) finish_test save
 

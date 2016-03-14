@@ -1,6 +1,6 @@
 plustest_name = nih
 
-!include testenv.mif
+!include testenv1.mif
 
 objs =  &
     arrayob.obj  &

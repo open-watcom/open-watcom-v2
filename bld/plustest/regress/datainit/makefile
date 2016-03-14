@@ -1,6 +1,6 @@
 plustest_name = datainit
 
-!include testenv.mif
+!include testenv1.mif
 
 exes = &
 idata01.$(exe) &

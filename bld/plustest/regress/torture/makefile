@@ -1,6 +1,6 @@
 plustest_name = torture
 
-!include testenv.mif
+!include testenv1.mif
 
 objs = &
     assert.obj &
