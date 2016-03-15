@@ -69,7 +69,7 @@ void tr4() {
     while(count>=0)
     {
       printf("Deleting no %d\n",count);
-      delete [] ptrs[count];
+      delete [] (char *)ptrs[count];
       --count;
     }
     throw;
