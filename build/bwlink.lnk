@@ -50,9 +50,14 @@ system begin windows
     option osname='Windows 16-bit'
     libpath %OWSRCDIR%/clib/library/windows.086/ms
     libpath %OWSRCDIR%/clib/library/windows.086/mc
+    libpath %OWSRCDIR%/clib/library/windows.086/mm
     libpath %OWSRCDIR%/clib/library/windows.086/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
     libpath %OWSRCDIR%/mathlib/library/windows.286/mc
     libpath %OWSRCDIR%/mathlib/library/windows.287/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
     libpath %OWSRCDIR%/mathlib/library/windows.286/ml
     libpath %OWSRCDIR%/mathlib/library/windows.287/ml
     libpath %OWSRCDIR%/cpplib/library/windows.086/mc
@@ -376,8 +381,11 @@ end
 system begin win386
     option osname='Windows 32-bit'
     libpath %OWSRCDIR%/clib/library/windows.386/mf_r
+    libpath %OWSRCDIR%/clib/library/windows.386/mf_s
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
     libpath %OWSRCDIR%/fpuemu/386/stub386
     libpath %OWSRCDIR%/win386/conv/win386
     format phar rex ^
