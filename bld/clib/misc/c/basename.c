@@ -74,9 +74,12 @@ _WCRTLINK char *basename( char *path )
              */
             path_buf[1] = NULLCHAR;
         } else {
-            while( *s != NULLCHAR ) {
-                if( IS_DIR_SEP( *s++ ) )
+            char    c;
+
+            while( (c = *s++) != NULLCHAR ) {
+                if( IS_DIR_SEP( c ) ) {
                     last_part = s;
+                }
                 /* If the rest of the path is a sequence of path separators,
                  * delete them by inserting a null terminator.
                  */
