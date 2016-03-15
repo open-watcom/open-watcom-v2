@@ -3,12 +3,30 @@
 
 clibtest_name = ntthrd
 
-all: tstdll1.dll tstexe1.exe
+ntexes = tstdll1.dll tstexe1.exe
+
+#all : start clean start_test $(exes) tests .symbolic
+all : start clean start_test $(ntexes) nttests .symbolic
+#    diff $(%ERROR_FILE) test.chk
+    %append $(log_file) PASS $(%__CWD__)
+    @%make clean
+
+!include ../mif/master.mif
+
+nttests: ntrunwnt .symbolic
+    @echo The clib tests completed: SUCCESS!
+
+ntrunwnt : tstexe1.exe .symbolic
+    @$[@
 
 tstdll1.dll : ../c/tstrtnt1.c
-        wcl386 -zq -wx -i"$(%WATCOM)/h/nt" -d2 -s -bt=nt -bd -bm -fm -DQA_MAKE_DLL -l=nt_dll -fe=tstdll1.dll -"option offset=0x01000000" ../c/tstrtnt1.c
-        wlib -q -o=tstdll1.lib tstdll1.dll
+    $(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt -bd -bm -DQA_MAKE_DLL -fo=$^*.obj $(c_dbg_flags)
+    @%make set_path_wlink
+    $(linker) SYSTEM nt_dll $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
+    @%make set_old_path
 
-tstexe1.exe : ../c/tstrtnt1.c tstdll1.dll
-        wcl386 -zq -i"$(%WATCOM)/h/nt" -fm -bm -bt=nt -DQA_MAKE_EXE -l=nt -fe=tstexe1.exe ../c/tstrtnt1.c tstdll1.lib
-
+tstexe1.exe : ../c/tstrtnt1.c tstdll1.lib
+    $(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt -bm -DQA_MAKE_EXE -fo=$^*.obj $(c_dbg_flags)
+    @%make set_path_wlink
+    $(linker) SYSTEM nt $(link_opts) $(link_x86) opt offset=0x01000000 FILE $^*.obj LIBRARY $]@
+    @%make set_old_path

@@ -86,7 +86,7 @@ void QA_func1( void );
 // check that threading works at all in the exe
 void exe_threadfunc( void* private_data )
 {
-    static counter = 0;
+    static int counter = 0;
     ++counter;
 
     printf( ".exe threadfunc entered %2d times.\n", counter );
@@ -103,7 +103,7 @@ void do_start_threads( void )
 }
 
 
-int main()
+int main( void )
 {
     do_start_threads();
     sleep( 1 /* second */); // Let'em die
