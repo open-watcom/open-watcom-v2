@@ -96,8 +96,8 @@
 !inject runcw          r_dos r_win r_nt386
 !inject rund4g         r_dos r_win r_nt386
 #!inject runpls         r_dos r_win r_nt386
-!inject runw16               r_win #r_nt386
-!inject runw386              r_win #r_nt386
+!inject runw16               r_win r_nt386
+!inject runw386              r_win r_nt386
 !inject runos2                             r_os2
 !inject runos3                             r_os2
 !inject runwnt                     r_nt386                         r_ntx64
