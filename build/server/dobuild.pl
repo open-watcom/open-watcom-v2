@@ -339,6 +339,7 @@ sub make_test_batch
     print BATCH 'rm -f wasmtest/*.log';
     print BATCH 'rm -f f77test/*.log';
     print BATCH 'rm -f plustest/*.log';
+    print BATCH 'rm -f clibtest/*.log';
     print BATCH 'builder -i test';
     close(BATCH);
     # On Windows it has no efect
@@ -474,6 +475,7 @@ sub run_tests
     $cresult = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
     $presult = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
     $aresult = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
+    $presult = process_log("\tC run-time libr. :", "$OW\/bld\/clibtest\/result.log");
     print REPORT '';
 
     if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success') {
