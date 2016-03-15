@@ -493,7 +493,10 @@ static void fmt4hex( unsigned value, CHAR_TYPE *buf, int maxlen )
 
     __F_NAME(itoa,_itow)( value, buffer, 16 );
     len = __F_NAME(strlen,wcslen)( buffer );
-    for( i = maxlen; i-- > 0 && len-- > 0; ) {
+    /* first check len, if it is not OK don't update i
+     * because i value is used next for adding leading zeros
+     */
+    for( i = maxlen; len-- > 0 && i-- > 0; ) {
         buf[i] = buffer[len];
     }
     while( i-- > 0 ) {
