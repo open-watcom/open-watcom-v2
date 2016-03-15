@@ -66,14 +66,13 @@ _WCRTLINK char *dirname( char *path )
         if( HAS_DRIVE( s ) )
             s += 2;
 #endif
-        if( !IS_DIR_SEP( *s++ ) ) {
+        if( !IS_DIR_SEP( *s ) ) {
             /* If path is not absolute, return "."
              */
-            --s;
             s[0] = '.';
             s[1] = NULLCHAR;
         } else {
-            char    *last_sep = s;
+            char    *last_sep = ++s;
 
             while( *s != NULLCHAR ) {
                 /* If the rest of the path is a sequence of path separators,
