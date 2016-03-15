@@ -186,23 +186,28 @@ static void newLine( LPWDATA w )
  */
 void _AddLine( LPWDATA w, const void *in_data, unsigned len )
 {
-    int                 i;
-    BOOL                hadbreak;
-    HWND                hwnd;
-    int                 tabcnt = 0;
-    int                 nlcnt = 0;
-    int                 curbufoff = 0;
-    const char          *data;
+    int                     i;
+    BOOL                    hadbreak;
+    HWND                    hwnd;
+    int                     tabcnt = 0;
+    int                     nlcnt = 0;
+    int                     curbufoff = 0;
 #ifdef _MBCS
-    static char         leadByte;
-    static int          leadByteWaiting;
-    unsigned char       ch[MB_CUR_MAX+1];
-    LPBYTE              p;
+    const unsigned char     *data;
+    static unsigned char    leadByte;
+    static int              leadByteWaiting;
+    unsigned char           ch[MB_CUR_MAX+1];
+    LPBYTE                  p;
 #else
-    char                ch;
+    const char              *data;
+    char                    ch;
 #endif
 
+#ifdef _MBCS
+    data = (const unsigned char *)in_data;
+#else
     data = (const char *)in_data;
+#endif
     hwnd = w->hwnd;
 
     _AccessWinLines();

@@ -172,7 +172,7 @@ static int __read_wide_char( FILE *fp, wchar_t *wc )
         if( !fread( &mbc[0], 1, 1, fp ) )
             return( 0 );
 
-        if( _ismbblead( mbc[0] ) ) {
+        if( _ismbblead( (unsigned char)mbc[0] ) ) {
             if( !fread( &mbc[1], 1, 1, fp ) )
                 return( 0 );
         }

@@ -687,7 +687,7 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
 
     while( specs->_n1 > 0 ) {
         mbBuf[0] = *mbPtr++;
-        if( _ismbblead( mbBuf[0] ) )
+        if( _ismbblead( (unsigned char)mbBuf[0] ) )
             mbBuf[1] = *mbPtr++;
 
         bytes = mbtowc( &wc, mbBuf, MB_CUR_MAX );
@@ -1034,7 +1034,7 @@ processNumericTypes:
 
             mbPtr = va_arg( pargs->v, char* );
             mbBuf[0] = mbPtr[0];
-            if( _ismbblead( mbBuf[0] ) )
+            if( _ismbblead( (unsigned char)mbBuf[0] ) )
                 mbBuf[1] = mbPtr[1];
 
             if( mbtowc( &wc, mbBuf, MB_CUR_MAX ) != -1 ) {
@@ -1053,7 +1053,7 @@ processNumericTypes:
             wc = va_arg( pargs->v, int );
             if( wctomb( mbBuf, wc ) != -1 ) {
                 buffer[0] = mbBuf[0];
-                if( _ismbblead( mbBuf[0] ) ) {
+                if( _ismbblead( (unsigned char)mbBuf[0] ) ) {
                     buffer[1] = mbBuf[1];
                     specs->_n0++;
                 }

@@ -35,12 +35,8 @@
 #include "riscstr.h"
 
 
-#ifdef __WIDECHAR__
- wchar_t *wcsrchr( const wchar_t *s, wint_t c )
-#else
- char *strrchr( const char *s, int c )
-#endif
-/*********************************************/
+CHAR_TYPE *__F_NAME(strrchr,wcsrchr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
+/************************************************************************/
 {
     RISC_DATA_LOCALREF;
     UINT                *result = NULL;

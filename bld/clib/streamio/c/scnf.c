@@ -275,7 +275,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 if( wctomb( mbBuf, c ) != -1 ) {
                     *PTR_ASCII( str ) = mbBuf[0];
                     str = (FAR_STRING)( PTR_ASCII( str ) + 1 );
-                    if( _ismbblead( mbBuf[0] ) )  {
+                    if( _ismbblead( (unsigned char)mbBuf[0] ) )  {
                         CHECK_ELEMS( maxelem, nelem, -1 );
                         *PTR_ASCII( str ) = mbBuf[1];
                         str = (FAR_STRING)( PTR_ASCII( str ) + 1 );
@@ -296,7 +296,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 char        mbBuf[MB_CUR_MAX];
 
                 mbBuf[0] = c;
-                if( _ismbblead( mbBuf[0] ) )
+                if( _ismbblead( (unsigned char)mbBuf[0] ) )
                     mbBuf[1] = cget( specs );
                 if( mbtowc( &wc, mbBuf, MB_CUR_MAX ) != -1 ) {
                     *PTR_WIDE( str ) = wc;
@@ -392,7 +392,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
 
                 if( wctomb( mbBuf, c ) != -1 ) {
                     *str++ = mbBuf[0];
-                    if( _ismbblead( mbBuf[0] ) ) {
+                    if( _ismbblead( (unsigned char)mbBuf[0] ) ) {
                         CHECK_ELEMS( maxelem, nelem, -1 );
                         *str++ = mbBuf[1];
                     }
@@ -412,7 +412,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                 char        mbBuf[MB_CUR_MAX];
 
                 mbBuf[0] = c;
-                if( _ismbblead( mbBuf[0] ) )
+                if( _ismbblead( (unsigned char)mbBuf[0] ) )
                     mbBuf[1] = cget( specs );
                 if( mbtowc( &wc, mbBuf, MB_CUR_MAX ) != -1 ) {
                     *PTR_WIDE( str ) = wc;
