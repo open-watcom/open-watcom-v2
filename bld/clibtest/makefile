@@ -3,10 +3,8 @@ clibtest_name = result
 !include testenv2.mif
 
 test_grp_list = &
-bios &
 char &
 direct &
-_dos &
 environ &
 file &
 fmtint &
@@ -34,10 +32,15 @@ streamio &
 string &
 time
 
-!ifdef __NT__
-test_grp_list += ntthrd
+
+!ifdef __DOS__
+test_grp_list += bios _dos
+!else ifdef __NT__
+test_grp_list += bios _dos ntthrd
 !else ifdef __OS2__
-test_grp_list += os2thrd
+test_grp_list += _dos os2thrd
+!else ifdef __UNIX__
+test_grp_list +=
 !endif
 
 # unused tests
@@ -45,14 +48,14 @@ test_grp_list += os2thrd
 #
 
 test : .symbolic start clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=
+#    @set ERROR_FILE=error.out
+#    @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
     %append $(log_file) PASS $(%__CWD__)
     %make clean
-    
+
 start_test: .symbolic
     @if exist *.sav rm -f *.sav
     @if exist $(log_file) rm -f $(log_file)

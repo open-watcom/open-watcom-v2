@@ -32,7 +32,7 @@
 #                               win_m
 #                               win_l
 # W386  Windows 3.x 32-bit      w386_3r
-#                               w386_3s 
+#                               w386_3s
 # WNT   Windows NT Console      wnt_3r
 #                               wnt_3s
 # WNT   Windows NT Window       wntw_3r
@@ -431,25 +431,25 @@ wntw_3s.exe : $(srcfile)
     @%make set_old_path
 
 wnt_axp.exe : $(srcfile)
-    $(wcc_axp) $[@ $(test_flags) $(comp_axp) -bt=nt $(c_dbg_flags)
+    $(wcc_axp) $[@ $(test_flags) $(test_flags_axp) -bt=nt $(c_dbg_flags)
     @%make set_path_wlink
     $(linker) SYSTEM ntaxp $(link_opts) $(link_axp) FILE $^*.obj
     @%make set_old_path
 
 wntw_axp.exe : $(srcfile)
-    $(wcc_axp) $[@ $(test_flags) $(comp_axp) $(defwin) -bt=nt $(c_dbg_flags)
+    $(wcc_axp) $[@ $(test_flags) $(test_flags_axp) $(defwin) -bt=nt $(c_dbg_flags)
     @%make set_path_wlink
     $(linker) SYSTEM ntaxp_win $(link_opts) $(link_axp) FILE $^*.obj
     @%make set_old_path
 
 lnx_3r : $(srcfile)
-    $(wcc_386) $[@ $(test_flags) $(comp_386) -3r -bt=linux $(c_dbg_flags)
+    $(wcc_386) $[@ $(test_flags) $(test_flags_386) -3r -bt=linux $(c_dbg_flags)
     @%make set_path_wlink
     $(linker) SYSTEM linux $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 lnx_3s : $(srcfile)
-    $(wcc_386) $[@ $(test_flags) $(comp_386) -3s -bt=linux $(c_dbg_flags)
+    $(wcc_386) $[@ $(test_flags) $(test_flags_386) -3s -bt=linux $(c_dbg_flags)
     @%make set_path_wlink
     $(linker) SYSTEM linux $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
@@ -504,7 +504,7 @@ runw386 :  $(w386exes) .symbolic
     @echo Executing w386_3s.exe
     @w386_3s.exe
     @type tmp.log
-   
+
 # Run OS/2 16-bit executables
 runos2 : $(os2exes) .symbolic
     @os2_s.exe
