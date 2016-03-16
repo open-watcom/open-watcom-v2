@@ -6,7 +6,7 @@
 !include testenv.mif
 
 .ERROR
-    @%append $(%ERROR_FILE) $(%ERROR_MSG)
+#    @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
 !ifndef log_file
 !  ifdef clibtest_name
