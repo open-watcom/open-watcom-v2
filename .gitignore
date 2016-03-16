@@ -103,6 +103,9 @@
 /bld/clib/alias/a/*
 /bld/clib/library/*/*/*.def
 #
+/bld/clibtest/regress/*/lnx_3r
+/bld/clibtest/regress/*/lnx_3s
+#
 /bld/cpplib/library/*/*/*.def
 #
 /bld/ctest/*.sav
