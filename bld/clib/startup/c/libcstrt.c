@@ -48,7 +48,7 @@
 #include "snglthrd.h"
 #include "mthread.h"
 #include "trdlstac.h"
-#include "_exit.h"
+
 
 /*****************************************************************************
 //  TLS slot key

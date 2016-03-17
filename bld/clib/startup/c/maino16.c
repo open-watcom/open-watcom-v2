@@ -57,7 +57,7 @@
 #include "osmain.h"
 #include "cmain.h"
 #include "maxthrds.h"
-#include "_exit.h"
+
 
 #if defined( __MT__ )
 

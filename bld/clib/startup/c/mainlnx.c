@@ -42,7 +42,7 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
-#include "_exit.h"
+
 
 #if defined( __MT__ )
 _WCRTLINK int *__threadid( void )

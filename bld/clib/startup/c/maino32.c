@@ -57,7 +57,7 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
-#include "_exit.h"
+
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;

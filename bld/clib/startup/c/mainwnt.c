@@ -62,7 +62,7 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
-#include "_exit.h"
+
 
 DWORD __TlsIndex = NO_INDEX;
 

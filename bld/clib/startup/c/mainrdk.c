@@ -53,7 +53,6 @@
 #include "trdlstac.h"
 #include "osmain.h"
 #include "cmain.h"
-#include "_exit.h"
 
 
 extern void _cexit_( unsigned ret_code );

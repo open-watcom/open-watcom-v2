@@ -52,7 +52,7 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
-#include "_exit.h"
+
 
 static char    DllName[_MAX_PATH];
 

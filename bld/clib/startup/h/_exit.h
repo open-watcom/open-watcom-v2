@@ -29,12 +29,6 @@
 ****************************************************************************/
 
 
-#ifdef __NETWARE__
-extern void _exit( int status );
-extern void __exit( unsigned rc );
-#else
-extern _WCRTLINK void _exit( int status );
-extern _WCRTLINK void __exit( unsigned rc );
+#if defined(__OS2_286__) && defined(__SW_BD)
 extern _WCRTLINK void _UnloadCLib( void );
 #endif
-

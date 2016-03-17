@@ -34,7 +34,7 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "exitwmsg.h"
-#include "_exit.h"
+
 
 _WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 /******************************************************************/
