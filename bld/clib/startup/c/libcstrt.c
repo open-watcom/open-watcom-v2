@@ -37,6 +37,7 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
