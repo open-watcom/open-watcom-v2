@@ -165,22 +165,9 @@ _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_co
 :: These functions from the standard library need to be in namspace std
 :: in C++ to avoid conflicts on using declarations if standard headers
 :: are also included.
-#ifdef __cplusplus
-namespace std {
-#endif
-_WCRTLINK extern void   abort( void );
-_WCRTLINK extern void   exit( int __status );
-_WCRTLINK extern char   *getenv( const char *__name );
-_WCRTLINK extern int    system( const char *__cmd );
-#ifdef __cplusplus
-}
-using std::abort;
-using std::exit;
-using std::getenv;
-using std::system;
-#endif
+:include process1.sp
 
-_WCRTLINK extern void   _exit( int __status );
+:include _exit.sp
 
 :segment QNX | LINUX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))

@@ -37,7 +37,6 @@ using std::size_t;
 #endif
 
 // C99 functions in stdlib.h
-using std::abort;
 using std::abs;
 using std::atexit;
 using std::atof;
@@ -47,9 +46,7 @@ using std::atoll;
 using std::bsearch;
 using std::calloc;
 using std::div;
-using std::exit;
 using std::free;
-using std::getenv;
 using std::labs;
 using std::ldiv;
 using std::malloc;
@@ -69,7 +66,8 @@ using std::strtol;
 using std::strtoll;
 using std::strtoul;
 using std::strtoull;
-using std::system;
+
+:include process1.sp
 
 :include ext.sp
 :segment !NO_WIDECHAR
@@ -149,8 +147,6 @@ typedef struct  {
     long long   rem;
 } lldiv_t;
 
-_WCRTLINK extern void    abort( void );
-
 _WCIRTLINK extern int    abs( int __j );
 #if defined(_M_IX86) && 0
 #pragma aux abs     parm nomemory modify nomemory;
@@ -165,10 +161,8 @@ _WCRTLINK extern void    *bsearch( const void *__key, const void *__base,
                                   int (*__compar)(const void *__pkey, const void *__pbase) );
 _WCRTLINK extern void    *calloc( size_t __n, size_t __size );
 _WCIRTLINK extern div_t  div( int __numer, int __denom );
-_WCRTLINK extern void    exit( int __status );
 _WCRTLINK extern void    _Exit( int __status );
 _WCRTLINK extern void    free( void *__ptr );
-_WCRTLINK extern char    *getenv( const char *__name );
 
 _WCIRTLINK extern long int labs( long int __j );
 #if defined(_M_IX86) && 0
@@ -206,12 +200,14 @@ _WCRTLINK extern long int strtol( const char *__nptr, char **__endptr, int __bas
 _WCRTLINK extern long long int strtoll( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long strtoul( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__endptr, int __base );
-_WCRTLINK extern int     system( const char *__string );
 
 :segment CNAME
 } // namespace std
 
 :endsegment
+:keep  NOUSING
+:include process1.sp
+
 #if defined(__INLINE_FUNCTIONS__)
 :segment CNAME
 namespace std {
@@ -242,7 +238,7 @@ namespace std {
 :endsegment
 :segment QNX | LINUX
 :include extunix.sp
-_WCRTLINK extern void    _exit( int __status );
+:include _exit.sp
 :include extepi.sp
 
 :endsegment
@@ -255,7 +251,7 @@ _WCRTLINK extern void    break_off( void );
 _WCRTLINK extern unsigned atoh( const char *__nptr );
 :endsegment
 :segment DOS
-_WCRTLINK extern void    _exit( int __status );
+:include _exit.sp
 :endsegment
 _WMRTLINK extern char    *ecvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char    *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
