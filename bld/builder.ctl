@@ -250,6 +250,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
 [ BLOCK . . ]
 #============
