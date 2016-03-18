@@ -3,6 +3,7 @@ clibtest_name = result
 !include testenv2.mif
 
 test_grp_list = &
+cgsupp &
 char &
 direct &
 environ &
