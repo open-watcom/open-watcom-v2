@@ -135,6 +135,8 @@ link_opts = NAME $^* OPTION quiet, map, symf
 link_opts = NAME $^* OPTION quiet, map
 !endif
 
+!ifdef srcfile
+
 !ifdef b_$(bld_os)$(bld_cpu)
 exes = $(b_$(bld_os)$(bld_cpu))
 !else ifdef b_$(bld_os)
@@ -147,6 +149,7 @@ rundeps = $(r_$(bld_os)$(bld_cpu))
 rundeps = $(r_$(bld_os))
 !endif
 
+!endif
 
 test : start clean start_test $(exes) tests .symbolic
 #    diff $(%ERROR_FILE) test.chk
