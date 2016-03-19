@@ -62,6 +62,11 @@ _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
     {
         __exit_with_msg( msg, retcode );
     }
+#if defined (_NETWARE_CLIB)
+    ExitThread( 0, retcode );
+#else
+    NXThreadExit(&retcode);
+#endif
 }
 
 #if defined (_NETWARE_LIBC)

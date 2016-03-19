@@ -60,4 +60,5 @@ _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
     if( !__EnterWVIDEO( msg ) ) {
         __exit_with_msg( msg, retcode );
     }
+    __exit( retcode );
 }
