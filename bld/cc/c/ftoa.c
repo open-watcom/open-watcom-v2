@@ -49,7 +49,7 @@ char *ftoa( FLOATVAL *flt )
     cvt.expwidth = 0;
     cvt.expchar = 0;
     __LDcvt( &flt->ld, &cvt, mant );
-    if( !isdigit( *mant ) ) {
+    if( !isdigit( (unsigned char)*mant ) ) {
         /* special magical thingy (nan, inf, ...) */
         strcpy( buf, mant );
         return( buf );
