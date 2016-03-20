@@ -36,19 +36,6 @@
     extern "C" {
 #endif
 
-#undef _EWM_PARM1
-#undef _EWM_PARM2
-#if defined(__386__)
-    #define _EWM_PARM1  eax
-    #define _EWM_PARM2  edx
-#elif defined( _M_I86 )
-    #define _EWM_PARM1  ax dx
-    #define _EWM_PARM2  bx
-#else
-    #define _EWM_PARM1
-    #define _EWM_PARM2
-#endif
-
 // C interface
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
@@ -62,7 +49,20 @@ _WCRTLINK _NORETURN extern void __exit( unsigned );
 // - always uses register calling convention
 // - this function is only called from the C implementation
 //   of __exit_with_msg
-extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
+#undef _EWM_PARM1
+#undef _EWM_PARM2
+#if defined(__386__)
+    #define _EWM_PARM1  eax
+    #define _EWM_PARM2  edx
+#elif defined( _M_I86 )
+    #define _EWM_PARM1  ax dx
+    #define _EWM_PARM2  bx
+#else
+    #define _EWM_PARM1
+    #define _EWM_PARM2
+#endif
+
+_NORETURN extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #ifdef _M_IX86
     #pragma aux __do_exit_with_msg "*__" parm caller [_EWM_PARM1] [_EWM_PARM2];
 #endif
