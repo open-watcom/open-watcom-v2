@@ -1619,6 +1619,8 @@ keyword:
 .ct ,
 .kwm naked
 .ct ,
+.kwm noreturn
+.ct ,
 .kwm dllimport
 .ct ,
 .kwm dllexport
@@ -1652,6 +1654,8 @@ The
 attribute affects data and objects only.
 The
 .kwm naked
+.ct ,
+.kwm noreturn
 .ct ,
 .kwm __pragma
 .ct ,
@@ -2635,6 +2639,45 @@ attribute cannot be used in a data declaration.
 The following declaration would be flagged in error.
 .exam begin
 __declspec(naked) static int data_object = 0;
+.exam end
+.endbull
+.*
+.note __declspec( noreturn )
+.*
+indicates to the C/C++ compiler that function does not return.
+.exam begin
+#include <stdio.h>
+
+int __declspec( noreturn ) foo( int x )
+{
+    x = -x;
+    exit( x );
+}
+
+void main()
+{
+    foo( 0 );
+}
+.exam end
+.np
+.id foo
+is defined to be a function that does not return. For example, it call
+.id exit
+to return to the system. In this case, &cmpname generates a "jmp" instruction
+instead of a "call" instruction to invoke
+.id foo.
+.np
+The following rules apply to the use of the
+.kwm noreturn
+attribute.
+.begbull
+.bull
+The
+.kwm noreturn
+attribute cannot be used in a data declaration.
+The following declaration would be flagged in error.
+.exam begin
+__declspec(noreturn) static int data_object = 0;
 .exam end
 .endbull
 .*

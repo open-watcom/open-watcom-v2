@@ -92,24 +92,25 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_INTERRUPT  = (FLAG_NEAR+FLAG_FAR), /* interrupt function */
     /* FLAG_NEAR + FLAG_FAR both on ==> interrupt far */
 
-    LANG_CDECL      = 0x0040,       /* Y0040         Y0040 */
-    LANG_PASCAL     = 0x0080,       /* Y0080         Y0080 */
-    LANG_FORTRAN    = 0x00C0,       /* Y00C0         Y00C0 */
-    LANG_SYSCALL    = 0x0100,       /* Y0100         Y0100 */
-    LANG_STDCALL    = 0x0140,       /* Y0140         Y0140 */
-    LANG_OPTLINK    = 0x0180,       /* Y0180         Y0180 */
-    LANG_FASTCALL   = 0x01C0,       /* Y01C0         Y01C0 */
-    LANG_WATCALL    = 0x0200,       /* Y0200         Y0200 */
+    LANG_CDECL      = 0x00040,      /* Y0040         Y0040 */
+    LANG_PASCAL     = 0x00080,      /* Y0080         Y0080 */
+    LANG_FORTRAN    = 0x000C0,      /* Y00C0         Y00C0 */
+    LANG_SYSCALL    = 0x00100,      /* Y0100         Y0100 */
+    LANG_STDCALL    = 0x00140,      /* Y0140         Y0140 */
+    LANG_OPTLINK    = 0x00180,      /* Y0180         Y0180 */
+    LANG_FASTCALL   = 0x001C0,      /* Y01C0         Y01C0 */
+    LANG_WATCALL    = 0x00200,      /* Y0200         Y0200 */
 
-    FLAG_SAVEREGS   = 0x0400,       /* Y0400         Y0400 */
-    FLAG_LOADDS     = 0x0800,       /* Y0800         Y0800 */
-    FLAG_EXPORT     = 0x1000,       /* Y1000         Y1000 */
-    FLAG_BASED      = 0x2000,       /* Y2000         Y2000 _based ptr or var */
-    FLAG_SEGMENT    = 0x4000,       /* Y4000         Y4000 __segment type */
-    FLAG_FAR16      = 0x8000,       /* Y8000         Y8000 __far16 modifier */
-    FLAG_UNALIGNED  =0x10000,       /*                     _Packed structures */
-    FLAG_INLINE     =0x20000,       /* Y20000              _inline keyword */
-    FLAG_WAS_ARRAY  =0x20000,       /* Y20000              for "char *argv[]" */
+    FLAG_SAVEREGS   = 0x00400,      /* Y0400         Y0400 */
+    FLAG_LOADDS     = 0x00800,      /* Y0800         Y0800 */
+    FLAG_EXPORT     = 0x01000,      /* Y1000         Y1000 */
+    FLAG_BASED      = 0x02000,      /* Y2000         Y2000 _based ptr or var */
+    FLAG_SEGMENT    = 0x04000,      /* Y4000         Y4000 __segment type */
+    FLAG_FAR16      = 0x08000,      /* Y8000         Y8000 __far16 modifier */
+    FLAG_UNALIGNED  = 0x10000,      /*                     _Packed structures */
+    FLAG_INLINE     = 0x20000,      /* Y20000              _inline keyword */
+    FLAG_WAS_ARRAY  = 0x20000,      /* Y20000              for "char *argv[]" */
+    FLAG_NORETURN   = 0x40000,      /* Y40000              __declspec(noreturn) */
 } type_modifiers;
 
 #define MASK_CV_QUALIFIERS  (FLAG_CONST|FLAG_VOLATILE)
@@ -119,7 +120,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
 
 #define MASK_ALL_MEM_MODELS (MASK_MEM_MODEL|FLAG_BASED)
 #define MASK_PTR            (MASK_QUALIFIERS|MASK_ALL_MEM_MODELS)
-#define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS)
+#define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS|FLAG_NORETURN)
 
 typedef enum sym_flags {
     SYM_NONE                = 0x00,     /* no symbol */

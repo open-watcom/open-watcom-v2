@@ -581,6 +581,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             } else {
                                 info->naked = TRUE;
                             }
+                        } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
+                            modifier = FLAG_NORETURN;
                         } else {
                             CErr1( ERR_INVALID_DECLSPEC );
                         }
@@ -598,6 +600,13 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                     }
                     if( modifier & MASK_LANGUAGES ) {
                         if( info->decl_mod & MASK_LANGUAGES ) {
+                            CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->decl_mod |= modifier;
+                        }
+                    }
+                    if( modifier & FLAG_NORETURN ) {
+                        if( info->decl_mod & FLAG_NORETURN ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->decl_mod |= modifier;

@@ -167,7 +167,7 @@ static void collectStrings( VBUF *vinfo )
     }
 }
 
-// #pragma message( "message" " string" );
+// #pragma message( "one or more" "message string" );
 
 static void pragMessage(        // #PRAGMA MESSAGE
     void )
@@ -187,7 +187,7 @@ static void pragMessage(        // #PRAGMA MESSAGE
     }
 }
 
-// #pragma error "message string" ;
+// #pragma error "one or more" "message string" ;
 
 static void pragError(          // #PRAGMA ERROR
     void )

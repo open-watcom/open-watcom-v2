@@ -154,6 +154,7 @@ typedef enum {
     STS_NAKED           = 0x0004,
     STS_THREAD          = 0x0008,
     STS_MODIFIER        = 0x0010,
+    STS_NORETURN        = 0x0020,
     STS_NULL            = 0x0000
 } ms_declspec_t;
 
@@ -278,6 +279,7 @@ typedef enum {
     TF1_INTRINSIC       = 0x00000100,
     TF1_EXPLICIT        = 0x00000200,
     TF1_NAKED           = 0x00000400,
+    TF1_NORETURN        = 0x00000800,
     TF1_PLUSPLUS_SET    = 0x80000000,   /* note 1 */// don't change TF1_PLUSPLUS
     TF1_CONST           = 0x00000001,               // TYP_MODIFIER
     TF1_VOLATILE        = 0x00000002,
