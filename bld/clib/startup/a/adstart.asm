@@ -556,16 +556,16 @@ endif
 endif   ; ACAD
 
 
-__exit   proc near
-        pop     eax                     ; get return code
-        jmp     short   ok
+__exit   proc near                      ; never return
+        ; return code is already on the stack
+        jmp short L5
 
         public   __do_exit_with_msg__
 
 ; input: ( char *msg, int rc ) always in registers
 
-__do_exit_with_msg__:
-        push    edx                     ; save return code
+__do_exit_with_msg__:                   ; never return
+        push    edx                     ; save return code on stack
         push    eax                     ; save msg
         mov     edx,offset ConsoleName
         mov     ax,03d01h               ; write-only access to screen
@@ -586,14 +586,11 @@ L4:     lodsb                           ; get char
         mov     ecx, sizeof NewLine     ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     eax                     ; get return code
-ok:
-
-        push    eax                     ; save return code
+L5:
         xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
 
 if      ACAD
         jmp     child_exit              ; do something more appropriate

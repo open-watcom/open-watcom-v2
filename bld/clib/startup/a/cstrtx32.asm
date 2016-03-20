@@ -375,7 +375,14 @@ exit_msg:       ;InitRtns hasn't been called yet so don't call FiniRtns
         mov     ax,4c01h
         int     21h
 
-null_error:     ;a null code pointer has been called
+;       don't touch AL in __exit, it has the return code
+__exit   proc near
+ifndef __STACK__
+        push    eax                     ; save return code on the stack
+endif
+        jmp short L5
+
+null_error:     ; a null code pointer has been called
         push    ebp
         mov     ebp,esp
         mov     eax,offset DGROUP:null_msg
@@ -406,19 +413,11 @@ L4:     lodsb                           ; get char
         mov     ecx,sizeof NewLine      ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-ifndef __STACK__
-        pop     eax                     ; restore return code
-endif
-
-;       don't touch AL in __exit, it has the return code
-__exit   proc near
-ifndef __STACK__
-        push    eax                     ; save return code
-endif
+L5:
         xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
         mov     ah,4cH                  ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit   endp
@@ -527,7 +526,8 @@ FindNext:
         mov     AH,4Fh                  ; find next
         int     21h                     ; ...
         pop     EDX                     ; restore EDX
-findret:ret                             ; return
+findret:
+        ret                             ; return
 __Int21_ endp
 
 _TEXT   ends

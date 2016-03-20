@@ -253,9 +253,10 @@ endif
 if _MODEL and _TINY
         mov     ax,__stacksize          ; get size of stack required
         cmp     ax,0800h                ; make sure stack size is at least
-        jae     ss_ok                   ; 2048 bytes
+        jae     stackok                 ; 2048 bytes
         mov     ax,0800h                ; - set stack size to 2048 bytes
-ss_ok:  add     bx,ax                   ; calc top address for stack
+stackok:
+        add     bx,ax                   ; calc top address for stack
 else
         add     bx,sp                   ; calculate top address for stack
 endif
@@ -285,8 +286,9 @@ _Not_Enough_Memory_:
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
         call    __fatal_runtime_error   ; - display msg and exit
-enuf_mem:                               ; endif
+        ; never return
 
+enuf_mem:                               ; endif
         mov     ax,es                   ; point to data segment
 ;
 ; This will be done by the call to _nheapgrow() in cmain.c
@@ -445,10 +447,10 @@ _cstart_ endp
 
 __exit  proc near
         public  "C",__exit
+        push    ax                      ; save return code on stack
 if _MODEL and _TINY
-        jmp     ok
+        jmp short L7
 else
-        push    ax
         mov     dx,DGROUP
         mov     ds,dx
         cld                             ; check lower region for altered values
@@ -457,12 +459,11 @@ else
         mov     cx,NUM_VAL
         mov     ax,INIT_VAL
         repe    scasw
-        pop     ax                      ; restore return code
-        je      ok
+        je      L7
 ;
 ; low memory has been altered
 ;
-        mov     bx,ax                   ; get exit code
+        pop     bx                      ; restore return code
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
 endif
@@ -500,26 +501,22 @@ L6:     lodsb                           ; get char
         mov     cx,sizeof NewLine       ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     ax                      ; restore return code
-ok:
+L7:
 if _MODEL and _BIG_CODE
         mov     dx,DGROUP               ; get access to DGROUP
         mov     ds,dx                   ; . . .
         cmp     byte ptr __ovlflag,0    ; if MS Overlay Manager present
         je      no_ovl                  ; then
-        push    ax                      ; - save return code
         mov     al,__intno              ; - get interrupt number used
         mov     ah,25h                  ; - DOS func to set interrupt vector
         lds     dx,__ovlvec             ; - get previous contents of vector
         int     21h                     ; - restore interrupt vector
-        pop     ax                      ; - restore return code
 no_ovl:                                 ; endif
 endif
-        push    ax                      ; save return code
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FiniRtns              ; do finalization
-        pop     ax                      ; restore return code
+        pop     ax                      ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit  endp

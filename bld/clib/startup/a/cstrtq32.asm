@@ -213,7 +213,8 @@ else
         mov     eax,offset DGROUP:NullAssign; point to msg
 endif
         call    __fatal_runtime_error
-        jmp     __qnx_exit
+        ; never return
+
 __exit endp
 
 _TEXT   ends

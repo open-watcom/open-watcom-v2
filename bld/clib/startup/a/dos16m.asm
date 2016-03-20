@@ -319,6 +319,7 @@ _Not_Enough_Memory_:
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
         call    __fatal_runtime_error_  ; - display msg and exit
+        ; never return
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there
@@ -467,7 +468,7 @@ _startup_ endp
 
 __exit  proc  far
         public  "C",__exit
-        push    ax
+        push    ax                      ; save return code on stack
         mov     dx,DGROUP
         mov     ds,dx
         cld                             ; check lower region for altered values
@@ -476,12 +477,11 @@ __exit  proc  far
         mov     cx,NUM_VAL
         mov     ax,INIT_VAL
         repe    scasw
-        pop     ax                      ; restore return code
-        je      ok
+        je      L4
 ;
 ; low memory has been altered
 ;
-        mov     bx,ax                   ; get exit code
+        pop     bx                      ; get exit code
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
 
@@ -518,20 +518,16 @@ L3:     lodsb                           ; get char
         mov     cx,sizeof NewLine       ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     ax                      ; restore return code
-ok:
+L4:
         mov     dx,DGROUP               ; get access to DGROUP
         mov     ds,dx                   ; . . .
         cmp     byte ptr __ovlflag,0    ; if MS Overlay Manager present
         je      no_ovl                  ; then
-        push    ax                      ; - save return code
         mov     al,__intno              ; - get interrupt number used
         mov     ah,25h                  ; - DOS func to set interrupt vector
         lds     dx,__ovlvec             ; - get previous contents of vector
         int     21h                     ; - restore interrupt vector
-        pop     ax                      ; - restore return code
 no_ovl:                                 ; endif
-        push    ax                      ; save return code
         xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FFiniRtns             ; call finalizer routines

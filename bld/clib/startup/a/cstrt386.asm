@@ -379,18 +379,18 @@ _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc near
+__exit  proc near                       ; never return
         public  "C",__exit
-ifdef __STACK__
-        pop     eax                     ; get return code into eax
+ifndef __STACK__
+        push    eax                     ; save return code on the stack
 endif
-        jmp     short   ok
+        jmp short L7
 
         public  __do_exit_with_msg__
 
 ; input: ( char *msg, int rc )  always in registers
 
-__do_exit_with_msg__:
+__do_exit_with_msg__:                   ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -412,13 +412,11 @@ L6:     lodsb                           ; get char
         mov     ecx,sizeof NewLine      ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     eax                     ; restore return code
-ok:
-        push    eax                     ; save return code
+L7:
         xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit  endp
