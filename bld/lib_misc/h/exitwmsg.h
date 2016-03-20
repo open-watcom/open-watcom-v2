@@ -53,9 +53,10 @@
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
 // - note there is no #pragma aborts so that debugger can trace out
-_WCRTLINK extern void   __exit_with_msg( char _WCI86FAR *, unsigned );
-_WCRTLINK extern void   __fatal_runtime_error( char _WCI86FAR *, unsigned );
-_WCRTLINK extern void   __exit( unsigned );
+_WCRTLINK extern void           __exit_with_msg( char _WCI86FAR *, unsigned );
+_WCRTLINK extern void           __fatal_runtime_error( char _WCI86FAR *, unsigned );
+_WCRTLINK extern void           _Not_Enough_Memory( void );
+_WCRTLINK _NORETURN extern void __exit( unsigned );
 
 // ASM interface
 // - always uses register calling convention
@@ -63,8 +64,7 @@ _WCRTLINK extern void   __exit( unsigned );
 //   of __exit_with_msg
 extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #ifdef _M_IX86
-    #pragma aux __do_exit_with_msg "*__" \
-                parm caller [_EWM_PARM1] [_EWM_PARM2];
+    #pragma aux __do_exit_with_msg "*__" parm caller [_EWM_PARM1] [_EWM_PARM2];
 #endif
 
 #undef _EWM_PARM1

@@ -66,8 +66,6 @@
 //
 #ifdef KLUGE_CPPLIB_END
   #ifdef _M_IX86
-    #pragma aux RTN_ABORTS aborts
-    #pragma aux (RTN_ABORTS) __exit;
   #endif
     #undef KLUGE_CPPLIB_END
 #endif

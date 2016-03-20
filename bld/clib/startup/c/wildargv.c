@@ -66,9 +66,8 @@ extern "C" {
 #endif
 
 #include "initarg.h"
-
-extern  int     __historical_splitparms;
-extern  void    _Not_Enough_Memory( void );
+#include "histsplt.h"
+#include "exitwmsg.h"
 
 #ifdef __cplusplus
 };
