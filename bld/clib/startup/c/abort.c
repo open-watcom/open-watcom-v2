@@ -32,10 +32,11 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "rtdata.h"
-#include "exitwmsg.h"
 #include <signal.h>
 #include <unistd.h>
+#include "rtdata.h"
+#include "exitwmsg.h"
+#include "sigfunc.h"
 
 
 void    (*_RWD_abort)( void ) = __terminate;
@@ -74,7 +75,7 @@ _WCRTLINK void abort( void )
     if( _RWD_abort != __terminate ) {
         (*_RWD_abort)();
     }
-    __terminate();                          /* 23-may-90 */
+    __terminate();
 }
 
 #endif

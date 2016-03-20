@@ -53,8 +53,9 @@
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
 // - note there is no #pragma aborts so that debugger can trace out
-_WCRTLINK extern void __exit_with_msg( char _WCI86FAR *, unsigned );
-_WCRTLINK extern void __fatal_runtime_error( char _WCI86FAR *, unsigned );
+_WCRTLINK extern void   __exit_with_msg( char _WCI86FAR *, unsigned );
+_WCRTLINK extern void   __fatal_runtime_error( char _WCI86FAR *, unsigned );
+_WCRTLINK extern void   __exit( unsigned );
 
 // ASM interface
 // - always uses register calling convention
@@ -69,9 +70,10 @@ extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #undef _EWM_PARM1
 #undef _EWM_PARM2
 
+// WVIDEO interface
+
 _WCRTDATA extern char volatile __WD_Present;
 
-// WVIDEO interface
 // this function should be called before __exit_with_msg()
 // to allow Watcom Debugger (nee WVIDEO) to trap runtime errors.
 // this really needs to be far!!!

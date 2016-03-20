@@ -246,6 +246,7 @@ axp_xd_opts=-xd
 ppc_xd_opts=
 mps_xd_opts=
 
+abort_opts    =-I"$(clib_dir)/process/h"
 atexit_opts   =$($(processor)_sub_opts)
 cmain086_opts =$($(processor)_sub_opts)
 cmain386_opts =$($(processor)_sub_opts)

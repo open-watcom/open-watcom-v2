@@ -46,3 +46,4 @@ _WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
 extern  void    __sigabort( void );
 extern  void    __restore_FPE_handler( void );
 extern  void    __grab_FPE_handler( void );
+extern  void    __terminate( void );
