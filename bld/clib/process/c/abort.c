@@ -39,8 +39,7 @@
 #include "sigfunc.h"
 
 
-void    (*_RWD_abort)( void ) = __terminate;
-
+void (*__abort)( void ) = NULL;
 
 // TODO: Use the QNX code once we get signal handling working properly
 
@@ -64,7 +63,7 @@ _WCRTLINK void abort( void )
     sigdelset( &mask, SIGABRT );
     sigprocmask( SIG_SETMASK, &mask, (sigset_t *)NULL );
     raise( SIGABRT );
-    signal( SIGABRT,SIG_DFL );
+    signal( SIGABRT, SIG_DFL );
     raise( SIGABRT );
     __terminate();
 }
@@ -72,7 +71,7 @@ _WCRTLINK void abort( void )
 
 _WCRTLINK void abort( void )
 {
-    if( _RWD_abort != __terminate ) {
+    if( _RWD_abort != NULL ) {
         (*_RWD_abort)();
     }
     __terminate();

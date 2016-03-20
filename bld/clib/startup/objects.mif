@@ -4,7 +4,6 @@
 !inject _8087086.obj d16                                            o16     q16     w16
 !inject _8087386.obj     d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
 !inject _8087osi.obj                                                                        osi
-!inject abort.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject argcv.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject atexit.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject chk.obj                                     nvc ncl nvl nll
@@ -246,7 +245,6 @@ axp_xd_opts=-xd
 ppc_xd_opts=
 mps_xd_opts=
 
-abort_opts    =-I"$(clib_dir)/process/h"
 atexit_opts   =$($(processor)_sub_opts)
 cmain086_opts =$($(processor)_sub_opts)
 cmain386_opts =$($(processor)_sub_opts)
@@ -270,7 +268,6 @@ axp_fpi87_postopts=
 ppc_fpi87_postopts=
 mps_fpi87_postopts=
 
-abort_postopts    =-os
 adifstrt_postopts =$($(processor)_fpi87_postopts)
 adsstart_postopts =$($(processor)_fpi87_postopts)
 atexit_postopts   =-os
