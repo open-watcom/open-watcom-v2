@@ -98,6 +98,7 @@ else
         mov     edx,1                   ; ...
 endif
         call    __fatal_runtime_error   ; ...
+        ; never return
         endproc __STK
 
         xdefp   __GRO

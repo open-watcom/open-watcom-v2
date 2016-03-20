@@ -146,8 +146,7 @@ else
         mov     edx,1
 endif
         call    __fatal_runtime_error
-        jmp     __qnx_exit
-
+        ; never return
 
 _putw proc near
         mov     edx,ebx         ; save value
