@@ -41,6 +41,7 @@
 #include "_int23.h"
 #include "thread.h"
 #include "sigtab.h"
+#include "exitwmsg.h"
 
 
 static struct sigtab _SignalTable[] = {
@@ -59,7 +60,7 @@ static struct sigtab _SignalTable[] = {
     { SIG_DFL, NULL, 0, 0 }                 /* SIGIOVFL */
 };
 
-void __sigabort( void )
+static void __sigabort( void )
 {
     raise( SIGABRT );
 }
@@ -69,9 +70,9 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
 {
     __sig_func  func;
 
-    func = _RWD_sigtab[ SIGFPE ].func;
+    func = _RWD_sigtab[SIGFPE].func;
     if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
-        _RWD_sigtab[ SIGFPE ].func = SIG_DFL;      /* 09-nov-87 FWC */
+        _RWD_sigtab[SIGFPE].func = SIG_DFL;
         (*(__sigfpe_func)func)( SIGFPE, fpe_type );        /* so we can pass 2'nd parm */
     }
 }
@@ -83,7 +84,7 @@ static void _WCFAR __pascal break_handler( USHORT sigarg, USHORT signum )
 
     sigarg = sigarg;
     for( sig = 1; sig <= __SIGLAST; sig++ ) {
-        if( _RWD_sigtab[ sig ].os_sig_code == signum ) {
+        if( _RWD_sigtab[sig].os_sig_code == signum ) {
             raise( sig );
             break;
         }
@@ -96,12 +97,12 @@ static void restore_handler( void )
     int sig;
 
     for( sig = 1; sig <= __SIGLAST; sig++ ) {
-        if( _RWD_sigtab[ sig ].os_func != NULL ) {
-                DosSetSigHandler( _RWD_sigtab[ sig ].os_func,
-                                  &_RWD_sigtab[ sig ].os_func,
-                                  &_RWD_sigtab[ sig ].prev_action,
-                                  _RWD_sigtab[ sig ].prev_action,
-                                  _RWD_sigtab[ sig ].os_sig_code );
+        if( _RWD_sigtab[sig].os_func != NULL ) {
+                DosSetSigHandler( _RWD_sigtab[sig].os_func,
+                                  &_RWD_sigtab[sig].os_func,
+                                  &_RWD_sigtab[sig].prev_action,
+                                  _RWD_sigtab[sig].prev_action,
+                                  _RWD_sigtab[sig].os_sig_code );
         }
     }
     __int23_exit = __null_int23_exit;
@@ -117,14 +118,14 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
         return( SIG_ERR );
     }
     _RWD_abort = __sigabort;           /* change the abort rtn address */
-    if( _RWD_sigtab[ sig ].os_sig_code != 0 ) {
+    if( _RWD_sigtab[sig].os_sig_code != 0 ) {
         if( func != SIG_DFL  &&  func != SIG_ERR ) {
-            if( _RWD_sigtab[ sig ].os_func == NULL ) {
+            if( _RWD_sigtab[sig].os_func == NULL ) {
                 DosSetSigHandler( (PFNSIGHANDLER)break_handler,
-                    &_RWD_sigtab[ sig ].os_func,
-                    &_RWD_sigtab[ sig ].prev_action,
+                    &_RWD_sigtab[sig].os_func,
+                    &_RWD_sigtab[sig].prev_action,
                     2,
-                    _RWD_sigtab[ sig ].os_sig_code );
+                    _RWD_sigtab[sig].os_sig_code );
                 __int23_exit = restore_handler;
             }
         }
@@ -135,8 +136,8 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
             __grab_FPE_handler();
         }
     }
-    prev_func = _RWD_sigtab[ sig ].func;
-    _RWD_sigtab[ sig ].func = func;
+    prev_func = _RWD_sigtab[sig].func;
+    _RWD_sigtab[sig].func = func;
     return( prev_func );
 }
 
@@ -144,7 +145,7 @@ _WCRTLINK int raise( int sig )
 {
     __sig_func  func;
 
-    func = _RWD_sigtab[ sig ].func;
+    func = _RWD_sigtab[sig].func;
     switch( sig ) {
     case SIGFPE:
         __sigfpe_handler( FPE_EXPLICITGEN );
@@ -153,6 +154,7 @@ _WCRTLINK int raise( int sig )
         if( func == SIG_DFL ) {
             __terminate();
         }
+        /* fall down */
     case SIGILL:
     case SIGINT:
     case SIGSEGV:
@@ -164,7 +166,7 @@ _WCRTLINK int raise( int sig )
     case SIGIDIVZ:
     case SIGIOVFL:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
-            _RWD_sigtab[ sig ].func = SIG_DFL;      /* 09-nov-87 FWC */
+            _RWD_sigtab[sig].func = SIG_DFL;
             (*func)( sig );
         }
         break;

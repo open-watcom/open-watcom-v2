@@ -37,12 +37,15 @@
 void (__sigjmpsave)( sigjmp_buf env, int mask )
 {
     env[0].__flg = mask;
-    if( mask ) sigprocmask( SIG_SETMASK, 0, (sigset_t *)&env[0].__msk );
+    if( mask ) {
+        sigprocmask( SIG_SETMASK, 0, (sigset_t *)&env[0].__msk );
+    }
 }
 
 
 _WCRTLINK void (siglongjmp)( sigjmp_buf env, int val )
 {
-    if( env[0].__flg ) sigprocmask( SIG_SETMASK, (sigset_t *)&env[0].__msk, 0 );
+    if( env[0].__flg )
+        sigprocmask( SIG_SETMASK, (sigset_t *)&env[0].__msk, 0 );
     longjmp( env[0].__buf, val );
 }

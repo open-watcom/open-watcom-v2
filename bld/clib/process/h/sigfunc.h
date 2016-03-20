@@ -43,7 +43,6 @@ _WCRTLINK extern int __sigfpe_handler( int );
 #else
 _WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
 #endif
-extern  void    __sigabort( void );
-extern  void    __restore_FPE_handler( void );
-extern  void    __grab_FPE_handler( void );
-extern  void    __terminate( void );
+extern void             __restore_FPE_handler( void );
+extern void             __grab_FPE_handler( void );
+extern void             __terminate( void );        // Defined in abort.c

@@ -42,18 +42,76 @@
 
 #define __SIGLAST       SIGIOVFL
 
-/* defined in sigtab.c */
-extern __sig_func _HUGEDATA _SignalTable[];
+#if defined( __WINDOWS_286__ )
 
-void __sigabort( void )
+extern void __far _fpmath( void );
+#pragma aux _fpmath "__fpmath";
+
+unsigned int win87em_get_sw( void );
+#pragma aux win87em_get_sw = \
+    "push   bx"                                     \
+    "mov    bx, 8h"                                 \
+    "call   far ptr _fpmath"                        \
+    "pop    bx"                                     \
+    value [ax];
+
+#endif
+
+static __sig_func _HUGEDATA _SignalTable[] = {
+    SIG_IGN,        /* unused  */
+    SIG_DFL,        /* SIGABRT */
+    SIG_DFL,        /* SIGFPE  */
+    SIG_DFL,        /* SIGILL  */
+    SIG_DFL,        /* SIGINT  */
+    SIG_DFL,        /* SIGSEGV */
+    SIG_DFL,        /* SIGTERM */
+    SIG_DFL,        /* SIGBREAK */
+    SIG_IGN,        /* SIGUSR1 */
+    SIG_IGN,        /* SIGUSR2 */
+    SIG_IGN,        /* SIGUSR3 */
+    SIG_DFL,        /* SIGIDIVZ */
+    SIG_DFL         /* SIGIOVFL */
+};
+
+static void __sigabort( void )
 {
     raise( SIGABRT );
+}
+
+
+_WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
+{
+    __sig_func  func;
+#if defined( __WINDOWS_286__ )
+    unsigned int  sw;
+
+    sw = win87em_get_sw();
+    if( sw & EM_INVALID ) {
+        fpe_type = FPE_INVALID;
+    } else if( sw & EM_DENORMAL ) {
+        fpe_type = FPE_DENORMAL;
+    } else if( sw & EM_ZERODIVIDE ) {
+        fpe_type = FPE_ZERODIVIDE;
+    } else if( sw & EM_OVERFLOW ) {
+        fpe_type = FPE_OVERFLOW;
+    } else if( sw & EM_UNDERFLOW ) {
+        fpe_type = FPE_UNDERFLOW;
+    } else if( sw & EM_INEXACT ) {
+        fpe_type = FPE_INEXACT;
+    }
+#endif
+
+    func = _SignalTable[SIGFPE];
+    if( func != SIG_IGN && func != SIG_DFL && func != SIG_ERR ) {
+        _SignalTable[SIGFPE] = SIG_DFL;
+        (*(__sigfpe_func)func)( SIGFPE, fpe_type );    /* so we can pass 2nd parm */
+    }
 }
 
 _WCRTLINK __sig_func signal( int sig, __sig_func func )
 {
     __sig_func  prev_func;
-    
+
     if(( sig < 1 ) || ( sig > __SIGLAST )) {
         _RWD_errno = EINVAL;
         return( SIG_ERR );
@@ -82,8 +140,8 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
   #endif
     }
 #endif
-    prev_func = _RWD_sigtab[ sig ];
-    _RWD_sigtab[ sig ] = func;
+    prev_func = _RWD_sigtab[sig];
+    _RWD_sigtab[sig] = func;
     return( prev_func );
 }
 
@@ -91,8 +149,8 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func )
 _WCRTLINK int raise( int sig )
 {
     __sig_func  func;
-    
-    func = _RWD_sigtab[ sig ];
+
+    func = _RWD_sigtab[sig];
     switch( sig ) {
 #if !defined( __WINDOWS_386__ )
     case SIGFPE:
@@ -102,16 +160,17 @@ _WCRTLINK int raise( int sig )
         if( func == SIG_DFL ) {
             __terminate();
         }
+        /* fall down */
     case SIGINT:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
-            _RWD_sigtab[ sig ] = SIG_DFL;      /* 09-nov-87 FWC */
+            _RWD_sigtab[sig] = SIG_DFL;
             __restore_int23();
             (*func)( sig );
         }
         break;
     case SIGBREAK:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
-            _RWD_sigtab[ sig ] = SIG_DFL;      /* 09-nov-87 FWC */
+            _RWD_sigtab[sig] = SIG_DFL;
             __restore_int_ctrl_break();
             (*func)( sig );
         }
@@ -131,7 +190,7 @@ _WCRTLINK int raise( int sig )
     case SIGIDIVZ:
     case SIGIOVFL:
         if( func != SIG_IGN  &&  func != SIG_DFL  &&  func != SIG_ERR ) {
-            _RWD_sigtab[ sig ] = SIG_DFL;      /* 09-nov-87 FWC */
+            _RWD_sigtab[sig] = SIG_DFL;
             (*func)( sig );
         }
         break;

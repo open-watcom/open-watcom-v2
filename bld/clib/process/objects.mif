@@ -48,7 +48,6 @@
 !inject raise.obj                                                   q16 q32
 !inject raisefpe.obj                                                        w16
 !inject raisep.obj                                                                      l32 lpc lmp
-!inject sigfpe.obj   d16 d32                                                w16
 !inject sigjmp.obj                                                  q16 q32             l32 lpc lmp
 !inject signl.obj    d16 d32                                                w16 w32
 !inject signlo16.obj                                        o16
@@ -57,7 +56,6 @@
 !inject signlwnt.obj                     nt nta ntp
 !inject signlrdu.obj                                                                                rdu
 !inject sigsy.obj    d16 d32                                                w16
-!inject sigtab.obj   d16 d32                                                w16 w32
 !inject sigsyo16.obj                                        o16
 !inject _slashc.obj  d16 d32             nt nta ntp         o16 o32
 !inject sleep.obj    d16 d32                        nvc nvl                 w16 w32

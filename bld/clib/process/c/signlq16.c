@@ -39,19 +39,15 @@
 #include <i86.h>
 #include "rtdata.h"
 
-extern  void    (*__abort)( void );
-extern  void    __sigabort( void );
-
 
 /*
  * This table is fished into by the kernel so do not change its
  * size or layout.
  */
-struct __sigtable {
+static struct __sigtable {
     void                (__SIG_FAR *stub)();
     struct sigaction    acttable[_SIGMAX];
-    } _SignalTable;
-
+} _SignalTable;
 
 
 _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
@@ -83,7 +79,10 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     return( (void (*)(int))act.sa_handler );
 }
 
-
+static void __sigabort( void )
+{
+    raise( SIGABRT );
+}
 
 _WCRTLINK int sigaction(sig, act, oact)
 int sig;
@@ -110,7 +109,7 @@ register struct sigaction *oact;
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
         first = 0;
 
-        __abort = __sigabort;           /* change the abort rtn address */
+        _RWD_abort = __sigabort;           /* change the abort rtn address */
     }
 
     if( (sig < _SIGMIN)  ||  (sig > _SIGMAX) ) {
@@ -134,7 +133,7 @@ register struct sigaction *oact;
     }
 
     if( oact )
-        *oact = _SignalTable.acttable[sig-1];
+        *oact = _SignalTable.acttable[sig - 1];
 
     if( act ) {
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
