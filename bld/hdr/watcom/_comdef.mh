@@ -54,9 +54,13 @@
  #ifdef _WCUNALIGNED
   #error The macro _WCUNALIGNED is reserved for use by the runtime library.
  #endif
+ #ifdef _NORETURN
+  #error The macro _NORETURN is reserved for use by the runtime library.
+ #endif
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
  #if defined(_M_IX86)
+  #define _NORETURN __declspec(noreturn)
   #define _WCNEAR __near
   #define _WCFAR __far
   #define _WCHUGE __huge
@@ -72,6 +76,7 @@
    #define _WCI86HUGE
   #endif
  #elif defined(__AXP__)
+  #define _NORETURN
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -81,6 +86,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__PPC__)
+  #define _NORETURN
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -90,6 +96,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__MIPS__)
+  #define _NORETURN
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -99,6 +106,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #else
+  #define _NORETURN
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
