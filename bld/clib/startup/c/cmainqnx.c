@@ -76,7 +76,7 @@ struct  _proc_spawn     *__cmd;         /* address of spawn msg */
 char                    *__near __env_mask;
 int (__far * (__far *__f))();           /* Shared library jump table    */
 extern  void __user_init( void );
-#define __user_init() ((int(__far *) ()) __f[1])()
+#define __user_init() ((int(__far *)()) __f[1])()
 #endif
 
 _WCRTLINK void _WCI86FAR __null_FPE_rtn( int fpe_type )
@@ -100,17 +100,20 @@ static void SetupArgs( struct _proc_spawn *cmd )
      */
     argc = cmd->argc + 1;
     /* The argc + 1 provides for a NULL pointer at end */
-    argv = cpp = (char **) malloc( (argc + 1) * sizeof( char * ) );
-    if( argv == NULL ) _Not_Enough_Memory();
+    argv = cpp = (char **)malloc( (argc + 1) * sizeof( char * ) );
+    if( argv == NULL )
+        _Not_Enough_Memory();
 
     cp = cmd->data;
     for( i = argc; i != 0; --i ) {
-    *cpp++ = cp;
-    while( *cp++ )
-        ;
+        *cpp++ = cp;
+        while( *cp++ != '\0' ) {
+            ;
+        }
     }
     *cpp = NULL;
-    if( *cp == '\0' ) ++cp;
+    if( *cp == '\0' )
+        ++cp;
 
     /*
      * Set up envp and *environ.
@@ -118,15 +121,17 @@ static void SetupArgs( struct _proc_spawn *cmd )
 
     envc = cmd->envc;
 
-    environ = cpp = (char **) malloc( (envc + 1) * sizeof(char *) +
-                    envc * sizeof(char) );
-    if( environ == NULL ) _Not_Enough_Memory();
-    __env_mask = mp = (char *) &cpp[ envc + 1 ];
+    environ = cpp = (char **)malloc( (envc + 1) * sizeof( char * ) +
+                    envc * sizeof( char ) );
+    if( environ == NULL )
+        _Not_Enough_Memory();
+    __env_mask = mp = (char *)&cpp[ envc + 1 ];
     for( i = envc ; i != 0 ; --i ) {
-    *mp++ = 0;  /* indicate environment string not alloc'd */
-    *cpp++ = cp;
-    while( *cp++ )
-        ;
+        *mp++ = 0;  /* indicate environment string not alloc'd */
+        *cpp++ = cp;
+        while( *cp++ != '\0' ) {
+            ;
+        }
     }
     --cpp;                                      /* Back up to the __CWD     */
     if( !strncmp( "__CWD=", *cpp, 6 ) ) {       /* Did spawn pass __CWD ?   */
@@ -135,7 +140,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
         environment. For old programs, also check the Q_CWD envar.
         The +6 skips over the __CWD=
         */
-        if ( (__MAGIC.sptrs[3] = (char __FAR *) strdup( *cpp+6) ) == NULL ) {
+        if ( (__MAGIC.sptrs[3] = (char __FAR *)strdup( *cpp + 6 ) ) == NULL ) {
             _Not_Enough_Memory();
         }
     } else {
@@ -149,7 +154,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
         Copy the pfx passed in an envar into magic and remove it from the
         environment. The +6 skips over the __PFX=
         */
-        if ( (__MAGIC.sptrs[4] = (char __FAR *) strdup( *cpp+6) ) == NULL ) {
+        if ( (__MAGIC.sptrs[4] = (char __FAR *)strdup( *cpp + 6 ) ) == NULL ) {
             _Not_Enough_Memory();
         }
     } else {
@@ -172,21 +177,21 @@ static void __far *CALLBACK _s_malloc( int i )
 {
     register void *p1;
 
-    return( (p1 = calloc( i, 1 )) ? p1 : (void *)NULL );
+    return( (p1 = calloc( i, 1 )) != NULL ? p1 : (void *)NULL );
 }
 
 static void __far *CALLBACK _s_calloc( int i, int n )
 {
     register void *p1;
 
-    return( (p1 = calloc( i, n )) ? p1 : (void *)NULL );
+    return( (p1 = calloc( i, n )) != NULL ? p1 : (void *)NULL );
 }
 
 static void __far *CALLBACK _s_realloc( char __far *p, int n )
 {
     register void *p1;
 
-    return( (p1 = realloc( (void *)p, n )) ? p1 : (void *)NULL );
+    return( (p1 = realloc( (void *)p, n )) != NULL ? p1 : (void *)NULL );
 }
 
 static void CALLBACK _s_free( void __far *p )
@@ -237,7 +242,8 @@ void _CMain( free, n, cmd, stk_bot, pid )
                                    process                              */
     _RWD_FPE_handler = __null_FPE_rtn;
     _endheap = (char __near *)free + n;
-    if( _endheap < free ) _endheap = (char __near *)~0xfU;
+    if( _endheap < free )
+        _endheap = (char __near *)~0xfU;
     setup_slib();
 
     __InitRtns( 255 );          /* call special initializer routines    */
