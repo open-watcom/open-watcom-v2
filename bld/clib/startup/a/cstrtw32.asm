@@ -350,19 +350,18 @@ _cstart_ endp
 
 __exit  proc far
         public  "C",__exit
-ifdef __STACK__
-        pop     eax                     ; get return code into eax
+ifndef __STACK__
+        push    eax                     ; save return code on stack
 endif
         cmp     byte ptr __inDLL,0      ; are we in a DLL?
         jne     short skip_fini         ; skip fini rtns if we are
-        push    eax                     ; save return value
         push    edx                     ; save edx
         xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
-        pop     eax                     ; restore return value
 skip_fini:
+        pop     eax                     ; restore return code from stack
         mov     esp,_STACKTOP           ; reset stack pointer
         mov     ds,_LocalPtr            ; restore ds
         ret
