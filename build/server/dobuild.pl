@@ -170,7 +170,7 @@ sub batch_output_reset_env
 
 sub batch_output_build_wmake_builder_rm
 {
-    # Create fresh builder tools to prevent lockup build server 
+    # Create fresh builder tools to prevent lockup build server
     # if builder tools from previous build are somehow broken
     #
     # Create new wmake tool, previous clean removed it.
@@ -327,7 +327,7 @@ sub make_test_batch
         print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'};
     }
     print BATCH '';
-    if ($^O eq 'MSWin32') { 
+    if ($^O eq 'MSWin32') {
         if ($Config{archname} =~ /x64/) {
 #            print BATCH "if not '%OWDOSBOX%' == '' $setenv EXTRA_ARCH=i86";
         } else {
@@ -391,7 +391,7 @@ sub process_log
                     print REPORT "\t\t$project_name\t$arch_test";
                     $result = 'fail';
                 }
-            }                   
+            }
             @fields = split;
             $project_name = Common::remove_OWloc($fields[2]);
             $arch_test = '';
@@ -413,7 +413,7 @@ sub process_log
         }
         print REPORT "\t\t$project_name\t$arch_test";
         $result = 'fail';
-      } 
+      }
     }
 
     # This is what we want to see.
@@ -453,7 +453,7 @@ sub display_CVS_messages
 
     foreach $message (@CVS_messages) {
         print REPORT "$message";
-    }   
+    }
     print REPORT $cvs_cmd, ' Messages end';
 }
 
@@ -597,7 +597,7 @@ sub CVS_check_sync
         return 'fail';
     }
     get_prev_changeno;
-    
+
     if ($prev_report_stamp ne '') {
         print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp";
     } else {
