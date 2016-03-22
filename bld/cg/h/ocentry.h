@@ -46,6 +46,7 @@ typedef enum {
 } oc_class;
 
 #define ATTR_IRET       ATTR_SHORT      /*  dual purpose bit */
+#define ATTR_NORET      ATTR_FLOAT      /*  dual purpose bit */
 #define GET_BASE        0x0f            /*  get base from class */
 #define BASE_CLASS(x)   ((x)&GET_BASE)
 

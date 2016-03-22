@@ -207,6 +207,7 @@ extern  void    InitQueue( void )
     FirstIns = NULL;
     LastIns = NULL;
     RetList = NULL;
+    NoRetList = NULL;
     PendingDeletes = NULL;
     Handles = NULL;
     InitFrl( &InstrFrl );

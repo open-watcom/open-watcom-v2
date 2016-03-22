@@ -38,6 +38,7 @@
         uint            QCount;
         label_handle    Handles;
         ins_entry       *RetList;
+        ins_entry       *NoRetList;
         pointer         *InstrFrl;
 //      pointer         *CodeLblFrl;
 #if( OPTIONS & SAVINGS )

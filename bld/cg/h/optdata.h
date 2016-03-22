@@ -36,6 +36,7 @@ extern  bool            InsDelete;
 extern  uint            QCount;
 extern  label_handle    Handles;
 extern  ins_entry       *RetList;
+extern  ins_entry       *NoRetList;
 extern  pointer         *InstrFrl;
 //      pointer         *CodeLblFrl;
 #if( OPTIONS & SAVINGS )

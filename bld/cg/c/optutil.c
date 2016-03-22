@@ -147,8 +147,13 @@ extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
         AddLblRef( instr );
         break;
     case OC_RET:
-        _LblRef( instr ) = RetList;
-        RetList = instr;
+        if( _Attr( instr ) & ATTR_NORET ) {
+            _LblRef( instr ) = NoRetList;
+            NoRetList = instr;
+        } else {
+            _LblRef( instr ) = RetList;
+            RetList = instr;
+        }
         break;
     }
   optend
@@ -214,7 +219,11 @@ static  ins_entry *DelInstr_Helper( ins_entry *old ) {
         DelLblRef( old );
         break;
     case OC_RET:
-        DelRef( &RetList, old );
+        if( _Attr( old ) & ATTR_NORET ) {
+            DelRef( &NoRetList, old );
+        } else {
+            DelRef( &RetList, old );
+        }
         break;
     }
     _SetClass( old, OC_DEAD );

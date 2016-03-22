@@ -316,7 +316,11 @@ extern  void    OptPush( void )
                 RetAftrCall( ins );
             }
             if( !InsDelete ) {
-                ComTail( RetList, ins );
+                if( _Attr( ins ) & ATTR_NORET ) {
+                    ComTail( NoRetList, ins );
+                } else {
+                    ComTail( RetList, ins );
+                }
             }
             break;
         }
