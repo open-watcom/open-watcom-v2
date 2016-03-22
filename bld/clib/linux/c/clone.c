@@ -70,7 +70,7 @@ static void __callfn( int (*__fn)(void *), void *args, void *tls )
     /* Kill this cloned process now, using __fn's return value as an
      * exit code
      */
-    sys_exit(ret);
+    _sys_exit( ret );
 }
 
 _WCRTLINK pid_t clone(int (*__fn)(void *), void *__child_stack, int __flags, 

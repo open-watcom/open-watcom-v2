@@ -49,16 +49,15 @@ struct __lnx_thread {
     void *args;
 };
 
-static int __cloned_lnx_start_fn(void *thrvoiddata)
+static void __cloned_lnx_start_fn( void *thrvoiddata )
 {
-struct __lnx_thread *thrdata = (struct __lnx_thread *)thrvoiddata;
+    struct __lnx_thread *thrdata = (struct __lnx_thread *)thrvoiddata;
     
     thrdata->start_addr(thrdata->args);
     
     free(thrvoiddata);
     
-    sys_exit(0);
-    return 0;
+    _sys_exit( 0 );
 }
 
 int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
@@ -80,7 +79,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     thrdata->start_addr = start_addr;
     thrdata->args = arglist;
     
-    pid = clone( __cloned_lnx_start_fn,  
+    pid = clone( (int(*)(void *))__cloned_lnx_start_fn,  
                  (void*)((int)stack_bottom + stack_size),
                  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, 
                  thrdata );
@@ -91,5 +90,5 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 void __CEndThread( void )
 /***********************/
 {
-    sys_exit(0);
+    _sys_exit( 0 );
 }

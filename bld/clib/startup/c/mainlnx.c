@@ -87,5 +87,5 @@ void __LinuxInit( struct thread_data *ptr )
 _WCRTLINK void __exit( unsigned ret_code )
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
-    sys_exit( ret_code );
+    _sys_exit( ret_code );
 }
