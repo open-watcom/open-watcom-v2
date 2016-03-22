@@ -155,6 +155,8 @@ extern  void    OutputOC( any_oc *oc ) {
     label_handle        lbl;
 
     base = oc->oc_header.class & GET_BASE;
+    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+        break;
     if( base != OC_LABEL ) {
         dumpDebug();
     }

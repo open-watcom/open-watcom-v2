@@ -559,6 +559,8 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
     byte            *ptr;
 
     base = oc->oc_header.class & GET_BASE;
+    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+        return;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
     }
@@ -656,11 +658,9 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
         ExpandCJ( oc );
         break;
     case OC_RET:
-        base = oc->oc_header.class;
-        if( base & ATTR_NORET )
-            break;
         _OutOpndSize;
         len = M_RET;
+        base = oc->oc_header.class;
         if( base & ATTR_FAR ) {
             len |= B_RET_LONG;
         }

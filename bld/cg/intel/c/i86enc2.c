@@ -76,7 +76,6 @@ extern  void            EmitOffset(offset);
 
 extern  void            CodeBytes( const byte *src, byte_seq_len len );
 extern  void            GenReturn( int pop, bool is_long, bool iret );
-extern  void            GenNoReturn( void );
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
@@ -335,6 +334,21 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
 }
 
 
+static  void    GenNoReturn( void ) {
+/************************************
+    Generate a noreturn instruction (pseudo instruction)
+*/
+
+    any_oc      oc;
+
+    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 0;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
+    InputOC( &oc );
+}
+
 extern  void    GenCall( instruction *ins ) {
 /********************************************
     Generate a call for "ins". (eg: call foo, or call far ptr foo)
@@ -564,21 +578,6 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     }
     oc.oc_ret.ref = NULL;
     oc.oc_ret.pops = pop;
-    InputOC( &oc );
-}
-
-extern  void    GenNoReturn( void ) {
-/************************************
-    Generate a noreturn instruction (pseudo instruction)
-*/
-
-    any_oc      oc;
-
-    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
-    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
-    oc.oc_ret.hdr.objlen = 0;
-    oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = 0;
     InputOC( &oc );
 }
 
