@@ -35,15 +35,17 @@
 #include "exitwmsg.h"
 
 
-_WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
     cputs( msg );
     putch( '\r' );
     putch( '\n' );
     __exit( retcode );
+    // never return
 }
 
 _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     __exit_with_msg( msg, retcode );
+    // never return
 }

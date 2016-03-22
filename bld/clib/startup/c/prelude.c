@@ -338,10 +338,11 @@ extern void __VersionEnforcement( void )
 }
 #endif
 
-extern void __exit( unsigned rc )
+_NORETURN extern void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     _exit( rc );
+    // never return
 }
 
 extern unsigned short __GETDS( void )

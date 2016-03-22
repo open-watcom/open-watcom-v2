@@ -231,10 +231,11 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-extern void __exit( unsigned rc )
+_NORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     _exit( rc );
+    // never return
 }
 
 /*#define INTERCEPT_ALLOCATIONS */

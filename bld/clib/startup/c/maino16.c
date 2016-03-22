@@ -216,8 +216,8 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 }
 
 
-_WCRTLINK void  __exit( unsigned ret_code )
-/*****************************************/
+_WCRTLINK _NORETURN void  __exit( unsigned ret_code )
+/***************************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD
@@ -226,4 +226,5 @@ _WCRTLINK void  __exit( unsigned ret_code )
 #else
     DosExit( EXIT_PROCESS, ret_code );
 #endif
+    // never return
 }

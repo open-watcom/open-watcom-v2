@@ -110,6 +110,7 @@ _WCRTLINK void _exit( int status )
     (*__FPE_handler_exit)();
 #endif
     __exit( status );
+    // never return
 }
 
 #endif

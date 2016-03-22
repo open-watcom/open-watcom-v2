@@ -62,6 +62,7 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
+#include "exitwmsg.h"
 
 
 DWORD __TlsIndex = NO_INDEX;
@@ -295,7 +296,7 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
@@ -311,4 +312,5 @@ _WCRTLINK void __exit( unsigned ret_code )
     // for multi-threaded apps
     __FirstThreadData = NULL;
     ExitProcess( ret_code );
+    // never return
 }

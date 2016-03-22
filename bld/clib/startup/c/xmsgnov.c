@@ -41,7 +41,7 @@ extern void             ExitThread( int,int );
 extern void             NXThreadExit( void *);
 #endif
 
-_WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
     char    newline[2];
 
@@ -54,19 +54,19 @@ _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
 #else
     NXThreadExit(&retcode);
 #endif
+    // never return
 }
 
 _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
 {
-    if( !__EnterWVIDEO( msg ) )
-    {
-        __exit_with_msg( msg, retcode );
-    }
+    if( __EnterWVIDEO( msg ) )
 #if defined (_NETWARE_CLIB)
-    ExitThread( 0, retcode );
+        ExitThread( 0, retcode );
 #else
-    NXThreadExit(&retcode);
+        NXThreadExit( &retcode );
 #endif
+    __exit_with_msg( msg, retcode );
+    // never return
 }
 
 #if defined (_NETWARE_LIBC)

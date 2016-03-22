@@ -36,7 +36,7 @@
 #include "exitwmsg.h"
 
 
-_WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 {
     char        tmp[128];
     LPSTR       a,b;
@@ -49,12 +49,13 @@ _WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 
     MessageBox( (HWND)NULL, tmp, "Open Watcom", MB_OK );
     _exit( retcode );
+    // never return
 }
 
 _WCRTLINK void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
 {
-    if( !__EnterWVIDEO( msg ) ) {
-        __exit_with_msg( msg, retcode );
-    }
-    _exit( retcode );
+    if( __EnterWVIDEO( msg ) )
+        _exit( retcode );
+    __exit_with_msg( msg, retcode );
+    // never return
 }
