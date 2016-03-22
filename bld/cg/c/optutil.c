@@ -37,10 +37,8 @@ extern  void            DelLblRef(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
 extern  ins_entry       *IsolatedCode(ins_entry*);
 extern  void            DelLblDef(ins_entry*);
-extern  void            DeleteQueue(ins_entry*);
 extern  void            AddLblRef(ins_entry*);
 extern  void            AddLblDef(ins_entry*);
-extern  void            InsertQueue(ins_entry*,ins_entry*);
 extern  void            FreeInstr(ins_entry*);
 
 

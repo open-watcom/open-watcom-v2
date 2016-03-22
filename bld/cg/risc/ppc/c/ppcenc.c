@@ -36,6 +36,8 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "cgaux.h"
+#include "ocentry.h"
+#include "optmain.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
 #include "data.h"
@@ -328,7 +330,7 @@ static  void    doCall( instruction *ins )
     code = FindAuxInfoSym( sym, CALL_BYTES );
     if( code != NULL ) {
         ObjBytes( code->data, code->length );
-        if( *(call_class *)FindAuxInfo( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
             GenNoReturn();
         }
     } else {

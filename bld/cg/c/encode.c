@@ -33,6 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "system.h"
 #include "cgaux.h"
 #include "cgdefs.h"
@@ -44,7 +45,6 @@
 
 extern  void            GenSetCC( instruction * );
 extern  byte            CondCode( instruction * );
-extern  void            InputOC(any_oc*);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 

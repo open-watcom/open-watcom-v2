@@ -33,6 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "cgmem.h"
 #include "system.h"
 #include "escape.h"
@@ -63,7 +64,6 @@ extern  void            LayModRM(name*);
 extern  void            LayOpword(gen_opcode);
 extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
-extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);

@@ -34,6 +34,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "axpencod.h"
 #include "reloc.h"
 #include "zoiks.h"
@@ -61,7 +62,6 @@ extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
 extern  void            ObjEmitSeq( byte_seq * );
-extern  void            InputOC( any_oc * );
 extern  opcode_defs     FlipOpcode( opcode_defs );
 
 extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
@@ -491,7 +491,7 @@ static  void    doCall( instruction *ins ) {
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( *(call_class *)FindAuxInfo( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
             GenNoReturn();
         }
     } else {

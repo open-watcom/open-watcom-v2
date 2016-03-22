@@ -37,6 +37,8 @@
 #include "objout.h"
 #include "memcheck.h"
 #include "memlimit.h"
+#include "ocentry.h"
+#include "optmain.h"
 #include "feprotos.h"
 
 static    pointer_int   MemLimit;
@@ -54,7 +56,6 @@ extern  bool            ScoreFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            AddrFrlFree( void );
 extern  bool            SchedFrlFree( void );
-extern  bool            ShrinkQueue( pointer_int );
 extern  pointer_int     MemInUse( void );
 extern  pointer_int     MemSize( void );
 extern  bool            TreeFrlFree( void );

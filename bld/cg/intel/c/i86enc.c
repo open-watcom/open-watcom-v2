@@ -34,6 +34,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "pccode.h"
 #include "system.h"
 #include "pcencode.h"
@@ -68,7 +69,6 @@ extern  void            GenRCall(instruction*);
 extern  void            GenCall(instruction*);
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
-extern  void            InputOC(any_oc*);
 extern  void            DoRepOp( instruction *ins );
 extern  void            Do4CXShift(instruction *,void (*)(instruction*) );
 extern  void            LayLeaOp(instruction*);

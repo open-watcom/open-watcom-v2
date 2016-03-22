@@ -35,6 +35,7 @@
 #include "inslist.h"
 #include "block.h"
 #include "data.h"
+#include "optmain.h"
 
 extern  void            JmpToRet( ins_entry *, ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
@@ -42,8 +43,6 @@ extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  void            ChgLblRef( ins_entry *, label_handle );
 extern  label_handle    AddNewLabel( ins_entry *, obj_length );
-extern  void            InsertQueue( ins_entry *, ins_entry * );
-extern  void            DeleteQueue( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  ins_entry       *PrevIns( ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );

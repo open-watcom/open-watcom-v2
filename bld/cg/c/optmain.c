@@ -35,10 +35,10 @@
 #include "objout.h"
 #include "inslist.h"
 #include "blips.h"
+#include "optmain.h"
 
 extern  void            FreePendingDeletes( void );
 extern  ins_entry       *DelInstr( ins_entry * );
-extern  void            OutputOC( any_oc *, any_oc * );
 extern  void            OptPull( void );
 extern  void            OptPush( void );
 extern  void            AddInstr( ins_entry *, ins_entry * );
@@ -143,8 +143,8 @@ static  bool    LDone( any_oc *oc )
     optreturn( TRUE );
 }
 
-extern  void    InputOC( any_oc *oc )
-/***********************************/
+void    InputOC( any_oc *oc )
+/***************************/
 {
   optbegin
     PSBlip();
@@ -177,8 +177,8 @@ extern  void    InputOC( any_oc *oc )
 }
 
 
-extern  bool    ShrinkQueue( pointer_int size )
-/**********************************************/
+bool    ShrinkQueue( pointer_int size )
+/*************************************/
 {
     pointer_int freed;
     pointer_int need;
@@ -199,8 +199,8 @@ extern  bool    ShrinkQueue( pointer_int size )
 }
 
 
-extern  void    InitQueue( void )
-/*******************************/
+void    InitQueue( void )
+/***********************/
 {
   optbegin
     QCount = 0;
@@ -218,8 +218,8 @@ extern  void    InitQueue( void )
 }
 
 
-extern  void    EmptyQueue( void )
-/********************************/
+void    EmptyQueue( void )
+/************************/
 {
   optbegin
     while( QCount != 0 ) {
@@ -228,8 +228,8 @@ extern  void    EmptyQueue( void )
   optend
 }
 
-extern  void    FlushQueue( void )
-/********************************/
+void    FlushQueue( void )
+/************************/
 {
     segment_id      old;
 
@@ -240,8 +240,8 @@ extern  void    FlushQueue( void )
   optend
 }
 
-extern  void    FiniQueue( void )
-/*******************************/
+void    FiniQueue( void )
+/***********************/
 {
   optbegin
     SetOP( AskCodeSeg() );
@@ -251,8 +251,8 @@ extern  void    FiniQueue( void )
 }
 
 
-extern  void    AbortQueue( void )
-/********************************/
+void    AbortQueue( void )
+/************************/
 {
     ins_entry   *next;
 

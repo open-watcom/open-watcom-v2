@@ -24,63 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction queue manipulation.
 *
 ****************************************************************************/
 
 
-#include "optwif.h"
-
-
-void    InsertQueue( ins_entry *old, ins_entry *new )
-/***************************************************/
-{
-  optbegin
-    if( FirstIns == NULL ) {
-        FirstIns = old;
-        LastIns = old;
-        FirstIns->ins.prev = NULL;
-        FirstIns->ins.next = NULL;
-    } else if( new == NULL ) {
-        FirstIns->ins.prev = old;
-        old->ins.next = FirstIns;
-        old->ins.prev = NULL;
-        FirstIns = old;
-    } else if( new == LastIns ) {
-        LastIns->ins.next = old;
-        old->ins.next = NULL;
-        old->ins.prev = LastIns;
-        LastIns = old;
-    } else {
-        old->ins.next = new->ins.next;
-        old->ins.prev = new;
-        new->ins.next->ins.prev = old;
-        new->ins.next = old;
-    }
-    ++QCount;
-  optend
-}
-
-
-void    DeleteQueue( ins_entry *old )
-/***********************************/
-{
-  optbegin
-    if( old == FirstIns ) {
-        FirstIns = FirstIns->ins.next;
-        if( FirstIns != NULL ) {
-            FirstIns->ins.prev = NULL;
-        } else {
-            LastIns = NULL;
-        }
-    } else if( old == LastIns ) {
-        LastIns = LastIns->ins.prev;
-        LastIns->ins.next = NULL;
-    } else {
-        old->ins.next->ins.prev = old->ins.prev;
-        old->ins.prev->ins.next = old->ins.next;
-    }
-    --QCount;
-  optend
-}
+extern  void    InputOC( any_oc *oc );
+extern  void    OutputOC( any_oc *, any_oc * );
+extern  bool    ShrinkQueue( pointer_int size );
+extern  void    InitQueue( void );
+extern  void    EmptyQueue( void );
+extern  void    FlushQueue( void );
+extern  void    FiniQueue( void );
+extern  void    AbortQueue( void );
