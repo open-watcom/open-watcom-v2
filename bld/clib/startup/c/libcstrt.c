@@ -49,6 +49,7 @@
 #include "snglthrd.h"
 #include "mthread.h"
 #include "trdlstac.h"
+#include "wprelude.h"
 
 
 /*****************************************************************************

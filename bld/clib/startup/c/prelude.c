@@ -49,6 +49,7 @@
 #include "thread.h"
 #include "mthread.h"
 #include "trdlstac.h"
+#include "wprelude.h"
 
 
 #define MAX_CMDLINE     500
@@ -323,7 +324,7 @@ extern void _Stop( void )
 }
 #endif
 
-extern void __WATCOM_Prelude( void )
+void __WATCOM_Prelude( void )
 {
 }
 
