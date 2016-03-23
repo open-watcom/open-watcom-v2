@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include <process.h>
 #include "linuxsys.h"
 
 _WCRTLINK pid_t gettid( void )

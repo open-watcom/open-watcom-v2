@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "futex.h"
 #include "linuxsys.h"
 
 _WCRTLINK int __futex(volatile int *__address, int __operation, 
@@ -40,6 +41,6 @@ syscall_res res;
 
     res = sys_call4( SYS_futex, (u_long)__address, (u_long)__operation, 
                      (u_long)__value, (u_long)__timeout );
-                     
+
     __syscall_return( int, res );
 }
