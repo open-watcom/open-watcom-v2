@@ -47,6 +47,7 @@ sub read_config
     $Common::config{'HHC'} = '';
     $Common::config{'GHOSTSCRIPTPATH'} = '';
     $Common::config{'DOSBOX'} = '';
+    $Common::config{'INITCMD'} = '';
     open(CONFIG_FILE, $filename) || die "Unable to open configuration file: $filename.";
     while (<CONFIG_FILE>) {
         s/\r?\n/\n/;

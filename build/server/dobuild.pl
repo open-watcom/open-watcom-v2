@@ -212,6 +212,9 @@ sub batch_output_build_wmake_builder_rm
 sub make_boot_batch
 {
     open(BATCH, ">$build_boot_batch_name") || die "Unable to open $build_boot_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -240,6 +243,9 @@ sub make_boot_batch
 sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -273,6 +279,9 @@ sub make_build_batch
 sub make_docs_batch
 {
     open(BATCH, ">$docs_batch_name") || die "Unable to open $docs_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -312,6 +321,9 @@ sub make_docs_batch
 sub make_test_batch
 {
     open(BATCH, ">$test_batch_name") || die "Unable to open $test_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -349,6 +361,9 @@ sub make_test_batch
 sub make_installer_batch
 {
     open(BATCH, ">$build_installer_name") || die "Unable to open $build_installer_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
