@@ -177,7 +177,8 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 #endif
         break;
     case OC_RET:
-        if( _RetPop( old ) != _RetPop( add ) )
+        if( _RetPop( old ) != _RetPop( add )
+          || (_Attr( old ) & ATTR_NORET) != (_Attr( add ) & ATTR_NORET) )
             optreturn( FALSE );
         break;
     default:
