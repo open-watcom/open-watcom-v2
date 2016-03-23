@@ -68,10 +68,3 @@ _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
     __exit_with_msg( msg, retcode );
     // never return
 }
-
-#if defined (_NETWARE_LIBC)
-_WCRTLINK void AbortWithStackOverflow( unsigned TID )
-{
-    __fatal_runtime_error("OpenWatcom RTL : Stack Overflow", TID);
-}
-#endif
