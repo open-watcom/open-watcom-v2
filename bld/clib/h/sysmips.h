@@ -321,7 +321,6 @@ syscall_res sys_call1( u_long func, u_long r_4 );
 void sys_call1n( u_long func, u_long r_4 );
 #pragma aux sys_call1n =                        \
     "syscall"                                   \
-    "move $v1,$a3"                              \
     parm [$v0] [$a0];
 
 syscall_res sys_call2( u_long func, u_long r_4, u_long r_5 );
