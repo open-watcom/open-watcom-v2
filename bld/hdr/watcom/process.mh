@@ -241,6 +241,10 @@ _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
 :endsegment
 
+:segment LINUX
+_WCRTLINK extern pid_t  gettid( void );
+:endsegment
+
 :segment QNX | LINUX
 ::
 :: End of extension section

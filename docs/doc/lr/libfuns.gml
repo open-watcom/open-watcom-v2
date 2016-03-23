@@ -494,6 +494,7 @@
 .fnc _gettextposition           gr_gettp.gml    DOS QNX W GRAPH
 .fnc _gettextsettings           gr_getts.gml    DOS QNX W GRAPH
 .fnc _gettextwindow             gr_gettw.gml    DOS QNX W GRAPH
+.fnc gettid                     gettid.gml      DOS QXO   WIN32
 .fnc getuid                     getuid.gml          QXO
 .fnc _getvideoconfig            gr_getvc.gml    DOS QNX W GRAPH
 .fnc _getviewcoord              gr_getlc.gml    DOS QNX W GRAPH

@@ -611,6 +611,7 @@
 .sys _gettextposition DOS16 DOS32 QNX16 QNX32
 .sys _gettextsettings DOS16 DOS32 QNX16 QNX32
 .sys _gettextwindow DOS16 DOS32 QNX16 QNX32
+.sys gettid LNX32
 .sys gettimer QNX16 QNX32
 .sys getuid QNX16 QNX32 LNX32
 .sys _getvideoconfig DOS16 DOS32 QNX16 QNX32
