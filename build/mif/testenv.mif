@@ -1008,8 +1008,14 @@ br_opt = $(targ_br_$(targ_env_$(arch)))
 
 #
 # targ_run      name of executable loader (e.g., run386)
+!ifdef buildtest
+targ_path_run_dos4gw = $(%OWSRCDIR)\redist\dos4gw
+!else
+targ_path_run_dos4gw = $(%WATCOM)\binw
+!endif
+
 targ_run_pls386 = run386
-targ_run_d4g386 = dos4gw
+targ_run_d4g386 = $(targ_path_run_dos4gw)\dos4gw
 targ_run_cw386  =
 targ_run_tnt386 = tntrun
 targ_run_os2386 =
@@ -1025,6 +1031,14 @@ targ_run_lnxppc =
 targ_run_lnxmps =
 
 run = $(targ_run_$(targ_env_$(arch)))
+
+!ifdef buildtest
+wbind_exe = $(%OWROOT)\build\bin\bwbind.exe
+wbind_ext = $(%OWSRCDIR)\win386\ext\win386.ext
+!else
+wbind_exe = $(%WATCOM)\binnt\wbind.exe
+wbind_ext = $(%WATCOM)\binw\win386.ext
+!endif
 
 !ifdef __UNIX__
 exec_prefix = ./
