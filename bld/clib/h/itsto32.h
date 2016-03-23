@@ -29,14 +29,7 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "rtinit.h"
-#include "itsto32.h"
+extern unsigned __threadstksize;
+#pragma aux __threadstksize "*"
 
-
-void __init_threadstksize( void )
-{
-    __threadstksize += 8 * 1024;
-}
-
-AXI( __init_threadstksize, INIT_PRIORITY_RUNTIME )
+extern void __init_threadstksize( void );

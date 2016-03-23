@@ -47,11 +47,9 @@
 #include "mthread.h"
 #include "initarg.h"
 #include "cthread.h"
+#include "itsto32.h"
+#include "trdlist.h"
 
-#pragma aux __threadstksize "*"
-extern  unsigned        __threadstksize;
-
-extern  unsigned        __threadstack( void );
 
 typedef struct thread_args {
     thread_fn   *rtn;

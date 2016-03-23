@@ -57,6 +57,8 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
+#include "itsto32.h"
+#include "trdlist.h"
 
 
 extern unsigned         __hmodule;
@@ -115,9 +117,6 @@ extern  char            _end;
 
 int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 
-#if defined(_M_IX86)
-#pragma aux __threadstksize "*"
-#endif
 unsigned        __threadstksize = { 0 };
 
 typedef struct sys_info {
