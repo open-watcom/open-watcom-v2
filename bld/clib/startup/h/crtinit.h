@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,22 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  _CRT_INIT function for Win32.
+* Description:  _CRT_INIT function prototype (MS).
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <windows.h>
-#include "crtinit.h"
-
 #if defined( __MAKE_DLL_CLIB ) || defined( __MAKE_DLL_WRTLIB )
 __declspec(dllexport)
 #endif
-BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved )
-{
-    hDLL = hDLL;
-    dwReason = dwReason;
-    reserved = reserved;
-    return( TRUE );
-}
+extern BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved );
