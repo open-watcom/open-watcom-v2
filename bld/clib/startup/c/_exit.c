@@ -35,8 +35,8 @@
 
 /* POSIX says _exit() and _Exit() "shall be functionally equivalent" */
 
-_WCRTLINK void _Exit( int status )
-/********************************/
+_WCRTLINK _NORETURN void _Exit( int status )
+/******************************************/
 {
     _exit( status );
 }

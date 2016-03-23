@@ -161,7 +161,7 @@ _WCRTLINK extern void    *bsearch( const void *__key, const void *__base,
                                   int (*__compar)(const void *__pkey, const void *__pbase) );
 _WCRTLINK extern void    *calloc( size_t __n, size_t __size );
 _WCIRTLINK extern div_t  div( int __numer, int __denom );
-_WCRTLINK extern void    _Exit( int __status );
+_WCRTLINK _NORETURN extern void _Exit( int __status );
 _WCRTLINK extern void    free( void *__ptr );
 
 _WCIRTLINK extern long int labs( long int __j );
