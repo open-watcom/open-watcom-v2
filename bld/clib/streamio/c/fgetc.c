@@ -48,6 +48,7 @@
 #include "flush.h"
 #include "streamio.h"
 #include "thread.h"
+#include "fillbuf.h"
 
 #define DOS_EOF_CHAR        0x1a
 

@@ -39,12 +39,10 @@
 #include "qread.h"
 #include "streamio.h"
 #include "thread.h"
+#include "fillbuf.h"
 
 
 #define DOS_EOF_CHAR    0x1a
-
-extern int  __fill_buffer( FILE * );    /* located in fgetc */
-
 
 _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
 {
