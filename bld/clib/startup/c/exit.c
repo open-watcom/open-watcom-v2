@@ -46,6 +46,7 @@
 #include "procfini.h"
 #include "_exit.h"
 
+
 /*
   __int23_exit is used by OS/2 as a general termination routine which unhooks
   exception handlers.  A better name for this variable is __sig_exit.
@@ -58,7 +59,7 @@
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
 void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
 void    (*__int23_exit)( void ) = __null_int23_exit;
-void    _null_exit_rtn( void ) {}
+static void _null_exit_rtn( void ) {}
 void    (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
 

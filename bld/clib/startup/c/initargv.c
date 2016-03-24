@@ -30,6 +30,10 @@
 
 
 #ifdef __NETWARE__
+#include "widechar.h"
+#include "variety.h"
+#include "initarg.h"
+
     void __Init_Argv( void ) { }
     void __Fini_Argv( void ) { }
 #else
@@ -147,7 +151,7 @@ static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHA
     return( argc );
 }
 
-_WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
+static void *__F_NAME( _getargv, _wgetargv )(
         int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
         int *pargc, CHAR_TYPE ***pargv )
 {

@@ -187,7 +187,7 @@ extern unsigned char _bin_to_ascii_offs( unsigned char c );
     "L1:" \
     parm routine [al] value [al];
 
-_WCRTLINK void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
+static void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 {
     char    msg[] = "Floating point exception (00)";
 

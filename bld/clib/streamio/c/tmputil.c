@@ -39,6 +39,7 @@
 #include "rtdata.h"
 #include "tmpfname.h"
 #include "pathmac.h"
+#include "tmpfile.h"
 
 
 static unsigned __GetTmpPath( char *buf )

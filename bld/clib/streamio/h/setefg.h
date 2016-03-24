@@ -24,33 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Routine to bring in real floating-point formatting code.
+* Description:  Prototypes for floating-point formatting routines.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdio.h>
-#include "farsupp.h"
-#include "ftos.h"
-#include "setefg.h"
-
-
-_WMRTLINK extern FAR_STRING (*__get_EFG_Format())();
-_WMRTLINK extern void       (*__get__cnvs2d())();
-
-extern FAR_STRING           _EFG_Format();
-extern void                 __cnvs2d();
-
-/* This routine will be called by cstart if "_fltused" is referenced. */
-
-void __setEFGfmt( void )
-{
-#ifdef __SW_BR
-    __EFG_printf = (_type_EFG_printf)__get_EFG_Format();
-    __EFG_scanf  = (_type_EFG_scanf)__get__cnvs2d();
-#else
-    __EFG_printf = (_type_EFG_printf)_EFG_Format;
-    __EFG_scanf  = (_type_EFG_scanf)__cnvs2d;
-#endif
-}
+extern void __setEFGfmt( void );

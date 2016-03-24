@@ -31,6 +31,8 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "setefg.h"
+
 
 #ifdef _M_I86
 unsigned _fltused_ = 1;
