@@ -835,9 +835,9 @@ void __InitMultipleThread( void )
         InitSemaphore.initialized = 1;
         // first thread data already in magic memory
   #elif defined( __LINUX__ )
-	__posix_sem_init( &InitSemaphore.semaphore, 0, 1 );
+        __posix_sem_init( &InitSemaphore.semaphore, 0, 1 );
         InitSemaphore.initialized = 1;
-	__AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
+        __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
   #elif defined( __RDOS__ )
         InitSemaphore.semaphore = RdosCreateSection();
         InitSemaphore.initialized = 1;
