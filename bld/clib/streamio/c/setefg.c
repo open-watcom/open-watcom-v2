@@ -31,16 +31,14 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include "myvalist.h"
+#include "xfloat.h"
 #include "farsupp.h"
 #include "ftos.h"
 #include "setefg.h"
+#include "printf.h"
+#include "fltsupp.h"
 
-
-_WMRTLINK extern FAR_STRING (*__get_EFG_Format())();
-_WMRTLINK extern void       (*__get__cnvs2d())();
-
-extern FAR_STRING           _EFG_Format();
-extern void                 __cnvs2d();
 
 /* This routine will be called by cstart if "_fltused" is referenced. */
 

@@ -44,6 +44,7 @@ typedef    signed_16    intstar2;       // 16-bit integer
 typedef    signed_32    intstar4;       // 32-bit integer
 
 #ifndef __cplusplus
+
 typedef    float        real;
 typedef    real         single;         // single precision
 typedef    long double  extended;       // extended precision
@@ -57,6 +58,7 @@ typedef struct {        // extended precision complex
     extended    realpart;
     extended    imagpart;
 } xcomplex;
+
 #endif
 
 typedef struct {        // double precision complex
@@ -72,22 +74,40 @@ extern "C" {
 #endif
 
 _WMRTLINK extern void       __rterrmsg( const int, const char * );
-_WMRTLINK extern dcomplex   __qmath1err(unsigned int,dcomplex *);
-_WMRTLINK extern dcomplex   __qmath2err(unsigned int,dcomplex *,dcomplex *);
-_WMRTLINK extern complex    __zmath1err(unsigned int,complex *);
-_WMRTLINK extern complex    __zmath2err(unsigned int,complex *,complex *);
+_WMRTLINK extern dcomplex   __qmath1err( unsigned int, dcomplex * );
+_WMRTLINK extern dcomplex   __qmath2err( unsigned int, dcomplex *, dcomplex * );
+_WMRTLINK extern complex    __zmath1err( unsigned int, complex * );
+_WMRTLINK extern complex    __zmath2err( unsigned int, complex *, complex * );
 
 _WMRTLINK extern dcomplex   _IF_C16Div( double r1, double i1, double r2, double i2 );
 _WMRTLINK extern dcomplex   _IF_C16Mul( double r1, double i1, double r2, double i2 );
+_WMRTLINK extern dcomplex   _IF_C16Pow( double base_r, double base_i, double power_r, double power_i );
+_WMRTLINK extern dcomplex   _IF_C16PowI( double a, double b, intstar4 i );
+
 _WMRTLINK extern double     _IF_CDABS( double r, double i );
 _WMRTLINK extern dcomplex   _IF_CDCOS( double r, double i );
 _WMRTLINK extern dcomplex   _IF_CDEXP( double r, double i );
 _WMRTLINK extern dcomplex   _IF_CDLOG( double r, double i );
-_WMRTLINK extern dcomplex   _IF_C16Pow( double base_r, double base_i,
-                                        double power_r, double power_i );
-_WMRTLINK extern dcomplex   _IF_C16PowI( double a, double b, intstar4 i );
 _WMRTLINK extern dcomplex   _IF_CDSIN( double r, double i );
 _WMRTLINK extern dcomplex   _IF_CDSQRT( double r, double i );
+
+#ifndef __cplusplus
+
+_WMRTLINK extern intstar4   _IF_powii( intstar4 base, intstar4 power );
+_WMRTLINK extern double     _IF_PowRI( double base, intstar4 power );
+_WMRTLINK extern double     _IF_PowRR( double base, double power );
+_WMRTLINK extern extended   _IF_PowXI( extended base, intstar4 power );
+
+_WMRTLINK extern complex    _IF_C8Div( single r1, single i1, single r2, single i2 );
+_WMRTLINK extern xcomplex   _IF_C32Div( extended r1, extended i1, extended r2, extended i2 );
+_WMRTLINK extern complex    _IF_C8Mul( single r1, single i1, single r2, single i2 );
+_WMRTLINK extern xcomplex   _IF_C32Mul( extended r1, extended i1, extended r2, extended i2 );
+_WMRTLINK extern complex    _IF_C8Pow( single base_r, single base_i, single power_r, single power_i );
+_WMRTLINK extern xcomplex   _IF_C32Pow( extended base_r, extended base_i, extended power_r, extended power_i );
+_WMRTLINK extern complex    _IF_C8PowI( single a, single b, intstar4 i );
+_WMRTLINK extern xcomplex   _IF_C32PowI( extended a, extended b, intstar4 i );
+
+#endif
 
 #ifdef __cplusplus
 };

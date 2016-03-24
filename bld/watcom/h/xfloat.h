@@ -147,6 +147,10 @@ _WMRTLINK extern int __Strtold(
                         const char *bufptr,
                         long_double *pld,
                         char **endptr );
+_WMRTLINK extern int __wStrtold(
+                        const wchar_t *bufptr,
+                        long_double *pld,
+                        wchar_t **endptr );
 #endif
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_arg, ld_arg );

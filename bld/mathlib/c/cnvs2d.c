@@ -31,6 +31,12 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdarg.h>
+#include "myvalist.h"
+#include "xfloat.h"
+#include "farsupp.h"
+#include "printf.h"
+#include "fltsupp.h"
 
 
 /* This routine is called from scnf.c */

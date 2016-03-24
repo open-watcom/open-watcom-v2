@@ -32,13 +32,13 @@
 
 
 #include "variety.h"
-#include "fenv.h"
+#include <fenv.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 #include "mathlib.h"
 #include "clibsupp.h"
 #include "_matherr.h"
-#include <errno.h>
 
 static const char * const Msgs[] = {
     0,

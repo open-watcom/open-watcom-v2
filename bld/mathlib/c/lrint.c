@@ -38,7 +38,7 @@
 #include <limits.h>
 #include "_matherr.h"
 
-double __rint_checked(double x, double limit, const char *funcname)
+static double __rint_checked(double x, double limit, const char *funcname)
 {
 double fres;
 

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -40,6 +39,7 @@
 #include "xfloat.h"
 #include "farsupp.h"
 #include "rtcntrl.h"
+#include "fltsupp.h"
 
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
