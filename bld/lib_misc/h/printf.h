@@ -95,8 +95,10 @@ typedef struct
 
 #if defined(__QNX__)
     #define OUTC_PARM       int
+#elif defined( __WIDECHAR__ )
+    #define OUTC_PARM       wchar_t
 #else
-    #define OUTC_PARM       CHAR_TYPE
+    #define OUTC_PARM       char
 #endif
 
 #if defined(__QNX__)
@@ -141,8 +143,13 @@ typedef void (__SLIB_CALLBACK slib_callback_t)( SPECS __SLIB *, OUTC_PARM );
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
 
-extern int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE * __restrict format,
+#ifdef __WIDECHAR__
+extern int __wprtf_s( void __SLIB *dest, const wchar_t * __restrict format,
                             va_list args, const char **errmsg, slib_callback_t *out_putc );
+#else
+extern int __prtf_s( void __SLIB *dest, const char * __restrict format,
+                            va_list args, const char **errmsg, slib_callback_t *out_putc );
+#endif
 /* dest         parm for use by out_putc    */
 /* format       pointer to format string    */
 /* args         pointer to pointer to args  */
@@ -151,7 +158,11 @@ extern int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE * __
 
 #else
 
-extern int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc );
+#ifdef __WIDECHAR__
+extern int __wprtf( void __SLIB *dest, const wchar_t *format, va_list args, slib_callback_t *out_putc );
+#else
+extern int __prtf( void __SLIB *dest, const char *format, va_list args, slib_callback_t *out_putc );
+#endif
 /* dest         parm for use by out_putc    */
 /* format       pointer to format string    */
 /* args         pointer to pointer to args  */
