@@ -47,6 +47,8 @@
 #define ERR_PREF_SIZE   5
 #define ERR_CODE_SIZE   6
 
+extern int         __EnterWVIDEO( char __far * );
+
 void    (*TraceRoutine)(char *) = { NULL };
 
 static  char            ErrorPref[] = { "*ERR*" };

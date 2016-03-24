@@ -43,7 +43,6 @@ extern bool        __Add( intstar4 *arg1, intstar4 *arg2 );
 extern bool        __AllowCommaSep( void );
 extern bool        __DevicesCC( void );
 extern int         __EnableF77RTExceptionHandling( void );
-extern int         __EnterWVIDEO( char __far * );
 extern void        __InitMultiThreadIO( void );
 extern void        __InitResource( void );
 extern void        __PartialReleaseFIO( void );
