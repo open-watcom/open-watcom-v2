@@ -106,6 +106,8 @@ extern  int     __sgn( double );
 extern  double  _EvalPoly( double x, const double *poly, int degree );
 extern  double  _OddPoly( double x, const double *poly, int degree );
 
+extern  char    *__cvt( double value, int ndigits, int *dec, int *sign, int fmt, char *buf );
+
 /*      The first parm to __...math1err and __...math2err is an unsigned int
         that indicates the math function, the type of error, and the
         expected result value.
