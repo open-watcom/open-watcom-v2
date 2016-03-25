@@ -33,9 +33,8 @@
 #include "uidef.h"
 
 
-VSCREEN* intern findvscreen( register ORD       row,
-                             register ORD       col )
-/***************************************************/
+VSCREEN* intern findvscreen( ORD row, ORD col )
+/*********************************************/
 {
     register    UI_WINDOW*              wptr;
 
@@ -52,9 +51,8 @@ VSCREEN* intern findvscreen( register ORD       row,
 }
 
 
-void UIAPI uivdirty( register VSCREEN  *vptr,
-                      register SAREA    area )
-/********************************************/
+void UIAPI uivdirty( VSCREEN *vptr, SAREA area )
+/**********************************************/
 {
     area.row += vptr->area.row;
     area.col += vptr->area.col;
@@ -62,8 +60,8 @@ void UIAPI uivdirty( register VSCREEN  *vptr,
 }
 
 
-void UIAPI uivsetactive( register VSCREEN *vptr )
-/************************************************/
+void UIAPI uivsetactive( VSCREEN *vptr )
+/**************************************/
 {
     okopen( vptr );
     if( ( vptr->flags & V_PASSIVE ) == 0 ) {
@@ -72,8 +70,8 @@ void UIAPI uivsetactive( register VSCREEN *vptr )
 }
 
 
-void UIAPI uivsetcursor( register VSCREEN *vptr )
-/************************************************/
+void UIAPI uivsetcursor( VSCREEN *vptr )
+/**************************************/
 {
     register    ORD                     row;
     register    ORD                     col;

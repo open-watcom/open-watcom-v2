@@ -154,7 +154,7 @@ endif
           mov   AL,1                    ; - indicate error
         _admit                          ; admit: +ve or -0.0
           fsqrt                         ; - calculate sqrt using 8087
-          mov   AL,0                    ; - indicate no error
+          xor   AL,AL                   ; - indicate no error
         _endguess                       ; endguess
         ret                             ; return
         endproc __@DSQRT

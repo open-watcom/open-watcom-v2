@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,5 +41,5 @@ _WCRTLINK int getsockname( int s , struct sockaddr *name , socklen_t *namelen )
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)name;
     args[2] = (unsigned long)namelen;
-    return ( __socketcall( SYS_GETSOCKNAME, args ) );
+    return( __socketcall( SYS_GETSOCKNAME, args ) );
 }

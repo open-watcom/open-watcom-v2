@@ -56,7 +56,7 @@ include math87.inc
         push    EDX             ; push argument
         push    EAX             ; . . .
         fld     qword ptr -8[EBP]; load argument
-        mov     DL,0            ; init 'negate' flag
+        xor     DL,DL           ; init 'negate' flag
 
         ftst                    ; get sign of argument
         fstsw   AX              ; . . .
@@ -81,7 +81,7 @@ include math87.inc
         _else                   ; else
           do_fpatan             ; - calculate artangent(argument)
         _endif                  ; endif
-        cmp     DL,0            ; if original argument was negative
+        test    DL,DL           ; if original argument was negative
         _if     ne              ; then
           fchs                  ; - negate the answer
         _endif                  ; endif

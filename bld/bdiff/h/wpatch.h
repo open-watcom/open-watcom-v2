@@ -32,7 +32,7 @@
 #ifndef __WPATCH_H_
 #define __WPATCH_H_
 
-extern void     PatchAddFile( char *path );
-extern int      DoBdiff( char *srcPath, char *tgtPath, char *name );
+extern void     PatchAddFile( const char *path );
+extern int      DoBdiff( const char *srcPath, const char *tgtPath, const char *name );
 
 #endif

@@ -54,8 +54,8 @@ extern unsigned short   MouseRow;
 extern unsigned short   MouseCol;
 extern unsigned short   MouseStatus;
 #else
-extern int              MouseRow;
-extern int              MouseCol;
+extern windim           MouseRow;
+extern windim           MouseCol;
 extern int              MouseStatus;
 #endif
 extern vi_mouse_event   LastMouseEvent;
@@ -81,8 +81,11 @@ extern line         *CurrentLine;
 extern i_mark       CurrentPos;
 extern i_mark       LeftTopPos;
 extern int          VirtualColumnDesired;
-extern window_id    CurrentWindow, MessageWindow, StatusWindow, CurrNumWindow;
-extern window_id    MenuWindow;
+extern window_id    current_window_id;
+extern window_id    message_window_id;
+extern window_id    status_window_id;
+extern window_id    curr_num_window_id;
+extern window_id    menu_window_id;
 extern char         *Comspec;
 extern select_rgn   SelRgn;
 
@@ -145,7 +148,6 @@ extern bool             BoundData;
 
 /* file io globals */
 extern int              SwapBlocksInUse;
-extern int              SwapFileHandle;
 extern int              SwapBlockArraySize, XMemBlockArraySize;
 extern char             *ReadBuffer, *WriteBuffer;
 extern unsigned char    *XMemBlocks;

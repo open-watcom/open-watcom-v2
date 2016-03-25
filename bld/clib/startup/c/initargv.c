@@ -30,9 +30,14 @@
 
 
 #ifdef __NETWARE__
+#include "widechar.h"
+#include "variety.h"
+#include "initarg.h"
+
     void __Init_Argv( void ) { }
     void __Fini_Argv( void ) { }
 #else
+
 #include "dll.h"        // needs to be first
 #include "widechar.h"
 #include "variety.h"
@@ -43,30 +48,110 @@
 #include "liballoc.h"
 #include "initarg.h"
 #include "rtdata.h"
+#include "histsplt.h"
+#include "exitwmsg.h"
 
-extern  int         __historical_splitparms;
-extern  void        _Not_Enough_Memory( void );             /* 25-jul-89 */
-static  unsigned    _SplitParms(int, CHAR_TYPE *, CHAR_TYPE **, CHAR_TYPE ** );
+
 _WCRTDATA static CHAR_TYPE  *__F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
 
-_WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
-        int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
-        int *pargc, CHAR_TYPE ***pargv );
-
-void __F_NAME(__Init_Argv,__wInit_Argv)( void )
+static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
 {
-    __F_NAME( __CmdLine, __wCmdLine ) = __F_NAME( _getargv, _wgetargv )(
-        __historical_splitparms,
-        __F_NAME( _LpPgmName, _LpwPgmName ), __F_NAME( _LpCmdLine, _LpwCmdLine ),
-        &__F_NAME( _argc, _wargc ), &__F_NAME( _argv, _wargv ) );
+    register unsigned argc;
+    register CHAR_TYPE *start;
+    register CHAR_TYPE *new;
+    enum QUOTE_STATE {
+        QUOTE_NONE,             /* no " active in current parm */
+        QUOTE_DELIMITER,        /* " was first char and must be last */
+        QUOTE_STARTED   /* " was seen, look for a match */
+    };
+    register enum QUOTE_STATE state;
 
-    __F_NAME( __argc, __wargc )   = __F_NAME( _argc, _wargc );
-    __F_NAME( ___Argc, ___wArgc ) = __F_NAME( _argc, _wargc );
-    __F_NAME( __argv, __wargv )   = __F_NAME( _argv, _wargv );
-    __F_NAME( ___Argv, ___wArgv ) = __F_NAME( _argv, _wargv );
+    argc = 0;
+    for( ;; ) {
+        while( *p == STRING( ' ' ) || *p == STRING( '\t' ) ) {
+            ++p; /* skip over blanks or tabs */
+        }
+        if( *p == NULLCHAR )
+            break;
+        /* we are at the start of a parm */
+        state = QUOTE_NONE;
+        if( *p == STRING( '\"' ) ) {
+            p++;
+            state = QUOTE_DELIMITER;
+        }
+        new = start = p;
+        for( ;; ) {
+            if( *p == STRING( '\"' ) ) {
+                if( !historical ) {
+                    p++;
+                    if( state == QUOTE_NONE ) {
+                        state = QUOTE_STARTED;
+                    } else {
+                        state = QUOTE_NONE;
+                    }
+                    continue;
+                } else {
+                    if( state == QUOTE_DELIMITER ) {
+                        break;
+                    }
+                }
+            }
+            if( *p == STRING( ' ' ) || *p == STRING( '\t' ) ) {
+                if( state == QUOTE_NONE ) {
+                    break;
+                }
+            }
+            if( *p == NULLCHAR )
+                break;
+            if( *p == STRING( '\\' ) ) {
+                if( !historical ) {
+                    if( p[1] == STRING( '\"' ) ) {
+                        ++p;
+                        if( p[-2] == STRING( '\\' ) ) {
+                            continue;
+                        }
+                    }
+                } else {
+                    if( p[1] == STRING( '\"' ) || p[1] == STRING( '\\' ) && state == QUOTE_DELIMITER ) {
+                        ++p;
+                    }
+                }
+            }
+            if( argv ) {
+                *(new++) = *p;
+            }
+            ++p;
+        }
+        if( argv ) {
+            argv[ argc ] = start;
+            ++argc;
+
+            /*
+              The *new = '\0' is req'd in case there was a \" to "
+              translation. It must be after the *p check against
+              '\0' because new and p could point to the same char
+              in which case the scan would be terminated too soon.
+            */
+
+            if( *p == NULLCHAR ) {
+                *new = NULLCHAR;
+                break;
+            }
+            *new = NULLCHAR;
+            ++p;
+        } else {
+            ++argc;
+            if( *p == NULLCHAR ) {
+                break;
+            }
+            ++p;
+        }
+    }
+    *endptr = p;
+    return( argc );
 }
 
-_WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
+static void *__F_NAME( _getargv, _wgetargv )(
         int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
         int *pargc, CHAR_TYPE ***pargv )
 {
@@ -88,25 +173,25 @@ _WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
     // round up size for alignment of argv pointer
     size = __ALIGN_SIZE( size );
 
-    #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
-        #if defined(__OS2_286__)
-            if( _RWD_osmode == DOS_MODE ) {
-                cmdline = ncmd = lib_nmalloc( size );
-                if( ncmd == NULL ) {
-                    cmdline = lib_malloc( size );
-                }
-            } else {
-                cmdline = lib_malloc( size );
-            }
-        #else
-            cmdline = ncmd = lib_nmalloc( size );
-            if( ncmd == NULL ) {
-                cmdline = lib_malloc( size );
-            }
-        #endif
-    #else
+#if defined(__REAL_MODE__) && defined(__BIG_DATA__)
+  #if defined(__OS2_286__)
+    if( _RWD_osmode == DOS_MODE ) {
+        cmdline = ncmd = lib_nmalloc( size );
+        if( ncmd == NULL ) {
+            cmdline = lib_malloc( size );
+        }
+    } else {
         cmdline = lib_malloc( size );
-    #endif
+    }
+  #else
+    cmdline = ncmd = lib_nmalloc( size );
+    if( ncmd == NULL ) {
+        cmdline = lib_malloc( size );
+    }
+  #endif
+#else
+    cmdline = lib_malloc( size );
+#endif
     argv = NULL;
     argc = 0;
     if( cmdline ) {
@@ -121,100 +206,17 @@ _WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
     return( cmdline );
 }
 
-
-static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
+void __F_NAME(__Init_Argv,__wInit_Argv)( void )
 {
-    register unsigned argc;
-    register CHAR_TYPE *start;
-    register CHAR_TYPE *new;
-    enum QUOTE_STATE {
-        QUOTE_NONE,             /* no " active in current parm */
-        QUOTE_DELIMITER,        /* " was first char and must be last */
-        QUOTE_STARTED   /* " was seen, look for a match */
-    };
-    register enum QUOTE_STATE state;
+    __F_NAME( __CmdLine, __wCmdLine ) = __F_NAME( _getargv, _wgetargv )(
+        __historical_splitparms,
+        __F_NAME( _LpPgmName, _LpwPgmName ), __F_NAME( _LpCmdLine, _LpwCmdLine ),
+        &__F_NAME( _argc, _wargc ), &__F_NAME( _argv, _wargv ) );
 
-    argc = 0;
-    for(;;) {
-        while( *p == ' ' || *p == '\t' ) {
-            ++p; /* skip over blanks or tabs */
-        }
-        if( *p == '\0' ) break;
-        /* we are at the start of a parm */
-        state = QUOTE_NONE;
-        if( *p == '\"' ) {
-            p++;
-            state = QUOTE_DELIMITER;
-        }
-        new = start = p;
-        for(;;) {
-            if( *p == '\"' ) {
-                if( !historical ) {
-                    p++;
-                    if( state == QUOTE_NONE ) {
-                        state = QUOTE_STARTED;
-                    } else {
-                        state = QUOTE_NONE;
-                    }
-                    continue;
-                } else {
-                    if( state == QUOTE_DELIMITER ) {
-                        break;
-                    }
-                }
-            }
-            if( *p == ' ' || *p == '\t' ) {
-                if( state == QUOTE_NONE ) {
-                    break;
-                }
-            }
-            if( *p == '\0' ) break;
-            if( *p == '\\' ) {
-                if( !historical ) {
-                    if( p[1] == '\"' ) {
-                        ++p;
-                        if( p[-2] == '\\' ) {
-                            continue;
-                        }
-                    }
-                } else {
-                    if( p[1] == '\"' || p[1] == '\\' && state == QUOTE_DELIMITER ) {
-                        ++p;
-                    }
-                }
-            }
-            if( argv ) {
-                *(new++) = *p;
-            }
-            ++p;
-        }
-        if( argv ) {
-            argv[ argc ] = start;
-            ++argc;
-
-            /*
-              The *new = '\0' is req'd in case there was a \" to "
-              translation. It must be after the *p check against
-              '\0' because new and p could point to the same char
-              in which case the scan would be terminated too soon.
-            */
-
-            if( *p == '\0' ) {
-                *new = '\0';
-                break;
-            }
-            *new = '\0';
-            ++p;
-        } else {
-            ++argc;
-            if( *p == '\0' ) {
-                break;
-            }
-            ++p;
-        }
-    }
-    *endptr = p;
-    return( argc );
+    __F_NAME( __argc, __wargc )   = __F_NAME( _argc, _wargc );
+    __F_NAME( ___Argc, ___wArgc ) = __F_NAME( _argc, _wargc );
+    __F_NAME( __argv, __wargv )   = __F_NAME( _argv, _wargv );
+    __F_NAME( ___Argv, ___wArgv ) = __F_NAME( _argv, _wargv );
 }
 
 void __F_NAME(__Fini_Argv,__wFini_Argv)( void )
@@ -223,4 +225,5 @@ void __F_NAME(__Fini_Argv,__wFini_Argv)( void )
         lib_free( __F_NAME(__CmdLine,__wCmdLine) );
     }
 }
+
 #endif

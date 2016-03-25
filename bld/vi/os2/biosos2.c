@@ -53,10 +53,14 @@ typedef struct {
 
 extern int  PageCnt;
 
-long BIOSGetColorRegister( short reg )
+uint_32 BIOSGetColorRegister( unsigned short reg )
 {
     THUNKEDVIO  vcr;
-    struct { char r; char g; char b; } data;
+    struct {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+    } data;
 
     vcr.cb = sizeof( vcr );
     vcr.type = 3;
@@ -64,13 +68,17 @@ long BIOSGetColorRegister( short reg )
     vcr.numcolorregs = 1;
     vcr.colorregaddr = (ptr_16)&data;
     VioGetState( &vcr, 0 );
-    return( ((long)data.r << 8) | ((long)data.g << 24) | ((long)data.b << 16) );
+    return( ((uint_32)data.r << 8) | ((uint_32)data.g << 24) | ((uint_32)data.b << 16) );
 }
 
-void BIOSSetColorRegister( short reg, char r, char g, char b )
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
 {
     THUNKEDVIO  vcr;
-    struct { char r; char g; char b; } data;
+    struct {
+        unsigned char r;
+        unsigned char g;
+        unsigned char b;
+    } data;
 
     data.r = r;
     data.g = g;
@@ -121,32 +129,30 @@ void BIOSSetBlinkAttr( void )
     setIntensity( 1 );
 }
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     page = page;
     VioSetCurPos( row, col, 0);
 
 } /* BIOSSetCursor */
 
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
     USHORT      r, c;
-    short       res;
 
     page = page;
     VioGetCurPos( &r, &c, 0 );
-    res = (r << 8) + c;
-    return( res );
+    return( ( r << 8 ) + ( c & 0xFF ) );
 
 } /* BIOSGetCursor */
 
-void BIOSNewCursor( char ch, char notused )
+void BIOSNewCursor( unsigned char top, unsigned char bottom )
 {
     VIOCURSORINFO       vioCursor;
 
-    notused = notused;
+    bottom = bottom;
     VioGetCurType( &vioCursor, 0 );
-    vioCursor.yStart = ch;
+    vioCursor.yStart = top;
     VioSetCurType( &vioCursor, 0);
 
 } /* BIOSNewCursor */
@@ -154,7 +160,7 @@ void BIOSNewCursor( char ch, char notused )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
     KBDKEYINFO      info;
 
@@ -184,7 +190,7 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     if( PageCnt > 0 ) {
         return;

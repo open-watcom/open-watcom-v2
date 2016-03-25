@@ -121,7 +121,6 @@ extern unsigned         BufSize;
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 extern struct asm_sym   *SegOverride;
-extern void             FreeASym( struct asm_sym *sym );
 extern struct asmfixup  *ModendFixup;   // start address fixup
 
 bool                    EndDirectiveFound = false;

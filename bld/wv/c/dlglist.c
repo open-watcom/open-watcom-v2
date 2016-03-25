@@ -36,8 +36,16 @@
 #include "guidlg.h"
 #include "dlglist.h"
 #include "strutil.h"
+#include "dlgfile.h"
 
-extern bool             AllBrowse( char * );
+
+typedef struct dlg_list {
+    void (*clear)(void);
+    void (*add)(const char *,unsigned);
+    char_ring *(*next)(char_ring *);
+    char *(*name)(char_ring *);
+    char *title;
+} dlg_list;
 
 static void SelectListLast( gui_window *gui )
 {
@@ -119,7 +127,7 @@ static bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
         case CTL_LIST_ADD:
         case CTL_LIST_OK:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
-            if( TxtBuff[0] != '\0' )
+            if( TxtBuff[0] != NULLCHAR )
                 AddText( gui, TxtBuff );
             SelectListLast( gui );
             GUIClearText( gui, CTL_LIST_EDIT );

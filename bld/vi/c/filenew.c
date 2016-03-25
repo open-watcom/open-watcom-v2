@@ -32,17 +32,16 @@
 
 #include "vi.h"
 #include "posix.h"
-#include "source.h"
 #include "win.h"
 #include "fts.h"
 
 /*
  * createNewFile - create new file entry
  */
-static vi_rc createNewFile( char *name, bool same_file )
+static vi_rc createNewFile( const char *name, bool same_file )
 {
     int         height;
-    window_id   cw;
+    window_id   wid;
     info        *tmp;
     vi_rc       rc;
 
@@ -74,17 +73,17 @@ static vi_rc createNewFile( char *name, bool same_file )
     /*
      * get new window
      */
-    rc = NewWindow2( &cw, &editw_info );
+    rc = NewWindow2( &wid, &editw_info );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 #ifdef __WIN__
     if( !strncmp( name, "untitled", 8 ) ) {
         // better yet, pass normal/maximize flag to NewWindow2...
-        ShowWindow( cw, SW_SHOWMAXIMIZED );
+        ShowWindow( wid, SW_SHOWMAXIMIZED );
     }
 #endif
-    SetBorderGadgets( cw, EditFlags.WindowGadgets );
+    SetBorderGadgets( wid, EditFlags.WindowGadgets );
 
     /*
      * get new file entry, and read the data
@@ -93,7 +92,7 @@ static vi_rc createNewFile( char *name, bool same_file )
     if( same_file ) {
         CurrentFile = tmp->CurrentFile;
         CurrentFile->dup_count++;
-        SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+        SetFileWindowTitle( current_window_id, CurrentInfo, true );
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
@@ -106,7 +105,7 @@ static vi_rc createNewFile( char *name, bool same_file )
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
-        height = editw_info.y2 - editw_info.y1 + 1;
+        height = editw_info.area.y2 - editw_info.area.y1 + 1;
 
         CurrentFile = FileAlloc( name );
         rc = OpenFcbData( CurrentFile );
@@ -124,7 +123,7 @@ static vi_rc createNewFile( char *name, bool same_file )
             MemFree( CurrentInfo );
             CurrentInfo = tmp;
             FileFree( CurrentFile );
-            CloseAWindow( cw );
+            CloseAWindow( wid );
             return( rc );
         }
         if( rc == ERR_FILE_NOT_FOUND ) {
@@ -161,19 +160,19 @@ static vi_rc createNewFile( char *name, bool same_file )
         AllocateUndoStacks();
     }
     AllocateMarkList();
-    CurrentWindow = cw;
+    current_window_id = wid;
     CurrentInfo->DuplicateID = CurrentFile->dup_count;
-    CurrentInfo->CurrentWindow = cw;
+    CurrentInfo->current_window_id = wid;
     LangInit( CurrentInfo->fsi.Language );
 #ifdef __WIN__
     {
         window_data     *wd;
-        wd = DATA_FROM_ID( cw );
+        wd = DATA_FROM_ID( wid );
         wd->info = CurrentInfo;
     }
 #endif
     DCCreate();
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+    SetFileWindowTitle( current_window_id, CurrentInfo, true );
 
     /*
      * set current file info
@@ -200,7 +199,7 @@ static int      inReadHook;
 /*
  * NewFile - load up a new file
  */
-vi_rc NewFile( char *name, bool same_file )
+vi_rc NewFile( const char *name, bool same_file )
 {
     vi_rc       rc;
     bool        dup;
@@ -218,8 +217,8 @@ vi_rc NewFile( char *name, bool same_file )
     if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
         ScreenPage( -1 );
         if( !EditFlags.Starting ) {
-            MoveWindowToFrontDammit( MessageWindow, true );
-            MoveWindowToFrontDammit( CurrentWindow, true );
+            MoveWindowToFrontDammit( message_window_id, true );
+            MoveWindowToFrontDammit( current_window_id, true );
         }
         UpdateCurrentStatus( oldstatus );
         return( rc );
@@ -247,14 +246,14 @@ vi_rc NewFile( char *name, bool same_file )
      * reset the screen to the display page, display everything
      */
     ScreenPage( -1 );
-    MoveWindowToFrontDammit( CurrentWindow, true );
+    MoveWindowToFrontDammit( current_window_id, true );
     UpdateStatusWindow();
     SetWindowCursor();
     DCDisplayAllLines();
     EditFlags.DuplicateFile = dup;
     DisplayFileStatus();
     SaveCurrentInfo();
-    ActiveWindow( CurrentWindow );
+    ActiveWindow( current_window_id );
     VarAddRandC();
     SetModifiedVar( false );
     UpdateCurrentStatus( oldstatus );
@@ -263,9 +262,9 @@ vi_rc NewFile( char *name, bool same_file )
     }
 #ifdef __WIN__
     DCUpdateAll();
-    ResetEditWindowCursor( CurrentWindow );
+    ResetEditWindowCursor( current_window_id );
     SetWindowCursorForReal();
-    GotoFile( CurrentWindow );
+    GotoFile( current_window_id );
 #endif
     return( rc );
 
@@ -274,7 +273,7 @@ vi_rc NewFile( char *name, bool same_file )
 /*
  * FileAlloc - allocate a file entry
  */
-file *FileAlloc( char *name )
+file *FileAlloc( const char *name )
 {
     file        *cfile;
 
@@ -287,7 +286,7 @@ file *FileAlloc( char *name )
      * initialize file info
      */
     if( name != NULL ) {
-        AddString( &(cfile->name), name );
+        cfile->name = DupString( name );
         GetCWD1( &(cfile->home) );
         MyGetFileSize( name, &(cfile->size) );
     }

@@ -41,6 +41,7 @@
 #include "streamio.h"
 #include "close.h"
 #include "flush.h"
+#include "tmpfile.h"
 
 
 #ifndef __UNIX__
@@ -79,8 +80,8 @@ int __doclose( FILE *fp, int close_handle )
 #endif
     }
     if( fp->_flag & _BIGBUF ) {     /* if we allocated the buffer */
-        lib_free( _FP_BASE(fp) );
-        _FP_BASE(fp) = NULL;
+        lib_free( _FP_BASE( fp ) );
+        _FP_BASE( fp ) = NULL;
     }
 #ifndef __UNIX__
     /* this never happens under UNIX */

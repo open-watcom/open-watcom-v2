@@ -43,11 +43,11 @@
 
 
 extern void ClearSample(sio_data *curr_sio);
-extern unsigned int BigRead(int ,void *,unsigned int );
+extern size_t BigRead( int, void *, size_t );
 extern void ErrorMsg(char *msg,... );
 extern void SetSampleInfo(sio_data *curr_sio);
 extern bool LoadImageOverlays(void );
-extern void SetCurrentMAD( mad_handle );
+extern void SetCurrentMAD( dig_mad );
 
 extern char             SamplePath[];
 extern system_config    DefSysConfig;

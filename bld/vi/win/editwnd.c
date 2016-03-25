@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,36 +38,32 @@
 #include "color.h"
 #include "utils.h"
 #include "wprocmap.h"
+#include "winifini.h"
 // #include "mdisim.h"
 
-char *EditWindowClassName = "Buffer Window";
 
+/* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+char *EditWindowClassName = "Buffer Window";
 
 window EditWindow = {
     &editw_info,
-    { 0, 0, 0, 0 },
-    Init,
-    Fini
+    { 0, 0, 0, 0 }
 };
 
 long            VScrollBarScale = 1;
 int             HScrollBarScale = MAX_INPUT_LINE;
 
 /*
- * Init - initialization routine for edit windows
+ * init - initialization routine for edit windows
  */
-static bool Init( window *w, void *parm )
+bool EditWindowInit( void )
 {
     WNDCLASS    wc;
-
-    w = w;
-    parm = parm;
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wc.lpfnWndProc = GetWndProc( EditWindowProc );
@@ -80,7 +77,13 @@ static bool Init( window *w, void *parm )
     wc.lpszClassName = EditWindowClassName;
     return( RegisterClass( &wc ) != 0 );
 
-} /* Init */
+} /* init */
+
+bool EditWindowFini( void )
+{
+    return( true );
+
+} /* fini */
 
 /*
  * GetEditStyle - get the edit window style
@@ -99,22 +102,22 @@ DWORD GetEditStyle( bool is_max )
 /*
  * SetWindowTitle - set the current window title
  */
-void SetWindowTitle( HWND hwnd )
+void SetWindowTitle( window_id wid )
 {
     info        *cinfo;
     char        buff[MAX_STR];
     window_data *wd;
 
-    wd = DATA_FROM_ID( hwnd );
+    wd = DATA_FROM_ID( wid );
     cinfo = wd->info;
     if( cinfo != NULL ) {
         if( cinfo->CurrentFile != NULL ) {
             if( cinfo->CurrentFile->dup_count > 0 ) {
                 MySprintf( buff, "%s [%d]", cinfo->CurrentFile->name,
                            cinfo->DuplicateID );
-                 SetWindowText( cinfo->CurrentWindow, buff );
+                 SetWindowText( cinfo->current_window_id, buff );
             } else {
-                SetWindowText( cinfo->CurrentWindow, cinfo->CurrentFile->name );
+                SetWindowText( cinfo->current_window_id, cinfo->CurrentFile->name );
             }
         }
     }
@@ -126,18 +129,18 @@ void SetWindowTitle( HWND hwnd )
  */
 window_id NewEditWindow( void )
 {
-    HWND            edit;
+    window_id       wid;
     RECT            rect;
     DWORD           style;
     window_data     *wd;
     MDICREATESTRUCT mdinew;
 
-    if( BAD_ID( EditContainer ) ) {
+    if( BAD_ID( edit_container_id ) ) {
         return( NO_WINDOW );
     }
     style = GetEditStyle( false );
     ResizeRoot();
-    GetClientRect( EditContainer, &rect );
+    GetClientRect( edit_container_id, &rect );
 
     mdinew.szClass = EditWindowClassName;
     mdinew.szTitle = "Edit Buffer";
@@ -149,15 +152,15 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    edit =(HWND)SendMessage( EditContainer, WM_MDICREATE, 0, (LPARAM)&mdinew );
+    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)&mdinew );
 
-    wd = DATA_FROM_ID( edit );
+    wd = DATA_FROM_ID( wid );
 
-    ShowWindow( edit, SW_NORMAL );
-    UpdateWindow( edit );
-    SetFocus( Root );
+    ShowWindow( wid, SW_NORMAL );
+    UpdateWindow( wid );
+    SetFocus( root_window_id );
 
-    return( edit );
+    return( wid );
 
 } /* NewEditWindow */
 
@@ -177,10 +180,10 @@ static void doPaint( window *w, RECT *r, window_data *wd )
         SaveCurrentInfo();
         RestoreInfo( new_info );
     }
-    height = FontHeight( WIN_FONT( w ) );
+    height = FontHeight( WIN_TEXT_FONT( w ) );
     start = r->top / height;
     stop = (r->bottom + height - 1) / height;
-    max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    max_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( stop + 1 > max_lines ) {
         stop = max_lines - 1;
     }
@@ -198,14 +201,14 @@ static void cancelDrag( void );
 /*
  * activateWindow - make a particular edit window active
  */
-static void activateWindow( HWND hwnd )
+static void activateWindow( window_id wid )
 {
     info        *cinfo;
     window_data *wd;
 
     cancelDrag();
     SaveCurrentInfo();
-    wd = DATA_FROM_ID( hwnd );
+    wd = DATA_FROM_ID( wid );
     cinfo = wd->info;
     if( cinfo != NULL ) {
         BringUpFile( cinfo, true );
@@ -298,13 +301,13 @@ static bool jumpToCoord( int row, int col )
 /*
  * regionSelected - handle selection with a mouse
  */
-static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
+static void regionSelected( window_id wid, int x, int y, bool dclick, bool popMenu )
 {
     int         row, col;
-    vi_key      tmp;
+    vi_key      save;
 
-    MyKillCaret( id );
-    ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
+    MyKillCaret( wid );
+    ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
     jumpToCoord( row, col );
     MouseX = x;
     MouseY = y;
@@ -316,10 +319,10 @@ static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
      * or an '_' thingy.
      */
     if( popMenu ) {
-        tmp = LastEvent;
+        save = LastEvent;
         LastEvent = VI_KEY( FAKEMOUSE );
         DoSelectSelection( popMenu );
-        LastEvent = tmp;
+        LastEvent = save;
     } else {
         DoSelectSelection( popMenu );
     }
@@ -328,7 +331,7 @@ static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
     }
     MouseY = 0;
     MouseX = 0;
-    MyRaiseCaret( id );
+    MyRaiseCaret( wid );
     // UnselectRegion();
 
 } /* regionSelected */
@@ -336,19 +339,19 @@ static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
 /*
  * mouseButtonDown - handle a mouse down event in an edit window
  */
-static void mouseButtonDown( HWND id, int x, int y, bool shift )
+static void mouseButtonDown( window_id wid, int x, int y, bool shift )
 {
     int         row, col;
 
     if (!EditFlags.WasOverstrike ) {
-        ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
+        ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
     } else {
-        ClientToRowCol( id, x, y, &row, &col, DIVIDE_BETWEEN );
+        ClientToRowCol( wid, x, y, &row, &col, DIVIDE_BETWEEN );
     }
 
-    if( CurrentWindow != id ) {
+    if( current_window_id != wid ) {
         UnselectRegion();
-        activateWindow( id );
+        activateWindow( wid );
         jumpToCoord( row, col );
         return;
     }
@@ -360,22 +363,22 @@ static void mouseButtonDown( HWND id, int x, int y, bool shift )
         if( EditFlags.WasOverstrike ) {
             /*  if already dragging, always divide in middle of chars
             */
-            ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
+            ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
         }
         EditFlags.Dragging = true;
-        UpdateDrag( id, col, row );
+        UpdateDrag( wid, col, row );
     } else {
         jumpToCoord( row, col );
         UnselectRegion();
         dragPending = true;
         if( !hasCapture ) {
-            SetCapture( id );
+            SetCapture( wid );
             hasCapture = true;
         }
         if( EditFlags.WasOverstrike ) {
             /*  dragging always based on middle of chars
             */
-            ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
+            ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
         }
         startDragRow = row;
         startDragCol = col;
@@ -386,12 +389,12 @@ static void mouseButtonDown( HWND id, int x, int y, bool shift )
 /*
  * rightButtonDown - handle the right mouse button being pressed
  */
-static void rightButtonDown( HWND id, int x, int y, bool shift )
+static void rightButtonDown( window_id wid, int x, int y, bool shift )
 {
     if( SelRgn.selected ) {
-        regionSelected( id, x, y, false, true );
+        regionSelected( wid, x, y, false, true );
     } else {
-        mouseButtonDown( id, x, y, shift );
+        mouseButtonDown( wid, x, y, shift );
     }
 
 } /* rightButtonDown */
@@ -399,39 +402,39 @@ static void rightButtonDown( HWND id, int x, int y, bool shift )
 /*
  * leftButtonDown - handle the right mouse button being pressed
  */
-static void leftButtonDown( HWND id, int x, int y, bool shift )
+static void leftButtonDown( window_id wid, int x, int y, bool shift )
 {
-    mouseButtonDown( id, x, y, shift );
+    mouseButtonDown( wid, x, y, shift );
 
 } /* leftButtonDown */
 
 /*
  * mouseMove - handle a mouse move event in an edit window
  */
-static void mouseMove( HWND id, int x, int y, bool not_used )
+static void mouseMove( window_id wid, int x, int y, bool not_used )
 {
     int     row, col;
 
     not_used = not_used;
 
     if( dragPending ) {
-        ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
+        ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
         if( row == startDragRow && col == startDragCol ) {
             return;
         }
         InitSelectedRegion();
         EditFlags.Dragging = true;
         dragPending = false;
-        startDragTimer( id );
+        startDragTimer( wid );
 
-        MyKillCaret( id );
+        MyKillCaret( wid );
     }
 
     if( !EditFlags.InsertModeActive && EditFlags.Dragging && buttonDown ) {
         MouseX = x;
         MouseY = y;
-        ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
-        UpdateDrag( id, col, row );
+        ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
+        UpdateDrag( wid, col, row );
         DCUpdate();
         SetWindowCursorForReal();
     }
@@ -441,9 +444,8 @@ static void mouseMove( HWND id, int x, int y, bool not_used )
 /*
  * leftButtonUp - handle a mouse up event in an edit window
  */
-static void leftButtonUp( HWND id, int x, int y, bool shift )
+static void leftButtonUp( window_id wid, int x, int y, bool shift )
 {
-    id = id;
     x = x;
     y = y;
     shift = shift;
@@ -451,27 +453,27 @@ static void leftButtonUp( HWND id, int x, int y, bool shift )
     cancelDrag();
     MouseX = MouseY = 0;
 
-    MyRaiseCaret( id );
+    MyRaiseCaret( wid );
 
 } /* leftButtonUp */
 
 /*
  * rightButtonUp - handle right mouse button coming up
  */
-static void rightButtonUp( HWND id, int x, int y, bool dclick )
+static void rightButtonUp( window_id wid, int x, int y, bool dclick )
 {
     cancelDrag();
-    regionSelected( id, x, y, dclick, true );
+    regionSelected( wid, x, y, dclick, true );
 
 } /* rightButtonUp */
 
 /*
  * leftButtonDoubleClick - handle double click of left button (word selectn)
  */
-static void leftButtonDoubleClick( HWND id, int x, int y, bool dclick )
+static void leftButtonDoubleClick( window_id wid, int x, int y, bool dclick )
 {
     cancelDrag();
-    regionSelected( id, x, y, dclick, false );
+    regionSelected( wid, x, y, dclick, false );
 
 } /* leftButtonDoubleClick */
 
@@ -487,10 +489,10 @@ static void mouseEvent( HWND hwnd, LPARAM l, bool flag, func f )
     }
     if( EditFlags.InsertModeActive ) {
         PushMode();
-        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
+        f( hwnd, GET_X( l ), GET_Y( l ), flag );
         PopMode();
     } else {
-        f( hwnd, (short)LOWORD( l ), (short)HIWORD( l ), flag );
+        f( hwnd, GET_X( l ), GET_Y( l ), flag );
     }
     DCUpdate();
     SetWindowCursorForReal();
@@ -517,7 +519,7 @@ static void sendDragMessage( HWND hwnd )
 /*
  * PositionVerticalScrollThumb - place the vertical thumb
  */
-void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
+void PositionVerticalScrollThumb( window_id wid, linenum top, linenum last )
 {
     /*
      * NOTE: This will not work well yet - linenum's are 32-bit while
@@ -527,7 +529,7 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
     int min, max, pos;
     int newtop, newlast;
 
-    if( BAD_ID( id ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
 
@@ -536,11 +538,11 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
      */
     VScrollBarScale = 1 + last / INT_MAX;
 
-    wlines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    wlines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
 
     /* Reduce number of redraws by checking current range and position
     */
-    GetScrollRange( id, SB_VERT, (LPINT)&min, (LPINT)&max );
+    GetScrollRange( wid, SB_VERT, (LPINT)&min, (LPINT)&max );
 
     newlast = last / VScrollBarScale;
     newtop = top / VScrollBarScale;
@@ -550,19 +552,19 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
         */
         if( max != newlast ){
             // always set position with range to avoid screen draws
-            SetScrollRange( id, SB_VERT, 1, newlast, FALSE );
-            SetScrollPos( id, SB_VERT, newtop, TRUE );
+            SetScrollRange( wid, SB_VERT, 1, newlast, FALSE );
+            SetScrollPos( wid, SB_VERT, newtop, TRUE );
         } else {
-            pos = GetScrollPos( id, SB_VERT );
+            pos = GetScrollPos( wid, SB_VERT );
             if( newtop != pos ){
-                SetScrollPos( id, SB_VERT, newtop, TRUE );
+                SetScrollPos( wid, SB_VERT, newtop, TRUE );
             }
         }
     } else {
         /* set dummy range & leave at bottom
         */
-        SetScrollRange( id, SB_VERT, 1, 2, FALSE );
-        SetScrollPos( id, SB_VERT, 2, TRUE );
+        SetScrollRange( wid, SB_VERT, 1, 2, FALSE );
+        SetScrollPos( wid, SB_VERT, 2, TRUE );
     }
 
 } /* PositionVerticalScrollThumb */
@@ -571,30 +573,30 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
 /*
  * PositionHorizontalScrollThumb - place the horizontal thumb
  */
-void PositionHorizontalScrollThumb( window_id id, int left )
+void PositionHorizontalScrollThumb( window_id wid, int left )
 {
-    if( BAD_ID( id ) ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
 
     // must reset range every time (size changes -> mdisim trashes it)
-    SetScrollRange( id, SB_HORZ, 1, HScrollBarScale, FALSE );
-    SetScrollPos( id, SB_HORZ, left, TRUE );
+    SetScrollRange( wid, SB_HORZ, 1, HScrollBarScale, FALSE );
+    SetScrollPos( wid, SB_HORZ, left, TRUE );
 
 } /* PositionHorizontalScrollThumb */
 
 /*
  * EditDrawScrollBars
  */
-void EditDrawScrollBars( HWND hwnd )
+void EditDrawScrollBars( window_id wid )
 {
     window_data *wd;
 
-    wd = DATA_FROM_ID( hwnd );
+    wd = DATA_FROM_ID( wid );
     if( wd->info != NULL ) {
-        PositionVerticalScrollThumb( hwnd, wd->info->LeftTopPos.line,
+        PositionVerticalScrollThumb( wid, wd->info->LeftTopPos.line,
                                      wd->info->CurrentFile->fcbs.tail->end_line );
-        PositionHorizontalScrollThumb( hwnd, wd->info->LeftTopPos.column );
+        PositionHorizontalScrollThumb( wid, wd->info->LeftTopPos.column );
     }
 
 } /* EditDrawScrollBars */
@@ -602,7 +604,7 @@ void EditDrawScrollBars( HWND hwnd )
 /*
  * doVScroll - handle various scroll events (vertical)
  */
-static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
+static void doVScroll( window_id wid, WPARAM wparam, LPARAM lparam )
 {
     window_data *wd;
     int         scrollAmount;
@@ -610,8 +612,10 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     int         text_lines;
     int         diff;
 
-    lparam = lparam;            // Shut up the compiler for the NT version
-    wd = DATA_FROM_ID( hwnd );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    wd = DATA_FROM_ID( wid );
 
     oldTopOfPage = LeftTopPos.line;
     EditFlags.ScrollCommand = true;
@@ -643,7 +647,7 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     }
     EditFlags.ScrollCommand = false;
 
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     diff = LeftTopPos.line - oldTopOfPage;
     if( diff != 0 ){
         if( abs( diff ) > text_lines / 2 ) {
@@ -674,7 +678,9 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     int newLeftColumn;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
@@ -698,7 +704,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
         MoveScreenRightPageML();
         break;
     case SB_THUMBTRACK:
-        MoveScreenLeftRightML( GET_WM_HSCROLL_POS( lparam, wparam ) - 1 );
+        MoveScreenLeftRightML( GET_WM_HSCROLL_POS( wparam, lparam ) - 1 );
         break;
     }
     EditFlags.ScrollCommand = false;
@@ -716,75 +722,75 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
 /*
  * EditWindowProc - window procedure for all edit windows
  */
-WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     window      *w;
     PAINTSTRUCT ps;
     HDC         hdc;
     RECT        rect;
-    window_data *data;
+    window_data *wd;
     HWND        win;
     HWND        tbwin;
     bool        killsel;
     info        *cinfo;
     info        *sinfo;
 
-    w = WINDOW_FROM_ID( hwnd );
+    w = WINDOW_FROM_ID( wid );
     switch( msg ) {
     case WM_CREATE:
-        data = MemAlloc( sizeof( window_data ) );
-        WINDOW_TO_ID( hwnd, (LONG_PTR)&EditWindow );
-        DATA_TO_ID( hwnd, (LONG_PTR)data );
+        wd = MemAlloc( sizeof( window_data ) );
+        WINDOW_TO_ID( wid, (LONG_PTR)&EditWindow );
+        DATA_TO_ID( wid, (LONG_PTR)wd );
         return( 0 );
     case WM_PAINT:
-        if( GetUpdateRect( hwnd, &rect, FALSE ) ) {
-            data = DATA_FROM_ID( hwnd );
-            hdc = BeginPaint( hwnd, &ps );
-            if( data->info != NULL ) {
-                doPaint( w, &rect, data );
+        if( GetUpdateRect( wid, &rect, FALSE ) ) {
+            wd = DATA_FROM_ID( wid );
+            hdc = BeginPaint( wid, &ps );
+            if( wd->info != NULL ) {
+                doPaint( w, &rect, wd );
             } else {
-                BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
+                BlankRectIndirect( wid, SEType[SE_WHITESPACE].background, &rect );
             }
-            EndPaint( hwnd, &ps );
-            if( IntersectRect( &rect, &rect, &data->extra ) ) {
-                BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
+            EndPaint( wid, &ps );
+            if( IntersectRect( &rect, &rect, &wd->extra ) ) {
+                BlankRectIndirect( wid, SEType[SE_WHITESPACE].background, &rect );
             }
         }
         return( 0 );
     case WM_MOUSEACTIVATE:
-        if( hwnd != CurrentWindow ) {
+        if( wid != current_window_id ) {
             UnselectRegion();
-            activateWindow( hwnd );
+            activateWindow( wid );
         }
         return( MA_ACTIVATE );
 
     case WM_MDIACTIVATE:
-        if( !wparam ) {
+        if( wparam == 0 ) {
             // losing focus
             cancelDrag();
             killsel = true;
-            win = (HWND) wparam;
+            win = (HWND)wparam;
             if( win != NULL ) {
                 tbwin = GetToolbarWindow();
-                if( win == Root || win == tbwin || win == CommandId ||
-                    (hColorbar && IsChild( hColorbar, win )) ||
-                    (hFontbar && IsChild( hFontbar, win )) ||
-                    (hSSbar && IsChild( hSSbar, win )) ) {
+                if( win == root_window_id || win == tbwin || win == command_window_id ||
+                    (!BAD_ID( hColorbar ) && IsChild( hColorbar, win )) ||
+                    (!BAD_ID( hFontbar ) && IsChild( hFontbar, win )) ||
+                    (!BAD_ID( hSSbar ) && IsChild( hSSbar, win )) ) {
                     killsel = false;
                 }
             }
             if( killsel ) {
                 UnselectRegion();
             }
-            GoodbyeCursor( hwnd );
+            GoodbyeCursor( wid );
         } else {
             // Gaining focus
-            MyShowCaret( hwnd );
-            ResetEditWindowCursor( hwnd );
-            if( hwnd != CurrentWindow ) {
-                activateWindow( hwnd );
-                MyShowCaret( hwnd );
-                ResetEditWindowCursor( hwnd );
+            MyShowCaret( wid );
+            ResetEditWindowCursor( wid );
+            if( wid != current_window_id ) {
+                activateWindow( wid );
+                MyShowCaret( wid );
+                ResetEditWindowCursor( wid );
                 SetWindowCursor();
                 SetWindowCursorForReal();
             }
@@ -794,53 +800,53 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         doubleClickPending = true;
         return( 0 );
     case WM_RBUTTONUP:
-        mouseEvent( hwnd, lparam, false, rightButtonUp );
+        mouseEvent( wid, lparam, false, rightButtonUp );
         return( 0 );
     case WM_RBUTTONDOWN:
-        mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, rightButtonDown );
+        mouseEvent( wid, lparam, (wparam & MK_SHIFT) != 0, rightButtonDown );
         return( 0 );
     case WM_LBUTTONDOWN:
-        mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonDown );
+        mouseEvent( wid, lparam, (wparam & MK_SHIFT) != 0, leftButtonDown );
         return( 0 );
     case WM_LBUTTONUP:
         if( doubleClickPending ) {
-            mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
-            mouseEvent( hwnd, lparam, true, leftButtonDoubleClick );
+            mouseEvent( wid, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
+            mouseEvent( wid, lparam, true, leftButtonDoubleClick );
             doubleClickPending = false;
         } else {
-            mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
+            mouseEvent( wid, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
         }
         return( 0 );
     case WM_MOUSEMOVE:
-        mouseMove( hwnd, (int)(short)LOWORD( lparam ), (int)(short)HIWORD( lparam ), false );
+        mouseMove( wid, GET_X( lparam ), GET_Y( lparam ), false );
         return( 0 );
     case WM_ERASEBKGND:
         return( TRUE );
     case WM_SYSCHAR:
     case WM_SYSKEYUP:
-        return( SendMessage( Root, msg, wparam, lparam ) );
+        return( SendMessage( root_window_id, msg, wparam, lparam ) );
     case WM_SYSKEYDOWN:
         if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
             return( 0 );
         }
-        return( SendMessage( Root, msg, wparam, lparam ) );
+        return( SendMessage( root_window_id, msg, wparam, lparam ) );
     case WM_KEYDOWN:
         if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
             return( 0 );
         }
         break;
     case WM_VSCROLL:
-        doVScroll( hwnd, wparam, lparam );
+        doVScroll( wid, wparam, lparam );
         return( 0 );
     case WM_HSCROLL:
-        doHScroll( hwnd, wparam, lparam );
+        doHScroll( wid, wparam, lparam );
         return( 0 );
     case WM_CLOSE:
         if( !EditFlags.HoldEverything ) {
             PushMode();
-            data = DATA_FROM_ID( hwnd );
-            SendMessage( EditContainer, WM_MDIRESTORE, (UINT)hwnd, 0L );
-            BringUpFile( data->info, true );
+            wd = DATA_FROM_ID( wid );
+            SendMessage( edit_container_id, WM_MDIRESTORE, (UINT)wid, 0L );
+            BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
             }
@@ -848,18 +854,18 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_TIMER:
-        sendDragMessage( hwnd );
+        sendDragMessage( wid );
         return( 0 );
     case WM_DESTROY:
-        data = DATA_FROM_ID( hwnd );
-        MemFree( data );
+        wd = DATA_FROM_ID( wid );
+        MemFree( wd );
         return( 0 );
     case WM_KILLFOCUS:
         DoneCurrentInsert( true );
         break;
     case WM_SIZE:
-        data = DATA_FROM_ID( hwnd );
-        DCResize( data->info );
+        wd = DATA_FROM_ID( wid );
+        DCResize( wd->info );
         if( wparam == SIZE_MINIMIZED ) {
             sinfo = CurrentInfo;
             cinfo = CurrentInfo->next;
@@ -868,10 +874,10 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     cinfo = InfoHead;
                 }
                 if( cinfo == sinfo ) {
-                    SetFocus( Root );
+                    SetFocus( root_window_id );
                     return( 0 );
                 }
-                if( IsIconic( cinfo->CurrentWindow ) ) {
+                if( IsIconic( cinfo->current_window_id ) ) {
                     cinfo = cinfo->next;
                 } else {
                     SaveInfo( sinfo );
@@ -881,37 +887,37 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             }
         }
         /* either way we remember to reset extra */
-        GetClientRect( hwnd, &data->extra );
-        data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-                                         FontHeight( WIN_FONT( &EditWindow ) );
+        GetClientRect( wid, &wd->extra );
+        wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
+                                         FontHeight( WIN_TEXT_FONT( &EditWindow ) );
         break;
     default:
         break;
     }
-    return( DefMDIChildProc( hwnd, msg, wparam, lparam ) );
+    return( DefMDIChildProc( wid, msg, wparam, lparam ) );
 
 } /* EditWindowProc */
 
 /*
  * ResizeExtra - reset the left over rectange for an edit window
  */
-WINEXPORT BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
+WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
 {
-    window_data         *data;
+    window_data         *wd;
     char                class[MAX_STR];
 
     l = l;
-    class[0] = 0;
-    GetClassName( hwnd, class, sizeof( class ) );
-    class[sizeof( class ) - 1] = 0;
+    class[0] = '\0';
+    GetClassName( wid, class, sizeof( class ) );
+    class[sizeof( class ) - 1] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {
         return( TRUE );
     }
 
-    data = DATA_FROM_ID( hwnd );
-    GetClientRect( hwnd, &data->extra );
-    data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-                                     FontHeight( WIN_FONT( &EditWindow ) );
+    wd = DATA_FROM_ID( wid );
+    GetClientRect( wid, &wd->extra );
+    wd->extra.top = WindowAuxInfo( wid, WIND_INFO_TEXT_LINES ) *
+                                     FontHeight( WIN_TEXT_FONT( &EditWindow ) );
 
     return( TRUE );
 
@@ -925,18 +931,10 @@ void ResetExtraRects( void )
 {
     FARPROC     proc;
 
-    if( EditContainer != HNULL ) {
+    if( !BAD_ID( edit_container_id ) ) {
         proc = MakeWndEnumProcInstance( ResizeExtra, InstanceHandle );
-        EnumChildWindows( EditContainer, (WNDENUMPROC)proc, 0L );
+        EnumChildWindows( edit_container_id, (WNDENUMPROC)proc, 0L );
         FreeProcInstance( proc );
     }
 
 } /* ResetExtraRects */
-
-static bool Fini( window *w, void *parm )
-{
-    w = w;
-    parm = parm;
-    return( true );
-
-} /* Fini */

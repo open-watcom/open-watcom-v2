@@ -666,21 +666,25 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, char *args[], unsigned len )
+static int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -688,10 +692,12 @@ static int SplitParms( char *p, char *args[], unsigned len )
         } else {
             endc = ' ';
         }
-        if( args != NULL ) args[i] = p;
+        if( args != NULL )
+            args[i] = p;
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc
                 || *p == '\0'
                 || (endc == ' ' && *p == '\t' ) ) {
@@ -700,7 +706,8 @@ static int SplitParms( char *p, char *args[], unsigned len )
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;
@@ -711,8 +718,7 @@ done:
     return( i );
 }
 
-static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info,
-                            char **name_ret )
+static pid_t RunningProc( nid_t *nid, char *name, struct _psinfo *info, char **name_ret )
 {
     pid_t       pid;
     pid_t       proc;
@@ -1576,7 +1582,6 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
-    name = GetOutPtr( sizeof( *ret ) );
     p = NULL;
     switch( acc->handle ) {
     case MH_NONE:
@@ -1597,7 +1602,9 @@ trap_retval ReqGet_lib_name( void )
                 }
                 qnx_vc_detach( vid );
             }
-            if( p == NULL ) p = "sys/Slib32";
+            if( p == NULL ) {
+                p = "sys/Slib32";
+            }
         } else {
             p = "sys/Slib16";
         }
@@ -1614,11 +1621,12 @@ trap_retval ReqGet_lib_name( void )
             p = "sys/Proc16";
         }
     default:
-        ret->handle = MH_NONE;
-        break;
+        ret->handle = 0;
+        return( sizeof( *ret ) );
     }
+    name = GetOutPtr( sizeof( *ret ) );
     if( p == NULL ) {
-        name[0] = '\0';
+        *name = '\0';
     } else if( p[0] == '/' ) {
         if( p[1] == '/' ) {
             for( p += 2; *p >= '0' && *p <= '9'; p++ );

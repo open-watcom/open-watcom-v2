@@ -622,7 +622,7 @@ int PragRegNumIndex( const char *str, int max_reg )
     int             index;
 
     // decode regular register index
-    if( isdigit( *str ) ) {
+    if( isdigit( (unsigned char)*str ) ) {
         index = atoi( str );
         if( index < max_reg ) {
             if( str[1] == '\0' ) {

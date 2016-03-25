@@ -105,6 +105,7 @@ static const FMT_FLAG_INFO functionFlags[] = {
     { "__loadds ",      TF1_LOADDS },
     { "__saveregs ",    TF1_SAVEREGS },
     { "__interrupt ",   TF1_INTERRUPT },
+    { "__declspec(noreturn) ", TF1_NORETURN },
     { NULL,             TF1_NULL }
 };
 

@@ -40,32 +40,19 @@
 #include "madinter.h"
 #include "i64.h"
 #include "dbgscan.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgloc.h"
+#include "dbgovl.h"
+#include "dbgreg.h"
+#include "addarith.h"
+#include "dbglkup.h"
+
 
 extern void             *DupType( void * );
 extern void             FreeType( void * );
-extern void             BinOp( stack_entry *, stack_entry * );
-extern int              AddrComp( address , address );
-extern void             RValue( stack_entry * );
-extern void             LValue( stack_entry * );
-extern sym_list         *ExprGetSymList( stack_entry *, bool );
-extern void             PurgeSymHandles( void );
-extern void             ConvertTo( stack_entry *,type_kind, type_modifier, unsigned );
-extern void             ClassNum( stack_entry * );
-extern void             DoXor( void );
-extern void             DoPlus( void );
-extern void             DoMinus( void );
-extern void             DoMul( void );
-extern void             DoPoints( type_kind );
-extern void             DoConvert( void );
-extern void             AddrFloat( address * );
-extern void             AddrFix( address * );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern void             ClassifyEntry( stack_entry *, dip_type_info * );
-extern void             ExprSymbol( stack_entry *, sym_handle * );
-extern address          GetRegIP( void );
-extern address          GetRegSP( void );
-extern address          GetRegBP( void );
-
 
 static stack_entry ExprBOS = {
     NULL, NULL,
@@ -80,16 +67,17 @@ void InitLC( location_context *new, bool use_real_regs )
 {
     memset( new, 0, sizeof( *new ) );
     new->regs = DbgRegs;
-    new->have_stack = TRUE;
-    new->maybe_have_frame = TRUE;
-    new->maybe_have_object = TRUE;
+    new->have_stack = true;
+    new->maybe_have_frame = true;
+    new->maybe_have_object = true;
     new->use = 1;
     if( use_real_regs ) {
         new->execution = GetRegIP();
         new->frame = GetRegBP();
         new->stack = GetRegSP();
     } else {
-        if( Context.up_stack_level ) new->regs = NULL;
+        if( Context.up_stack_level )
+            new->regs = NULL;
         new->execution = Context.execution;
         new->frame = Context.frame;
         new->stack = Context.stack;
@@ -104,7 +92,7 @@ void CreateLC( stack_entry *entry )
 
     if( entry->lc == NULL ) {
         _ChkAlloc( new, sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-        InitLC( new, FALSE );
+        InitLC( new, false );
         entry->lc = new;
     }
 }
@@ -150,22 +138,27 @@ void CreateEntry( void )
     memset( new, 0, size );
     new->up = ExprSP;
     new->dn = ExprSP->dn;
-    if( new->dn != NULL ) new->dn->up = new;
-    if( new->up != NULL ) new->up->dn = new;
+    if( new->dn != NULL )
+        new->dn->up = new;
+    if( new->up != NULL )
+        new->up->dn = new;
     ExprSP = new;
 }
 
 bool AllocatedString( stack_entry *stk )
 {
-    if( stk->info.kind != TK_STRING ) return( FALSE );
-    if( stk->flags & SF_LOCATION ) return( FALSE );
+    if( stk->info.kind != TK_STRING )
+        return( false );
+    if( stk->flags & SF_LOCATION )
+        return( false );
     return( stk->v.string.allocated != 0 );
 }
 
 
 static void FreeEntry( stack_entry *old )
 {
-    if( AllocatedString( old ) ) _Free( old->v.string.allocated );
+    if( AllocatedString( old ) )
+        _Free( old->v.string.allocated );
     FreeLC( old );
     _Free( old );
 }
@@ -177,9 +170,12 @@ static void FreeEntry( stack_entry *old )
 
 void DeleteEntry( stack_entry *old )
 {
-    if( old == ExprSP ) ExprSP = old->up;
-    if( old->up != NULL ) old->up->dn = old->dn;
-    if( old->dn != NULL ) old->dn->up = old->up;
+    if( old == ExprSP )
+        ExprSP = old->up;
+    if( old->up != NULL )
+        old->up->dn = old->dn;
+    if( old->dn != NULL )
+        old->dn->up = old->up;
     FreeEntry( old );
 }
 
@@ -194,12 +190,15 @@ stack_entry *StkEntry( int amount )
 
     new = ExprSP;
     for( ; amount > 0; --amount ) {
-        if( new == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_OVERFL ) );
+        if( new == &ExprBOS )
+            Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_OVERFL ) );
         new = new->up;
     }
     for( ; amount < 0; ++amount ) {
         new = new->dn;
-        if( new == NULL ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+        if( new == NULL ) {
+            Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+        }
     }
     return( new );
 }
@@ -224,19 +223,25 @@ void SwapStack( int entry )
 
     other = StkEntry( entry );
 
-    if( (temp = ExprSP->up) == other ) temp = ExprSP;
+    if( (temp = ExprSP->up) == other )
+        temp = ExprSP;
     ExprSP->up = other->up;
     other->up = temp;
 
-    if( (temp = other->dn) == ExprSP ) temp = other;
+    if( (temp = other->dn) == ExprSP )
+        temp = other;
     other->dn = ExprSP->dn;
     ExprSP->dn = temp;
 
-    if( ExprSP->up != NULL ) ExprSP->up->dn = ExprSP;
-    if( ExprSP->dn != NULL ) ExprSP->dn->up = ExprSP;
+    if( ExprSP->up != NULL )
+        ExprSP->up->dn = ExprSP;
+    if( ExprSP->dn != NULL )
+        ExprSP->dn->up = ExprSP;
 
-    if( other->up != NULL ) other->up->dn = other;
-    if( other->dn != NULL ) other->dn->up = other;
+    if( other->up != NULL )
+        other->up->dn = other;
+    if( other->dn != NULL )
+        other->dn->up = other;
 
     ExprSP = other;
 }
@@ -263,7 +268,7 @@ void UnFreezeStack( bool nuke_top )
         while( ExprSP->dn != NULL ) {
             ExprSP = ExprSP->dn;
         }
-        while( !( ExprSP->flags & SF_END_PURGE ) ) {
+        while( (ExprSP->flags & SF_END_PURGE) == 0 ) {
             DeleteEntry( ExprSP );
         }
         sp = ExprSP->v.save_sp;
@@ -274,7 +279,7 @@ void UnFreezeStack( bool nuke_top )
         if( sp->flags & SF_END_PURGE ) {
             ExprSP = ExprSP->v.save_sp;
         }
-        while( !(sp->flags & SF_END_PURGE) ) {
+        while( (sp->flags & SF_END_PURGE) == 0 ) {
             sp = sp->up;
         }
         DeleteEntry( sp );
@@ -286,8 +291,10 @@ char *DupStringVal( stack_entry *stk )
 {
     char *dest;
 
-    if( stk->info.size == 0 ) return( NULL );
-    if( stk->info.size >= UINT_MAX ) Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    if( stk->info.size == 0 )
+        return( NULL );
+    if( stk->info.size >= UINT_MAX )
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     _ChkAlloc( dest, stk->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memcpy( dest, stk->v.string.loc.e[0].u.p, stk->info.size );
     return( dest );
@@ -303,15 +310,18 @@ void DupStack( void )
     stack_entry *old, *down, *link;
 
     old = link = ExprSP;
-    while( old->flags & SF_END_PURGE ) old = old->up;
+    while( old->flags & SF_END_PURGE )
+        old = old->up;
     CreateEntry();
     down = ExprSP->dn;
     memcpy( ExprSP, old, sizeof( *old ) + type_SIZE + sym_SIZE );
     ExprSP->up = link;
     ExprSP->dn = down;
     DupLC( ExprSP );
-    if( old->th != NULL ) SET_TH( ExprSP );
-    if( old->flags & SF_SYM ) SET_SH( ExprSP );
+    if( old->th != NULL )
+        SET_TH( ExprSP );
+    if( old->flags & SF_SYM )
+        SET_SH( ExprSP );
     if( AllocatedString( old ) ) {
         ExprSP->v.string.allocated = DupStringVal( old );
         ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
@@ -389,8 +399,7 @@ void ExprSetAddrInfo( stack_entry *stk, bool trunc )
     GetMADTypeDefaultAt( stk->v.addr, MTK_ADDRESS, &mti );
     stk->info.size = mti.b.bits / BITS_PER_BYTE;
     if( trunc ) {
-        stk->v.addr.mach.offset &=
-                ~0UL >> (sizeof(addr48_off)*8-(mti.b.bits-mti.a.seg.bits));
+        stk->v.addr.mach.offset &= ~0UL >> ( sizeof( addr48_off ) * 8 - ( mti.b.bits - mti.a.seg.bits ) );
     }
 }
 
@@ -403,13 +412,14 @@ void PushAddr( address addr )
     CreateEntry();
     ExprSP->v.addr = addr;
     AddrFix( &ExprSP->v.addr );
-    ExprSetAddrInfo( ExprSP, FALSE );
+    ExprSetAddrInfo( ExprSP, false );
 }
 
 void PushLocation( location_list *ll, dip_type_info *ti )
 {
     CreateEntry();
-    if( ti != NULL ) ExprSP->info = *ti;
+    if( ti != NULL )
+        ExprSP->info = *ti;
     ExprSP->v.loc = *ll;
     ExprSP->flags |= SF_LOCATION;
 }
@@ -429,13 +439,18 @@ void CombineEntries( stack_entry *dest, stack_entry *l, stack_entry *r )
     lc_src = l;
     if( r != NULL ) {
         f &= r->flags;
-        if( r->lc != NULL ) lc_src = r;
+        if( r->lc != NULL ) {
+            lc_src = r;
+        }
     }
     MoveLC( lc_src, dest );
     dest->flags &= ~SF_CONST;
     dest->flags |= f & SF_CONST;
-    if( l != dest ) DeleteEntry( l );
-    if( r != dest ) DeleteEntry( r );
+    if( l != dest )
+        DeleteEntry( l );
+    if( r != dest ) {
+        DeleteEntry( r );
+    }
 }
 
 
@@ -512,7 +527,8 @@ void PushString( void )
 
 void PopEntry( void )
 {
-    if( ExprSP == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
+    if( ExprSP == &ExprBOS )
+        Error( ERR_LOC+ERR_INTERNAL, LIT_ENG( ERR_STK_UNDERFL ) );
     DeleteEntry( ExprSP );
 }
 
@@ -529,7 +545,9 @@ static int FStrCmp( char *str1, unsigned len1, char *str2, unsigned len2 )
     for( count = 0; count < max; ++count ) {
         c1 = (count < len1)  ?  *str1++  :  ' ';
         c2 = (count < len2)  ?  *str2++  :  ' ';
-        if( c1 != c2 ) return(  c1 - c2 );
+        if( c1 != c2 ) {
+            return(  c1 - c2 );
+        }
     }
     return( 0 );
 }
@@ -539,9 +557,7 @@ static int FStrCmp( char *str1, unsigned len1, char *str2, unsigned len2 )
 /*
  * TstEQ - test for equality
  */
-
-
-unsigned TstEQ( unsigned true_value )
+int TstEQ( int true_value )
 {
     stack_entry *left, *rite;
     int temp;
@@ -585,8 +601,7 @@ unsigned TstEQ( unsigned true_value )
 /*
  * TstLT - test for less than
  */
-
-unsigned TstLT( unsigned true_value )
+int TstLT( int true_value )
 {
     stack_entry *left, *rite;
     int temp;
@@ -628,42 +643,40 @@ unsigned TstLT( unsigned true_value )
 
 
 /*
- * TstTrue - set to FALSE or TRUE and return result
+ * TstTrue - set to false or true and return result
  */
-
-unsigned TstTrue( unsigned true_value )
+int TstTrue( int true_value )
 {
     PushInt( 0 );
     TstEQ( true_value );
     PushInt( true_value );
     DoXor();
-    return( U32FetchTrunc( ExprSP->v.uint ) );
+    return( I32FetchTrunc( ExprSP->v.sint ) );
 }
 
 
 /*
  * TstExist - test if a variable exists or not
  */
-
-unsigned TstExist( unsigned true_value )
+int TstExist( int true_value )
 {
     bool        tst;
     sym_list    *syms;
 
     if( ExprSP->flags & SF_NAME ) {
-        syms = ExprGetSymList( ExprSP, FALSE );
+        syms = ExprGetSymList( ExprSP, false );
         if( syms != NULL ) {
             PurgeSymHandles();
-            tst = TRUE;
+            tst = true;
         } else {
-            tst = FALSE;
+            tst = false;
         }
     } else {
-        tst = TRUE;
+        tst = true;
     }
     PopEntry();
     PushBool( tst ? true_value : 0 );
-    return( U32FetchTrunc( ExprSP->v.uint ) );
+    return( I32FetchTrunc( ExprSP->v.sint ) );
 }
 
 
@@ -688,7 +701,7 @@ void MakeAddr( void )
     ExprSP->v.addr.mach.offset = offset;
     ExprSP->v.addr.mach.segment = U32FetchTrunc( left->v.uint );
     AddrFloat( &ExprSP->v.addr );
-    ExprSetAddrInfo( ExprSP, TRUE );
+    ExprSetAddrInfo( ExprSP, true );
     CombineEntries( ExprSP, left, ExprSP );
 }
 
@@ -704,8 +717,8 @@ void FreePgmStack( bool freeall )
                     ( (NestedCallLevel > 0)  ?  NestedCallLevel - 1  :  0 ) );
     MADRegSpecialGet( MSR_SP, &DbgRegs->mr, &stk );
     for( ; count > 0; --count ) {
-        stk.offset += PgmStackUsage[ NestedCallLevel ];
-        PgmStackUsage[ NestedCallLevel ] = 0;
+        stk.offset += PgmStackUsage[NestedCallLevel];
+        PgmStackUsage[NestedCallLevel] = 0;
         --NestedCallLevel;
     }
     MADRegSpecialSet( MSR_SP, &DbgRegs->mr, &stk );
@@ -722,19 +735,17 @@ void ExprPurge( void )
 {
     stack_entry *stk_ptr, *next_ptr;
 
-    stk_ptr = ExprSP;
-    while( stk_ptr->dn != NULL ) {
-        stk_ptr = stk_ptr->dn;
-    }
-    while( !(stk_ptr->flags & SF_END_PURGE) ) {
+    for( stk_ptr = ExprSP; stk_ptr->dn != NULL; stk_ptr = stk_ptr->dn )
+        ;
+    for( ; (stk_ptr->flags & SF_END_PURGE) == 0; stk_ptr = next_ptr ) {
         next_ptr = stk_ptr->up;
         FreeEntry( stk_ptr );
-        stk_ptr = next_ptr;
     }
     stk_ptr->dn = NULL;
     ExprSP = stk_ptr;
-    if( StringStart != NULL ) _Free( StringStart );
-    FreePgmStack( TRUE );
+    if( StringStart != NULL )
+        _Free( StringStart );
+    FreePgmStack( true );
 }
 
 void MarkArrayOrder( bool column_major )

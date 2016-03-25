@@ -44,9 +44,6 @@
 
 #if defined( _STANDALONE_ )
 
-extern bool             ChangeCurrentLocation( bool, int_32, bool );
-extern bool             SymIs32( struct asm_sym *sym );
-
 /* static globals */
 /* is this data element a field in a structure definition? */
 static bool             struct_field;

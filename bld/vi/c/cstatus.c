@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,21 +81,21 @@ status_type UpdateCurrentStatus( status_type st )
 
         if( EditFlags.CurrentStatus ) {
             memset( str, ' ', MAX_CSTATUS_STRLEN );
-            str[MAX_CSTATUS_STRLEN] = 0;
+            str[MAX_CSTATUS_STRLEN] = '\0';
             i = strlen( currStatus[lastStatus] );
             if( i > MAX_CSTATUS_STRLEN )
                 i = MAX_CSTATUS_STRLEN;
             memcpy( str, currStatus[lastStatus], i );
             for( i = 0; i < MAX_CSTATUS_STRLEN; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1, EditVars.CurrentStatusColumn + i, str[i], &menubarw_info.text );
+                SetCharInWindowWithColor( menu_window_id, 1, EditVars.CurrentStatusColumn + i, str[i], &menubarw_info.text_style );
             }
         } else {
 #if 0
             /* this is real lame - no time to fix it now */
             memset( str, ' ', 15 );
-            str[15] = 0;
+            str[15] = '\0';
             for( i = 0; i < 14; i++ ) {
-                SetCharInWindowWithColor( MenuWindow, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text );
+                SetCharInWindowWithColor( menu_window_id, 1, CurrentStatusColumn + i - 6, str[i], &menubarw_info.text_style );
             }
 #endif
         }

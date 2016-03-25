@@ -36,21 +36,26 @@
 #include <string.h>
 #ifdef __WATCOMC__
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
 #include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __WINDOWS__
+#include "commonui.h"
+#endif
 #include "banner.h"
 #include "os.h"
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
 #include "digtypes.h"
-
 #ifdef __WINDOWS__
 #include "sampwin.h"
+#endif
+
+#include "clibext.h"
+
+#ifdef __WINDOWS__
 #define Info SharedMemory->Info
 #define SampleIndex SharedMemory->SampleIndex
 #define SampleCount SharedMemory->SampleCount

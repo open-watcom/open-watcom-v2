@@ -41,13 +41,16 @@ void WndChooseEvent( a_window *wnd, gui_event event, void *parm )
 {
     gui_key     key;
 
-    if( _Isnt( wnd, WSW_CHOOSING ) ) return;
+    if( _Isnt( wnd, WSW_CHOOSING ) )
+        return;
     switch( event ) {
     case GUI_KEYDOWN:
     case GUI_KEYUP:
         GUI_GET_KEY( parm, key );
-        if( GUI_IS_ASCII( key ) && WndKeyChar( key ) ) return;
-        if( key == GUI_KEY_BACKSPACE ) return;
+        if( GUI_IS_ASCII( key ) && WndKeyChar( key ) )
+            return;
+        if( key == GUI_KEY_BACKSPACE )
+            return;
         break;
     case GUI_RESIZE:
     case GUI_MOVE:
@@ -69,7 +72,8 @@ extern  void    WndDoneChoose( a_window *wnd )
 
 extern  bool    WndKeyEscape( a_window *wnd )
 {
-    if( wnd->keypiece == WND_NO_PIECE ) return( FALSE );
+    if( wnd->keypiece == WND_NO_PIECE )
+        return( FALSE );
     WndNoSelect( wnd );
     wnd->keyindex = 0;
     return( TRUE );
@@ -87,15 +91,15 @@ extern  void    WndSayMatchMode( a_window *wnd )
     wnd_line_piece      line;
     char                *match;
 
-#define _SOFAR (sofar_buff+strlen( match )-1 )
+#define _SOFAR (sofar_buff + strlen( match ) - 1)
 
     match = WndLoadString( LITERAL_Match_Mode );
-    sofar_buff = alloca( MAX_KEY_SIZE+strlen( match ) +1 );
+    sofar_buff = alloca( MAX_KEY_SIZE + strlen( match ) + 1 );
     if( _Is( wnd, WSW_CHOOSING ) ) {
         strcpy( sofar_buff, match );
         WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
         strcpy( _SOFAR, line.text );
-        _SOFAR[ wnd->keyindex ] = '\0';
+        _SOFAR[wnd->keyindex] = '\0';
         WndStatusText( sofar_buff );
     }
     WndFree( match );
@@ -105,10 +109,10 @@ static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
 {
     wnd_line_piece      line;
     wnd_row             row;
-    int                 len;
+//    int                 len;
     int                 scrolled;
     wnd_coord           saved_curr;
-    char                sofar[MAX_KEY_SIZE+1];
+    char                sofar[MAX_KEY_SIZE + 1];
 
     saved_curr = wnd->current;
     scrolled = 0;
@@ -122,16 +126,18 @@ static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
     }
     WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
     strcpy( sofar, line.text );
-    sofar[ wnd->keyindex ] = key;
-    sofar[ wnd->keyindex+1 ] = '\0';
-    for( row = wnd->current.row;; ++row ) {
-        if( !WndGetLine( wnd, row, wnd->keypiece, &line ) ) break;
-        if( !line.use_key ) continue;
-        len = line.length;
-        if( strnicmp( line.text, sofar, wnd->keyindex+1 ) == 0 ) {
-            if( !WndGetLine( wnd, row+1, wnd->keypiece, &line ) ||
+    sofar[wnd->keyindex] = key;
+    sofar[wnd->keyindex + 1] = '\0';
+    for( row = wnd->current.row; ; ++row ) {
+        if( !WndGetLine( wnd, row, wnd->keypiece, &line ) )
+            break;
+        if( !line.use_key )
+            continue;
+//        len = line.length;
+        if( strnicmp( line.text, sofar, wnd->keyindex + 1 ) == 0 ) {
+            if( !WndGetLine( wnd, row + 1, wnd->keypiece, &line ) ||
                 line.length < wnd->keyindex ||
-                tolower( line.text[ wnd->keyindex ] ) != tolower( key ) ) {
+                tolower( line.text[wnd->keyindex] ) != tolower( key ) ) {
             }
             wnd->keyindex++;
             WndDirtyCurr( wnd );
@@ -147,7 +153,7 @@ static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
             wnd->sel_start = wnd->current;
             wnd->sel_end = wnd->current;
             wnd->sel_start.col = 0;
-            wnd->sel_end.col = wnd->keyindex-1;
+            wnd->sel_end.col = wnd->keyindex - 1;
             return( TRUE );
         }
     }
@@ -171,17 +177,19 @@ extern  bool    WndKeyRubOut( a_window *wnd )
     int                 newindex;
     wnd_line_piece      line;
     int                 i;
-    char                sofar[MAX_KEY_SIZE+1];
+    char                sofar[MAX_KEY_SIZE + 1];
 
-    if( wnd->keypiece == WND_NO_PIECE ) return( FALSE );
-    if( wnd->keyindex == 0 ) return( FALSE );
+    if( wnd->keypiece == WND_NO_PIECE )
+        return( FALSE );
+    if( wnd->keyindex == 0 )
+        return( FALSE );
     WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
     strcpy( sofar, line.text );
     newindex = wnd->keyindex - 1;
     WndKeyEscape( wnd );
     for( i = 0; i < newindex; ++i ) {
-        DoWndKeyChoose( wnd, sofar[ i ] );
+        DoWndKeyChoose( wnd, sofar[i] );
     }
-    sofar[ i ] = '\0';
+    sofar[i] = '\0';
     return( TRUE );
 }

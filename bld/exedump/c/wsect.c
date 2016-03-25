@@ -955,7 +955,7 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
     uint_32         tmp;
     uint_32         attr;
     uint_32         abbr_off;
-    bool            start;
+//    bool            start;
 
     if( Sections[ DW_DEBUG_ABBREV ].data == 0 ) {
         Sections[ DW_DEBUG_ABBREV ].data = Wmalloc( length );
@@ -964,12 +964,13 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
     }
     p = input;
     for( ;; ) {
-        if( p > input + length ) break;
+        if( p > input + length )
+            break;
         abbr_off = tmp = p - input;
         p = DecodeULEB128( p, &tmp );
         if( tmp == 0 ) {
             Wdputslc( "End_CU\n" );
-            start = TRUE;
+//            start = true;
             continue; /* compile unit separator */
         }
         Wdputs( "Offset: " );
@@ -977,8 +978,10 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
         Wdputs( "  Code: " );
         Puthex( tmp, 8 );
         Wdputslc( "\n" );
-        if( p >= input + length ) break;
-        if( tmp == 0 )continue; /* compile unit separator */
+        if( p >= input + length )
+            break;
+        if( tmp == 0 )
+            continue; /* compile unit separator */
         p = DecodeULEB128( p, &tmp );
         Wdputs( "        " );
         getTAG( tmp );
@@ -990,9 +993,11 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
         }
         p++;
         for( ;; ) {
-            if( p > input + length ) break;
+            if( p > input + length )
+                break;
             p = DecodeULEB128( p, &attr );
-            if( p > input + length ) break;
+            if( p > input + length )
+                break;
             p = DecodeULEB128( p, &tmp );
             if( attr == 0 && tmp == 0 ) {
                 Wdputslc( "        End_form\n" );
@@ -1003,7 +1008,9 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
             Wdputs( "        " );
             getFORM( tmp );
             Wdputslc( "\n" );
-            if( attr == 0 ) break;
+            if( attr == 0 ) {
+                break;
+            }
         }
     }
 }

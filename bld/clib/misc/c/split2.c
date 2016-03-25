@@ -37,12 +37,8 @@
 #if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
     #include <mbstring.h>
 #endif
+#include "pathmac.h"
 
-#if defined(__UNIX__)
-  #define IS_PC(x) (x=='/')
-#else   /* DOS, OS/2, Windows */
-  #define IS_PC(x) (x=='\\'||x=='/')
-#endif
 
 /* split full Unix path name into its components */
 
@@ -66,13 +62,13 @@ static CHAR_TYPE *pcopy( CHAR_TYPE **pdst, CHAR_TYPE *dst, const CHAR_TYPE *b_sr
     }
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
     memcpy( dst, b_src, len * CHARSIZE );
-    dst[ len ] = NULLCHAR;
+    dst[len] = NULLCHAR;
     return( dst + len + 1 );
 #else
-    len = _mbsnccnt( b_src, len );          /* # chars in len bytes */
-    _mbsncpy( dst, b_src, len );            /* copy the chars */
-    dst[ _mbsnbcnt( dst,len ) ] = NULLCHAR;
-    return( dst + _mbsnbcnt( dst, len ) + 1 );
+    len = _mbsnccnt( (unsigned char *)b_src, len );          /* # chars in len bytes */
+    _mbsncpy( (unsigned char *)dst, (unsigned char *)b_src, len );            /* copy the chars */
+    dst[_mbsnbcnt( (unsigned char *)dst, len )] = NULLCHAR;
+    return( dst + _mbsnbcnt( (unsigned char *)dst, len ) + 1 );
 #endif
 }
 
@@ -91,31 +87,30 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 
     /* process node/drive/UNC specification */
     startp = inp;
-    if( IS_PC( inp[ 0 ] ) && IS_PC( inp[ 1 ] ) )
-    {
+    if( IS_DIR_SEP( inp[0] ) && IS_DIR_SEP( inp[1] ) ) {
         inp += 2;
         for( ;; ) {
             if( *inp == NULLCHAR )
                 break;
-            if( IS_PC( *inp ) )
+            if( IS_DIR_SEP( *inp ) )
                 break;
-            if( *inp == '.' )
+            if( *inp == STRING( '.' ) )
                 break;
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
             ++inp;
 #else
-            inp = _mbsinc( inp );
+            inp = (char *)_mbsinc( (unsigned char *)inp );
 #endif
         }
         outp = pcopy( drive, outp, startp, inp );
 #if !defined(__UNIX__)
     /* process drive specification */
-    } else if( inp[ 0 ] != NULLCHAR && inp[ 1 ] == ':' ) {
+    } else if( inp[0] != NULLCHAR && inp[1] == DRV_SEP ) {
         if( drive != NULL ) {
             *drive = outp;
-            outp[ 0 ] = inp[ 0 ];
-            outp[ 1 ] = ':';
-            outp[ 2 ] = NULLCHAR;
+            outp[0] = inp[0];
+            outp[1] = DRV_SEP;
+            outp[2] = NULLCHAR;
             outp += 3;
         }
         inp += 2;
@@ -137,11 +132,11 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ch = *inp;
 #else
-        ch = _mbsnextc( inp );
+        ch = _mbsnextc( (unsigned char *)inp );
 #endif
         if( ch == 0 )
             break;
-        if( ch == '.' ) {
+        if( ch == EXT_SEP ) {
             dotp = inp;
             ++inp;
             continue;
@@ -149,9 +144,9 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         inp++;
 #else
-        inp = _mbsinc( inp );
+        inp = (char *)_mbsinc( (unsigned char *)inp );
 #endif
-        if( IS_PC( ch ) ) {
+        if( IS_DIR_SEP( ch ) ) {
             fnamep = inp;
             dotp = NULL;
         }

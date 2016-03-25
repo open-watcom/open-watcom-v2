@@ -8,9 +8,6 @@ REM       modify it as necessary for your own use!!
 REM Change this to point your Open Watcom source tree
 set OWROOT=c:\ow\ow
 
-REM Subdirectory to be used for building OW build tools
-set OWOBJDIR=binbuild
-
 REM Set this entry to identify your toolchain used by build process
 REM supported values are WATCOM VISUALC INTEL
 set OWTOOLS=WATCOM

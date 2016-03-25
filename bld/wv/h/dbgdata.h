@@ -63,12 +63,12 @@ global tokens           CurrToken;
 global dbg_switches     DbgSwitches;
 global screen_state     ScrnState;
 
-global unsigned         ExprAddrDepth;
+global int              ExprAddrDepth;
 global unsigned         NestedCallLevel;
 global int              PgmStackUsage[MAX_NESTED_CALL];
 
-global unsigned char    DefRadix;
-global unsigned char    CurrRadix;
+global mad_radix        DefRadix;
+global mad_radix        CurrRadix;
 
 global unsigned         InvCount;
 
@@ -89,11 +89,11 @@ global brkp             *BrkList;   // brk changed
 global void             *CmdHistory;
 global void             *SrchHistory;
 
-global unsigned         SkipCount;
+global int              SkipCount;
 global input_stack      *InpStack;
 global system_config    SysConfig;
 global unsigned         CheckSize;
-global unsigned         OvlSize;
+global trap_elen        OvlSize;
 
 global const char       *CmdStart;
 global thread_state     *HeadThd;

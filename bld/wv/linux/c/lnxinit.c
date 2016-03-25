@@ -41,6 +41,9 @@
 #include <signal.h>
 #include "dbgdefn.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
@@ -51,9 +54,6 @@ unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 #endif
 
-
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
@@ -67,9 +67,12 @@ static char             *cmdStart;
 static volatile bool    BrkPending;
 static unsigned         NumArgs;
 
+extern  void    (*__abort)( void );
+extern  void    __sigabort( void );
+
 /* following are to stop the C library from hauling in stuff we don't want */
-void (*__abort)();
-void __sigabort() {}
+void (*__abort)(void);
+void __sigabort( void ) {}
 
 static void BrkHandler( int signo )
 {
@@ -132,7 +135,7 @@ void SetCmdArgStart( int num, char *ptr )
     cmdStart = ptr;
 }
 
-void KillDebugger( void )
+void KillDebugger( int rc )
 {
     exit( 0 );
 }
@@ -177,33 +180,29 @@ long _fork( const char *cmd, size_t len )
     }
     fcntl( DbgConHandle, F_SETFD, 0 );
     if ((pid = fork()) == 0) {
-            /* make sure STDIN/STDOUT/STDERR are connected to a terminal */
-            dup2( DbgConHandle, 0 );
-            dup2( DbgConHandle, 1 );
-            dup2( DbgConHandle, 2 );
-            close( DbgConHandle );
-            setsid();
+        /* make sure STDIN/STDOUT/STDERR are connected to a terminal */
+        dup2( DbgConHandle, 0 );
+        dup2( DbgConHandle, 1 );
+        dup2( DbgConHandle, 2 );
+        close( DbgConHandle );
+        setsid();
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-            execve( shell, (char * const *)argv, (char * const *)environ );
+        execve( shell, (char * const *)argv, (char * const *)environ );
 #else
-            execve( shell, argv, (const char **)environ );
+        execve( shell, argv, (const char **)environ );
 #endif
-            exit( 1 );
+        exit( 1 );
     } else {
-            fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
-            if( pid == -1 )
-                return( 0xffff0000 | errno );
-            do {
-            } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
+        fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
+        if( pid == -1 )
+            return( 0xffff0000 | errno );
+        do {
+        } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     }
     return 0;
 }
 
-void SysSetMemLimit( void )
-{
-}
-
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }

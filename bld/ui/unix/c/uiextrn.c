@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include "uidef.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "uivirt.h"
 
         /* filedescriptor */
@@ -47,9 +47,9 @@ pid_t            UIRemProxy;
         /* process group */
 pid_t            UIPGroup;
         /* tell keyboard app wants to see shift, alt, ... keys... */
-unsigned         UIWantShiftChanges = TRUE;
+bool             UIWantShiftChanges = true;
         /* Disable checking on non console devices */
-unsigned         UIDisableShiftChanges = FALSE;
+bool             UIDisableShiftChanges = false;
         /* anytime is mouse time ?!? */
 unsigned long    MouseTime = 0L;
         /* Active virtual console functions */

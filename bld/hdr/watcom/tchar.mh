@@ -473,7 +473,7 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _tgetenv        getenv
 #define _tmakepath      _makepath
 #define _tputenv        putenv
-#define _tsearchenv     searchenv
+#define _tsearchenv     _searchenv
 #define _tsplitpath     _splitpath
 
 /* Stdio functions */

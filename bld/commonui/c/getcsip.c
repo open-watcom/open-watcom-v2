@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "getcsip.h"
 
 #define MAKECSIP( cs, ip ) (((DWORD)(cs) << 16L) + (DWORD)(ip))

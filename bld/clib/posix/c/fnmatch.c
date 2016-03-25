@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,34 +35,30 @@
 #include <ctype.h>
 #include <string.h>
 #include <wctype.h>
+#include "bool.h"
+#include "pathmac.h"
+
 
 /* Implementation note: On non-UNIX systems, backslashes in the string
  * (but not in the pattern) are considered to be path separators and
  * identical to forward slashes when FNM_PATHNAME is set.
  */
 
-#ifdef __UNIX__
-  #define IS_PATH_SEP(c)   (c == '/')
-#else
-  #define IS_PATH_SEP(c)   (c == '/' || c == '\\')
-#endif
-
-
-static char icase( int ch, int flags )
+static char icase( char ch, int flags )
 {
     if( flags & FNM_IGNORECASE ) {
-        return( tolower( ch ) );
+        return( tolower( (unsigned char)ch ) );
     } else {
         return( ch );
     }
 }
 
-/* Maximum length of character class name. 
+/* Maximum length of character class name.
  * The longest is currently 'xdigit' (6 chars).
  */
 #define CCL_NAME_MAX    8
 
-/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid 
+/* Note: Using wctype()/iswctype() may seem odd, but that way we can avoid
  * hardcoded character class lists.
  */
 static int sub_bracket( const char *p, int c )
@@ -75,11 +72,11 @@ static int sub_bracket( const char *p, int c )
     case ':':
         ++p;
         for( i = 0; i < CCL_NAME_MAX; i++ ) {
-            if( !isalpha(*p ) )
+            if( !isalpha( (unsigned char)*p ) )
                 break;
             sname[i] = *p++;
         }
-        sname[i] = '\0';
+        sname[i] = NULLCHAR;
         if( *p++ != ':' )
             return( 0 );
         if( *p++ != ']' )
@@ -104,58 +101,62 @@ static int sub_bracket( const char *p, int c )
 
 static const char *cclass_match( const char *patt, int c )
 {
-    int	        ok = 0;
-    int	        lc = 0;
-    int	        state = 0;
-    int         invert = 0;
-    int	        sb;
+    bool        ok;
+    int         lc;
+    int         state;
+    bool        invert;
+    int         sb;
 
     /* Meaning of '^' is unspecified in POSIX - consider it equal to '!' */
+    invert = false;
     if( *patt == '!' || *patt == '^' ) {
-        invert = 1;
+        invert = true;
         ++patt;
     }
+    lc = 0;
+    state = 0;
+    ok = false;
     while( *patt ) {
-    	if( *patt == ']' )
-    	    return( ok ^ invert ? patt + 1 : NULL );
+        if( *patt == ']' )
+            return( ( ok ^ invert ) ? patt + 1 : NULL );
 
         if( *patt == '[' ) {
              sb = sub_bracket( patt, c );
              if( sb < 0 ) {
                  patt -= sb;
-                 ok = 0;
+                 ok = false;
                  continue;
              } else if( sb > 0 ) {
                  patt += sb;
-                 ok = 1;
+                 ok = true;
                  continue;
              }
         }
 
         switch( state ) {
         case 0:
-    	    if( *patt == '\\' )
+            if( *patt == DIR_SEP )
                 ++patt;
-    	    if( *patt == c )
-                ok = 1;
-    	    lc = (int)*patt++;
-    	    state = 1;
-    	    break;
-    	case 1:
-    	    if( state = (*patt == '-') ? 2 : 0 )
+            if( (unsigned char)*patt == c )
+                ok = true;
+            lc = (unsigned char)*patt++;
+            state = 1;
+            break;
+        case 1:
+            if( state = (*patt == '-') ? 2 : 0 )
                 ++patt;
-    	    break;
-    	case 2:	
-    	    if( *patt == '\\' )
+            break;
+        case 2:
+            if( *patt == DIR_SEP )
                 ++patt;
-            if( lc <= c && c <= *patt )
-                ok = 1;
-    	    ++patt;	
-    	    state = 0;
-    	    break;
-    	default:
-    	    return( NULL );
-    	}
+            if( lc <= c && c <= (unsigned char)*patt )
+                ok = true;
+            ++patt;
+            state = 0;
+            break;
+        default:
+            return( NULL );
+        }
     }
     return( NULL );
 }
@@ -167,76 +168,78 @@ _WCRTLINK int   fnmatch( const char *patt, const char *s, int flags )
     char        c, cl;
     const char  *start = s;
 
-    while( 1 ) {
+    for( ;; ) {
         c = icase( *patt++, flags );
-    	switch( c ) {
-        case '\0':
-            if( flags & FNM_LEADING_DIR && IS_PATH_SEP( *s ) )
+        switch( c ) {
+        case NULLCHAR:
+            if( (flags & FNM_LEADING_DIR) && IS_DIR_SEP( *s ) )
                 return( 0 );
-            return( *s ? FNM_NOMATCH : 0 );
-    	case '?':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            return( ( *s != NULLCHAR ) ? FNM_NOMATCH : 0 );
+        case '?':
+            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
             ++s;
-    	    break;
+            break;
         case '[':
-            if( flags & FNM_PATHNAME && IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && IS_DIR_SEP( *s ) )
                 return( FNM_NOMATCH );
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
-            patt = cclass_match( patt, *s );
-    	    if( patt == NULL )
+            patt = cclass_match( patt, (unsigned char)*s );
+            if( patt == NULL )
                 return( FNM_NOMATCH );
-    	    ++s;
-    	    break;
+            ++s;
+            break;
         case '*':
-            if( *s == '\0' )
+            if( *s == NULLCHAR )
                 return( 0 );
-            if( flags & FNM_PATHNAME && ( *patt == '/' ) ) {
-                while( *s && !IS_PATH_SEP( *s ) )
+            if( (flags & FNM_PATHNAME) && ( *patt == '/' ) ) {
+                while( *s != NULLCHAR && !IS_DIR_SEP( *s ) )
                     ++s;
                 break;
             }
-            if( flags & FNM_PERIOD && *s == '.' && s == start )
+            if( (flags & FNM_PERIOD) && *s == '.' && s == start )
                 return( FNM_NOMATCH );
-            if( *patt == '\0' ) {
+            if( *patt == NULLCHAR ) {
                 /* Shortcut - don't examine every remaining character. */
                 if( flags & FNM_PATHNAME ) {
-                    if( flags & FNM_LEADING_DIR || !strchr( s, '/' ) )
+                    if( (flags & FNM_LEADING_DIR) || !strchr( s, '/' ) ) {
                         return( 0 );
-                    else
+                    } else {
                         return( FNM_NOMATCH );
+                    }
                 } else {
                     return( 0 );
                 }
             }
-            while( (cl = icase( *s, flags )) != '\0' ) {
+            while( (cl = icase( *s, flags )) != NULLCHAR ) {
                 if( !fnmatch( patt, s, flags & ~FNM_PERIOD ) )
                     return( 0 );
-                if( flags & FNM_PATHNAME && IS_PATH_SEP( cl ) ) {
+                if( (flags & FNM_PATHNAME) && IS_DIR_SEP( cl ) ) {
                     start = s + 1;
                     break;
                 }
                 ++s;
             }
-    	    return( FNM_NOMATCH );
+            return( FNM_NOMATCH );
         case '\\':
-            if( !( flags & FNM_NOESCAPE ) ) {
+            if( (flags & FNM_NOESCAPE) == 0 ) {
                 c = icase( *patt++, flags );
             }
             /* Fall through */
         default:
-            if( IS_PATH_SEP( *s ) )
+            if( IS_DIR_SEP( *s ) )
                 start = s + 1;
             cl = icase( *s++, flags );
 #ifndef __UNIX__
-            if( flags & FNM_PATHNAME && cl == '\\' )
-                cl = '/';
+            if( (flags & FNM_PATHNAME) && cl == DIR_SEP )
+                cl = ALT_DIR_SEP;
 #endif
-    	    if( c != cl )
+            if( c != cl ) {
                 return( FNM_NOMATCH );
-    	}
+            }
+        }
     }
 }

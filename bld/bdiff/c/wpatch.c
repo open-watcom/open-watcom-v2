@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <direct.h>
-#include <io.h>
 #include "bdiff.h"
+#include <direct.h>
 #include "wpatchio.h"
 #include "msg.h"
 
@@ -44,13 +41,12 @@
 #define FALSE 0
 
 struct {
-    int origSrcDirLen;
-    int origTgtDirLen;
+    size_t origSrcDirLen;
+    size_t origTgtDirLen;
 } glob;
 
-
 int     cmpStrings( const void *, const void * );
-void    WPatchApply( char *PatchName, char *TgtPath );
+void    WPatchApply( const char *patch_name, const char *TgtPath );
 void    DirDelete( char *tgtDir );
 void    DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag );
 void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
@@ -68,26 +64,27 @@ void main( int argc, char *argv[] )
         printf( "Copyright (c) 1996 by Sybase, Inc., and its subsidiaries.\n");
         printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
     }
-    WPatchApply( argv[ 1 ], argv[ 2 ] );
+    WPatchApply( argv[1], argv[2] );
 }
 
-void WPatchApply( char *PatchName, char *TgtPath )
+void WPatchApply( const char *patch_name, const char *TgtPath )
 {
     short   flag;
-    char    RelPath[ PATCH_MAX_PATH_SIZE ];
-    char    FullPath[ PATCH_MAX_PATH_SIZE ];
+    char    RelPath[PATCH_MAX_PATH_SIZE];
+    char    FullPath[PATCH_MAX_PATH_SIZE];
 
-    PatchReadOpen( PatchName );
+    PatchReadOpen( patch_name );
     for( ;; ) {
         PatchReadFile( &flag, RelPath );
-        if ( flag == PATCH_EOF ) break;
+        if( flag == PATCH_EOF )
+            break;
         strcpy( FullPath, TgtPath );
         strcat( FullPath, "\\" );
         strcat( FullPath, RelPath );
         switch( flag ) {
             case PATCH_FILE_PATCHED:
                 printf( "Patching file %s\n", FullPath );
-                DoPatch( "", 0,0,0, FullPath );
+                DoPatch( "", 0, 0, 0, FullPath );
                 break;
             case PATCH_DIR_DELETED:
                 printf( "Deleting directory %s\n", FullPath );
@@ -114,8 +111,8 @@ void DirDelete( char *tgtDir )
 {
     DIR     *tgtdirp;
 
-    char **tgtFiles = malloc ( 1000 * sizeof( char *));
-    char **tgtDirs = malloc ( 500 * sizeof( char *));
+    char **tgtFiles = bdiff_malloc( 1000 * sizeof( char * ) );
+    char **tgtDirs = bdiff_malloc( 500 * sizeof( char * ) );
 
     tgtdirp = opendir( tgtDir );
     if( tgtdirp == NULL ) {
@@ -130,19 +127,18 @@ void DirDelete( char *tgtDir )
 
 void DirDelFiles( char *tgtDir, char *tgtFiles[], int Dirflag ) 
 {
-    int     indexTgt = 0;
-    char    FullTgtPath[ PATCH_MAX_PATH_SIZE ];
+    int     indexTgt;
+    char    FullTgtPath[PATCH_MAX_PATH_SIZE];
 
-    while( tgtFiles[ indexTgt ] != NULL ){
+    for( indexTgt = 0; tgtFiles[indexTgt] != NULL; ++indexTgt ){
         strcpy( FullTgtPath, tgtDir );
         strcat( FullTgtPath, "\\" );
-        strcat( FullTgtPath, tgtFiles[ indexTgt ] );
+        strcat( FullTgtPath, tgtFiles[indexTgt] );
         if( Dirflag == 1 ) {
             DirDelete( FullTgtPath );
         } else {
             remove( FullTgtPath );
         }
-        indexTgt += 1;
     }
 }
 
@@ -154,27 +150,32 @@ void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 
     for( ;; ) {
         direntp = readdir( dirp );
-        if( direntp == NULL ) break;
+        if( direntp == NULL )
+            break;
         if(( direntp->d_attr & _A_SUBDIR ) == 0 ) {
             /* must be a file */
-            Files[ file ] = (char *)malloc( strlen( direntp->d_name ) + 1 );
-            strcpy( Files[ file ], direntp->d_name );
+            Files[file] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );
+            strcpy( Files[file], direntp->d_name );
             file += 1;
-            if( file >= 1000 ) perror( "File limit in directory is 1000." );
+            if( file >= 1000 ) {
+                perror( "File limit in directory is 1000." );
+            }
         } else {
             /* must be a directory */
-            Dirs[ dir ] = (char *)malloc( strlen( direntp->d_name ) + 1 );
-            strcpy( Dirs[ dir ], direntp->d_name );
-            if( strcmp( Dirs[ dir ], "." ) != 0 && strcmp( Dirs[ dir ], ".." ) != 0 ) {
+            Dirs[dir] = (char *)bdiff_malloc( strlen( direntp->d_name ) + 1 );
+            strcpy( Dirs[dir], direntp->d_name );
+            if( strcmp( Dirs[dir], "." ) != 0 && strcmp( Dirs[dir], ".." ) != 0 ) {
                 dir += 1;
             }
-            if( dir >= 500 ) perror( "Subdirectory limit is 500." );
+            if( dir >= 500 ) {
+                perror( "Subdirectory limit is 500." );
+            }
         }
     }
     Files[file] = NULL;
     Dirs[dir] = NULL;
-    qsort( Files, file, sizeof(char *), cmpStrings );
-    qsort( Dirs, dir, sizeof(char *), cmpStrings );
+    qsort( Files, file, sizeof( char * ), cmpStrings );
+    qsort( Dirs, dir, sizeof( char * ), cmpStrings );
 }
 
 int cmpStrings( const void *op1, const void *op2 )
@@ -182,39 +183,4 @@ int cmpStrings( const void *op1, const void *op2 )
     const char **p1 = (const char **) op1;
     const char **p2 = (const char **) op2;
     return( strcmp( *p1, *p2 ) );
-}
-
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
 }

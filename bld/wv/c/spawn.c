@@ -31,9 +31,10 @@
 
 #include <stdlib.h>
 #include <setjmp.h>
+#include "bool.h"
 #include "spawn.h"
+#include "dbginit.h"
 
-extern void PopErrBox( const char *buff );
 
 static jmp_buf  *ExitSP;
 

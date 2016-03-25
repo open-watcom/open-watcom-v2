@@ -29,17 +29,17 @@
 ****************************************************************************/
 
 
-extern rc_erridx        RemoteRename( const char *, const char * );
-extern rc_erridx        RemoteMkDir( const char * );
-extern rc_erridx        RemoteRmDir( const char * );
-extern rc_erridx        RemoteSetDrv( int );
+extern error_handle     RemoteRename( const char *, const char * );
+extern error_handle     RemoteMkDir( const char * );
+extern error_handle     RemoteRmDir( const char * );
+extern error_handle     RemoteSetDrv( int );
 extern int              RemoteGetDrv( void );
-extern rc_erridx        RemoteSetCWD( const char * );
+extern error_handle     RemoteSetCWD( const char * );
 extern long             RemoteGetFileAttr( const char * );
-extern rc_erridx        RemoteSetFileAttr( const char * , long );
+extern error_handle     RemoteSetFileAttr( const char * , long );
 extern long             RemoteGetFreeSpace( int );
-extern rc_erridx        RemoteDateTime( sys_handle , int *, int *, int );
-extern rc_erridx        RemoteGetCwd( int, char * );
-extern rc_erridx        RemoteFindFirst( const char *, void *, unsigned , int );
-extern int              RemoteFindNext( void *, unsigned );
-extern rc_erridx        RemoteFindClose( void );
+extern error_handle     RemoteDateTime( sys_handle , int *, int *, int );
+extern error_handle     RemoteGetCwd( int, char * );
+extern error_handle     RemoteFindFirst( const char *, void *, trap_elen , int );
+extern int              RemoteFindNext( void *, trap_elen );
+extern error_handle     RemoteFindClose( void );

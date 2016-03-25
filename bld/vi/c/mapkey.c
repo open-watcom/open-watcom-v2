@@ -44,7 +44,7 @@ static bool key_alloc( int cnt )
     return( true );
 }
 
-static bool key_save( int i, char *buff )
+static bool key_save( int i, const char *buff )
 {
     keyVals[i] = atoi( buff );
     return( true );
@@ -76,7 +76,7 @@ static vi_rc readKeyData( void )
 /*
  * MapKey - set up a key mapping
  */
-vi_rc MapKey( int flag, char *data )
+vi_rc MapKey( int flag, const char *data )
 {
     char        keystr[MAX_STR];
 #ifndef VICOMP
@@ -105,11 +105,11 @@ vi_rc MapKey( int flag, char *data )
         maps = KeyMaps;
     }
 #endif
-
-    if( NextWord1( data, keystr ) <= 0 ) {
+    data = GetNextWord1( data, keystr );
+    if( *keystr == '\0' ) {
         return( ERR_INVALID_MAP );
     }
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
 
     /*
      * get key we are using
@@ -119,7 +119,7 @@ vi_rc MapKey( int flag, char *data )
 #endif
         j = Tokenize( charTokens, keystr, true );
         if( j == TOK_INVALID ) {
-            key = (unsigned char)keystr[0];
+            key = C2VIKEY( keystr[0] );
         } else {
             key = keyVals[j];
         }
@@ -141,7 +141,7 @@ vi_rc MapKey( int flag, char *data )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        if( !(flag & MAPFLAG_UNMAP) ) {
+        if( (flag & MAPFLAG_UNMAP) == 0 ) {
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
@@ -166,7 +166,7 @@ vi_rc MapKey( int flag, char *data )
     maps[key].is_base = false;
     MemFree( maps[key].data );
     maps[key].data = NULL;
-    if( !(flag & MAPFLAG_UNMAP ) ) {
+    if( (flag & MAPFLAG_UNMAP) == 0 ) {
         if( flag & MAPFLAG_BASE ) {
             maps[key].is_base = true;
         }
@@ -225,7 +225,7 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
     }
     cstack = UndoStack;
     StartUndoGroup( cstack );
-    while( total > 0 ) {
+    for( ; total > 0; --total ) {
         /*
          * set up key map to run
          */
@@ -234,7 +234,8 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
             EditFlags.NoInputWindow = true;
         }
         // max = strlen( CurrentKeyMap );
-        for( max = 0; CurrentKeyMap[max] != 0; max++ );
+        for( max = 0; CurrentKeyMap[max] != VI_KEY( NULL ); max++ )
+            ;
 
         EditFlags.KeyMapInProgress = true;
         EditFlags.KeyMapMode = true;
@@ -258,7 +259,6 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
         if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
             break;
         }
-        total--;
     }
 
     TryEndUndoGroup( cstack );
@@ -338,19 +338,18 @@ void DoneInputKeyMap( void )
  * extractViKeyToken - extract the character token from a data string,
  *                    assumes we are pointing at <CHAR>
  */
-vi_key extractViKeyToken( unsigned char **p )
+static vi_key extractViKeyToken( const char **data )
 {
     char            str[MAX_STR];
     int             j;
     vi_rc           rc;
-    int             c;
+    char            c;
 
-    
-    for( j = 0; (c = **p) != '\0'; ++j ) {
-        (*p)++;
+    for( (*data)++, j = 0; (c = **data) != '\0'; ++j ) {
         if( c == '>' )
             break;
         str[j] = c;
+        (*data)++;
     }
     str[j] = '\0';
     rc = readKeyData();
@@ -359,7 +358,7 @@ vi_key extractViKeyToken( unsigned char **p )
     }
     j = Tokenize( charTokens, str, true );
     if( j == TOK_INVALID ) {
-        return( (unsigned char)str[0] );
+        return( C2VIKEY( str[0] ) );
     } else {
         return( keyVals[j] );
     }
@@ -369,14 +368,12 @@ vi_key extractViKeyToken( unsigned char **p )
 /*
  * AddKeyMap - add a specified key mapping
  */
-vi_rc AddKeyMap( key_map *scr, char *data )
+vi_rc AddKeyMap( key_map *scr, const char *data )
 {
-    int             c;
+    char            c;
     vi_key          *sdata;
     int             len;
-    unsigned char   *p;
 
-    p = (unsigned char *)data;
     /*
      * get storage for key map
      */
@@ -387,16 +384,15 @@ vi_rc AddKeyMap( key_map *scr, char *data )
     /*
      * copy in key map data
      */
-    sdata = scr->data;
-    while( *p != '\0' ) {
-        c = *p++;
+    for( sdata = scr->data; (c = *data) != '\0'; ++data, ++sdata ) {
         if( c == '\\' ) {
-            c = *p++;
+            ++data;
+            c = *data;
             switch( c ) {
-            case 0:
+            case '\0':
                 return( ERR_INVALID_MAP );
             case '<':
-                *sdata = extractViKeyToken( &p );
+                *sdata = extractViKeyToken( &data );
                 break;
             case 'h':
                 *sdata = NO_ADD_TO_HISTORY_KEY;
@@ -418,20 +414,18 @@ vi_rc AddKeyMap( key_map *scr, char *data )
 #ifndef VICOMP
                 if( EditFlags.CompileScript ) {
 #endif
-                    *sdata = '\\';
-                    sdata++;
+                    *sdata++ = VI_KEY( BACKSLASH );
 #ifndef VICOMP
                 }
 #endif
-                *sdata = c;
+                *sdata = C2VIKEY( c );
                 break;
             }
         } else {
-            *sdata = c;
+            *sdata = C2VIKEY( c );
         }
-        sdata++;
     }
-    *sdata = 0;
+    *sdata = VI_KEY( NULL );
 
     return( ERR_NO_ERR );
 
@@ -524,7 +518,7 @@ char *LookUpCharToken( vi_key key, bool want_single )
             return( "t" );
         case NO_ADD_TO_HISTORY_KEY:
             return( "h" );
-        case '\\':
+        case VI_KEY( BACKSLASH ):
             return( "\\" );
         }
     }

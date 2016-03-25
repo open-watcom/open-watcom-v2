@@ -44,7 +44,7 @@ struct buf_limit {
  * buf_putc -- append a character to a string in memory
  */
 static slib_callback_t buf_putc; // setup calling convention
-static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, int op_char )
+static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct buf_limit    *bufinfo;
 
@@ -59,7 +59,7 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, int op_char )
  * buf_count_putc -- only count characters to be output
  */
 static slib_callback_t buf_count_putc; // setup calling convention
-static void __SLIB_CALLBACK buf_count_putc( SPECS __SLIB *specs, int op_char )
+static void __SLIB_CALLBACK buf_count_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     specs->_output_count++;
 }
@@ -77,7 +77,7 @@ _WCRTLINK int __F_NAME(vsnprintf,vsnwprintf)( CHAR_TYPE *s, size_t bufsize,
         len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_count_putc );
     else {
         len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
-        s[(( len >= 0 ) && ( len < bufsize )) ? len : bufsize - 1] = '\0';
+        s[(( len >= 0 ) && ( len < bufsize )) ? len : bufsize - 1] = NULLCHAR;
     }
     return( len );
 }

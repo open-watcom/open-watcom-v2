@@ -82,7 +82,7 @@ void intern restorekeyb( void )
 bool intern initkeyboard( void )
 /******************************/
 {
-    return _initkeyboard();
+    return( _initkeyboard() );
 }
 
 void intern finikeyboard( void )

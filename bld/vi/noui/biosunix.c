@@ -32,13 +32,13 @@
 #include "vi.h"
 #include "win.h"
 
-long BIOSGetColorRegister( short a ) { return( 0 ); }
+uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}
 void BIOSSetBlinkAttr() {}
-void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
-void BIOSSetCursor( char page, char row, char col ) {}
-short BIOSGetCursor( char page ) { return 0; }
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col ) {}
+unsigned short BIOSGetCursor( unsigned char page ) { return 0; }
 int KeyboardInit( void ) { return 0; }
-short BIOSGetKeyboard( char extended ) { return 0; }
-short BIOSKeyboardHit( char a ) { return 0; }
-void MyVioShowBuf( unsigned offset, unsigned nchars ) {}
+unsigned BIOSGetKeyboard( unsigned *scan ) { if( scan != NULL ) *scan = 0; return VI_KEY( NULL ); }
+bool BIOSKeyboardHit( void ) { return 0; }
+void MyVioShowBuf( size_t offset, unsigned nchars ) {}

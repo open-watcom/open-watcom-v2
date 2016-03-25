@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
 #include <stdarg.h>

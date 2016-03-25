@@ -67,8 +67,11 @@ trap_retval RemoteGet( void *data, trap_elen len )
 #ifdef __WINDOWS__
     for( ;; ) {
         rc = ConvGet( _id, data, len, NO_BLOCK );
-        if( (rc & 0xffff) == BLOCK ) SetExecutionFocus( _id );
-        else break;
+        if( (rc & 0xffff) == BLOCK ) {
+            SetExecutionFocus( _id );
+        } else {
+            break;
+        }
     }
 #else
 #ifdef DEBUG_ME
@@ -89,8 +92,11 @@ trap_retval RemotePut( void *data, trap_elen len )
 
     for( ;; ) {
         rc = ConvPut( _id, data, len, NO_BLOCK );
-        if( rc == BLOCK ) SetExecutionFocus( _id );
-        else break;
+        if( rc == BLOCK ) {
+            SetExecutionFocus( _id );
+        } else {
+            break;
+        }
     }
 #else
 #ifdef DEBUG_ME
@@ -160,8 +166,10 @@ const char *RemoteLink( const char *parms, bool server )
         parms = DefLinkName;
     i = 0;
     for( ;; ) {
-        if( i >= sizeof( LinkName ) ) break;
-        if( *parms == '\0' ) break;
+        if( i >= sizeof( LinkName ) )
+            break;
+        if( *parms == '\0' )
+            break;
         LinkName[i++] = *parms++;
     }
     LinkName[i] = '\0';
@@ -176,7 +184,8 @@ const char *RemoteLink( const char *parms, bool server )
     }
 #else
     rc = AccessName( LinkName, &_id );
-    if( rc < 0 ) return( TRP_ERR_CANT_FIND_SERVER );
+    if( rc < 0 )
+        return( TRP_ERR_CANT_FIND_SERVER );
 #endif
     return( NULL );
 }
@@ -185,8 +194,8 @@ const char *RemoteLink( const char *parms, bool server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-        UnregisterName( LinkName );
+    UnregisterName( LinkName );
 #else
-        UnaccessName( LinkName );
+    UnaccessName( LinkName );
 #endif
 }

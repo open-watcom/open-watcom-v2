@@ -31,13 +31,8 @@
 
 
 #include "vi.h"
+#include "win.h"
 
-#ifdef __WIN__
-extern int  AddLineToClipboard( char *data, int scol, int ecol );
-extern int  AddFcbsToClipboard( fcb_list *fcbs );
-extern int  GetClipboardSavebuf( savebuf *clip );
-extern bool IsClipboardEmpty( void );
-#endif
 
 /*
  * freeSavebuf - release savebuf data
@@ -325,7 +320,7 @@ vi_rc GetSavebufString( char **data )
             strcpy( *data, tmp->u.data );
             break;
         case SAVEBUF_FCBS:
-            **data = 0;
+            **data = '\0';
             for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
                 FetchFcb( cfcb );
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
@@ -423,7 +418,7 @@ void AddLineToSavebuf( char *data, int scol, int ecol )
     for( i = scol; i <= ecol; i++ ) {
         tmp->u.data[i - scol] = data[i];
     }
-    tmp->u.data[len] = 0;
+    tmp->u.data[len] = '\0';
 
 } /* AddLineToSavebuf */
 
@@ -574,8 +569,8 @@ vi_rc DoSavebufNumber( void )
     if( key == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }
-    buff[0] = key;
-    buff[1] = 0;
+    buff[0] = (char)key;
+    buff[1] = '\0';
     rc = SetSavebufNumber( buff );
     if( rc == ERR_NO_ERR ) {
         rc = GOT_A_SAVEBUF;
@@ -587,14 +582,14 @@ vi_rc DoSavebufNumber( void )
 /*
  * SetSavebufNumber - set savebuf number from a string
  */
-vi_rc SetSavebufNumber( char *data )
+vi_rc SetSavebufNumber( const char *data )
 {
     char        st[MAX_STR];
 
     SavebufNumber = NO_SAVEBUF;
-    if( NextWord1( data, st ) > 0 ) {
-
-        if( st[1] != 0 ) {
+    data = GetNextWord1( data, st );
+    if( st[0] != '\0' ) {
+        if( st[1] != '\0' ) {
             Error( GetErrorMsg( ERR_INVALID_SAVEBUF), st[0] );
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }

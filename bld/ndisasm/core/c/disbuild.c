@@ -33,8 +33,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "distypes.h"
 #include "dis.h"
+#include "distypes.h"
 
 #define NUM_ELTS( a ) (sizeof( a ) / sizeof( a[0] ))
 
@@ -748,7 +748,7 @@ typedef struct list_item {
     char                *handler;
 } list_item;
 
-
+#if 0
 static void addHandlerItem( list_item **owner, char *handler )
 {
     list_item   *new;
@@ -768,17 +768,7 @@ static void addHandlerItem( list_item **owner, char *handler )
     new->handler = handler;
     *owner = new;
 }
-
-static void printHandlersDeclaration( FILE *fp, list_item *item )
-{
-    list_item   *item_next;
-
-    for( ; item != NULL; item = item_next ) {
-        item_next = item->next;
-        fprintf( fp, "extern dis_handler_return %s( dis_handle *, void *, dis_dec_ins * );\n", item->handler );
-        free( item );
-    }
-}
+#endif
 
 #define INVALID_INS     "????"
 string_data InvalidIns = { INVALID_INS, 0 };
@@ -796,7 +786,6 @@ int main( void )
     ins_decode_data **decode;
     unsigned        *num_ins;
     int             *listl;
-    list_item       *handlersList;
 
     fp = fopen( "distbls.gh", "w" );
     if( fp == NULL ) {
@@ -840,19 +829,6 @@ int main( void )
         if( (i % 16) == 15 ) fprintf( fp, "\n" );
     }
     fprintf( fp, "};\n\n" );
-    for( i = 0, mach = AMachine ; i < NUM_ELTS( AMachine ); ++i, ++mach ) {
-        handlersList = NULL;
-        num_ins = mach->num_ins;
-        for( decode = mach->decode; *decode != NULL ; ++decode ) {
-            for( j = 0; j < *num_ins; ++j ) {
-                if( strcmp( (*decode)[j].handler, "NULL" ) != 0 ) {
-                    addHandlerItem( &handlersList, (*decode)[j].handler );
-                }
-            }
-            ++num_ins;
-        }
-        printHandlersDeclaration( fp, handlersList );
-    }
     fprintf( fp, "\nconst dis_ins_descript DisInstructionTable[] = {\n" );
     fprintf( fp, "    { 0x%4.4x, 0x00000001, 0x00000000, NULL },\n", InvalidIns.string_idx );
     for( i = 0, mach = AMachine ; i < NUM_ELTS( AMachine ); ++i, ++mach ) {

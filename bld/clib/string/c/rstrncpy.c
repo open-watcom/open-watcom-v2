@@ -95,7 +95,7 @@ CHAR_TYPE *__F_NAME(strncpy,wcsncpy)( CHAR_TYPE *dest, const CHAR_TYPE *src,
     } else {
         src = (CHAR_TYPE*)dwSrc - (shl/8);
     }
-    while( n >= 1  &&  *src != '\0' ) {
+    while( n >= 1  &&  *src != NULLCHAR ) {
         *dest++ = *src++;
         n--;
     }

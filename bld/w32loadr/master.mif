@@ -32,10 +32,10 @@ w32bind.exe : w32bind.c
 
 !else ifeq host_os dos
 
-extra_c_flags_tntrun = -D__DOS -D__CALL21__ -D__TNT -fo=$@
-extra_c_flags_x32run = -D__DOS -D__CALL21__ -D__X32 -fo=$@
-extra_c_flags_d4grun = -D__DOS -D__CALL21__ -D__DOS4G -fo=$@
-extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -fo=$@
+extra_c_flags_tntrun = -D__DOS -D__CALL21__ -D__TNT -zl -fo=$@
+extra_c_flags_x32run = -D__DOS -D__CALL21__ -D__X32 -zl -fo=$@
+extra_c_flags_d4grun = -D__DOS -D__CALL21__ -D__DOS4G -zl -fo=$@
+extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -zl -fo=$@
 
 all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 
@@ -47,21 +47,21 @@ dpmi_ldr.exe : $(dpmildr_objs)
 d4grun.exe : $(d4grun_objs)
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 #  $(linker) name w386run.exe system dos4g option stack=32k,map export DOS4GOPTIONS=_DOS4GOPTIONS file d4grun.obj,cmain32.obj,int21dos.obj
-  $(linker) name w386run.exe system dos4g option stack=32k,map file {$(d4grun_objs)}
+  $(linker) name w386run.exe system dos4g option stack=32k,map file {$(d4grun_objs)} lib {clib3r.lib}
   $(rsi_root)\bin\4gbind $(rsi_root)\bin\dos4g.exe w386run.exe $^@ -V
 
 dbgrun.exe : $(d4grun_objs)
   $(linker) name $^@ debug all system dos4g option stack=32k,map file {$(d4grun_objs)}
 
 cwsrun.exe : $(cwsrun_objs)
-  $(linker) name $^@ system causeway option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe file {$(cwsrun_objs)}
+  $(linker) name $^@ system causeway option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe file {$(cwsrun_objs)} lib {clib3r.lib}
 
 tntrun.exe : $(tntrun_objs)
-  $(linker) name $^&.exp system pharlap ext option stack=32k,map file {$(tntrun_objs)}
+  $(linker) name $^&.exp system pharlap ext option stack=32k,map file {$(tntrun_objs)} lib {clib3r.lib}
   $(%tntdir)\bin\rebind $(%tntdir)\bin\rtk\tntb.exe $^&.exp -exe $^@
 
 x32run.exe : $(x32run_objs)
-  $(linker) name $^@ format os2 lx option map,dosseg,internalrelocs,stack=4k libpath $(lang_root)/lib386/dos;$(lang_root)/lib386 file {$(x32run_objs)} lib {x32b.lib}
+  $(linker) name $^@ system x32r option map,dosseg file {$(x32run_objs)} lib {clib3r.lib}
   x32fix $^@
    
 # Probably should use default build rules?

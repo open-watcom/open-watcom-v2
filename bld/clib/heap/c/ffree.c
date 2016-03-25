@@ -49,11 +49,11 @@ _WCRTLINK void free( void *stg )
 
 _WCRTLINK void _ffree( void _WCFAR *stg )
 {
-    struct heapblk _WCFAR *p;
-    unsigned seg;
+    heapblk     _WCFAR *p;
+    __segment   seg;
 
     seg = FP_SEG( stg );
-    if( seg == 0 ) {
+    if( seg == _NULLSEG ) {
         return;
     }
     if( seg == _DGroup() ) {

@@ -5,9 +5,10 @@ bootstrap = 1
 host_os  = linux
 host_cpu = ppc
 
-os    = linux
+target_cpu = ppc
+target_os  = linux
+
 srv   = tcp
-cpu   = ppc
 which = SERVER
 remote_link = 1
 builtin_trap = 1

@@ -134,10 +134,10 @@ __FSAemu:
         mov     BL,AL           ; get exponent of op1
         mov     BH,DL           ; get exponent of op2
 
-        mov     AL,0            ; zero rest of fraction
+        xor     AL,AL           ; zero rest of fraction
         stc                     ; put implied 1 bit into top bit of
         rcr     EAX,1           ; ... fraction
-        mov     DL,0            ; zero rest of fraction
+        xor     DL,DL           ; zero rest of fraction
         stc                     ; put implied 1 bit into top bit
         rcr     EDX,1           ; ... of fraction
 
@@ -197,7 +197,7 @@ __FSAemu:
 
         ; normalize the fraction
         add     EAX,00000080h   ; round up fraction if required
-        mov     AL,0            ; zero bottom 8 bits    10-jul-89
+        xor     AL,AL           ; zero bottom 8 bits    10-jul-89
         _guess  underflow       ; guess
           _quif nc              ; - quit if round up didn't overflow frac
           inc   CH              ; - adjust exponent
@@ -277,8 +277,8 @@ __FSMemu:
         jle     short mul_uflow ; quit if underflow
         add     DL,7fh+1        ; bias exponent
         mov     CL,DL           ; save exponent
-        mov     AL,0            ; zero rest of fraction
-        mov     DL,0            ; ...
+        xor     AL,AL           ; zero rest of fraction
+        xor     DL,DL           ; ...
         stc                     ; turn on implied 1 bit in fraction
         rcr     EAX,1           ; ...
         stc                     ; turn on implied 1 bit in fraction
@@ -366,8 +366,8 @@ __FSDemu:
         jle     short div_uflow ; . . .
         add     AL,7Fh          ; restore bias to exponent
         mov     CH,AL           ; save calculated exponent
-        mov     AL,0            ; zero bottom of fraction
-        mov     DL,0            ; ...
+        xor     AL,AL           ; zero bottom of fraction
+        xor     DL,DL           ; ...
         stc                     ; rotate implied '1'bit back into divisor
         rcr     EDX,1           ; . . .
         stc                     ; rotate implied '1' bit into dividend

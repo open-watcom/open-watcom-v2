@@ -39,10 +39,5 @@
 #define CTL_NEWP_CANCEL 101
 
 #ifndef RC
-    typedef struct dlg_new_prog {
-        char    *prog;
-        char    *args;
-        bool    cancel;
-    } dlg_new_prog;
+extern  void    DlgNewProg( void );
 #endif
-

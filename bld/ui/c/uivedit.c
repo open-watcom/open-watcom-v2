@@ -50,7 +50,7 @@ static int isdelim( char ch )
 {
     buffer->index = 0;
     memset( buffer->content, ' ', buffer->length );
-    buffer->dirty = TRUE;
+    buffer->dirty = true;
 }
 
 
@@ -107,7 +107,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
                     }
                     *(buffer->content + buffer->index) = (char) ev;
                     right = TRUE;
-                    buffer->dirty = TRUE;
+                    buffer->dirty = true;
                 }
             } else {
                 bptr = (buffer->content + buffer->index);
@@ -140,7 +140,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
                     }
                 }
                 right = TRUE;
-                buffer->dirty = TRUE;
+                buffer->dirty = true;
             }
         }
     } else if( ev == EV_HOME ) {
@@ -154,7 +154,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             --bptr;
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_LEFT ) {
+    } else if( ev == EV_CTRL_CURSOR_LEFT ) {
         bptr = buffer->content + buffer->index;
         while( bptr > buffer->content ) {
             --bptr;
@@ -170,7 +170,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             }
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_RIGHT ) {
+    } else if( ev == EV_CTRL_CURSOR_RIGHT ) {
 
         char                    *eptr;   /* end pointer */
         char                    *tptr;   /* blank tail */
@@ -199,7 +199,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
     } else if( ev == EV_CTRL_END ) {
         memset( buffer->content + buffer->index,
                         ' ', buffer->length - buffer->index );
-        buffer->dirty = TRUE;
+        buffer->dirty = true;
     } else if( ev == EV_CURSOR_RIGHT ) {
         allblank = TRUE;
         bptr = buffer->content + buffer->index;
@@ -250,7 +250,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             if( delsize == 2 ) {
                 *++bptr = ' ';
             }
-            buffer->dirty = TRUE;
+            buffer->dirty = true;
         }
         if( allblank && ( ev == EV_DELETE ) ) {
             new = EV_JOIN_RIGHT;

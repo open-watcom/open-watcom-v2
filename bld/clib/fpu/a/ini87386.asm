@@ -43,7 +43,7 @@ __x87id proc
         fnstcw  word ptr [ESP]          ; save control word
         mov     EAX,[ESP]               ; delay CPU to sync with FPU if present
         pop     EAX
-        mov     AL,0                    ; assume no coprocessor present
+        xor     AL,AL                   ; assume no coprocessor present
         cmp     AH,3                    ; upper byte is 03h if coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present
         ; now we can use FWAIT because FPU is present
@@ -62,7 +62,7 @@ __x87id proc
         jz      not387                  ; it's 287 if infinities equal
         mov     AL,3                    ; indicate 80387
 not387: finit                           ; re-initialize the 8087
-nox87:  mov     AH,0
+nox87:  xor     AH,AH
         ret                             ; return
 __x87id endp
 

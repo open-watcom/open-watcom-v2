@@ -45,6 +45,8 @@
 #define PUT_U16( P, V )         (GET_U16( P ) = V )
 #define PUT_U32( P, V )         (GET_U32( P ) = V )
 
+#define GET_I8(  P )            (*(signed_8  *)(P))
+
 #define _GetU16UN( P )          (*((unsigned_16 _WCUNALIGNED *) (P) ))
 #define _GetU32UN( P )          (*((unsigned_32 _WCUNALIGNED *) (P) ))
 

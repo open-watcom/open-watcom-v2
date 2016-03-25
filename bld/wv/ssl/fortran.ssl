@@ -485,7 +485,7 @@ rules
                 @arith_shift
                 [SkipCount
                   | 0:
-                    DoTstEQ(1)
+                    DoTstEQ( 1 )
                     @perform_not
                   | *:
                 ]

@@ -30,25 +30,27 @@
 
 
 #include <stdlib.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "trpcomm.h"
+#include "lnxcomm.h"
 #include "lnxstrt.h"
 
-char                            **dbg_environ;  /* pointer to parent's environment table */
-const trap_callbacks            *Client;
-extern const trap_requests      ImpInterface;
 
-const trap_requests *TrapLoad( trap_callbacks *client )
+char                        **dbg_environ;  /* pointer to parent's environment table */
+static const trap_callbacks *Client;
+static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
+
+const trap_requests *TrapLoad( const trap_callbacks *client )
 {
     Client = client;
-    if( Client->len <= offsetof(trap_callbacks,signal) ) return( NULL );
-    dbg_environ = *Client->environ;
+    if( Client->len <= offsetof(trap_callbacks,signal) )
+        return( NULL );
+    dbg_environ = *Client->environp;
     return( &ImpInterface );
 }
 
-const trap_requests ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
-
-#if !defined( BUILTIN_TRAP_FILE )
+#if !defined( __WATCOMC__ ) && !defined( BUILTIN_TRAP_FILE )
 
 void *_nmalloc( unsigned size )
 {

@@ -34,7 +34,6 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
-#include "source.h"
 #ifdef __WIN__
     #include "utils.h"
 #endif
@@ -64,13 +63,9 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
     /*
      * copy data into buffer
      */
-    while( s <= e ) {
-
-        data = cline->data;
-        while( *data != 0 ) {
-            *buff = *data;
-            buff++;
-            data++;
+    for( ; s <= e; ++s ) {
+        for( data = cline->data; *data != '\0'; ++data ) {
+            *buff++ = *data;
         }
         len += cline->len;
         if( s != e || last_eol ) {
@@ -82,8 +77,6 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
             len++;
         }
         cline = cline->next;
-        s++;
-
     }
 
     /*
@@ -115,7 +108,7 @@ static int readOnlyCheck( void )
 
     MySprintf( tmp, "\"%s\" is read-only, overwrite?", CurrentFile->name );
 #ifdef __WIN__
-    if( MessageBox( Root, tmp, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
+    if( MessageBox( root_window_id, tmp, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
         return( ERR_NO_ERR );
     }
     return( ERR_READ_ONLY_FILE );
@@ -159,13 +152,13 @@ vi_rc SaveFileAs( void )
 /*
  * SaveFile - save data from current file
  */
-vi_rc SaveFile( char *name, linenum start, linenum end, bool dammit )
+vi_rc SaveFile( const char *name, linenum start, linenum end, bool dammit )
 {
     int         i;
     bool        existflag = false;
     bool        restpath = false;
     bool        makerw = false;
-    char        *fn;
+    const char  *fn;
     fcb         *cfcb, *sfcb, *efcb;
     linenum     s, e, lc;
     long        bc = 0;
@@ -197,7 +190,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, bool dammit )
         existflag = true;
         fn = name;
     }
-    if( fn[0] == 0 ) {
+    if( fn[0] == '\0' ) {
         return( ERR_NO_FILE_NAME );
     }
     if( SameFile( fn, CurrentFile->name ) ) {
@@ -337,7 +330,7 @@ vi_rc StartSaveExit( void )
 /*
  * SaveAndExit - save and exit a file
  */
-vi_rc SaveAndExit( char *fname )
+vi_rc SaveAndExit( const char *fname )
 {
     vi_rc   rc;
 
@@ -370,32 +363,30 @@ bool FilePromptForSaveChanges( file *f )
     vi_rc   rc;
 
 #ifdef __WIN__
-    MySprintf( buffer, "\"%s\" has been modified - save changes?",
-        f->name );
-    BringWindowToTop( Root );
-    SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    if( MessageBox( Root, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
+    MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
+    BringWindowToTop( root_window_id );
+    SetWindowPos( root_window_id, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    if( MessageBox( root_window_id, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
         rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
-            MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
+            MessageBox( root_window_id, buffer, EditorName, MB_OK | MB_TASKMODAL );
         } else {
             Modified( false );
         }
     }
-    SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( root_window_id, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 #else
     char    response[MAX_SRC_LINE];
 
-//  MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?",
-    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?",
-        f->name );
+//  MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
+    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
-        case 0:
+        case '\0':
             // if the user hit ENTER then the buffer will be
-            // a string of 0 chars so act as if y had been hit
+            // a string of '\0' chars so act as if y had been hit
         case 'y':
         case 'Y':
             rc = SaveFile( NULL, -1, -1, false );
@@ -427,12 +418,12 @@ bool FileExitOptionSaveChanges( file *f )
     vi_rc       rc;
 
     MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
-    resp = MessageBox( Root, buffer, EditorName, MB_YESNOCANCEL | MB_TASKMODAL );
+    resp = MessageBox( root_window_id, buffer, EditorName, MB_YESNOCANCEL | MB_TASKMODAL );
     if( resp == IDYES ) {
         rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
-            MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
+            MessageBox( root_window_id, buffer, EditorName, MB_OK | MB_TASKMODAL );
             aborted = true;
         } else {
             NextFileDammit();
@@ -445,13 +436,12 @@ bool FileExitOptionSaveChanges( file *f )
 #else
     char response[MAX_SRC_LINE];
 
-    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?",
-        f->name );
+    MySprintf( buffer, "\"%s\" has been modified - save changes (yes|no|cancel)?", f->name );
     if( GetResponse( buffer, response ) == GOT_RESPONSE ) {
         switch( response[0] ) {
-        case 0:
+        case '\0':
             // if the user hit ENTER then the buffer will be
-            // a string of 0 chars so act as if y had been hit
+            // a string of '\0' chars so act as if y had been hit
         case 'y':
         case 'Y':
             SaveAndExit( NULL );
@@ -506,7 +496,7 @@ vi_rc DoKeyboardSave( void )
     if( CurrentFile != NULL ) {
         _splitpath( CurrentFile->name, NULL, NULL, fname, NULL );
     } else {
-        fname[0] = 0;
+        fname[0] = '\0';
     }
 
     if( strcmp( fname, "untitled" ) == 0 ) {

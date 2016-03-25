@@ -85,7 +85,7 @@ void Win_CreateColorPal( void )
             GetWindowRect( HColorPalette, &rect );
             w = _wpi_getwidthrect( rect ) + (CP_WIDTH - w);
             h = _wpi_getheightrect( rect ) + (CP_HEIGHT - h);
-            SetWindowPos( HColorPalette, HWND_TOP, 0, 0, w, h,
+            SetWindowPos( HColorPalette, (HWND)NULL, 0, 0, w, h,
                           SWP_SIZE | SWP_NOZORDER | SWP_NOMOVE );
         }
     }
@@ -321,7 +321,7 @@ HWND WinNewDrawPad( img_node *node )
             GetWindowRect( drawarea, &rect );
             w = _wpi_getwidthrect( rect ) + (pad_x - w);
             h = _wpi_getheightrect( rect ) + (pad_y - h);
-            SetWindowPos( drawarea, HWND_TOP, 0, 0, w, h,
+            SetWindowPos( drawarea, (HWND)NULL, 0, 0, w, h,
                           SWP_SIZE | SWP_NOZORDER | SWP_NOMOVE );
         }
     }
@@ -382,7 +382,7 @@ HWND WinCreateViewWin( HWND hviewwnd, BOOL foneview,
             h_adj + width,                      /* Initial X size */
             v_adj + height,                     /* Initial Y size */
             HMainWindow,                        /* Parent window handle */
-            (HMENU) NULL,                       /* Window menu handle */
+            (HMENU)NULL,                        /* Window menu handle */
             Instance,                           /* Program instance handle */
             NULL );                             /* Create parameters */
 #else
@@ -414,7 +414,7 @@ HWND WinCreateViewWin( HWND hviewwnd, BOOL foneview,
             GetWindowRect( hwnd, &rect );
             w = _wpi_getwidthrect( rect ) + (width - w);
             h = _wpi_getheightrect( rect ) + (height - h);
-            SetWindowPos( hwnd, HWND_TOP, 0, 0, w, h,
+            SetWindowPos( hwnd, (HWND)NULL, 0, 0, w, h,
                           SWP_SIZE | SWP_NOZORDER | SWP_NOMOVE );
         }
     }

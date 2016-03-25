@@ -223,12 +223,12 @@ _WMRTLINK extern double scalbn( double __x, int __n );
 _WMRTLINK extern double tgamma( double __x );
 _WMRTLINK extern double trunc( double __x );
 
-_WMRTLINK float nanf(const char *ignored);
-_WMRTLINK double nan(const char *ignored);
+_WMRTLINK extern float nanf(const char *ignored);
+_WMRTLINK extern double nan(const char *ignored);
 #ifdef _LONG_DOUBLE_
-_WMRTLINK long double nanl(const char *ignored);
+_WMRTLINK extern long double nanl(const char *ignored);
 #else
-_WMRTLINK double nanl(const char *ignored);
+_WMRTLINK extern double nanl(const char *ignored);
 #endif
 
 :segment DOS | QNX

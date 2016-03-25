@@ -36,32 +36,32 @@
 #include "heap.h"
 #include "heapacc.h"
 
-_WCRTLINK void __based(void) *_bexpand( __segment seg,
-                              void __based(void) *mem,
-                              size_t req_size )
-    {
-        struct {
-            unsigned expanded : 1;
-        } flags;
-        int retval;
-        size_t growth_size;
+_WCRTLINK void __based( void ) *_bexpand( __segment seg, void __based( void ) *mem, size_t req_size )
+{
+    struct {
+        unsigned expanded : 1;
+    }       flags;
+    int     retval;
+    size_t  growth_size;
 
-        flags.expanded = 0;
-        _AccessFHeap();
-        for( ;; ) {
-            retval = __HeapManager_expand( seg, (unsigned)mem,
-                                           req_size, &growth_size );
-            if( retval == __HM_SUCCESS ) {
-                _ReleaseFHeap();
-                return( mem );
-            }
-            if( retval == __HM_FAIL ) break;
-            if( retval == __HM_TRYGROW ) {
-                if( flags.expanded ) break;
-                if( __GrowSeg( seg, growth_size ) == 0 ) break;
-                flags.expanded = 1;
-            }
+    flags.expanded = 0;
+    _AccessFHeap();
+    for( ;; ) {
+        retval = __HeapManager_expand( seg, (unsigned)mem, req_size, &growth_size );
+        if( retval == __HM_SUCCESS ) {
+            _ReleaseFHeap();
+            return( mem );
         }
-        _ReleaseFHeap();
-        return( _NULLOFF );
+        if( retval == __HM_FAIL )
+            break;
+        if( retval == __HM_TRYGROW ) {
+            if( flags.expanded )
+                break;
+            if( __GrowSeg( seg, growth_size ) == 0 )
+                break;
+            flags.expanded = 1;
+        }
     }
+    _ReleaseFHeap();
+    return( _NULLOFF );
+}

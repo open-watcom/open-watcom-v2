@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,15 @@
 ****************************************************************************/
 
 
+#include "objloc.h"
+
+
 typedef struct dta {
     struct {
-    char                i_dunno[13];
-    unsigned int        dir_entry_num;
-    unsigned int        cluster;
-    char                i_still_dunno[4];
+        char                i_dunno[13];
+        unsigned int        dir_entry_num;
+        unsigned int        cluster;
+        char                i_still_dunno[4];
     } dos;
     char                attr;
     unsigned int        time;
@@ -48,7 +52,7 @@ typedef struct dir_handle {
     dta         disk_area;
     char        path[64];
     long        free;
-    int         location;
+    object_loc  location;
     char        status;
 } dir_handle;
 

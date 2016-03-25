@@ -47,8 +47,8 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
     WORD                ptop,pbot,pleft,pright,poff,pdown;
     WORD                width;
 #ifdef _MBCS
-    mb_char _WCI86FAR * image;
-    char                mbc[MB_CUR_MAX+1];
+    mb_char _WCI86FAR   *image;
+    unsigned char       mbc[MB_CUR_MAX + 1];
 #else
     LPSTR               image;
 #endif
@@ -86,10 +86,10 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
 
             ptl.x = poff;
             ptl.y = ( w->y2 - w->y1 ) - (pdown + w->ychar) + w->base_offset;
-            #ifdef _MBCS
+    #ifdef _MBCS
             {
                 int         count;
-                char _WCI86FAR * buff;
+                LPSTR       buff;
 
                 buff = _MemAlloc( sizeof(mb_char)*(width+1) );
                 *buff = '\0';
@@ -101,32 +101,32 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
                 GpiCharStringAt( (HPS)ph, &ptl, FAR_mbsnbcnt(buff,width), buff );
                 _MemFree( buff );
             }
-            #else
-                GpiCharStringAt( (HPS)ph, &ptl, width, &image[pleft] );
-            #endif
+    #else
+            GpiCharStringAt( (HPS)ph, &ptl, width, &image[pleft] );
+    #endif
         }
 #else
         SetBkColor( (HDC)ph, _ColorMap[w->background_color] );
         SetTextColor( (HDC)ph, _ColorMap[w->text_color] );
-        #ifdef _MBCS
+    #ifdef _MBCS
         {
             int         count, bytes;
-            char _WCI86FAR *    buff;
+            LPSTR       buff;
 
             buff = _MemAlloc( sizeof(mb_char)*(width+1) );
             *buff = '\0';
             for( count=0; count<width; count++ ) {
                 _mbvtop( image[pleft+count], mbc );
                 mbc[_mbclen(mbc)] = '\0';
-                FARstrcat( buff, mbc );
+                FARstrcat( buff, (LPSTR)mbc );
             }
             bytes = FARstrlen( buff );
             TextOut( (HDC)ph, poff, pdown, buff, bytes );
             _MemFree( buff );
         }
-        #else
-            TextOut( (HDC)ph, poff, pdown, &image[pleft], width );
-        #endif
+    #else
+        TextOut( (HDC)ph, poff, pdown, &image[pleft], width );
+    #endif
 #endif
         pdown += w->ychar;
     }

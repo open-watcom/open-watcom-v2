@@ -104,7 +104,7 @@ __init_87_emulator proc
         mov     al, byte ptr __8087     ; get coprocessor value
         jmp     set_real
 no_copro:
-        mov     al, 0
+        xor     al, al
 set_real:
         mov     byte ptr __real87,al    ; assume we have a real 80x87 present
         pop     bx                      ; restore bx

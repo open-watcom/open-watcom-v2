@@ -33,18 +33,26 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   __iFDLD
-        xrefp   __iLDFD
-
         modstart  sqrt386
 
+        xrefp   __iFDLD
+        xrefp   __iLDFD
+endif
+
+        xdefp   __sqrt
+
+ifdef _BUILDING_MATHLIB
+
+;
+;       double __sqrtd( double );
+;
+;       input:  EDX:EAX - double
+;       output: EDX:EAX - double
+;
         xdefp   __sqrtd
 
-;
-;      double __sqrtd( double EDX EAX );
-;
-
         defp    __sqrtd
+
         push    EDX                     ; make double parm addressable
         push    EAX                     ; ...
         mov     EAX,ESP                 ; get address of first parm
@@ -61,18 +69,21 @@ include struct.inc
         pop     EAX                     ; pop double into return regs
         pop     EDX                     ; ...
         ret                             ; return
+
         endproc __sqrtd
 
 include fstatus.inc
 
 endif
 
-        xdefp   __sqrt
 ;
-;       __sqrt( long double *EAX );
+;       void __sqrt( long double * );
+;
+;       input:  EAX - pointer to long double operand
 ;
 
         defp    __sqrt
+
         push    EDI             ; save EDI
         push    ESI             ; save ESI
         push    EDX             ; save EDX
@@ -174,6 +185,7 @@ sqrt9:  pop     EBX             ; restore EBX
         pop     ESI             ; restore ESI
         pop     EDI             ; restore EDI
         ret                     ; return to caller
+
         endproc __sqrt
 
 ifdef _BUILDING_MATHLIB

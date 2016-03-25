@@ -33,13 +33,7 @@
 ;  This file supports the Windows 32 bit supervisor and the O/S independent
 ;  supervisor.
 ;
-ifdef  __OSI__
-        extrn   __Int21 : near
-int21h  macro
-        call    __Int21
-        endm
-else
-ifdef  __WIN386__
+ifdef  __CALL21__
         extrn   __Int21 : near
 int21h  macro
         call    __Int21
@@ -48,5 +42,4 @@ else
 int21h  macro
         int     21h
         endm
-endif
 endif

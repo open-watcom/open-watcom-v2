@@ -39,27 +39,22 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbglog.h"
+#include "dbgset.h"
 
 #include "clibext.h"
-
-
-extern bool             SwitchOnOff( void );
-extern void             ShowSwitch( bool );
-extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern void             LogStart( void );
-extern void             LogEnd( void );
 
 
 /*
  * ImplicitSet - set implicit/explicit invoke file processing
  */
 
-extern void ImplicitSet( void )
+void ImplicitSet( void )
 {
     _SwitchSet( SW_IMPLICIT, SwitchOnOff() );
 }
 
-extern void ImplicitConf( void )
+void ImplicitConf( void )
 {
     ShowSwitch( _IsOn( SW_IMPLICIT ) );
 }
@@ -76,23 +71,26 @@ extern void ImplicitConf( void )
  * InvRead -- read from an invoke file
  */
 
-static int InvRead( invokes *inv, unsigned *save_point )
+static int InvRead( invokes *inv, size_t *save_point )
 {
     int         ch;
-    unsigned    left;
-    int         size;
+    size_t      left;
+    size_t      size;
 
-    if( inv->flags & AT_EOF ) return( KEY_EOF );
+    if( inv->flags & AT_EOF )
+        return( KEY_EOF );
     for( ;; ) {
         if( inv->in_off < inv->in_size ) {
-            ch = inv->in_buff[ inv->in_off++ ];
-            if( ch == '\r' ) continue;
+            ch = inv->in_buff[inv->in_off++];
+            if( ch == '\r' )
+                continue;
             return( ch );
         }
         left = inv->in_size - *save_point;
-        memmove( &inv->in_buff[0], &inv->in_buff[*save_point], left );
-        size = ReadText( inv->inv_input, &inv->in_buff[left], IN_BUFF_SIZE - left );
-        if( size <= 0 ) break;
+        memmove( inv->in_buff, inv->in_buff + *save_point, left );
+        size = ReadText( inv->inv_input, inv->in_buff + left, IN_BUFF_SIZE - left );
+        if( size == ERR_RETURN || size == 0 )
+            break;
         inv->in_size = size + left;
         inv->in_off = left;
         *save_point = 0;
@@ -113,7 +111,7 @@ static int InvGetKey( invokes *inv )
     char_ring   *next;
     int         ch;
     unsigned    parm;
-    unsigned    save;
+    size_t      save;
     static      char inv_num[5];
 
     for( ;; ) {
@@ -161,26 +159,32 @@ static bool GetInvkCmd( invokes *inv )
     char        *buff;
     bool        eatwhite;
 
-    if( inv == NULL ) return( FALSE );
+    if( inv == NULL )
+        return( false );
     cmd = inv->buff;
     buff = inv->buff;
-    ch = '\0';
+    ch = NULLCHAR;
     unmatched = 0;
-    eatwhite = FALSE;
+    eatwhite = false;
     for( ;; ) {
         ch = InvGetKey( inv );
-        if( inv->flags & AT_EOF ) return( FALSE );
-        if( ( ch == ' ' || ch == '\t' ) && eatwhite ) continue;
-        eatwhite = FALSE;
-        if( ch == '}' ) --unmatched;
-        if( ch == '{' ) ++unmatched;
+        if( inv->flags & AT_EOF )
+            return( false );
+        if( ( ch == ' ' || ch == '\t' ) && eatwhite )
+            continue;
+        eatwhite = false;
+        if( ch == '}' )
+            --unmatched;
+        if( ch == '{' )
+            ++unmatched;
         if( ch == '\n' ) {
             inv->line++;
-            if( unmatched <= 0 ) break;
-            eatwhite = TRUE;
+            if( unmatched <= 0 )
+                break;
+            eatwhite = true;
             ch = '\r';
         }
-        if( cmd >= &buff[ inv->buff_size ] ) {
+        if( cmd >= buff + inv->buff_size ) {
             _Alloc( buff, inv->buff_size + CMD_LEN + 1 );
             if( buff != NULL ) {
                 memcpy( buff, inv->buff, inv->buff_size );
@@ -193,11 +197,11 @@ static bool GetInvkCmd( invokes *inv )
                 continue;
             }
         }
-        *cmd = ( char ) ch;
+        *cmd = (char)ch;
         cmd++;
     }
     *cmd = NULLCHAR;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -219,14 +223,14 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
-        if( !GetInvkCmd( inv ) ) return( FALSE );
+        if( !GetInvkCmd( inv ) ) return( false );
         ReScan( inv->buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_FINI:
         Conclude( inv );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE ); // silence compiler
+        return( false ); // silence compiler
     }
 }
 
@@ -235,18 +239,19 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
  * Invoke -- invoke a file
  */
 
-static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
+static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
     _Alloc( inv, sizeof( invokes ) + strlen( name ) );
     if( inv != NULL ) {
         inv->buff_size = CMD_LEN;
-        _Alloc( inv->buff, inv->buff_size+1 ); /* extra for NULLCHAR */
+        _Alloc( inv->buff, inv->buff_size + 1 ); /* extra for NULLCHAR */
     }
     if( inv == NULL || inv->buff == NULL ) {
-        if( inv != NULL ) _Free( inv );
-        FileClose( hndl );
+        if( inv != NULL )
+            _Free( inv );
+        FileClose( fh );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
@@ -255,25 +260,25 @@ static void DoInvoke( handle hndl, const char *name, char_ring *parmlist )
     inv->in_off = 0;
     inv->flags = 0;
     inv->redirect = NULL;
-    inv->inv_input = hndl;
+    inv->inv_input = fh;
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
-    PushInpStack( inv, DoneInvLine, TRUE );
+    PushInpStack( inv, DoneInvLine, true );
     TypeInpStack( INP_CMD_FILE );
 }
 
-void Invoke( const char *invfile, int len, char_ring *parmlist )
+void Invoke( const char *invfile, size_t len, char_ring *parmlist )
 {
-    handle      hndl;
+    file_handle     fh;
 
-    hndl = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
-    if( hndl == NIL_HANDLE ) {
-        MakeFileName( TxtBuff, invfile, "dbg", 0 );
+    fh = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
+    if( fh == NIL_HANDLE ) {
+        MakeFileName( TxtBuff, invfile, "dbg", OP_LOCAL );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
-    DoInvoke( hndl, TxtBuff, parmlist );
+    DoInvoke( fh, TxtBuff, parmlist );
 }
 
 
@@ -283,9 +288,9 @@ void Invoke( const char *invfile, int len, char_ring *parmlist )
 
 void ProfileInvoke( char *name )
 {
-    unsigned    len;
+    size_t      len;
 #if defined(__UNIX__)
-    handle      hndl;
+    file_handle fh;
 #endif
 
     len = strlen( name );
@@ -299,12 +304,12 @@ void ProfileInvoke( char *name )
 #if defined(__UNIX__)
         /* under QNX and Linux, look for .wdrc first */
         name[0] = '.';
-        strcpy( &name[1], EXENAME );
+        strcpy( name + 1, EXENAME );
         strcat( name, "rc" );
         strlwr( name );
-        hndl = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );
-        if( hndl != NIL_HANDLE ) {
-            DoInvoke( hndl, TxtBuff, NULL );
+        fh = LocalFullPathOpen( name, strlen( name ), LIT_ENG( Empty ), TxtBuff, TXT_LEN );
+        if( fh != NIL_HANDLE ) {
+            DoInvoke( fh, TxtBuff, NULL );
             return;
         }
 #endif
@@ -327,24 +332,24 @@ void ProcInvoke( void )
     char_ring   *path;
     size_t      len;
 
-    if( !ScanItem( TRUE, &fstart, &flen ) )
+    if( !ScanItem( true, &fstart, &flen ) )
         Error( ERR_LOC, LIT_ENG( ERR_WANT_FILENAME ) );
     parmlist = NULL;
     owner = &parmlist;
     while( !ScanEOC() ) {
-        ScanItem( TRUE, &start, &len );
+        ScanItem( true, &start, &len );
         _Alloc( path, sizeof( char_ring ) + len );
         if( path == NULL ) {
             FreeRing( parmlist );
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
         memcpy( path->name, start, len );
-        path->name[ len ] = NULLCHAR;
+        path->name[len] = NULLCHAR;
         path->next = NULL;
         *owner = path;
         owner = &path->next;
     }
-    Invoke( fstart, (int)flen, parmlist );
+    Invoke( fstart, flen, parmlist );
 }
 
 

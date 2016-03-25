@@ -1029,24 +1029,24 @@ next_seg:
     }
 }
 
-static unsigned long CalcHash( const char *name, unsigned len )
+static unsigned long CalcHash( const char *name, size_t len )
 {
     unsigned_32         end;
     unsigned_32         sum;
-    unsigned            i;
+    int                 i;
 
 #define B_toupper( b )  ((b) & 0xdf)
 #define D_toupper( d )  ((d) & 0xdfdfdfdf)
 
     end = 0;
-    for( i = len & 0x3; i != 0; --i ) {
-        end |= B_toupper( name[ len - 1 ] );
+    for( i = len & 0x3; i > 0; --i ) {
+        end |= B_toupper( name[len - 1] );
         end <<= 8;
-        len -= 1;
+        --len;
     }
     len /= 4;
     sum = 0;
-    for( i = 0; i < len; ++i ) {
+    while( len-- > 0 ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
         sum = _lrotl( sum, 4 );
         name += 4;
@@ -1148,7 +1148,7 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 
 
 dip_status hllSymFindMatchingSym( imp_image_handle *ii,
-                                  const char *name, unsigned len, unsigned idx,
+                                  const char *name, size_t len, unsigned idx,
                                   imp_sym_handle *is )
 {
 #if 0
@@ -1183,6 +1183,7 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
 {
     unsigned        off_name_len;
     unsigned_32     pos;
+    unsigned_16     len;
 
     /*
      * Iterate the publics.
@@ -1192,11 +1193,9 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
     } else {
         off_name_len = offsetof( cv3_public_16, name_len );
     }
-    pos = 0;
-    while( pos < hde->cb ) {
+    for( pos = 0; pos < hde->cb; pos += len ) {
         hll_public_all  *pub;
         unsigned_8      name_len;
-        unsigned_16     len;
         walk_result     wr;
 
         /* get the record length and make sure it's all valid. */
@@ -1223,9 +1222,6 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
-
-        /* next */
-        pos += len;
     }
     return( WR_CONTINUE );
 }
@@ -1476,12 +1472,12 @@ imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
  *         when scanned in an expression, the symbol handle can
  *         be reconstructed. Deprecated - never used.
  */
-static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
+static size_t hllSymName( imp_image_handle *ii, imp_sym_handle *is,
                             location_context *lc, symbol_name sn,
-                            char *buff, unsigned buff_size )
+                            char *buff, size_t buff_size )
 {
     const char  *name = NULL;
-    unsigned    name_len;
+    size_t      name_len;
 
     if( is->type == HLL_SYM_TYPE_PUB ) {
         unsigned off_name;
@@ -1557,9 +1553,9 @@ static unsigned hllSymName( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get the symbol name.
  */
-unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                  location_context *lc, symbol_name sn,
-                                 char *buff, unsigned buff_size )
+                                 char *buff, size_t buff_size )
 {
     return( hllSymName( ii, is, lc, sn, buff, buff_size ) );
 }
@@ -1742,7 +1738,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
         case HLL_SSR_MEM_FUNC:
             si->kind = SK_PROCEDURE;
             si->rtn_far = !!(ssr->proc.flags & HLL_SSR_PROC_FAR);
-            si->ret_addr_offset = ssr->proc.flags & HLL_SSR_PROC_32BIT
+            si->ret_addr_offset = (ssr->proc.flags & HLL_SSR_PROC_32BIT)
                                 ? sizeof( unsigned_32 ) : sizeof( unsigned_16 );
             si->prolog_size = ssr->proc.prologue_len;
             si->epilog_size = ssr->proc.len - ssr->proc.prologue_body_len;
@@ -2162,7 +2158,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
     struct search_data  *sd = d;
     lookup_item         *li;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_sym_handle      *new;
     s_all               *p;
 
@@ -2232,7 +2228,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     unsigned long       hash;
     struct search_data  data;
     imp_sym_handle      *scope_is;
-    unsigned            len;
+    size_t              len;
 
     data.d = d;
     data.found = 0;
@@ -2320,7 +2316,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     symbol_type         save_type;
     search_result       sr;
     char                *new;
-    unsigned            new_len;
+    size_t              new_len;
 
     save_type = li->type;
     save_name = li->name;

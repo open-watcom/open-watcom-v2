@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern dig_fhandle  DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *buff, unsigned buff_size );
+extern dig_fhandle  DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
 extern unsigned     DIGPathClose( dig_fhandle handle );
 extern long         DIGGetSystemHandle( dig_fhandle handle );

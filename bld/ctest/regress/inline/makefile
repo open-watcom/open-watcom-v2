@@ -1,6 +1,6 @@
 ctest_name = inline
 
-!include testenv.mif
+!include testenv1.mif
 !include inline.mif
 
 !ifdef test1

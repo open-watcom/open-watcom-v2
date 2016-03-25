@@ -41,7 +41,7 @@
 _WCRTLINK int __F_NAME(__iscsymf,__iswcsymf)( INTCHAR_TYPE c )
 {
     if( IS_ASCII( c ) ) {
-        return( (IsWhat( c ) & (_LOWER|_UPPER)) || (c == '_') );
+        return( (IsWhat( c ) & (_LOWER|_UPPER)) || (c == STRING( '_' )) );
     } else {
         return( 0 );
     }

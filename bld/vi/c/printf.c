@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +78,7 @@ static void basePrintf( const char *in, va_list al )
     char        buff[MAX_STR], *tmp;
 
     cin = *in;
-    while( cin ) {
+    while( cin != '\0' ) {
         if( cin == '%' ) {
             in++;
             switch( *in ) {
@@ -158,7 +159,7 @@ copyloopa:
                 tmp = va_arg( al, char * );
                 strcpy( buff, tmp );
                 {
-                    int k, l;
+                    int k;
 
                     l = strlen( buff );
                     k = j - l;
@@ -167,7 +168,7 @@ copyloopa:
                         for( i = 0; i < k; i++ ) {
                             tmp[i] = ' ';
                         }
-                        tmp[k] = 0;
+                        tmp[k] = '\0';
                     }
                 }
                 goto copyloop1;
@@ -176,7 +177,7 @@ copyloop:
 copyloop1:
                 tmp = buff;
 copyloop2:
-                while( *tmp ) {
+                while( *tmp != '\0' ) {
                     barfChar( *tmp++ );
                 }
                 break;
@@ -188,7 +189,7 @@ copyloop2:
         cin = *in;
     }
     if( cFile == NULL ) {
-        *cStr++ = 0;
+        *cStr++ = '\0';
     }
 }
 
@@ -203,7 +204,7 @@ void MyPrintf( const char *str, ... )
     cFile = NULL;
     cStr = tmp;
     basePrintf( str, al );
-    MessageBox( 0, tmp, EditorName, MB_OK | MB_TASKMODAL );
+    MessageBox( NO_WINDOW, tmp, EditorName, MB_OK | MB_TASKMODAL );
 #else
     va_start( al, str );
     cFile = stdout;

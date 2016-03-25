@@ -4,6 +4,8 @@ proj_name = flib
 flib_autodepends = .AUTODEPEND
 !endif
 
+additional_cleanup = *.gc
+
 flib_host_cpu_086 = i86
 flib_host_cpu_087 = i86
 flib_host_cpu_286 = i86
@@ -41,9 +43,9 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 .c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
 
 #-------------------------------------------------------------------------------
-#cc = wcl -c -cc++ 
+#cc = wcl -c -cc++
 
-$(libname).lib : $(files)
+$(libname).lib : errcod.gh $(files)
     @%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     $(librarian) $(lib_flags) $^@ @$(libname).lbc
@@ -63,3 +65,12 @@ $(libname).lib : $(files)
     @echo flib_as $@
     @$(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
 !endif
+
+errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
+    errsrc $[@ eo r
+
+jerrmsg.grc:  ../../../h/error.msg
+    errsrc $[@ jo r
+
+errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

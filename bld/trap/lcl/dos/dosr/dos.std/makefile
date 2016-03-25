@@ -3,9 +3,10 @@
 host_os  = dos
 host_cpu = i86
 
-os      = dos
-srv     = lcl
-cpu     = x86
+target_cpu = x86
+target_os  = dos
+
+srv   = lcl
 which = TRAP
 
 !include $(trap_dir)/lcl/dos/dosr/dosr.mif

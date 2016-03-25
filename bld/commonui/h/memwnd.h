@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +76,7 @@ typedef struct memdata {
     DWORD           limit;                  /* limit of this selector */
     DWORD           base;                   /* base offset */
     unsigned        lastline;
-    WORD            disp_type;              /* BYTE, WORD, DWORD or CODE */
+    unsigned        disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
     unsigned char   bytesdisp;
     DWORD           ins_cnt;
     AsmInfo         *asm;
@@ -103,10 +104,9 @@ typedef struct memconfig {
     int         ypos;                   /* y coordinate of mem window */
     int         xsize;                  /* width of mem window */
     int         ysize;                  /* height of mem window */
-    WORD        disp_type;              /* display bytes, words, dwords */
-    WORD        code_disp_type;         /* display 16 or 32 bit code */
-    MultWnd     allowmult;              /* what to do when the user tries
-                                           to open more than one window */
+    unsigned    data_type;              /* display bytes, words, dwords (menu item value) */
+    unsigned    code_type;              /* display 16 or 32 bit code (menu item value) */
+    MultWnd     allowmult;              /* what to do when the user tries to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
     char        *appname;               /* name of calling application */
     bool        init            : 1;    /* for internal use only */
@@ -141,7 +141,7 @@ bool    RegMemWndClass( HANDLE instance );
 void    SetDefMemConfig( void );
 void    SetMemWndConfig( MemWndConfig *cfg );
 void    GetMemWndConfig( MemWndConfig *cfg );
-void    GetMemWndDefault( MemWndConfig *info );
+void    GetMemWndDefault( MemWndConfig *cfg );
 HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi );
 #ifdef __NT__
 HWND    DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title );

@@ -100,14 +100,13 @@ typedef struct {
 
 extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
 #pragma aux _TinyDPMIGetFreeMemoryInformation = \
-        "push es"    \
-        "push ds"    \
-        "pop es"     \
-        "mov ah,05h" \
-        "mov al,00h" \
-        "int 31h"    \
-        "pop es"     \
-        "sbb ax,ax"  \
+        "push es"      \
+        "push ds"      \
+        "pop es"       \
+        "mov ax,0500h" \
+        "int 31h"      \
+        "pop es"       \
+        "sbb eax,eax"  \
         parm[edi] value[eax];
 
 #include "extender.h"

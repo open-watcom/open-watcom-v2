@@ -101,17 +101,17 @@ unequal:                                ; dword was not equal
         _guess                          ; guess strings are equal
           cmp   bl,cl                   ; - check low bytes
           _quif ne                      ; - quit if not equal
-          cmp   bl,0                    ; - stop if end of string
+          test  bl,bl                   ; - stop if end of string
           je    equalrst                ; - ...
           cmp   bh,ch                   ; - check next bytes
           _quif ne                      ; - quit if not equal
-          cmp   bh,0                    ; - stop if end of string
+          test  bh,bh                   ; - stop if end of string
           je    equalrst                ; - ...
           shr   ebx,16                  ; - shift top 2 bytes to bottom
           shr   ecx,16                  ; - ...
           cmp   bl,cl                   ; - check third byte
           _quif ne                      ; - quit if not equal
-          cmp   bl,0                    ; - stop if end of string
+          test  bl,bl                   ; - stop if end of string
           je    equalrst                ; - ...
           cmp   bh,ch                   ; - check high order byte
 ;;        we know at this point that bh != ch, just have to do the compare

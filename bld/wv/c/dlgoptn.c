@@ -37,17 +37,20 @@
 #include "dlgoptn.h"
 #include "dbgscan.h"
 #include "trapglbl.h"
+#include "dbglkup.h"
+#include "dlgexpr.h"
 
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
-extern void             LookCaseSet( bool respect );
+
+typedef struct dlg_window_set {
+    bool            cancel : 1;
+} dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )
 {
     long        tmp;
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     _SwitchSet( SW_AUTO_SAVE_CONFIG, GUIIsChecked( gui, CTL_OPT_AUTO ) );
     _SwitchSet( SW_BELL, GUIIsChecked( gui, CTL_OPT_BELL ) );
     _SwitchSet( SW_IMPLICIT, GUIIsChecked( gui, CTL_OPT_IMPLICIT ) );
@@ -57,37 +60,37 @@ static void GetDlgStatus( gui_window *gui )
     LookCaseSet( !GUIIsChecked( gui, CTL_OPT_CASE ) );
     if( DlgGetLong( gui, CTL_OPT_RADIX, &tmp ) ) {
         DefaultRadixSet( tmp );
-        old = NewCurrRadix( 10 );
+        old_radix = NewCurrRadix( 10 );
     }
     if( DlgGetLong( gui, CTL_OPT_DCLICK, &tmp ) ) {
         WndSetDClick( tmp );
     }
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 
-    SetCapabilitiesExactBreakpointSupport( GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ), TRUE );
+    SetCapabilitiesExactBreakpointSupport( GUIIsChecked( gui, CTL_OPT_BR_ON_WRITE ), true );
 }
 
 
 static void SetDlgStatus( gui_window *gui )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     GUISetChecked( gui, CTL_OPT_AUTO, _IsOn( SW_AUTO_SAVE_CONFIG ) );
     GUISetChecked( gui, CTL_OPT_BELL, _IsOn( SW_BELL ) );
     GUISetChecked( gui, CTL_OPT_IMPLICIT, _IsOn( SW_IMPLICIT ) );
     GUISetChecked( gui, CTL_OPT_RECURSE, _IsOn( SW_RECURSE_CHECK ) );
     GUISetChecked( gui, CTL_OPT_FLIP, _IsOn( SW_FLIP ) );
     GUISetChecked( gui, CTL_OPT_CASE, _IsOn( SW_CASE_IGNORE ) );
-    DlgSetLong( gui, CTL_OPT_RADIX, old );
+    DlgSetLong( gui, CTL_OPT_RADIX, old_radix );
     DlgSetLong( gui, CTL_OPT_DCLICK, WndGetDClick() );
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
     GUIEnableControl( gui, CTL_OPT_BR_ON_WRITE, IsExactBreakpointsSupported() );
     GUISetChecked( gui, CTL_OPT_NOHEX, _IsOn( SW_DONT_EXPAND_HEX ) );
     if( IsExactBreakpointsSupported() ) {
         GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, _IsOn( SW_BREAK_ON_WRITE ) );
     } else {
-        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, FALSE );
+        GUISetChecked( gui, CTL_OPT_BR_ON_WRITE, false );
     }
 }
 
@@ -125,7 +128,7 @@ OVL_EXTERN bool OptSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  bool    DlgOptSet( void )
+bool    DlgOptSet( void )
 {
     dlg_window_set      optset;
 

@@ -93,22 +93,22 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_END :
         key = GUI_KEY_END;
         break;
-    case EV_CTRL_UP :
+    case EV_CTRL_CURSOR_UP :
     case EV_SHIFT_CURSOR_UP :
     case EV_CURSOR_UP :
         key = GUI_KEY_UP;
         break;
-    case EV_CTRL_DOWN :
+    case EV_CTRL_CURSOR_DOWN :
     case EV_CURSOR_DOWN :
     case EV_SHIFT_CURSOR_DOWN :
         key = GUI_KEY_DOWN;
         break;
-    case EV_CTRL_LEFT :
+    case EV_CTRL_CURSOR_LEFT :
     case EV_SHIFT_CURSOR_LEFT :
     case EV_CURSOR_LEFT :
         key = GUI_KEY_LEFT;
         break;
-    case EV_CTRL_RIGHT :
+    case EV_CTRL_CURSOR_RIGHT :
     case EV_SHIFT_CURSOR_RIGHT :
     case EV_CURSOR_RIGHT :
         key = GUI_KEY_RIGHT;
@@ -139,16 +139,16 @@ EVENT GUIMapKeys( EVENT ev )
     case ' ' :
         key = GUI_KEY_SPACE;
         break;
-    case EV_FUNC_11 :
-    case EV_ALT_FUNC_11 :
-    case EV_CTRL_FUNC_11 :
-    case EV_SHIFT_FUNC_11 :
+    case EV_F11 :
+    case EV_ALT_F11 :
+    case EV_CTRL_F11 :
+    case EV_SHIFT_F11 :
         key = GUI_KEY_F11;
         break;
-    case EV_FUNC_12 :
-    case EV_ALT_FUNC_12 :
-    case EV_CTRL_FUNC_12 :
-    case EV_SHIFT_FUNC_12 :
+    case EV_F12 :
+    case EV_ALT_F12 :
+    case EV_CTRL_F12 :
+    case EV_SHIFT_F12 :
         key = GUI_KEY_F12;
         break;
     default:
@@ -168,23 +168,23 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_SHIFT_CURSOR_RIGHT :
     case EV_SHIFT_PAGE_UP :
     case EV_SHIFT_PAGE_DOWN :
-    case EV_SHIFT_FUNC_11 :
-    case EV_SHIFT_FUNC_12 :
+    case EV_SHIFT_F11 :
+    case EV_SHIFT_F12 :
         SET_KS_SHIFT;
         break;
     case EV_CTRL_TAB :
     case EV_CTRL_HOME :
     case EV_CTRL_END :
-    case EV_CTRL_UP :
-    case EV_CTRL_DOWN :
-    case EV_CTRL_LEFT :
-    case EV_CTRL_RIGHT :
+    case EV_CTRL_CURSOR_UP :
+    case EV_CTRL_CURSOR_DOWN :
+    case EV_CTRL_CURSOR_LEFT :
+    case EV_CTRL_CURSOR_RIGHT :
     case EV_CTRL_INSERT :
     case EV_CTRL_DELETE :
     case EV_CTRL_PAGE_UP :
     case EV_CTRL_PAGE_DOWN :
-    case EV_CTRL_FUNC_11 :
-    case EV_CTRL_FUNC_12 :
+    case EV_CTRL_F11 :
+    case EV_CTRL_F12 :
         SET_KS_CTRL;
         break;
     case EV_ALT_HOME :
@@ -194,8 +194,8 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_ALT_PAGE_UP :
     case EV_ALT_PAGE_DOWN :
     case EV_ALT_SPACE :
-    case EV_ALT_FUNC_11 :
-    case EV_ALT_FUNC_12 :
+    case EV_ALT_F11 :
+    case EV_ALT_F12 :
         SET_KS_ALT;
         break;
     default:

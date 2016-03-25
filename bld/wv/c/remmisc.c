@@ -33,6 +33,8 @@
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"
 #include "dbglit.h"
+#include "remthrd.h"
+#include "remrtrd.h"
 #else
 #include "rfxdata.h"
 #endif
@@ -42,16 +44,20 @@
 #include "strutil.h"
 #include "trapglbl.h"
 #include "filermt.h"
+#include "remcore.h"
+#include "remfile.h"
+#include "removl.h"
+#include "remasync.h"
+#include "remenv.h"
+#include "dbginit.h"
+#include "dbgerr.h"
 
 #include "clibext.h"
 
 
-extern void             RestoreHandlers( void );
-extern void             GrabHandlers( void );
-extern void             StartupErr( const char * );
 //extern void             TrapErrTranslate( char *, int );
 
-unsigned int            MaxPacketLen;
+trap_elen           MaxPacketLen;
 
 //NYI: We don't know the size of the incoming err msg.
 #define MAX_ERR_MSG_SIZE        (TXT_LEN/2)
@@ -95,7 +101,7 @@ void InitTrap( const char *parms )
     connect_ret         ret;
     char                *error;
     trap_version        ver;
-    char                buff[ TXT_LEN ];
+    char                buff[TXT_LEN];
 
 #ifdef ENABLE_TRAP_LOGGING
     OpenTrapTraceFile();
@@ -106,9 +112,9 @@ void InitTrap( const char *parms )
 #if !defined( BUILD_RFX )
     TrapSetFailCallBack( TrapFailed );
 #endif
-    InitTrapError = FALSE;
+    InitTrapError = false;
     RestoreHandlers();
-    ver.remote = FALSE;
+    ver.remote = false;
     if( parms == NULL )
         parms = "";
 #if !defined( BUILD_RFX )
@@ -123,25 +129,25 @@ void InitTrap( const char *parms )
     GrabHandlers();
     if( error != NULL ) {
         strcpy( buff, error );
-        InitTrapError = TRUE;
+        InitTrapError = true;
         StartupErr( buff );
     }
     acc.req = REQ_CONNECT;
     acc.ver.major = TRAP_MAJOR_VERSION;
     acc.ver.minor = TRAP_MINOR_VERSION;
-    acc.ver.remote = FALSE;
+    acc.ver.remote = false;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    buff[0] = '\0';
+    buff[0] = NULLCHAR;
     out[1].ptr = buff;
     out[1].len = MAX_ERR_MSG_SIZE;
     TrapAccess( 1, in, 2, out );
     MaxPacketLen = ret.max_msg_size;
-    if( buff[0] != '\0' ) {
+    if( buff[0] != NULLCHAR ) {
         KillTrap();
-        InitTrapError = TRUE;
+        InitTrapError = true;
         StartupErr( buff );
     }
 #if !defined( BUILD_RFX )
@@ -167,7 +173,7 @@ trap_shandle GetSuppId( char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );

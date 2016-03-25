@@ -41,20 +41,18 @@
 #include "madinter.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "dbgmemor.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
+#include "dbgexpr.h"
+#include "dbgmain.h"
+#include "dbgparse.h"
+#include "dbgdot.h"
+#include "dbgmodfy.h"
+#include "dbgreg.h"
+#include "dbgevent.h"
+#include "dbgupdt.h"
 
-
-extern void             OptMemAddr( memory_expr, address *);
-extern void             PopEntry( void );
-extern void             DbgUpdate( update_list );
-extern void             NormalExpr( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern unsigned         ReqExpr( void );
-extern void             SetDataDot( address addr );
-extern address          GetDataDot( void );
-extern char             *GetCmdName( wd_cmd cmd );
-extern void             RecordCommand( const char *startpos, wd_cmd cmd );
-extern bool             AdvMachState( int );
-extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
 extern stack_entry      *ExprSP;
 
@@ -77,7 +75,8 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
         addr = GetDataDot();
         OptMemAddr( EXPR_DATA, &addr );
     }
-    if( CurrToken == T_COMMA ) Scan();
+    if( CurrToken == T_COMMA )
+        Scan();
     MADTypeInfo( th, &mti );
     while( !ScanEOC() ) {
         if( !( ops & IT_IO ) ) {
@@ -92,7 +91,9 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
             }
             ItemPutMAD( &addr, &item, ops, th );
         }
-        if( CurrToken == T_COMMA ) Scan();
+        if( CurrToken == T_COMMA ) {
+            Scan();
+        }
     }
     if( !(ops & IT_IO) ) {
         DbgUpdate( UP_MEM_CHANGE | UP_CODE_ADDR_CHANGE | UP_REG_CHANGE );

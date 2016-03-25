@@ -43,15 +43,15 @@
 #include "fmthcode.h"
 
 
-complex C8PowI( single a, single b, intstar4 i ) {
+scomplex C8PowI( single a, single b, intstar4 i ) {
 //================================================
 
 // Complex power to an integer exponent.
 
     single      t;
-    complex     arg1;
-    complex     arg2;
-    complex     res;
+    scomplex    arg1;
+    scomplex    arg2;
+    scomplex    res;
 
     if( ( a == 0 ) && ( b == 0 ) ) {
         if( i > 0 ) {

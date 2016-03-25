@@ -37,7 +37,8 @@
 
 typedef struct Suffix   SUFFIX;
 typedef struct Creator  CREATOR;
-typedef NODE            PATHRING;
+typedef NODE            PATHNODE;
+typedef PATHNODE        *PATHRING;
 
 /*
  * The suffix name (without '.') is stored in node.name.  PATHRING is a closed
@@ -49,8 +50,8 @@ struct Suffix {
     /* node.name has been FixName'd() before being hashed */
     HASHNODE    node;
                 /* these fields are private to msuffix.c */
-    PATHRING    *first;         /* first path in ring               */
-    PATHRING    *pathring;      /* current path in ring (.optimize) */
+    PATHRING    pathring;       /* first path in ring               */
+    PATHNODE    *currpath;      /* current path in ring (.optimize) */
     UINT16      id;             /* id for this suffix               */
                 /* these fields are public */
     CREATOR     *creator;       /* first creator for this suffix    */

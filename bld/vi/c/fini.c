@@ -103,7 +103,7 @@ void Quit( const char **usage_msg, const char *str, ... )
             MyVSprintf( buff, str, al );
             va_end( al );
         } else {
-            buff[0] = 0;
+            buff[0] = '\0';
         }
         CloseStartupDialog();
         UsageDialog( UsageMsg, buff,  sizeof( UsageMsg ) / sizeof( char *) );
@@ -187,7 +187,7 @@ void ExitEditor( int rc )
     FiniSavebufs();
     FindCmdFini();
     DirFini();
-    CurrentWindow = NO_WINDOW;
+    current_window_id = NO_WINDOW;
     FinishWindows();
     ScreenFini();
 #ifdef __WIN__

@@ -45,10 +45,10 @@ struct  buf_limit {
  * buf_putc -- append a character to a string in memory
  */
 static slib_callback_t buf_putc; // setup calling convention
-static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, int op_char )
+static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct buf_limit    *bufinfo;
-    
+
     bufinfo = (struct buf_limit *)specs->_dest;
     if( specs->_output_count < bufinfo->bufsize ) {
         *( bufinfo->bufptr++ ) = op_char;
@@ -73,7 +73,7 @@ _WCRTLINK int __F_NAME(_vsnprintf,_vsnwprintf)( CHAR_TYPE *s, size_t bufsize,
     bufinfo.bufover = 0;
     len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, buf_putc );
     if( len < bufsize ) {
-        s[len] = '\0';
+        s[len] = NULLCHAR;
     }
     if( bufinfo.bufover == 0 ) {
         return( len );

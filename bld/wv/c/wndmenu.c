@@ -37,63 +37,39 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmad.h"
-
-extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             DebugExit( void );
-extern void             DlgSource( void );
-extern void             ProcSearchAll( void );
-extern void             ProcWndSearch( a_window * );
-extern void             ProcWndFindNext( a_window * );
-extern void             ProcWndFindPrev( a_window * );
-extern void             DlgOptSet( void );
-extern void             DlgCmd( void );
-extern void             DoSystem( const char *, size_t, int );
-extern void             ExecTrace( trace_cmd_type, debug_level );
-extern unsigned         Go( bool );
-extern void             ReStart( void );
-extern bool             SetProgStartHook( bool );
-extern void             GoToReturn( void );
-extern void             DlgNewProg( void );
-extern bool             DlgBreak( address );
-extern void             BreakSave( bool );
-extern void             ReplaySave( bool );
-extern void             BrkEnableAll( void );
-extern void             BrkDisableAll( void );
-extern void             BrkClearAll( void );
-extern void             ConfigSave( bool );
-extern wnd_class        ReqWndName( void );
-extern void             FileBrowse( void );
-extern void             LastMachState( void );
-extern void             LastStackPos( void );
-extern void             MoveStackPos( int by );
-extern void             PosMachState( int rel_pos );
-extern void             Flip( unsigned );
-extern void             WndAsmInspect( address );
-extern void             WndSrcInspect( address );
-extern void             DlgAbout( void );
-extern void             FontChange( void );
-extern void             ToggleHardMode( void );
-extern void             WndDumpPrompt( a_window * );
-extern void             WndDumpLog( a_window * );
-extern const char       *GetCmdName( wd_cmd cmd );
-extern void             DlgWndSet( void );
-extern bool             VarInfoRelease( void );
-extern void             SkipToAddr( address );
-extern void             GoToAddr( address );
-extern address          GetCodeDot( void );
-extern void             ToggleBreak( address );
-extern void             FuncNewMod( a_window *wnd, mod_handle mod );
-extern void             GlobNewMod( a_window *wnd, mod_handle mod );
-extern void             ModNewHandle( a_window *wnd, mod_handle mod );
-extern void             GoHome( void );
-extern void             DoProcHelp( gui_help_actions );
-extern void             DlgBreakDLL( void );
-extern bool             DebugScreen( void );
-extern void             UnknownScreen( void );
-extern bool             DlgCodeAddr( const char *title, address *value );
-extern bool             DlgDataAddr( const char *title, address *value );
-extern void             WndAddrInspect( address addr );
-extern bool             HaveRemoteRunThread( void );
+#include "dbgexec.h"
+#include "dbgmain.h"
+#include "dbgbrk.h"
+#if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
+#include "dbgsys.h"
+#endif
+#include "wndsys.h"
+#include "dbgprog.h"
+#include "dbgtrace.h"
+#include "dbgmisc.h"
+#include "remrtrd.h"
+#include "dbgreg.h"
+#include "dlgexpr.h"
+#include "dbgdot.h"
+#include "dbgwdisp.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmod.h"
+#include "dbgwvar.h"
+#include "dlgbreak.h"
+#include "dlgdll.h"
+#include "dlgfile.h"
+#include "dlgsrc.h"
+#include "wnddump.h"
+#include "wndhelp.h"
+#include "wndmenu.h"
+#include "dlgabout.h"
+#include "dbgscrn.h"
+#include "dbgwfunc.h"
+#include "dlgoptn.h"
+#include "dlgnewp.h"
+#include "dlgcmd.h"
+#include "dlgwind.h"
 
 
 #include "menudef.h"
@@ -192,22 +168,26 @@ static bool StrAmpEqual( const char *str, const char *menu, int len )
     if( menu_accel ) {
         for( p = menu; *p; ++p ) {
             if( *p == '&' ) {
-                if( tolower( p[1] ) == menu_accel ) return( TRUE );
+                if( tolower( p[1] ) == menu_accel )
+                    return( true );
                 break;
             }
         }
     }
-    while( len > 0 && str[ len-1 ] == ' ' ) {
+    while( len > 0 && str[len-1] == ' ' ) {
         --len;
     }
     while( --len >= 0 ) {
-        if( *menu == '&' ) ++menu;
-        if( tolower( *menu ) != tolower( *str ) ) return( FALSE );
-        if( *menu == '\0' ) return( FALSE );
+        if( *menu == '&' )
+            ++menu;
+        if( tolower( *menu ) != tolower( *str ) )
+            return( false );
+        if( *menu == NULLCHAR )
+            return( false );
         ++menu;
         ++str;
     }
-    return( TRUE );
+    return( true );
 }
 
 static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
@@ -215,12 +195,15 @@ static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
     const char          *start;
     size_t              len;
 
-    if( !ScanItem( TRUE, &start, &len ) ) return( NULL );
+    if( !ScanItem( true, &start, &len ) )
+        return( NULL );
     while( --size >= 0 ) {
-        if( StrAmpEqual( start, menu->label, len ) ) break;
+        if( StrAmpEqual( start, menu->label, len ) )
+            break;
         ++menu;
     }
-    if( size < 0 ) return( NULL );
+    if( size < 0 )
+        return( NULL );
     return( menu );
 }
 
@@ -233,12 +216,14 @@ char *GetMenuLabel( unsigned size,
 
     while( size != 0 ) {
         if( menu->id == id ) {
-            for( cp = menu->label; *cp != '\0'; ++cp ) {
-                if( *cp == '&' && strip_amp ) continue;
-                if( *cp == '\t' ) break;
+            for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
+                if( *cp == '&' && strip_amp )
+                    continue;
+                if( *cp == '\t' )
+                    break;
                 *buff++ = *cp;
             }
-            *buff = '\0';
+            *buff = NULLCHAR;
             return( buff );
         }
         if( menu->num_child_menus != 0 ) {
@@ -298,7 +283,7 @@ void AccelMenuItem( gui_menu_struct *menu, bool is_main )
 }
 
 static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
-                  gui_menu_struct **parent, int *num_siblings, wnd_class wndcls )
+                  gui_menu_struct **parent, int *num_siblings, wnd_class_wv wndclass )
 {
     gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
@@ -312,44 +297,46 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     if( ScanCmd( MainTab ) == 0 ) {
         main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         if( main_menu == NULL ) {
-            if( add_to_menu ) return( TRUE );
+            if( add_to_menu )
+                return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
-        if( ScanItem( TRUE, &start, &len ) ) {
+        if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
         }
         if( child == NULL ) {
-            if( add_to_menu ) return( TRUE );
+            if( add_to_menu )
+                return( true );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = main_menu->child;
         *num_siblings = main_menu->num_child_menus;
-        if( add_to_menu ) return( TRUE );
+        if( add_to_menu ) return( true );
         ReqEOC();
-        AccelMenuItem( child, TRUE );
+        AccelMenuItem( child, true );
     } else {
-        info = WndInfoTab[wndcls];
-        if( ScanItem( TRUE, &start, &len ) ) {
+        info = WndInfoTab[wndclass];
+        if( ScanItem( true, &start, &len ) ) {
             child = FindSubMenu( start, len, info->popupmenu, info->num_popups );
         }
         if( child == NULL ) {
             if( add_to_menu )
-                return( FALSE );
+                return( false );
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
         *parent = info->popupmenu;
         *num_siblings = info->num_popups;
         if( add_to_menu )
-            return( FALSE );
+            return( false );
         wnd = WndFindActive();
-        if( WndClass( wnd ) != wndcls )
+        if( WndClass( wnd ) != wndclass )
             Error( ERR_NONE, LIT_DUI( ERR_MACRO_NOT_VALID ) );
         ReqEOC();
-        AccelMenuItem( child, FALSE );
+        AccelMenuItem( child, false );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern void ProcAccel( void )
@@ -357,7 +344,7 @@ extern void ProcAccel( void )
     gui_menu_struct     *menu,*parent;
     int                 num_sibs;
 
-    DoProcAccel( FALSE, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
+    DoProcAccel( false, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
 }
 
 static void FreeLabels( gui_menu_struct *menu, int num_menus )
@@ -423,18 +410,18 @@ void SetTargMenuItems( void )
 {
     WndEnableMainMenu( MENU_MAIN_BREAK_ON_DLL, _IsOn( SW_HAVE_RUNTIME_DLLS ) );
 #if defined(__GUI__) && defined(__OS2__)
-    WndEnableMainMenu( MENU_MAIN_FILE_FONT, FALSE );
+    WndEnableMainMenu( MENU_MAIN_FILE_FONT, false );
 #endif
     SetMADMenuItems();
 }
 
 static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_menus ) )
 {
-    int         i;
+    wnd_class_wv    wndclass;
 
     rtn( WndMainMenu, ArraySize( WndMainMenu ) );
-    for( i = 0; i < WND_NUM_CLASSES; ++i ) {
-        rtn( WndInfoTab[i]->popupmenu, WndInfoTab[i]->num_popups );
+    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->num_popups );
     }
 }
 
@@ -467,7 +454,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
     size_t              len;
 
     if( menu == NULL ) return;
-    for( cp = menu->label; *cp != '\0'; ++cp ) {
+    for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
         if( *cp == '\t' ) {
             break;
         }
@@ -488,7 +475,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
 }
 
 
-gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndcls, bool *is_main )
+gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main )
 {
     const char          *old;
     gui_menu_struct     *menu,*parent;
@@ -497,10 +484,11 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class wndcl
     old = ReScan( cmd );
     menu = NULL;
     if( ScanCmd( GetCmdName( CMD_ACCEL ) ) == 0 ) {
-        *is_main = DoProcAccel( TRUE, &menu, &parent, &num_sibs, wndcls );
+        *is_main = DoProcAccel( true, &menu, &parent, &num_sibs, wndclass );
     }
     ReScan( old );
-    if( menu == NULL || !ScanEOC() ) return( NULL );
+    if( menu == NULL || !ScanEOC() )
+        return( NULL );
     WndMenuSetHotKey( menu, *is_main, key );
     return( menu );
 }
@@ -557,7 +545,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
 #if !defined(__GUI__) && !defined(__WINDOWS__) && !defined(__NT__)
     case MENU_MAIN_FILE_SYSTEM:
-        DoSystem( NULL, 0, 0 );
+        DoSystem( NULL, 0, LOC_DEFAULT );
         break;
 #endif
     case MENU_MAIN_FILE_OPTIONS:
@@ -590,7 +578,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_TOOL_GO:
     case MENU_MAIN_RUN_GO:
-        Go( TRUE );
+        Go( true );
         break;
     case MENU_MAIN_RUN_SKIP_TO_CURSOR:
         SkipToAddr( GetCodeDot() );
@@ -652,7 +640,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         {
             bool old;
 
-            old = SetProgStartHook( FALSE );
+            old = SetProgStartHook( false );
             ReStart();
             SetProgStartHook( old );
         }
@@ -680,23 +668,23 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         BrkEnableAll();
         break;
     case MENU_MAIN_BREAK_SAVE_ALL:
-        BreakSave( TRUE );
+        BreakSave( true );
         break;
     case MENU_MAIN_BREAK_RESTORE_ALL:
-        BreakSave( FALSE );
+        BreakSave( false );
         break;
     case MENU_MAIN_SAVE_REPLAY:
-        ReplaySave( TRUE );
+        ReplaySave( true );
         break;
     case MENU_MAIN_RESTORE_REPLAY:
-        ReplaySave( FALSE );
+        ReplaySave( false );
         break;
     case MENU_MAIN_FILE_SAVE_CONFIGURATION:
-        ConfigSave( TRUE );
+        ConfigSave( true );
         break;
     case MENU_MAIN_FILE_LOAD_CONFIGURATION:
-        save = WndStopRefresh( TRUE );
-        ConfigSave( FALSE );
+        save = WndStopRefresh( true );
+        ConfigSave( false );
         WndStopRefresh( save );
         break;
     case MENU_MAIN_FILE_SOURCE_PATH:
@@ -816,7 +804,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
 #endif
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

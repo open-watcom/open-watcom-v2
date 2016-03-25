@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "packet.h"
@@ -263,8 +265,7 @@ trap_retval ReqGet_lib_name( void )
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
         ret->handle = 0;
-        *(char *)GetOutPtr( sizeof( *ret ) ) = '\0';
-        return( sizeof( *ret ) + 1 );
+        return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }
@@ -305,7 +306,7 @@ trap_retval ReqProg_load( void )
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( src, buffer, DosExtList );
+    rc = FindProgFile( src, buffer, DosExtList );
     endparm = LinkParms;
     while( *endparm++ != '\0' ) {}      // skip trap parameters
     strcpy( endparm, buffer );          // add command line

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "win.h"
 #include "fts.h"
 #include <assert.h>
@@ -74,9 +74,9 @@ vi_rc NextFileDammit( void )
                 if( tinfo->CurrentFile == CurrentFile ) {
                     if( tinfo->DuplicateID > lastid ) {
                         tinfo->DuplicateID--;
-                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, false );
+                        SetFileWindowTitle( tinfo->current_window_id, tinfo, false );
                     } else if( CurrentFile->dup_count == 0 ) {
-                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, false );
+                        SetFileWindowTitle( tinfo->current_window_id, tinfo, false );
                     }
                 }
             }
@@ -86,8 +86,8 @@ vi_rc NextFileDammit( void )
             // CurrentFile = NULL;
         }
 #ifdef __WIN__
-        CloseAChildWindow( CurrentWindow );
-        CurrentWindow = NO_WINDOW;
+        CloseAChildWindow( current_window_id );
+        current_window_id = NO_WINDOW;
 #endif
         dont_exit_this_time = 1;
 
@@ -104,20 +104,19 @@ vi_rc NextFileDammit( void )
 
     if( cinfo == NULL ) {
         if( EditFlags.QuitAtLastFileExit || !dont_exit_this_time ) {
-            CurrentWindow = NO_WINDOW;
+            current_window_id = NO_WINDOW;
             // EditFlags.Quiet = true;
             if( CommandBuffer ) {
                 MemFree( CommandBuffer );
             }
             QuitEditor( ERR_NO_ERR );
         }
-    }
 #ifndef __WIN__
-    else {
-        CloseAWindow( CurrentWindow );
-        CurrentWindow = NO_WINDOW;
-    }
+    } else {
+        CloseAWindow( current_window_id );
+        current_window_id = NO_WINDOW;
 #endif
+    }
     /*
      * now, set up with next file
      */
@@ -201,7 +200,7 @@ vi_rc RotateFileBackwards( void )
 /*
  * GotoFile - bring up file in filelist with given window id
  */
-vi_rc GotoFile( window_id id )
+vi_rc GotoFile( window_id wid )
 {
     info        *cinfo;
 
@@ -210,7 +209,7 @@ vi_rc GotoFile( window_id id )
     }
 
     for( cinfo = InfoHead; cinfo->next != NULL; cinfo = cinfo->next ) {
-        if( cinfo->CurrentWindow == id ) {
+        if( cinfo->current_window_id == wid ) {
             break;
         }
     }
@@ -224,7 +223,7 @@ vi_rc GotoFile( window_id id )
  */
 void BringUpFile( info *ci, bool runCmds )
 {
-    window_id   wn;
+    window_id   wid;
     static bool recursive = false;
 
     if( recursive ) {
@@ -232,22 +231,22 @@ void BringUpFile( info *ci, bool runCmds )
     }
 
     SourceHook( SRC_HOOK_BUFFOUT, ERR_NO_ERR );
-    wn = CurrentWindow;
+    wid = current_window_id;
     if( RestoreInfo( ci ) ) {
         LineNumbersSetup();
     }
     EditFlags.Dragging = false;
-    MoveWindowToFrontDammit( CurrentWindow, false );
+    MoveWindowToFrontDammit( current_window_id, false );
     if( EditFlags.LineNumbers ) {
-        MoveWindowToFrontDammit( CurrNumWindow, false );
+        MoveWindowToFrontDammit( curr_num_window_id, false );
     }
     DisplayFileStatus();
     UpdateStatusWindow();
     SetWindowCursor();
-    if( wn != CurrentWindow && wn != NO_WINDOW ) {
-        InactiveWindow( wn );
+    if( wid != current_window_id && !BAD_ID( wid ) ) {
+        InactiveWindow( wid );
     }
-    ActiveWindow( CurrentWindow );
+    ActiveWindow( current_window_id );
     UnselectRegion();
     if( ci != NULL && ci->CurrentFile->dup_count > 0 ) {
         DCDisplayAllLines();

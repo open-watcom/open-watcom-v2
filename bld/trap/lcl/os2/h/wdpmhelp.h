@@ -61,4 +61,4 @@ extern void StopPMHelp(void);
 
 extern void PMLock(unsigned long,unsigned long);
 extern void PMUnLock(void);
-extern int PMFlip(void);
+extern int  PMFlip(void);

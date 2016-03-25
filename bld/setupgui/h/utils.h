@@ -54,10 +54,10 @@ extern bool             CheckUpgrade();
 extern bool             LicenseFileName( char * );
 extern char             *GetInstallName( void );
 extern bool             PromptUser( char *name, char *dlg, char *skip, char *replace, int *value );
-#if defined( WINNT ) || defined( WIN )
-extern bool             GetRootFromPath( char *root, char *path );
-extern long             FreeSpace( char *path );
-extern long             ClusterSize( char *path );
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+extern bool             GetRootFromPath( char *root, const char *path );
+extern disk_size        FreeSpace( const char *path );
+extern long             ClusterSize( const char *path );
 #endif
 extern signed int       IncrementDLLUsageCount( char *path );
 extern signed int       DecrementDLLUsageCount( char *path );

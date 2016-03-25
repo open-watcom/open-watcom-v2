@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <stdio.h>
 #include <io.h>
@@ -84,7 +85,7 @@ bool WREGetCurrentResource( WRECurrentResInfo *current )
     WRETypeName *tn;
     bool        ok;
     HWND        resLbox;
-    LRESULT     index;
+    int         index;
 
     ok = (current != NULL);
 
@@ -113,13 +114,12 @@ bool WREGetCurrentResource( WRECurrentResInfo *current )
     }
 
     if( ok ) {
-        index = SendMessage( resLbox, LB_GETCURSEL, 0, 0 );
+        index = (int)SendMessage( resLbox, LB_GETCURSEL, 0, 0 );
         ok = (index != LB_ERR);
     }
 
     if( ok ) {
-        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA,
-                                                     (WPARAM)index, 0 );
+        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA, index, 0 );
         ok = (current->lang != NULL);
     }
 

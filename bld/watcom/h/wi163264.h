@@ -165,6 +165,8 @@
 
 #endif
 
+#define MENU_CLOSED(wp,lp)                      ((GET_WM_MENUSELECT_FLAGS(wp,lp)==(WORD)-1)&&(GET_WM_MENUSELECT_HMENU(wp,lp)==(HMENU)NULL))
+
 #if defined( _M_I86 )
 #define FARstricmp      _fstricmp
 #define FARstrcpy       _fstrcpy
@@ -173,12 +175,6 @@
 #define FARstricmp      stricmp
 #define FARstrcpy       strcpy
 #define FARmemcpy       memcpy
-#endif
-
-#if defined( _M_I86 ) && defined( __WINDOWS__ )
-#define WINEXPORT       __declspec(dllexport)
-#else
-#define WINEXPORT
 #endif
 
 #endif /* !defined(__NT__) */

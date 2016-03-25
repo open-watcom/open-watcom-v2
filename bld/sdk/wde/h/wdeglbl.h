@@ -35,7 +35,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "precomp.h"
+#include "commonui.h"
 #include "watcom.h"
 #include "bool.h"
 #include "fmedit.def"

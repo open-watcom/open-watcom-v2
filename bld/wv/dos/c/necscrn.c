@@ -42,10 +42,10 @@
 #include "dbgswtch.h"
 #include "dbginstr.h"
 
+
 extern unsigned inp(unsigned __port);
 extern unsigned outp(unsigned __port, unsigned __value);
 extern void WndDirty(void);
-extern void StartupErr( const char * );
 extern void uisetcurrpage(int);
 
 flip_types              FlipMech;
@@ -56,10 +56,10 @@ static char             SaveMode;
 static unsigned int     PageSize;
 static int              SavCurPos;
 
-extern bool             SavTextScrnOn = TRUE; /* assume screen on initially */
-extern bool             SavGrScrnOn   = FALSE; /*assume graphic off initially*/
-extern bool             SavCurBlinkOn = TRUE;/*assume cursor blinks initially*/
-extern bool             SavCursorOn   = TRUE; /*assume cursor on initially */
+extern bool             SavTextScrnOn = true; /* assume screen on initially */
+extern bool             SavGrScrnOn   = false; /*assume graphic off initially*/
+extern bool             SavCurBlinkOn = true;/*assume cursor blinks initially*/
+extern bool             SavCursorOn   = true; /*assume cursor on initially */
 
 void GetGdcCursor( int *CurPos )
 /***********************************************************************
@@ -292,7 +292,7 @@ bool UsrScrnMode()
     setup the user screen mode
 ************************************************************************/
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -326,24 +326,24 @@ bool DebugScreen()
     bool    usr_vis;
 
     _NEC_DBG_IN( "***** DebugScreen()\r\n" );
-    usr_vis = TRUE;
+    usr_vis = true;
     SaveBIOSSettings();
     switch( FlipMech ) {
     case FLIP_SWAP:
         movedata( 0xA000, 0, SwapSeg, 0, PageSize );
         movedata( 0xA200, 0, SwapSeg, PageSize, PageSize );
         WndDirty();
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_PAGE:
         SetPage( NEC_DEBUG_SCREEN );
         WndDirty();
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_OVERWRITE:
         SaveBIOSSettings();
         WndDirty();
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     }
     if( !SavTextScrnOn ) {
@@ -369,17 +369,17 @@ bool UserScreen()
 {
     bool    dbg_vis;
 
-    dbg_vis = TRUE;
+    dbg_vis = true;
     uiswap();
     switch( FlipMech ) {
     case FLIP_SWAP:
         movedata( SwapSeg, 0, 0xA000, 0, PageSize );
         movedata( SwapSeg, PageSize, 0xA200, 0, PageSize );
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     case FLIP_PAGE:
         SetPage( NEC_USER_SCREEN );
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     }
     if( !SavTextScrnOn ) {

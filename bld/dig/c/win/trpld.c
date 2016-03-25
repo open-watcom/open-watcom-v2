@@ -36,36 +36,37 @@
 #include <string.h>
 #include <stdlib.h>
 #include "trptypes.h"
-#include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
+#include "tcerr.h"
 
-void                    (TRAPENTRY*HookFunc)(LPVOID);
-void                    (TRAPENTRY*InfoFunction)(HWND);
-void                    (TRAPENTRY*UnLockInput)(void);
-void                    (TRAPENTRY*SetHardMode)(char);
-static int              (TRAPENTRY*HardModeCheck)(void);
-static int              (TRAPENTRY*GetHwndFunc)(void);
 
-int HardModeRequired;
+bool    TrapHardModeRequired = false;
+
+static TRAPENTRY_FUNC_PTR( InputHook );
+static TRAPENTRY_FUNC_PTR( InfoFunction );
+static TRAPENTRY_FUNC_PTR( UnLockInput );
+static TRAPENTRY_FUNC_PTR( SetHardMode );
+static TRAPENTRY_FUNC_PTR( HardModeCheck );
+static TRAPENTRY_FUNC_PTR( GetHwndFunc );
 
 static trap_fini_func   *FiniFunc = NULL;
 static HINSTANCE        TrapFile = 0;
-
-static HINSTANCE toolhelp = 0;
+static HINSTANCE        toolhelp = 0;
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
-    HookFunc = NULL;
+    TRAPENTRY_PTR_NAME( InputHook ) = NULL;
+    TRAPENTRY_PTR_NAME( InfoFunction ) = NULL;
+    TRAPENTRY_PTR_NAME( HardModeCheck ) = NULL;
+    TRAPENTRY_PTR_NAME( SetHardMode ) = NULL;
+    TRAPENTRY_PTR_NAME( UnLockInput ) = NULL;
+    TRAPENTRY_PTR_NAME( GetHwndFunc ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
     }
-    InfoFunction = NULL;
-    HardModeCheck = NULL;
-    SetHardMode = NULL;
-    UnLockInput = NULL;
-    GetHwndFunc = NULL;
     if( TrapFile != 0 ) {
         FreeLibrary( TrapFile );
         TrapFile = 0;
@@ -99,12 +100,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             have_ext = FALSE;
             break;
         case '.':
+#ifdef USE_FILENAME_VERSION
+            *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+            *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
             have_ext = TRUE;
             break;
         }
         *dst++ = chr;
     }
     if( !have_ext ) {
+#ifdef USE_FILENAME_VERSION
+        *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+        *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
         *dst++ = '.';
         *dst++ = 'd';
         *dst++ = 'l';
@@ -130,16 +139,17 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)3 );
     ReqFunc  = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)4 );
-    HookFunc = (void(TRAPENTRY*)(LPVOID)) GetProcAddress( TrapFile, (LPSTR)5 );
-    InfoFunction = (void(TRAPENTRY*)(HWND)) GetProcAddress( TrapFile, (LPSTR)6 );
-    HardModeCheck = (int(TRAPENTRY*)(void)) GetProcAddress( TrapFile, (LPSTR)7 );
-    SetHardMode = (void(TRAPENTRY*)(char)) GetProcAddress( TrapFile, (LPSTR)12 );
-    UnLockInput = (void(TRAPENTRY*)(void)) GetProcAddress( TrapFile, (LPSTR)13 );
-    GetHwndFunc = (int(TRAPENTRY*)(void)) GetProcAddress( TrapFile, (LPSTR)8 );
+    TRAPENTRY_PTR_NAME( InputHook ) = TRAPENTRY_PTR_CAST( InputHook )GetProcAddress( TrapFile, (LPSTR)5 );
+    TRAPENTRY_PTR_NAME( InfoFunction ) = TRAPENTRY_PTR_CAST( InfoFunction )GetProcAddress( TrapFile, (LPSTR)6 );
+    TRAPENTRY_PTR_NAME( HardModeCheck ) = TRAPENTRY_PTR_CAST( HardModeCheck )GetProcAddress( TrapFile, (LPSTR)7 );
+    TRAPENTRY_PTR_NAME( GetHwndFunc ) = TRAPENTRY_PTR_CAST( GetHwndFunc )GetProcAddress( TrapFile, (LPSTR)8 );
+    TRAPENTRY_PTR_NAME( SetHardMode ) = TRAPENTRY_PTR_CAST( SetHardMode )GetProcAddress( TrapFile, (LPSTR)12 );
+    TRAPENTRY_PTR_NAME( UnLockInput ) = TRAPENTRY_PTR_CAST( UnLockInput )GetProcAddress( TrapFile, (LPSTR)13 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
-      && HookFunc != NULL && InfoFunction != NULL && HardModeCheck != NULL
-      && GetHwndFunc != NULL && SetHardMode != NULL && UnLockInput != NULL ) {
+      && TRAPENTRY_PTR_NAME( InputHook ) != NULL && TRAPENTRY_PTR_NAME( InfoFunction ) != NULL
+      && TRAPENTRY_PTR_NAME( HardModeCheck ) != NULL && TRAPENTRY_PTR_NAME( GetHwndFunc ) != NULL
+      && TRAPENTRY_PTR_NAME( SetHardMode ) != NULL && TRAPENTRY_PTR_NAME( UnLockInput ) != NULL ) {
         parms = ptr;
         if( *parms != '\0' )
             ++parms;
@@ -156,7 +166,27 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     return( buff );
 }
 
-void DoHardModeCheck( void )
+void TrapHardModeCheck( void )
 {
-    HardModeRequired = HardModeCheck();
+    TrapHardModeRequired = TRAPENTRY_PTR_NAME( HardModeCheck )();
+}
+
+void TrapTellHWND( HWND hwnd )
+{
+    TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+}
+
+void TrapInputHook( hook_fn *hookfn )
+{
+    TRAPENTRY_PTR_NAME( InputHook )( hookfn );
+}
+
+void TrapUnLockInput( void )
+{
+    TRAPENTRY_PTR_NAME( UnLockInput )();
+}
+
+void  TrapSetHardMode( bool mode )
+{
+    TRAPENTRY_PTR_NAME( SetHardMode )( mode );
 }

@@ -33,7 +33,7 @@
 int DbgRegs;
 int TaskId;
 int CheckSize;
-int OvlSize;
+trap_elen OvlSize;
 void SameAddrSpace() {}
 void SectLoad() {}
 void WndUser() {}

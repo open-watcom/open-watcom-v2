@@ -34,19 +34,19 @@
 /*
  * Terminal setup routines common to termcap and terminfo:
  *
- *		use_env(bool)
- *		setupterm(char *, int, int *)
+ *              use_env(bool)
+ *              setupterm(char *, int, int *)
  */
 
 #include <curses_p.h>
-#include <tic.h>		/* for MAX_NAME_SIZE */
+#include <tic.h>                /* for MAX_NAME_SIZE */
 #include <term_ent.h>
 
 #if SVR4_TERMIO && !defined(_POSIX_SOURCE)
 #define _POSIX_SOURCE
 #endif
 
-#include <term.h>		/* lines, columns, cur_term */
+#include <term.h>               /* lines, columns, cur_term */
 
 MODULE_ID("$Id: lib_setup.c,v 1.70 2002/10/12 21:50:18 tom Exp $")
 
@@ -114,90 +114,90 @@ _nc_get_screensize(int *linep, int *colp)
     T(("screen size: terminfo lines = %d columns = %d", lines, columns));
 
     if (!_use_env) {
-	*linep = (int) lines;
-	*colp = (int) columns;
-    } else {			/* usually want to query LINES and COLUMNS from environment */
-	int value;
+        *linep = (int) lines;
+        *colp = (int) columns;
+    } else {                    /* usually want to query LINES and COLUMNS from environment */
+        int value;
 
-	*linep = *colp = 0;
+        *linep = *colp = 0;
 
-	/* first, look for environment variables */
-	if ((value = _nc_getenv_num("LINES")) > 0) {
-	    *linep = value;
-	}
-	if ((value = _nc_getenv_num("COLUMNS")) > 0) {
-	    *colp = value;
-	}
-	T(("screen size: environment LINES = %d COLUMNS = %d", *linep, *colp));
+        /* first, look for environment variables */
+        if ((value = _nc_getenv_num("LINES")) > 0) {
+            *linep = value;
+        }
+        if ((value = _nc_getenv_num("COLUMNS")) > 0) {
+            *colp = value;
+        }
+        T(("screen size: environment LINES = %d COLUMNS = %d", *linep, *colp));
 
 #ifdef __EMX__
-	if (*linep <= 0 || *colp <= 0) {
-	    int screendata[2];
-	    _scrsize(screendata);
-	    *colp = screendata[0];
-	    *linep = screendata[1];
-	    T(("EMX screen size: environment LINES = %d COLUMNS = %d",
-	       *linep, *colp));
-	}
+        if (*linep <= 0 || *colp <= 0) {
+            int screendata[2];
+            _scrsize(screendata);
+            *colp = screendata[0];
+            *linep = screendata[1];
+            T(("EMX screen size: environment LINES = %d COLUMNS = %d",
+               *linep, *colp));
+        }
 #endif
 #if HAVE_SIZECHANGE
-	/* if that didn't work, maybe we can try asking the OS */
-	if (*linep <= 0 || *colp <= 0) {
-	    if (isatty(cur_term->Filedes)) {
-		STRUCT_WINSIZE size;
+        /* if that didn't work, maybe we can try asking the OS */
+        if (*linep <= 0 || *colp <= 0) {
+            if (isatty(cur_term->Filedes)) {
+                STRUCT_WINSIZE size;
 
-		errno = 0;
-		do {
-		    if (ioctl(cur_term->Filedes, IOCTL_WINSIZE, &size) < 0
-			&& errno != EINTR)
-			goto failure;
-		} while
-		    (errno == EINTR);
+                errno = 0;
+                do {
+                    if (ioctl(cur_term->Filedes, IOCTL_WINSIZE, &size) < 0
+                        && errno != EINTR)
+                        goto failure;
+                } while
+                    (errno == EINTR);
 
-		/*
-		 * Solaris lets users override either dimension with an
-		 * environment variable.
-		 */
-		if (*linep <= 0)
-		    *linep = WINSIZE_ROWS(size);
-		if (*colp <= 0)
-		    *colp = WINSIZE_COLS(size);
-	    }
-	    /* FALLTHRU */
-	  failure:;
-	}
+                /*
+                 * Solaris lets users override either dimension with an
+                 * environment variable.
+                 */
+                if (*linep <= 0)
+                    *linep = WINSIZE_ROWS(size);
+                if (*colp <= 0)
+                    *colp = WINSIZE_COLS(size);
+            }
+            /* FALLTHRU */
+          failure:;
+        }
 #endif /* HAVE_SIZECHANGE */
 
-	/* if we can't get dynamic info about the size, use static */
-	if (*linep <= 0) {
-	    *linep = (int) lines;
-	}
-	if (*colp <= 0) {
-	    *colp = (int) columns;
-	}
+        /* if we can't get dynamic info about the size, use static */
+        if (*linep <= 0) {
+            *linep = (int) lines;
+        }
+        if (*colp <= 0) {
+            *colp = (int) columns;
+        }
 
-	/* the ultimate fallback, assume fixed 24x80 size */
-	if (*linep <= 0) {
-	    *linep = 24;
-	}
-	if (*colp <= 0) {
-	    *colp = 80;
-	}
+        /* the ultimate fallback, assume fixed 24x80 size */
+        if (*linep <= 0) {
+            *linep = 24;
+        }
+        if (*colp <= 0) {
+            *colp = 80;
+        }
 
-	/*
-	 * Put the derived values back in the screen-size caps, so
-	 * tigetnum() and tgetnum() will do the right thing.
-	 */
-	lines = (short) (*linep);
-	columns = (short) (*colp);
+        /*
+         * Put the derived values back in the screen-size caps, so
+         * tigetnum() and tgetnum() will do the right thing.
+         */
+        lines = (short) (*linep);
+        columns = (short) (*colp);
     }
 
     T(("screen size is %dx%d", *linep, *colp));
 
     if (VALID_NUMERIC(init_tabs))
-	TABSIZE = (int) init_tabs;
+        TABSIZE = (int) init_tabs;
     else
-	TABSIZE = 8;
+        TABSIZE = 8;
     T(("TABSIZE = %d", TABSIZE));
 
 }
@@ -210,7 +210,7 @@ _nc_update_screensize(void)
 
     _nc_get_screensize(&my_lines, &my_cols);
     if (SP != 0 && SP->_resize != 0)
-	SP->_resize(my_lines, my_cols);
+        SP->_resize(my_lines, my_cols);
 }
 #endif
 
@@ -220,21 +220,21 @@ _nc_update_screensize(void)
  *
  ****************************************************************************/
 
-#define ret_error(code, fmt, arg)	if (errret) {\
-					    *errret = code;\
-					    returnCode(ERR);\
-					} else {\
-					    fprintf(stderr, fmt, arg);\
-					    exit(EXIT_FAILURE);\
-					}
+#define ret_error(code, fmt, arg)       if (errret) {\
+                                            *errret = code;\
+                                            returnCode(ERR);\
+                                        } else {\
+                                            fprintf(stderr, fmt, arg);\
+                                            exit(EXIT_FAILURE);\
+                                        }
 
-#define ret_error0(code, msg)		if (errret) {\
-					    *errret = code;\
-					    returnCode(ERR);\
-					} else {\
-					    fprintf(stderr, msg);\
-					    exit(EXIT_FAILURE);\
-					}
+#define ret_error0(code, msg)           if (errret) {\
+                                            *errret = code;\
+                                            returnCode(ERR);\
+                                        } else {\
+                                            fprintf(stderr, msg);\
+                                            exit(EXIT_FAILURE);\
+                                        }
 
 #if USE_DATABASE || USE_TERMCAP
 static int
@@ -248,19 +248,19 @@ grab_entry(const char *const tn, TERMTYPE * const tp)
      * $TERM shouldn't contain pathname delimiters.
      */
     if (strchr(tn, '/'))
-	return 0;
+        return 0;
 
 #if USE_DATABASE
     if ((status = _nc_read_entry(tn, filename, tp)) != 1) {
 
 #if !PURE_TERMINFO
-	/*
-	 * Try falling back on the termcap file.
-	 * Note:  allowing this call links the entire terminfo/termcap
-	 * compiler into the startup code.  It's preferable to build a
-	 * real terminfo database and use that.
-	 */
-	status = _nc_read_termcap_entry(tn, tp);
+        /*
+         * Try falling back on the termcap file.
+         * Note:  allowing this call links the entire terminfo/termcap
+         * compiler into the startup code.  It's preferable to build a
+         * real terminfo database and use that.
+         */
+        status = _nc_read_termcap_entry(tn, tp);
 #endif /* PURE_TERMINFO */
 
     }
@@ -275,15 +275,15 @@ grab_entry(const char *const tn, TERMTYPE * const tp)
      * a string is cancelled, for merging entries).
      */
     if (status == 1) {
-	int n;
-	for_each_boolean(n, tp) {
-	    if (!VALID_BOOLEAN(tp->Booleans[n]))
-		tp->Booleans[n] = FALSE;
-	}
-	for_each_string(n, tp) {
-	    if (tp->Strings[n] == CANCELLED_STRING)
-		tp->Strings[n] = ABSENT_STRING;
-	}
+        int n;
+        for_each_boolean(n, tp) {
+            if (!VALID_BOOLEAN(tp->Booleans[n]))
+                tp->Booleans[n] = FALSE;
+        }
+        for_each_string(n, tp) {
+            if (tp->Strings[n] == CANCELLED_STRING)
+                tp->Strings[n] = ABSENT_STRING;
+        }
     }
     return (status);
 }
@@ -292,15 +292,15 @@ grab_entry(const char *const tn, TERMTYPE * const tp)
 NCURSES_EXPORT_VAR(char) ttytype[NAMESIZE] = "";
 
 /*
- *	setupterm(termname, Filedes, errret)
+ *      setupterm(termname, Filedes, errret)
  *
- *	Find and read the appropriate object file for the terminal
- *	Make cur_term point to the structure.
+ *      Find and read the appropriate object file for the terminal
+ *      Make cur_term point to the structure.
  *
  */
 
 NCURSES_EXPORT(int)
-setupterm(NCURSES_CONST char *tname, int Filedes, int *errret)
+setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
 {
     struct term *term_ptr;
     int status;
@@ -308,44 +308,43 @@ setupterm(NCURSES_CONST char *tname, int Filedes, int *errret)
     START_TRACE();
     T((T_CALLED("setupterm(%s,%d,%p)"), _nc_visbuf(tname), Filedes, errret));
 
-    if (tname == 0) {
-	tname = getenv("TERM");
-	if (tname == 0 || *tname == '\0') {
-	    ret_error0(-1, "TERM environment variable not set.\n");
-	}
+    if( tname == NULL ) {
+        tname = getenv( "TERM" );
+        if( tname == NULL || *tname == '\0' ) {
+            ret_error0( -1, "TERM environment variable not set.\n" );
+        }
     }
-    if (strlen(tname) > MAX_NAME_SIZE) {
-	ret_error(-1, "TERM environment must be <= %d characters.\n",
-		  MAX_NAME_SIZE);
+    if( strlen( tname ) > MAX_NAME_SIZE ) {
+        ret_error( -1, "TERM environment must be <= %d characters.\n", MAX_NAME_SIZE );
     }
 
     T(("your terminal name is %s", tname));
 
-    term_ptr = typeCalloc(TERMINAL, 1);
+    term_ptr = typeCalloc( TERMINAL, 1 );
 
-    if (term_ptr == 0) {
-	ret_error0(-1, "Not enough memory to create terminal structure.\n");
+    if( term_ptr == 0 ) {
+        ret_error0( -1, "Not enough memory to create terminal structure.\n" );
     }
 #if USE_DATABASE || USE_TERMCAP
-    status = grab_entry(tname, &term_ptr->type);
+    status = grab_entry( tname, &term_ptr->type );
 #else
     status = 0;
 #endif
 
     /* try fallback list if entry on disk */
-    if (status != 1) {
-	const TERMTYPE *fallback = _nc_fallback(tname);
+    if( status != 1 ) {
+        const TERMTYPE *fallback = _nc_fallback( tname );
 
-	if (fallback) {
-	    term_ptr->type = *fallback;
-	    status = 1;
-	}
+        if( fallback ) {
+            term_ptr->type = *fallback;
+            status = 1;
+        }
     }
 
-    if (status == -1) {
-	ret_error0(-1, "terminals database is inaccessible\n");
-    } else if (status == 0) {
-	ret_error(0, "'%s': unknown terminal type.\n", tname);
+    if( status == -1 ) {
+        ret_error0( -1, "terminals database is inaccessible\n" );
+    } else if( status == 0 ) {
+        ret_error( 0, "'%s': unknown terminal type.\n", tname );
     }
 
     /*
@@ -361,25 +360,26 @@ setupterm(NCURSES_CONST char *tname, int Filedes, int *errret)
      * curses does not do this, however applications that are working
      * around the problem will still work properly with this feature).
      */
-    if (cur_term != 0) {
-	if (cur_term->Filedes == Filedes)
-	    term_ptr->Ottyb = cur_term->Ottyb;
+    if( cur_term != 0 ) {
+        if( cur_term->Filedes == Filedes ) {
+            term_ptr->Ottyb = cur_term->Ottyb;
+        }
     }
 
-    set_curterm(term_ptr);
+    set_curterm( term_ptr );
 
-    if (command_character && getenv("CC"))
-	do_prototype();
+    if( command_character && getenv( "CC" ) )
+        do_prototype();
 
-    strncpy(ttytype, cur_term->type.term_names, NAMESIZE - 1);
+    strncpy( ttytype, cur_term->type.term_names, NAMESIZE - 1 );
     ttytype[NAMESIZE - 1] = '\0';
 
     /*
      * Allow output redirection.  This is what SVr3 does.  If stdout is
      * directed to a file, screen updates go to standard error.
      */
-    if (Filedes == STDOUT_FILENO && !isatty(Filedes))
-	Filedes = STDERR_FILENO;
+    if( Filedes == STDOUT_FILENO && !isatty( Filedes ) )
+        Filedes = STDERR_FILENO;
     cur_term->Filedes = Filedes;
 
     /*
@@ -387,51 +387,52 @@ setupterm(NCURSES_CONST char *tname, int Filedes, int *errret)
      * we will not have the def_prog_mode() call in _nc_setupscreen().  Do it
      * now anyway, so we can initialize the baudrate.
      */
-    if (isatty(Filedes)) {
-	def_prog_mode();
-	baudrate();
+    if( isatty( Filedes ) ) {
+        def_prog_mode();
+        baudrate();
     }
 
-    _nc_get_screensize(&LINES, &COLS);
+    _nc_get_screensize( &LINES, &COLS );
 
-    if (errret)
-	*errret = 1;
+    if( errret )
+        *errret = 1;
 
     T((T_CREATE("screen %s %dx%d"), tname, LINES, COLS));
 
-    if (generic_type) {
-	ret_error(0, "'%s': I need something more specific.\n", tname);
+    if( generic_type ) {
+        ret_error( 0, "'%s': I need something more specific.\n", tname );
     }
-    if (hard_copy) {
-	ret_error(1, "'%s': I can't handle hardcopy terminals.\n", tname);
+    if( hard_copy ) {
+        ret_error( 1, "'%s': I can't handle hardcopy terminals.\n", tname );
     }
-    returnCode(OK);
+    returnCode( OK );
 }
 
 /*
-**	do_prototype()
+**      do_prototype()
 **
-**	Take the real command character out of the CC environment variable
-**	and substitute it in for the prototype given in 'command_character'.
+**      Take the real command character out of the CC environment variable
+**      and substitute it in for the prototype given in 'command_character'.
 **
 */
 
 static void
-do_prototype(void)
+do_prototype( void )
 {
     int i;
     char CC;
     char proto;
     char *tmp;
 
-    tmp = getenv("CC");
+    tmp = getenv( "CC" );
     CC = *tmp;
     proto = *command_character;
 
-    for_each_string(i, &(cur_term->type)) {
-	for (tmp = cur_term->type.Strings[i]; *tmp; tmp++) {
-	    if (*tmp == proto)
-		*tmp = CC;
-	}
+    for_each_string( i, &(cur_term->type) ) {
+        for( tmp = cur_term->type.Strings[i]; *tmp; tmp++ ) {
+            if( *tmp == proto ) {
+                *tmp = CC;
+            }
+        }
     }
 }

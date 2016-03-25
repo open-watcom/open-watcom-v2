@@ -43,26 +43,21 @@
 #include "madinter.h"
 #include "madcli.h"
 #include "dbgutil.h"
+#include "dbgovl.h"
+#include "dbgparse.h"
+#include "dbgtrace.h"
+#include "dbgtback.h"
+#include "remcore.h"
+#include "removl.h"
+#include "dbgreg.h"
+#include "dbgset.h"
+#include "dbgupdt.h"
+#include "dbgmad.h"
 
 #include "clibext.h"
 
 
-extern void             AddrSection( address *, unsigned );
-extern void             DbgUpdate( update_list );
-extern unsigned         ProgPeek( address, void *, unsigned );
-extern unsigned         ProgPoke( address, const void *, unsigned );
-extern bool             RemoteOvlTransAddr(address *);
-extern address          GetRegIP(void);
-extern void             ResizeRegData(void);
-extern void             ResizeTraceData(void);
-extern void             PendingToggles( void );
-extern bool             FixOvlRetAddr( address * );
-extern void             EvalExpr( unsigned addr_depth );
-extern void             MakeMemoryAddr( bool pops, memory_expr def_seg, address *val );
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len );
-extern void             StartupErr( const char * );
 extern void             SetMADMenuItems( void );
-extern void             ClearMachineDataCache( void );
 
 static mad_status       MADStatus;
 
@@ -81,17 +76,17 @@ mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
 }
 
 mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, unsigned buff_len )
+                            mad_label_kind lk, char *buff, size_t buff_len )
 {
     char        *p;
 
     RemoteOvlTransAddr( &a );
     switch( lk ) {
     case MLK_CODE:
-        p = CnvAddr( a, CAO_NO_PLUS, FALSE, buff, buff_len );
+        p = CnvAddr( a, CAO_NO_PLUS, false, buff, buff_len );
         break;
     default:
-        p = CnvAddr( a, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
+        p = CnvAddr( a, CAO_NORMAL_PLUS, false, buff, buff_len );
         break;
     }
     if( p != NULL )
@@ -100,32 +95,32 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
+mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address *a )
 {
     const char  *old_scan;
-    unsigned    old_radix;
+    mad_radix   old_radix;
 
     old_radix = SetCurrRadix( radix );
     old_scan = ReScan( expr );
     EvalExpr( 0 );   /* memory expression */
-    MakeMemoryAddr( TRUE, EXPR_DATA, a );
+    MakeMemoryAddr( true, EXPR_DATA, a );
     SetCurrRadix( old_radix );
     ReScan( old_scan );
     return( MS_OK );
 }
 
 
-unsigned        DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )
+size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
 {
     return( ProgPeek( a, buff, size ) );
 }
 
-unsigned        DIGCLIENT MADCliWriteMem( address a, unsigned size, const void *buff )
+size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
 {
     return( ProgPoke( a, buff, size ) );
 }
 
-unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
+size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
 {
     static  char ** strings[] = {
         #define pick( e, es, js ) LITREF_ENG( e ),
@@ -133,7 +128,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
         #undef pick
     };
 
-    unsigned    len;
+    size_t      len;
 
     len = strlen( *strings[mstr] );
     if( buff_len > 0 ) {
@@ -141,7 +136,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned bu
         if( buff_len > len )
             buff_len = len;
         memcpy( buff, *strings[mstr], buff_len );
-        buff[buff_len] = '\0';
+        buff[buff_len] = NULLCHAR;
     }
     return( len );
 }
@@ -153,10 +148,10 @@ mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
     return( MS_FAIL );
 }
 
-unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
+size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
 {
     const char          *start;
-    unsigned            len;
+    size_t              len;
 
     if( radix == CurrRadix )
         return( 0 );
@@ -166,7 +161,7 @@ unsigned        DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigne
         if( buff_len > len )
             buff_len = len;
         memcpy( buff, start, buff_len );
-        buff[buff_len] = '\0';
+        buff[buff_len] = NULLCHAR;
     }
     return( len );
 }
@@ -239,22 +234,22 @@ void    GetMADTypeDefault( mad_type_kind mtk, mad_type_info *mti )
 
 void ReportMADFailure( mad_status ms )
 {
-    mad_handle  old;
+    dig_mad     mad_old;
     char        buff[TXT_LEN];
 
     if( SysConfig.mad == MAD_NIL ) {
         /* we're in deep do do */
         StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
     }
-    old = SysConfig.mad;
-    MADNameFile( old, buff, sizeof( buff ) );
+    mad_old = SysConfig.mad;
+    MADNameFile( mad_old, buff, sizeof( buff ) );
     SysConfig.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
-    MADRegister( old, NULL, NULL );
+    MADRegister( mad_old, NULL, NULL );
     _SwitchOn( SW_ERROR_RETURNS );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), old );
+        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), mad_old );
         break;
     case MS_INVALID_MAD_VERSION:
         Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
@@ -312,14 +307,14 @@ void CheckMADChange( void )
     }
 }
 
-static unsigned NormalizeString( char *p )
+static size_t NormalizeString( char *p )
 {
 //    char        *start;
     char        *d;
 
 //    start = p;
     d = p;
-    while( *p != '\0' ) {
+    while( *p != NULLCHAR ) {
         switch( *p ) {
         case ' ':
         case '\t':
@@ -333,17 +328,17 @@ static unsigned NormalizeString( char *p )
         }
         ++p;
     }
-    *d = '\0';
+    *d = NULLCHAR;
     return( d - p );
 }
 
-unsigned GetMADNormalizedString( mad_string ms, char *buff, unsigned buff_len )
+size_t GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len )
 {
     MADCliString( ms, buff, buff_len );
     return( NormalizeString( buff ) );
 }
 
-unsigned GetMADTypeNameForCmd( mad_type_handle th, char *buff, unsigned buff_len )
+size_t GetMADTypeNameForCmd( mad_type_handle th, char *buff, size_t buff_len )
 {
     return( GetMADNormalizedString( MADTypeName( th ), buff, buff_len ) );
 }
@@ -375,34 +370,34 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
 }
 
 struct find_mad {
-    const char  *name;
-    unsigned    len;
-    mad_handle  mad;
+    const char      *name;
+    unsigned        len;
+    dig_mad         mad;
 };
 
-static walk_result FindTheMad( mad_handle mh, void *d )
+static walk_result FindTheMad( dig_mad mad, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];
 //    char                *p;
 
-    MADNameFile( mh, buff, sizeof( buff ) );
+    MADNameFile( mad, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mh;
+        fd->mad = mad;
         return( WR_STOP );
     }
-    MADNameDescription( mh, buff, sizeof( buff ) );
+    MADNameDescription( mad, buff, sizeof( buff ) );
     NormalizeString( buff );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
-        fd->mad = mh;
+        fd->mad = mad;
         return( WR_STOP );
     }
     return( WR_CONTINUE );
 }
 
-mad_handle FindMAD( const char *name, unsigned len )
+dig_mad FindMAD( const char *name, unsigned len )
 {
     struct find_mad     data;
 

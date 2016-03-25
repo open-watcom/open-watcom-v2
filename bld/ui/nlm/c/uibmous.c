@@ -35,10 +35,8 @@
 
 /* NetWare does not support mice.  */
 
-void UIAPI uisetmouse( row, col )
-/********************************/
-    register MOUSEORD        row;
-    register MOUSEORD        col;
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
+/*************************************************/
 {
     row = row;
     col = col;

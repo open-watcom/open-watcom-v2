@@ -66,7 +66,7 @@ bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
         hscroll = 0;
     }
 
-    win_height = _wpi_getheightrect( wnd->hwnd_client );
+    win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
     pos.x = rect->x;
     pos.y = rect->y;
@@ -137,7 +137,7 @@ bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
         hscroll = 0;
     }
 
-    win_height = _wpi_getheightrect( wnd->hwnd_client );
+    win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
     pos.x = rect->x;
     pos.y = rect->y;

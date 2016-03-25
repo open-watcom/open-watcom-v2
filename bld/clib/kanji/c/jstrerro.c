@@ -61,7 +61,7 @@
 **/
 
 
-unsigned char *jsys_errlist[] = {
+char *jsys_errlist[] = {
 /* 0    EZERO           *///"No error",
                             "該当するエラーコードがありません",
 /* 1    ENOENT          *///"No such file or directory",
@@ -127,5 +127,5 @@ _WCRTLINK unsigned char *jstrerror( int errnum )
     if( errnum < 0 || errnum > jsys_nerr ) {
         errnum = 0;
     }
-    return( jsys_errlist[errnum] );
+    return( (unsigned char *)jsys_errlist[errnum] );
 }

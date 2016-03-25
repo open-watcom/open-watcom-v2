@@ -33,11 +33,12 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dui.h"
+#include "dbgdot.h"
+#include "dbgupdt.h"
+
 
 static address          CodeAddr;
 static address          DataAddr;
-
-extern void             DbgUpdate(update_list );
 
 address GetDotAddr( void )
 {

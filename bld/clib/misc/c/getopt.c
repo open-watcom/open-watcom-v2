@@ -65,7 +65,7 @@ _WCRTLINK int getopt( int argc, char * const argv[], const char *optstring )
         return( -1 );
     }
     for( ;; ) {
-        optopt = curr_arg[opt_offset];
+        optopt = (unsigned char)curr_arg[opt_offset];
         if( isspace( optopt ) ) {
             opt_offset++;
             continue;

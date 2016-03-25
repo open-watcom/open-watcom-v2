@@ -48,7 +48,7 @@ BOOL ctl_dcombo_finish( ctl_elt *elt, HANDLE inst, HWND dlg, void *ptr )
     inst = inst;
 
     _value_int( ptr, elt ) = elt->info.dcombo.origin +
-            SendDlgItemMessage( dlg, elt->control,
+            (int)SendDlgItemMessage( dlg, elt->control,
                         ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( TRUE );

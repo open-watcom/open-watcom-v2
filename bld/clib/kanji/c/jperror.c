@@ -73,6 +73,6 @@ _WCRTLINK void jperror( const char *s )
         fputs( s, stderr );
         fputs( ": ", stderr );
     }
-    fputs( jstrerror( _RWD_errno ), stderr );
+    fputs( (char *)jstrerror( _RWD_errno ), stderr );
     fputc( '\n', stderr );
 }

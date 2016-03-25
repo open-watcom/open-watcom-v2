@@ -38,9 +38,9 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "addarith.h"
+#include "dbglkup.h"
 
-extern void             FreeSymHandle( sym_list * );
-extern int              AddrComp( address a, address b );
 
 sym_list *Disambiguate( sym_list *sym, location_context *lc )
 {

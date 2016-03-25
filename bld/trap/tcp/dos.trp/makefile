@@ -2,13 +2,14 @@
 host_cpu = i86
 host_os  = dos
 
+target_cpu = x86
+target_os  = dos
+
 memory_model_i86 = l
 
 # NOTE: This is not working at present...
 
-os = dos
 srv = tcp
-cpu = x86
 which = TRAP
 remote_link = 1
 

@@ -8,7 +8,7 @@ nist_tests = test0 test1 test2 test3 test4 test5 test6 test7 test8 test9
 
 all_tests = $(nist_tests)
 
-!include testenv.mif
+!include testenv1.mif
 
 test : .symbolic start clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
     @set ERROR_FILE=error.out

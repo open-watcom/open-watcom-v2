@@ -8,6 +8,10 @@
 
 :include readonly.sp
 
+:segment CNAME
+:include cpponly.sp
+
+:endsegment
 :include owrtlink.sp
 
 :include cpluspro.sp
@@ -23,7 +27,7 @@
 #endif
 
 _WCRTLINK extern int    _setjmp( jmp_buf __env );
-_WCRTLINK extern void   longjmp( jmp_buf __env, int __val );
+_WCRTLINK _NORETURN extern void   longjmp( jmp_buf __env, int __val );
 
 #if !defined(_SETJMPEX_H_INCLUDED_)
  #define setjmp(__env)  _setjmp(__env)
@@ -45,8 +49,6 @@ _WCRTLINK extern void   longjmp( jmp_buf __env, int __val );
 :endsegment
 #endif
 
-#pragma aux longjmp __aborts;
-
 :segment QNX | LINUX
 :include extunix.sp
 
@@ -61,12 +63,10 @@ typedef struct {
 :include poppack.sp
 
 _WCRTLINK extern void __sigjmpsave( sigjmp_buf __env, int __msk );
-_WCRTLINK extern void siglongjmp( sigjmp_buf __env, int __val );
+_WCRTLINK _NORETURN extern void siglongjmp( sigjmp_buf __env, int __val );
 
 #define sigsetjmp( __env, __msk ) ( __sigjmpsave( __env, __msk ), \
                                     _setjmp( (__env)[0].__buf ) )
-
-#pragma aux siglongjmp __aborts;
 
 :include extepi.sp
 

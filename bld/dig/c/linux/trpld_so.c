@@ -33,18 +33,13 @@
 #include <stdio.h>
 #include <signal.h>
 #include <dlfcn.h>
-#include "trpimp.h"
-#include "tcerr.h"
-#include "trpuximp.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "tcerr.h"
 #include "digio.h"
 
 #include "clibext.h"
 
-
-#if defined( BUILTIN_TRAP_FILE )
-extern const trap_requests *TrapLoad( const trap_callbacks *client );
-#endif
 
 #ifndef __WATCOMC__
 extern char             **environ;
@@ -87,16 +82,32 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
     const char          *ptr;
-    const trap_requests *(*ld_func)( const trap_callbacks * );
+    trap_load_func      *ld_func;
     char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
+#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
+    char                *p;
+#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
+#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
+    for( ptr = parms, p = trap_name; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+        *p++ = *ptr;
+    }
+#else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
         ;
+#endif
 #if !defined( BUILTIN_TRAP_FILE )
+  #ifdef USE_FILENAME_VERSION
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p = '\0';
+    filehndl = DIGPathOpen( buff, p - trap_name, "so", trap_name, sizeof( trap_name ) );
+#else
     filehndl = DIGPathOpen( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
+#endif
     if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
@@ -109,7 +120,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    ld_func = dlsym( TrapFile, "TrapLoad" );
+    ld_func = (trap_load_func *)dlsym( TrapFile, "TrapLoad" );
     if( ld_func != NULL ) {
 #else
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );

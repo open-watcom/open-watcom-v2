@@ -44,6 +44,7 @@
 #include "objout.h"
 #include "namelist.h"
 #include "objio.h"
+#include "optmain.h"
 #include "feprotos.h"
 
 extern  void            OutPatch(label_handle,patch_attr);
@@ -62,7 +63,6 @@ extern  void            TellObjNewLabel( cg_sym_handle );
 extern  void            TellOptimizerByPassed( void );
 extern  void            TellByPassOver( void );
 extern  void            GenSelEntry(bool);
-extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
 extern  void            IterBytes( offset len, byte pat );
 

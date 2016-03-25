@@ -34,18 +34,13 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
+#include "wndsys.h"
+#include "dbgmisc.h"
+#include "remrtrd.h"
+#include "dbgupdt.h"
+#include "dbgwglob.h"
+#include "dbgwrtrd.h"
 
-extern bool             RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize );
-extern void             RemoteUpdateRunThread( thread_state *thd );
-
-extern bool             IsThdCurr( thread_state *thd );
-extern void             SetUnderLine( a_window *, wnd_line_piece * );
-extern void             DbgUpdate( update_list );
-extern bool             HaveRemoteRunThread( void );
-extern void             RemotePollRunThread( void );
-extern void             MakeRunThdCurr( thread_state * );
-extern void             RemoteStopThread( thread_state *thd );
-extern void             RemoteSignalStopThread( thread_state *thd );
 
 #include "menudef.h"
 static gui_menu_struct RunTrdMenu[] = {
@@ -119,12 +114,12 @@ static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         RunThreadWnd = wnd;
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         RunThreadWnd = 0;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
@@ -139,23 +134,23 @@ static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
         } else {
             switch( thd->state ) {
             case THD_SIGNAL:
-                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, TRUE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, TRUE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, FALSE );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, true );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, true );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, false );
                 break;
 
             case THD_DEBUG:
-                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, FALSE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, FALSE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, TRUE );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, false );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, false );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, true );
                 break;
 
             case THD_RUN:
             case THD_WAIT:
             case THD_BLOCKED:
-                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, TRUE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, FALSE );
-                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, FALSE );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_STOP, true );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_SIGNAL_STOP, false );
+                WndMenuEnable( wnd, MENU_RUN_THREAD_CHANGE_TO, false );
                 break;
 
             default:
@@ -200,34 +195,34 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
 {
     thread_state        *thd = GetThreadRow( row );
 
-    line->indent = Indents[ piece ] * WndAvgCharX( wnd );
+    line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
         switch( row ) {
         case 0:
             if( piece < PieceCount ) {
-                line->text = HeaderArr[ piece ];
-                return( TRUE );
+                line->text = HeaderArr[piece];
+                return( true );
             } 
-            return( FALSE );
+            return( false );
         case 1:
-            if( piece != 0 ) return( FALSE );
+            if( piece != 0 ) return( false );
             SetUnderLine( wnd, line );
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     } else {
-        if( thd == NULL ) return( FALSE );
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        if( thd == NULL ) return( false );
+        line->tabstop = false;
+        line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
-        switch( InfoType[ piece ] ) {
+        switch( InfoType[piece] ) {
         case RUN_THREAD_INFO_TYPE_NAME:
-            line->tabstop = TRUE;
-            line->use_prev_attr = FALSE;
+            line->tabstop = true;
+            line->use_prev_attr = false;
             line->text = thd->name;
-            return( TRUE );
+            return( true );
         case RUN_THREAD_INFO_TYPE_STATE:
             if( IsThdCurr( thd ) && ( thd->state == THD_DEBUG ) ) {
                 line->text = LIT_ENG( Current );
@@ -262,25 +257,25 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
                     break;
                 }
             }
-            return( TRUE );
+            return( true );
         case RUN_THREAD_INFO_TYPE_EXTRA:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             line->text = thd->extra;
-            return( TRUE );
+            return( true );
         case RUN_THREAD_INFO_TYPE_CS_EIP:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             if( thd->cs ) {
                 sprintf(TxtBuff, "%04hX:%08lX", thd->cs, (unsigned long)thd->eip );
                 line->text = TxtBuff;
             } else {
                 line->text = "";
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info RunTrdInfo = {
@@ -304,7 +299,7 @@ wnd_info RunTrdInfo = {
 a_window *WndRunTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL,
-                               &TrdIcon, TITLE_SIZE, TRUE ) );
+                               &TrdIcon, TITLE_SIZE, true ) );
 }
 
 void RunThreadNotify( void )

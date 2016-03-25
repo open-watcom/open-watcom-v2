@@ -36,6 +36,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "trpimp.h"
+#include "trpcomm.h"
+#include "coremisc.h"
 
 
 trap_retval ReqFile_get_config( void )
@@ -253,7 +255,7 @@ trap_retval ReqSet_debug_screen( void )
     return( 0 );
 }
 
-unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *ptr;
 
@@ -297,9 +299,11 @@ unsigned FindFilePath( int exe, const char *name, char *result )
         return( TryOnePath( getenv( "PATH" ), &tmp, name, result ) );
     } else {
         len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-        if( len != 0 ) return( len );
+        if( len != 0 )
+            return( len );
         len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-        if( len != 0 ) return( len );
+        if( len != 0 )
+            return( len );
         return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
     }
     return( 0 );

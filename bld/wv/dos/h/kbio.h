@@ -30,38 +30,39 @@
 ****************************************************************************/
 
 
-#pragma aux ShiftStatus =                                       \
-/*      ShiftStatus() : int                             */      \
-0XB4 0X02       /* mov    ah,2                          */      \
-0XCD 0X16       /* int    16                            */      \
-        parm caller [ ax ];
+#pragma aux ShiftStatus =   \
+/* ShiftStatus() : int */   \
+            "mov    ah,2"   \
+            "int    16h"    \
+        parm caller [ax];
 
 
 
-#pragma aux kbhit =                                             \
-/*      kbhit() : char                                  */      \
-0XB4 0X01       /* mov    ah,1                          */      \
-0XCD 0X16       /* int    16                            */      \
-0X75 0X04       /* jnz    ip+4                          */      \
-0X31 0XC0       /* xor    ax,ax                         */      \
-0XEB 0X03       /* jmp    ip+                           */      \
-0XB8 0X01 0X00  /* mov    ax,1                          */      \
+#pragma aux kbhit =         \
+/* kbhit() : char */        \
+            "mov    ah,1"   \
+            "int    16h"    \
+            "jnz short L1"  \
+            "xor    al,al"  \
+            "jmp short L2"  \
+        "L1: mov    al,1"   \
+        "L2:"               \
         parm caller ;
 
 
 
-#pragma aux ScnKey =                                            \
-/*      ScnKey() : int                                  */      \
-0XB4 0X01       /* mov    ah,1                          */      \
-0XCD 0X16       /* int    16                            */      \
+#pragma aux ScnKey =        \
+/* ScnKey() : int */        \
+            "mov    ah,1"   \
+            "int    16h"    \
         parm caller ;
 
 
 
-#pragma aux GtKey =                                             \
-0XB4 0X00       /* mov    ah,0                          */      \
-0XCD 0X16       /* int    16                            */      \
-        parm caller [ ax ];
+#pragma aux GtKey =         \
+            "xor    ah,ah"  \
+            "int    16h"    \
+        parm caller [ax];
 
 
 

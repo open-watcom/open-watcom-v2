@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <limits.h>
 #define INCL_ERRORS
 #define INCL_BASE
 #include <os2.h>
@@ -61,29 +62,30 @@ void LocalErrMsg( sys_error code, char *buff )
         GetDOSErrMsg( code, buff );
         return;
     }
-    buff[msg_len] = '\0';
+    buff[msg_len] = NULLCHAR;
     s = d = buff;
     if( s[0] == 'S' && s[1] == 'Y' && s[2] == 'S' ) {
         /* Got the SYSxxxx: at the front. Take it off. */
         s += 3;
-        for( ;; ) {
-            ch = *s++;
-            if( ch == ':' ) break;
+        while( (ch = *s++) != ':' ) {
             if( ch < '0' || ch > '9' ) {
                 s = buff;
                 break;
             }
         }
     }
-    while( *s == ' ' ) ++s;
-    for( ;; ) {
-        ch = *s++;
-        if( ch == '\0' ) break;
-        if( ch == '\n' ) ch = ' ';
-        if( ch != '\r' ) *d++ = ch;
+    while( *s == ' ' )
+        ++s;
+    while( (ch = *s++) != NULLCHAR ) {
+        if( ch == '\n' )
+            ch = ' ';
+        if( ch != '\r' ) {
+            *d++ = ch;
+        }
     }
-    while( d > buff && d[-1] == ' ' ) --d;
-    *d = '\0';
+    while( d > buff && d[-1] == ' ' )
+        --d;
+    *d = NULLCHAR;
 }
 
 sys_handle LocalOpen( const char *name, open_access access )
@@ -104,9 +106,10 @@ sys_handle LocalOpen( const char *name, open_access access )
     }
     openmode |= 0x20c0;
     openflags = 0;
-    if( access & OP_CREATE ) openflags |= 0x10;
+    if( access & OP_CREATE )
+        openflags |= 0x10;
     openflags |= (access & OP_TRUNC) ? 0x02 : 0x01;
-    rc = DosOpen( name,         /* name */
+    rc = DosOpen( (char *)name, /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
@@ -121,30 +124,56 @@ sys_handle LocalOpen( const char *name, open_access access )
     return( hdl );
 }
 
-unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
+size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
-    USHORT      read;
+    USHORT      read_len;
     USHORT      ret;
+    size_t      total;
+    unsigned    piece_len;
 
-    ret = DosRead( filehndl, ptr, len, &read );
-    if( ret != 0 ) {
-        StashErrCode( ret, OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = DosRead( filehndl, ptr, piece_len, &read_len );
+        if( ret != 0 ) {
+            StashErrCode( ret, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        total += read_len;
+        if( read_len != piece_len )
+            break;
+        ptr = (char *)ptr + read_len;
+        len -= read_len;
     }
-    return( read );
+    return( total );
 }
 
-unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
+size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
-    USHORT  written;
-    USHORT  ret;
+    USHORT      write_len;
+    USHORT      ret;
+    size_t      total;
+    unsigned    piece_len;
 
-    ret = DosWrite( filehndl, (PVOID)ptr, len, &written );
-    if( ret != 0 ) {
-        StashErrCode( ret, OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = DosWrite( filehndl, (PVOID)ptr, piece_len, &write_len );
+        if( ret != 0 ) {
+            StashErrCode( ret, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        total += write_len;
+        if( write_len != piece_len )
+            break;
+        ptr = (char *)ptr + write_len;
+        len -= write_len;
     }
-    return( written );
+    return( total );
 }
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
@@ -155,12 +184,12 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     ret = DosChgFilePtr( hdl, len, method, &new );
     if( ret != 0 ) {
         StashErrCode( ret, OP_LOCAL );
-        return( -1UL );
+        return( ERR_SEEK );
     }
     return( new );
 }
 
-rc_erridx LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle filehndl )
 {
     USHORT      ret;
 
@@ -168,15 +197,15 @@ rc_erridx LocalClose( sys_handle filehndl )
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 
-rc_erridx LocalErase( const char *name )
+error_handle LocalErase( const char *name )
 {
     USHORT      ret;
 
-    ret = DosDelete( name, 0 );
+    ret = DosDelete( (char *)name, 0 );
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 
-sys_handle LocalHandleSys( handle h )
+sys_handle LocalHandleSys( file_handle fh )
 {
-    return( h );
+    return( (sys_handle)fh );
 }

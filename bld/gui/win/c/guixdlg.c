@@ -311,8 +311,8 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         wnd->hwnd_pinfo.normal_pres =
             _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
-        _wpi_getclientrect( hwnd, &wnd->hwnd_client );
-        wnd->root_client = wnd->hwnd_client;
+        _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
+        wnd->root_client_rect = wnd->hwnd_client_rect;
         GUIInsertCtrlWnd( wnd );
         if( wnd->flags & IS_RES_DIALOG ) {
             GUIInsertResDialogControls( wnd );
@@ -324,8 +324,8 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     switch( message ) {
     case WM_SIZE :
         if( wnd ) {
-            _wpi_getclientrect( hwnd, &wnd->hwnd_client );
-            wnd->root_client = wnd->hwnd_client;
+            _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
+            wnd->root_client_rect = wnd->hwnd_client_rect;
             size.x = _wpi_getwmsizex( wparam, lparam );
             size.y = _wpi_getwmsizey( wparam, lparam );
             GUIScreenToScaleR( &size );

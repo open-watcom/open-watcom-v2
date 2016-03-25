@@ -169,7 +169,7 @@ PUBLIC GetIDTSel_
         mov     _idt+5,al               ;
         mov     _idt+6,000h
 
-        mov     ax,0                    ; now, get an LDT
+        xor     ax,ax                   ; now, get an LDT
         mov     cx,1                    ;    entry from
         int     31h                     ;       DPMI
         mov     _IDTSel,ax

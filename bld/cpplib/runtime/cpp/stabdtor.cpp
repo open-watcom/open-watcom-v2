@@ -42,31 +42,33 @@ static RO_STATE* nextDtorPosn(  // POSITION TO NEXT DTOR
 
     state = CPPLIB( stab_trav_move )( traverse );
     if( state != NULL
-     && state->dtor == NULL
-     && traverse->state_var != traverse->bound ) {
+      && state->dtor == NULL
+      && traverse->state_var != traverse->bound ) {
         cmd = state->u.cmd_addr;
         switch( cmd->base.code ) {
-          case DTC_CTOR_TEST :
-          case DTC_TEST_FLAG :
-          case DTC_SET_SV :
-          default :
+        case DTC_CTOR_TEST :
+        case DTC_TEST_FLAG :
+        case DTC_SET_SV :
+        default :
             GOOF_EXC( "nextDtorPosn: bad DTC_" );
-          case DTC_CATCH :
-          case DTC_TRY :
-          case DTC_FN_EXC :
+            break;
+        case DTC_CATCH :
+        case DTC_TRY :
+        case DTC_FN_EXC :
 #ifndef RT_EXC_ENABLED
             GOOF_EXC( "nextDtorPosn: -xs code in -xd library" );
+            break;
 #endif
-          case DTC_ACTUAL_VBASE :
-          case DTC_ACTUAL_DBASE :
-          case DTC_COMP_VBASE :
-          case DTC_COMP_DBASE :
-          case DTC_COMP_MEMB :
-          case DTC_ARRAY_INIT :
-          case DTC_DLT_1 :
-          case DTC_DLT_2 :
-          case DTC_DLT_1_ARRAY :
-          case DTC_DLT_2_ARRAY :
+        case DTC_ACTUAL_VBASE :
+        case DTC_ACTUAL_DBASE :
+        case DTC_COMP_VBASE :
+        case DTC_COMP_DBASE :
+        case DTC_COMP_MEMB :
+        case DTC_ARRAY_INIT :
+        case DTC_DLT_1 :
+        case DTC_DLT_2 :
+        case DTC_DLT_1_ARRAY :
+        case DTC_DLT_2_ARRAY :
             break;
         }
     }
@@ -141,7 +143,8 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
     next_state = nextDtorPosn( &traversal );
     ro = rtc->ro;
     for( ; ; ) {
-        if( traversal.state_var == state_var ) break;
+        if( traversal.state_var == state_var )
+            break;
         if( traversal.state_var < state_var ) {
             GOOF_EXC( "destruct_traverse: underflow sv" );
         }
@@ -154,9 +157,10 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
         if( dtor == NULL ) {
             cmd = curr_state->u.cmd_addr;
             switch( cmd->base.code ) {
-              default :
+            default :
                 GOOF_EXC( "destruct_traverse: invalid command" );
-              case DTC_ARRAY :
+                break;
+            case DTC_ARRAY :
               { RT_ARRAY_INIT* array_init;
                 array_init = PointUsingOffset( RT_ARRAY_INIT
                                              , rw
@@ -165,7 +169,7 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
                                     , cmd->array.count
                                     , cmd->array.sig );
               } break;
-              case DTC_CATCH :
+            case DTC_CATCH :
 #ifdef RT_EXC_ENABLED
                 cmd = TryFromCatch( cmd );
                 dtorCaughtException( rtc, rw, cmd );
@@ -173,53 +177,53 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
 #endif
                 break;
-              case DTC_FN_EXC :
+            case DTC_FN_EXC :
 #ifdef RT_EXC_ENABLED
                 dtorFnexcException( rtc, rw, cmd );
 #else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
 #endif
                 break;
-              case DTC_TRY :
+            case DTC_TRY :
 #ifndef RT_EXC_ENABLED
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
 #endif
                 break;
-              case DTC_COMP_VBASE :
+            case DTC_COMP_VBASE :
                 dtorComponent( cmd
                              , DTOR_COMPONENT
                              , rtc
                              , DTOR_IGNORE_COMPS | DTOR_COMPONENT );
                 break;
-              case DTC_ACTUAL_VBASE :
-              case DTC_ACTUAL_DBASE :
-              case DTC_COMP_DBASE :
+            case DTC_ACTUAL_VBASE :
+            case DTC_ACTUAL_DBASE :
+            case DTC_COMP_DBASE :
                 dtorComponent( cmd
                              , DTOR_COMPONENT
                              , rtc
                              , DTOR_IGNORE_COMPS );
                 break;
-              case DTC_COMP_MEMB :
+            case DTC_COMP_MEMB :
                 dtorComponent( cmd
                              , DTOR_NULL
                              , rtc
                              , DTOR_IGNORE_COMPS );
                 break;
-              case DTC_ARRAY_INIT :
+            case DTC_ARRAY_INIT :
               { RT_ARRAY_INIT* ctl;         // - array-init. block
                 ctl = PointUsingOffset( RT_ARRAY_INIT
                                       , rw
                                       , cmd->array_init.offset );
                 CPPLIB( dtor_array )( ctl->array, ctl->index, ctl->sig );
               } break;
-              case DTC_DLT_1 :
+            case DTC_DLT_1 :
               { void** object_ptr;          // - addr[ pointer to object ]
                 object_ptr = PointUsingOffset( void*
                                              , rw
                                              , cmd->delete_1.offset );
                 ( *cmd->delete_1.op_del )( *object_ptr );
               } break;
-              case DTC_DLT_1_ARRAY :
+            case DTC_DLT_1_ARRAY :
               { void** object_ptr;          // - addr[ pointer to object ]
                 object_ptr = PointUsingOffset( void*
                                              , rw
@@ -227,14 +231,14 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
                 ARRAY_STORAGE* array_ptr = ArrayStorageFromArray( *object_ptr );
                 ( *cmd->delete_1.op_del )( array_ptr );
               } break;
-              case DTC_DLT_2 :
+            case DTC_DLT_2 :
               { void** object_ptr;          // - addr[ pointer to object ]
                 object_ptr = PointUsingOffset( void*
                                              , rw
                                              , cmd->delete_2.offset );
                 ( *cmd->delete_2.op_del )( *object_ptr, cmd->delete_2.size );
               } break;
-              case DTC_DLT_2_ARRAY :
+            case DTC_DLT_2_ARRAY :
               { void** object_ptr;          // - addr[ pointer to object ]
                 object_ptr = PointUsingOffset( void*
                                              , rw

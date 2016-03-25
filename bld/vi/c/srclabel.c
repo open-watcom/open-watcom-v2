@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 
 #include "clibext.h"
 
@@ -39,12 +38,12 @@
 /*
  * FindLabel - locate a label
  */
-int FindLabel( labels *labs, label lbl )
+int FindLabel( labels *labs, const char *lbl )
 {
     int i;
 
     for( i = 0; i < labs->cnt; i++ ) {
-        if( !stricmp( lbl, labs->name[i] ) )  {
+        if( stricmp( lbl, labs->name[i] ) == 0 )  {
             return( i );
         }
     }
@@ -55,7 +54,7 @@ int FindLabel( labels *labs, label lbl )
 /*
  * AddLabel - add a label in the file
  */
-vi_rc AddLabel( sfile *sf, labels *labs, label lbl )
+vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
 {
     /*
      * find label name
@@ -73,7 +72,7 @@ vi_rc AddLabel( sfile *sf, labels *labs, label lbl )
     /*
      * set name and position of label
      */
-    AddString( &(labs->name[labs->cnt]), lbl );
+    labs->name[labs->cnt] = DupString( lbl );
     labs->pos[labs->cnt] = sf;
     labs->cnt++;
     return( ERR_NO_ERR );

@@ -34,7 +34,7 @@
 #include "win.h"
 #include <assert.h>
 
-static vi_key   lastChar[2];
+static vi_key   lastKeys[2];
 
 static vi_rc checkLine( linenum *ln )
 {
@@ -146,7 +146,7 @@ vi_rc MovePageMiddle( range *r, long count )
         return( ERR_NO_FILE );
     }
     count = count;
-    ln = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - 1;
+    ln = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
     CFindLastLine( &lne );
     lne = lne - LeftTopPos.line + 1;
     if( ln > lne ) {
@@ -171,7 +171,7 @@ vi_rc MovePageBottom( range *r, long count )
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( IsPastLastLine( LeftTopPos.line + lines ) ) {
         CFindLastLine( &ln );
         amt = ln - LeftTopPos.line - count + 1;
@@ -240,6 +240,7 @@ vi_rc MoveLineEnd( range *r, long count )
     }
 }
 
+#if 0
 vi_rc LineEndRange( range *r, long count )
 {
     if( CurrentLine == NULL ) {
@@ -252,6 +253,7 @@ vi_rc LineEndRange( range *r, long count )
     r->end.column = CurrentLine->len + 1;
     return( ERR_NO_ERR );
 }
+#endif
 
 vi_rc MoveStartOfLine( range *r, long count )
 {
@@ -305,14 +307,13 @@ vi_rc MoveTab( range *r, long count )
     r->line_based = false;
     len = VirtualLineLen( CurrentLine->data );
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    while( count ) {
+    for( ; count > 0; --count ) {
         i = Tab( vc, EditVars.TabAmount );
         vc += i;
         if( vc > len ) {
             r->start.column = len;
             return( ERR_NO_SUCH_COLUMN );
         }
-        count -= 1;
     }
     r->start.column = RealColumnOnCurrentLine( vc );
     return( ERR_NO_ERR );
@@ -332,14 +333,13 @@ vi_rc MoveShiftTab( range *r, long count )
     r->start.line = CurrentPos.line;
     r->line_based = false;
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
-    while( count ) {
+    for( ; count > 0; --count ) {
         i = ShiftTab( vc, EditVars.TabAmount );
         vc -= i;
         if( vc < 1 ) {
             r->start.column = 1;
             return( ERR_NO_SUCH_COLUMN );
         }
-        count -= 1;
     }
     r->start.column = RealColumnOnCurrentLine( vc );
     return( ERR_NO_ERR );
@@ -490,8 +490,8 @@ static vi_rc doACharFind( range *r, bool forward, int num, long count )
     lc = LastEvent;
     rc = FindCharOnCurrentLine( forward, num, &c, count );
     if( rc == ERR_NO_ERR && c >= 0 ) {
-        lastChar[0] = lc;
-        lastChar[1] = LastEvent;
+        lastKeys[0] = lc;
+        lastKeys[1] = LastEvent;
         r->start.column = c;
         return( ERR_NO_ERR );
     }
@@ -561,13 +561,13 @@ static vi_rc moveToLastCFind( range *r, bool reverse, long count )
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    if( lastChar[0] == 0 ) {
+    if( lastKeys[0] == VI_KEY( NULL ) ) {
         return( ERR_NO_PREVIOUS_COMMAND );
     }
-    tmp[0] = lastChar[0];
-    tmp[1] = lastChar[1];
-    KeyAdd( lastChar[1] );
-    lastc = lastChar[0];
+    tmp[0] = lastKeys[0];
+    tmp[1] = lastKeys[1];
+    KeyAdd( lastKeys[1] );
+    lastc = lastKeys[0];
     if( reverse ) {
         if( islower( lastc ) ) {
             lastc = toupper( lastc );
@@ -576,8 +576,8 @@ static vi_rc moveToLastCFind( range *r, bool reverse, long count )
         }
     }
     rc = (EventList[lastc].rtn.move)( r, count );
-    lastChar[0] = tmp[0];
-    lastChar[1] = tmp[1];
+    lastKeys[0] = tmp[0];
+    lastKeys[1] = tmp[1];
     return( rc );
 
 } /* moveToLastCFind */
@@ -640,7 +640,7 @@ vi_rc MoveTopOfPage( range *r, long count )
 vi_rc MoveBottomOfPage( range *r, long count )
 {
     int bottom = LeftTopPos.line +
-                 WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - 1;
+                 WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
     count = count;
     return( doMoveToStartEndOfLine( r, bottom - CurrentPos.line, false ) );
 }

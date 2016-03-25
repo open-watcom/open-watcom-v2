@@ -6,26 +6,30 @@ include struct.inc
 
         modstart    fldm086, word
 
-
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>     long double math library
-;<>
-;<>     inputs: AX - pointer to long double (op1)
-;<>             DX - pointer to long double (op2)
-;<>             BX - pointer to long double (result)
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
         xdefp   __FLDM           ; 10-byte real multiply
+        xdefp   __FLDMC
         xdefp   ___LDM           ; 10-byte real multiply
 
-
-;=====================================================================
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;       long double math library
+;  
+;ifdef _BUILDING_MATHLIB
+;       inputs: SS:AX - pointer to long double (op1)
+;               SS:DX - pointer to long double (op2)
+;               SS:BX - pointer to long double (result)
+;else
+;       inputs: DS:AX - pointer to long double (op1)
+;               DS:DX - pointer to long double (op2)
+;               DS:BX - pointer to long double (result)
+;endif
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         defp    __FLDM
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -51,9 +55,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDM
 
+
         defp    __FLDMC
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -86,9 +93,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDMC
 
+
         defp    mul_oflow       ; overflow
+
         mov     SI,CX           ; get sign
         or      SI,7FFFh        ; set exponent for infinity
         mov     AX,8000h        ; set fraction
@@ -99,14 +109,16 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc mul_oflow
+
 ;
-; input:
-;       DI - pointer to operand
-;       AX - sign+exponent of op1
-;       DX - sign+exponent of op2
+;       input:  DI - pointer to operand
+;               AX - sign+exponent of op1
+;               DX - sign+exponent of op2
 ;
         defp    mul_by_pow2
+
         mov     CX,AX           ; calc. sign of result
         xor     CX,DX           ; ...
         and     CX,8000h        ; ...
@@ -157,18 +169,24 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc mul_by_pow2
 
 
-; input:
-;       SI - pointer to op1
-;       DI - pointer to op2
-; output:
-;       SI - exponent+sign of result
-;       AX:BX:CX:DX - mantissa
-
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:SI - pointer to op1
+;               SS:DI - pointer to op2
+;else
+;       input:  DS:SI - pointer to op1
+;               DS:DI - pointer to op2
+;endif
+;       output: SI          - exponent+sign of result
+;               AX:BX:CX:DX - mantissa
+;
 
         defp    ___LDM
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS

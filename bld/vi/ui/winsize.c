@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,42 +38,43 @@
 /*
  * ResizeWindow - give a window a new size
  */
-vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
-    wind        *oldw;
+    window      *oldw;
 //    int         bt, k;
 //    char        *txt, *tptr;
 //    char        *ot;
 //    int         i, j;
 
-    oldw = AccessWindow( wn );
+    oldw = WINDOW_FROM_ID( wid );
+    AccessWindow( oldw );
 
     if( !ValidDimension( x1, y1, x2, y2, oldw->has_border ) ) {
         ReleaseWindow( oldw );
         return( ERR_WIND_INVALID );
     }
-    RestoreOverlap( wn, scrflag );
+    RestoreOverlap( wid, scrflag );
 
-    AllocWindow( wn, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
+    AllocWindow( wid, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
             oldw->border_color1, oldw->border_color2, oldw->text_color, oldw->background_color );
-    MarkOverlap( wn );
+    MarkOverlap( wid );
 
     /*
      * display the new text
      */
-    ClearWindow( wn );
+    ClearWindow( wid );
     if( oldw->title != NULL ) {
-        WindowTitle( wn, oldw->title );
+        WindowTitle( wid, oldw->title );
     } else {
-        DrawBorder( wn );
+        DrawBorder( wid );
     }
     DCResize( CurrentInfo );
     DCDisplayAllLines();
     DCUpdate();
 
     FreeWindow( oldw );
+    ReleaseWindow( WINDOW_FROM_ID( wid ) );
 
-    ReleaseWindow( Windows[wn] );
     return( ERR_NO_ERR );
 
 } /* ResizeWindow */
@@ -80,14 +82,12 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
 /*
  * ResizeWindowRelative - resize current window with relative shifts
  */
-vi_rc ResizeWindowRelative( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
+vi_rc ResizeWindowRelative( window_id wid, windim x1, windim y1, windim x2, windim y2, bool scrflag )
 {
-    wind        *w;
-    vi_rc       rc;
+    window      *w;
 
-    w = Windows[wn];
-    rc = ResizeWindow( wn, w->x1 + x1, w->y1 + y1, w->x2 + x2, w->y2 + y2, scrflag );
-    return( rc );
+    w = WINDOW_FROM_ID( wid );
+    return( ResizeWindow( wid, w->area.x1 + x1, w->area.y1 + y1, w->area.x2 + x2, w->area.y2 + y2, scrflag ) );
 
 } /* ResizeWindowRelative */
 
@@ -99,8 +99,8 @@ static int getMinSlot( void )
     int i;
 
     for( i = 0; i < MAX_MIN_SLOTS; i++ ) {
-        if( MinSlots[i] == 0 ) {
-            MinSlots[i] = 1;
+        if( !MinSlots[i] ) {
+            MinSlots[i] = true;
             return( i + 1 );
         }
     }
@@ -116,7 +116,7 @@ static int getMinSlot( void )
 vi_rc MinimizeCurrentWindow( void )
 {
     int     i, j;
-    int     minx1, miny1;
+    windim  minx1, miny1;
     vi_rc   rc;
 
     i = getMinSlot();
@@ -135,8 +135,8 @@ vi_rc MinimizeCurrentWindow( void )
             minx1 = 0;
         }
     }
-    rc = CurrentWindowResize( minx1, miny1, minx1 + MIN_WIN_WIDTH - 1, miny1 + 2 );
-    WindowAuxUpdate( CurrentWindow, WIND_INFO_MIN_SLOT, i );
+    rc = ResizeCurrentWindow( minx1, miny1, minx1 + MIN_WIN_WIDTH - 1, miny1 + 2 );
+    WindowAuxUpdate( current_window_id, WIND_INFO_MIN_SLOT, i );
     return( rc );
 
 } /* MinimizeCurrentWindow */
@@ -146,17 +146,17 @@ vi_rc MinimizeCurrentWindow( void )
  */
 vi_rc MaximizeCurrentWindow( void )
 {
-    vi_rc   rc;
+    windim  x1, x2;
 
+    x1 = editw_info.area.x1;
+    x2 = editw_info.area.x2;
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2 - EditVars.LineNumWinWidth, editw_info.y2 );
+            x2 -= EditVars.LineNumWinWidth;
         } else {
-            rc = CurrentWindowResize( editw_info.x1 + EditVars.LineNumWinWidth, editw_info.y1, editw_info.x2, editw_info.y2 );
+            x1 += EditVars.LineNumWinWidth;
         }
-    } else {
-        rc = CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2 );
     }
-    return( rc );
+    return( ResizeCurrentWindow( x1, editw_info.area.y1, x2, editw_info.area.y2 ) );
 
 } /* MaximizeCurrentWindow */

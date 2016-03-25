@@ -35,13 +35,13 @@
 #include <direct.h>
 #include "rdos.h"
 #include "stdrdos.h"
+#include "trpimp.h"
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version    ver;
 
-    remote = remote;
-    parms = parms;
+    remote = remote; parms = parms;
 
     err[0] = 0;
     ver.major = TRAP_MAJOR_VERSION;

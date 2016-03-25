@@ -79,7 +79,7 @@ extern void FlipCurrentRelBar(sio_data *curr_sio);
 extern void FlipCurrentMaxBar(sio_data *curr_sio);
 extern void ErrorMsg(char *msg,... );
 extern int SampleNumRows( a_window * wnd );
-extern void SetCurrentMAD( mad_handle );
+extern void SetCurrentMAD( dig_mad );
 
 
 extern sio_data *       SIOData;
@@ -932,6 +932,7 @@ STATIC bool sampleSetLine( a_window *wnd, int row, int piece,
         Ring();
         return( false );
     }
+    catcher_extent = 0;
     if( sampNewRow ) {
         catcher_extent = BAR_TAIL_POINT - (WndMaxCharX( wnd ) / 2);
         catcher_extent = WPPixelTruncWidth( catcher_extent );

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdlib.h>
 #include "mem.h"
 #include "palette.h"

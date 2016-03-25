@@ -43,3 +43,5 @@ extern mod_handle       ModListMod( const module_list *list, int member_idx );
 extern void             ModListName( const module_list *list, int member_idx, char *buff );
 extern void             ModListInit( module_list *list, const char *prefix );
 extern void             ModListFree( module_list *list );
+extern int              ModCompare( mod_handle const *a, mod_handle const *b );
+extern address          ModFirstAddr( mod_handle mod );

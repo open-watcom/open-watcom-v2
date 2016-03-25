@@ -31,14 +31,13 @@
 
 
 /* this stuff is written out by wvtypes.c in codegen */
-typedef unsigned_16 cue_idx;
 
 #include "pushpck1.h"
 typedef struct cue_state{
-    cue_idx     cue;
-    short       fno;
-    unsigned_16 line;
-    unsigned_16 col;
+    line_number     cue;
+    unsigned_16     fno;
+    line_number     line;
+    unsigned_16     col;
 } _WCUNALIGNED cue_state;
 #include "poppck.h"
 

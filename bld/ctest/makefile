@@ -24,7 +24,7 @@ callconv_tests = $(gr2)
 diagnose_tests = $(gr1)
 inline_tests   = $(gr3)
 
-!include testenv.mif
+!include testenv1.mif
 
 test : .symbolic start clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
     @set ERROR_FILE=error.out

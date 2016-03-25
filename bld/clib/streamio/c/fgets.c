@@ -44,22 +44,23 @@ _WCRTLINK CHAR_TYPE *__F_NAME(fgets,fgetws)( CHAR_TYPE *s, int n, FILE *fp )
     _ValidFile( fp, 0 );
     _AccessFile( fp );
 
-    oflag = fp->_flag & (_SFERR | _EOF);                /* 06-sep-91 */
+    oflag = fp->_flag & (_SFERR | _EOF);
     fp->_flag &= ~(_SFERR | _EOF);
     cs = s;
 
     /* don't use macro version of getc: multi-threading issues */
-    while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != __F_NAME(EOF,WEOF) ) {
-        if( (*cs++ = c) == STRING( '\n' ) )
+    while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != INTCHAR_EOF ) {
+        if( (*cs++ = (CHAR_TYPE)c) == STRING( '\n' ) ) {
             break;
+        }
     }
 
-    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s || ferror( fp )) ) {
+    if( c == INTCHAR_EOF && (cs == s || ferror( fp )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;
     }
-    fp->_flag |= oflag;                                 /* 06-sep-91 */
+    fp->_flag |= oflag;
     _ReleaseFile( fp );
     return( s );
 }

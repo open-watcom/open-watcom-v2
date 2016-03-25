@@ -120,11 +120,11 @@ typedef struct {
 } mem_block;
 
 #define SET_NIL_ADDR( addr )    \
-        { addr.indirect = 0; addr.sect_id = 0; addr.mach.segment = 0; addr.mach.offset = 0; }
+        { (addr).indirect = 0; (addr).sect_id = 0; (addr).mach.segment = 0; (addr).mach.offset = 0; }
 
-#define IS_NIL_ADDR( addr )     ( (addr.indirect == 0)          \
-                                && (addr.mach.segment == 0)     \
-                                && (addr.mach.offset == 0) )
+#define IS_NIL_ADDR( addr )     ( ((addr).indirect == 0)          \
+                                && ((addr).mach.segment == 0)     \
+                                && ((addr).mach.offset == 0) )
 
 #define ConvAddr32ToAddr48( addr32, addr48 ) \
 \

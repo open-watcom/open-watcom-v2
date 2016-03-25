@@ -197,7 +197,7 @@ static struct {
     unsigned    active : 1;
 } examples;
 
-static char *fname;
+static char *ifname;
 static FILE *i_gml;
 static FILE *o_msgc;
 static FILE *o_msgh;
@@ -259,7 +259,7 @@ static void error( char *f, ... )
     ++errors;
     va_start( args, f );
     if( line ) {
-        printf( "%s(%u): Error! E000: ", fname, line );
+        printf( "%s(%u): Error! E000: ", ifname, line );
     }
     vprintf( f, args );
     va_end( args );
@@ -273,7 +273,7 @@ static void warn( char *f, ... )
     va_start( args, f );
     if( !flags.no_warn ) {
         if( line ) {
-            printf( "%s(%u): Warning! W000: ", fname, line );
+            printf( "%s(%u): Warning! W000: ", ifname, line );
         }
         vprintf( f, args );
     }
@@ -306,8 +306,6 @@ static void initFILE( FILE **f, char *n, char *m )
         fatal( "cannot open file" );
     }
     if( m[0] == 'r' ) {
-        // read access
-        fname = strdup( n );
     } else {
         // write access
         outputFNames[ nextOutputFName++ ] = n;
@@ -344,6 +342,7 @@ static void processOptions( char **argv )
         flags.gen_gpick = 1;
         ++argv;
     }
+    ifname = *argv;
     initFILE( &i_gml, *argv, "rb" );
     ++argv;
     initFILE( &o_msgc, *argv, "w" );
@@ -634,7 +633,7 @@ static void do_msgsym( char *p )
     currMSGSYM = &(msg->next);
     msg->sortedByName[0] = NULL;
     msg->sortedByName[1] = NULL;
-    msg->fname = fname;
+    msg->fname = ifname;
     msg->line = line;
     msg->grpIndex =  messageIndex;
     msg->index = groupIndex + messageIndex;
@@ -1516,12 +1515,12 @@ static void dumpInternational( void )
     unsigned lang;
     unsigned len;
     int dump_warning;
-    auto char fname[16];
+    auto char err_fname[16];
     auto LocaleErrors errors_header;
 
     for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
-        sprintf( fname, "errors%02u." LOCALE_DATA_EXT, lang );
-        fp = fopen( fname, "wb" );
+        sprintf( err_fname, "errors%02u." LOCALE_DATA_EXT, lang );
+        fp = fopen( err_fname, "wb" );
         if( fp == NULL ) {
             fatal( "cannot open international file for write" );
         }

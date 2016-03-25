@@ -92,7 +92,6 @@ typedef struct fcn {
     unsigned    thunkindex:5;   /* ThunkStrs index */
     unsigned    thunk:1;        /* requires a thunking layer */
     unsigned    is_16:1;        /* is an _16 function */
-    unsigned    is_tinyio:1;    /* is a tinyio function */
     unsigned    noregfor_16:1;  /* _16 function has no regular function */
     unsigned    need_fpusave:1; /* function requires floating point save */
     unsigned    __special_func:1;/* special @func requires extra thunking */
@@ -420,16 +419,11 @@ void ProcessDefFile( FILE *f )
         }
         tmpf->fn = myalloc( strlen( fn ) + 1 );
         strcpy( tmpf->fn, fn );
-        if( !strncmp( fn,"_Tiny", 5 ) || !strncmp( fn, "_nTiny", 6 ) ) {
-            tmpf->is_tinyio = 1;
+        tmpf->noregfor_16 = 0;
+        if( !strncmp( fn, "_16", 3 ) ) {
+            tmpf->is_16 = 1;
         } else {
-            tmpf->is_tinyio = 0;
-            tmpf->noregfor_16 = 0;
-            if( !strncmp( fn, "_16", 3 ) ) {
-                tmpf->is_16 = 1;
-            } else {
-                tmpf->is_16 = 0;
-            }
+            tmpf->is_16 = 0;
         }
         ClassifyParmList( plist, tmpf );
 
@@ -1267,7 +1261,7 @@ void DLLThunkHeader( void )
     fprintf( dllthunk, "public __BackPatch_xxx\n" );
     fprintf( dllthunk, "__BackPatch_xxx proc near\n" );
     fprintf( dllthunk, "        push   di\n" );
-    fprintf( dllthunk, "        mov    dh,0\n" );
+    fprintf( dllthunk, "        xor    dh,dh\n" );
     fprintf( dllthunk, "        mov    di,dx\n" );
     fprintf( dllthunk, "        add    di,di\n" );
     fprintf( dllthunk, "        mov    dx,ax\n" );
@@ -1378,13 +1372,8 @@ void FunctionHeader( void )
                         tmpf->fn, tmpf->class, th2 );
             }
         } else {
-            if( tmpf->is_tinyio ) {
-                fprintf( stubsinc,"%sextrn        _%s:FAR ; t=%d %s\n", th1,
-                        tmpf->fn, tmpf->class, th2 );
-            } else {
-                fprintf(stubsinc,"%sextrn        %s:FAR ; t=%d %s\n",
-                        th1, tmpf->fn, tmpf->class, th2 );
-            }
+            fprintf(stubsinc,"%sextrn        %s:FAR ; t=%d %s\n",
+                    th1, tmpf->fn, tmpf->class, th2 );
         }
         tmpf = tmpf->next;
     }
@@ -1420,9 +1409,7 @@ void FunctionHeader( void )
                 }
             }
         } else {
-            if( tmpf->is_tinyio ) {
-                fprintf( stubs, "  dd _%s\n", tmpf->fn );
-            } else if( tmpf->thunk ) {
+            if( tmpf->thunk ) {
                 fprintf( stubs, "  dd __DLLPatch ; %s%s\n",
                                 thunkstr, tmpf->fn );
             } else {

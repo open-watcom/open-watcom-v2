@@ -45,7 +45,7 @@ modstart        macro   modname
                 endm
 
 xdefp           macro   xsym
-ifdef _DEBUG
+ifndef NDEBUG
                 public  xsym
 endif
                 endm
@@ -78,6 +78,10 @@ include struct.inc
 include fstatus.inc
 include cmpconst.inc
 include fpe86.inc
+include shiftmac.inc
+
+include normdw.asm
+include normqw.asm
 include flda086.asm
 include fldc086.asm
 include fldd086.asm

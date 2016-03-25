@@ -592,7 +592,7 @@ shift_16:
           mov   SI,DI           ; - . . .
           mov   DI,CX           ; - . . .
           and   DI,00FFh        ; (we only move low word)
-          mov   CL,0            ; - . . .
+          xor   CL,CL           ; - . . .
         _endloop                ; endloop
         mul     BL              ; mulitply 2 most significant bytes
         add     AX,DI           ; and add to the result
@@ -762,7 +762,7 @@ __FDDemu:
           mov   BP,BX           ; - save exponent in BP
           push  CX              ; - save sign
           mov   BH,DL           ; - get divisor into BX
-          mov   BL,0            ; - . . .
+          xor   BL,BL           ; - . . .
           _shl  BX,1            ; - move to top of register
           _shl  BX,1            ; - . . .
           _shl  BX,1            ; - . . .
@@ -771,7 +771,7 @@ __FDDemu:
           or    BX,AX           ; - get all 16 bits together in BX (divisor)
 
           mov   DL,DH           ; - set up high order word of dividend
-          mov   DH,0            ; - . . .
+          xor   DH,DH           ; - . . .
           mov   AX,ss:4[DI]     ; - get next word of dividend
           div   BX              ; - do partial divide
           push  AX              ; - save next word of quotient

@@ -76,13 +76,15 @@ bool intern initmonitor( void )
         UIData = &ui_data;
     }
     vioMode.cb = sizeof(vioMode);
-    if( VioGetMode(&vioMode, HANDLE) != 0 ) return( FALSE );
+    if( VioGetMode(&vioMode, HANDLE) != 0 )
+        return( false );
 
     UIData->width  = vioMode.col;
     UIData->height = vioMode.row;
 
-    config.cb = sizeof(config);
-    if( VioGetConfig(0,&config,0) != 0 ) return( FALSE );
+    config.cb = sizeof( config );
+    if( VioGetConfig(0,&config,0) != 0 )
+        return( false );
     if( config.display == 3 ) {
         UIData->colour = M_BW;
     } else {
@@ -91,36 +93,36 @@ bool intern initmonitor( void )
         case 1:         UIData->colour = M_CGA; break;
         case 2:         UIData->colour = M_EGA; break;
         case 3:         UIData->colour = M_VGA; break;
-        default:                UIData->colour = M_VGA; break;
+        default:        UIData->colour = M_VGA; break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
-int intern initbios( void )
-/*************************/
+bool intern initbios( void )
+/**************************/
 {
-    int                 initialized;
+    bool                initialized;
     // unsigned            offset;
-    #ifdef __386__
-        void        __far16 *ptrLVB;
-        void                *ptr;
-    #else
-        unsigned    long    ptrLVB;
-    #endif
+#ifdef __386__
+    void        __far16 *ptrLVB;
+    void                *ptr;
+#else
+    unsigned    long    ptrLVB;
+#endif
     unsigned    short   SizeOfLVB;
 
-    initialized = FALSE;
+    initialized = false;
     if( initmonitor() ) {
         VioGetBuf( (PULONG) &ptrLVB, (PUSHORT) &SizeOfLVB, 0);
         // offset = SCREEN_OFFSET; AFS 08-feb-91
-        #ifdef __386__
-            ptr = ptrLVB;
-            UIData->screen.origin = ptr;
-        #else
-            UIData->screen.origin = (LP_PIXEL)ptrLVB;
-        #endif
+#ifdef __386__
+        ptr = ptrLVB;
+        UIData->screen.origin = ptr;
+#else
+        UIData->screen.origin = (LP_PIXEL)ptrLVB;
+#endif
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
@@ -137,7 +139,7 @@ int intern initbios( void )
             UIData->tick_delay = 500;
             UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
         }
-        initialized = TRUE;
+        initialized = true;
     }
     return( initialized );
 }

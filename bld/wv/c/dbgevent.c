@@ -40,23 +40,14 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
-
-
-extern void             RecordPointStart( void );
-extern void             RecordNewProg( void );
-extern void             PointFini( void );
-extern int              GetStackPos( void );
-extern char             *GetCmdName( wd_cmd cmd );
-extern unsigned         UndoLevel( void );
-extern address          GetRegIP( void );
-extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern void             InvokeAFile( const char * );
-extern unsigned         ReqExpr( void );
-extern char             *CopySourceLine( cue_handle *ch );
-extern char             *GetEventAddress( event_record *ev );
-extern void             ReplayTo( event_record *ev );
-extern void             ProcInput( void );
-extern void             DbgUpdate( update_list );
+#include "dbgmain.h"
+#include "dbginvk.h"
+#include "dbgbrk.h"
+#include "dbgpend.h"
+#include "dbgparse.h"
+#include "dbgprog.h"
+#include "dbgreg.h"
+#include "dbgupdt.h"
 
 
 event_record *EventList;
@@ -65,10 +56,9 @@ static event_record **LastOwner;
 static event_record **FindOwner( event_record *of )
 {
     event_record **owner;
-    owner = &EventList;
-    while( *owner != of ) {
-        owner = &((*owner)->next);
-    }
+
+    for( owner = &EventList; *owner != of; owner = &((*owner)->next) )
+        ;
     return( owner );
 }
 
@@ -101,16 +91,16 @@ void ShowReplay( void )
 {
     event_record        *ev;
     for( ev = EventList; ev != NULL; ev = ev->next ) {
-        Format( TxtBuff, "%s %d {%s}", GetCmdName( CMD_RECORD ), ev->rad, ev->cmd->buff );
+        Format( TxtBuff, "%s %d {%s}", GetCmdName( CMD_RECORD ), ev->radix, ev->cmd->buff );
         DUIDlgTxt( TxtBuff );
     }
 }
 
 bool OkToSaveReplay( void )
 {
-    if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( TRUE );
-    if( DUIAskIfAsynchOk() ) return( TRUE );
-    return( FALSE );
+    if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( true );
+    if( DUIAskIfAsynchOk() ) return( true );
+    return( false );
 }
 
 void SaveReplayToFile( const char *name )
@@ -138,11 +128,11 @@ static void AddEvent( const char *start, size_t len, address ip )
     new->next = NULL;
     new->cmd = AllocCmdList( start, len );
     new->ip = ip;
-    new->after_asynch = FALSE;
-    new->rad = CurrRadix;
+    new->after_asynch = false;
+    new->radix = CurrRadix;
     if( _IsOn( SW_HAD_ASYNCH_EVENT ) ) {
         if( _IsOn( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
-            new->after_asynch = TRUE;
+            new->after_asynch = true;
         }
     }
     *owner = new;
@@ -152,18 +142,18 @@ void ProcRecord( void )
 {
     const char  *start;
     size_t      len;
-    unsigned    rad;
-    unsigned    old;
+    mad_radix   new_radix;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
-    rad = ReqExpr();
-    NewCurrRadix( old );
+    old_radix = NewCurrRadix( 10 );
+    new_radix = (mad_radix)ReqExpr();
+    NewCurrRadix( old_radix );
     if( !ScanEOC() ) {
-        if( ScanItem( FALSE, &start, &len ) ) {
+        if( ScanItem( false, &start, &len ) ) {
             ReqEOC();
-            old = NewCurrRadix( rad );
+            old_radix = NewCurrRadix( new_radix );
             AddEvent( start, len, NilAddr );
-            NewCurrRadix( old );
+            NewCurrRadix( old_radix );
         }
     }
 }
@@ -180,19 +170,19 @@ OVL_EXTERN bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        NewCurrRadix( (unsigned)(pointer_int)parm );
-        return( FALSE );
+        NewCurrRadix( (mad_radix)(pointer_int)parm );
+        return( false );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 
-static void PushRadChange( unsigned rad )
+static void PushRadixChange( mad_radix radix )
 {
-    PushInpStack( (inp_data_handle)(pointer_int)rad, DoneRadix, FALSE );
+    PushInpStack( (inp_data_handle)(pointer_int)radix, DoneRadix, false );
     TypeInpStack( INP_NO_CMD );
 }
 
@@ -209,14 +199,16 @@ void ReplayTo( event_record *ev )
         for( ;; ) {
             PushCmdList( ev->cmd );
             TypeInpStack( INP_REPLAYED );
-            PushRadChange( ev->rad );
+            PushRadixChange( ev->radix );
             TypeInpStack( INP_REPLAYED );
-            if( ev == EventList ) break;
-            for( prev = EventList; prev->next != ev; prev = prev->next ) ;
+            if( ev == EventList )
+                break;
+            for( prev = EventList; prev->next != ev; prev = prev->next )
+                ;
             ev = prev;
         }
     }
-    PushRadChange( CurrRadix );
+    PushRadixChange( CurrRadix );
     TypeInpStack( INP_REPLAYED );
     RecordFini();
 }
@@ -283,7 +275,7 @@ void RecordCommand( const char *startpos, wd_cmd cmd )
     *p++ = ' ';
     memcpy( p, startpos, endpos - startpos );
     p += endpos - startpos;
-    *p = '\0';
+    *p = NULLCHAR;
     RecordEvent( TxtBuff );
 }
 

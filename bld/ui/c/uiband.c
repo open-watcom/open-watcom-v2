@@ -42,8 +42,7 @@ static ATTR             Attr;
 static void drawband( SAREA area, void *dummy )
 {
     area=area;dummy=dummy;
-    drawbox( &UIData->screen, BandArea, (char *)&UiGChar[ UI_SBOX_TOP_LEFT ],
-             Attr, FALSE );
+    drawbox( &UIData->screen, BandArea, SBOX_CHARS(), Attr, FALSE );
 }
 
 void UIAPI uibandinit( SAREA start, ATTR attr )
@@ -59,7 +58,7 @@ void UIAPI uibandinit( SAREA start, ATTR attr )
     BandWnd.update = drawband;
     BandWnd.parm = NULL;
     openwindow( &BandWnd );
-    BandWnd.dirty = BandArea;
+    BandWnd.dirty_area = BandArea;
 }
 
 
@@ -70,7 +69,7 @@ void UIAPI uibandmove( SAREA new )
     uidirty( BandArea );
     BandArea = new;
     uidirty( new );
-    BandWnd.dirty = BandArea;
+    BandWnd.dirty_area = BandArea;
 }
 
 

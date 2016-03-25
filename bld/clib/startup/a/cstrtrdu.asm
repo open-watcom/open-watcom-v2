@@ -225,7 +225,7 @@ CPUExceptionHandler:
 	push Erec.ExceptionCode
 	call RaiseException
 ;
-    mov eax,-1
+    or eax,-1
     UserGate unload_exe_nr
 
 ueSs    EQU 36
@@ -561,8 +561,8 @@ GetOldExc:
 	cmp al, 01fh
 	jna GetOldExc
 ;
-	mov ax,cs
-	mov es,ax
+	mov eax,cs
+	mov es,eax
 	xor al,al
 	mov edi,OFFSET Exc00
 

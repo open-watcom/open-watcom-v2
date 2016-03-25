@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "vi.h"
+#include "color.h"
 
 typedef struct color {
     long        rgb;
@@ -61,7 +63,7 @@ static void NewColor( vi_color index, long rgb )
     long        nearest;
     HDC         hdc;
 
-    hdc = GetDC( (HWND)NULLHANDLE );
+    hdc = GetDC( NO_WINDOW );
     c = &colorData[index];
     if( c->pen ) {
         DeleteObject( c->pen );
@@ -71,7 +73,7 @@ static void NewColor( vi_color index, long rgb )
     }
     c->rgb = rgb;
     nearest = GetNearestColor( hdc, rgb );
-    ReleaseDC( (HWND)NULLHANDLE, hdc );
+    ReleaseDC( NO_WINDOW, hdc );
     c->pen = CreatePen( PS_SOLID, 1, nearest );
     brush.lbStyle = BS_SOLID;
     brush.lbColor = nearest;
@@ -85,9 +87,9 @@ void InitColors( void )
     PALETTEENTRY    palette[MAX_COLORS], *p;
     HDC             hdc;
 
-    hdc = GetDC( (HWND)NULLHANDLE );
+    hdc = GetDC( NO_WINDOW );
     GetSystemPaletteEntries( hdc, 0, MAX_COLORS, &palette[0] );
-    ReleaseDC( (HWND)NULLHANDLE, hdc );
+    ReleaseDC( NO_WINDOW, hdc );
     p = &palette[0];
     memset( &colorData[0], 0, sizeof( color ) * MAX_COLORS );
     for( i = 0; i < MAX_COLORS; i++, p++ ) {
@@ -170,28 +172,32 @@ static void setUpColor( vi_color index, COLORREF *rgb )
 /*
  * SetAColor - set a new color
  */
-vi_rc SetAColor( char *data )
+vi_rc SetAColor( const char *data )
 {
     char        token[MAX_STR];
     int         index;
     int         red, blue, green;
     COLORREF    rgb;
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     index = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
-        if( !chooseColor( index, &rgb, Root ) ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
+        if( !chooseColor( index, &rgb, root_window_id ) ) {
             return( ERR_NO_ERR );
         }
     } else {
         red = atoi( token );
-        if( NextWord1( data, token ) <= 0 ) {
+        data = GetNextWord1( data, token );
+        if( *token == '\0' ) {
             return( ERR_INVALID_SETCOLOR );
         }
         green = atoi( token );
-        if( NextWord1( data, token ) <= 0 ) {
+        data = GetNextWord1( data, token );
+        if( *token == '\0' ) {
             return( ERR_INVALID_SETCOLOR );
         }
         blue = atoi( token );

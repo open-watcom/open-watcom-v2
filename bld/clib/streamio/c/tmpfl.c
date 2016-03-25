@@ -45,6 +45,8 @@
 #include "tmpfname.h"
 #include "openmode.h"
 #include "thread.h"
+#include "tmpfile.h"
+
 
 #define OPEN_MODE   (O_RDWR | O_CREAT | O_BINARY)
 #define PMODE       (S_IREAD | S_IWRITE)
@@ -58,10 +60,6 @@
 #define X_OK    1       /*  Test for execute permission */
 #define F_OK    0       /*  Test for existence of file  */
 #endif
-
-extern void     __MkTmpFile( char *buf, int num );
-extern void     __RmTmpFile( FILE *fp );
-extern void     (*__RmTmpFileFn)( FILE *fp );
 
 char __tmpfnext = _TMP_INIT_CHAR;
 
@@ -164,7 +162,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 /* files. Since we know that temporary files can _only_ be created through */
 /* tmpfile(), we can have a dummy __RmTmpFile() by default and use the     */
 /* real thing only if tmpfil() was called.                                 */
-void __Init_Tmpfl( void )
+static void __Init_Tmpfl( void )
 {
     // Just assign the function address
     __RmTmpFileFn = __RmTmpFile;

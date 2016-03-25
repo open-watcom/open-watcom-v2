@@ -32,7 +32,7 @@ eng_objs = &
     $(_subdir_)dbgloc.obj &
     $(_subdir_)dbglog.obj &
     $(_subdir_)dbgmain.obj &
-    $(_subdir_)dbgmem.obj &
+    $(_subdir_)dbgmemor.obj &
     $(_subdir_)memtypes.obj &
     $(_subdir_)dbgmisc.obj &
     $(_subdir_)dbgovl.obj &
@@ -105,22 +105,18 @@ eng_objs_dosi86 = &
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &
     $(_subdir_)dsxinit.obj &
-    $(_subdir_)dsxchk.obj &
     $(_subdir_)dsxcmd.obj &
     $(_subdir_)dsxfilio.obj &
     $(_subdir_)dsxlkup.obj &
-    $(_subdir_)dsxhdlr.obj &
-    $(_subdir_)dsxmem.obj
+    $(_subdir_)dsxhdlr.obj
 
 eng_objs_linux = &
     $(_subdir_)lnxinit.obj &
     $(_subdir_)linuxcmd.obj &
     $(_subdir_)linuxio.obj &
-    $(_subdir_)lnxlkup.obj &
-    $(_subdir_)lnxchk.obj
+    $(_subdir_)lnxlkup.obj
 
 eng_objs_os2 = &
-    $(_subdir_)os2chk.obj &
     $(_subdir_)os2cmd.obj
 
 eng_objs_os2386 = &
@@ -135,7 +131,6 @@ eng_objs_os2i86 = &
 eng_objs_qnx386 = &
     $(_subdir_)qnxinit.obj &
     $(_subdir_)qnxlkup.obj &
-    $(_subdir_)qnxchk.obj &
     $(_subdir_)qnxcmd.obj &
     $(_subdir_)qnxfilio.obj
 
@@ -143,7 +138,6 @@ eng_objs_rdos386 = &
     $(_subdir_)rdosinit.obj &
     $(_subdir_)rdosio.obj &
     $(_subdir_)rdoscmd.obj &
-    $(_subdir_)rdoschk.obj &
     $(_subdir_)rdoslkup.obj
 
 eng_objs_nt = &
@@ -151,12 +145,10 @@ eng_objs_nt = &
     $(_subdir_)ntfilio.obj &
     $(_subdir_)ntfinfo.obj &
     $(_subdir_)ntcmd.obj &
-    $(_subdir_)winchk.obj &
     $(_subdir_)winlkup.obj
 
 eng_objs_wini86 = &
     $(_subdir_)wininit.obj &
-    $(_subdir_)winchk.obj &
     $(_subdir_)wincmd.obj &
     $(_subdir_)winfilio.obj &
     $(_subdir_)winlkup.obj
@@ -227,7 +219,7 @@ dui_objs_linux    = lnxscrn.obj helpio.obj
 dui_objs_qnx386   = qnxscrn.obj helpio.obj
 dui_objs_rdos386  = rdosscrn.obj helpio.obj
 !ifeq sys_windowed 1
-dui_objs_os2i86   = pmscrn2.obj
+dui_objs_os2i86   = pmscrn.obj
 dui_objs_os2386   = pmscrn2.obj
 dui_objs_nt       = ntguiscn.obj ntdbgpb.obj
 dui_objs_win      = wguiscrn.obj

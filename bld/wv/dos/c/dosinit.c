@@ -35,9 +35,9 @@
 #include <setjmp.h>
 #include "tinyio.h"
 #include "dbgdefn.h"
+#include "dbgmain.h"
+#include "dbginit.h"
 
-extern void             DebugMain( void );
-extern void             DebugFini( void );
 extern void             WndRefresh( void );
 
 static void (interrupt *_old10)();
@@ -103,7 +103,7 @@ void RestoreHandlers( void )
     TinySetVect( 0x28, _old28 );
 }
 
-void KillDebugger( void )
+void KillDebugger( int rc )
 {
     RestoreHandlers();
     TinyTerminateProcess( 0 );
@@ -171,5 +171,10 @@ void SysMemInit( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
+}
+
+void PopErrBox( const char *buff )
+{
+    WriteText( STD_ERR, buff, strlen( buff ) );
 }

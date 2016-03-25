@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,16 +59,16 @@ typedef struct {
     CHAR       load_name[2];
 } loadstack_t;
 
-#pragma aux intrface modify [];
-#pragma aux (intrface) TrapInit;
-#pragma aux (intrface) TrapAccess;
-#pragma aux (intrface) TrapFini;
+//#pragma aux intrface modify [];
+//#pragma aux (intrface) TrapInit;
+//#pragma aux (intrface) TrapAccess;
+//#pragma aux (intrface) TrapFini;
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
-    int         len;
-} watch;
+    word        len;
+} watch_point;
 
 /* Maximum watchpoints */
 #define MAX_WP  32
@@ -88,7 +89,7 @@ extern unsigned         CurrModHandle;
 extern ULONG            ExceptNum;
 extern HMODULE          ThisDLLModHandle;
 //extern uDB_t          Buff;
-//extern watch          WatchPoints[MAX_WP];
+//extern watch_point      WatchPoints[MAX_WP];
 //extern short          WatchCount;
 extern USHORT           FlatCS,FlatDS;
 
@@ -131,3 +132,6 @@ void OutNum( ULONG i );
 #define Out( a )
 #define OutNum( a )
 #endif
+
+extern void AppSession( void );
+extern void DebugSession( void );

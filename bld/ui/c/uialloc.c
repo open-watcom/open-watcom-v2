@@ -64,7 +64,7 @@ void UIMemRedirect( int handle )
 extern void UIMemOpen( void )
 {
 #ifdef TRMEM
-    char        *tmpdir;
+    const char      *tmpdir;
 
     if( !UIMemOpened ) {
 #ifdef NLM
@@ -110,19 +110,6 @@ void UIMemPrtUsage( void )
 }
 #endif
 
-
-void *uicalloc( size_t n, size_t size )
-{
-#ifdef TRMEM
-    void *result = _trmem_alloc( n * size, _trmem_guess_who(), UIMemHandle );
-
-    if( result )
-        memset( result, 0, n * size );
-    return( result );
-#else
-    return( calloc( n, size ) );
-#endif
-}
 
 void *uimalloc( size_t size )
 {

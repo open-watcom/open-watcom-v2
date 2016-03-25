@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -1010,7 +1010,6 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.inst = WGetEditInstance();
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
-            ai.first_cr_year = "2002";
             ai.title = AllocRCString( W_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

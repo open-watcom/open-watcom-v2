@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +214,7 @@ static void checkBrushItem( HMENU hmenu, int newitem )
 /*
  * IEIsMenuIDValid
  */
-static BOOL IEIsMenuIDValid( HMENU menu, WORD id )
+static BOOL IEIsMenuIDValid( HMENU menu, unsigned id )
 {
     UINT st;
 
@@ -252,7 +253,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 {
     static BOOL         window_destroyed = FALSE;
     static HMENU        hmenu;
-    WORD                cmdid;
+    ctl_id              cmdid;
     img_node            *node;
     WPI_RECT            rcmain;
 #ifndef __OS2_PM__
@@ -371,7 +372,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             break;
         }
 #endif
-        ShowHintText( wparam );
+        ShowHintText( LOWORD( wparam ) );
         break;
 
     case WM_COMMAND:
@@ -417,7 +418,6 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             ai.inst = Instance;
             ai.name = IEAllocRCString( WIE_ABOUTTEXT );
             ai.version = IEAllocRCString( WIE_ABOUTVERSION );
-            ai.first_cr_year = "1994";
             ai.title = IEAllocRCString( WIE_ABOUTTITLE );
             DoAbout( &ai );
             if( ai.name != NULL ) {

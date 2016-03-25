@@ -38,34 +38,38 @@ include struct.inc
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __I8LD, __U8LD - convert 8-byte integer into long double
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  SS:AX - pointer to 8-byte integer
-;<>             SS:DX - pointer to long double operand 
-;<>   else
-;<>     input:  CX:BX:DX:AX - 8-byte integer
-;<>             DS:SI - pointer to long double operand
-;<>   endif
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+        xrefp   __qw_normalize
 
         xdefp   __I8LD
         xdefp   __U8LD
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __I8LD, __U8LD - convert 8-byte integer into long double
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to 8-byte integer
+;               SS:DX - pointer to long double result
+;else
+;       input:  AX:BX:CX:DX - 8-byte integer
+;               DS:SI       - pointer to long double result
+;endif
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 ;       __I8LD - convert 8-byte integer into long double
 ;       __U8LD - convert unsigned 8-byte integer into long double
 
         defp    __U8LD
+
         push    DI              ; save DI
-        mov     DI,1            ; unsigned value
+        xor     DI,DI           ; unsigned value
         jmp     short cont1
 
         defp    __I8LD
+
         push    DI              ; save DI
-        mov     DI,0            ; signed value
+        mov     DI,8000h        ; signed value
 cont1:
 ifdef _BUILDING_MATHLIB
         push    BP
@@ -74,77 +78,40 @@ ifdef _BUILDING_MATHLIB
         push    AX
         push    DX
         mov     BP,AX
-        mov     CX,6[BP]        ; get 8-byte integer
+        mov     AX,6[BP]        ; get 8-byte integer
         mov     BX,4[BP]        ; ...
-        mov     DX,2[BP]        ; ...
-        mov     AX,[BP]         ; ...
+        mov     CX,2[BP]        ; ...
+        mov     DX,[BP]         ; ...
 endif
-        _guess
-          or    DI,DI           ; if unsigned input
-          mov   DI,403Eh        ; get exponent and sign
-          _quif nz              ; then
-          or    CX,CX           ; if number is negative
-          _if s                 ; then
-            not CX              ; - negate the value
-            not BX              ; - ...
-            not DX              ; - ...
-            neg AX              ; - ...
-            sbb DX,-1           ; - ...
-            sbb BX,-1           ; - ...
-            sbb CX,-1           ; - ...
-            or  DI,8000h        ; - turn on sign bit
-          _endif                ; endif
-        _endguess
-        _guess
-          or    CX,CX           ; if high order word is 0
-          _quif ne
-          sub   DI,16           ; - adjust exponent
-          or    CX,BX           ; - shift operand left 16 bits
-          mov   BX,DX           ; - ...
-          mov   DX,AX           ; - ...
-          mov   AX,0            ; - ...
-          _quif ne              ; - if next word was also 0
-          sub   DI,16           ; - adjust exponent
-          or    CX,BX           ; - shift operand left 16 bits again
-          mov   BX,DX           ; - ...
-          mov   DX,AX           ; - ...
-          _quif ne              ; - if next word was also 0
-          sub   DI,16           ; - adjust exponent
-          or    CX,BX           ; - shift operand left 16 bits again
-          mov   BX,DX           ; - ...
-          _quif ne              ; - if last word was also 0
-          mov   DI,AX           ; - set exponent to 0
-        _admit
-          cmp   CH,0            ; if high order byte is 0
-          _if e                 ; then
-            sub DI,8            ; - adjust exponent
-            or  CH,CL           ; - shift up 8 bits
-            mov CL,BH           ; - ...
-            mov BH,BL           ; - ...
-            mov BL,DH           ; - ...
-            mov DH,DL           ; - ...
-            mov DL,AH           ; - ...
-            mov AH,AL           ; - ...
-            mov AL,0            ; - ...
-          _endif                ; endif
-          _if ns                ; if not already normalized
-            _loop               ; - loop (normalize result)
-              dec   DI          ; - - decrement exponent
-              _shl  AX,1        ; - - shift left 1 bit
-              _rcl  DX,1        ; - - ...
-              _rcl  BX,1        ; - - ...
-              _rcl  CX,1        ; - - ...
-            _until s            ; - until normalized
-          _endif                ; endif
-        _endguess
+        _guess xx1              ; guess
+          test  AX,DI           ; - check signed negative value
+          _if nz                ; - if negative value
+            not AX              ; - - negate the value
+            not BX              ; - - ...
+            not CX              ; - - ...
+            neg DX              ; - - ...
+            sbb CX,-1           ; - - ...
+            sbb BX,-1           ; - - ...
+            sbb AX,-1           ; - - ...
+            mov DI,0C03Eh       ; - - get exponent and sign
+          _else                 ; - else
+            mov DI,AX           ; - - check zero value
+            or  DI,BX           ; - - ...
+            or  DI,CX           ; - - ...
+            or  DI,DX           ; - - ...
+        _quif z,xx1             ; quit if zero
+            mov DI,403Eh        ; - - get exponent and sign
+          _endif                ; - endif
+          call __qw_normalize   ; - normalize fraction
+        _endguess               ; endguess
 ifdef _BUILDING_MATHLIB
         pop     BP
         push    BP
         mov     8[BP],DI        ; store exponent
-        mov     6[BP],CX        ; fraction
+        mov     6[BP],AX        ; fraction
         mov     4[BP],BX        ; ...
-        mov     2[BP],DX        ; ...
-        mov     [BP],AX         ; ...
+        mov     2[BP],CX        ; ...
+        mov     [BP],DX         ; ...
         pop     DX
         pop     AX
         pop     BX
@@ -152,15 +119,16 @@ ifdef _BUILDING_MATHLIB
         pop     BP
 else
         mov     8[SI],DI        ; store exponent
-        mov     6[SI],CX        ; fraction
+        mov     6[SI],AX        ; fraction
         mov     4[SI],BX        ; ...
-        mov     2[SI],DX        ; ...
-        mov     [SI],AX         ; ...
+        mov     2[SI],CX        ; ...
+        mov     [SI],DX         ; ...
 endif
         pop     DI              ; restore DI
         ret                     ; return
-__I8LD  endp
-__U8LD  endp
+
+        endproc __I8LD
+        endproc __U8LD
 
 
 ifdef _BUILDING_MATHLIB

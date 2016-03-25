@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,5 +40,5 @@ _WCRTLINK int bind( int sockfd, const struct sockaddr *my_addr, socklen_t addrle
     args[0] = (unsigned long)sockfd;
     args[1] = (unsigned long)my_addr;
     args[2] = (unsigned long)addrlen;
-    return ( __socketcall( SYS_BIND, args ) );
+    return( __socketcall( SYS_BIND, args ) );
 }

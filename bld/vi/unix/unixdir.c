@@ -40,20 +40,20 @@
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
 {
     char        *tmpname;
-    int         len;
+    size_t      len;
     struct stat st;
 
-    tmpname = malloc( strlen( path ) + strlen( nd->d_name ) + 3 );
+    len = strlen( path );
+    tmpname = malloc( len + strlen( nd->d_name ) + 3 );
     strcpy( tmpname, path );
-    len = strlen( tmpname );
     if( tmpname[len - 1] != FILE_SEP ) {
-        tmpname[len] = FILE_SEP;
-        tmpname[len + 1] = 0;
+        tmpname[len++] = FILE_SEP;
+        tmpname[len] = '\0';
     }
-    strcat( tmpname, nd->d_name );
+    strcpy( tmpname + len, nd->d_name );
     stat( tmpname, &st );
     free( tmpname );
     tmp->attr = 0;
@@ -69,7 +69,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
 /*
  * MyGetFileSize - do just that
  */
-vi_rc MyGetFileSize( char *inname, long *size )
+vi_rc MyGetFileSize( const char *inname, long *size )
 {
     struct stat sb;
 
@@ -110,8 +110,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     time_t      tt;
     size_t      size1;
 
-    size = strlen( file->name ) + 4;
-    size1 = size;
+    size1 = strlen( file->name ) + 4;
     if( size1 < NAMEWIDTH + 1 )
         size1 = NAMEWIDTH + 1;
     tmp = malloc( size1 );
@@ -170,7 +169,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[9] = 'x';
     }
 
-    tmp[NAMEWIDTH] = 0;
+    tmp[NAMEWIDTH] = '\0';
 
     tt = file->time;
     tm = localtime( &tt );

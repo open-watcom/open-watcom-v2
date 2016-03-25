@@ -47,6 +47,7 @@ sub read_config
     $Common::config{'HHC'} = '';
     $Common::config{'GHOSTSCRIPTPATH'} = '';
     $Common::config{'DOSBOX'} = '';
+    $Common::config{'INITCMD'} = '';
     open(CONFIG_FILE, $filename) || die "Unable to open configuration file: $filename.";
     while (<CONFIG_FILE>) {
         s/\r?\n/\n/;
@@ -82,6 +83,11 @@ sub process_summary
     my($current_project) = '';
     my(@header);
 
+    if( not -e $inp_filename ) {
+        # Create non-existing input file to be able proccess for first time.
+        open(INFILE, '>', $inp_filename) || die "Unable to open input file: $inp_filename";
+        close(INFILE);
+    }
     open(INFILE, $inp_filename) || die "Unable to open input file: $inp_filename";
     open(OUTFILE, '>', $out_filename) || die "Unable to open output file: $out_filename";
 
@@ -145,17 +151,21 @@ sub process_compare
     $fh ||= \*STDOUT;
 
     # Read both the old and new summaries into memory.
-    open(OLDFILE, $filename1) || die "Unable to open input file: $filename1";
-    while (($record = read_record(\*OLDFILE)) ne 'EOF') {
-        push @old_records, $record;
+    if( -e $filename1 ) {
+        open(OLDFILE, $filename1) || die "Unable to open input file: $filename1";
+        while (($record = read_record(\*OLDFILE)) ne 'EOF') {
+            push @old_records, $record;
+        }
+        close(OLDFILE);
     }
-    close(OLDFILE);
 
-    open(NEWFILE, $filename2) || die "Unable to open output file: $filename2";
-    while (($record = read_record(\*NEWFILE)) ne 'EOF') {
-        push @new_records, $record;
+    if( -e $filename2 ) {
+        open(NEWFILE, $filename2) || die "Unable to open output file: $filename2";
+        while (($record = read_record(\*NEWFILE)) ne 'EOF') {
+            push @new_records, $record;
+        }
+        close(NEWFILE);
     }
-    close(NEWFILE);
 
     # Now compare the summaries. This runs in O(n^2) where n is the # of records.
     #############################################################################
@@ -168,8 +178,10 @@ sub process_compare
     $something_added = 'no';
     foreach $record (@new_records) {
         $found = 'no';
-        foreach $candidate (@old_records) {
-            if ($record eq $candidate) { $found = 'yes'; }
+        if (@old_records) {
+            foreach $candidate (@old_records) {
+                if ($record eq $candidate) { $found = 'yes'; }
+            }
         }
         if ($found eq 'no') {
             if ($first_added eq 'yes') {
@@ -187,7 +199,7 @@ sub process_compare
     # messages might appear to vanish because certain compilations failed to
     # finish. Only trust the removal list if there are no additional errors.
     #
-    if ($something_added eq 'no') {
+    if ($something_added eq 'no' and @old_records) {
         foreach $record (@old_records) {
             $found = 'no';
             foreach $candidate (@new_records) {

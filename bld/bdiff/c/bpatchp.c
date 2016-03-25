@@ -31,23 +31,16 @@
 
 
 #include "bdiff.h"
+#include "newfile.h"
+#include "oldfile.h"
+#include "myio.h"
+#include "msg.h"
 
 byte            *NewFile;
 
-extern char     *NewName;
-extern char     *PatchName;
-
-extern void     PatchError( int, ... );
-extern void     FilePatchError( int, ... );
-extern void     SameDate( char *file, char *as );
-extern foff     CheckSumOld( foff len );
-
-extern void     FileCheck(int, char *);
-extern void     SeekCheck(long, char *);
-
 PATCH_RET_CODE OpenNew( foff len )
 {
-    NewFile = _allocate( len );
+    NewFile = bdiff_malloc( len );
     if( NewFile == NULL ) {
         //PatchError( ERR_USEREAL );
         return( PATCH_BAD_PATCH );
@@ -56,45 +49,42 @@ PATCH_RET_CODE OpenNew( foff len )
     return( PATCH_RET_OKAY );
 }
 
-PATCH_RET_CODE CloseNew( foff len, foff actual_sum, int *havenew )
+PATCH_RET_CODE CloseNew( foff len, foff actual_sum, bool *havenew )
 {
-    foff        sum;
-    foff        off;
-    int         fd;
-    char        *p;
+    foff            sum;
+    unsigned long   off;
+    FILE            *fd;
+    byte            *p;
 
-    *havenew = 1;
-    off = 0;
+    *havenew = true;
     sum = 0;
     p = NewFile;
-    while( off != len ) {
-        sum += *p;
-        ++p;
-        ++off;
+    for( off = 0; off < len; ++off ) {
+        sum += *p++;
     }
     if( sum != actual_sum ) {
-        *havenew = 0;
+        *havenew = false;
         if( CheckSumOld( len ) == actual_sum ) {
             return( PATCH_RET_OKAY );
         } else {
             PatchError( ERR_WRONG_CHECKSUM, sum, actual_sum );
-            _free( NewFile );
+            bdiff_free( NewFile );
             NewFile = NULL;
             return( PATCH_BAD_CHECKSUM );
         }
     }
-    fd = open( NewName, O_BINARY+O_WRONLY+O_CREAT+O_TRUNC, S_IRWXU );
+    fd = fopen( NewName, "wb" );
     FileCheck( fd, NewName );
-    if( write( fd, NewFile, len ) != len ) {
-        *havenew = 0;
+    if( fwrite( NewFile, 1, len, fd ) != len ) {
+        *havenew = false;
         FilePatchError( ERR_CANT_WRITE, NewName );
-        _free( NewFile );
+        bdiff_free( NewFile );
         NewFile = NULL;
         return( PATCH_CANT_WRITE );
     }
-    close( fd );
+    fclose( fd );
     SameDate( NewName, PatchName );
-    _free( NewFile );
+    bdiff_free( NewFile );
     NewFile = NULL;
     return( PATCH_RET_OKAY );
 }

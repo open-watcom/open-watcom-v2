@@ -82,8 +82,8 @@ endif
         mov     int24ip,EAX     ; save address of users int 24 handler
         mov     int24cs,DX      ; ...
         push    DS              ; save DS
-        mov     AX,CS           ; set DS=CS
-        mov     DS,AX           ; ...
+        mov     EAX,CS          ; set DS=CS
+        mov     DS,EAX          ; ...
         mov     EDX,offset int24rtn ; point to int 24 interrupt handler
 ;
 ;       need to set interrupt so that we gain control in protect mode
@@ -96,13 +96,11 @@ endif
           _quif a               ; - quit if not pharlap
           push  ECX             ; - save ECX
           mov   CL,24H          ; - critical error interrupt number
-          mov   AL,06H          ; - set interrupt to always gain control
-          mov   AH,25H          ; - ... in protected mode
+          mov   AX,2506H        ; - set interrupt to always gain control in protected mode
           int   21H             ; - ...
           pop   ECX             ; - restore ECX
         _admit                  ; assume: DOS/4GW or Ergo OS386
-          mov   AL,24h          ; - critical error interrupt number
-          mov   AH,25H          ; - set interrupt vector
+          mov   AX,2524h        ; - set interrupt vector / critical error interrupt number
           int   21h             ; - ...
         _endguess               ; endguess
         sub     EAX,EAX         ; set success
@@ -125,15 +123,15 @@ endif
         push    EAX             ; ...
         mov     EDX,EAX         ; save EAX
         call    __GETDS         ; get DGROUP
-        mov     AX,DS           ; ...
-        mov     ES,AX           ; ...
+        mov     EAX,DS          ; ...
+        mov     ES,EAX          ; ...
         mov     oldsp,ESP       ; save the stack pointer
         mov     oldss,SS        ; save SS
         mov     ECX,_STACKLOW   ; save old stack low value
         mov     oldstklow,ECX   ; ...
         lea     ECX,DGROUP:temp_stacklow; setup stacklow variable
         mov     _STACKLOW,ECX   ; ...
-        mov     SS,AX           ; point to stack in DGROUP
+        mov     SS,EAX          ; point to stack in DGROUP
         lea     ESP,DGROUP:temp_stack;...
         sub     EBX,EBX         ; zero offset
         mov     BX,BP           ; get 16-bit real-mode segment
@@ -151,9 +149,9 @@ endif
         _admit                  ; guess: DOS/4GW
           cmp   AL,X_RATIONAL   ; - ...
           _quif ne              ; - quit if not DOS4GW
-          mov   CX,DS           ; - just use DS
+          mov   ECX,DS          ; - just use DS
         _admit                  ; assume: Ergo OS386
-          mov   CL,34H          ; - GDT entry for first 1 meg
+          mov   CX,34H          ; - GDT entry for first 1 meg
         _endguess               ; endguess
         movzx   EAX,DX          ; get deverror
         movzx   EDX,DI          ; get error code

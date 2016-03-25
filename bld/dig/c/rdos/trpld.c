@@ -34,9 +34,10 @@
 #include <dos.h>
 #include <string.h>
 #include <stdlib.h>
-#include "trpimp.h"
-#include "tcerr.h"
+#include "trptypes.h"
 #include "trpld.h"
+#include "tcerr.h"
+
 
 static int              TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
@@ -76,12 +77,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             have_ext = 0;
             break;
         case '.':
+#ifdef USE_FILENAME_VERSION
+            *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+            *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
             have_ext = 1;
             break;
         }
         *dst++ = chr;
     }
     if( !have_ext ) {
+#ifdef USE_FILENAME_VERSION
+        *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+        *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
         *dst++ = '.';
         *dst++ = 'd';
         *dst++ = 'l';

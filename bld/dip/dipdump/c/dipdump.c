@@ -307,16 +307,16 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     /* try get the name */
     buff[0] = '\0';
     len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
     } else {
-        printf( "(len=%d)\n", len );
+        printf( "(len=%u)\n", len );
     }
 
 
@@ -498,7 +498,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
     char            buff[1024];
-    unsigned        len;
+    size_t          len;
     dip_status      rc;
 
     /* filename */
@@ -507,7 +507,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     if( len > 0 ) {
         printf( " %lx %s\n", file_id, buff );
     } else {
-        printf( " %lx (len=%d)\n", file_id, len );
+        printf( " %lx (len=%u)\n", file_id, len );
     }
 
     /* check the LineCue function */
@@ -705,16 +705,16 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
     /* try get the name */
     buff[0] = '\0';
     len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
-    if( !len ) {
+    if( len == 0 ) {
         len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
     } else {
-        printf( "(len=%d)\n", len );
+        printf( "(len=%u)\n", len );
     }
 
     /* more locations. */
@@ -763,7 +763,7 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
     /* language and name */
     lang = ModSrcLang( mh );
     len = ModName( mh, buff, sizeof(buff) );
-    if( !len ) {
+    if( len == 0 ) {
         buff[0] = '\0';
     }
     printf( "%-4s  %s\n", lang, buff );
@@ -1019,7 +1019,7 @@ int main( int argc, char **argv )
     char    *dips[16] = { 0 };
     int     next_dip = 0;
     int     c;
-    char    *s;
+//    char    *s;
 
     /* Process command line options */
     if( argc < 2 ) {
@@ -1043,6 +1043,7 @@ int main( int argc, char **argv )
         }
     }
 
+#if 0
     /* Add default DIPs at end of list. */
     s = DIPDefaults;
     while( *s ) {
@@ -1052,6 +1053,7 @@ int main( int argc, char **argv )
         dips[next_dip++] = s;
         s += strlen( s ) + 1;
     }
+#endif
 
     /* Try to dump debug info for all remaining arguments */
     while( argv[optind] ) {

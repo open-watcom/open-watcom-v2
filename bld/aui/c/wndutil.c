@@ -139,12 +139,14 @@ extern gui_ord  WndExtentX( a_window *wnd, const char *string )
 }
 
 
-extern  a_window        *WndFindClass( a_window *first, wnd_class class )
+extern  a_window        *WndFindClass( a_window *first, wnd_class wndclass )
 {
     a_window    *wnd;
 
     for( wnd = WndNext( first ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( wnd->class == class ) return( wnd );
+        if( wnd->wndclass == wndclass ) {
+            return( wnd );
+        }
     }
     return( NULL );
 }
@@ -174,12 +176,12 @@ a_window        *WndNext( a_window *wnd )
     return( GUIGetExtra( gui ) );
 }
 
-extern void WndForAllClass( wnd_class class, void (*rtn)( a_window * ) )
+extern void WndForAllClass( wnd_class wndclass, void (*rtn)( a_window * ) )
 {
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( class == WND_NO_CLASS || WndClass( wnd ) == class ) {
+        if( wndclass == WND_NO_CLASS || WndClass( wnd ) == wndclass ) {
             rtn( wnd );
         }
     }

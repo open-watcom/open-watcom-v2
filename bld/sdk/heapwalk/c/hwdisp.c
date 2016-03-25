@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -530,14 +531,14 @@ BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam,
 void ShowHeapObject( HWND lbhandle )
 {
     heap_list   *hl;
-    LRESULT     index;
+    int         index;
     HWND        dispwnd;
     HWND        memhdl;
     BOOL        is_res;
     char        *rcstr;
 
     dispwnd = NULL;
-    index = SendMessage( lbhandle, LB_GETCURSEL, 0 , 0L );
+    index = (int)SendMessage( lbhandle, LB_GETCURSEL, 0 , 0L );
     if( index == LB_ERR ) {
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,8 +84,8 @@ static bool ctl_rfloat_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
 // The *_modified functions will be called to query if the control element
 // was modified.
 //   first parameter: pointer to the control element data
-//   second parameter: the wParam of the message
-//   third parameter: the lParam of the message
+//   second parameter: the wparam of the message
+//   third parameter: the lparam of the message
 static bool ctl_check_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 static bool ctl_text_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 static bool ctl_combo_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
@@ -117,7 +118,7 @@ bool ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 {
     int                 num;
     ctl_elt             *elt;
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
@@ -139,7 +140,7 @@ bool ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 {
     int                 num;
     ctl_elt             *elt;
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
@@ -161,7 +162,7 @@ void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /* this routine must be called for all WM_COMMAND events sent to the
    dialog. */
 {
-    clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
+    ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
     ctl_elt             *elt;
     int                 num;
     bool                mod;
@@ -347,7 +348,9 @@ static bool ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        cmd;
     WORD        id;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == elt->control && (cmd == BN_CLICKED || cmd == BN_DOUBLECLICKED) ) {
@@ -408,7 +411,7 @@ static bool ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.combo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.combo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }
@@ -419,7 +422,9 @@ static bool ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == elt->control && (cmd == CBN_SELCHANGE || cmd == LBN_SELCHANGE) ) {
@@ -526,7 +531,7 @@ static bool ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    _value_int( ptr, elt ) = elt->info.dcombo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
+    _value_int( ptr, elt ) = elt->info.dcombo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }
@@ -749,7 +754,9 @@ static bool ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id >= elt->control && id <= elt->info.radio.end_control &&
@@ -795,11 +802,14 @@ static bool ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 }
 
 static bool ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lparam )
-/**********************************************************************/
+/**********************************************************************************/
 {
     WORD        id;
     WORD        cmd;
 
+#ifdef __NT__
+    lparam=lparam;
+#endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
 

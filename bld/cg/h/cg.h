@@ -165,7 +165,6 @@ typedef enum {
     GIVEN_NAME      = 0x0080,       /* use the segment name as given */
     COMDAT          = 0x0100,       /* COMDAT segment (ALPHA) */
     THREAD_LOCAL    = 0x0200,       /* Thread Local Storage */
-    NOGROUP         = 0x0400        /* Not part of a group (DGROUP) */
 } seg_attr;
 
 

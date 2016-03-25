@@ -31,12 +31,15 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setscr.h"
 #include "stddef.h"
 #include "ctltype.h"
 #include "util.h"
 #include "wprocmap.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define FILEENDSTRINGWIDTH      200
 
@@ -87,7 +90,7 @@ static void setdlgDataDefaults( void )
 /*
  * SetScrProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -97,7 +100,7 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETSCR_DEFAULTS:
             setdlgDataDefaults();
             ctl_dlg_reset( GET_HINSTANCE( hwndDlg ),
@@ -116,7 +119,7 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setscr, wParam, lParam );
+        ctl_dlg_process( &Ctl_setscr, wparam, lparam );
     }
 
     return( FALSE );
@@ -131,7 +134,7 @@ bool GetSetScrDialog( void )
     bool        rc;
 
     proc = MakeDlgProcInstance( SetScrProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETSCR", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "SETSCR", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct

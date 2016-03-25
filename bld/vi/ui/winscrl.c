@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,19 +37,20 @@
 /*
  * ShiftWindowUpDown - shift the stuff in a window in an up/down direction
  */
-void ShiftWindowUpDown( window_id id, int diff )
+void ShiftWindowUpDown( window_id wid, int diff )
 {
-    wind                *w;
+    window              *w;
     int                 start, spl, i, j;
     int                 sline, eline, add;
     char_info           *txt_s, *txt_d;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( id );
+    w = WINDOW_FROM_ID( wid );
+    AccessWindow( w );
     if( w->has_border ) {
         start = 1;
         spl = 0;
@@ -75,7 +77,7 @@ void ShiftWindowUpDown( window_id id, int diff )
     for( ;; ) {
         txt_s = &(w->text[i * w->width + start]);
         txt_d = &(w->text[(i - diff) * w->width + start]);
-        oscr = w->x1 + start + (w->y1 + i - diff) * EditVars.WindMaxWidth;
+        oscr = w->area.x1 + start + (w->area.y1 + i - diff) * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
         for( j = 0; j < w->text_cols; j++ ) {
             WRITE_SCREEN( scr[j], txt_s[j] );

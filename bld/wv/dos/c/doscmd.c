@@ -37,11 +37,8 @@
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgswtch.h"
-
-
-extern int              Lookup( const char *, const char *, size_t );
-extern unsigned long    GetMemory( void );
-extern void             StartupErr( const char * );
+#include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
 extern addr_seg         _psp;
@@ -96,9 +93,9 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         OvlAreaSize = num / 16; /* OvlAreaSize is in paragraphs */
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -116,7 +113,7 @@ void ProcSysOptInit( void )
 
     ptr = MK_FP( _psp, 0x80 );
     len = *ptr;
-    ptr[ len + 1 ] = NULLCHAR;
+    ptr[len + 1] = NULLCHAR;
     cmdStart = 0x81;
 }
 

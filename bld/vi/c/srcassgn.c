@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <setjmp.h>
 #include <time.h>
-#include "source.h"
 #include "expr.h"
 #include "rxsupp.h"
 
@@ -43,7 +42,7 @@
 /*
  * SrcAssign - assign a value to a variable
  */
-vi_rc SrcAssign( char *data, vlist *vl )
+vi_rc SrcAssign( const char *data, vlist *vl )
 {
     int         i, j, k, l;
     long        val;
@@ -53,7 +52,8 @@ vi_rc SrcAssign( char *data, vlist *vl )
     bool        expflag = false;
     bool        timeflag = false;
     bool        lnumflag = false;
-    char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE], name[MAX_SRC_LINE];
+    char        tmp[MAX_SRC_LINE], tmp1[MAX_SRC_LINE], name[MAX_SRC_LINE];
+    const char  *v1;
     char        *t;
     vars        *v;
     jmp_buf     jmpaddr;
@@ -68,36 +68,38 @@ vi_rc SrcAssign( char *data, vlist *vl )
      *  strchr %a ch
      *  substr %a n1 n2
      */
-    if( NextWord1( data, name ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( !VarName( name, vl ) ) {
+    if( !VarName( name, tmp, vl ) ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( NextWord1( data, tmp ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    if( stricmp( tmp, "=" ) ) {
+    if( stricmp( tmp, "=" ) != 0 ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
 
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;
         if( data[0] == '"' ) {
-            NextWord( data, v1, "\"" );
+            data = GetNextWord( data, tmp, SingleQuote );
             if( data[0] == '"' ) {
                 check_end = true;
             }
         } else {
-            NextWordSlash( data, v1 );
+            data = GetNextWord( data, tmp, SingleSlash );
             if( data[0] == '/' ) {
                 check_end = true;
             }
         }
         if( check_end ) {
-            EliminateFirstN( data, 1 );
-            while( data[0] != 0 ) {
+            ++data;
+            while( data[0] != '\0' ) {
                 switch( data[0] ) {
                 case 't':
                     timeflag = true;
@@ -118,65 +120,70 @@ vi_rc SrcAssign( char *data, vlist *vl )
                     lnumflag = true;
                     break;
                 }
-                EliminateFirstN( data, 1 );
+                ++data;
             }
         }
-        Expand( v1, vl );
+        Expand( tmp1, tmp, vl );
     } else {
-        if( NextWord1( data, v1 ) <= 0 ) {
+        data = GetNextWord1( data, tmp );
+        if( *tmp == '\0' ) {
             return( ERR_SRC_INVALID_ASSIGN );
         }
-        j = Tokenize( StrTokens, v1, false );
+        j = Tokenize( StrTokens, tmp, false );
         if( j != TOK_INVALID ) {
-            if( NextWord1( data, v1 ) <= 0 ) {
+            data = GetNextWord1( data, tmp );
+            if( *tmp == '\0' ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
-            if( !VarName( v1, vl ) ) {
+            if( !VarName( tmp1, tmp, vl ) ) {
                 return( ERR_SRC_INVALID_ASSIGN );
             }
-            v = VarFind( v1, vl );
+            v = VarFind( tmp1, vl );
             switch( j ) {
             case STR_T_STRLEN:
                 if( v != NULL ) {
-                    sprintf( v1, "%d", v->len );
+                    sprintf( tmp1, "%d", v->len );
                 } else {
-                    strcpy( v1, "0" );
+                    strcpy( tmp1, "0" );
                 }
                 break;
             case STR_T_SUBSTR:
-                if( NextWord1( data, v1 ) <= 0 ) {
+                data = GetNextWord1( data, tmp );
+                if( *tmp == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
-                i = atoi( v1 ) - 1;
-                if( NextWord1( data, v1 ) <= 0 ) {
+                Expand( tmp1, tmp, vl );
+                i = atoi( tmp1 ) - 1;
+                data = GetNextWord1( data, tmp );
+                if( *tmp == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
-                j = atoi( v1 ) - 1;
+                Expand( tmp1, tmp, vl );
+                j = atoi( tmp1 ) - 1;
                 if( v == NULL ) {
-                    v1[0] = 0;
+                    tmp1[0] = '\0';
                     break;
                 }
                 if( j >= v->len || i < 0 ) {
-                    v1[0] = 0;
+                    tmp1[0] = '\0';
                 } else {
                     l = 0;
                     for( k = i; k <= j; k++ ) {
-                        v1[l++] = v->value[k];
+                        tmp1[l++] = v->value[k];
                     }
-                    v1[l] = 0;
+                    tmp1[l] = '\0';
                 }
                 break;
             case STR_T_STRCHR:
-                if( NextWord1( data, v1 ) <= 0 ) {
+                data = GetNextWord1( data, tmp );
+                if( *tmp == '\0' ) {
                     return( ERR_SRC_INVALID_ASSIGN );
                 }
-                Expand( v1, vl );
+                Expand( tmp1, tmp, vl );
                 if( v == NULL ) {
                     j = -1;
                 } else {
-                    t = strchr( v->value, v1[0] );
+                    t = strchr( v->value, tmp1[0] );
                     if( t != NULL ) {
                         j = t - v->value;
                     } else {
@@ -184,11 +191,11 @@ vi_rc SrcAssign( char *data, vlist *vl )
                     }
                     j++;
                 }
-                sprintf( v1, "%d", j );
+                sprintf( tmp1, "%d", j );
                 break;
             }
         } else {
-            Expand( v1, vl );
+            Expand( tmp1, tmp, vl );
         }
 
     }
@@ -196,47 +203,45 @@ vi_rc SrcAssign( char *data, vlist *vl )
      * regular expression subs.
      */
     if( rxflag && CurrentRegularExpression != NULL ) {
-        RegSub( CurrentRegularExpression, v1, tmp, CurrentPos.line );
-        strcpy( v1, tmp );
+        RegSub( CurrentRegularExpression, tmp1, tmp, CurrentPos.line );
+        strcpy( tmp1, tmp );
     }
 
     /*
      * special processing
      */
     if( envflag ) {
-        t = getenv( v1 );
-        if( t != NULL ) {
-            strcpy( v1, t );
-        } else {
-            v1[0] = 0;
+        v1 = getenv( tmp1 );
+        if( v1 == NULL ) {
+            v1 = "";
         }
     } else if( setflag ) {
-        strcpy( v1, GetASetVal( v1 ) );
+        v1 = GetASetVal( tmp1 );
     } else if( timeflag ) {
         tod = time( NULL );
-        strftime( tmp, sizeof( tmp ), v1, localtime( &tod ) );
-        strcpy( v1, tmp );
+        strftime( tmp, sizeof( tmp ), tmp1, localtime( &tod ) );
+        v1 = tmp;
     } else if( expflag || lnumflag ) {
         i = setjmp( jmpaddr );
         if( i != 0 ) {
             return( (vi_rc)i );
         }
-        StartExprParse( v1, jmpaddr );
+        StartExprParse( tmp1, jmpaddr );
         val = GetConstExpr();
         if( lnumflag ) {
             fcb         *cfcb;
             line        *cline;
             vi_rc       rc;
             rc = CGimmeLinePtr( val, &cfcb, &cline );
+            v1 = cline->data;
             if( rc != ERR_NO_ERR ) {
-                VarAddStr( name, "", vl );
-            } else {
-                VarAddStr( name, cline->data, vl );
+                v1 = "";
             }
-            return( ERR_NO_ERR );
         } else {
-            ltoa( val, v1, EditVars.Radix );
+            v1 = ltoa( val, tmp1, EditVars.Radix );
         }
+    } else {
+        v1 = tmp1;
     }
 
     VarAddStr( name, v1, vl );

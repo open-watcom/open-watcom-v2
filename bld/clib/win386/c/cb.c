@@ -51,7 +51,7 @@ extern DWORD __far *_CodeSelectorBaseAddr;
 extern DWORD __far *_DataSelectorBaseAddr;
 
 static int              emitOffset;
-static char             *emitWhere;
+static unsigned char    *emitWhere;
 static int              MaxCBIndex;
 
 #define CB_CODE_SIZE    4
@@ -71,10 +71,10 @@ static int              MaxCBIndex;
 /*
  * code emitting functions follow
  */
-static void emitByte( char byte )
+static void emitByte( unsigned char byte )
 {
     if( emitWhere != NULL ) {
-        emitWhere[ emitOffset ] = byte;
+        emitWhere[emitOffset] = byte;
     }
     emitOffset ++;
 }

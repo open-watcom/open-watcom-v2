@@ -4,25 +4,31 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPDivZero
-        xrefp   FPInvalidOp
-
         modstart    fldd086, word
-
 
 endif
 
+        xrefp   FPDivZero
+        xrefp   FPInvalidOp
 
         xdefp   __FLDD
         xdefp   ___LDD
 
-; void __FLDD( long double *op1 , long double *op2, long double *result )
-;       AX - pointer to op1
-;       DX - pointer to op2
-;       BX - pointer for result
 ;
+; void __FLDD( long double *op1 , long double *op2, long double *result )
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to op1
+;               SS:DX - pointer to op2
+;               SS:BX - pointer for result
+;else
+;       input:  DS:AX - pointer to op1
+;               DS:DX - pointer to op2
+;               DS:BX - pointer for result
+;endif
 
         defp    __FLDD
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -50,19 +56,26 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDD
 
 
-; input:
-;       SI - pointer to op1
-;       DI - pointer to op2
-;       AX - exponent+sign of op1
-;       DX - exponent+sign of op2
-; output:
-;       SI - exponent+sign of result
-;       AX:BX:CX:DX - mantissa
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:SI - pointer to op1
+;               SS:DI - pointer to op2
+;else
+;       input:  DS:SI - pointer to op1
+;               DS:DI - pointer to op2
+;endif
+;               AX - exponent+sign of op1
+;               DX - exponent+sign of op2
+;       output: SI          - exponent+sign of result
+;               AX:BX:CX:DX - mantissa
+;
 
         defp    ___LDD
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -89,7 +102,7 @@ endif
             _shl  CX,1          ; - - place sign in carry
             _quif ne            ; - - quit if not 0
             call  FPInvalidOp   ; - - process exception
-            mov   SI,0FFFFh     ; - - return NaN
+            mov   SI,0FFFFh     ; - - return QNaN
             mov   AX,0C000h     ; - - ...
           _admit                ; - admit: divide by 0
             mov   SI,AX         ; - - get exponent+sign of op1
@@ -467,19 +480,30 @@ normalize_opnd proc     near
         _loop                   ; loop (normalize it)
           or    BX,BX           ; - check high word for 0
           _quif ne              ; - quit if not zero
+          sub   DX,16           ; - decrement exponent by 16
           xchg  [BP],BX         ; - shift operand left 16 bits
           xchg  2[BP],BX        ; - ...
           xchg  4[BP],BX        ; - ...
-          sub   DX,16           ; - decrement exponent by 16
         _endloop                ; endloop
+        or      BH,BH           ; check high byte for 0
+        _if z
+          sub   DX,8            ; - decrement exponent by 8
+          xchg  [BP],BH         ; - shift operand left 8 bits
+          xchg  1[BP],BH        ; - ...
+          xchg  2[BP],BH        ; - ...
+          xchg  3[BP],BH        ; - ...
+          xchg  4[BP],BH        ; - ...
+          xchg  5[BP],BH        ; - ...
+          xchg  BL,BH           ; - ...
+          or    BH,BH           ; - check for implied 1 bit
+        _endif
         _loop                   ; loop (normalize it)
-          or    BX,BX           ; - check for implied 1 bit
-          _quif s               ; - quit if its on
+        _quif s
+          dec   DX              ; - decrement exponent
           shl   word ptr [BP],1 ; - shift fraction left
           rcl   word ptr 2[BP],1; - ...
           rcl   word ptr 4[BP],1; - ...
           _rcl  BX,1            ; - ...
-          dec   DX              ; - decrement exponent
         _endloop                ; endloop
         mov     6[BP],BX        ; save high order word
         xchg    DI,BP           ; restore address of operand

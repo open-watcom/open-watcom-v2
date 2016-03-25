@@ -5,6 +5,10 @@
 #
 # Expects POSIX or OW tools.
 
+if [ -z "$OWROOT" ]; then
+    source ./setvars.sh
+fi
+
 OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
 
 output_redirect()
@@ -69,4 +73,7 @@ else
     fi
 fi
 cd $OWROOT
+if [ $RC -eq 0 ]; then
+    echo "Now you can run 'cd bld && builder rel' to produce the final binaries"
+fi
 exit $RC

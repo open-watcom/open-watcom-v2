@@ -49,7 +49,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     mad_init_func       *init_func;
     mad_status          status;
 
-    if( DosLoadModule( NULL, 0, path, &dll ) != 0 ) {
+    if( DosLoadModule( NULL, 0, (char *)path, &dll ) != 0 ) {
         return( MS_ERR|MS_FOPEN_FAILED );
     }
     status = MS_ERR|MS_INVALID_MAD;

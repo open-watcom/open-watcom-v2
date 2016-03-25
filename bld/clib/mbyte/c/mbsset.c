@@ -46,6 +46,6 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsset,_fmbsset)( unsigned char _FFAR *
 {
     size_t              n;
 
-    n = _NEARFAR(strlen,_fstrlen)( string );
+    n = _NEARFAR(strlen,_fstrlen)( (char _FFAR *)string );
     return( _NEARFAR(_mbsnbset,_fmbsnbset)( string, ch, n ) );
 }

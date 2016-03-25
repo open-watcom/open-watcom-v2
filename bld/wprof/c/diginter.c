@@ -51,7 +51,7 @@
 #include "madregs.h"
 
 
-extern unsigned BigRead(int ,void *,unsigned int );
+extern size_t   BigRead( int, void *, size_t );
 extern bool     IsX86BigAddr( address );
 extern bool     IsX86RealAddr( address );
 
@@ -123,18 +123,42 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
 
 
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void * b , unsigned s )
-/*******************************************************************/
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void * b , size_t s )
+/***************************************************************/
 {
     return( BigRead( h, b, s ) );
 }
 
 
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, unsigned s )
-/*************************************************************************/
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
+/*********************************************************************/
 {
+#ifdef _WIN64
+    size_t      total;
+    unsigned    write_len;
+    unsigned    amount;
+
+    amount = INT_MAX;
+    total = 0;
+    while( s > 0 ) {
+        if( amount > s )
+            amount = (unsigned)s;
+        write_len = write( h, b, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( (size_t)-1 );
+        }
+        total += write_len;
+        if( write_len != amount ) {
+            return( total );
+        }
+        b = (char *)b + amount;
+        s -= amount;
+    }
+    return( total );
+#else
     return( write( h, b, s ) );
+#endif
 }
 
 
@@ -155,8 +179,8 @@ void DIGCLIENT DIGCliRemove( const char * name, dig_open mode )
 }
 
 unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
     enum x86_addr_characteristics       *d;
 

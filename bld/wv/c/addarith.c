@@ -34,6 +34,8 @@
 #include "dbgdata.h"
 #include "dbgmem.h"
 #include "mad.h"
+#include "dbgovl.h"
+#include "addarith.h"
 
 
 typedef struct alias_info {
@@ -43,7 +45,6 @@ typedef struct alias_info {
 } alias_info;
 
 extern unsigned         HugeShift( void );
-extern void             AddrFix( address * );
 
 static alias_info               *HeadAliasTbl = NULL;
 
@@ -53,16 +54,12 @@ void AddAliasInfo( unsigned seg, unsigned alias )
     alias_info          *curr;
 
     if( alias == 0 ) {
-        owner = &HeadAliasTbl;
-        for( ;; ) {
-            curr = *owner;
-            if( curr == NULL ) break;
+        for( owner = &HeadAliasTbl; (curr = *owner) != NULL; owner = &curr->next ) {
             if( curr->seg == seg ) {
                 (*owner)->next = curr->next;
                 _Free( curr );
                 return;
             }
-            owner = &curr->next;
         }
     } else {
         _Alloc( curr, sizeof( alias_info ) );
@@ -158,15 +155,15 @@ long AddrDiff( address a, address b )
 
 
 /*
- * SameAddrSpace - return TRUE if two addresses are in the same address space
+ * SameAddrSpace - return true if two addresses are in the same address space
  */
 
-int SameAddrSpace( address a, address b )
+bool SameAddrSpace( address a, address b )
 {
-    if( _IsOn( SW_IGNORE_SEGMENTS ) ) return( TRUE );
+    if( _IsOn( SW_IGNORE_SEGMENTS ) ) return( true );
     if( a.sect_id == 0 ) a.sect_id = b.sect_id;
     if( b.sect_id == 0 ) b.sect_id = a.sect_id;
-    if( a.sect_id != b.sect_id ) return( FALSE );
+    if( a.sect_id != b.sect_id ) return( false );
     AddrFix( &a );
     AddrFix( &b );
     DeAlias( &a.mach );

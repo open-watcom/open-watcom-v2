@@ -31,9 +31,8 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "itsto32.h"
 
-extern unsigned __threadstksize;
-#pragma aux __threadstksize "*"
 
 void __init_threadstksize( void )
 {

@@ -39,14 +39,14 @@ const char      DIPImpName[] = "CodeView";
 
 unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
-    static unsigned_8 Sizes[] = {
+    static unsigned_8 Sizes[MAX_HK] = {
         sizeof( imp_image_handle ),
         sizeof( imp_type_handle ),
         sizeof( imp_cue_handle ),
         sizeof( imp_sym_handle )
     };
 
-    return( Sizes[ hk ] );
+    return( Sizes[hk] );
 }
 
 dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
@@ -68,7 +68,7 @@ void            DIGENTRY DIPImpCancel( void )
 {
 }
 
-unsigned NameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
+size_t NameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 {
     if( buff_size > 0 ) {
         --buff_size;

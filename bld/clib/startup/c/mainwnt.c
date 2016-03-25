@@ -36,6 +36,7 @@
 #include <stddef.h>
 #include <io.h>
 #include <ctype.h>
+#include <wctype.h>
 #include <string.h>
 #ifdef _M_IX86
  #include <i86.h>
@@ -61,7 +62,8 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
-#include "_exit.h"
+#include "exitwmsg.h"
+
 
 DWORD __TlsIndex = NO_INDEX;
 
@@ -196,16 +198,16 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
         _cmd_ptr = cmd = __clib_strdup( GetCommandLineA() );
         if( *cmd == '"' ) {
             cmd++;
-            while( *cmd != '"' && *cmd != 0 ) {
+            while( *cmd != '"' && *cmd != '\0' ) {
                 cmd++;
             }
             if( *cmd ) cmd++;
         } else {
-            while( !isspace( *cmd ) && *cmd != 0 ) {
+            while( !isspace( (unsigned char)*cmd ) && *cmd != '\0' ) {
                 cmd++;
             }
         }
-        while( isspace( *cmd ) ) {
+        while( isspace( (unsigned char)*cmd ) ) {
             cmd++;
         }
         _LpCmdLine = cmd;
@@ -213,20 +215,20 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     {
         wchar_t *wcmd;
         wcmd = GetCommandLineW();       /* Win95 supports GetCommandLineW */
-        if( wcmd ) {
+        if( wcmd != NULL ) {
             _wcmd_ptr = wcmd = __clib_wcsdup( wcmd );
-            if( *wcmd == '"' ) {
+            if( *wcmd == L'"' ) {
                 wcmd++;
-                while( *wcmd != '"' && *wcmd != 0 ) {
+                while( *wcmd != L'"' && *wcmd != L'\0' ) {
                     wcmd++;
                 }
                 if( *wcmd ) wcmd++;
             } else {
-                while( !isspace( *wcmd ) && *wcmd != 0 ) {
+                while( !iswspace( *wcmd ) && *wcmd != L'\0' ) {
                     wcmd++;
                 }
             }
-            while( isspace( *wcmd ) ) {
+            while( iswspace( *wcmd ) ) {
                 wcmd++;
             }
         } else {
@@ -294,7 +296,7 @@ void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     __NTFini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
@@ -310,4 +312,5 @@ _WCRTLINK void __exit( unsigned ret_code )
     // for multi-threaded apps
     __FirstThreadData = NULL;
     ExitProcess( ret_code );
+    // never return
 }

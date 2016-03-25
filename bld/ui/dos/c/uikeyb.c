@@ -41,37 +41,37 @@
 #include "uishift.h"
 #include "biosui.h"
 
-#define         NRM_KEY_READ            0x00
-#define         NRM_KEY_STAT            0x01
-#define         NRM_KEY_SHFT            0x02
-#define         NRM_KEY_WRITE           0x05
+#define NRM_KEY_READ            0x00
+#define NRM_KEY_STAT            0x01
+#define NRM_KEY_SHFT            0x02
+#define NRM_KEY_WRITE           0x05
 
-#define         EXT_KEY_READ            0x10
-#define         EXT_KEY_STAT            0x11
-#define         EXT_KEY_SHFT            0x12
+#define EXT_KEY_READ            0x10
+#define EXT_KEY_STAT            0x11
+#define EXT_KEY_SHFT            0x12
 
 static unsigned char    ReadReq;      /* this will be 0x00 or 0x10 */
 
-static          EVENT                   EventsPress[]   = {
-                EV_SHIFT_PRESS,
-                EV_SHIFT_PRESS,
-                EV_CTRL_PRESS,
-                EV_ALT_PRESS,
-                EV_SCROLL_PRESS,
-                EV_NUM_PRESS,
-                EV_CAPS_PRESS,
-                EV_INSERT_PRESS
+static EVENT    EventsPress[]   = {
+    EV_SHIFT_PRESS,
+    EV_SHIFT_PRESS,
+    EV_CTRL_PRESS,
+    EV_ALT_PRESS,
+    EV_SCROLL_PRESS,
+    EV_NUM_PRESS,
+    EV_CAPS_PRESS,
+    EV_INSERT_PRESS
 };
 
-static          EVENT                   EventsRelease[] = {
-                EV_SHIFT_RELEASE,
-                EV_SHIFT_RELEASE,
-                EV_CTRL_RELEASE,
-                EV_ALT_RELEASE,
-                EV_SCROLL_RELEASE,
-                EV_NUM_RELEASE,
-                EV_CAPS_RELEASE,
-                EV_INSERT_RELEASE
+static EVENT    EventsRelease[] = {
+    EV_SHIFT_RELEASE,
+    EV_SHIFT_RELEASE,
+    EV_CTRL_RELEASE,
+    EV_ALT_RELEASE,
+    EV_SCROLL_RELEASE,
+    EV_NUM_RELEASE,
+    EV_CAPS_RELEASE,
+    EV_INSERT_RELEASE
 };
 
 unsigned int extern uiextkeyboard( void )
@@ -135,11 +135,14 @@ bool intern initkeyboard( void )
 
     ReadReq = NRM_KEY_READ;
     x = BIOSTestKeyboard();
-    if( (x & 0xff) == 0xff ) return( TRUE ); /* too many damn keys pressed! */
-    if( AL( x ) != ( RAL( x ) || LAL( x ) ) ) return( TRUE );
-    if( CT( x ) != ( RCT( x ) || LCT( x ) ) ) return( TRUE );
+    if( (x & 0xff) == 0xff )
+        return( true ); /* too many damn keys pressed! */
+    if( AL( x ) != ( RAL( x ) || LAL( x ) ) )
+        return( true );
+    if( CT( x ) != ( RCT( x ) || LCT( x ) ) )
+        return( true );
     ReadReq = EXT_KEY_READ;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -164,27 +167,26 @@ EVENT intern keyboardevent( void )
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
+        ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( scan + 0x100 >= EV_HOME && scan + 0x100 <= EV_DELETE ) {
+        if( ev >= EV_HOME && ev <= EV_DELETE ) {
             if( ( newshift & S_NUM ) == 0 ) {
                 if( ( newshift & S_SHIFT ) != 0 ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
-        if( ascii == 0 ) {
-            ev = 0x100 + scan;
-        } else {
+        if( ascii != 0 ) {
             ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
                 ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
-                switch( ev + 0x100 ) {
+                switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
-                case EV_RETURN:
+                case EV_ENTER:
                 case EV_ESCAPE:
-                    ev += 0x100;
+                    ev = ascii + 0x100;
                     break;
                 }
             }
@@ -199,7 +201,7 @@ EVENT intern keyboardevent( void )
         if( changed != 0 ) {
             key = 0;
             scan = 1;
-            while( scan < 256 ) {
+            while( scan < (1 << 8) ) {
                 if( ( changed & scan ) != 0 ) {
                     if( ( newshift & scan ) != 0 ) {
                         UIData->old_shift |= scan;

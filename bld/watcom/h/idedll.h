@@ -32,12 +32,12 @@
 #ifndef IDEDLL_H_INCLUDED
 #define IDEDLL_H_INCLUDED
 
+#include <stdlib.h>
+#include <sys/stat.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdlib.h>
-#include <sys/stat.h>
 
 #include "pushpck4.h"
 

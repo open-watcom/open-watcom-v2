@@ -8,23 +8,30 @@ include struct.inc
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>     long double math library
-;<>
-;<>     inputs: AX - pointer to long double (op1)
-;<>             DX - pointer to long double (op2)
-;<>             BX - pointer to long double (result)
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
         xdefp   __FLDA          ; add real*10 to real*10
         xdefp   __FLDS          ; subtract real*10 from real*10
         xdefp   __FLDAC         ; add real*10 to real*10
         xdefp   __FLDSC         ; subtract real*10 from real*10
         xdefp   ___LDA          ; long double add routine
 
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;       long double math library
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double (op1)
+;               SS:DX - pointer to long double (op2)
+;               SS:BX - pointer to long double (result)
+;else
+;       input:  DS:AX - pointer to long double (op1)
+;               DS:DX - pointer to long double (op2)
+;               DS:BX - pointer to long double (result)
+;endif
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
         defp    __FLDS
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -53,9 +60,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDS
 
+
         defp    __FLDSC
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -70,9 +80,12 @@ endif
         mov     DX,CS:8[DI]     ; get exponent+sign of op2
         xor     DX,8000h        ; flip the sign of op2
         jmp     short _addc     ; add constant
+
         endproc __FLDSC
 
+
         defp    __FLDA
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -100,10 +113,12 @@ ifdef _BUILDING_MATHLIB
         pop     DS              ; restore DS
 endif
         ret                     ; return
+
         endproc __FLDA
 
 
         defp    __FLDAC
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -126,19 +141,26 @@ _addc:  push    CS:8[DI]        ; push constant op2 onto stack
         lcall   ___LDA          ; do the add
         add     SP,10           ; remove constant from stack
         jmp     _add9           ; store result
+
         endproc __FLDAC
 
-
-; input:
-;       SI - pointer to op1
-;       DI - pointer to op2
-;       AX - exponent+sign of op1
-;       DX - exponent+sign of op2
-; output:
-;       SI - exponent+sign of result
-;       AX:BX:CX:DX - mantissa
-
+;
+; - long double add routine
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:SI - pointer to op1
+;               SS:DI - pointer to op2
+;else
+;       input:  DS:SI - pointer to op1
+;               DS:DI - pointer to op2
+;endif
+;               AX - exponent+sign of op1
+;               DX - exponent+sign of op2
+;       output: SI          - exponent+sign of result
+;               AX:BX:CX:DX - mantissa
+;
         defp    ___LDA
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    SS              ; fpc code assumes parms are relative to SS
@@ -267,7 +289,7 @@ endif
           cmp   SI,16           ; - quit if < 16 bits to shift
           _quif b               ; - ...
           or    AL,AH           ; - move sticky bits to bottom
-          mov   AH,0            ; - zero top sticky bits
+          xor   AH,AH           ; - zero top sticky bits
           or    AX,DX           ; - set sticky bits
           mov   DX,CX           ; - shift fraction right 16 bits
           mov   CX,BX           ; - ...
@@ -287,7 +309,7 @@ endif
           xchg  AX,DI           ; - put sticky bits into DI
           mov   BH,AL           ; - ...
           mov   AL,AH           ; - ...
-          mov   AH,0            ; - ...
+          xor   AH,AH           ; - ...
           xchg  AX,DI           ; - get sticky bits back into AX
           sub   SI,8            ; - adjust shift count
         _endif                  ; endif

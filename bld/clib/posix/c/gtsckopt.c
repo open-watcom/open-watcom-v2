@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,5 +44,5 @@ _WCRTLINK int getsockopt( int s, int level, int optname, void *optval, socklen_t
     args[2] = (u_long)optname;
     args[3] = (u_long)optval;
     args[4] = (u_long)optlen;
-    return ( __socketcall( SYS_GETSOCKOPT, args ) );
+    return( __socketcall( SYS_GETSOCKOPT, args ) );
 }

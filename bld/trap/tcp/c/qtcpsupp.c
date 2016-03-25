@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+
 FILE    __near __iob[2];
 
 static int File2Hdl( FILE *f )
@@ -48,7 +49,7 @@ static int File2Hdl( FILE *f )
     return( (int) f );
 }
 
-unsigned stackavail()
+unsigned stackavail( void )
 {
     return( ~0 );
 }

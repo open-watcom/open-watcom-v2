@@ -36,9 +36,9 @@ typedef struct {
     unsigned char       class;
     unsigned char       namelen;
     unsigned            type_index;
-    char                *name;
+    const char          *name;
     /* stuff that we don't have to parse until we know we want the lcl */
-    byte                *unparsed;
+    const char          *unparsed;
 } lcl_info;
 
 /* variable, class = 1x */
@@ -60,7 +60,7 @@ typedef struct {
     lcl_block           b;
     unsigned char       pro_size;
     unsigned char       epi_size;
-    unsigned long       ret_addr_offset;
+    addr_off            ret_addr_offset;
 } lcl_routine;
 
 typedef struct {
@@ -103,3 +103,56 @@ typedef union {
 #define ADD_PREV_SEG    0x00
 #define SET_BASE        0x01
 #define SET_BASE386     0x02
+
+
+extern unsigned         InfoSize( imp_image_handle *ii, imp_mod_handle im,
+                                demand_kind dk, word entry );
+extern void             *InfoLoad( imp_image_handle *ii, imp_mod_handle im,
+                                demand_kind dk, word entry,
+                                void (*clear)(void *, void *) );
+extern void             InfoClear( imp_image_handle *ii );
+extern void             InfoUnlock( void );
+extern dip_status       InfoRelease( void );
+extern void             InfoSpecUnlock(const char *);
+extern void             InfoSpecLock(const char *);
+extern dip_status       InitDemand( imp_image_handle *ii );
+extern void             FiniDemand( void );
+extern const char       *GetIndex( const char *ptr, unsigned *value );
+extern const char       *GetAddress( imp_image_handle *ii, const char *ptr,
+                                address *addr, int is32 );
+extern void             KillLclLoadStack( void );
+extern search_result    SearchLclMod( imp_image_handle *ii, imp_mod_handle im,
+                                lookup_item *li, void *d );
+extern search_result    SearchLclScope( imp_image_handle *ii, imp_mod_handle im,
+                                address *addr, lookup_item *li, void *d );
+extern search_result    LookupLclAddr( imp_image_handle *ii, address addr,
+                                imp_sym_handle *is );
+extern unsigned         SymHdl2LclName( imp_image_handle *ii, imp_sym_handle *is,
+                                char *buff, unsigned buff_size );
+extern dip_status       SymHdl2LclLoc( imp_image_handle *ii, imp_sym_handle *is,
+                                location_context *lc, location_list *ll );
+extern dip_status       SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is,
+                                imp_type_handle *it );
+extern void             SetGblLink( imp_sym_handle *is, gbl_info *link );
+extern dip_status       Lcl2GblHdl( imp_image_handle *ii, imp_sym_handle *lcl_is,
+                                imp_sym_handle *gbl_is );
+extern dip_status       SymHdl2LclInfo( imp_image_handle *ii, imp_sym_handle *is,
+                                sym_info *si );
+extern dip_status       SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
+                                location_context *lc, location_list *ll, unsigned parm );
+extern walk_result      WalkScopedSymList( imp_image_handle *ii, address *addr,
+                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+extern walk_result      WalkBlockSymList( imp_image_handle *ii, scope_block *scope,
+                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+extern dip_status       WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
+                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d,
+                                walk_result *last );
+
+extern dip_status DIGENTRY      DIPImpSymObjType( imp_image_handle *ii, imp_sym_handle *is,
+                                        imp_type_handle *it, dip_type_info *ti );
+extern dip_status DIGENTRY      DIPImpSymObjLocation( imp_image_handle *ii, imp_sym_handle *is,
+                                        location_context *lc, location_list *ll );
+extern search_result DIGENTRY   DIPImpAddrScope( imp_image_handle *ii, imp_mod_handle im,
+                                        address addr, scope_block *scope );
+extern search_result DIGENTRY   DIPImpScopeOuter( imp_image_handle *ii, imp_mod_handle im,
+                                        scope_block *in, scope_block *out );

@@ -48,13 +48,9 @@ extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
 extern void _forward( void );
 extern void _backward( void );
 
-#pragma aux             _forward = \
-        0xfc                    /* cld */ \
-        modify [];
+#pragma aux             _forward = "cld" modify []
 
-#pragma aux             _backward = \
-        0xfd                    /* std */ \
-        modify [];
+#pragma aux             _backward = "std" modify []
 
 #pragma aux             _snowget = \
        0x1e                       /*     push    ds         */  \
@@ -188,7 +184,8 @@ intern void cdecl farstring( LP_PIXEL start, int attr, size_t len,
     if( snow ) {
         for( i = 0 ; i < len ; ++i ) {
             p.ch = *str;
-            if( p.ch == '\0' ) break;
+            if( p.ch == '\0' )
+                break;
             ++str;
             start = _snowput( start, p );
         }
@@ -198,19 +195,20 @@ intern void cdecl farstring( LP_PIXEL start, int attr, size_t len,
 #endif
     {
         for( i = 0 ; i < len ; ++i ) {
-            if( str )
+            if( str != NULL ) {
                 p.ch = *str;
-            else
+            } else {
                 p.ch = '\0';
-
-            if( p.ch == '\0' ) break;
+            }
+            if( p.ch == '\0' )
+                break;
             ++str;
             *start = p;
             ++start;
         }
     }
     p.ch = ' ';
-    farfill( start, p, len-i, snow );
+    farfill( start, p, len - i, snow );
 }
 
 intern void cdecl farattrib( LP_PIXEL start, int attr, size_t len, bool snow )

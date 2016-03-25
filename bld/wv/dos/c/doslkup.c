@@ -33,6 +33,8 @@
 #include <string.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
+#include "envlkup.h"
+#include "dosutil.h"
 
 #define DOSEnv 0x002C
 
@@ -61,21 +63,23 @@ const char __far *DOSEnvFind( const char __far *name )
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  __far *env;
-    unsigned    len;
-    int         output = 0;
+    size_t      len;
+    bool        output;
     char        c;
 
     env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
+
+    output = false;
     if( buff_len != 0 && buff != NULL ) {
         --buff_len;
-        output = 1;
+        output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -84,7 +88,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
 }

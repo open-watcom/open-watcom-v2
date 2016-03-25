@@ -46,6 +46,6 @@ void            DIGCLIENT DIPCliAddrSection( address * );
 
 void            DIGCLIENT DIPCliStatus( dip_status );
 
-mad_handle      DIGCLIENT DIPCliCurrMAD(void);
+dig_mad         DIGCLIENT DIPCliCurrMAD(void);
 
 #endif

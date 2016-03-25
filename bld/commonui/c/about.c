@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,7 +44,7 @@
 #include "uistr.gh"
 #include "wprocmap.h"
 
-#if defined( __WATCOMC__ ) && defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( _M_I86 ) && defined( __WINDOWS__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
@@ -70,18 +71,6 @@ WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         }
         if( pai->version != NULL ) {
             SetDlgItemText( hwnd, ABOUT_VERSION, pai->version );
-        }
-        if( pai->first_cr_year != NULL ) {
-#if defined( __WATCOMC__) && !defined( __ALPHA__ )
-            if( _fstrcmp( pai->first_cr_year, CURR_YEAR ) ) {
-#else
-            if( strcmp( pai->first_cr_year, CURR_YEAR ) ) {
-#endif
-                sprintf( buff, banner2a( "%s" ), pai->first_cr_year );
-            } else {
-                strcpy( buff, banner2a( "1984" ) );
-            }
-            SetDlgItemText( hwnd, ABOUT_COPYRIGHT, buff );
         }
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
         {

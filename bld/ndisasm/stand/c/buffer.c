@@ -34,8 +34,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "buffer.h"
 #include "print.h"
 #include "formasm.h"

@@ -40,9 +40,8 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
-
-extern void             FreeSymHandle( sym_list * );
-extern int              AddrComp( address a, address b );
+#include "addarith.h"
+#include "dbglkup.h"
 
 
 static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
@@ -72,8 +71,8 @@ static const char *SymPickText( const void *data_handle, int item )
         len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
     }
     image_name = ModImageName( SymMod( SL2SH( sym ) ) );
-    if( *image_name != '\0' ) {
-        Format( &TxtBuff[ len ], " [%s]", image_name );
+    if( *image_name != NULLCHAR ) {
+        Format( &TxtBuff[len], " [%s]", image_name );
     }
     return( TxtBuff );
 }

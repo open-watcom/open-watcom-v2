@@ -39,6 +39,7 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "_doslfn.h"

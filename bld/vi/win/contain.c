@@ -33,10 +33,12 @@
 #include "window.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND, UINT, WPARAM, LPARAM );
+
 static char *className = "MDICLIENT";
 WNDPROC oldContainerProc;
-
-WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 
 /*
@@ -54,7 +56,7 @@ window_id CreateContainerWindow( RECT *size )
                 WS_CHILD | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL | WS_VISIBLE,
                 size->left, size->top,
                 size->right - size->left, size->bottom - size->top,
-                Root, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
+                root_window_id, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
     SET_WNDINFO( container, 0 );
     oldContainerProc = (WNDPROC)GET_WNDPROC( container );
     SET_WNDPROC( container, (LONG_PTR)MakeWndProcInstance( ContainerWindowProc, InstanceHandle ) );
@@ -71,7 +73,7 @@ WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND hwnd, UINT msg, WPARAM wpar
 {
     switch( msg ) {
     case WM_KEYDOWN:
-        return( SendMessage( Root, msg, wparam, lparam ) );
+        return( SendMessage( root_window_id, msg, wparam, lparam ) );
         break;
     }
     return( CallWindowProc( oldContainerProc, hwnd, msg, wparam, lparam ) );

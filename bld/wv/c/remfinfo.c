@@ -37,6 +37,7 @@
 #include "trpfinfo.h"
 #include "filermt.h"
 #include "trapglbl.h"
+#include "trpld.h"
 
 #define SUPP_FILE_INFO_SERVICE( in, request )   \
         in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
@@ -49,8 +50,8 @@ bool InitFileInfoSupp( void )
 {
     SuppFileInfoId = GetSuppId( FILE_INFO_SUPP_NAME );
     if( SuppFileInfoId != 0 )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 long RemoteGetFileDate( const char *name )
@@ -65,7 +66,7 @@ long RemoteGetFileDate( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -84,20 +85,20 @@ bool RemoteSetFileDate( const char *name, long date )
     file_info_set_date_req      acc;
     file_info_set_date_ret      ret;
 
-    if( SuppFileInfoId == 0 ) return( FALSE );
+    if( SuppFileInfoId == 0 ) return( false );
     SUPP_FILE_INFO_SERVICE( acc, REQ_FILE_INFO_SET_DATE );
     acc.date = date;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }

@@ -210,7 +210,7 @@ __Int21_ proc   far
         lss     sp,_EntryStackSave      ; switch to 16-bit stack
         push    bx                      ; save bx
         mov     bl,ah                   ; get func code
-        mov     bh,0                    ; zero high byte
+        xor     bh,bh                   ; zero high byte
         mov     bl,cs:Int21Class[bx]       ; determine class of func
         mov     bx,cs:ClassTable[bx]       ; get addr of func
         jmp     bx                      ; jump to func
@@ -219,9 +219,9 @@ C_IOCTL:                                ; ioctl function
         cmp     al,0Fh                  ; check range of sub func code
         ja      short C_Error           ; error if too large
         mov     bl,al                   ; get sub func code
-        mov     bh,0                    ; zero high byte
+        xor     bh,bh                   ; zero high byte
         mov     bl,cs:IOctlClass[BX]       ; get class of function
-        cmp     bl,0                    ; if no pointer translation required
+        test    bl,bl                   ; if no pointer translation required
         je      C_NONE                  ; then go do it
         jmp     C_EDX                   ; translate pointer in EDX
 

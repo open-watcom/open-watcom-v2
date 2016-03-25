@@ -185,16 +185,16 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     compunit = &DWRCurrNode->compunit;
     start = DWRCurrNode->sections[DR_DEBUG_INFO].base;
     finish = start + DWRCurrNode->sections[DR_DEBUG_INFO].size;
-    addr_size = DWRVMReadByte( start + COMPILE_UNIT_HDR_ADDR_SIZE );
+    addr_size = DWRVMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
     for( ;; ) {
         compunit->next = NULL;
         compunit->start = start;
         compunit->end = start + sizeof( unsigned_32 ) + DWRVMReadDWord( start );
-        version = DWRVMReadWord( start + COMPILE_UNIT_HDR_VERSION );
+        version = DWRVMReadWord( start + offsetof( compuhdr_prologue, version ) );
         if( DWARF_VER_INVALID( version ) )
             DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        compunit->abbrev_start = DWRVMReadDWord( start + COMPILE_UNIT_HDR_ABBREV_OFFSET );
-        curr_addr_size = DWRVMReadByte( start + COMPILE_UNIT_HDR_ADDR_SIZE );
+        compunit->abbrev_start = DWRVMReadDWord( start + offsetof( compuhdr_prologue, abbrev_offset ) );
+        curr_addr_size = DWRVMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }

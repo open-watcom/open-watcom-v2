@@ -36,26 +36,31 @@ include struct.inc
 
         modstart    ldfs386, dword
 
+endif
 
+ifdef _BUILDING_MATHLIB
         xdefp   __iLDFS
 else
         xdefp   __EmuLDFS
 endif
 
-;       convert long double to float
-; input:
-;       EAX - pointer to long double
-;ifdef _BUILDING_MATHLIB
-;       EDX - pointer to float
-;else
-; output:
-;       EAX - float
-;endif
 ;
+;       convert long double to float
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  EAX - pointer to long double
+;               EDX - pointer to float result
+;else
+;       input:  EAX - pointer to long double
+;       output: EAX - float
+;endif
+
 ifdef _BUILDING_MATHLIB
-__iLDFS proc  near
+
+        defp    __iLDFS
 else
-__EmuLDFS proc  near
+
+        defp    __EmuLDFS
 endif
         push    EDX                     ; save EDX
         push    ECX                     ; save ECX
@@ -115,10 +120,12 @@ endif
 ifdef _BUILDING_MATHLIB
         mov     [EDX],EAX               ; store float value
         ret                             ; return
-__iLDFS endp
+
+        endproc __iLDFS
 else
         ret                             ; return
-__EmuLDFS endp
+
+        endproc __EmuLDFS
 endif
 
 ifdef _BUILDING_MATHLIB

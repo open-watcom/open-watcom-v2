@@ -38,11 +38,10 @@
 #include <sys/stat.h>
 #include <malloc.h>
 #include <time.h>
-
 #include "watcom.h"
-#include "banner.h"
-#include "bool.h"
 #include "sample.h"
+#include "banner.h"
+
 
 char *Types[] = {
         "INFO:",

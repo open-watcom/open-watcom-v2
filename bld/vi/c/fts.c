@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <stddef.h>
 #include "fts.h"
-#include "source.h"
 #include <assert.h>
 #include "parsecl.h"
 
@@ -43,7 +42,7 @@ static  ft_src  *ftsTail;
 /*
  * FTSStart - start a new fts; EditFlags.FileTypeSource will suck in commands
  */
-vi_rc FTSStart( char *data )
+vi_rc FTSStart( const char *data )
 {
     char        template_data[MAX_STR];
     template_ll *templatePtr;
@@ -52,7 +51,7 @@ vi_rc FTSStart( char *data )
     fts = MemAlloc( sizeof( ft_src ) );
     fts->cmd_head = fts->cmd_tail = NULL;
     fts->template_head = fts->template_tail = NULL;
-    while( NextWord1( data, template_data ) > 0 ) {
+    for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
         templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&fts->template_head, (ss **)&fts->template_tail, (ss *)templatePtr );
@@ -73,7 +72,7 @@ vi_rc FTSStart( char *data )
 /*
  * FTSAddCmd - add a 1-line command to the current (tail) fts
  */
-vi_rc FTSAddCmd( char *data, int tok )
+vi_rc FTSAddCmd( const char *data, int tok )
 {
     char    cmd_data[MAX_STR];
     cmd_ll  *cmd;
@@ -85,10 +84,10 @@ vi_rc FTSAddCmd( char *data, int tok )
     // Source gets cute & trashes "set "...
     if( tok >= SRC_T_NULL + 1 ) {
         switch( tok ) {
-        case SRC_T_NULL + PCL_T_SET + 1:
+        case SRC_T_NULL + 1 + PCL_T_SET:
             strcpy( cmd_data, "set " );
             if( EditFlags.ScriptIsCompiled ) {
-                NextWord1( data, cmd_data + 4 );
+                data = GetNextWord1( data, cmd_data + 4 );
                 ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
             }
             break;
@@ -108,7 +107,7 @@ vi_rc FTSAddCmd( char *data, int tok )
 /*
  * FTSAddBoolean - add a boolean set to the current (tail) fts
  */
-vi_rc FTSAddBoolean( bool val, char *name )
+vi_rc FTSAddBoolean( bool val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -120,7 +119,7 @@ vi_rc FTSAddBoolean( bool val, char *name )
 /*
  * FTSAddInt - add an integral set to the current (tail) fts
  */
-vi_rc FTSAddInt( int val, char *name )
+vi_rc FTSAddInt( int val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -132,7 +131,7 @@ vi_rc FTSAddInt( int val, char *name )
 /*
  * FTSAddChar - add a character set to the current (tail) fts
  */
-vi_rc FTSAddChar( char val, char *name )
+vi_rc FTSAddChar( char val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -144,7 +143,7 @@ vi_rc FTSAddChar( char val, char *name )
 /*
  * FTSAddStr - add a string set to the current (tail) fts
  */
-vi_rc FTSAddStr( char *val, char *name )
+vi_rc FTSAddStr( char *val, const char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
@@ -206,7 +205,6 @@ int FTSSearchFTIndex( const char *name )
 
 static vi_rc runCmds( ft_src *fts )
 {
-    char    cmd_data[MAX_STR];
     vi_rc   rc;
     cmd_ll  *cmd;
     bool    oldScript, oldQuiet, oldHold;
@@ -222,8 +220,7 @@ static vi_rc runCmds( ft_src *fts )
     EditFlags.DisplayHold = true;
 
     for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
-        strcpy( cmd_data, cmd->data );
-        rc = RunCommandLine( cmd_data );
+        rc = RunCommandLine( cmd->data );
 #if 0
         if( rc != ERR_NO_ERR && rc != DO_NOT_CLEAR_MESSAGE_WINDOW ) {
             break;
@@ -240,7 +237,7 @@ static vi_rc runCmds( ft_src *fts )
 /*
  * FTSRunCmds - run commands if 'name' has a registered file type
  */
-vi_rc FTSRunCmds( char *name )
+vi_rc FTSRunCmds( const char *name )
 {
     ft_src      *fts;
 
@@ -343,7 +340,7 @@ ft_src *FTSMatchTemplate( template_ll *template_head )
 
 } /* FTSMatchTemplate */
 
-void deleteTemplateList( template_ll *template_head )
+static void deleteTemplateList( template_ll *template_head )
 {
     template_ll *tp, *tpnext;
 
@@ -356,7 +353,7 @@ void deleteTemplateList( template_ll *template_head )
 /*
  * FTSMatchTemplateData - return fts of entry with given template data
  */
-ft_src *FTSMatchTemplateData( char *data )
+ft_src *FTSMatchTemplateData( const char *data )
 {
     char            template_data[MAX_STR];
     template_ll     *templatePtr;
@@ -365,7 +362,7 @@ ft_src *FTSMatchTemplateData( char *data )
 
     // build a template list
     template_head = template_tail = NULL;
-    while( NextWord1( data, template_data ) > 0 ) {
+    for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
         templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail, (ss *)templatePtr );
@@ -411,7 +408,7 @@ void FTSInit( void )
  */
 void FTSFini( void )
 {
-    while( ftsHead ) {
+    while( ftsHead != NULL ) {
         FTSKill( ftsHead );
     }
 

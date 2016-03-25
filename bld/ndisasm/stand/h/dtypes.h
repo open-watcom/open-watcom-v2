@@ -32,7 +32,6 @@
 #ifndef WDIS_TYPES_INCLUDED
 #define WDIS_TYPES_INCLUDED
 
-#include "watcom.h"
 #include "orl.h"
 
 // label list
@@ -142,8 +141,6 @@ typedef enum {
     RC_ERROR,
     RC_OKAY
 } return_val;
-
-#include "bool.h"
 
 typedef enum {
     SECTION_TYPE_TEXT = 0,

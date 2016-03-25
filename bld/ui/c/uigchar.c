@@ -40,40 +40,9 @@
 void intern DBCSCharacterMap( void ) {}
 
 unsigned char UiGChar[] = {
-    '(',                /* UI_RADIO_LEFT        */
-    ')',                /* UI_RADIO_RIGHT       */
-    '*',                /* UI_RADIO_FULL        */
-    ' ',                /* UI_RADIO_EMPTY       */
-    '[',                /* UI_CHECKBOX_LEFT     */
-    ']',                /* UI_CHECKBOX_RIGHT    */
-    'X',                /* UI_CHECKBOX_FULL     */
-    ' ',                /* UI_CHECKBOX_EMPTY    */
-    UI_ULCORNER,        /* UI_BOX_TOP_LEFT      */
-    UI_URCORNER,        /* UI_BOX_TOP_RIGHT     */
-    UI_LRCORNER,        /* UI_BOX_BOTTOM_RIGHT  */
-    UI_LLCORNER,        /* UI_BOX_BOTTOM_LEFT   */
-    UI_DHLINE,          /* UI_BOX_TOP_LINE      */
-    UI_DVLINE,          /* UI_BOX_RIGHT_LINE    */
-    UI_DHLINE,          /* UI_BOX_BOTTOM_LINE   */
-    UI_DVLINE,          /* UI_BOX_LEFT_LINE     */
-    UI_UBLOCK,          /* UI_SHADOW_BOTTOM     */
-    ' ',                /* UI_SHADOW_B_LEFT     */
-    UI_DBLOCK,          /* UI_SHADOW_RIGHT      */
-    UI_UBLOCK,          /* UI_SHADOW_B_RIGHT    */
-    UI_ULCORNER,        /* UI_SBOX_TOP_LEFT     */
-    UI_URCORNER,        /* UI_SBOX_TOP_RIGHT    */
-    UI_LRCORNER,        /* UI_SBOX_BOTTOM_RIGHT */
-    UI_LLCORNER,        /* UI_SBOX_BOTTOM_LEFT  */
-    UI_HLINE,           /* UI_SBOX_TOP_LINE     */
-    UI_VLINE,           /* UI_SBOX_RIGHT_LINE   */
-    UI_HLINE,           /* UI_SBOX_BOTTOM_LINE  */
-    UI_VLINE,           /* UI_SBOX_LEFT_LINE    */
-    UI_LTEE,            /* UI_SBOX_LEFT_TACK    */
-    UI_RTEE,            /* UI_SBOX_RIGHT_TACK   */
-    UI_HLINE,           /* UI_SBOX_HORIZ_LINE   */
-    UI_DARROW,          /* UI_ARROW_DOWN        */
-    UI_RPOINT,          /* UI_POPUP_MARK        */
-    UI_ROOT,            /* UI_CHECK_MARK        */
+    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) linux,
+    #include "_mapchar.h"
+    #undef pick
 };
 
 #else
@@ -85,40 +54,9 @@ unsigned char UiGChar[] = {
 */
 
 unsigned char UiGChar[] = {
-    '(',                /* UI_RADIO_LEFT        */
-    ')',                /* UI_RADIO_RIGHT       */
-    '*',                /* UI_RADIO_FULL        */
-    ' ',                /* UI_RADIO_EMPTY       */
-    '[',                /* UI_CHECKBOX_LEFT     */
-    ']',                /* UI_CHECKBOX_RIGHT    */
-    'X',                /* UI_CHECKBOX_FULL     */
-    ' ',                /* UI_CHECKBOX_EMPTY    */
-    0xc9,               /* UI_BOX_TOP_LEFT      */
-    0xbb,               /* UI_BOX_TOP_RIGHT     */
-    0xbc,               /* UI_BOX_BOTTOM_RIGHT  */
-    0xc8,               /* UI_BOX_BOTTOM_LEFT   */
-    0xcd,               /* UI_BOX_TOP_LINE      */
-    0xba,               /* UI_BOX_RIGHT_LINE    */
-    0xcd,               /* UI_BOX_BOTTOM_LINE   */
-    0xba,               /* UI_BOX_LEFT_LINE     */
-    0xdf,               /* UI_SHADOW_BOTTOM     */
-    ' ',                /* UI_SHADOW_B_LEFT     */
-    0xdc,               /* UI_SHADOW_RIGHT      */
-    0xdf,               /* UI_SHADOW_B_RIGHT    */
-    0xda,               /* UI_SBOX_TOP_LEFT     */
-    0xbf,               /* UI_SBOX_TOP_RIGHT    */
-    0xd9,               /* UI_SBOX_BOTTOM_RIGHT */
-    0xc0,               /* UI_SBOX_BOTTOM_LEFT  */
-    0xc4,               /* UI_SBOX_TOP_LINE     */
-    0xb3,               /* UI_SBOX_RIGHT_LINE   */
-    0xc4,               /* UI_SBOX_BOTTOM_LINE  */
-    0xb3,               /* UI_SBOX_LEFT_LINE    */
-    0xc3,               /* UI_SBOX_LEFT_TACK    */
-    0xb4,               /* UI_SBOX_RIGHT_TACK   */
-    0xc4,               /* UI_SBOX_HORIZ_LINE   */
-    PC_arrowdown,       /* UI_ARROW_DOWN        */
-    PC_triangright,     /* UI_POPUP_MARK        */
-    PC_radical,         /* UI_CHECK_MARK        */
+    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) others,
+    #include "_mapchar.h"
+    #undef pick
 };
 
 extern char VertScrollFrame[2];
@@ -130,40 +68,9 @@ extern char UpPoint[2];
 extern char DownPoint[2];
 
 unsigned char UiDBCSChar[] = {
-    '(',        /* UI_RADIO_LEFT        */
-    ')',        /* UI_RADIO_RIGHT       */
-    '*',        /* UI_RADIO_FULL        */
-    ' ',        /* UI_RADIO_EMPTY       */
-    '[',        /* UI_CHECKBOX_LEFT     */
-    ']',        /* UI_CHECKBOX_RIGHT    */
-    'X',        /* UI_CHECKBOX_FULL     */
-    ' ',        /* UI_CHECKBOX_EMPTY    */
-    0x01,       /* UI_BOX_TOP_LEFT      */
-    0x02,       /* UI_BOX_TOP_RIGHT     */
-    0x04,       /* UI_BOX_BOTTOM_RIGHT  */
-    0x03,       /* UI_BOX_BOTTOM_LEFT   */
-    0x06,       /* UI_BOX_TOP_LINE      */
-    0x05,       /* UI_BOX_RIGHT_LINE    */
-    0x06,       /* UI_BOX_BOTTOM_LINE   */
-    0x05,       /* UI_BOX_LEFT_LINE     */
-    ' ',        /* UI_SHADOW_BOTTOM     */
-    ' ',        /* UI_SHADOW_B_LEFT     */
-    ' ',        /* UI_SHADOW_RIGHT      */
-    ' ',        /* UI_SHADOW_B_RIGHT    */
-    0x01,       /* UI_SBOX_TOP_LEFT     */
-    0x02,       /* UI_SBOX_TOP_RIGHT    */
-    0x04,       /* UI_SBOX_BOTTOM_RIGHT */
-    0x03,       /* UI_SBOX_BOTTOM_LEFT  */
-    0x06,       /* UI_SBOX_TOP_LINE     */
-    0x05,       /* UI_SBOX_RIGHT_LINE   */
-    0x06,       /* UI_SBOX_BOTTOM_LINE  */
-    0x05,       /* UI_SBOX_LEFT_LINE    */
-    0x19,       /* UI_SBOX_LEFT_TACK    */
-    0x17,       /* UI_SBOX_RIGHT_TACK   */
-    0x06,       /* UI_SBOX_HORIZ_LINE   */
-    0x07,       /* UI_ARROW_DOWN        */
-    '>',        /* UI_POPUP_MARK        */
-    'X',        /* UI_CHECK_MARK        */
+    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) dbcs,
+    #include "_mapchar.h"
+    #undef pick
 };
 
 void intern DBCSCharacterMap( void )

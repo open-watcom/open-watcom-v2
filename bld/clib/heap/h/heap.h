@@ -46,24 +46,23 @@
 #endif
 #endif
 
-typedef unsigned int                tag;
-typedef struct freelistp            frl;
-typedef struct freelistp _WCNEAR    *frlptr;
-typedef struct freelist _WCFAR      *farfrlptr;
-typedef unsigned char _WCNEAR       *PTR;
-typedef unsigned char _WCFAR        *FARPTR;
-typedef struct miniheapblkp _WCNEAR *mheapptr;
+typedef unsigned int    tag;
+typedef unsigned char   _WCNEAR *PTR;
+typedef unsigned char   _WCFAR *FARPTR;
 
 /*
 ** NOTE: the size of these data structures is critical to the alignemnt
 **       of the pointers returned by malloc().
 */
-struct freelist {
+typedef struct freelist {
     tag                 len;    /* length of block in free list */
     unsigned int        prev;   /* offset of previous block in free list */
     unsigned int        next;   /* offset of next block in free list */
-};
-struct heapblk {
+} freelist;
+
+typedef freelist        _WCFAR *farfrlptr;
+
+typedef struct heapblk {
     tag                 heaplen;        /* size of heap (0 = 64K) */
     unsigned int        prevseg;        /* segment selector for previous heap */
     unsigned int        nextseg;        /* segment selector for next heap */
@@ -72,18 +71,22 @@ struct heapblk {
     unsigned int        largest_blk;    /* largest block in the heap  */
     unsigned int        numalloc;       /* number of allocated blocks in heap */
     unsigned int        numfree;        /* number of free blocks in the heap */
-    struct freelist     freehead;       /* listhead of free blocks in heap */
+    freelist            freehead;       /* listhead of free blocks in heap */
 #if defined(__WARP__)
     unsigned int        spare;          /* match miniheapblkp size */
 #endif
-};
+} heapblk;
 
-struct freelistp {
+typedef struct freelistp {
     tag                 len;
-    frlptr              prev;
-    frlptr              next;
-};
-struct heapblkp {
+    struct freelistp    _WCNEAR *prev;
+    struct freelistp    _WCNEAR *next;
+} freelistp;
+
+typedef freelistp       frl;
+typedef freelistp       _WCNEAR *frlptr;
+
+typedef struct heapblkp {
     tag                 heaplen;
     unsigned int        prevseg;
     unsigned int        nextseg;
@@ -96,12 +99,12 @@ struct heapblkp {
 #if defined(__WARP__)
     unsigned int        spare;          /* match miniheapblkp size */
 #endif
-};
+} heapblkp;
 
-struct miniheapblkp {
+typedef struct miniheapblkp {
     tag                 len;
-    mheapptr            prev;
-    mheapptr            next;
+    struct miniheapblkp _WCNEAR *prev;
+    struct miniheapblkp _WCNEAR *next;
     frlptr              rover;
     unsigned int        b4rover;
     unsigned int        largest_blk;
@@ -111,61 +114,63 @@ struct miniheapblkp {
 #if defined(__WARP__)
     unsigned int        used_obj_any    :1; /* allocated with OBJ_ANY - block may be in high memory */
 #endif
-};
+} miniheapblkp;
 
-struct heapstart {
-    struct heapblk      h;
-    struct freelist     first;
-};
+typedef miniheapblkp    _WCNEAR *mheapptr;
 
-struct heapend {
+typedef struct heapstart {
+    heapblk             h;
+    freelist            first;
+} heapstart;
+
+typedef struct heapend {
     tag                 last_tag;
-    struct freelist     last;
-};
+    freelist            last;
+} heapend;
 
 #ifdef __DOS_EXT__
-struct dpmi_hdr {
+typedef struct dpmi_hdr {
     unsigned long       dpmi_handle;
     tag                 dos_seg_value;  // 0 => DPMI block, else DOS segment
-};
+} dpmi_hdr;
 #endif
 
-extern mheapptr _WCNEAR                 __nheapbeg;
+extern mheapptr         _WCNEAR __nheapbeg;
 #if defined(_M_IX86)
-extern __segment                        __fheap;
-extern __segment                        __bheap;
-extern __segment                        __fheapRover;
+extern __segment        __fheap;
+extern __segment        __bheap;
+extern __segment        __fheapRover;
 #endif
-extern int                              __heap_enabled;
-extern unsigned int                     __LargestSizeB4Rover;
-extern struct miniheapblkp _WCNEAR      *__MiniHeapRover;
-extern unsigned int                     __LargestSizeB4MiniHeapRover;
-extern struct miniheapblkp _WCNEAR      *__MiniHeapFreeRover;
+extern int              __heap_enabled;
+extern unsigned int     __LargestSizeB4Rover;
+extern miniheapblkp     _WCNEAR *__MiniHeapRover;
+extern unsigned int     __LargestSizeB4MiniHeapRover;
+extern miniheapblkp     _WCNEAR *__MiniHeapFreeRover;
 
-extern size_t __LastFree( void );
-extern int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg );
-extern int __ExpandDGROUP( unsigned int __amt );
+extern size_t           __LastFree( void );
+extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg );
+extern int              __ExpandDGROUP( unsigned int __amt );
 #if defined(_M_IX86)
-extern unsigned __AllocSeg( unsigned int __amt );
-extern unsigned __GrowSeg( __segment __seg, unsigned int __amt );
-extern int      __FreeSeg( __segment seg );
-extern int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all );
-extern int __HeapMin( __segment seg, unsigned one_seg );
-extern int __HeapSet( __segment seg, unsigned fill );
+extern __segment        __AllocSeg( unsigned int __amt );
+extern int              __GrowSeg( __segment __seg, unsigned int __amt );
+extern int              __FreeSeg( __segment __seg );
+extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, unsigned all );
+extern int              __HeapMin( __segment __seg, unsigned one_seg );
+extern int              __HeapSet( __segment __seg, unsigned fill );
 #endif
 
 #if defined(__DOS_EXT__)
-extern void __FreeDPMIBlocks( void );
-extern void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
-extern void *__ExpandDPMIBlock( frlptr, unsigned );
+extern void             __FreeDPMIBlocks( void );
+extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
+extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
-extern int __HeapManager_expand( __segment seg, unsigned offset,
+extern int              __HeapManager_expand( __segment seg, unsigned offset,
                             size_t req_size, size_t *growth_size );
 
-extern void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
 
-_WCRTLINK extern void _WCNEAR *__brk( unsigned );
+_WCRTLINK extern void   _WCNEAR *__brk( unsigned );
 
 #if defined(_M_IX86)
  #define _DGroup()      FP_SEG((&__nheapbeg))
@@ -187,8 +192,8 @@ _WCRTLINK extern void _WCNEAR *__brk( unsigned );
  #define __IsCtsNHeap() 1
 #endif
 
-extern  unsigned __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off );
-extern  void     __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
+extern  unsigned        __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off );
+extern  void            __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
 #if defined(_M_IX86)
  #if defined(__386__)
   #pragma aux __MemAllocator "*" parm [eax] [edx] [ebx];
@@ -215,6 +220,6 @@ extern  void     __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
 #define __HM_TRYGROW    2
 
 #if defined(__WARP__)
-extern unsigned char _os2_use_obj_any;           // Prefer high memory heap block
-extern unsigned char _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
+extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif

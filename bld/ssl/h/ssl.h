@@ -30,6 +30,7 @@
 
 
 #include <stdio.h>
+#include "bool.h"
 #include "sslops.h"
 
 #include "pushpck1.h"

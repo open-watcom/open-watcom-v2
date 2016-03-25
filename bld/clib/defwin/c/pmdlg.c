@@ -125,16 +125,16 @@ static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval ) {
     len = WinQueryDlgItemText( hwndDlg, id, MAX_INTEGER_FIELD+1, buff );
     /* strtoul will accept negative numbers */
     ptr = buff;
-    while( isspace( *ptr ) )
+    while( isspace( (unsigned char)*ptr ) )
         ++ptr;
     if( *ptr == '-' )
         return( FALSE );
     val = strtoul( ptr, &ptr, 10 );
     if( len == 0 )
         return( FALSE ); // blank entry
-    while( isspace( *ptr ) )
+    while( isspace( (unsigned char)*ptr ) )
         ++ptr;
-    if( *ptr == 0 ) {
+    if( *ptr == '\0' ) {
         *pval = val;
         return( TRUE );
     } else {

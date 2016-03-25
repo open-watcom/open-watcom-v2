@@ -54,7 +54,8 @@ int _info;
  * to the proper value (ie. no multiple instances - but it may not be possible
  * to register multiple event hooks anyway). See Undocumented Windows.
  */ 
-void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
+#pragma aux DebuggerHookRtn far parm [ax] [cx] modify exact [];
+static void __far __loadds DebuggerHookRtn( unsigned event, unsigned info )
 {
     if( event == WM_KEYDOWN ) {
         HaveKey = TRUE;

@@ -39,6 +39,7 @@
 #include <process.h>
 #include <stdio.h>
 #include <string.h>
+#include "pathmac.h"
 
 #define UNIQUE                  5
 
@@ -53,18 +54,22 @@ static CHAR_TYPE *try_dir( CHAR_TYPE *dir, CHAR_TYPE *prefix )
 
     /*** Ensure the directory exists ***/
     if( dir[0] != NULLCHAR ) {
-        if( __F_NAME(access,_waccess)( dir, F_OK )  ==  -1 ) {
+        if( __F_NAME(access,_waccess)( dir, F_OK ) == -1 ) {
             return( NULL );
         }
     }
 
     /*** Initialize addslash ***/
-    numchars = __F_NAME(_mbslen,wcslen)( dir );
-    if( numchars > 0  &&  prefix[0] != STRING( '\\' ) ) {
 #ifdef __WIDECHAR__
-        if( dir[numchars-1] != L'\\' ) {
+    numchars = wcslen( dir );
 #else
-        if( _mbccmp( _mbsninc(dir,numchars-1), "\\" ) ) {
+    numchars = _mbslen( (unsigned char *)dir );
+#endif
+    if( numchars > 0 && prefix[0] != DIR_SEP ) {
+#ifdef __WIDECHAR__
+        if( dir[numchars - 1] != DIR_SEP ) {
+#else
+        if( _mbccmp( (unsigned char *)_mbsninc( (unsigned char *)dir, numchars - 1 ), (unsigned char *)"\\" ) ) {
 #endif
             addslash = 1;
         }

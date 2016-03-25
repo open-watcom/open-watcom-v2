@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <math.h>
 #include "wddespy.h"
@@ -83,7 +84,7 @@ static const MenuItemHint menuHints[] = {
  */
 void SetMainWndDefault( void )
 {
-    MainWndConfig.visible = TRUE;
+    MainWndConfig.visible = true;
     MainWndConfig.xpos = 0;
     MainWndConfig.ypos = 0;
     MainWndConfig.xsize = GetSystemMetrics( SM_CXSCREEN );
@@ -99,12 +100,12 @@ void SetMainWndDefault( void )
 static void initMonitoring( HWND hwnd )
 {
     HMENU       mh;
-    UINT        itemid;
+    unsigned    i;
 
     mh = GetMenu( hwnd );
-    for( itemid = DDE_MON_FIRST; itemid <= DDE_MON_LAST; itemid++ ) {
-        if( Monitoring[itemid - DDE_MON_FIRST] ) {
-            CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_CHECKED );
+    for( i = 0; i < MAX_DDE_MON; i++ ) {
+        if( Monitoring[i] ) {
+            CheckMenuItem( mh, DDE_MON_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         }
     }
 
@@ -114,16 +115,16 @@ static void initMonitoring( HWND hwnd )
  * monitorChange - change the check state a menu item to reflect a
  *                 change in the monitoring state
  */
-static void monitorChange( HWND hwnd, UINT itemid )
+static void monitorChange( HWND hwnd, unsigned i )
 {
     UINT        action;
     HMENU       mh;
 
     action = MF_BYCOMMAND;
     mh = GetMenu( hwnd );
-    Monitoring[itemid - DDE_MON_FIRST] = !Monitoring[itemid - DDE_MON_FIRST];
-    action |= Monitoring[itemid - DDE_MON_FIRST] ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem( mh, itemid, action );
+    Monitoring[i] = !Monitoring[i];
+    action |= ( Monitoring[i] ) ? MF_CHECKED : MF_UNCHECKED;
+    CheckMenuItem( mh, DDE_MON_FIRST + i, action );
 
 } /* monitorChange */
 
@@ -200,7 +201,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     HDC                 dc;
     HFONT               font;
     about_info          ai;
-    WORD                cmd;
+    unsigned            cmd;
     SIZE                sz;
     HWND                hinthwnd;
     BOOL                alias_state;
@@ -220,7 +221,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         memset( info, 0, sizeof( DDEWndInfo ) );
         memset( &area, 0, sizeof( RECT ) );
         info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL );
-        SetHintText( info->hintbar, (MenuItemHint *)menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
+        SetHintsText( info->hintbar, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         hinthwnd = GetHintHwnd( info->hintbar );
         info->list.ypos = 0;
         info->horz_extent = 0;
@@ -293,13 +294,13 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         case DDEMENU_MON_ERR:
         case DDEMENU_MON_CONV:
         case DDEMENU_MON_LNK:
-            monitorChange( hwnd, cmd );
+            monitorChange( hwnd, cmd - DDE_MON_FIRST );
             break;
         case DDEMENU_TRK_STR:
         case DDEMENU_TRK_CONV:
         case DDEMENU_TRK_LINK:
         case DDEMENU_TRK_SERVER:
-            DisplayTracking( cmd );
+            DisplayTracking( cmd - DDE_TRK_FIRST );
             break;
         case DDEMENU_SCREEN_OUT:
             ConfigInfo.screen_out = !ConfigInfo.screen_out;
@@ -376,7 +377,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
                     hideHintBar( hwnd, info, !ConfigInfo.show_hints );
                 }
                 GetClientRect( hwnd, &area );
-                ResizeListBox( area.right - area.left, area.bottom - area.top,
+                ResizeListBox( (WORD)( area.right - area.left ), (WORD)( area.bottom - area.top ),
                                &info->list );
                 resetFonts( info );
             }
@@ -399,7 +400,6 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             ai.inst = Instance;
             ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = AllocRCString( STR_ABOUT_VERSION );
-            ai.first_cr_year = "1994";
             ai.title = AllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

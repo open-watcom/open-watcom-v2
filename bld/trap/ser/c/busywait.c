@@ -29,7 +29,9 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "serial.h"
+#include "serlink.h"
 #include "nothing.h"
 
 extern  int             GetByte( void );

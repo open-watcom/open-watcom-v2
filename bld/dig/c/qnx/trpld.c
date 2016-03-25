@@ -34,11 +34,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "tcerr.h"
 #include "dipcli.h"
 #include "trpqimp.h"
-#include "trpld.h"
 #include "digio.h"
 
 #include "../dsx/ldimp.h"
@@ -80,14 +80,29 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     dig_fhandle         filehndl;
     const char          *ptr;
-    const trap_requests *(*ld_func)( const trap_callbacks * );
+    trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
+#ifdef USE_FILENAME_VERSION
+    char                filename[256];
+    char                *p;
+#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
+#ifdef USE_FILENAME_VERSION
+    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
+        *p++ = *ptr;
+    }
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p = '\0';
+    filehndl = DIGPathOpen( filename, p - filename, "trp", NULL, 0 );
+#else
+    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
+    }
     filehndl = DIGPathOpen( parms, ptr - parms, "trp", NULL, 0 );
+#endif
     if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
@@ -100,7 +115,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( TrapCode->sig == TRAPSIG ) {
 #endif
             strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-            ld_func = (void *)TrapCode->init_rtn;
+            ld_func = (trap_load_func *)TrapCode->init_rtn;
             trap_funcs = ld_func( &TrapCallbacks );
             if( trap_funcs != NULL ) {
                 parms = ptr;

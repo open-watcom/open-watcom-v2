@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,10 +82,10 @@ extern char     *MagicString;
 typedef struct {
     const char  *startp[NSUBEXP];
     const char  *endp[NSUBEXP];
-    char        regstart;       /* Internal use only. */
-    char        reganch;        /* Internal use only. */
     const char  *regmust;       /* Internal use only. */
     short       regmlen;        /* Internal use only. */
+    char        regstart;       /* Internal use only. */
+    char        reganch;        /* Internal use only. */
     char        program[1];     /* Unwarranted chumminess with compiler. */
 } regexp;
 

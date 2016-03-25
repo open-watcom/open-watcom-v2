@@ -36,6 +36,7 @@
 #include "dfmodinf.h"
 #include "dfloc.h"
 #include "dfclean.h"
+#include "dftype.h"
 
 #include "clibext.h"
 
@@ -81,15 +82,15 @@ static bool GetStrLen( imp_image_handle *ii,
                         location_context *lc,
                         dr_typeinfo  *ret ){
 //  Find value of scalar
-    uint_32         seg;
+    addr_seg        seg;
     location_list   src;
     location_list   dst;
     imp_mod_handle  im;
-    union{
+    union {
         long  l;
         short s;
         char  c;
-    }val;
+    } val;
     unsigned        idx_size;
     mod_info        *modinfo;
 
@@ -581,7 +582,7 @@ static bool GetSymVal( imp_image_handle *ii,
     dr_handle       dr_type;
     dr_typeinfo     typeinfo[1];
     imp_mod_handle  im;
-    uint_32         seg;
+    addr_seg        seg;
     location_list   src;
     location_list   dst;
 
@@ -888,13 +889,11 @@ static bool FreeBases( void *_lnk )
 {
     inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
-    inh_vbase   *old;
+    inh_vbase   *next;
 
-    cur = *lnk;
-    while( cur != NULL ){
-        old = cur;
-        cur = cur->next;
-        DCFree( old );
+    for( cur = *lnk; cur != NULL; cur = next ) {
+        next = cur->next;
+        DCFree( cur );
     }
     *lnk = NULL;
     return 0;
@@ -1024,7 +1023,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
     type_wlk_lookup *d = _d;
     imp_sym_handle  *is;
     char            *name;
-    unsigned        len;
+    size_t          len;
 
     name =  DRGetName( var );
     if( name == NULL ){
@@ -1110,7 +1109,7 @@ static bool AEnumMemLookup( dr_handle var, int index, void *_d )
     type_wlk_lookup *d = _d;
     imp_sym_handle  *is;
     char            *name;
-    unsigned        len;
+    size_t          len;
 
     index = index;
     name =  DRGetName( var );
@@ -1281,15 +1280,14 @@ static bool AInhFind( dr_handle inh, int index, void *_df )
     df->lnk = &head.next;
     dr_derived = DRGetTypeAT( inh );        /* get base type */
     if( dr_derived == df->dr_derived ){
-        curr = df->head;
-        while( curr != NULL ){
+        for( curr = df->head; curr != NULL; curr = curr->next ) {
             df->wr = EvalLocAdj( df->ii, df->lc, curr->inh, df->addr );
-            if( df->wr != DS_OK )
+            if( df->wr != DS_OK ) {
                 break;
-            curr = curr->next;
+            }
         }
         df->cont = FALSE;
-    }else{
+    } else {
         dr_derived =  DRSkipTypeChain( dr_derived); /* skip modifiers and typedefs */
         DRWalkStruct( dr_derived, InheritWlk, df ); /* walk struct looking for inheritance */
     }
@@ -1332,8 +1330,8 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DFBaseAdjust( ii, base->type, derived->type, lc, addr ) );
 }
 
-unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     /*
         Given the imp_type_handle, copy the name of the type into 'buff'.
@@ -1358,20 +1356,18 @@ unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     char        *name = NULL;
     dr_handle   dr_type;
     dr_typeinfo typeinfo;
-    unsigned    len;
+    size_t      len;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     ++num;
     len = 0;
-    dr_type = it->type;
-    while( dr_type != DR_HANDLE_NUL ) {
+    for( dr_type = it->type; dr_type != DR_HANDLE_NUL; dr_type = DRGetTypeAT( dr_type ) ) {
         name =  DRGetName( dr_type );
         if( name != NULL ){
             if( --num == 0 )
                 break;
             DCFree( name );
         }
-        dr_type = DRGetTypeAT( dr_type );
     }
     if( num == 0 ){
         DRGetTypeInfo( dr_type, &typeinfo );

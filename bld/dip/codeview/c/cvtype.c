@@ -46,10 +46,10 @@ extern dip_status ImpTypeInfo( imp_image_handle *ii,
 
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
-                        const char **name_p, unsigned *name_len_p, lf_all **pp )
+                        const char **name_p, size_t *name_len_p, lf_all **pp )
 {
     lf_all              *p;
-    unsigned            skip;
+    size_t              skip;
     const char          *name;
     numeric_leaf        dummy;
 
@@ -63,7 +63,8 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
        have enough stuff mapped in to work.
     */
     p = VMBlock( ii, base, sizeof( *p ) + sizeof( unsigned_32 ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_ARRAY:
         skip = sizeof( lf_array );
@@ -118,11 +119,13 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
     }
     /* A name can't be longer than 255 bytes */
     p = VMBlock( ii, base, 256 + skip );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     name = (char *)p + skip;
     *name_len_p = *(unsigned_8 *)name;
-    *name_p = &name[1];
-    if( pp != NULL ) *pp = p;
+    *name_p = name + 1;
+    if( pp != NULL ) 
+        *pp = p;
     return( DS_OK );
 }
 
@@ -131,15 +134,18 @@ static virt_mem TypeIndexVM( imp_image_handle *ii, unsigned idx )
     cv_directory_entry  *cde;
     unsigned_32         *p;
 
-    if( idx < CV_FIRST_USER_TYPE ) return( 0 );
+    if( idx < CV_FIRST_USER_TYPE ) 
+        return( 0 );
     cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
-    if( cde == NULL ) return( 0 );
+    if( cde == NULL ) 
+        return( 0 );
     p = VMBlock( ii,
         cde->lfo
            + (unsigned long)(idx-CV_FIRST_USER_TYPE) * sizeof( *p )
            + offsetof( cv_sst_global_types_header, offType ),
         sizeof( *p ) );
-    if( p == NULL ) return( 0 );
+    if( p == NULL ) 
+        return( 0 );
     return( *p + ii->types_base );
 }
 
@@ -153,7 +159,8 @@ dip_status TypeIndexFillIn( imp_image_handle *ii, unsigned idx,
         return( DS_OK );
     }
     it->handle = TypeIndexVM( ii, idx );
-    if( it->handle == 0 ) return( DS_ERR|DS_FAIL );
+    if( it->handle == 0 ) 
+        return( DS_ERR|DS_FAIL );
     it->handle += sizeof( unsigned_16 );
     return( DS_OK );
 }
@@ -167,9 +174,11 @@ static dip_status TypeReal( imp_image_handle *ii,
     *out = *in;
     p = NULL;
     for( ;; ) {
-        if( out->handle == 0 ) goto done;
+        if( out->handle == 0 ) 
+            goto done;
         p = VMBlock( ii, out->handle, sizeof( *p ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         switch( p->common.code ) {
         case LF_MODIFIER:
             if( TypeIndexFillIn( ii, p->modifier.f.index, out ) != DS_OK ) {
@@ -181,7 +190,8 @@ static dip_status TypeReal( imp_image_handle *ii,
         }
     }
 done:
-    if( pp != NULL ) *pp = p;
+    if( pp != NULL ) 
+        *pp = p;
     return( DS_OK );
 }
 
@@ -193,9 +203,11 @@ dip_status TypeCallInfo( imp_image_handle *ii, unsigned idx,
     imp_type_handle     it;
 
     ds = TypeIndexFillIn( ii, idx, &it );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = TypeReal( ii, &it, &it, &p );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     switch( p->common.code ) {
     case LF_PROCEDURE:
         *call_type = p->procedure.f.call;
@@ -220,15 +232,19 @@ dip_status TypeMemberFuncInfo( imp_image_handle *ii, imp_type_handle *func_it,
     unsigned    class_idx;
 
     p = VMBlock( ii, func_it->handle, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
-    if( p->common.code != LF_MFUNCTION ) return( DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
+    if( p->common.code != LF_MFUNCTION ) 
+        return( DS_FAIL );
     if( adjustp != NULL ) {
         *adjustp = p->mfunction.f.thisadjust;
     }
     class_idx = p->mfunction.f.class_idx;
     if( this_it != NULL ) {
         ds = TypeIndexFillIn( ii, p->mfunction.f.thisptr, this_it );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) {
+            return( ds );
+        }
     }
     if( class_it != NULL ) {
         ds = TypeIndexFillIn( ii, class_idx, class_it );
@@ -236,13 +252,15 @@ dip_status TypeMemberFuncInfo( imp_image_handle *ii, imp_type_handle *func_it,
         if( p->common.code == LF_MODIFIER ){ //NON standard need it to handle forward refs
             ds = TypeIndexFillIn( ii, p->modifier.f.index, class_it );
         }
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) {
+            return( ds );
+        }
     }
     return( DS_OK );
 }
 
 dip_status TypeSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                        const char **name_p, unsigned *name_len_p )
+                        const char **name_p, size_t *name_len_p )
 {
     return( TypeVMGetName( ii, is->handle, name_p, name_len_p, NULL ) );
 }
@@ -280,9 +298,11 @@ static walk_result TypeListWalk( imp_image_handle *ii, virt_mem head,
     list->curr = head;
     list->containing_type = containing_type;
 new_list:
-    if( list->curr == 0 ) return( WR_FAIL );
+    if( list->curr == 0 ) 
+        return( WR_FAIL );
     len_p = VMBlock( ii, list->curr, sizeof( *len_p ) );
-    if( len_p == NULL ) return( WR_FAIL );
+    if( len_p == NULL ) 
+        return( WR_FAIL );
     list->curr += sizeof( *len_p );
     list->end = list->curr + *len_p;
     list->curr += sizeof( p->common.code ); /* skip the list introducer */
@@ -290,15 +310,18 @@ new_list:
         while( list->curr >= list->end ) {
             tmp = list;
             list = list->prev;
-            if( list == NULL ) return( WR_CONTINUE );
+            if( list == NULL ) 
+                return( WR_CONTINUE );
             wr = wk( ii, SWI_INHERIT_END, list, NULL, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) 
+                return( wr );
             tmp->prev = free_list;
             free_list = tmp;
             list->curr += list->len;
         }
         p = VMBlock( ii, list->curr, sizeof( *p ) + sizeof( unsigned_32 ) );
-        if( p == NULL ) return( WR_FAIL );
+        if( p == NULL ) 
+            return( WR_FAIL );
         if( *(unsigned_8 *)p > LF_PAD0 ) {
             list->curr += *(unsigned_8 *)p & 0x0f;
         } else {
@@ -342,10 +365,11 @@ inherit_class:
                 tmp->prev = list;
                 list = tmp;
                 list->containing_type = TypeIndexVM( ii, base_idx );
-                if( list->containing_type == 0 ) return( WR_FAIL );
-                p = VMBlock( ii, list->containing_type+sizeof( unsigned_16 ),
-                                        sizeof( *p ) );
-                if( p == NULL ) return( WR_FAIL );
+                if( list->containing_type == 0 ) 
+                    return( WR_FAIL );
+                p = VMBlock( ii, list->containing_type+sizeof( unsigned_16 ), sizeof( *p ) );
+                if( p == NULL ) 
+                    return( WR_FAIL );
                 switch( p->common.code ) {
                 case LF_CLASS:
                 case LF_STRUCTURE:
@@ -402,10 +426,12 @@ inherit_class:
                 return( WR_FAIL );
             }
             p = VMBlock( ii, list->curr, len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             list->len = len;
             wr = wk( ii, SWI_SYMBOL, list, p, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) 
+                return( wr );
             list->curr += len;
         }
     }
@@ -450,13 +476,15 @@ static void TypePrimitiveInfo( unsigned idx, dip_type_info *ti )
             ti->modifier = TM_SIGNED;
             ti->kind = TK_INTEGER;
             ti->size = 1 << prim.f.size;
-            if( ti->size == 1 ) ti->kind = TK_CHAR;
+            if( ti->size == 1 ) 
+                ti->kind = TK_CHAR;
             break;
         case CV_UNSIGNED:
             ti->modifier = TM_UNSIGNED;
             ti->kind = TK_INTEGER;
             ti->size = 1 << prim.f.size;
-            if( ti->size == 1 ) ti->kind = TK_CHAR;
+            if( ti->size == 1 ) 
+                ti->kind = TK_CHAR;
             break;
         case CV_BOOL:
             ti->kind = TK_BOOL;
@@ -569,12 +597,15 @@ static method_info *GetMethodInfo( imp_image_handle *ii, unsigned ml_idx,
     method_info *p;
 
     mlist = TypeIndexVM( ii, ml_idx );
-    if( mlist == 0 ) return( NULL );
+    if( mlist == 0 ) 
+        return( NULL );
     mlist += sizeof( unsigned_16 ) * 2;
     for( ;; ) {
         p = VMBlock( ii, mlist, sizeof( *p ) );
-        if( p == NULL ) return( NULL );
-        if( mf_idx == 0 ) return( p );
+        if( p == NULL ) 
+            return( NULL );
+        if( mf_idx == 0 ) 
+            return( p );
         mlist += sizeof( method_info );
         switch( p->attr.f.mprop ) {
         case CV_INTROVIRT:
@@ -607,25 +638,31 @@ static dip_status GetVirtBaseDisp( imp_image_handle *ii, virt_mem adj,
     location_list       dst;
 
     p = VMBlock( ii, adj, sizeof( *p ) + sizeof( unsigned_32 ) * 4 );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     ptr = GetNumLeaf( &p->vbclass + 1, &val );
     LocationAdd( &ll, val.int_val * 8 );
     GetNumLeaf( ptr, &val );
     idx = val.int_val;
     ds = TypeIndexFillIn( ii, p->vbclass.f.vtype, &vbp );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = ImpTypeInfo( ii, &vbp, lc, &ti );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     if( ti.kind != TK_POINTER ) {
         Confused();
     }
     p = VMBlock( ii, vbp.handle, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     if( p->pointer.f.type >= CV_FIRST_USER_TYPE ) {
         ds = TypeIndexFillIn( ii, p->pointer.f.type, &vbp );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         p = VMBlock( ii, vbp.handle, sizeof( *p ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         if( p->common.code != LF_ARRAY || p->array.f.elemtype >= CV_FIRST_USER_TYPE ) {
             Confused();
         }
@@ -638,7 +675,8 @@ static dip_status GetVirtBaseDisp( imp_image_handle *ii, virt_mem adj,
     ll.e[0].u.addr.mach.offset += ti.size * idx;
     LocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, &ll, ti.size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     switch( ti.size ) {
     case 1:
         *disp = tmp.u8;
@@ -700,9 +738,11 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
     dip_status          ds;
 
     p = VMBlock( ii, is->containing_type, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     base = TypeIndexVM( ii, p->class_.f.field );
-    if( base == 0 ) return( DS_ERR|DS_FAIL );
+    if( base == 0 ) 
+        return( DS_ERR|DS_FAIL );
     switch( TypeListWalk( ii, base, is->containing_type, FindVTab, &data ) ) {
     case WR_STOP:
         break;
@@ -710,20 +750,26 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
         return( DS_ERR|DS_FAIL );
     }
     ds = TypeIndexFillIn( ii, data.ptr_idx, &it );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = ImpTypeInfo( ii, &it, lc, &ti );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = DCItemLocation( lc, CI_OBJECT, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     LocationAdd( ll, data.disp * 8 );
     ds = DoIndirection( ii, &ti, lc, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     LocationAdd( ll, vfunc_off * 8 );
     ds = ImpTypeBase( ii, &it, &it );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     vfsp = VMBlock( ii, it.handle + sizeof(unsigned_16)*2 + is->mfunc_idx/2,
                         sizeof( *vfsp ) );
-    if( vfsp == NULL ) return( DS_ERR|DS_FAIL );
+    if( vfsp == NULL ) 
+        return( DS_ERR|DS_FAIL );
     if( (is->mfunc_idx % 2) != 0 ) {
         vfshape = *vfsp >> 4;
     } else {
@@ -751,14 +797,16 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
         return( DS_ERR|DS_FAIL );
     }
     ds = DoIndirection( ii, &ti, lc, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     switch( vfshape ) {
     case CV_VTNEAR:
     case CV_VTNEAR32:
         /* since it's a code item, the default addr space is CI_EXECUTION */
         save = ll->e[0].u.addr.mach.offset;
         ds = DCItemLocation( lc, CI_EXECUTION, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+	    return( ds );
         ll->e[0].u.addr.mach.offset = save;
 
     }
@@ -769,7 +817,7 @@ static dip_status MatchSymLocation( imp_image_handle *ii, imp_sym_handle *is,
                     unsigned idx, location_context *lc, location_list *ll )
 {
     const char          *name;
-    unsigned            len;
+    size_t              len;
     char                *buff;
     char                *start;
     imp_sym_handle      real;
@@ -780,20 +828,23 @@ static dip_status MatchSymLocation( imp_image_handle *ii, imp_sym_handle *is,
         address. Ugh :-(.
     */
     ds = TypeVMGetName( ii, is->handle, &name, &len, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     /* name can't be longer than 256 because of CV format */
     buff = __alloca( len + (SCOPE_TOKEN_LEN + 256) );
-    start = &buff[SCOPE_TOKEN_LEN+256];
+    start = &buff[SCOPE_TOKEN_LEN + 256];
     buff = &start[len];
     memcpy( start, name, len );
     start -= SCOPE_TOKEN_LEN;
     memcpy( start, SCOPE_TOKEN, SCOPE_TOKEN_LEN );
     ds = TypeVMGetName( ii, is->containing_type, &name, &len, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     start -= len;
     memcpy( start, name, len );
     ds = SymFindMatchingSym( ii, start, buff-start, idx, &real );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     return( ImpSymLocation( ii, &real, lc, ll ) );
 }
 
@@ -815,20 +866,24 @@ dip_status TypeSymGetAddr( imp_image_handle *ii, imp_sym_handle *is,
         idx = p->member.f.type;
         GetNumLeaf( &p->member + 1, &val );
         ds = DCItemLocation( lc, CI_OBJECT, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         if( is->adjustor_type != 0 ) {
             /* have to fish displacement out of virtual base table */
             ds = GetVirtBaseDisp( ii, is->adjustor_type, lc, *ll, &disp );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             LocationAdd( ll, disp * 8 );
         }
         LocationAdd( ll, (is->adjustor_offset + val.int_val) * 8 );
         if( idx >= CV_FIRST_USER_TYPE ) {
             /* have to check type in case it's a bit field */
             ds = TypeIndexFillIn( ii, idx, &base );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             p = VMBlock( ii, base.handle, sizeof( p->bitfield ) );
-            if( p == NULL ) return( DS_ERR|DS_FAIL );
+            if( p == NULL ) 
+                return( DS_ERR|DS_FAIL );
             if( p->common.code == LF_BITFIELD ) {
                 LocationAdd( ll, p->bitfield.f.position );
                 LocationTrunc( ll, p->bitfield.f.length );
@@ -842,12 +897,13 @@ dip_status TypeSymGetAddr( imp_image_handle *ii, imp_sym_handle *is,
         goto method_addr;
     case LF_METHOD:
         minfo = GetMethodInfo( ii, p->method.f.mList, is->mfunc_idx );
-        if( minfo == NULL ) return( DS_ERR|DS_FAIL );
+        if( minfo == NULL ) 
+            return( DS_ERR|DS_FAIL );
 method_addr:
         switch( minfo->attr.f.mprop ) {
         case CV_VIRTUAL:
         case CV_PUREVIRT:
-             return( DS_FAIL );
+            return( DS_FAIL );
         case CV_INTROVIRT:
         case CV_PUREINTROVIRT:
             return( VFuncLocation( ii, is, minfo->vtab_off, lc, ll ) );
@@ -878,9 +934,11 @@ dip_status TypeSymGetType( imp_image_handle *ii, imp_sym_handle *is,
         if( idx >= CV_FIRST_USER_TYPE ) {
             /* have to check type in case it's a bit field */
             ds = TypeIndexFillIn( ii, idx, it );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             p = VMBlock( ii, it->handle, sizeof( p->bitfield ) );
-            if( p == NULL ) return( DS_ERR|DS_FAIL );
+            if( p == NULL ) 
+                return( DS_ERR|DS_FAIL );
             if( p->common.code == LF_BITFIELD ) {
                 idx = p->bitfield.f.type;
             }
@@ -891,7 +949,8 @@ dip_status TypeSymGetType( imp_image_handle *ii, imp_sym_handle *is,
         break;
     case LF_METHOD:
         minfo = GetMethodInfo( ii, p->method.f.mList, is->mfunc_idx );
-        if( minfo == NULL ) return( DS_ERR|DS_FAIL );
+        if( minfo == NULL ) 
+            return( DS_ERR|DS_FAIL );
         idx = minfo->type;
         break;
     case LF_ENUMERATE:
@@ -921,14 +980,16 @@ dip_status TypeSymGetValue( imp_image_handle *ii, imp_sym_handle *is,
        has enough stuff mapped in to work.
     */
     p = VMBlock( ii, is->handle, sizeof( *p ) + sizeof( unsigned_32 ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_ENUMERATE:
         GetNumLeaf( &p->enumerate + 1, &val );
         /* make sure everything is mapped in */
         p = VMBlock( ii, is->handle,
                 val.size + sizeof( *p ) + sizeof( unsigned_32 ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         /* VM might have shifted things around */
         GetNumLeaf( &p->enumerate + 1, &val );
         memcpy( buff, val.valp, val.size );
@@ -981,7 +1042,8 @@ dip_status TypeSymGetInfo( imp_image_handle *ii, imp_sym_handle *is,
         si->kind = SK_CODE;
         si->is_member = 1;
         minfo = GetMethodInfo( ii, p->method.f.mList, is->mfunc_idx );
-        if( minfo == NULL ) return( DS_ERR|DS_FAIL );
+        if( minfo == NULL ) 
+            return( DS_ERR|DS_FAIL );
         switch( minfo->attr.f.access ) {
         case CV_PRIVATE:
             si->is_private = 1;
@@ -1021,11 +1083,13 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
     switch( swi ) {
     case SWI_INHERIT_START:
         wr = gd->wk( ii, SWI_INHERIT_START, NULL, gd->d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) 
+            return( wr );
         switch( list->code ) {
         case LF_BCLASS:
             p = VMBlock( ii, list->curr, list->len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
             gd->is->adjustor_offset += val.int_val;
             break;
@@ -1036,11 +1100,13 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
         return( WR_CONTINUE );
     case SWI_INHERIT_END:
         wr = gd->wk( ii, SWI_INHERIT_END, NULL, gd->d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) 
+            return( wr );
         switch( list->code ) {
         case LF_BCLASS:
             p = VMBlock( ii, list->curr, list->len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
             gd->is->adjustor_offset -= val.int_val;
             break;
@@ -1069,7 +1135,8 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
     gd->is->handle = list->curr;
     do {
         wr = gd->wk( ii, SWI_SYMBOL, gd->is, gd->d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) 
+            return( wr );
         gd->is->mfunc_idx++;
     } while( --count != 0 );
     return( WR_CONTINUE );
@@ -1090,8 +1157,10 @@ walk_result TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it,
     glue.is = is;
 
     ds = TypeReal( ii, it, &real, &p );
-    if( ds != DS_OK ) return( WR_FAIL );
-    if( real.idx < CV_FIRST_USER_TYPE ) return( WR_CONTINUE );
+    if( ds != DS_OK ) 
+        return( WR_FAIL );
+    if( real.idx < CV_FIRST_USER_TYPE ) 
+        return( WR_CONTINUE );
     switch( p->common.code ) {
     case LF_CLASS:
     case LF_STRUCTURE:
@@ -1107,7 +1176,8 @@ walk_result TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it,
         return( SR_NONE );
     }
     base = TypeIndexVM( ii, list_idx );
-    if( base == 0 ) return( WR_FAIL );
+    if( base == 0 ) 
+        return( WR_FAIL );
     is->adjustor_type = 0;
     is->adjustor_offset = 0;
     return( TypeListWalk( ii, base, it->handle, WalkGlue, &glue ) );
@@ -1124,7 +1194,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     virt_mem            array_vm;
     unsigned_32         *array_p;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
@@ -1148,10 +1218,12 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
         return( SR_NONE );
     }
     cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL ) 
+        return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
-    if( array_p == NULL ) return( SR_FAIL );
+    if( array_p == NULL ) 
+        return( SR_FAIL );
     if( li->case_sensitive ) {
         cmp = memcmp;
     } else {
@@ -1159,20 +1231,23 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     }
     count = *array_p;
     for( ;; ) {
-        if( count == 0 ) return( SR_NONE );
+        if( count == 0 ) 
+            return( SR_NONE );
         array_vm += sizeof( *array_p );
         array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
-        if( array_p == NULL ) return( SR_FAIL );
+        if( array_p == NULL ) 
+            return( SR_FAIL );
         type = ii->types_base + *array_p + sizeof( unsigned_16 );
         if( TypeVMGetName( ii, type, &name, &len, &p ) != DS_OK ) {
             return( SR_FAIL );
         }
         if( name != NULL
-         && p->common.code == code
-         && len == li->name.len
-         && cmp( name, li->name.start, len ) == 0 ) {
+          && p->common.code == code
+          && len == li->name.len
+          && cmp( name, li->name.start, len ) == 0 ) {
             is = DCSymCreate( ii, d );
-            if( is == NULL ) return( SR_FAIL );
+            if( is == NULL ) 
+                return( SR_FAIL );
             is->mfunc_idx = 0;
             is->handle = type;
             is->containing_type = type;
@@ -1198,7 +1273,7 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
 {
     struct search_data  *sd = d;
     const char          *name;
-    unsigned            name_len;
+    size_t              name_len;
     imp_sym_handle      *is;
     search_result       sr;
     numeric_leaf        val;
@@ -1210,7 +1285,8 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
         switch( list->code ) {
         case LF_BCLASS:
             p = VMBlock( ii, list->curr, list->len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
             sd->adj_offset += val.int_val;
             break;
@@ -1223,7 +1299,8 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
         switch( list->code ) {
         case LF_BCLASS:
             p = VMBlock( ii, list->curr, list->len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
             sd->adj_offset -= val.int_val;
             break;
@@ -1251,7 +1328,8 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
         sd->sr = SR_FAIL;
         return( WR_FAIL );
     }
-    if( sd->li->name.len != name_len ) return( WR_CONTINUE );
+    if( sd->li->name.len != name_len ) 
+        return( WR_CONTINUE );
     sr = SR_NONE;
     if( sd->li->case_sensitive ) {
         if( memcmp( name, sd->li->name.start, name_len ) == 0 ) {
@@ -1266,7 +1344,8 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
         sd->sr = SR_EXACT;
         for( idx = 0; idx < count; ++idx ) {
             is = DCSymCreate( ii, sd->d );
-            if( is == NULL ) return( WR_FAIL );
+            if( is == NULL ) 
+                return( WR_FAIL );
             is->mfunc_idx = idx;
             is->handle = list->curr;
             is->containing_type = list->containing_type;
@@ -1285,9 +1364,11 @@ search_result TypeSearchNestedSym( imp_image_handle *ii, imp_type_handle *it,
     unsigned            list_idx;
     virt_mem            base;
 
-    if( it->handle == 0 ) return( SR_NONE );
+    if( it->handle == 0 ) 
+        return( SR_NONE );
     p = VMBlock( ii, it->handle, sizeof( *p ) );
-    if( p == NULL ) return( SR_FAIL );
+    if( p == NULL ) 
+        return( SR_FAIL );
     switch( p->common.code ) {
     case LF_CLASS:
     case LF_STRUCTURE:
@@ -1303,7 +1384,8 @@ search_result TypeSearchNestedSym( imp_image_handle *ii, imp_type_handle *it,
         return( SR_NONE );
     }
     base = TypeIndexVM( ii, list_idx );
-    if( base == 0 ) return( SR_FAIL );
+    if( base == 0 ) 
+        return( SR_FAIL );
     data.it = it;
     data.li = li;
     data.d  = d;
@@ -1344,10 +1426,12 @@ walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
             return( WR_CONTINUE );
         array_vm += sizeof( *array_p );
         array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
-        if( array_p == NULL ) return( WR_FAIL );
+        if( array_p == NULL ) 
+            return( WR_FAIL );
         it->handle = ii->types_base + *array_p + sizeof( unsigned_16 );
         wr = wk( ii, it, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) 
+            return( wr );
         it->idx++;
         --count;
     }
@@ -1396,14 +1480,16 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
     ti->modifier = TM_NONE;
     ti->size = 0;
     ds = TypeReal( ii, it, &real, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     if( real.idx < CV_FIRST_USER_TYPE ) {
         TypePrimitiveInfo( real.idx, ti );
         return( DS_OK );
     }
     /* map in enough to get integer values from numeric leaves */
     p = VMBlock( ii, real.handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     maybe_string = 0;
     switch( p->common.code ) {
     case LF_POINTER:
@@ -1466,9 +1552,11 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
         break;
     case LF_ENUM:
         ds = TypeIndexFillIn( ii, p->enum_.f.type, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = ImpTypeInfo( ii, &real, lc, ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ti->kind = TK_ENUM;
         break;
     case LF_PROCEDURE:
@@ -1503,12 +1591,15 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
             maybe_string = 1;
         }
         ds = ImpTypeArrayInfo( ii, it, lc, &ai, NULL );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         if( ai.column_major && ai.num_dims > 1 ) {
             real = *it;
             real.array_dim += ai.num_dims - 1;
             ds = ImpTypeArrayInfo( ii, it, lc, &ai, NULL );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) {
+                return( ds );
+            }
         }
         ti->size = ai.num_elts * ai.stride;
         break;
@@ -1522,7 +1613,8 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
         break;
     case LF_BITFIELD:
         ds = TypeIndexFillIn( ii, p->bitfield.f.type, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         return( ImpTypeInfo( ii, &real, lc, ti ) );
     case LF_REFSYM:
         break;
@@ -1551,7 +1643,8 @@ dip_status ImpTypeBase( imp_image_handle *ii, imp_type_handle *it, imp_type_hand
     unsigned                    save_idx;
 
     ds = TypeReal( ii, it, base, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     if( base->idx < CV_FIRST_USER_TYPE ) {
         prim.s = base->idx;
         prim.f.mode = CV_DIRECT;
@@ -1559,7 +1652,8 @@ dip_status ImpTypeBase( imp_image_handle *ii, imp_type_handle *it, imp_type_hand
         return( DS_OK );
     }
     p = VMBlock( ii, base->handle, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_POINTER:
         return( TypeIndexFillIn( ii, p->pointer.f.type, base ) );
@@ -1585,9 +1679,11 @@ dip_status ImpTypeBase( imp_image_handle *ii, imp_type_handle *it, imp_type_hand
     case LF_DIMARRAY:
         save_idx = p->dimarray.f.utype;
         ds = TypeIndexFillIn( ii, p->dimarray.f.diminfo, &dim_it );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         p = VMBlock( ii, dim_it.handle, sizeof( *p ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         base->array_dim++;
         if( base->array_dim < p->dimconu.f.rank ) {
             return( DS_OK );
@@ -1603,7 +1699,8 @@ dip_status ImpTypeBase( imp_image_handle *ii, imp_type_handle *it, imp_type_hand
         return( DS_ERR|DS_BAD_PARM );
     case LF_BITFIELD:
         ds = TypeIndexFillIn( ii, p->bitfield.f.type, base );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         return( ImpTypeBase( ii, base, base ) );
     case LF_REFSYM:
         break;
@@ -1639,7 +1736,8 @@ static dip_status GetBound( imp_image_handle *ii, virt_mem vm, unsigned size,
     location_list       dst;
 
     ds = SymFillIn( ii, &bnd, vm + sizeof( lf_common ) );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = ImpSymLocation( ii, &bnd, lc, &src );
     if( ds == DS_OK ) {
         LocationCreate( &dst, LT_INTERNAL, &data );
@@ -1647,7 +1745,8 @@ static dip_status GetBound( imp_image_handle *ii, virt_mem vm, unsigned size,
     } else {
         ds = ImpSymValue( ii, &bnd, lc, &data );
     }
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     switch( size ) {
     case 1:
         *bound = data.s8[0];
@@ -1676,15 +1775,17 @@ static dip_status GetArrayRange( imp_image_handle *ii, location_context *lc,
     long                hi_bound;
 
     ds = TypeIndexFillIn( ii, idx, &real );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ds = ImpTypeInfo( ii, &real, lc, &ti );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     switch( code ) {
     case LF_DIMCONU:
         ai->low_bound = ai->column_major;
-        di = VMBlock( ii, dim_hdl + sizeof( lf_dimconu ) + ti.size*i,
-                    ti.size );
-        if( di == NULL ) return( DS_ERR|DS_FAIL );
+        di = VMBlock( ii, dim_hdl + sizeof( lf_dimconu ) + ti.size * i, ti.size );
+        if( di == NULL ) 
+            return( DS_ERR|DS_FAIL );
         switch( ti.size ) {
         case 1:
             hi_bound = di->s8[0];
@@ -1701,9 +1802,9 @@ static dip_status GetArrayRange( imp_image_handle *ii, location_context *lc,
         }
         break;
     case LF_DIMCONLU:
-        di = VMBlock( ii, dim_hdl + sizeof( lf_dimconlu ) + 2*ti.size*i,
-                    ti.size*2 );
-        if( di == NULL ) return( DS_ERR|DS_FAIL );
+        di = VMBlock( ii, dim_hdl + sizeof( lf_dimconlu ) + 2 * ti.size * i, ti.size * 2 );
+        if( di == NULL ) 
+            return( DS_ERR|DS_FAIL );
         switch( ti.size ) {
         case 1:
             ai->low_bound = di->s8[0];
@@ -1724,27 +1825,33 @@ static dip_status GetArrayRange( imp_image_handle *ii, location_context *lc,
         break;
     case LF_DIMVARU:
         ai->low_bound = ai->column_major;
-        di = VMBlock( ii, dim_hdl + sizeof( lf_dimvaru ) + sizeof( di->idx[0] )*i,
-                    sizeof( di->idx[0] ) );
-        if( di == NULL ) return( DS_ERR|DS_FAIL );
+        di = VMBlock( ii, dim_hdl + sizeof( lf_dimvaru ) + sizeof( di->idx[0] ) * i, sizeof( di->idx[0] ) );
+        if( di == NULL ) 
+            return( DS_ERR|DS_FAIL );
         ds = TypeIndexFillIn( ii, di->idx[0], &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = GetBound( ii, real.handle, ti.size, lc, &hi_bound );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         break;
     case LF_DIMVARLU:
-        di = VMBlock( ii, dim_hdl + sizeof( lf_dimvaru ) + sizeof( di->idx )*i,
-                    sizeof( di->idx ) );
-        if( di == NULL ) return( DS_ERR|DS_FAIL );
+        di = VMBlock( ii, dim_hdl + sizeof( lf_dimvaru ) + sizeof( di->idx ) * i, sizeof( di->idx ) );
+        if( di == NULL ) 
+            return( DS_ERR|DS_FAIL );
         code = di->idx[1];      /* save from VM system */
         ds = TypeIndexFillIn( ii, di->idx[0], &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = GetBound( ii, real.handle, ti.size, lc, &ai->low_bound );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = TypeIndexFillIn( ii, code, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = GetBound( ii, real.handle, ti.size, lc, &hi_bound );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         break;
     default:
         Confused();
@@ -1770,7 +1877,8 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
     unsigned            i;
 
     ds = TypeReal( ii, array, &real, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK ) 
+        return( ds );
     ai->low_bound = 0;
     ai->num_elts = 0;
     ai->stride = 0;
@@ -1778,49 +1886,60 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
     ai->column_major = IsFortranModule( ii, lc );
     /* map in enough to get integer values from numeric leaves */
     p = VMBlock( ii, real.handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_ARRAY:
         idx = p->array.f.idxtype;
         ai->num_dims = 1;
         GetNumLeaf( &p->array + 1, &val );
         ds = TypeIndexFillIn( ii, p->array.f.elemtype, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = ImpTypeInfo( ii, &real, lc, &ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ai->stride = ti.size;
         ai->num_elts = val.int_val / ti.size;
         break;
     case LF_DIMARRAY:
         utype = p->dimarray.f.utype;
         ds = TypeIndexFillIn( ii, p->dimarray.f.diminfo, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         p = VMBlock( ii, real.handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         idx = p->dimconu.f.index;
         code = p->common.code;
         dim_hdl = real.handle;
         ai->num_dims = p->dimconu.f.rank - array->array_dim;
         if( ai->column_major ) {
             ds = TypeIndexFillIn( ii, utype, &real );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             ds = ImpTypeInfo( ii, &real, lc, &ti );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             ai->stride = ti.size;
             for( i = 0; i < array->array_dim; ++i ) {
                 ds = GetArrayRange( ii, lc, code, dim_hdl, idx, i, ai );
-                if( ds != DS_OK ) return( ds );
+                if( ds != DS_OK ) 
+                    return( ds );
                 ai->stride *= ai->num_elts;
             }
         } else {
             ds = ImpTypeBase( ii, array, &real );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             ds = ImpTypeInfo( ii, &real, lc, &ti );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             ai->stride = ti.size;
         }
         ds = GetArrayRange( ii, lc, code, dim_hdl, idx, array->array_dim, ai );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         break;
     default:
         return( DS_FAIL );
@@ -1849,8 +1968,10 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     unsigned            parm_count;
 
     ds = TypeReal( ii, proc, parm, &p );
-    if( ds != DS_OK ) return( ds );
-    if( parm->idx < CV_FIRST_USER_TYPE ) return( DS_FAIL );
+    if( ds != DS_OK ) 
+        return( ds );
+    if( parm->idx < CV_FIRST_USER_TYPE ) 
+        return( DS_FAIL );
     switch( p->common.code ) {
     case LF_PROCEDURE:
         rv_idx = p->procedure.f.rvtype;
@@ -1870,11 +1991,14 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     }
     if( n <= parm_count ) {
         ds = TypeIndexFillIn( ii, al_idx, parm );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         p = VMRecord( ii, parm->handle - sizeof( unsigned_16 ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL ) 
+            return( DS_ERR|DS_FAIL );
         p = (lf_all *)((unsigned_16 *)p + 1);
-        if( p->common.code != LF_ARGLIST ) return( DS_ERR|DS_FAIL );
+        if( p->common.code != LF_ARGLIST ) 
+            return( DS_ERR|DS_FAIL );
         arg_types = (void *)(&p->arglist + 1);
         return( TypeIndexFillIn( ii, arg_types[n-1], parm ) );
     }
@@ -1899,11 +2023,15 @@ dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
     location_list       tmp_ll;
 
     ds = TypeReal( ii, it, &real, NULL );
-    if( ds != DS_OK ) return( ds );
-    if( real.idx < CV_FIRST_USER_TYPE ) return( DS_FAIL );
+    if( ds != DS_OK ) 
+        return( ds );
+    if( real.idx < CV_FIRST_USER_TYPE ) 
+        return( DS_FAIL );
     p = VMBlock( ii, real.handle, sizeof( p->pointer ) + sizeof( s_common ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
-    if( p->common.code != LF_POINTER ) return( DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
+    if( p->common.code != LF_POINTER ) 
+        return( DS_FAIL );
     ptype = p->pointer.f.attr.f.type;
     switch( ptype ) {
     case CV_BASESEG:
@@ -1916,9 +2044,11 @@ dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
     case CV_BASESYM:
     case CV_BASESEGSYM:
         ds = SymFillIn( ii, &is, real.handle + sizeof( p->pointer ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = ImpSymLocation( ii, &is, lc, &ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         *a = ll.e[0].u.addr;
         switch( ptype ) {
         case CV_BASESEGSYM:
@@ -1928,9 +2058,11 @@ dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
             return( DS_OK );
         }
         ds = ImpSymType( ii, &is, &real );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         ds = ImpTypeInfo( ii, &real, lc, &ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) 
+            return( ds );
         LocationCreate( &tmp_ll, LT_INTERNAL, &tmp );
         ds = DCAssignLocation( &ll, &tmp_ll, ti.size );
         if( ds != DS_OK ) {
@@ -1947,7 +2079,8 @@ dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
             a->mach.segment = tmp.addr48.segment;
             a->mach.offset  = tmp.addr48.offset;
         }
-        if( ptype == CV_BASESEGVAL ) a->mach.offset = 0;
+        if( ptype == CV_BASESEGVAL ) 
+            a->mach.offset = 0;
         return( DS_OK );
     case CV_BASETYPE:
         //NYI: ????
@@ -1972,13 +2105,15 @@ static walk_result ThunkSearch( imp_image_handle *ii, sym_walk_info swi,
     numeric_leaf        val;
     unsigned            struct_idx;
 
-    if( td->found ) return( WR_STOP );
+    if( td->found ) 
+        return( WR_STOP );
     switch( swi ) {
     case SWI_INHERIT_END:
         switch( list->code ) {
         case LF_BCLASS:
             p = VMBlock( ii, list->curr, list->len );
-            if( p == NULL ) return( WR_FAIL );
+            if( p == NULL ) 
+                return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
             td->adj_offset -= val.int_val;
             break;
@@ -1992,7 +2127,8 @@ static walk_result ThunkSearch( imp_image_handle *ii, sym_walk_info swi,
     }
     /* SWI_INHERIT_START */
     p = VMBlock( ii, list->curr, list->len );
-    if( p == NULL ) return( WR_FAIL );
+    if( p == NULL ) 
+        return( WR_FAIL );
     switch( list->code ) {
     case LF_BCLASS:
         GetNumLeaf( &p->bclass + 1, &val );
@@ -2026,9 +2162,11 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     if( base->idx < CV_FIRST_USER_TYPE || derived->idx < CV_FIRST_USER_TYPE ) {
         return( DS_FAIL );
     }
-    if( base->handle == derived->handle ) return( DS_FAIL );
+    if( base->handle == derived->handle ) 
+        return( DS_FAIL );
     p = VMBlock( ii, derived->handle, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_CLASS:
     case LF_STRUCTURE:
@@ -2038,7 +2176,8 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     }
 
     p = VMBlock( ii, base->handle, sizeof( *p ) );
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( p == NULL ) 
+        return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_CLASS:
     case LF_STRUCTURE:
@@ -2048,7 +2187,8 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
         return( DS_FAIL );
     }
     list_vm = TypeIndexVM( ii, list_idx );
-    if( list_vm == 0 ) return( DS_ERR|DS_FAIL );
+    if( list_vm == 0 ) 
+        return( DS_ERR|DS_FAIL );
     data.derived_vm = derived->handle - sizeof( unsigned_16 );
     data.adj_offset = 0;
     data.adj_type = 0;
@@ -2061,7 +2201,8 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
         if( data.adj_type != 0 ) {
             LocationCreate( &ll, LT_ADDR, addr );
             ds = GetVirtBaseDisp( ii, data.adj_type, lc, ll, &disp );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK ) 
+                return( ds );
             addr->mach.offset += disp;
         }
         addr->mach.offset += data.adj_offset;
@@ -2070,26 +2211,27 @@ dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
-                                imp_type_handle *it2 )
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
 {
     ii = ii;
     return( it2->idx - it1->idx );
 }
 
-unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     lf_all              *p;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_type_handle     real_it;
 
-    if( num != 0 ) return( 0 );
+    if( num != 0 ) 
+        return( 0 );
     if( TypeReal( ii, it, &real_it, &p ) != DS_OK ) {
         return( 0 );
     }
-    if( real_it.idx != 0 ) return( 0 );
+    if( real_it.idx != 0 ) 
+        return( 0 );
     switch( p->common.code ) {
     case LF_CLASS:
         *tag = ST_CLASS_TAG;
@@ -2132,4 +2274,3 @@ dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
     ii=ii;
     return(DS_OK);
 }
-

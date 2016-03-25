@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,33 +36,28 @@
 #include "utils.h"
 #include "myprtf.h"
 #include "wprocmap.h"
+#include "winifini.h"
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 window MessageBar = {
     &messagew_info,
-    { 0, 0, 0, 0 },
-    Init,
-    Fini
+    { 0, 0, 0, 0 }
 };
-
-WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "MessageWindow";
 static char msgString1[MAX_STR];
 static char msgString2[MAX_STR];
-static void msgString( int, char * );
+static void msgString( int, const char * );
 
-static bool Init( window *w, void *parm )
+bool MessageBarInit( void )
 {
     WNDCLASS        wc;
 
-    w = w;
-    parm = parm;
-
-    msgString1[0] = 0;
-    msgString2[0] = 0;
+    msgString1[0] = '\0';
+    msgString2[0] = '\0';
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = GetWndProc( MessageWindowProc );
@@ -76,10 +72,8 @@ static bool Init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool Fini( window *w, void *parm )
+bool MessageBarFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 
@@ -93,14 +87,14 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         break;
     case WM_PAINT:
         BeginPaint( hwnd, &ps );
-        if( !BAD_ID( MessageWindow ) ) {
+        if( !BAD_ID( message_window_id ) ) {
             msgString( 1, msgString1 );
             msgString( 2, msgString2 );
         }
         EndPaint( hwnd, &ps );
         return( 0 );
     case WM_SETFOCUS:
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( 0 );
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -109,52 +103,52 @@ WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
 
 window_id NewMsgWindow( void )
 {
-    window_id   msg;
+    window_id   wid;
     RECT        *size;
     int         height;
 
-    size = &MessageBar.area;
-    msgString1[0] = 0;
-    msgString2[0] = 0;
+    size = &MessageBar.def_area;
+    msgString1[0] = '\0';
+    msgString2[0] = '\0';
     height = size->bottom - size->top;
     if( !EditFlags.StatusInfo ) {
         height += 1;
     }
-    msg = CreateWindow( ClassName, "Message",
+    wid = CreateWindow( ClassName, "Message",
                         WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
                         size->left - 1, size->top,
                         size->right - size->left + 2, height,
-                        Root, (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( msg, SW_SHOWNORMAL );
-    UpdateWindow( msg );
-    return( msg );
+                        root_window_id, (HMENU)NULLHANDLE, InstanceHandle, NULL );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }
 
-static void msgString( int line_no, char *str )
+static void msgString( int line_no, const char *str )
 {
     int     height;
     RECT    rect;
     HDC     hdc;
 
-    if( !AllowDisplay || BAD_ID( MessageWindow ) ) {
+    if( !AllowDisplay || BAD_ID( message_window_id ) ) {
         return;
     }
-    GetClientRect( MessageWindow, &rect );
-    height = FontHeight( WIN_FONT( &MessageBar ) );
+    GetClientRect( message_window_id, &rect );
+    height = FontHeight( WIN_TEXT_FONT( &MessageBar ) );
     rect.top += (line_no - 1) * height;
     rect.bottom = rect.top + height;
-    hdc = TextGetDC( MessageWindow, WIN_STYLE( &MessageBar ) );
-    FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &MessageBar ) ) );
-    TextReleaseDC( MessageWindow, hdc );
-    WriteString( MessageWindow, 0, rect.top, WIN_STYLE( &MessageBar ), str );
+    hdc = TextGetDC( message_window_id, WIN_TEXT_STYLE( &MessageBar ) );
+    FillRect( hdc, &rect, ColorBrush( WIN_TEXT_BACKCOLOR( &MessageBar ) ) );
+    TextReleaseDC( message_window_id, hdc );
+    WriteString( message_window_id, 0, rect.top, WIN_TEXT_STYLE( &MessageBar ), str );
 }
-   
-void Message1( char *fmt, ... )
+
+void Message1( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];
 
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( args, fmt );
     MyVSprintf( tmp, fmt, args );
     va_end( args );
@@ -162,7 +156,7 @@ void Message1( char *fmt, ... )
     msgString( 1, tmp );
 }
 
-void Message1Box( char *fmt, ... )
+void Message1Box( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];
@@ -171,10 +165,10 @@ void Message1Box( char *fmt, ... )
     MyVSprintf( tmp, fmt, args );
     va_end( args );
     strcpy( msgString1, tmp );
-    MessageBox( Root, tmp, NULL, MB_OK );
+    MessageBox( root_window_id, tmp, NULL, MB_OK );
 }
 
-void Message2( char *fmt, ... )
+void Message2( const char *fmt, ... )
 {
     va_list     args;
     char        tmp[MAX_STR];

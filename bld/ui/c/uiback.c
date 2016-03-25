@@ -94,10 +94,10 @@ void intern closebackground( void )
 BUFFER * UIAPI uibackgroundbuffer( void )
 /****************************************/
 {
-    register    bool                    ok;
+    bool    ok;
 
     if( UIData->blank.type.buffer.origin != NULL ){
-        ok = TRUE;
+        ok = true;
     } else {
         ok = balloc( &UIData->blank.type.buffer, UIData->height, UIData->width );
     }

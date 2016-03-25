@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +37,13 @@
 /*
  * DrawVerticalThumb - draw the scroll thumb on the screen
  */
-void DrawVerticalThumb( wind *w, char ch )
+void DrawVerticalThumb( window *w, char ch )
 {
     char_info   what = {0, 0};
     int         addr;
     char_info   *txt;
     window_id   *over;
-    unsigned    oscr;
+    size_t      oscr;
 
     if( w->vert_scroll_pos < THUMB_START || EditFlags.Quiet ) {
         return;
@@ -55,10 +56,10 @@ void DrawVerticalThumb( wind *w, char ch )
     what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
 
     addr = w->width - 1 + w->vert_scroll_pos * w->width;
-    oscr = (w->x2) + (w->y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
+    oscr = (w->area.x2) + (w->area.y1 + w->vert_scroll_pos) * EditVars.WindMaxWidth;
 
     WRITE_SCREEN_DATA( txt[addr], what );
-    if( over[addr] == NO_WINDOW ) {
+    if( BAD_ID( over[addr] ) ) {
         WRITE_SCREEN( Scrn[oscr], what );
     }
 #ifdef __VIO__
@@ -70,18 +71,19 @@ void DrawVerticalThumb( wind *w, char ch )
 /*
  * PositionVerticalScrollThumb - draw the scroll thumb on the screen
  */
-void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
+void PositionVerticalScrollThumb( window_id wid, linenum curr, linenum last )
 {
-    wind        *w;
+    window      *w;
     int         height;
     int         newpos;
 
-    w = AccessWindow( wn );
+    w = WINDOW_FROM_ID( wid );
+    AccessWindow( w );
     if( !w->has_gadgets || !w->has_border ) {
         ReleaseWindow( w );
         return;
     }
-    height = w->y2 - w->y1 - THUMB_START * 2;
+    height = w->area.y2 - w->area.y1 - THUMB_START * 2;
     if( height <= 0 ) {
         newpos = 0;
     } else if( curr == 1 ) {
@@ -103,7 +105,7 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
 /*
  * PositionToNewThumbPosition - set new position in file based on thumb
  */
-vi_rc PositionToNewThumbPosition( wind *w, int win_y )
+vi_rc PositionToNewThumbPosition( window *w, int win_y )
 {
     int         height;
     vi_rc       rc;
@@ -116,7 +118,7 @@ vi_rc PositionToNewThumbPosition( wind *w, int win_y )
     if( win_y < 0 ) {
         return( ERR_NO_ERR );
     }
-    height = w->y2 - w->y1 - THUMB_START * 2;
+    height = w->area.y2 - w->area.y1 - THUMB_START * 2;
     if( win_y > height ) {
         return( ERR_NO_ERR );
     }
@@ -136,8 +138,8 @@ vi_rc PositionToNewThumbPosition( wind *w, int win_y )
 
 } /* PositionToNewThumbPosition */
 
-void PositionHorizontalScrollThumb( window_id id, int left_column )
+void PositionHorizontalScrollThumb( window_id wid, int left_column )
 {
-    id = id;
+    wid = wid;
     left_column = left_column;
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1293,14 +1294,14 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     char                *cp;
     WdeHashValue        value;
     bool                found;
-    LRESULT             index;
+    int                 index;
     int                 count;
 
     if( table == NULL ) {
         return;
     }
 
-    count = SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCOUNT, 0, 0 );
+    count = (int)SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCOUNT, 0, 0L );
     if( count == 0 || count == CB_ERR ) {
         return;
     }
@@ -1309,7 +1310,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hDlg, IDB_SYMBOL );
     } else {
-        index = SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCURSEL, 0, 0 );
+        index = (int)SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hDlg, IDB_SYMBOL, index );
         }
@@ -1371,14 +1372,14 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     char                *cp;
     WdeHashValue        value;
     bool                found;
-    LRESULT             index;
+    int                 index;
     int                 count;
 
     if( table == NULL ) {
         return;
     }
 
-    count = SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCOUNT, 0, 0 );
+    count = (int)SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCOUNT, 0, 0L );
     if( count == 0 || count == CB_ERR ) {
         return;
     }
@@ -1387,7 +1388,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hDlg, IDB_HELPSYMBOL );
     } else {
-        index = SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCURSEL, 0, 0 );
+        index = (int)SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hDlg, IDB_HELPSYMBOL, index );
         }

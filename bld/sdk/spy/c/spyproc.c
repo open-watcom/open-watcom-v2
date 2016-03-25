@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
 static BOOL     spyAll;
 static WORD     statusHite = 25;
 
-static MenuItemHint menuHints[] = {
+static const MenuItemHint menuHints[] = {
     SPY_SAVE,                       STR_HINT_SAVE,
     SPY_SAVE_AS,                    STR_HINT_SAVE_AS,
     SPY_LOG,                        STR_HINT_LOG,
@@ -163,13 +164,13 @@ void SaveExtra( FILE *f )
  *                to make it so long that the pause is too obvious to the
  *                user
  */
-void setUpForPick( HWND hwnd, WORD cmdid ) {
+void setUpForPick( HWND hwnd, UINT_PTR timerid ) {
 
 #ifdef __WINDOWS__
-    SendMessage( hwnd, WM_TIMER, cmdid, 0 );
+    SendMessage( hwnd, WM_TIMER, timerid, 0 );
 #else
     ShowWindow( hwnd, SW_MINIMIZE );
-    SetTimer( hwnd, cmdid, 300, NULL );
+    SetTimer( hwnd, timerid, 300, NULL );
 #endif
 }
 
@@ -225,7 +226,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     int         check;
     HWND        selwin;
     HWND        hinthwnd;
-    WORD        cmdid = 0;
+    ctl_id      cmdid = 0;
     RECT        area;
     BOOL        pausestate;
     BOOL        spyallstate;
@@ -239,8 +240,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         area.top = area.bottom - statusHite;
         StatusHdl = HintWndCreate( hwnd, &area, Instance, NULL );
         statusHite = SizeHintBar( StatusHdl );
-        SetHintText( StatusHdl, (MenuItemHint *)menuHints,
-                     sizeof( menuHints ) / sizeof( MenuItemHint ) );
+        SetHintsText( StatusHdl, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );
         if( SpyMainWndInfo.show_hints ) {
             CheckMenuItem( mh, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
         } else {
@@ -430,7 +430,6 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             ai.inst = Instance;
             ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = AllocRCString( STR_ABOUT_VERSION );
-            ai.first_cr_year = "1993";
             ai.title = AllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

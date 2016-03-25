@@ -3,6 +3,7 @@
 #
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 #==========================================================================================================
+!inject abort.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject cenvarg.obj  d16 d32             nt nta ntp         o16 o32                                 rdu
 !inject cwaitos2.obj                                        o16 o32
 !inject cwaitwnt.obj                     nt nta ntp
@@ -47,8 +48,7 @@
 !inject raise.obj                                                   q16 q32
 !inject raisefpe.obj                                                        w16
 !inject raisep.obj                                                                      l32 lpc lmp
-!inject sigfpe.obj   d16 d32                                                w16
-!inject sigjmp.obj                                                  q16 q32
+!inject sigjmp.obj                                                  q16 q32             l32 lpc lmp
 !inject signl.obj    d16 d32                                                w16 w32
 !inject signlo16.obj                                        o16
 !inject signlo32.obj                                            o32
@@ -56,7 +56,6 @@
 !inject signlwnt.obj                     nt nta ntp
 !inject signlrdu.obj                                                                                rdu
 !inject sigsy.obj    d16 d32                                                w16
-!inject sigtab.obj   d16 d32                                                w16 w32
 !inject sigsyo16.obj                                        o16
 !inject _slashc.obj  d16 d32             nt nta ntp         o16 o32
 !inject sleep.obj    d16 d32                        nvc nvl                 w16 w32
@@ -121,6 +120,7 @@ objsuffix=files
 !include ../../../../objlist.mif
 objprefix=
 
+abort_postopts      =-os
 cenvarg_postopts    =-os
 exve_postopts       =-os
 exveos2_postopts    =-os

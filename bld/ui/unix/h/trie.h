@@ -33,5 +33,5 @@
 
 extern int      TrieInit( void );
 extern void     TrieFini( void );
-extern int      TrieAdd( EVENT event, char *str );
+extern int      TrieAdd( EVENT event, const char *str );
 extern EVENT    TrieRead( void );

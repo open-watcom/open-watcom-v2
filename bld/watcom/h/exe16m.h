@@ -79,12 +79,12 @@ typedef struct dos16m_exe_header {
 
 /* the values for the exp_flags field. */
 enum {
-    ef_auto			    = 0x0001,   /* automatic selectors (=> relocatable) */
-    ef_package		    = 0x0002,   /* module is a package                  */
-    ef_nobigfoot	    = 0x0004,   /* don't place stack low DPMI memory    */
-    ef_sharedata	    = 0x2000,   /* data is global, not per-instance     */
-    ef_shareable	    = 0x4000,   /* component may be shared              */
-    ef_dos4g		    = 0x8000    /* module is or requires DOS/4G         */
+    ef_auto                 = 0x0001,   /* automatic selectors (=> relocatable) */
+    ef_package              = 0x0002,   /* module is a package                  */
+    ef_nobigfoot            = 0x0004,   /* don't place stack low DPMI memory    */
+    ef_sharedata            = 0x2000,   /* data is global, not per-instance     */
+    ef_shareable            = 0x4000,   /* component may be shared              */
+    ef_dos4g                = 0x8000    /* module is or requires DOS/4G         */
 };
 
 /* the values for the options field */

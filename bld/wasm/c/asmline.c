@@ -40,6 +40,7 @@
 #include "asminput.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "standalo.h"
 
 #include "clibext.h"
 #include "pathgrp.h"
@@ -292,9 +293,9 @@ void print_include_file_nesting_structure( void )
             break;
         if( !tmp->hidden ) {
             if( tmp->is_a_file ) {
-                AsmNote( 0, NOTE_INCLUDED_BY, tmp->next->srcfile->name, tmp->line_num );
+                _AsmNote( 0, NOTE_INCLUDED_BY, tmp->next->srcfile->name, tmp->line_num );
             } else {
-                AsmNote( 0, NOTE_MACRO_CALLED_FROM, tmp->next->srcfile->name, tmp->line_num );
+                _AsmNote( 0, NOTE_MACRO_CALLED_FROM, tmp->next->srcfile->name, tmp->line_num );
             }
         }
         tmp = tmp->next;
@@ -303,9 +304,9 @@ void print_include_file_nesting_structure( void )
 
     if( !tmp->hidden ) {
         if( tmp->is_a_file ) {
-            AsmNote( 0, NOTE_INCLUDED_BY, ModuleInfo.srcfile->name, tmp->line_num );
+            _AsmNote( 0, NOTE_INCLUDED_BY, ModuleInfo.srcfile->name, tmp->line_num );
         } else {
-            AsmNote( 0, NOTE_MACRO_CALLED_FROM, ModuleInfo.srcfile->name, tmp->line_num );
+            _AsmNote( 0, NOTE_MACRO_CALLED_FROM, ModuleInfo.srcfile->name, tmp->line_num );
         }
     }
 }

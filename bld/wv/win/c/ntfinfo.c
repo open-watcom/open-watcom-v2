@@ -45,7 +45,7 @@ long LocalGetFileDate( const char *name )
     WORD                md,mt;
 
     h = FindFirstFile( name, &ffb );
-    if( h == (HANDLE)-1 ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         return( -1 );
     }
     FindClose( h );
@@ -65,12 +65,12 @@ bool LocalSetFileDate( const char *name, long date )
     DosDateTimeToFileTime( md, mt, &ft );
     h = CreateFile( name, GENERIC_READ | GENERIC_WRITE, 0, NULL,
                     OPEN_EXISTING, 0, NULL );
-    if( h == (HANDLE)-1 ) {
-        return( FALSE );
+    if( h == INVALID_HANDLE_VALUE ) {
+        return( false );
     }
     if( !SetFileTime( h, &ft, &ft, &ft ) ) {
-        return( FALSE );
+        return( false );
     }
     CloseHandle( h );
-    return( TRUE );
+    return( true );
 }

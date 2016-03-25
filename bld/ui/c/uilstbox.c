@@ -174,13 +174,20 @@ void uiboxpushlist( void )
         'a',            'z',
         'A',            'Z',
         EV_NO_EVENT,
-        EV_SCROLL_LINE_UP, EV_SCROLL_LINE_DOWN,
-        EV_SCROLL_PAGE_UP, EV_SCROLL_PAGE_DOWN,
-        EV_PAGE_UP, EV_PAGE_DOWN,
-        EV_CURSOR_UP,   EV_CURSOR_DOWN,
-        EV_MOUSE_PRESS, EV_MOUSE_RELEASE,
-        EV_MOUSE_REPEAT, EV_MOUSE_DRAG,
-        EV_ALT_CURSOR_UP, EV_NO_EVENT
+        EV_SCROLL_LINE_UP,
+        EV_SCROLL_LINE_DOWN,
+        EV_SCROLL_PAGE_UP,
+        EV_SCROLL_PAGE_DOWN,
+        EV_PAGE_UP,
+        EV_PAGE_DOWN,
+        EV_CURSOR_UP,
+        EV_CURSOR_DOWN,
+        EV_MOUSE_PRESS,
+        EV_MOUSE_RELEASE,
+        EV_MOUSE_REPEAT,
+        EV_MOUSE_DRAG,
+        EV_ALT_CURSOR_UP,
+        EV_NO_EVENT
     };
 
     uipushlist( listboxevents );
@@ -191,16 +198,16 @@ void uiboxpoplist( void )
     uipoplist();
 }
 
-static unsigned getlistsize( const void *data_handle, UIPICKGETTEXT *get )
+static int getlistsize( const void *data_handle, UIPICKGETTEXT *get )
 {
-    unsigned    item;
+    int     item;
 
-    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != FALSE; item++ );
-
+    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != FALSE; item++ )
+        ;
     return( item );
 }
 
-unsigned uilistsize( a_list *list )
+int uilistsize( a_list *list )
 {
     if( list->data_handle == NULL ) {
         return( 0 );
@@ -219,16 +226,15 @@ void uimovelistbox( a_list *list, int row_diff, int col_diff )
 a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
 {
     a_list_info     *box;
-    unsigned        maxline;
+    int             maxline;
 
-    box = uicalloc( 1, sizeof( a_list_info ) );
+    box = uimalloc( sizeof( a_list_info ) );
     if( box == NULL ) {
         return( NULL );
     }
     if( list->get == NULL ) {
         list->get = uigetlistelement;
     }
-
     box->vs     = vs;
     box->area   = *area;
     box->line   = list->choice;
@@ -283,7 +289,7 @@ static int getmouseregion( a_list *list, int *row, int *col )
 
     uimousepos( box->vs, row, col );
 
-    if( *row - box->area.row >= (int)uilistsize( list ) ) {
+    if( *row - box->area.row >= uilistsize( list ) ) {
         return( R_UNS );
     }
     if( *row >= box->area.height + box->area.row ) {

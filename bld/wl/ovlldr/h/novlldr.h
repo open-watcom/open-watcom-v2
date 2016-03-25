@@ -132,7 +132,7 @@ typedef desc __far      *desc_ptr;
 #define BLOCK_IS_FREE 0xFFFF
 #define NULL_SEG 0
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_16 next;       /* paragraph of next free block in the list */
@@ -273,6 +273,6 @@ typedef ret_trap __far *ret_trap_ptr;
 
 #define CALL_FAR_INSTRUCTION    0x9a
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #endif

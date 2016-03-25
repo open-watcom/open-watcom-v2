@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,9 @@
  * ReadDataFile - do just that
  */
 #ifdef VICOMP
-vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ) )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool (*fn_save)(int, const char *) )
 #else
-vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*fn_save)( int, char* ), bool bounddata )
+vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool (*fn_save)(int, const char *), bool bounddata )
 #endif
 {
     GENERIC_FILE        gf;
@@ -47,6 +48,7 @@ vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*f
     char                token[MAX_STR], buff[MAX_STR];
     char                *buffdata;
     bool                hasvals;
+    const char          *ptr;
 
     /*
      * get file and buffer
@@ -62,41 +64,48 @@ vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ), bool (*f
     /*
      * get counts
      */
-    if( SpecialFgets( buff, MAX_STR - 1, &gf ) < 0 ) {
+    if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
         SpecialFclose( &gf );
         return( ERR_INVALID_DATA_FILE );
     }
     dcnt = atoi( buff );
     hasvals = fn_alloc( dcnt );
     buffdata = NULL;
-    size = 0;
+    ptr = NULL;
 
     /*
      * read all tokens
+     *
+     * create list of tokens separated by '\0'
+     * list is terminated by two '\0' characters
      */
+    size = 0;
     for( i = 0; i < dcnt; i++ ) {
-
-        len = SpecialFgets( buff, sizeof( buff ) - 1, &gf );
-        if( len < 0 ) {
+        if( SpecialFgets( buff, sizeof( buff ) - 1, &gf ) ) {
             SpecialFclose( &gf );
             return( ERR_INVALID_DATA_FILE );
         }
         if( hasvals ) {
-            len = NextWord1( buff, token );
-            if( len <= 0 ) {
+            ptr = GetNextWord1( buff, token );
+            if( *token == '\0' ) {
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }
         } else {
-            memcpy( token, buff, len + 1 );
+            strcpy( token, buff );
         }
-        len++;
+        // add space for token terminator
+        len = strlen( token ) + 1;
+        // add space for list terminator
         buffdata = MemReAlloc( buffdata, size + len + 1 );
-        memcpy( &buffdata[size], token, len );
+        // copy token with terminator
+        memcpy( buffdata + size, token, len );
         size += len;
-        buffdata[size] = 0;
+        // write list terminator
+        buffdata[size] = '\0';
         if( hasvals ) {
-            if( NextWord1( buff, token ) <= 0 ) {
+            ptr = GetNextWord1( ptr, token );
+            if( *token == '\0' ) {
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }

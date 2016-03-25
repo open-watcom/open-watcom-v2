@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,19 +40,18 @@
 
 static void FreeSystemMenu( gui_window *wnd )
 {
-    int         num;
-    HMENU       system;
-    int         i;
-    HWND        frame;
+    gui_ctl_idx     num;
+    gui_ctl_idx     pos;
+    HMENU           system;
+    HWND            frame;
 
     frame = GUIGetParentFrameHWND( wnd );
-    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) &&
-        ( wnd->style & GUI_SYSTEM_MENU ) ) {
+    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && ( wnd->style & GUI_SYSTEM_MENU ) ) {
         system = _wpi_getsystemmenu( frame );
         if( system != NULLHANDLE ) {
-            num = (int) _wpi_getmenuitemcount( system );
-            for( i = num; i >= NUM_SYSTEM_MENUS; i-- ) {
-                _wpi_deletemenu( system, i, TRUE );
+            num = _wpi_getmenuitemcount( system );
+            for( pos = num; pos >= NUM_SYSTEM_MENUS; pos-- ) {
+                _wpi_deletemenu( system, pos, TRUE );
             }
         }
     }

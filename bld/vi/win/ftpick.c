@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,14 @@
 #include "sstyle.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK FtPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 extern  LOGFONT     CurLogfont;
 
 static  bool        haveCapture = false;
-static  HWND        mod_hwnd;
+static  window_id   mod_wid = NO_WINDOW;
 static  POINT       m_pt;
 
 static void sendNewFontCurrentWindow( void )
@@ -49,8 +54,8 @@ static void sendNewFontCurrentWindow( void )
     bool            totally;
     linenum         line_num;
 
-    ScreenToClient( mod_hwnd, &m_pt );
-    ClientToRowCol( mod_hwnd, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
+    ScreenToClient( mod_wid, &m_pt );
+    ClientToRowCol( mod_wid, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
 
     /* someone is base 0, someone else isn't.  bummer.
      * Also row may not be valid if attemping to drop beyond bottom
@@ -85,15 +90,15 @@ static void sendNewFont( void )
 {
     type_style  *mod_style;
 
-    if( mod_hwnd == NULL ) {
+    if( BAD_ID( mod_wid ) ) {
         return;
     }
 
-    mod_style = (&(WINDOW_FROM_ID( mod_hwnd )->info->text));
+    mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_wid ) );
 
-    if( mod_hwnd == CurrentWindow ) {
+    if( mod_wid == current_window_id ) {
         sendNewFontCurrentWindow();
-    } else if( mod_hwnd != GetToolbarWindow() ) {
+    } else if( mod_wid != GetToolbarWindow() ) {
         /* (toolbar has no font)
         */
         SetUpFont( &CurLogfont, mod_style->font );
@@ -116,39 +121,38 @@ static LRESULT doDrop( HWND hwnd, WPARAM wparam )
     return( 0 );
 }
 
-static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static LRESULT processMouseMove( window_id wid, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
 
     if( !haveCapture ) {
-        return( DefWindowProc( hwnd, msg, wparam, lparam ) );
+        return( DefWindowProc( wid, msg, wparam, lparam ) );
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (int)(short)LOWORD( lparam );
-    m_pt.y = (int)(short)HIWORD( lparam );
-    ClientToScreen( hwnd, &m_pt );
-    GetWindowRect( GetParent( hwnd ), &rect );
+    m_pt.x = GET_X( lparam );
+    m_pt.y = GET_Y( lparam );
+    ClientToScreen( wid, &m_pt );
+    GetWindowRect( GetParent( wid ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPFT );
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_wid = NO_WINDOW;
         return( 0 );
     }
 
     /* otherwise, figure out what we're over & change element display
     */
-    mod_hwnd = GetOwnedWindow( m_pt );
-    if( mod_hwnd != NULL && mod_hwnd != GetToolbarWindow() ) {
+    mod_wid = GetOwnedWindow( m_pt );
+    if( !BAD_ID( mod_wid ) && mod_wid != GetToolbarWindow() ) {
         CursorOp( COP_DROPFT );
     } else {
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_wid = NO_WINDOW;
         CursorOp( COP_NODROP );
     }
-
     return( 0 );
 }
 
-LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static LRESULT drawCurLogfont( window_id wid, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         hdc;
@@ -164,9 +168,9 @@ LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     lparam = lparam;
 
     hFont = CreateFontIndirect( &CurLogfont );
-    GetClientRect( hwnd, &rect );
+    GetClientRect( wid, &rect );
 
-    hdc = BeginPaint( hwnd, &ps );
+    hdc = BeginPaint( wid, &ps );
     SelectObject( hdc, hFont );
     SetTextColor( hdc, GetSysColor( COLOR_BTNTEXT ) );
     SetBkColor( hdc, GetSysColor( COLOR_BTNFACE ) );
@@ -185,21 +189,20 @@ LRESULT drawCurLogfont( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     y -= tm.tmInternalLeading;
     TextOut( hdc, x, y, "Waterloo", 8 );
-    EndPaint( hwnd, &ps );
+    EndPaint( wid, &ps );
 
     DeleteObject( hFont );
 
     return( 0 );
 }
 
-static LRESULT setupForDrop( HWND hwnd )
+static LRESULT setupForDrop( window_id wid )
 {
-    DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_DOWN );
+    DrawRectangleUpDown( GetDlgItem( GetParent( wid ), FT_RECTANGLE ), DRAW_DOWN );
     CursorOp( COP_DROPFT );
-    SetCapture( hwnd );
+    SetCapture( wid );
     haveCapture = true;
-    mod_hwnd = (HWND)NULLHANDLE;
-
+    mod_wid = NO_WINDOW;
     return( 0 );
 }
 

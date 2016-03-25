@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,14 +79,17 @@ extern bool GUIXCreateFixedToolbar( gui_window *wnd )
     int                 j;
     gui_menu_struct     menu;
     char                *with_excl;
+    toolbarinfo         *tbar;
 
-    wnd->toolbar->fixed = true;
+    tbar = wnd->tbinfo;
+    tbar->fixed = true;
     menu.num_child_menus = 0;
     menu.child = NULL;
     menu.style = GUI_ENABLED;
 
-    for( i = 0; i < wnd->toolbar->num_items; i++ ) {
-        menu.label = wnd->toolbar->info[i].label;
+    for( i = 0; i < tbar->num_items; i++ ) {
+        with_excl = NULL;
+        menu.label = tbar->info[i].label;
         if( menu.label != NULL ) {
             with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + 2 );
             if( with_excl != NULL ) {
@@ -94,12 +98,12 @@ extern bool GUIXCreateFixedToolbar( gui_window *wnd )
             }
             menu.label = with_excl;
         }
-        menu.id = wnd->toolbar->info[i].id;
-        menu.hinttext = wnd->toolbar->info[i].hinttext;
-        if( !GUIAppendToolbarMenu( wnd, &menu, i==(wnd->toolbar->num_items-1) ) ) {
+        menu.id = tbar->info[i].id;
+        menu.hinttext = tbar->info[i].hinttext;
+        if( !GUIAppendToolbarMenu( wnd, &menu, ( i == ( tbar->num_items - 1 ) ) ) ) {
             GUIMemFree( with_excl );
             for( j = 0; j < i; j++ ) {
-                GUIDeleteToolbarMenuItem( wnd, wnd->toolbar->info[j].id );
+                GUIDeleteToolbarMenuItem( wnd, tbar->info[j].id );
             }
             return( false );
         }
@@ -115,9 +119,9 @@ static bool FixToolbar( gui_window *wnd )
     gui_window  *parent;
 
     parent = wnd->parent;
-    wnd->parent->toolbar->switching = true;
+    wnd->parent->tbinfo->switching = true;
     GUICloseWnd( wnd );
-    parent->toolbar->switching = false;
+    parent->tbinfo->switching = false;
     return( GUIXCreateFixedToolbar( parent ) );
 }
 
@@ -149,13 +153,13 @@ bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
         break;
     case GUI_DESTROY :
         /* didn't get close first */
-        if( wnd->parent->toolbar->floattoolbar != NULL ) {
-            wnd->parent->toolbar->floattoolbar = NULL;
+        if( wnd->parent->tbinfo->floattoolbar != NULL ) {
+            wnd->parent->tbinfo->floattoolbar = NULL;
         }
         GUICloseToolBar( wnd->parent );
         break;
     case GUI_CLOSE :
-        wnd->parent->toolbar->floattoolbar = NULL;
+        wnd->parent->tbinfo->floattoolbar = NULL;
         break;
     default :
         break;
@@ -171,12 +175,12 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     int                 loc;
     gui_rect            client;
     gui_rect            size;
-    toolbarinfo         *toolbar;
+    toolbarinfo         *tbar;
     gui_colour_set      *plain;
     gui_colour_set      *standout;
 
-    toolbar = wnd->toolbar;
-    toolbar->fixed = false;
+    tbar = wnd->tbinfo;
+    tbar->fixed = false;
     GUIGetTextMetrics( wnd, &metrics );
     if( height == 0 ) {
         height = 2 * metrics.avg.y;
@@ -192,35 +196,35 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     FloatingToolbar.num_attrs = GUIGetNumWindowColours( wnd );
     FloatingToolbar.colours = GUIGetWindowColours( wnd );
     FloatingToolbar.colours[GUI_FRAME_INACTIVE] = FloatingToolbar.colours[GUI_FRAME_ACTIVE];
-    toolbar->floattoolbar = GUICreateWindow( &FloatingToolbar );
+    tbar->floattoolbar = GUICreateWindow( &FloatingToolbar );
     GUIMemFree( FloatingToolbar.colours );
     FloatingToolbar.colours = NULL;
-    Button.parent = toolbar->floattoolbar;
+    Button.parent = tbar->floattoolbar;
     loc = 0;
-    if( toolbar->has_colours ) {
-        plain = &toolbar->plain;
-        standout = &toolbar->standout;
+    if( tbar->has_colours ) {
+        plain = &tbar->plain;
+        standout = &tbar->standout;
     } else {
         plain = NULL;
         standout = NULL;
     }
-    for( i = 0; i < toolbar->num_items; i++ ) {
-        Button.text = toolbar->info[i].label;
-        Button.id = toolbar->info[i].id;
+    for( i = 0; i < tbar->num_items; i++ ) {
+        Button.text = tbar->info[i].label;
+        Button.id = tbar->info[i].id;
         Button.rect.x = loc;
         Button.rect.width = ( strlen( Button.text ) + 4 ) * metrics.avg.x;
         Button.rect.height = metrics.avg.y * 2;
         loc += Button.rect.width;
         if( !GUIAddControl( &Button, plain, standout ) ) {
-            GUIDestroyWnd( toolbar->floattoolbar );
+            GUIDestroyWnd( tbar->floattoolbar );
             return( false );
         }
     }
-    GUIGetClientRect( toolbar->floattoolbar, &client );
-    GUIGetRect( toolbar->floattoolbar, &size );
+    GUIGetClientRect( tbar->floattoolbar, &client );
+    GUIGetRect( tbar->floattoolbar, &size );
     size.width += loc - client.width;
-    GUIResizeWindow( toolbar->floattoolbar, &size );
-    GUIShowWindow( toolbar->floattoolbar );
+    GUIResizeWindow( tbar->floattoolbar, &size );
+    GUIShowWindow( tbar->floattoolbar );
     return( true );
 }
 
@@ -229,51 +233,54 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                        gui_colour_set *plain, gui_colour_set *standout,
                        gui_rect *float_pos )
 {
-    int size;
-    int i;
-    int j;
+    int         size;
+    int         i;
+    int         j;
+    toolbarinfo *tbar;
 
-    float_pos=float_pos;
+    float_pos = float_pos;
 
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
     }
-    wnd->toolbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
-    if( wnd->toolbar == NULL ) {
+    tbar = wnd->tbinfo = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
+    if( tbar == NULL ) {
         return( false );
     }
     size = sizeof( gui_toolbar_struct ) * num_items;
-    wnd->toolbar->info = (gui_toolbar_struct *)GUIMemAlloc( size );
-    if( wnd->toolbar->info == NULL ) {
-        GUIMemFree( wnd->toolbar );
-        wnd->toolbar = false;
+    tbar->info = (gui_toolbar_struct *)GUIMemAlloc( size );
+    if( tbar->info == NULL ) {
+        GUIMemFree( tbar );
+        wnd->tbinfo = NULL;
         return( false );
     }
-    memset( wnd->toolbar->info, 0, size );
-    wnd->toolbar->excl = excl;
-    wnd->toolbar->has_colours = ( plain != NULL ) && ( standout != NULL );
-    if( wnd->toolbar->has_colours ) {
-        wnd->toolbar->plain.fore = plain->fore;
-        wnd->toolbar->plain.back = plain->back;
-        wnd->toolbar->standout.fore = standout->fore;
-        wnd->toolbar->standout.back = standout->back;
+    memset( tbar->info, 0, size );
+    tbar->excl = excl;
+    tbar->has_colours = ( plain != NULL ) && ( standout != NULL );
+    if( tbar->has_colours ) {
+        tbar->plain.fore = plain->fore;
+        tbar->plain.back = plain->back;
+        tbar->standout.fore = standout->fore;
+        tbar->standout.back = standout->back;
     }
     for( i = 0; i < num_items; i++ ) {
         bool    ok;
 
-        wnd->toolbar->info[i].label = GUIStrDup( toolinfo[i].label, &ok );
+        tbar->info[i].label = GUIStrDup( toolinfo[i].label, &ok );
         if( !ok ) {
             for( j = 0; j < i; j++ ) {
-                GUIMemFree( (void *)wnd->toolbar->info[j].label );
+                GUIMemFree( (void *)tbar->info[j].label );
             }
-            GUIMemFree( wnd->toolbar->info );
-            GUIMemFree( wnd->toolbar );
+            GUIMemFree( tbar->info );
+            GUIMemFree( tbar );
+            wnd->tbinfo = NULL;
+            return( false );
         }
-        wnd->toolbar->info[i].id = toolinfo[i].id;
+        tbar->info[i].id = toolinfo[i].id;
     }
-    wnd->toolbar->num_items = num_items;
-    wnd->toolbar->floattoolbar = NULL;
-    wnd->toolbar->switching = false;
+    tbar->num_items = num_items;
+    tbar->floattoolbar = NULL;
+    tbar->switching = false;
     if( fixed ) {
         return( GUIXCreateFixedToolbar( wnd ) );
     } else {
@@ -295,28 +302,29 @@ bool GUIXCloseToolBar( gui_window *wnd )
 {
     int         i;
     bool        switching;
+    toolbarinfo *tbar;
 
-    if( wnd->toolbar == NULL ) {
+    if( wnd->tbinfo == NULL ) {
         return( true );
     }
-    switching = wnd->toolbar->switching;
-    if( wnd->toolbar->fixed ) {
-        for( i = 0; i < wnd->toolbar->num_items; i++ ) {
-            GUIDeleteToolbarMenuItem( wnd, wnd->toolbar->info[i].id );
+    tbar = wnd->tbinfo;
+    switching = tbar->switching;
+    if( tbar->fixed ) {
+        for( i = 0; i < tbar->num_items; i++ ) {
+            GUIDeleteToolbarMenuItem( wnd, tbar->info[i].id );
         }
     } else {
-        if( wnd->toolbar->floattoolbar != NULL ) {
-            GUIDestroyWnd( wnd->toolbar->floattoolbar );
+        if( tbar->floattoolbar != NULL ) {
+            GUIDestroyWnd( tbar->floattoolbar );
         }
     }
-    if( (wnd->toolbar != NULL ) && ( wnd->toolbar->info != NULL ) &&
-        !( wnd->toolbar->switching ) ) {
-        for( i = 0; i < wnd->toolbar->num_items; i++ ) {
-            GUIMemFree( (void *)wnd->toolbar->info[i].label );
+    if( ( tbar->info != NULL ) && !switching ) {
+        for( i = 0; i < tbar->num_items; i++ ) {
+            GUIMemFree( (void *)tbar->info[i].label );
         }
-        GUIMemFree( wnd->toolbar->info );
-        GUIMemFree( wnd->toolbar );
-        wnd->toolbar = NULL;
+        GUIMemFree( tbar->info );
+        GUIMemFree( tbar );
+        wnd->tbinfo = NULL;
     }
     if( !switching ) {
         GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
@@ -326,22 +334,22 @@ bool GUIXCloseToolBar( gui_window *wnd )
 
 bool GUIHasToolBar( gui_window *wnd )
 {
-    return( wnd->toolbar != NULL );
+    return( wnd->tbinfo != NULL );
 }
 
 bool GUIToolBarFixed( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
-        return( wnd->toolbar->fixed );
+        return( wnd->tbinfo->fixed );
     }
     return( false );
 }
 
 static bool FloatToolbar( gui_window *wnd )
 {
-    wnd->toolbar->switching = true;
+    wnd->tbinfo->switching = true;
     GUIXCloseToolBar( wnd );
-    wnd->toolbar->switching = false;
+    wnd->tbinfo->switching = false;
     return( CreateFloatingToolbar( wnd, 0 ) );
 }
 
@@ -351,7 +359,7 @@ bool GUIChangeToolBar( gui_window *wnd )
         if( GUIToolBarFixed( wnd ) ) {
             return( FloatToolbar( wnd ) );
         } else {
-            return( FixToolbar( wnd->toolbar->floattoolbar ) );
+            return( FixToolbar( wnd->tbinfo->floattoolbar ) );
         }
     }
     return( false );

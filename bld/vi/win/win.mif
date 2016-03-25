@@ -9,7 +9,7 @@ objwiny  =  main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
                 repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
                 finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
                 ftbar.obj startdlg.obj usage.obj tagdlg.obj &
-                hasshare.obj getidata.obj linedlg.obj &
+                hasshare.obj linedlg.obj &
                 clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
                 setfs.obj setscr.obj setgen.obj util.obj hotkey.obj &
                 ssbar.obj subclass.obj snoop.obj &

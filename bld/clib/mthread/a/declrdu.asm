@@ -74,7 +74,7 @@ __tls_alloc:
 	lea eax, [eax+32]
 	jnz __tls_alloc_ok
 
-	mov eax,-1
+	or eax,-1
 	ret
 
 __tls_alloc_ok:
@@ -125,8 +125,8 @@ __task_end:
     UserGate terminate_thread_nr   ; won't return
 
 __task_start:
-	mov ax,ds
-	mov es,ax
+	mov eax,ds
+	mov es,eax
 	mov esi,fs:__pv_arbitrary
 	push OFFSET __task_end
 	push edx
@@ -143,11 +143,11 @@ __create_thread:
 	pushad
 ;
     push ebx
-	mov bx,cs
-	mov ds,bx
+	mov ebx,cs
+	mov ds,ebx
 	mov esi,OFFSET __task_start
 	mov fs:__pv_arbitrary,eax
-	mov bx,fs
+	mov ebx,fs
 	pop eax
 	UserGate create_thread_nr
 ;

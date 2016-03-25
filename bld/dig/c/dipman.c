@@ -103,22 +103,32 @@ static struct {
     dip_imp_routines    *rtns;
     dip_sys_handle      sys_hdl;
 }                       LoadedDIPs[MAX_DIPS];
-static unsigned         MaxHdlSize[HK_LAST];
+static unsigned         MaxHdlSize[MAX_HK];
 
-static const unsigned_8 MgrHdlOverhead[] = {
+static const unsigned_8 MgrHdlOverhead[MAX_HK] = {
     sizeof( image_handle ),
     sizeof( type_handle ),
     sizeof( cue_handle ),
     sizeof( sym_handle )
 };
 
+#define STRXX(x)    #x
+#define STRX(x)     STRXX(x)
 
 char DIPDefaults[] = {
+#ifdef USE_FILENAME_VERSION
+    "dwarf"  STRX( USE_FILENAME_VERSION ) "\0"
+    "watcom" STRX( USE_FILENAME_VERSION ) "\0"
+    "codevi" STRX( USE_FILENAME_VERSION ) "\0"
+    "mapsym" STRX( USE_FILENAME_VERSION ) "\0"
+    "export" STRX( USE_FILENAME_VERSION ) "\0"
+#else
     "dwarf\0"
     "watcom\0"
     "codeview\0"
     "mapsym\0"
     "export\0"
+#endif
     "\0"
 };
 
@@ -183,7 +193,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     handle_kind hk;
     unsigned    size;
 
-    for( hk = 0; hk < (sizeof(MaxHdlSize) / sizeof(MaxHdlSize[0])); ++hk ) {
+    for( hk = 0; hk < MAX_HK; ++hk ) {
         size = rtns->handle_size( hk );
         if( size > MaxHdlSize[hk] ) {
             MaxHdlSize[hk] = size;
@@ -265,9 +275,9 @@ void DIPFini( void )
     }
 }
 
-unsigned DIPHandleSize( handle_kind h )
+unsigned DIPHandleSize( handle_kind hk )
 {
-    return( MaxHdlSize[h] + MgrHdlOverhead[h] );
+    return( MaxHdlSize[hk] + MgrHdlOverhead[hk] );
 }
 
 dip_status DIPMoreMem( unsigned amount )
@@ -783,7 +793,7 @@ const char *ImageDIP( mod_handle mh )
 /*
  * Module Information
  */
-unsigned ModName( mod_handle mh, char *buff, unsigned buff_size )
+size_t ModName( mod_handle mh, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
@@ -1050,16 +1060,14 @@ int TypeCmp( type_handle *th1, type_handle *th2 )
     return( ih->dip->type_cmp( IMP_HDL( ih, image ), IMP_HDL( th1, type ), IMP_HDL( th2, type ) ) );
 }
 
-unsigned TypeName( type_handle *th, unsigned num, symbol_type *tag,
-                        char *buff, unsigned buff_size )
+size_t TypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->type_name( IMP_HDL( ih, image ),
-                IMP_HDL( th, type ), num, tag, buff, buff_size ) );
+    return( ih->dip->type_name( IMP_HDL( ih, image ), IMP_HDL( th, type ), num, tag, buff, buff_size ) );
 }
 
 /*
@@ -1074,16 +1082,14 @@ mod_handle SymMod( sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-unsigned SymName( sym_handle *sh, location_context *lc, symbol_name sn,
-                        char *buff, unsigned buff_size )
+size_t SymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->sym_name( IMP_HDL( ih, image ),
-                IMP_HDL( sh, sym ), lc, sn, buff, buff_size ) );
+    return( ih->dip->sym_name( IMP_HDL( ih, image ), IMP_HDL( sh, sym ), lc, sn, buff, buff_size ) );
 }
 
 dip_status SymType( sym_handle *sh, type_handle *th )
@@ -1235,7 +1241,7 @@ mod_handle CueMod( cue_handle *ch )
     return( MK_MH( ih->ii, ih->dip->cue_mod( IMP_HDL( ih, image ), IMP_HDL( ch, cue ) ) ) );
 }
 
-unsigned CueFile( cue_handle *ch, char *buff, unsigned buff_size )
+size_t CueFile( cue_handle *ch, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 

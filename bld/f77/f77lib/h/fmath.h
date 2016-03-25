@@ -28,8 +28,5 @@
 *
 ****************************************************************************/
 
-#define complex __complex
-#define cabs __cabs
+
 #include <math.h>
-#undef complex
-#undef cabs

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,28 +35,23 @@
 #include "font.h"
 #include "utils.h"
 #include "wprocmap.h"
+#include "winifini.h"
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 window FileCompleteWindow = {
     &filecw_info,
-    { 0, 0, 0, 0 },
-    Init,
-    Fini
+    { 0, 0, 0, 0 }
 };
-
-void FileCompleteMouseClick( HWND, int, int, bool );
-WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "FileCompleteWindow";
 
-static bool Init( window *w, void *parm )
+bool FileCompleteWindowInit( void )
 {
     WNDCLASS        wc;
 
-    w = w;
-    parm = parm;
     wc.style = CS_DBLCLKS;
     wc.lpfnWndProc = GetWndProc( FileCompleteWindowProc );
     wc.cbClsExtra = 0;
@@ -69,10 +65,8 @@ static bool Init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool Fini( window *w, void *parm )
+bool FileCompleteWindowFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 
@@ -80,9 +74,9 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
 {
     switch( msg ) {
     case WM_KEYDOWN:
-        if( CommandId != NO_WINDOW ) {
-            SetFocus( CommandId );
-            SendMessage( CommandId, msg, w, l );
+        if( !BAD_ID( command_window_id ) ) {
+            SetFocus( command_window_id );
+            SendMessage( command_window_id, msg, w, l );
             return( 0 );
         }
         break;
@@ -94,12 +88,12 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), true );
+        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), true );
         break;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), false );
+        FileCompleteMouseClick( hwnd, GET_X( l ), GET_Y( l ), false );
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -108,19 +102,19 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
 window_id NewFileCompleteWindow( void )
 {
     RECT        *size;
-    HWND        dir;
+    window_id   wid;
     POINT       p;
 
-    size = &FileCompleteWindow.area;
+    size = &FileCompleteWindow.def_area;
     p.x = size->left;
     p.y = size->top;
-    ClientToScreen( Root, &p );
-    dir = CreateWindow( ClassName, "File Complete",
+    ClientToScreen( root_window_id, &p );
+    wid = CreateWindow( ClassName, "File Complete",
                         WS_POPUPWINDOW | WS_CLIPSIBLINGS | WS_BORDER,
                         p.x, p.y,
-                        size->right - size->left, size->bottom - size->top, Root,
+                        size->right - size->left, size->bottom - size->top, root_window_id,
                         (HMENU)NULLHANDLE, InstanceHandle, NULL );
-    ShowWindow( dir, SW_SHOWNORMAL );
-    UpdateWindow( dir );
-    return( dir );
+    ShowWindow( wid, SW_SHOWNORMAL );
+    UpdateWindow( wid );
+    return( wid );
 }

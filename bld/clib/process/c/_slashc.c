@@ -36,15 +36,19 @@
 #include "_process.h"
 
 #if defined(_M_IX86)
-extern  int     _DOS_Switch_Char( void );
+extern  char    _DOS_Switch_Char( void );
+#ifdef _M_I86
 #pragma aux     _DOS_Switch_Char = \
-                        0x52            /* push dx */\
-                        0xb4 0x37       /* mov ah,37h    */\
-                        0xb0 0x00       /* mov al,00h    */\
-                        0xcd 0x21       /* int 21h       */\
-                        0x88 0xd0       /* mov al,dl     */\
-                        0xb4 0x00       /* mov ah,0      */\
-                        0x5a            /* pop dx        */;
+        "mov ax,3700h"  \
+        "int 21h"       \
+        value [dl] modify [ax]
+#else
+#pragma aux     _DOS_Switch_Char = \
+        "xor eax,eax"   \
+        "mov ah,37h"    \
+        "int 21h"       \
+        value [dl] modify [eax]
+#endif
 #endif
 
 
@@ -60,6 +64,6 @@ CHAR_TYPE *__F_NAME(__Slash_C,__wSlash_C)( CHAR_TYPE *switch_c, unsigned char us
 #endif
     }
     switch_c[1] = STRING( 'c' );
-    switch_c[2] = '\0';
+    switch_c[2] = NULLCHAR;
     return( switch_c );
 }

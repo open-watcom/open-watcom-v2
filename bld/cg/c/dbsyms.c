@@ -35,6 +35,7 @@
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"
@@ -57,8 +58,6 @@
 #include "cgprotos.h"
 
 extern  void            AddIns(instruction*);
-extern  void            EmptyQueue(void);
-extern  void            InputOC(any_oc *);
 extern  bool            DBNested( bool nested );
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);

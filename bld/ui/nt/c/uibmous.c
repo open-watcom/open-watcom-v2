@@ -39,7 +39,7 @@
 extern MOUSEORD MouseRow, MouseCol;
 
 static MOUSEORD oldMouseRow, oldMouseCol = OFF_SCREEN;
-static bool     mouseOn = FALSE;
+static bool     mouseOn = false;
 #if 0
 static ATTR     OldAttr;
 
@@ -119,10 +119,10 @@ void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {
-        mouseOn = TRUE;
+        mouseOn = true;
         uisetmouseon( oldMouseRow, oldMouseCol );
     } else {
         uisetmouseoff();
-        mouseOn = FALSE;
+        mouseOn = false;
     }
 }

@@ -36,8 +36,11 @@
 #include "dbgadget.h"
 #include "guidlg.h"
 #include "strutil.h"
+#include "wndsys.h"
+#include "dbgwfing.h"
+#include "fingmsg.h"
 
-extern void StartupErr( const char * );
+
 extern int WndNumColours;
 extern a_window *WndMain;
 
@@ -47,8 +50,6 @@ extern a_window *WndMain;
 #define _EXPIRY_DAY     1
 #endif
 
-extern int      FingMessageSize;
-extern char     *AboutMessage[];
 static gui_coord BitmapSize;
 static gui_ord  Width;
 static gui_ord  Height;
@@ -61,12 +62,12 @@ static bool ChkDate( void )
     struct date_st { char day; char month; int year; } date;
     extern struct date_st getdate();
     date = getdate();
-    if( date.year  < _EXPIRY_YEAR  ) return( TRUE );
-    if( date.year  > _EXPIRY_YEAR  ) return( FALSE );
-    if( date.month < _EXPIRY_MONTH ) return( TRUE );
-    if( date.month > _EXPIRY_MONTH ) return( FALSE );
-    if( date.day   > _EXPIRY_DAY   ) return( FALSE );
-    return( TRUE );
+    if( date.year  < _EXPIRY_YEAR  ) return( true );
+    if( date.year  > _EXPIRY_YEAR  ) return( false );
+    if( date.month < _EXPIRY_MONTH ) return( true );
+    if( date.month > _EXPIRY_MONTH ) return( false );
+    if( date.day   > _EXPIRY_DAY   ) return( false );
+    return( true );
 }
 #endif
 
@@ -96,30 +97,30 @@ static WNDGETLINE FingGetLine;
 static  bool    FingGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
-    if( piece != 0 ) return( FALSE );
+    if( piece != 0 ) return( false );
     row -= TOP_BLANK( wnd );
     if( row < 0 ) {
         line->text = " ";
-        return( TRUE );
+        return( true );
     }
     if( row >= FingMessageSize ) {
-        if( !GUIIsGUI() || piece != 0 ) return( FALSE );
+        if( !GUIIsGUI() || piece != 0 ) return( false );
         row -= FingMessageSize;
         switch( row ) {
         case 0:
             line->text = " ";
-            return( TRUE );
+            return( true );
         case 1:
             SetGadgetLine( wnd, line, GADGET_SPLASH );
             line->indent = ( Width - BitmapSize.x ) / 2;
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     }
-    line->text = AboutMessage[ row ];
+    line->text = AboutMessage[row];
     line->indent = ( Width - WndExtentX( wnd, line->text ) ) / 2;
-    return( TRUE );
+    return( true );
 }
 
 static WNDCALLBACK FingEventProc;
@@ -139,9 +140,9 @@ static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
             GUIMemFree( colours );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static wnd_info FingInfo = {
@@ -175,13 +176,12 @@ void FingOpen( void )
     WndInitCreateStruct( &info );
     info.title = NULL;
     info.info = &FingInfo;
-    info.class = WND_NO_CLASS;
     info.extra = NULL;
     if( GUIIsGUI() ) {
         WndGetGadgetSize( GADGET_SPLASH, &BitmapSize );
         Width = Height = 0;
         for( i = 0; i < FingMessageSize; ++i ) {
-            extent = WndExtentX( WndMain, AboutMessage[ i ] );
+            extent = WndExtentX( WndMain, AboutMessage[i] );
             if( extent > Width ) Width = extent;
         }
         if( BitmapSize.x >= Width ) Width = BitmapSize.x;

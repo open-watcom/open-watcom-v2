@@ -54,7 +54,7 @@ BOOL AllocNewBuf( void ) {
     return( TRUE );
 }
 
-BOOL AddString( MSGID msgid ) {
+BOOL AddString( msg_id msgid ) {
 
     int         len;
 

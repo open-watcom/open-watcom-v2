@@ -49,10 +49,10 @@ typedef enum {
 /*
  * updateHist - add a string to a history list
  */
-static void updateHist( history_data *hist, char *str )
+static void updateHist( history_data *hist, const char *str )
 {
     if( hist->curr < hist->max ) {
-        AddString2( &hist->data[hist->curr], str );
+        ReplaceString( &hist->data[hist->curr], str );
         hist->curr++;
     }
 
@@ -61,7 +61,7 @@ static void updateHist( history_data *hist, char *str )
 /*
  * LoadHistory - load history from file
  */
-void LoadHistory( char *cmd )
+void LoadHistory( const char *cmd )
 {
     FILE        *f;
     char        str[MAX_INPUT_LINE];
@@ -80,7 +80,7 @@ void LoadHistory( char *cmd )
         rs = READ_NONE;
         while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
             for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1 ]); --i ) {
-                str[i - 1] = 0;
+                str[i - 1] = '\0';
             }
             if( cnt == 0 ) {
                 cnt = atoi( str );
@@ -110,7 +110,7 @@ void LoadHistory( char *cmd )
         break;
     }
     if( cmd != NULL ) {
-        AddString2( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
+        ReplaceString( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
         EditVars.CLHist.curr++;
     }
 

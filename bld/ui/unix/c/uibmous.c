@@ -39,7 +39,7 @@
 extern MOUSEORD MouseRow, MouseCol;
 
 static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
-static bool     MouseOn = FALSE;
+static bool     mouseOn = false;
 static ATTR     OldAttr;
 
 static char *RegenPos( unsigned row, unsigned col )
@@ -47,8 +47,7 @@ static char *RegenPos( unsigned row, unsigned col )
 {
     char        *pos;
 
-    pos = (char *)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
+    pos = (char *)( UIData->screen.origin + row * UIData->screen.increment + col ) + 1;
     return( pos );
 }
 
@@ -58,7 +57,7 @@ static void uisetmouseoff( void )
     char                *old;
     SAREA               area;
 
-    if( MouseOn ) {
+    if( mouseOn ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
         *old = OldAttr;
         area.row = OldMouseRow;
@@ -69,14 +68,13 @@ static void uisetmouseoff( void )
     }
 }
 
-static void uisetmouseon( register MOUSEORD row,
-                          register MOUSEORD col )
-/***********************************************/
+static void uisetmouseon( MOUSEORD row, MOUSEORD col )
+/****************************************************/
 {
     char                *new;
     SAREA               area;
 
-    if( MouseOn ){
+    if( mouseOn ) {
         new = RegenPos( row, col );
         OldAttr = *new;
         if( UIData->colour == M_MONO ){
@@ -94,11 +92,11 @@ static void uisetmouseon( register MOUSEORD row,
     }
 }
 
-void UIAPI uisetmouse( register MOUSEORD row,
-                        register MOUSEORD col )
-/*********************************************/
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
+/*************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }
@@ -108,10 +106,10 @@ void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {
-        MouseOn = TRUE;
+        mouseOn = true;
         uisetmouseon( OldMouseRow, OldMouseCol );
     } else {
         uisetmouseoff();
-        MouseOn = FALSE;
+        mouseOn = false;
     }
 }

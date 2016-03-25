@@ -55,7 +55,7 @@ typedef struct {
     vi_key  cs;
 } keytable;
 
-int find_key_in_table( const void *pkey, const void *pbase )
+static int find_key_in_table( const void *pkey, const void *pbase )
 {
     WORD        vk = *(WORD *)pkey;
     keytable    *base = (keytable *)pbase;
@@ -157,12 +157,12 @@ bool ShiftDown( void )
 {
     return( (GetKeyState( VK_SHIFT ) & ~0x01) != 0 );
 }
-
+#if 0
 bool CapsDown( void )
 {
     return( (GetKeyState( VK_CAPITAL ) & 0x01) != 0  );
 }
-
+#endif
 bool CtrlDown( void )
 {
     return( (GetKeyState( VK_CONTROL ) & ~0x01) != 0 );
@@ -190,10 +190,10 @@ static vi_key ConvertWierdCharacter( WORD vk, WORD data )
 
     GetKeyboardState( keyboard_state );
     if( ToAscii( vk, scancode, keyboard_state, &newkey, 0 ) == 0 ) {
-        return( 0 );
+        return( VI_KEY( NULL ) );
     }
 
-    return( (vi_key)( newkey & 0xFF ) );
+    return( C2VIKEY( newkey ) );
 }
 
 vi_key MapVirtualKeyToVIKey( WORD vk, WORD data )

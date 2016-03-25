@@ -23,15 +23,6 @@ typedef void __far *REALFARPROC;
 #define NOMINMAX
 #include <win16.h>
 
-#ifdef STRICT
-//int PASCAL    WinMain( HINSTANCE, HINSTANCE, LPSTR, int );
-int CALLBACK    LibMain( HINSTANCE, WORD, WORD, LPSTR );
-#else
-//int PASCAL    WinMain( HANDLE, HANDLE, LPSTR, int);
-int CALLBACK    LibMain( HANDLE, WORD, WORD, LPSTR);
-#endif
-int CALLBACK    WEP(int);
-
 #ifndef NOCOVERSENDS
     #define SendMessage                 _Cover_SendMessage
     #define SendDlgItemMessage          _Cover_SendDlgItemMessage
@@ -659,6 +650,15 @@ typedef unsigned int    PROCPTR;
 typedef void            *CALLBACKPTR;
 typedef void            *HINDIR;
 
+#ifdef STRICT
+int PASCAL      WinMain( HINSTANCE, HINSTANCE, LPSTR, int );
+int CALLBACK    LibMain( HINSTANCE, WORD, WORD, LPSTR );
+#else
+int PASCAL      WinMain( HANDLE, HANDLE, LPSTR, int);
+int CALLBACK    LibMain( HANDLE, WORD, WORD, LPSTR);
+#endif
+int CALLBACK    WEP(int);
+
 /* Prototypes for special Win386 library functions */
 #define GETPROC_CALLBACK                0
 #define GETPROC_SETTIMER                0
@@ -794,6 +794,9 @@ extern DWORD    AllocAlias16( void * );
 extern DWORD    AllocHugeAlias16( void *, DWORD );
 extern void     FreeAlias16( DWORD );
 extern void     FreeHugeAlias16( DWORD, DWORD );
+#pragma aux FreeAlias16 modify [fs gs];
+#pragma aux FreeHugeAlias16 modify [fs gs];
+
 void            *MapAliasToFlat( DWORD alias );
 
 extern WORD __A000;

@@ -259,7 +259,7 @@ BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam,
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
-    return( NULL );
+    return( FALSE );
 }
 
 /*

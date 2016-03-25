@@ -87,6 +87,23 @@ Done:
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexec.h"
+#include "dbgmain.h"
+#include "dbgbrk.h"
+#include "dbgass.h"
+#include "dbgpend.h"
+#include "envlkup.h"
+#include "dbgprog.h"
+#include "dbgtrace.h"
+#include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbginsty.h"
+#include "dbgdot.h"
+#include "ntdbgpb.h"
+#include "dlgcmd.h"
+#include "dbgwintr.h"
+
 
 enum {
     REQ_NONE,
@@ -97,42 +114,12 @@ enum {
 } Req = REQ_NONE;
 
 /* External Functions Used */
-extern brkp             *AddBreak( address addr );
-extern void             BrkClearAll( void );
-extern void             BrkDisableAll( void );
-extern void             BrkEnableAll( void );
 extern void             CallResults( void );
-extern void             DebugFini( void );
-extern void             DebugMain( void );
-extern void             DlgCmd( void );
-extern void             DoCmd(char*);
-extern void             DoInput( void );
-extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern brkp             *GetBPAtIndex( int index );
-extern address          GetCodeDot( void );
-extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
-extern unsigned         Go( bool );
-extern void             GoToReturn( void );
-extern bool             InsMemRef( mad_disasm_data *dd );
-extern void             LoadNewProg( const char *cmd, const char *parms );
-extern address          ModFirstAddr( mod_handle mod );
-extern void             PerformTrace( void );
 extern void             ProcCall( void );
-extern void             ProcGo( void );
-extern void             RemoveBPs( void );
-extern void             ReStart( void );
 extern void             ShowCalls( void );
-extern void             ShowBPs( void );
 extern void             ShowVarDisplay( void );
-extern void             TraceKill( void );
-extern var_node         *VarExpandNode( var_node *v );
-extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 extern void             *WndAsmInspect( address addr );
-extern bool             WndEvalInspectExpr( const char *item, bool pop );
-extern inspect_type     WndGetExprSPInspectType( address *paddr );
-extern void             RemovePoint( brkp *bp );
-extern void             ActPoint( brkp *bp, bool act );
 
 volatile bool           BrkPending;
 
@@ -142,7 +129,7 @@ static bool             Done;
 /* Constants Used in this File */
 
 /*
-Whenever you add a short cut command, please the 
+Whenever you add a short cut command, please the
 corresponding help command in the process_cmd_help function
 */
 static const char   *WDB_CMD_QUIT = "quit";
@@ -246,7 +233,7 @@ char *StrLTrim( char *s )
         char    *t = s;
 
         /* find the first non-space character */
-        while( *t != '\0' && isspace( (unsigned char) *t )) {
+        while( *t != NULLCHAR && isspace( (unsigned char) *t )) {
             ++t;
         }
         len = strlen( t ) + 1;
@@ -265,7 +252,7 @@ char *StrRTrim( char *s )
             if( 0 == len ) {
                 done = 1;
             } else if( isspace( (unsigned char)s[len - 1] ) ) {
-                s[len - 1] = '\0';
+                s[len - 1] = NULLCHAR;
             } else {
                 done = 1;
             }
@@ -301,17 +288,17 @@ const char *MyStrTrimLen( const char *start, unsigned *len )
 char *GetCmdPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value = strcspn( cmd, delimit );
+    size_t  pos;
+    size_t  len;
 
-    if( pos_value == strlen( cmd ) ) {
-        result = malloc( sizeof( char ) * ( strlen( cmd ) + 1 ) );
-        strncpy( result, cmd, strlen( cmd ) );
-        result[strlen( cmd )] = '\0';
-    } else {
-        result = malloc( sizeof( char )*( pos_value + 1 ) );
-        strncpy( result, cmd, pos_value );
-        result[pos_value] = '\0';
+    pos = strcspn( cmd, delimit );
+    len = strlen( cmd );
+    if( len > pos ) {
+        len = pos;
     }
+    result = malloc( sizeof( char ) * ( len + 1 ) );
+    strncpy( result, cmd, len );
+    result[len] = NULLCHAR;
     MyStrTrim( result );
     return( result );
 }
@@ -324,15 +311,19 @@ char *GetCmdPart( const char *cmd )
 char *GetParamPartByChar( const char *cmd, const char *delimit )
 {
     char    *result;
-    size_t  pos_value = strcspn( cmd, delimit );
+    size_t  pos;
+    size_t  len;
 
-    if( pos_value == strlen( cmd ) ) {
+    pos = strcspn( cmd, delimit );
+    len = strlen( cmd );
+    if( pos == len ) {
         result = malloc( sizeof( char ) * 1 );
         strncpy( result, "\0" , 1 );
     } else {
-        result = malloc( sizeof( char ) * ( strlen( cmd ) - pos_value + 1 ) );
-        strncpy( result, &cmd[pos_value+1], strlen( cmd ) - pos_value + 1 );
-        result[strlen( cmd ) - pos_value] = '\0';
+        len -= pos;
+        result = malloc( sizeof( char ) * ( len + 1 ) );
+        strncpy( result, cmd + pos + 1, len + 1 );
+        result[len] = NULLCHAR;
     }
     MyStrTrim( result );
     return( result );
@@ -370,20 +361,22 @@ char *GetSecondQuotedPart( const char *cmd )
 
 bool IsCmdEqualCmd( const char *cmd, const char *e_cmd, const char *e_short_cmd )
 {
-    bool comparefull  = !(strlen( cmd ) != strlen( e_cmd ));
-    bool compareshort = !(strlen( cmd ) != strlen( e_short_cmd ));
+    bool    comparefull;
+    bool    compareshort;
 
+    comparefull = ( strlen( cmd ) == strlen( e_cmd ) );
+    compareshort = ( strlen( cmd ) == strlen( e_short_cmd ) );
     /* if the length of the command does not match then we'll ignore the command */
     if( (!comparefull) && (!compareshort) ) {
-        return( FALSE );
+        return( false );
     }
     /* otherwise we'll check if they are same */
     if( comparefull && ( _strnicmp( cmd, e_cmd, strlen( e_cmd ) ) == 0 ) ) {
-        return( TRUE );
+        return( true );
     } else if( compareshort && ( _strnicmp( cmd, e_short_cmd, strlen( e_short_cmd ) ) == 0 ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -391,18 +384,18 @@ bool IsCmdEqualCmd2( const char *cmd, const char *e_cmd )
 {
     /* if the length of the command does not match then we'll ignore the command */
     if( strlen( cmd ) != strlen( e_cmd ) ) {
-        return( FALSE );
+        return( false );
     }
     /* otherwise we'll check if they are same */
     if( _strnicmp( cmd , e_cmd, strlen( e_cmd ) ) == 0 ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
 /*for setting a breakpoint in a file,
-we need to check is the file is in the 
+we need to check is the file is in the
 module list. then from the module we get the cuFileID
 and cuMod. Then using the cuFileID, cuMod and line number
 we can find the breakoint address associated with the file
@@ -418,25 +411,25 @@ address SetBreakPointInFile( char *filename,int line_num )
     int                 mod_nums;
     int                 row;
     char                mod_name[200];
-    bool                bp_handled = FALSE;
+    bool                bp_handled = false;
     DIPHDL( cue, ch );
 
     // Line numbers in Window start from 0, so we'll subtract one
     line_num = line_num - 1;
     ModListInit( &list, NULL );
-    ModListAddModules( &list, NO_MOD, FALSE );
+    ModListAddModules( &list, NO_MOD, false );
     mod_nums = ModListNumRows( &list );
     for( row = 0; row < mod_nums; ++row ) {
-        ModListName( &list, row, &mod_name[0] );
+        ModListName( &list, row, mod_name );
         if( IsCmdEqualCmd2( mod_name, filename ) ) {
             ShowDebuggerMsg( mod_name );
             mod_address = ModFirstAddr( ModListMod ( &list, row ) );
             if( DeAliasAddrCue( ModListMod ( &list, row ), mod_address, ch ) == SR_NONE ) {
             } else {
-                bp_address = GetRowAddrDirectly( CueMod( ch ), CueFileId( ch ), line_num, FALSE );
+                bp_address = GetRowAddrDirectly( CueMod( ch ), CueFileId( ch ), line_num, false );
                 if( !IS_NIL_ADDR( bp_address ) ) {
                     bp = AddBreak( bp_address );
-                    bp_handled = TRUE;
+                    bp_handled = true;
                 }
             }
             break;
@@ -460,10 +453,10 @@ void ShowModuleList( void )
     char            mod_name[200];
 
     ModListInit( &list, NULL );
-    ModListAddModules( &list, NO_MOD, FALSE );
+    ModListAddModules( &list, NO_MOD, false );
     mod_nums = ModListNumRows( &list );
     for( row = 0; row < mod_nums; ++row ){
-        ModListName( &list, row, &mod_name[0]);
+        ModListName( &list, row, mod_name );
         ShowDebuggerMsg( mod_name );
     }
     printf( "\nNumber of Modules  Found = %d", mod_nums );
@@ -478,7 +471,7 @@ static void DisplayDebuggerVarRecursively( var_info *pVarInfoList, var_node *v )
     var_node    *e;
 
     /*temp code start*/
-    VarBuildName( pVarInfoList , v, TRUE );
+    VarBuildName( pVarInfoList , v, true );
     printf( "%s = {\n", TxtBuff );
     printf( "}\n" );
     fflush( stdout );
@@ -487,7 +480,7 @@ static void DisplayDebuggerVarRecursively( var_info *pVarInfoList, var_node *v )
 
     if( v == NULL )
         return;
-    VarBuildName( pVarInfoList , v, TRUE );
+    VarBuildName( pVarInfoList , v, true );
     printf( "%s = {\n", TxtBuff );
     if( (v->gadget == VARGADGET_CLOSED) || (v->gadget == VARGADGET_POINTS) || (v->gadget == VARDISP_INHERIT_CLOSED) ) {
         e = VarFirstExpandNode( pVarInfoList, v );
@@ -506,10 +499,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
     int         depth, inherited;
     var_node    *v;
 
-    for( row = 0; ; ++row ) {
-        v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_GADGET, &depth , &inherited );
-        if( v == NULL )
-            break;
+    for( row = 0; (v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_GADGET, &depth , &inherited )) != NULL; ++row ) {
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_NAME, &depth , &inherited );
         v = VarGetDisplayPiece( pVarInfoList, row, (int)VAR_PIECE_VALUE, &depth , &inherited );
         switch( v->gadget ) {
@@ -534,7 +524,7 @@ void DisplayDebuggerVarValue( var_info *pVarInfoList )
             //printf( "%s = { \n%s\n}\n", TxtBuff, v->value );
             DisplayDebuggerVarRecursively( pVarInfoList, v );
         } else {
-            VarBuildName( pVarInfoList , v, TRUE );
+            VarBuildName( pVarInfoList , v, true );
             printf( "%s = { \n%s\n}\n", TxtBuff, v->value );
         }
 
@@ -551,15 +541,15 @@ bool InspectDebuggerVar( const char *item )
     var_node        *v;
 
     VarInitInfo( &InspectVars );
-    if( WndEvalInspectExpr( item, FALSE ) ) {
+    if( WndEvalInspectExpr( item, false ) ) {
         t = WndGetExprSPInspectType( &addr );
         switch( t ) {
             //case INSP_CODE:
             //    WndSrcOrAsmInspect( addr );
-            //    return( TRUE );
+            //    return( true );
             case INSP_DATA:
                 {
-                    v = VarAdd1( &InspectVars, item, strlen( item ), TRUE, FALSE );
+                    v = VarAdd1( &InspectVars, item, strlen( item ), true, false );
                     if( v != NULL ) {
                         DisplayDebuggerVarValue( &InspectVars );
                     }
@@ -567,10 +557,10 @@ bool InspectDebuggerVar( const char *item )
                 }
             case INSP_RAW_DATA:
                 //WndAddrInspect( addr );
-                return( TRUE );
+                return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*display the local values
@@ -581,16 +571,16 @@ static void DumpLocals( void )
     var_info    Locals;
 
     VarInitInfo( &Locals );
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
-        VarOkToCache( &Locals, TRUE );
+        VarOkToCache( &Locals, true );
     }
 
     DisplayDebuggerVarValue( &Locals );
 
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
-        VarOkToCache( &Locals, FALSE );
+    if( _IsOff( SW_TASK_RUNNING ) ) {
+        VarOkToCache( &Locals, false );
         VarOldErrState();
     }
 }
@@ -610,12 +600,12 @@ void ShowSourceDirectories( void )
 the global src path variable*/
 void AddSourcePathsToDebugger( const char *srcpath )
 {
-    // if possible replace strtok with other 
+    // if possible replace strtok with other
     // efficient tokenizer
     const char  *path;
     const char  *end;
     const char  *s;
-    unsigned    len;
+    size_t      len;
 
     path = srcpath;
     while( (end = strchr( path, ';' )) != NULL ) {
@@ -681,7 +671,7 @@ and delete the bps one at a time
 */
 bool DeleteBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -695,7 +685,7 @@ bool DeleteBps( char *params )
         RemovePoint( bp );
         num = strtok( NULL, " " );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*parse the bp numbers (bps should be  seperated by a space)
@@ -703,7 +693,7 @@ and enable the bps one at a time
 */
 bool DisableBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -714,10 +704,10 @@ bool DisableBps( char *params )
         MyStrTrim( num );
         index = atoi( num );
         bp = GetBPAtIndex( index );
-        ActPoint( bp, FALSE );
+        ActPoint( bp, false );
         num = strtok( NULL, " " );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*parse the bp numbers (bps should be  seperated by a space)
@@ -725,7 +715,7 @@ and enable the bps one at a time
 */
 bool EnableBps( char *params )
 {
-    //if possible replace strtok with other 
+    //if possible replace strtok with other
     //efficient tokenizer
     char    *num;
     int     index;
@@ -736,10 +726,10 @@ bool EnableBps( char *params )
         MyStrTrim( num );
         index = atoi( num );
         bp = GetBPAtIndex( index );
-        ActPoint( bp, TRUE );
+        ActPoint( bp, true );
         num = strtok( NULL, " " );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsDbgProgramLoaded( void )
@@ -761,18 +751,18 @@ bool ProcessCmdPrint( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_PRINT );
-        return( TRUE );
-    } 
+        return( true );
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
-    if( param[0] == '\0' ) {
+    if( param[0] == NULLCHAR ) {
         ShowDebuggerError( "no variable/expression specified." );
-        return( FALSE );
+        return( false );
     }
     InspectDebuggerVar( param );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdRun( const char *cmd )
@@ -784,14 +774,14 @@ bool ProcessCmdRun( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_RUN );
-        return( TRUE );
-    } 
+        return( true );
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     ProcGo();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdContinue( const char *cmd )
@@ -803,14 +793,14 @@ bool ProcessCmdContinue( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_CONTINUE );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     ProcGo();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdLoad( const char *cmd )
@@ -822,22 +812,22 @@ bool ProcessCmdLoad( const char *param )
 {
     char    *program_name = GetFirstQuotedPart( param );
     char    *program_param = GetSecondQuotedPart( param );
-    bool    do_return = FALSE;
+    bool    do_return = false;
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_LOAD );
-        return( TRUE );
+        return( true );
     }
 #ifdef _WDB_DEBUG_
     printf( "\nProgram : %s", program_name );
     printf( "\nParam : %s\n", program_param );
 #endif
-    if( program_name[0] == '\0' ) {
+    if( program_name[0] == NULLCHAR ) {
         ShowDebuggerError( "no program not load." );
-        do_return = FALSE ;
+        do_return = false ;
     }
     LoadNewProg( program_name, program_param );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdRestart( const char *cmd )
@@ -848,7 +838,7 @@ bool IsCmdRestart( const char *cmd )
 bool ProcessCmdRestart( const char *param )
 {
     ReStart();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdBreakpoint( const char *cmd )
@@ -865,11 +855,11 @@ bool ProcessCmdBreakpoint( const char *param )
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg(WDB_HELP_BREAKPOINT);
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     /*
       parse the cmd
@@ -889,31 +879,31 @@ bool ProcessCmdBreakpoint( const char *param )
 #endif
 
     /* if the filename or the missing then throw an error */
-    if( file_name[0] == '\0' ) {
+    if( file_name[0] == NULLCHAR ) {
         ShowDebuggerError( "file name not provided." );
         free( file_name );
         free( line_number_str );
-        return( FALSE );
+        return( false );
     }
-    if( line_number_str[0] == '\0' ) {
+    if( line_number_str[0] == NULLCHAR ) {
         ShowDebuggerError( "line number not provided." );
         free( file_name );
         free( line_number_str );
-        return( FALSE );
+        return( false );
     }
     line_num = atoi( line_number_str );
     if( line_num == 0 ) {
         ShowDebuggerError( "line number is invalid." );
         free( file_name );
         free( line_number_str );
-        return( FALSE );
+        return( false );
     }
     only_file_name = GetCmdPartByChar( file_name, "." );
     SetBreakPointInFile( only_file_name, line_num );
     free( file_name );
     free( line_number_str );
     free( only_file_name );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdDisable( const char *cmd )
@@ -928,12 +918,12 @@ bool ProcessCmdDisable( const char *param )
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_DISABLE );
-        return( TRUE );
+        return( true );
     }
 
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     disable_cmd = GetCmdPartByChar( param, " " );
     if( IsCmdEqualCmd2( disable_cmd, "breakpoints" ) ) {
@@ -951,7 +941,7 @@ bool ProcessCmdDisable( const char *param )
     if( disable_param != NULL ){
         free( disable_param );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdEnable( const char *cmd )
@@ -966,11 +956,11 @@ bool ProcessCmdEnable( const char *param )
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_ENABLE );
-        return( TRUE );
-    } 
+        return( true );
+    }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     enable_cmd = GetCmdPartByChar( param, " " );
     if( IsCmdEqualCmd2( enable_cmd, "breakpoints" ) ) {
@@ -988,7 +978,7 @@ bool ProcessCmdEnable( const char *param )
     if( enable_param != NULL ) {
         free( enable_param );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdDelete( const char *cmd )
@@ -1003,11 +993,11 @@ bool ProcessCmdDelete( const char *param )
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_DELETE );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     delete_cmd = GetCmdPartByChar( param, " " );
     if( IsCmdEqualCmd2( delete_cmd, "breakpoints" ) ) {
@@ -1025,7 +1015,7 @@ bool ProcessCmdDelete( const char *param )
     if( delete_param != NULL ) {
         free( delete_param );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdInfo( const char *cmd )
@@ -1038,11 +1028,11 @@ bool ProcessCmdInfo( const char *param )
 
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_INFO );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     info_cmd = GetCmdPartByChar( param, " " );
     if( IsCmdEqualCmd2( info_cmd, "break" ) ) {
@@ -1053,7 +1043,7 @@ bool ProcessCmdInfo( const char *param )
         ShowDebuggerError( "no subcommand specified." );
     }
     free( info_cmd );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdNext( const char *cmd )
@@ -1065,14 +1055,14 @@ bool ProcessCmdNext( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_NEXT );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     PerformDebuggerTrace( TRACE_OVER );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdStep( const char *cmd )
@@ -1084,14 +1074,14 @@ bool ProcessCmdStep( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_STEP );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     PerformDebuggerTrace( TRACE_INTO );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdFinish( const char *cmd )
@@ -1103,14 +1093,14 @@ bool ProcessCmdFinish( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_FINISH );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     PerformDebuggerFinish();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdBacktrace( const char *cmd )
@@ -1122,18 +1112,18 @@ bool ProcessCmdBacktrace( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_BACKTRACE );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     if( IsCmdEqualCmd2( "full", param ) ) {
         DumpLocals();
     } else {
         ShowCalls();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdModule( const char *cmd )
@@ -1145,14 +1135,14 @@ bool ProcessCmdModule( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_MODULE );
-        return( TRUE );
+        return( true );
     }
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     ShowModuleList();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdAttach( const char *cmd )
@@ -1164,11 +1154,11 @@ bool ProcessCmdAttach( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_ATTACH );
-        return( TRUE );
+        return( true );
     }
     //Fixme:
     ShowDebuggerError( "Command Not Implemented." );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdKill( const char *cmd )
@@ -1180,15 +1170,15 @@ bool ProcessCmdKill( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_KILL );
-        return( TRUE );
+        return( true );
     }
     //fixme: Not working
     if( !IsDbgProgramLoaded() ) {
         ShowDebuggerError( "program not loaded." );
-        return( FALSE );
+        return( false );
     }
     TraceKill();
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdDirectory( const char *cmd )
@@ -1200,7 +1190,7 @@ bool ProcessCmdDirectory( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg( WDB_HELP_DIRECTORY );
-        return( TRUE );
+        return( true );
     }
     if( IsCmdEqualCmd2( param, "" ) ) {
         RemoveSourcePathsFromDebugger();
@@ -1208,7 +1198,7 @@ bool ProcessCmdDirectory( const char *param )
     } else {
         AddSourcePathsToDebugger( param );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdShow( const char *cmd )
@@ -1220,12 +1210,12 @@ bool ProcessCmdShow( const char *param )
 {
     if( IsCmdEqualCmd2( param, WDB_HELP_PARAM ) ) {
         ShowDebuggerMsg(WDB_HELP_SHOW);
-        return( TRUE );
+        return( true );
     }
     if( IsCmdEqualCmd2( param, "directories" ) ) {
         ShowSourceDirectories();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdHelp( const char *cmd )
@@ -1257,7 +1247,7 @@ bool ProcessCmdHelp( char *param )
     printf( WDB_HELP_DIRECTORY );
     printf( WDB_HELP_FINISH );
     printf( WDB_HELP_HELP );
-    return( TRUE );
+    return( true );
 }
 
 bool IsCmdTest( const char *cmd )
@@ -1268,7 +1258,7 @@ bool IsCmdTest( const char *cmd )
 bool ProcessCmdTest( const char *param )
 {
     WndAsmInspect( GetCodeDot() );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1276,11 +1266,11 @@ bool ProcessDebuggerCmd( char *cmd )
 {
     char    *cmd_part;
     char    *param_part;
-    bool    result = FALSE;
+    bool    result = false;
 
     /*if the user hits enter*/
-    if( ( cmd == NULL ) || ( cmd[0] == '\0' ) )
-        return( TRUE );
+    if( ( cmd == NULL ) || ( cmd[0] == NULLCHAR ) )
+        return( true );
 
     cmd = MyStrTrim( cmd );
     cmd_part = GetCmdPart( cmd );
@@ -1288,70 +1278,70 @@ bool ProcessDebuggerCmd( char *cmd )
 
     if( IsCmdQuit( cmd_part ) ) {
         ShowDebuggerMsg( "Quitting." );
-        return( FALSE );
+        return( false );
     } else if( IsCmdPrint( cmd_part ) ) {
         ProcessCmdPrint( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdRun( cmd_part ) ) {
         ProcessCmdRun( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdContinue( cmd_part ) ) {
         ProcessCmdContinue( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdLoad( cmd_part ) ) {
         ProcessCmdLoad( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdRestart( cmd_part ) ) {
         ProcessCmdRestart( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdBreakpoint( cmd_part ) ) {
         ProcessCmdBreakpoint( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdEnable( cmd_part ) ) {
         ProcessCmdEnable( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdDisable( cmd_part ) ) {
         ProcessCmdDisable( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdDelete( cmd_part ) ) {
         ProcessCmdDelete( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdInfo( cmd_part ) ) {
         ProcessCmdInfo( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdNext( cmd_part ) ) {
         ProcessCmdNext( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdStep( cmd_part ) ) {
         ProcessCmdStep( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdFinish( cmd_part ) ) {
         ProcessCmdFinish( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdBacktrace( cmd_part ) ) {
         ProcessCmdBacktrace( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdAttach( cmd_part ) ) {
         ProcessCmdAttach( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdKill( cmd_part ) ) {
         ProcessCmdKill( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdShow( cmd_part ) ) {
         ProcessCmdShow( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdDirectory( cmd_part ) ) {
         ProcessCmdDirectory( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdModule( cmd_part ) ) {
         ProcessCmdModule( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdTest( cmd_part ) ) {
         ProcessCmdTest( param_part );
-        result = TRUE;
+        result = true;
     } else if( IsCmdHelp( cmd_part ) ) {
         ProcessCmdHelp( param_part );
-        result = TRUE;
+        result = true;
     }
 
     if( !result ) {
@@ -1362,7 +1352,7 @@ bool ProcessDebuggerCmd( char *cmd )
     free( cmd_part );
     free( param_part );
 
-    return( TRUE );
+    return( true );
 }
 
 void WndMemInit( void )
@@ -1376,8 +1366,8 @@ unsigned DUIConfigScreen( void )
 
 bool DUIClose( void )
 {
-    Done = TRUE;
-    return( TRUE );
+    Done = true;
+    return( true );
 }
 
 HANDLE          Requestsem;
@@ -1385,14 +1375,14 @@ HANDLE          Requestdonesem;
 
 bool RequestDone;
 
-DWORD WINAPI ControlFunc( void *parm )
+DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     do {
         WaitForSingleObject( Requestsem, INFINITE ); // wait for Request
         switch( Req ) {
         case REQ_GO:
-            Go( TRUE );
+            Go( true );
             break;
         case REQ_TRACE_OVER:
             ExecTrace( TRACE_OVER, DbgLevel );
@@ -1425,7 +1415,7 @@ void DlgCmd( void )
         ShowDebuggerPrompt();
         gets( buff );
         MyStrTrim( buff );
-        buff[strlen( buff )] = '\0';
+        buff[strlen( buff )] = NULLCHAR;
         if( !ProcessDebuggerCmd( buff ) ) {
             break;
         }
@@ -1439,8 +1429,8 @@ extern char *DUILoadString( int id )
     int         size;
 
     size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    buff[size]='\0';
-    ret = DbgAlloc( size+1 );
+    buff[size] = NULLCHAR;
+    ret = DbgAlloc( size + 1 );
     strcpy( ret, buff );
     return( ret );
 }
@@ -1453,7 +1443,7 @@ void DUIMsgBox( const char *text )
 bool DUIDlgTxt( const char *text )
 {
     printf( "DLG %s\n", text );
-    return( TRUE );
+    return( true );
 }
 
 void DUIInfoBox( const char *text )
@@ -1471,10 +1461,10 @@ void DUIStatusText( const char *text )
     printf( "STA %s\n", text );
 }
 
-bool DlgGivenAddr( const char *title, address *value )
+bool DUIDlgGivenAddr( const char *title, address *value )
 {
     // needed when segment's don't map (from new/sym command)
-    return( FALSE );
+    return( false );
 }
 bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
@@ -1484,34 +1474,34 @@ bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 bool DlgUpTheStack( void )
 {
     // used when trying to trace, but we've unwound the stack a bit
-    return( FALSE );
+    return( false );
 }
 bool DlgAreYouNuts( unsigned long mult )
 {
     // used when too many break on write points are set
-    return( FALSE );
+    return( false );
 }
 bool DlgBackInTime( bool warn )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     warn = warn;
-    return( FALSE );
+    return( false );
 }
 bool DlgIncompleteUndo( void )
 {
     // used when trying to trace, but we've backed up over a call or asynch
-    return( FALSE );
+    return( false );
 }
 bool DlgBreak( address addr )
 {
     // used when an error occurs in the break point expression or it is entered wrong
-    return( FALSE );
+    return( false );
 }
 
 bool DUIInfoRelease( void )
 {
     // used when we're low on memory
-    return( FALSE );
+    return( false );
 }
 void DUIUpdate( update_list flags )
 {
@@ -1539,7 +1529,7 @@ extern bool DUIStopRefresh( bool stop )
 {
     // temporarily turn off/on screen refreshing, cause we're going to run a
     // big command file and we don't want flashing.
-    return( FALSE );
+    return( false );
 }
 extern void DUIShow( void )
 {
@@ -1579,7 +1569,7 @@ extern void DUIArrowCursor( void )
 bool DUIAskIfAsynchOk( void )
 {
     // we're about to try to replay across an asynchronous event.  Ask user
-    return( FALSE );
+    return( false );
 }
 extern void DUIFlushKeys( void )
 {
@@ -1630,11 +1620,13 @@ void ProcHelp( void )
     // stub for old UI
     FlushEOC();
 }
+#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
+#endif
 void ProcPaint( void )
 {
     // stub for old UI
@@ -1645,7 +1637,7 @@ void ProcView( void )
     // stub for old UI
     FlushEOC();
 }
-void ProcWindow( void )
+void DUIProcWindow( void )
 {
     // stub for old UI
     FlushEOC();
@@ -1725,11 +1717,11 @@ extern void SearchConf( void )
 {
     // stub for old UI
 }
-extern void FingClose( void )
+extern void DUIFingClose( void )
 {
     // open a splash page
 }
-extern void FingOpen( void )
+extern void DUIFingOpen( void )
 {
     // close the splash page
 }
@@ -1850,20 +1842,18 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( FALSE );
-    buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    if( viewhndl == NULL ) return( false );
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
-    return( TRUE );
+    return( true );
 }
 
 bool DUIIsDBCS( void )
 {
-    return( FALSE );
+    return( false );
 }
 
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
-
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }
@@ -1872,13 +1862,6 @@ void DUIDirty( void )
 {
 }
 
-
-void StartupErr( const char *err )
-/********************************/
-{
-    printf( "Fatal error: %s", err );
-    exit( 1 );
-}
 
 void DUISrcOrAsmInspect( address addr )
 {
@@ -1928,7 +1911,7 @@ bool DUIImageLoaded( image_entry *image, bool load,
         sprintf( buff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( buff );
-    return( FALSE );
+    return( false );
 }
 
 void DUICopySize( void *cookie, unsigned long size )
@@ -1949,7 +1932,7 @@ bool DUICopyCancelled( void * cookie )
 /************************************/
 {
     cookie = cookie;
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIDlgAsyncRun( void )
@@ -2004,7 +1987,7 @@ int main( int argc, char **argv )
     Requestsem = CreateSemaphore( NULL, 0, 1, NULL );
     Requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
     ReleaseSemaphore( Requestdonesem, 1, NULL ); // signal req done
-    hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
+    hThread = CreateThread( NULL, 0, ControlFunc, NULL, 0, &tid );
     if( hThread == NULL) {
         //MessageBox( NULL, "Error creating thread!", "Stubugger", MB_APPLMODAL+MB_OK );
         ShowDebuggerError( "Error creating thread!" );

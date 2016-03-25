@@ -53,18 +53,13 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
+#include "dbgprog.h"
+#include "dbginit.h"
+#include "dbglkup.h"
 
-extern void         StartupErr( const char * );
-extern void         ReleaseProgOvlay( bool );
-extern void         KillDebugger( int );
-extern unsigned     GetValue( void );
-extern int          Lookup( const char *, const char *, size_t );
-extern void         WantEquals(void);
-extern void         GetRawItem( char * );
-extern char         *GetFileName( int pass );
 
 extern unsigned     UIConHandle;
-extern char         *UITermType;
 
 char                XConfig[2048];
 char                *DbgTerminal;
@@ -107,7 +102,7 @@ static void HupHandler( int signo )
 {
     /* Xqsh has gone away -- nothing to do except die */
     signo = signo;
-    ReleaseProgOvlay( TRUE );
+    ReleaseProgOvlay( true );
     KillDebugger( 0 );
 }
 
@@ -128,17 +123,20 @@ static bool TryXWindows( void )
     }
     fcntl( pip[0], F_SETFD, (int)FD_CLOEXEC );
     searchenv( "qnxterm", "PATH", xqsh_name );
-    if( xqsh_name[0] == '\0' ) {
+    if( xqsh_name[0] == NULLCHAR ) {
         StartupErr( "qnxterm executable not in PATH" );
     }
     argc = 0;
     p = XConfig;
     for( ;; ) {
-        while( isspace( *p ) ) ++p;
-        while( !isspace( *p ) && *p != '\0' ) ++p;
-        if( *p == '\0' ) break;
+        while( isspace( *p ) )
+            ++p;
+        while( !isspace( *p ) && *p != NULLCHAR )
+            ++p;
+        if( *p == NULLCHAR )
+            break;
         ++argc;
-        *p++ = '\0';
+        *p++ = NULLCHAR;
     }
     end = p;
     _AllocA( argv, (argc + 10) * sizeof( *argv ) );
@@ -151,14 +149,17 @@ static bool TryXWindows( void )
 
     if( DbgLines != 0 || DbgColumns != 0 ) {
         argv[argc++] = "-geometry";
-        if( DbgLines == 0 ) DbgLines = 25;
-        if( DbgColumns == 0 ) DbgColumns = 80;
+        if( DbgLines == 0 )
+            DbgLines = 25;
+        if( DbgColumns == 0 )
+            DbgColumns = 80;
         p = Format( buff, "%ux%u+0+0", DbgColumns, DbgLines ) + 1;
         argv[argc++] = buff;
     }
 
     for( p = XConfig; p < end; p += strlen( p ) + 1 ) {
-        while( isspace( *p ) ) ++p;
+        while( isspace( *p ) )
+            ++p;
         argv[argc++] = p;
     }
     argv[argc++] = "-tty";
@@ -178,15 +179,15 @@ static bool TryXWindows( void )
         StartupErr( "console helper process unable to initialize" );
     }
     close( pip[0] );
-    buff[len] = '\0';
+    buff[len] = NULLCHAR;
     DbgConHandle = open( buff, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );
     }
-    UITermType = "qnx";
+    SetTermType( "qnx" );
     tcsetct( DbgConHandle, getpid() );
     signal( SIGHUP, &HupHandler );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -196,7 +197,7 @@ static bool TryQConsole( void )
     struct _sidinfo             info;
     struct _dev_info_entry      dev;
     char                        *ptr;
-    char                        *term;
+    const char                  *term;
 
     if( qnx_psinfo( PROC_PID, getpid(), &psinfo, 0, 0 ) != getpid() ) {
         StartupErr( "unable to obtain process information" );
@@ -204,14 +205,16 @@ static bool TryQConsole( void )
     if( qnx_sid_query( PROC_PID, psinfo.sid, &info ) != psinfo.sid ) {
         StartupErr( "unable to obtain console name" );
     }
-    ptr = &info.tty_name[ strlen( info.tty_name ) ];
+    ptr = info.tty_name + strlen( info.tty_name );
     for( ;; ) {
         --ptr;
-        if( *ptr < '0' || *ptr > '9' ) break;
+        if( *ptr < '0' || *ptr > '9' ) {
+            break;
+        }
     }
     if( DbgConsole != 0 ) {
-        ptr[ 1 ] = '0' + DbgConsole / 10;
-        ptr[ 2 ] = '0' + DbgConsole % 10;
+        ptr[1] = '0' + DbgConsole / 10;
+        ptr[2] = '0' + DbgConsole % 10;
         ptr += 2;
     }
     ptr[1] = NULLCHAR;
@@ -229,7 +232,7 @@ static bool TryQConsole( void )
     ConCtrl = console_open( DbgConHandle, O_WRONLY );
     if( ConCtrl == NULL ) {
         close( DbgConHandle );
-        return( FALSE );
+        return( false );
     }
     if( dev_info( DbgConHandle, &dev ) == -1 ) {
         StartupErr( "unable to obtain console information" );
@@ -238,7 +241,7 @@ static bool TryQConsole( void )
     console_size( ConCtrl, DbgConsole, 0, 0, &PrevLines, &PrevColumns );
     console_size( ConCtrl, DbgConsole, DbgLines, DbgColumns, 0, 0 );
     InitConsole = console_active( ConCtrl, -1 );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryTTY( void )
@@ -246,24 +249,25 @@ static bool TryTTY( void )
     unsigned long       num;
     char                *end;
 
-    if( DbgTerminal == NULL ) return( FALSE );
+    if( DbgTerminal == NULL )
+        return( false );
     num = strtoul( DbgTerminal, &end, 10 );
     if( *end == NULLCHAR && num < 100 ) {
         DbgConsole = num;
-        return( FALSE );
+        return( false );
     }
     /* guy gave an explicit terminal name */
     end = strchr( DbgTerminal, ':' );
     if( end != NULL ) {
         /* and also told us the terminal type */
         *end = NULLCHAR;
-        UITermType = strdup( end + 1 );
+        SetTermType( strdup( end + 1 ) );
     }
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitScreen( void )
@@ -287,7 +291,8 @@ void InitScreen( void )
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );
     }
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIInitMouse( 1 );
     DebugScreen();
 }
 
@@ -300,9 +305,9 @@ bool UsrScrnMode( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -319,17 +324,17 @@ bool DebugScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_QCON:
         PrevConsole = console_active( ConCtrl, DbgConsole );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -341,12 +346,12 @@ bool UserScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_QCON:
         console_active( ConCtrl, PrevConsole );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -355,7 +360,8 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     switch( ConMode ) {
     case C_QCON:
@@ -372,20 +378,30 @@ void FiniScreen( void )
 
 void ScrnSpawnStart( void )
 {
-    char        *term;
+    const char  *term;
+    const char  *curr_term;
 
-    if( ConCtrl == NULL && UITermType != NULL ) {
-        term = getenv( "TERM" );
-        if( term == NULL ) term = "";
-        strcpy( TxtBuff, term );
-        setenv( "TERM", UITermType, 1 );
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            term = getenv( "TERM" );
+            if( term == NULL )
+                term = "";
+            strcpy( TxtBuff, term );
+            setenv( "TERM", curr_term, 1 );
+        }
     }
 }
 
 void ScrnSpawnEnd( void )
 {
-    if( ConCtrl == NULL && UITermType != NULL ) {
-        setenv( "TERM", TxtBuff, 1 );
+    const char  *curr_term;
+
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            setenv( "TERM", TxtBuff, 1 );
+        }
     }
 }
 
@@ -435,16 +451,16 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         break;
     case OPT_XCONFIG:
         WantEquals();
-        p = &XConfig[ strlen( XConfig ) ];
+        p = XConfig + strlen( XConfig );
         *p++ = ' ';
         GetRawItem( p );
         if( pass == 1 )
             XConfig[0] = NULLCHAR;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void ScreenOptInit( void )

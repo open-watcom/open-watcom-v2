@@ -54,9 +54,9 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is 
 }
 
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
-                        imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+                    imp_sym_handle *is, location_context *lc,
+                    symbol_name sn, char *buff, size_t buff_size )
 /****************************************************************/
 {
     /*
@@ -80,8 +80,8 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                 Not possible. Will never happen.
     */
     char        *name;
-    unsigned    demangled_len;
-    unsigned    len = 0;
+    size_t      demangled_len;
+    size_t      len = 0;
 
     lc = lc;
 //TODO: what's lc for?
@@ -96,7 +96,7 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
         }
         --len;
         if( buff_size != 0 && len > buff_size ) {
-           buff[buff_size - 1] = '\0';
+            buff[buff_size - 1] = '\0';
         }
         break;
     case SN_SCOPED:
@@ -199,7 +199,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
 //TODO: no segments, better TAG_label
     struct mod_wlk  *d = _d;
     uint_32         offset;
-    uint_32         seg;
+    addr_seg        seg;
 //    bool            ret;
     addrsym_info    info;
     bool            is_segment;
@@ -324,7 +324,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
     /* Get the location of the given symbol. */
     dip_status       ret;
     address          base; /* base segment & offset */
-    uint_32          seg;
+    addr_seg         seg;
     dr_handle        sym;
     bool             is_segment;
 
@@ -494,10 +494,11 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
             si->ret_modifier = TM_NONE;
             si->epilog_size = 0;
             si->rtn_calloc  = 0;
-            if( EvalOffset( ii, is->sym, &num1 ) )
+            if( EvalOffset( ii, is->sym, &num1 ) ) {
                 si->ret_addr_offset = num1;
-            else
-                si->ret_addr_offset = ~0;
+            } else {
+                si->ret_addr_offset = (addr_off)-1L;
+            }
             addr_class =  DRGetAddrClass( is->sym );
             switch( addr_class ) {
             case DR_PTR_far32:
@@ -723,7 +724,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     dr_handle       dr_this;
     dr_handle       dr_type;
     dr_typeinfo     typeinfo;
-    uint_32         seg;
+    addr_seg        seg;
     address         base;   /* base segment & offset */
     location_list   tmp;
     dip_status      ret;
@@ -867,8 +868,7 @@ static bool IsInScope( scope_ctl  *ctl, address addr )
     root = ctl->root;
     if( root != NULL ) {
         if( ctl->base.mach.segment == addr.mach.segment ) {
-            if( root->start <= addr.mach.offset
-              && addr.mach.offset <  root->end ) {
+            if( root->start <= addr.mach.offset && addr.mach.offset < root->end ) {
                 ret = TRUE;
            }
         }
@@ -1545,12 +1545,12 @@ static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
 
 typedef struct {
     const char  *p;
-    unsigned    len;
+    size_t      len;
 } strvi;
 
 typedef struct {
     char        *p;
-    unsigned    len;
+    size_t      len;
 } strvo;
 
 static unsigned StrVCopy( strvo *dst, strvi *src )
@@ -1562,16 +1562,15 @@ static unsigned StrVCopy( strvo *dst, strvi *src )
     unsigned    total;
 
     total = src->len;
-    for( ;; ) {
-        if( src->len == 0 ) break;
-        if( *src->p == '\0' ) break;
+    for( ; src->len > 0; --src->len ) {
+        if( *src->p == '\0' )
+            break;
         if( dst->len > 0 ) {
             *dst->p = *src->p;
             ++dst->p;
             --dst->len;
         }
         ++src->p;
-        --src->len;
     }
     total -= src->len;
     return( total );
@@ -1617,7 +1616,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 /*****************************************************************/
 {
     char                buff[256];
-    unsigned            len;
+    size_t              len;
     search_result       sr;
     hash_look_data      data;
     name_wlk            wlk;
@@ -1692,7 +1691,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.kind = WLK_LOOKUP;
     df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
     df.lookup.li = li;
-    df.lookup.len =  li->name.len+1;
+    df.lookup.len =  li->name.len + 1;
     if( df.lookup.len <= sizeof( buff ) ) {
         df.lookup.buff = buff;
     } else {

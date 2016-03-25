@@ -43,7 +43,7 @@
 bool intern isdialogue( VSCREEN *vptr )
 /*************************************/
 {
-    return( ( vptr != NULL ) && ( ( vptr->flags & V_DIALOGUE ) != 0 ) );
+    return( ( vptr != NULL ) && ( (vptr->flags & V_DIALOGUE) != 0 ) );
 }
 
 
@@ -67,5 +67,5 @@ bool intern isscreen( BUFFER * bptr )
 void UIAPI uisetsnow( bool snow )
 /********************************/
 {
-    UIData->no_snow = ~snow;
+    UIData->no_snow = !snow;
 }

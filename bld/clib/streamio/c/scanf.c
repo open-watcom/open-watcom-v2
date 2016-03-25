@@ -36,18 +36,18 @@
 #include "scanf.h"
 
 
-static int cget_stdin( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE cget_stdin( PTR_SCNF_SPECS specs )
 {
-    int     c;
+    INTCHAR_TYPE    c;
 
-    if( (c = __F_NAME(getc,getwc)( stdin )) == __F_NAME(EOF,WEOF) ) {
+    if( (c = __F_NAME(getc,getwc)( stdin )) == INTCHAR_EOF ) {
         specs->eoinp = 1;
     }
     return( c );
 }
 
 
-static void uncget_stdin( int c, PTR_SCNF_SPECS specs )
+static void uncget_stdin( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     __F_NAME(ungetc,ungetwc)( c, stdin );
 }

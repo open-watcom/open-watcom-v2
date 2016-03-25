@@ -54,7 +54,7 @@ _WCRTLINK size_t _NEARFAR(mbstowcs,_fmbstowcs)( wchar_t _FFAR *pwcs, const char 
                 rc = _NEARFAR(mbtowc,_fmbtowc)( pwcs, s, MB_LEN_MAX );
                 if( rc == -1 )  return( -1 );
                 n--;
-                s = _NEARFAR(_mbsinc,_fmbsinc)( s );
+                s = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)s );
                 pwcs++;
                 numChars++;
             } else {
@@ -67,7 +67,7 @@ _WCRTLINK size_t _NEARFAR(mbstowcs,_fmbstowcs)( wchar_t _FFAR *pwcs, const char 
             if( *s != '\0' ) {
                 rc = _NEARFAR(mbtowc,_fmbtowc)( NULL, s, MB_LEN_MAX );
                 if( rc == -1 )  return( -1 );
-                s = _NEARFAR(_mbsinc,_fmbsinc)( s );
+                s = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)s );
                 numChars++;
             } else {
                 break;

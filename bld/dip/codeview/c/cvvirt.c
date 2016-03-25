@@ -127,8 +127,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
     unsigned            dir_idx;
     unsigned            pg_idx;
     unsigned            tmp_idx;
-    int                 i;
-    int                 j;
+    unsigned            i;
+    unsigned            j;
     unsigned            num_pages;
     virt_mem            pg_start;
     virt_page           *pg;
@@ -137,13 +137,15 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
 
     dir_idx = GET_DIR( start );
     if( ii->virt[dir_idx] == NULL ) {
-        if( !InitPageDir( ii, dir_idx ) ) return( NULL );
+        if( !InitPageDir( ii, dir_idx ) ) {
+            return( NULL );
+        }
     }
     pg_idx = GET_PAGE( start );
     len += start % VM_PAGE_SIZE;
     pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
     pg = ii->virt[dir_idx][pg_idx];
-    if( pg == NULL || (pg->block->len - pg->offset) < len ) {
+    if( pg == NULL || (unsigned)( pg->block->len - pg->offset ) < len ) {
         /* unloaded previously loaded block */
         if( pg != NULL ) {
             tmp_idx = dir_idx;
@@ -212,7 +214,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             return( NULL );
         }
         /* last block might be a short read */
-        if( DCRead( ii->sym_file, pg->block->data, len ) == (unsigned)-1 ) {
+        if( DCRead( ii->sym_file, pg->block->data, len ) == DCREAD_ERROR ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }
@@ -223,9 +225,9 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
         /* deal with wrap-around */
         for( ii = ImageList; ii != NULL; ii = ii->next_image ) {
             if( ii->virt != NULL ) {
-                for( i = ii->vm_dir_num-1; i >= 0; --i ) {
+                for( i = ii->vm_dir_num; i-- > 0; ) {
                     if( ii->virt[i] != NULL ) {
-                        for( j = DIR_SIZE-1; j >= 0; --j ) {
+                        for( j = DIR_SIZE; j-- > 0; ) {
                             zero = ii->virt[i][j];
                             if( zero != NULL ) {
                                 zero->block->time_stamp = 0;

@@ -1,6 +1,6 @@
 plustest_name = bits
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 test_flags_386 = -d2-3r

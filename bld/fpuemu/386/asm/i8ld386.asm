@@ -38,34 +38,36 @@ include struct.inc
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __I8LD, __U8LD - convert 8-byte integer to long double
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  EAX - pointer to 8-byte integer
-;<>             EDX - pointer to long double operand 
-;<>   else
-;<>     input:  EDX:EAX - 8-byte integer
-;<>             EBX - pointer to long double operand
-;<>   endif
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-        xdefp   __I8LD
         xdefp   __U8LD
+        xdefp   __I8LD
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __I8LD, __U8LD - convert 8-byte integer to long double
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  EAX - pointer to 8-byte integer
+;               EDX - pointer to long double result
+;else
+;       input:  EDX:EAX - 8-byte integer
+;               EBX     - pointer to long double result
+;endif
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 ;       __I8LD - convert signed 8-byte integer into long double
 ;       __U8LD - convert unsigned 8-byte integer into long double
 
         defp    __U8LD
+
         push    ECX              ; save DI
         mov     CL,1            ; unsigned value
         jmp     short cont1
 
         defp    __I8LD
+
         push    ECX             ; save ECX
-        mov     CL,0            ; signed value
+        xor     CL,CL           ; signed value
 cont1:
 ifdef _BUILDING_MATHLIB
         push    EBX
@@ -110,8 +112,9 @@ ifdef _BUILDING_MATHLIB
 endif
         pop     ECX             ; restore ECX
         ret                     ; return
-__I8LD  endp
-__U8LD  endp
+
+        endproc __I8LD
+        endproc __U8LD
 
 
 ifdef _BUILDING_MATHLIB

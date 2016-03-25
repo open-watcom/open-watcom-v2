@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@
 _WCRTLINK unsigned short int ntohs( unsigned short int netshort )
 {
 #if defined( __BIG_ENDIAN__ )
-    return ( netshort );
+    return( netshort );
 #else
-    return ( ((netshort >> 8) & 0xff) | ((netshort & 0xff) << 8) );
+    return( ((netshort >> 8) & 0xff) | ((netshort & 0xff) << 8) );
 #endif
 }

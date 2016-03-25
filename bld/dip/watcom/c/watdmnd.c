@@ -31,10 +31,10 @@
 
 #include "dipwat.h"
 #include <limits.h>
+#include "watlcl.h"
+#include "watmod.h"
+#include "watldsym.h"
 
-extern dip_status InfoRead(section_info *, unsigned long ,unsigned int ,void *);
-extern mod_info *ModPointer( imp_image_handle *, imp_mod_handle );
-extern section_info *FindInfo(imp_image_handle *, imp_mod_handle );
 
 /* WD looks for this symbol to determine module bitness */
 #if !defined( __WINDOWS__ )
@@ -45,14 +45,14 @@ int __nullarea;
 #endif
 
 typedef struct demand_ctrl {
-        struct demand_ctrl      *link;
-        pointer_int             *owner;
-        void                    (*clear)(void *, void *);
-        pointer_int             save;
-        unsigned                size;
-        unsigned                locks;
-        unsigned                time_stamp;
-        char                    buff[1];
+    struct demand_ctrl      *link;
+    pointer_int             *owner;
+    void                    (*clear)(void *, void *);
+    pointer_int             save;
+    unsigned                size;
+    unsigned                locks;
+    unsigned                time_stamp;
+    char                    buff[1];
 } demand_ctrl;
 
 
@@ -63,17 +63,16 @@ static demand_ctrl      *LastDemand;
 static unsigned         LastDmndSize;
 static unsigned         TimeStamp;
 
-#define GET_LINK( sect, idx )                                   \
-        ((sect)->dmnd_link[(unsigned)(idx) / MAX_LINK_ENTRIES]  \
-        [(unsigned)(idx) % MAX_LINK_ENTRIES])
+#define GET_LINK( sect, idx )                               \
+        ((sect)->dmnd_link[(dword)(idx) / MAX_LINK_ENTRIES] \
+        [(dword)(idx) % MAX_LINK_ENTRIES])
 
 #define RESIDENT                0x00000001UL
 #define MK_DMND_PTR( p )        ((demand_ctrl *)( (p) & ~RESIDENT))
 #define IS_RESIDENT( p )        ((p) & RESIDENT)
 #define DMND_LINK( p )          (IS_RESIDENT(p)?MK_DMND_PTR(p)->save:(p))
-#define MK_DMND_OFFSET( p )     (DMND_LINK( p ) >> 1)
-#define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1))     \
-                                 - DMND_LINK(GET_LINK(sect,idx))) >> 1)
+#define MK_DMND_OFFSET( p )     ((p) >> 1)
+#define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1)) - DMND_LINK(GET_LINK(sect,idx))) >> 1)
 #define STASH_DMND_PTR( p )     ((pointer_int)(p) | RESIDENT)
 
 
@@ -81,16 +80,18 @@ static unsigned         TimeStamp;
  * InfoSize -- return size of demand info section
  */
 unsigned InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                        unsigned item, unsigned entry )
+                        demand_kind dk, word entry )
 {
     demand_info         *dmnd;
     section_info        *inf;
+    dword               real_entry;
 
-    dmnd = &ModPointer( ii, im )->di[item];
-    if( entry >= dmnd->u.entries ) return( 0 );
-    entry += dmnd->info_off;
+    dmnd = ModPointer( ii, im )->di + dk;
+    if( entry >= dmnd->u.entries )
+        return( 0 );
+    real_entry = dmnd->info_off + entry;
     inf = FindInfo( ii, im );
-    return( DMND_SIZE( inf, entry ) );
+    return( (unsigned)DMND_SIZE( inf, real_entry ) );
 }
 
 
@@ -102,19 +103,21 @@ struct walk_demand {
     unsigned long       max_size;
 };
 
-walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
+static walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
     struct walk_demand  *wdd = d;
     unsigned long       size;
-    unsigned            dmnd;
-    unsigned            i;
+    demand_kind         dk;
+    word                i;
 
-    for( dmnd = DMND_FIRST; dmnd < DMND_NUM; ++dmnd ) {
+    for( dk = 0; dk < MAX_DMND; ++dk ) {
         i = 0;
         for( ;; ) {
-            size = InfoSize( ii, im, dmnd, i );
-            if( size == 0 ) break;
-            if( size > wdd->max_size ) wdd->max_size = size;
+            size = InfoSize( ii, im, dk, i );
+            if( size == 0 )
+                break;
+            if( size > wdd->max_size )
+                wdd->max_size = size;
             ++i;
         }
     }
@@ -125,7 +128,8 @@ static void Unload( demand_ctrl *section )
 {
     demand_ctrl **owner;
 
-    if( section->owner == NULL ) return;
+    if( section->owner == NULL )
+        return;
     if( section == LastDemand ) {
         if( section->clear != NULL ) {
             section->clear( section->buff, section->buff + section->size );
@@ -151,11 +155,12 @@ dip_status InitDemand( imp_image_handle *ii )
 
     d.max_size = 0;
     MyWalkModList( ii, WlkDmnd, &d );
-    if( d.max_size >= (0x10000UL - sizeof( demand_ctrl )) ) {
+    if( d.max_size >= ( 0x10000UL - sizeof( demand_ctrl ) ) ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
-    if( d.max_size <= LastDmndSize ) return( DS_OK );
+    if( d.max_size <= LastDmndSize )
+        return( DS_OK );
     if( LastDemand != NULL ) {
         Unload( LastDemand );
         DCFree( LastDemand );
@@ -181,21 +186,21 @@ void FiniDemand( void )
     TimeStamp = 0;
 }
 
-walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
+static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
-    unsigned            dmnd;
+    demand_kind         dk;
     mod_info            *mp;
     section_info        *sect;
-    int                 entry;
-    unsigned            real_entry;
+    word                entry;
+    dword               real_entry;
     pointer_int         *lnk;
 
     d = d;
     mp = ModPointer( ii, im );
     sect = FindInfo( ii, im );
-    for( dmnd = DMND_FIRST; dmnd < DMND_NUM; ++dmnd ) {
-        for( entry = mp->di[dmnd].u.entries-1; entry >= 0; --entry ) {
-            real_entry = entry + mp->di[dmnd].info_off;
+    for( dk = 0; dk < MAX_DMND; ++dk ) {
+        for( entry = mp->di[dk].u.entries; entry-- > 0; ) {
+            real_entry = mp->di[dk].info_off + entry;
             lnk = &GET_LINK( sect, real_entry );
             if( IS_RESIDENT( *lnk ) ) {
                 Unload( MK_DMND_PTR( *lnk ) );
@@ -221,7 +226,9 @@ void InfoUnlock( void )
     for( section = DemandList; section != NULL; section = section->link ) {
         section->locks = 0;
     }
-    if( LastDemand != NULL ) LastDemand->locks = 0;
+    if( LastDemand != NULL ) {
+        LastDemand->locks = 0;
+    }
 }
 
 
@@ -229,8 +236,8 @@ void InfoUnlock( void )
  * InfoLoad -- load demand info
  */
 
-void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
-                unsigned entry, void (*clear)(void *, void *) )
+void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
+                word entry, void (*clear)(void *, void *) )
 {
     demand_ctrl         *section;
     demand_info         *info;
@@ -238,26 +245,27 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
     unsigned long       tmpoff;
     pointer_int         *lnk;
     unsigned            size;
+    dword               real_entry;
 
     ++TimeStamp;
     if( TimeStamp == 0 ) { /* TimeStamp wrapped */
         TimeStamp = 1;
-        for(section = DemandList; section != NULL; section = section->link) {
+        for( section = DemandList; section != NULL; section = section->link ) {
             section->time_stamp = 0;
         }
     }
-    info = &ModPointer( ii, im )->di[ item ];
-    if( entry >= info->u.entries ) return( NULL );
-    entry += info->info_off;
+    info = ModPointer( ii, im )->di + dk;
+    if( entry >= info->u.entries )
+        return( NULL );
+    real_entry = info->info_off + entry;
     sect = FindInfo( ii, im );
-    lnk = &GET_LINK( sect, entry );
+    lnk = &GET_LINK( sect, real_entry );
     if( IS_RESIDENT( *lnk ) ) {
         section = MK_DMND_PTR( *lnk );
     } else {
         /* section not loaded */
-        size = DMND_SIZE( sect, entry );
-        if( (LastDemand->owner == NULL || LastDemand->size < size)
-            && LastDemand->locks == 0 ) {
+        size = (unsigned)DMND_SIZE( sect, real_entry );
+        if( ( LastDemand->owner == NULL || LastDemand->size < size ) && LastDemand->locks == 0 ) {
             /* keep largest section in LastDemand */
             section = LastDemand;
             Unload( LastDemand );
@@ -265,15 +273,17 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
             /* allocate some memory */
             section = DCAlloc( _demand_size( size ) );
             if( section == NULL ) {
-                if( LastDemand->locks != 0 ) return( NULL );
+                if( LastDemand->locks != 0 )
+                    return( NULL );
                 /* no memory, use last chance */
                 section = LastDemand;
                 Unload( LastDemand );
             }
         }
-        tmpoff = MK_DMND_OFFSET( *lnk );
+        tmpoff = (unsigned long)MK_DMND_OFFSET( *lnk );
         if( InfoRead( sect, tmpoff, size, section->buff ) != DS_OK ) {
-            if( section != LastDemand ) DCFree( section );
+            if( section != LastDemand )
+                DCFree( section );
             return( NULL );
         }
         section->size = size;
@@ -293,18 +303,18 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
 }
 
 
-static void AdjustLockCount( void *p, int adjust )
+static void AdjustLockCount( const char *p, int adjust )
 {
     demand_ctrl *section;
 
-    section = (demand_ctrl *)((byte *)p - offsetof( demand_ctrl, buff ));
+    section = (demand_ctrl *)( p - offsetof( demand_ctrl, buff ) );
     section->locks += adjust;
 }
 
 /*
  * Increment the lock count for a specific demand load section
  */
-void InfoSpecLock( void *p )
+void InfoSpecLock( const char *p )
 {
     AdjustLockCount( p, 1 );
 }
@@ -313,7 +323,7 @@ void InfoSpecLock( void *p )
 /*
  * Decrement the lock count for a specific demand load section
  */
-void InfoSpecUnlock( void *p )
+void InfoSpecUnlock( const char *p )
 {
     AdjustLockCount( p, -1 );
 }
@@ -337,14 +347,16 @@ static dip_status ReleaseFromList( void )
             release = curr;
         }
     }
-    if( release == NULL ) return( DS_FAIL );
+    if( release == NULL )
+        return( DS_FAIL );
     Unload( release );
     return( DS_OK );
 }
 
 dip_status InfoRelease( void )
 {
-    if( ReleaseFromList() == DS_OK ) return( DS_OK );
+    if( ReleaseFromList() == DS_OK )
+        return( DS_OK );
     if( LastDemand != NULL && LastDemand->locks == 0 && LastDemand->clear != NULL ) {
         /* let's hope the clear routine frees up some memory */
         Unload( LastDemand );

@@ -131,6 +131,7 @@
 .fnc clock_gettime              clkget.gml      DOS     W WIN32
 .fnc clock_nanosleep            clkns.gml       DOS     W WIN32
 .fnc clock_settime              clkset.gml      DOS     W WIN32
+.fnc clone                      clone.gml       DOS     W WIN32
 .fnc close                      close.gml       DOS QNX W WIN32
 .fn8 _close                     close.gml       DOS       WIN32
 .fnc closedir                   closedir.gml    DOS QNX W WIN32
@@ -240,7 +241,11 @@
 .fnc _ellipse_w                 gr_ellip.gml    DOS QNX W GRAPH
 .fnc _ellipse_wxy               gr_ellip.gml    DOS QNX W GRAPH
 .fnc _enable                    _enable.gml     DOS QNX W WIN32
+.fnc endhostent                 endhsten.gml    DOS     W WIN32
+.fnc endnetent                  endneten.gml    DOS     W WIN32
+.fnc endprotoent                endproen.gml    DOS     W WIN32
 .fnc endpwent                   endpwent.gml    DOS QNX W WIN32
+.fnc endservent                 endsrven.gml    DOS     W WIN32
 .fnc _endthread                 _ethread.gml    DOS QXO   WIN32
 .fnc _endthreadex               _ethread.gml    DOS       WIN32
 .fnc eof                        eof.gml         DOS QNX W WIN32
@@ -447,6 +452,8 @@
 .fnc getgroups                  getgrps.gml         QXO
 .fnc _getgtextextent            gr_getge.gml    DOS QNX W GRAPH
 .fnc _getgtextvector            gr_gettv.gml    DOS QNX W GRAPH
+.fnc gethostbyname              gthstnam.gml    DOS     W WIN32
+.fnc gethostent                 gthstent.gml    DOS     W WIN32
 .fnc _getimage                  gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_w                gr_getim.gml    DOS QNX W GRAPH
 .fnc _getimage_wxy              gr_getim.gml    DOS QNX W GRAPH
@@ -455,6 +462,9 @@
 .fnc getlogin                   getlogin.gml        QXO
 .fnm _getmbcp                   getmbcp.gml     DOS       WIN32
 .fnc getnid                     getnid.gml          QXO
+.fnc getnetbyaddr               gtnetadr.gml    DOS     W WIN32
+.fnc getnetbyname               gtnetnam.gml    DOS     W WIN32
+.fnc getnetent                  gtnetent.gml    DOS     W WIN32
 .fnc getopt                     getopt.gml      DOS QXO   WIN32
 .fn7 _get_osfhandle             getosfha.gml    DOS       WIN32
 .fnc getpgrp                    getpgrp.gml         QXO
@@ -466,18 +476,25 @@
 .fnc _getplotaction             gr_getpa.gml    DOS QNX W GRAPH
 .fnc getppid                    getppid.gml         QXO
 .fnc getprio                    getprio.gml         QXO
+.fnc getprotobyname             gtpronam.gml    DOS     W WIN32
+.fnc getprotobynumber           gtpronum.gml    DOS     W WIN32
+.fnc getprotoent                gtproent.gml    DOS     W WIN32
 .fnc getpwent                   getpwent.gml    DOS QNX W WIN32
 .fnc getpwnam                   getpwnam.gml    DOS QNX W WIN32
 .fnc getpwuid                   getpwuid.gml    DOS QNX W WIN32
 .fnc gets                       gets.gml        DOS QNX W WIN32
 .fnw _getws                     gets.gml        DOS QNX W WIN32
 .fnc gets_s                     gets_s.gml      DOS QNX W WIN32
+.fnc getservbyname              gtsrvnam.gml    DOS     W WIN32
+.fnc getservbyport              gtsrvprt.gml    DOS     W WIN32
+.fnc getservent                 gtsrvent.gml    DOS     W WIN32
 .fnc _gettextcolor              gr_gettc.gml    DOS QNX W GRAPH
 .fnc _gettextcursor             gr_gettu.gml    DOS QNX W GRAPH
 .fnc _gettextextent             gr_gette.gml    DOS QNX W GRAPH
 .fnc _gettextposition           gr_gettp.gml    DOS QNX W GRAPH
 .fnc _gettextsettings           gr_getts.gml    DOS QNX W GRAPH
 .fnc _gettextwindow             gr_gettw.gml    DOS QNX W GRAPH
+.fnc gettid                     gettid.gml      DOS QXO   WIN32
 .fnc getuid                     getuid.gml          QXO
 .fnc _getvideoconfig            gr_getvc.gml    DOS QNX W GRAPH
 .fnc _getviewcoord              gr_getlc.gml    DOS QNX W GRAPH
@@ -855,7 +872,9 @@
 .fn7 _mktemp                    mktemp.gml      DOS       WIN32
 .fnw _wmktemp                   mktemp.gml      DOS       WIN32
 .fnc mktime                     mktime.gml      DOS QNX W WIN32
-.fnc mmap                       mmap.gml            QXO
+.fnc mlock                      mlock.gml       DOS QNX W WIN32
+.fnc mlockall                   mlockall.gml    DOS QNX W WIN32
+.fnc mmap                       mmap.gml        DOS QNX W WIN32
 .fnc modf                       modf.gml        DOS QNX W WIN32
 .fnc mount                      mount.gml           QXO
 .fnc mouse_close                ms_close.gml        QXO
@@ -888,7 +907,7 @@
 .fn7 _m_pmulhw                  mpmulhw.gml     DOS QNX W WIN32
 .fn7 _m_pmullw                  mpmullw.gml     DOS QNX W WIN32
 .fn7 _m_por                     mpor.gml        DOS QNX W WIN32
-.fnc mprotect                   mprot.gml           QXO
+.fnc mprotect                   mprotect.gml    DOS QNX W WIN32
 .fn7 _m_pslld                   mpslld.gml      DOS QNX W WIN32
 .fn7 _m_pslldi                  mpslldi.gml     DOS QNX W WIN32
 .fn7 _m_psllq                   mpsllq.gml      DOS QNX W WIN32
@@ -923,10 +942,13 @@
 .fnc _bmsize                    _msize.gml      DOS QNX W
 .fnf _fmsize                    _msize.gml      DOS QNX W
 .fnc _nmsize                    _msize.gml      DOS QNX W WIN32
+.fnc msync                      msync.gml       DOS QNX W WIN32
 .fnc mtob                       mtob.gml        NEC
 .fnf _fmtob                     mtob.gml        NEC
 .fn7 _m_to_int                  mtoint.gml      DOS QNX W WIN32
-.fnc munmap                     munmap.gml          QXO
+.fnc munlock                    munlock.gml     DOS QNX W WIN32
+.fnc munlockall                 munlall.gml     DOS QNX W WIN32
+.fnc munmap                     munmap.gml      DOS QNX W WIN32
 .fnc nan                        nanf.gml        DOS QNX W WIN32
 .fnc nanf                       nanf.gml        DOS QNX W WIN32
 .fnc nanl                       nanf.gml        DOS QNX W WIN32
@@ -1153,6 +1175,12 @@
 .fnc segread                    segread.gml     DOS QNX W WIN32
 .fnc select                     select.gml          QXO
 .fnc _selectpalette             gr_selp.gml     DOS QNX W GRAPH
+.fnc sem_destroy                sem_dest.gml    DOS     W WIN32
+.fnc sem_getvalue               sem_getv.gml    DOS     W WIN32
+.fnc sem_init                   sem_init.gml    DOS     W WIN32
+.fnc sem_post                   sem_post.gml    DOS     W WIN32
+.fnc sem_trywait                sem_tryw.gml    DOS     W WIN32
+.fnc sem_wait                   sem_wait.gml    DOS     W WIN32
 .fnc Send                       send.gml            QXO
 .fnc Sendfd                     sendfd.gml          QXO
 .fnc Sendfdmx                   sendfdmx.gml        QXO
@@ -1176,6 +1204,7 @@
 .fnc _setfont                   gr_setf.gml     DOS QNX W GRAPH
 .fnc setgid                     setgid.gml          QXO
 .fnc _setgtextvector            gr_settv.gml    DOS QNX W GRAPH
+.fnc sethostent                 sthstent.gml    DOS     W WIN32
 .fnc setjmp                     setjmp.gml      DOS QNX W WIN32
 .fnc _setlinestyle              gr_setls.gml    DOS QNX W GRAPH
 .fnc setlocale                  setlocal.gml    DOS QNX W WIN32
@@ -1185,6 +1214,7 @@
 .fnc setmode                    setmode.gml     DOS QNX W WIN32
 .fnc _setmode                   setmode.gml     DOS       WIN32
 .fnc _setmx                     setmx.gml           QXO
+.fnc setnetent                  stnetent.gml    DOS     W WIN32
 .fnc _set_new_handler           setnew.gml      DOS QNX W WIN32
 .fnc set_new_handler            setnew.gml      DOS QNX W WIN32
 .fnc setpgid                    setpgid.gml         QXO
@@ -1192,7 +1222,9 @@
 .fnc _setpixel_w                gr_setpx.gml    DOS QNX W GRAPH
 .fnc _setplotaction             gr_setpa.gml    DOS QNX W GRAPH
 .fnc setprio                    setprio.gml         QXO
+.fnc setprotoent                stproent.gml    DOS     W WIN32
 .fnc setpwent                   setpwent.gml    DOS QNX W WIN32
+.fnc setservent                 stsrvent.gml    DOS     W WIN32
 .fnc setsid                     setsid.gml          QXO
 .fnc _settextalign              gr_setta.gml    DOS QNX W GRAPH
 .fnc _settextcolor              gr_settc.gml    DOS QNX W GRAPH
@@ -1460,6 +1492,7 @@
 .fnw wcstod                     strtod.gml      DOS QNX W WIN32
 .fnc strtok                     strtok.gml      DOS QNX W WIN32
 .fnf _fstrtok                   strtok.gml      DOS QNX W WIN32
+.fnf _fstrtok_r                 strtok.gml      DOS       WIN32
 .fnw wcstok                     strtok.gml      DOS QNX W WIN32
 .fnm _mbstok                    strtok.gml      DOS       WIN32
 .fnm _mbstok_r                  strtok.gml      DOS       WIN32
@@ -1467,7 +1500,6 @@
 .fnn _fmbstok_r                 strtok.gml      DOS       WIN32
 .fnc strtok_r                   strtok.gml      DOS       WIN32
 .fnc strtok_s                   strtok_s.gml    DOS       WIN32
-.fnf _fstrtok_r                 strtok.gml      DOS       WIN32
 .fnw wcstok_s                   strtok_s.gml    DOS       WIN32
 .fnc strtol                     strtol.gml      DOS QNX W WIN32
 .fnw wcstol                     strtol.gml      DOS QNX W WIN32

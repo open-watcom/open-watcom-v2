@@ -10,13 +10,18 @@
 
 :include owrtlink.sp
 
-#ifndef _SYS_SOCKET_H_INCLUDED
- #include <sys/socket.h>        /* for AF_INET */
-#endif
+:include syssock.sp
 
 :include cpluspro.sp
 
 :include lnxkpack.sp
+
+struct netent {
+    char     *n_name;       /* official network name */
+    char     **n_aliases;   /* alias list */
+    int      n_addrtype;    /* address type */
+    uint32_t n_net;         /* network number */
+};
 
 struct protoent {
     char    *p_name;        /* official protocol name */
@@ -31,7 +36,6 @@ struct servent {
     char    *s_proto;       /* protocol to use */
 };
 
-
 struct hostent {
     char    *h_name;        /* official name of host */
     char    **h_aliases;    /* alias list */
@@ -42,6 +46,20 @@ struct hostent {
 #define h_addr  h_addr_list[0]  /* for backward compatibility */
 
 _WCRTDATA extern int h_errno;
+
+#define HOST_NOT_FOUND 1
+#define TRY_AGAIN      2
+#define NO_RECOVERY    3
+#define NO_DATA        4
+
+/* GNU libc compatibility */
+#define NO_ADDRESS     NO_DATA
+
+_WCRTLINK extern struct netent   *getnetent( void );
+_WCRTLINK extern struct netent   *getnetbyaddr( uint32_t __naddr, int __type );
+_WCRTLINK extern struct netent   *getnetbyname( const char *__name );
+_WCRTLINK extern void            setnetent( int __stayopen );
+_WCRTLINK extern void            endnetent( void );
 
 _WCRTLINK extern struct protoent *getprotoent( void );
 _WCRTLINK extern struct protoent *getprotobyname( const char *__name );
@@ -56,9 +74,11 @@ _WCRTLINK extern void            setservent( int __stayopen );
 _WCRTLINK extern void            endservent( void );
 
 _WCRTLINK extern struct hostent  *gethostbyname( const char *__name );
-_WCRTLINK extern struct hostent  *gethostbyaddr( const char *__addr, int __len, int __type );
+_WCRTLINK extern struct hostent  *gethostbyaddr( const void *__addr, socklen_t __len, int __type );
+_WCRTLINK extern struct hostent  *gethostent(void);
 _WCRTLINK extern void            sethostent( int __stayopen );
 _WCRTLINK extern void            endhostent( void );
+
 _WCRTLINK extern void            herror( const char *__s );
 _WCRTLINK extern const char      *hstrerror( int __err );
 

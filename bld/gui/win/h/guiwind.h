@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,7 @@
     #include <commdlg.h>
 #endif
 
+#include "commonui.h"
 #include "wpitypes.h"
 #include "wpi.h"
 #include "guiwpi.h"
@@ -96,7 +98,7 @@ typedef struct wnd_colour {
 } wnd_colour;
 
 typedef struct toolbarinfo {
-    struct toolbar      *hdl;
+    toolbar             *hdl;
     TOOLDISPLAYINFO     info;
     WPI_RECT            floatrect;
     WPI_RECT            fixedrect;
@@ -131,7 +133,7 @@ typedef struct gui_window {
     HBRUSH              bk_brush;
     WPI_PRES            hdc;
     PAINTSTRUCT         *ps;
-    toolbarinfo         *toolbar;
+    toolbarinfo         *tbinfo;
     gui_create_styles   style;
     gui_scroll_styles   scroll;
     gui_flags           flags;
@@ -157,8 +159,8 @@ typedef struct gui_window {
     control_item        *controls;
     WPI_HICON           icon;
     popup_info          *popup;
-    WPI_RECT            root_client;
-    WPI_RECT            hwnd_client;
+    WPI_RECT            root_client_rect;
+    WPI_RECT            hwnd_client_rect;
     gui_paint_info      root_pinfo;
     gui_paint_info      hwnd_pinfo;
 };

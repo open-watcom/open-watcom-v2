@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,16 @@
 
 
 #include "vi.h"
+#include "getspcmd.h"
 
-char *ExeExtensions[] = { "" };
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 
-char *InternalCommands[] = {
-    ""
-};
+const char *InternalCommands[] = { "" };
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char * );
+
+const char *ExeExtensions[] = { "" };
+
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 
 void ResetSpawnScreen( void ) {}
 

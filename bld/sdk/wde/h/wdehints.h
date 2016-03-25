@@ -45,7 +45,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WdeDisplayHint( int id );
+extern void WdeDisplayHint( ctl_id id );
 extern void WdeHandleMenuSelect( WPARAM, LPARAM );
 extern bool WdeInitHints( void );
 extern void WdeFiniHints( void );

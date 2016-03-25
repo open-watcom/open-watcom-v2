@@ -33,7 +33,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-static int MouseOn = FALSE;
+static bool mouseOn = false;
 
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
@@ -43,17 +43,17 @@ void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 
 
 void UIAPI uimouse( int func )
-/*****************************/
+/****************************/
 {
     if( func == MOUSE_ON ) {
-        if( !MouseOn ) {
+        if( !mouseOn ) {
             RdosShowMouse();
-            MouseOn = TRUE;
+            mouseOn = true;
         }
     } else {
-        if( MouseOn ) {
+        if( mouseOn ) {
             RdosHideMouse();
-            MouseOn = FALSE;
+            mouseOn = false;
         }
     }
 }

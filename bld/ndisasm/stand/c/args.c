@@ -34,8 +34,8 @@
 #include <ctype.h>
 #include <string.h>
 #include "wio.h"
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "banner.h"
 #include "args.h"
 #include "buffer.h"
@@ -237,7 +237,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             if( !isspace( *cmd ) ) {
-                                LabelChar = toupper( *cmd );
+                                LabelChar = (char)toupper( *(unsigned char *)cmd );
                             } else {
                                 printUsage( INVALID_I );
                             }

@@ -333,6 +333,7 @@ static int ParseVariable( const char *var, char **argv, char *buf )
 
     output_data = ( buf != NULL ) && ( argv != NULL );
     bufend = buf;
+    bufstart = NULL;
     argc = 0;
     for( ;; ) {
         got_quote = false;

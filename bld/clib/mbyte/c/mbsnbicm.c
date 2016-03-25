@@ -54,7 +54,7 @@ _WCRTLINK int _NEARFAR(_mbsnbicmp,_fmbsnbicmp)( const unsigned char _FFAR *s1, c
         if( n >= MB_LEN_MAX ) {
             status = _NEARFAR(_mbcicmp,_fmbcicmp)( s1, s2 );    /* compare */
         } else {
-            status = _NEARFAR(strnicmp,_fstrnicmp)( s1, s2, n );/* compare */
+            status = _NEARFAR(strnicmp,_fstrnicmp)( (const char _FFAR *)s1, (const char _FFAR *)s2, n );/* compare */
         }
         if( status != 0 )  break;                   /* if error, exit loop */
         bytes = _NEARFAR(_mbclen,_fmbclen)( s1 );   /* char size in bytes */

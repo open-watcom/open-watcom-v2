@@ -56,14 +56,14 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory - save the current directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     STUPID_UINT         c;
     unsigned long       map;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     DosQCurDisk( &c, &map );
-    oldDisk = (char) c;
+    oldDisk = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }
@@ -76,7 +76,7 @@ void PushDirectory( char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     DosSelectDisk( oldDisk );
@@ -87,16 +87,16 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
-    int                 base,nbase;
-    VIOCURSORINFO       vioCursor;
+    unsigned char   base,nbase;
+    VIOCURSORINFO   vioCursor;
 
-    id = id;
+    wid = wid;
     VioGetCurType( &vioCursor, 0 );
     base = vioCursor.cEnd;
-    nbase = (base * (int)(100 - ct.height)) / 100;
-    BIOSNewCursor( (char) nbase, base - 1 );
+    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
+    BIOSNewCursor( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -251,14 +251,14 @@ drive_type DoGetDriveType( int drv )
     for( i = 'A'; i <= 'Z'; i++ ) {
         if( drv == i ) {
             if( map & 1 ) {
-                return( DRIVE_IS_FIXED );
+                return( DRIVE_TYPE_IS_FIXED );
             } else {
-                return( DRIVE_NONE );
+                return( DRIVE_TYPE_NONE );
             }
         }
         map >>= 1;
     }
-    return( DRIVE_NONE ); // to quiet the compiler
+    return( DRIVE_TYPE_NONE ); // to quiet the compiler
 
 } /* DoGetDriveType */
 
@@ -282,17 +282,17 @@ void SetCursorBlinkRate( int cbr )
 
 vi_key GetKeyboard( void )
 {
-    unsigned short  key;
-    int             scan;
-    bool            shift;
+    unsigned    code;
+    unsigned    scan;
+    bool        shift;
 
-    key = BIOSGetKeyboard( &scan );
+    code = BIOSGetKeyboard( &scan );
     shift = ShiftDown();
-    key &= 0xff;
-    if( key == 0xE0 && scan != 0 ) {
-        key = 0;
+    code &= 0xff;
+    if( code == 0xE0 && scan != 0 ) {
+        code = 0;
     }
-    return( GetVIKey( key, scan, shift ) );
+    return( GetVIKey( code, scan, shift ) );
 }
 
 bool KeyboardHit( void )
@@ -300,7 +300,7 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned nchars )
+void MyVioShowBuf( size_t offset, unsigned nchars )
 {
     BIOSUpdateScreen( offset, nchars );
 }

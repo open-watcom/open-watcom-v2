@@ -40,26 +40,25 @@
 #include "spawn.h"
 #include "dui.h"
 #include "dbgutil.h"
-
-
-extern void             NewLang( const char *lang );
-extern void             ProcACmd( void );
-extern bool             IsInternalMod( mod_handle );
-extern bool             HookPendingPush( void );
+#include "dbgmain.h"
+#include "dbgpend.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgset.h"
 
 
 static bool ProcPending( void )
 {
     for( ;; ) {
         for( ;; ) {
-            if( InpStack == NULL ) return( FALSE );
+            if( InpStack == NULL ) return( false );
             if( InpStack->type & INP_NEW_LANG ) {
                 InpStack->type &= ~INP_NEW_LANG;
                 if( (CodeAddrMod != NO_MOD) && !IsInternalMod( CodeAddrMod ) ) {
                     NewLang( ModSrcLang( CodeAddrMod ) );
                 }
             }
-            if( InpStack->type & INP_STOP_PURGE ) return( FALSE );
+            if( InpStack->type & INP_STOP_PURGE ) return( false );
             if( InpStack->type & INP_NO_CMD ) break;
             if( CurrToken == T_LINE_SEPARATOR ) break;
             _SwitchSet( SW_CMD_INTERACTIVE, !(InpStack->type & (INP_BREAK_POINT|INP_HOOK)));
@@ -73,7 +72,8 @@ static bool ProcPending( void )
 
 void DoProcPending( void )
 {
-    while( ProcPending() ) ;
+    while( ProcPending() )
+        ;
     _SwitchOn( SW_CMD_INTERACTIVE );
     _SwitchOff( SW_IN_REPLAY_MODE );
 }

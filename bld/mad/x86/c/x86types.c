@@ -139,7 +139,7 @@ walk_result     DIGENTRY MITypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     }
 
     for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
-        if( TypeArray[th].io <= iol || TypeArray[th].mem <= meml ) {
+        if( (int)TypeArray[th].io <= iol || (int)TypeArray[th].mem <= meml ) {
             if( tk & TypeArray[th].u.info->b.kind ) {
                 wr = wk( th, data );
                 if( wr != WR_CONTINUE ) return( wr );
@@ -154,7 +154,7 @@ mad_string      DIGENTRY MITypeName( mad_type_handle th )
     return( TypeArray[th].name );
 }
 
-unsigned        DIGENTRY MITypePreferredRadix( mad_type_handle th )
+mad_radix       DIGENTRY MITypePreferredRadix( mad_type_handle th )
 {
     return( TypeArray[th].hex ? 16 : 10 );
 }
@@ -163,7 +163,7 @@ void            DIGENTRY MITypeInfo( mad_type_handle th, mad_type_info *ti )
 {
     memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
     if( TypeArray[th].u.b == &BIT.b || TypeArray[th].u.b == &MMX_TITLE || TypeArray[th].u.b == &XMM_TITLE ) {
-        ti->b.handler_code = th;
+        ti->b.handler_code = (unsigned_8)th;
     }
 }
 
@@ -205,9 +205,9 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+mad_status      DIGENTRY MITypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
-    unsigned    buff_size;
+    size_t      buff_size;
 
     radix = radix;
 

@@ -15,10 +15,11 @@ XAM_EMPTY       equ     41h
 XAM_DENORMAL    equ     44h
 
 ;
-;  input:
-;       AX - pointer to long double
+;       input:  AX - pointer to long double operand
 ;
+
         defp    __fxam
+
         push    BX                      ; save BX
         push    DX                      ; save DX
         mov     BX,AX                   ; get pointer to top of stack
@@ -83,5 +84,6 @@ XAM_DENORMAL    equ     44h
         pop     DX                      ; restore DX
         pop     BX                      ; restore BX
         ret                             ; return
-__fxam  endp
+
+        endproc __fxam
 

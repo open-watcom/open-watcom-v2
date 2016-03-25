@@ -39,5 +39,5 @@
 
 _WCRTLINK int __F_NAME(isascii,iswascii)( INTCHAR_TYPE c )
 {
-    return( (unsigned)(c) <= 0x7f );
+    return( (UINTCHAR_TYPE)(c) <= 0x7f );
 }

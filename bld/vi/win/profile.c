@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,23 +64,9 @@ static bool     saveConfig;
 #endif
 
 /*
- * getInt - parse an int from a string
- */
-static bool getInt( char *str, STUPIDINT *i )
-{
-    DWORD       tmp;
-    bool        rc;
-
-    rc = GetDWORD( str, &tmp );
-    *i = (STUPIDINT) tmp;
-    return( rc );
-
-} /* getInt */
-
-/*
  * getProfileString - get a string from the profile
  */
-static void getProfileString( char *key, char *initial, char *buffer )
+static void getProfileString( const char *key, const char *initial, char *buffer )
 {
     GetPrivateProfileString( EditorName, key, initial, buffer, MAX_STR, iniFile );
 
@@ -88,22 +75,30 @@ static void getProfileString( char *key, char *initial, char *buffer )
 /*
  * getProfileRect - get a rectangle from the profile
  */
-static void getProfileRect( char *key, char *initial, RECT *r )
+static void getProfileRect( const char *key, const char *initial, RECT *r )
 {
     char        str[MAX_STR];
+    DWORD       tmp;
+    bool        rc;
+    const char  *ptr;
 
     getProfileString( key, initial, str );
-    getInt( str, &r->left );
-    getInt( str, &r->top );
-    getInt( str, &r->right );
-    getInt( str, &r->bottom );
+    ptr = str;
+    rc = GetDWORD( &ptr, &tmp );
+    r->left = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->top = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->right = (STUPIDINT)tmp;
+    rc = GetDWORD( &ptr, &tmp );
+    r->bottom = (STUPIDINT)tmp;
 
 } /* getProfileRect */
 
 /*
  * getProfileLong - get a long integer from the profile
  */
-static long getProfileLong( char *key )
+static long getProfileLong( const char *key )
 {
     char        buffer[32];
 
@@ -115,7 +110,7 @@ static long getProfileLong( char *key )
 /*
  * writeProfileString - write a string to the profile
  */
-static void writeProfileString( char *key, char *buffer )
+static void writeProfileString( const char *key, char *buffer )
 {
     WritePrivateProfileString( EditorName, key, buffer, iniFile );
 
@@ -124,7 +119,7 @@ static void writeProfileString( char *key, char *buffer )
 /*
  * writeProfileRect - write a rectangle to the profile
  */
-static void writeProfileRect( char *key, RECT *r )
+static void writeProfileRect( const char *key, RECT *r )
 {
     char        str[MAX_STR];
 
@@ -136,7 +131,7 @@ static void writeProfileRect( char *key, RECT *r )
 /*
  * writeProfileLong - write a long integer to the profile
  */
-static void writeProfileLong( char *key, long value )
+static void writeProfileLong( const char *key, long value )
 {
     char        str[MAX_STR];
 
@@ -179,12 +174,12 @@ static void readInitialPosition( void )
 /*
  * writeInitialPosition - write out the initial position information
  */
-void writeInitialPosition( void )
+static void writeInitialPosition( void )
 {
     if( !EditFlags.SavePosition ) {
         memset( &RootRect, 0, sizeof( RECT ) );
     }
-    if( !IsIconic( Root ) ){
+    if( !IsIconic( root_window_id ) ){
         writeProfileRect( keyInitialPosition, &RootRect );
         writeProfileLong( keyInitialPositionState, RootState );
     }
@@ -221,13 +216,13 @@ static void getConfigFilePaths( void )
 #else
     GetWindowsDirectory( path, FILENAME_MAX );
 #endif
-    AddString2( &iniPath, path );           /* these freed in WriteProfile */
+    ReplaceString( &iniPath, path );           /* these freed in WriteProfile */
     VarAddGlobalStr( "IniPath", iniPath );  /* make accessable to scripts */
     strcat( path, "\\" INI_FILE );
-    AddString2( &iniFile, path);
+    ReplaceString( &iniFile, path);
     strcpy( path, iniPath );
     strcat( path, "\\" CONFIG_INI );
-    AddString2( &cfgFile, path);
+    ReplaceString( &cfgFile, path);
 
 } /* getConfigFilePaths */
 
@@ -246,7 +241,7 @@ static void readConfigFile( void )
     cfgTime = getProfileLong( keyCfgTime );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
-    if( cname[0] != 0 ) {
+    if( cname[0] != '\0' ) {
         stat( cname, &cfg );
         new_cfgtime = cfg.st_mtime;
         if( cfgTime == 0 ) {
@@ -261,7 +256,7 @@ static void readConfigFile( void )
         if( new_cfgtime > cfgTime ) {
             MySprintf( str, "The configuration file \"%s\" is newer than your .INI file, do you wish to use the new configuration?",
                        cname );
-            rc = MessageBox( (HWND) NULL, str, EditorName, MB_YESNO | MB_TASKMODAL );
+            rc = MessageBox( NO_WINDOW, str, EditorName, MB_YESNO | MB_TASKMODAL );
             if( rc == IDYES ) {
                 cfgTime = new_cfgtime;
             }

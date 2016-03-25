@@ -3,9 +3,10 @@
 host_os  = linux
 host_cpu = 386
 
-os    = linux
+target_cpu = x86
+target_os  = linux
+
 srv   = tcp
-cpu   = x86
 which = SERVER
 remote_link = 1
 

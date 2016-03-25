@@ -822,6 +822,9 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #endif
             fn_flags = fn_type->flag;
+            if( fn_flags & TF1_NORETURN ) {
+                value |= SUICIDAL;
+            }
 #if _INTEL_CPU
             // don't export addressability thunks
             if( (sym->flag & SF_ADDR_THUNK) == 0 ) {
@@ -1546,6 +1549,11 @@ bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     return( (getLangInfo( sym )->cclass & SUICIDAL) != 0 );
 }
 
+bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
+    SYMBOL func )               // - function symbol
+{
+    return( func->flag & TF1_NORETURN );
+}
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
     cg_sym_handle _sym )        // - symbol

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,8 +320,7 @@ void DoDump( HWND hwnd )
 /*
  * DumpDialog - get dump info
  */
-BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -332,11 +332,11 @@ BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
         _splitpath( DTModuleEntry.szExePath, drive, dir, fname, ext );
         _makepath( dumpFile, drive, dir, fname, ".dmp" );
         strlwr( dumpFile );
-        #if 0
-            SetCourierFont( hwnd, DUMP_FILE_NAME );
-            SetCourierFont( hwnd, DUMP_MODULE_NAME );
-            SetCourierFont( hwnd, DUMP_EXE_NAME );
-        #endif
+#if 0
+        SetCourierFont( hwnd, DUMP_FILE_NAME );
+        SetCourierFont( hwnd, DUMP_MODULE_NAME );
+        SetCourierFont( hwnd, DUMP_EXE_NAME );
+#endif
         SetDlgItemText( hwnd, DUMP_FILE_NAME, dumpFile );
         SetDlgItemText( hwnd, DUMP_MODULE_NAME, DTModuleEntry.szModule );
         SetDlgItemText( hwnd, DUMP_EXE_NAME, DTModuleEntry.szExePath );
@@ -450,8 +450,7 @@ static void FillTaskList( HWND hwnd )
 /*
  * DebuggerOptDlg - manage the dialog to get debugger options
  */
-BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
 
@@ -483,11 +482,10 @@ BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, WORD msg, WORD wparam,
 /*
  * DumpAnyDialog - select a task to dump
  */
-BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
-    int         i,j;
+    int         i, j;
     FARPROC     fp;
 
     lparam = lparam;
@@ -510,10 +508,10 @@ BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, WORD msg, WORD wparam,
             FillTaskList( hwnd );
             break;
         case TASKCTL_TASKLIST:
-            i = SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
+            i = (int)SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
             SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
             SetDlgItemText( hwnd, TASKCTL_TASKNAME, str );
-            j = strlen( str )-1;
+            j = strlen( str ) - 1;
             currTask = 0;
             i = 1;
             while( str[j] != '=' ) {

@@ -136,7 +136,7 @@ rules
         PurgePgmStack
         @assignment
     ;
-    
+
 !ifdef CPP
 
     get_dtor >>bool:
@@ -154,7 +154,7 @@ rules
         ScanRestore
         >>false
     ;
-    
+
     get_operator >>bool:
         [
         | ET_OPERATOR:
@@ -180,7 +180,7 @@ rules
                 >>false
               | *:
           ]
-            
+
         ]
         >>true
     ;
@@ -195,8 +195,7 @@ rules
             >>true
         ]
     ;
-       
-    
+
 !endif
 
 
@@ -391,7 +390,7 @@ rules
             #err_illegal_type_spec
         ]
     ;
-    
+
 !else
 
    push_scalar_type:
@@ -426,7 +425,7 @@ rules
             #err_illegal_type_spec
         ]
     ;
-    
+
    push_scalar_type_old:        %OBSOLETE
         [BitsGet
           | bits_void:
@@ -746,14 +745,14 @@ rules
                 @relational
                 [SkipCount
                   | 0:
-                    DoTstEQ(1)
+                    DoTstEQ( 1 )
                   | *:
                 ]
               | ET_NE:
                 @relational
                 [SkipCount
                   | 0:
-                    DoTstEQ(1)
+                    DoTstEQ( 1 )
                     PushInt( 1 )
                     DoXor
                   | *:
@@ -979,7 +978,7 @@ rules
             [SkipCount
               | 0:
                 PushInt( 0 )
-                DoTstEQ(1)
+                DoTstEQ( 1 )
               | *:
             ]
           | ET_SIZEOF:
@@ -1053,7 +1052,7 @@ rules
                         @nest_callexpr
                         [SkipCount
                           | 0:
-                            StackValue(0)
+                            StackValue( 0 )
                             StackSwap( 1 )
                           | *:
                         ]
@@ -1129,7 +1128,7 @@ rules
         [SkipCount
         | 0:
 !ifdef JAVA
-          [StackSymKind(1)
+          [StackSymKind( 1 )
           | SK_NAMESPACE:
             DoScope( false )
           | *:
@@ -1155,7 +1154,7 @@ rules
             @primary
             [SkipCount
               | 0:
-                DoTstExist(1)
+                DoTstExist( 1 )
               | *:
             ]
           | *:
@@ -1178,13 +1177,13 @@ rules
 !ifdef CPP
     push_cpp_name:
       @push_token
-      [StackForm(0)
+      [StackForm( 0 )
       | SF_NAME:
       | *:
         #err_loc_and_want_name
       ]
     ;
-    
+
     handle_scoping:
       {
         [
@@ -1250,7 +1249,7 @@ rules
           | *:
             @push_token
 !ifdef CPP
-            [StackForm(0)
+            [StackForm( 0 )
             | SF_NAME:
               @handle_scoping
             | *:

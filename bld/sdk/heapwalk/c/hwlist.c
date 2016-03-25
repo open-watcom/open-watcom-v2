@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,11 +296,11 @@ BOOL FormatHeapListItem( char *line, unsigned index )
 
 static BOOL SaveGlobalListState( HWND boxhwnd, GlobStateStruct *state ) {
 
-    LRESULT     top, sel;
+    int     top, sel;
 
     if( HeapList == NULL ) return( FALSE );
-    top = SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
-    sel = SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
+    top = (int)SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
+    sel = (int)SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
     if( sel != LB_ERR && sel < HeapListSize ) {
         state->sel = *HeapList[sel];
         state->sel_valid = TRUE;

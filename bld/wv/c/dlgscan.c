@@ -38,15 +38,12 @@
 #include "spawn.h"
 #include "mad.h"
 #include "dbgscan.h"
+#include "dbgexpr.h"
+#include "dbgparse.h"
+#include "dlgscan.h"
+#include "dbglkup.h"
 
 
-extern unsigned long    ReqLongExpr( void );
-extern void             ReqMemAddr( memory_expr, address * );
-extern void             NormalExpr( void );
-extern void             ChkExpr( void );
-extern void             FreezeStack( void );
-extern void             UnFreezeStack( bool );
-extern mod_handle       LookupModName( mod_handle, const char *, unsigned );
 extern void             RawScanInit( void );
 
 
@@ -95,7 +92,7 @@ OVL_EXTERN void GetModName( void *value )
     size_t      len;
 
     RawScanInit();
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     mod = LookupModName( NO_MOD, start, len );
     if( mod == NO_MOD ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), start, len );
@@ -114,7 +111,7 @@ static bool DlgDoScan( const char *str, void *value, wv_spawn_funcP *rtn )
     _SwitchOn( SW_ERR_IN_TXTBUFF );
     FreezeStack();
     ok = ( SpawnP( rtn, value ) == 0 );
-    UnFreezeStack( FALSE );
+    UnFreezeStack( false );
     _SwitchOff( SW_ERR_IN_TXTBUFF );
     ReScan( old );
     return( ok );
@@ -160,7 +157,7 @@ bool DlgScanAny( const char *str, void *value )
 bool DlgScanString( const char *str, void *value )
 {
     strcpy( value, str );
-    return( TRUE );
+    return( true );
 }
 
 bool DlgScanModName( const char *str, void *value )

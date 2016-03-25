@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +37,18 @@
 #include "ldstr.h"
 
 typedef struct {
-    WORD        menuid;
-    MSGID       msgid;
+    ctl_id      menuid;
+    msg_id      msgid;
 } MenuItemHint;
 
-void            HintToolBar( statwnd *wnd, WORD menuid, bool select );
-WORD            SizeHintBar( statwnd *wnd );
-void            HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
-MenuItemHint    *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt );
-statwnd         *HintWndCreate( HWND parent, RECT *size, HINSTANCE hinstance, LPVOID lpvParam );
-void            HintWndDestroy( statwnd *wnd );
-bool            HintWndInit( HINSTANCE hinstance, statushook hook, int extra );
-void            HintFini( void );
-HWND            GetHintHwnd( statwnd *wnd );
+void                HintToolBar( statwnd *wnd, ctl_id menuid, bool select );
+WORD                SizeHintBar( statwnd *wnd );
+void                HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
+const MenuItemHint  *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt );
+statwnd             *HintWndCreate( HWND parent, RECT *size, HINSTANCE hinstance, LPVOID lpvParam );
+void                HintWndDestroy( statwnd *wnd );
+bool                HintWndInit( HINSTANCE hinstance, statushook hook, int extra );
+void                HintFini( void );
+HWND                GetHintHwnd( statwnd *wnd );
 
 #endif /* _HINT_H_INCLUDED */

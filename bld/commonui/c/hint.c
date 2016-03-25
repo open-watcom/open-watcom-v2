@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "bool.h"
 #include "hint.h"
 #include "uistr.gh"
@@ -38,9 +39,9 @@
 
 typedef struct {
     HWND                parent;
-    MSGID               curmsg;
+    msg_id              curmsg;
     WORD                hintlen;
-    MenuItemHint        *hints;
+    const MenuItemHint  *hints;
 } HintWndInfo;
 
 #define HINT_PROP_ID    "info"
@@ -48,14 +49,14 @@ typedef struct {
 /*
  * getItemMsg - find the hint message for the specified menu item
  */
-static MSGID getItemMsg( statwnd *wnd, WORD menuid )
+static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
 {
     WORD                i;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
-    MenuItemHint        *hinttable;
-    MSGID               msgid;
+    const MenuItemHint  *hinttable;
+    msg_id              msgid;
 
     hint = GetHintHwnd( wnd );
     hinfo = GetProp( hint, HINT_PROP_ID );
@@ -78,7 +79,7 @@ static MSGID getItemMsg( statwnd *wnd, WORD menuid )
 /*
  * updateHintText - updated the text shown when a menu item is selected
  */
-static void updateHintText( statwnd *wnd, MSGID msgid )
+static void updateHintText( statwnd *wnd, msg_id msgid )
 {
     HDC         dc;
     HFONT       font;
@@ -104,9 +105,9 @@ static void updateHintText( statwnd *wnd, MSGID msgid )
 /*
  * HintToolbar - handle the selection or deselection of a menu item
  */
-void HintToolBar( statwnd *wnd, WORD menuid, bool select )
+void HintToolBar( statwnd *wnd, ctl_id menuid, bool select )
 {
-    MSGID   msgid;
+    msg_id  msgid;
 
     if( select ) {
         msgid = getItemMsg( wnd, menuid );
@@ -142,8 +143,7 @@ WORD SizeHintBar( statwnd *wnd )
     ReleaseDC( hint, dc );
     GetClientRect( info->parent, &area );
     area.top = area.bottom - sz.cy - TOTAL_VERT;
-    MoveWindow( hint, area.left, area.top, area.right - area.left,
-                area.bottom - area.top, TRUE );
+    MoveWindow( hint, area.left, area.top, area.right - area.left, area.bottom - area.top, TRUE );
     updateHintText( wnd, info->curmsg );
     GetWindowRect( hint, &area );
     LocalUnlock( hinfo );
@@ -158,33 +158,34 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     HMENU       menu;
     WORD        flags;
-    MSGID       msgid;
+    msg_id      msgid;
 
-    menu = GetMenu( hwnd );
-    flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
-    if( flags == (WORD)-1 &&
-        GET_WM_MENUSELECT_HMENU( wparam, lparam ) == (HMENU)NULL ) {
+    if( MENU_CLOSED( wparam, lparam ) ) {
         updateHintText( wnd, HINT_EMPTY );
-    } else if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-        updateHintText( wnd, HINT_EMPTY );
-    } else if( flags & MF_POPUP ) {
-        //
-        // NYI handle popup message hints
-        //
     } else {
-        msgid = getItemMsg( wnd, GET_WM_MENUSELECT_ITEM( wparam, lparam ) );
-        updateHintText( wnd, msgid );
+        menu = GetMenu( hwnd );
+        flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
+        if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
+            updateHintText( wnd, HINT_EMPTY );
+        } else if( flags & MF_POPUP ) {
+            //
+            // NYI handle popup message hints
+            //
+        } else {
+            msgid = getItemMsg( wnd, GET_WM_MENUSELECT_ITEM( wparam, lparam ) );
+            updateHintText( wnd, msgid );
+        }
     }
 
 } /* HintMenuSelect */
 
 /*
- * SetHintText - set the hint text for the specified menu items
+ * SetHintsText - set the hint text for the specified menu items
  */
-MenuItemHint *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
+const MenuItemHint *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt )
 {
     HintWndInfo         *info;
-    MenuItemHint        *ret;
+    const MenuItemHint  *ret;
     HLOCAL              hinfo;
     HWND                hint;
 
@@ -197,7 +198,7 @@ MenuItemHint *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt )
     LocalUnlock( hinfo );
     return( ret );
 
-} /* SetHintText */
+} /* SetHintsText */
 
 /*
  * HintWndCreate - create a hint status bar

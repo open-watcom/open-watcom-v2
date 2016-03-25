@@ -37,7 +37,7 @@
 #include <malloc.h>
 #include <dos.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "winstubs.h"
 #include "_mmsyste.h"
 
@@ -299,7 +299,7 @@ HMMIO FAR PASCAL __mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
     if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST
                                 | MMIO_GETTEMP) ) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            DPMIGetHugeAlias( (DWORD) lpmmioinfo->pchBuffer, &alias,
+            _DPMIGetHugeAlias( (DWORD) lpmmioinfo->pchBuffer, &alias,
                                 lpmmioinfo->cchBuffer );
             lpmmioinfo->pchBuffer = (LPVOID) alias;
         }
@@ -347,7 +347,7 @@ UINT FAR PASCAL __mmioClose( HMMIO hmmio, UINT flags )
     prev = NULL;
     while( curr != NULL ) {
         if( curr->handle == hmmio ) {
-            DPMIFreeHugeAlias( curr->alias, curr->size );
+            _DPMIFreeHugeAlias( curr->alias, curr->size );
             if( prev == NULL ) {
                 mminfoListHead = curr->next;
             } else {
@@ -409,9 +409,9 @@ LONG FAR PASCAL __mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
         mmsystemmmioRead = BackPatch_mmsystem( "mmioRead" );
         if( mmsystemmmioRead == NULL ) return( 0 );
     }
-    DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
+    _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioRead( hmmio, (HPSTR) alias, cch );
-    DPMIFreeHugeAlias( alias, cch );
+    _DPMIFreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioRead */
@@ -428,9 +428,9 @@ LONG FAR PASCAL __mmioWrite( HMMIO hmmio, HPSTR pch, LONG cch )
         mmsystemmmioWrite = BackPatch_mmsystem( "mmioWrite" );
         if( mmsystemmmioWrite == NULL ) return( 0 );
     }
-    DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
+    _DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
     rc = mmsystemmmioWrite( hmmio, (HPSTR) alias, cch );
-    DPMIFreeHugeAlias( alias, cch );
+    _DPMIFreeHugeAlias( alias, cch );
     return( rc );
 
 } /* __mmioWrite */

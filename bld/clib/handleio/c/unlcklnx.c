@@ -36,6 +36,7 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 
 // TODO: Need Linux POSIX library!
 #if 0

@@ -32,6 +32,8 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
 #include <sys/resource.h>
@@ -98,6 +100,23 @@ static int __sysconf_pages( int name )
 #endif
 }
 
+static int __sysconf_somaxconn( )
+{
+    FILE *fp;
+    int ret;
+    char line[16];
+    
+    ret = 128;
+    fp = fopen("/proc/sys/net/core/somaxconn", "r");
+    if(fp != NULL) {
+        if(fgets(line, 16, fp) != NULL) {
+            ret = atoi(line);
+        }
+        fclose(fp);
+    }
+    return ret;
+}
+
 _WCRTLINK long sysconf( int name )
 {
     int ret;
@@ -153,6 +172,9 @@ _WCRTLINK long sysconf( int name )
     case _SC_NPROCESSORS_CONF:
     case _SC_NPROCESSORS_ONLN:
         ret = __sysconf_nprocessors();
+        break;
+    case _SC_SOMAXCONN:
+        ret = (long)__sysconf_somaxconn();
         break;
     default:
         _RWD_errno = EINVAL;

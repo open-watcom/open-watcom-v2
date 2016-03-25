@@ -60,7 +60,8 @@ void WndSelectEvent( a_window *wnd, gui_event event, void *parm )
         case GUI_KEY_RIGHT:
         case GUI_KEY_HOME:
         case GUI_KEY_END:
-            if( GUI_SHIFT( state ) ) return;
+            if( GUI_SHIFT_STATE( state ) )
+                return;
         case GUI_KEY_ESCAPE:
             WndNoSelect( wnd );
             break;

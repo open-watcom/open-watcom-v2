@@ -138,7 +138,7 @@ static bool ACueFile( void *_info, dr_line_file *curr )
         }
         cont = FALSE;
     }
-    return( cont  );
+    return( cont );
 }
 
 
@@ -173,13 +173,13 @@ static bool IsRelPathname( const char *name )
 }
 
 
-unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                                          char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                          char *buff, size_t buff_size )
 /************************************************************************/
 {
     char            *name;
     file_walk_name  wlk;
-    unsigned        len;
+    size_t          len;
     dr_handle       stmts;
     dr_handle       cu_tag;
     int             i;
@@ -420,6 +420,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     cue.fno = src->fno;
     cue.line = src->line;
     cue.col = src->col;
+    cue.mach = src->a.mach;
     find = LINE_NOT;
     while( 0 != adj ) {
         find = FindCue( cue_map, &cue, start_state );
@@ -584,10 +585,12 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     if( file == 0 ) {   // primary file
         cue.fno = 1;
     } else {
-        cue.fno = file;
+        cue.fno = (uint_16)file;
     }
     cue.line = line;
-    cue.col = column;
+    cue.col = (uint_16)column;
+    cue.mach.offset = 0;
+    cue.mach.segment = 0;
     ic->a = NilAddr;
     if( line == 0 ) {
         what = LOOK_FILE;

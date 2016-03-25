@@ -51,7 +51,7 @@ static bool             CaptureOk;
 
 extern void CaptureError( void )
 {
-    CaptureOk = FALSE;
+    CaptureOk = false;
 }
 
 OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
@@ -62,9 +62,9 @@ OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds->buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
         FreeCmdList( cmds );
         old = ReScan( LIT_ENG( Empty ) );
@@ -73,9 +73,9 @@ OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
         if( CaptureOk ) {
             WndTmpFileInspect( FileName );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -88,7 +88,7 @@ extern void ProcCapture( void )
     char        *p;
     char        *end;
 
-    if( !ScanItem( FALSE, &start, &len ) )
+    if( !ScanItem( false, &start, &len ) )
         Error( ERR_NONE, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     ReqEOC();
     cmds = AllocCmdList( start, len );
@@ -97,13 +97,13 @@ extern void ProcCapture( void )
     p = CnvULongHex( TaskId, p, end - p );
     *p++ = RemFile.ext_separator;
     p = CnvULongDec( FileNum++, p, end - p );
-    *p = '\0';
+    *p = NULLCHAR;
     old = ReScan( FileName+PREFIX_LEN );
     StdOutNew();
     ReScan( old );
     cmds->use++;
-    CaptureOk = TRUE;
-    PushInpStack( cmds, DoneCapture, FALSE );
+    CaptureOk = true;
+    PushInpStack( cmds, DoneCapture, false );
     TypeInpStack( INP_CAPTURED );
     FreeCmdList( cmds );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +35,13 @@
 #include "posix.h"
 #include "win.h"
 #include "menu.h"
-#include "source.h"
 
 extern int      CurrentMenuNumber;
 
 /*
  * SelectFileOpen - select file from specified directory
  */
-vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs )
+vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool want_all_dirs )
 {
     char                dd[FILENAME_MAX], cdir[FILENAME_MAX];
     int                 j;
@@ -97,7 +97,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
             break;
         }
         if( sfd.sl == -1 ) {
-            result[0] = 0;
+            result[0] = '\0';
             break;
         }
         j = (int) sfd.sl - 1;
@@ -106,7 +106,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
                 GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
                 dd[0] = cline->data[3];
                 dd[1] = ':';
-                dd[2] = 0;
+                dd[2] = '\0';
             } else {
                 strcpy( dd, cdir );
                 if( dd[strlen(dd) - 1] != FILE_SEP ) {
@@ -130,7 +130,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
                 strcat( result, FILE_SEP_STR );
             }
         } else {
-            result[0] = 0;
+            result[0] = '\0';
         }
         strcat( result, DirFiles[j]->name );
         break;
@@ -146,7 +146,7 @@ vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_di
 
 } /* SelectFileOpen */
 
-static window_id        cWin;
+static window_id        cwid;
 static bool             isMenu;
 
 /*
@@ -161,9 +161,9 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     fcb         *cfcb, *tfcb;
     line        *cline;
     hilst       *ptr;
-    type_style  *text, *hot_key;
-    window_info *info;
-    type_style  base;
+    type_style  *text_style, *hot_key_style;
+    window_info *wi;
+    type_style  base_style;
     char        tmp[MAX_STR];
 //    bool        disabled;
     vi_rc       rc;
@@ -175,10 +175,10 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    base.foreground = WindowAuxInfo( cWin, WIND_INFO_TEXT_COLOR );
-    base.background = WindowAuxInfo( cWin, WIND_INFO_BACKGROUND_COLOR );
-    base.font = WindowAuxInfo( cWin, WIND_INFO_TEXT_FONT );
-    text_lines = WindowAuxInfo( cWin, WIND_INFO_TEXT_LINES );
+    base_style.foreground = WindowAuxInfo( cwid, WIND_INFO_TEXT_COLOR );
+    base_style.background = WindowAuxInfo( cwid, WIND_INFO_BACKGROUND_COLOR );
+    base_style.font = WindowAuxInfo( cwid, WIND_INFO_TEXT_FONT );
+    text_lines = WindowAuxInfo( cwid, WIND_INFO_TEXT_LINES );
 
     /*
      * mark all fcb's as being not in display
@@ -201,33 +201,33 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                 if( InvokeMenuHook( CurrentMenuNumber, cl ) == -1 ) {
 //                    disabled = true;
                     if( cl == hilite ) {
-                        info = &activegreyedmenu_info;
+                        wi = &activegreyedmenu_info;
                     } else {
-                        info = &greyedmenu_info;
+                        wi = &greyedmenu_info;
                     }
                 } else {
 //                    disabled = false;
                     if( cl == hilite ) {
-                        info = &activemenu_info;
+                        wi = &activemenu_info;
                     } else {
-                        info = &menuw_info;
+                        wi = &menuw_info;
                     }
                 }
-                text = &info->text;
-                hot_key = &info->hilight;
+                text_style = &wi->text_style;
+                hot_key_style = &wi->hilight_style;
             } else {
-                text = &base;
+                text_style = &base_style;
                 if( cl == hilite ) {
-                    text = style;
+                    text_style = style;
                 }
-                hot_key = text;
+                hot_key_style = text_style;
             }
 
             /*
              * now, display what we can of the line on the window
              */
             if( cline->len == 0 ) {
-                DisplayCrossLineInWindow( cWin, j );
+                DisplayCrossLineInWindow( cwid, j );
                 goto evil_goto;
             } else if( cline->len > leftcol ) {
                 if( vals != NULL ) {
@@ -236,17 +236,17 @@ static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
                     for( k = i; k < valoff; k++ ) {
                         tmp[k] = ' ';
                     }
-                    tmp[k] = 0;
+                    tmp[k] = '\0';
                     strcat( tmp, vals[j + pagetop - 2] );
-                    DisplayLineInWindowWithColor( cWin, j, tmp, text, 0 );
+                    DisplayLineInWindowWithColor( cwid, j, tmp, text_style, 0 );
                 } else {
-                    DisplayLineInWindowWithColor( cWin, j, cline->data, text, leftcol );
+                    DisplayLineInWindowWithColor( cwid, j, cline->data, text_style, leftcol );
                 }
             } else {
-                DisplayLineInWindowWithColor( cWin, j, SingleBlank, text, 0 );
+                DisplayLineInWindowWithColor( cwid, j, SingleBlank, text_style, 0 );
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( cWin, j, 1 + ptr->_offs, ptr->_char, hot_key );
+                SetCharInWindowWithColor( cwid, j, 1 + ptr->_offs, ptr->_char, hot_key_style );
             }
 evil_goto:  if( ptr != NULL ) {
                 ptr += 1;
@@ -261,7 +261,7 @@ evil_goto:  if( ptr != NULL ) {
             cl++;
             cfcb->on_display = true;
         } else {
-            DisplayLineInWindow( cWin, j, "~" );
+            DisplayLineInWindow( cwid, j, "~" );
         }
 
     }
@@ -279,7 +279,7 @@ typedef enum {
     MS_EXPOSEUP
 } ms_type;
 
-static window_id        oWin, mouseWin;
+static window_id        owid, mouse_wid;
 static int              mouseLine = -1;
 static ms_type          mouseScroll;
 static bool             rlMenu;
@@ -288,7 +288,7 @@ static int              rlMenuNum;
 /*
  * SelectLineMouseHandler - handle mouse events for line selector
  */
-bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
+static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
 {
     int x, y, i;
 
@@ -297,14 +297,14 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         LastMouseEvent != MOUSE_REPEAT && LastMouseEvent != MOUSE_PRESS_R ) {
         return( false );
     }
-    mouseWin = id;
+    mouse_wid = wid;
     mouseScroll = MS_NONE;
 
-    if( !isMenu && (id == cWin) && (LastMouseEvent == MOUSE_REPEAT ||
+    if( !isMenu && ( wid == cwid ) && (LastMouseEvent == MOUSE_REPEAT ||
                                     LastMouseEvent == MOUSE_PRESS ||
                                     LastMouseEvent == MOUSE_DCLICK ) ) {
-        x = WindowAuxInfo( cWin, WIND_INFO_WIDTH );
-        y = WindowAuxInfo( cWin, WIND_INFO_HEIGHT );
+        x = WindowAuxInfo( cwid, WIND_INFO_WIDTH );
+        y = WindowAuxInfo( cwid, WIND_INFO_HEIGHT );
         if( win_x == x - 1 ) {
             if( win_y == 1 ) {
                 mouseScroll = MS_EXPOSEUP;
@@ -322,13 +322,13 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         }
     }
     if( LastMouseEvent == MOUSE_REPEAT ) {
-        if( id != cWin && !isMenu ) {
-            y = WindowAuxInfo( cWin, WIND_INFO_Y1 );
+        if( wid != cwid && !isMenu ) {
+            y = WindowAuxInfo( cwid, WIND_INFO_Y1 );
             if( MouseRow < y ) {
                 mouseScroll = MS_UP;
                 return( true );
             }
-            y = WindowAuxInfo( cWin, WIND_INFO_Y2 );
+            y = WindowAuxInfo( cwid, WIND_INFO_Y2 );
             if( MouseRow > y ) {
                 mouseScroll = MS_DOWN;
                 return( true );
@@ -336,7 +336,7 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         }
         return( false );
     }
-    if( isMenu && EditFlags.Menus && id == MenuWindow &&
+    if( isMenu && EditFlags.Menus && wid == menu_window_id &&
         LastMouseEvent != MOUSE_PRESS_R ) {
         i = GetMenuIdFromCoord( win_x );
         if( i >= 0 ) {
@@ -347,11 +347,11 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         }
         return( true );
     }
-    if( id != cWin && id != oWin ) {
+    if( wid != cwid && wid != owid ) {
         return( true );
     }
 
-    if( !InsideWindow( id, win_x, win_y ) ) {
+    if( !InsideWindow( wid, win_x, win_y ) ) {
         return( false );
     }
     mouseLine = win_y - 1;
@@ -458,29 +458,29 @@ vi_rc SelectLineInFile( selflinedata *sfd )
      */
     cln = sfd->cln;
     endline = sfd->f->fcbs.tail->end_line;
-    farx = sfd->wi->x2;
+    farx = sfd->wi->area.x2;
     if( sfd->show_lineno ) {
         farx++;
     }
     if( sfd->hilite != NULL ) {
         hiflag = true;
     }
-    rc = NewWindow2( &cWin, sfd->wi );
+    rc = NewWindow2( &cwid, sfd->wi );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     if( !sfd->is_menu ) {
-        WindowAuxUpdate( cWin, WIND_INFO_HAS_SCROLL_GADGETS, true );
-        DrawBorder( cWin );
+        WindowAuxUpdate( cwid, WIND_INFO_HAS_SCROLL_GADGETS, true );
+        DrawBorder( cwid );
     }
-    oWin = sfd->eiw;
+    owid = sfd->eiw;
     isMenu = sfd->is_menu;
     PushMouseEventHandler( SelectLineMouseHandler );
     KillCursor();
-    text_lines = WindowAuxInfo( cWin, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( cwid, WIND_INFO_TEXT_LINES );
     sfd->sl = -1;
     if( sfd->title != NULL ) {
-        WindowTitle( cWin, sfd->title );
+        WindowTitle( cwid, sfd->title );
     }
     pagetop = text_lines * (cln / text_lines);
     if( cln % text_lines != 0 ) {
@@ -499,8 +499,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( redraw ) {
             if( sfd->show_lineno ) {
                 MySprintf(tmp, "%l/%l", cln, endline );
-                i = sfd->wi->x2 - sfd->wi->x1;
-                WindowBorderData( cWin, tmp, i - strlen( tmp ) );
+                i = sfd->wi->area.x2 - sfd->wi->area.x1;
+                WindowBorderData( cwid, tmp, i - strlen( tmp ) );
                 drawbord = true;
             }
             if( hiflag ) {
@@ -515,9 +515,9 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
             }
             if( drawbord ) {
-                DrawBorder( cWin );
+                DrawBorder( cwid );
             }
-            displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight), sfd->hilite, sfd->vals, sfd->valoff );
+            displayGenericLines( sfd->f, pagetop, leftcol, cln, &(sfd->wi->hilight_style), sfd->hilite, sfd->vals, sfd->valoff );
         }
         lln = cln;
         redraw = true;
@@ -529,13 +529,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         }
         key = GetNextEvent( true );
         if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
-                       (key >='a' && key <= 'z') || (key >= 'A' && key <= 'Z') ||
-                       (key >= '1' && key <= '9')) ) {
+                       (key >= VI_KEY( a ) && key <= VI_KEY( z )) || (key >= VI_KEY( A ) && key <= VI_KEY( Z )) ||
+                       (key >= VI_KEY( 1 ) && key <= VI_KEY( 9 ))) ) {
             i = 0;
             if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
                 key2 = key - VI_KEY( ALT_A ) + 'A';
-            } else if( key >= 'a' && key <= 'z' ) {
-                key2 = key - 'a' + 'A';
+            } else if( key >= VI_KEY( a ) && key <= VI_KEY( z ) ) {
+                key2 = key - VI_KEY( a ) + 'A';
             } else {
                 key2 = key;
             }
@@ -557,7 +557,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( sfd->retevents != NULL ) {
             i = 0;
             if( key == VI_KEY( MOUSEEVENT ) ) {
-                if( mouseWin == oWin && LastMouseEvent == MOUSE_PRESS ) {
+                if( mouse_wid == owid && LastMouseEvent == MOUSE_PRESS ) {
                     DisplayMouse( false );
                     sfd->event = sfd->retevents[mouseLine];
                     key = VI_KEY( ENTER );
@@ -614,7 +614,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             }
             switch( LastMouseEvent ) {
             case MOUSE_DRAG:
-                if( mouseWin != cWin ) {
+                if( mouse_wid != cwid ) {
                     break;
                 }
                 cln = mouseLine + pagetop;
@@ -623,7 +623,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 if( !sfd->is_menu ) {
                     break;
                 }
-                if( mouseWin == cWin ) {
+                if( mouse_wid == cwid ) {
                     cln = mouseLine + pagetop;
                     if( cln <= endline ) {
                         goto evil_enter;
@@ -631,7 +631,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
                 break;
             case MOUSE_DCLICK:
-                if( mouseWin != cWin ) {
+                if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;
                 } else {
@@ -642,13 +642,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 }
                 break;
             case MOUSE_PRESS_R:
-                if( mouseWin != cWin ) {
+                if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;
                 }
                 break;
             case MOUSE_PRESS:
-                if( mouseWin != cWin ) {
+                if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;
                 } else {
@@ -664,34 +664,25 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
         evil_enter:
         case VI_KEY( ENTER ):
-        case ' ':
+        case VI_KEY( SPACE ):
             /*
              * see if we need to do a callback for this
              */
             if( sfd->checkres != NULL ) {
                 line    *cline;
                 fcb     *cfcb;
-                char    data[64];
+                char    *ptr;
 
                 i = cln - 1;
                 GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
-                strcpy( data, cline->data );
-                RemoveLeadingSpaces( data );
-                winflag = false;
+                ptr = SkipLeadingSpaces( cline->data );
                 strcpy( tmp, sfd->vals[i] );
-                rc = sfd->checkres( data, tmp, &winflag );
-                if( winflag ) {
-                    if( winflag == 2 ) {
-                        winflag = true;
-                    } else {
-                        winflag = false;
-                    }
-                }
-                if( winflag ) {
-                    MoveWindowToFront( cWin );
+                rc = sfd->checkres( ptr, tmp, &winflag );
+                if( winflag == 2 ) {
+                    MoveWindowToFront( cwid );
                 }
                 if( rc == ERR_NO_ERR ) {
-                    AddString2( &(sfd->vals[i]), tmp );
+                    ReplaceString( &(sfd->vals[i]), tmp );
                     redraw = true;
                 }
                 break;
@@ -709,7 +700,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             break;
 
         case VI_KEY( LEFT ):
-        case 'h':
+        case VI_KEY( h ):
             if( sfd->allow_rl != NULL ) {
                 *(sfd->allow_rl) = -1;
                 done = true;
@@ -717,7 +708,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             break;
 
         case VI_KEY( RIGHT ):
-        case 'l':
+        case VI_KEY( l ):
             if( sfd->allow_rl != NULL ) {
                 *(sfd->allow_rl) = 1;
                 done = true;
@@ -726,13 +717,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
         evil_up:
         case VI_KEY( UP ):
-        case 'k':
+        case VI_KEY( k ):
             drawbord = adjustCLN( &cln, &pagetop, -1, endline, text_lines );
             break;
 
         evil_down:
         case VI_KEY( DOWN ):
-        case 'j':
+        case VI_KEY( j ):
             drawbord = adjustCLN( &cln, &pagetop, 1, endline, text_lines );
             break;
 
@@ -779,7 +770,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
     }
     PopMouseEventHandler();
-    CloseAWindow( cWin );
+    CloseAWindow( cwid );
     RestoreCursor();
     SetWindowCursor();
     return( rc );

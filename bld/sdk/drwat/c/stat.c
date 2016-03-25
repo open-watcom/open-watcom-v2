@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,7 +312,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, UINT wparam,
                 char            str[100];
                 int             sel;
 
-                sel = SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
+                sel = (int)SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
                 str[4] = 0;
                 seg = atoi( str );

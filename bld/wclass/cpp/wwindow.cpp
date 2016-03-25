@@ -272,6 +272,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         bool dummy;
         GUI_GET_ENDSESSION( parm, ending, dummy );
         endSession( ending );
+        dummy = dummy;
     case GUI_ACTIVATEAPP:
         bool activated;
         GUI_GET_BOOL( parm, activated );
@@ -818,7 +819,7 @@ bool WEXPORT WWindow::updateAutosize() {
     if( parent() ) {
         parent()->getClientRect( prect );
     }
-    
+
     if( _autosize.x() >= 0 ) {
         if( rect.x() < 0 ) {
             // don't let the x co-ordinate change sign in case
@@ -845,7 +846,7 @@ bool WEXPORT WWindow::updateAutosize() {
             _autosize.y( rect.y() );
         }
     }
- 
+
     if( _autosize.w() >= 0 ) {
         _autosize.w( rect.w() + w_adjust );
     }

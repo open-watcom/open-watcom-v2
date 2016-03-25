@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
+#include "int32std.h"
 #include "dosextx.h"
 #include "dosfile.h"
 
@@ -166,7 +168,7 @@ trap_retval ReqProg_load( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( TINY_ERROR( FindFilePath( parm, exe_name, DosExtList ) ) ) {
+        if( TINY_ERROR( FindProgFile( parm, exe_name, DosExtList ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath( exe_name, drive, directory, NULL, NULL );

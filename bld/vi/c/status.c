@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +50,12 @@ vi_rc NewStatusWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( StatusWindow != NO_WINDOW ) {
-        CloseAWindow( StatusWindow );
-        StatusWindow = NO_WINDOW;
+    if( !BAD_ID( status_window_id ) ) {
+        CloseAWindow( status_window_id );
+        status_window_id = NO_WINDOW;
     }
     if( EditFlags.StatusInfo ) {
-        rc = NewWindow2( &StatusWindow, &statusw_info );
+        rc = NewWindow2( &status_window_id, &statusw_info );
         UpdateStatusWindow();
     }
     return( rc );
@@ -65,14 +66,14 @@ vi_rc NewStatusWindow( void )
 /*
  * StatusLine - display a line in the status window
  */
-void StatusLine( int line, char *str, int format )
+static void StatusLine( int line, char *str, int format )
 {
     int         len, width, blanks, i, j;
     type_style  *style;
 
     len = strlen( str );
-    width = WindowAuxInfo( StatusWindow, WIND_INFO_TEXT_COLS );
-    style = &statusw_info.text;
+    width = WindowAuxInfo( status_window_id, WIND_INFO_TEXT_COLS );
+    style = &statusw_info.text_style;
     switch( format ) {
     case FMT_RIGHT:
         blanks = 0;
@@ -87,22 +88,22 @@ void StatusLine( int line, char *str, int format )
         }
         break;
     default:
-        DisplayLineInWindow( StatusWindow, line, str );
+        DisplayLineInWindow( status_window_id, line, str );
         return;
     }
     i = 1;
     while( i <= blanks ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, ' ', style );
+        SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
         i++;
     }
     j = 0;
     while( j < len && i <= width ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, str[j], style );
+        SetCharInWindowWithColor( status_window_id, line, i, str[j], style );
         j += 1;
         i += 1;
     }
     while( i <= width ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, ' ', style );
+        SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
         i++;
     }
 
@@ -123,8 +124,9 @@ void UpdateStatusWindow( void )
     int         line;
     char        numstr[12];
     int         format;
+    char        c;
 
-    if( StatusWindow == NO_WINDOW ||
+    if( BAD_ID( status_window_id ) ||
         EditFlags.DisplayHold ||
         EditFlags.Quiet ||
         !EditFlags.StatusInfo ||
@@ -132,13 +134,12 @@ void UpdateStatusWindow( void )
         return;
     }
 
-    str = EditVars.StatusString;
     res = result;
     line = 1;
     format = FMT_LEFT;
     EditFlags.ModeInStatusLine = false;
-    while( *str ) {
-        if( *str == '$' ) {
+    for( str = EditVars.StatusString; (c = *str) != '\0'; ++str ) {
+        if( c == '$' ) {
             str++;
             ptr = str;
             while( isdigit( *str ) ) {
@@ -151,7 +152,10 @@ void UpdateStatusWindow( void )
             }
             use_num = false;
             num = 0;
-            switch( *str++ ) {
+            c = *str;
+            if( c == '\0' )
+                break;
+            switch( c ) {
             case '$':
                 *res++ = '$';
                 break;
@@ -231,16 +235,16 @@ void UpdateStatusWindow( void )
                     digits--;
                 }
                 ptr = numstr;
-                while( *ptr ) {
+                while( *ptr != '\0' ) {
                     *res++ = *ptr++;
                 }
             }
         } else {
-            *res++ = *str++;
+            *res++ = c;
         }
     }
+    *res = 0;
     if( res != result ) {
-        *res = 0;
         StatusLine( line, result, format );
     }
 

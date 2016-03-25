@@ -44,13 +44,13 @@
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsncat,_fmbsncat)( unsigned char _FFAR *s1, const unsigned char _FFAR *s2, size_t n )
 {
-    unsigned char _FFAR *   string_start = s1;
-    size_t                  bytes;
+    unsigned char _FFAR *string_start = s1;
+    size_t              bytes;
 
 //    if( !__IsDBCS )  return( strncat( s1, s2, n ) );
 
     bytes = _NEARFAR(_mbsnbcnt,_fmbsnbcnt)( s2, n );/* bytes in src */
-    s1 += _NEARFAR(strlen,_fstrlen)( s1 );          /* point to end of string */
+    s1 += _NEARFAR(strlen,_fstrlen)( (char _FFAR *)s1 );          /* point to end of string */
     _NEARFAR(memcpy,_fmemcpy)( s1, s2, bytes );     /* copy the data */
     *(s1+bytes) = '\0';                             /* add terminating null */
     return( string_start );

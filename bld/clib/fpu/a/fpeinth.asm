@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -90,12 +91,11 @@ __FPE2Handler_ label byte
         fwait                           ; wait for 80x87
         fdisi                           ; disable interrupts
         sti                             ; enable CPU interrupts
-ifndef  __NETWARE__
-        call    __GETDS                 ; load DS
-endif
 ifdef __NETWARE__
         push    SS                      ; load DS
         pop     DS                      ; ...
+else
+        call    __GETDS                 ; load DS
 endif
         mov     EDX,ENV_CW[EBP]         ; get control word
         not     EDX                     ; flip the mask bits
@@ -333,7 +333,7 @@ endproc GetInf
 Load    proc    near
         test    BH,04h          ; check if result is top element
         _if     e               ; if result is not top element
-          mov   DL,0            ; - indicate we are at the top
+          xor   DL,DL           ; - indicate we are at the top
         _else                   ; else
           mov   DL,BL           ; - get st(i)
           and   DL,07h          ; - . . .

@@ -84,7 +84,7 @@ a_window *W8Open( void )
     WndInitCreateStruct( &info );
     info.title = "Bar Graph";
     info.info = &W8Info;
-    info.class = 0;
+    info.wndclass = CLASS_W1;
     info.extra = NULL;
     return( WndCreateWithStruct( &info ) );
 }

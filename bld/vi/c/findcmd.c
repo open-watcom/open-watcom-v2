@@ -100,7 +100,7 @@ void ResetLastFind( info *inf )
 /*
  * GetFindForward - get position of forward find string
  */
-vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
+static vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
 {
     find_type   flags;
 
@@ -116,7 +116,7 @@ vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
 /*
  * GetFindBackwards - get backwards find position
  */
-vi_rc GetFindBackwards( char *st, i_mark *pos1, int *len1 )
+static vi_rc GetFindBackwards( char *st, i_mark *pos1, int *len1 )
 {
     find_type   flags;
 
@@ -160,7 +160,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             ff.search_forward = is_forward;
             ff.search_wrap  = lastFindWasWrap;
         } else {
-            st[0] = 0;
+            st[0] = '\0';
         }
         ff.find = st;
         ff.findlen = sizeof( st );
@@ -169,7 +169,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
                 return( RANGE_REQUEST_CANCELLED );
             }
         } else {
-            st[0] = 0;
+            st[0] = '\0';
             EditFlags.NoReplaceSearchString = true;
         }
         is_forward = ff.search_forward;
@@ -178,7 +178,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
         if( !ff.use_regexp ) {
             /* we need to add the string without any changes */
             if( !EditFlags.NoReplaceSearchString ) {
-                AddString2( &lastFindStr, st );
+                ReplaceString( &lastFindStr, st );
                 lastFindWasRegExp = false;
             }
             MakeExpressionNonRegular( st );
@@ -312,7 +312,7 @@ vi_rc FancyDoFind( range *r, long count )
  */
 vi_rc DoNextFindForward( range *r, long count )
 {
-    char        st = 0;
+    char        st = '\0';
 
     count = count;
     if( EditFlags.LastSearchWasForward ) {
@@ -328,7 +328,7 @@ vi_rc DoNextFindForward( range *r, long count )
  */
 vi_rc DoNextFindBackwards( range *r, long count )
 {
-    char        st = 0;
+    char        st = '\0';
 
     count = count;
     if( !EditFlags.LastSearchWasForward ) {
@@ -464,7 +464,7 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
      * process results
      */
     if( rc == ERR_NO_ERR ) {
-        if( linedata[pos2.column] == 0 ) {
+        if( linedata[pos2.column] == '\0' ) {
             pos2.column--;
         }
         len = GetCurrRegExpLength();
@@ -506,7 +506,7 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
     /*
      * get next position
      */
-    if( st[0] == 0 ) {
+    if( st[0] == '\0' ) {
         if( lastFind == NULL ) {
             return( ERR_NO_PREVIOUS_SEARCH_STRING );
         }
@@ -526,12 +526,12 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
                 pos->column -= 2;
             }
         }
-        AddString2( &sStr, lastFind );
+        ReplaceString( &sStr, lastFind );
     } else {
         if( !(flags & FINDFL_NOCHANGE) ) {
-            AddString2( &lastFind, st );
+            ReplaceString( &lastFind, st );
         }
-        AddString2( &sStr, st );
+        ReplaceString( &sStr, st );
         *pos = CurrentPos;
         if( flags & FINDFL_FORWARD ) {
             pos->column += 0;
@@ -588,7 +588,7 @@ void SaveFindRowColumn( void )
 /*
  * ColorFind - find string and color it
  */
-vi_rc ColorFind( char *data, find_type findfl )
+vi_rc ColorFind( const char *data, find_type findfl )
 {
     vi_rc       rc;
     int         len;
@@ -599,7 +599,8 @@ vi_rc ColorFind( char *data, find_type findfl )
      * get search string and flags
      */
     buff = StaticAlloc();
-    if( (len = NextWordSlash( data, buff ) ) <= 0 ) {
+    GetNextWord1( data, buff );
+    if( *buff == '\0' ) {
         StaticFree( buff );
         return( ERR_INVALID_FIND_CMD );
     }
@@ -627,9 +628,9 @@ vi_rc ColorFind( char *data, find_type findfl )
 /*
  * SetLastFind - set the last find string
  */
-void SetLastFind( char* newLastFind )
+void SetLastFind( const char *newLastFind )
 {
-    AddString2( &lastFind, newLastFind );
+    ReplaceString( &lastFind, newLastFind );
 
 } /* SetLastFind */
 
@@ -662,12 +663,12 @@ vi_rc FancyDoReplace( void )
         ff.search_forward = is_forward;
         ff.search_wrap = lastFindWasWrap;
     } else {
-        find[0] = 0;
+        find[0] = '\0';
     }
     if( lastReplace != NULL ) {
         strcpy( replace, lastReplace );
     } else {
-        replace[0] = 0;
+        replace[0] = '\0';
     }
     ff.find = find;
     ff.findlen = sizeof( find );
@@ -683,7 +684,7 @@ vi_rc FancyDoReplace( void )
         MakeExpressionNonRegular( find );
         // MakeExpressionNonRegular( replace );
     }
-    AddString2( &lastReplace, replace );
+    ReplaceString( &lastReplace, replace );
 
     EditFlags.LastSearchWasForward = is_forward;
 

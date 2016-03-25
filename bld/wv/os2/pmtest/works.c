@@ -161,7 +161,7 @@ INT main (VOID)
 
 /*
  * Get and dispatch messages from the application message queue
- * until WinGetMsg returns FALSE, indicating a WM_QUIT message.
+ * until WinGetMsg returns false, indicating a WM_QUIT message.
  */
 
   while( WinGetMsg( hab, &qmsg, 0L, 0, 0 ) )
@@ -238,15 +238,15 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
             _beginthread( DebugIt, p, STACK_SIZE, (void*)NULL );
           }
           strcpy( szString, "Task Started?" );
-          WinInvalidateRegion( hwnd, 0L, FALSE );
+          WinInvalidateRegion( hwnd, 0L, false );
           break;
         case ID_OPTION2:
           strcpy( szString, sz2 );
-          WinInvalidateRegion( hwnd, 0L, FALSE );
+          WinInvalidateRegion( hwnd, 0L, false );
           break;
         case ID_OPTION3:
           strcpy( szString, sz3 );
-          WinInvalidateRegion( hwnd, 0L, FALSE );
+          WinInvalidateRegion( hwnd, 0L, false );
           break;
         case ID_EXITPROG:
           WinPostMsg( hwnd, WM_CLOSE, (MPARAM)0, (MPARAM)0 );
@@ -259,10 +259,10 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
       }
     case WM_ERASEBACKGROUND:
       /*
-       * Return TRUE to request PM to paint the window background
+       * Return true to request PM to paint the window background
        * in SYSCLR_WINDOW.
        */
-      return (MRESULT)( TRUE );
+      return (MRESULT)( true );
     case WM_PAINT:
       /*
        * Window contents are drawn here in WM_PAINT processing.
@@ -298,7 +298,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
 
       return WinDefWindowProc( hwnd, msg, mp1, mp2 );
   }
-  return (MRESULT)FALSE;
+  return( (MRESULT)false );
 } /* End of MyWindowProc */
 
 /**************************************************************************
@@ -362,7 +362,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
     ULONG                       value;
     ULONG                       stopvalue;
     ULONG                       notify=0;
-    BOOL                        got_second_notification;
+//    bool                        got_second_notification;
     ULONG                       fcp;
     CONTEXTRECORD               fcr;
 
@@ -372,12 +372,12 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
         value = 0;
     }
     stopvalue = XCPT_CONTINUE_EXECUTION;
-    got_second_notification = FALSE;
+//    got_second_notification = false;
     if( cmd == DBG_C_Stop ) {
         stopvalue = XCPT_CONTINUE_STOP;
     }
 
-    while( 1 ) {
+    for( ;; ) {
 
         buff->Value = value;
         buff->Cmd = cmd;
@@ -558,9 +558,7 @@ DebugIt( void *crap )
     W = SW.hwnd;
     A = WinQueryAnchorBlock( W );
     Q = WinQueueFromID( A, Buff.Pid, Buff.Tid );
-    for( ;; ) {
-        hmq = WinQuerySendMsg( A, 0, Q, &qmsg );
-        if( hmq == 0 ) break;
+    while( (hmq = WinQuerySendMsg( A, 0, Q, &qmsg )) != 0 ) {
 //      printf( "SND hwnd=%8.8x msg=%d\n", qmsg.hwnd, qmsg.msg );
         WinReplyMsg( A, hmq, Q, 1 );
     }
@@ -580,5 +578,7 @@ DebugIt( void *crap )
 //    }
 //    Go = 0;
 //  while( !ThreadGone ) DosSleep( 1 );
-   for( ;; ) DosSleep( 100 );
+   for( ;; ) {
+       DosSleep( 100 );
+   }
 }

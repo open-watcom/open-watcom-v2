@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,14 +77,17 @@
 #define STATUS_FORMAT_LEFT      '<'
 #define STATUS_NEXT_BLOCK       '['
 
+#define DT_ESC_CONTROLLED       ((UINT)-1)
+
+typedef unsigned short  section_size;
+
 typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 typedef struct {
-    WORD            separator_width;            /* in pixels */
-    WORD            width;                      /* width of block area */
-    unsigned char   width_is_percent    : 1;
-    unsigned char   width_is_pixels     : 1;
-    unsigned char   spare               : 6;
+    section_size    separator_width;            /* in pixels */
+    section_size    width;                      /* width of block area */
+    bool            width_is_percent    : 1;
+    bool            width_is_pixels     : 1;
 } status_block_desc;
 
 typedef struct statwnd statwnd;
@@ -110,8 +114,6 @@ void    StatusWndFini( void );
 #define TOTAL_HORZ (2 * (HORZ_BORDER + BORDER_SIZE))
 
 /* Maximum number of sections on status bar */
-#ifndef MAX_SECTIONS
-    #define MAX_SECTIONS    20
-#endif
+#define MAX_SECTIONS    20
 
 #endif /* _STATWND_H_INCLUDED */

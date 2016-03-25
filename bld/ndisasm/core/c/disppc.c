@@ -31,14 +31,10 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
+#include "distypes.h"
+#include "disppc.h"
 
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          PPCRangeTable[];
-extern const int                PPCRangeTablePos[];
-extern const unsigned char      PPCMaxInsName;
 extern const unsigned short     DisRegisterTable[];
 
 #define MK_SPR(a,b) (((a)<<5)|(b))
@@ -387,7 +383,7 @@ dis_handler_return PPCImmediate( dis_handle *h, void *d, dis_dec_ins *ins )
         ins->op[2].value = code.i.lo.immediate;
         break;
     default:
-        ins->op[2].value = SEX(code.i.lo.immediate, 15 );
+        ins->op[2].value = DisSEX(code.i.lo.immediate, 15 );
         break;
     }
     return( DHR_DONE );
@@ -534,7 +530,7 @@ dis_handler_return PPCMem1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.i.hi.general.second + DR_PPC_r0;
     ins->op[1].type = DO_MEMORY_ABS;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
-    ins->op[1].value = SEX( code.i.lo.immediate, 15 );
+    ins->op[1].value = DisSEX( code.i.lo.immediate, 15 );
 
     if( code.i.hi.general.floating ) {
         if( code.i.hi.general.type & 0x2 ) {
@@ -577,7 +573,7 @@ dis_handler_return PPCMemD1( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.i.hi.general.second + DR_PPC_r0;
     ins->op[1].type = DO_MEMORY_ABS;
     ins->op[1].base = code.i.hi.general.first + DR_PPC_r0;
-    ins->op[1].value = SEX( code.i.lo.immediate & ~0x3, 15 );
+    ins->op[1].value = DisSEX( code.i.lo.immediate & ~0x3, 15 );
     ins->op[1].ref_type = DRT_PPC_DWORD;
     return( DHR_DONE );
 }
@@ -732,10 +728,10 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     }
     switch( ins->type ) {
     case DI_PPC_b:
-        ins->op[0].value = SEX( code.b.LI, 23 ) << 2;
+        ins->op[0].value = DisSEX( code.b.LI, 23 ) << 2;
         break;
     case DI_PPC_bc:
-        ins->op[2].value = SEX( code.i.lo.branch.BD, 13 ) << 2;
+        ins->op[2].value = DisSEX( code.i.lo.branch.BD, 13 ) << 2;
         ins->op[2].op_position = 0;
         // fall through
     case DI_PPC_bcctr:
@@ -776,7 +772,7 @@ dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
         break;
     case DI_PPC_cmpi:
         ins->op[3].type = DO_IMMED;
-        ins->op[3].value = SEX( code.i.lo.immediate, 15 );
+        ins->op[3].value = DisSEX( code.i.lo.immediate, 15 );
         break;
     case DI_PPC_cmpli:
         ins->op[3].type = DO_IMMED;
@@ -1013,7 +1009,7 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_twi:
     case DI_PPC_tdi:
         ins->op[2].type = DO_IMMED;
-        ins->op[2].value = SEX( code.i.lo.immediate, 15 );
+        ins->op[2].value = DisSEX( code.i.lo.immediate, 15 );
         break;
     default:
         break;
@@ -1404,7 +1400,7 @@ static const char ConditionField[4][3] = {
 };
 
 static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     char        *p;
     char        val;
@@ -1512,7 +1508,7 @@ static void PPCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t PPCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     // Nothing to do
     h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;

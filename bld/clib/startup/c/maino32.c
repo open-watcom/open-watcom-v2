@@ -57,7 +57,9 @@
 #include "cinit.h"
 #include "osmainin.h"
 #include "procfini.h"
-#include "_exit.h"
+#include "itsto32.h"
+#include "trdlist.h"
+
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
@@ -115,9 +117,6 @@ extern  char            _end;
 
 int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 
-#if defined(_M_IX86)
-#pragma aux __threadstksize "*"
-#endif
 unsigned        __threadstksize = { 0 };
 
 typedef struct sys_info {
@@ -198,7 +197,7 @@ void __OS2Fini( void )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
@@ -211,4 +210,5 @@ _WCRTLINK void __exit( unsigned ret_code )
     }
 
     DosExit( EXIT_PROCESS, ret_code );
+    // never return
 }

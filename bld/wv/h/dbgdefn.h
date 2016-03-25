@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "machtype.h"
 #include "bool.h"
+#include "machtype.h"
 
 /* Functions declared as OVL_EXTERN are used only within the module
  * they are declared in however pointers to them are used.  In order
@@ -45,8 +45,12 @@
 #define OVL_EXTERN      static
 #endif
 
-#define NULLCHAR '\0'
+#define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'
+
+#define GETU8(x)        (*(unsigned char *)(x))
+#define GETI8(x)        (*(signed char *)(x))
+#define GETWORD(x)      (GETU8((x)) + ( GETU8((x + 1)) << 8 ))
 
 /* Handles */
 
@@ -57,7 +61,9 @@ typedef struct machine_state    machine_state;
 
 /* Global Definitions */
 
-typedef unsigned                error_idx;
+typedef unsigned                error_handle;
+
+typedef int                     file_handle;
 
 typedef unsigned_8 debug_level; enum {
     #define pick( a,b ) a,
@@ -114,16 +120,6 @@ typedef unsigned_8 memory_expr; enum {
         EXPR_GIVEN
 };
 
-enum {
-        TSTR_PAREN       = 0x1000,
-        TSTR_POINTER_IND,
-        TSTR_FIELD_SELECT,
-        TSTR_POINTER_FIELD,
-        TSTR_ARRAY,
-        TSTR_SELF,
-        TSTR_NULL
-};
-
 typedef unsigned_8 cnvaddr_option; enum {
     CAO_NORMAL_PLUS,
     CAO_OMIT_PLUS,
@@ -132,7 +128,7 @@ typedef unsigned_8 cnvaddr_option; enum {
 
 typedef unsigned_8 trace_cmd_type; enum {
     #define pick( a,b ) a,
-    #include "dbgtrace.h"
+    #include "_dbgtrac.h"
     #undef pick
 };
 
@@ -175,7 +171,7 @@ typedef struct {
 
 typedef enum {
     #define pick( a,b,c ) a,
-    #include "dbgcmd.h"
+    #include "_dbgcmd.h"
     #undef pick
 } wd_cmd;
 

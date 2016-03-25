@@ -209,7 +209,7 @@ _cstart_ proc  far
           push  esi                     ; - push ptr to next string
           _loop                         ; - loop (find end of string)
             lodsb                       ; - - get character
-            cmp   al,0                  ; - - check for null char
+            test  al,al                 ; - - check for null char
           _until  e                     ; - until end of string
           cmp   byte ptr [esi],0        ; - check for double null char
         _until  e                       ; until end of environment strings
@@ -257,7 +257,7 @@ __exit  proc far
 public "C",__exit
         push    eax                     ; save return value
         push    edx                     ; save edx
-        mov     eax,00h                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
@@ -289,22 +289,20 @@ __null_FPE_rtn endp
 ;__Int16        endp
 
 public  __Int21
-public  __Int21_
 __Int21 proc    near
-__Int21_:push   ebp                     ; save ebp
+        push    ebp                     ; save ebp
         call    fword ptr __INT21ADDR   ; call extender
         pop     ebp                     ; restore ebp
         ret                             ; return
 __Int21 endp
 
 ;public __Int31
-;public __Int31_
-;__Int31        proc    near
-;__Int31_:push  ebp                     ; save ebp
-;       call    fword ptr __INT31ADDR   ; call extender
-;       pop     ebp                     ; restore ebp
-;       ret                             ; return
-;__Int31        endp
+;__Int31 proc    near
+;        push    ebp                     ; save ebp
+;        call    fword ptr __INT31ADDR   ; call extender
+;        pop     ebp                     ; restore ebp
+;        ret                             ; return
+;__Int31 endp
 
 _TEXT   ends
 

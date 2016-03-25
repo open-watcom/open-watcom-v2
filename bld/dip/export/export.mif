@@ -1,3 +1,9 @@
+!ifdef %USE_FILENAME_VERSION
+name = export$(bld_ver)
+!else
+name = export
+!endif
+
 #
 # Exports DIP makefile
 #
@@ -9,8 +15,6 @@ imp_objs = &
         exptype.obj &
         expsym.obj &
         expcue.obj
-
-name = export
 
 # Set the extra_incs and extra_srcs to any other directories that include
 # additional includes or source files. Delete the definitions if you don't

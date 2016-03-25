@@ -39,26 +39,29 @@ include struct.inc
 
 endif
 
-        xdefp   __LDI4
-
-        xdefp   __LDU4
         xdefp   __RLDU4
+        xdefp   __RLDI4
+        xdefp   __LDI4
+        xdefp   __LDU4
 
-;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-;[]
-;[] __LDU4      convert long double [EAX] into 32-bit integer EAX
-;[]     Input:  EAX  - pointer to long double
-;[]     Output: EAX  - 32-bit integer
-;[]
-;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __LDU4      convert long double [EAX] into 32-bit integer EAX
+;  
+;       Input:  EAX  - pointer to long double
+;       Output: EAX  - 32-bit integer
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;       convert floating double to 4-byte integer with rounding
 
         defp    __RLDU4
+
         push    EBX             ; save EBX
         mov     BL,80h+20h      ; indicate we are rounding
         jmp     short DtoI      ; do it
 
         defp    __RLDI4
+
         push    EBX             ; save EBX
         mov     BH,9[EAX]       ; get sign
 
@@ -103,7 +106,9 @@ endif
         pop     EBX             ; restore EBX
         ret                     ; return
 
+
         defp    __LDI4
+
         push    EBX             ; save EBX
         mov     BL,1Fh          ; indicate we are truncating
         jmp     short DtoI      ; do it
@@ -111,6 +116,7 @@ endif
 ;       convert floating double to 4-byte integer with truncation
 
         defp    __LDU4
+
         push    EBX             ; save EBX
         mov     BL,20h          ; indicate we are truncating
 

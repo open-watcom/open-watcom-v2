@@ -142,22 +142,24 @@ vi_rc FindMatch( i_mark *pos1 )
 /*
  * AddMatchString - add another match string
  */
-vi_rc AddMatchString( char *data )
+vi_rc AddMatchString( const char *data )
 {
     char        st[MAX_STR], st2[MAX_STR];
 
     if( MatchCount >= MAX_SEARCH_STRINGS * 2 - 2 ) {
         return( ERR_TOO_MANY_MATCH_STRINGS );
     }
-    RemoveLeadingSpaces( data );
-    if( NextWordSlash( data, st ) <= 0 ) {
+    data = SkipLeadingSpaces( data );
+    data = GetNextWord( data, st, SingleSlash );
+    if( *st == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
-    if( NextWordSlash( data, st2 ) <= 0 ) {
+    data = GetNextWord( data, st2, SingleSlash );
+    if( *st2 == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
-    AddString( &(MatchData[MatchCount]), st );
-    AddString( &(MatchData[MatchCount + 1]), st2 );
+    MatchData[MatchCount] = DupString( st );
+    MatchData[MatchCount + 1] = DupString( st2 );
     MatchCount += 2;
     Message1( "match pair \"%s\"-\"%s\" added", st, st2 );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );

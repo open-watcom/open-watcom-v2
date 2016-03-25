@@ -40,7 +40,7 @@
 _WCRTLINK int __F_NAME(isblank,iswblank)( INTCHAR_TYPE c )
 {
     if( IS_ASCII( c ) ) {
-        return( (c == ' ') || (c == '\t') );
+        return( (c == STRING( ' ' )) || (c == STRING( '\t' )) );
     } else {
         return( 0 );
     }

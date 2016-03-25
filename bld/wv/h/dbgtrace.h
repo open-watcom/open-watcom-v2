@@ -24,13 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  User program step and trace support.
 *
 ****************************************************************************/
 
 
-pick( TRACE_INTO, "Into\0" )
-pick( TRACE_OVER, "Over\0" )
-pick( TRACE_NEXT, "Next\0" )
-pick( TRACE_NONE, "\0" )
+extern void             ResizeTraceData( void );
+extern bool             TraceStart( bool tracing );
+extern mad_trace_how    TraceHow( bool force_into );
+extern bool             TraceSimulate( void );
+extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
+extern void             TraceStop( bool tracing );
+extern void             TraceKill( void );
+extern bool             SourceStep( void );
+extern bool             CheckForDLLThunk( void );
+extern unsigned         TraceCheck( unsigned conditions );
+extern void             PerformTrace( void );
+extern bool             HasLineInfo( address addr );
+extern void             ExecTrace( trace_cmd_type type, debug_level level );
+extern void             ProcTrace( void );
+extern void             FiniTrace( void );
+extern void             LevelSet( void );
+extern void             LevelConf( void );

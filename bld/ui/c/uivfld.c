@@ -40,25 +40,25 @@
 
 
 static EVENT livefieldevents[] = {
-        ' ', '~',
-        EV_HOME, EV_DELETE,
-        EV_ALT_KEYPAD( 1 ), EV_ALT_KEYPAD( 0xff ),
-        EV_NO_EVENT,            /* end of list of ranges */
-        EV_RUB_OUT,
-        EV_CTRL_END,
-        EV_CTRL_HOME,
-        EV_TAB_FORWARD,
-        EV_TAB_BACKWARD,
-        EV_NO_EVENT
+    ' ',            '~',
+    EV_HOME,        EV_DELETE,
+    0x0001,         0x00ff,     /* Alt Keypad number */
+    EV_NO_EVENT,                /* end of list of ranges */
+    EV_RUB_OUT,
+    EV_CTRL_END,
+    EV_CTRL_HOME,
+    EV_TAB_FORWARD,
+    EV_TAB_BACKWARD,
+    EV_NO_EVENT
 };
 
 
 static EVENT deadfieldevents[] = {
-        EV_HOME, EV_INSERT,
-        EV_NO_EVENT,            /* end of list of ranges */
-        EV_TAB_FORWARD,
-        EV_TAB_BACKWARD,
-        EV_NO_EVENT
+    EV_HOME,        EV_INSERT,
+    EV_NO_EVENT,                /* end of list of ranges */
+    EV_TAB_FORWARD,
+    EV_TAB_BACKWARD,
+    EV_NO_EVENT
 };
 
 
@@ -203,7 +203,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 buffer.length = cur->length;
                 buffer.index = vptr->col - cur->col;
                 uieditevent( EV_DELETE, &buffer );
-                header->dirty = TRUE;
+                header->dirty = true;
                 header->delpending = FALSE;
             }
             uivtextput( vptr, cur->row, cur->col, header->enter,

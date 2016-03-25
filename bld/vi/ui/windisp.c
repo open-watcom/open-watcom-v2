@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +35,14 @@
 #include "win.h"
 #include "sstyle.h"
 
-static void WriteLongLineMarker( window_id wn, type_style *style, char_info *txt, char_info _FAR *scr, char old )
+static void WriteLongLineMarker( window_id wid, type_style *style, char_info *txt, char_info _FAR *scr, char old )
 {
     char_info   info = {0, 0};
 
-    if( wn != CurrentWindow || !EditFlags.MarkLongLines ) {
+    if( wid != current_window_id || !EditFlags.MarkLongLines ) {
         return;
     }
-    info.cinfo_attr = MAKE_ATTR( Windows[wn], style->background, style->foreground );
+    info.cinfo_attr = MAKE_ATTR( WINDOW_FROM_ID( wid ), style->background, style->foreground );
     if( EditVars.EndOfLineChar ) {
         info.cinfo_char = EditVars.EndOfLineChar;
     } else {
@@ -56,15 +57,15 @@ size_t strlen( const char *__s );
 /*
  * displayLineInWindowGeneric - takes an ss_block directly
  */
-vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
+static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
                                 char *text, int start_col, ss_block *ss )
 {
-    wind                *w;
+    window              *w;
     char_info           *txt;
     window_id           *over;
     char                *tmp, *otmp;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 addr, start, end, a, spend;
     int                 cnt1, cnt2, startc, spl;
     char_info           blank = {0, 0};
@@ -78,7 +79,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     otmp = NULL;
     write_eol = false;
     if( EditFlags.RealTabs ) {
@@ -130,7 +131,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     cnt2 = spend - end;
 
     c_line_no--;
-    w = AccessWindow( wn );
+    AccessWindow( w );
 
     /*
      * initialize
@@ -138,7 +139,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     addr = startc + spl * w->width;
     txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
-    oscr = w->x1 + startc + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + startc + (spl + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
 #ifdef __VIO__
     tbytes = cnt1 + cnt2;
@@ -157,24 +158,26 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
         while( cnt1-- != 0 ) {
             what.cinfo_char = *tmp++;
             WRITE_SCREEN_DATA( *txt++, what );
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, what );
             }
+            over++;
             scr++;
             if( ++ss_i > ss->end ) {
                 ss++;
                 what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             }
         }
-        if( write_eol && *(over - 1) == NO_WINDOW ) {
-            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
+        if( write_eol && BAD_ID( *(over - 1) ) ) {
+            WriteLongLineMarker( wid, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
             blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
                 WRITE_SCREEN_DATA( *txt++, blank );
-                if( *over++ == NO_WINDOW ) {
+                if( BAD_ID( *over ) ) {
                     WRITE_SCREEN( *scr, blank );
                 }
+                over++;
                 scr++;
             }
         }
@@ -189,7 +192,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
             }
         }
         if( write_eol ) {
-            WriteLongLineMarker( wn, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
+            WriteLongLineMarker( wid, &SEType[SE_EOFTEXT], txt - 1, scr - 1, *(tmp - 1) );
         } else {
             blank.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
             while( cnt2-- != 0 ) {
@@ -214,7 +217,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
 /*
  * DisplayLineInWindowWithColor - do just that
  */
-vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no, char *text, type_style *ts, int start_col )
+vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, char *text, type_style *ts, int start_col )
 {
     ss_block    ss;
 
@@ -224,13 +227,13 @@ vi_rc DisplayLineInWindowWithColor( window_id wn, int c_line_no, char *text, typ
     ss.type = SE_UNUSED;
     ss.end = BEYOND_TEXT;
 
-    return( displayLineInWindowGeneric( wn, c_line_no, text, start_col, &ss ) );
+    return( displayLineInWindowGeneric( wid, c_line_no, text, start_col, &ss ) );
 }
 
 /*
  * DisplayLineInWindowWithSyntaxStyle - display wrt syntax lang. settings
  */
-vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *line,
+vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *line,
                                         linenum line_no, char *text, int start_col,
                                         unsigned int junk )
 {
@@ -240,7 +243,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     int                 a;
     vi_rc               rc;
     char                *tmp;
-    // dc               c_line;
+//    dc_line             *c_line;
 
     junk = junk;
     if( EditFlags.RealTabs ) {
@@ -255,7 +258,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     // it should be close considering it mirrors the WINDOWS version.
 
     // get the laguage flags state previous to this line
-    // c_line = DCFindLine( c_line_no - 1, wn );
+    // c_line = DCFindLine( c_line_no - 1, wid );
     // SSGetLanguageFlags( &(c_line->flags) );
 
     // parse the line (generate new flags as well)
@@ -267,7 +270,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
     EditFlags.RealTabs = false;
 
     // display the thing
-    rc = displayLineInWindowGeneric( wn, c_line_no, tmp, start_col, ss );
+    rc = displayLineInWindowGeneric( wid, c_line_no, tmp, start_col, ss );
     EditFlags.RealTabs = saveRealTabs;
 
     // now say that it has been displayed and the flags are OK
@@ -282,20 +285,20 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
 /*
  * DisplayCrossLineInWindow - do just that, using given colors
  */
-void DisplayCrossLineInWindow( window_id wn, int line )
+void DisplayCrossLineInWindow( window_id wid, int line )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 addr, i;
     char_info           what = {0, 0};
 
     if( EditFlags.Quiet ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * find dimensions of line
@@ -311,34 +314,36 @@ void DisplayCrossLineInWindow( window_id wn, int line )
     /*
      * initialize
      */
-    w = AccessWindow( wn );
+    AccessWindow( w );
     addr = 1 + (1 + line) * w->width;
     txt = &(w->text[addr]);
     over = &(w->overlap[addr]);
-    oscr = w->x1 + (1 + line + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + (1 + line + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
     what.cinfo_attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
     what.cinfo_char = WindowBordersNG[WB_LEFTT];
 
     WRITE_SCREEN_DATA( *txt++, what );
-    if( *over++ == NO_WINDOW ) {
+    if( BAD_ID( *over ) ) {
         WRITE_SCREEN( *scr, what );
     }
+    over++;
     scr++;
 
     what.cinfo_char = WindowBordersNG[WB_TOPBOTTOM];
-    for( i = w->x1 + 1; i < w->x2; i++ ) {
+    for( i = w->area.x1 + 1; i < w->area.x2; i++ ) {
         WRITE_SCREEN_DATA( *txt++, what );
-        if( *over++ == NO_WINDOW ) {
+        if( BAD_ID( *over ) ) {
             WRITE_SCREEN( *scr, what );
         }
+        over++;
         scr++;
     }
 
     if( line != w->height - 3 && line != 0 ) {
         what.cinfo_char = WindowBordersNG[WB_RIGHTT];
         WRITE_SCREEN_DATA( *txt, what );
-        if( *over == NO_WINDOW ) {
+        if( BAD_ID( *over ) ) {
             WRITE_SCREEN( *scr, what );
         }
     }
@@ -355,10 +360,10 @@ void DisplayCrossLineInWindow( window_id wn, int line )
  */
 static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *s )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     char_info           what = {0, 0};
 #ifdef __VIO__
     unsigned            onscr;
@@ -369,11 +374,12 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( CurrentWindow );
+    w = WINDOW_FROM_ID( current_window_id );
 
     /*
      * find dimensions of line
      */
+    AccessWindow( w );
     if( w->has_border ) {
         if( line < 1 || line > w->height - 2 ) {
             ReleaseWindow( w );
@@ -411,7 +417,7 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     /*
      * initialize
      */
-    oscr = w->x1 + sscol + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + sscol + (spl + w->area.y1) * EditVars.WindMaxWidth;
     scr = &Scrn[oscr];
 #ifdef __VIO__
     onscr = 0;
@@ -425,23 +431,25 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     if( w->overcnt[spl] ) {
         over = w->overlap + sscol + spl * w->width;
         while( cnt1-- != 0 ) {
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
 #endif
             }
+            over++;
             scr++;
         }
         while( cnt2-- != 0 ) {
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 what.cinfo_char = scr->cinfo_char;
                 WRITE_SCREEN( *scr, what );
 #ifdef __VIO__
                 onscr++;
 #endif
             }
+            over++;
             scr++;
         }
     } else {
@@ -479,8 +487,8 @@ void HiliteAColumnRange( linenum line, int scol, int ecol )
     if( scol == 0 ) {
         s = 0;
     }
-    changeColorOfDisplayLine( (int) (line - LeftTopPos.line + 1),
-        s - LeftTopPos.column, e - LeftTopPos.column, &editw_info.hilight );
+    changeColorOfDisplayLine( (int)(line - LeftTopPos.line + 1),
+        s - LeftTopPos.column, e - LeftTopPos.column, &editw_info.hilight_style );
 
 } /* HiliteAColumnRange */
 
@@ -508,18 +516,19 @@ void ColorAColumnRange( int row, int scol, int ecol, type_style *style )
 /*
  * SetCharInWindowWithColor - do just that, using given colors
  */
-vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style )
+vi_rc SetCharInWindowWithColor( window_id wid, windim line, windim col, char text, type_style *style )
 {
-    wind                *w;
-    int                 addr, start, spl;
+    window              *w;
+    size_t              addr;
+    windim              start, spl;
     char_info           tmp = {0, 0};
     bool                has_mouse;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.Quiet ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * find dimensions of line
@@ -546,9 +555,9 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
     /*
      * initialize
      */
-    w = AccessWindow( wn );
+    AccessWindow( w );
     addr = col + start + spl * w->width;
-    oscr = w->x1 + start + col + (spl + w->y1) * EditVars.WindMaxWidth;
+    oscr = w->area.x1 + start + col + ( spl + w->area.y1 ) * EditVars.WindMaxWidth;
     tmp.cinfo_attr = MAKE_ATTR( w, style->foreground, style->background );
     tmp.cinfo_char = text;
 
@@ -557,7 +566,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
      */
     has_mouse = DisplayMouse( false );
     WRITE_SCREEN_DATA( w->text[addr], tmp );
-    if( w->overlap[addr] == NO_WINDOW ) {
+    if( BAD_ID( w->overlap[addr] ) ) {
         WRITE_SCREEN( Scrn[oscr], tmp );
     }
 #ifdef __VIO__
@@ -573,14 +582,17 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
 /*
  * DisplayLineInWindow - do as it sounds, use default colors
  */
-vi_rc DisplayLineInWindow( window_id wn, int c_line_no, char *text )
+vi_rc DisplayLineInWindow( window_id wid, int c_line_no, char *text )
 {
     ss_block    ss;
-    SEType[SE_UNUSED].foreground = Windows[wn]->text_color;
-    SEType[SE_UNUSED].background = Windows[wn]->background_color;
+    window      *w;
+
+    w = WINDOW_FROM_ID( wid );
+    SEType[SE_UNUSED].foreground = w->text_color;
+    SEType[SE_UNUSED].background = w->background_color;
     SEType[SE_UNUSED].font = FONT_DEFAULT;
     ss.type = SE_UNUSED;
     ss.end = BEYOND_TEXT;
-    return( displayLineInWindowGeneric( wn, c_line_no, text, 0, &ss ) );
+    return( displayLineInWindowGeneric( wid, c_line_no, text, 0, &ss ) );
 
 } /* DisplayLineInWindow */

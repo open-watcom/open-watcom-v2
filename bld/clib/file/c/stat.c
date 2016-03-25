@@ -61,8 +61,9 @@
 #include "int64.h"
 #endif
 #include "thread.h"
+#include "pathmac.h"
 
-#define HAS_DRIVE(x)    (__F_NAME(isalpha,iswalpha)(x[0]) && x[1]==STRING(':'))
+
 #define ALL_ATTRIB      (_A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH)
 
 #ifdef __INT64__
@@ -105,7 +106,7 @@ static unsigned short at2mode( int attr, char *fname )
 /****************************************************/
 {
     unsigned short  mode;
-    char            *ext;
+    unsigned char   *ext;
 
     if( attr & _A_SUBDIR ) {
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
@@ -114,9 +115,9 @@ static unsigned short at2mode( int attr, char *fname )
     } else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = _mbschr( fname, '.' )) != NULL ) {
+        if( (ext = _mbschr( (unsigned char *)fname, '.' )) != NULL ) {
             ++ext;
-            if( _mbscmp( ext, "EXE" ) == 0 || _mbscmp( ext, "COM" ) == 0 ) {
+            if( _mbscmp( ext, (unsigned char *)"EXE" ) == 0 || _mbscmp( ext, (unsigned char *)"COM" ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }
@@ -127,9 +128,8 @@ static unsigned short at2mode( int attr, char *fname )
     return( mode );
 }
 
-_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
-                                              struct __F_NAME(stat,_stat) *buf )
-/******************************************************************************/
+_WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat,_stat) *buf )
+/********************************************************************************************/
 {
     struct find_t       dta;
     const CHAR_TYPE     *ptr;
@@ -138,16 +138,18 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
     int                 isrootdir = 0;
 
     /* reject null string and names that has wildcard */
-    if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
+#ifdef __WIDECHAR__
+    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+#else
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+#endif
         _RWD_errno = ENOENT;
         return( -1 );
     }
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( HAS_DRIVE( fullpath ) &&
-            fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
@@ -155,7 +157,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
     ptr = path;
     if( HAS_DRIVE( path ) )
         ptr += 2;
-    if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
         CHAR_TYPE       cwd[_MAX_PATH];
 
@@ -173,7 +175,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
         dta.wr_time   = 0;
         dta.wr_date   = 0;
         dta.size      = 0;
-        dta.name[0]   = NULLCHAR;
+        dta.name[0]   = '\0';
 #ifdef __WATCOM_LFN__
         LFN_SIGN_OF( &dta )   = 0;
         LFN_HANDLE_OF( &dta ) = 0;
@@ -235,7 +237,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
 
     /* process drive number */
     if( HAS_DRIVE( path ) ) {
-        buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
+        buf->st_dev = (CHAR_TYPE)__F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
         buf->st_dev = TinyGetCurrDrive();
     }

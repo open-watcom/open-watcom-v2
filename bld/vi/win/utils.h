@@ -51,17 +51,17 @@ enum drawUpDown {
     DRAW_DOWN
 };
 
-extern int  TextWidth( HWND, char *, int, int );
-extern int  StringWidth( HWND, char *, int );
-extern void WriteText( HWND, int, int, type_style *, char *, int );
-extern void WriteString( HWND, int, int, type_style *, char *);
-extern HDC  TextGetDC( HWND, type_style *);
-extern void TextReleaseDC( HWND, HDC );
-extern int  MyTextExtent( HWND, type_style *, char *, unsigned );
-extern int  MyStringExtent( HWND, type_style *, char * );
-extern void BlankRect( HWND, vi_color, int, int, int, int );
-extern void BlankRectIndirect( HWND, vi_color, RECT * );
-extern void ClientToRowCol( HWND, int, int, int *, int *, int );
+//extern int  TextWidth( HWND, char *, int, int );
+//extern int  StringWidth( HWND, char *, int );
+extern void WriteText( window_id, int, int, type_style *, const char *, int );
+extern void WriteString( window_id, int, int, type_style *, const char *);
+extern HDC  TextGetDC( window_id, type_style *);
+extern void TextReleaseDC( window_id, HDC );
+extern int  MyTextExtent( window_id, type_style *, char *, unsigned );
+extern int  MyStringExtent( window_id, type_style *, char * );
+extern void BlankRect( window_id, vi_color, int, int, int, int );
+extern void BlankRectIndirect( window_id, vi_color, RECT * );
+extern void ClientToRowCol( window_id, int, int, int *, int *, int );
 extern void ToggleHourglass( bool );
 int         GetNumWindowTypes( void );
 HWND        GetOwnedWindow( POINT );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -675,16 +675,14 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
 
 void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
-    WORD flags;
-
-    flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
-
-    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wParam, lParam ) == (HMENU)NULL ) {
-        einfo->last_menu_select = -1;
-    } else if( flags & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
+    if( MENU_CLOSED( wParam, lParam ) ) {
         einfo->last_menu_select = -1;
     } else {
-        einfo->last_menu_select = GET_WM_MENUSELECT_ITEM( wParam, lParam );
+        if( GET_WM_MENUSELECT_FLAGS( wParam, lParam ) & (MF_SYSMENU | MF_SEPARATOR | MF_POPUP) ) {
+            einfo->last_menu_select = -1;
+        } else {
+            einfo->last_menu_select = GET_WM_MENUSELECT_ITEM( wParam, lParam );
+        }
     }
 }
 
@@ -930,7 +928,6 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             ai.inst = WGetEditInstance();
             ai.name = AllocRCString( W_ABOUT_NAME );
             ai.version = AllocRCString( W_ABOUT_VERSION );
-            ai.first_cr_year = "2002";
             ai.title = AllocRCString( W_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

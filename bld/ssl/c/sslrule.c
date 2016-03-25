@@ -60,7 +60,8 @@ static void SemCall( symbol *call )
 
     Scan();
     if( call->v.sem.parm != NULL ) {
-        if( CurrToken != T_LEFT_PAREN ) Error( "expecting '('" );
+        if( CurrToken != T_LEFT_PAREN )
+            Error( "expecting '('" );
         Scan();
         parm = Lookup( CLASS_ENUMS );
         if( call->v.sem.parm != parm->v.enums.type ) {
@@ -68,7 +69,8 @@ static void SemCall( symbol *call )
         }
         GenSetParm( parm->v.enums.value );
         Scan();
-        if( CurrToken != T_RITE_PAREN ) Error( "expecting ')'" );
+        if( CurrToken != T_RITE_PAREN )
+            Error( "expecting ')'" );
         Scan();
     }
     GenSemCall( call->v.sem.value );
@@ -79,7 +81,7 @@ static void Choice( symbol *rule, instruction *exit )
 {
     instruction *choice = NULL;
     instruction *def_lbl;
-    char        def;
+    bool        def;
     class       typ = 0;
     unsigned    first_value = 0;
     instruction *first_lbl;
@@ -111,7 +113,8 @@ static void Choice( symbol *rule, instruction *exit )
     case T_NAME:
         call = Lookup( CLASS_SEM );
         ret = call->v.sem.ret;
-        if( ret == NULL ) Error( "semantic action has no return type" );
+        if( ret == NULL )
+            Error( "semantic action has no return type" );
         SemCall( call );
         choice = GenChoice();
         typ = CLASS_ENUMS;
@@ -120,15 +123,16 @@ static void Choice( symbol *rule, instruction *exit )
     bot = GenNewLbl();
     def_lbl = GenNewLbl();
     GenJump( def_lbl );
-    def = 0;
+    def = false;
     first_lbl = NULL;
     while( CurrToken == T_OR ) {
         lbl = GenNewLbl();
         Scan();
         for( ;; ) {
             if( CurrToken == T_STAR ) {
-                if( def ) Error( "default case already processed" );
-                def = 1;
+                if( def )
+                    Error( "default case already processed" );
+                def = true;
                 GenLabel( def_lbl );
             } else {
                 sym = Lookup( typ );
@@ -153,7 +157,8 @@ static void Choice( symbol *rule, instruction *exit )
                 }
             }
             Scan();
-            if( CurrToken != T_COMMA ) break;
+            if( CurrToken != T_COMMA )
+                break;
             Scan();
         }
         WantColon();
@@ -161,7 +166,8 @@ static void Choice( symbol *rule, instruction *exit )
         while( CurrToken != T_OR && CurrToken != T_RITE_BRACKET ) {
             Action( rule, exit );
         }
-        if( CurrToken == T_RITE_BRACKET ) break;
+        if( CurrToken == T_RITE_BRACKET )
+            break;
         GenJump( bot );
     }
     if( !def ) {
@@ -217,7 +223,8 @@ static void Action( symbol *rule, instruction *exit )
         Cycle( rule );
         break;
     case T_GT:
-        if( exit == NULL ) Error( "no cycle to exit from" );
+        if( exit == NULL )
+            Error( "no cycle to exit from" );
         GenJump( exit );
         Scan();
         break;
@@ -233,7 +240,8 @@ static void Action( symbol *rule, instruction *exit )
     case T_GT_GT:
         Scan();
         if( rule->v.rule.ret != NULL ) {
-            if( CurrToken != T_NAME ) Error( "expecting name" );
+            if( CurrToken != T_NAME )
+                Error( "expecting name" );
             ret = Lookup( CLASS_ENUMS );
             if( ret->v.enums.type != rule->v.rule.ret ) {
                 Error( "improper return type" );
@@ -253,9 +261,9 @@ void Rules(void)
 {
     symbol      *sym;
     symbol      *ret;
-    int         exported;
+    bool        exported;
 
-    exported = 1;       /* first rule always exported */
+    exported = true;       /* first rule always exported */
     do {
         sym = Lookup( CLASS_RULE );
         if( sym->v.rule.defined ) {
@@ -278,7 +286,7 @@ void Rules(void)
         if( CurrToken == T_COLON ) {
             Scan();
             sym->v.rule.exported = 1;
-            exported = 1;
+            exported = true;
         }
         if( exported ) {
             GenExportLabel( sym->v.rule.lbl );
@@ -294,6 +302,6 @@ void Rules(void)
         } else {
             GenKill();
         }
-        exported = 0;
+        exported = false;
     } while( CurrToken != T_EOF );
   }

@@ -51,15 +51,14 @@
   #include "myassert.h"
   #include "asminput.h"
 #endif
+#include "asmjump.h"
 #include "asminsd.h"
 #include "asmopsd.gh"
 
 #include "clibext.h"
 
 
-extern bool             match_phase_1( void );
 extern bool             ptr_operator( memtype, bool );
-extern bool             jmp( expr_list *, int * );
 
 static struct asm_code  Code_Info;
 struct asm_code         *Code = &Code_Info;
@@ -72,8 +71,6 @@ static bool             segm_override_jumps( expr_list *opndx );
 
 
 #if defined( _STANDALONE_ )
-extern bool             directive( token_idx, asm_token );
-extern bool             SymIs32( struct asm_sym *sym );
 
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
@@ -151,11 +148,6 @@ int GetInsString( asm_token token, char *string )
     return( len );
 }
 #endif
-
-void AsmBufferInit( void )
-/************************/
-{
-}
 
 const asm_ins ASMFAR *get_instruction( char *string )
 /***************************************************/
@@ -964,7 +956,7 @@ static bool proc_check( const char *curline, bool *prolog )
 
 char *regs[4] = { "ax",  "dx",  "bx",  "cx" };
 
-bool get_register_argument( token_idx index, char *buffer, int *register_count, bool *on_stack )
+static bool get_register_argument( token_idx index, char *buffer, int *register_count, bool *on_stack )
 {
     token_idx   i;
     int         size, j;
@@ -1266,7 +1258,7 @@ static bool get_stack_argument( token_idx idx, char *buffer )
     return( RC_OK );
 }
 
-bool expand_call( token_idx index, int lang_type )
+static bool expand_call( token_idx index, int lang_type )
 {
     token_idx   i, j;
     token_idx   arglist[16];
@@ -3081,8 +3073,6 @@ static bool check_size( void )
 void AsmInit( int use32, int cpu, int fpu, bool fpu_emu )
 /*******************************************************/
 {
-    AsmBufferInit();
-
     Code->use32 = ( use32 != 0 );
     switch( cpu ) {
     case 0: Code->info.cpu = P_86;   break;

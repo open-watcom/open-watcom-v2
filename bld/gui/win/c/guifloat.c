@@ -40,11 +40,11 @@
 extern  HMENU           GUIHFloatingPopup;
 extern  WPI_INST        GUIMainHInst;
 
-static  gui_ctl_id      CurrItem        = NO_SELECT;
-static  bool            InitComplete    = false;
+static  gui_ctl_id      CurrId       = NO_SELECT;
+static  bool            InitComplete = false;
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
-                            gui_mouse_track track, gui_ctl_id *curr_item )
+                            gui_mouse_track track, gui_ctl_id *curr_id )
 {
     WPI_POINT   pt;
     ULONG       flags;
@@ -56,7 +56,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     }
 
     GUIScaleToScreenRPt( location );
-    _wpi_getrectvalues( wnd->hwnd_client, &left, &top, &right, &bottom );
+    _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
     location->x += left;
     location->y += top;
     if( GUI_DO_HSCROLL( wnd ) ) {
@@ -66,9 +66,9 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         location->y -= GUIGetScrollPos( wnd, SB_VERT );
     }
 
-    CurrItem = NO_SELECT;
-    if( ( curr_item != NULL ) && ( *curr_item != 0 ) ) {
-        CurrItem = *curr_item;
+    CurrId = NO_SELECT;
+    if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
+        CurrId = *curr_id;
     }
 
     location->y = _wpi_cvth_y( location->y, (bottom - top) );
@@ -95,10 +95,10 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
     GUIHFloatingPopup = NULLHANDLE;
 
-    if( ( CurrItem != NO_SELECT ) && ( curr_item != NULL ) ) {
-        *curr_item = CurrItem;
+    if( ( CurrId != NO_SELECT ) && ( curr_id != NULL ) ) {
+        *curr_id = CurrId;
     }
-    CurrItem = NO_SELECT;
+    CurrId = NO_SELECT;
     GUIDeleteFloatingPopups( wnd );
     return( true );
 }
@@ -109,7 +109,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num, gui_menu_struct *menu,
-                             gui_mouse_track track, gui_ctl_id *curr_item )
+                             gui_mouse_track track, gui_ctl_id *curr_id )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {
         _wpi_destroymenu( GUIHFloatingPopup );
@@ -122,7 +122,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
         return( false );
     }
 
-    return( GUITrackFloatingPopup( wnd, location, track, curr_item ) );
+    return( GUITrackFloatingPopup( wnd, location, track, curr_id ) );
 }
 
 void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
@@ -152,13 +152,13 @@ void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #endif
 
     if( menu_closed ) {
-        CurrItem = NO_SELECT;
+        CurrId = NO_SELECT;
     } else {
         if( !InitComplete ) {
             InitComplete = true;
         } else {
             if( is_hilite ) {
-                CurrItem = id;
+                CurrId = id;
             }
         }
     }

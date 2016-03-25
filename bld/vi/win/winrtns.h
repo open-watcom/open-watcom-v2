@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,16 +36,18 @@
 #define WINRTNS_INCLUDED
 
 #include "winhdr.h"
+
 void        DDEFini( void );
 void        MessageLoop( bool block );
 window_id   NewEditWindow( void );
 window_id   NewCommandWindow( void );
+void        FileCompleteMouseClick( HWND, int, int, bool );
 window_id   NewFileCompleteWindow( void );
 window_id   NewRepeatCountWindow( void );
 window_id   NewMsgWindow( void );
 window_id   NewStatWindow( void );
 bool        WindowsKeyPush( WORD, WORD );
-vi_rc       MenuCommand( UINT );
+vi_rc       MenuCommand( int );
 void        StatusLine( int, char *, int );
 int         GetStatusHeight( void );
 
@@ -64,20 +67,21 @@ void        BarfFontData( FILE * );
 void        ResizeRoot( void );
 bool        RegisterContainerWindow( HANDLE );
 window_id   CreateMainWindow( HANDLE );
+bool        RegisterMainWindow( HANDLE );
 window_id   CreateContainerWindow( LPRECT );
-void        SetInitialWindowSize( char * );
+void        SetInitialWindowSize( const char * );
 void        SetInitialWindowRect( RECT *r );
-bool        GetDWORD( char *str, LPVOID res );
+bool        GetDWORD( const char **str, DWORD *res );
 void        SelRgnInit( void );
 void        SelRgnFini( void );
 void        ExecWait( char * );
 void        NewToolBar( RECT * );
 void        DestroyToolBar( void );
 void        CloseToolBar( void );
-vi_rc       AddBitmapToToolBar( char * );
-vi_rc       DeleteFromToolBar( char * );
-UINT        NextMenuId( void );
-vi_rc       HandleToolCommand( UINT );
+vi_rc       AddBitmapToToolBar( const char * );
+vi_rc       DeleteFromToolBar( const char * );
+unsigned    NextMenuId( void );
+vi_rc       HandleToolCommand( int );
 void        Draw3DBox( window_id, RECT *, RECT * );
 void        ResetExtraRects( void );
 void        HandleInitMenu( HMENU hmenu );
@@ -90,10 +94,7 @@ void        FiniProfile( void );
 void        StatusDisplay( char * );
 
 // Cursor.c
-void        GoodbyeCursor( HWND );
-
-// Tab_hell.c
-bool        CursorPositionOffRight( int vc );
+void        GoodbyeCursor( window_id );
 
 // Snoop.c
 bool        GetSnoopStringDialog( fancy_find **ff );
@@ -107,7 +108,7 @@ void    RemoveEditSubClass( HWND hwnd, int id );
 vi_key  MapVirtualKeyToVIKey( WORD vk, WORD data );
 void    InitGrepDialog( void );
 void    FiniGrepDialog( void );
-bool    SetGrepDialogFile( char *str );
+bool    SetGrepDialogFile( const char *str );
 bool    GetCmdDialog( char *str, int len );
 bool    GetLineDialog( long * );
 void    RefreshColorbar( void );
@@ -118,6 +119,7 @@ void    BarfToolBarData( FILE * );
 DWORD   GetEditStyle( bool is_max );
 void    EditDrawScrollBars( HWND hwnd );
 void    SetWindowTitle( HWND hwnd );
+void    FiniInstance( void );
 void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( char *str );
@@ -126,10 +128,7 @@ void    CloseStartupDialog( void );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
 int     HasShare( void );
-#ifdef __WINDOWS__
-int     MyGetInstanceData( unsigned short p1, char _NEAR *p2, short p3 );
-#endif
-int     PickATag( int clist, char **list, char *tagname );
+int     PickATag( int clist, char **list, const char *tagname );
 
 // clrpick.c
 void    InitClrPick( void );
@@ -143,10 +142,6 @@ bool    GetSetFSDialog( void );
 bool    GetSetScrDialog( void );
 bool    GetSetGenDialog( void );
 void    CenterWindowInRoot( HWND );
-void    StatusWndSetSeparatorsWithArray( short *, int );
-
-// ideactiv.c
-void    StartIDE( HANDLE instance, BOOL dospawn );
 
 // filetype.c
 void    UpdateFileTypeIcon( HWND hwnd, const char *filename );

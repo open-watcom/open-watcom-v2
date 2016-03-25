@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +52,8 @@ extern bool WdeSetStickyMode( bool );
 extern void WdeToggleStickyTools( void );
 extern bool WdeGetStickyMode( void );
 extern void WdeHandleShowToolsMenu( void );
-extern void WdeSetBaseObject( WORD );
+extern void WdeSetBaseObject( int );
 extern bool WdeCreateControlsToolBar( void );
-extern WORD WdeGetCToolID( void );
+extern int  WdeGetCToolID( void );
 
 #endif

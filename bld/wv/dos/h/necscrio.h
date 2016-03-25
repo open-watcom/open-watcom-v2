@@ -37,160 +37,125 @@
 #define NEC_DEBUG_SCREEN        1
 #define NEC_USER_SCREEN         0
 
-#pragma aux BIOSSetPage =                               \
-    "       cmp     al, 01h                     "       \
-    "       je      Page1                       "       \
-    "       mov     dx, 0                       "       \
-    "       jmp short foo                       "       \
-    "Page1: mov     dx, 1000h                   "       \
-    "foo:   mov     ah, 0Eh                     "       \
-    "       int    18h                          "       \
-        parm caller [ al ]                              \
-        modify [ ax dx ];
-
 extern void BIOSSetPage( char );
+#pragma aux BIOSSetPage =       \
+    "       cmp     al,1"       \
+    "       je short Page1"     \
+    "       xor     dx,dx"      \
+    "       jmp short foo"      \
+    "Page1: mov     dx,1000h"   \
+    "foo:   mov     ah,0Eh"     \
+    "       int     18h"        \
+    parm caller [al] modify [ax dx];
 
+extern char BIOSGetMode( void );
+#pragma aux BIOSGetMode =       \
+    "mov    ah,0Bh"             \
+    "int    18h"                \
+    value[al] modify[ax];
 
-#pragma aux BIOSGetMode =                               \
-    "mov    ah, 0Bh                             "       \
-    "int    18h                                 "       \
-        value[ al ]                                     \
-        modify[ ax ];
-extern char BIOSGetMode();
-
-
-#pragma aux BIOSSetMode =                               \
-    "mov    ah, 0Ah                             "       \
-    "int    18h                                 "       \
-        parm [ al ]                                     \
-        modify[ ax ];
 extern void BIOSSetMode( char );
+#pragma aux BIOSSetMode =       \
+    "mov    ah,0Ah"             \
+    "int    18h"                \
+    parm [al] modify[ax];
 
+extern void BIOSTextOn( void );
+#pragma aux BIOSTextOn =        \
+    "mov    ah,0Ch"             \
+    "int    18h"                \
+    modify[ah];
 
-#pragma aux BIOSTextOn =                                \
-    "mov    ah, 0Ch                             "       \
-    "int    18h                                 "       \
-        modify[ ah ];
-extern void BIOSTextOn();
+extern void BIOSTextOff( void );
+#pragma aux BIOSTextOff =       \
+    "mov    ah,0Dh"             \
+    "int    18h"                \
+    modify[ah];
 
+extern void BIOSGraphOn( void );
+#pragma aux BIOSGraphOn =       \
+    "mov    ah,40h"             \
+    "int    18h"                \
+    modify[ah];
 
-#pragma aux BIOSTextOff =                               \
-    "mov    ah, 0Dh                             "       \
-    "int    18h                                 "       \
-        modify[ ah ];
-extern void BIOSTextOff();
-
-
-#pragma aux BIOSGraphOn =                               \
-    "mov    ah, 40h                             "       \
-    "int    18h                                 "       \
-        modify[ ah ];
-extern void BIOSGraphOn();
-
-
-#pragma aux BIOSGraphOff =                              \
-    "mov    ah, 41h                             "       \
-    "int    18h                                 "       \
-        modify[ ah ];
-extern void BIOSGraphOff();
-
-#pragma aux DoRingBell = \
-        "mov bx, 2h " \
-        "mov cx, 1h " \
-        "mov ah, 0x40 " \
-        "int 21h      " \
-        parm    [dx] \
-        modify [ ah cx ];
+extern void BIOSGraphOff( void );
+#pragma aux BIOSGraphOff =      \
+    "mov    ah,41h"             \
+    "int    18h"                \
+    modify[ah];
 
 extern void DoRingBell( char __far * s );
+#pragma aux DoRingBell =        \
+    "mov    bx,2"               \
+    "mov    cx,1"               \
+    "mov    ah,40h"             \
+    "int    21h"                \
+    parm [dx] modify [ah cx];
+
 
 #define RING_BELL_ DoRingBell( "\007" );
 
-#pragma aux GdcMask =                                   \
-    "pushf                                      "       \
-    "cli                                        "
-
 void GdcMask( void );
-
-
-#pragma aux GdcUnMask =                                 \
-        "popf"
+#pragma aux GdcMask =           \
+    "pushf"                     \
+    "cli"
 
 void GdcUnMask( void );
-
-
-#pragma aux GdcDelay =                                  \
-    "       jmp short dl1                       "       \
-    "dl1:   jmp short dl2                       "       \
-    "dl2:   jmp short dl3                       "       \
-    "dl3:                                       "
+#pragma aux GdcUnMask = "popf"
 
 void GdcDelay( void );
-
-
-#pragma aux BIOSSetCurPos =                             \
-    "mov    ah, 13h                             "       \
-    "int    18h                                 "       \
-        parm caller [ dx ]                              \
-        modify [ ah ];
+#pragma aux GdcDelay =          \
+    "       jmp short dl1"      \
+    "dl1:   jmp short dl2"      \
+    "dl2:   jmp short dl3"      \
+    "dl3:"
 
 extern void BIOSSetCurPos( int );
-
-
-#pragma aux BIOS_OPEN_APP =                             \
-    "mov    ax, 0                               "       \
-    "mov    cl, 0xe0                            "       \
-    "int    0DCh                                "       \
-        modify      [ ax cl ];
+#pragma aux BIOSSetCurPos =     \
+    "mov    ah,13h"             \
+    "int    18h"                \
+    parm caller [dx] modify [ah];
 
 extern void BIOS_OPEN_APP( void );
-
-
-#pragma aux BIOS_CLOSE_APP =                            \
-    "mov    cl, 0xe1                            "       \
-    "int    0DCh                                "       \
-        modify      [ ax cl ];
+#pragma aux BIOS_OPEN_APP =     \
+    "xor    ax,ax"              \
+    "mov    cl,0e0h"            \
+    "int    0DCh"               \
+    modify [ax cl];
 
 extern void BIOS_CLOSE_APP( void );
-
-
-#pragma aux BIOS_JIS_SHF =                              \
-    "mov    cl, 0xf3                            "       \
-    "int    0DCh                                "       \
-        parm caller [ ax ]                              \
-        modify      [ ax cl ]                           \
-        value       [ ax ];
+#pragma aux BIOS_CLOSE_APP =    \
+    "mov    cl,0e1h"            \
+    "int    0DCh"               \
+    modify [ax cl];
 
 extern unsigned short BIOS_JIS_SHF( unsigned short );
-
-
-#pragma aux BIOSSetCursorOn =                           \
-    "mov    ah, 11h                             "       \
-    "int    18h                                 "       \
-        modify [ ah ];
+#pragma aux BIOS_JIS_SHF =      \
+    "mov    cl,0f3h"            \
+    "int    0DCh"               \
+    parm caller [ax] modify [ax cl] value [ax];
 
 extern void BIOSSetCursorOn( void );
-
-
-#pragma aux BIOSSetCursorOff =                          \
-    "mov    ah, 12h                             "       \
-    "int    18h                                 "       \
-        modify [ ah ];
+#pragma aux BIOSSetCursorOn =   \
+    "mov    ah,11h"             \
+    "int    18h"                \
+    modify [ah];
 
 extern void BIOSSetCursorOff( void );
-
-
-#pragma aux BIOSSetCurBlinkOn =                         \
-    "mov    ax, 1000h                           "       \
-    "int    18h                                 "       \
-        modify [ ax ];
+#pragma aux BIOSSetCursorOff =  \
+    "mov    ah,12h"             \
+    "int    18h"                \
+    modify [ah];
 
 extern void BIOSSetCurBlinkOn( void );
-
-
-#pragma aux BIOSSetCurBlinkOff =                        \
-    "mov    ax, 1001h                           "       \
-    "int    18h                                 "       \
-        modify [ ax ];
+#pragma aux BIOSSetCurBlinkOn = \
+    "mov    ax,1000h"           \
+    "int    18h"                \
+    modify [ax];
 
 extern void BIOSSetCurBlinkOff( void );
+#pragma aux BIOSSetCurBlinkOff = \
+    "mov    ax,1001h"           \
+    "int    18h"                \
+    modify [ax];
+

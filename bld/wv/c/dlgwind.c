@@ -36,25 +36,25 @@
 #include "dbgerr.h"
 #include "dlgwind.h"
 #include "dbgscan.h"
+#include "dlgexpr.h"
+#include "dbgwass.h"
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwmod.h"
+#include "dbgwset.h"
+#include "dbgwvar.h"
 
 
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
-extern int              TabIntervalGet( void );
-extern void             TabIntervalSet( int );
-extern void             AsmChangeOptions( void );
-extern void             VarChangeOptions( void );
-extern void             GlobChangeOptions( void );
-extern void             ModChangeOptions( void );
-extern void             FuncChangeOptions( void );
-
+typedef struct dlg_window_set {
+    bool            cancel : 1;
+} dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )
 {
     long        tab;
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     _SwitchSet( SW_ASM_SOURCE, GUIIsChecked( gui, CTL_WIND_ASM_SOURCE ) );
     _SwitchSet( SW_ASM_HEX, GUIIsChecked( gui, CTL_WIND_ASM_HEX ) );
     _SwitchSet( SW_VAR_WHOLE_EXPR, GUIIsChecked( gui, CTL_WIND_VAR_EXPR ) );
@@ -76,15 +76,15 @@ static void GetDlgStatus( gui_window *gui )
     FuncChangeOptions();
     GlobChangeOptions();
     ModChangeOptions();
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 
 static void SetDlgStatus( gui_window *gui )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = NewCurrRadix( 10 );
+    old_radix = NewCurrRadix( 10 );
     GUISetChecked( gui, CTL_WIND_ASM_SOURCE, _IsOn( SW_ASM_SOURCE ) );
     GUISetChecked( gui, CTL_WIND_ASM_HEX, _IsOn( SW_ASM_HEX ) );
     GUISetChecked( gui, CTL_WIND_VAR_EXPR, _IsOn( SW_VAR_WHOLE_EXPR ) );
@@ -99,7 +99,7 @@ static void SetDlgStatus( gui_window *gui )
     GUISetChecked( gui, CTL_WIND_GLOB_TYPED, _IsOn( SW_GLOB_D2_ONLY ) );
     GUISetChecked( gui, CTL_WIND_MOD_ALL, _IsOn( SW_MOD_ALL_MODULES ) );
     DlgSetLong( gui, CTL_WIND_FILE_TAB, TabIntervalGet() );
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
 }
 
 
@@ -136,7 +136,7 @@ OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  bool    DlgWndSet( void )
+bool    DlgWndSet( void )
 {
     dlg_window_set      wndset;
 

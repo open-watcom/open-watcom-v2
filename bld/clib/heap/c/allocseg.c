@@ -48,94 +48,99 @@
     #include <windows.h>
 #else
     #include <dos.h>
-#endif
-#include "rtdata.h"
-#if defined(__OS2__)
-    #include "tinyos2.h"
-#elif defined(__QNX__)
-#elif defined(__WINDOWS__) && defined( _M_I86 )
-#else
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "heap.h"
 
 #if defined(__WINDOWS_286__)
-extern unsigned long _WCNEAR __win_alloc_flags;
+extern unsigned long    _WCNEAR __win_alloc_flags;
 #elif defined(__QNX__)
-extern unsigned __qnx_alloc_flags;
+extern unsigned         __qnx_alloc_flags;
 #endif
 
-unsigned __AllocSeg( unsigned int amount )
-    {
-        unsigned n;             /* number of paragraphs desired   */
-        short seg;
-        struct heapstart _WCFAR *p;
-        tag _WCFAR *last_tag;
-#if !(defined(__QNX__) || defined(__WINDOWS_286__) )
-        tiny_ret_t rc;
-#endif
-
-        if( !__heap_enabled ) return( 0 );
-        /*               heapinfo + frl + frl,       end tags */
-        if( amount > - (sizeof(struct heapstart) + TAG_SIZE*2 ) ) {
-            return( 0 );
-        }
-        /*        heapinfo + frl,        allocated blk,  end tags */
-        amount += sizeof(struct heapblk) + TAG_SIZE + TAG_SIZE * 2;
-        if( amount < _amblksiz )  amount = _amblksiz;
-        n = ( amount + 0x0f ) >> 4;
-        if( n == 0 )  n = 0x1000;                       /* 23-may-89 */
+__segment __AllocSeg( unsigned int amount )
+{
+    unsigned    n;              /* number of paragraphs desired   */
+    __segment   seg;
+    heapstart   _WCFAR *p;
+    tag         _WCFAR *last_tag;
 #if defined(__OS2__)
-        rc = DosAllocSeg( n << 4, (PSEL)&seg, 0 );      /* 21-aug-91 */
-        if( rc != 0 ) return( 0 );
 #elif defined(__QNX__)
-        seg = qnx_segment_alloc_flags( ((long)n) << 4, __qnx_alloc_flags );
-        if( seg == -1 ) return( 0 );
+    unsigned    rc;
 #elif defined(__WINDOWS_286__)
-        {
-            HANDLE hmem;
-            LPSTR p;
-
-            hmem = GlobalAlloc( __win_alloc_flags, ((long)n) << 4 );
-            if( hmem == NULL ) return( 0 );
-            p = GlobalLock( hmem );
-            if( p == NULL ) {
-                GlobalFree( hmem );
-                return( 0 );
-            }
-#if 0       /* code generator can't handle this */
-            if( FP_OFF( p ) != 0 ) {    /* in case, Microsoft changes Windows */
-                GlobalUnlock( hmem );   /* in post 3.1 versions */
-                GlobalFree( hmem );
-                return( 0 );
-            }
-#endif
-            seg = FP_SEG( p );
-        }
 #else
-        rc = TinyAllocBlock( n );
-        if( TINY_ERROR( rc ) ) {
-            return( 0 );
-        }
-        seg = TINY_INFO( rc );
+    tiny_ret_t  rc;
 #endif
-        p = (struct heapstart _WCFAR *)MK_FP( seg, 0 );
-        p->h.heaplen = n << 4;
-        p->h.prevseg = 0;
-        p->h.nextseg = 0;
-        p->h.rover   = offsetof( struct heapstart, first );
-        p->h.b4rover     = 0;
-        p->h.numalloc = 0;
-        p->h.numfree  = 1;
-        p->h.freehead.len  = 0;
-        p->h.freehead.prev = offsetof( struct heapstart, first );
-        p->h.freehead.next = offsetof( struct heapstart, first );
-        p->first.len  = p->h.heaplen - sizeof(struct heapblk) - TAG_SIZE*2;
-        p->h.largest_blk = p->first.len;
-        p->first.prev = offsetof( struct heapblk, freehead );
-        p->first.next = offsetof( struct heapblk, freehead );
-        last_tag = MK_FP( seg, p->h.heaplen - TAG_SIZE*2 );
-        *last_tag = END_TAG;
-        last_tag[1] = 0;        /* link to next piece of near heap */
-        return( seg );          /* return allocated segment */
+
+    if( !__heap_enabled )
+        return( _NULLSEG );
+    /*               heapinfo + frl + frl,       end tags */
+    if( amount > - ( sizeof( heapstart ) + TAG_SIZE * 2 ) ) {
+        return( _NULLSEG );
     }
+    /*        heapinfo + frl,        allocated blk,  end tags */
+    amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
+    if( amount < _amblksiz )
+        amount = _amblksiz;
+    n = ( amount + 0x0f ) >> 4;
+    if( n == 0 )
+        n = 0x1000;
+#if defined(__OS2__)
+    seg = _NULLSEG;
+    if( DosAllocSeg( n << 4, (PSEL)&seg, 0 ) )
+        return( _NULLSEG );
+#elif defined(__QNX__)
+    rc = qnx_segment_alloc_flags( ((long)n) << 4, __qnx_alloc_flags );
+    if( rc == -1 )
+        return( _NULLSEG );
+    seg = (__segment)rc;
+#elif defined(__WINDOWS_286__)
+    {
+        HANDLE hmem;
+        LPSTR p;
+
+        hmem = GlobalAlloc( __win_alloc_flags, ((long)n) << 4 );
+        if( hmem == NULL )
+            return( _NULLSEG );
+        p = GlobalLock( hmem );
+        if( p == NULL ) {
+            GlobalFree( hmem );
+            return( _NULLSEG );
+        }
+  #if 0       /* code generator can't handle this */
+        if( FP_OFF( p ) != 0 ) {    /* in case, Microsoft changes Windows */
+            GlobalUnlock( hmem );   /* in post 3.1 versions */
+            GlobalFree( hmem );
+            return( _NULLSEG );
+        }
+  #endif
+        seg = FP_SEG( p );
+    }
+#else
+    rc = TinyAllocBlock( n );
+    if( TINY_ERROR( rc ) ) {
+        return( _NULLSEG );
+    }
+    seg = TINY_INFO( rc );
+#endif
+    p = (heapstart _WCFAR *)MK_FP( seg, 0 );
+    p->h.heaplen = n << 4;
+    p->h.prevseg = _NULLSEG;
+    p->h.nextseg = _NULLSEG;
+    p->h.rover   = offsetof( heapstart, first );
+    p->h.b4rover  = 0;
+    p->h.numalloc = 0;
+    p->h.numfree  = 1;
+    p->h.freehead.len  = 0;
+    p->h.freehead.prev = offsetof( heapstart, first );
+    p->h.freehead.next = offsetof( heapstart, first );
+    p->first.len  = p->h.heaplen - sizeof( heapblk ) - TAG_SIZE * 2;
+    p->h.largest_blk = p->first.len;
+    p->first.prev = offsetof( heapblk, freehead );
+    p->first.next = offsetof( heapblk, freehead );
+    last_tag = MK_FP( seg, p->h.heaplen - TAG_SIZE * 2 );
+    *last_tag = END_TAG;
+    last_tag[1] = 0;        /* link to next piece of near heap */
+    return( seg );          /* return allocated segment */
+}

@@ -43,5 +43,5 @@
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbscpy,_fmbscpy)( unsigned char _FFAR *s1, const unsigned char _FFAR *s2 )
 {
-    return( _NEARFAR(strcpy,_fstrcpy)( s1, s2 ) );
+    return( (unsigned char _FFAR *)_NEARFAR(strcpy,_fstrcpy)( (char _FFAR *)s1, (const char _FFAR *)s2 ) );
 }

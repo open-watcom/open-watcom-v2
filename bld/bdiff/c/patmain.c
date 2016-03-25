@@ -30,17 +30,16 @@
 
 
 #include "bdiff.h"
+#include "wpatchio.h"
 #include "msg.h"
-
-extern  PATCH_RET_CODE  DoPatch( char *, int, int, int, char * );
 
 
 static void PrintBanner( void )
 {
-    static int  banner_printed = 0;
+    static bool banner_printed = false;
 
     if( !banner_printed ) {
-        banner_printed = 1;
+        banner_printed = true;
         printf( banner1w( "BPATCH", _BPATCH_VERSION_ ) "\n" );
         printf( banner2 "\n" );
         printf( banner2a( "1990" ) "\n" );
@@ -49,7 +48,7 @@ static void PrintBanner( void )
     }
 }
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -61,45 +60,11 @@ void Usage( char *name )
     printf( "\n" );
     for( i = i + 1; i <= MSG_USAGE_LAST; i++ ) {
         GetMsg( msgbuf, i );
-        if( msgbuf[ 0 ] == 0 ) break;
+        if( msgbuf[0] == 0 )
+            break;
         printf( "\n" );
         printf( msgbuf );
     }
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-static void Err( int format, va_list args )
-{
-    char        msgbuf[MAX_RESOURCE_SIZE];
-
-    GetMsg( msgbuf, MSG_ERROR );
-    printf( msgbuf );
-    MsgPrintf( format, args);
-}
-
-void PatchError( int format, ... )
-{
-    va_list     args;
-
-    va_start( args, format );
-    Err( format, args );
-    printf( "\n" );
-    va_end( args );
-    MsgFini();
-    exit( EXIT_FAILURE );
-}
-
-void FilePatchError( int format, ... )
-{
-    va_list     args;
-    int         err;
-
-    va_start( args, format );
-    err = errno;
-    Err( format, args );
-    printf( ": %s\n", strerror( err ) );
-    va_end( args );
     MsgFini();
     exit( EXIT_FAILURE );
 }
@@ -108,35 +73,37 @@ void main( int argc, char **argv )
 {
     int         i;
     char        *target;
-    int         doprompt = 1;
-    int         dobackup = 1;
-    int         printlevel = 0;
+    bool        doprompt = true;
+    bool        dobackup = true;
+    bool        printlevel = false;
     char        *patchname = NULL;
 
-    if( !MsgInit() ) exit( EXIT_FAILURE );
-    if( argc < 2 ) Usage( argv[0] );
-    for( i = 1; argv[ i ] != NULL; ++i ) {
-        if( argv[ i ][ 0 ] == '-' ) {
-            switch( tolower( argv[ i ][ 1 ] ) ) {
+    if( !MsgInit() )
+        exit( EXIT_FAILURE );
+    if( argc < 2 )
+        Usage( argv[0] );
+    for( i = 1; argv[i] != NULL; ++i ) {
+        if( argv[i][0] == '-' ) {
+            switch( tolower( argv[i][1] ) ) {
             case 'p':
-                doprompt = 0;
+                doprompt = false;
                 break;
             case 'b':
-                dobackup = 0;
+                dobackup = false;
                 break;
             case 'f':           /* specify full pathname of file to patch */
                 ++i;
                 target = argv[i];
                 break;
             case 'q':
-                printlevel = 1;
+                printlevel = true;
                 break;
             default:
-                Usage( argv[ 0 ] );
+                Usage( argv[0] );
                 break;
             }
-        } else if( argv[ i ][ 0 ] == '?' ) {
-            Usage( argv[ 0 ] );
+        } else if( argv[i][0] == '?' ) {
+            Usage( argv[0] );
         } else {
             if( patchname != NULL ) {
                 if( doprompt ) {
@@ -144,7 +111,7 @@ void main( int argc, char **argv )
                 }
                 PatchError( ERR_TWO_NAMES );
             }
-            patchname = argv[ i ];
+            patchname = argv[i];
         }
     }
     PrintBanner();

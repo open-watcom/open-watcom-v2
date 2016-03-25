@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <errno.h>
 #include "posix.h"
-#include "source.h"
 #include "win.h"
 
 #include "clibext.h"
@@ -52,17 +51,18 @@ void SaveInfo( info *ci  )
     if( ci == NULL ) {
         return;
     }
-    ci->CurrentFile = CurrentFile;
-    ci->CurrentPos = CurrentPos;
+    ci->CurrentFile         = CurrentFile;
+    ci->CurrentPos          = CurrentPos;
     ci->VirtualColumnDesired = VirtualColumnDesired;
-    ci->LeftTopPos = LeftTopPos;
-    ci->CurrentWindow = CurrentWindow;
-    ci->UndoStack = UndoStack;
-    ci->UndoUndoStack = UndoUndoStack;
-    ci->CurrNumWindow = CurrNumWindow;
-    ci->linenumflag = EditFlags.LineNumbers;
-    ci->MarkList = MarkList;
-    ci->SelRgn = SelRgn;
+    ci->LeftTopPos          = LeftTopPos;
+    ci->current_window_id   = current_window_id;
+    ci->UndoStack           = UndoStack;
+    ci->UndoUndoStack       = UndoUndoStack;
+    ci->curr_num_window_id  = curr_num_window_id;
+    ci->linenumflag         = EditFlags.LineNumbers;
+    ci->MarkList            = MarkList;
+    ci->SelRgn              = SelRgn;
+
     ci->fsi.Language        = CurrentInfo->fsi.Language;
     ci->fsi.PPKeywordOnly   = EditFlags.PPKeywordOnly;
     ci->fsi.CMode           = EditFlags.CMode;
@@ -84,8 +84,8 @@ void SaveInfo( info *ci  )
     ci->fsi.GrepDefault     = EditVars.GrepDefault;
     CTurnOffFileDisplayBits();
 #ifdef __WIN__
-    ci->VScrollBarScale = VScrollBarScale;
-    ci->HScrollBarScale = HScrollBarScale;
+    ci->VScrollBarScale     = VScrollBarScale;
+    ci->HScrollBarScale     = HScrollBarScale;
 #endif
 } /* SaveInfo */
 
@@ -122,19 +122,20 @@ static void cRestoreFileDisplayBits( void )
 bool RestoreInfo( info *ci  )
 {
     info        tmpinfo;
+
     CurrentInfo = ci;
     if( ci == NULL ) {
         ci = &tmpinfo;
         memset( ci, 0, sizeof( tmpinfo ) );
-        ci->CurrentWindow = NO_WINDOW;
-        ci->CurrNumWindow = NO_WINDOW;
-        ci->CurrentPos.line = 1;
-        ci->CurrentPos.column = 1;
+        ci->current_window_id   = NO_WINDOW;
+        ci->curr_num_window_id  = NO_WINDOW;
+        ci->CurrentPos.line     = 1;
+        ci->CurrentPos.column   = 1;
         ci->VirtualColumnDesired = 1;
-        ci->LeftTopPos.line = 1;
-        ci->LeftTopPos.column = 0;
-        CurrentLine = NULL;
-        CurrentFcb = NULL;
+        ci->LeftTopPos.line     = 1;
+        ci->LeftTopPos.column   = 0;
+        CurrentLine             = NULL;
+        CurrentFcb              = NULL;
 
         ci->fsi.Language        = LANG_NONE;
         ci->fsi.HardTab         = EditVars.HardTab;
@@ -167,20 +168,20 @@ bool RestoreInfo( info *ci  )
         ci->fsi.GrepDefault     = EditVars.GrepDefault;
 #endif
     }
-    CurrentFile = ci->CurrentFile;
-    SelRgn = ci->SelRgn;
+    CurrentFile                 = ci->CurrentFile;
+    SelRgn                      = ci->SelRgn;
 #ifdef __WIN__
-    VScrollBarScale = ci->VScrollBarScale;
-    HScrollBarScale = ci->HScrollBarScale;
+    VScrollBarScale             = ci->VScrollBarScale;
+    HScrollBarScale             = ci->HScrollBarScale;
 #endif
-    CurrentPos = ci->CurrentPos;
-    VirtualColumnDesired = ci->VirtualColumnDesired;
-    LeftTopPos = ci->LeftTopPos;
-    CurrentWindow = ci->CurrentWindow;
-    CurrNumWindow = ci->CurrNumWindow;
-    UndoStack = ci->UndoStack;
-    UndoUndoStack = ci->UndoUndoStack;
-    MarkList = ci->MarkList;
+    CurrentPos                  = ci->CurrentPos;
+    VirtualColumnDesired        = ci->VirtualColumnDesired;
+    LeftTopPos                  = ci->LeftTopPos;
+    current_window_id           = ci->current_window_id;
+    curr_num_window_id          = ci->curr_num_window_id;
+    UndoStack                   = ci->UndoStack;
+    UndoUndoStack               = ci->UndoUndoStack;
+    MarkList                    = ci->MarkList;
     SetMarkContext();
     EditFlags.CMode             = ci->fsi.CMode;
     EditFlags.CRLFAutoDetect    = ci->fsi.CRLFAutoDetect;
@@ -225,7 +226,7 @@ bool RestoreInfo( info *ci  )
         SetModifiedVar( false );
     } else{
         SetModifiedVar( CurrentFile->modified );
-        if( (unsigned) ci->linenumflag != EditFlags.LineNumbers ) {
+        if( (unsigned)ci->linenumflag != EditFlags.LineNumbers ) {
             return( true );
         }
     }
@@ -244,7 +245,7 @@ static int getFileInfoString( char *st, bool is_small )
     } else {
         write_crlf = EditFlags.WriteCRLF;
     }
-    st[0] = 0;
+    st[0] = '\0';
     if( !is_small ) {
         if( EditFlags.NewFile ) {
             strcat( st, " [new file]" );
@@ -316,14 +317,14 @@ static int getFileInfoString( char *st, bool is_small )
     return( strlen( st ) );
 }
 
-static void make_short_name( char *name, int len, char *buffer )
+static void make_short_name( char *name, size_t len, char *buffer )
 {
     char    *start;
     char    *end;
     int     newlen;
 
     len -= 2; /* for 2 quotes */
-    strcpy( buffer, "\"" );
+    strcpy( buffer, SingleQuote );
     start = strchr( name, '\\' );
     if( start ) {
         for( end = name + strlen( name ) - 1; *end != '\\'; end-- );
@@ -332,13 +333,13 @@ static void make_short_name( char *name, int len, char *buffer )
             strncat( buffer, name, start - name + 1 );
             strcat( buffer, "..." );
             strcat( buffer, end );
-            strcat( buffer, "\"" );
+            strcat( buffer, SingleQuote );
             return;
         }
     }
     strcat( buffer, "..." );
     strncat( buffer, name + strlen(name) - len + 3, len - 3 );
-    strcat( buffer, "\"" );
+    strcat( buffer, SingleQuote );
 }
 
 /*
@@ -347,14 +348,14 @@ static void make_short_name( char *name, int len, char *buffer )
 vi_rc DisplayFileStatus( void )
 {
     char        st[MAX_STR], data[MAX_STR];
-    int         free_len;
+    size_t      free_len;
     long        pc;
 
     if( CurrentFile == NULL ) {
         Message1( "No file currently loaded" );
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }
-    free_len = messagew_info.x2 - messagew_info.x1;
+    free_len = messagew_info.area.x2 - messagew_info.area.x1;
     if( free_len > MAX_STR ) {
         free_len = MAX_STR;
     }
@@ -367,7 +368,7 @@ vi_rc DisplayFileStatus( void )
         strcat( data, st );
     } else {
         // go to short version
-        free_len = messagew_info.x2 - messagew_info.x1;
+        free_len = messagew_info.area.x2 - messagew_info.area.x1;
         if( free_len > MAX_STR ) {
             free_len = MAX_STR;
         }
@@ -440,7 +441,7 @@ bool CFileReadOnly( void )
 /*
  * FileIOMessage - print message about file
  */
-void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
+void FileIOMessage( const char *name, linenum lnecnt, long bytecnt )
 {
     if( !EditFlags.Quiet ){
         Message1( "\"%s\" %l lines, %l bytes", name, lnecnt, bytecnt );
@@ -451,16 +452,17 @@ void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
 /*
  * IsTextFile - check if a file has .obj, .com,.bat, or .exe at the end
  */
-bool IsTextFile( char *file )
+bool IsTextFile( const char *file )
 {
     int         i, j;
-    char        *fign, *fend;
+    const char  *fign;
+    const char  *fend;
 
     i = strlen( file );
     fend = file + i;
     fign = EditVars.FIgnore;
     for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
-         if( !strcmp( fend - strlen( fign ), fign ) ) {
+         if( strcmp( fend - strlen( fign ), fign ) == 0 ) {
              return( false );
          }
          fign += EXTENSION_LENGTH;

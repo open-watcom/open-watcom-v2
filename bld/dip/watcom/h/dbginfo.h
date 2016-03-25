@@ -92,6 +92,8 @@
 
 #include "pushpck1.h"
 
+typedef word        line_number;
+
 typedef struct {
     word            signature;      /* == 0x8386                    */
     byte            exe_major_ver;  /* == 2 or 3                    */
@@ -120,35 +122,40 @@ typedef struct {
     }               u;
 } _WCUNALIGNED demand_info;
 
-enum { DMND_FIRST = 0, DMND_LOCALS = 0, DMND_TYPES, DMND_LINES, DMND_NUM };
+typedef enum {
+    DMND_LOCALS = 0,
+    DMND_TYPES,
+    DMND_LINES,
+    MAX_DMND
+} demand_kind;
 
 typedef struct {
     word            language;       /* offset from source language table */
-    demand_info     di[DMND_NUM];
+    demand_info     di[MAX_DMND];
     char            name[1];
 } _WCUNALIGNED mod_info;
 
 typedef struct {
-    word            line_number;
+    line_number     line;
     dword           code_offset;    /* offset from segment base */
 } _WCUNALIGNED line_info;
 
 typedef struct {
     word            segment;        /* offset from addr info class */
-    word            num;
-    line_info       line[1];        /* repeated 'num' times */
+    word            count;
+    line_info       line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v2_line_segment;
 
 typedef struct {
-    dword       segment;        /* offset from addr info class */
-    word        num;
-    line_info   line[1];        /* repeated 'num' times */
+    dword           segment;        /* offset from addr info class */
+    word            count;
+    line_info       line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v3_line_segment;
 
 typedef struct {
     addr48_ptr      addr;
-    word            mod;            /* offset from mod info class for V2 */
-                                    /* module index number for V3 */
+    word            mod;        /* offset from mod info class for V2 */
+                                /* module index number for V3 */
     char            name[1];
 } _WCUNALIGNED gbl_info;
 
@@ -157,25 +164,25 @@ typedef struct {
 #define GBL_KIND_CODE           0x04
 
 typedef struct {
-    addr48_ptr          addr;
-    word                mod;
-    byte                kind;
-    char                name[1];
+    addr48_ptr      addr;
+    word            mod;    /* module index number for V3 */
+    byte            kind;
+    char            name[1];
 } _WCUNALIGNED v3_gbl_info;
 
 
 typedef struct {
     dword           size;
-    word            mod;            /* offset from mod info class for V2 */
-                                    /* module index number for V3 */
+    word            mod;        /* offset from mod info class for V2 */
+                                /* module index number for V3 */
 } _WCUNALIGNED addr_info;
 
 typedef struct {
     addr48_ptr      base;
-    word            num;
-    addr_info       addr[1];
+    word            count;
+    addr_info       addr[1];    /* repeated 'count' times */
 } _WCUNALIGNED seg_info;
 
-#define SEG_NUM_MASK    0x7fff
+#define SEG_COUNT_MASK  0x7fff
 
 #include "poppck.h"

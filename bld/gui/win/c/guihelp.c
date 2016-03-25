@@ -292,16 +292,20 @@ bool GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic )
 #else
     if( topic == NULL ) {
   #if defined( __NT__ )
+    #if !defined( _WIN64 )
         DWORD   version;
 
         version = GetVersion();
         version = 100 * LOBYTE(LOWORD(version)) + HIBYTE(LOWORD(version));
-        if( version >= 351 ) {
-            // NT 3.51 or higher
-            return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, 0 ) );
+        if( version < 351 ) {
+            return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
         }
-  #endif
+    #endif
+        // NT 3.51 or higher
+        return( WWinHelp( wnd->hwnd, file, (UINT)HELP_FINDER, 0 ) );
+  #else
         return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
+  #endif
     } else {
         return( WWinHelp( wnd->hwnd, file, (UINT)HELP_KEY, (HELP_DATA)topic ) );
     }

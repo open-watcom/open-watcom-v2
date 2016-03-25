@@ -39,19 +39,23 @@
 #include "dbgitem.h"
 #include "mad.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
+#include "dbgass.h"
 
 
 static walk_result MemRefDisp( address a, mad_type_handle th,
                         mad_memref_kind mk, void *d )
 {
-    char                *p = TxtBuff;
+    char                *p;
     item_mach           item;
-    unsigned            max;
+    size_t              max;
 
     d = d;
-    if( mk & MMK_IMPLICIT ) return( WR_CONTINUE );
-    if( p[0] != '\0' ) {
-        p = &p[strlen( p )];
+    if( mk & MMK_IMPLICIT )
+        return( WR_CONTINUE );
+    p = TxtBuff;
+    if( *p != NULLCHAR ) {
+        p += strlen( p );
         *p++ = ' ';
     }
     p = StrAddr( &a, p, TXT_LEN - ( p - TxtBuff ) );
@@ -83,8 +87,8 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
 
 bool InsMemRef( mad_disasm_data *dd )
 {
-    TxtBuff[0] = '\0';
+    TxtBuff[0] = NULLCHAR;
     MADDisasmMemRefWalk( dd, MemRefDisp, &DbgRegs->mr, NULL );
-    return( TxtBuff[0] != '\0' );
+    return( TxtBuff[0] != NULLCHAR );
 }
 

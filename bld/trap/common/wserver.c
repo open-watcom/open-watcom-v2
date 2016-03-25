@@ -30,11 +30,12 @@
 
 
 #include <stdio.h>
-#include <malloc.h>
 #include <process.h>
 #include <wwindows.h>
 #include "wserver.h"
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "trpsys.h"
 #include "trperr.h"
 #include "packet.h"
 #include "servname.h"
@@ -43,11 +44,8 @@
 #include "nothing.h"
 #include "options.h"
 
-extern trap_version TrapVersion;
 
-#ifdef __NT__
-extern void         TellHWND( HWND );
-#endif
+extern trap_version TrapVersion;
 
 char            ServParms[PARMS_MAXLEN];
 
@@ -171,7 +169,7 @@ static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
     if( !hwndMain ) return( FALSE );
 
 #ifdef __NT__
-    TellHWND( hwndMain );
+    TrapTellHWND( hwndMain );
 #endif
 
     /*

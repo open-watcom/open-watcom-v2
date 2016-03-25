@@ -1,7 +1,7 @@
 # pp11 has incorrect output
 plustest_name = preproc
 
-!include testenv.mif
+!include testenv1.mif
 
 alt_error=00
 

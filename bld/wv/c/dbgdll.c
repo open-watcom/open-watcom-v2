@@ -33,15 +33,15 @@
 #include "dbgdata.h"
 #include "dlglist.h"
 #include "dbgsrc.h"
+#include "dbgbrk.h"
+#include "dbgprog.h"
+#include "dbgdll.h"
+#include "dbgevent.h"
 
 #include "clibext.h"
 
-char_ring               *DLLList;
 
-extern char             *GetLastImageName( void );
-extern void             RecordEvent( const char *p );
-extern void             GetBreakOnImageCmd( const char *, char *, bool );
-
+char_ring       *DLLList;
 
 bool DLLMatch( void )
 {
@@ -50,10 +50,10 @@ bool DLLMatch( void )
     strcpy( TxtBuff, GetLastImageName() );
     strupr( TxtBuff );
     for( curr = DLLList; curr != NULL; curr = curr->next ) {
-        if( curr->name[0] == '*' ) return( TRUE );
-        if( strstr( TxtBuff, curr->name ) != NULL ) return( TRUE );
+        if( curr->name[0] == '*' ) return( true );
+        if( strstr( TxtBuff, curr->name ) != NULL ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 char *DLLListName( char_ring *src )
@@ -69,15 +69,15 @@ char_ring *NextDLLList( char_ring *curr )
 
 void AddDLLList( const char *start, unsigned len )
 {
-    InsertRing( RingEnd( &DLLList ), start, len, TRUE );
+    InsertRing( RingEnd( &DLLList ), start, len, true );
 }
 
 void BreakOnImageLoad( const char *name, unsigned len, bool clear )
 {
     if( clear ) {
-        DeleteRing( &DLLList, name, len, TRUE );
+        DeleteRing( &DLLList, name, len, true );
     } else {
-        InsertRing( RingEnd( &DLLList ), name, len, TRUE );
+        InsertRing( RingEnd( &DLLList ), name, len, true );
     }
     GetBreakOnImageCmd( name, TxtBuff, clear );
     RecordEvent( TxtBuff );
@@ -99,7 +99,7 @@ void RecordClearDLLBreaks( void )
     char_ring   *dll;
 
     for( dll = DLLList; dll != NULL; dll = dll->next ) {
-        GetBreakOnImageCmd( dll->name, TxtBuff, TRUE );
+        GetBreakOnImageCmd( dll->name, TxtBuff, true );
         RecordEvent( TxtBuff );
     }
 }
@@ -109,7 +109,7 @@ void RecordSetDLLBreaks( void )
     char_ring   *dll;
 
     for( dll = DLLList; dll != NULL; dll = dll->next ) {
-        GetBreakOnImageCmd( dll->name, TxtBuff, FALSE );
+        GetBreakOnImageCmd( dll->name, TxtBuff, false );
         RecordEvent( TxtBuff );
     }
 }

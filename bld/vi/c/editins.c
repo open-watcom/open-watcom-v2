@@ -34,7 +34,6 @@
 #ifdef _M_I86
     #include <i86.h>
 #endif
-#include "source.h"
 #include "menu.h"
 #include "win.h"
 #include "rxsupp.h"
@@ -86,15 +85,16 @@ static int trimWorkLine( void )
 
     len = 0;
     if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
-        i = WorkLine->len - 1;
-        while( i >= 0 && WHITE_SPACE( WorkLine->data[i] ) ) {
-            i--;
+        for( i = WorkLine->len - 1; i >= 0; --i ) {
+            if( !WHITE_SPACE( WorkLine->data[i] ) ) {
+                break;
+            }
         }
         if( i == -1 ) {
             len = VirtualLineLen( WorkLine->data );
         }
         WorkLine->len = i + 1;
-        WorkLine->data[i + 1] = 0;
+        WorkLine->data[i + 1] = '\0';
     }
     return( len );
 
@@ -120,7 +120,7 @@ void DoneCurrentInsert( bool trim )
         doneWithCurrentLine();
         EndUndoGroup( UndoStack );
         if( !EditFlags.Modeless ) {
-            NewCursor( CurrentWindow, EditVars.NormalCursorType );
+            NewCursor( current_window_id, EditVars.NormalCursorType );
             SetWindowCursor();
         }
         EditFlags.EscapedInsertChar = false;
@@ -137,11 +137,11 @@ void UpdateEditStatus( void )
     if( overStrike ) {
         UpdateCurrentStatus( CSTATUS_OVERSTRIKE );
         EditFlags.WasOverstrike = true;
-        NewCursor( CurrentWindow, EditVars.OverstrikeCursorType );
+        NewCursor( current_window_id, EditVars.OverstrikeCursorType );
     } else {
         UpdateCurrentStatus( CSTATUS_INSERT );
         EditFlags.WasOverstrike = false;
-        NewCursor( CurrentWindow, EditVars.InsertCursorType );
+        NewCursor( current_window_id, EditVars.InsertCursorType );
     }
     SetWindowCursor();
 
@@ -157,7 +157,7 @@ static void addChar( char ch )
 
     if( WorkLine->len == 0 ) {
         WorkLine->data[0] = ch;
-        WorkLine->data[1] = 0;
+        WorkLine->data[1] = '\0';
         WorkLine->len = 1;
         DisplayWorkLine( SSKillsFlags( ch ) );
         return;
@@ -176,7 +176,7 @@ static void addChar( char ch )
         WorkLine->data[CurrentPos.column - 1] = ch;
         if( CurrentPos.column - 1 == WorkLine->len ) {
             WorkLine->len++;
-            WorkLine->data[WorkLine->len] = 0;
+            WorkLine->data[WorkLine->len] = '\0';
         }
     }
 
@@ -196,7 +196,7 @@ static void checkWrapMargin( void )
         if( EditVars.WrapMargin < 0 ) {
             width = -EditVars.WrapMargin;
         } else {
-            width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ) - EditVars.WrapMargin;
+            width = WindowAuxInfo( current_window_id, WIND_INFO_WIDTH ) - EditVars.WrapMargin;
         }
         if( CurrentPos.column > width ) {
             for( i = CurrentPos.column - 1; i >= 0; i-- ) {
@@ -285,7 +285,6 @@ vi_rc IMEnter( void )
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
 
     /*
      * truncate the working line
@@ -296,10 +295,10 @@ vi_rc IMEnter( void )
     if( el > 0 && WorkLine->len > 0 ) {
         memcpy( buff, &WorkLine->data[CurrentPos.column - 1], el + 1 );
         WorkLine->len -= el;
-        WorkLine->data[CurrentPos.column - 1] = 0;
+        WorkLine->data[CurrentPos.column - 1] = '\0';
     } else {
         el = 0;
-        buff[0] = 0;
+        buff[0] = '\0';
     }
 
     len = trimWorkLine();
@@ -570,7 +569,6 @@ vi_rc IMSpace( void )
 {
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
     return( insertChar( false, true ) );
 
 } /* IMSpace */
@@ -588,7 +586,6 @@ vi_rc IMTabs( void )
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
-    abbrevCnt = 0;
     switch( LastEvent ) {
     case VI_KEY( TAB ):
         if( EditFlags.RealTabs ) {
@@ -776,7 +773,7 @@ static vi_rc getBracketLoc( i_mark *pos )
 
     tmp[0] = '\\';
     tmp[1] = ')';
-    tmp[2] = 0;
+    tmp[2] = '\0';
 //    lne = CurrentPos.line;
     RegExpAttrSave( -1, NULL );
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +38,8 @@
 _WCRTLINK unsigned short htons( unsigned short hostshort )
 {
 #if defined( __BIG_ENDIAN__ )
-    return ( hostshort );
+    return( hostshort );
 #else
-    return ( ((hostshort >> 8) & 0xff) | ((hostshort & 0xff) << 8) );
+    return( ((hostshort >> 8) & 0xff) | ((hostshort & 0xff) << 8) );
 #endif
 }

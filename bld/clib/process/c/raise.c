@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX raise() implementation.
 *
 ****************************************************************************/
 
@@ -46,13 +45,6 @@ _WCRTLINK int (raise)( int sig )
     __getmagicvar( &me, _m_my_pid );
     return( kill( me, sig ) );
 }
-
-
-void __sigabort( void )
-{
-    raise( SIGABRT );
-}
-
 
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
 {

@@ -45,6 +45,9 @@ enum {
     FIRST_UNUSED_ID = 100
 };
 
+#define ID2VH(x)    ((vhandle)(x - FIRST_UNUSED_ID))
+#define VH2ID(x)    ((gui_ctl_id)(x + FIRST_UNUSED_ID))
+
 extern int      NominalButtonWidth;
 
 #define C0      0

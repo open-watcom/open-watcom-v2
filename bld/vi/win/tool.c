@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "vi.h"
 #include <malloc.h>
 #include <shellapi.h>
@@ -39,7 +41,7 @@
 
 typedef struct tool_item {
     ss                  tool_head;
-    UINT                id;
+    int                 id;
     HBITMAP             bmp;
     bool                is_blank    : 1;
     bool                dont_save   : 1;
@@ -81,22 +83,15 @@ static HBITMAP          buttonPattern;
 
 RECT                    ToolBarFloatRect;
 
-vi_rc HandleToolCommand( UINT id )
+vi_rc HandleToolCommand( int id )
 {
     ss          *p;
     tool_item   *item;
-    int         len;
-    vi_rc       rc;
-    char        *str;
 
     for( p = toolBarHead; p != NULL; p = p->next ) {
         item = (tool_item *)p;
         if( item->id == id ) {
-            len = strlen( item->cmd ) + 1;
-            str = alloca( len );
-            memcpy( str, item->cmd, len );
-            rc = RunCommandLine( str );
-            return( rc );
+            return( RunCommandLine( item->cmd ) );
         }
     }
     return( MENU_COMMAND_NOT_HANDLED );
@@ -124,10 +119,33 @@ static void nukeButtons( void )
     toolBarTail = NULL;
 }
 
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
-void ToolBarHelp( HWND hwnd, UINT id, bool isdown );
+/*
+ * toolBarHelp - update tool bar hint text
+ */
+static void toolBarHelp( HWND hwnd, ctl_id id, bool isdown )
+{
+    ss                 *p;
+
+    hwnd = hwnd;
+    SetMenuHelpString( NULL );
+    if( isdown ) {
+        p = toolBarHead;
+        while( p != NULL ) {
+            tool_item *item = (tool_item *)p;
+            if( item->id == id ) {
+                SetMenuHelpString( item->help );
+                break;
+            }
+            p = p->next;
+        }
+    }
+    UpdateStatusWindow();
+
+} /* toolBarHelp */
 
 #if 0
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
+
 static void newToolBarWindow( void )
 {
     RECT                rect;
@@ -137,13 +155,13 @@ static void newToolBarWindow( void )
 
     userClose = false;
 
-    GetWindowRect( EditContainer, &rect );
+    GetWindowRect( edit_container_id, &rect );
     width = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
     tl.x = rect.left;
     tl.y = 0;
-    ScreenToClient( Root, &tl );
+    ScreenToClient( root_window_id, &tl );
 
     if( fixedToolBar ) {
         // make it float
@@ -166,12 +184,12 @@ static void newToolBarWindow( void )
     dinfo.border_size.x = BORDER_X( ToolBarButtonWidth );
     dinfo.border_size.y = BORDER_Y( ToolBarButtonHeight );
     dinfo.background = buttonPattern;
-    dinfo.hook = MyToolBarProc;
-    dinfo.helphook = ToolBarHelp;
+    dinfo.hook = myToolBarProc;
+    dinfo.helphook = toolBarHelp;
 
     ToolBarDisplay( toolBar, &dinfo );
 
-    MoveWindow( EditContainer, tl.x, tl.y, width, height, TRUE );
+    MoveWindow( edit_container_id, tl.x, tl.y, width, height, TRUE );
     ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
     UpdateWindow( ToolBarWindow( toolBar ) );
     fixedToolBar = !fixedToolBar;
@@ -182,33 +200,9 @@ static void newToolBarWindow( void )
 #endif
 
 /*
- * ToolBarHelp - update tool bar hint text
+ * myToolBarProc - called by toolbar window proc
  */
-void ToolBarHelp( HWND hwnd, UINT id, bool isdown )
-{
-    ss                 *p;
-
-    hwnd = hwnd;
-    SetMenuHelpString( NULL );
-    if( isdown ) {
-        p = toolBarHead;
-        while( p != NULL ) {
-            tool_item *item = (tool_item *)p;
-            if( item->id == id ) {
-                SetMenuHelpString( item->help );
-                break;
-            }
-            p = p->next;
-        }
-    }
-    UpdateStatusWindow();
-
-} /* ToolBarHelp */
-
-/*
- * MyToolBarProc - called by toolbar window proc
- */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -237,53 +231,7 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     }
     return( false );
 
-} /* MyToolBarProc */
-
-/*
- * createToolBar - create the tool bar
- */
-static void createToolBar( RECT *rect )
-{
-    int                 toolbar_height;
-    TOOLDISPLAYINFO     dinfo;
-
-    fixedToolBar = true;
-    dinfo.button_size.x = EditVars.ToolBarButtonWidth;
-    dinfo.button_size.y = EditVars.ToolBarButtonHeight;
-    dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
-    dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
-    dinfo.style = TOOLBAR_FIXED_STYLE;
-    dinfo.is_fixed = true;
-    toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
-    dinfo.area = *rect;
-    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
-    dinfo.area.top -= 1;
-    dinfo.area.bottom -= 1;
-    dinfo.area.left -= 1;
-    dinfo.area.right += 1;
-    dinfo.hook = MyToolBarProc;
-    dinfo.helphook = ToolBarHelp;
-    dinfo.background = LoadBitmap( InstanceHandle, "BUTTONPATTERN" );
-    dinfo.use_tips = 1;
-    buttonPattern = dinfo.background;
-    toolBar = ToolBarInit( Root );
-#if defined( __NT__ )
-    ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
-#else
-    ToolBarChangeSysColors( GetRGB( EditVars.ToolBarColor ),
-#endif
-                            GetSysColor( COLOR_BTNHIGHLIGHT ),
-                            GetSysColor( COLOR_BTNSHADOW ) );
-    ToolBarDisplay( toolBar, &dinfo );
-    if( toolBar != NULL ) {
-        // CopyRect( &fixedRect, &dinfo.area );
-        // WARNING: These are some pretty stupid arbitrary constants here
-        rect->top = dinfo.area.bottom;
-        ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
-        // UpdateWindow( ToolBarWindow( toolBar ) );
-    }
-
-} /* createToolBar */
+} /* myToolBarProc */
 
 /*
  * getTip - get the string identifier of the tooltip for a given item
@@ -302,7 +250,7 @@ static int getTip( char *name )
     return( -1 );
 
 } /* getTip */
- 
+
 /*
  * addToolBarItem - add an item to the tool bar
  */
@@ -310,7 +258,7 @@ static void addToolBarItem( tool_item *item )
 {
     TOOLITEMINFO        info;
     int                 id;
-    
+
     if( item->is_blank ) {
         info.u.blank_space = 8;
         info.flags = ITEM_BLANK;
@@ -332,39 +280,9 @@ static void addToolBarItem( tool_item *item )
 } /* addToolBarItem */
 
 /*
- * NewToolBar - create a new brand tool bar
- */
-void NewToolBar( RECT *rect )
-{
-    ss          *curr;
-    RECT        covered;
-
-    if( toolBar ) {
-        userClose = false;
-        CloseToolBar();
-        userClose = true;
-    }
-    if( !EditFlags.Toolbar ) {
-        return;
-    }
-    createToolBar( rect );
-    curr = toolBarHead;
-    while( curr != NULL ) {            
-        addToolBarItem( (tool_item *)curr );
-        curr = curr->next;
-    }
-    UpdateToolBar( toolBar );
-    covered = *rect;
-    covered.bottom = rect->top;
-    covered.top = 0;
-    InvalidateRect( EditContainer, &covered, FALSE );
-
-} /* NewToolBar */
-
-/*
  * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help & command)
  */
-vi_rc AddBitmapToToolBar( char *data )
+vi_rc AddBitmapToToolBar( const char *data )
 {
     char                file[FILENAME_MAX];
     char                help[MAX_STR];
@@ -373,18 +291,18 @@ vi_rc AddBitmapToToolBar( char *data )
     int                 cmd_len;
     int                 name_len;
 
-    dont_save[0] = 0;
+    dont_save[0] = '\0';
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuote( data, dont_save );
+        GetStringWithPossibleQuote( &data, dont_save );
     }
 
-    GetStringWithPossibleQuote( data, file );
-    GetStringWithPossibleQuote( data, help );
+    GetStringWithPossibleQuote( &data, file );
+    GetStringWithPossibleQuote( &data, help );
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
     item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + strlen( help ) + 2 );
@@ -396,7 +314,7 @@ vi_rc AddBitmapToToolBar( char *data )
     }
     item->dont_save = ( strlen( dont_save ) != 0 );
 
-    if( file[0] && item->cmd[0] ) {
+    if( file[0] != '\0' && item->cmd[0] != '\0' ) {
         item->bmp = LoadBitmap( InstanceHandle, file );
         if( item->bmp == HNULL ) {
             item->bmp = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );
@@ -419,13 +337,13 @@ vi_rc AddBitmapToToolBar( char *data )
 /*
  * DeleteFromToolBar - delete an item from the toolbar
  */
-vi_rc DeleteFromToolBar( char *data )
+vi_rc DeleteFromToolBar( const char *data )
 {
     char    buffer[MAX_STR];
     int     index;
     ss      *p;
 
-    NextWord1( data, buffer );
+    GetNextWord1( data, buffer );
     index = atoi( buffer );
     // index should be (base 1) index of tool in list
     if( index > 0 ) {
@@ -501,10 +419,85 @@ void BarfToolBarData( FILE *f )
         } else if( citem->is_blank ) {
             MyFprintf( f, "addtoolbaritem\n" );
         } else {
-            MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name,
-                       citem->help, citem->cmd );
+            MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name, citem->help, citem->cmd );
         }
         p = p->next;
     }
 
 } /* BarfToolBarData */
+
+/*
+ * createToolBar - create the tool bar
+ */
+static void createToolBar( RECT *rect )
+{
+    int                 toolbar_height;
+    TOOLDISPLAYINFO     dinfo;
+
+    fixedToolBar = true;
+    dinfo.button_size.x = EditVars.ToolBarButtonWidth;
+    dinfo.button_size.y = EditVars.ToolBarButtonHeight;
+    dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
+    dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
+    dinfo.style = TOOLBAR_FIXED_STYLE;
+    dinfo.is_fixed = true;
+    toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
+    dinfo.area = *rect;
+    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
+    dinfo.area.top -= 1;
+    dinfo.area.bottom -= 1;
+    dinfo.area.left -= 1;
+    dinfo.area.right += 1;
+    dinfo.hook = myToolBarProc;
+    dinfo.helphook = toolBarHelp;
+    dinfo.background = LoadBitmap( InstanceHandle, "BUTTONPATTERN" );
+    dinfo.use_tips = 1;
+    buttonPattern = dinfo.background;
+    toolBar = ToolBarInit( root_window_id );
+#if defined( __NT__ )
+    ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
+#else
+    ToolBarChangeSysColors( GetRGB( EditVars.ToolBarColor ),
+#endif
+                            GetSysColor( COLOR_BTNHIGHLIGHT ),
+                            GetSysColor( COLOR_BTNSHADOW ) );
+    ToolBarDisplay( toolBar, &dinfo );
+    if( toolBar != NULL ) {
+        // CopyRect( &fixedRect, &dinfo.area );
+        // WARNING: These are some pretty stupid arbitrary constants here
+        rect->top = dinfo.area.bottom;
+        ShowWindow( ToolBarWindow( toolBar ), SW_SHOWNORMAL );
+        // UpdateWindow( ToolBarWindow( toolBar ) );
+    }
+
+} /* createToolBar */
+
+/*
+ * NewToolBar - create a new brand tool bar
+ */
+void NewToolBar( RECT *rect )
+{
+    ss          *curr;
+    RECT        covered;
+
+    if( toolBar ) {
+        userClose = false;
+        CloseToolBar();
+        userClose = true;
+    }
+    if( !EditFlags.Toolbar ) {
+        return;
+    }
+    createToolBar( rect );
+    curr = toolBarHead;
+    while( curr != NULL ) {
+        addToolBarItem( (tool_item *)curr );
+        curr = curr->next;
+    }
+    UpdateToolBar( toolBar );
+    covered = *rect;
+    covered.bottom = rect->top;
+    covered.top = 0;
+    InvalidateRect( edit_container_id, &covered, FALSE );
+
+} /* NewToolBar */

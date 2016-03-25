@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ typedef struct {
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool         WREInitResourceWindow( WREResInfo *, uint_16 );
-extern bool         WRESetResNamesFromType( WREResInfo *, uint_16, bool, WResID *, LRESULT );
+extern bool         WRESetResNamesFromType( WREResInfo *, uint_16, bool, WResID *, int );
 extern WRETypeName  *WREGetTypeNameFromRT( uint_16 );
 extern char         *WREGetResName( WResResNode *, uint_16 );
 

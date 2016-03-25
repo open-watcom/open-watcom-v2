@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,18 +39,24 @@
 #endif
 #include "wprocmap.h"
 
-static fancy_find       snoopData =
-    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
+
+/* Local Windows CALLBACK function prototypes */
+#ifdef __NT__
+WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data );
+#endif
+WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #ifdef __NT__
-static HINSTANCE        hInstShell = NULL;
-
 typedef LPITEMIDLIST    (CALLBACK *PFNSHBFF)( LPBROWSEINFO );
 typedef BOOL            (CALLBACK *PFNSHGPFIL)( LPCITEMIDLIST, LPSTR );
 
-static PFNSHBFF     pfnSHBrowseForFolder = NULL;
-static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
+static HINSTANCE        hInstShell = NULL;
+static PFNSHBFF         pfnSHBrowseForFolder = NULL;
+static PFNSHGPFIL       pfnSHGetPathFromIDList = NULL;
 #endif
+
+static fancy_find       snoopData =
+    { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
 
 #ifdef __NT__
 
@@ -58,6 +65,7 @@ static PFNSHGPFIL   pfnSHGetPathFromIDList = NULL;
  */
 WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data )
 {
+    lparam=lparam;
     switch( msg ) {
     case BFFM_INITIALIZED:
         SendMessage( hwnd, BFFM_SETSELECTION, TRUE, data );
@@ -76,7 +84,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 {
     // int                 i;
     int                 cmd;
-    DWORD               index;
+    int                 index;
     char                snoop[MAX_INPUT_LINE];
 #ifdef __NT__
     BROWSEINFO          bi;
@@ -85,7 +93,9 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     LPITEMIDLIST        pidl;
 #endif
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
@@ -114,7 +124,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         case SNOOP_EXT:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL, 0, 0L );
+                index = (int)SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
@@ -146,11 +156,11 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             break;
         case IDOK:
             GetDlgItemText( hwnd, SNOOP_STRING, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.find, snoop );
+            ReplaceString( &snoopData.find, snoop );
             GetDlgItemText( hwnd, SNOOP_EXT, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.ext, snoop );
+            ReplaceString( &snoopData.ext, snoop );
             GetDlgItemText( hwnd, SNOOP_PATH, snoop, MAX_INPUT_LINE );
-            AddString2( &snoopData.path, snoop );
+            ReplaceString( &snoopData.path, snoop );
             snoopData.case_ignore = IsDlgButtonChecked( hwnd, SNOOP_IGNORE_CASE );
             snoopData.use_regexp = IsDlgButtonChecked( hwnd, SNOOP_REGULAR_EXPRESSIONS );
             // RemoveEditSubClass( hwnd, SNOOP_STRING );
@@ -186,15 +196,15 @@ bool GetSnoopStringDialog( fancy_find **ff )
      * all other values are saved from the last fgrep before
      */
     snoopData.case_ignore = EditFlags.CaseIgnore;
-    AddString2( &snoopData.ext, EditVars.GrepDefault );
+    ReplaceString( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
     proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
-        rc = DialogBox( InstanceHandle, "SNOOPDLG95", Root, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, (DLGPROC)proc );
     } else {
 #endif
-        rc = DialogBox( InstanceHandle, "SNOOPDLG", Root, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, (DLGPROC)proc );
 #ifdef __NT__
     }
 #endif

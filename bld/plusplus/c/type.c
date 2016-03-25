@@ -2465,6 +2465,8 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
         spec->ms_declspec = STS_THREAD;
     } else if( strcmp( NameStr( name ), "naked" ) == 0 ) {
         spec->ms_declspec = STS_NAKED;
+    } else if( strcmp( NameStr( name ), "noreturn" ) == 0 ) {
+        spec->ms_declspec = STS_NORETURN;
     } else {
         PTreeErrorExprName( id, ERR_UNSUPPORTED_DECLSPEC, name );
     }
@@ -3354,6 +3356,11 @@ static TYPE makeMSDeclSpecType( DECL_SPEC *dspec )
     }
     if( ms_dspec & STS_NAKED ) {
         fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NAKED );
+        fnmod_type->of = type;
+        type = fnmod_type;
+    }
+    if( ms_dspec & STS_NORETURN ) {
+        fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NORETURN );
         fnmod_type->of = type;
         type = fnmod_type;
     }

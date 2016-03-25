@@ -36,7 +36,7 @@
 #define RCS_KEY "rcs settings"
 #define RCS_DEFAULT "generic"
 
-#define BUFLEN 128
+#define BUFLEN 512
 
 #define MAX_RCS_STRING_LEN 10 // including nullchar
 class userData;

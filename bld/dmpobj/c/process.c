@@ -846,16 +846,17 @@ static void DoLinNumsHLL( void )
     unsigned_16         file_num;
     unsigned_32         offset;
     static unsigned_16  type = 0x100;   // indicate no current type
-    unsigned_16         seg;
-    unsigned_16         base_grp;
+//    unsigned_16         seg;
+//    unsigned_16         base_grp;
     unsigned_16         base_seg;
-    unsigned_32         count;
+//    unsigned_32         count;
     static unsigned_32  entry_num;
     static unsigned_16  num_entries;
-    unsigned_32         size;
+//    unsigned_32         size;
     unsigned_32         i;
 
-    base_grp = GetIndex();
+//    base_grp = GetIndex();
+    GetIndex();
     base_seg = GetIndex();
 
     // New table is starting
@@ -866,13 +867,15 @@ static void DoLinNumsHLL( void )
             // This is the first entry
             type        = GetUInt();
             num_entries = GetUInt();
-            seg         = GetUInt();
+//            seg         = GetUInt();
+            GetUInt();
             entry_num   = 0;
         }
         switch( type ) {
         case 0:     // Source line numbers table
             Output( INDENT "Source line numbers" CRLF );
-            size = GetLInt();   // Address of logical segment - filled out by
+//            size = GetLInt();   // Address of logical segment - filled out by
+            GetLInt();   // Address of logical segment - filled out by
                                 // linker, zero in object file
             break;
         case 1:     // Listing line numbers table
@@ -886,12 +889,14 @@ static void DoLinNumsHLL( void )
             // Note - the descriptions are taken from LINK386 and are not
             // necessarily correct, as IBM tools don't appear to use the
             // 'start' and 'number of records' entries
-            size = GetLInt();
+//            size = GetLInt();
+            GetLInt();
             i = GetLInt();
             Output( INDENT "Record Number of Start of Source: %5" CRLF, i );
             i = GetLInt();
             Output( INDENT "Number of Primary Source Records: %5" CRLF, i );
-            count = GetLInt();
+//            count = GetLInt();
+            GetLInt();
             break;
         case 4:
             Output( INDENT "Path table (not formatting data)" CRLF );

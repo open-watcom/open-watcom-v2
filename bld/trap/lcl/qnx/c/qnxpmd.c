@@ -744,6 +744,9 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
+    ret->handle = 0;
+    if( PmdInfo.read_gdts == 0 )
+        return( sizeof( *ret ) );
     name = GetOutPtr( sizeof( *ret ) );
     switch( acc->handle ) {
     case MH_NONE:
@@ -764,16 +767,9 @@ trap_retval ReqGet_lib_name( void )
         }
         break;
     default:
-        ret->handle = MH_NONE;
-        name[0] = '\0';
-        break;
+        return( sizeof( *ret ) );
     }
-    if( PmdInfo.read_gdts ) {
-        PmdInfo.mapping_shared = TRUE;
-    } else {
-        name[0] = '\0';
-        ret->handle = MH_NONE;
-    }
+    PmdInfo.mapping_shared = TRUE;
     return( sizeof( *ret ) + 1 + strlen( name ) );
 }
 

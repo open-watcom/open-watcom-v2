@@ -79,6 +79,7 @@ inline  void                writeBlock( const void * buff, uint_32 len );
                             };
 
         static uint         ULEB128Len( uint_32 uleb );
+        static uint         SLEB128Len( int_32 sleb );
 
 private:
         static char         _buffer[ MERGEFILESTRBUF ];

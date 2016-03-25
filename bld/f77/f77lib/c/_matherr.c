@@ -147,10 +147,10 @@ double  __math1err( unsigned int err_info, double *a1 ) {
 }
 
 
-complex __zmath2err( unsigned int err_info, complex *a1, complex *a2 ) {
-//======================================================================
+scomplex __zmath2err( unsigned int err_info, scomplex *a1, scomplex *a2 ) {
+//=========================================================================
 
-    complex     res;
+    scomplex    res;
 
     a1 = a1;
     if( err_info & M_DOMAIN ) {

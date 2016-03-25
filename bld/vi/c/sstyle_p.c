@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Support for C syntax.
+* Description:  Support for Perl/AWK syntax.
 *
 ****************************************************************************/
 
 
 #include "vi.h"
 #include "sstyle.h"
+#include "sstyle_p.h"
 
 
 /*----- LOCALS -----*/
@@ -103,7 +104,7 @@ static int isspecvar( int c )
 
 void InitPerlLine( char *text )
 {
-    while( *text && isspace( *text ) ) {
+    while( *text != '\0' && isspace( *text ) ) {
         text++;
     }
     firstNonWS = text;
@@ -117,8 +118,7 @@ static void getHex( ss_block *ss_new, char *start )
 
     flags.beforeRegExp = false;
     ss_new->type = SE_HEX;
-    while( *text && isxdigit( *text ) ) {
-        text++;
+    for( text = start + 2; *text != '\0' && isxdigit( *text ); ++text ) {
         nodigits = false;
     }
     if( nodigits ) {
@@ -253,20 +253,20 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     lastc = tolower( *text );
     if( lastc == 'u' ) {
         ss_new->len++;
-        if( tolower( *(text + 1) ) == 'l' ) {
+        if( tolower( text[1] ) == 'l' ) {
             text++;
             ss_new->len++;
         }
-        if( tolower( *(text + 1) ) == 'l' ) {
+        if( tolower( text[1] ) == 'l' ) {
             ss_new->len++;
         }
     } else if( lastc == 'l' ) {
         ss_new->len++;
-        if( tolower( *(text + 1) ) == 'l' ) {
+        if( tolower( text[1] ) == 'l' ) {
             text++;
             ss_new->len++;
         }
-        if( tolower( *(text + 1) ) == 'u' ) {
+        if( tolower( text[1] ) == 'u' ) {
             ss_new->len++;
         }
     }
@@ -307,8 +307,7 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->type = SE_IDENTIFIER;
     if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
-    } else if( *text == ':' && firstNonWS == start &&
-               *(text + 1) != ':' && *(text + 1) != '>' ) {
+    } else if( text[0] == ':' && firstNonWS == start && text[1] != ':' && text[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         text++;
         ss_new->type = SE_JUMPLABEL;
@@ -361,20 +360,22 @@ static void getSymbol( ss_block *ss_new, char *start )
 
 static void getChar( ss_block *ss_new, char *start, int skip )
 {
-    char    *text = start + skip;
+    char    *text;
+
     flags.beforeRegExp = false;
     ss_new->type = SE_CHAR;
-embedded:
-    while( (*text) && (*text != '\'') ) {
-        text++;
+    for( text = start + skip; *text != '\0'; ++text ) {
+        if( text[0] == '\'' ) {
+            break;
+        }
+        if( text[0] == '\\' && ( text[1] == '\\' || text[1] == '\'' ) ) {
+            ++text;
+        }
     }
     if( *text == '\0' ) {
         ss_new->type = SE_INVALIDTEXT;
-    } else if( (*(text - 1) == '\\') && (*(text - 2) != '\\') ) {
-        text++;
-        goto embedded;
     } else {
-        text++;
+        ++text;
     }
     ss_new->len = text - start;
     if(ss_new->len == 2) {
@@ -405,7 +406,7 @@ static void getInvalidChar( ss_block *ss_new )
 static void getPerlComment( ss_block *ss_new, char *start )
 {
     char    *text = start;
-    while( *text ) {
+    while( *text != '\0' ) {
         text++;
     }
     flags.beforeRegExp = true;
@@ -416,20 +417,20 @@ static void getPerlComment( ss_block *ss_new, char *start )
 
 static void getString( ss_block *ss_new, char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *text = nstart;
+    char    *text;
 
     flags.beforeRegExp = false;
     ss_new->type = SE_STRING;
-    while( *text && *text != '"' ) {
-        if( *text == '\\' && (*(text + 1) == '\\' || *(text + 1) == '"') ) {
-            text += 2;
-        } else {
-            text++;
+    for( text = start + skip; *text != '\0'; ++text ) {
+        if( text[0] == '"' ) {
+            break;
+        }
+        if( text[0] == '\\' && (text[1] == '\\' || text[1] == '"') ) {
+            ++text;
         }
     }
-    if( *text == '\0' ) {
-        if( *(text - 1) != '\\' ) {
+    if( text[0] == '\0' ) {
+        if( text[-1] != '\\' ) {
             // unterminated string
             ss_new->type = SE_INVALIDTEXT;
 
@@ -449,21 +450,24 @@ static void getString( ss_block *ss_new, char *start, int skip )
 
 static void getRegExp( ss_block *ss_new, char *start )
 {
-    char    *text = start + 1;
+    char    *text;
 
     ss_new->type = SE_REGEXP;
-start:
-    while( *text && *text != '/' ) {
-        if( *text == '\\' && (*(text + 1) == '\\' || *(text + 1) == '/') ) {
-            text += 2;
-        } else {
-            text++;
+    for( ;; ) {
+        for( text = start + 1; *text != '\0'; ++text ) {
+            if( text[0] != '/' ) {
+                break;
+            }
+            if( text[0] == '\\' && (text[1] == '\\' || text[1] == '/') ) {
+                ++text;
+            }
         }
-    }
-    text++;
-    if( flags.doubleRegExp ) {
+        if( text[0] == '\0' )
+            break;
+        ++text;
+        if( !flags.doubleRegExp )
+            break;
         flags.doubleRegExp = false;
-        goto start;
     }
     while( isalpha( *text ) ) {
         text++;
@@ -498,13 +502,11 @@ void InitPerlFlags( linenum line_no )
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
-    rc = GimmePrevLinePtr( &fcb, &line );
-    while( rc == ERR_NO_ERR ) {
+    while( (rc = GimmePrevLinePtr( &fcb, &line )) == ERR_NO_ERR ) {
         if( line->data[line->len - 1] != '\\' ) {
             break;
         }
         inBlock = true;
-        rc = GimmePrevLinePtr( &fcb, &line );
     }
 
     if( rc == ERR_NO_ERR ) {
@@ -524,16 +526,16 @@ void InitPerlFlags( linenum line_no )
     if( inBlock ) {
         // parse down through lines, noticing "
         while( line != thisline ) {
-            text = line->data;
-            while( *text ) {
-                if( *text == '"' ) {
+            for( text = line->data; *text != '\0'; ++text ) {
+                if( text[0] == '"' ) {
                     if( !withinQuotes ) {
                         withinQuotes = true;
-                    } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
+                    } else {
                         withinQuotes = false;
                     }
+                } else if( text[0] == '\\' && ( text[1] == '\\' || text[1] == '"' ) ) {
+                    ++text;
                 }
-                text++;
             }
             rc = CGimmeNextLinePtr( &fcb, &line );
         }

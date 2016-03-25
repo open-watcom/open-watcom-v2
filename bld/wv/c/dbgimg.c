@@ -35,21 +35,18 @@
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "sortlist.h"
+#include "dbgprog.h"
+#include "dbgimg.h"
 
 
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
-extern void             WndGblFuncInspect( mod_handle mod );
-extern void             WndGblVarInspect( mod_handle mod );
-extern void             WndModListInspect( mod_handle mod );
-extern image_entry      *ImagePrimary(void);
 
-
-char *ImgSymName( image_entry *img, bool always )
+char *ImgSymFileName( image_entry *img, bool always )
 {
     if( img->dip_handle != NO_MOD || always ) {
-        if( img->sym_name != NULL ) {
-            return( img->sym_name );
+        if( img->symfile_name != NULL ) {
+            return( img->symfile_name );
         } else {
             return( img->image_name );
         }

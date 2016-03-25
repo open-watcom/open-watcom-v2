@@ -483,8 +483,8 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
 /*
  * DIPCliRead
  */
-unsigned DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, unsigned size ) {
-
+size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
+{
     DEBUGOUT( "reading" );
     return( read( (int)hdl, buf, size ) );
 }
@@ -492,8 +492,8 @@ unsigned DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, unsigned size ) {
 /*
  * DIPCliWrite
  */
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, unsigned size ) {
-
+size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
+{
     return( write( (int)hdl, buf, size ) );
 }
 
@@ -523,8 +523,8 @@ void DIGCLIENT DIPCliStatus( dip_status stat ) {
 /*
  * DIPCliCurrMAD
  */
-mad_handle DIGCLIENT DIPCliCurrMAD( void )
-/****************************************/
+dig_mad DIGCLIENT DIPCliCurrMAD( void )
+/*************************************/
 {
     return( MAD_X86 );
 }
@@ -532,9 +532,9 @@ mad_handle DIGCLIENT DIPCliCurrMAD( void )
 /*
  * DIGCliMachineData
  */
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
     addr = addr;
     info_type = info_type;

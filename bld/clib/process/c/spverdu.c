@@ -126,7 +126,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     if( cmdline != NULL ) {
         __F_NAME(_makepath,_wmakepath)( p, drive, dir, fname, ext );
         _RWD_errno = ENOENT;
-        if( ext[0] != '\0' ) {
+        if( ext[0] != NULLCHAR ) {
             if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 )
             {
                 retval = -1; /* assume file doesn't exist */

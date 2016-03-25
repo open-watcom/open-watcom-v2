@@ -380,53 +380,55 @@ static void ProcessScrollEvent( EVENT ev  )
 
     switch( ev ) {
     case EV_SCROLL_UP :
-        events = GUICurrWnd->style & GUI_VSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_UP;
         diff = -1;
         gadget = GUICurrWnd->vgadget;
         break;
     case EV_SCROLL_DOWN :
-        events = GUICurrWnd->style & GUI_VSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_DOWN;
         diff = 1;
         gadget = GUICurrWnd->vgadget;
         break;
     case EV_SCROLL_PAGE_UP :
-        events = GUICurrWnd->style & GUI_VSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_PAGE_UP;
         diff = -GUICurrWnd->use.height;
         gadget = GUICurrWnd->vgadget;
         break;
     case EV_SCROLL_PAGE_DOWN :
-        events = GUICurrWnd->style & GUI_VSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_PAGE_DOWN;
         diff = GUICurrWnd->use.height;
         gadget = GUICurrWnd->vgadget;
         break;
     case EV_SCROLL_LEFT :
-        events = GUICurrWnd->style & GUI_HSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_LEFT;
         diff = -1;
         gadget = GUICurrWnd->hgadget;
         break;
     case EV_SCROLL_RIGHT :
-        events = GUICurrWnd->style & GUI_HSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_RIGHT;
         diff = 1;
         gadget = GUICurrWnd->hgadget;
         break;
     case EV_SCROLL_LEFT_PAGE :
-        events = GUICurrWnd->style & GUI_HSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_PAGE_LEFT;
         diff = -GUICurrWnd->use.width;
         gadget = GUICurrWnd->hgadget;
         break;
     case EV_SCROLL_RIGHT_PAGE :
-        events = GUICurrWnd->style & GUI_HSCROLL_EVENTS;
+        events = (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0;
         gui_ev = GUI_SCROLL_PAGE_RIGHT;
         diff = GUICurrWnd->use.width;
         gadget = GUICurrWnd->hgadget;
         break;
+    default:
+        return;
     }
     if( events ) {
         GUIEVENTWND( GUICurrWnd, gui_ev, NULL );

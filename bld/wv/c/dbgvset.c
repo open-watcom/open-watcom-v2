@@ -40,11 +40,12 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgvset.h"
+
 
 extern type_display     *TypeDisplay;
-
-extern const char       *GetCmdName( wd_cmd cmd );
-extern char             *GetCmdEntry( const char *, int, char * );
 
 static const char TypeSettings[] = {
     "Ontop\0"
@@ -100,7 +101,7 @@ enum {
     TY_STATIC,
 };
 
-char *Attributes( type_display *curr, char *p )
+static char *Attributes( type_display *curr, char *p )
 {
     type_display        *alias;
 
@@ -227,9 +228,9 @@ static void ScanLeftBrace( void )
 static bool ScanRightBrace( void )
 /********************************/
 {
-    if( CurrToken != T_RIGHT_BRACE ) return( FALSE );
+    if( CurrToken != T_RIGHT_BRACE ) return( false );
     Scan();
-    return( TRUE );
+    return( true );
 }
 
 static char *ScanName( void )
@@ -238,33 +239,33 @@ static char *ScanName( void )
     const char  *start;
     size_t      len;
 
-    ScanItem( TRUE, &start, &len );
+    ScanItem( true, &start, &len );
     memcpy( TxtBuff, start, len );
-    TxtBuff[len] = '\0';
+    TxtBuff[len] = NULLCHAR;
     return( TxtBuff );
 }
 
 
 static int ScanAttribute( type_display *type, int token )
 {
-    bool        dirty = TRUE;
+    bool        dirty = true;
     switch( token ) {
     case TY_FIELD:
-        dirty = FALSE;
+        dirty = false;
         break;
     case TY_ONTOP:
-        type->on_top = TRUE;
+        type->on_top = true;
         break;
     case TY_HASTOP:
-        type->has_top = TRUE;
-        dirty = FALSE;
+        type->has_top = true;
+        dirty = false;
         break;
     case TY_AUTOEXPAND:
-        type->autoexpand = TRUE;
+        type->autoexpand = true;
         break;
     case TY_ISSTRUCT:
         VarDisplayAlias( type, VarDisplayAddStruct( ScanName() ) );
-        dirty = FALSE;
+        dirty = false;
     case TY_HEX:
         type->display |= VARDISP_HEX;
         break;

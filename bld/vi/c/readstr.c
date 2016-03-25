@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "vi.h"
 #include "walloca.h"
 #include "win.h"
-#include "source.h"
 #include "mouse.h"
 #ifdef __WIN__
     #include "utils.h"
@@ -65,7 +65,7 @@ typedef struct input_buffer {
     int             curr_pos;
     int             left_column;
     int             line;
-    unsigned        overstrike  : 1;
+    bool            overstrike  : 1;
 } input_buffer;
 
 /*
@@ -101,7 +101,7 @@ static bool insertChar( input_buffer *input, int ch )
         len = strlen( input->buffer ) + 1;
         input->buffer[input->curr_pos++] = ch;
         if( input->curr_pos == len ) {
-            input->buffer[input->curr_pos] = 0;
+            input->buffer[input->curr_pos] = '\0';
         }
     } else {
         if( strlen( input->buffer ) >= input->buffer_length - 1 ) {
@@ -156,7 +156,7 @@ static void displayLine( input_buffer *input )
         *dest++ = *buffer++;
         length += 1;
     }
-    *dest = 0;
+    *dest = '\0';
     cursor_pos = input->curr_pos - input->left_column + 1;
     cursor_pos += strlen( input->prompt );
 #ifdef __WIN__
@@ -164,11 +164,11 @@ static void displayLine( input_buffer *input )
         RECT        rect;
         char        *ptr, *c;
         int         len, x;
-        HWND        id;
+        window_id   wid;
 
-        id = (HWND) input->window.id;
-        MyHideCaret( id );
-        GetClientRect( id, &rect );
+        wid = input->window.id;
+        MyHideCaret( wid );
+        GetClientRect( wid, &rect );
         // BlankRectIndirect( input->window.id, input->window.style.background, &rect );
         c = input->cache;
         for( len = 0, ptr = input->buffer; *ptr; ptr++, len++ ) {
@@ -177,11 +177,11 @@ static void displayLine( input_buffer *input )
             }
             c++;
         }
-        x = MyTextExtent( id, &input->window.style, input->cache, len );
-        WriteString( id, x, 0, &input->window.style, display + len );
-        rect.left = MyTextExtent( id, &input->window.style, display, strlen( display ) );
-        BlankRectIndirect( id, input->window.style.background, &rect );
-        MyShowCaret( id );
+        x = MyTextExtent( wid, &input->window.style, input->cache, len );
+        WriteString( wid, x, 0, &input->window.style, display + len );
+        rect.left = MyTextExtent( wid, &input->window.style, display, strlen( display ) );
+        BlankRectIndirect( wid, input->window.style.background, &rect );
+        MyShowCaret( wid );
         SetCursorOnLine( input->window.id, cursor_pos, display, &input->window.style );
     }
 #else
@@ -238,7 +238,7 @@ static vi_key cursorKeyFilter( input_buffer *input, vi_key event )
 
     max_pos = strlen( input->buffer );
     switch( event ) {
-    case VI_KEY_HANDLED:
+    case VI_KEY( NULL ):
         break;
     case VI_KEY( HOME ):
         input->curr_pos = 0;
@@ -276,7 +276,7 @@ static vi_key cursorKeyFilter( input_buffer *input, vi_key event )
     default:
         return( event );
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* cursorKeyFilter */
 
@@ -315,8 +315,8 @@ static bool addHistory( input_buffer *input )
     history_data    *h;
 
     h = input->history;
-    if( h != NULL && input->buffer[0] != 0 ) {
-        AddString2( &(h->data[h->curr % h->max]), input->buffer );
+    if( h != NULL && input->buffer[0] != '\0' ) {
+        ReplaceString( &(h->data[h->curr % h->max]), input->buffer );
         h->curr += 1;
         return( true );
     }
@@ -405,7 +405,7 @@ static vi_key historyFilter( input_buffer *input, vi_key event )
     default:
         return( event );
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* historyFilter */
 
@@ -419,7 +419,7 @@ static vi_key historyFilter( input_buffer *input, vi_key event )
 
 static bool insertString( input_buffer *input, char *str )
 {
-    while( *str ) {
+    while( *str != '\0' ) {
         if( !insertChar( input, *str++ ) ) {
             return( false );
         }
@@ -438,9 +438,9 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
     switch( event ) {
     case VI_KEY( CTRL_E ):
     case VI_KEY( CTRL_W ):
-        tmp[0] = 0;
+        tmp[0] = '\0';
         GimmeCurrentWord( tmp, str_max, event == VI_KEY( CTRL_E ) );
-        tmp[str_max] = 0;
+        tmp[str_max] = '\0';
         break;
     case VI_KEY( ALT_L ):
         if( CurrentLine == NULL ) {
@@ -475,7 +475,7 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
             }
         }
         ExpandTabsInABuffer( &CurrentLine->data[i - 1], l, tmp, str_max );
-        tmp[l] = 0;
+        tmp[l] = '\0';
     default:
         return( false );
     }
@@ -546,7 +546,7 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
         return( event );
         break;
     }
-    return( VI_KEY_HANDLED );
+    return( VI_KEY( NULL ) );
 
 } /* specialKeyFilter */
 
@@ -629,11 +629,11 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
 
 static window_id    thisWindow = NO_WINDOW;
 
-static bool mouseHandler( window_id id, int x, int y )
+static bool mouseHandler( window_id wid, int x, int y )
 {
     x = x;
     y = y;
-    if( id != thisWindow ) {
+    if( wid != thisWindow ) {
         if( LastMouseEvent == MOUSE_PRESS ) {
             KeyAdd( VI_KEY( ESC ) );
             AddCurrentMouseEvent();
@@ -646,7 +646,7 @@ static bool mouseHandler( window_id id, int x, int y )
 static void initInput( input_buffer *input )
 {
     type_style      *s;
-    window_id       id;
+    window_id       wid;
 
     memset( input->buffer, 0, input->buffer_length );
     input->curr_pos = 0;
@@ -656,12 +656,12 @@ static void initInput( input_buffer *input )
     input->left_column = 0;
     input->overstrike = true;
     s = &input->window.style;
-    id = input->window.id;
-    thisWindow = id;
-    s->foreground = WindowAuxInfo( id, WIND_INFO_TEXT_COLOR );
-    s->background = WindowAuxInfo( id, WIND_INFO_BACKGROUND_COLOR );
-    s->font = WindowAuxInfo( id, WIND_INFO_TEXT_FONT );
-    input->window.width = WindowAuxInfo( id, WIND_INFO_TEXT_COLS );
+    wid = input->window.id;
+    thisWindow = wid;
+    s->foreground = WindowAuxInfo( wid, WIND_INFO_TEXT_COLOR );
+    s->background = WindowAuxInfo( wid, WIND_INFO_BACKGROUND_COLOR );
+    s->font = WindowAuxInfo( wid, WIND_INFO_TEXT_FONT );
+    input->window.width = WindowAuxInfo( wid, WIND_INFO_TEXT_COLS );
     PushMouseEventHandler( mouseHandler );
     NewCursor( input->window.id, EditVars.NormalCursorType );
     displayLine( input );
@@ -700,7 +700,7 @@ static bool getStringInWindow( input_buffer *input )
         event = historyFilter( input, event );
         event = specialKeyFilter( input, event );
         switch( event ) {
-        case VI_KEY_HANDLED:
+        case VI_KEY( NULL ):
             break;
         case VI_KEY( SHIFT_TAB ):
         case VI_KEY( TAB ):
@@ -734,12 +734,12 @@ static bool getStringInWindow( input_buffer *input )
             break;
         case VI_KEY( CTRL_END ):
             saveStr( input );
-            input->buffer[input->curr_pos] = 0;
+            input->buffer[input->curr_pos] = '\0';
             break;
         case VI_KEY( CTRL_X ):
         case VI_KEY( CTRL_U ):
             saveStr( input );
-            input->buffer[0] = 0;
+            input->buffer[0] = '\0';
             endColumn( input );
             break;
         case VI_KEY( CTRL_INS ):
@@ -776,7 +776,7 @@ static bool getStringInWindow( input_buffer *input )
 
 } /* getStringInWindow */
 
-bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
+bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
                          int max_len, history_data *history )
 {
     input_buffer        input;
@@ -786,11 +786,11 @@ bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
     input.buffer = str;
     input.buffer_length = max_len;
     input.history = history;
-    input.window.id = id;
+    input.window.id = wid;
     input.window.line = line;
 #ifdef __WIN__
     input.cache = (char *)MemAlloc( max_len );
-    input.cache[0] = 0;
+    input.cache[0] = '\0';
 #endif
     rc = getStringInWindow( &input );
 #ifdef __WIN__
@@ -803,30 +803,30 @@ bool ReadStringInWindow( window_id id, int line, char *prompt, char *str,
 vi_rc PromptForString( char *prompt, char *buffer,
                         int buffer_length, history_data *history )
 {
-    window_id           id;
+    window_id           wid;
     vi_rc               rc;
 
     if( !EditFlags.NoInputWindow ) {
-        rc = NewWindow2( &id, &cmdlinew_info );
+        rc = NewWindow2( &wid, &cmdlinew_info );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     } else {
-        id = NO_WINDOW;
+        wid = NO_WINDOW;
     }
 
     if( !EditFlags.NoInputWindow &&
-        strlen( prompt ) >= WindowAuxInfo( id, WIND_INFO_TEXT_COLS ) ) {
+        strlen( prompt ) >= WindowAuxInfo( wid, WIND_INFO_TEXT_COLS ) ) {
         rc = ERR_PROMPT_TOO_LONG;
     } else {
         rc = NO_VALUE_ENTERED;
-        if( ReadStringInWindow( id, 1, prompt, buffer, buffer_length, history ) ) {
+        if( ReadStringInWindow( wid, 1, prompt, buffer, buffer_length, history ) ) {
             rc = ERR_NO_ERR;
         }
     }
 
     if( !EditFlags.NoInputWindow ) {
-        CloseAWindow( id );
+        CloseAWindow( wid );
         SetWindowCursor();
     } else {
         EditFlags.NoInputWindow = false;

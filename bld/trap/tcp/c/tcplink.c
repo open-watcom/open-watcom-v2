@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define LIST_INTERFACES
+
 #if defined( __OS2__ ) && defined( _M_I86 )
 #define OS2
 #define _TCP_ENTRY __cdecl __far
@@ -93,7 +95,28 @@
 
 #if defined ( __NETWARE__ )
     #include "debugme.h"
-#else
+#endif
+
+#include "trptypes.h"
+#if !defined( SERVER ) && defined( __NT__ )
+    #include "trpimp.h"
+#endif
+#include "trperr.h"
+#include "packet.h"
+#ifdef LIST_INTERFACES
+// TODO: need rework to POSIX if_nameindex in <net/if.h>
+#include "ifi.h"
+#endif
+
+#if defined( __WATCOMC__ )
+#if defined( __NT__ )
+#pragma library("wsock32.lib")
+#elif defined( __WINDOWS__ )
+#pragma library("winsock.lib")
+#endif
+#endif
+
+#if !defined ( __NETWARE__ )
     #define _DBG_THREAD( x )
     #define _DBG_DR( x )
     #define _DBG_EVENT( x )
@@ -105,53 +128,43 @@
     #define _DBG_ERROR( x )
 #endif
 
-#include "trptypes.h"
-#include "trperr.h"
-#include "packet.h"
-#include "ifi.h"
-
-#if defined( __WATCOMC__ )
-#if defined( __NT__ )
-#pragma library("wsock32.lib")
-#elif defined( __WINDOWS__ )
-#pragma library("winsock.lib")
-#endif
-#endif
-
 #define DEFAULT_PORT    0x0DEB  /* 3563 */
 
 #if defined( __RDOS__ )
     #define INVALID_SOCKET          0
-    #define IS_INVALID_SOCKET(x)    (x==INVALID_SOCKET)
-    #define IS_SOCK_ERROR(x)        (x==0)
+    #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET && !RdosIsTcpConnectionClosed(x))
+    #define IS_RET_OK(x)            (x!=0)
     #define trp_socket              int
     #define soclose( s )            RdosCloseTcpConnection( s )
     #define recv(a,b,c,d)           RdosReadTcpConnection(a,b,c)
     #define send(a,b,c,d)           RdosWriteTcpConnection(a,b,c)
 #elif defined( __NT__ ) || defined( __WINDOWS__ )
-    #define IS_INVALID_SOCKET(x)    (x==INVALID_SOCKET)
-    #define IS_SOCK_ERROR(x)        (x==SOCKET_ERROR)
+    #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET)
+    #define IS_RET_OK(x)            (x!=SOCKET_ERROR)
     #define trp_socket              SOCKET
     #define trp_socklen             int
     #define soclose( s )            closesocket( s )
 #elif defined( __DOS__ )
-    #define IS_INVALID_SOCKET(x)    (x<0)
-    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define IS_VALID_SOCKET(x)      (x>=0)
+    #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
 #elif defined( __OS2__ )
     #define INVALID_SOCKET          -1
-    #define IS_INVALID_SOCKET(x)    (x<0)
-    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define IS_VALID_SOCKET(x)      (x>=0)
+    #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             int
 #else
     #define INVALID_SOCKET          -1
-    #define IS_INVALID_SOCKET(x)    (x<0)
-    #define IS_SOCK_ERROR(x)        (x==-1)
+    #define IS_VALID_SOCKET(x)      (x>=0)
+    #define IS_RET_OK(x)            (x!=-1)
     #define trp_socket              int
     #define trp_socklen             socklen_t
     #define soclose( s )            close( s )
+#endif
+#if !defined( __NT__ ) && !defined( __WINDOWS__ )
+    typedef struct sockaddr         *LPSOCKADDR;
 #endif
 
 #ifdef __RDOS__
@@ -162,11 +175,6 @@
 
   #ifndef IPPROTO_TCP
     #define IPPROTO_TCP 6
-  #endif
-
-  #if !defined( __LINUX__ )
-    static struct ifi_info      *get_ifi_info( int family, int doaliases );
-    static void                 free_ifi_info( struct ifi_info *ifihead );
   #endif
 
     static struct sockaddr_in   socket_address;
@@ -180,6 +188,11 @@
   #else
     static trp_socket           control_socket;
   #endif
+#ifdef LIST_INTERFACES
+// TODO: need rework to POSIX if_nameindex in <net/if.h>
+    static struct ifi_info      *get_ifi_info( int, int );
+    static void                 free_ifi_info( struct ifi_info * );
+#endif
 #endif
 
 static trp_socket           data_socket = INVALID_SOCKET;
@@ -188,7 +201,8 @@ static trp_socket           data_socket = INVALID_SOCKET;
 extern void     ServMessage( const char * );
 #endif
 
-bool Terminate( void )
+#if !defined( SERVER )
+static bool Terminate( void )
 {
 #ifdef __RDOS__
     RdosPushTcpConnection( data_socket );
@@ -204,23 +218,19 @@ bool Terminate( void )
     return( TRUE );    
 }
 
+#endif
+
 static int FullGet( void *get, int len )
 {
     int     rec, got;
 
     got = len;
-    for( ;; ) {
+    while( len > 0 ) {
         rec = recv( data_socket, get, len, 0 );
-        if( IS_SOCK_ERROR( rec ) )
+        if( !IS_RET_OK( rec ) )
             return( -1 );
-#if !defined( __RDOS__ )
-        if( rec == 0 )  // connection closed
-            return( -1 );
-#endif
-        len -= rec;
-        if( len == 0 )
-            break;
         get = (char *)get + rec;
+        len -= rec;
     }
     return( got );
 }
@@ -233,11 +243,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
 
     _DBG_NET(("RemoteGet\r\n"));
 
-#ifdef __RDOS__
-    if( !IS_INVALID_SOCKET( data_socket ) && !RdosIsTcpConnectionClosed( data_socket ) ) {
-#else
-    if( !IS_INVALID_SOCKET( data_socket ) ) {
-#endif
+    if( IS_VALID_SOCKET( data_socket ) ) {
         if( FullGet( &rec_len, sizeof( rec_len ) ) == sizeof( rec_len ) ) {
             CONV_LE_16( rec_len );
             if( rec_len == 0 || FullGet( data, rec_len ) == rec_len ) {
@@ -252,18 +258,18 @@ trap_retval RemoteGet( void *data, trap_elen len )
 trap_retval RemotePut( void *data, trap_elen len )
 {
     unsigned_16         send_len;
+    int                 snd;
 
     _DBG_NET(("RemotePut\r\n"));
 
-#ifdef __RDOS__
-    if( !IS_INVALID_SOCKET( data_socket ) && !RdosIsTcpConnectionClosed( data_socket ) ) {
-#else
-    if( !IS_INVALID_SOCKET( data_socket ) ) {
-#endif
+    if( IS_VALID_SOCKET( data_socket ) ) {
         send_len = len;
         CONV_LE_16( send_len );
-        if( !IS_SOCK_ERROR( send( data_socket, (void *)&send_len, sizeof( send_len ), 0 ) ) ) {
-            if( len == 0 || !IS_SOCK_ERROR( send( data_socket, data, len, 0 ) ) ) {
+        snd = send( data_socket, (void *)&send_len, sizeof( send_len ), 0 );
+        if( IS_RET_OK( snd ) ) {
+            if( len != 0 )
+                snd = send( data_socket, data, len, 0 );
+            if( len == 0 || IS_RET_OK( snd ) ) {
 #ifdef __RDOS__
                  RdosPushTcpConnection( data_socket );
 #endif
@@ -300,24 +306,26 @@ bool RemoteConnect( void )
     obj = RdosWaitTimeout( wait_handle, 250 );
     if( obj != NULL ) {
         data_socket = RdosGetTcpListen( listen_handle );
-        if( !IS_INVALID_SOCKET( data_socket ) ) {
+        if( IS_VALID_SOCKET( data_socket ) ) {
             _DBG_NET(("Found a connection\r\n"));
             return( TRUE );
         }
     }
   #else
-    struct          timeval timeout;
+    struct timeval  timeout;
     fd_set          ready;
-    struct          sockaddr dummy;
+    struct sockaddr dummy;
     trp_socklen     dummy_len = sizeof( dummy );
+    int             rc;
 
     FD_ZERO( &ready );
     FD_SET( control_socket, &ready );
     timeout.tv_sec = 0;
     timeout.tv_usec = 10000;
-    if( select( control_socket + 1, &ready, 0, 0, &timeout ) > 0 ) {
+    rc = select( control_socket + 1, &ready, 0, 0, &timeout );
+    if( IS_RET_OK( rc ) ) {
         data_socket = accept( control_socket, &dummy, &dummy_len );
-        if( !IS_INVALID_SOCKET( data_socket ) ) {
+        if( IS_VALID_SOCKET( data_socket ) ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
             return( TRUE );
@@ -328,9 +336,12 @@ bool RemoteConnect( void )
   #ifdef __RDOS__
     // todo: Add code for connect!
   #else
+    int         rc;
+
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
-    if( !IS_INVALID_SOCKET( data_socket ) ) {
-        if( connect( data_socket, (struct sockaddr DIGFAR *)&socket_address, sizeof( socket_address ) ) >= 0 ) {
+    if( IS_VALID_SOCKET( data_socket ) ) {
+        rc = connect( data_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) );
+        if( IS_RET_OK( rc ) ) {
             nodelay();
             return( TRUE );
         }
@@ -344,7 +355,7 @@ void RemoteDisco( void )
 {
     _DBG_NET(("RemoteDisco\r\n"));
 
-    if( !IS_INVALID_SOCKET( data_socket ) ) {
+    if( IS_VALID_SOCKET( data_socket ) ) {
         soclose( data_socket );
         data_socket = INVALID_SOCKET;
     }
@@ -359,12 +370,8 @@ const char *RemoteLink( const char *parms, bool server )
 #endif    
 
 #ifdef SERVER
-  #ifndef __RDOS__
+  #if !defined( __RDOS__ )
     trp_socklen         length;
-    #if !defined(__LINUX__)   /* FIXME */
-    struct ifi_info     *ifi, *ifihead;
-    struct sockaddr     *sa;
-    #endif
     char                buff[128];
   #endif
 
@@ -378,7 +385,7 @@ const char *RemoteLink( const char *parms, bool server )
             return( TRP_ERR_unable_to_initialize_TCPIP );
         }
     }
-  #endif   
+  #endif
  
     port = 0;
   #ifdef __RDOS__
@@ -409,19 +416,19 @@ const char *RemoteLink( const char *parms, bool server )
     }
 
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if( IS_INVALID_SOCKET( control_socket ) ) {
+    if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
     socket_address.sin_port = port;
-    if( bind( control_socket, (struct sockaddr DIGFAR *)&socket_address, sizeof( socket_address ) ) ) {
+    if( bind( control_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) ) ) {
         return( TRP_ERR_unable_to_bind_stream_socket );
     }
     /* Find out assigned port number and print it out */
     length = sizeof( socket_address );
-    if( getsockname( control_socket, (struct sockaddr DIGFAR *)&socket_address, &length ) ) {
+    if( getsockname( control_socket, (LPSOCKADDR)&socket_address, &length ) ) {
         return( TRP_ERR_unable_to_get_socket_name );
     }
     sprintf( buff, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
@@ -430,22 +437,27 @@ const char *RemoteLink( const char *parms, bool server )
     _DBG_NET((buff));
     _DBG_NET(("\r\n"));
 
-    #if !defined(__LINUX__)   /* FIXME */
+#ifdef LIST_INTERFACES
+// TODO: need rework to POSIX if_nameindex in <net/if.h>
     /* Find and print TCP/IP interface addresses, ignore aliases */
-    ifihead = get_ifi_info( AF_INET, FALSE );
-    for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
-        /* Ignore loopback interfaces */
-        if( ifi->flags & IFI_LOOP )
-            continue;
+    {
+        struct ifi_info     *ifi, *ifihead;
+        struct sockaddr     *sa;
 
-        if( (sa = ifi->ifi_addr) != NULL ) {
-            sprintf( buff, "%s%s", TRP_TCP_ip_address,
-                inet_ntoa( ((struct sockaddr_in*)sa)->sin_addr ) );
-            ServMessage( buff );
+        ifihead = get_ifi_info( AF_INET, FALSE );
+        for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
+            /* Ignore loopback interfaces */
+            if( ifi->flags & IFI_LOOP )
+                continue;
+            if( (sa = ifi->ifi_addr) != NULL ) {
+                sprintf( buff, "%s%s", TRP_TCP_ip_address,
+                    inet_ntoa( ((struct sockaddr_in *)sa)->sin_addr ) );
+                ServMessage( buff );
+            }
         }
+        free_ifi_info( ifihead );
     }
-    free_ifi_info( ifihead );
-    #endif
+#endif
   #endif
 
     _DBG_NET(("Start accepting connections\r\n"));
@@ -497,7 +509,8 @@ const char *RemoteLink( const char *parms, bool server )
         if( *sock != '\0' ) {
             return( TRP_ERR_unable_to_parse_port_number );
         }
-        if( port == 0 ) port = DEFAULT_PORT;
+        if( port == 0 )
+            port = DEFAULT_PORT;
         port = htons( port );
     }
     parms = buff;
@@ -532,7 +545,6 @@ void RemoteUnLink( void )
         RdosCloseWait( wait_handle );
         wait_handle = 0;
     }
-    
     if( listen_handle ) {
         RdosCloseTcpListen( listen_handle );
         listen_handle = 0;
@@ -551,6 +563,9 @@ void RemoteUnLink( void )
 #endif
 }
 
+#ifdef LIST_INTERFACES
+// TODO: need rework to POSIX if_nameindex in <net/if.h>
+
 #ifndef __RDOS__
 
   #ifdef SERVER
@@ -565,17 +580,15 @@ void RemoteUnLink( void )
 /* Actual implementation - feel free to port to further OSes */
 
 /* Sort out implementation differences. */
-      #ifdef __DOS__
+      #if defined( __DOS__ )
         #define w_ioctl         ioctlsocket
         #define HAVE_SA_LEN     FALSE
-      #endif
-
-      #ifdef __OS2__
+      #elif defined( __OS2__ )
         #define w_ioctl         ioctl
         #define HAVE_SA_LEN     TRUE
       #endif
 
-static struct ifi_info * get_ifi_info( int family, int doaliases )
+static struct ifi_info  *get_ifi_info( int family, int doaliases )
 {
     struct ifi_info     *ifi, *ifihead, **ifipnext;
     int                 len, lastlen, flags, myflags;
@@ -589,7 +602,7 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
 
     lastlen = 0;
     len = 20 * sizeof( struct ifreq );   /* initial buffer size guess */
-    for( ; ; ) {
+    for( ;; ) {
         buf = malloc( len );
         ifc.ifc_len = len;
         ifc.ifc_buf = buf;
@@ -606,7 +619,7 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
     lastname[0] = 0;
 
     for( ptr = buf; ptr < buf + ifc.ifc_len; ) {
-        ifr = (struct ifreq *) ptr;
+        ifr = (struct ifreq *)ptr;
 
       #if HAVE_SA_LEN
         len = sizeof( struct sockaddr );
@@ -678,15 +691,15 @@ static void free_ifi_info( struct ifi_info *ifihead )
     }
 }
 
-    #elif !defined( __LINUX__ )
+    # else
 
 /* Stubbed out */
-static struct ifi_info * get_ifi_info(int family, int doaliases)
+static struct ifi_info *get_ifi_info( int family, int doaliases )
 {
-    return NULL;
+    return( NULL );
 }
 
-static void free_ifi_info(struct ifi_info *ifihead)
+static void free_ifi_info( struct ifi_info *ifihead )
 {
 }
 
@@ -694,4 +707,7 @@ static void free_ifi_info(struct ifi_info *ifihead)
 
   #endif
 
+#endif
+
+// TODO: need rework to POSIX if_nameindex in <net/if.h>
 #endif

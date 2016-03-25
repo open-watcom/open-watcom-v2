@@ -268,7 +268,7 @@ void ClearLastChar()
 }
 
 
-void Wait( int timer_ticks )
+void Wait( unsigned timer_ticks )
 {
     unsigned    wait_time;
 

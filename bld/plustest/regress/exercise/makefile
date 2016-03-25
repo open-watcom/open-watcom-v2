@@ -1,6 +1,6 @@
 plustest_name = exercise
 
-!include testenv.mif
+!include testenv1.mif
 
 exes = &
     chkcl.$(exe) &

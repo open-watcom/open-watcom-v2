@@ -31,12 +31,11 @@
 
 
 #include "vi.h"
-#include "source.h"
 
 /*
  * srcGenericInput - input a value to a variable
  */
-static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
+static vi_rc srcGenericInput( const char *data, vlist *vl, bool input )
 {
     vi_rc       resp;
     char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE], str[MAX_STR];
@@ -46,10 +45,11 @@ static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
      * get input syntax :
      * INPUT v1
      */
-    if( NextWord1( data, v1 ) <= 0 ) {
+    GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         return( ERR_SRC_INVALID_INPUT );
     }
-    if( !VarName( v1, vl ) ) {
+    if( !VarName( v1, tmp, vl ) ) {
         return( ERR_SRC_INVALID_INPUT );
     }
     if( input ) {
@@ -63,7 +63,7 @@ static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
     } else {
         resp = GOT_RESPONSE;
         tmp[0] = GetKey( false );
-        tmp[1] = 0;
+        tmp[1] = '\0';
     }
     if( resp == GOT_RESPONSE ) {
         VarAddStr( v1, tmp, vl );
@@ -73,13 +73,13 @@ static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
 
 } /* srcGenericInput */
 
-vi_rc SrcInput( char *tmp, vlist *vl )
+vi_rc SrcInput( const char *tmp, vlist *vl )
 {
     return( srcGenericInput( tmp, vl, true ) );
 
 } /* SrcInput */
 
-void SrcGet( char *tmp, vlist *vl )
+void SrcGet( const char *tmp, vlist *vl )
 {
     srcGenericInput( tmp, vl, false );
 

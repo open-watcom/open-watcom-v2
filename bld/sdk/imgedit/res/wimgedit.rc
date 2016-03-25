@@ -7,6 +7,8 @@
 #include "rcstr.gh"
 #include "uistr.gh"
 
+#define FIRST_COPYRIGHT_YEAR "1994"
+
 "APPLICON"      ICON    "wimgedit.ico"
 "APPLBITMAP"    BITMAP  "wimgedit.bmp"
 

@@ -210,7 +210,7 @@ int_16  GetNextByte( void )
 }
 
 
-char  EndOfSegment( void )
+bool  EndOfSegment( void )
 /************************/
 {
     return( Segment->curr == Segment->size );

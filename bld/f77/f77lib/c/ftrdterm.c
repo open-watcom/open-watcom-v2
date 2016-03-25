@@ -33,13 +33,11 @@
 // Default FORTRAN thread termination routine.
 // Used if user does not write his own
 
-#if defined( _M_IX86 )
-  #pragma aux __fthrd_terminate "^_"
-#endif
+#include "fdll.h"
 
 
-unsigned        __fthrd_terminate( void ) {
-//=========================================
+int         __fthrd_terminate( void ) {
+//=====================================
 
     return( 1 );
 }

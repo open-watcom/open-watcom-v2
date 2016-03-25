@@ -37,21 +37,14 @@
 #include "dbgmem.h"
 #include "i64.h"
 #include "dbgscan.h"
+#include "dbgexpr3.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgovl.h"
+#include "dbgparse.h"
+#include "dbgwalk.h"
+#include "dbgreg.h"
 
-
-extern void             PushInt( int );
-extern void             SwapStack( int );
-extern void             MakeAddr( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern void             PopEntry( void );
-extern void             ExprValue( stack_entry * );
-extern void             DefAddr( memory_expr, address * );
-extern void             ExprResolve( stack_entry * );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
-
-extern handle           LocalPathOpen( const char *, unsigned, const char * );
-extern int              SSLWalk( char *, unsigned, void **, unsigned int );
 
 extern stack_entry      *ExprSP;
 
@@ -65,7 +58,7 @@ static token_table  ParseTokens;
 
 static void start_expr( void )
 {
-    void        *stack[ PARSE_STACK_SIZE ];
+    const char  *stack[PARSE_STACK_SIZE];
 
     ScanExpr( &ParseTokens );
     SSLWalk( ParseTable, 0, stack, PARSE_STACK_SIZE );
@@ -167,9 +160,8 @@ xreal ReqXRealExpr( void )
 
 unsigned OptExpr( unsigned def_val )
 {
-    if( CurrToken == T_COMMA
-     || CurrToken == T_LEFT_BRACE
-     || ScanEOC() ) return( def_val );
+    if( CurrToken == T_COMMA || CurrToken == T_LEFT_BRACE || ScanEOC() )
+        return( def_val );
     return( ReqExpr() );
 }
 
@@ -184,7 +176,8 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     switch( ExprSP->info.kind ) {
     case TK_ADDRESS:
     case TK_POINTER:
-        if( (ExprSP->info.modifier & TM_MOD_MASK) != TM_NEAR ) break;
+        if( (ExprSP->info.modifier & TM_MOD_MASK) != TM_NEAR )
+            break;
         /* fall through */
     default:
         DefAddr( def_seg, val );
@@ -196,7 +189,9 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     }
     *val = ExprSP->v.addr;
     AddrFloat( val );
-    if( pops ) PopEntry();
+    if( pops ) {
+        PopEntry();
+    }
 }
 
 
@@ -206,13 +201,13 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
 
 void ReqMemAddr( memory_expr def_seg, address *out_val )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 16 );
+    old_radix = SetCurrRadix( 16 );
     _SwitchOff( SW_EXPR_IS_CALL );
     EvalExpr( 0 );   /* memory expression */
-    MakeMemoryAddr( TRUE, def_seg, out_val );
-    SetCurrRadix( old );
+    MakeMemoryAddr( true, def_seg, out_val );
+    SetCurrRadix( old_radix );
 }
 
 
@@ -221,13 +216,13 @@ void ReqMemAddr( memory_expr def_seg, address *out_val )
  */
 void CallExpr( address *out_val )
 {
-    unsigned    old;
+    mad_radix   old_radix;
 
-    old = SetCurrRadix( 16 );
+    old_radix = SetCurrRadix( 16 );
     _SwitchOn( SW_EXPR_IS_CALL );
     EvalExpr( 0 ); /* call expression */
-    MakeMemoryAddr( TRUE, EXPR_CODE, out_val );
-    SetCurrRadix( old );
+    MakeMemoryAddr( true, EXPR_CODE, out_val );
+    SetCurrRadix( old_radix );
 }
 
 
@@ -237,15 +232,19 @@ void CallExpr( address *out_val )
 
 void OptMemAddr( memory_expr def_seg, address *def_val )
 {
-    if( CurrToken == T_COMMA || ScanEOC() ) return;
+    if( CurrToken == T_COMMA || ScanEOC() )
+        return;
     ReqMemAddr( def_seg, def_val );
 }
 
 
 void SetTokens( bool parse_tokens )
 {
-    if( parse_tokens ) ScanExpr( &ParseTokens );
-    else               ScanExpr( NULL );
+    if( parse_tokens ) {
+        ScanExpr( &ParseTokens );
+    } else {
+        ScanExpr( NULL );
+    }
 }
 
 
@@ -265,13 +264,13 @@ void LangFini( void )
     ParseTableSize = 0;
 }
 
-static unsigned ReadSection( handle filehndl, unsigned off )
+static unsigned ReadSection( file_handle fh, unsigned off )
 {
     unsigned_16 len;
     unsigned    last;
     void        *new;
 
-    if( ReadStream( filehndl, &len, sizeof( len ) ) != sizeof( len ) ) {
+    if( ReadStream( fh, &len, sizeof( len ) ) != sizeof( len ) ) {
         return( 0 );
     }
     CONV_LE_16( len );
@@ -279,42 +278,47 @@ static unsigned ReadSection( handle filehndl, unsigned off )
     if( last > ParseTableSize ) {
         new = ParseTable;
         _Realloc( new, last );
-        if( new == NULL ) return( 0 );
+        if( new == NULL )
+            return( 0 );
         ParseTable = new;
         ParseTableSize = last;
     }
-    if( ReadStream( filehndl, &ParseTable[off], len ) != len ) {
+    if( ReadStream( fh, &ParseTable[off], len ) != len ) {
         return( 0 );
     }
     return( off + len );
 }
 
-static bool ReadAllSections( handle filehndl )
+static bool ReadAllSections( file_handle fh )
 {
     unsigned    key_off;
     unsigned    delim_off;
 
     /* read rules */
-    key_off = ReadSection( filehndl, 0 );
-    if( key_off == 0 ) return( FALSE );
+    key_off = ReadSection( fh, 0 );
+    if( key_off == 0 )
+        return( false );
     /* read keywords */
-    delim_off = ReadSection( filehndl, key_off );
-    if( delim_off == 0 ) return( FALSE );
+    delim_off = ReadSection( fh, key_off );
+    if( delim_off == 0 )
+        return( false );
     /* read delimiters */
-    if( ReadSection( filehndl, delim_off ) == 0 ) return( FALSE );
-    ParseTokens.keywords = &ParseTable[ key_off ];
-    ParseTokens.delims = &ParseTable[ delim_off ];
-    return( TRUE );
+    if( ReadSection( fh, delim_off ) == 0 )
+        return( false );
+    ParseTokens.keywords = &ParseTable[key_off];
+    ParseTokens.delims = &ParseTable[delim_off];
+    return( true );
 }
 
-bool LangLoad( const char *lang, unsigned langlen )
+bool LangLoad( const char *lang, size_t langlen )
 {
-    handle      filehndl;
+    file_handle fh;
     bool        ret;
 
-    filehndl = LocalPathOpen( lang, langlen, "prs" );
-    if( filehndl == NIL_HANDLE ) return( FALSE );
-    ret = ReadAllSections( filehndl );
-    FileClose( filehndl );
+    fh = LocalPathOpen( lang, langlen, "prs" );
+    if( fh == NIL_HANDLE )
+        return( false );
+    ret = ReadAllSections( fh );
+    FileClose( fh );
     return( ret );
 }

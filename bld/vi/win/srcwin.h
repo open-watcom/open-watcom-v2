@@ -58,4 +58,4 @@ enum {
     T_LOCATE
 };
 
-bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl );
+bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist *vl );

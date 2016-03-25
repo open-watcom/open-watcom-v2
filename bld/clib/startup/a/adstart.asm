@@ -284,15 +284,15 @@ endif
 m00:
         mov     info_off,esi            ; offset of initialization info struct
         mov     info_sel,dx             ; selector of info struct
-        mov     es,dx
+        mov     es,edx
         mov     eax,es:[esi].minmem
         mov     min_mem,eax             ; initial heap size of driver
 ifdef   PADI
         mov     eax,es:[esi].physadr
         mov     phys_adr,eax            ; phys addr of pg w/ PADI packet buffer
 endif   ; PADI
-        mov     ax,ds
-        mov     es,ax
+        mov     eax,ds
+        mov     es,eax
         pop     dword ptr rtnaddr       ; Save return address, offset
         pop     ax
         mov     word ptr rtnaddr+4,ax   ;    and segment.
@@ -300,8 +300,8 @@ endif   ; PADI
 endif   ; ACAD
 
         mov     ax,PSP_SEG              ; get segment address of PSP
-        mov      _psp,ax                ; save segment address of PSP
-        mov     es,ax                   ; point to PSP
+        mov     _psp,ax                 ; save segment address of PSP
+        mov     es,eax                  ; point to PSP
         and     esp,0fffffffch          ; make sure stack is on a 4 byte bdry
         mov     ebx,esp                 ; get sp
         mov      _STACKTOP,ebx          ; set stack top
@@ -323,7 +323,7 @@ endif   ; ACAD
         jne     not_pharlap             ; if its pharlap
         sub     bl,'0'                  ; - save major version number
         mov     al,bl                   ; - (was in ascii)
-        mov     ah,0                    ; - subtype
+        xor     ah,ah                   ; - subtype
         mov     bx,14h                  ; - get value of Phar Lap data segment
         jmp     short know_extender     ; else
 not_pharlap:                            ; - see if Rational DOS/4G
@@ -334,14 +334,14 @@ not_pharlap:                            ; - see if Rational DOS/4G
         cmp     al,0                    ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
         mov     al,1                    ; - indicate Rational 32-bit Extender
-        mov     ah,0                    ; - assume zero base subtype
-        mov     bx,ds                   ; - just use ds (FLAT model)
-        mov      _psp,es                ; - save segment address of PSP
+        xor     ah,ah                   ; - assume zero base subtype
+        mov     ebx,ds                  ; - just use ds (FLAT model)
+        mov     _psp,es                 ; - save segment address of PSP
 ;
 know_extender:                          ; endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype
-;;      mov     es,bx                   ; get access to code segment
+;;      mov     es,ebx                  ; get access to code segment
 ;;      mov     es:__saved_DS,ds        ; save DS value
 
 ;
@@ -359,32 +359,32 @@ know_extender:                          ; endif
         repe    scasb
         lea     esi,-1[edi]
         mov     edi,edx
-        mov     bx,es
-        mov     dx,ds
-        mov     ds,bx
-        mov     es,dx                   ; es:edi is destination
+        mov     ebx,es
+        mov     edx,ds
+        mov     ds,ebx
+        mov     es,edx                  ; es:edi is destination
         je      noparm
         inc     ecx
         rep     movsb
 noparm: sub     al,al
         stosb                           ; store NULLCHAR
-        mov     al,0                    ; assume no pgm name
+        xor     al,al                   ; assume no pgm name
         stosb                           ; . . .
         dec     edi                     ; back up pointer 1
         push    edi                     ; save pointer to pgm name
-        mov     ds,dx                   ; restore ds
+        mov     ds,edx                  ; restore ds
         push    ds                      ; save ds
 
         cmp     byte ptr  _Extender,1   ; if OS/386 or Rational
         jg      short pharlap           ; then
           mov   dx,PSP_SEG              ; - get PSP segment descriptor
-          mov   ds,dx                   ; - ... into ds
+          mov   ds,edx                  ; - ... into ds
           mov   dx,ds:[02ch]            ; - get environment segment into dx
           jmp   short haveenv           ; else
 pharlap:mov   dx,ENV_SEG                ; - PharLap environment segment
 haveenv:                                ; endif
         mov     es:word ptr _Envptr+4,dx ; save segment of environment area
-        mov     ds,dx                   ; get segment addr of environment area
+        mov     ds,edx                  ; get segment addr of environment area
         sub     ebp,ebp                 ; assume "NO87" env. var. not present
         sub     esi,esi                 ; offset 0
         mov     es:dword ptr _Envptr,esi ; save offset of environment area
@@ -514,7 +514,7 @@ ifdef ADS
         mov     ax,2502h
         int     21h
         jc      noi3
-        mov     ax,es
+        mov     eax,es
         verr    ax
         jnz     noi3
         cmp     ebx,8
@@ -556,16 +556,16 @@ endif
 endif   ; ACAD
 
 
-__exit   proc near
-        pop     eax                     ; get return code
-        jmp     short   ok
+__exit   proc near                      ; never return
+        ; return code is already on the stack
+        jmp short L5
 
         public   __do_exit_with_msg__
 
 ; input: ( char *msg, int rc ) always in registers
 
-__do_exit_with_msg__:
-        push    edx                     ; save return code
+__do_exit_with_msg__:                   ; never return
+        push    edx                     ; save return code on stack
         push    eax                     ; save msg
         mov     edx,offset ConsoleName
         mov     ax,03d01h               ; write-only access to screen
@@ -575,7 +575,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -586,14 +586,11 @@ L4:     lodsb                           ; get char
         mov     ecx, sizeof NewLine     ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     eax                     ; get return code
-ok:
-
-        push    eax                     ; save return code
-        mov     eax,00h                 ; run finalizers
+L5:
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
 
 if      ACAD
         jmp     child_exit              ; do something more appropriate

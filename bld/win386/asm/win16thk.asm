@@ -40,8 +40,8 @@
 ;****************************************************************************
 .386p
 
-extrn   DPMIGetAliases_:near
-extrn   DPMIFreeAlias_:near
+extrn   _DPMIGetAlias_:near
+extrn   _DPMIFreeAlias_:near
 extrn   _SaveSP:DWORD           ; save for stack
 extrn   _EntryStackSave:DWORD   ; save for stack
 extrn   _DataSelector:WORD      ; selector obtained for 32-bit area
@@ -83,10 +83,10 @@ Get16Alias:
         sub     sp,4                    ; allocate space for aliased pointer
         mov     si,sp                   ; point es:si at allocated space
         push    cx                      ; push return address
-        mov     cx,1                    ; want 1 alias
-        call    DPMIGetAliases_         ; get alias
+        call    _DPMIGetAlias_          ; get alias
         mov     es, _DataSelector       ; reload es
         ret                             ; return
+
 L0b:    movzx   eax,ax                  ; zero extend the value
 L0a:    push    eax                     ; push aliased pointer
         jmp     cx                      ; return
@@ -103,7 +103,7 @@ L0c:    pop     eax                     ; get aliased pointer
         cmp     eax,edx                 ; compare them
         je      short L0d               ; if different, then
         shr     eax,16                  ; - get selector
-        call    DPMIFreeAlias_          ; - free it
+        call    _DPMIFreeAlias_         ; - free it
 L0d:                                    ; endif
         cmp     sp,bp                   ; are we done?
         jne     L0c                     ; jump if not done
@@ -195,6 +195,7 @@ map2flat:or     dx,dx                   ; check for NULL pointer
         add     ecx,esi                 ; add offset to base
         mov     eax,ecx                 ; to get 32-bit flat address
         jmp     short mapdone           ; ...
+
 nullptr:sub     eax,eax                 ; NULL pointer
 mapdone:pop     ecx                     ; restore 32-bit stack pointer
         mov     word ptr _EntryStackSave,SP     ; save current sp
@@ -223,6 +224,7 @@ __Win16Thunk4_ proc far
         add     bx,offset _FunctionTable; ...
         call    cs:__ThunkTable[bp]        ; call appropriate thunk routine
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
+
 __Win16Thunk4_ endp
 
 GetNestedAliases proc near
@@ -268,7 +270,7 @@ nest2:; _loop                           ; loop
           cmp   eax,ebx                 ; - compare them
           je    short nest3             ; - if different, then
             shr   eax,16                ; - - get selector
-            call  DPMIFreeAlias_        ; - - free it
+            call  _DPMIFreeAlias_       ; - - free it
             mov   es,_DataSelector      ; - - load 32-bit data segment
 nest3:                                  ; - endif
           dec   cx                      ; - decrement count
@@ -335,6 +337,7 @@ __Win16Thunk6_ proc far
         pop     ax                      ; ...
         pop     dx                      ; ...
         jmp     map2flat                ; map 16:16 pointer to 32-bit flat
+
 __Win16Thunk6_ endp
 
 _TEXT   ends

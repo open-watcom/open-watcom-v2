@@ -50,19 +50,19 @@ typedef struct {
 
 static const map events[] = {
     { VK_BACK, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT },
-    { VK_TAB, EV_TAB_FORWARD, EV_TAB_BACKWARD, EV_CTRL_TAB, EV_TAB_FORWARD },
+    { VK_TAB, EV_TAB, EV_SHIFT_TAB, EV_CTRL_TAB, EV_ALT_TAB },
     { VK_RETURN, EV_ENTER, EV_ENTER, EV_ENTER, EV_ENTER },
     { VK_ESCAPE, EV_ESCAPE, EV_ESCAPE, EV_ESCAPE, EV_ESCAPE },
-    { VK_PRIOR, EV_PAGE_UP, EV_PAGE_UP, EV_CTRL_PGUP, EV_ALT_PGUP },
-    { VK_NEXT, EV_PAGE_DOWN, EV_PAGE_DOWN, EV_CTRL_PGDN, EV_ALT_PGDN },
-    { VK_END, EV_END, EV_END, EV_CTRL_END, EV_ALT_END },
-    { VK_HOME, EV_HOME, EV_HOME, EV_CTRL_HOME, EV_ALT_HOME },
-    { VK_LEFT, EV_CURSOR_LEFT, EV_CURSOR_LEFT, EV_CTRL_LEFT, EV_CURSOR_LEFT },
-    { VK_UP, EV_CURSOR_UP, EV_CURSOR_UP, EV_CTRL_UP, EV_CURSOR_UP },
-    { VK_RIGHT, EV_CURSOR_RIGHT, EV_CURSOR_RIGHT, EV_CTRL_RIGHT, EV_CURSOR_RIGHT },
-    { VK_DOWN, EV_CURSOR_DOWN, EV_CURSOR_DOWN, EV_CTRL_DOWN, EV_CURSOR_DOWN },
-    { VK_INSERT, EV_INSERT, EV_INSERT, EV_CTRL_INSERT, EV_ALT_INSERT},
-    { VK_DELETE, EV_DELETE, EV_DELETE, EV_CTRL_DELETE, EV_ALT_DELETE },
+    { VK_PRIOR, EV_PAGE_UP, EV_SHIFT_PAGE_UP, EV_CTRL_PAGE_UP, EV_ALT_PAGE_UP },
+    { VK_NEXT, EV_PAGE_DOWN, EV_SHIFT_PAGE_DOWN, EV_CTRL_PAGE_DOWN, EV_ALT_PAGE_DOWN },
+    { VK_END, EV_END, EV_SHIFT_END, EV_CTRL_END, EV_ALT_END },
+    { VK_HOME, EV_HOME, EV_SHIFT_HOME, EV_CTRL_HOME, EV_ALT_HOME },
+    { VK_LEFT, EV_CURSOR_LEFT, EV_SHIFT_CURSOR_LEFT, EV_CTRL_CURSOR_LEFT, EV_ALT_CURSOR_LEFT },
+    { VK_UP, EV_CURSOR_UP, EV_SHIFT_CURSOR_UP, EV_CTRL_CURSOR_UP, EV_ALT_CURSOR_UP },
+    { VK_RIGHT, EV_CURSOR_RIGHT, EV_SHIFT_CURSOR_RIGHT, EV_CTRL_CURSOR_RIGHT, EV_ALT_CURSOR_RIGHT },
+    { VK_DOWN, EV_CURSOR_DOWN, EV_SHIFT_CURSOR_DOWN, EV_CTRL_CURSOR_DOWN, EV_ALT_CURSOR_DOWN },
+    { VK_INSERT, EV_INSERT, EV_SHIFT_INSERT, EV_CTRL_INSERT, EV_ALT_INSERT},
+    { VK_DELETE, EV_DELETE, EV_SHIFT_DELETE, EV_CTRL_DELETE, EV_ALT_DELETE },
     { 'A', 'a', 'A', 'A'-'A'+1, EV_ALT_A },
     { 'B', 'b', 'B', 'B'-'A'+1, EV_ALT_B },
     { 'C', 'c', 'C', 'C'-'A'+1, EV_ALT_C },
@@ -89,18 +89,18 @@ static const map events[] = {
     { 'X', 'x', 'X', 'X'-'A'+1, EV_ALT_X },
     { 'Y', 'y', 'Y', 'Y'-'A'+1, EV_ALT_Y },
     { 'Z', 'z', 'Z', 'Z'-'A'+1, EV_ALT_Z },
-    { VK_F1, EV_FUNC( 1 ), EV_SHIFT_FUNC( 1 ), EV_CTRL_FUNC( 1 ), EV_ALT_FUNC( 1 ) },
-    { VK_F2, EV_FUNC( 2 ), EV_SHIFT_FUNC( 2 ), EV_CTRL_FUNC( 2 ), EV_ALT_FUNC( 2 ) },
-    { VK_F3, EV_FUNC( 3 ), EV_SHIFT_FUNC( 3 ), EV_CTRL_FUNC( 3 ), EV_ALT_FUNC( 3 ) },
-    { VK_F4, EV_FUNC( 4 ), EV_SHIFT_FUNC( 4 ), EV_CTRL_FUNC( 4 ), EV_ALT_FUNC( 4 ) },
-    { VK_F5, EV_FUNC( 5 ), EV_SHIFT_FUNC( 5 ), EV_CTRL_FUNC( 5 ), EV_ALT_FUNC( 5 ) },
-    { VK_F6, EV_FUNC( 6 ), EV_SHIFT_FUNC( 6 ), EV_CTRL_FUNC( 6 ), EV_ALT_FUNC( 6 ) },
-    { VK_F7, EV_FUNC( 7 ), EV_SHIFT_FUNC( 7 ), EV_CTRL_FUNC( 7 ), EV_ALT_FUNC( 7 ) },
-    { VK_F8, EV_FUNC( 8 ), EV_SHIFT_FUNC( 8 ), EV_CTRL_FUNC( 8 ), EV_ALT_FUNC( 8 ) },
-    { VK_F9, EV_FUNC( 9 ), EV_SHIFT_FUNC( 9 ), EV_CTRL_FUNC( 9 ), EV_ALT_FUNC( 9 ) },
-    { VK_F10, EV_FUNC( 10 ), EV_SHIFT_FUNC( 10 ), EV_CTRL_FUNC( 10 ), EV_ALT_FUNC( 10 ) },
-    { VK_F11, EV_FUNC_11, EV_SHIFT_FUNC_11, EV_CTRL_FUNC_11, EV_ALT_FUNC_11 },
-    { VK_F12, EV_FUNC_12, EV_SHIFT_FUNC_12, EV_CTRL_FUNC_12, EV_ALT_FUNC_12 }
+    { VK_F1, EV_F1, EV_SHIFT_F1, EV_CTRL_F1, EV_ALT_F1 },
+    { VK_F2, EV_F2, EV_SHIFT_F2, EV_CTRL_F2, EV_ALT_F2 },
+    { VK_F3, EV_F3, EV_SHIFT_F3, EV_CTRL_F3, EV_ALT_F3 },
+    { VK_F4, EV_F4, EV_SHIFT_F4, EV_CTRL_F4, EV_ALT_F4 },
+    { VK_F5, EV_F5, EV_SHIFT_F5, EV_CTRL_F5, EV_ALT_F5 },
+    { VK_F6, EV_F6, EV_SHIFT_F6, EV_CTRL_F6, EV_ALT_F6 },
+    { VK_F7, EV_F7, EV_SHIFT_F7, EV_CTRL_F7, EV_ALT_F7 },
+    { VK_F8, EV_F8, EV_SHIFT_F8, EV_CTRL_F8, EV_ALT_F8 },
+    { VK_F9, EV_F9, EV_SHIFT_F9, EV_CTRL_F9, EV_ALT_F9 },
+    { VK_F10, EV_F10, EV_SHIFT_F10, EV_CTRL_F10, EV_ALT_F10 },
+    { VK_F11, EV_F11, EV_SHIFT_F11, EV_CTRL_F11, EV_ALT_F11 },
+    { VK_F12, EV_F12, EV_SHIFT_F12, EV_CTRL_F12, EV_ALT_F12 }
 };
 
 extern MOUSEORD MouseRow;
@@ -139,7 +139,7 @@ bool intern initkeyboard( void )
 //                      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
 //                      OPEN_EXISTING, 0, NULL );
 //    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT );
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )
@@ -186,23 +186,23 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool UIAPI initmouse( int install )
+int UIAPI initmouse( int install )
 {
-    DWORD       tmp;
+    unsigned long   tmp;
 
     if( install == 0 ) {
-        return( FALSE );
+        return( false );
     }
     UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
     UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
-    MouseOn = FALSE;
-    MouseInstalled = TRUE;
-    UIData->mouse_swapped = FALSE;
+    MouseOn = false;
+    MouseInstalled = true;
+    UIData->mouse_swapped = false;
     checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 
-void intern finimouse( void )
+void UIAPI finimouse( void )
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -214,8 +214,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
-                        MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;

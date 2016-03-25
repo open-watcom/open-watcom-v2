@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -320,8 +321,8 @@ trap_retval ReqProg_load( void )
     IsDOS = FALSE;
 #endif
     if( pid == 0 ) {
-        if( FindFilePath( parm, exe_name, NtExtList ) != 0 ) {
-            ret->err = ERROR_FILE_NOT_FOUND;
+        ret->err = FindProgFile( parm, exe_name, NtExtList );
+        if( ret->err != 0 ) {
             goto error_exit;
         }
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +52,6 @@ extern bool WdeResizeRibbon( RECT * );
 extern void WdeShowRibbon( void );
 extern void WdeDestroyRibbon( void );
 extern int  WdeGetRibbonHeight( void );
-extern void WdeSetRibbonItemState( WORD, int );
+extern void WdeSetRibbonItemState( UINT, int );
 
 #endif

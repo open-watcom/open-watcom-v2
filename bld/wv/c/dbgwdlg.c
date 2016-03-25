@@ -34,19 +34,23 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include "dbglog.h"
+#include "dbgwdlg.h"
+#include "wndsys.h"
+#include "dbgupdt.h"
+#include "dbgwglob.h"
+#include "wndmenu.h"
+
 
 #define MAX_DLG_LINES 30000U
 
-extern void             LogLine( const char * );
 extern int              PageSize( int );
-extern void             SetLogMenuItems( bool active );
-extern void             DbgUpdate( update_list );
 
 typedef struct dlg_entry {
     struct dlg_entry        *prev;
     struct dlg_entry        *next;
     unsigned                line;
-    wnd_attr                wndattr;
+    wnd_attr_wv             wndattr;
     char                    data[1];
 } dlg_entry;
 
@@ -57,14 +61,14 @@ static unsigned         DlgListLineNum = 0;
 static unsigned         DlgLines = 0;
 
 
-static void DlgListPush( const char *buff, size_t len, wnd_attr wndattr )
+static void DlgListPush( const char *buff, size_t len, wnd_attr_wv wndattr )
 {
     dlg_entry   *entry;
 
     entry = DbgMustAlloc( sizeof( dlg_entry ) + len + 1 );
     SET_SYM_NAME_LEN( entry->data, len );
     memcpy( SYM_NAME_NAME( entry->data ), buff, len );
-    SYM_NAME_NAME( entry->data )[len] = '\0';
+    SYM_NAME_NAME( entry->data )[len] = NULLCHAR;
     entry->wndattr = wndattr;
     entry->next = NULL;
     entry->prev = DlgListBot;
@@ -95,14 +99,14 @@ static void DlgListPopLine( void )
 bool DlgInfoRelease( void )
 {
     if( DlgListBot == NULL || DlgListTop == NULL)
-        return( FALSE );
+        return( false );
     if( (DlgListBot->line - DlgListTop->line) <= 1 )
-        return( FALSE );
+        return( false );
     DlgListPopLine();
-    return( TRUE );
+    return( true );
 }
 
-static void WndDlgLine( const char *buff, wnd_attr wndattr )
+static void WndDlgLine( const char *buff, wnd_attr_wv wndattr )
 {
     size_t  len;
 
@@ -114,31 +118,27 @@ static void WndDlgLine( const char *buff, wnd_attr wndattr )
 }
 
 
-static bool WndDlgTxtAttr( const char *buff, wnd_attr wndattr )
+static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 {
     char        ch, *p;
-    bool        multi = FALSE;
+    bool        multi = false;
 
-    for( ;; ) {
-        p = strchr( buff, '\n' );
-        if( p == NULL )
-            break;
+    for( ; (p = strchr( buff, '\n' )) != NULL; buff = p + 1 ) {
         ch = *p;
-        *p = '\0';
+        *p = NULLCHAR;
         LogLine( buff );
         WndDlgLine( buff, wndattr );
-        multi = TRUE;
+        multi = true;
         *p = ch;
-        buff = p + 1;
     }
-    if( !multi || buff[0] != '\0' ) {
+    if( !multi || buff[0] != NULLCHAR ) {
         LogLine( buff );
         WndDlgLine( buff, wndattr );
     }
     if( WndDlg == NULL )
-        return( FALSE );
+        return( false );
     DbgUpdate( UP_DLG_WRITTEN );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -172,17 +172,17 @@ static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     wnd = wnd;
     curr = DlgListTop;
     if( piece != 0 )
-        return( FALSE );
+        return( false );
     i = 0;
     while( i < row && curr != NULL ) {
         curr = curr->next;
         ++i;
     }
     if( curr == NULL )
-        return( FALSE );
+        return( false );
     line->text = SYM_NAME_NAME( curr->data );
     line->attr = curr->wndattr;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -190,7 +190,7 @@ void WndDlgFini( void )
 {
     dlg_entry   *old;
 
-    while( DlgListTop ) {
+    while( DlgListTop != NULL ) {
         old = DlgListTop;
         DlgListTop = DlgListTop->next;
         _Free( old );
@@ -202,21 +202,21 @@ static bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     parm=parm;
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
-        SetLogMenuItems( TRUE );
+        SetLogMenuItems( true );
         break;
     case GUI_NOT_ACTIVE:
-        SetLogMenuItems( FALSE );
+        SetLogMenuItems( false );
         break;
     case GUI_INIT_WINDOW:
         WndDlg = wnd;
-        SetLogMenuItems( TRUE );
-        return( TRUE );
+        SetLogMenuItems( true );
+        return( true );
     case GUI_DESTROY :
         WndDlg = NULL;
-        SetLogMenuItems( FALSE );
-        return( TRUE );
+        SetLogMenuItems( false );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info LogInfo = {

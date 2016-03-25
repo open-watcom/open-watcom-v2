@@ -370,10 +370,11 @@ static void *dmp_movable_seg_ent_pnts( unsigned_16 num_ent_pnts,
 static void prs_ent_tab( unsigned_32 ent_tab, unsigned_16 ent_tab_len )
 /*********************************************************************/
 {
-    struct bundle_prefix    *ent_bund;
-    struct bundle_prefix    *init_ent_bund;
-    unsigned_16             ent_pnt_index;
-    unsigned_16             num_ent_pnts;
+    bundle_prefix       *ent_bund;
+    bundle_prefix       *init_ent_bund;
+    unsigned_16         ent_pnt_index;
+    unsigned_16         num_ent_pnts;
+    unsigned_8          ent_type;
 
     if( ent_tab_len == 0 ) {
         return;
@@ -385,17 +386,16 @@ static void prs_ent_tab( unsigned_32 ent_tab, unsigned_16 ent_tab_len )
     ent_pnt_index = 1;
     for( ; ent_bund->number != 0; ) {
         num_ent_pnts = ent_bund->number;
-        switch( ent_bund->type ) {
-        case 0:                   /* just incrementing entry table index */
-            ++ent_bund;
+        ent_type = ent_bund->type;
+        ++ent_bund;
+        switch( ent_type ) {
+        case 0:                     /* just incrementing entry table index */
             break;
-        case MOVABLE_ENTRY_PNT:       /* movable segment                 */
-            ent_bund = dmp_movable_seg_ent_pnts( num_ent_pnts,
-                ++ent_bund, ent_pnt_index );
+        case MOVABLE_ENTRY_PNT:     /* movable segment */
+            ent_bund = dmp_movable_seg_ent_pnts( num_ent_pnts, ent_bund, ent_pnt_index );
             break;
-        default:                  /* fixed segment                       */
-            ent_bund = dmp_fixed_seg_ent_pnts( num_ent_pnts,
-                ++ent_bund, ent_pnt_index, ent_bund->type );
+        default:                    /* fixed segment */
+            ent_bund = dmp_fixed_seg_ent_pnts( num_ent_pnts, ent_bund, ent_pnt_index, ent_bund->type );
             break;
         }
         ent_pnt_index += num_ent_pnts;
@@ -470,7 +470,7 @@ void Dmp_ne_tbls( void )
 {
     prs_ent_tab( New_exe_off + Os2_head.entry_off, Os2_head.entry_size );
     Banner( "Resident Names Table" );
-    dmp_res_nonres_tab( New_exe_off + Os2_head.resident_off, 
+    dmp_res_nonres_tab( New_exe_off + Os2_head.resident_off,
                         Os2_head.module_off - Os2_head.resident_off );
     dmp_mod_ref_tab( New_exe_off + Os2_head.module_off, Os2_head.modrefs );
     if( Os2_head.import_off != Os2_head.entry_off )

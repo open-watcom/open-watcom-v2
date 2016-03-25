@@ -34,6 +34,7 @@
 #include "dbgwind.h"
 #include "dbgmem.h"
 #include "strutil.h"
+#include "fingmsg.h"
 
 char *AboutMessage[] = {
     "", // constructed

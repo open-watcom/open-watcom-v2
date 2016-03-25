@@ -3,9 +3,10 @@
 host_cpu = 386
 host_os  = nt
 
-os  = nt
+target_cpu = x86
+target_os  = nt
+
 srv = net
-cpu = x86
 which = SERVER
 remote_link = 1
 

@@ -38,21 +38,21 @@
 
 #define WND_MENU_ALLOCATED      GUI_UTIL_2
 
-enum {
+typedef enum {
     WND_ATTR_PLAIN = WND_FIRST_UNUSED,
     WND_ATTR_TABSTOP,
     WND_ATTR_SELECTED,
     WND_ATTR_STANDOUT,
     WND_ATTR_HOTSPOT,
     WND_ATTR_STANDOUT_TABSTOP,
-};
+} wnd_attr_wv;
 
-#define WND_PLAIN               ((wnd_attr)WND_ATTR_PLAIN)
-#define WND_TABSTOP             ((wnd_attr)WND_ATTR_TABSTOP)
-#define WND_SELECTED            ((wnd_attr)WND_ATTR_SELECTED)
-#define WND_STANDOUT            ((wnd_attr)WND_ATTR_STANDOUT)
-#define WND_HOTSPOT             ((wnd_attr)WND_ATTR_HOTSPOT)
-#define WND_STANDOUT_TABSTOP    ((wnd_attr)WND_ATTR_STANDOUT_TABSTOP)
+#define WND_PLAIN               WND_ATTR_PLAIN
+#define WND_TABSTOP             WND_ATTR_TABSTOP
+#define WND_SELECTED            WND_ATTR_SELECTED
+#define WND_STANDOUT            WND_ATTR_STANDOUT
+#define WND_HOTSPOT             WND_ATTR_HOTSPOT
+#define WND_STANDOUT_TABSTOP    WND_ATTR_STANDOUT_TABSTOP
 
 typedef enum wnd_controls {
     COMBOBOX_CONTROL
@@ -60,12 +60,13 @@ typedef enum wnd_controls {
 
 #define MAX_TAB         80
 
-enum {
+typedef enum {
     #define pick( a,b,c,d,e,f ) b,
     #include "wndnames.h"
     #undef pick
-    WND_NUM_CLASSES
-};
+    WND_NUM_CLASSES,
+    WND_NOCLASS = WND_NO_CLASS
+} wnd_class_wv;
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
@@ -82,13 +83,13 @@ typedef enum macro_type {
 } macro_type;
 
 typedef struct wnd_macro {
-        struct wnd_macro        *link;
-        void                    *cmd;
-        unsigned                key;
-        wnd_class               wndcls;
-        int                     menu_item;
-        gui_menu_struct         *menu;
-        macro_type              type;
+    struct wnd_macro        *link;
+    void                    *cmd;
+    unsigned                key;
+    wnd_class_wv            wndclass;
+    int                     menu_item;
+    gui_menu_struct         *menu;
+    macro_type              type;
 } wnd_macro;
 
 #define pick( a,b,c,d,e,f ) extern wnd_metrics e;
@@ -97,34 +98,17 @@ typedef struct wnd_macro {
 
 extern wnd_metrics *WndMetrics[];
 
-extern void             WndInitScrnState(void);
-extern void             WndNewProg(void);
-extern void             WndStrt(void);
-extern void             WndShow(void);
-extern void             WndStop(void);
-extern void             WndUser(void);
-extern void             WndDebug(void);
+extern void         WndInitScrnState(void);
+extern void         WndNewProg(void);
+extern void         WndStrt(void);
+extern void         WndShow(void);
 
-extern void             WndSysStart(void);
-extern void             WndSysEnd(bool );
-extern void             WndRedraw(wnd_class );
-extern void             WndCodeBrk(address ,bool );
+extern void         WndCodeBrk(address ,bool );
 
-extern void             WndDoInput(void);
+extern void         WndDoInput(void);
 
-extern wnd_macro        *WndMacroList;
+extern wnd_macro    *WndMacroList;
 
-extern char             *WndClipItem;
+extern char         *WndClipItem;
 
-extern void             WndUpdate(update_list );
-
-extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class wndcls, void * extra,
-                               gui_resource *icon );
-
-extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class wndcls, void * extra,
-                                    gui_resource * icon,
-                                    int title_size, bool vdrag );
-
-extern bool     ChkFlags( wnd_update_list flags );
+extern void         WndUpdate(update_list );

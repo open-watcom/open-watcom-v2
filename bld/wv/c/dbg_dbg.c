@@ -37,22 +37,19 @@
 #include "madinter.h"
 #include "dui.h"
 #include "dbgscan.h"
+#include "dbgovl.h"
+#include "dbg_dbg.h"
+#include "remcore.h"
+#include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "dbgdot.h"
 
 #include "clibext.h"
 
+
 typedef int     cmp_func( const void *, const void *, size_t );
-
-
-extern void             GetSysConfig( void );
-extern address          GetRegIP( void );
-extern address          GetRegSP( void );
-extern address          GetRegBP( void );
-extern address          GetDataDot( void );
-extern address          GetCodeDot( void );
-extern dtid_t           GetNextTID( void );
-extern void             AddrFix( address * );
-extern bool             IsInternalMod( mod_handle );
-
 
 typedef struct wv_sym_list      wv_sym_list;
 struct wv_sym_list {
@@ -190,7 +187,7 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
     wv_sym_entry        *curr;
 
     if( li->scope.start != NULL )
-        return( FALSE );
+        return( NULL );
     if( li->case_sensitive ) {
         cmp = memcmp;
     } else {
@@ -209,7 +206,7 @@ struct lookup_reg {
     const char          *name;
     unsigned            len;
     cmp_func            *cmp;
-    mad_reg_info const  *ri;
+    const mad_reg_info  *ri;
 };
 
 static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
@@ -218,13 +215,13 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 
     if( memicmp( ld->name, ri->name, ld->len ) != 0 )
         return( WR_CONTINUE );
-    if( ri->name[ld->len] != '\0' )
+    if( ri->name[ld->len] != NULLCHAR )
         return( WR_CONTINUE );
     ld->ri = ri;
     return( WR_STOP );
 }
 
-mad_reg_info const *LookupRegName( mad_reg_info *parent, lookup_item *li )
+const mad_reg_info *LookupRegName( const mad_reg_info *parent, lookup_item *li )
 {
     struct lookup_reg   lr;
 
@@ -246,13 +243,13 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
 {
     wv_sym_entry    *se;
     const char      *null_start;
-    unsigned        null_len;
+    size_t          null_len;
     cmp_func        *cmp;
 
     se = StaticLookup( ListInternal, li );
     if( se != NULL )
         return( se );
-    if( TokenName( TSTR_NULL, &null_start, &null_len ) ) {
+    if( TokenName( T_SSL_SPEC_NULL, &null_start, &null_len ) ) {
         ++null_start;
         --null_len;
         if( null_len != li->name.len )
@@ -295,8 +292,8 @@ void PurgeUserNames( void )
 
     while( (sl = WmonSymLst) != NULL ) {
         WmonSymLst = sl->next;
-        if( sl->s.t.k == TK_STRING )
-            _Free( sl->s.v.string );
+        if( sl->s.info.t.k == TK_STRING )
+            _Free( sl->s.info.v.string );
         _Free( sl );
     }
 }
@@ -310,9 +307,9 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     wv_sym_list         *new;
 
     if( (li->mod != NO_MOD) && !IsInternalMod( li->mod ) )
-        return( FALSE );
+        return( false );
     if( li->scope.start != NULL )
-        return( FALSE );
+        return( false );
     info.k = ti->kind;
     info.m = ti->modifier;
     info.s = ti->size;
@@ -321,31 +318,31 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     case TK_ENUM:
     case TK_CHAR:
         info.k = TK_INTEGER;
-        info.s = sizeof( new->s.v.uint );
+        info.s = sizeof( new->s.info.v.uint );
         break;
     case TK_REAL:
-        info.s = sizeof( new->s.v.real );
+        info.s = sizeof( new->s.info.v.real );
         break;
     case TK_COMPLEX:
-        info.s = sizeof( new->s.v.cmplx );
+        info.s = sizeof( new->s.info.v.cmplx );
         break;
     case TK_ADDRESS:
     case TK_POINTER:
         info.k = TK_ADDRESS;
         info.m = TM_FAR;
-        info.s = sizeof( new->s.v.addr.mach );
+        info.s = sizeof( new->s.info.v.addr.mach );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     new = DbgMustAlloc( sizeof( *new ) + li->name.len );
     new->next = WmonSymLst;
     WmonSymLst = new;
-    new->s.t = info;
-    new->s.sc = SC_USER;
+    new->s.info.t = info;
+    new->s.info.sc = SC_USER;
     SET_SYM_NAME_LEN( new->s.name, li->name.len );
     memcpy( SYM_NAME_NAME( new->s.name ), li->name.start, li->name.len );
-    return( TRUE );
+    return( true );
 }
 
 static void GetNPXType( void )

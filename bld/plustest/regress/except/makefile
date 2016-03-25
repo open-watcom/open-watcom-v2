@@ -3,7 +3,7 @@ plustest_name = except
 #
 # 95/09/14 -- J.W.Welch     -- added batch capability
 
-!include testenv.mif
+!include testenv1.mif
 
 files = &
     excok.$(ext) &

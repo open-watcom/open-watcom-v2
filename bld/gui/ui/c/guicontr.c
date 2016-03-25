@@ -161,13 +161,14 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
 
 bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id )
 {
-    gui_control *control;
+//    gui_control *control;
     gui_rect    rect;
 
     if( !GUI_IS_DIALOG( wnd ) ) {
         GUIGetControlRect( wnd, id, &rect );
     }
-    control = GUIGetControl( wnd, id );
+//    control = GUIGetControl( wnd, id );
+    GUIGetControl( wnd, id );
     if( GUIDeleteField( wnd, id ) ) {
         if( DeleteControl( wnd, id ) ) {
             if( GUI_IS_DIALOG( wnd ) ) {

@@ -457,10 +457,6 @@ prepending the module name to the code segments when BIG_CODE is
 specified on the x86).
 When GIVEN_NAME is specified, the back end outputs the segment name to
 the object file exactly as given.
-:DT.NOGROUP
-:DD.Segment will not be part of DGROUP (if it is a data segment). Private
-segments are never part of DGROUP, but sometimes it is useful to have
-segments that are combinable with others but can be physically separate.
 :DT.THREAD_LOCAL
 :DD.Segment contains thread local data. Such segments may need special
 handling in executable modules.

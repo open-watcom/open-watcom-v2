@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( __UNIX__ )
+#ifndef __UNIX__
 #include <conio.h>
 #include <process.h>
 #endif
@@ -39,16 +39,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined( __WATCOMC__ ) || defined( __QNX__ )
+#include <utime.h>
+#else
+#include <sys/utime.h>
+#endif
+#include "bool.h"
 #include "wio.h"
-
+#include "watcom.h"
 #include "banner.h"
 #include "machtype.h"
 #include "patchsig.h"
 
-typedef unsigned long foff;
-typedef signed long foff_diff;
-typedef unsigned long hole;
-#define IsHoleSize( x ) ( ( (x) & (sizeof(hole)-1) ) == 0 )
+typedef unsigned_32     foff;
+typedef signed_32       foff_diff;
+typedef unsigned_32     hole;
+
+#define IsHoleSize( x ) ( ( (x) & (sizeof( hole ) - 1) ) == 0 )
 
 #define WORD_MAX        65535
 
@@ -74,20 +81,17 @@ typedef enum {
 
 typedef struct {
         foff            start;
-        unsigned        len;
-        int             handle;
-        int             dirty;
-        char            *name;
+        size_t          len;
+        FILE            *fd;
+        const char      *name;
+        bool            dirty;
         char            buff[BUFFER_SIZE];
 } MY_FILE;
 
 #include "bpatch.h"
+#include "dopatch.h"
 
 // Memory management
-
-#define _allocate( s )      bdiff_malloc( s )
-#define _reallocate( p, s ) bdiff_realloc( p, s )
-#define _free( p )          bdiff_free( p )
 
 extern void             *bdiff_malloc( size_t );
 extern void             *bdiff_realloc( void *, size_t );

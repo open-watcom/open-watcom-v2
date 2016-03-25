@@ -3,6 +3,8 @@
 
 set PROJDIR=<CWD>
 set PROJNAME=watcom
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+set PROJNAME=watcom<OWBLDVER>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,34 +20,34 @@ set PROJNAME=watcom
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/watcom.dip     <OWRELROOT>/binw/
-#    <CCCMD> dos386/watcom.sym     <OWRELROOT>/binw/watcom.dsy
+    <CCCMD> dos386/<PROJNAME>.dip     <OWRELROOT>/binw/
+#    <CCCMD> dos386/<PROJNAME>.sym     <OWRELROOT>/binw/<PROJNAME>.dsy
 
-    <CCCMD> wini86/watcom.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/watcom.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/<PROJNAME>.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/watcom.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/watcom.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/watcom.d32     <OWRELROOT>/binp/
-    <CCCMD> os2386/watcom.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/<PROJNAME>.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/<PROJNAME>.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/<PROJNAME>.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/<PROJNAME>.sym     <OWRELROOT>/binp/
 
-    <CCCMD> nt386/watcom.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/watcom.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/watcom.dip   <OWRELROOT>/binl/
-    <CCCMD> linux386/watcom.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.dip   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.sym   <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/watcom.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/watcom.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/watcom.dip     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/watcom.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/<PROJNAME>.dip     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/<PROJNAME>.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> rdos386/watcom.dll    <OWRELROOT>/rdos/
-    <CCCMD> rdos386/watcom.sym    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.dll    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.sym    <OWRELROOT>/rdos/
 
-    <CCCMD> linuxx64/watcom.so    <OWRELROOT>/binl64/
-    <CCCMD> ntx64/watcom.dll      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/<PROJNAME>.so    <OWRELROOT>/binl64/
+    <CCCMD> ntx64/<PROJNAME>.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

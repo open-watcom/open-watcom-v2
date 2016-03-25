@@ -35,60 +35,23 @@
 #endif
 #include "demangle.h"
 #include "walloca.h"
-
-
-extern void             InfoUnlock( void );
-extern dip_status       InfoRelease( void );
-extern void             FiniDemand( void );
-extern search_result    LookupLclAddr( imp_image_handle *, address, imp_sym_handle * );
-extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );
-extern unsigned         SymHdl2CstName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2TypName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2MbrName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2GblName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2ObjGblName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern unsigned         SymHdl2LclName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
-extern dip_status       SymHdl2CstValue( imp_image_handle *, imp_sym_handle *, void * );
-extern dip_status       SymHdl2CstType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2TypType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2MbrType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2LclType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2GblType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
-extern dip_status       SymHdl2MbrLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
-extern dip_status       SymHdl2LclLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
-extern dip_status       SymHdl2GblLoc( imp_image_handle *, imp_sym_handle *, location_list * );
-extern dip_status       SymHdl2GblInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern dip_status       SymHdl2LclInfo( imp_image_handle *, imp_sym_handle *, sym_info * );
-extern dip_status       SymHdl2MbrInfo( imp_image_handle *, imp_sym_handle *, sym_info *, location_context *  );
-extern dip_status       SymHdl2LclParmLoc( imp_image_handle *, imp_sym_handle *, location_context *, location_list *, unsigned );
-extern search_result    SearchGbl( imp_image_handle *, imp_mod_handle, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchLclScope( imp_image_handle *, imp_mod_handle, address *, lookup_item *, void * );
-extern search_result    SearchLclMod( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchEnumName( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchTypeName( imp_image_handle *, imp_mod_handle, lookup_item *, void * );
-extern search_result    SearchMbr( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status       WalkLclModSymList( imp_image_handle *, imp_mod_handle, IMP_SYM_WKR *, imp_sym_handle *, void *, walk_result * );
-extern walk_result      WalkGblModSymList( imp_image_handle *, imp_mod_handle, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkScopedSymList( imp_image_handle *, address *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkBlockSymList( imp_image_handle *, scope_block *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern walk_result      WalkTypeSymList( imp_image_handle *, imp_type_handle *, IMP_SYM_WKR *, imp_sym_handle *, void * );
-extern void             KillLclLoadStack(void);
-extern void             KillTypeLoadStack(void);
-extern dip_status       Lcl2GblHdl( imp_image_handle *, imp_sym_handle *, imp_sym_handle * );
+#include "watlcl.h"
+#include "wattype.h"
+#include "watgbl.h"
 
 
 const char DIPImpName[] = "WATCOM";
 
 unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
-    static unsigned_8 Sizes[] = {
+    static unsigned_8 Sizes[MAX_HK] = {
         sizeof( imp_image_handle ),
         sizeof( imp_type_handle ),
         sizeof( imp_cue_handle ),
         sizeof( imp_sym_handle )
     };
 
-    return( Sizes[ hk ] );
+    return( Sizes[hk] );
 }
 
 dip_status DIGENTRY DIPImpStartup( void )
@@ -126,25 +89,28 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) return( SR_NONE );
+        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) {
+            return( SR_NONE );
+        }
     } else {
         is->im = im;
     }
     sr = LookupLclAddr( ii, addr, is );
-    if( sr != SR_NONE ) return( sr );
+    if( sr != SR_NONE )
+        return( sr );
     return( LookupGblAddr( ii, addr, is ) );
 }
 
 #define SH_ESCAPE       0xf0
 
-unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,
-                                symbol_name sn, char *buff, unsigned buff_size )
+                                symbol_name sn, char *buff, size_t buff_size )
 {
     byte                *sp;
     byte                *ep;
     byte                curr;
-    unsigned            len;
+    size_t              len;
     char                *mangled_name;
     location_list       ll;
     imp_sym_handle      gbl_is;
@@ -175,7 +141,8 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             }
             STUFF_IT( curr );
         }
-        if( buff_size > 0 ) *ep++ = '\0';
+        if( buff_size > 0 )
+            *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
         len = ImpInterface.sym_name( ii, is, lc, SN_OBJECT, NULL, 0 );
@@ -189,13 +156,18 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
     case SN_OBJECT:
         switch( is->type ) {
         case SH_LCL:
-            if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK ) break;
+            if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK )
+                break;
             return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK ) break;
-            if( ll.num != 1 || ll.e[0].type != LT_ADDR ) break;
-            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE ) break;
-            if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT ) break;
+            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK )
+                break;
+            if( ll.num != 1 || ll.e[0].type != LT_ADDR )
+                break;
+            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+                break;
+            if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
+                break;
             is = &gbl_is;
             /* fall through */
         case SH_GBL:
@@ -221,7 +193,7 @@ unsigned DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 
-static void CollectSymHdl( byte *ep, imp_sym_handle *is )
+static void CollectSymHdl( const char *ep, imp_sym_handle *is )
 {
     byte        *sp;
     byte        curr;
@@ -231,9 +203,9 @@ static void CollectSymHdl( byte *ep, imp_sym_handle *is )
     sp = (byte *)is;
     ++is;
     while( sp < (byte *)is ) {
-        curr = *ep++;
+        curr = GETU8( ep++ );
         if( curr == SH_ESCAPE )
-            curr = escapes[ *ep++ - 1 ];
+            curr = escapes[GETU8( ep++ ) - 1];
         *sp++ = curr;
     }
 }
@@ -248,7 +220,8 @@ static search_result SearchFileScope( imp_image_handle *ii,
     switch( li->type ) {
     case ST_NONE:
         sr = SearchLclMod( ii, im, li, d );
-        if( sr != SR_NONE ) return( sr );
+        if( sr != SR_NONE )
+            return( sr );
         return( SearchEnumName( ii, im, li, d ) );
     case ST_DESTRUCTOR:
     case ST_OPERATOR:
@@ -258,7 +231,7 @@ static search_result SearchFileScope( imp_image_handle *ii,
     }
 }
 
-search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
+static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
                          void *source, lookup_item *li, location_context *lc, void *d )
 {
     imp_mod_handle      im;
@@ -267,16 +240,17 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     char                *buff;
     const char          *src;
     char                *dst;
-    unsigned            len;
+    size_t              len;
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 
     lc = lc;
-    if( *li->name.start == (char)SH_ESCAPE ) {
-        CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
+    if( GETU8( li->name.start ) == SH_ESCAPE ) {
+        CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }
-    if( li->type == ST_NAMESPACE ) return( SR_NONE );
+    if( li->type == ST_NAMESPACE )
+        return( SR_NONE );
     sym_li = *li;
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
@@ -296,7 +270,8 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         buff = __alloca( len + 20 );
         dst = buff;
         for( ;; ) {
-            if( len == 0 ) break;
+            if( len == 0 )
+                break;
             if( src == sym_li.source.start ) {
                 op_len = __mangle_operator( src, sym_li.source.len, buff );
                 if( op_len == 0 ) {
@@ -315,6 +290,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         sym_li.name.start = buff;
     }
     sr = SR_NONE;
+    im = IMH_NOMOD;
     switch( ss ) {
     case SS_SCOPED:
         if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
@@ -445,7 +421,8 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
 dip_status DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
     imp_sym_handle *is, location_context *lc, location_list *ll, unsigned parm )
 {
-    if( is->type != SH_LCL ) return( DS_FAIL );
+    if( is->type != SH_LCL )
+        return( DS_FAIL );
     return( SymHdl2LclParmLoc( ii, is, lc, ll, parm ) );
 }
 
@@ -455,7 +432,7 @@ typedef struct {
     void                *d;
 } sym_glue;
 
-walk_result WalkMySyms( imp_image_handle *ii,
+static walk_result WalkMySyms( imp_image_handle *ii,
                         imp_mod_handle im, void *d )
 {
     sym_glue    *wd = d;
@@ -465,13 +442,14 @@ walk_result WalkMySyms( imp_image_handle *ii,
     return( wr );
 }
 
-walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
+static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
                 void *t, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
     sym_glue            glue;
     walk_result         wr;
 
+    wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE:
         return( WalkTypeSymList( ii, (imp_type_handle *)t, wk, is, d ) );
@@ -520,7 +498,7 @@ dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
     return( DS_FAIL );
 }
 
-static int GblCmp( void *g1, void *g2 )
+static int GblCmp( gbl_info *g1, gbl_info *g2 )
 {
 #if defined(__COMPACT__) || defined(__LARGE__) || defined( __HUGE__ )
     unsigned    s1;
@@ -528,7 +506,8 @@ static int GblCmp( void *g1, void *g2 )
 
     s1 = FP_SEG( g1 );
     s2 = FP_SEG( g2 );
-    if( s1 != s2 ) return( s1 - s2 );
+    if( s1 != s2 )
+        return( s1 - s2 );
     return( FP_OFF( g1 ) - FP_OFF( g2 ) );
 #else
     return( (char*)g1 - (char*)g2 );

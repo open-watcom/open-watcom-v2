@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wreglbl.h"
 #include "wrectl3d.h"
 #include "wrdll.h"

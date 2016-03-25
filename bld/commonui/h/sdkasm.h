@@ -40,7 +40,7 @@ typedef struct disasmrtns {
     int_16              (*GetDataWord)( void );
     int_16              (*GetNextByte)( void );
     int_32              (*GetDataLong)( void );
-    char                (*EndOfSegment)( void );
+    bool                (*EndOfSegment)( void );
     DWORD               (*GetOffset)( void );
     void                (*DoWtk)( void );
     int                 (*IsWtk)( void );

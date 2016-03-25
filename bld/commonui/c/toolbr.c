@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <assert.h>
 #include "bool.h"
@@ -49,44 +50,9 @@
 #define WPI_GET_WNDINFO( w )    ((toolbar *)_wpi_getwindowlongptr( w, 0 ))
 #define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
 
-#define NO_ID   (CMDID)-1
+#define NO_ID   ((ctl_id)-1)
 
-typedef struct tool {
-    struct tool *next;
-    union {
-        HBITMAP bitmap;
-        WORD    blank_space;
-    } u;
-    HBITMAP     depressed;
-    CMDID       id;
-    UINT        flags;
-    WORD        state;
-    WPI_RECT    area;
-#ifdef __NT__
-    char        tip[MAX_TIP];
-#endif
-} tool;
-
-typedef struct toolbar {
-    HWND        hwnd;
-    HWND        owner;
-    toolhook    hook;
-    helphook    helphook;
-    WPI_POINT   button_size;
-    WPI_POINT   border;
-    HBITMAP     background;
-    HBRUSH      foreground;
-    HBRUSH      bgbrush;
-    int         border_width;
-    tool        *tool_list;
-    char        is_fixed    : 1;
-    char        spare       : 7;
-#ifdef __NT__
-    HWND        container;
-    WNDPROC     old_wndproc;
-    HWND        tooltips;
-#endif
-} toolbar;
+typedef int     tb_idx;
 
 #ifdef __NT__
 HBITMAP TB_CreateTransparentBitmap( HBITMAP, int, int );
@@ -124,7 +90,7 @@ static WPI_PROC     oldFrameProc;
 
 static tool     *currTool;
 static bool     currIsDown;
-static CMDID    lastID = NO_ID;
+static ctl_id   lastID = NO_ID;
 static bool     mouse_captured = false;
 static bool     ignore_mousemove = false;   /* ReleaseCapture() generates
                                            a WM_MOUSEMOVE message */
@@ -137,7 +103,7 @@ static bool round_corners = false;      /* Platform has rounded buttons? */
 /*
  * findTool - find tool item based on id
  */
-static tool *findTool( tool *list, CMDID id )
+static tool *findTool( tool *list, ctl_id id )
 {
     while( list != NULL ) {
         if( list->id == id ) {
@@ -276,7 +242,7 @@ static void reinsertButtons( toolbar *bar )
     TBBUTTON    tbb;
     TBADDBITMAP tbab;
     BITMAP      bm;
-    int         n;
+    tb_idx      n;
     TOOLINFO    ti;
     if( IsCommCtrlLoaded() ) {
         for( t = bar->tool_list; t != NULL; t = t->next ) {
@@ -301,7 +267,7 @@ static void reinsertButtons( toolbar *bar )
             tbb.iString = 0;
             SendMessage( bar->hwnd, TB_ADDBUTTONS, 1, (LPARAM)&tbb );
             if( bar->tooltips != NULL && !(t->flags & ITEM_BLANK) ) {
-                n = (int)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
+                n = (tb_idx)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
                 SendMessage( bar->hwnd, TB_GETITEMRECT, n - 1, (LPARAM)&ti.rect );
                 ti.cbSize = sizeof( TOOLINFO );
                 ti.uFlags = 0;
@@ -321,7 +287,7 @@ static void reinsertButtons( toolbar *bar )
 /*
  * ToolBarRedrawButtons - redraw the toolbar buttons
  */
-void ToolBarRedrawButtons( struct toolbar *bar )
+void ToolBarRedrawButtons( toolbar *bar )
 {
     if( bar ) {
         createButtonList( bar->hwnd, bar, bar->tool_list );
@@ -533,7 +499,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     TBBUTTON    tbb;
     TBADDBITMAP tbab;
     BITMAP      bm;
-    int         n;
+    tb_idx      n;
     TOOLINFO    ti;
 #endif
 
@@ -579,7 +545,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
         tbb.iString = 0;
         SendMessage( bar->hwnd, TB_ADDBUTTONS, 1, (LPARAM)&tbb );
         if( bar->tooltips != NULL && !(info->flags & ITEM_BLANK) ) {
-            n = (int)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
+            n = (tb_idx)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
             SendMessage( bar->hwnd, TB_GETITEMRECT, n - 1, (LPARAM)&ti.rect );
             ti.cbSize = sizeof( TOOLINFO );
             ti.uFlags = 0;
@@ -597,7 +563,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
 /*
  * ToolBarSetState - set the state of a toolbar button
  */
-void ToolBarSetState( toolbar *bar, CMDID id, WORD state )
+void ToolBarSetState( toolbar *bar, ctl_id id, WORD state )
 {
     tool        *t;
 
@@ -620,11 +586,11 @@ void ToolBarSetState( toolbar *bar, CMDID id, WORD state )
 /*
  * ToolBarGetState - get the state of a toolbar button
  */
-WORD ToolBarGetState( toolbar *bar, CMDID id )
+WORD ToolBarGetState( toolbar *bar, ctl_id id )
 {
     tool        *t;
 #ifdef __NT__
-    int         n;
+    tb_idx      n;
     TBBUTTON    tbb;
 
     if( !IsCommCtrlLoaded() ) {
@@ -633,7 +599,7 @@ WORD ToolBarGetState( toolbar *bar, CMDID id )
         return( t->state );
 #ifdef __NT__
     } else {
-        n = (int)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, (WPARAM)id, 0L );
+        n = (tb_idx)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, id, 0L );
         SendMessage( bar->hwnd, TB_GETBUTTON, n, (LPARAM)&tbb );
         return( (tbb.fsState & TBSTATE_CHECKED) ? BUTTON_DOWN : BUTTON_UP );
     }
@@ -644,12 +610,12 @@ WORD ToolBarGetState( toolbar *bar, CMDID id )
 /*
  * ToolBarDeleteItem - delete an item from the tool bar
  */
-bool ToolBarDeleteItem( toolbar *bar, CMDID id )
+bool ToolBarDeleteItem( toolbar *bar, ctl_id id )
 {
     tool    *t;
     tool    *next;
 #ifdef __NT__
-    int     n;
+    tb_idx  n;
 
     if( !IsCommCtrlLoaded() ) {
 #endif
@@ -666,8 +632,8 @@ bool ToolBarDeleteItem( toolbar *bar, CMDID id )
         }
 #ifdef __NT__
     } else {
-        n = (int)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, (WPARAM)id, 0L );
-        SendMessage( bar->hwnd, TB_DELETEBUTTON, (WPARAM)n, 0L );
+        n = (tb_idx)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, id, 0L );
+        SendMessage( bar->hwnd, TB_DELETEBUTTON, n, 0L );
         return( true );
     }
 #endif
@@ -816,20 +782,28 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
             bar->tooltips = NULL;
         }
         reinsertButtons( bar );
+  #ifndef _WIN64
     } else if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 && !bar->is_fixed ) {
+  #else
+    } else if( !bar->is_fixed ) {
+  #endif
         CreateWindowEx( WS_EX_TOOLWINDOW, className, NULL, disp->style,
                         disp->area.left, disp->area.top, width, height,
                         bar->owner, (HMENU) HNULL, GET_HINSTANCE( bar->owner ), bar );
     } else {
+  #ifndef _WIN64
         if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #endif
             CreateWindow( className, NULL, WS_CHILD | WS_CLIPSIBLINGS,
                           disp->area.left, disp->area.top, width, height,
                           bar->owner, (HMENU) HNULL, GET_HINSTANCE( bar->owner ), bar );
+  #ifndef _WIN64
         } else {
             CreateWindow( className, NULL, disp->style, disp->area.left, disp->area.top,
                           width, height, bar->owner, (HMENU) HNULL,
                           GET_HINSTANCE( bar->owner ), bar );
         }
+  #endif
     }
 #else
     CreateWindow( className, NULL, disp->style, disp->area.left, disp->area.top, width,
@@ -970,8 +944,7 @@ static void drawBottomRightCorner( WPI_PRES pres, WPI_POINT size, int border, HP
 /*
  * drawBottomRightInsideCorner - draw the inside corner of a button
  */
-static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int border,
-                                         HPEN pen )
+static void drawBottomRightInsideCorner( WPI_PRES pres, WPI_POINT size, int border, HPEN pen )
 {
     HPEN        old_pen;
     WPI_POINT   pt;
@@ -1061,8 +1034,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
 /*
  * toolBarDrawBitmap - draw the bitmap on a button
  */
-static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org,
-                               HBITMAP bitmap )
+static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, HBITMAP bitmap )
 {
     WPI_BITMAP  bm;
     WPI_PRES    mempres;
@@ -1242,14 +1214,11 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     drawBorder( mempres, bar->button_size, BORDER_WIDTH( bar ) );
     if( selected ) {
         drawTopLeftCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
-        drawTopLeftInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                                 btnFacePen );
+        drawTopLeftInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnFacePen );
     } else {
         drawTopLeftCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnHighlightPen );
-        drawBottomRightCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                               btnShadowPen );
-        drawBottomRightInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ),
-                                     btnShadowPen );
+        drawBottomRightCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
+        drawBottomRightInsideCorner( mempres, bar->button_size, BORDER_WIDTH( bar ), btnShadowPen );
     }
     _wpi_getrectvalues( tool->area, &left, &top, &right, &bottom );
     _wpi_bitblt( pres, left, top, bar->button_size.x, bar->button_size.y, mempres, 0, 0,
@@ -1319,14 +1288,14 @@ static tool *findToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam
 /*
  * customHitTest - find a tool at a given point for a native toolbar
  */
-static int customHitTest( toolbar *bar, POINT *pt )
+static ctl_id customHitTest( toolbar *bar, POINT *pt )
 {
-    int         i;
-    int         count;
+    tb_idx      i;
+    tb_idx      count;
     TBBUTTON    tbb;
     RECT        rc;
 
-    count = (int)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
+    count = (tb_idx)SendMessage( bar->hwnd, TB_BUTTONCOUNT, 0, 0L );
     for( i = 0; i < count; i++ ) {
         SendMessage( bar->hwnd, TB_GETITEMRECT, i, (LPARAM)&rc );
         if( PtInRect( &rc, *pt ) ) {
@@ -1334,7 +1303,7 @@ static int customHitTest( toolbar *bar, POINT *pt )
             return( tbb.idCommand );
         }
     }
-    return( -1 );
+    return( NO_ID );
 
 } /* customHitTest */
 
@@ -1343,7 +1312,7 @@ static int customHitTest( toolbar *bar, POINT *pt )
 /*
  * HasToolAtPoint - return TRUE if a tool exists at a given point
  */
-bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifdef __NT__
     POINT   pt;
@@ -1355,7 +1324,7 @@ bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     } else {
         pt.x = LOWORD( lparam );
         pt.y = HIWORD( lparam );
-        return( customHitTest( bar, &pt ) >= 0 );
+        return( customHitTest( bar, &pt ) != NO_ID );
     }
 #endif
 
@@ -1365,12 +1334,12 @@ bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
  * FindToolIDAtPoint - Find the tool ID at a given point, if any.  Returns
  *                     TRUE if tool exists at a given point.
  */
-bool FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id )
+bool FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, ctl_id *id )
 {
     tool    *ctool;
 #ifdef __NT__
     POINT   pt;
-    int     ret;
+    ctl_id  ret;
 
     if( !IsCommCtrlLoaded() ) {
 #endif
@@ -1386,7 +1355,7 @@ bool FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         pt.x = LOWORD( lparam );
         pt.y = HIWORD( lparam );
         ret = customHitTest( bar, &pt );
-        if( ret >= 0 ) {
+        if( ret != NO_ID ) {
             *id = ret;
             return( true );
         } else {
@@ -1454,7 +1423,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                 _wpi_setcapture( hwnd );
                 currIsDown = true;
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
+                    bar->helphook( hwnd, currTool->id, true );
                 }
             }
         }
@@ -1482,7 +1451,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                                             WM_MOUSEMOVE message */
                 _wpi_releasecapture();
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
+                    bar->helphook( hwnd, currTool->id, false );
                 }
                 currTool = NULL;
             }
@@ -1500,7 +1469,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                     currIsDown = true;
                     drawButton( hwnd, currTool, true, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
+                        bar->helphook( hwnd, currTool->id, true );
                     }
                 }
             } else {
@@ -1508,17 +1477,17 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                     drawButton( hwnd, currTool, false, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                     currIsDown = false;
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
+                        bar->helphook( hwnd, currTool->id, false );
                     }
                 }
             }
         } else {
             if( bar->helphook != NULL ) {
                 if( tool ) {
-                    bar->helphook( hwnd, MPFROMSHORT( tool->id ), true );
+                    bar->helphook( hwnd, tool->id, true );
                     lastID = tool->id;
                 } else if( lastID != NO_ID ) {
-                    bar->helphook( hwnd, MPFROMSHORT( lastID ), false );
+                    bar->helphook( hwnd, lastID, false );
                     lastID = NO_ID;
                 }
             }
@@ -1571,21 +1540,21 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
  */
 WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    struct toolbar  *bar;
-    CMDID           id;
-    int             n;
+    toolbar         *bar;
+    ctl_id          id;
+    tb_idx          n;
     TBBUTTON        tbb;
     DWORD           pos;
     POINT           pt;
     RECT            rc;
 
-    bar = (struct toolbar *)GetProp( hwnd, "bar" );
+    bar = (toolbar *)GetProp( hwnd, "bar" );
     switch( msg ) {
     case WM_MOUSEMOVE:
         if( FindToolIDAtPoint( bar, wparam, lparam, &id ) ) {
-            n = (int)SendMessage( hwnd, TB_COMMANDTOINDEX, id, 0L );
+            n = (tb_idx)SendMessage( hwnd, TB_COMMANDTOINDEX, id, 0L );
             SendMessage( hwnd, TB_GETBUTTON, n, (LPARAM)&tbb );
-            if( (tbb.fsState & TBSTATE_PRESSED) || !(wparam & MK_LBUTTON) ) {
+            if( (tbb.fsState & TBSTATE_PRESSED) || (wparam & MK_LBUTTON) == 0 ) {
                 bar->helphook( hwnd, id, true );
                 lastID = id;
                 SetTimer( hwnd, 1, 50, NULL );
@@ -1636,14 +1605,14 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
  */
 WINEXPORT LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    HWND            otherwnd;
-    struct toolbar  *bar;
+    HWND        otherwnd;
+    toolbar     *bar;
 
     if( msg == WM_NCCREATE ) {
         bar = ((CREATESTRUCT *)lparam)->lpCreateParams;
         SetProp( hwnd, "bar", bar );
     } else {
-        bar = (struct toolbar *)GetProp( hwnd, "bar" );
+        bar = (toolbar *)GetProp( hwnd, "bar" );
     }
     if( bar != NULL ) {
         bar->hook( hwnd, msg, wparam, lparam );
@@ -1668,11 +1637,11 @@ WINEXPORT LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wpa
 /*
  * ChangeToolButtonBitmap - change a bitmap for a toolbar item
  */
-void ChangeToolButtonBitmap( toolbar *bar, CMDID id, HBITMAP newbmp )
+void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, HBITMAP newbmp )
 {
     tool        *t;
 #ifdef __NT__
-    int         n;
+    tb_idx      n;
     TBBUTTON    tbb;
     TBADDBITMAP tbab;
 
@@ -1686,9 +1655,9 @@ void ChangeToolButtonBitmap( toolbar *bar, CMDID id, HBITMAP newbmp )
         }
 #ifdef __NT__
     } else {
-        n = (int)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, (WPARAM)id, 0L );
+        n = (tb_idx)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, id, 0L );
         if( n >= 0 ) {
-            SendMessage( bar->hwnd, TB_GETBUTTON, (WPARAM)n, (LPARAM)&tbb );
+            SendMessage( bar->hwnd, TB_GETBUTTON, n, (LPARAM)&tbb );
             tbab.hInst = NULL;
             tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( newbmp,
                 bar->button_size.x - bar->border.x,

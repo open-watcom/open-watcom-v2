@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,10 @@
 #include "asavedlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * ASaveDlgProc - callback routine for autosave response dialog
  */
@@ -49,13 +54,13 @@ WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case DLG_IGNORE:
-            EndDialog( hwnd, 'i' );
+            EndDialog( hwnd, VI_KEY( i ) );
             break;
         case IDCANCEL:
-            EndDialog( hwnd, 'q' );
+            EndDialog( hwnd, VI_KEY( q ) );
             break;
         case DLG_RECOVER:
-            EndDialog( hwnd, 'r' );
+            EndDialog( hwnd, VI_KEY( r ) );
             break;
         default:
             return( FALSE );
@@ -72,12 +77,12 @@ WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 vi_key GetAutosaveResponse( void )
 {
     FARPROC     proc;
-    int         rc;
+    vi_key      key;
 
     proc = MakeDlgProcInstance( ASaveDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, (DLGPROC)proc );
+    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, (DLGPROC)proc );
     FreeProcInstance( proc );
 
-    return( rc );
+    return( key );
 
 } /* GetAutosaveResponse */

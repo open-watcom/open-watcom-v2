@@ -69,10 +69,12 @@ sys_handle LocalOpen( const char *name, open_access access )
     } else {
         openmode = O_WRONLY;
     }
-    if( access & OP_CREATE ) openmode |= O_CREAT;
-    if( access & OP_TRUNC ) openmode |= O_TRUNC;
+    if( access & OP_CREATE )
+        openmode |= O_CREAT;
+    if( access & OP_TRUNC )
+        openmode |= O_TRUNC;
     ret = open( name, openmode | O_BINARY, 0666 );
-    if( (int)ret == -1 ) {
+    if( ret == -1 ) {
         StashErrCode( errno, OP_LOCAL );
         return( NIL_SYS_HANDLE );
     }
@@ -80,28 +82,58 @@ sys_handle LocalOpen( const char *name, open_access access )
     return( ret );
 }
 
-unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
+size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
     int         ret;
+    size_t      total;
+    unsigned    piece_len;
+    unsigned    read_len;
 
-    ret = read( filehndl, ptr, len );
-    if( ret < 0 ) {
-        StashErrCode( errno, OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = read( filehndl, ptr, piece_len );
+        if( ret < 0 ) {
+            StashErrCode( errno, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        read_len = (unsigned)ret;
+        total += read_len;
+        if( read_len != piece_len )
+            break;
+        ptr = (char *)ptr + read_len;
+        len -= read_len;
     }
-    return( ret );
+    return( total );
 }
 
-unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
+size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
     int         ret;
+    size_t      total;
+    unsigned    piece_len;
+    unsigned    write_len;
 
-    ret = write( filehndl, ptr, len );
-    if( ret < 0 ) {
-        StashErrCode( errno, OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = write( filehndl, ptr, piece_len );
+        if( ret < 0 ) {
+            StashErrCode( errno, OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        write_len = (unsigned)ret;
+        total += write_len;
+        if( write_len != piece_len )
+            break;
+        ptr = (char *)ptr + write_len;
+        len -= write_len;
     }
-    return( ret );
+    return( total );
 }
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
@@ -111,26 +143,26 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     ret = lseek( hdl, len, method );
     if( ret == (off_t)-1 ) {
         StashErrCode( errno, OP_LOCAL );
-        return( -1UL );
+        return( ERR_SEEK );
     }
     return( ret );
 }
 
-rc_erridx LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle filehndl )
 {
     if( close( filehndl ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-rc_erridx LocalErase( const char *name )
+error_handle LocalErase( const char *name )
 {
     if( remove( name ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-sys_handle LocalHandleSys( handle h )
+sys_handle LocalHandleSys( file_handle fh )
 {
-    return( h );
+    return( (sys_handle)fh );
 }

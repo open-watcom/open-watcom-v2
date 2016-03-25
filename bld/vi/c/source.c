@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include "posix.h"
-#include "source.h"
 #include "parsecl.h"
 #include "menu.h"
 #include "ex.h"
@@ -42,24 +41,38 @@
 
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
-static vi_rc    initSource( vlist *, char *);
-static vi_rc    barfScript( char *, sfile *, vlist *, unsigned *, char *);
-static void     addResidentScript( char *, sfile *, labels * );
-static resident *residentScript( char * );
-static void     finiSourceErrFile( char * );
+static vi_rc    initSource( vlist *, const char * );
+static vi_rc    barfScript( const char *, sfile *, vlist *, srcline *, const char *);
+static void     addResidentScript( const char *, sfile *, labels * );
+static resident *residentScript( const char * );
+static void     finiSourceErrFile( const char * );
+
+static void freeSource( sfile *sf )
+{
+    sfile   *curr, *next;
+
+    for( curr = sf; curr != NULL; curr = next ) {
+        next = curr->next;
+        MemFree( curr->data );
+        MemFree( curr->arg1 );
+        MemFree( curr->arg2 );
+        MemFree( curr );
+    }
+}
 
 /*
  * Source - main driver
  */
-vi_rc Source( char *fn, char *data, unsigned *ln )
+vi_rc Source( const char *fn, const char *data, srcline *sline )
 {
     undo_stack  *atomic = NULL;
     labels      *lab, lb;
     vlist       vl;
     files       fi;
     sfile       *sf, *curr;
-    char        tmp[MAX_SRC_LINE];
+    char        buff[MAX_SRC_LINE];
     char        sname[FILENAME_MAX];
+    const char  *tmp;
     vi_rc       rc;
     bool        sicmp, wfb, ssa, exm;
     resident    *res;
@@ -84,8 +97,7 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
         sf = res->sf;
     }
     if( EditFlags.CompileScript ) {
-        sname[0] = 0;
-        NextWord1( data, sname );
+        data = GetNextWord1( data, sname );
     }
 
     /*
@@ -130,7 +142,7 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
      * if we were compiling, dump results and go back
      */
     if( EditFlags.CompileScript ) {
-        rc = barfScript( fn, sf, &vl, ln, sname );
+        rc = barfScript( fn, sf, &vl, sline, sname );
         finiSource( lab, &vl, sf, NULL );
         return( rc );
     }
@@ -156,15 +168,14 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
             }
         }
         rc = LastError = ERR_NO_ERR;
-        if( curr->data != NULL ) {
-            strcpy( tmp, curr->data );
-        } else {
-            tmp[0] = 0;
+        tmp = curr->data;
+        if( tmp == NULL ) {
+            tmp = "";
         }
 
         if( EditFlags.Appending ) {
             if( curr->hasvar) {
-                Expand( tmp, &vl );
+                tmp = Expand( buff, tmp, &vl );
             }
             rc = AppendAnother( tmp );
         } else if( cTokenID == PCL_T_ENDFILETYPESOURCE ) {
@@ -175,14 +186,14 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
             if( curr->data != NULL ) {
                 int     ret;
                 GetErrorTokenValue( &ret, curr->data );
-                rc = ret;
+                rc = (vi_rc)ret;
             } else {
                 rc = ERR_NO_ERR;
             }
             break;
         } else if( curr->token > SRC_T_NULL ) {
             if( curr->hasvar) {
-                Expand( tmp, &vl );
+                tmp = Expand( buff, tmp, &vl );
             }
             rc = TryCompileableToken( cTokenID, tmp, false );
             if( rc == NOT_COMPILEABLE_TOKEN ) {
@@ -191,97 +202,86 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
             if( rc < ERR_NO_ERR ) {
                 rc = ERR_NO_ERR;
             }
-        } else switch( curr->token ) {
-        case SRC_T_ATOMIC:
-            if( atomic == NULL ) {
-                atomic = UndoStack;
-                StartUndoGroup( atomic );
-            }
-            break;
-
-        case SRC_T_IF:
-            rc = SrcIf( &curr, &vl );
-            break;
-
-        case SRC_T_GOTO:
-            rc = SrcGoTo( &curr, tmp, lab );
-            break;
-
-        case SRC_T_LABEL:
-            break;
-
-        case SRC_T_GET:
-            SrcGet( tmp, &vl );
-            rc = ERR_NO_ERR;
-            break;
-
-        case SRC_T_INPUT:
-            LastRC = SrcInput( tmp, &vl );
-            if( LastRC != NO_VALUE_ENTERED && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_NEXTWORD:
-            rc = SrcNextWord( tmp, &vl );
-            break;
-
-        case SRC_T_ASSIGN:
-            rc = SrcAssign( tmp, &vl );
-            break;
-
-        case SRC_T_EXPR:
-            rc = SrcExpr( curr, &vl );
-            break;
-
-        case SRC_T_OPEN:
-            LastRC = SrcOpen( curr, &vl, &fi, tmp );
-            if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_READ:
-            LastRC = SrcRead( curr, &fi, tmp, &vl );
-            if( LastRC != END_OF_FILE && LastRC != ERR_NO_ERR ) {
-                rc = LastRC;
-            }
-            break;
-
-        case SRC_T_WRITE:
-            rc = SrcWrite( curr, &fi, tmp, &vl );
-            break;
-
-        case SRC_T_CLOSE:
-            rc = SrcClose( curr, &vl, &fi, tmp );
-            break;
-
-        default:
-#ifdef __WIN__
-            {
-                if( RunWindowsCommand( tmp, &LastRC, &vl ) ) {
-                    rc = LastRC;
-                    break;
+        } else {
+            switch( curr->token ) {
+            case SRC_T_ATOMIC:
+                if( atomic == NULL ) {
+                    atomic = UndoStack;
+                    StartUndoGroup( atomic );
                 }
+                break;
+            case SRC_T_IF:
+                rc = SrcIf( &curr, &vl );
+                break;
+            case SRC_T_GOTO:
+                rc = SrcGoTo( &curr, tmp, lab );
+                break;
+            case SRC_T_LABEL:
+                break;
+            case SRC_T_GET:
+                SrcGet( tmp, &vl );
+                rc = ERR_NO_ERR;
+                break;
+            case SRC_T_INPUT:
+                LastRC = SrcInput( tmp, &vl );
+                if( LastRC != NO_VALUE_ENTERED && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+            case SRC_T_NEXTWORD:
+                rc = SrcNextWord( tmp, &vl );
+                break;
+            case SRC_T_ASSIGN:
+                rc = SrcAssign( tmp, &vl );
+                break;
+            case SRC_T_EXPR:
+                rc = SrcExpr( curr, &vl );
+                break;
+            case SRC_T_OPEN:
+                LastRC = SrcOpen( curr, &vl, &fi, tmp );
+                if( LastRC != ERR_FILE_NOT_FOUND && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+            case SRC_T_READ:
+                LastRC = SrcRead( curr, &fi, tmp, &vl );
+                if( LastRC != END_OF_FILE && LastRC != ERR_NO_ERR ) {
+                    rc = LastRC;
+                }
+                break;
+            case SRC_T_WRITE:
+                rc = SrcWrite( curr, &fi, tmp, &vl );
+                break;
+            case SRC_T_CLOSE:
+                rc = SrcClose( curr, &vl, &fi, tmp );
+                break;
+            default:
+    #ifdef __WIN__
+                {
+                    if( RunWindowsCommand( tmp, &LastRC, &vl ) ) {
+                        rc = LastRC;
+                        break;
+                    }
+                }
+    #endif
+                if( curr->hasvar ) {
+                    tmp = Expand( buff, tmp, &vl );
+                }
+                LastRC = RunCommandLine( tmp );
+                if( LastRC == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
+                    LastRC = LastError;
+                }
+                break;
             }
-#endif
-            if( curr->hasvar ) {
-                Expand( tmp, &vl );
-            }
-            LastRC = RunCommandLine( tmp );
-            if( LastRC == DO_NOT_CLEAR_MESSAGE_WINDOW ) {
-                LastRC = LastError;
-            }
-            break;
         }
     }
     if( EditFlags.Appending ) {
         AppendAnother( "." );
     }
     if( curr != NULL ) {
-        *ln = curr->line;
+        *sline = curr->sline;
     } else {
-        *ln = CurrentSrcLine;
+        *sline = CurrentSrcLine;
         rc = ERR_NO_ERR;
     }
     EditFlags.WatchForBreak = wfb;
@@ -300,7 +300,7 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
 /*
  * initSource - initialize language variables
  */
-static vi_rc initSource( vlist *vl, char *data )
+static vi_rc initSource( vlist *vl, const char *data )
 {
     int         j;
     char        tmp[MAX_SRC_LINE];
@@ -310,8 +310,8 @@ static vi_rc initSource( vlist *vl, char *data )
     /*
      * break up command line parms
      */
-    all[0] = 0;
-    for( j = 1; GetStringWithPossibleQuote( data, tmp ) == ERR_NO_ERR; ++j ) {
+    all[0] = '\0';
+    for( j = 1; GetStringWithPossibleQuote( &data, tmp ) == ERR_NO_ERR; ++j ) {
         sprintf( name, "%d", j );
         VarAddStr( name, tmp, vl );
         StrMerge( 2, all, tmp, SingleBlank );
@@ -327,7 +327,6 @@ static vi_rc initSource( vlist *vl, char *data )
  */
 static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 {
-    sfile       *curr, *tmp;
     info        *cinfo;
 
     if( lab != NULL ) {
@@ -337,15 +336,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
 
     VarListDelete( vl );
 
-    curr = sf;
-    while( curr != NULL ) {
-        tmp = curr->next;
-        MemFree( curr->data );
-        MemFree( curr->arg1 );
-        MemFree( curr->arg2 );
-        MemFree( curr );
-        curr = tmp;
-    }
+    freeSource( sf );
 
     /*
      * make sure this undo stack is still around
@@ -378,7 +369,7 @@ void FileSPVAR( void )
     if( CurrentFile == NULL ) {
         VarAddGlobalStr( "F", "" );
         VarAddGlobalStr( "H", "" );
-        drive[0] = dir[0] = fname[0] = ext[0] = 0;
+        drive[0] = dir[0] = fname[0] = ext[0] = '\0';
     } else {
         VarAddGlobalStr( "F", CurrentFile->name );
         VarAddGlobalStr( "H", CurrentFile->home );
@@ -391,7 +382,7 @@ void FileSPVAR( void )
     strcat( path, dir );
     i = strlen( path ) - 1;
     if( path[i] == FILE_SEP && i > 0 ) {
-        path[i] = 0;
+        path[i] = '\0';
     }
     if( CurrentFile != NULL ) {
         PushDirectory( path );
@@ -399,7 +390,7 @@ void FileSPVAR( void )
         GetCWD2( path, FILENAME_MAX );
         PopDirectory();
     } else {
-        path[0] = 0;
+        path[0] = '\0';
     }
     if( path[strlen(path) - 1] == FILE_SEP ) {
         StrMerge( 2, path, fname, ext );
@@ -439,7 +430,7 @@ void SourceError( char *msg )
 /*
  * finiSourceErrFile - close up error file
  */
-static void finiSourceErrFile( char *fn )
+static void finiSourceErrFile( const char *fn )
 {
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        path[FILENAME_MAX];
@@ -465,20 +456,21 @@ static void finiSourceErrFile( char *fn )
 /*
  * barfScript - write a compiled script
  */
-static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
+static vi_rc barfScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        path[FILENAME_MAX];
-    char        tmp[MAX_SRC_LINE];
+    char        buff[MAX_SRC_LINE];
+    const char  *tmp;
     int         i, k;
     vi_rc       rc;
 
     /*
      * get compiled file name, and make error file
      */
-    if( vn[0] == 0 ) {
+    if( vn[0] == '\0' ) {
         _splitpath( fn, drive, directory, name, NULL );
         _makepath( path, drive, directory, name, "._vi" );
     } else {
@@ -489,23 +481,17 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
         return( ERR_FILE_OPEN );
     }
     MyFprintf( foo, "VBJ__\n" );
-    curr = sf;
-    *ln = 1;
+    *sline = 1;
 
     /*
      * process all lines
      */
-    for( ;; ) {
-
-        curr = curr->next;
-        if( curr == NULL ) {
-            break;
-        }
-
-        if( curr->data != NULL ) {
-            strcpy( tmp, curr->data );
-        } else {
-            tmp[0] = 0;
+    for( curr = sf; curr != NULL; curr = curr->next ) {
+        if( curr->token == SRC_T_NULL )
+            continue;
+        tmp = curr->data;
+        if( tmp == NULL ) {
+            tmp = "";
         }
 
         /*
@@ -522,7 +508,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
                     return( rc );
                 }
                 if( !EditFlags.CompileAssignments ) {
-                    strcpy( tmp, curr->data );
+                    tmp = curr->data;
                     EditFlags.CompileAssignments = true;
                 } else {
                     continue;
@@ -530,7 +516,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
             } else {
                 if( curr->token != SRC_T_IF ) {
                     if( curr->hasvar ) {
-                        Expand( tmp, vl );
+                        tmp = Expand( buff, tmp, vl );
                         curr->hasvar = false;
                         k = strlen( curr->data );
                         for( i = 0; i < k; i++ ) {
@@ -562,7 +548,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
                 fclose( foo );
                 return( rc );
             }
-            strcpy( tmp, WorkLine->data );
+            tmp = WorkLine->data;
             break;
         }
 
@@ -574,7 +560,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
             MyFprintf( foo, " %d", curr->branchcond );
         }
         MyFprintf( foo, "\n" );
-        *ln += 1;
+        *sline += 1;
 
     }
     fclose( foo );
@@ -588,12 +574,12 @@ static resident *resHead = NULL;
 /*
  * addResidentScript - add a script to the resident list
  */
-static void addResidentScript( char *fn, sfile *sf, labels *lab )
+static void addResidentScript( const char *fn, sfile *sf, labels *lab )
 {
     resident    *tmp;
 
     tmp = MemAlloc( sizeof( resident ) );
-    AddString( &tmp->fn, fn );
+    tmp->fn = DupString( fn );
     tmp->sf = sf;
     memcpy( &tmp->lab, lab, sizeof( labels ) );
     tmp->scriptcomp = EditFlags.ScriptIsCompiled;
@@ -609,27 +595,14 @@ static void addResidentScript( char *fn, sfile *sf, labels *lab )
 void DeleteResidentScripts( void )
 {
     resident    *tmp, *tmp_next;
-    sfile       *curr, *next;
 
-    for( tmp = resHead; tmp != NULL; ) {
+    for( tmp = resHead; tmp != NULL; tmp = tmp_next ) {
         tmp_next = tmp->next;
-
+        freeSource( tmp->sf );
         MemFreeList( tmp->lab.cnt, tmp->lab.name );
         MemFree( tmp->lab.pos );
-
-        curr = tmp->sf;
-        while( curr != NULL ) {
-            next = curr->next;
-            MemFree( curr->data );
-            MemFree( curr->arg1 );
-            MemFree( curr->arg2 );
-            MemFree( curr );
-            curr = next;
-        }
         MemFree( tmp->fn );
         MemFree( tmp );
-
-        tmp = tmp_next;
     }
 
 } /* DeleteResidentScripts */
@@ -638,15 +611,14 @@ void DeleteResidentScripts( void )
 /*
  * residentScript - check for a resident script
  */
-static resident *residentScript( char *fn )
+static resident *residentScript( const char *fn )
 {
-    resident    *tmp = resHead;
+    resident    *tmp;
 
-    while( tmp != NULL ) {
+    for( tmp = resHead; tmp != NULL; tmp = tmp->next ) {
         if( !stricmp( fn, tmp->fn ) ) {
             break;
         }
-        tmp = tmp->next;
     }
     return( tmp );
 

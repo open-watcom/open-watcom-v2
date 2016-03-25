@@ -36,9 +36,9 @@
 static bool covered( SAREA area, UI_WINDOW *wptr )
 /************************************************/
 {
-    register    int                     i;
-    register    bool                    flag;
-    auto        SAREA                   areas[ 5 ];
+    int             i;
+    bool            flag;
+    SAREA           areas[ 5 ];
 
     dividearea( area, wptr->area, areas );
     flag = ( areas[ 0 ].height > 0 );
@@ -121,10 +121,10 @@ static void removewindow( UI_WINDOW *wptr )
 bool intern openwindow( UI_WINDOW *wptr )
 /***************************************/
 {
-    wptr->dirty = wptr->area;
+    wptr->dirty_area = wptr->area;
     insert( wptr, wptr->priority );
     if( wptr->prev == NULL ) {
-        return( FALSE );
+        return( false );
     } else {
         return( covered( wptr->area, wptr->prev ) );
     }
@@ -146,7 +146,7 @@ void intern movewindow( UI_WINDOW *wptr, ORD row, ORD col )
     }
     wptr->area.row = row;
     wptr->area.col = col;
-    wptr->dirty = wptr->area;
+    wptr->dirty_area = wptr->area;
 }
 
 
@@ -156,7 +156,7 @@ void intern frontwindow( UI_WINDOW *wptr )
     if( wptr->prev != NULL ) {
         if( wptr->prev->priority >= wptr->priority ) {
             removewindow( wptr );
-            wptr->dirty = wptr->area;
+            wptr->dirty_area = wptr->area;
             /* we really only need to dirty what is covered */
             /* using a similar algorithm to dirtynext */
             insert( wptr, wptr->priority );

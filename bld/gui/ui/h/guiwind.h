@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +139,7 @@ struct gui_window {
     MENUITEM            *menu;          // pulldown menu under closer
     VBARMENU            *vbarmenu;      // top level menu
     int                 min_pos;        // unused
-    toolbarinfo         *toolbar;       // pointer to toolbar, if exists
+    toolbarinfo         *tbinfo;        // pointer to toolbar, if exists
     statusinfo          *status;        // pointer to status window, if exists
     hintinfo            hint;           // hint text
     char                background;     // character to use to draw background

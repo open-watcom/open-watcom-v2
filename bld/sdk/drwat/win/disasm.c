@@ -285,12 +285,11 @@ long DrWatGetDataLong( void )
     return( UNREADABLE );
 } /* DrWatGetDataLong */
 
-char DrWatEndOfSegment( void )
+bool DrWatEndOfSegment( void )
 {
     char        byte;
 
-    return( !ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset,
-                                &byte, sizeof( char ), NULL ) );
+    return( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte, sizeof( char ), NULL ) == 0 );
 } /* DrWatEndOfSegment */
 
 void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod ) {
@@ -394,7 +393,7 @@ long DrWatGetDataLong( void )
 
 } /* DrWatGetDataLong */
 
-char DrWatEndOfSegment( void )
+bool DrWatEndOfSegment( void )
 {
 
     if( !IsValidSelector( currentAddr.seg ) ) {

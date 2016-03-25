@@ -35,6 +35,8 @@
 #include "dbgio.h"
 #include "trpthrd.h"
 #include "trapglbl.h"
+#include "trpld.h"
+#include "remthrd.h"
 
 #define DEFAULT_TID     1
 
@@ -65,7 +67,7 @@ dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )
     return( ret.thread );
 }
 
-dtid_t RemoteSetThreadWithErr( dtid_t tid, error_idx *erridx )
+dtid_t RemoteSetThreadWithErr( dtid_t tid, error_handle *errh )
 {
     thread_set_req      acc;
     thread_set_ret      ret;
@@ -76,7 +78,7 @@ dtid_t RemoteSetThreadWithErr( dtid_t tid, error_idx *erridx )
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
-        *erridx = StashErrCode( ret.err, OP_REMOTE );
+        *errh = StashErrCode( ret.err, OP_REMOTE );
         return( 0 );
     }
     return( ret.old_thread );

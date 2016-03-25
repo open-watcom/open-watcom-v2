@@ -31,41 +31,48 @@
 
 
 #include "vi.h"
-#include "rtns.h"
-#include "source.h"
 
 /*
  * SrcNextWord - get next word in a variable, putting result into another
  *               variable
  */
-vi_rc SrcNextWord( char *data, vlist *vl )
+vi_rc SrcNextWord( const char *data, vlist *vl )
 {
     char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
+    char        *ptr;
 
     /*
      * get syntax :
      * NEXTWORD src res
      */
-    if( NextWord1( data, v1 ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( v1, vl ) ) {
+    if( !VarName( v1, str, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( NextWord1( data, v2 ) <= 0 ) {
+    data = GetNextWord1( data, str );
+    if( *str == '\0' ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
-    if( !VarName( v2, vl ) ) {
+    if( !VarName( v2, str, vl ) ) {
         return( ERR_SRC_INVALID_NEXTWORD );
     }
     v = VarFind( v1, vl );
-    RemoveLeadingSpaces( v->value );
-    if( v->value[0] == '"' ) {
-        NextWord( v->value, str, "\"" );
-        EliminateFirstN( v->value, 1 );
+    data = SkipLeadingSpaces( v->value );
+    if( *data == '"' ) {
+        data = GetNextWord( data, str, SingleQuote );
+        if( *data == '"' ) {
+            ++data;
+        }
     } else {
-        NextWord1( v->value, str );
+        data = GetNextWord1( data, str );
+    }
+    // remove next word from src variable
+    for( ptr = v->value; (*ptr = *data) != '\0'; ++ptr ) {
+        ++data;
     }
     VarAddStr( v2, str, vl );
     return( ERR_NO_ERR );

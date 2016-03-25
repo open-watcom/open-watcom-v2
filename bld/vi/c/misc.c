@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +39,11 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
   #include <process.h>
 #endif
-#include "source.h"
 #include "posix.h"
 #include "win.h"
+#ifdef __WIN__
+  #include "color.h"
+#endif
 
 #include "clibext.h"
 
@@ -51,7 +54,7 @@ static void setPrompt( void )
 {
     char        *tmp;
 
-    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
             oldPrompt = MemAlloc( strlen( tmp ) + 1 );
@@ -65,7 +68,7 @@ static void setPrompt( void )
 
 static void restorePrompt( void )
 {
-    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
+    if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
         if( oldPrompt != NULL ) {
             MemFree( oldPrompt );
@@ -124,7 +127,7 @@ static void postSpawn( long rc )
 // ifdef __NT__
 #include "batcher.h"
 #include <conio.h>
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     int                 len;
     unsigned long       stat;
@@ -159,7 +162,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
 #endif
 
 #ifdef __WIN__
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     file_in = file_in;
     file_out = file_out;
@@ -171,7 +174,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
 }
 #else
 #ifndef __NT__
-static int doRedirect( int original, char * filename, int mode )
+static int doRedirect( int original, const char *filename, int mode )
 {
     int fh;
 
@@ -189,7 +192,7 @@ static int doRedirect( int original, char * filename, int mode )
 #define MAX_ARGS        128
 
 #ifdef __NT__
-static long doExec( char *std_in, char *std_out, const char *cmd )
+static long doExec( const char *std_in, const char *std_out, const char *cmd )
 {
     HANDLE      cp;
     long        st;
@@ -244,7 +247,7 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
     return( st );
 }
 #else
-static long doExec( char *std_in, char *std_out, const char *cmd )
+static long doExec( const char *std_in, const char *std_out, const char *cmd )
 {
     long        st;
     int         save_in, new_in;
@@ -288,17 +291,18 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
     strcpy( buffer, cmd );
     s = buffer;
     for( i = 0; i < MAX_ARGS; i++ ) {
-        while( isspace( *s ) ) s++;
-        if( *s == 0 ) {
+        while( isspace( *s ) )
+            s++;
+        if( *s == '\0' ) {
             argv[i] = NULL;
             break;
         }
         argv[i] = s;
-        while( *s && !isspace( *s ) ) {
+        while( *s != '\0' && !isspace( *s ) ) {
             s++;
         }
-        if( *s ) {
-            *s++ = 0;
+        if( *s != '\0' ) {
+            *s++ = '\0';
         } else {
             argv[i + 1] = NULL;
             break;
@@ -338,7 +342,7 @@ static long doExec( char *std_in, char *std_out, const char *cmd )
 #endif
 
 #if defined( __DOS__ )
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     if( file_in != NULL || file_out != NULL ) {
         SystemRC = doExec( file_in, file_out, cmd );
@@ -350,7 +354,7 @@ long ExecCmd( char *file_in, char *file_out, const char *cmd )
     return( SystemRC );
 }
 #else
-long ExecCmd( char *file_in, char *file_out, const char *cmd )
+long ExecCmd( const char *file_in, const char *file_out, const char *cmd )
 {
     return( doExec( file_in, file_out, cmd ) );
 }
@@ -382,7 +386,7 @@ bool PromptFilesForSave( void )
     info        *cinfo;
     int         i;
     int         num = 0;
-    HWND        hwnd_old = 0;
+    HWND        hwnd_old = NO_WINDOW;
 
     if( !EditFlags.SaveOnBuild ) {
         return( true );
@@ -398,16 +402,16 @@ bool PromptFilesForSave( void )
             CurrentFile->modified ) {
 
             /* we have a modified file, so bring to the front */
-            BringWindowToTop( Root );
-            hwnd_old = SetFocus( Root );
+            BringWindowToTop( root_window_id );
+            hwnd_old = SetFocus( root_window_id );
 
             // file modified -- so prompt for save
             FilePromptForSaveChanges( CurrentFile );
         }
         RotateFileForward();
     }
-    if( hwnd_old != NULL ) {
-        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    if( !BAD_ID( hwnd_old ) ) {
+        SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
 #endif
@@ -420,35 +424,35 @@ bool PromptFilesForSave( void )
  */
 bool PromptThisFileForSave( const char *filename )
 {
-#ifndef __WIN__
-    filename = filename;
-#else
+#ifdef __WIN__
     info        *cinfo;
-    HWND        hwnd_old = 0;
+    HWND        hwnd_old = NO_WINDOW;
 
     while( isspace( *filename ) ) {
         filename++;
     }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
+        if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
                 cinfo->CurrentFile->modified ) {
 
                 BringUpFile( cinfo, true );
 
                 /* we have a modified file, so bring to the front */
-                BringWindowToTop( Root );
-                hwnd_old = SetFocus( Root );
+                BringWindowToTop( root_window_id );
+                hwnd_old = SetFocus( root_window_id );
 
                 // file modified -- so prompt for save
                 FilePromptForSaveChanges( CurrentFile );
             }
         }
     }
-    if( hwnd_old != NULL ) {
-        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    if( !BAD_ID( hwnd_old ) ) {
+        SetWindowPos( root_window_id, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
+#else
+    filename = filename;
 #endif
     return( true );
 
@@ -465,7 +469,7 @@ bool QueryFile( const char *filename )
         filename++;
     }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
+        if( SameFile( cinfo->CurrentFile->name, filename ) ) {
             return( true );
         }
     }
@@ -535,7 +539,7 @@ void ExitWithVerify( void )
     }
     if( modified ) {
 #ifdef __WIN__
-        if( MessageBox( Root, "Files are modified, really exit?",
+        if( MessageBox( root_window_id, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
             BringUpFile( InfoHead, true );
             EditFlags.QuitAtLastFileExit = true;
@@ -615,7 +619,7 @@ void ExitWithVerify( void )
     }
     if( modified ) {
 #ifdef __WIN__
-        i = MessageBox( Root, "Files are modified, really exit?",
+        i = MessageBox( root_window_id, "Files are modified, really exit?",
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
             QuitEditor( ERR_NO_ERR );
@@ -662,6 +666,7 @@ vi_rc EnterHexKey( void )
     int         i;
     char        st[MAX_STR], val;
     vi_rc       rc;
+    const char  *ptr;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
@@ -671,8 +676,7 @@ vi_rc EnterHexKey( void )
         return( ERR_LINE_FULL );
     }
 
-    rc = PromptForString( "Enter the number of char to insert:", st,
-                          sizeof( st ) - 1, NULL );
+    rc = PromptForString( "Enter the number of char to insert:", st, sizeof( st ) - 1, NULL );
     if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );
@@ -683,9 +687,9 @@ vi_rc EnterHexKey( void )
     /*
      * get value
      */
-    RemoveLeadingSpaces( st );
-    val = (char) strtol( st, NULL, 0 );
-    if( val == 0 ) {
+    ptr = SkipLeadingSpaces( st );
+    val = (char)strtol( ptr, NULL, 0 );
+    if( val == '\0' ) {
         return( ERR_INVALID_VALUE );
     }
 
@@ -736,12 +740,11 @@ char *StrMerge( int cnt, char *str, ... )
     char        *n;
 
     va_start( arg, str );
-    while( cnt > 0 ) {
+    for( ; cnt > 0; --cnt ) {
         n = va_arg( arg, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
-        cnt--;
     }
     va_end( arg );
     return( str );
@@ -896,7 +899,7 @@ vi_rc ToggleFontbar( void )
 bool GenericQueryBool( char *str )
 {
 #ifdef __WIN__
-    return( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK );
+    return( MessageBox( root_window_id, str, EditorName, MB_OKCANCEL ) == IDOK );
 #else
     #define BUFLEN 10
     char buffer[BUFLEN];

@@ -34,7 +34,7 @@
 #if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) )
     #define _NEXTMBTOK          (__THREADDATAPTR->__nextmbtokP)
 #else
-    static char                 *nextmbtok = NULL;
+    static unsigned char        *nextmbtok = NULL;
 
     #define _NEXTMBTOK          nextmbtok
 #endif

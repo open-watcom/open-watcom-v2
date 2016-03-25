@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,13 +142,12 @@ typedef struct __LINFOSEG {      /* lis */
 
 #endif
 
-char        *StrCopy( const char *, char * );
-long        OpenFile( char *, USHORT, int );
-void        RestoreScreen( void );
-long        TryPath( const char *, char *, const char * );
-long        FindFilePath( const char *, char *, const char * );
-char        *AddDriveAndPath( char *, char * );
-void        MergeArgvArray( char *, char *, unsigned );
-long        TaskOpenFile( char *name, int mode, int flags );
-HFILE       TaskDupFile( HFILE old, HFILE new );
-long        TaskCloseFile( HFILE hdl );
+char            *StrCopy( const char *, char * );
+long            OpenFile( char *, USHORT, int );
+void            RestoreScreen( void );
+unsigned long   FindProgFile( const char *, char *, const char * );
+char            *AddDriveAndPath( char *, char * );
+void            MergeArgvArray( char *, char *, unsigned );
+long            TaskOpenFile( char *name, int mode, int flags );
+HFILE           TaskDupFile( HFILE old, HFILE new );
+long            TaskCloseFile( HFILE hdl );

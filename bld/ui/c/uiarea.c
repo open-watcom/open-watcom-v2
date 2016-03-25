@@ -85,13 +85,13 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
         switch( i ) {
         case 0:
             row = arow;
-            if( row > crow )
+            if( row < crow )
                 row = crow;
             maxrow = amaxrow;
             if( maxrow > cmaxrow )
                 maxrow = cmaxrow;
             col = acol;
-            if( col > ccol )
+            if( col < ccol )
                 col = ccol;
             maxcol = amaxcol;
             if( maxcol > cmaxcol )
@@ -113,23 +113,23 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
             if( maxrow > cmaxrow )
                 maxrow = cmaxrow;
             col = acol;
-            if( col > cmaxcol + 1 )
+            if( col < cmaxcol + 1 )
                 col = cmaxcol + 1;
             maxcol = amaxcol;
             break;
         case 3:
             row = arow;
-            if( row > cmaxrow + 1 )
+            if( row < cmaxrow + 1 )
                 row = cmaxrow + 1;
             maxrow = amaxrow;
             col = acol;
-            if( col > ccol )
+            if( col < ccol )
                 col = ccol;
             maxcol = amaxcol;
             break;
         case 4:
             row = arow;
-            if( row > crow )
+            if( row < crow )
                 row = crow;
             maxrow = amaxrow;
             col = acol;

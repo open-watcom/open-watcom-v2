@@ -41,10 +41,11 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "envlkup.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
 
 static char             *cmdStart;
 static volatile bool    BrkPending;
@@ -119,7 +120,7 @@ long _fork( const char *cmd, size_t len )
 {
     char        *dst;
     char        *args;
-    unsigned    cmd_len;
+    size_t      cmd_len;
     RESULTCODES res;
     USHORT      rc;
     HFILE       savestdin;
@@ -127,10 +128,11 @@ long _fork( const char *cmd, size_t len )
     HFILE       console;
     HFILE       new;
     USHORT      act;
-    char        buff[ 256 ];
+    char        buff[256];
 
     cmd_len = EnvLkup( "COMSPEC", buff, sizeof( buff ) );
-    if( cmd_len == 0 ) return( ERROR_FILE_NOT_FOUND );
+    if( cmd_len == 0 )
+        return( ERROR_FILE_NOT_FOUND );
     while( len != 0 && *cmd == ' ' ) {
         ++cmd;
         --len;
@@ -141,9 +143,9 @@ long _fork( const char *cmd, size_t len )
         dst = StrCopy( "/C ", dst );
         _fmemcpy( dst, cmd, len );
         dst += len;
-        *dst++ = '\0';
+        *dst++ = NULLCHAR;
     }
-    *dst = '\0';
+    *dst = NULLCHAR;
 
     savestdin = 0xffff;
     savestdout = 0xffff;
@@ -182,8 +184,4 @@ bool TBreak( void )
     ret = BrkPending;
     BrkPending = false;
     return( ret );
-}
-
-void SysSetMemLimit( void )
-{
 }

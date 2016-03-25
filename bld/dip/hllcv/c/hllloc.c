@@ -64,12 +64,12 @@ void hllLocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
-    unsigned            num;
+    byte                num;
     unsigned long       bits;
 
     bits = sbits;
     if( sbits < 0 ) {
-        bits = -bits;
+        bits = -sbits;
         add = (bits + 7) / 8;
         if( ll->e[0].type == LT_ADDR ) {
             ll->e[0].u.addr.mach.offset -= add;
@@ -94,7 +94,8 @@ void hllLocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {
@@ -104,18 +105,17 @@ void hllLocationAdd( location_list *ll, long sbits )
 
 void hllLocationTrunc( location_list *ll, unsigned bits )
 {
-    unsigned    i;
+    byte    i;
 
-    if( bits == 0 ) return;
-    i = 0;
-    for( ;; ) {
-        if( i >= ll->num ) return;
-        if( ll->e[i].bit_length == 0 ) break;
-        if( ll->e[i].bit_length > bits ) break;
-        bits -= ll->e[i].bit_length;
-        ++i;
+    if( bits != 0 ) {
+        for( i = 0; i < ll->num; ++i ) {
+            if( ll->e[i].bit_length == 0  || ll->e[i].bit_length > bits ) {
+                ll->e[i].bit_length = (word)bits;
+                break;
+            }
+            bits -= ll->e[i].bit_length;
+        }
     }
-    ll->e[i].bit_length = bits;
 }
 
 typedef struct {
@@ -193,15 +193,15 @@ dip_status hllLocationManyReg( imp_image_handle *ii, unsigned count,
                                const unsigned_8 *reg_list,
                                location_context *lc, location_list *ll )
 {
-    int                 i;
-    int                 j;
+    unsigned            i;
+    byte                j;
     unsigned            idx;
     const reg_entry     *reg;
     location_list       reg_ll;
     dip_status          ds;
 
     j = 0;
-    for( i = count-1; i >= 0; --i ) {
+    for( i = count; i-- > 0; ) {
         idx = reg_list[i];
         switch( ii->mad ) {
         case MAD_X86:

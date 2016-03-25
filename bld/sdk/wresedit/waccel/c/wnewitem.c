@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
@@ -153,22 +153,22 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, box_pos po
     keytext = NULL;
     if( ok ) {
         if( entry->is32bit ) {
-            key = entry->entry32.Ascii;
-            flags = entry->entry32.Flags;
-            id = entry->entry32.Id;
+            key = entry->u.entry32.Ascii;
+            flags = entry->u.entry32.Flags;
+            id = entry->u.entry32.Id;
         } else {
-            key = entry->entry.Ascii;
-            flags = entry->entry.Flags;
-            id = (uint_16)entry->entry.Id;
+            key = entry->u.entry.Ascii;
+            flags = entry->u.entry.Flags;
+            id = (uint_16)entry->u.entry.Id;
         }
         keytext = WGetKeyText( key, flags );
         ok = (keytext != NULL);
         if( !ok ) {
             WSetStatusByID( einfo->wsb, -1, W_INVALIDACCEL );
             memcpy( entry, &DefaultEntry, sizeof( WAccelEntry ) );
-            key = entry->entry.Ascii;
-            flags = entry->entry.Flags;
-            id = (uint_16)entry->entry.Id;
+            key = entry->u.entry.Ascii;
+            flags = entry->u.entry.Flags;
+            id = (uint_16)entry->u.entry.Id;
             keytext = WGetKeyText( key, flags );
             ok = (keytext != NULL);
         }
@@ -218,11 +218,11 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
         new->is32bit = einfo->tbl->is32bit;
         if( !WGetEditWindowKeyEntry( einfo, new, FALSE ) ) {
             if( new->is32bit ) {
-                new->entry32.Ascii = 'A';
-                new->entry32.Id = DEFAULT_ACC_ID;
+                new->u.entry32.Ascii = 'A';
+                new->u.entry32.Id = DEFAULT_ACC_ID;
             } else {
-                new->entry.Ascii = 'A';
-                new->entry.Id = DEFAULT_ACC_ID;
+                new->u.entry.Ascii = 'A';
+                new->u.entry.Id = DEFAULT_ACC_ID;
             }
         }
     }

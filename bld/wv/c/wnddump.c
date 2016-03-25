@@ -37,28 +37,26 @@
 #include "dbgadget.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgwdlg.h"
+#include "dlgfile.h"
+#include "wndsys.h"
+#include "wnddump.h"
 
 
-extern char             *GetDmpName( void );
-extern bool             WndDlgTxt( const char *buff );
+typedef void WRITERTN( file_handle, const char * );
 
-extern gui_resource     WndGadgetArray[];
-
-
-typedef void WRITERTN( handle, const char * );
-
-static void WriteFile( handle file, const char *buff )
+static void WriteFile( file_handle fh, const char *buff )
 {
-    WriteText( file, buff, strlen( buff ) );
+    WriteText( fh, buff, strlen( buff ) );
 }
 
-static void WriteLog( handle dummy, const char *buff )
+static void WriteLog( file_handle fh, const char *buff )
 {
-    dummy = dummy;
+    fh = fh;
     WndDlgTxt( buff );
 }
 
-static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
+static void DoWndDump( a_window *wnd, WRITERTN *rtn, file_handle fh )
 {
     int                 row;
     int                 piece;
@@ -76,7 +74,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     font = WndGetFontInfo( wnd );
     gadget_len = MaxGadgetLength;
     MaxGadgetLength = ( strlen( WndGadgetArray[0].chars ) + 1 ) * WndAvgCharX( wnd );
-    WndSetSysFont( wnd, TRUE );
+    WndSetSysFont( wnd, true );
     indent_per_char = WndAvgCharX( wnd );
 //    len = WndGetTitle( wnd, buff, TXT_LEN );
     WndGetTitle( wnd, buff, TXT_LEN );
@@ -92,8 +90,8 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     for( i = 0; i < 7; ++i ) {
         *p++ = '=';
     }
-    *p = '\0';
-    rtn( file, TxtBuff );
+    *p = NULLCHAR;
+    rtn( fh, TxtBuff );
     for( row = -WndTitleSize( wnd );; ++row ) {
         p = buff;
         chars_written = 0;
@@ -114,7 +112,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
         }
         if( piece == 0 )
             break;
-        rtn( file, buff );
+        rtn( fh, buff );
     }
     MaxGadgetLength = gadget_len;
     if( font != NULL )
@@ -125,16 +123,16 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
 
 static void DoWndDumpFile( const char *name, a_window *wnd )
 {
-    handle              file;
+    file_handle     fh;
 
     if( wnd == NULL )
         return;
-    file = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
-    if( file == NIL_HANDLE ) {
+    fh = FileOpen( name, OP_WRITE | OP_CREATE | OP_TRUNC );
+    if( fh == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), name );
     }
-    DoWndDump( wnd, WriteFile, file );
-    FileClose( file );
+    DoWndDump( wnd, WriteFile, fh );
+    FileClose( fh );
 }
 
 void WndDumpPrompt( a_window *wnd )
@@ -153,13 +151,13 @@ void WndDumpFile( a_window *wnd )
     size_t              len;
     bool                got;
 
-    got = ScanItem( TRUE, &start, &len );
+    got = ScanItem( true, &start, &len );
     ReqEOC();
     if( !got ) {
         WndDumpPrompt( wnd );
     } else {
         memcpy( TxtBuff, start, len );
-        TxtBuff[len] = '\0';
+        TxtBuff[len] = NULLCHAR;
         DoWndDumpFile( TxtBuff, wnd );
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,40 +33,33 @@
 
 #include "vi.h"
 #include "posix.h"
+#include "getspcmd.h"
 
 #include "clibext.h"
 
 
-extern char  _NEAR * _NEAR ExeExtensions[];
-extern int ExeExtensionCount;
-extern char _NEAR * _NEAR InternalCommands[];
-extern int InternalCommandCount;
-
 void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
-    char        orgcmd[MAX_INPUT_LINE];
-    char        cmd[MAX_INPUT_LINE];
+    char        *cmd;
     char        full[FILENAME_MAX];
     char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        ext[_MAX_EXT];
     int         i;
     bool        is_internal;
 
-    strcpy( cmd, cmdl );
-    strcpy( orgcmd, cmd );
-    NextWord1( cmd, full );
     is_internal = false;
-
+    cmdl = SkipLeadingSpaces( cmdl );
+    cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
     _splitpath( full, drive, directory, name, ext );
-    if( ext[0] != 0 ) {
-        if( drive[0] == 0 && directory[0] == 0 ) {
+    if( ext[0] != '\0' ) {
+        if( drive[0] == '\0' && directory[0] == '\0' ) {
             GetFromEnv( full, path );
         }
     } else {
-        if( drive[0] == 0 && directory[0] == 0 ) {
+        if( drive[0] == '\0' && directory[0] == '\0' ) {
             for( i = 0; i < InternalCommandCount; i++ ) {
-                if( !stricmp( full, InternalCommands[i] ) ) {
+                if( stricmp( full, InternalCommands[i] ) == 0 ) {
                     is_internal = true;
                     break;
                 }
@@ -75,21 +69,21 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
             for( i = 0; i < ExeExtensionCount; i++ ) {
                 _makepath( full, drive, directory, name, ExeExtensions[i] );
                 GetFromEnv( full, path );
-                if( path[0] != 0 ) {
+                if( path[0] != '\0' ) {
                     break;
                 }
             }
         }
     }
-    RemoveLeadingSpaces( cmd );
     _splitpath( full, drive, directory, name, ext );
-    if( !stricmp( ext, ExeExtensions[0] ) || is_internal ) {
+    if( stricmp( ext, ExeExtensions[0] ) == 0 || is_internal ) {
         strcpy( path, Comspec );
         strcpy( cmds->cmd, "/c " );
-        strcat( cmds->cmd, orgcmd );
+        strcat( cmds->cmd, cmdl );
     } else {
+        cmd = SkipLeadingSpaces( cmd );
         strcpy( cmds->cmd, cmd );
     }
     cmds->len = strlen( cmds->cmd );
-    cmds->cmd[cmds->len] = 0x0d;
+    cmds->cmd[cmds->len] = '\r';
 }

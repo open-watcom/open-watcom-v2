@@ -46,20 +46,15 @@
 #include "madinter.h"
 #include "dbgmad.h"
 #include "dbgutil.h"
+#include "dbgovl.h"
+#include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgset.h"
+#include "dbgdot.h"
 
 
 extern char             *Language;
-
-
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
-extern void             NewLang( const char * );
-extern void             AddrFloat( address * );
-extern void             AddrFix( address * );
-extern address          GetCodeDot( void );
-extern image_entry      *ImageEntry( mod_handle mh );
-extern image_entry      *ImagePrimary( void );
-
 
 unsigned DefaultSize( default_kind dk )
 {
@@ -89,39 +84,39 @@ unsigned DefaultSize( default_kind dk )
     return( info.size );
 }
 
-static char *DoMadLongConv( char *buff, unsigned buff_len, unsigned long value, int radix, int size )
+static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, mad_radix radix, int size )
 {
-    unsigned            old;
+    mad_radix           old_radix;
     mad_type_info       mti;
 
-    old = NewCurrRadix( radix );
+    old_radix = NewCurrRadix( radix );
     MADTypeInfoForHost( MTK_INTEGER, size, &mti );
     MADTypeToString( radix, &mti, &value, buff, &buff_len );
-    NewCurrRadix( old );
+    NewCurrRadix( old_radix );
     return( buff + buff_len );
 }
 
-char *CnvULongHex( unsigned long value, char *buff, unsigned buff_len )
+char *CnvULongHex( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, 16, sizeof( value ) ) );
 }
 
-char    *CnvLongDec( long value, char *buff, unsigned buff_len )
+char    *CnvLongDec( long value, char *buff, size_t buff_len )
 {
-    return( DoMadLongConv( buff, buff_len, value, 10, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, 10, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
-char    *CnvULongDec( unsigned long value, char *buff, unsigned buff_len )
+char    *CnvULongDec( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, 10, sizeof( value ) ) );
 }
 
-char    *CnvLong( long value, char *buff, unsigned buff_len )
+char    *CnvLong( long value, char *buff, size_t buff_len )
 {
-    return( DoMadLongConv( buff, buff_len, value, CurrRadix, -(int)sizeof( value ) ) );
+    return( DoMadLongConv( buff, buff_len, value, CurrRadix, SIGNTYPE_SIZE( sizeof( value ) ) ) );
 }
 
-char    *CnvULong( unsigned long value, char *buff, unsigned buff_len )
+char    *CnvULong( unsigned long value, char *buff, size_t buff_len )
 {
     return( DoMadLongConv( buff, buff_len, value, CurrRadix, sizeof( value ) ) );
 }
@@ -144,7 +139,7 @@ void CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti )
 }
 #endif
 
-char *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buff_len )
+char *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len )
 {
     mad_type_info       mti;
     item_mach           item;
@@ -158,21 +153,22 @@ char *AddrTypeToString( address *a, mad_type_handle th, char *buff, unsigned buf
     return( buff + buff_len );
 }
 
-char *AddrToIOString( address *a, char *buff, unsigned buff_len )
+char *AddrToIOString( address *a, char *buff, size_t buff_len )
 {
     return( AddrTypeToString( a, MADTypeDefault( MAS_IO | MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
-char *AddrToString( address *a, mad_address_format af, char *buff, unsigned buff_len )
+char *AddrToString( address *a, mad_address_format af, char *buff, size_t buff_len )
 {
     return( AddrTypeToString( a, MADTypeDefault( MTK_ADDRESS, af, &DbgRegs->mr, a ), buff, buff_len ) );
 }
 
-unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
+size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
 {
     mod_handle  mod;
-    unsigned    name_len;
-    unsigned    len,rc;
+    size_t      name_len;
+    size_t      len;
+    size_t      rc;
     sym_info    sinfo;
 
     SymInfo( sh, NULL, &sinfo );
@@ -201,7 +197,7 @@ unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
         if( name != NULL ) {
             name += name_len;
             *name++ = '`';
-            *name = '\0';
+            *name = NULLCHAR;
             max -= name_len + 1;
         }
         len++;
@@ -220,10 +216,10 @@ unsigned QualifiedSymName( sym_handle *sh, char *name, unsigned max, bool uniq )
  */
 
 char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
-                        char *p, unsigned max )
+                        char *p, size_t max )
 {
     char                off_buff[40];
-    unsigned            str_width, name_width, off_width;
+    size_t              str_width, name_width, off_width;
     addr_off            sym_offset;
     search_result       sr;
     location_list       ll;
@@ -236,7 +232,8 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     case SR_NONE:
         return( NULL );
     case SR_CLOSEST:
-        if( cao == CAO_NO_PLUS ) return( NULL );
+        if( cao == CAO_NO_PLUS )
+            return( NULL );
         SymLocation( sym, NULL, &ll );
         sym_offset = addr.mach.offset - ll.e[0].u.addr.mach.offset;
         if( cao == CAO_NORMAL_PLUS ) {
@@ -250,9 +247,11 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     }
     name_width = QualifiedSymName( sym, NULL, 0, uniq );
     str_width = name_width + off_width;
-    if( max == 0 ) max = str_width;
+    if( max == 0 )
+        max = str_width;
     if( str_width > max ) { /* won't fit */
-        if( off_width != 0 ) return( NULL );
+        if( off_width != 0 )
+            return( NULL );
         QualifiedSymName( sym, p, max - 1, uniq );
         p += max - 1;
         *p++ = '>';
@@ -271,11 +270,11 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     return( p );
 }
 
-char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
+char *CnvNearestAddr( address addr, char *buff, size_t buff_len )
 {
     char        *p;
 
-    p = CnvAddr( addr, CAO_OMIT_PLUS, FALSE, buff, buff_len );
+    p = CnvAddr( addr, CAO_OMIT_PLUS, false, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( &addr, MAF_FULL, buff, buff_len );
     }
@@ -286,11 +285,11 @@ char *CnvNearestAddr( address addr, char *buff, unsigned buff_len )
  * StrAddr --
  */
 
-char *StrAddr( address *addr, char *buff, unsigned buff_len )
+char *StrAddr( address *addr, char *buff, size_t buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, FALSE, buff, buff_len );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, false, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
@@ -298,11 +297,11 @@ char *StrAddr( address *addr, char *buff, unsigned buff_len )
 }
 
 
-char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
+char *UniqStrAddr( address *addr, char *buff, size_t buff_len )
 {
     char        *p;
 
-    p = CnvAddr( *addr, CAO_NORMAL_PLUS, TRUE, buff, buff_len );
+    p = CnvAddr( *addr, CAO_NORMAL_PLUS, true, buff, buff_len );
     if( p == NULL ) {
         p = AddrToString( addr, MAF_FULL, buff, buff_len );
     }
@@ -314,7 +313,7 @@ char *UniqStrAddr( address *addr, char *buff, unsigned buff_len )
  * LineAddr
  */
 
-char *LineAddr( address  *addr, char *buff, unsigned buff_len )
+char *LineAddr( address  *addr, char *buff, size_t buff_len )
 {
     mod_handle          mod;
     char                *end;
@@ -373,7 +372,7 @@ static char *Rtrm( char *p )
         --p;
     } while( *p == ' ' && p >= op );
     ++p;
-    *p = '\0';
+    *p = NULLCHAR;
     return( p );
 }
 
@@ -387,7 +386,7 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 
     cmds = DbgMustAlloc( sizeof( cmd_list ) + len );
     cmds->use = 1;
-    cmds->buff[ len ] = NULLCHAR;
+    cmds->buff[len] = NULLCHAR;
     memcpy( cmds->buff, start, len );
     return( cmds );
 }
@@ -399,16 +398,20 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 
 void FreeCmdList( cmd_list *cmds )
 {
-    if( cmds == NULL ) return;
+    if( cmds == NULL )
+        return;
     cmds->use--;
-    if( cmds->use == 0 ) _Free( cmds );
+    if( cmds->use == 0 ) {
+        _Free( cmds );
+    }
 }
 
 /* Lock List -- increment use count */
 
 void LockCmdList( cmd_list *cmds )
 {
-    if( cmds == NULL ) return;
+    if( cmds == NULL )
+        return;
     cmds->use++;
 }
 
@@ -454,10 +457,11 @@ input_type SetInpStack( input_type new )
 void PopInpStack( void )
 {
     input_stack *old;
-    char        buff[ TXT_LEN ];
+    char        buff[TXT_LEN];
 
     old = InpStack;
-    if( old == NULL ) return;
+    if( old == NULL )
+        return;
     if( old->lang != NULL ) {
         StrCopy( old->lang, buff );
         _Free( old->lang );
@@ -507,8 +511,10 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 
 void CopyInpFlags( void )
 {
-    if( InpStack == NULL ) return;
-    if( InpStack->link == NULL ) return;
+    if( InpStack == NULL )
+        return;
+    if( InpStack->link == NULL )
+        return;
     InpStack->type |= InpStack->link->type & (INP_HOOK+INP_BREAK_POINT);
 }
 
@@ -520,14 +526,14 @@ OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds->buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
         FreeCmdList( cmds );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 
@@ -538,7 +544,7 @@ OVL_EXTERN bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
 void PushCmdList( cmd_list *cmds )
 {
     cmds->use++;
-    PushInpStack( cmds, DoneCmdList, FALSE );
+    PushInpStack( cmds, DoneCmdList, false );
 }
 
 
@@ -548,13 +554,13 @@ OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 #endif
 
@@ -566,7 +572,7 @@ OVL_EXTERN bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
 #ifdef DEADCODE
 void PushCmdText( char *cmds )
 {
-    PushInpStack( cmds, DoneCmdText, FALSE );
+    PushInpStack( cmds, DoneCmdText, false );
 }
 #endif
 
@@ -577,11 +583,12 @@ void PushCmdText( char *cmds )
 
 bool PurgeInpStack( void )
 {
-    for( ;; ) {
-        if( InpStack == NULL ) return( TRUE );
-        if( InpStack->type & INP_STOP_PURGE ) return( FALSE );
+    while( InpStack != NULL ) {
+        if( InpStack->type & INP_STOP_PURGE )
+            return( false );
         PopInpStack();
     }
+    return( true );
 }
 
 OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
@@ -589,22 +596,22 @@ OVL_EXTERN bool DoneNull( inp_data_handle buff, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );
-        return( TRUE );
+        return( true );
     case INP_RTN_EOL:
-        return( FALSE );
+        return( false );
     case INP_RTN_FINI:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE ); // silence compiler
+    return( false ); // silence compiler
 }
 
 void FreezeInpStack( void )
 {
-    PushInpStack( LIT_ENG( Empty ), DoneNull, FALSE );
+    PushInpStack( LIT_ENG( Empty ), DoneNull, false );
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 
-void UnAsm( address addr, char *buff, unsigned buff_len )
+void UnAsm( address addr, char *buff, size_t buff_len )
 {
     mad_disasm_data     *dd;
 

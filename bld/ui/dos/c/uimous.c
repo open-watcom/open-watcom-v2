@@ -36,10 +36,6 @@
 #include "charmap.h"
 
 
-extern void         (*DrawCursor)( void );
-
-unsigned short      Points;                 /* Number of lines / char  */
-
 struct mouse_data {
     unsigned short    bx,cx,dx;
 };
@@ -69,25 +65,28 @@ extern void MouseState( unsigned short, md_stk_ptr );
 
 #endif
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE         8
 
-extern          MOUSEORD                MouseRow;
-extern          MOUSEORD                MouseCol;
+extern void         (*DrawCursor)( void );
+
+extern MOUSEORD             MouseRow;
+extern MOUSEORD             MouseCol;
+
+extern bool                 MouseOn;
+
+extern unsigned short       MouseStatus;
+extern bool                 MouseInstalled;
+
+unsigned short              Points;                 /* Number of lines / char  */
+
+unsigned long               MouseTime = 0;
 
 /* MickeyRow and MickeyCol are accurate under DOS and OS2's DOS */
-static          int                     MickeyRow;
-static          int                     MickeyCol;
+static int                  MickeyRow;
+static int                  MickeyCol;
 
-extern          bool                    MouseOn;
-
-extern          unsigned long           MouseTime       = 0L;
-
-extern          unsigned short          MouseStatus;
-extern          bool                    MouseInstalled;
-
-void intern checkmouse( unsigned short *status, MOUSEORD *row,
-                          MOUSEORD *col, unsigned long *time )
-/************************************************************/
+void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
+/*************************************************************************************************/
 {
     struct  mouse_data state;
     char    change;
@@ -98,12 +97,12 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row,
     *status = state.bx;
 
     if( DrawCursor == NULL ) {
-        *col = state.cx/MOUSE_SCALE;
-        *row = state.dx/MOUSE_SCALE;
+        *col = state.cx / MOUSE_SCALE;
+        *row = state.dx / MOUSE_SCALE;
     } else {
         MouseState( 0x0B, (md_stk_ptr)&state );
-        MickeyCol += (short int ) state.cx; /* delta of mickeys */
-        MickeyRow += (short int ) state.dx; /* delta of mickeys */
+        MickeyCol += (short int)state.cx; /* delta of mickeys */
+        MickeyRow += (short int)state.dx; /* delta of mickeys */
         if( MickeyRow < 0 ) {
             MickeyRow = 0;
             change = TRUE;
@@ -174,22 +173,23 @@ void intern setupmouse( void )
     MouseInt( 8, 0, 0, dx );
 
     uisetmouseposn( UIData->height/2 - 1, UIData->width/2 - 1 );
-    MouseInstalled = TRUE;
-    MouseOn = FALSE;
-    UIData->mouse_swapped = FALSE;
+    MouseInstalled = true;
+    MouseOn = false;
+    UIData->mouse_swapped = false;
     checkmouse( &MouseStatus, &MouseRow, &MouseCol, &MouseTime );
-    if( DrawCursor != NULL ) UIData->mouse_speed /= 2;
+    if( DrawCursor != NULL )
+        UIData->mouse_speed /= 2;
     uimousespeed( UIData->mouse_speed );
 }
 
-bool UIAPI initmouse( int install )
-/**********************************/
+int UIAPI initmouse( int install )
+/********************************/
 {
-    MouseInstalled = FALSE;
+    MouseInstalled = false;
     if( install > 0 && installed( BIOS_MOUSE ) ) {
         if( install > 1 ) {
             if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
-               install = 0; /* mouse initialization failed */
+                install = 0;    /* mouse initialization failed */
             }
         }
         if( install > 0 ) {
@@ -203,7 +203,7 @@ bool UIAPI initmouse( int install )
 
 
 void UIAPI finimouse( void )
-/***************************/
+/**************************/
 {
     if( MouseInstalled ) {
         uioffmouse();

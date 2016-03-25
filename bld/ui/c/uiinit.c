@@ -56,8 +56,8 @@ bool UIAPI uistart( void )
     return( false );
 }
 
-bool UIAPI uiinit( int mouse )
-/*****************************/
+bool UIAPI uiinit( int install )
+/******************************/
 {
     bool    initialized;
 
@@ -65,9 +65,9 @@ bool UIAPI uiinit( int mouse )
 
     if( initialized ) {
 #ifdef __UNIX__
-        _initmouse( mouse );
+        _initmouse( install );
 #else
-        initmouse( mouse );
+        initmouse( install );
 #endif
     }
     return( initialized );
@@ -78,6 +78,7 @@ void UIAPI uistop( void )
     forceevfini();
     closebackground();
     finibios();
+    UIMemClose();
 }
 
 void UIAPI uifini( void )
@@ -89,7 +90,6 @@ void UIAPI uifini( void )
     finimouse();
 #endif
     uistop();
-    UIMemClose();
 }
 
 

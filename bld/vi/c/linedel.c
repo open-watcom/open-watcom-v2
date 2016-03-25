@@ -38,10 +38,9 @@
  */
 void UpdateLineNumbers( linenum amt, fcb *cfcb  )
 {
-    while( cfcb != NULL ) {
+    for( ; cfcb != NULL; cfcb = cfcb->next ) {
         cfcb->start_line += amt;
         cfcb->end_line += amt;
-        cfcb = cfcb->next;
     }
 
 } /* UpdateLineNumbers */

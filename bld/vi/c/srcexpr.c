@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "expr.h"
 
 #include "clibext.h"
@@ -43,19 +42,19 @@
  */
 vi_rc SrcExpr( sfile *sf, vlist *vl )
 {
-    char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE];
+    char        tmp[MAX_SRC_LINE], tmp1[MAX_SRC_LINE];
+    const char  *v1;
     long        val, oval;
     int         i;
     jmp_buf     jmpaddr;
     vars        *v;
 
-    strcpy( tmp, sf->arg1 );
-    strcpy( v1, sf->arg2 );
-    if( !VarName( tmp, vl ) ) {
+    if( !VarName( tmp, sf->arg1, vl ) ) {
         return( ERR_SRC_INVALID_EXPR );
     }
+    v1 = sf->arg2;
     if( sf->hasvar ) {
-        Expand( v1, vl  );
+        v1 = Expand( tmp1, v1, vl  );
     }
     i = setjmp( jmpaddr );
     if( i != 0 ) {
@@ -86,7 +85,7 @@ vi_rc SrcExpr( sfile *sf, vlist *vl )
         }
     }
 
-    VarAddStr( tmp, ltoa( val, v1, 10 ), vl );
+    VarAddStr( tmp, ltoa( val, tmp1, 10 ), vl );
     return( ERR_NO_ERR );
 
 } /* SrcExpr */

@@ -52,7 +52,8 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
-#include "_exit.h"
+#include "exitwmsg.h"
+
 
 static char    DllName[_MAX_PATH];
 
@@ -127,7 +128,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     return( 1 );
 }
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     if( !__Is_DLL ) {
         __DoneExceptionFilter();
@@ -136,6 +137,8 @@ _WCRTLINK void __exit( unsigned ret_code )
     // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
     // for multi-threaded apps
     __FirstThreadData = NULL;
-    if( !__Is_DLL )
+    if( !__Is_DLL ) {
         RdosUnloadExe( ret_code );
+    }
+    // never return
 }

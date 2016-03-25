@@ -36,8 +36,9 @@
 #include "dlglist.h"
 #include "diptypes.h"
 #include "dbgsrc.h"
+#include "dbgupdt.h"
+#include "dlgsrc.h"
 
-extern void             DbgUpdate( update_list );
 
 void DlgSource( void )
 {

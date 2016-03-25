@@ -24,50 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run a debugger command.
 *
 ****************************************************************************/
 
 
-#define MAX_CMD_NAME    12
-pick(   CMD_ACCEL,      ProcAccel,       "Accelerate\0" )
-pick(   CMD_BREAK,      ProcBreak,       "Break\0" )
-pick(   CMD_CALL,       ProcCall,        "Call\0" )
-pick(   CMD_CAPTURE,    ProcCapture,     "CAPture\0" )
-pick(   CMD_DISPLAY,    ProcDisplay,     "Display\0" )
-pick(   CMD_DO,         ProcDo,          "DO\0" )
-pick(   CMD_ERROR,      ProcError,       "ERror\0" )
-pick(   CMD_EXAMINE,    ProcExamine,     "Examine\0" )
-pick(   CMD_FLIP,       ProcFlip,        "Flip\0" )
-pick(   CMD_GO,         ProcGo,          "Go\0" )
-pick(   CMD_HELP,       ProcHelp,        "Help\0" )
-pick(   CMD_HOOK,       ProcHook,        "HOok\0" )
-pick(   CMD_IF,         ProcIf,          "IF\0" )
-pick(   CMD_INVOKE,     ProcInvoke,      "INvoke\0" )
-pick(   CMD_LOG,        ProcLog,         "Log\0" )
-pick(   CMD_NEW,        ProcNew,         "NEW\0" )
-pick(   CMD_PAINT,      ProcPaint,       "PAint\0" )
-pick(   CMD_FONT,       ProcFont,        "FOnt\0" )
-pick(   CMD_PRINT,      ProcPrint,       "Print\0" )
-pick(   CMD_QUIT,       ProcQuit,        "Quit\0" )
-pick(   CMD_REGISTER,   ProcRegister,    "Register\0" )
-pick(   CMD_REMARK,     ProcRemark,      "REMark\0" )
-pick(   CMD_SET,        ProcSet,         "Set\0" )
-pick(   CMD_SHOW,       ProcShow,        "SHow\0" )
-pick(   CMD_SYSTEM,     ProcSystem,      "SYstem\0" )
-pick(   CMD_THREAD,     ProcThread,      "THread\0" )
-pick(   CMD_TRACE,      ProcTrace,       "Trace\0" )
-pick(   CMD_VIEW,       ProcView,        "View\0" )
-pick(   CMD_WHILE,      ProcWhile,       "While\0" )
-pick(   CMD_WINDOW,     ProcWindow,      "WIndow\0" )
-pick(   CMD_CONFIGFILE, ProcConfigFile,  "COnfigfile\0" )
-pick(   CMD_STACKPOS,   ProcStackPos,    "STackpos\0" )
-pick(   CMD_UNDO,       ProcUndo,        "Undo\0" )
-pick(   CMD_SKIP,       ProcSkip,        "SKip\0" )
-pick(   CMD_RECORD,     ProcRecord,      "RECord\0" )
-pick(   CMD_ASSIGN,     ProcAssign,      "ASsign\0" )
-pick(   CMD_MODIFY,     ProcModify,      "MOdify\0" )
-#ifndef NDEBUG
-pick(   CMD_INTERNAL,   ProcInternal,    "XX\0" )
-#endif
+extern void     DoCmd( char *cmd );

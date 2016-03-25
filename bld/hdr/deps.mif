@@ -15,48 +15,48 @@ cplus     = ../cpluspro.sp ../cplusepi.sp
 # headers. This is only relevant for headers in the C++ standard library.
 
 assert_deps   = assert.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension)
-ctype_deps    = ctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
+ctype_deps    = ctype.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(extension) $(c99ext)
 errno_deps    = errno.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp
 float_deps    = float.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(extension)
-inttypes_deps = inttypes.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
+inttypes_deps = inttypes.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp
 iso646_deps   = iso646.mh ../crwat.sp ../readonly.sp
-limits_deps   = limits.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../mbmax.sp $(unixext) $(extension)
-locale_deps   = locale.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
-math_deps     = math.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
+limits_deps   = limits.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../mbmax.sp $(unixext) $(extension)
+locale_deps   = locale.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp
+math_deps     = math.mh ../crwat.sp ../readonly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) $(packll)
 setjmp_deps   = setjmp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps   = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
-stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
-stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp ../cpponly.sp
-stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension) ../thrdhndl.sp
-stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp ../intptr.sp
-stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wint_t.sp $(saferc)
-stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
-string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
-time_deps     = time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
-wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
-wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp
+signal_deps   = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
+stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
+stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp
+stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension) ../thrdhndl.sp
+stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp $(saferc) ../exactint.sp ../intptr.sp
+stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wint_t.sp $(saferc)
+stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp ../process1.sp ../_exit.sp
+string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
+time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
+wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
+wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp
 
-cassert      : cassert.mh $(assert_deps)
-cctype       : cctype.mh $(ctype_deps)
-cerrno       : cerrno.mh $(errno_deps)
-cfloat       : cfloat.mh $(float_deps)
-ciso646      : ciso646.mh $(iso646_deps)
-climits      : climits.mh $(limits_deps)
-clocale      : clocale.mh $(locale_deps)
-cmath        : cmath.mh $(math_deps)
-cinttype     : cinttype.mh $(inttypes_deps)
-csetjmp      : csetjmp.mh $(setjmp_deps)
-csignal      : csignal.mh $(signal_deps)
-cstdarg      : cstdarg.mh $(stdarg_deps)
-cstdbool     : cstdbool.mh $(stdbool_deps)
-cstddef      : cstddef.mh $(stddef_deps)
-cstdint      : cstdint.mh $(stdint_deps)
-cstdio       : cstdio.mh $(stdio_deps)
-cstdlib      : cstdlib.mh $(stdlib_deps)
-cstring      : cstring.mh $(string_deps)
-ctime        : ctime.mh $(time_deps)
-cwchar       : cwchar.mh $(wchar_deps)
-cwctype      : cwctype.mh $(wctype_deps)
+cassert      : cassert.mh ../cpponly.sp $(assert_deps)
+cctype       : cctype.mh ../cpponly.sp $(ctype_deps)
+cerrno       : cerrno.mh ../cpponly.sp $(errno_deps)
+cfloat       : cfloat.mh ../cpponly.sp $(float_deps)
+ciso646      : ciso646.mh ../cpponly.sp $(iso646_deps)
+climits      : climits.mh ../cpponly.sp $(limits_deps)
+clocale      : clocale.mh ../cpponly.sp $(locale_deps)
+cmath        : cmath.mh ../cpponly.sp $(math_deps)
+cinttype     : cinttype.mh ../cpponly.sp $(inttypes_deps)
+csetjmp      : csetjmp.mh ../cpponly.sp $(setjmp_deps)
+csignal      : csignal.mh ../cpponly.sp $(signal_deps)
+cstdarg      : cstdarg.mh ../cpponly.sp $(stdarg_deps)
+cstdbool     : cstdbool.mh ../cpponly.sp $(stdbool_deps)
+cstddef      : cstddef.mh ../cpponly.sp $(stddef_deps)
+cstdint      : cstdint.mh ../cpponly.sp $(stdint_deps)
+cstdio       : cstdio.mh ../cpponly.sp $(stdio_deps)
+cstdlib      : cstdlib.mh ../cpponly.sp $(stdlib_deps)
+cstring      : cstring.mh ../cpponly.sp $(string_deps)
+ctime        : ctime.mh ../cpponly.sp $(time_deps)
+cwchar       : cwchar.mh ../cpponly.sp $(wchar_deps)
+cwctype      : cwctype.mh ../cpponly.sp $(wctype_deps)
 
 # These dependency lists are for the IOStreams headers.
 
@@ -218,6 +218,7 @@ new.h           : $(new_deps)
 ostream.h       : $(ostream_deps)
 pgchart.h       : $(pgchart_deps)
 search.h        : search.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+semaphor.h      : semaphor.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
 setjmp.h        : $(setjmp_deps)
 setjmpex.h      : setjmpex.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus)
 share.h         : share.mh ../crwat.sp ../readonly.sp $(extension)
@@ -275,8 +276,8 @@ sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus
 !ifeq system dos
 
 fcntl.h         : fcntl.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
-process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension) ../thrdhndl.sp
-unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension) ../thrdhndl.sp ../process1.sp ../_exit.sp
+unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension) ../_exit.sp
 
 sys/_lfndos.h   : dos/sys/_lfndos.mh ../crwatcnt.sp ../readonly.sp
 sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
@@ -288,21 +289,21 @@ dirent.h        : linux/dirent.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../s
 fcntl.h         : fcntl.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packlnxk) ../incdir.sp $(extension)
 grp.h           : grp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../systypes.sp $(cplus) $(packll)
 netdb.h         : linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
+process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
 pwd.h           : pwd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
 sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
 termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension)
+unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension) ../_exit.sp
 
 arpa/inet.h     : linux/arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
-netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
+netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
 netinet/tcp.h   : linux/netinet/tcp.mh ../crwat.sp ../readonly.sp $(cplus) $(packlnxk)
 sys/ioctl.h     : linux/sys/ioctl.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
 sys/mman.h      : linux/sys/mman.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
 sys/mount.h     : linux/sys/mount.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/ptrace.h    : linux/sys/ptrace.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/resource.h  : linux/sys/resource.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp
+sys/socket.h    : linux/sys/socket.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
 sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk) ../incdir.sp $(posixext)
 sys/sysinfo.h   : linux/sys/sysinfo.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
 sys/sysmips.h   : linux/sys/sysmips.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
@@ -339,7 +340,7 @@ dirent.h        : ../quantum/dirent.mh $(packll)
 cdrom.h         : ../quantum/cdrom.mh $(packll)
 fcntl.h         : fcntl.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
 grp.h           : ../quantum/grp.mh $(packll)
-process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension)
+process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
 pwd.h           : ../quantum/pwd.mh $(packll)
 regex.h         : ../quantum/regex.mh $(packll)
 sgtty.h         : ../quantum/sgtty.mh $(packll)

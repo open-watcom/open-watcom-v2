@@ -31,6 +31,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "dipwv.h"
 #include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
@@ -42,54 +43,26 @@
 #include "madinter.h"
 #include "i64.h"
 #include "dbgutil.h"
+#include "dbgmemor.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgloc.h"
+#include "dbgcall2.h"
+#include "dbgovl.h"
+#include "dbg_dbg.h"
+#include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "addarith.h"
 
 
-extern void             BinOp( stack_entry *, stack_entry * );
-extern void             AddOp( stack_entry *, stack_entry * );
-extern address          AddrAdd( address, long );
-extern int              AddrComp( address, address );
-extern long             AddrDiff( address, address );
-extern bool             NameResolve( stack_entry *, bool );
-extern void             SymResolve( stack_entry *entry );
-extern void             RValue( stack_entry * );
-extern void             LRValue( stack_entry * );
-extern void             LValue( stack_entry * );
-extern void             ExprResolve( stack_entry * );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern void             ClassifyEntry( stack_entry *, dip_type_info * );
-extern bool             ClassifyType( location_context *, type_handle *, dip_type_info * );
 extern void             LclLValue( stack_entry * );
-extern void             FreezeRegs( void );
-extern bool             PerformCall( address, bool, unsigned int );
-extern void             UnFreezeRegs( void );
-extern void             SetRegSP( address );
-extern void             CreateEntry( void );
-extern void             DeleteEntry( stack_entry * );
-extern stack_entry      *StkEntry( int );
-extern void             MoveSP( int );
-extern void             SwapStack( int );
 extern char             *DupStringEntry( char *, unsigned long );
-extern void             PushType( type_handle * );
-extern void             FreePgmStack( bool );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
-extern unsigned         ToItem( stack_entry *, item_mach * );
-extern void             CombineEntries( stack_entry *, stack_entry *, stack_entry * );
-extern void             PushAddr( address );
-extern void             MoveTH( stack_entry *, stack_entry * );
-extern bool             CreateSym( lookup_item *, dip_type_info * );
-extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern void             LocationAdd( location_list *, unsigned long );
-extern void             ExprSymbol( stack_entry *, sym_handle * );
-extern void             CreateLC( stack_entry * );
-extern void             MoveLC( stack_entry *, stack_entry * );
-extern address          DefAddrSpaceForAddr( address );
-extern address          GetRegSP( void );
-extern void             SetRegSP( address );
-extern void             ExprSetAddrInfo( stack_entry *, bool );
-extern void             AddrFix( address * );
-extern void             PushLocation( location_list *, dip_type_info * );
 
 extern stack_entry      *ExprSP;
 
@@ -472,7 +445,7 @@ void DoAddr( void )
         && ExprSP->v.loc.num == 1
         && ExprSP->v.loc.e[0].type == LT_ADDR ) {
         ExprSP->v.addr = ExprSP->v.loc.e[0].u.addr;
-        ExprSetAddrInfo( ExprSP, FALSE );
+        ExprSetAddrInfo( ExprSP, false );
         if( ExprSP->th != NULL ) {
             GetMADTypeDefaultAt( ExprSP->v.addr, MTK_ADDRESS, &mti );
             TypePointer(ExprSP->th, TM_FAR, mti.b.bits / BITS_PER_BYTE, ExprSP->th);
@@ -515,9 +488,12 @@ void DoAPoints( stack_entry *stk, type_kind def )
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
             TypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
             ClassifyEntry( stk, &stk->info );
-            if( stk->info.kind == TK_VOID ) Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
+            if( stk->info.kind == TK_VOID ) {
+                Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
+            }
         } else {
-            if( def == TK_NONE ) def = TK_INTEGER;
+            if( def == TK_NONE )
+                def = TK_INTEGER;
             stk->info.kind = def;
             switch( def ) {
             case TK_INTEGER:
@@ -525,7 +501,7 @@ void DoAPoints( stack_entry *stk, type_kind def )
                 stk->info.size = DefaultSize( DK_INT );
                 break;
             case TK_ADDRESS:
-                ExprSetAddrInfo( stk, FALSE );
+                ExprSetAddrInfo( stk, false );
                 break;
             }
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
@@ -555,22 +531,29 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
-    if( object->th != NULL ) HDLAssign( type, obj_th, object->th );
+    if( object->th != NULL )
+        HDLAssign( type, obj_th, object->th );
     ClassifyEntry( new, &new_type );
     new_type.modifier &= TM_MOD_MASK; /* turn off DEREF bit */
     ConvertTo( object, new_type.kind, new_type.modifier, new_type.size );
-    if( object->th == NULL ) goto no_adjust;
+    if( object->th == NULL )
+        goto no_adjust;
     ClassifyEntry( object, &obj_type );
-    if( obj_type.kind != TK_POINTER ) goto no_adjust;
-    if( AddrComp( object->v.addr, NilAddr ) == 0 ) goto no_adjust;
+    if( obj_type.kind != TK_POINTER )
+        goto no_adjust;
+    if( AddrComp( object->v.addr, NilAddr ) == 0 )
+        goto no_adjust;
     TypeBase( obj_th, obj_th, NULL, NULL );
     ClassifyType( object->lc, obj_th, &obj_type );
-    if( obj_type.kind != TK_STRUCT ) goto no_adjust;
+    if( obj_type.kind != TK_STRUCT )
+        goto no_adjust;
     ClassifyEntry( new, &new_type );
-    if( new_type.kind != TK_POINTER ) goto no_adjust;
+    if( new_type.kind != TK_POINTER )
+        goto no_adjust;
     TypeBase( new->th, new_th, NULL, NULL );
     ClassifyType( object->lc, new_th, &new_type );
-    if( new_type.kind != TK_STRUCT ) goto no_adjust;
+    if( new_type.kind != TK_STRUCT )
+        goto no_adjust;
     /*
      * At this point we know both the old type and the new type were
      * pointers to structures (classes) and that the pointer is non-null.
@@ -583,7 +566,7 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
         NYI: C++ actually allows us to go the other way (convert a base
         type to a derived type) if the thunk adjust does not have to go
         through a virtual base type. If the above function doesn't return
-        TRUE we can do the following:
+        true we can do the following:
         save = object->v.addr.mach.offset;
         if( CalcThunkAdjust( &object->v.addr, new_th, obj_th ) ) {
             diff = object->v.addr.mach.offset - save;
@@ -691,10 +674,10 @@ void DoStringConcat( void )
     ExprSP->info.size = left->info.size + rite->info.size;
     _ChkAlloc( ExprSP->v.string.allocated, ExprSP->info.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
-    LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->info.size, FALSE );
+    LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->info.size, false );
     ExprSP->v.string.loc.e[0].u.p = left->info.size +
                 (byte *)ExprSP->v.string.loc.e[0].u.p;
-    LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->info.size, FALSE );
+    LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->info.size, false );
     ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
     CombineEntries( ExprSP, left, rite );
 }
@@ -712,8 +695,8 @@ void DoGivenField( sym_handle *member_hdl )
     }
     CreateLC( ExprSP );
     ExprSP->lc->object = ExprSP->v.loc;
-    ExprSP->lc->have_object = TRUE;
-    ExprSP->lc->maybe_have_object = FALSE;
+    ExprSP->lc->have_object = true;
+    ExprSP->lc->maybe_have_object = false;
     ExprSymbol( ExprSP, member_hdl );
     SymResolve( ExprSP );
 }
@@ -724,18 +707,18 @@ typedef struct {
     bool                found;
 } find_context;
 
-OVL_EXTERN CALL_CHAIN_RTN FindContext;
 OVL_EXTERN bool FindContext( call_chain_entry *entry, void *_info )
 {
     find_context *info = _info;
     unsigned    save_use;
 
-    if( AddrComp( entry->start, info->proc_addr ) != 0 ) return( TRUE );
+    if( AddrComp( entry->start, info->proc_addr ) != 0 )
+        return( true );
     save_use = info->lc->use;
     *info->lc = entry->lc;
     info->lc->use = save_use;
-    info->found = TRUE;
-    return( FALSE );
+    info->found = true;
+    return( false );
 }
 
 /*
@@ -764,7 +747,7 @@ void DoField( void )
             Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
         }
         find.proc_addr = ll.e[0].u.addr;
-        find.found = FALSE;
+        find.found = false;
         CreateLC( ExprSP );
         find.lc = ExprSP->lc;
         WalkCallChain( FindContext, &find );
@@ -772,11 +755,11 @@ void DoField( void )
             ExprSP->lc->execution = find.proc_addr;
             ExprSP->lc->regs = NULL;
             ExprSP->lc->th = NULL;
-            ExprSP->lc->have_frame = FALSE;
-            ExprSP->lc->have_stack = FALSE;
-            ExprSP->lc->have_object = FALSE;
-            ExprSP->lc->maybe_have_frame = FALSE;
-            ExprSP->lc->maybe_have_object = FALSE;
+            ExprSP->lc->have_frame = false;
+            ExprSP->lc->have_stack = false;
+            ExprSP->lc->have_object = false;
+            ExprSP->lc->maybe_have_frame = false;
+            ExprSP->lc->maybe_have_object = false;
         }
         object->flags |= SF_IMP_ADDR;
     } else {
@@ -786,11 +769,11 @@ void DoField( void )
             Error( ERR_NONE, LIT_ENG( ERR_NEED_ADDRESS ) );
         }
         ExprSP->lc->object = object->v.loc;
-        ExprSP->lc->have_object = TRUE;
-        ExprSP->lc->maybe_have_object = FALSE;
+        ExprSP->lc->have_object = true;
+        ExprSP->lc->maybe_have_object = false;
         ExprSP->lc->th = object->th;
     }
-    NameResolve( ExprSP, TRUE );
+    NameResolve( ExprSP, true );
     ExprSP->flags &= ~SF_IMP_ADDR;
     ExprSP->flags |= (object->flags & SF_IMP_ADDR);
     DeleteEntry( object );
@@ -822,16 +805,16 @@ void DoScope( void )
     }
     memcpy( p, scope->v.li.name.start, scope->v.li.name.len );
     p += scope->v.li.name.len;
-    *p++ = '\0';
+    *p++ = NULLCHAR;
     memcpy( ScopeBuff, buff, p - buff );
     ExprSP->v.li.scope.start = ScopeBuff;
     ExprSP->v.li.scope.len = p - buff;
     ExprSP->flags |= SF_SCOPE;
-    NameResolve( scope, FALSE );
+    NameResolve( scope, false );
     if( (scope->flags & SF_SYM) ) {
         CreateLC( ExprSP );
         ExprSP->lc->sh = scope->v.sh;
-        NameResolve( ExprSP, FALSE );
+        NameResolve( ExprSP, false );
     }
     DeleteEntry( scope );
 }
@@ -853,10 +836,9 @@ void DoAssign( void )
     dest = StkEntry( 1 );
     ExprResolve( ExprSP );
     LValue( ExprSP );
-    if( (dest->flags & SF_NAME) && !NameResolve( dest, FALSE ) ) {
+    if( (dest->flags & SF_NAME) && !NameResolve( dest, false ) ) {
         if( !CreateSym( &dest->v.li, &ExprSP->info ) ) {
-            Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start,
-                        dest->v.li.name.len );
+            Error( ERR_NONE, LIT_ENG( ERR_SYM_NOT_CREATED ), dest->v.li.name.start, dest->v.li.name.len );
         }
     }
     LValue( dest );
@@ -866,22 +848,24 @@ void DoAssign( void )
                 Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
             copy = ExprSP->info.size;
-            if( copy > dest->info.size ) copy = dest->info.size;
-            if( LocationAssign( &dest->v.loc, &ExprSP->v.loc, copy, FALSE ) != DS_OK ) {
+            if( copy > dest->info.size )
+                copy = dest->info.size;
+            if( LocationAssign( &dest->v.loc, &ExprSP->v.loc, copy, false ) != DS_OK ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
             if( dest->info.size > copy ) {
                 /* have to pad */
                 #define PADDING "                     "
-                #define PAD_LEN (sizeof(PADDING)-1)
+                #define PAD_LEN (sizeof( PADDING ) - 1)
                 ll = dest->v.loc;
                 pad = dest->info.size - ExprSP->info.size;
                 do {
                     LocationAdd( &ll, copy * 8 );
                     copy = pad;
-                    if( copy > PAD_LEN ) copy = PAD_LEN;
+                    if( copy > PAD_LEN )
+                        copy = PAD_LEN;
                     LocationCreate( &src, LT_INTERNAL, PADDING );
-                    if( LocationAssign( &ll, &src, copy, FALSE ) != DS_OK ) {
+                    if( LocationAssign( &ll, &src, copy, false ) != DS_OK ) {
                         Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                     }
                     pad -= copy;
@@ -892,7 +876,7 @@ void DoAssign( void )
             ConvertGiven( ExprSP, dest );
             ToItem( ExprSP, &item );
             LocationCreate( &src, LT_INTERNAL, &item );
-            if( LocationAssign( &dest->v.loc, &src, dest->info.size, FALSE ) != DS_OK ) {
+            if( LocationAssign( &dest->v.loc, &src, dest->info.size, false ) != DS_OK ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
             }
         }
@@ -909,12 +893,16 @@ static address AllocPgmStack( unsigned size )
     address     addr;
     address     new;
 
-    if( _IsOn( SW_STACK_GROWS_UP ) ) size = -size;
     addr = GetRegSP();
     new = addr;
-    new.mach.offset -= (int)size;
-    PgmStackUsage[ NestedCallLevel ] += size;
-    if( _IsOff( SW_STACK_GROWS_UP ) ) addr.mach.offset = new.mach.offset;
+    if( _IsOn( SW_STACK_GROWS_UP ) ) {
+        new.mach.offset += size;
+        PgmStackUsage[NestedCallLevel] -= size;
+    } else {
+        new.mach.offset -= size;
+        PgmStackUsage[NestedCallLevel] += size;
+        addr.mach.offset = new.mach.offset;
+    }
     SetRegSP( new );
     return( addr );
 }
@@ -927,14 +915,14 @@ static address PokePgmStack( location_list *ll, unsigned long size )
 
     addr = AllocPgmStack( size );
     LocationCreate( &dst, LT_ADDR, &addr );
-    if( LocationAssign( &dst, ll, size, FALSE ) != DS_OK ) {
+    if( LocationAssign( &dst, ll, size, false ) != DS_OK ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_WRITE_MEM ), addr );
     }
     return( addr );
 }
 
 
-static unsigned MakeSCB( item_mach *item, address addr, item_type typ )
+static trap_elen MakeSCB( item_mach *item, address addr, item_type typ )
 {
     unsigned len;
 
@@ -964,9 +952,12 @@ static type_modifier DerefType( type_handle *th )
 {
     dip_type_info   ti;
 
-    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK ) return( TM_NONE );
-    if( ti.kind != TK_POINTER ) return( TM_NONE );
-    if( !(ti.modifier & TM_FLAG_DEREF) ) return( TM_NONE );
+    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
+        return( TM_NONE );
+    if( ti.kind != TK_POINTER )
+        return( TM_NONE );
+    if( !(ti.modifier & TM_FLAG_DEREF) )
+        return( TM_NONE );
     return( ti.modifier & TM_MOD_MASK );
 }
 
@@ -1049,7 +1040,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
     }
     ExprSP->flags &= ~SF_LOCATION;
     ExprSP->v.addr = addr;
-    ExprSetAddrInfo( ExprSP, FALSE );
+    ExprSetAddrInfo( ExprSP, false );
     ExprSP->th = NULL;
 }
 
@@ -1059,7 +1050,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
  * DoCall - call a procedure
  */
 
-void DoCall( unsigned num_parms, bool build_scbs )
+void DoCall( int num_parms, bool build_scbs )
 {
     stack_entry         *rtn_entry;
     address             addr;
@@ -1083,12 +1074,13 @@ void DoCall( unsigned num_parms, bool build_scbs )
     dip_type_info       ti;
     dip_type_info       ret_ti;
     item_mach           item;
-    unsigned            parm_loc_adjust;
-    unsigned            parm;
+    int                 parm_loc_adjust;
+    int                 parm;
     unsigned            size;
     dip_status          ds;
 
-    if( _IsOn( SW_CALL_FATAL ) ) Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
+    if( _IsOn( SW_CALL_FATAL ) )
+        Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     rtn_entry = StkEntry( num_parms );
     RValue( rtn_entry );
     switch( rtn_entry->info.kind ) {
@@ -1175,7 +1167,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     if( this_ti.kind == TK_POINTER ) {
         TypeInfo( obj_th, rtn_entry->lc, &ti );
         PushLocation( &rtn_entry->lc->object, &ti );
-        Addressable( FALSE, obj_th );
+        Addressable( false, obj_th );
         ConvertTo( ExprSP, this_ti.kind, this_ti.modifier, this_ti.size );
         ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ll, 1 );
         if( ds & DS_ERR ) {
@@ -1207,7 +1199,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
         ToItem( ExprSP, &item );
         DeleteEntry( ExprSP );
         LocationCreate( &ll, LT_INTERNAL, &item );
-        LocationAssign( &ret_ll, &ll, rtn_si.ret_size, FALSE );
+        LocationAssign( &ret_ll, &ll, rtn_si.ret_size, false );
         LocationCreate( &ret_ll, LT_ADDR, &ret_addr );
     }
     if( PerformCall( addr, rtn_si.rtn_far, num_parms ) ) {
@@ -1239,7 +1231,7 @@ void DoCall( unsigned num_parms, bool build_scbs )
     ExprSP->flags &= ~(SF_CONST | SF_IMP_ADDR);
     DeleteEntry( rtn_entry );
     UnFreezeRegs();
-    FreePgmStack( FALSE );
+    FreePgmStack( false );
 }
 
 #if 0
@@ -1263,13 +1255,13 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
         ri->want_base_type = 1;
         ri->ref_size = ri->ti.size;
         if( (ri->ti.modifier & TM_MOD_MASK) != TM_NEAR ) {
-            ri->ref_far = TRUE;
+            ri->ref_far = true;
         }
         TypeBase( ret_th, ret_th, NULL, NULL );
         TypeInfo( ret_th, &Context, &ri->ti );
         if( ri->ti.kind == TK_STRING ) {
-            ri->rl_passed_in = TRUE;
-            ri->scb = TRUE;
+            ri->rl_passed_in = true;
+            ri->scb = true;
         }
     }
     if( !ri->scb && ri->ti.size == 0 ) {
@@ -1277,7 +1269,7 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
         return;
     }
     if( si.ret_modifier != TM_NONE && si.rtn_calloc ) {
-        ri->rl_passed_in = TRUE;
+        ri->rl_passed_in = true;
     }
 }
 
@@ -1301,14 +1293,15 @@ void PrepReturnInfo( sym_handle *f, return_info *ri )
             ExprSP->info.kind = TK_INTEGER;
             ExprSP->info.modifier = TM_UNSIGNED;
             ExprSP->info.size = ri->ref_size;
-            if( ri->ref_far ) ExprSP->info.size -= sizeof( addr_seg );
+            if( ri->ref_far )
+                ExprSP->info.size -= sizeof( addr_seg );
             ExprSP->flags = SF_LOCATION;
             RValue( ExprSP );
             ri->ti.size = ExprSP->v.uint;
         }
         DeleteEntry( ExprSP );
     }
-    ri->rl_passed_in = FALSE;
+    ri->rl_passed_in = false;
 }
 
 void PushReturnInfo( sym_handle *f, return_info *ri )
@@ -1343,7 +1336,8 @@ void PushReturnInfo( sym_handle *f, return_info *ri )
     }
     SymType( f, th );
     TypeProcInfo( th, th, 0 );
-    if( ri->want_base_type ) TypeBase( th, th, NULL, NULL );
+    if( ri->want_base_type )
+        TypeBase( th, th, NULL, NULL );
     PushType( th );
     ExprSP->v.loc = ri->ll;
     ExprSP->flags = SF_LOCATION;

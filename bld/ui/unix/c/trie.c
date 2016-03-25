@@ -45,7 +45,7 @@
 #include "uishift.h"
 
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "trie.h"
 #include "ctkeyb.h"
 
@@ -76,14 +76,16 @@ struct eTrie{
     int         alc_child;      // allocated size of array
 };
 
-static eTrie    KeyTrie;
-int             KeyTrieDepth=1;
+int             KeyTrieDepth = 1;
 
-int TrieInit(void)
+static eTrie    KeyTrie;
+
+int TrieInit( void )
 {
 
-    KeyTrie.child= uimalloc( TRIE_TOP * sizeof( eNode ) );
-    if( KeyTrie.child == NULL ) return( FALSE );
+    KeyTrie.child = uimalloc( TRIE_TOP * sizeof( eNode ) );
+    if( KeyTrie.child == NULL )
+        return( FALSE );
     KeyTrie.alc_child = TRIE_TOP;
     KeyTrie.num_child = 0;
     return( TRUE );
@@ -94,10 +96,11 @@ static void free_subtrie( eNode *subt )
 {
     int         i;
 
-    if( subt==NULL ) return;
+    if( subt == NULL )
+        return;
 
-    if( subt->trie!=NULL ){
-        for( i=0; i<subt->trie->num_child; i++ ){
+    if( subt->trie != NULL ) {
+        for( i = 0; i < subt->trie->num_child; i++ ) {
             free_subtrie( &(subt->trie->child[i]) );
         }
         uifree( subt->trie );
@@ -111,7 +114,7 @@ void TrieFini( void )
 {
     int         i;
 
-    for( i=0; i<KeyTrie.num_child; i++ ){
+    for( i = 0; i < KeyTrie.num_child; i++ ) {
         free_subtrie( &(KeyTrie.child[i]) );
     }
 }
@@ -128,17 +131,21 @@ static int child_search( char key, eTrie *trie )
     int         x;
     eNode       *ary;
 
-    num= trie->num_child;
-    if( num<1 )return(0);
+    num = trie->num_child;
+    if( num < 1 )
+        return( 0 );
 
-    ary= trie->child;
-    if( key>ary[num-1].c ) return(num);
+    ary = trie->child;
+    if( key > ary[num - 1].c )
+        return( num );
 
-    for( x=0; x < num; x++ ) {
-        if(ary[x].c>=key) return(x);
+    for( x = 0; x < num; x++ ) {
+        if( ary[x].c >= key ) {
+            return( x );
+        }
     }
 
-    return(num);
+    return( num );
 }
 
 /* This function will add a string and matching event to KeyTrie. It adds
@@ -146,38 +153,39 @@ static int child_search( char key, eTrie *trie )
  * to improve the performance, but I think any improvements would be slight,
  * as this function is only called at initialization.
  */
-int TrieAdd( EVENT event, char *str )
+int TrieAdd( EVENT event, const char *str )
 {
-    eTrie       *trie=&KeyTrie;
+    eTrie       *trie = &KeyTrie;
     int         i;
-    int         depth=1;
+    int         depth = 1;
 
-    if( str != NULL && *str == '\0' ) return( TRUE );
+    if( str == NULL || *str == '\0' )
+        return( TRUE );
 
     for( ;; ) {
-        i= child_search( *str, trie );
+        i = child_search( *str, trie );
 
-        if( i==trie->num_child || trie->child[i].c!=*str ) {
+        if( i == trie->num_child || trie->child[i].c != *str ) {
             // the char's not in the list, so we'd better add it
 
             trie->num_child++;
 
-            if( trie->alc_child<trie->num_child ){
+            if( trie->alc_child < trie->num_child ) {
                 //eNode                 *tmp;
 
                 // the array isn't big enough, expand it a bit
-                trie->alc_child+= TRIE_ARRAY_GROWTH;
-                trie->child= uirealloc( trie->child, trie->alc_child*sizeof( eNode ) );
-                if( trie->child== NULL ){
-                    trie->alc_child= 0;
+                trie->alc_child += TRIE_ARRAY_GROWTH;
+                trie->child = uirealloc( trie->child, trie->alc_child * sizeof( eNode ) );
+                if( trie->child == NULL ) {
+                    trie->alc_child = 0;
                     return( FALSE );
                 }
             }
 
-            if( i<(trie->num_child-1) ){
+            if( i < ( trie->num_child - 1 ) ) {
                 // We're in the middle of the list, so clear a spot
-                memmove( &(trie->child[i+1]), &(trie->child[i]),
-                                (trie->num_child-i-1)*sizeof(eNode) );
+                memmove( &(trie->child[i + 1]), &(trie->child[i]),
+                                ( trie->num_child - i - 1 ) * sizeof( eNode ) );
             }
 
             trie->child[i].c = *str;
@@ -189,24 +197,29 @@ int TrieAdd( EVENT event, char *str )
         str++;
 
         // by this point, "i" is set to the index of a matching sub-trie.
-        if( *str=='\0' ) {
+        if( *str == '\0' ) {
             // at the end of the string, so insert the event
-            trie->child[i].ev= event;
+            trie->child[i].ev = event;
             return( TRUE );
         }
 
-        if( trie->child[i].trie==NULL ){
+        if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
-            trie->child[i].trie= uicalloc( 1, sizeof( eTrie ) );
-            if( trie->child[i].trie==NULL ){
+            trie->child[i].trie = uimalloc( sizeof( eTrie ) );
+            if( trie->child[i].trie == NULL ) {
                 return( FALSE );
             }
+            trie->child[i].trie->child = NULL;
+            trie->child[i].trie->num_child = 0;
+            trie->child[i].trie->alc_child = 0;
         }
 
         // go down a level, and work on the next char
-        trie= trie->child[i].trie;
+        trie = trie->child[i].trie;
         depth++;
-        if( depth > KeyTrieDepth ) KeyTrieDepth = depth;
+        if( depth > KeyTrieDepth ) {
+            KeyTrieDepth = depth;
+        }
     }
 }
 
@@ -217,14 +230,14 @@ static int child_comp( const int *pkey, const eNode *pbase )
 
 EVENT TrieRead( void )
 {
-    eTrie       *trie;
-    char        *buf;
-    int         c;
-    int         cpos=0;
-    EVENT       ev = EV_UNUSED;
-    int         ev_pos = 0;
-    eNode       *node;
-    int         timeout;
+    eTrie           *trie;
+    unsigned char   *buf;
+    int             c;
+    int             cpos = 0;
+    EVENT           ev = EV_UNUSED;
+    int             ev_pos = 0;
+    eNode           *node;
+    int             timeout;
 
     buf = alloca( KeyTrieDepth + 1 );
 
@@ -232,21 +245,26 @@ EVENT TrieRead( void )
     buf[0] = '\0';
     timeout = 0;
     for( ;; ) {
-        c = nextc(timeout);
-        if( c <= 0 ) break;
-        if( c == 256 ) return( EV_MOUSE_PRESS );
+        c = nextc( timeout );
+        if( c <= 0 )
+            break;
+        if( c == 256 )
+            return( EV_MOUSE_PRESS );
         buf[cpos++] = c;
 
-        if( trie->num_child == 0 ) break;
-        node = bsearch( &c, trie->child, trie->num_child, sizeof(eNode),
-                            ( int (*) (const void *, const void *) )child_comp );
-        if( node == NULL ) break;
+        if( trie->num_child == 0 )
+            break;
+        node = bsearch( &c, trie->child, trie->num_child, sizeof( eNode ),
+                            (int (*)(const void *, const void *))child_comp );
+        if( node == NULL )
+            break;
         if( node->ev != EV_UNUSED ) {
             ev = node->ev;
             ev_pos = cpos;
         }
         trie = node->trie;
-        if( trie == NULL ) break;
+        if( trie == NULL )
+            break;
         timeout = 3;
     }
     if( ev == EV_UNUSED ) {

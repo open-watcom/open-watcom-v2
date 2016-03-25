@@ -32,42 +32,42 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 
-char                    __FAR *PGrpCodes = GrpCodes;
+const unsigned char  __FAR *PGrpCodes = GrpCodes;
 
-void    BldErrCode( unsigned int error_num, char *buffer ) {
+void    BldErrCode( unsigned int error_num, char *buffer )
 // Build error code.
-    char            __FAR *group;
-    unsigned int    num;
+{
+    const unsigned char __FAR *group;
+    unsigned int        num;
 
-    group = &PGrpCodes[ ( error_num / 256 ) * 3 ];
+    group = &PGrpCodes[( error_num / 256 ) * 3];
     num = ( error_num % 256 ) + 1;
-    buffer[ 0 ] = ' ';
-    buffer[ 1 ] = group[ 0 ];
-    buffer[ 2 ] = group[ 1 ];
-    buffer[ 3 ] = '-';
-    buffer[ 4 ] = num / 10 + '0';
-    buffer[ 5 ] = num % 10 + '0';
-    buffer[ 6 ] = NULLCHAR;
+    buffer[0] = ' ';
+    buffer[1] = group[0];
+    buffer[2] = group[1];
+    buffer[3] = '-';
+    buffer[4] = num / 10 + '0';
+    buffer[5] = num % 10 + '0';
+    buffer[6] = NULLCHAR;
 }
 
 
 #if !defined( __RT__ ) && !defined( __WFL__ )
 
-extern  char            __FAR CaretTable[];
-char                    __FAR *PCaretTable = CaretTable;
+extern const unsigned char  __FAR CaretTable[];
+const unsigned char         __FAR *PCaretTable = CaretTable;
 
-uint    CarrotType( uint error_num ) {
+uint    CarrotType( uint error_num )
 // Return the type of caret.
-    char        __FAR *group;
-    char        __FAR *grp;
-    uint        idx;
+{
+    const unsigned char __FAR *group;
+    const unsigned char __FAR *grp;
+    uint                idx;
 
     idx = error_num % 256;
     group = &PGrpCodes[( error_num / 256 ) * 3];
-    grp = PGrpCodes;
-    while( grp != group ) {
-        idx += grp[2];
-        grp += 3;
+    for( grp = PGrpCodes; grp != group; grp += 3 ) {
+        idx += *(grp + 2);
     }
     return( PCaretTable[idx] );
 }

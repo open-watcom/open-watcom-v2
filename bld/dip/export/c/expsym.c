@@ -43,7 +43,7 @@
 */
 
 
-walk_result     DoWalkSymList( imp_image_handle *ii,
+static walk_result     DoWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -82,9 +82,9 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
     return( IMH_EXPORT );
 }
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     ii = ii; lc = lc;
     if( sn == SN_DEMANGLED ) return( 0 );
@@ -199,7 +199,7 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
 }
 
 
-search_result   DoLookupSym( imp_image_handle *ii,
+static search_result   DoLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {

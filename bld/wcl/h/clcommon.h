@@ -36,6 +36,18 @@
 #define MAX_CMD 500
 #endif
 
+#if defined(__UNIX__)
+#define fname_cmp   strcmp
+#else
+#define fname_cmp   stricmp
+#endif
+
+#ifdef __UNIX__
+#define PATH_SEPS_STR   SYS_DIR_SEP_STR
+#else
+#define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
+#endif
+
 #ifdef __UNIX__
 #define OBJ_EXT             ".o"
 #define OBJ_EXT_SECONDARY   ".obj"
@@ -45,6 +57,15 @@
 #define OBJ_EXT_SECONDARY   ".o"
 #define EXE_EXT             ".exe"
 #endif
+#define LIB_EXT             ".lib"
+#define LIB_EXT_SECONDARY   ".a"
+
+#define ASM_EXT             ".asm"
+#define ASMS_EXT            ".s"
+
+#define LNK_EXT             ".lnk"
+
+#define IS_OBJ(x)           (HasFileExtension( x, OBJ_EXT ) || HasFileExtension( x, OBJ_EXT_SECONDARY ))
 
 #define TRUE        1
 #define FALSE       0
@@ -76,6 +97,15 @@ enum {
     #undef E
 };
 
+typedef enum DBG_OPT {
+    DBG_NONE,
+    DBG_LINES,
+    DBG_ALL,
+    DBG_FMT_DWARF,
+    DBG_FMT_WATCOM,
+    DBG_FMT_CODEVIEW,
+} DBG_OPT;
+
 typedef struct  list {
     char        *item;
     struct list *next;
@@ -102,33 +132,40 @@ typedef struct  flags {
     unsigned keep_exename     : 1;  /* verbatim -o name from owcc         */
 } flags;
 
-extern FILE     *Fp;                /* file pointer for Temp_Link         */
 extern char     *Exe_Name;          /* name of executable                 */
 extern char     *Map_Name;          /* name of map file                   */
 extern char     *Obj_Name;          /* object file name pattern           */
 extern list     *Libs_List;         /* list of libraires from Cmd         */
-extern const char *WclMsgs[];
 extern list     *Obj_List;          /* linked list of object filenames    */
+extern list     *Directive_List;    /* linked list of wlink directives    */
+extern const char *WclMsgs[];
 
 extern flags    Flags;
 
-extern char     *DebugOptions[];
+extern char     *StackSize;         /* size of stack                      */
+extern DBG_OPT  DebugFlag;          /* debug info wanted                  */
+extern DBG_OPT  DebugFormat;        /* debug info format                  */
 
 extern void     PrintMsg( const char *fmt, ... );
 extern void     FindPath( const char *name, char *buf );
-extern void     BuildLinkFile( void );
-extern void     AddName( char *, FILE * );
+extern void     BuildLinkFile( FILE *fp );
+extern void     AddNameObj( const char * );
 extern void     ListAppend( list **, list * );
 extern void     ListFree( list * );
 extern void     Fputnl( const char *, FILE * );
-extern void     FputnlQuoted( const char *, FILE * );
 extern void     MemInit( void );
 extern void     MemFini( void );
 extern void     *MemAlloc( size_t );
 extern char     *MemStrDup( const char * );
+extern char     *MemStrLenDup( const char *str, size_t len );
 extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
 extern char     *MakePath( const char * );
-extern char     *GetName( const char * );
-extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
-extern char     *DoQuoted( char *buffer, const char *name );
+extern char     *GetName( const char *, char * );
+extern char     *DoQuoted( char *buffer, const char *name, char quote );
+extern void     BuildSystemLink( FILE *fp );
+extern void     AddDirective( const char *directive );
+extern void     AddDirectivePath( const char *directive, const char *path );
+extern char     *RemoveExt( char * );
+extern int      HasFileExtension( const char *p, const char *ext );
+extern void     MakeName( char *name, const char *ext );

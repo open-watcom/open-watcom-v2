@@ -3,6 +3,8 @@
 
 set PROJDIR=<CWD>
 set PROJNAME=export
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+set PROJNAME=export<OWBLDVER>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,31 +20,31 @@ set PROJNAME=export
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/export.dip     <OWRELROOT>/binw/
-#    <CCCMD> dos386/export.sym     <OWRELROOT>/binw/export.dsy
+    <CCCMD> dos386/<PROJNAME>.dip     <OWRELROOT>/binw/
+#    <CCCMD> dos386/<PROJNAME>.sym     <OWRELROOT>/binw/<PROJNAME>.dsy
 
-    <CCCMD> wini86/export.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/export.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.dll     <OWRELROOT>/binw/
+#    <CCCMD> wini86/<PROJNAME>.sym     <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/export.dll     <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/export.sym     <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/export.d32     <OWRELROOT>/binp/
-    <CCCMD> os2386/export.sym     <OWRELROOT>/binp/
+#    <CCCMD> os2i86/<PROJNAME>.dll     <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/<PROJNAME>.sym     <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/<PROJNAME>.d32     <OWRELROOT>/binp/
+    <CCCMD> os2386/<PROJNAME>.sym     <OWRELROOT>/binp/
 
-    <CCCMD> nt386/export.dll      <OWRELROOT>/binnt/
-    <CCCMD> nt386/export.sym      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.dll      <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.sym      <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/export.dip   <OWRELROOT>/binl/
-    <CCCMD> linux386/export.sym   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.dip   <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.sym   <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/export.dll      <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/export.sym      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.dll      <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.sym      <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/export.dip     <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/export.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/<PROJNAME>.dip     <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/<PROJNAME>.sym     <OWRELROOT>/qnx/sym/
 
-    <CCCMD> linuxx64/export.so    <OWRELROOT>/binl64/
-    <CCCMD> ntx64/export.dll      <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/<PROJNAME>.so    <OWRELROOT>/binl64/
+    <CCCMD> ntx64/<PROJNAME>.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

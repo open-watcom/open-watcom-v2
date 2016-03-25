@@ -33,50 +33,18 @@
 #ifndef _UIGCHAR_H_
 #define _UIGCHAR_H_
 
+
+#define BOX_CHARS()         ((unsigned char *)&UiGChar[UI_BOX_TOP_LEFT])
+#define SBOX_CHARS()        ((unsigned char *)&UiGChar[UI_SBOX_TOP_LEFT])
+
+#define BOX_CHAR(x,y)       (x)[UI_SBOX_##y - UI_SBOX_TOP_LEFT]
+#define CHECKBOX_CHAR(x)    UiGChar[UI_CHECKBOX_##x]
+#define RADIO_CHAR(x)       UiGChar[UI_RADIO_##x]
+
 enum    MappedChars {
-    UI_RADIO_LEFT,
-    UI_RADIO_RIGHT,
-    UI_RADIO_FULL,
-    UI_RADIO_EMPTY,
-    UI_CHECKBOX_LEFT,
-    UI_CHECKBOX_RIGHT,
-    UI_CHECKBOX_FULL,
-    UI_CHECKBOX_EMPTY,
-    UI_BOX_TOP_LEFT,
-    UI_BOX_TOP_RIGHT,
-    UI_BOX_BOTTOM_RIGHT,
-    UI_BOX_BOTTOM_LEFT,
-    UI_BOX_TOP_LINE,
-    UI_BOX_RIGHT_LINE,
-    UI_BOX_BOTTOM_LINE,
-    UI_BOX_LEFT_LINE,
-    UI_SHADOW_BOTTOM,
-    UI_SHADOW_B_LEFT,
-    UI_SHADOW_RIGHT,
-    UI_SHADOW_B_RIGHT,
-    UI_SBOX_TOP_LEFT,
-    UI_SBOX_TOP_RIGHT,
-    UI_SBOX_BOTTOM_RIGHT,
-    UI_SBOX_BOTTOM_LEFT,
-    UI_SBOX_TOP_LINE,
-    UI_SBOX_RIGHT_LINE,
-    UI_SBOX_BOTTOM_LINE,
-    UI_SBOX_LEFT_LINE,
-    UI_SBOX_LEFT_TACK,
-    UI_SBOX_RIGHT_TACK,
-    UI_SBOX_HORIZ_LINE,
-    UI_ARROW_DOWN,
-    UI_POPUP_MARK,
-    UI_CHECK_MARK,
-    UI_DBOX_TOP_LEFT,
-    UI_DBOX_TOP_RIGHT,
-    UI_DBOX_BOTTOM_RIGHT,
-    UI_DBOX_BOTTOM_LEFT,
-    UI_DBOX_TOP_LINE,
-    UI_DBOX_RIGHT_LINE,
-    UI_DBOX_BOTTOM_LINE,
-    UI_DBOX_LEFT_LINE,
-    UI_LAST_CHAR
+    #define pick(e,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) e,
+    #include "_mapchar.h"
+    #undef pick
 };
 
 extern unsigned char    UiGChar[];

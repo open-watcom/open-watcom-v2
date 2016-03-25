@@ -100,15 +100,15 @@ static const map events[] = {
 extern COORD    BSize;
 extern int      PageCnt;
 extern int      CurrMouseStatus;
-extern int      CurrMouseCol;
-extern int      CurrMouseRow;
+extern windim   CurrMouseCol;
+extern windim   CurrMouseRow;
 
 void BIOSGetColorPalette( void *a )
 {
     a = a;
 }
 
-long BIOSGetColorRegister( short a )
+uint_32 BIOSGetColorRegister( unsigned short a )
 {
     a = a;
     return( 0 );
@@ -122,7 +122,7 @@ void BIOSSetBlinkAttr( void )
 {
 }
 
-void BIOSSetColorRegister( short reg, char r, char g, char b )
+void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
 {
     reg = reg; r = r; g = g; b =b;
 }
@@ -137,7 +137,7 @@ static int CompareEvents( const void *p1, const void *p2 )
 /*
  * BIOSGetCursor - set current cursor postion
  */
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     page = page;
     _cpos.X = col;
@@ -149,13 +149,10 @@ void BIOSSetCursor( char page, char row, char col )
 /*
  * BIOSGetCursor - return current cursor postion
  */
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
-    short       res;
-
     page = page;
-    res = (_cpos.Y << 8) + _cpos.X;
-    return( res );
+    return( ( _cpos.Y << 8 ) + ( _cpos.X & 0xFF ) );
 
 } /* BIOSGetCursor */
 
@@ -237,9 +234,9 @@ static bool eventWeWant( INPUT_RECORD *ir )
 } /* eventWeWant */
 
 /*
- * BIOSKeyboardHit - read the keyboard
+ * BIOSGetKeyboard - read the keyboard
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
     INPUT_RECORD        ir;
     DWORD               rd, ss;
@@ -255,7 +252,7 @@ vi_key BIOSGetKeyboard( int *scan )
         return( VI_KEY( MOUSEEVENT ) );
     }
     vk = ir.Event.KeyEvent.wVirtualKeyCode;
-    key = (unsigned char)ir.Event.KeyEvent.uChar.AsciiChar;
+    key = C2VIKEY( ir.Event.KeyEvent.uChar.AsciiChar );
     ss = ir.Event.KeyEvent.dwControlKeyState;
 
     has_shift = (ss & SHIFT_PRESSED) != 0;
@@ -275,17 +272,17 @@ vi_key BIOSGetKeyboard( int *scan )
         // Caps lock has efect to keys which generate character
         // don't apply to extended keys as down, up, page down,
         // page up, insert, end, delete, ....
-        } else if( has_shift ^ ( key && has_capsl ) ) {
-            if( key == 0 ) {
+        } else if( has_shift ^ ( key == VI_KEY( NULL ) && has_capsl ) ) {
+            if( key == VI_KEY( NULL ) ) {
                 key = ev->shift;
             }
         } else {
-            if( key == 0 ) {
+            if( key == VI_KEY( NULL ) ) {
                 key = ev->reg;
             }
         }
     }
-    if( key == 0 ) {    // ignore unknown keys
+    if( key == VI_KEY( NULL ) ) {    // ignore unknown keys
         key = VI_KEY( DUMMY );
     }
     if( scan != NULL ) {
@@ -323,11 +320,11 @@ bool BIOSKeyboardHit( void )
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     SMALL_RECT  sr;
     COORD       bcoord;
-    unsigned    oend;
+    size_t      oend;
 
     if( PageCnt > 0 || nchars == 0 ) {
         return;

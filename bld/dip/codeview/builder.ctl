@@ -3,6 +3,8 @@
 
 set PROJDIR=<CWD>
 set PROJNAME=codeview
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+set PROJNAME=codevi<OWBLDVER>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
@@ -18,31 +20,31 @@ set PROJNAME=codeview
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/codeview.dip       <OWRELROOT>/binw/
-#    <CCCMD> dos386/codeview.sym       <OWRELROOT>/binw/codeview.dsy
+    <CCCMD> dos386/<PROJNAME>.dip       <OWRELROOT>/binw/
+#    <CCCMD> dos386/<PROJNAME>.sym       <OWRELROOT>/binw/<PROJNAME>.dsy
 
-    <CCCMD> wini86/codeview.dll       <OWRELROOT>/binw/
-#    <CCCMD> wini86/codeview.sym       <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.dll       <OWRELROOT>/binw/
+#    <CCCMD> wini86/<PROJNAME>.sym       <OWRELROOT>/binw/
 
-#    <CCCMD> os2i86/codeview.dll       <OWRELROOT>/binp/dll/
-#    <CCCMD> os2i86/codeview.sym       <OWRELROOT>/binp/dll/
-    <CCCMD> os2386/codeview.d32       <OWRELROOT>/binp/
-    <CCCMD> os2386/codeview.sym       <OWRELROOT>/binp/
+#    <CCCMD> os2i86/<PROJNAME>.dll       <OWRELROOT>/binp/dll/
+#    <CCCMD> os2i86/<PROJNAME>.sym       <OWRELROOT>/binp/dll/
+    <CCCMD> os2386/<PROJNAME>.d32       <OWRELROOT>/binp/
+    <CCCMD> os2386/<PROJNAME>.sym       <OWRELROOT>/binp/
 
-    <CCCMD> nt386/codeview.dll        <OWRELROOT>/binnt/
-    <CCCMD> nt386/codeview.sym        <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.dll        <OWRELROOT>/binnt/
+    <CCCMD> nt386/<PROJNAME>.sym        <OWRELROOT>/binnt/
 
-    <CCCMD> linux386/codeview.dip     <OWRELROOT>/binl/
-    <CCCMD> linux386/codeview.sym     <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.dip     <OWRELROOT>/binl/
+    <CCCMD> linux386/<PROJNAME>.sym     <OWRELROOT>/binl/
 
-    <CCCMD> ntaxp/codeview.dll        <OWRELROOT>/axpnt/
-    <CCCMD> ntaxp/codeview.sym        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.dll        <OWRELROOT>/axpnt/
+    <CCCMD> ntaxp/<PROJNAME>.sym        <OWRELROOT>/axpnt/
 
-    <CCCMD> qnx386/codeview.dip       <OWRELROOT>/qnx/watcom/wd/
-    <CCCMD> qnx386/codeview.sym       <OWRELROOT>/qnx/sym/
+    <CCCMD> qnx386/<PROJNAME>.dip       <OWRELROOT>/qnx/watcom/wd/
+    <CCCMD> qnx386/<PROJNAME>.sym       <OWRELROOT>/qnx/sym/
 
-    <CCCMD> linuxx64/codeview.so      <OWRELROOT>/binl64/
-    <CCCMD> ntx64/codeview.dll        <OWRELROOT>/binnt64/
+    <CCCMD> linuxx64/<PROJNAME>.so      <OWRELROOT>/binl64/
+    <CCCMD> ntx64/<PROJNAME>.dll        <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 #============

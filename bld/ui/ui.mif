@@ -100,18 +100,18 @@ $(name).lib: $(objs)
 !endif
 
 !ifeq SAMPLE_MODE WIN_C_M_J
-sample.exe : samplew.obj sampdial.obj $(name).lib
+sample.exe : samplew.obj sampdial.obj $(ui_lib)
     %create sample.lnk
-    %append sample.lnk system windows op m D A library $(name).lib
+    %append sample.lnk system windows op m D A library {$(ui_lib)}
     %append sample.lnk n sample
     %append sample.lnk f samplew f sampdial
     %append sample.lnk import DEATH GDI.121
     %append sample.lnk import RESURRECTION GDI.122
     wlink @sample.lnk
 !else ifeq SAMPLE_MODE WIN_C_M
-sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
+sample.exe : samplew.obj sampdial.obj swap.obj $(ui_lib)
     %create sample.lnk
-    %append sample.lnk system windows op m D A library $(name).lib
+    %append sample.lnk system windows op m D A library {$(ui_lib)}
     %append sample.lnk n sample
     %append sample.lnk f samplew f sampdial f swap
     %append sample.lnk import DEATH GDI.121
@@ -119,5 +119,5 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
     wlink @sample.lnk
 !else
 sample.exe : sample.obj sampdial.obj $(name).lib
-    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(name).lib}
+    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(ui_lib)}
 !endif

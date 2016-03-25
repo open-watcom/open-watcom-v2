@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,37 +43,37 @@
 #include "clibext.h"
 
 
-static void initDCLine( dc dc )
+static void initDCLine( dc_line *dcline )
 {
-    dc->display = true;
-    dc->valid = false;
-    dc->text = NULL;
-    dc->textlen = 0;
-    dc->ss = SSNewBlock();
+    dcline->display = true;
+    dcline->valid = false;
+    dcline->text = NULL;
+    dcline->textlen = 0;
+    dcline->ss = SSNewBlock();
 }
 
-static void deinitDCLine( dc dc )
+static void deinitDCLine( dc_line *dcline )
 {
-    if( dc->text ) {
-        MemFree( dc->text );
+    if( dcline->text ) {
+        MemFree( dcline->text );
     }
-    SSKillBlock( dc->ss );
+    SSKillBlock( dcline->ss );
 }
 
 void DCCreate( void )
 {
     int     nlines, i;
-    dc      dc;
+    dc_line *dcline;
 
     assert( CurrentInfo );
-    nlines = WindowAuxInfo( CurrentInfo->CurrentWindow, WIND_INFO_TEXT_LINES );
-    CurrentInfo->dc = NULL;
+    nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
+    CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
-        dc = MemAlloc( nlines * sizeof( dc_line ) );
-        CurrentInfo->dc = dc;
+        dcline = MemAlloc( nlines * sizeof( dc_line ) );
+        CurrentInfo->dclines = dcline;
         for( i = 0; i < nlines; i++ ) {
-            initDCLine( dc );
-            dc++;
+            initDCLine( dcline );
+            dcline++;
         }
     }
     CurrentInfo->dc_size = nlines;
@@ -81,32 +82,32 @@ void DCCreate( void )
 void DCResize( info *info )
 {
     int     nlines, extra;
-    dc      dc;
+    dc_line *dcline;
 
     if( info == NULL ) {
         // Windows is sending WM_SIZE before we've set CurrentInfo -
         // hang on & cache will be initialized in DCCreate in a moment
         return;
     }
-    nlines = WindowAuxInfo( info->CurrentWindow, WIND_INFO_TEXT_LINES );
-    dc = info->dc;
-    dc += info->dc_size - 1;
+    nlines = WindowAuxInfo( info->current_window_id, WIND_INFO_TEXT_LINES );
+    dcline = info->dclines;
+    dcline += info->dc_size - 1;
     for( extra = nlines - info->dc_size; extra < 0; ++extra ) {
-        deinitDCLine( dc );
-        dc--;
+        deinitDCLine( dcline );
+        dcline--;
     }
     if( nlines == 0 ) {
         // no room to display anything - trash the cache
-        if( info->dc ) {
-            MemFree( info->dc );
+        if( info->dclines != NULL ) {
+            MemFree( info->dclines );
         }
-        info->dc = NULL;
+        info->dclines = NULL;
     } else {
-        info->dc = dc = MemReAlloc( info->dc, nlines * sizeof( dc_line ) );
-        dc += info->dc_size;
+        info->dclines = dcline = MemReAlloc( info->dclines, nlines * sizeof( dc_line ) );
+        dcline += info->dc_size;
         for( ; extra > 0; --extra ) {
-            initDCLine( dc );
-            dc++;
+            initDCLine( dcline );
+            dcline++;
         }
     }
     info->dc_size = nlines;
@@ -114,58 +115,62 @@ void DCResize( info *info )
 
 void DCScroll( int nlines )
 {
-    dc      dc, dc_i, dc_temp;
-    int     bit, rest;
-    int     i, a;
+    dc_line     *dcline;
+    dc_line     *dcline_i;
+    dc_line     *dcline_temp;
+    int         bit;
+    int         rest;
+    int         i;
+    int         a;
 
     assert( CurrentInfo );
     if( CurrentInfo->dc_size == 0 ) {
         return;
     }
-    dc = CurrentInfo->dc;
+    dcline = CurrentInfo->dclines;
 
     // 'wrap' pointers so don't need to free/allocate ss blocks, etc.
-    dc_temp = MemAlloc( CurrentInfo->dc_size * sizeof( dc_line ) );
+    dcline_temp = MemAlloc( CurrentInfo->dc_size * sizeof( dc_line ) );
     bit = abs( nlines ) * sizeof( dc_line );
     rest = (CurrentInfo->dc_size - abs( nlines )) * sizeof( dc_line );
     if( nlines > 0 ) {
-        memmove( dc_temp, dc + CurrentInfo->dc_size - nlines, bit );
-        memmove( dc + nlines, dc, rest );
-        memmove( dc, dc_temp, bit );
-        dc_i = dc;
+        memmove( dcline_temp, dcline + CurrentInfo->dc_size - nlines, bit );
+        memmove( dcline + nlines, dcline, rest );
+        memmove( dcline, dcline_temp, bit );
+        dcline_i = dcline;
     } else {
-        memmove( dc_temp, dc, bit );
-        memmove( dc, dc - nlines, rest );
-        memmove( dc + CurrentInfo->dc_size + nlines, dc_temp, bit );
-        dc_i = dc + CurrentInfo->dc_size + nlines;
+        memmove( dcline_temp, dcline, bit );
+        memmove( dcline, dcline - nlines, rest );
+        memmove( dcline + CurrentInfo->dc_size + nlines, dcline_temp, bit );
+        dcline_i = dcline + CurrentInfo->dc_size + nlines;
     }
-    MemFree( dc_temp );
+    MemFree( dcline_temp );
 
     a = abs( nlines );
     for( i = 0; i < a; i++ ) {
-        dc_i->valid = false;
-        dc_i++;
+        dcline_i->valid = false;
+        dcline_i++;
     }
 }
 
 void DCDestroy( void )
 {
-    int     i;
-    dc      dc;
-    int     nlines;
+    int         i;
+    dc_line     *dcline;
+    int         nlines;
 
     assert( CurrentInfo );
-    dc = CurrentInfo->dc;
-    if( !dc ) {
+    dcline = CurrentInfo->dclines;
+    if( dcline == NULL ) {
         return;
     }
     nlines = CurrentInfo->dc_size;
     for( i = 0; i < nlines; i++ ) {
-        deinitDCLine( dc );
-        dc++;
+        deinitDCLine( dcline );
+        dcline++;
     }
-    MemFree( CurrentInfo->dc );
-    CurrentInfo->dc = 0;
+    MemFree( CurrentInfo->dclines );
+    CurrentInfo->dclines = NULL;
     CurrentInfo->dc_size = 0;
 }
 
@@ -175,7 +180,7 @@ vi_rc DCUpdate( void )
     int             i, nlines;
     fcb             *fcb;
     line            *line;
-    dc              dc;
+    dc_line         *dcline;
     bool            firstLine, firstTilde;
     linenum         line_no;
     int             displayOffset;
@@ -197,13 +202,13 @@ vi_rc DCUpdate( void )
     }
 
 #ifdef __WIN__
-    MyHideCaret( CurrentWindow );
-    hdc_wnd = GetDC( CurrentWindow );
+    MyHideCaret( current_window_id );
+    hdc_wnd = GetDC( current_window_id );
 #ifdef BITBLT_BUFFER_DISPLAY
     hdc_mem = CreateCompatibleDC( hdc_wnd );
     ws = &(SEType[SE_WHITESPACE]);
     hbitmap = CreateCompatibleBitmap( hdc_wnd,
-                    WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ),
+                    WindowAuxInfo( current_window_id, WIND_INFO_WIDTH ),
                     FontHeight( ws->font ) );
     SelectObject( hdc_mem, hbitmap );
     SelectObject( hdc_mem, ColorBrush( ws->background ) );
@@ -218,16 +223,16 @@ vi_rc DCUpdate( void )
     }
 
     nlines = CurrentInfo->dc_size;
-    dc = CurrentInfo->dc;
+    dcline = CurrentInfo->dclines;
     firstLine = true;
     firstTilde = true;
     for( i = 0, line_no = LeftTopPos.line; i < nlines; i++, line_no++ ) {
-        if( dc->display ) {
+        if( dcline->display ) {
             if( line ) {
                 if( firstLine ) {
-                    if( dc->valid ) {
+                    if( dcline->valid ) {
                          // major speedup
-                         SSInitLanguageFlagsGivenValues( &(dc->flags) );
+                         SSInitLanguageFlagsGivenValues( &(dcline->flags) );
                     } else {
                         SSInitLanguageFlags( line_no );
                     }
@@ -259,16 +264,16 @@ vi_rc DCUpdate( void )
                 displayOffset = 0;
             }
 #ifdef BITBLT_BUFFER_DISPLAY
-            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+            DisplayLineInWindowWithSyntaxStyle( current_window_id, i + 1,
                                 line, line_no, displayText, displayOffset,
                                 hdc_wnd,
                                 hdc_mem );
 #else
-            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+            DisplayLineInWindowWithSyntaxStyle( current_window_id, i + 1,
                                 line, line_no, displayText, displayOffset,
                                 hdc_wnd );
 #endif
-            dc->display = false;
+            dcline->display = false;
         } else {
             // just in case displaying 2+ blocks in one update
             firstLine = true;
@@ -279,15 +284,15 @@ vi_rc DCUpdate( void )
         if( rc != ERR_NO_ERR && rc != ERR_NO_MORE_LINES ) {
             return( rc );
         }
-        dc++;
+        dcline++;
     }
 #ifdef __WIN__
 #ifdef BITBLT_BUFFER_DISPLAY
     DeleteDC( hdc_mem );
     DeleteObject( hbitmap );
 #endif
-    ReleaseDC( CurrentWindow, hdc_wnd );
-    MyShowCaret( CurrentWindow );
+    ReleaseDC( current_window_id, hdc_wnd );
+    MyShowCaret( current_window_id );
 #else
     DisplayMouse( hasMouse );
 #endif
@@ -322,7 +327,7 @@ void DCUpdateAll( void )
     }
 }
 
-void shaveRange( int *start, int *end )
+static void shaveRange( int *start, int *end )
 {
     int     tmp;
 
@@ -348,7 +353,7 @@ void shaveRange( int *start, int *end )
 void DCDisplaySomeLines( int start, int end )
 {
     int         i;
-    dc          dc;
+    dc_line     *dcline;
     linenum     line_no;
     line        *line;
     fcb         *cfcb;
@@ -375,24 +380,25 @@ void DCDisplaySomeLines( int start, int end )
     CTurnOffFileDisplayBits();
     cfcb->on_display = true;
 
-    dc = CurrentInfo->dc;
-    dc += start;
+    dcline = CurrentInfo->dclines;
+    dcline += start;
     for( i = start; i <= end; i++ ) {
-        dc->display = true;
-        dc++;
+        dcline->display = true;
+        dcline++;
     }
 }
 
 void DCDisplayAllLines( void )
 {
-    if( CurrentInfo == NULL ) return;
+    if( CurrentInfo == NULL )
+        return;
     DCDisplaySomeLines( 0, CurrentInfo->dc_size - 1 );
 }
 
 void DCInvalidateSomeLines( int start, int end )
 {
     int         i;
-    dc          dc;
+    dc_line     *dcline;
 
     if( EditFlags.DisplayHold || CurrentFile == NULL ) {
         return;
@@ -404,11 +410,11 @@ void DCInvalidateSomeLines( int start, int end )
         return;
     }
 
-    dc = CurrentInfo->dc;
-    dc += start;
+    dcline = CurrentInfo->dclines;
+    dcline += start;
     for( i = start; i <= end; i++ ) {
-        dc->valid = false;
-        dc++;
+        dcline->valid = false;
+        dcline++;
     }
 }
 
@@ -421,35 +427,35 @@ void DCInvalidateAllLines( void )
     DCInvalidateSomeLines( 0, CurrentInfo->dc_size - 1 );
 }
 
-dc DCFindLine( int c_line_no, window_id id )
+dc_line *DCFindLine( int c_line_no, window_id wid )
 {
-    info    *info;
-    dc      dc;
+    info        *info;
+    dc_line     *dcline;
 
     for( info = InfoHead; info != NULL; info = info->next ) {
-        if( info->CurrentWindow == id ) {
+        if( info->current_window_id == wid ) {
             break;
         }
     }
     assert( info );
     assert( c_line_no >= 0 && c_line_no < info->dc_size );
 
-    dc = info->dc;
-    return( dc + c_line_no );
+    dcline = info->dclines;
+    return( dcline + c_line_no );
 }
 
-void DCValidateLine( dc dc_line, int start_col, char *text )
+void DCValidateLine( dc_line *dcline, int start_col, char *text )
 {
     int     nlen;
 
     // assumes ss has already been filled correctly
-    dc_line->start_col = start_col;
+    dcline->start_col = start_col;
     nlen = strlen( text ) + 1;
-    if( dc_line->text ) {
-        if( dc_line->textlen < nlen ) {
+    if( dcline->text ) {
+        if( dcline->textlen < nlen ) {
             // realloc might needlessly memcpy stuff around
-            MemFree( dc_line->text );
-            dc_line->text = MemAlloc( nlen );
+            MemFree( dcline->text );
+            dcline->text = MemAlloc( nlen );
         }
     } else {
         size_t  len;
@@ -457,9 +463,9 @@ void DCValidateLine( dc dc_line, int start_col, char *text )
         len = nlen;
         if( len < MIN_CACHE_LINE_LENGTH )
             len = MIN_CACHE_LINE_LENGTH;
-        dc_line->text = MemAlloc( len );
+        dcline->text = MemAlloc( len );
     }
-    memcpy( dc_line->text, text, nlen );
-    dc_line->textlen = nlen;
-    dc_line->valid = true;
+    memcpy( dcline->text, text, nlen );
+    dcline->textlen = nlen;
+    dcline->valid = true;
 }

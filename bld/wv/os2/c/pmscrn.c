@@ -49,28 +49,25 @@
 #include "dbgscrn.h"
 #include "guigmous.h"
 #include "guiwin.h"
+#include "wndsys.h"
+#include "trpld.h"
+#include "trpsys.h"
+#include "dbginit.h"
+
 
 extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
-extern HMQ      GUIPMmq;
-
-extern void     __far *ExtraAlloc( size_t );
-extern void     ExtraFree( void __far * );
-extern void     TellHandles( void __far *hab, void __far *hwnd );
-extern void     SaveMainScreen(char*);
-extern void     RestoreMainScreen(char*);
-extern bool     IsTrapFilePumpingMessageQueue( void );
-
+extern HMQ              GUIPMmq;
+extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
-int                     ForceHardMode;
-bool                    ToldWinHandle = FALSE;
-extern a_window         *WndMain;
+bool                    TrapForceHardMode = false;
+bool                    ToldWinHandle = false;
 ULONG                   PumpMessageSem;
 ULONG                   PumpMessageDoneSem;
 #define STACK_SIZE      10000
-static char             Stack[STACK_SIZE];
+static unsigned char    Stack[STACK_SIZE];
 
 
 void WndInitWndMain( wnd_create_struct *info )
@@ -81,9 +78,8 @@ void WndInitWndMain( wnd_create_struct *info )
 
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle ) {
-        TellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
-        ToldWinHandle = TRUE;
+    if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
+        ToldWinHandle = true;
     }
 }
 
@@ -107,12 +103,12 @@ unsigned ConfigScreen( void )
 }
 
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
-/****************************************************/
+size_t GetSystemDir( char *buff, size_t buff_len )
+/************************************************/
 {
     // inst
     PRFPROFILE                  prof;
-    unsigned                    i;
+    size_t                      i;
 
     prof.cchUserName = 0L;
     prof.cchSysName = 0L;
@@ -136,7 +132,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
             }
         }
     }
-    buff[i] = '\0';
+    buff[i] = NULLCHAR;
     return( strlen( buff ) );
 } /* _wpi_getinidirectory */
 
@@ -144,7 +140,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
  * InitScreen
  */
 
-VOID PumpMessageQueue( VOID )
+static VOID PumpMessageQueue( VOID )
 {
     char        class_name[80];
     QMSG        qmsg;
@@ -176,7 +172,7 @@ void InitScreen( void )
     RestoreMainScreen( "WDPM" );
     DosSemSet( &PumpMessageSem );
     DosSemSet( &PumpMessageDoneSem );
-    DosCreateThread( (PFNTHREAD)PumpMessageQueue, &tid, Stack+STACK_SIZE );
+    DosCreateThread( (PFNTHREAD)PumpMessageQueue, &tid, Stack + STACK_SIZE );
     DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }
 
@@ -187,7 +183,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -204,7 +200,8 @@ static HWND FocusWnd, ActiveWnd;
 
 bool DebugScreen( void )
 {
-    if( !WndMain ) return( FALSE );
+    if( !WndMain )
+        return( false );
     if( FocusWnd && WinIsWindow( GUIGetHAB(), FocusWnd ) &&
         FocusWnd != WinQueryFocus( HWND_DESKTOP, 0 ) ) {
         WinSetFocus( HWND_DESKTOP, FocusWnd );
@@ -213,13 +210,13 @@ bool DebugScreen( void )
         ActiveWnd != WinQueryActiveWindow( HWND_DESKTOP, 0 ) ) {
         WinSetActiveWindow( HWND_DESKTOP, ActiveWnd );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -229,10 +226,11 @@ bool DebugScreenRecover( void )
 
 bool UserScreen( void )
 {
-    if( !WndMain ) return( FALSE );
+    if( !WndMain )
+        return( false );
     FocusWnd = WinQueryFocus( HWND_DESKTOP, 0 );
     ActiveWnd = WinQueryActiveWindow( HWND_DESKTOP, 0 );
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -251,29 +249,19 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void __far *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-
-void uifarfree( void __far *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
+
 void PopErrBox( const char *buff )
 {
-    WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, buff,
+    WinMessageBox( HWND_DESKTOP, HWND_DESKTOP, (char *)buff,
                    LIT_ENG( Debugger_Startup_Error ), 1001,
                    MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
+unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen out_num, mx_entry_p out_mx )
 {
     unsigned    result;
 
@@ -289,7 +277,7 @@ unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned o
     }
 }
 
-unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     unsigned    result;
 
@@ -307,16 +295,20 @@ unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned
 
 void SetNumLines( int num )
 {
-    if( num < 10 || num > 999 )
-        num = 0;
-    DbgLines = num;
+    if( num < 10 )
+        num = 10;
+    if( num > 99 )
+        num = 99;
+    NumLines = num;
 }
 
 void SetNumColumns( int num )
 {
-    if( num < 10 || num > 999 )
-        num = 0;
-    DbgColumns = num;
+    if( num < 10 )
+        num = 10;
+    if( num > 255 )
+        num = 255;
+    NumColumns = num;
 }
 
 bool ScreenOption( const char *start, unsigned len, int pass )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +53,13 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     unsigned    c;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     _dos_getdrive( &c );
-    oldDrive = (char) c;
+    oldDrive = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }
@@ -73,7 +74,7 @@ void PopDirectory( void )
 {
     unsigned    total;
 
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     _dos_setdrive( oldDrive, &total );
@@ -84,7 +85,7 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
     // could do a curs_set() here
 
@@ -116,7 +117,7 @@ void MyBeep( void )
  */
 void ScreenInit( void )
 {
-    int size;
+    size_t size;
 
     CursesWindow = initscr();
     EditVars.WindMaxWidth = COLS;
@@ -236,16 +237,16 @@ void TurnOffCapsLock( void )
 
 } /* TurnOffCapsLock */
 
-extern short CheckRemovable( char );
+extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
-        "mov    ax, 04408h" \
-        "int    021h" \
-        "cmp    ax, 0fh" \
-        "jne    ok" \
-        "mov    ax, 0" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
+        "mov    ax,4408h" \
+        "int    21h"      \
+        "cmp    ax,0fh"   \
+        "jne short ok"    \
+        "xor    ax,ax"    \
+        "jmp short done"  \
+    "ok: inc ax"          \
+    "done:" \
     parm [bl] value[ax];
 
 /*
@@ -253,7 +254,7 @@ extern short CheckRemovable( char );
  */
 drive_type DoGetDriveType( int drv )
 {
-    return( CheckRemovable( drv - 'A' + 1 ) );
+    return( (drive_type)CheckRemovable( (unsigned char)( drv - 'A' + 1 ) ) );
 
 } /* DoGetDriveType */
 
@@ -278,7 +279,7 @@ void SetCursorBlinkRate( int cbr )
 
 } /* SetCursorBlinkRate */
 
-void MyVioShowBuf( unsigned short offset, unsigned short nchars )
+void MyVioShowBuf( size_t offset, unsigned short nchars )
 {
     int         line, column;
     char_info   _FAR *info;
@@ -312,30 +313,32 @@ void MyVioShowBuf( unsigned short offset, unsigned short nchars )
 // unsigned long   BIOSGetVideoMode( void );
 // long            BIOSGetColorRegister( short );
 
-short BIOSGetCursor( char type )
+unsigned short BIOSGetCursor( unsigned char type )
 {
     int x, y;
 
     getyx( CursesWindow, x, y );
-    return( (y << 16) | x );
+    return( ( y << 8 ) | ( x & 0xFF ) );
 }
 
-void BIOSSetCursor( char page, char row, char col )
+void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     wmove( CursesWindow, row, col );
     refresh();
 }
 
-unsigned short BIOSGetKeyboard( int extended )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
-    extended = extended;
+    if( scan != NULL )
+        *scan = 0;
+    return( VI_KEY( NULL ) );
 }
 
 /*
  * come up with a correct curses attribute given a color combo and a
  * window.
  */
-viattr_t WindowAttr( wind *w, vi_color foreground, vi_color background )
+viattr_t WindowAttr( window *w, vi_color foreground, vi_color background )
 {
     unsigned long   attr = A_NORMAL;
 

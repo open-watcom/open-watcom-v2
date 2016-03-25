@@ -32,30 +32,30 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-static          EVENT                   mouseevtab[6][3] = {
+static EVENT    mouseevtab[6][3] = {
     { EV_MOUSE_PRESS,   EV_MOUSE_PRESS_R,       EV_MOUSE_PRESS_M },
     { EV_MOUSE_RELEASE, EV_MOUSE_RELEASE_R,     EV_MOUSE_RELEASE_M },
     { EV_MOUSE_DCLICK,  EV_MOUSE_DCLICK_R,      EV_MOUSE_DCLICK_M },
     { EV_MOUSE_HOLD,    EV_MOUSE_HOLD_R,        EV_MOUSE_HOLD_M },
     { EV_MOUSE_DRAG,    EV_MOUSE_DRAG_R,        EV_MOUSE_DRAG_M },
     { EV_MOUSE_REPEAT,  EV_MOUSE_REPEAT_R,      EV_MOUSE_REPEAT_M }
-    };
+};
 
-                MOUSEORD          MouseRow;
-                MOUSEORD          MouseCol;
-                bool                    MouseOn;
-                unsigned short          MouseStatus;
-                bool                    MouseInstalled;
+        MOUSEORD            MouseRow;
+        MOUSEORD            MouseCol;
+        bool                MouseOn;
+        unsigned short      MouseStatus;
+        bool                MouseInstalled;
 
-static          int                     MouseForcedOff = 0;
+static  int                 MouseForcedOff = 0;
 
-static          bool                    MouseRepeat;
-static          unsigned long           MouseTime       = 0L;
-static          int                     MouseLast       = MOUSE_OFF;
-static          unsigned short          MouseLastButton = (unsigned short)~0;
+static  bool                MouseRepeat;
+static  unsigned long       MouseTime       = 0L;
+static  int                 MouseLast       = MOUSE_OFF;
+static  unsigned short      MouseLastButton = (unsigned short)~0;
 
 
-int UIAPI uimouseinstalled( void )
+bool UIAPI uimouseinstalled( void )
 /*********************************/
 /* call this ONLY after UI has been initialized */
 
@@ -117,7 +117,7 @@ void UIAPI uihidemouse( void )
 /*****************************/
 // turn mouse cursor off ( until user clicks or moves )
 {
-    MouseOn = FALSE;
+    MouseOn = false;
 }
 
 
@@ -137,18 +137,17 @@ static unsigned short button( unsigned short status )
 EVENT intern mouseevent( void )
 /*****************************/
 {
-    register    EVENT                   ev;
-    auto        MOUSEORD                     row;
-    auto        MOUSEORD                     col;
-    auto        unsigned long           time;
-    auto        unsigned short          status;
-    auto        bool                    moved;
-    auto        unsigned short          diff;
-    auto        signed short            butt = 0;
+    EVENT               ev;
+    MOUSEORD            row;
+    MOUSEORD            col;
+    unsigned long       time;
+    unsigned short      status;
+    bool                moved;
+    unsigned short      diff;
+    signed short        butt = 0;
 
     ev = EV_NO_EVENT;
     if( MouseInstalled ) {
-
         checkmouse( &status, &row, &col, &time );
         diff = (status ^ MouseStatus) & MOUSE_PRESS_ANY;
 
@@ -158,12 +157,12 @@ EVENT intern mouseevent( void )
         if( moved ){
             if( MouseStatus & MOUSE_PRESS_ANY ){
                 /* DO NOT TURN ON THE MOUSE IF YOU ARE DRAGGING */
-                /* i.e. don't set MouseOn = TRUE */
+                /* i.e. don't set MouseOn = true */
                 butt = button( status );
                 ev = M_DRAG;
             } else {
                 ev = EV_MOUSE_MOVE;
-                MouseOn = TRUE;
+                MouseOn = true;
             }
             MouseLastButton = -1;    /* don't double click */
         } else if( diff & MOUSE_PRESS_ANY ){
@@ -183,7 +182,7 @@ EVENT intern mouseevent( void )
             MouseRepeat = FALSE;
             MouseTime = time;
             MouseStatus = status;
-            MouseOn = TRUE;
+            MouseOn = true;
         } else if( status & MOUSE_PRESS_ANY ){
             if( UIData->busy_wait ) {
                 ev = M_HOLD;
@@ -220,8 +219,8 @@ VSCREEN* UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
     owner = findvscreen( MouseRow/UIData->mouse_yscale, MouseCol/UIData->mouse_xscale );
 
     if( vptr != NULL ) {
-        *rowptr = (int) MouseRow - (int) vptr->area.row * UIData->mouse_yscale;
-        *colptr = (int) MouseCol - (int) vptr->area.col * UIData->mouse_xscale;
+        *rowptr = (int)MouseRow - (int)vptr->area.row * UIData->mouse_yscale;
+        *colptr = (int)MouseCol - (int)vptr->area.col * UIData->mouse_xscale;
     } else {
         *rowptr = MouseRow;
         *colptr = MouseCol;
@@ -263,10 +262,10 @@ void UIAPI uiswapmouse( void )
 
     if( UIData->mouse_swapped ) {
         uionmouse();
-        UIData->mouse_swapped = FALSE;
+        UIData->mouse_swapped = false;
     } else {
         uioffmouse();
-        UIData->mouse_swapped = TRUE;
+        UIData->mouse_swapped = true;
     }
 }
 
@@ -285,7 +284,7 @@ MOUSEORD UIAPI uigetmcol( void )
 }
 #endif
 
-void UIAPI uigetmouse( ORD *row, ORD *col, int *status )
+void UIAPI uigetmouse( ORD *row, ORD *col, bool *status )
 /*******************************************************/
 {
     *row = MouseRow/UIData->mouse_yscale;
@@ -293,7 +292,7 @@ void UIAPI uigetmouse( ORD *row, ORD *col, int *status )
     *status = MouseOn;
 }
 
-int UIAPI uivmouseinstalled( void )
+bool UIAPI uivmouseinstalled( void )
 {
     return( MouseInstalled );
 }

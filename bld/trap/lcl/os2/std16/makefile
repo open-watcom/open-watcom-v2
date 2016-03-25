@@ -5,9 +5,10 @@
 host_cpu = i86
 host_os  = os2
 
-os      = os2
+target_cpu = x86
+target_os  = os2
+
 srv     = lcl
-cpu     = x86
 name    = std16
 which = TRAP
 

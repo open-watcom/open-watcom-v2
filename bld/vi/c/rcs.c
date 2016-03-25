@@ -32,8 +32,19 @@
 #include "vi.h"
 #include "rcscli.h"
 #include "rcs.h"
+#include "winexprt.h"
 #ifdef __WIN__
 #include "wprocmap.h"
+#endif
+
+
+/* Local Windows CALLBACK function prototypes */
+#if defined( VI_RCS )
+#if defined( __WINDOWS_386__ )
+WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie );
+#else
+WINEXPORT int RCSAPI Batcher( rcsstring cmd, void *cookie );
+#endif
 #endif
 
 #if defined( __WINDOWS_386__ )
@@ -122,7 +133,7 @@ bool ViRCSInit( void )
         LibHandle = (HINSTANCE)0;
         return( false );
     }
-#if defined( __WINDOWS_386__ )
+  #if defined( __WINDOWS_386__ )
     _16RCSGetVersion = (FARPROC)GetProcAddress( LibHandle, GETVER_FN_NAME );
     _16RCSInit = (FARPROC)GetProcAddress( LibHandle, INIT_FN_NAME );
     _16RCSCheckout = (FARPROC)GetProcAddress( LibHandle, CHECKOUT_FN_NAME );
@@ -135,7 +146,7 @@ bool ViRCSInit( void )
     _16RCSRegisterMessageBoxCallback = (FARPROC)GetProcAddress( LibHandle, REG_MSGBOX_CB_FN_NAME );
     _16RCSSetPause = (FARPROC)GetProcAddress( LibHandle, SET_PAUSE_FN_NAME );
     _16RCSFini = (FARPROC)GetProcAddress( LibHandle, FINI_FN_NAME );
-#else
+  #else
     RCSGetVersion = (RCSGetVersionFn *)GetProcAddress( LibHandle, GETVER_FN_NAME );
     RCSInit = (RCSInitFn *)GetProcAddress( LibHandle, INIT_FN_NAME );
     RCSCheckout = (RCSCheckoutFn *)GetProcAddress( LibHandle, CHECKOUT_FN_NAME );
@@ -148,7 +159,7 @@ bool ViRCSInit( void )
     RCSRegisterMessageBoxCallback = (RCSRegMsgBoxCbFn *)GetProcAddress( LibHandle, REG_MSGBOX_CB_FN_NAME );
     RCSSetPause = (RCSSetPauseFn *)GetProcAddress( LibHandle, SET_PAUSE_FN_NAME );
     RCSFini = (RCSFiniFn *)GetProcAddress( LibHandle, FINI_FN_NAME );
-#endif
+  #endif
     return( true );
 }
 
@@ -251,16 +262,12 @@ bool ViRCSFini( void )
 
 #if defined( VI_RCS )
 
-#if !defined( WINEXPORT )
-#define WINEXPORT
-#endif
-
-#if defined( __WINDOWS_386__ )
+  #if defined( __WINDOWS_386__ )
 
 WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie )
 {
     char    *p;
-    int     len;
+    size_t  len;
     int     rc;
 
     cookie = cookie;
@@ -272,7 +279,7 @@ WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie )
     return( rc );
 }
 
-#else
+  #else
 
 BatchCallback    Batcher;
 
@@ -282,24 +289,24 @@ WINEXPORT int RCSAPI Batcher( rcsstring cmd, void *cookie )
     return( ExecCmd( NULL, NULL, cmd ) == 0 );
 }
 
-#endif
+  #endif
 
 vi_rc ViRCSCheckout( vi_rc rc )
 {
     rcsdata r;
-#ifdef __WIN__
+  #ifdef __WIN__
     FARPROC fp;
-#endif
+  #endif
 
-#if defined( __WINDOWS_386__ )
+  #if defined( __WINDOWS_386__ )
     if( !( _16RCSInit == NULL || _16RCSRegisterBatchCallback == NULL || _16RCSQuerySystem == NULL
                      || _16RCSSetPause == NULL || _16RCSCheckout == NULL || _16RCSFini == NULL ) ) {
-#else
+  #else
     if( !( RCSInit == NULL || RCSRegisterBatchCallback == NULL || RCSQuerySystem == NULL
                      || RCSSetPause == NULL || RCSCheckout == NULL || RCSFini == NULL ) ) {
-#endif
-#ifdef __WIN__
-        r = _RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
+  #endif
+  #ifdef __WIN__
+        r = _RCSInit( (unsigned long)root_window_id, getenv( "WATCOM" ) );
     #if defined( __WINDOWS_386__ )
         DefineUserProc16( GETPROC_USERDEFINED_1, (PROCPTR)Batcher, UDP16_PTR, UDP16_PTR, UDP16_ENDLIST );
         fp = GetProc16( (PROCPTR)Batcher, GETPROC_USERDEFINED_1 );
@@ -308,10 +315,10 @@ vi_rc ViRCSCheckout( vi_rc rc )
         fp = MakeProcInstance( (FARPROC)Batcher, InstanceHandle );
         _RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
     #endif
-#else
+  #else
         r = _RCSInit( 0, getenv( "WATCOM" ) );
         RCSRegisterBatchCallback( r, Batcher, NULL );
-#endif
+  #endif
         if( _RCSQuerySystem( r ) != 0 ) {
             if( GenericQueryBool( "File is read only, check out?" ) ) {
                 char full1[FILENAME_MAX];
@@ -324,9 +331,9 @@ vi_rc ViRCSCheckout( vi_rc rc )
                 }
             }
         }
-#ifdef __WIN__
+  #ifdef __WIN__
         _ReleaseProc( fp );
-#endif
+  #endif
         _RCSFini( r );
     }
     return( rc );
@@ -335,19 +342,19 @@ vi_rc ViRCSCheckout( vi_rc rc )
 vi_rc ViRCSCheckin( vi_rc rc )
 {
     rcsdata r;
-#ifdef __WIN__
+  #ifdef __WIN__
     FARPROC fp;
-#endif
+  #endif
 
-#if defined( __WINDOWS_386__ )
+  #if defined( __WINDOWS_386__ )
     if( !( _16RCSInit == NULL || _16RCSRegisterBatchCallback == NULL
       || _16RCSSetPause == NULL || _16RCSCheckin == NULL || _16RCSFini == NULL ) ) {
-#else
+  #else
     if( !( RCSInit == NULL || RCSRegisterBatchCallback == NULL
       || RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL ) ) {
-#endif
-#ifdef __WIN__
-        r = _RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
+  #endif
+  #ifdef __WIN__
+        r = _RCSInit( (unsigned long)root_window_id, getenv( "WATCOM" ) );
     #if defined( __WINDOWS_386__ )
         DefineUserProc16( GETPROC_USERDEFINED_1, (PROCPTR)Batcher, UDP16_PTR, UDP16_PTR, UDP16_ENDLIST );
         fp = GetProc16( (PROCPTR)Batcher, GETPROC_USERDEFINED_1 );
@@ -356,10 +363,10 @@ vi_rc ViRCSCheckin( vi_rc rc )
         fp = MakeProcInstance( (FARPROC)Batcher, InstanceHandle );
         _RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
     #endif
-#else
+  #else
         r = _RCSInit( 0, getenv( "WATCOM" ) );
         RCSRegisterBatchCallback( r, Batcher, NULL );
-#endif
+  #endif
         _RCSSetPause( r, true );
         if( CurrentFile->modified ) {
             FilePromptForSaveChanges( CurrentFile );
@@ -368,9 +375,9 @@ vi_rc ViRCSCheckin( vi_rc rc )
             rc = ERR_NO_ERR;
             EditRCSCurrentFile();
         }
-#ifdef __WIN__
+  #ifdef __WIN__
         _ReleaseProc( fp );
-#endif
+  #endif
         _RCSFini( r );
     }
     return( rc );

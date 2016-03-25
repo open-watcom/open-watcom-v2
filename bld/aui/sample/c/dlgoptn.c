@@ -48,7 +48,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;

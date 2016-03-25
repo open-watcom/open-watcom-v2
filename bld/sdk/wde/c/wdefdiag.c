@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2852,7 +2853,7 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
             switch( GET_WM_COMMAND_CMD( wParam, lParam ) ) {
             case CBN_CLOSEUP:
                 /* get the currently selected item */
-                font_index = SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_GETCURSEL, 0, 0 );
+                font_index = (int)SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_GETCURSEL, 0, 0L );
 
                 if( font_index == CB_ERR ) {
                     WdeWriteTrail( "Could not get font index" );
@@ -2861,7 +2862,7 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
 
                 WdeDialogSetDialogPntInfo( hDlg, font_index );
 
-                SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_SETCURSEL, 0, 0 );
+                SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_SETCURSEL, 0, 0L );
 
                 break;
             }

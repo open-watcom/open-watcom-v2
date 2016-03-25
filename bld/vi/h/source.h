@@ -67,8 +67,9 @@ enum {
 #define SRC_HOOK_MOUSE_CHARSEL  0x0100
 #define SRC_HOOK_DDE            0x0200
 
-typedef int     hooktype;
-typedef char    *label;
+typedef int         hooktype;
+typedef char        *label;
+typedef unsigned    srcline;
 
 typedef enum {
     CS_IF,          /* an if/elseif block */
@@ -93,7 +94,7 @@ typedef struct cs_entry {
     label               alt;
     label               end;
     cstype              type;
-    unsigned            srcline;
+    srcline             sline;
 } cs_entry;
 
 struct sfile;
@@ -141,8 +142,10 @@ typedef enum branch_cond {
 } branch_cond;
 
 typedef struct sfile {
-    struct sfile    *next, *prev;
-    char            *arg1, *arg2;
+    struct sfile    *next;
+    struct sfile    *prev;
+    char            *arg1;
+    char            *arg2;
     int             token;
     branch_cond     branchcond;
     union {
@@ -150,7 +153,7 @@ typedef struct sfile {
         expr_oper   oper;
     } u;
     bool            hasvar;
-    unsigned        line;
+    srcline         sline;
     char            *data;
 } sfile;
 
@@ -171,59 +174,58 @@ extern char         *ErrorTokens;
 extern int          *ErrorValues;
 extern vars         *VarHead, *VarTail;
 extern long         CurrentSrcLabel;
-extern unsigned     CurrentSrcLine;
+extern srcline      CurrentSrcLine;
 extern int          CurrentSrcToken;
-extern char         *CurrentSrcData;
 
 /*
  * function prototypes
  */
  
 /* srcassgn.c */
-extern vi_rc    SrcAssign( char *, vlist * );
+extern vi_rc    SrcAssign( const char *, vlist * );
 
 /* srccs.c */
 extern void     CSInit( void );
 extern vi_rc    CSFini( void );
-extern void     CSIf( void );
-extern void     CSElseIf( void );
+extern void     CSIf( const char *data );
+extern void     CSElseIf( const char *data );
 extern void     CSElse( void );
 extern void     CSEndif( void );
-extern void     CSWhile( void );
+extern void     CSWhile( const char *data );
 extern void     CSLoop( void );
 extern void     CSEndLoop( void );
-extern void     CSUntil( void );
+extern void     CSUntil( const char *data );
 extern void     CSBreak( void );
 extern void     CSContinue( void );
-extern void     CSQuif( void );
+extern void     CSQuif( const char *data );
 
 /* srcexpnd.c */
-extern void     Expand( char *, vlist * );
+extern char     *Expand( char *, const char *, vlist * );
 
 /* srcexpr.c */
 extern vi_rc    SrcExpr( sfile *, vlist * );
 
 /* srcfile.c */
-extern vi_rc    SrcOpen( sfile *, vlist *, files *, char * );
-extern vi_rc    SrcRead( sfile *, files *, char *, vlist * );
-extern vi_rc    SrcWrite( sfile *, files *, char *, vlist * );
-extern vi_rc    SrcClose( sfile *, vlist *, files *, char * );
+extern vi_rc    SrcOpen( sfile *, vlist *, files *, const char * );
+extern vi_rc    SrcRead( sfile *, files *, const char *, vlist * );
+extern vi_rc    SrcWrite( sfile *, files *, const char *, vlist * );
+extern vi_rc    SrcClose( sfile *, vlist *, files *, const char * );
 
 /* srcgen.c */
 extern vi_rc    PreProcess( const char *, sfile **, labels * );
-extern void     GenJmpIf( branch_cond, label );
-extern void     GenJmp( label );
-extern void     GenLabel( label );
-extern void     GenTestCond( void );
+extern void     GenJmpIf( branch_cond, const char *lbl );
+extern void     GenJmp( const char *lbl );
+extern void     GenLabel( char *lbl );
+extern void     GenTestCond( const char *data );
 extern label    NewLabel( void );
 extern void     AbortGen( vi_rc );
 
 /* srcgoto.c */
-extern vi_rc    SrcGoTo( sfile **, label, labels * );
+extern vi_rc    SrcGoTo( sfile **, const char *lbl, labels * );
 
 /* srclabel.c */
-extern vi_rc    AddLabel( sfile *, labels *, label );
-extern int      FindLabel( labels *labs, label lbl );
+extern vi_rc    AddLabel( sfile *, labels *, const char *lbl );
+extern int      FindLabel( labels *labs, const char *lbl );
 
 /* srchook.c */
 extern vi_rc    SourceHook( hooktype, vi_rc );
@@ -236,25 +238,25 @@ extern vi_rc    InvokeMenuHook( int menunum, int line );
 
 /* srcif.c */
 extern vi_rc    SrcIf( sfile **, vlist * );
-extern vi_rc    GetErrorTokenValue( int *, char * );
+extern vi_rc    GetErrorTokenValue( int *, const char * );
 extern vi_rc    ReadErrorTokens( void );
 
 /* srcinp.c */
-extern vi_rc    SrcInput( char *, vlist * );
-extern void     SrcGet( char *, vlist * );
+extern vi_rc    SrcInput( const char *, vlist * );
+extern void     SrcGet( const char *, vlist * );
 
 /* srcnextw.c */
-extern vi_rc    SrcNextWord( char *, vlist * );
+extern vi_rc    SrcNextWord( const char *, vlist * );
 
 /* srcvar.c */
-extern void     VarAddGlobalStr( char *, char * );
+extern void     VarAddGlobalStr( const char *, const char * );
 extern void     VarAddRandC( void );
-extern void     VarAddGlobalLong( char *, long );
-extern void     VarAddStr( char *, char *, vlist * );
+extern void     VarAddGlobalLong( const char *, long );
+extern void     VarAddStr( const char *, const char *, vlist * );
 extern void     VarListDelete( vlist * );
-extern bool     VarName( char *, vlist * );
-extern vars     *VarFind( char *, vlist * );
+extern bool     VarName( char *, const char *, vlist * );
+extern vars     *VarFind( const char *, vlist * );
 
-extern bool     RunWindowsCommand( char *, vi_rc *, vlist * );
+extern bool     RunWindowsCommand( const char *, vi_rc *, vlist * );
 
 #endif

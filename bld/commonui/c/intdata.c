@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wdebug.h"
 #include "intdata.h"
 

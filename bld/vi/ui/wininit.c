@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
  */
 static void allocImage( void )
 {
-    int     i;
-    int     size;
+    size_t  i;
+    size_t  size;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
     ScreenImage = MemAlloc( size * sizeof( window_id ) );
@@ -66,24 +67,24 @@ void StartWindows( void )
 void FinishWindows( void )
 {
     cursor_type ct;
-    window_id   i;
+    window_id   wid;
 
     // Close Down All Straggling Windows
-    for( i = 0; i < MAX_WINDS; i++ ) {
-        if( Windows[i] != NULL ) {
-            // CloseAWindow( i );
+    for( wid = 0; wid < MAX_WINDS; wid++ ) {
+        if( WINDOW_FROM_ID( wid ) != NULL ) {
+            // CloseAWindow( wid );
         }
     }
 
     // Close down the windowing system.
 
     if( EditFlags.ZapColors ) {
-        int             i, total;
+        size_t  j, total;
 
         if( !EditFlags.Quiet && Scrn != NULL ) {
             total = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
-            for( i = 0; i < total; i++ ) {
-                Scrn[i].cinfo_attr = EditVars.ExitAttr;
+            for( j = 0; j < total; j++ ) {
+                Scrn[j].cinfo_attr = EditVars.ExitAttr;
             }
 #ifdef __VIO__
             MyVioShowBuf( 0, EditVars.WindMaxWidth * EditVars.WindMaxHeight );

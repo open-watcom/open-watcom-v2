@@ -107,7 +107,7 @@ endif
           _endif                        ; - endif
           fxch  st(1)                   ; - get arguments in right order
           fyl2x                         ; - ln(x) = ln(2) * log2(x)
-          mov   AL,0                    ; - indicate success
+          xor   AL,AL                   ; - indicate success
         _endif                          ; endif
         ret                             ; return
         endproc IF@LOG

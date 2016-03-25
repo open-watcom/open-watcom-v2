@@ -34,11 +34,6 @@
 #include "nmp.h"
 #include "bool.h"
 
-bool Terminate( void )
-{
-    // a sideways dive to terminate the link (with failure)
-    return( FALSE );
-}
 
 bhandle myopen( char *name )
 {

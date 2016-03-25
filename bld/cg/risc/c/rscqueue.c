@@ -42,6 +42,8 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "rscenc2.h"
+#include "optmain.h"
+
 
 extern  void    ObjBytes( const void *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
@@ -146,15 +148,17 @@ static  void    doInfo( any_oc *oc ) {
     }
 }
 
-extern  void    OutputOC( any_oc *oc ) {
-/**************************************/
-
+void    OutputOC( any_oc *oc, any_oc *next_lbl )
+/**********************************************/
+{
     oc_class            base;
     offset              lc;
     offset              len;
     label_handle        lbl;
 
     base = oc->oc_header.class & GET_BASE;
+    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+        return;
     if( base != OC_LABEL ) {
         dumpDebug();
     }

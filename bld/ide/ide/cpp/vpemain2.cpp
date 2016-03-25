@@ -246,22 +246,22 @@ bool VpeMain::reallyClose()
     return( false );
 }
 
-bool VpeMain::executeCommand( const char* c, int location, const char* title )
+bool VpeMain::executeCommand( const char *cmdl, int location, const char* title )
 {
     int i;
 
-    if( c && strlen( c ) > 0 ) {
+    if( cmdl != NULL && strlen( cmdl ) > 0 ) {
         WString* cur = NULL;
         WStringList opts;
-        for( i=0; c[i]!= '\0'; i++ ) {
+        for( i=0; cmdl[i]!= '\0'; i++ ) {
             if( cur ) {
-                if( c[i] == '"' ) {
+                if( cmdl[i] == '"' ) {
                     opts.add( cur );
                     cur = NULL;
                 } else {
-                    cur->concat( c[i] );
+                    cur->concat( cmdl[i] );
                 }
-            } else if( c[i] == '$' && c[i+1] == '"' ) {
+            } else if( cmdl[i] == '$' && cmdl[i+1] == '"' ) {
                 i++;
                 cur = new WString();
             }
@@ -281,16 +281,16 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
         }
         WString cmd;
         int j = 0;
-        for( i=0; c[i]!= '\0'; i++ ) {
+        for( i=0; cmdl[i]!= '\0'; i++ ) {
             if( !cur ) {
-                if( c[i] == '$' && c[i+1] == '"' ) {
+                if( cmdl[i] == '$' && cmdl[i+1] == '"' ) {
                     i++;
                     cur = &reps.stringAt( j );
                     j++;
                 } else {
-                    cmd.concat( c[i] );
+                    cmd.concat( cmdl[i] );
                 }
-            } else if( c[i] == '"' ) {
+            } else if( cmdl[i] == '"' ) {
                 cmd.concat( *cur );
                 cur = NULL;
             }

@@ -38,7 +38,7 @@
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
 {
     char        tmpname[_MAX_PATH];
     int         len;
@@ -48,7 +48,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
         len = strlen( tmpname );
         if( tmpname[len - 1] != FILE_SEP ) {
             tmpname[len] = FILE_SEP;
-            tmpname[len + 1] = 0;
+            tmpname[len + 1] = '\0';
         }
         strcat( tmpname, nd->d_name );
         stat( tmpname, &nd->d_stat );
@@ -66,7 +66,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
 /*
  * MyGetFileSize - do just that
  */
-int MyGetFileSize( char *inname, long *size )
+int MyGetFileSize( const char *inname, long *size )
 {
     struct stat sb;
 
@@ -154,7 +154,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[9] = 'x';
     }
 
-    tmp[NAMEWIDTH]=0;
+    tmp[NAMEWIDTH] = '\0';
 
     tt = file->time;
     tm = localtime( &tt );

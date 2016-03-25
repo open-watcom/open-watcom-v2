@@ -83,15 +83,11 @@ static void freeListItem( lib_list_info *curr )
 void FreeLibList( void )
 {
     lib_list_info   *curr;
-    lib_list_info   *next;
 
-    curr = listInfoHead;
-    while( curr != NULL ) {
-        next = curr->next;
+    while( (curr = listInfoHead) != NULL ) {
+        listInfoHead = curr->next;
         freeListItem( curr );
-        curr = next;
     }
-    listInfoHead = NULL;
     listInfoTail = NULL;
 }
 
@@ -150,9 +146,8 @@ void RemoveModuleFromLibList( char *module, char *filename )
     lib_list_info   *curr;
     lib_list_info   *prev;
 
-    curr = listInfoHead;
     prev = NULL;
-    while( curr != NULL ) {
+    for( curr = listInfoHead; curr != NULL; curr = curr->next ) {
         if( !stricmp( module, curr->modname ) && !stricmp( filename, curr->filename ) ) {
             if( prev == NULL ) {
                 listInfoHead = curr->next;
@@ -166,7 +161,6 @@ void RemoveModuleFromLibList( char *module, char *filename )
             return;
         }
         prev = curr;
-        curr = curr->next;
     }
 }
 
@@ -280,7 +274,7 @@ void AddProcess( header_info *hi )
  * NameFromProcess - get fully qualified filename for last DLL
  * that was loaded in process. Intended for Win9x.
  */
-BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
+static BOOL NameFromProcess( lib_load_info *lli, DWORD dwPID, char *name )
 {
     HANDLE          hModuleSnap = INVALID_HANDLE_VALUE;
     MODULEENTRY32   me32;
@@ -325,7 +319,7 @@ error_exit:
  * NameFromHandle - get fully qualified filename from file handle.
  * Intended for Windows NT.
  */
-BOOL NameFromHandle( HANDLE hFile, char *name )
+static BOOL NameFromHandle( HANDLE hFile, char *name )
 {
 #define BUFSIZE 512
     BOOL        bSuccess = FALSE;
@@ -668,9 +662,9 @@ trap_retval ReqGet_lib_name( void )
     for( i = 0; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             ret->handle = i;
-            name[0] = '\0';
+            *name = '\0';
             moduleInfo[i].newly_unloaded = FALSE;
-            return( sizeof( *ret ) );
+            return( sizeof( *ret ) + 1 );
         } else if( moduleInfo[i].newly_loaded ) {
             ret->handle = i;
             strcpy( name, moduleInfo[i].filename );

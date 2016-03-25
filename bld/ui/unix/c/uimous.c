@@ -46,11 +46,10 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     MouseCol = col;
 }
 
-void intern checkmouse( unsigned short *status, MOUSEORD *row,
-                        MOUSEORD *col, unsigned long *time )
-/**********************************************/
+void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
+/*************************************************************************************************/
 {
-    _checkmouse(status, row, col, time);
+    _checkmouse( status, row, col, time );
 }
 
 void intern stopmouse( void )
@@ -59,14 +58,14 @@ void intern stopmouse( void )
     _stopmouse();
 }
 
-bool UIAPI initmouse( int install )
-/**********************************/
+int UIAPI initmouse( int install )
+/********************************/
 {
-    return _initmouse( install );
+    return( _initmouse( install ) );
 }
 
 void UIAPI finimouse( void )
-/***************************/
+/**************************/
 {
     _finimouse();
 }
@@ -81,5 +80,5 @@ void UIAPI uimousespeed( unsigned speed )
  * For now, 10 will be fastest and 1 will be slowest.
  */
 {
-    _uimousespeed(speed);
+    _uimousespeed( speed );
 }

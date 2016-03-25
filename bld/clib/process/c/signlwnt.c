@@ -43,8 +43,10 @@
 #include "thread.h"
 #include "sigtab.h"
 #include "initsig.h"
+#include "exitwmsg.h"
 
-sigtab  _SignalTable[] = {
+
+static sigtab  _SignalTable[] = {
     { SIG_IGN, -1 },                                /* unused  */
     { SIG_DFL, -1 },                                /* SIGABRT */
     { SIG_DFL, -1 },                                /* SIGFPE  */
@@ -68,11 +70,11 @@ static __sig_func __SetSignalFunc( int sig, __sig_func new_func )
     __sig_func  prev_func = NULL;
 
     if(( sig == SIGBREAK ) || ( sig == SIGINT )) {
-        prev_func = _SignalTable[ sig ].func;
-        _SignalTable[ sig ].func = new_func;
+        prev_func = _SignalTable[sig].func;
+        _SignalTable[sig].func = new_func;
     } else {
-        prev_func = _RWD_sigtab[ sig ].func;
-        _RWD_sigtab[ sig ].func = new_func;
+        prev_func = _RWD_sigtab[sig].func;
+        _RWD_sigtab[sig].func = new_func;
     }
     return( prev_func );
 }
@@ -81,18 +83,18 @@ static __sig_func __SetSignalFunc( int sig, __sig_func new_func )
 static __sig_func __GetSignalFunc( int sig )
 {
     if(( sig == SIGBREAK ) || ( sig == SIGINT ))
-        return( _SignalTable[ sig ].func );
+        return( _SignalTable[sig].func );
 
-    return( _RWD_sigtab[ sig ].func );
+    return( _RWD_sigtab[sig].func );
 }
 
 
 static long __GetSignalOSCode( int sig )
 {
     if(( sig == SIGBREAK ) || ( sig == SIGINT ))
-        return( _SignalTable[ sig ].os_sig_code );
+        return( _SignalTable[sig].os_sig_code );
 
-    return( _RWD_sigtab[ sig ].os_sig_code );
+    return( _RWD_sigtab[sig].os_sig_code );
 }
 
 
@@ -161,7 +163,7 @@ static BOOL KillCtrlHandler( void )
 }
 
 
-void __sigabort( void )
+static void __sigabort( void )
 {
     raise( SIGABRT );
 }
@@ -217,6 +219,7 @@ _WCRTLINK int raise( int sig )
         if( func == SIG_DFL ) {
             __terminate();
         }
+        /* fall down */
     case SIGILL:
     case SIGINT:
     case SIGSEGV:
@@ -256,7 +259,7 @@ static void __SigInit( void )
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {
-        _RWD_sigtab[ i ] = _SignalTable[ i ];
+        _RWD_sigtab[i] = _SignalTable[i];
     }
 #endif
 

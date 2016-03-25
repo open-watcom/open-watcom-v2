@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +101,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
     int     text_copied;
     int     count;
 
-    count = SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
+    count = (int)SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
     if( count == 0 || count == LB_ERR || count < index ) {
         return( NULL );
     }
@@ -114,8 +115,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index,
-                                      (LPARAM)(LPSTR)cp );
+    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WRMemFree( cp );
@@ -134,7 +134,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
     int     text_copied;
     int     count;
 
-    count = SendDlgItemMessage( hDlg, id, CB_GETCOUNT, 0, 0 );
+    count = (int)SendDlgItemMessage( hDlg, id, CB_GETCOUNT, 0, 0L );
     if( count == 0 || count == CB_ERR || count < index ) {
         return( NULL );
     }

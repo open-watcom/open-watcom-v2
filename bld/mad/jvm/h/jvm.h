@@ -61,7 +61,7 @@ struct jvm_reg_info {
 
 struct mad_disasm_data {
     address             addr;
-    unsigned            radix;
+    mad_radix           radix;
     dis_dec_ins         ins;
 };
 

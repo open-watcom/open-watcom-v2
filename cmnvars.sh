@@ -16,6 +16,9 @@ if [ -z "$OWDEFPATH" ]; then
     export OWDEFWATCOM=$WATCOM
 fi
 
+# Subdirectory to be used for building OW build tools
+export OWOBJDIR=binbuild
+
 # Subdirectory to be used for build binaries
 export OWBINDIR=$OWROOT/build/bin
 

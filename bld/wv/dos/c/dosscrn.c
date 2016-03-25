@@ -42,12 +42,13 @@
 #include "dbgswtch.h"
 #include "dbginstr.h"
 #include "uidbg.h"
+#include "dbgcmdln.h"
+#include "dbglkup.h"
+
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
-extern int  Lookup( const char *, const char *, size_t );
-extern void WndDirty(void);
-extern void StartupErr( const char * );
+extern void WndDirty( void );
 
 flip_types              FlipMech;
 mode_types              ScrnMode;
@@ -118,24 +119,24 @@ extern unsigned MouseSaveSize();
 0X29 0XDB       /* sub    bx,bx                         */      \
 0XB8 0X15 0X00  /* mov    ax,0015                       */      \
 0XCD 0X33       /* int    33                            */      \
-                value [ bx ]                                    \
-                modify [ ax ];
+                value [bx]                                    \
+                modify [ax];
 
 
 extern void MouseSaveState();
 #pragma aux MouseSaveState =                                    \
 0XB8 0X16 0X00  /* mov    ax,0016                       */      \
 0XCD 0X33       /* int    33                            */      \
-                parm [ es ] [ dx ]                              \
-                modify [ ax ];
+                parm [es] [dx]                              \
+                modify [ax];
 
 
 extern void MouseRestoreState();
 #pragma aux MouseRestoreState =                                 \
 0XB8 0X17 0X00  /* mov    ax,0017                       */      \
 0XCD 0X33       /* int    33                            */      \
-                parm [ es ] [ dx ]                              \
-                modify [ ax ];
+                parm [es] [dx]                              \
+                modify [ax];
 
 
 extern display_configuration BIOSDevCombCode();
@@ -147,8 +148,8 @@ extern display_configuration BIOSDevCombCode();
 0X74 0X02       /* jz     *+2                           */      \
 0X29 0XDB       /* sub    bx,bx                         */      \
 0X5D            /* pop    bp                            */      \
-                value   [ bx ]                                  \
-                modify  [ ax ];
+                value   [bx]                                  \
+                modify  [ax];
 
 
 static display_configuration HWDisplay;
@@ -195,8 +196,8 @@ enum {
 0XB8 0X07 0X0E  /* mov    ax,0E07                       */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        parm caller [ax]                                      \
+        modify [bx];
 
 extern void DoRingBell( void );
 
@@ -254,15 +255,15 @@ static void DoSetMode( unsigned char mode )
 
 static bool TstMono( void )
 {
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
+    return( true );
 }
 
 
 static bool TstColour( void )
 {
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
+    return( true );
 }
 
 
@@ -324,9 +325,9 @@ static void GetDispConfig( void )
 
 static bool ChkForColour( hw_display_type display )
 {
-    if( ColourAdapters[ display ] <= 0 ) return( FALSE );
+    if( ColourAdapters[display] <= 0 ) return( false );
     ScrnMode = MD_COLOUR;
-    return( TRUE );
+    return( true );
 
 }
 
@@ -338,36 +339,36 @@ static void SwapActAlt( void )
     temp = HWDisplay.active;
     HWDisplay.active = HWDisplay.alt;
     HWDisplay.alt = temp;
-    OnAlt = TRUE;
+    OnAlt = true;
 }
 
 static bool ChkColour( void )
 {
-    if( ChkForColour( HWDisplay.active ) ) return( TRUE );
+    if( ChkForColour( HWDisplay.active ) ) return( true );
     if( ChkForColour( HWDisplay.alt    ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 static bool ChkForMono( hw_display_type display )
 {
-    if( ColourAdapters[ display ] >= 0 ) return( FALSE );
+    if( ColourAdapters[display] >= 0 ) return( false );
     ScrnMode = MD_MONO;
-    return( TRUE );
+    return( true );
 }
 
 
 static bool ChkMono( void )
 {
-    if( ChkForMono( HWDisplay.active ) ) return( TRUE );
+    if( ChkForMono( HWDisplay.active ) ) return( true );
     if( ChkForMono( HWDisplay.alt    ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -377,24 +378,24 @@ static bool ChkForEGA( hw_display_type display )
     case DISP_EGA_COLOUR:
     case DISP_VGA_COLOUR:
         ScrnMode = MD_EGA;
-        return( TRUE );
+        return( true );
     case DISP_EGA_MONO:
     case DISP_VGA_MONO:
         ScrnMode = MD_EGA;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 static bool ChkEGA( void )
 {
-    if( ChkForEGA( HWDisplay.active ) ) return( TRUE );
+    if( ChkForEGA( HWDisplay.active ) ) return( true );
     if( ChkForEGA( HWDisplay.alt    ) ) {
         SwapActAlt();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -402,7 +403,7 @@ static void GetDefault( void )
 {
     if( StrtMode == 0x07 || StrtMode == 0x0f ) {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkColour() == FALSE ) {
+            if( ChkColour() == false ) {
                 FlipMech = FLIP_SWAP;
                 ChkMono();
             }
@@ -411,7 +412,7 @@ static void GetDefault( void )
         }
     } else {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkMono() == FALSE ) {
+            if( ChkMono() == false ) {
                 FlipMech = FLIP_PAGE;
                 ChkColour();
             }
@@ -570,7 +571,7 @@ static void SaveBIOSSettings( void )
 
 unsigned ConfigScreen( void )
 {
-    OnAlt = FALSE;
+    OnAlt = false;
 
     GetDispConfig();
 
@@ -602,13 +603,13 @@ unsigned ConfigScreen( void )
         GetDefault();
         break;
     case MD_MONO:
-        if( ChkMono() == FALSE ) GetDefault();
+        if( ChkMono() == false ) GetDefault();
         break;
     case MD_COLOUR:
-        if( ChkColour() == FALSE ) GetDefault();
+        if( ChkColour() == false ) GetDefault();
         break;
     case MD_EGA:
-        if( ChkEGA() == FALSE ) GetDefault();
+        if( ChkEGA() == false ) GetDefault();
         break;
     }
     /* get flip mechanism to use */
@@ -628,9 +629,9 @@ unsigned ConfigScreen( void )
 
 static bool SetMode( unsigned char mode )
 {
-    if( (BIOSGetMode() & 0x7f) == (mode & 0x7f) ) return( FALSE );
+    if( (BIOSGetMode() & 0x7f) == (mode & 0x7f) ) return( false );
     DoSetMode( mode );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -880,7 +881,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    char user_mode;
+    char    user_mode;
     bool    usr_vis;
 
     if( (StrtAttr != 0) && (DbgBiosMode == StrtMode) ) {
@@ -888,9 +889,9 @@ bool UsrScrnMode( void )
         UIData->attrs[ATTR_BRIGHT]  = StrtAttr ^ 0x8;
         UIData->attrs[ATTR_REVERSE] = (StrtAttr&0x07)<<4 | (StrtAttr&0x70)>>4;
     }
-    usr_vis = FALSE;
+    usr_vis = false;
     if( FlipMech == FLIP_TWO ) {
-        usr_vis = TRUE;
+        usr_vis = true;
         SaveMouse( DbgMouse );
         RestoreMouse( PgmMouse );
         user_mode = (DbgBiosMode == 7) ? 3 : 7;
@@ -907,7 +908,6 @@ bool UsrScrnMode( void )
     if( DbgRows != UIData->height ) {
         UIData->height = DbgRows;
         if( _IsOn( SW_USE_MOUSE ) ) {
-            extern int  initmouse( int );
             /*
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
@@ -940,7 +940,7 @@ bool DebugScreen( void )
 {
     bool    usr_vis;
 
-    usr_vis = TRUE;
+    usr_vis = true;
     SaveMouse( PgmMouse );
     SaveBIOSSettings();
     switch( FlipMech ) {
@@ -948,7 +948,7 @@ bool DebugScreen( void )
         SwapSave();
         BIOSSetPage( 0 );
         WndDirty();
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_PAGE:
         if( SetMode( DbgBiosMode ) ) {
@@ -957,7 +957,7 @@ bool DebugScreen( void )
             WndDirty();
         }
         BIOSSetPage( 1 );
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     case FLIP_OVERWRITE:
         if( SetMode( DbgBiosMode ) ) {
@@ -965,7 +965,7 @@ bool DebugScreen( void )
             SaveBIOSSettings();
         }
         WndDirty();
-        usr_vis = FALSE;
+        usr_vis = false;
         break;
     }
     RestoreMouse( DbgMouse );
@@ -982,16 +982,16 @@ bool UserScreen( void )
 {
     bool    dbg_vis;
 
-    dbg_vis = TRUE;
+    dbg_vis = true;
     uiswap();
     SaveMouse( DbgMouse );
     switch( FlipMech ) {
     case FLIP_SWAP:
         SwapRestore();
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     case FLIP_PAGE:
-        dbg_vis = FALSE;
+        dbg_vis = false;
         break;
     }
     BIOSSetPage( SavePage );
@@ -1113,10 +1113,10 @@ static ATTR OldAttr;
 void uimouse( int func )
 {
     if( func == 1 ) {
-        MouseOn = TRUE;
+        MouseOn = true;
     } else {
         uisetmouse( 0, OFF_SCREEN );
-        MouseOn = FALSE;
+        MouseOn = false;
     }
 }
 
@@ -1233,9 +1233,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

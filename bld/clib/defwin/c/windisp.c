@@ -80,7 +80,7 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 
     for( i=1; i<end; i++ ) {
         if( ld == NULL ) {
-            _DisplayLineInWindow( w, i, (LPSTR) " " );
+            _DisplayLineInWindow( w, i, " " );
         } else {
             _DisplayLineInWindow( w, i, ld->data );
             ln++;
@@ -97,43 +97,50 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
                         int c2, int extra, int startcol )
 {
-    LPSTR       tmp;
-    char        buff[256];
-    int         start,end,a,spend,cnt1,cnt2;
-    WORD        i;
-    HWND        hwnd;
+  #ifdef _MBCS
+    LPBYTE          tmp;
+  #else
+    LPSTR           tmp;
+  #endif
+    char            buff[256];
+    int             start,end,a,spend,cnt1,cnt2;
+    WORD            i;
+    HWND            hwnd;
 
     hwnd = w->hwnd;
 
     /*** Find dimensions of line ***/
-    #ifdef _MBCS
-        tmp = (LPSTR) FAR_mbsninc( text, startcol );
-        a = FAR_mbslen( tmp );
-        if( line<1 || line>=w->height )  return;
-        start = 0;
-        spend = end = w->width - extra;
-        if( a < end )
-            end = a;
-        cnt1 = FAR_mbsnbcnt( tmp, end-start );
-        cnt2 = spend - end;
-        FAR_mbsnbcpy( buff, tmp, cnt1-start );
-        FARmemset( buff+cnt1, ' ', cnt2 );
-        tmp = (LPSTR) FAR_mbsninc( buff, cnt1+cnt2 );
-        *tmp = '\0';
-    #else
-        tmp = text;
-        tmp += startcol;
-        a = FARstrlen( tmp );
-        if( line < 1 || line >= w->height ) return;
-        start = 0;
-        spend = end = w->width-extra;
-        if( a < end ) end = a;
-        cnt1 = end-start;
-        cnt2 = spend-end;
-        FARmemcpy( buff, tmp, cnt1 );
-        FARmemset( buff+cnt1, ' ', cnt2 );
-        buff[cnt1+cnt2] = 0;
-    #endif
+  #ifdef _MBCS
+    tmp = FAR_mbsninc( (LPBYTE)text, startcol );
+    a = FAR_mbslen( tmp );
+    if( line < 1 || line >= w->height )
+        return;
+    start = 0;
+    spend = end = w->width - extra;
+    if( end > a )
+        end = a;
+    cnt1 = FAR_mbsnbcnt( tmp, end - start );
+    cnt2 = spend - end;
+    FAR_mbsnbcpy( (LPBYTE)buff, tmp, cnt1 - start );
+    FARmemset( buff + cnt1, ' ', cnt2 );
+    tmp = FAR_mbsninc( (LPBYTE)buff, cnt1 + cnt2 );
+    *tmp = '\0';
+  #else
+    tmp = text;
+    tmp += startcol;
+    a = FARstrlen( tmp );
+    if( line < 1 || line >= w->height )
+        return;
+    start = 0;
+    spend = end = w->width - extra;
+    if( end > a )
+        end = a;
+    cnt1 = end - start;
+    cnt2 = spend - end;
+    FARmemcpy( buff, tmp, cnt1 );
+    FARmemset( buff + cnt1, ' ', cnt2 );
+    buff[cnt1 + cnt2] = 0;
+  #endif
     line--;
 
 #if defined( __OS2__ )
@@ -149,21 +156,21 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         _SelectFont( ps );
         GpiQueryTextBox( ps, startcol, w->tmpbuff->data, TXTBOX_COUNT, points );
         rcl.xLeft = points[TXTBOX_BOTTOMRIGHT].x;
-        #ifdef _MBCS
-            GpiQueryTextBox( ps, __mbslen(buff), buff, TXTBOX_COUNT, points );
-        #else
-            GpiQueryTextBox( ps, strlen(buff), buff, TXTBOX_COUNT, points );
-        #endif
+    #ifdef _MBCS
+        GpiQueryTextBox( ps, __mbslen( (unsigned char *)buff ), buff, TXTBOX_COUNT, points );
+    #else
+        GpiQueryTextBox( ps, strlen( buff ), buff, TXTBOX_COUNT, points );
+    #endif
         rcl.xRight = points[TXTBOX_BOTTOMRIGHT].x;
         rcl.yTop = (w->y2 - w->y1) - line*w->ychar;
         rcl.yBottom = rcl.yTop - w->ychar;
         WinFillRect( ps, &rcl, c1 );
         GpiSetColor( ps, c2 );
-        #ifdef _MBCS
-            GpiCharStringAt( ps, &ptl, _mbsnbcnt(buff,w->width), buff );
-        #else
-            GpiCharStringAt( ps, &ptl, w->width, buff );
-        #endif
+    #ifdef _MBCS
+        GpiCharStringAt( ps, &ptl, _mbsnbcnt(buff,w->width), buff );
+    #else
+        GpiCharStringAt( ps, &ptl, w->width, buff );
+    #endif
         WinReleasePS( ps );
     }
 #else
@@ -180,11 +187,11 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
 //          GetTextExtentPoint( dc, buff, strlen(buff), &size );
 //      #endif
 //
-        #ifdef _MBCS
-            TextOut( dc, 0, line*w->ychar, buff, FAR_mbsnbcnt(buff,w->width) );
-        #else
-            TextOut( dc, 0, line*w->ychar, buff, w->width );
-        #endif
+    #ifdef _MBCS
+        TextOut( dc, 0, line * w->ychar, (LPSTR)buff, FAR_mbsnbcnt( (LPBYTE)buff, w->width ) );
+    #else
+        TextOut( dc, 0, line * w->ychar, buff, w->width );
+    #endif
 
         /*** Clear to end of line to remove any residue ***/
 //      GetClientRect( w->hwnd, &rect );
@@ -197,23 +204,23 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
 #endif
 
     /*** Update the w->image array ***/
-    #ifdef _MBCS
+#ifdef _MBCS
     {
         mb_char         mbc;
-        char *          curMbc;
+        unsigned char   *curMbc;
         int             count;
 
-        i = line*w->width + startcol;
-        for( count=0,curMbc=buff; count<w->width-startcol; count++ ) {
+        i = line * w->width + startcol;
+        for( count = 0, curMbc = (unsigned char *)buff; count < w->width - startcol; count++ ) {
             mbc = _mbsnextc( curMbc );          /* get the character */
             curMbc = _mbsinc( curMbc );         /* point to next char */
-            w->image[i+count] = mbc;            /* store it in w->image */
+            w->image[i + count] = mbc;          /* store it in w->image */
         }
     }
-    #else
-        i = line*w->width + startcol;
-        FARmemcpy( &w->image[i], buff, w->width-startcol );
-    #endif
+#else
+    i = line * w->width + startcol;
+    FARmemcpy( &w->image[i], buff, w->width - startcol );
+#endif
 } /* _DisplayLineInWindowWithColor */
 
 /*
@@ -239,18 +246,19 @@ void _ClearWindow( LPWDATA w )
     hwnd = w->hwnd;
 
     /*** Clear the w->image array ***/
-    #ifdef _MBCS
+#ifdef _MBCS
     {
         mb_char         mbc;
         int             count;
 
-        mbc = _mbsnextc( " " );
-        for( count=0; count<w->width*w->height; count++ )
+        mbc = _mbsnextc( (unsigned char *)" " );
+        for( count=0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
+        }
     }
-    #else
-        FARmemset( w->image, 0x20, w->width*w->height );
-    #endif
+#else
+    FARmemset( w->image, 0x20, w->width*w->height );
+#endif
 
 #if defined( __OS2__ )
     {
@@ -268,13 +276,13 @@ void _ClearWindow( LPWDATA w )
         HDC     dc;
 
         dc = GetDC( hwnd );
-        #ifndef __NT__
-            UnrealizeObject( w->brush );
-        #endif
+    #ifndef __NT__
+        UnrealizeObject( w->brush );
+    #endif
         SelectObject( dc, w->brush );
-        #ifdef __NT__
-            SetBrushOrgEx( dc, 0, 0, NULL  );
-        #endif
+    #ifdef __NT__
+        SetBrushOrgEx( dc, 0, 0, NULL  );
+    #endif
         GetClientRect( hwnd, &rect );
         FillRect( dc, &rect, w->brush );
         ReleaseDC( hwnd, dc );
@@ -298,43 +306,44 @@ void _ShiftWindow( LPWDATA w, int diff )
 
 #if defined( __OS2__ )
     {
-    RECTL       rcl;
+        RECTL       rcl;
 
-    WinQueryWindowRect( hwnd, &rcl );
-    WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULL, NULL,
-                     SW_INVALIDATERGN );
+        WinQueryWindowRect( hwnd, &rcl );
+        WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULL, NULL, SW_INVALIDATERGN );
     }
 #else
     {
-    RECT        rect;
+        RECT        rect;
 
-    GetClientRect( hwnd, &rect );
-    i = (rect.bottom+1) / w->ychar;
-    rect.bottom = i * w->ychar;
-    ScrollWindow( hwnd, 0, amt, NULL, &rect );
+        GetClientRect( hwnd, &rect );
+        i = (rect.bottom + 1) / w->ychar;
+        rect.bottom = i * w->ychar;
+        ScrollWindow( hwnd, 0, amt, NULL, &rect );
     }
 #endif
 
     if( diff < 0 ) {
-        sline = w->height-3+diff;
-        if( sline < 0 ) sline = 0;
+        sline = w->height - 3 + diff;
+        if( sline < 0 )
+            sline = 0;
         eline = 0;
         add = -1;
     } else {
         sline = diff;
-        eline = w->height-1;
-        if( eline < sline ) eline = sline;
+        eline = w->height - 1;
+        if( eline < sline )
+            eline = sline;
         add = 1;
     }
     i = sline;
     while( i != eline ) {
-        txt_s = (LPSTR) &w->image[i*w->width];
-        txt_d = (LPSTR) &w->image[(i-diff)*w->width];
-        #ifdef _MBCS
-            FARmemcpy( txt_d, txt_s, sizeof(mb_char)*w->width );
-        #else
-            FARmemcpy( txt_d, txt_s, w->width );
-        #endif
+        txt_s = (LPSTR)&w->image[i * w->width];
+        txt_d = (LPSTR)&w->image[(i - diff) * w->width];
+#ifdef _MBCS
+        FARmemcpy( txt_d, txt_s, sizeof( mb_char ) * w->width );
+#else
+        FARmemcpy( txt_d, txt_s, w->width );
+#endif
         i += add;
     }
 
@@ -347,35 +356,38 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
 {
     int height;
 
-    height = (y2-y1+1)/w->ychar+1;
+    height = (y2 - y1 + 1) / w->ychar + 1;
     if( w->CurrentLineNumber - w->TopLineNumber >= height ) {
-        w->CurrentLineNumber = w->TopLineNumber + height-1;
+        w->CurrentLineNumber = w->TopLineNumber + height - 1;
     }
 
     w->x1 = x1;
     w->x2 = x2;
     w->y1 = y1;
     w->y2 = y2;
-    w->width = (x2-x1+1)/w->xchar+1;
+    w->width = (x2 - x1 + 1) / w->xchar + 1;
     w->height = height;
 
     /*** Initialize a new w->image array ***/
     _MemFree( w->image );
-    #ifdef _MBCS
+#ifdef _MBCS
     {
         mb_char         mbc;
         int             count;
 
-        w->image = _MemAlloc( sizeof(mb_char)*w->width*w->height );
-        mbc = _mbsnextc( " " );
-        for( count=0; count<w->width*w->height; count++ )
+        w->image = _MemAlloc( sizeof( mb_char ) * w->width * w->height );
+        mbc = _mbsnextc( (unsigned char *)" " );
+        for( count = 0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
+        }
     }
-    #else
-        w->image = _MemAlloc( w->width*w->height );
-        FARmemset( w->image, 0x20, w->width*w->height );
-    #endif
+#else
+    w->image = _MemAlloc( w->width * w->height );
+    FARmemset( w->image, 0x20, w->width * w->height );
+#endif
 
-    if( w->width > w->maxwidth ) w->maxwidth = w->width;
+    if( w->width > w->maxwidth ) {
+        w->maxwidth = w->width;
+    }
 
 } /* _ResizeWin */

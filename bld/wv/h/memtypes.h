@@ -32,10 +32,10 @@
 
 typedef struct {
     mad_type_handle     type;
-    char                items_per_line;
-    char                item_size;
-    char                item_width;
-    char                piece_radix;
+    unsigned char       items_per_line;
+    unsigned char       item_size;
+    unsigned char       item_width;
+    mad_radix           piece_radix;
 } mem_type_info;
 
 typedef struct {

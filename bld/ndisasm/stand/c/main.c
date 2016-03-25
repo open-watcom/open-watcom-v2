@@ -32,8 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "main.h"
 #include "init.h"
 #include "fini.h"
@@ -85,7 +85,7 @@ extern char             *SourceFileInObject;
 
 static void printUnixHeader( section_ptr sec )
 {
-    char                alignment;
+    orl_sec_alignment   alignment;
     orl_sec_flags       flags;
     orl_sec_type        type;
     char                attributes[10];
@@ -127,7 +127,7 @@ static void printUnixHeader( section_ptr sec )
         if( flags & ORL_SEC_FLAG_SHARED ) {
             *ca++ = 's';
         }
-        *ca++ = '0' + alignment;
+        *ca++ = '0' + (char)alignment;
         *ca = '\0';
 
         if( !( DFormat & DFF_ASM ) ){
@@ -163,16 +163,16 @@ static void printUnixHeader( section_ptr sec )
 static char *getAlignment( orl_sec_alignment alignment )
 {
     switch( alignment ) {
-    case( 0 ):
+    case 0:
         return( "BYTE" );
-    case( 1 ):
+    case 1:
         return( "WORD" );
-    case( 2 ):
+    case 2:
         return( "DWORD" );
-    case( 4 ):
+    case 4:
         return( "PARA" );
-    case( 8 ):
-    case( 12 ):
+    case 8:
+    case 12:
         return( "PAGE" );
     default:
         return( "" );
@@ -193,15 +193,15 @@ static char *getUse( orl_sec_flags flags )
 static char *getAlloc( orl_sec_combine combine )
 {
     switch( combine & ORL_SEC_COMBINE_COMDAT_ALLOC_MASK ) {
-    case( ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC ):
+    case ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC:
         return( "EXPLICIT" );
-    case( ORL_SEC_COMBINE_COMDAT_ALLOC_CODE16 ):
+    case ORL_SEC_COMBINE_COMDAT_ALLOC_CODE16:
         return( "CODE16" );
-    case( ORL_SEC_COMBINE_COMDAT_ALLOC_CODE32 ):
+    case ORL_SEC_COMBINE_COMDAT_ALLOC_CODE32:
         return( "CODE32" );
-    case( ORL_SEC_COMBINE_COMDAT_ALLOC_DATA16 ):
+    case ORL_SEC_COMBINE_COMDAT_ALLOC_DATA16:
         return( "DATA16" );
-    case( ORL_SEC_COMBINE_COMDAT_ALLOC_DATA32 ):
+    case ORL_SEC_COMBINE_COMDAT_ALLOC_DATA32:
         return( "DATA32" );
     default:
         return( "" );
@@ -212,13 +212,13 @@ static char *getAlloc( orl_sec_combine combine )
 static char *getPick( orl_sec_combine combine )
 {
     switch( combine & ORL_SEC_COMBINE_COMDAT_PICK_MASK ) {
-    case( ORL_SEC_COMBINE_COMDAT_PICK_NONE ):
+    case ORL_SEC_COMBINE_COMDAT_PICK_NONE:
         return( "NONE" );
-    case( ORL_SEC_COMBINE_COMDAT_PICK_ANY ):
+    case ORL_SEC_COMBINE_COMDAT_PICK_ANY:
         return( "ANY" );
-    case( ORL_SEC_COMBINE_COMDAT_PICK_SAME ):
+    case ORL_SEC_COMBINE_COMDAT_PICK_SAME:
         return( "SAME" );
-    case( ORL_SEC_COMBINE_COMDAT_PICK_EXACT ):
+    case ORL_SEC_COMBINE_COMDAT_PICK_EXACT:
         return( "EXACT" );
     default:
         return( "" );
@@ -229,13 +229,13 @@ static char *getPick( orl_sec_combine combine )
 static char *getCombine( orl_sec_combine combine )
 {
     switch( combine & ORL_SEC_COMBINE_MASK ) {
-    case( ORL_SEC_COMBINE_PRIVATE ):
+    case ORL_SEC_COMBINE_PRIVATE:
         return( "PRIVATE" );
-    case( ORL_SEC_COMBINE_PUBLIC ):
+    case ORL_SEC_COMBINE_PUBLIC:
         return( "PUBLIC" );
-    case( ORL_SEC_COMBINE_STACK ):
+    case ORL_SEC_COMBINE_STACK:
         return( "STACK" );
-    case( ORL_SEC_COMBINE_COMMON ):
+    case ORL_SEC_COMBINE_COMMON:
         return( "COMMON" );
     default:
         return( "" );

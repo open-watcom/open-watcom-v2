@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,14 @@
 
 #include "vi.h"
 #include <malloc.h>
-#include "fcbmem.h"
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <os2.h>
+#include "fcbmem.h"
+#include "getspcmd.h"
 
-char _NEAR * _NEAR ExeExtensions[] = { ".cmd", ".exe" };
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
 
-char _NEAR * _NEAR InternalCommands[] = {
+const char _NEAR * _NEAR InternalCommands[] = {
     "BREAK",
     "CALL",
     "CD",
@@ -80,7 +80,12 @@ char _NEAR * _NEAR InternalCommands[] = {
     "VERIFY",
     "VOL"
 };
+
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char _NEAR * );
+
+const char _NEAR * _NEAR ExeExtensions[] = { ".cmd", ".exe" };
+
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
 
 void ResetSpawnScreen( void )
 {
@@ -92,18 +97,13 @@ long MySpawn( const char *cmd )
     RESULTCODES         returncodes;
     char                path[_MAX_PATH];
     char                all[_MAX_PATH + 128];
-    char                *dest, *src;
     cmd_struct          cmds;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0x00;
-
-    src = path;
-    dest = all;
-    while( *dest++ = *src++ );
-    src = cmds.cmd;
-    while( *dest++ = *src++ );
-    *dest = 0;
+    cmds.cmd[cmds.len] = '\0';
+    strcpy( all, path );
+    strcat( all, " " );
+    strcat( all, cmds.cmd );
 
     rc = DosExecPgm( NULL, 0, EXEC_SYNC, all, NULL, &returncodes, path );
     if( rc != 0 ) {

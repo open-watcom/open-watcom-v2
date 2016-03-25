@@ -158,9 +158,9 @@ _WCRTLINK extern void *realloc( void *__ptr, size_t __size );
 
 :segment DOS
 #if defined(__OS2__) && !defined(_M_I86)
-_WCRTLINK int _use_os2_high_mem( int __himem );     /* Returns prior setting */
-_WCRTLINK void *_os2lmalloc( size_t __size );
-_WCRTLINK void *_os2hmalloc( size_t __size );
+_WCRTLINK extern int _use_os2_high_mem( int __himem );     /* Returns prior setting */
+_WCRTLINK extern void *_os2lmalloc( size_t __size );
+_WCRTLINK extern void *_os2hmalloc( size_t __size );
 #endif
 
 :endsegment

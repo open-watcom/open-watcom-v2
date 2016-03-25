@@ -73,7 +73,7 @@
 #define ERR_PATCH_ABORTED               40
 #define ERR_WRONG_CHECKSUM              41
 #define ERR_USE_REAL                    42
-#define ERR_CANT_GET_ATTRIBUTES     43
+#define ERR_CANT_GET_ATTRIBUTES         43
 #define MSG_SUCCESSFULLY_PATCHED        44
 
 /* messages common to all */
@@ -88,6 +88,9 @@
 #define ERR_MEMORY_OUT                  55
 #define MSG_ERROR                       56
 #define ERR_NO_SYNCSTRING               57
+#define ERR_CANT_DELETE                 58
+#define ERR_CANT_CREATE                 59
+#define ERR_CANT_CREATE_TMP             60
 
 #define MSG_LANG_SPACING    1000
 
@@ -96,10 +99,6 @@
 /* From msg.c */
 int MsgInit( void );
 void MsgFini( void );
-
-/* From myio.c */
-void Input( MY_FILE *file, void *tmp, foff off, size_t len );
-void Output( MY_FILE *file, void *tmp, foff off, size_t len );
 
 typedef enum {
     PATCH_RET_OKAY,
@@ -118,4 +117,5 @@ typedef enum {
     PATCH_RET_CANCEL,
     PATCH_BAD_CHECKSUM
 } PATCH_RET_CODE;
+
 #endif

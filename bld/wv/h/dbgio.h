@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "sysdef.h"
 
-typedef int             handle;
-typedef error_idx       rc_erridx;
 
 typedef unsigned_8 seek_method; enum {
     DIO_SEEK_ORG,
@@ -52,35 +51,58 @@ typedef unsigned_8 open_access; enum {
     OP_SEARCH       = 0x80
 };
 
-#define NIL_HANDLE      ( (handle) -1 )
+#define NIL_HANDLE      ((file_handle)-1)
 
-#define ERR_RETURN      ( (unsigned)-1 )
+#define ERR_RETURN      ((size_t)-1)
+#define ERR_SEEK        ((unsigned long)-1L)
 
 #define STD_IN          0
 #define STD_OUT         1
 #define STD_ERR         2
 
-unsigned        ReadStream( handle, void *, unsigned );
-unsigned        ReadText( handle, void *, unsigned );
+extern size_t           ReadStream( file_handle, void *, size_t );
+extern size_t           ReadText( file_handle, void *, size_t );
 
-unsigned        WriteStream( handle, const void *, unsigned );
-unsigned        WriteNL( handle );
-unsigned        WriteText( handle, const void *, unsigned );
+extern size_t           WriteStream( file_handle, const void *, size_t );
+extern size_t           WriteNL( file_handle );
+extern size_t           WriteText( file_handle, const void *, size_t );
 
-unsigned long   SeekStream( handle, long, seek_method );
+extern unsigned long    SeekStream( file_handle, long, seek_method );
 
-handle          FileOpen( char const *, open_access );
-rc_erridx       FileClose( handle );
-rc_erridx       FileRemove( char const *, open_access );
-open_access     FileHandleInfo( handle );
-const char      *FileLoc( char const *, open_access * );
+extern file_handle      FileOpen( char const *, open_access );
+extern error_handle     FileClose( file_handle );
+extern error_handle     FileRemove( char const *, open_access );
+extern const char       *FileLoc( char const *, open_access * );
+extern open_access      FileHandleInfo( file_handle );
+extern sys_handle       GetSystemHandle( file_handle );
 
-char            *SysErrMsg( error_idx, char * );
-error_idx       StashErrCode( sys_error, open_access );
+extern char             *SysErrMsg( error_handle, char *buff );
+extern error_handle     StashErrCode( sys_error, open_access );
+extern error_handle     GetLastErr( void );
+extern sys_error        GetSystemErrCode( error_handle );
 
-const char      *SkipPathInfo( char const *, open_access );
-const char      *ExtPointer( char const *, open_access );
-char            *AppendPathDelim( char *, open_access );
-unsigned        MakeFileName( char *, const char *, const char *, open_access );
+extern const char       *SkipPathInfo( char const *, open_access );
+extern const char       *ExtPointer( char const *, open_access );
+extern char             *AppendPathDelim( char *, open_access );
+extern size_t           MakeFileName( char *result, const char *name, const char *ext, open_access loc );
+extern const char       *RealFName( char const *name, open_access *loc );
+extern bool             IsAbsolutePath( const char *path );
+extern char             *AppendPathDelim( char *path, open_access loc );
+extern const char       *ExtPointer( char const *path, open_access loc );
+extern file_handle      LclStringToFullName( const char *name, size_t len, char *full );
+extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
+extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
+extern file_handle      PathOpen( const char *name, size_t name_len, const char *ext );
+extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *ext );
 
-bool            FindWritable( char const *, char * );
+extern bool             FindWritable( char const *, char * );
+#if !defined( BUILD_RFX )
+extern bool             FindWritable( char const *src, char *dst );
+#endif
+
+extern void             WriteToPgmScreen( const void *buff, size_t len );
+extern void             SysFileInit( void );
+#if !defined( BUILD_RFX )
+extern void             PathFini( void );
+#endif
+extern void             PathInit( void );

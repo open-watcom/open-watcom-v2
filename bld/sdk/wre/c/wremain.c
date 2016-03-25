@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <ddeml.h>
 #include <stdio.h>
 #include <string.h>
@@ -822,7 +822,6 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             ai.inst = WREInst;
             ai.name = AllocRCString( WRE_ABOUT_NAME );
             ai.version = AllocRCString( WRE_ABOUT_VERSION );
-            ai.first_cr_year = "1984";
             ai.title = AllocRCString( WRE_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
@@ -1059,7 +1058,8 @@ void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 
 BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    UINT        msecs, timer, start;
+    UINT        msecs, start;
+    UINT_PTR    timer;
     HDC         dc, tdc;
     HBITMAP     old;
     HWND        w666;
@@ -1094,7 +1094,7 @@ BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
         if( msecs != 0 ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
             if( timer != 0 ) {
-                SET_DLGDATA( hDlg, (LONG)timer );
+                SET_DLGDATA( hDlg, timer );
             }
         }
 
@@ -1167,7 +1167,7 @@ BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
         break;
 
     case WM_TIMER:
-        timer = (UINT)GET_DLGDATA( hDlg );
+        timer = (UINT_PTR)GET_DLGDATA( hDlg );
         if( timer != 0 ) {
             KillTimer( hDlg, timer );
         }

@@ -776,7 +776,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         if( asgn_check ) {
             if( IsPtrtoFunc( typ1 ) ) {
                 if( parmno ) {
-                    CWarn2( WARN_POINTER_TYPE_MISMATCH, ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
+                    CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
                 } else {
                     CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
                 }
@@ -798,7 +798,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         break;
     case PM:
         if( parmno ) {
-            CWarn2( WARN_POINTER_TYPE_MISMATCH, ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
+            CErr2( ERR_PARM_POINTER_TYPE_MISMATCH, parmno );
         } else {
             CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
         }

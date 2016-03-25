@@ -37,10 +37,8 @@ extern  void            DelLblRef(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
 extern  ins_entry       *IsolatedCode(ins_entry*);
 extern  void            DelLblDef(ins_entry*);
-extern  void            DeleteQueue(ins_entry*);
 extern  void            AddLblRef(ins_entry*);
 extern  void            AddLblDef(ins_entry*);
-extern  void            InsertQueue(ins_entry*,ins_entry*);
 extern  void            FreeInstr(ins_entry*);
 
 
@@ -147,8 +145,13 @@ extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
         AddLblRef( instr );
         break;
     case OC_RET:
-        _LblRef( instr ) = RetList;
-        RetList = instr;
+        if( _Attr( instr ) & ATTR_NORET ) {
+            _LblRef( instr ) = NoRetList;
+            NoRetList = instr;
+        } else {
+            _LblRef( instr ) = RetList;
+            RetList = instr;
+        }
         break;
     }
   optend
@@ -214,7 +217,11 @@ static  ins_entry *DelInstr_Helper( ins_entry *old ) {
         DelLblRef( old );
         break;
     case OC_RET:
-        DelRef( &RetList, old );
+        if( _Attr( old ) & ATTR_NORET ) {
+            DelRef( &NoRetList, old );
+        } else {
+            DelRef( &RetList, old );
+        }
         break;
     }
     _SetClass( old, OC_DEAD );

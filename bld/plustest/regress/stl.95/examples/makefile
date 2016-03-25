@@ -1,6 +1,6 @@
 plustest_name = stl95
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 alt_error = 01

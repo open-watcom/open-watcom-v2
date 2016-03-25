@@ -40,11 +40,10 @@
 #include "namelist.h"
 #include "sortlist.h"
 #include "dbgutil.h"
+#include "addarith.h"
 
 #include "clibext.h"
 
-
-extern int              AddrComp( address a, address b );
 
 typedef struct a_symbol {
     struct a_symbol     *next;
@@ -91,23 +90,23 @@ static bool CheckType( sym_handle *sym, name_list *name )
 
     if( name->d2_only ) {
         mod = SymMod( sym );
-        if( mod == NO_MOD ) return( FALSE );
-        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) return( FALSE );
+        if( mod == NO_MOD ) return( false );
+        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) return( false );
     }
     SymInfo( sym, NULL, &sinfo );
     switch( sinfo.kind ) {
     case SK_CODE:
     case SK_PROCEDURE:
-        if( sinfo.compiler ) return( FALSE );
-        if( name->type & WF_CODE ) return( TRUE );
+        if( sinfo.compiler ) return( false );
+        if( name->type & WF_CODE ) return( true );
         break;
     case SK_DATA:
-        if( name->type & WF_DATA ) return( TRUE );
+        if( name->type & WF_DATA ) return( true );
         break;
     case SK_NONE:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -150,7 +149,7 @@ static a_symbol *NameGetRow( name_list *name, int i )
 
     if( name->skip ) {
         idx = i / SKIP_ENTRIES;
-        curr = name->skip[ idx ];
+        curr = name->skip[idx];
         i -= idx * SKIP_ENTRIES;
     } else {
         curr = name->list;
@@ -166,11 +165,9 @@ static void UniqList( name_list *name, bool dup_ok )
     a_symbol    **owner, *next;
     address     addr, next_addr;
 
-    owner = (a_symbol **)&name->list;
-    for( ;; ) {
-        next = *owner;
-        if( next == NULL ) break;
-        if( next->next == NULL ) break;
+    for( owner = (a_symbol **)&name->list; (next = *owner) != NULL; ) {
+        if( next->next == NULL )
+            break;
         addr = NameSymAddr( next );
         next_addr = NameSymAddr( next->next );
         if( ( AddrComp( addr, next_addr ) == 0 &&
@@ -206,7 +203,7 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
         i = 0;
         for( curr = name->list; curr != NULL; curr = curr->next ) {
             if( i % SKIP_ENTRIES == 0 ) {
-                name->skip[ i / SKIP_ENTRIES ] = curr;
+                name->skip[i / SKIP_ENTRIES] = curr;
             }
             ++i;
         }
@@ -237,7 +234,8 @@ void    NameListFree( name_list *name )
 
 int     NameListNumRows( name_list *name )
 {
-    if( name->list == NULL ) return( 0 );
+    if( name->list == NULL )
+        return( 0 );
     return( name->numrows );
 }
 
@@ -246,13 +244,14 @@ unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
     unsigned    rc;
     sym_handle  *sh;
 
-    buff[0] = '\0';
-    if( i >= name->numrows || name->list == NULL ) return( 0 );
+    buff[0] = NULLCHAR;
+    if( i >= name->numrows || name->list == NULL )
+        return( 0 );
     sh = ASymHdl( NameGetRow( name, i ) );
     if( type == SN_PARSEABLE ) {
-        rc = QualifiedSymName( sh, buff, TXT_LEN, TRUE );
+        rc = QualifiedSymName( sh, buff, TXT_LEN, true );
     } else if( type == SN_QUALIFIED ) {
-        rc = QualifiedSymName( sh, buff, TXT_LEN, FALSE );
+        rc = QualifiedSymName( sh, buff, TXT_LEN, false );
     } else {
         rc = SymName( sh, NULL, type, buff, TXT_LEN );
     }
@@ -261,7 +260,8 @@ unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
 
 address NameListAddr( name_list *name, int i )
 {
-    if( i >= name->numrows || name->list == NULL ) return( NilAddr );
+    if( i >= name->numrows || name->list == NULL )
+        return( NilAddr );
     return( NameSymAddr( NameGetRow( name, i ) ) );
 }
 

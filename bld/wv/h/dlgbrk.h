@@ -30,19 +30,6 @@
 ****************************************************************************/
 
 
-#ifndef RC
-    typedef struct {
-        brkp            *bp;
-        brkp            tmpbp;
-        gui_ctl_id      last_edit;
-        unsigned        brand_new       : 1;
-        unsigned        cancel          : 1;
-        unsigned        clear           : 1;
-        unsigned        cmd_error       : 1;
-        unsigned        cond_error      : 1;
-    } dlg_brk;
-#endif
-
 #define DIALOG_BREAK 3002
 
 #define CTL_BRK_ADDRESS 104

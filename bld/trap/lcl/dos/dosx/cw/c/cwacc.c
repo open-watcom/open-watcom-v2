@@ -37,6 +37,7 @@
 #include <stdarg.h>
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "doserr.h"
 #include "madregs.h"
@@ -142,12 +143,12 @@ typedef struct hbrk_t {
     unsigned        installed :1;
 } hbrk_t;
 
-typedef struct watch_t {
+typedef struct watch_point {
     unsigned_32     address;
     unsigned_32     check;
     unsigned_8      length;
     unsigned        inuse     :1;
-} watch_t;
+} watch_point;
 
 void dos_print( char *s );
 #pragma aux dos_print = \
@@ -226,7 +227,7 @@ bool                FakeBreak = FALSE;
 
 static unsigned_8   RealNPXType;
 static hbrk_t       HBRKTable[4];
-static watch_t      WatchPoints[MAX_WATCHES];
+static watch_point  WatchPoints[MAX_WATCHES];
 static mod_t        *ModHandles = NULL;
 static int          NumModHandles = 0;
 
@@ -266,7 +267,7 @@ void SetHBRK( void )
     // Install hardware break points.
     for( i = 0; i < 4; ++i ) {
         if( HBRKTable[i].inuse ) {
-            dpmi_watch_handle   wh;
+            long    wh;
 
             wh = _DPMISetWatch( HBRKTable[i].address, HBRKTable[i].size, HBRKTable[i].type );
             if( wh >= 0 ) {
@@ -729,7 +730,7 @@ trap_retval ReqProg_load( void )
         ch = *src++;
         if( ch == '\0' ) {
             if( len == 1 )
-                break;   
+                break;
             ch = ' ';
         }
         *dst++ = ch;
@@ -913,15 +914,16 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->handle = 0;
+    handle = acc->handle + 1;
+    if( handle >= NumModHandles ) {
+        ret->handle = 0;
+        return( sizeof( *ret ) );
+    }
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
-    handle = acc->handle + 1;
-    if( handle < NumModHandles ) {
-        if( ModHandles[ handle ].loaded )
-            strcpy( name, ModHandles[ handle ].epsp->FileName );
-        ret->handle = handle;
-    }
+    if( ModHandles[handle].loaded )
+        strcpy( name, ModHandles[handle].epsp->FileName );
+    ret->handle = handle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

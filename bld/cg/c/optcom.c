@@ -34,6 +34,7 @@
 #include "inslist.h"
 #include "block.h"
 #include "data.h"
+#include "optmain.h"
 
 typedef struct common_info {
         ins_entry   *start_com;
@@ -43,8 +44,6 @@ typedef struct common_info {
 
 extern  ins_entry       *IsolatedCode( ins_entry * );
 extern  void            AddNewJump( ins_entry *, label_handle );
-extern  void            InsertQueue( ins_entry *, ins_entry * );
-extern  void            DeleteQueue( ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
@@ -178,7 +177,8 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 #endif
         break;
     case OC_RET:
-        if( _RetPop( old ) != _RetPop( add ) )
+        if( _RetPop( old ) != _RetPop( add )
+          || (_Attr( old ) & ATTR_NORET) != (_Attr( add ) & ATTR_NORET) )
             optreturn( FALSE );
         break;
     default:

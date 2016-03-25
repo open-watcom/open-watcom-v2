@@ -38,6 +38,7 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 
 _WCRTLINK int chsize( int handle, long size )
 {

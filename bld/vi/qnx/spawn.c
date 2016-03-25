@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +35,16 @@
 #include <malloc.h>
 #include <i86.h>
 #include "fcbmem.h"
+#include "getspcmd.h"
 
-char _NEAR * _NEAR ExeExtensions[] = {""};
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
 
-char _NEAR * _NEAR InternalCommands[] = {
-    ""
-};
+const char _NEAR * _NEAR InternalCommands[] = { "" };
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char _NEAR * );
+
+const char _NEAR * _NEAR ExeExtensions[] = { "" };
+
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
 
 void ResetSpawnScreen( void )
 {

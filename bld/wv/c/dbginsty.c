@@ -40,16 +40,15 @@
 #include "mad.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgovl.h"
+#include "dbgbrk.h"
+#include "dbgparse.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbginsty.h"
 
-extern void             PopEntry(void);
-extern void             ExprValue(stack_entry *);
-extern bool             IsInternalMod( mod_handle mod );
-extern void             AddrFloat( address * );
-extern void             MakeMemoryAddr( bool, memory_expr def_seg, address *out_val );
-extern void             EvalLValExpr( int );
-extern void             NormalExpr(void);
-extern void             BreakOnExprSP(const char *);
-extern void             LValue(stack_entry *);
 
 extern stack_entry      *ExprSP;
 
@@ -104,7 +103,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
                 || ExprSP->info.kind == TK_POINTER ) {
             *paddr = ExprSP->v.addr;
         }
-        if( !IS_NIL_ADDR( (*paddr) ) ) {
+        if( !IS_NIL_ADDR( *paddr ) ) {
             AddrFloat( paddr );
             if( DeAliasAddrSym( NO_MOD, *paddr, sh ) != SR_NONE ) {
                 SymInfo( sh, ExprSP->lc, &info );
@@ -122,7 +121,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
         }
     }
     ExprValue( ExprSP );
-    MakeMemoryAddr( TRUE, EXPR_DATA, paddr );
+    MakeMemoryAddr( true, EXPR_DATA, paddr );
     return( INSP_RAW_DATA );
 }
 
@@ -141,12 +140,12 @@ extern  bool    WndEvalInspectExpr( const char *item, bool pop )
     bool        rc;
 
     if( ispunct(item[0]) &&
-      ( item[1] == '\0' || ( ispunct( item[1] ) && item[2] == '\0' ) ) ) {
+      ( item[1] == NULLCHAR || ( ispunct( item[1] ) && item[2] == NULLCHAR ) ) ) {
         // nyi - pui - use SSL
         p = StrCopy( item, StrCopy( "operator", buff ) );
-        if( item[0] == '[' && item[1] == '\0' ) {
+        if( item[0] == '[' && item[1] == NULLCHAR ) {
             StrCopy( "]", p );
-        } else if( item[0] == '(' && item[1] == '\0' ) {
+        } else if( item[0] == '(' && item[1] == NULLCHAR ) {
             StrCopy( ")", p );
         }
         old = ReScan( buff );

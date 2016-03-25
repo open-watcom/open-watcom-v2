@@ -122,7 +122,7 @@ DtoI:   _shl    AX,1            ; get sign
           mov   CL,CH           ; - shift right 8 bits
           mov   CH,BL           ; - . . .
           mov   BL,BH           ; - . . .
-          mov   BH,0            ; - zero high byte
+          xor   BH,BH           ; - zero high byte
           sub   AL,8            ; - adjust exponent by 8
         _endguess               ; endguess
 

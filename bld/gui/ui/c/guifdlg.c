@@ -363,7 +363,7 @@ extern short CheckRemovable( char );
         "int    021h" \
         "cmp    ax,0fh" \
         "jne    ok" \
-        "mov    ax,0" \
+        "xor    ax,ax" \
         "jmp    done" \
         "ok:    inc ax" \
         "done:" \
@@ -518,7 +518,9 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 static bool goToDir( gui_window *gui, char *dir )
 {
     char        drive[_MAX_DRIVE];
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     unsigned    total;
+#endif
     bool        removed_end;
     size_t      len;
     int         rc;
@@ -561,9 +563,7 @@ static bool goToDir( gui_window *gui, char *dir )
 
     splitPath( dir, drive, NULL, NULL, NULL );
     if( drive[0] != 0 ) {
-#if defined( __UNIX__ ) || defined( __NETWARE__ )
-        total = 1;
-#else
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
 #endif
     }
@@ -717,7 +717,7 @@ static bool setFileList( gui_window *gui, const char *ext )
         if( directory != NULL ) {
             while( ( dent = readdir( directory ) ) != NULL ) {
                 if( !isdir( dent, path ) ) {
-                    if( ( dlg->currOFN->flags & OFN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
+                    if( ( dlg->currOFN->flags & FN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
                         continue;
                     }
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -763,9 +763,9 @@ static bool setDirList( gui_window *gui )
     char                indent[80];
     char                tmp[256];
     const char          **drvlist;
-    int                 i;
+    gui_ctl_idx         i;
     size_t              len;
-    int                 curr,cnt;
+    gui_ctl_idx         curr, cnt;
     const char          **list;
 
     GUIClearList( gui, CTL_DIR_LIST );
@@ -963,7 +963,7 @@ static process_rc processFileName( gui_window *gui )
         if( !goToDir( gui, path ) ) {
             return( PROCESS_FALSE );
         }
-        if( !rc && (dlg->currOFN->flags & OFN_OVERWRITEPROMPT) ) {
+        if( !rc && (dlg->currOFN->flags & FN_OVERWRITEPROMPT) ) {
             buff = alloca( strlen( txt ) + 100 );
             strcpy( buff, txt );
             strcat( buff, LIT( File_Exists_Replace ) );
@@ -1018,12 +1018,12 @@ static process_rc processFileName( gui_window *gui )
 void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 {
     process_rc  prc;
-    int         sel;
-    int         realsel;
+    gui_ctl_idx sel;
+    gui_ctl_idx realsel;
     char        path[_MAX_PATH];
     char        *optr;
     char        *ptr;
-    int         i;
+    gui_ctl_idx i;
     gui_ctl_id  focusid;
     dlg_info    *dlg = GUIGetExtra( gui );
 
@@ -1045,10 +1045,10 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
     case CTL_OK :
         prc = processFileName( gui );
         if( prc == PROCESS_TRUE ) {
-            dlg->dialogRC = OFN_RC_FILE_SELECTED;
+            dlg->dialogRC = FN_RC_FILE_SELECTED;
             GUICloseDialog( gui );
         } else if( prc == PROCESS_FAIL ) {
-            dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+            dlg->dialogRC = FN_RC_RUNTIME_ERROR;
             GUICloseDialog( gui );
         }
         break;
@@ -1061,7 +1061,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         path[0] = 0;
 #endif
         realsel = 0;
-        for( i=0;i<sel;i++ ) {
+        for( i = 0; i < sel; i++ ) {
             ptr = GUIGetListItem( gui, id, i );
             if( ptr == NULL ) {
                 return;
@@ -1071,7 +1071,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
                 ptr++;
             }
             if( *ptr == '-' ) {
-                strcat( path, ptr+1 );
+                strcat( path, ptr + 1 );
                 realsel++;
                 if( i > 0 ) {
                     strcat( path, FILE_SEP );
@@ -1094,7 +1094,7 @@ void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         GUIMemFree( optr );
         goToDir( gui, path );
         if( !initDialog( gui, NULL, NULL ) ) {
-            dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+            dlg->dialogRC = FN_RC_RUNTIME_ERROR;
             GUICloseDialog( gui );
         } else {
             GUISetCurrSelect( gui, id, realsel );
@@ -1133,7 +1133,7 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
         InitTextList( gui, CTL_DRIVES, GetDriveTextList() );
 #endif
         if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
-            dlg->dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
+            dlg->dialogRC = FN_RC_FAILED_TO_INITIALIZE;
             return( false );
         }
         dlg->initted = true;
@@ -1171,14 +1171,14 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
             path[2] = 0;
             goToDir( gui, path );
             if( !initDialog( gui, NULL, NULL ) ) {
-                dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+                dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
             break;
         case CTL_FILE_TYPES:
             sel = GUIGetCurrSelect( gui, id );
             if( !initDialog( gui, dlg->fileExtensions[sel], NULL ) ) {
-                dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
+                dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
             break;
@@ -1206,18 +1206,18 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
     }
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     if( !buildDriveList() ) {
-        return( OFN_RC_FAILED_TO_INITIALIZE );
+        return( FN_RC_FAILED_TO_INITIALIZE );
     }
 #endif
     ok = buildFileTypesExts( &dlg, ofn->filter_list );
     if( !ok ) {
         dlg.currExt = NULL;
-        dlg.dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
+        dlg.dialogRC = FN_RC_FAILED_TO_INITIALIZE;
     } else {
         dlg.currOFN = ofn;
         dlg.currExt = NULL;
         dlg.currExtIndex = ofn->filter_index;
-        dlg.dialogRC = OFN_RC_NO_FILE_SELECTED;
+        dlg.dialogRC = FN_RC_NO_FILE_SELECTED;
 
         getcwd( olddir, sizeof( olddir ) );
         goToDir( gui, ofn->initial_dir );
@@ -1225,7 +1225,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
                     dlgControls, NUM_CONTROLS, &GetFileNameEvent, &dlg );
 
-        if( !(ofn->flags & OFN_CHANGEDIR) ) {
+        if( !(ofn->flags & FN_CHANGEDIR) ) {
             goToDir( gui, olddir );
         }
     }

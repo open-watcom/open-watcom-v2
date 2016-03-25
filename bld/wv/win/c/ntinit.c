@@ -47,16 +47,16 @@
 #include "autoenv.h"
 #include "dbglit.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif
 #include "clibext.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
-extern void     DebugExit(void);
-extern void     StartupErr( const char *err );
+
 extern void     NewConsoleTitle( void );
 
 extern volatile bool    BrkPending;
@@ -154,8 +154,4 @@ void PopErrBox( const char *buff )
 {
     MessageBox( (HWND) NULL, buff, LIT_ENG( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
-
-void SysSetMemLimit( void )
-{
 }

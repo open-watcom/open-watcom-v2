@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,7 +189,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     RegModifyData   *data;
     char            *name;
     unsigned        len;
-    unsigned        new;
+    mad_radix       radix;
     mad_type_info   mti;
     mad_type_info   cmp;
     char            s[255];
@@ -222,7 +223,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     dc = GetDC( field );
     GetTextMetrics( dc, &tm );
     MADTypeInfo( data->th, &mti );
-    new = MADTypePreferredRadix( data->th );
+    radix = MADTypePreferredRadix( data->th );
 
     if( data->num_possible == 1 ) {
         if( data->maxv == 0 ) {
@@ -230,7 +231,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         } else {
             len = data->maxv;
         }
-        MADTypeToString( new, &mti, data->curr_value, s, &len );
+        MADTypeToString( radix, &mti, data->curr_value, s, &len );
         if( data->maxv == 0 ) {
             max_len = strlen( s );
         } else {
@@ -243,7 +244,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         for( i = 0; i < data->num_possible; i++ ) {
             if( data->m_list[i].name == MAD_MSTR_NIL ) {
                 len = sizeof( s );
-                MADTypeToString( new, &mti, data->m_list[i].data, s, &len );
+                MADTypeToString( radix, &mti, data->m_list[i].data, s, &len );
             } else {
                 MADCliString( data->m_list[i].name, s, sizeof( s ) );
             }
@@ -280,7 +281,7 @@ static void CheckForRegisterChange( HWND hwnd )
     RegModifyData   *data;
     mad_type_info   mti_target;
     mad_type_info   mti_host;
-    int             i;
+    int             size;
     char            *s;
     char            *endptr;
     void            *test;
@@ -290,27 +291,22 @@ static void CheckForRegisterChange( HWND hwnd )
     data = ( RegModifyData * )GetWindowLong( hwnd, DWL_USER );
     MADTypeInfo( data->curr_info->type, &mti_target );
     if( data->num_possible == 1 ) {
-        i = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;
-        s = alloca( i * sizeof( char ) );
+        size = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;
+        s = alloca( size );
         GetDlgItemText( hwnd, REG_EDIT_FIELD, s, 255 );
         test = alloca( mti_target.b.bits / BITS_PER_BYTE );
-        memset( &seg, 0, sizeof(seg) );
+        memset( &seg, 0, sizeof( seg ) );
         errno = 0;
-        switch ( mti_target.b.kind ){
+        size = 0;
+        switch ( mti_target.b.kind ) {
         case MTK_INTEGER:
-            if( mti_target.i.nr == MNR_UNSIGNED ) {
-                i = StrToU64(s, &( in.i ), 0 );
-            }else {
-                i = StrToU64(s, &( in.i ), 1 );
-            }
-            if( i == FALSE ) {
+            if( !StrToU64( s, &( in.i ), ( mti_target.i.nr != MNR_UNSIGNED ) ) ) {
                 MessageBox( hwnd, "Unrecognized input.", "Error",MB_OK | MB_ICONEXCLAMATION ) ;
                 return;
             }
-            i = sizeof( unsigned_64 );
+            size = sizeof( unsigned_64 );
             break;
         case MTK_FLOAT:
-            i = sizeof( in.d );
             in.d = strtod( s, &endptr );
             if( errno == ERANGE ) {
                 MessageBox( hwnd, "Value out of range.", "Error",MB_OK | MB_ICONEXCLAMATION ) ;
@@ -320,12 +316,13 @@ static void CheckForRegisterChange( HWND hwnd )
                 MessageBox( hwnd, "Unrecognized input.", "Error",MB_OK | MB_ICONEXCLAMATION ) ;
                 return;
             }
+            size = sizeof( in.d );
             break;
         default:
             EndDialog( hwnd, 0 );
             break;
         }
-        MADTypeInfoForHost( mti_target.b.kind, i , &mti_host );
+        MADTypeInfoForHost( mti_target.b.kind, size, &mti_host );
         MADTypeConvert( &mti_host, &in, &mti_target, test, seg );
         if( memcmp( data->curr_value, test, mti_target.b.bits / BITS_PER_BYTE ) == 0 ) {
             EndDialog( hwnd, 0 );
@@ -334,7 +331,7 @@ static void CheckForRegisterChange( HWND hwnd )
             EndDialog( hwnd, 1 );
         }
     } else {
-        i = SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_GETCURSEL, 0, 0 );
+        int i = (int)SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_GETCURSEL, 0, 0L );
         if( memcmp( data->curr_value, data->m_list[i].data, mti_target.b.bits / BITS_PER_BYTE ) == 0 ) {
             EndDialog( hwnd, 0 );
         } else {

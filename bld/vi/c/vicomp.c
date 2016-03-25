@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,7 @@
 
 #include "vi.h"
 #include <stdarg.h>
-#include <stdlib.h>
 #include "posix.h"
-#include "source.h"
 #include "specio.h"
 
 #include "clibext.h"
@@ -59,7 +58,7 @@ vi_rc       LastRetCode = ERR_NO_ERR;
 /*
  * MemAlloc - allocate some memory (always works, or editor aborts)
  */
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     return( malloc( size ) );
 }
@@ -91,7 +90,7 @@ void MemFreeList( int count, char **ptr )
 /*
  * MemReAlloc - reallocate a block, and it will succeed.
  */
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 
@@ -125,7 +124,7 @@ char *StrMerge( int cnt, char *str, ... )
 void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -140,7 +139,7 @@ FILE *GetFromEnvAndOpen( const char *path )
     char        tmppath[FILENAME_MAX];
 
     GetFromEnv( path, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         return( fopen( tmppath, "r" ) );
     }
     return( NULL );
@@ -185,7 +184,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf )
 /*
  * writeScript - write a compiled script
  */
-static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn )
+static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, const char *vn )
 {
     sfile       *curr;
     FILE        *foo;
@@ -198,7 +197,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, ch
     /*
      * get compiled file name, and make error file
      */
-    if( vn[0] == 0 ) {
+    if( vn[0] == '\0' ) {
         _splitpath( fn, drive, directory, name, NULL );
         _makepath( path, drive, directory, name, "._vi" );
     } else {
@@ -213,14 +212,14 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, ch
     /*
      * process all lines
      */
-    *ln = 1;
+    *sline = 1;
     for( curr = sf->next; curr != NULL; curr = curr->next ) {
 
         token = curr->token;
         if( curr->data != NULL ) {
             strcpy( tmp, curr->data );
         } else {
-            tmp[0] = 0;
+            tmp[0] = '\0';
         }
         /*
          * spew out line
@@ -230,7 +229,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, unsigned *ln, ch
             MyFprintf( foo, " %d", curr->branchcond );
         }
         MyFprintf( foo, "\n" );
-        *ln += 1;
+        *sline += 1;
 
     }
     fclose( foo );
@@ -268,37 +267,37 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
+bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
-    int         i;
+    size_t      i;
 
     if( fgets( buff, max, gf->data.f ) == NULL ) {
-        return( -1 );
+        return( true );
     }
     gf->gf.a.currline++;
     for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
         buff[i - 1] = '\0';
     }
-    return( i );
+    return( false );
 
 } /* SpecialFgets */
 
 
-static vi_rc Compile( const char *fn, char *data )
+static vi_rc Compile( const char *fn, const char *data )
 {
     labels      *lab, lb;
     vlist       vl;
     sfile       *sf;
     char        sname[FILENAME_MAX];
     vi_rc       rc;
-    unsigned    ln = 0;
+    srcline     sline = 0;
 
     WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
     WorkLine->len = -1;
     LastRC = LastRetCode;
     vl.head = vl.tail = NULL;
-    sname[0] = 0;
-    NextWord1( data, sname );
+    sname[0] = '\0';
+    GetNextWord1( data, sname );
     rc = initSource( &vl );
     if( rc == ERR_NO_ERR ) {
         SourceErrCount = 0;
@@ -306,12 +305,12 @@ static vi_rc Compile( const char *fn, char *data )
         lab = &lb;
         memset( lab, 0, sizeof( labels ) );
         rc = PreProcess( fn, &sf, lab );
-        ln = CurrentSrcLine;
+        sline = CurrentSrcLine;
         if( SourceErrCount > 0 ) {
             printf( "Compile of %s finished, %d errors encountered\n", fn, SourceErrCount );
         }
         if( rc == ERR_NO_ERR && SourceErrCount == 0 ) {
-            rc = writeScript( fn, sf, &vl, &ln, sname );
+            rc = writeScript( fn, sf, &vl, &sline, sname );
             finiSource( lab, &vl, sf );
         }
     }

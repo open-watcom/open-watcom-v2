@@ -49,6 +49,7 @@
 extern void             AsmErr( int msgnum, ... );
 extern void             AsmWarn( int level, int msgnum, ... );
 extern void             AsmNote( int level, int msgnum, ... );
+extern void             _AsmNote( int level, int msgnum, ... );
 
 #if !defined( _STANDALONE_ )
     #define DebugCurrLine()

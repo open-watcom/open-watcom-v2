@@ -33,7 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include <windows.h>
 #include "madregs.h"
+#include "trptypes.h"
+#include "trpld.h"
 #include "stdnt.h"
 
 typedef enum {
@@ -71,7 +74,7 @@ static void setATBit( thread_info *ti, set_t set )
                     (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
                     sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
             if( ti->brk_opcode != BRKPOINT ) {
-                opcode_type brk_opcode = BRK_POINT;
+                opcode_type brk_opcode = BRKPOINT;
                 WriteProcessMemory( ProcessInfo.process_handle,
                     (LPVOID)ti->brk_addr, (LPVOID)&brk_opcode, sizeof( brk_opcode ),
                     (LPDWORD)&bytes );
@@ -332,7 +335,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
     int         cond;
     char        *p;
     char        *q;
-    bool        rc;
+    BOOL        rc;
 #ifdef WOW
 #if !defined( MD_x64 )
     thread_info *ti;

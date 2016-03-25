@@ -34,10 +34,16 @@ include struct.inc
 
         modstart        stk_libc
 
+datasegment
+
+msg     db      "OpenWatcom RTL : Stack Overflow", 0
+
+enddata
+
     ;
     ;   From OpenWatcom Library
     ;
-        extrn   "C",    AbortWithStackOverflow          :near
+        extrn   "C",    __fatal_error_exit              :near
     ;
     ;   From LIBC.NLM
     ;
@@ -65,12 +71,9 @@ include struct.inc
     $overflow_cond:
         call    NXThreadGetId
         push    eax
-        call    AbortWithStackOverflow
-        add     esp, 0x00000004
-        pop     esi
-        pop     ebx
-        ret
-        
+        push    offset msg
+        call    __fatal_error_exit
+        ; never return        
         endproc __STK
 
         endmod

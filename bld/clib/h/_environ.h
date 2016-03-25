@@ -39,21 +39,21 @@
 #define _TCSDEC(__p)        (__p - 1)
 #define _TCSINC(__p)        (__p + 1)
 #define _TCSCMP(__p1,__p2)  ((*(__p1))-(*(__p2)))
-#define _TCSICMP(__p1,__p2) (__F_NAME(toupper,towupper)(*(__p1))-__F_NAME(toupper,towupper)(*(__p2)))
+#define _TCSICMP(__p1,__p2) (__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p1))-__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p2)))
 #define _TCSTERM(__p)       (*(__p)==NULLCHAR)
 #define _TCSNEXTC(__p)      (*(__p))
-#define _TCSCHR             __F_NAME(strchr,wcschr)
-#define _TCSLEN             __F_NAME(strlen,wcslen)
+#define _TCSCHR(__p,__c)    __F_NAME(strchr,wcschr)(__p,__c)
+#define _TCSLEN(__p)        __F_NAME(strlen,wcslen)(__p)
 #else
 // multi-byte
-#define _TCSDEC             _mbsdec
-#define _TCSINC             _mbsinc
-#define _TCSCMP             _mbccmp
-#define _TCSICMP(__p1,__p2) (_mbctoupper(_mbsnextc(__p1))-_mbctoupper(_mbsnextc(__p2)))
-#define _TCSTERM            _mbterm
-#define _TCSNEXTC           _mbsnextc
-#define _TCSCHR             _mbschr
-#define _TCSLEN             _mbslen
+#define _TCSDEC(__p)        _mbsdec(__p)
+#define _TCSINC(__p)        (char *)_mbsinc((unsigned char *)__p)
+#define _TCSCMP(__p1,__p2)  _mbccmp(__p1,__p2)
+#define _TCSICMP(__p1,__p2) (_mbctoupper(_mbsnextc((unsigned char *)__p1))-_mbctoupper(_mbsnextc((unsigned char *)__p2)))
+#define _TCSTERM(__p)       _mbterm((unsigned char *)__p)
+#define _TCSNEXTC(__p)      _mbsnextc((unsigned char *)__p)
+#define _TCSCHR(__p,__c)    (char *)_mbschr((unsigned char *)__p,__c)
+#define _TCSLEN(__p)        _mbslen((unsigned char *)__p)
 #endif
 
 /*

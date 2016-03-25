@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #define NUM_TOOLS       26
 #define NUM_TOOLS_DDE   23
 
-static void             *functionBar;
+static toolbar          *functionBar;
 static HWND             hFunctionBar = NULL;
 
 static button           toolList[NUM_TOOLS] = {
@@ -93,7 +94,7 @@ static button           toolListDDE[NUM_TOOLS_DDE] = {
     { CLROTBMP,     IMGED_ROTATECL, FALSE,  CLROTDBMP,      0, 0, WIE_TIP_ROTATECL  },
     { CCROTBMP,     IMGED_ROTATECC, FALSE,  CCROTDBMP,      0, 0, WIE_TIP_ROTATECC  }
 };
-    
+
 /*
  * addFunctionButton - add a button to the function bar
  */
@@ -150,26 +151,27 @@ static void addItems( void )
 } /* addItems */
 
 /*
- * FunctionBarHelpProc
+ * functionBarHelpProc
  */
-void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+static void functionBarHelpProc( HWND hwnd, ctl_id id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
-        ShowHintText( wparam );
+        ShowHintText( id );
     } else {
         SetHintText( " " );
     }
 
-} /* FunctionBarHelpProc */
+} /* functionBarHelpProc */
 
 /*
- * FunctionBarProc - hook function which intercepts messages to the toolbar
+ * functionBarProc - hook function which intercepts messages to the toolbar
  */
-bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
+    ctl_id              id;
 
     hwnd = hwnd;
 
@@ -178,19 +180,21 @@ bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
         break;
 
     case WM_USER:
+        id = LOWORD( wparam );
         if( !lparam ) {
-            ShowHintText( wparam );
+            ShowHintText( id );
         }
 
-        if( LOWORD( wparam ) == IMGED_GRID ) {
-            ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_DOWN );
+        if( id == IMGED_GRID ) {
+            ToolBarSetState( functionBar, id, BUTTON_DOWN );
         } else {
             return( true );
         }
         break;
 
     case WM_COMMAND:
-        if( LOWORD( wparam ) == IMGED_GRID ) {
+        id = LOWORD( wparam );
+        if( id == IMGED_GRID ) {
             if( !gridButtonDown ) {
                 gridButtonDown = TRUE;
             } else {
@@ -203,7 +207,7 @@ bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
             return( true );
         }
 
-        ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_UP );
+        ToolBarSetState( functionBar, id, BUTTON_UP );
         break;
 
     case WM_DESTROY:
@@ -264,8 +268,8 @@ void InitFunctionBar( HWND hparent )
     tdi.border_size = border;
     tdi.area = functionbar_loc;
     tdi.style = TOOLBAR_FIXED_STYLE;
-    tdi.hook = FunctionBarProc;
-    tdi.helphook = FunctionBarHelpProc;
+    tdi.hook = functionBarProc;
+    tdi.helphook = functionBarHelpProc;
     tdi.background = (HBITMAP)0;
     tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = 1;

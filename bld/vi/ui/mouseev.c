@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ static mouse_hook  *hookHead;
 /*
  * GetMousePosInfo - get position of mouse in window
  */
-window_id GetMousePosInfo( int *win_x, int *win_y )
+window_id GetMousePosInfo( windim *win_x, windim *win_y )
 {
     *win_x = MouseCol;
     *win_y = MouseRow;
@@ -55,17 +56,17 @@ window_id GetMousePosInfo( int *win_x, int *win_y )
  */
 bool TestMouseEvent( bool usemouse )
 {
-    int         win_x, win_y;
-    window_id   id;
+    windim      win_x, win_y;
+    window_id   wid;
     bool        rc;
 
     if( hookHead == NULL ) {
         return( usemouse );
     }
 
-    id = GetMousePosInfo( &win_x, &win_y );
+    wid = GetMousePosInfo( &win_x, &win_y );
 
-    rc = hookHead->cb( id, win_x, win_y );
+    rc = hookHead->cb( wid, win_x, win_y );
     if( !usemouse ) {
         return( false );
     }
@@ -98,10 +99,12 @@ void PopMouseEventHandler( void )
     if( mh != NULL ) {
         hookHead = hookHead->next;
         MemFree( mh );
-    } else {
 #ifndef NDEBUG
+    } else {
         Message1( "Popped null mouse event handler!!!" );
-        while( getch() != ' ' );
+        while( getchar() != ' ' ) {
+            ;
+        }
 #endif
     }
 

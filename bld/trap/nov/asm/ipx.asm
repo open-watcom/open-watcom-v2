@@ -189,7 +189,7 @@ IPXCall endp
         mov     DS,14[BP]
         mov     BX,12[BP]
         mov     [BX],CX         ; store transit time result
-        mov     AH,0            ; clear high byte of return value
+        xor     AH,AH           ; clear high byte of return value
         pop     ES              ; restore registers
         pop     DS
         pop     BP
@@ -214,7 +214,7 @@ IPXCall endp
 ;        call    dword ptr cs:IPXLoc; invoke function
 ;        pop     BX              ; restore pointer to transit time
 ;        mov     [BX],CX         ; store transit time result
-;        mov     AH,0            ; clear high byte of return value
+;        xor     AH,AH           ; clear high byte of return value
 ;        pop     ES              ; restore registers
 ;        pop     BP
 ;        pop     DI

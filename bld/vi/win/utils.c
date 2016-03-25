@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ void SetGadgetString( char *str )
 {
     size_t  i;
 
-    if( str != NULL ) {
+    if( str != NULL && *str != '\0' ) {
         i = strlen( str );
         if( i > GADGET_SIZE ) {
             i = GADGET_SIZE;
@@ -80,14 +81,19 @@ void SetGadgetString( char *str )
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
         memcpy( EditVars.GadgetString, str, i );
     } else {
-        AddString2( &EditVars.GadgetString, windowBordersG );
+        ReplaceString( &EditVars.GadgetString, windowBordersG );
     }
+}
+
+bool IsGadgetStringChanged( char *str )
+{
+    return( strcmp( str, windowBordersG ) != 0 );
 }
 
 /*
  * WriteText - write a length specified string to a window
  */
-void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len )
+void WriteText( window_id wid, int x, int y, type_style *style, const char * text, int len )
 {
     HDC     hdc;
 #ifdef __WINDOWS_386__
@@ -97,10 +103,10 @@ void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len
 #endif
 
     if( len > 0 ){
-        hdc = TextGetDC( hwnd, style );
+        hdc = TextGetDC( wid, style );
         tab = FontTabWidth( style->font );
         TabbedTextOut( hdc, x, y, text, len, 1, &tab, 0 );
-        TextReleaseDC( hwnd, hdc );
+        TextReleaseDC( wid, hdc );
     }
 
 } /* WriteText */
@@ -108,20 +114,20 @@ void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len
 /*
  * WriteString - write a null delimited string to a window
  */
-void WriteString( HWND hwnd, int x, int y, type_style *style, char *text )
+void WriteString( window_id wid, int x, int y, type_style *style, const char *text )
 {
-    WriteText( hwnd, x, y, style, text, strlen( text ) );
+    WriteText( wid, x, y, style, text, strlen( text ) );
 
 } /* WriteString */
 
 /*
  * TextGetDC - get the DC for a window, and set its properties
  */
-HDC TextGetDC( HWND hwnd, type_style *style )
+HDC TextGetDC( window_id wid, type_style *style )
 {
     HDC     hdc;
 
-    hdc = GetDC( hwnd );
+    hdc = GetDC( wid );
     SaveDC( hdc );
     SelectObject( hdc, FontHandle( style->font ) );
     // SelectObject( hdc, ColorPen( style->foreground ) );
@@ -135,30 +141,30 @@ HDC TextGetDC( HWND hwnd, type_style *style )
 /*
  * TextReleaseDC - release the dc for a window
  */
-void TextReleaseDC( HWND hwnd, HDC hdc )
+void TextReleaseDC( window_id wid, HDC hdc )
 {
     RestoreDC( hdc, -1 );
-    ReleaseDC( hwnd, hdc );
+    ReleaseDC( wid, hdc );
 
 } /* TextReleaseDC */
 
 /*
  * BlankRectIndirect - blank out a rectangle given a pointer to the rectangle
  */
-void BlankRectIndirect( HWND hwnd, vi_color color, RECT *rect )
+void BlankRectIndirect( window_id wid, vi_color color, RECT *rect )
 {
     HDC     hdc;
 
-    hdc = GetDC( hwnd );
+    hdc = GetDC( wid );
     FillRect( hdc, rect, ColorBrush( color ) );
-    ReleaseDC( hwnd, hdc );
+    ReleaseDC( wid, hdc );
 
 } /* BlankRectIndirect */
 
 /*
  * BlankRect - blank out a rectangle given its coordinates
  */
-void BlankRect( HWND hwnd, vi_color color, int x1, int x2, int y1, int y2 )
+void BlankRect( window_id wid, vi_color color, int x1, int x2, int y1, int y2 )
 {
     RECT    rect;
 
@@ -166,14 +172,14 @@ void BlankRect( HWND hwnd, vi_color color, int x1, int x2, int y1, int y2 )
     rect.right = x2;
     rect.top = y1;
     rect.bottom = y2;
-    BlankRectIndirect( hwnd, color, &rect );
+    BlankRectIndirect( wid, color, &rect );
 
 } /* BlankRect */
 
 /*
  * MyTextExtent - get the text extend of a string in a specified style
  */
-int MyTextExtent( HWND hwnd, type_style *style, char *text, unsigned length )
+int MyTextExtent( window_id wid, type_style *style, char *text, unsigned length )
 {
     HDC         hdc;
     int         extent;
@@ -185,7 +191,7 @@ int MyTextExtent( HWND hwnd, type_style *style, char *text, unsigned length )
     int         tab;
 #endif
 
-    hdc = TextGetDC( hwnd, style );
+    hdc = TextGetDC( wid, style );
     font_width = FontAverageWidth( style->font );
     tab = FontTabWidth( style->font );
     text_len = strlen( text );
@@ -196,24 +202,24 @@ int MyTextExtent( HWND hwnd, type_style *style, char *text, unsigned length )
     }
     extent = LOWORD( GetTabbedTextExtent( hdc, text, length, 1, &tab ) );
     extent += extra * font_width;
-    TextReleaseDC( hwnd, hdc );
+    TextReleaseDC( wid, hdc );
     return( extent );
 
 } /* MyTextExtent */
 
-int MyStringExtent( HWND hwnd, type_style *style, char *text )
+int MyStringExtent( window_id wid, type_style *style, char *text )
 {
-    return( MyTextExtent( hwnd, style, text, strlen( text ) ) );
+    return( MyTextExtent( wid, style, text, strlen( text ) ) );
 }
 
 /*
  * ClientToRowCol - Given an (x,y) in client coords inside an *EDIT* window,
  *                  fill in the row and col with the correct values (base 1).
  */
-void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
+void ClientToRowCol( window_id wid, int x, int y, int *row, int *col, int divide )
 {
     window      *w;
-    dc          dc_line;
+    dc_line     *dcline;
     ss_block    *ss, *ss_start, *ss_prev;
     int         startCols, intoCols;
     int         startPixel, lenBlock;
@@ -222,8 +228,8 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     int         avg_width;
     char        *str;
 
-    w = WINDOW_FROM_ID( hwnd );
-    *row = y / FontHeight( WIN_FONT( w ) ) + 1;
+    w = WINDOW_FROM_ID( wid );
+    *row = y / FontHeight( WIN_TEXT_FONT( w ) ) + 1;
 
     if( x < 0 ) {
         *col = 1;
@@ -236,24 +242,24 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     }
 
     // get line data
-    dc_line = DCFindLine( *row - 1, hwnd );
-    if( dc_line->display != 0 ) {
+    dcline = DCFindLine( *row - 1, wid );
+    if( dcline->display != 0 ) {
         // line needs to be displayed
         // therefore ss information has not been set!
         // therefore we cant use it to calculate anything of value!
         // best we can do is a good solid guess.
-        avg_width = FontAverageWidth( WIN_FONT( w ) );
+        avg_width = FontAverageWidth( WIN_TEXT_FONT( w ) );
         *col = x / avg_width + 1;
         return;
     }
-    assert( dc_line->valid );
-    if( dc_line->start_col < LeftTopPos.column ) {
+    assert( dcline->valid );
+    if( dcline->start_col < LeftTopPos.column ) {
         // entire line has been scrolled off to left - go to end of that line
         *col = 10000;
         return;
     }
-    assert( dc_line->start_col == LeftTopPos.column );
-    ss_start = ss = dc_line->ss;
+    assert( dcline->start_col == LeftTopPos.column );
+    ss_start = ss = dcline->ss;
 
     // find which block x lies on
     while( ss->offset < x ) {
@@ -280,11 +286,11 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         startPixel = ss_prev->offset;
         startCols = ss_prev->end + 1;
         lenBlock = ss->end - ss_prev->end;
-        str = dc_line->text + startCols;
+        str = dcline->text + startCols;
     } else {
         startPixel = 0;
         startCols = 0;
-        str = dc_line->text;
+        str = dcline->text;
         lenBlock = ss->end + 1;
     }
     // lenBlock must be less than the length of the text
@@ -372,11 +378,11 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     // refine guess
     toleftExtent = 0;
     difExtent = 0;
-    intoExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols );
+    intoExtent = MyTextExtent( wid, &SEType[ss->type], str, intoCols );
     if( intoExtent > x ) {
         while( intoExtent > x ) {
             intoCols--;
-            difExtent = intoExtent - MyTextExtent( hwnd, &SEType[ss->type], str, intoCols );
+            difExtent = intoExtent - MyTextExtent( wid, &SEType[ss->type], str, intoCols );
             intoExtent -= difExtent;
         }
         intoCols++;
@@ -385,7 +391,7 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         while( intoExtent <= x ) {
             intoCols++;
             toleftExtent = intoExtent;
-            difExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols ) - intoExtent;
+            difExtent = MyTextExtent( wid, &SEType[ss->type], str, intoCols ) - intoExtent;
             intoExtent += difExtent;
         }
     }
@@ -458,13 +464,13 @@ static char oldDrive;
 /*
  * PushDirectory - save the current drive/directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     unsigned    c;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     _dos_getdrive( &c );
-    oldDrive = (char) c;
+    oldDrive = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }
@@ -479,7 +485,7 @@ void PopDirectory( void )
 {
     unsigned    total;
 
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     _dos_setdrive( oldDrive, &total );
@@ -494,11 +500,10 @@ vi_rc DoAboutBox( void )
 {
     about_info  ai;
 
-    ai.owner = Root;
+    ai.owner = root_window_id;
     ai.inst = InstanceHandle;
     ai.name = WATCOM_ABOUT_EDITOR STR_BITNESS;
     ai.version = banner1p2( _VI_VERSION_ );
-    ai.first_cr_year = "1989";
     ai.title = "About Open Watcom Text Editor";
     DoAbout( &ai );
     return( ERR_NO_ERR );
@@ -584,7 +589,7 @@ HWND GetOwnedWindow( POINT pt )
     hwndElement = WindowFromPoint( pt );
     ScreenToClient( hwndElement, &pt );
     hwndChild = ChildWindowFromPoint( hwndElement, pt );
-    if( hwndChild != NULL ) {
+    if( !BAD_ID( hwndChild ) ) {
         /* must go 2 generations down
            (BufferWindows children of ContainerWindow, child of EditorName)
         */
@@ -592,7 +597,7 @@ HWND GetOwnedWindow( POINT pt )
         hwndElement = hwndChild;
         ScreenToClient( hwndElement, &pt );
         hwndChild = ChildWindowFromPoint( hwndElement, pt );
-        if( hwndChild != NULL) {
+        if( !BAD_ID( hwndChild ) ) {
             hwndElement = hwndChild;
         }
     }
@@ -603,13 +608,13 @@ HWND GetOwnedWindow( POINT pt )
         if( !strcmp( textBuffer, windowName[i] ) ) {
             /* a recognized window - return handle to it
             */
-            if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( Root ) ) {
+            if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( root_window_id ) ) {
                 return( hwndElement );
             }
-            return( (HWND)NULLHANDLE );
+            return( NO_WINDOW );
         }
     }
-    return( (HWND)NULLHANDLE );
+    return( NO_WINDOW );
 }
 
 int GetNumWindowTypes( void )
@@ -628,8 +633,8 @@ void MoveWindowTopRight( HWND hwnd )
     int     clientWidth, usWidth, usHeight;
     int     xshift, xshiftmax;
 
-    if( !BAD_ID(CurrentWindow) ){
-        GetClientRect( CurrentWindow, &rcClient );
+    if( !BAD_ID(current_window_id) ){
+        GetClientRect( current_window_id, &rcClient );
         GetWindowRect( hwnd, &rcUs );
 
         clientWidth = rcClient.right - rcClient.left;
@@ -638,7 +643,7 @@ void MoveWindowTopRight( HWND hwnd )
 
         pt.x = rcClient.left;
         pt.y = rcClient.top;
-        ClientToScreen( CurrentWindow, &pt );
+        ClientToScreen( current_window_id, &pt );
         xshift = FontAverageWidth( 1 ) * 80;
         xshiftmax = clientWidth - usWidth - 35;
         if( xshift > xshiftmax ) {
@@ -751,7 +756,7 @@ void CenterWindowInRoot( HWND hwnd )
     RECT    rR, rH;
     int     x, y, w, h, d;
 
-    GetWindowRect( Root, &rR );
+    GetWindowRect( root_window_id, &rR );
     GetWindowRect( hwnd, &rH );
 
     // center in root
@@ -797,12 +802,13 @@ void DrawRectangleUpDown( HWND hwnd, int which )
 #if 0
 // sanity check on list of ss blocks
 
-static void dumpSSBlocks( ss_block *ss_start, dc dc_line ) {
+static void dumpSSBlocks( ss_block *ss_start, dc_line *dcline )
+{
     ss_block    *ss = ss_start;
     FILE *f = fopen( "C:\\vi.out", "a+t" );
 
     fprintf( f, "Bad SSBlock:: dumping current DC line\n" );
-    fprintf( f, "%s %d %d %d %d\n", dc_line->text, ss->type, ss->end,
+    fprintf( f, "%s %d %d %d %d\n", dcline->text, ss->type, ss->end,
              ss->len, ss->offset );
 
     ss++;

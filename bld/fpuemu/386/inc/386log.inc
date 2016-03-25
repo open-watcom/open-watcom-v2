@@ -43,9 +43,9 @@
         xrefp   __poly          ; evaluate polynomial
         xrefp   __OddPoly       ; oddpoly
 
-        xdefp   __log           ; calc log(fac1)
-        xdefp   __fyl2x         ; calc. log2([eax]) * [edx]
         xdefp   __fyl2xp1       ; calc. log2([ax]+1.0) * [dx]
+        xdefp   __fyl2x         ; calc. log2([eax]) * [edx]
+        xdefp   __log           ; calc log(fac1)
 
 ;;one_over_loge2 dt      1.4426950408889634075
 
@@ -59,8 +59,8 @@ BPoly   dt       1.0
         dt       0.31203222091924532844e+3
         dt      -0.76949932108494879777e+3
 
-
         defp    __fyl2xp1
+
         push    EBX             ; save EBX
         push    EDX             ; save address for result
         push    EAX             ; save address of operand
@@ -75,10 +75,11 @@ BPoly   dt       1.0
 ;
 ;       fall into __fyl2x routine
 ;
-__fyl2xp1 endp
+        endproc __fyl2xp1
 
 
         defp    __fyl2x
+
         push    EDI                     ; save registers
         push    ESI                     ; ...
         push    EDX                     ; ...
@@ -108,7 +109,8 @@ __fyl2xp1 endp
         pop     ESI                     ; restore ESI
         pop     EDI                     ; restore EDI
         ret                             ; return
-__fyl2x endp
+
+        endproc __fyl2x
 
 
 
@@ -123,6 +125,7 @@ __fyl2x endp
 ;;    } else {
 
         defp    __log
+
         push    EDI                     ; save registers
         push    ESI                     ; ...
         push    EDX                     ; ...
@@ -318,5 +321,6 @@ __fyl2x endp
         pop     ESI                     ; ...
         pop     EDI                     ; ...
         ret                             ; return
-__log   endp
+
+        endproc __log
 

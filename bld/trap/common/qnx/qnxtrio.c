@@ -253,7 +253,7 @@ unsigned long DIGCliSeek( dig_fhandle h, unsigned long p,
     return( lseek( h, p, k ) );
 }
 
-unsigned DIGCliRead( dig_fhandle h, void *b , unsigned s )
+size_t DIGCliRead( dig_fhandle h, void *b , size_t s )
 {
     return( read( h, b, s ) );
 }

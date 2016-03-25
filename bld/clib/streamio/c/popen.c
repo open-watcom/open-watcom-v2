@@ -47,6 +47,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
+#include "bool.h"
 #include "rtdata.h"
 #include "liballoc.h"
 #include "osver.h"
@@ -77,16 +78,17 @@ static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
     int                 error = 0;
     size_t              len;
 
-    while( *p != '\0' ) {
+    while( *p != NULLCHAR ) {
         /*** Skip any leading whitespace ***/
-        while( __F_NAME(isspace,iswspace)(*p) ) {
+        while( __F_NAME(isspace,iswspace)( (UCHAR_TYPE)*p ) ) {
             p++;
         }
 
         /*** Handle the word ***/
-        if( *p == '\0' )  break;
+        if( *p == NULLCHAR )
+            break;
         pLookAhead = p;
-        while( *pLookAhead != '\0'  &&  !__F_NAME(isspace,iswspace)(*pLookAhead) ) {
+        while( *pLookAhead != NULLCHAR && !__F_NAME(isspace,iswspace)( (UCHAR_TYPE)*pLookAhead ) ) {
             pLookAhead++;
         }
         if( words != NULL ) {
@@ -97,7 +99,7 @@ static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
                 break;
             }
             __F_NAME(strncpy,wcsncpy)( words[numWords], p, len );
-            words[numWords][len] = '\0';
+            words[numWords][len] = NULLCHAR;
         }
 
         p = pLookAhead;
@@ -145,26 +147,25 @@ static int spawn_it( FILE *fp, const CHAR_TYPE *command )
 
     /*** Use CMD.EXE under NT and OS/2, and COMMAND.COM under Win95 ***/
 #if defined( __OS2__ )
-    words[0] = __F_NAME("cmd.exe",L"cmd.exe");
+    words[0] = STRING( "cmd.exe" );
 #else
     if( WIN32_IS_WIN95 ) {
-        words[0] = __F_NAME("command.com",L"command.com");  /* 95 */
+        words[0] = STRING( "command.com" ); /* 95 */
     } else {
-        words[0] = __F_NAME("cmd.exe",L"cmd.exe");          /* NT */
+        words[0] = STRING( "cmd.exe" );     /* NT */
     }
 #endif
-    words[1] = __F_NAME("/c",L"/c");
+    words[1] = STRING( "/c" );
 
     /*** Spawn the process ***/
-    pid = __F_NAME(spawnvp,_wspawnvp)( P_NOWAIT, words[0],
-        (const CHAR_TYPE **)&words[0] );
+    pid = __F_NAME(spawnvp,_wspawnvp)( P_NOWAIT, words[0], (const CHAR_TYPE **)&words[0] );
     if( pid == -1 ) {
         return( 0 );
     }
     _FP_PIPEDATA(fp).pid = pid;
 
     /*** Free any memory used by parse_words ('words' freed on return) ***/
-    for( numWords--; numWords>=2; numWords-- ) {
+    for( numWords--; numWords >= 2; numWords-- ) {
         lib_free( words[numWords] );
     }
     return( 1 );
@@ -174,7 +175,7 @@ static int spawn_it( FILE *fp, const CHAR_TYPE *command )
 /* Returns non-zero on success */
 
 static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
-                         int readOrWrite, int textOrBinary )
+                         bool readOrWrite, bool textOrBinary )
 /************************************************************************/
 {
 #if defined( __NT__ )
@@ -191,7 +192,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     HFILE               oldHandle;
 #endif
 
-    if( readOrWrite == 'w' ) {
+    if( !readOrWrite ) {
         /*** Change the standard input handle for process inheritance ***/
 #if defined( __NT__ )
         osHandle = GetStdHandle( STD_INPUT_HANDLE );        /* get old */
@@ -206,7 +207,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
 #elif defined( __OS2__ )
-      oldHandle = (HFILE)-1;                /* duplicate standard input */
+        oldHandle = (HFILE)-1;                /* duplicate standard input */
         rc = DosDupHandle( STDIN_HANDLE, &oldHandle );
         if( rc != NO_ERROR )  return( 0 );
         osHandle = STDIN_HANDLE;            /* use new standard input */
@@ -289,39 +290,39 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
 #endif
     FILE *              fp;
     int                 handles[2];
-    CHAR_TYPE           textOrBinary;
-    CHAR_TYPE           readOrWrite;
+    bool                textOrBinary;
+    bool                readOrWrite;
 
 
     /*** Parse the mode string ***/
     switch( mode[0] ) {         /* read or write */
-    case 'r':
-        readOrWrite = 'r';
+    case STRING( 'r' ):
+        readOrWrite = true;
         break;
-    case 'w':
-        readOrWrite = 'w';
+    case STRING( 'w' ):
+        readOrWrite = false;
         break;
     default:
         return( NULL );
     }
     switch( mode[1] ) {         /* text or binary */
-    case 't':
-        textOrBinary = 't';
+    case STRING( 't' ):
+        textOrBinary = true;
         break;
-    case 'b':
-        textOrBinary = 'b';
+    case STRING( 'b' ):
+        textOrBinary = false;
         break;
     default:
-        textOrBinary = _RWD_fmode == _O_BINARY ? 'b' : 't';
+        textOrBinary = ( _RWD_fmode != _O_BINARY );
     }
 
     /*** Create the pipe at the OS level ***/
-    if( _pipe( handles, 0, textOrBinary == 't' ? _O_TEXT : _O_BINARY ) == -1 ) {
+    if( _pipe( handles, 0, (textOrBinary ? _O_TEXT : _O_BINARY) ) == -1 ) {
         return( NULL );
     }
 
     /*** Make read handle non-inheritable if reading ***/
-    if( readOrWrite == 'r' ) {
+    if( readOrWrite ) {
 #if defined( __NT__ )
         rc = DuplicateHandle( GetCurrentProcess(),
                               (HANDLE)_os_handle(handles[0]),
@@ -331,7 +332,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
         close( handles[0] );        /* don't need this any more */
-        handleMode = _O_RDONLY  |  (textOrBinary == 't' ? _O_TEXT : _O_BINARY);
+        handleMode = _O_RDONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
         handles[0] = _hdopen( (int)osHandle, handleMode );
         if( handles[0] == -1 ) {
             CloseHandle( osHandle );
@@ -363,7 +364,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
         close( handles[1] );        /* don't need this any more */
-        handleMode = _O_WRONLY | (textOrBinary == 't' ? _O_TEXT : _O_BINARY);
+        handleMode = _O_WRONLY | (textOrBinary ? _O_TEXT : _O_BINARY);
         handles[1] = _hdopen( (int)osHandle, handleMode );
         if( handles[1] == -1 ) {
             CloseHandle( osHandle );
@@ -385,7 +386,7 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     }
 
     /*** Create the pipe's FILE* ***/
-    fp = __F_NAME(fdopen,_wfdopen)( handles[readOrWrite == 'r' ? 0 : 1], mode );
+    fp = __F_NAME(fdopen,_wfdopen)( handles[(readOrWrite ? 0 : 1)], mode );
     if( fp == NULL ) {
         close( handles[0] );
         close( handles[1] );

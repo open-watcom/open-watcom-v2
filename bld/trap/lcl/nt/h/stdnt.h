@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,11 @@
 #include <tlhelp32.h>
 #include "cpuglob.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "exepe.h"
 #include "exeos2.h"
 #include "exedos.h"
-
-#ifndef STATUS_SEGMENT_NOTIFICATION
-#define STATUS_SEGMENT_NOTIFICATION 0x40000005
-#endif
 #if defined( MD_x86 ) && defined( WOW )
 #include "vdmdbg.h"
 #endif
@@ -53,7 +51,7 @@
 
 #if defined( MD_x64 )
     #define MYCONTEXT           WOW64_CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
@@ -63,7 +61,7 @@
                         WOW64_CONTEXT_DEBUG_REGISTERS | WOW64_CONTEXT_EXTENDED_REGISTERS)
 #else
     #define MYCONTEXT           CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define MYCONTEXT_MXCSR     24
     #define MYCONTEXT_XMM       (10 * 16)
@@ -79,7 +77,7 @@
 
 #if defined( MD_x64 )
     #define WOW64CONTEXT           WOW64_CONTEXT
-    // position in Windows CONTEXT, 
+    // position in Windows CONTEXT,
     // it is offset in FXSAVE/FXRSTOR memory structure
     #define WOW64CONTEXT_MXCSR     24
     #define WOW64CONTEXT_XMM       (10 * 16)
@@ -165,11 +163,9 @@ struct msg_list {
 
 
 /*
- * global variables
+ * global variables prototypes
  */
 
-#define TRPGLOBAL extern
-#define TRPGLOBINIT( x )
 #include "globals.h"
 
 /*
@@ -199,12 +195,11 @@ DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
 BOOL IsBigSel( WORD sel );
-int FindFilePath( const char *pgm, char *buffer, const char *ext_list );
+unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list );
 void AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
 int DebugExecute( DWORD state, int *tsc, bool );
-void InterruptProgram( void );
 void InterruptProgram( void );
 bool Terminate( void );
 

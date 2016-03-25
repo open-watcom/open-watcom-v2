@@ -36,6 +36,7 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "liballoc.h"
@@ -48,7 +49,8 @@
 #include "thread.h"
 #include "mthread.h"
 #include "trdlstac.h"
-#include "_exit.h"
+#include "wprelude.h"
+
 
 #define MAX_CMDLINE     500
 
@@ -307,7 +309,7 @@ extern long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
                                      AllocSignature );
     _LpCmdLine = CommandLine;
     if( cmdLineP != NULL ) {
-        strcpy( _LpCmdLine, cmdLineP );
+        strcpy( _LpCmdLine, (char *)cmdLineP );
     }
     return( _StartNLM( NLMHandle, initializationErrorScreenID, cmdLineP,
                       loadDirectoryPath, uninitializedDataLength,
@@ -322,7 +324,7 @@ extern void _Stop( void )
 }
 #endif
 
-extern void __WATCOM_Prelude( void )
+void __WATCOM_Prelude( void )
 {
 }
 
@@ -337,10 +339,11 @@ extern void __VersionEnforcement( void )
 }
 #endif
 
-extern void __exit( unsigned rc )
+_NORETURN extern void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     _exit( rc );
+    // never return
 }
 
 extern unsigned short __GETDS( void )

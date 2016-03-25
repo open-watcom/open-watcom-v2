@@ -35,8 +35,7 @@
 #include <malloc.h>
 
 int __fmemneed( size_t size )
-    {
-        size = size;
-        return( 0 );
-    }
-
+{
+    size = size;
+    return( 0 );
+}

@@ -33,34 +33,40 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPInvalidOp
-
         modstart    fdld386, dword
 
+endif
+
+        xrefp   FPInvalidOp
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iFDLD
 else
         xdefp   __EmuFDLD
 endif
 
+;
 ;       convert double to long double
-; input:
+;
 ;ifdef _BUILDING_MATHLIB
-;       EAX     pointer to double
-;       EDX     pointer to long double to be filled in
+;       input:  EAX - pointer to double
+;               EDX - pointer to long double to be filled in
 ;else
-;       EDX:EAX double
-;       EBX     pointer to long double to be filled in
+;       input:  EDX:EAX - double
+;               EBX     - pointer to long double to be filled in
 ;endif
 
 ifdef _BUILDING_MATHLIB
-__iFDLD proc    near
+        defp    __iFDLD
+
         push    ECX                     ; save ECX
         push    EBX                     ; save EBX
         mov     EBX,EDX                 ; get pointer to long double
         mov     EDX,4[EAX]              ; get double
         mov     EAX,[EAX]               ; ...
 else
-__EmuFDLD proc  near
+        defp    __EmuFDLD
+
         push    ECX                     ; save ECX
 endif
         mov     ECX,EDX                 ; get exponent and sign
@@ -114,11 +120,13 @@ ifdef _BUILDING_MATHLIB
         pop     EBX                     ; restore EBX
         pop     ECX                     ; restore ECX
         ret                             ; return
-__iFDLD endp
+
+        endproc __iFDLD
 else
         pop     ECX                     ; restore ECX
         ret                             ; return
-__EmuFDLD endp
+
+        endproc __EmuFDLD
 endif
 
 ifdef _BUILDING_MATHLIB

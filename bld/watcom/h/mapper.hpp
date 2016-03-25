@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-extern "C" {
-    #include "mapper.h"
+#include "mapper.h"
 
 /*
      Client Supplied routines.
 */
+extern "C" {
+
 void            *MapperCliAlloc( unsigned size );
 void            MapperCliFree( void * );
 

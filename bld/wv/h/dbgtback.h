@@ -35,5 +35,8 @@ typedef struct {
     address             start;
 } call_chain_entry;
 
-typedef bool (CALL_CHAIN_RTN)(call_chain_entry *, void * );
-extern bool WalkCallChain(CALL_CHAIN_RTN*,void *);
+typedef bool (CALL_CHAIN_RTN)( call_chain_entry *, void * );
+
+extern bool     WalkCallChain( CALL_CHAIN_RTN *, void * );
+extern bool     FixOvlRetAddr( address *return_addr );
+extern address  ReturnAddress( void );

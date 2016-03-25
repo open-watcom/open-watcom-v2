@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,16 +117,14 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( UINT wparam )
+void ShowHintText( ctl_id id )
 {
     int         i;
-    int         toolid;
 
-    toolid = LOWORD( wparam );
     for( i = 0; i < MAX_HINT; i++ ) {
         if( hintText[i].id <= 0 ) {
             break;
-        } else if( hintText[i].id == toolid ) {
+        } else if( hintText[i].id == id ) {
             PrintHintTextByID( hintText[i].hint, NULL );
             return;
         }
@@ -271,18 +270,14 @@ static a_hint_text_line         hintText[MAX_HINT] = {
 /*
  * ShowHintText - given a tool identifier, display the hint text that goes with it
  */
-void ShowHintText( MPARAM wparam )
+void ShowHintText( ctl_id id )
 {
     int         i;
-    int         toolid;
-
-    toolid = LOWORD( wparam );
-    toolid = SHORT1FROMMP( wparam );
 
     for( i = 0; i < MAX_HINT; i++ ) {
         if( hintText[i].id <= 0 ) {
             break;
-        } else if( hintText[i].id == toolid ) {
+        } else if( hintText[i].id == id ) {
             SetHintText( hintText[i].text );
             return;
         }

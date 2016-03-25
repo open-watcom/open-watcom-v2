@@ -32,9 +32,9 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dui.h"
+#include "litwdeng.h"
+#include "dbglit.h"
 
-extern void InitEngineLiterals( void );
-extern void FiniEngineLiterals( void );
 
 void InitLiterals( void )
 {

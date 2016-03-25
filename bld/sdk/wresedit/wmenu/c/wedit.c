@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -976,7 +976,7 @@ WINEXPORT BOOL CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, L
     case WM_INITDIALOG:
         einfo = (WMenuEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
+        SET_DLGDATA( hDlg, einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_MENUEDID, WR_HASHENTRY_ALL );
         ret = TRUE;

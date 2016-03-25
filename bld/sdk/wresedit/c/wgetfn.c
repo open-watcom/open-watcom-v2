@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <commdlg.h>
 #include <dlgs.h>
 #include <direct.h>

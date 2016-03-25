@@ -37,6 +37,9 @@
     #define _FAR
 #endif
 
+#define Align4K( x )  (((x) + 0xfffL) & ~0xfffL)
+#define Align64K( x ) (((x) + 0xffffL) & ~0xffffL)
+
 typedef struct {
     void (__far *rtn)();
 } rtns;
@@ -67,13 +70,5 @@ typedef struct {
     DWORD stackstart;
 } exe_data;
 
-extern WORD DataSelector;
-extern WORD MyDataSelector;
-extern DWORD DataSelectorSize;
-extern WORD Has87;
-
-extern short MaxGlueRoutines,MaxCallbackRoutines;
-extern rtns Glue[];
-extern char MsgTitle[];
 extern void FAR FiniDLLs( void );
-extern int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline );
+extern int  WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline );

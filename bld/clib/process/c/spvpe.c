@@ -40,6 +40,7 @@
 #include "rterrno.h"
 #include "msdos.h"
 #include "thread.h"
+#include "pathmac.h"
 
 #pragma on(check_stack);
 
@@ -55,7 +56,7 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
     retval = __F_NAME(spawnve,_wspawnve)( mode, file, argv, envp );
     if( retval != -1  || (_RWD_errno != ENOENT && _RWD_errno != EINVAL) )
         return( retval );
-    if( *file == STRING( '\\' ) || *file == NULLCHAR || file[1] == STRING( ':' ) )
+    if( file[0] == DIR_SEP || file[0] == NULLCHAR || file[1] == DRV_SEP )
         return( retval );
     p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
     if( p == NULL )
@@ -75,8 +76,8 @@ _WCRTLINK int __F_NAME(spawnvpe,_wspawnvpe)( int mode, const CHAR_TYPE *file, co
         }
         memcpy( buffer, p, (end - p) * sizeof( CHAR_TYPE ) );
         p2 = buffer + (end - p);
-        if( p2[-1] != STRING( '\\' ) ) {
-            *p2++ = STRING( '\\' );
+        if( p2[-1] != DIR_SEP ) {
+            *p2++ = DIR_SEP;
         }
         memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
         retval = __F_NAME(spawnve,_wspawnve)( mode, buffer, argv, envp );

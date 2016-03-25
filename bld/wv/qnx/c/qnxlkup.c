@@ -35,88 +35,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dbgdefn.h"
+#include "envlkup.h"
 
-char *copy_char_to_buff( char *ptr, char c, char **end )
-{
-    if( *end == NULL )
-        return( ptr + 1 );
-    if( ptr < *end ) {
-        *ptr++ = c;
-        *ptr = NULLCHAR;
-    }
-    return( ptr );
-}
 
-char *copy_str_to_buff( char *ptr, const char *str, char **end )
-{
-    int len;
-
-    len = strlen( str );
-    if( *end == NULL )
-        return( ptr + len );
-    while( len-- && ptr < *end ) {
-        *ptr++ = *src++;
-    }
-    *ptr = NULLCHAR;
-    return( ptr );
-}
-
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  *env;
-    char        *ptr;
-    char        *p;
-    char        cmd[_MAX_PATH];
-    char        *str;
-    char        *end = NULL;
+    size_t      len;
+    bool        output;
+    char        c;
 
-    if( buff == NULL ) {
-        buff = cmd;
-    } else if( buff_len != 0 ) {
-        end = buff + buff_len - 1;
-    }
-    ptr = str = buff;
-    /* if we're asking for the PATH variable, we really want to know where
-        to search for our support files */
-    if( strcmp( name, "PATH" ) == 0 ) {
-        /* look in current directory */
-        ptr = copy_char_to_buff( ptr, '.', &end );
-        ptr = copy_char_to_buff( ptr, ':', &end );
-        env = getenv( "WD_PATH" );
-        if( env != NULL ) {
-            /* look in WD_PATH dirs */
-            ptr = copy_str_to_buff( ptr, env, &end );
-            ptr = copy_char_to_buff( ptr, ':', &end );
-        }
-        env = getenv( "HOME" );
-        if( env != NULL ) {
-            /* look in HOME dir */
-            ptr = copy_str_to_buff( ptr, env, &end );
-            ptr = copy_char_to_buff( ptr, ':', &end );
-        }
-        if( _cmdname( cmd ) != NULL ) {
-            p = strrchr( cmd, '/' );
-            if( p != NULL ) {
-                *p = NULLCHAR;
-                /* look in the executable's directory */
-                ptr = copy_str_to_buff( ptr, cmd, &end );
-                ptr = copy_char_to_buff( ptr, ':', &end );
-                p = strrchr( cmd, '/' );
-                if( p != NULL ) {
-                    /* look in a sibling directory of where the executable is */
-                    memcpy( p + 1, "wd", 3 );
-                    ptr = copy_str_to_buff( ptr, cmd, &end );
-                    ptr = copy_char_to_buff( ptr, ':', &end );
-                }
-            }
-        }
-        /* look in "/opt/watcom/wd" */
-        ptr = copy_str_to_buff( ptr, "/opt/watcom/wd", &end );
-        return( ptr - str );
-    }
     env = getenv( name );
-    if( env != NULL ) {
-        ptr = copy_str_to_buff( ptr, env, &end );
+    if( env == NULL )
+        return( 0 );
+
+    output = false;
+    if( buff_len != 0 && buff != NULL ) {
+        --buff_len;
+        output = true;
     }
-    return( ptr - str );
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
+        if( output ) {
+            if( len >= buff_len ) {
+                break;
+            }
+            *buff++ = c;
+        }
+    }
+    if( output ) {
+        buff[len] = NULLCHAR;
+    }
+    return( len );
 }

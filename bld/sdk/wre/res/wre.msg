@@ -295,6 +295,12 @@ pick(   WRE_VERSIONNAME,
 pick(   WRE_DLGINCLUDENAME,
         "Dialog Include Resources",
         "Dialog Include Resources" )
+pick(   WRE_HTMLNAME,
+        "Html Resources",
+        "Html Resources" )
+pick(   WRE_MANIFESTNAME,
+        "Manifest file Resource",
+        "Manifest file Resource" )
 pick(   WRE_TOTALTEXT_NONE,
         "No Resources",
         "No Resources" )
@@ -351,9 +357,6 @@ pick(   WRE_ABOUT_NAME,
 pick(   WRE_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )
-pick(   WRE_ABOUT_COPYRIGHT_YEAR,
-        "1984",
-        "1984" )
 pick(   WRE_ABOUT_TITLE,
         "About Open Watcom Resource Editor",
         "About Open Watcom Resource Editor" )

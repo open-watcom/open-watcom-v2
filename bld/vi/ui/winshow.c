@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,32 +38,34 @@
 /*
  * reDisplayWindow - redisplay the saved window text
  */
-static void reDisplayWindow( window_id wn )
+static void reDisplayWindow( window_id wid )
 {
-    wind                *w;
+    window              *w;
     char_info           *txt;
     window_id           *over;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 j, i;
 
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * re-display text area
      */
+    AccessWindow( w );
     txt = w->text;
     over = w->overlap;
-    for( j = w->y1; j <= w->y2; j++ ) {
-        oscr = w->x1 + j * EditVars.WindMaxWidth;
+    for( j = w->area.y1; j <= w->area.y2; j++ ) {
+        oscr = w->area.x1 + j * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
-        for( i = w->x1; i <= w->x2; i++ ) {
-            if( *over++ == NO_WINDOW ) {
+        for( i = w->area.x1; i <= w->area.x2; i++ ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, *txt );
             }
+            over++;
             scr++;
             txt++;
         }
@@ -71,7 +74,7 @@ static void reDisplayWindow( window_id wn )
 #endif
     }
 
-    DrawBorder( wn );
+    DrawBorder( wid );
     ReleaseWindow( w );
 
 } /* reDisplayWindow */
@@ -79,47 +82,47 @@ static void reDisplayWindow( window_id wn )
 /*
  * MoveWindowToFront - bring a window forward
  */
-void MoveWindowToFront( window_id wn )
+void MoveWindowToFront( window_id wid )
 {
-    if( !TestOverlap( wn ) ) {
+    if( !TestOverlap( wid ) ) {
         return;
     }
-    MoveWindowToFrontDammit( wn, true );
+    MoveWindowToFrontDammit( wid, true );
 
 } /* MoveWindowToFront */
 
 /*
  * MoveWindowToFrontDammit - bring a window forward
  */
-void MoveWindowToFrontDammit( window_id wn, bool scrflag )
+void MoveWindowToFrontDammit( window_id wid, bool scrflag )
 {
-    wind        *w;
+    window      *w;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
 
-    RestoreOverlap( wn, scrflag );
+    RestoreOverlap( wid, scrflag );
     ResetOverlap( w );
-    MarkOverlap( wn );
-    reDisplayWindow( wn );
+    MarkOverlap( wid );
+    reDisplayWindow( wid );
 
 } /* MoveWindowToFrontDammit */
 
 /*
  * InactiveWindow - display a window as inactive
  */
-void InactiveWindow( window_id wn )
+void InactiveWindow( window_id wid )
 {
-    wind        *w;
+    window      *w;
     vi_color    c;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     if( w == NULL ) {
         return;
     }
@@ -133,32 +136,31 @@ void InactiveWindow( window_id wn )
      */
     c = w->border_color1;
     w->border_color1 = EditVars.InactiveWindowColor;
-    DrawBorder( wn );
+    DrawBorder( wid );
     w->border_color1 = c;
 
 } /* InactiveWindow */
 
-void ActiveWindow( window_id a ) { a = a; }
+void ActiveWindow( window_id wid ) { wid = wid; }
 
 /*
  * WindowTitleAOI - set the title of a window, active or inactive
  */
-void WindowTitleAOI( window_id wn, char *title, bool active )
+void WindowTitleAOI( window_id wid, const char *title, bool active )
 {
-    wind        *w;
+    window      *w;
 
-    w = Windows[wn];
-
+    w = WINDOW_FROM_ID( wid );
     MemFree( w->title );
     if( title == NULL ) {
         w->title = NULL;
     } else {
-        AddString( &(w->title), title );
+        w->title = DupString( title );
     }
     if( active ) {
-        DrawBorder( wn );
+        DrawBorder( wid );
     } else {
-        InactiveWindow( wn );
+        InactiveWindow( wid );
     }
 
 } /* WindowTitleAOI */
@@ -167,42 +169,43 @@ void WindowTitleAOI( window_id wn, char *title, bool active )
 /*
  * WindowTitle - set window title, active border
  */
-void WindowTitle( window_id id, char *name )
+void WindowTitle( window_id wid, const char *name )
 {
-    WindowTitleAOI( id, name, true );
+    WindowTitleAOI( wid, name, true );
 
 } /* WindowTitle */
 
 /*
  * WindowTitleInactive - set window title, inactive border
  */
-void WindowTitleInactive( window_id id, char *name )
+void WindowTitleInactive( window_id wid, const char *name )
 {
-    WindowTitleAOI( id, name, false );
+    WindowTitleAOI( wid, name, false );
 
 } /* WindowTitleInactive */
 
 /*
  * ClearWindow - do just that
  */
-void ClearWindow( window_id wn )
+void ClearWindow( window_id wid )
 {
-    wind                *w;
+    window              *w;
     window_id           *over;
     char_info           *txt;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
     int                 j, i, shift, addr;
     char_info           what = {0, 0};
 
     if( EditFlags.Quiet ) {
         return;
     }
-    w = AccessWindow( wn );
+    w = WINDOW_FROM_ID( wid );
 
     /*
      * clear text area
      */
+    AccessWindow( w );
     what.cinfo_char = ' ';
     what.cinfo_attr = MAKE_ATTR( w, w->text_color, w->background_color );
     shift = 0;
@@ -211,16 +214,17 @@ void ClearWindow( window_id wn )
         shift = 1;
         addr = w->width + shift;
     }
-    for( j = w->y1 + shift; j <= w->y2 - shift; j++ ) {
-        oscr = w->x1 + shift + j * EditVars.WindMaxWidth;
+    for( j = w->area.y1 + shift; j <= w->area.y2 - shift; j++ ) {
+        oscr = w->area.x1 + shift + j * EditVars.WindMaxWidth;
         scr = &Scrn[oscr];
         txt = &(w->text[addr]);
         over = &(w->overlap[addr]);
-        for( i = w->x1 + shift; i <= w->x2 - shift; i++ ) {
+        for( i = w->area.x1 + shift; i <= w->area.x2 - shift; i++ ) {
             WRITE_SCREEN_DATA( *txt++, what );
-            if( *over++ == NO_WINDOW ) {
+            if( BAD_ID( *over ) ) {
                 WRITE_SCREEN( *scr, what );
             }
+            over++;
             scr++;
         }
 #ifdef __VIO__
@@ -236,11 +240,11 @@ void ClearWindow( window_id wn )
 /*
  * InsideWindow - test if coordinates are in window or on border
  */
-bool InsideWindow( window_id id, int x, int y )
+bool InsideWindow( window_id wid, int x, int y )
 {
-    wind        *w;
+    window      *w;
 
-    w = Windows[id];
+    w = WINDOW_FROM_ID( wid );
     if( !w->has_border ) {
         return( true );
     }

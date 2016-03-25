@@ -50,7 +50,7 @@ static int compare( const void *p1, const void *p2 )
 /*
  * getDir - get current directory list (no sorting)
  */
-static vi_rc getDir( char *dname, bool want_all_dirs )
+static vi_rc getDir( const char *dname, bool want_all_dirs )
 {
     DIR                 *d;
     struct dirent       *nd;
@@ -74,11 +74,11 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
     for( j = 0; j < i + 1; j++ ) {
         path[j] = dname[j];
     }
-    path[i + 1] = 0;
+    path[i + 1] = '\0';
     if( i >= 0 ) {
         ch = path[i];
     } else {
-        ch = 0;
+        ch = '\0';
     }
     for( j = i + 1; j <= len; j++ ) {
         wild[j - i - 1] = dname[j];
@@ -88,14 +88,14 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
         return( rc );
     }
 #ifndef __UNIX__
-    if( ch != '\\' && ch != '/' && ch != ':' && ch != 0 ) {
+    if( ch != '\\' && ch != '/' && ch != ':' && ch != '\0' ) {
         strcat( path, FILE_SEP_STR );
     }
     strcat( path, ALL_FILES_WILD_CARD );
 #else
-    if( ch == 0 ) {
+    if( ch == '\0' ) {
         path[0] = '.';
-        path[1] = 0;
+        path[1] = '\0';
     }
 #endif
 
@@ -161,7 +161,7 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
 /*
  * GetSortDir - get a directory and sort it
  */
-vi_rc GetSortDir( char *name, bool want_all_dirs )
+vi_rc GetSortDir( const char *name, bool want_all_dirs )
 {
     vi_rc       rc;
 

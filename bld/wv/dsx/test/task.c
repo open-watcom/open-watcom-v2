@@ -42,10 +42,10 @@
 #define _debug( s )     { cputs( s ); cputs( "\n\rPress a key\n\r" ); getch(); }
 #define NB_VECTORS      256
 
-static void             __far *SavePMVTable[ NB_VECTORS ];
-static unsigned         SaveRMVTable[ NB_VECTORS ];
-static unsigned         NewPMVTable[ NB_VECTORS ];
-static unsigned         NewRMVTable[ NB_VECTORS ];
+static void             __far *SavePMVTable[NB_VECTORS];
+static unsigned         SaveRMVTable[NB_VECTORS];
+static unsigned         NewPMVTable[NB_VECTORS];
+static unsigned         NewRMVTable[NB_VECTORS];
 
 // Shouldn't this set si as well?? - MN
 extern void DoInt66( uint_16, uint_16, void __far * );
@@ -86,9 +86,9 @@ static void save_vects( unsigned *rmvtable, void __far **pmvtable )
     #endif
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
-            rmvtable[ intnb ] = TinyDPMIGetRealVect( intnb );
+            rmvtable[intnb] = TinyDPMIGetRealVect( intnb );
         #endif
-        pmvtable[ intnb ] = TinyDPMIGetProtectVect( intnb );
+        pmvtable[intnb] = TinyDPMIGetProtectVect( intnb );
     }
 }
 
@@ -104,10 +104,10 @@ static void restore_vects( unsigned *rmvtable, void __far **pmvtable )
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
             TinyDPMISetRealVect( intnb,
-                                 ( (uint_16 *)&rmvtable[ intnb ] )[ 1 ],
-                                 (uint_16)rmvtable[ intnb ] );
+                                 ( (uint_16 *)&rmvtable[intnb] )[1],
+                                 (uint_16)rmvtable[intnb] );
         #endif
-        TinyDPMISetProtectVect( intnb, pmvtable[ intnb ] );
+        TinyDPMISetProtectVect( intnb, pmvtable[intnb] );
     }
 }
 
@@ -131,7 +131,7 @@ static void read_vtable( unsigned *rmvtable, unsigned *pmvtable, uint_16 *cs,
 static void dump_selec( uint_16 sel )
 {
     tiny_dscp           d;
-    char                buff[ 100 ];
+    char                buff[100];
 
     if( TinyDPMIGetDescriptor( sel, &d ) ) {
         _debug( "error getting descriptor for selector" );
@@ -205,16 +205,16 @@ static void set_new_vects( unsigned *rmvtable, unsigned *pmvtable,
     for( intnb = 0; intnb < NB_VECTORS; ++intnb ) {
         #ifndef __DOS4G__
             TinyDPMISetRealVect( intnb,
-                                 ( (uint_16 *)&rmvtable[ intnb ] )[ 1 ],
-                                 (uint_16)rmvtable[ intnb ] );
+                                 ( (uint_16 *)&rmvtable[intnb] )[1],
+                                 (uint_16)rmvtable[intnb] );
         #endif
         if( intnb == 0x66 ) {
             TinyDPMISetProtectVect( intnb, MK_FP( pmcs,
-                                           (uint_16)pmvtable[ intnb ] ) );
+                                           (uint_16)pmvtable[intnb] ) );
         } else {
             TinyDPMISetProtectVect( intnb,
-                                MK_FP( ( (uint_16 *)&pmvtable[ intnb ] )[ 1 ],
-                                       (uint_16)pmvtable[ intnb ] ) );
+                                MK_FP( ( (uint_16 *)&pmvtable[intnb] )[1],
+                                       (uint_16)pmvtable[intnb] ) );
         }
     }
     _debug( "new vectors have been set" );
@@ -247,7 +247,7 @@ extern void main( void )
     dump_selec( pmds );
     //dump_selec( ldt );
     _debug( "doing an int 0x66" );
-    DoInt66( pmcs, pmds, SavePMVTable[ 0x66 ] );
+    DoInt66( pmcs, pmds, SavePMVTable[0x66] );
     _debug( "completed int 0x66" );
     _debug( "switching back to my real and protected mode vector tables" );
     restore_vects( SaveRMVTable, SavePMVTable );

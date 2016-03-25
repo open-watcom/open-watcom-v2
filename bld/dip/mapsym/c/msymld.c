@@ -56,7 +56,7 @@ static struct {
     unsigned_8          data[4096];
 } Buff;
 
-unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
+static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
 {
     unsigned long       bpos;
     unsigned long       npos = 0;
@@ -64,7 +64,7 @@ unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
     case DIG_END:
-        return( -1UL ); /* unsupported */
+        return( DCSEEK_ERROR ); /* unsupported */
     case DIG_CUR:
         npos = bpos + p + Buff.off;
         break;
@@ -82,16 +82,16 @@ unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     return( Buff.fpos );
 }
 
-unsigned BRead( dig_fhandle h, void *b, unsigned s )
+static size_t BRead( dig_fhandle h, void *b, size_t s )
 {
-    unsigned    got;
-    unsigned    want;
+    size_t      got;
+    size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
-        if( Buff.fpos == -1UL )
+        if( Buff.fpos == DCSEEK_ERROR )
             return( 0 );
         got = DCRead( h, b, s );
         Buff.fpos += got;
@@ -99,18 +99,22 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
     }
     want = s;
     got = Buff.len - Buff.off;
-    if( got > want ) got = want;
+    if( got > want )
+        got = want;
     memcpy( b, &Buff.data[Buff.off], got );
     Buff.off += got;
     want -= got;
     if( want > 0 ) {
-        Buff.len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( Buff.len == (unsigned)-1 ) {
-            Buff.fpos = -1UL;
+        size_t  len;
+
+        len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
+        if( len == DCREAD_ERROR ) {
+            Buff.fpos = DCSEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( (unsigned)-1 );
+            return( DCREAD_ERROR );
         }
+        Buff.len = len;
         Buff.fpos += Buff.len;
         b = (unsigned_8 *)b + got;
         memcpy( b, &Buff.data[0], want );
@@ -162,7 +166,7 @@ msym_block *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
     for( b = ii->addr; b != NULL; b = b->next ) {
         if( SameAddrSpace( b->start, addr )
           && b->start.offset <= addr.offset
-          && (b->start.offset+b->len) > addr.offset ) {
+          && (b->start.offset + b->len) > addr.offset ) {
             return( b );
         }
     }
@@ -244,8 +248,8 @@ static dip_status CheckSymFile( dig_fhandle h )
     unsigned long       pos;
 
     /* seek to the end, read and check end map record */
-    pos = DCSeek( h, -(long)sizeof( end_map ), DIG_END );
-    if( pos == -1UL ) {
+    pos = DCSeek( h, DCSEEK_POSBACK( sizeof( end_map ) ), DIG_END );
+    if( pos == DCSEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     /* the endmap record must be 16-byte aligned */
@@ -291,7 +295,7 @@ static dip_status ReadString( dig_fhandle h, char *buf, unsigned *len_ptr )
 }
 
 /* Load symbols for a segment */
-static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, int count,
+static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, unsigned count,
                         unsigned long base_ofs, unsigned_32 table_ofs,
                         addr_seg seg, int big_syms )
 {
@@ -309,7 +313,7 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, int count,
     if( sym_tbl == NULL ) {
         return( DS_ERR | DS_NO_MEM );
     }
-    if( BSeek( h, base_ofs + table_ofs, DIG_ORG ) == -1UL ) {
+    if( BSeek( h, base_ofs + table_ofs, DIG_ORG ) == DCSEEK_ERROR ) {
         ds = DS_ERR | DS_FSEEK_FAILED;
         goto done;
     }
@@ -318,8 +322,10 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, int count,
         goto done;
     }
 
+    sym.offset = 0;
+    sym_32.offset = 0;
     for( i = 0; i < count; ++i ) {
-        if( BSeek( h, base_ofs + sym_tbl[i], DIG_ORG ) == -1UL ) {
+        if( BSeek( h, base_ofs + sym_tbl[i], DIG_ORG ) == DCSEEK_ERROR ) {
             ds = DS_ERR | DS_FSEEK_FAILED;
             goto done;
         }
@@ -371,16 +377,15 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
     sym_segdef      seg;
     char            name[256];
     unsigned        name_len;
-    unsigned_32     seg_start;
+    unsigned long   seg_start;
     int             i;
     int             is_code;
 
     for( i = 0; i < count; ++i ) {
         seg_start = BSeek( h, 0, DIG_CUR );
-        if( seg_start == -1UL ) {
+        if( seg_start == DCSEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
-
         if( BRead( h, &seg, SYM_SEGDEF_FIXSIZE ) != SYM_SEGDEF_FIXSIZE ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
@@ -391,10 +396,11 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         /* There's no good way to tell whether segment is code or data. Try
          * to guess what a segment is based on its name.
          */
-        if( !strcmp( name, "DGROUP" ) )
+        if( strcmp( name, "DGROUP" ) == 0 ) {
             is_code = 0;
-        else
+        } else {
             is_code = 1;
+        }
         ds = AddBlock( ii, seg.load_addr, 0, 0, is_code );
         if( ds != DS_OK )
             return( ds );
@@ -402,7 +408,7 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         LoadSymTable( h, ii, seg.num_syms, seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
-        if( BSeek( h, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == -1UL ) {
+        if( BSeek( h, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DCSEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
     }
@@ -419,7 +425,7 @@ static dip_status LoadSymFile( dig_fhandle h, imp_image_handle *ii )
     unsigned        name_len;
 
     map_start = BSeek( h, 0, DIG_ORG );
-    if( map_start == -1UL ) {
+    if( map_start == DCSEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -436,7 +442,7 @@ static dip_status LoadSymFile( dig_fhandle h, imp_image_handle *ii )
     if( ds != DS_OK )
         return( ds );
 
-    if( BSeek( h, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == -1UL ) {
+    if( BSeek( h, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DCSEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = LoadSegments( h, ii, map.num_segs );

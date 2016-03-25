@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 
 #if defined(DOSXTRAP) || defined(DOSXHELP)

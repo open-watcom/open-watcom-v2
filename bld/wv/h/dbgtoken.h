@@ -31,22 +31,44 @@
 
 
 typedef enum
- {
-        /* one character command line delimiters */
+{
+/* Debugger tokens */
+
+    /* one character command line delimiters */
     #define pick(t,c)   t,
     #include "_dbgtok.h"
     #undef pick
-        /* numbers & names for expressions and command lines */
+    /* numbers & names for expressions and command lines */
     T_INT_NUM,
     T_REAL_NUM,
     T_BAD_NUM,
     T_NAME,
     T_STRING,
     T_UNKNOWN,
- } tokens;
 
-#define FIRST_CMDLN_DELIM  T_LT
-#define LAST_CMDLN_DELIM   T_UNKNOWN
+/* SSL tokens */
+
+    /* SSL delimiters */
+    T_SSL_DELIMS            = 0x20,
+
+    /* SSL escape characters */
+    T_SSL_ESCAPE_CHARS      = 0x80,
+
+    /* SSL special operators */
+    T_SSL_SPEC_PAREN        = 0x1000,
+    T_SSL_SPEC_POINTER_IND,
+    T_SSL_SPEC_FIELD_SELECT,
+    T_SSL_SPEC_POINTER_FIELD,
+    T_SSL_SPEC_ARRAY,
+    T_SSL_SPEC_SELF,
+    T_SSL_SPEC_NULL,
+
+    T_SSL_MAX_TOKEN         = 0xFFFF,
+} tokens;
+
+#define FIRST_CMDLN_DELIM     T_LT
+#define LAST_CMDLN_DELIM      T_UNKNOWN
+#define FIRST_SSL_ESCAPE_CHAR T_SSL_ESCAPE_CHARS
 
 typedef struct {
     const char  *delims;

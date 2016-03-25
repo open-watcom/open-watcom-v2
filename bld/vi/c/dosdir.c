@@ -40,7 +40,7 @@
 /*
  * MyGetFileSize - do just that
  */
-vi_rc MyGetFileSize( char *name, long *size )
+vi_rc MyGetFileSize( const char *name, long *size )
 {
     DIR         *d;
 
@@ -69,7 +69,7 @@ bool IsDirectory( char *name )
     if( rc != 0 )
         return( false ); /* not valid */
 
-    if( name[1] == ':' && name[2] == '\\' && name[3] == 0 ) {
+    if( name[1] == ':' && name[2] == '\\' && name[3] == '\0' ) {
         /* this is a root dir -- this is OK */
         return( true );
     }
@@ -87,7 +87,7 @@ bool IsDirectory( char *name )
 /*
  * GetFileInfo - get info from a directory entry
  */
-void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
+void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
 {
     path = path;
 

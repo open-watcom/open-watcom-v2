@@ -38,6 +38,8 @@
 #include "trprfx.h"
 #include "remote.h"
 #include "trapglbl.h"
+#include "trpld.h"
+#include "rfxacc.h"
 
 extern char *TxtBuff;
 
@@ -51,12 +53,12 @@ trap_shandle    SuppRFXId;
 bool InitRFXSupp( void )
 {
     SuppRFXId = GetSuppId( RFX_SUPP_NAME );
-    if( SuppRFXId == 0 ) return( FALSE );
-    return( TRUE );
+    if( SuppRFXId == 0 ) return( false );
+    return( true );
 }
 
 
-rc_erridx RemoteRename( const char * from, const char *to )
+error_handle RemoteRename( const char * from, const char *to )
 {
     in_mx_entry         in[3];
     mx_entry            out[1];
@@ -67,16 +69,16 @@ rc_erridx RemoteRename( const char * from, const char *to )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = from;
-    in[1].len = strlen( from ) + 1;
+    in[1].len = (trap_elen)( strlen( from ) + 1 );
     in[2].ptr = to;
-    in[2].len = strlen( to ) + 1;
+    in[2].len = (trap_elen)( strlen( to ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 3, in, 1, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteMkDir( const char *name )
+error_handle RemoteMkDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -87,14 +89,14 @@ rc_erridx RemoteMkDir( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteRmDir( const char *name )
+error_handle RemoteRmDir( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -105,14 +107,14 @@ rc_erridx RemoteRmDir( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteSetDrv( int drv )
+error_handle RemoteSetDrv( int drv )
 {
     rfx_setdrive_req    acc;
     rfx_setdrive_ret    ret;
@@ -133,7 +135,7 @@ int RemoteGetDrv( void )
     return( ret.drive );
 }
 
-rc_erridx RemoteSetCWD( const char *name )
+error_handle RemoteSetCWD( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -144,7 +146,7 @@ rc_erridx RemoteSetCWD( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -162,7 +164,7 @@ long RemoteGetFileAttr( const char * name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -173,7 +175,7 @@ long RemoteGetFileAttr( const char * name )
     return( ret.attribute );
 }
 
-rc_erridx RemoteSetFileAttr( const char * name, long attrib )
+error_handle RemoteSetFileAttr( const char * name, long attrib )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -185,7 +187,7 @@ rc_erridx RemoteSetFileAttr( const char * name, long attrib )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -233,10 +235,14 @@ static void mylocaltime( unsigned long date_time, int *time, int *date )
         }
     }
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
-        for( month=2; month<=12; ++day_since_jan[month], ++month ) {}
+        for( month = 2; month <= 12; ++day_since_jan[month], ++month ) {
+            ;
+        }
     }
     year = num_yr_since_1970 - 10;
-    for( month=1;( day > day_since_jan[month] && month <= 12 ); month++ ) {}
+    for( month = 1; ( day > day_since_jan[month] && month <= 12 ); month++ ) {
+        ;
+    }
     day -= day_since_jan[month - 1];
     date_time %= 86400;
     hour = date_time / 3600;
@@ -278,7 +284,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
+error_handle RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 {
     if( set ) {
         rfx_setdatetime_req     acc;
@@ -305,7 +311,7 @@ unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 //NYI: Assume max cwd lenght is 80
 #define MAX_STRING_LEN  80
 
-rc_erridx RemoteGetCwd( int drv, char *where )
+error_handle RemoteGetCwd( int drv, char *where )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -324,7 +330,7 @@ rc_erridx RemoteGetCwd( int drv, char *where )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+error_handle RemoteFindFirst( const char *pattern, void *info, trap_elen info_len, int attrib )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -336,7 +342,7 @@ rc_erridx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, i
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = pattern;
-    in[1].len = strlen( pattern ) + 1;
+    in[1].len = (trap_elen)( strlen( pattern ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = info;
@@ -346,7 +352,7 @@ rc_erridx RemoteFindFirst( const char *pattern, void *info, unsigned info_len, i
 }
 
 
-int RemoteFindNext( void *info, unsigned info_len )
+int RemoteFindNext( void *info, trap_elen info_len )
 {
     in_mx_entry          in[2];
     mx_entry             out[2];
@@ -366,7 +372,7 @@ int RemoteFindNext( void *info, unsigned info_len )
     return( ret.err );
 }
 
-rc_erridx RemoteFindClose( void )
+error_handle RemoteFindClose( void )
 {
     rfx_findclose_req   acc;
     rfx_findclose_ret   ret;
@@ -376,7 +382,7 @@ rc_erridx RemoteFindClose( void )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_len )
+size_t RenameNameToCannonical( char *name, char *fullname, trap_elen fullname_len )
 {
     in_mx_entry           in[2];
     mx_entry              out[2];
@@ -387,7 +393,7 @@ unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_l
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = fullname;

@@ -49,7 +49,7 @@ struct vsprtf_s_buf {
 };
 
 static slib_callback_t mem_putc; // set up calling convention
-static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, int op_char )
+static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct vsprtf_s_buf     *info;
 

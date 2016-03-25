@@ -39,34 +39,42 @@
 #include "dbgio.h"
 #include "dbgscan.h"
 #include "trapglbl.h"
+#include "dbgmain.h"
+#include "dbgsys.h"
+#include "remfile.h"
+#include "dbginit.h"
+#if defined( __DOS__ ) && defined( _M_I86 )
+#include "doschk.h"
+#endif
 
-
-extern long         _fork( const char *, size_t );
-extern rc_erridx    RemoteFork( const char *,size_t );
-extern bool         CheckPointMem( unsigned, char * );
-extern void         CheckPointRestore( void );
-extern const char   *GetCmdName( wd_cmd cmd );
 
 static const char SystemOps[] = { "Remote\0Local\0" };
 
-void DoSystem( const char *cmd, size_t len, int loc )
+void DoSystem( const char *cmd, size_t len, object_loc loc )
 {
-    long        rc;
-    rc_erridx   ret;
-    bool        chk;
+    long            rc;
+//    error_handle    errh;
+#if defined( __DOS__ ) && defined( _M_I86 )
+    bool            chk;
+#endif
 
     DUISysStart();
-    if( loc == 0 && _IsOn( SW_REMOTE_FILES ) )
-        loc = 1;
-    if( loc > 0 ) {
-        ret = RemoteFork( cmd, len );
+    if( loc == LOC_DEFAULT && _IsOn( SW_REMOTE_FILES ) )
+        loc = LOC_REMOTE;
+    if( loc == LOC_REMOTE ) {
+//        errh = RemoteFork( cmd, len );
+        RemoteFork( cmd, (trap_elen)len );
         rc = 0;
     } else {
         RemoteSuspend();
-        chk = CheckPointMem( CheckSize, TxtBuff );
+#if defined( __DOS__ ) && defined( _M_I86 )
+        chk = CheckPointMem( ON_DISK, CheckSize, TxtBuff );
+#endif
         rc = _fork( cmd, len );
+#if defined( __DOS__ ) && defined( _M_I86 )
         if( chk )
-            CheckPointRestore();
+            CheckPointRestore( ON_DISK );
+#endif
         RemoteResume();
     }
     DUISysEnd( rc >= 0 );
@@ -80,24 +88,24 @@ void ProcSystem( void )
 {
     const char  *start;
     size_t      len;
-    int         loc;
+    object_loc  loc;
 
-    loc = 0;
+    loc = LOC_DEFAULT;
     if( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( SystemOps ) ) {
         case 0:
-            loc = 1;
+            loc = LOC_REMOTE;
             break;
         case 1:
-            loc = -1;
+            loc = LOC_LOCAL;
             break;
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
             break;
         }
     }
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     ReqEOC();
     DoSystem( start, len, loc );
 }

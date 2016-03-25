@@ -35,6 +35,7 @@
 //
 
 #include "ftnstd.h"
+#include "fdll.h"
 
 
 unsigned        __FInitThrd( void ) {

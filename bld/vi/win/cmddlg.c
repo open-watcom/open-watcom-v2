@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,10 @@
 #include "cmd.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static char     *cmdStr;
 static int      cmdLen;
 
@@ -45,12 +50,14 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     int                 curr;
     int                 i;
     int                 cmd;
-    DWORD               index;
+    int                 index;
     char                str[MAX_INPUT_LINE];
     history_data        *h;
     char                *ptr;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
@@ -75,7 +82,7 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         case CMD_LISTBOX:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETCURSEL, 0, 0L );
+                index = (int)SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
@@ -99,7 +106,7 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, cmdStr ) ) {
-                AddString2( &(h->data[h->curr % h->max]), cmdStr );
+                ReplaceString( &(h->data[h->curr % h->max]), cmdStr );
                 h->curr += 1;
             }
             RemoveEditSubClass( hwnd, CMD_EDIT );
@@ -125,7 +132,7 @@ bool GetCmdDialog( char *str, int len )
     cmdStr = str;
     cmdLen = len;
     proc = MakeDlgProcInstance( CmdDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "CMDDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     /* this is technically a bug of some kind - if the above command

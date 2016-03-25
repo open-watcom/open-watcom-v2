@@ -40,7 +40,7 @@
 #define _SMAlloc( pointer, size )       _Alloc( pointer, size )
 #define _SMFree( pointer )              _Free( pointer )
 
-#define sm_file_handle                  handle
+#define sm_file_handle                  file_handle
 #define sm_mod_handle                   mod_handle
 #define sm_cue_fileid                   cue_fileid
 
@@ -57,4 +57,4 @@
 
 #define SMReadStream( fp, buff, len )   ReadStream( fp, buff, len )
 
-#define SMFileRemote( fp )              ( (FileHandleInfo( hndl->file_ptr ) & OP_REMOTE) != 0 )
+#define SMFileRemote( fp )              ( (FileHandleInfo( fp ) & OP_REMOTE) != 0 )

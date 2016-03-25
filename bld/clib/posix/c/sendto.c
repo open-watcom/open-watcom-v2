@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2008-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2008-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,6 +43,6 @@ _WCRTLINK int sendto( int s, const void *msg, size_t len, int flags, const struc
     args[3] = (unsigned long)flags;
     args[4] = (unsigned long)to;
     args[5] = (unsigned long)tolen;
-    return ( __socketcall( SYS_SENDTO, args ) );
+    return( __socketcall( SYS_SENDTO, args ) );
 }
 

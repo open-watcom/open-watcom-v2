@@ -38,8 +38,8 @@
 
 _WCRTLINK INTCHAR_TYPE __F_NAME(tolower,towlower)( INTCHAR_TYPE c )
 {
-    if( c >= 'A' && c <= 'Z' ) {
-        c = c - 'A' + 'a';
+    if( c >= STRING( 'A' ) && c <= STRING( 'Z' ) ) {
+        c += ( STRING( 'a' ) - STRING( 'A' ) );
     }
     return( c );
 }

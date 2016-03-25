@@ -62,7 +62,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
     ULONG                       value;
     ULONG                       stopvalue;
     ULONG                       notify=0;
-    BOOL                        got_second_notification;
+//    bool                        got_second_notification;
     ULONG                       fcp;
     CONTEXTRECORD               fcr;
 
@@ -72,12 +72,12 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
         value = 0;
     }
     stopvalue = XCPT_CONTINUE_EXECUTION;
-    got_second_notification = FALSE;
+//    got_second_notification = false;
     if( cmd == DBG_C_Stop ) {
         stopvalue = XCPT_CONTINUE_STOP;
     }
 
-    while( 1 ) {
+    for( ;; ) {
 
         buff->Value = value;
         buff->Cmd = cmd;
@@ -265,9 +265,7 @@ main()
     WinQuerySwitchEntry( hswitch, &SW );
     W = SW.hwnd;
     A = WinQueryAnchorBlock( W );
-    for( ;; ) {
-        hmq = WinQuerySendMsg( A, 0, Q, &qmsg );
-        if( hmq == 0 ) break;
+    while( (hmq = WinQuerySendMsg( A, 0, Q, &qmsg )) != 0 ) {
         printf( "SND hwnd=%8.8x msg=%d\n", qmsg.hwnd, qmsg.msg );
         fflush( stdout );
         WinReplyMsg( A, hmq, Q, 1 );
@@ -286,7 +284,9 @@ main()
 //  DebugExecute( &Buff, DBG_C_Go );
     for( i = 0; i < 100; ++i ) {
         DosSleep( 100 );
-        if( kbhit() ) break;
+        if( kbhit() ) {
+            break;
+        }
     }
     Q = 0;
 //  while( !ThreadGone ) DosSleep( 1 );

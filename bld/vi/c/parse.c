@@ -32,26 +32,34 @@
 
 #include "vi.h"
 
-static bool isIgnorable( char, char * );
 
 /*
- * RemoveLeadingSpaces - remove leading spaces from a string
+ * isIgnorable - test if a character is ignorable
  */
-void RemoveLeadingSpaces( char *buff )
+static bool isIgnorable( char c, const char *ign )
 {
-    int k = 0;
+    char    ci;
 
-    if( buff[0] == '\0' ) {
-        return;
-    }
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( k ) {
-        EliminateFirstN( buff, k );
+    while( (ci = *ign++) != '\0' ) {
+        if( ci == c || ci == ' ' && isspace( c ) ) {
+            return( true );
+        }
     }
 
-} /* RemoveLeadingSpaces */
+    return( false );
+
+} /* isIgnorable */
+
+/*
+ * SkipLeadingSpaces - skip leading spaces in a string
+ */
+char *SkipLeadingSpaces( const char *buff )
+{
+    while( isspace( *buff ) )
+        ++buff;
+    return( (char *)buff );
+
+} /* SkipLeadingSpaces */
 
 /*
  * TranslateTabs
@@ -75,82 +83,98 @@ void TranslateTabs( char *buff )
 /*
  * GetStringWithPossibleQuote2
  */
-vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
+vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slash )
 {
-    int     len;
+    const char  *buff = *pbuff;
 
-    RemoveLeadingSpaces( data );
-    if( allow_slash && data[0] == '/' ) {
-        len = NextWord( data, st, SingleSlash );
-        if( len >= 0 ) {
-            EliminateFirstN( data, 1 );
+    while( isspace( *buff ) )
+        ++buff;
+    if( allow_slash && *buff == '/' ) {
+        buff = GetNextWord( buff, st, SingleSlash );
+        if( *buff == '/' ) {
+            ++buff;
         }
-    } else if( data[0] == '"' ) {
-        len = NextWord( data, st, SingleQuote );
-        if( len >= 0 ) {
-            EliminateFirstN( data, 1 );
+    } else if( *buff == '"' ) {
+        buff = GetNextWord( buff, st, SingleQuote );
+        if( *buff == '"' ) {
+            ++buff;
         }
     } else {
-        len = NextWord1( data, st );
+        buff = GetNextWord1( buff, st );
     }
-    if( len <= 0 ) {
+    *pbuff = buff;
+    if( *st == '\0' ) {
         return( ERR_NO_STRING );
     }
     return( ERR_NO_ERR );
 
 } /* GetStringWithPossibleQuote2 */
 
-vi_rc GetStringWithPossibleQuote( char *data, char *st )
+vi_rc GetStringWithPossibleQuote( const char **pbuff, char *st )
 {
-    return( GetStringWithPossibleQuote2( data, st, true ) );
+    return( GetStringWithPossibleQuote2( pbuff, st, true ) );
 
 } /* GetStringWithPossibleQuote */
 
 /*
- * NextWord1 - get next space delimited word in buff
+ * GetNextWord1 - get next space delimited word in buff
  */
-int NextWord1( char *buff, char *res )
+char *GetNextWord1( const char *buff, char *res )
 {
-    int         j, k = 0;
-    char        c;
+    char    c;
 
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( buff[k] == '\0' ) {
-        res[0] = '\0';
-        return( -1 );
-    }
-
+    while( isspace( *buff ) )
+        ++buff;
     /*
      * get word
      */
-    for( j = 0; (c = buff[k]) != '\0'; ++k ) {
+    for( ; (c = *buff) != '\0'; ++buff ) {
         if( isspace( c ) )
             break;
-        res[j++] = c;
+        *res++ = c;
     }
-    res[j] = '\0';
-    EliminateFirstN( buff, k );
-    return( j );
+    *res = '\0';
+    return( (char *)buff );
 
-} /* NextWord1 */
-
-/*
- * NextWordSlash - next slash delimited word
- */
-int NextWordSlash( char *buff, char *res )
-{
-    return( NextWord( buff, res, SingleSlash ) );
-
-} /* NextWordSlash */
+} /* GetNextWord1 */
 
 /*
- * NextWord - get next word in buff
+ * GetNextWord2 - get next space or alternate character delimited word in buff
  */
-int NextWord( char *buff, char *res, char *ign )
+char *GetNextWord2( const char *buff, char *res, char alt_delim )
 {
-    int         j = 0, k = 0, sl;
+    char    c;
+
+    while( isspace( *buff ) )
+        ++buff;
+    /*
+     * get word
+     */
+    for( ; (c = *buff) != '\0'; ++buff ) {
+        if( c == alt_delim ) {
+            break;
+        }
+        if( isspace( c ) ) {
+            ++buff;
+            while( isspace( *buff ) )
+                buff++;
+            break;
+        }
+        *res++ = c;
+    }
+    *res = '\0';
+    if( *buff == alt_delim )
+        ++buff;
+    return( (char *)buff );
+
+} /* GetNextWord2 */
+
+/*
+ * GetNextWord - get next word in buff
+ */
+char *GetNextWord( const char *buff, char *res, const char *ign )
+{
+    int         sl;
     char        c;
 
     /*
@@ -159,84 +183,43 @@ int NextWord( char *buff, char *res, char *ign )
      */
     sl = strlen( ign );
     if( sl == 1 ) {
-        if( isIgnorable( buff[0], ign ) ) {
-            k = 1;
+        if( isIgnorable( *buff, ign ) ) {
+            ++buff;
         }
     } else {
-        while( isIgnorable( buff[k], ign ) ) {
-            k++;
+        while( isIgnorable( *buff, ign ) ) {
+            ++buff;
         }
     }
-    if( buff[k] == '\0' ) {
-        res[0] = '\0';
-        return( -1 );
-    }
-
     /*
      * get word
      */
-    for( ; (c = buff[k]) != '\0'; ++k ) {
+    for( ; (c = *buff) != '\0'; ++buff ) {
         /*
          * look for escaped delimiters
          */
         if( c == '\\' && sl == 1 ) {
-            if( buff[k + 1] == ign[0] ) {
-                ++k;
-                res[j++] = buff[k];
+            if( buff[1] == ign[0] ) {
+                ++buff;
+                *res++ = *buff;
                 continue;
             }
-            if( buff[k + 1] == '\\' ) {
-                ++k;
-                res[j++] = '\\';
-                res[j++] = '\\';
+            if( buff[1] == '\\' ) {
+                ++buff;
+                *res++ = '\\';
+                *res++ = '\\';
                 continue;
             }
         }
         if( isIgnorable( c, ign ) ) {
             break;
         }
-        res[j++] = c;
+        *res++ = c;
     }
-    res[j] = '\0';
-    EliminateFirstN( buff, k );
-    return( j );
+    *res = '\0';
+    return( (char *)buff );
 
-} /* NextWord */
-
-/*
- * isIgnorable - test if a character is ignorable
- */
-static bool isIgnorable( char c, char *ign )
-{
-    while( *ign != 0 ) {
-        if( *ign == ' ' ) {
-            if( isspace( c ) ) {
-                return( true );
-            }
-        } else if( c == *ign ) {
-            return( true );
-        }
-        ign++;
-    }
-
-    return( false );
-
-} /* isIgnorable */
-
-/*
- * EliminateFirstN - eliminate first n chars from buff
- */
-void EliminateFirstN( char *buff, int n )
-{
-    char        *buff2;
-
-    buff2 = &buff[n];
-    while( *buff2 != 0 ) {
-        *buff++ = *buff2++;
-    }
-    *buff = 0;
-
-} /* EliminateFirstN */
+} /* GetNextWord */
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
 extern char toUpper( char );
@@ -328,7 +311,7 @@ int Tokenize( const char *Tokens, const char *token, bool entireflag )
             t++;
             tkn++;
         }
-        while( *t != 0 ) {
+        while( *t != '\0' ) {
             t++;
         }
         i++;

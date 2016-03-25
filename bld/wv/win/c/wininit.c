@@ -48,35 +48,35 @@
 #include "autoenv.h"
 #include "strutil.h"
 #include "guiwin.h"
+#include "dbgmain.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
+#include "trptypes.h"
+#include "trpsys.h"
+#include "wininit.h"
 
 #include "clibint.h"
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
 static BOOL     PASCAL GetCommandData( HWND );
-extern void     InitHookFunc(void);
-extern void     FiniHookFunc(void);
-#ifndef __NT__
-extern void  (WINAPI *InfoFunction)(HWND);
-#endif
-
 extern HWND     MainHwnd = NULL;
 extern a_window *WndMain;
 
 volatile bool   BrkPending;
-bool            ToldWinHandle = FALSE;
+bool            ToldWinHandle = false;
 
 static char     *CmdData;
 
+#if defined( __GUI__ )
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle && InfoFunction != NULL ) {
-        InfoFunction( GUIGetSysHandle( WndGui( WndMain ) ) );
-        ToldWinHandle = TRUE;
+    if( !ToldWinHandle ) {
+        TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+        ToldWinHandle = true;
     }
 }
+#endif
 
 void GUImain( void )
 {
@@ -108,13 +108,14 @@ void GUISysFini( void  )
 
 void WndCleanUp( void )
 {
-    InfoFunction( (HWND)0 );
+    TrapTellHWND( (HWND)0 );
     FiniHookFunc();
 }
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 
@@ -136,8 +137,8 @@ void KillDebugger( int ret_code )
 
 void GrabHandlers( void )
 {
-    if( !ToldWinHandle && InfoFunction != NULL ) {
-        InfoFunction( (HWND)0 );
+    if( !ToldWinHandle ) {
+        TrapTellHWND( (HWND)0 );
     }
 }
 
@@ -184,8 +185,4 @@ void PopErrBox( const char *buff )
 {
     MessageBox( (HWND)NULL, buff, LIT_ENG( Debugger_Startup_Error ),
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
-}
-
-void SysSetMemLimit( void )
-{
 }

@@ -39,8 +39,8 @@
 .386p
 include struct.inc
 
-extrn   DPMIGetAliases_:near
-extrn   DPMIFreeAlias_:near
+extrn   _DPMIGetAlias_:near
+extrn   _DPMIFreeAlias_:near
 extrn   _SaveSP:DWORD           ; save for stack
 extrn   _EntryStackSave:DWORD   ; save for stack
 extrn   _DataSelector:WORD      ; selector obtained for 32-bit area
@@ -134,7 +134,7 @@ nxtparm:;_loop                          ; loop
 longparm: push  edx                     ; - push long parm
           jmp   nxtparm                 ; - go get next parm
 
-byteparm: mov   dh,0                    ; - zero high byte
+byteparm: xor dh,dh                     ; - zero high byte
 wordparm: push  dx                      ; - push word parm
           jmp   nxtparm                 ; - go get next parm
 floatparm:
@@ -161,8 +161,7 @@ pointerparm:
           push  si                      ; - save si
           sub   sp,4                    ; - allocate space for aliased pointer
           mov   si,sp                   ; - point es:si at allocated space
-          mov   cx,1                    ; - want 1 alias
-          call  DPMIGetAliases_         ; - get alias
+          call  _DPMIGetAlias_          ; - get alias
           mov   es, _DataSelector       ; - reload es
           pop   eax                     ; - load alias pointer
           pop   si                      ; - restore si
@@ -189,7 +188,7 @@ docall: call    dword ptr _funcptr[bp]  ; invoke 16-bit function
           cmp   eax,edx                 ; - if they are different
           _if   ne                      ; - then
             shr   eax,16                ; - - get selector
-            call  DPMIFreeAlias_        ; - - free it
+            call  _DPMIFreeAlias_       ; - - free it
           _endif                        ; - endif
           add   esi,8                   ; - advance 32-bit stack pointer
         _endloop                        ; endloop

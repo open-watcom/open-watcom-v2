@@ -106,6 +106,8 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
                 _hostType = HOST_WINOS2;
             }
         }
+#elif defined( _WIN64 )
+        _hostType = HOST_NT;
 #elif defined( __NT__ )
     /* -------------------------------------------------------- */
     #ifdef __AXP__

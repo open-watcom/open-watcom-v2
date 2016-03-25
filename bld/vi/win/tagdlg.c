@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,10 @@
 #include "tagdlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static int      tagCnt;
 static char     **tagList;
 
@@ -59,7 +64,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             EndDialog( hwnd, -1 );
             break;
         case IDOK:
-            i = SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
+            i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( i == LB_ERR ) {
                 MessageBox( hwnd, "No selection", EditorName,
                             MB_ICONEXCLAMATION | MB_OK );
@@ -69,7 +74,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             break;
         case TAGS_LISTBOX:
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
-                i = SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
+                i = (int)SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
                 EndDialog( hwnd, i );
             }
             break;
@@ -85,7 +90,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 /*
  * PickATag - create dialog to select a specific tag
  */
-int PickATag( int clist, char **list, char *tagname )
+int PickATag( int clist, char **list, const char *tagname )
 {
     FARPROC     proc;
     int         rc;
@@ -94,7 +99,7 @@ int PickATag( int clist, char **list, char *tagname )
     tagList = list;
 
     proc = MakeDlgProcInstance( TagListProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, (DLGPROC)proc, (LPARAM)tagname );
+    rc = DialogBoxParam( InstanceHandle, "TAGS", root_window_id, (DLGPROC)proc, (LPARAM)tagname );
     FreeProcInstance( proc );
     return( rc );
 

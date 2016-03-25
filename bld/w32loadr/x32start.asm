@@ -444,7 +444,7 @@ brk_b:  ;insufficient memory
         pop     ecx                     ;pop and discard original eax
         pop     ecx                     ;restore original ecx
 brk_c:
-        mov     eax,-1
+        or      eax,-1
         stc                             ; indicate allocation failure
         ret
 
@@ -453,15 +453,15 @@ __brk_  endp
 ;
 ;       __Int21 interface to OS int 21h translator
 ;
-        public  __Int21_
-        public  __fInt21_
+        public  __Int21
+        public  __fInt21
 
-__fInt21_ proc  far
-        call    __Int21_
+__fInt21 proc  far
+        call    __Int21
         ret
-__fInt21_ endp
+__fInt21 endp
 
-__Int21_ proc   near
+__Int21 proc   near
         cmp     AH,48h                  ; allocate memory?
         je      short AllocMem          ; branch if yes
         cmp     AH,4Eh                  ; DOS Find First?
@@ -493,7 +493,7 @@ FindNext:
         int     21h                     ; ...
         pop     EDX                     ; restore EDX
 findret:ret                             ; return
-__Int21_ endp
+__Int21 endp
 
 _TEXT   ends
 

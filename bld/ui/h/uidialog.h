@@ -111,11 +111,13 @@ typedef struct a_list {
 } a_list;
 
 typedef struct a_check {
-    unsigned char   val;
-    unsigned char   def;
+    bool            val;
+    bool            def;
     char            *str;   // without button
     char            hotkey; // will be set by UI
 } a_check;
+
+#define _checked( a ) ( a->val != a->def )
 
 typedef struct a_combo_box {
     a_list          list;
@@ -123,16 +125,14 @@ typedef struct a_combo_box {
     int             perm;   // bool : permanent combo-box ?
 } a_combo_box;
 
-#define _checked( a ) ( !( a->val == a->def ) )
-
 typedef struct a_radio_group {
-    unsigned        value;
+    int             value;
     char            *caption;      // used for printing and reading
-    unsigned        def;           // default value (used as above)
+    int             def;           // default value (used as above)
 } a_radio_group;
 
 typedef struct a_radio {
-    unsigned        value;
+    int             value;
     char            *str;        // without button
     a_radio_group   *group;
     char            hotkey;      // will be set by UI
@@ -207,7 +207,7 @@ extern unsigned uiendlistbox( struct a_list * );
 extern void uipaintlistbox( struct a_list * );
 extern struct a_list_info *uibeglistbox( VSCREEN *, struct sarea *,
                                          struct a_list * );
-extern unsigned uilistsize( struct a_list * );
+extern int  uilistsize( struct a_list * );
 extern UIPICKGETTEXT uigetlistelement;
 extern void uiupdatelistbox( struct a_list * );
 extern void uiupdatecombobox( struct a_combo_box * );

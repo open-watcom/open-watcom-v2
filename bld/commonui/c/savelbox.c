@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <stdio.h>
 #include <dos.h>
@@ -55,8 +56,8 @@
  */
 static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
 {
-    LRESULT     i;
-    LRESULT     count;
+    int         i;
+    int         count;
     FILE        *f;
     char        str[256];
 
@@ -67,7 +68,7 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
     if( writefn != NULL ) {
         writefn( f );
     }
-    count = SendMessage( listbox, LB_GETCOUNT, 0, 0L );
+    count = (int)SendMessage( listbox, LB_GETCOUNT, 0, 0L );
     if( count == LB_ERR ) {
         fclose( f );
         return( false );

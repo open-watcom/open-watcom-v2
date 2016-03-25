@@ -47,9 +47,10 @@ extern void Lead( char c, int num, char *buff );
 /*
  * RegSub - perform substitutions after a regexp match
  */
-bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
+bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
 {
-    char        *src, *dst, c;
+    const char  *src;
+    char        *dst, c;
     int         no, len;
     bool        splitit = false;
     bool        upper_flag = false;
@@ -92,13 +93,11 @@ bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                     while( isdigit( *src ) ) {
                         buff[i++] = *src++;
                     }
-                    buff[i] = 0;
+                    buff[i] = '\0';
                     j = atoi( buff ) - 1;
-                    *dst = 0;
-                    i = VirtualLineLen( dest );
-                    while( i < j ) {
+                    *dst = '\0';
+                    for( i = VirtualLineLen( dest ); i < j; ++i ) {
                         *dst++ = ' ';
-                        i++;
                     }
                     break;
                 case '#':
@@ -202,9 +201,8 @@ bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
             }
             dst += len;
         }
-
     }
-    *dst++ = 0;
+    *dst = '\0';
     StaticFree( tmp );
     return( splitit );
 

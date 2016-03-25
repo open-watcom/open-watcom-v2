@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include "vi.h"
 #include "utils.h"
 #include "clrbar.h"
@@ -38,6 +40,10 @@
 #include "sstyle.h"
 #include "subclass.h"
 #include "wprocmap.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define NUM_ACROSS      8
 #define NUM_DOWN        8
@@ -50,20 +56,20 @@
 #define INDEX_FROM_XY( x, y )   ((y) * NUM_ACROSS + (x))
 #define COLOUR_FROM_XY( x, y )  (RGBValues[INDEX_FROM_XY( x, y )])
 
-extern HWND hColorbar;
-int         Width;
-int         Height;
-
-
 typedef enum NewColourOps {
     NC_FORE,
     NC_BACK
 } NewColourOps;
 
+extern HWND hColorbar;
+
+int         Width;
+int         Height;
+
 static int              cursx = 0, cursy = 0;
 static COLORREF         RGBValues[NUM_COLOURS];
 static bool             haveCapture = false;
-static HWND             mod_hwnd;
+static window_id        mod_wid = NO_WINDOW;
 static POINT            m_pt;
 
 static void sendNewColourToolbar( void )
@@ -91,8 +97,8 @@ static void sendNewColourCurrentWindow( NewColourOps op )
     syntax_element  i;
     linenum         line_num;
 
-    ScreenToClient( mod_hwnd, &m_pt );
-    ClientToRowCol( mod_hwnd, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
+    ScreenToClient( mod_wid, &m_pt );
+    ClientToRowCol( mod_wid, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
 
     /* someone is base 0, someone else isn't.  bummer.
      * also col may not be valid, check this
@@ -142,30 +148,30 @@ static void sendNewColour( NewColourOps op )
 {
     type_style  *mod_style;
 
-    if( mod_hwnd == NULL ) {
+    if( BAD_ID( mod_wid ) ) {
         return;
     }
 
-    if( mod_hwnd == GetToolbarWindow() ) {
+    if( mod_wid == GetToolbarWindow() ) {
         sendNewColourToolbar();
-    } else if( mod_hwnd == CurrentWindow ) {
+    } else if( mod_wid == current_window_id ) {
         sendNewColourCurrentWindow( op );
     } else {
-        mod_style = ( &(WINDOW_FROM_ID( mod_hwnd )->info->text) );
+        mod_style = WIN_TEXT_STYLE( WINDOW_FROM_ID( mod_wid ) );
         if( op == NC_FORE ) {
             mod_style->foreground = INDEX_FROM_XY( cursx, cursy );
         } else {
             mod_style->background = INDEX_FROM_XY( cursx, cursy );
         }
-        StatusWndChangeSysColors( RGBValues[statusw_info.text.background],
-                                  RGBValues[statusw_info.text.foreground],
+        StatusWndChangeSysColors( RGBValues[statusw_info.text_style.background],
+                                  RGBValues[statusw_info.text_style.foreground],
                                   GetSysColor( COLOR_BTNHIGHLIGHT ),
                                   GetSysColor( COLOR_BTNSHADOW ) );
         ReDisplayScreen();
     }
 }
 
-void drawFocus( HDC hdc, RECT *rect, bool set )
+static void drawFocus( HDC hdc, RECT *rect, bool set )
 {
     HPEN        hDkGreyPen;
     HPEN        hWhitePen;
@@ -273,10 +279,10 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );
 
-    cursx = (short)( LOWORD( lparam ) / Width );
+    cursx = GET_X( lparam ) / Width;
     if( cursx > NUM_ACROSS - 1 )
         cursx = NUM_ACROSS - 1;
-    cursy = (short)( HIWORD( lparam ) / Height );
+    cursy = GET_Y( lparam ) / Height;
     if( cursy > NUM_DOWN - 1 ) {
         cursy = NUM_DOWN - 1;
     }
@@ -287,8 +293,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     CursorOp( COP_DROPCLR );
     SetCapture( hwnd );
     haveCapture = true;
-    mod_hwnd = (HWND)NULLHANDLE;
-
+    mod_wid = NO_WINDOW;
     return( 0 );
 }
 
@@ -327,19 +332,19 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     }
 
     // check we aren't on ourselves first
-    m_pt.x = (short)LOWORD( lparam );
-    m_pt.y = (short)HIWORD( lparam );
+    m_pt.x = GET_X( lparam );
+    m_pt.y = GET_Y( lparam );
     ClientToScreen( hwnd, &m_pt );
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPCLR );
-        mod_hwnd = (HWND)NULLHANDLE;
+        mod_wid = NO_WINDOW;
         return( 0 );
     }
 
     // otherwise, figure out what we're over & change element display
-    mod_hwnd = GetOwnedWindow( m_pt );
-    if( mod_hwnd != NULL ) {
+    mod_wid = GetOwnedWindow( m_pt );
+    if( !BAD_ID( mod_wid ) ) {
         CursorOp( COP_DROPCLR );
     } else {
         CursorOp( COP_NODROP );

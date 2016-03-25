@@ -57,7 +57,7 @@ bool    qflag = false;
 char    _bf[] = "edbind.dat";
 char    *bindfile = _bf;
 
-void Banner( void )
+static void Banner( void )
 {
     if( qflag ) {
         return;
@@ -72,7 +72,7 @@ void Banner( void )
 /*
  * Abort - made a boo-boo
  */
-void Abort( char *str, ... )
+static void Abort( char *str, ... )
 {
     va_list     al;
 
@@ -87,7 +87,7 @@ void Abort( char *str, ... )
 /*
  * MyPrintf - do a printf
  */
-void MyPrintf( char *str, ... )
+static void MyPrintf( char *str, ... )
 {
     va_list     al;
 
@@ -102,7 +102,7 @@ void MyPrintf( char *str, ... )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
+static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
 {
     int                 h, i, newh;
     char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
@@ -186,6 +186,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
             tocopy = 0;
         }
     }
+    free( copy );
     close( h );
 
     /*
@@ -215,7 +216,7 @@ void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
 static void GetFromEnv( char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -225,12 +226,12 @@ static void GetFromEnv( char *what, char *path )
 /*
  * GetFromEnvAndOpen - search env and fopen a file
  */
-FILE *GetFromEnvAndOpen( char *inpath )
+static FILE *GetFromEnvAndOpen( char *inpath )
 {
     char tmppath[_MAX_PATH];
 
     GetFromEnv( inpath, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         MyPrintf( " %s...", tmppath );
         return( fopen( tmppath, "r" ) );
     }
@@ -245,7 +246,7 @@ FILE *GetFromEnvAndOpen( char *inpath )
     #pragma aux Usage aborts;
 #endif
 
-void Usage( char *msg )
+static void Usage( char *msg )
 {
     if( msg != NULL ) {
         printf( "%s\n", msg );
@@ -263,44 +264,20 @@ void Usage( char *msg )
 } /* Usage */
 
 /*
- * EliminateFirstN - eliminate first n chars from buff
+ * SkipLeadingSpaces - skip leading spaces in a string
  */
-static void EliminateFirstN( char *buff, short n  )
+static char *SkipLeadingSpaces( const char *buff )
 {
-    char        *buff2;
+    while( isspace( *buff ) )
+        ++buff;
+    return( (char *)buff );
 
-    buff2 = &buff[n];
-    while( *buff2 != 0 ) {
-        *buff++ = *buff2++;
-    }
-    *buff = 0;
-
-} /* EliminateFirstN */
-
-/*
- * RemoveLeadingSpaces - remove leading spaces from a string
- */
-void RemoveLeadingSpaces( char *buff )
-{
-    short       k = 0;
-
-    if( buff[0] == 0 ) {
-        return;
-    }
-    while( isspace( buff[k] ) ) {
-        k++;
-    }
-    if( k == 0 ) {
-        return;
-    }
-    EliminateFirstN( buff, k );
-
-} /* RemoveLeadingSpaces */
+} /* SkipLeadingSpaces */
 
 /*
  * MyAlloc - allocate memory, failing if cannot
  */
-void *MyAlloc( unsigned size )
+static void *MyAlloc( size_t size )
 {
     void        *tmp;
 
@@ -318,6 +295,7 @@ int main( int argc, char *argv[] )
     char                *buff = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
+    char                *ptr;
     int                 i, bytes, j, k, sl;
     FILE                *f;
     struct stat         fs;
@@ -331,8 +309,7 @@ int main( int argc, char *argv[] )
     bind_size           *index;
     bind_size           *entries;
 
-    j = argc - 1;
-    while( j > 0 ) {
+    for( j = argc - 1; j > 0; --j ) {
         if( argv[j][0] == '/' || argv[j][0] == '-' ) {
             sl = strlen( argv[j] );
             for( i = 1; i < sl; i++ ) {
@@ -356,7 +333,6 @@ int main( int argc, char *argv[] )
             }
             argc--;
         }
-        j--;
     }
     Banner();
 
@@ -367,7 +343,7 @@ int main( int argc, char *argv[] )
         Usage( "No executable to bind" );
     }
     _splitpath( argv[1], drive, dir, fname, ext );
-    if( ext[0] == 0 ) {
+    if( ext[0] == '\0' ) {
         _makepath( path, drive, dir, fname, ".exe" );
     } else {
         strcpy( path, argv[1] );
@@ -392,19 +368,19 @@ int main( int argc, char *argv[] )
         if( f == NULL ) {
             Abort( "Could not open %s", bindfile );
         }
-        while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
-            for( i = strlen( buff3 ); i && isWSorCtrlZ( buff3[i - 1] ); --i ) {
-                buff3[i - 1] = '\0';
+        while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
+            for( i = strlen( ptr ); i && isWSorCtrlZ( ptr[i - 1] ); --i ) {
+                ptr[i - 1] = '\0';
             }
-            if( buff3[0] == '\0' ) {
+            if( ptr[0] == '\0' ) {
                 continue;
             }
-            RemoveLeadingSpaces( buff3 );
-            if( buff3[0] == '#' ) {
+            ptr = SkipLeadingSpaces( ptr );
+            if( ptr[0] == '#' ) {
                 continue;
             }
-            dats[FileCount] = MyAlloc( strlen( buff3 ) + 1 );
-            strcpy( dats[FileCount], buff3 );
+            dats[FileCount] = MyAlloc( strlen( ptr ) + 1 );
+            strcpy( dats[FileCount], ptr );
             FileCount++;
             if( FileCount >= MAX_DATA_FILES ) {
                 Abort( "Too many files to bind!" );
@@ -451,22 +427,22 @@ int main( int argc, char *argv[] )
             setvbuf( f, buff2, _IOFBF, 32000 );
             bytes = lines = 0;
             index[j] = cnt;
-            while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
+            while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
                 unsigned    len;
 
-                for( len = strlen( buff3 ); len && isWSorCtrlZ( buff3[len - 1] ); --len )
-                    buff3[len - 1] = '\0';
-                if( buff3[0] == '\0' ) {
+                for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len )
+                    ptr[len - 1] = '\0';
+                if( ptr[0] == '\0' ) {
                     continue;
                 }
-                RemoveLeadingSpaces( buff3 );
-                if( buff3[0] == '#' ) {
+                ptr = SkipLeadingSpaces( ptr );
+                if( ptr[0] == '#' ) {
                     continue;
                 }
-                len = strlen( buff3 );
+                len = strlen( ptr );
                 *buffn = (char)len;
                 buffn++;
-                memcpy( buffn, buff3, len );
+                memcpy( buffn, ptr, len );
                 buffn += len;
                 cnt += len + 1;
                 lines++;

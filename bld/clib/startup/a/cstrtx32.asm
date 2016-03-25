@@ -357,8 +357,8 @@ stack_okay:
         mov     _STACKTOP,esp           ; set stack top
 
         xor     eax,eax
-        mov     fs,ax
-        mov     gs,ax                   ;makes reloading segs faster
+        mov     fs,eax
+        mov     gs,eax                  ;makes reloading segs faster
 
         mov     eax,0FFH                ; run all initalizers
         call    __InitRtns              ; call initializer routines
@@ -375,7 +375,14 @@ exit_msg:       ;InitRtns hasn't been called yet so don't call FiniRtns
         mov     ax,4c01h
         int     21h
 
-null_error:     ;a null code pointer has been called
+;       don't touch AL in __exit, it has the return code
+__exit   proc near
+ifndef __STACK__
+        push    eax                     ; save return code on the stack
+endif
+        jmp short L5
+
+null_error:     ; a null code pointer has been called
         push    ebp
         mov     ebp,esp
         mov     eax,offset DGROUP:null_msg
@@ -395,7 +402,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -406,19 +413,11 @@ L4:     lodsb                           ; get char
         mov     ecx,sizeof NewLine      ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-ifndef __STACK__
-        pop     eax                     ; restore return code
-endif
-
-;       don't touch AL in __exit, it has the return code
-__exit   proc near
-ifndef __STACK__
-        push    eax                     ; save return code
-endif
-        mov     eax,00H                 ; run finalizers
+L5:
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
         mov     ah,4cH                  ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit   endp
@@ -479,7 +478,7 @@ brk_b:  ;insufficient memory
         pop     ecx                     ;pop and discard original eax
         pop     ecx                     ;restore original ecx
 brk_c:
-        mov     eax,-1
+        or      eax,-1
         stc                             ; indicate allocation failure
         ret
 
@@ -519,7 +518,7 @@ FindFirst:
         int     21h                     ; ...
         ret                             ; return
 FindNext:
-        cmp     AL,0                    ; if not FIND NEXT
+        test    AL,AL                   ; if not FIND NEXT
         jne     short findret           ; then return
         push    EDX                     ; save EDX
         mov     AH,1Ah                  ; set DTA address
@@ -527,7 +526,8 @@ FindNext:
         mov     AH,4Fh                  ; find next
         int     21h                     ; ...
         pop     EDX                     ; restore EDX
-findret:ret                             ; return
+findret:
+        ret                             ; return
 __Int21_ endp
 
 _TEXT   ends

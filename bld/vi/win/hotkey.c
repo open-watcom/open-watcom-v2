@@ -34,6 +34,10 @@
 #include "subclass.h"
 #include "hotkey.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * HotkeyProc - pass hotkeys on to root for various modeless 'bars'
  */
@@ -47,7 +51,7 @@ WINEXPORT LRESULT CALLBACK HotkeyProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         if( key == VI_KEY( F7 ) ||
             key == VI_KEY( F8 ) ||
             key == VI_KEY( F9 ) ) {
-            return( SendMessage( Root, msg, wparam, lparam ) );
+            return( SendMessage( root_window_id, msg, wparam, lparam ) );
         }
         break;
     }

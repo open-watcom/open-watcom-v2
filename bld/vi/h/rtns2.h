@@ -34,7 +34,7 @@
 extern void         PositionScrollThumb( void );
 
 /* biosos2.c */
-extern void         MyVioShowBuf( unsigned, unsigned );
+extern void         MyVioShowBuf( size_t, unsigned );
 
 /* biosqnx.c */
 extern vi_rc        KeyboardInit( void );
@@ -56,7 +56,7 @@ extern void         MyDelay( int );
 extern void         ClearScreen( void );
 extern long         MemSize( void );
 extern void         MyBeep( void );
-extern vi_rc        SetCWD( char * );
+extern vi_rc        SetCWD( const char * );
 extern void         KillCursor( void );
 extern void         TurnOffCursor( void );
 extern void         RestoreCursor( void );
@@ -70,17 +70,17 @@ extern void         ScreenFini( void );
 extern void         ChkExtendedKbd( void );
 extern bool         KeyboardHit( void );
 extern vi_key       GetKeyboard( void );
-extern vi_rc        SetAColor( char * );
-extern vi_rc        SetFont( char * );
+extern vi_rc        SetAColor( const char * );
+extern vi_rc        SetFont( const char * );
 extern void         InitColors( void );
 extern void         ResetColors( void );
 extern void         FiniColors( void );
 extern void         ScreenPage( int );
 extern void         GetClockStart( void );
 extern void         GetSpinStart( void );
-extern bool         SameFile( char *, char * );
+extern bool         SameFile( const char *, const char * );
 extern vi_rc        ChangeDrive( int );
-extern void         PushDirectory( char * );
+extern void         PushDirectory( const char * );
 extern void         PopDirectory( void );
 extern bool         ShiftDown( void );
 extern bool         CtrlDown( void );

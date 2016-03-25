@@ -1,6 +1,6 @@
 plustest_name = dcmat
 
-!include testenv.mif
+!include testenv1.mif
 
 objs = &
     compmat.obj &

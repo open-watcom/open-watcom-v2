@@ -35,7 +35,7 @@
 #include <windows.h>
 #include <toolhelp.h>
 #include "winext.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "_toolhlp.h"
 
 #pragma aux BackPatch_toolhelp parm [ax]
@@ -58,9 +58,9 @@ DWORD FAR PASCAL __MemoryRead( WORD sel, DWORD off, LPVOID buff, DWORD cb )
             return( 0 );
         }
     }
-    DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
+    _DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
     rc = toolhelpMemoryRead( sel, off, (LPVOID) alias, cb );
-    DPMIFreeHugeAlias( alias, cb );
+    _DPMIFreeHugeAlias( alias, cb );
 
     return( rc );
 
@@ -80,9 +80,9 @@ DWORD FAR PASCAL __MemoryWrite( WORD sel, DWORD off, LPVOID buff, DWORD cb )
             return( 0 );
         }
     }
-    DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
+    _DPMIGetHugeAlias( (DWORD) buff, &alias, cb );
     rc = toolhelpMemoryWrite( sel, off, (LPVOID) alias, cb );
-    DPMIFreeHugeAlias( alias, cb );
+    _DPMIFreeHugeAlias( alias, cb );
 
     return( rc );
 

@@ -35,20 +35,21 @@
 #include <malloc.h>
 #include "heap.h"
 
-__segment __bheap = 0;
+__segment __bheap = _NULLSEG;
 
 _WCRTLINK __segment _bheapseg( size_t size )
 {
     __segment   seg;
-    struct heapblk __based(seg) *p;
+    heapblk     __based( seg ) *p;
 
     seg = __AllocSeg( size );
-    if( seg == 0 )  return( _NULLSEG );
+    if( seg == _NULLSEG )
+        return( _NULLSEG );
     p = 0;
     p->nextseg = __bheap;
     __bheap = seg;
     seg = p->nextseg;
-    if( seg != 0 ) {
+    if( seg != _NULLSEG ) {
         p->prevseg = __bheap;
     }
     return( __bheap );

@@ -46,6 +46,7 @@
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "objio.h"
+#include "optmain.h"
 #include "feprotos.h"
 
 extern  void            OutFPPatch(fp_patches);
@@ -548,8 +549,8 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
     return( lbl );
 }
 
-extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
-/******************************************************/
+void    OutputOC( any_oc *oc, any_oc *next_lbl )
+/**********************************************/
 {
     label_handle    lbl;
     cg_sym_handle   sym;
@@ -559,6 +560,8 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl )
     byte            *ptr;
 
     base = oc->oc_header.class & GET_BASE;
+    if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
+        return;
     if( base != OC_LABEL ) {
         DumpSavedDebug();
     }

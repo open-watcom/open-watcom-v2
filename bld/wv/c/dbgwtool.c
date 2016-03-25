@@ -32,8 +32,9 @@
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "rcdef.h"
+#include "dbgwtool.h"
+#include "dbginit.h"
 
-extern bool SysGUI( void );
 
 #include "menudef.h"
 static gui_toolbar_struct ToolBar[] = {

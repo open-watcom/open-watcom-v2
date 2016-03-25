@@ -53,8 +53,8 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii,
     return( IMH_NOMOD );
 }
 
-unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii,
+                        imp_cue_handle *ic, char *buff, size_t buff_size )
 {
     ii = ii; ic = ic; buff = buff; buff_size = buff_size;
     return( 0 );

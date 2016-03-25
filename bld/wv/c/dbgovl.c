@@ -32,6 +32,8 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
+#include "dbgovl.h"
+#include "removl.h"
 
 typedef struct {
     addr_seg    first;
@@ -39,12 +41,6 @@ typedef struct {
     signed_16   shift;
     unsigned_16 spacer;         /* to make a power of two */
 } section_info;
-
-extern void             RemoteSectTblRead( byte * );
-extern void             RemoteSectTblWrite( const byte * );
-extern bool             RemoteOvlRetAddr( address *, unsigned );
-extern bool             RemoteOvlSectPos( unsigned, mem_block * );
-extern unsigned         RemoteOvlSectSize( void );
 
 static void             *TblCache;
 static section_info     *OvlRemap;
@@ -62,7 +58,7 @@ bool InitOvlState( void )
         OvlCount = ( OvlSize - 3 ) * 8;
         _Alloc( OvlRemap, OvlCount * sizeof( section_info ) );
         if( OvlRemap == NULL )
-            return( FALSE );
+            return( false );
         _Alloc( TblCache, OvlSize );
         for( i = 0; i < OvlCount; ++i ) {
             if( RemoteOvlSectPos( i + 1, &where ) ) {
@@ -75,7 +71,7 @@ bool InitOvlState( void )
             OvlRemap[i].shift = 0;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void FiniOvlState( void )
@@ -89,19 +85,19 @@ void FiniOvlState( void )
 
 void InvalidateTblCache( void )
 {
-    TblCacheValid = FALSE;
+    TblCacheValid = false;
 }
 
-int SectIsLoaded( unsigned sect_id, int sect_map_id )
+bool SectIsLoaded( unsigned sect_id, int sect_map_id )
 {
     byte    *tbl;
 
     if( sect_id == 0 )
-        return( TRUE );
+        return( true );
     if( OvlSize == 0 )
-        return( FALSE );
+        return( false );
     if( sect_id > OvlCount )
-        return( TRUE );
+        return( true );
     --sect_id;
     if( sect_map_id == OVL_MAP_CURR ) {
         if( TblCacheValid ) {
@@ -109,7 +105,7 @@ int SectIsLoaded( unsigned sect_id, int sect_map_id )
         } else if( TblCache != NULL ) {
             tbl = TblCache;
             RemoteSectTblRead( tbl );
-            TblCacheValid = TRUE;
+            TblCacheValid = true;
         } else {
             _AllocA( tbl, OvlSize );
             RemoteSectTblRead( tbl );
@@ -162,7 +158,7 @@ bool TransOvlRetAddr( address *addr, unsigned ovl_level )
 
     if( OvlSize == 0 ) {
         addr->sect_id = 0;
-        return( FALSE );
+        return( false );
     }
     trans = RemoteOvlRetAddr( addr, ovl_level );
     return( trans );
@@ -185,7 +181,7 @@ void AddrSection( address *addr, unsigned ovl_map_id )
     unsigned    i;
     addr_seg    seg;
 
-    addr->indirect = TRUE;
+    addr->indirect = true;
     for( i = 0; i < OvlCount; ++i ) {
         seg = addr->mach.segment - OvlRemap[i].shift;
         if( seg < OvlRemap[i].first )
@@ -210,7 +206,7 @@ void AddrFix( address *addr )
     if( addr->sect_id == 0 )
         return;
     addr->mach.segment += OvlRemap[addr->sect_id - 1].shift;
-    addr->indirect = FALSE;
+    addr->indirect = false;
 }
 
 void AddrFloat( address *addr )
@@ -223,6 +219,6 @@ void AddrFloat( address *addr )
         AddrSection( addr, OVL_MAP_CURR );
     } else {
         addr->mach.segment -= OvlRemap[addr->sect_id - 1].shift;
-        addr->indirect = TRUE;
+        addr->indirect = true;
     }
 }

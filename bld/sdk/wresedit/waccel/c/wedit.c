@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -188,7 +188,7 @@ static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect )
     t.right = 0;
     t.bottom = WEDIT_PAD;
     MapDialogRect( hDlg, &t );
-    SetWindowPos( win, (HWND) NULL, 0, 0, prect->right - crect.left - t.bottom,
+    SetWindowPos( win, (HWND)NULL, 0, 0, prect->right - crect.left - t.bottom,
                   crect.bottom - crect.top, SWP_NOMOVE | SWP_NOZORDER );
     InvalidateRect( win, NULL, TRUE );
 }
@@ -217,21 +217,21 @@ bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
 
     if( ok ) {
         if( entry->is32bit ) {
-            key = entry->entry32.Ascii;
-            flags = entry->entry32.Flags;
-            id = entry->entry32.Id;
+            key = entry->u.entry32.Ascii;
+            flags = entry->u.entry32.Flags;
+            id = entry->u.entry32.Id;
         } else {
-            key = entry->entry.Ascii;
-            flags = entry->entry.Flags;
-            id = (uint_16)entry->entry.Id;
+            key = entry->u.entry.Ascii;
+            flags = entry->u.entry.Flags;
+            id = (uint_16)entry->u.entry.Id;
         }
         ok = WSetEditWindowKey( einfo->edit_dlg, key, flags );
         if( !ok ) {
             WSetStatusByID( einfo->wsb, -1, W_INVALIDACCEL );
             memcpy( entry, &DefaultEntry, sizeof( WAccelEntry ) );
-            key = entry->entry.Ascii;
-            flags = entry->entry.Flags;
-            id = (uint_16)entry->entry.Id;
+            key = entry->u.entry.Ascii;
+            flags = entry->u.entry.Flags;
+            id = (uint_16)entry->u.entry.Id;
             ok = WSetEditWindowKey( einfo->edit_dlg, key, flags );
         }
     }
@@ -292,11 +292,11 @@ bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
             ok = (symbol != NULL && stricmp( entry->symbol, symbol ));
             if( !ok ) {
                 if( entry->is32bit ) {
-                    ok = (entry->entry32.Ascii != key || entry->entry32.Flags != flags ||
-                          entry->entry32.Id != id);
+                    ok = (entry->u.entry32.Ascii != key || entry->u.entry32.Flags != flags ||
+                          entry->u.entry32.Id != id);
                 } else {
-                    ok = (entry->entry.Ascii != key || entry->entry.Flags != (uint_8)flags ||
-                          entry->entry.Id != id);
+                    ok = (entry->u.entry.Ascii != key || entry->u.entry.Flags != (uint_8)flags ||
+                          entry->u.entry.Id != id);
                 }
             }
         }
@@ -307,13 +307,13 @@ bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
 
     if( ok ) {
         if( entry->is32bit ) {
-            entry->entry32.Ascii = key;
-            entry->entry32.Flags = flags;
-            entry->entry32.Id = id;
+            entry->u.entry32.Ascii = key;
+            entry->u.entry32.Flags = flags;
+            entry->u.entry32.Id = id;
         } else {
-            entry->entry.Ascii = key;
-            entry->entry.Flags = (uint_8)flags;
-            entry->entry.Id = id;
+            entry->u.entry.Ascii = key;
+            entry->u.entry.Flags = (uint_8)flags;
+            entry->u.entry.Id = id;
         }
         if( entry->symbol != NULL ) {
             WRMemFree( entry->symbol );
@@ -769,9 +769,9 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
         if( change ) {
             uint_16 id;
             if( entry->is32bit ) {
-                id = entry->entry32.Id;
+                id = entry->u.entry32.Id;
             } else {
-                id = (uint_16)entry->entry.Id;
+                id = (uint_16)entry->u.entry.Id;
             }
             WSetEditWindowID( einfo->edit_dlg, entry->symbol, id );
         } else {
@@ -813,7 +813,7 @@ WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam,
     case WM_INITDIALOG:
         einfo = (WAccelEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
+        SET_DLGDATA( hDlg, einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;

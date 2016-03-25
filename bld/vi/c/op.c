@@ -209,7 +209,7 @@ vi_rc Change( range *r )
     WorkLine->data[vecol] = '$';
 #endif
     if( WorkLine->len == 0 ) {
-        WorkLine->data[1] = 0;
+        WorkLine->data[1] = '\0';
     }
     EditFlags.InsertModeActive = true;
     GoToColumn( scol + 1, CurrentLine->len );

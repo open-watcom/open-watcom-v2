@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
@@ -137,8 +138,7 @@ bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data );
-        ok = (pos != LB_ERR);
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );
@@ -157,8 +157,7 @@ bool WInsertLBoxWithStr( HWND lbox, box_pos pos, char *str, void *data )
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data );
-        ok = ( new_pos != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );

@@ -34,6 +34,10 @@
 #include "usage.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static char     **usageList;
 static int      usageCnt;
 static char     *usageStr;
@@ -53,7 +57,7 @@ WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         font = GetStockObject( SYSTEM_FIXED_FONT );
         SendDlgItemMessage( hwnd, USAGE_LISTBOX, WM_SETFONT, (UINT)font, 0L );
         SendDlgItemMessage( hwnd, USAGE_TEXT, WM_SETFONT, (UINT)font, 0L );
-        if( usageStr[0] != 0 ) {
+        if( usageStr[0] != '\0' ) {
             SetDlgItemText( hwnd, USAGE_TEXT, usageStr );
         }
         for( i = 0; i < usageCnt; i++ ) {
@@ -86,7 +90,7 @@ void UsageDialog( char **list, char *msg, int cnt )
     usageCnt = cnt;
 
     proc = MakeDlgProcInstance( UsageProc, InstanceHandle );
-    DialogBox( InstanceHandle, "Usage", Root, (DLGPROC)proc );
+    DialogBox( InstanceHandle, "Usage", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
 } /* UsageDialog */

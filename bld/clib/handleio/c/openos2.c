@@ -73,7 +73,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     char        mbName[MB_CUR_MAX * _MAX_PATH];     /* single-byte char */
 #endif
 
-    while( *name == ' ' )
+    while( *name == STRING( ' ' ) )
         ++name;
 #ifdef __WIDECHAR__
     /*** If necessary, convert the wide filename to multibyte form ***/

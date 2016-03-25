@@ -194,7 +194,7 @@ extern tiny_ret_t __dos_getfileattr_lfn( const char *path );
         "push ds"       \
         "xchg ax,dx"    \
         "mov  ds,ax"    \
-        "mov  bl,0"     \
+        "xor  bl,bl"    \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
@@ -208,7 +208,7 @@ extern tiny_ret_t __dos_getfileattr_lfn( const char *path );
         modify exact    [bl cx];
   #else
     #pragma aux __dos_getfileattr_lfn = \
-        "mov  bl,0"     \
+        "xor  bl,bl"    \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \

@@ -86,7 +86,7 @@ include struct.inc
           mov   BH,BL           ; - . . .
           mov   BL,CH           ; - . . .
           mov   CH,CL           ; - . . .
-          mov   CL,0            ; - . . .
+          xor   CL,CL           ; - . . .
           sub   DX,0080h        ; - exp <-- exp - 8
         _endif                  ; endif
 

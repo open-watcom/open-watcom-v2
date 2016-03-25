@@ -646,8 +646,8 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
 /*
  * Get the filename of a cue.
  */
-unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                                 char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+                                 char *buff, size_t buff_size )
 {
     unsigned_8  name_len;
     const char *file_name;

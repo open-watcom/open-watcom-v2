@@ -39,7 +39,7 @@
 extern MOUSEORD MouseRow, MouseCol;
 
 static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
-static bool     MouseOn = FALSE;
+static bool     mouseOn = false;
 static ATTR     OldAttr;
 
 static LP_STRING RegenPos( unsigned row, unsigned col )
@@ -58,7 +58,7 @@ static void uisetmouseoff( void )
     LP_STRING   old;
     SAREA       area;
 
-    if( MouseOn ) {
+    if( mouseOn ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
         *old = OldAttr;
         area.row = OldMouseRow;
@@ -69,15 +69,13 @@ static void uisetmouseoff( void )
     }
 }
 
-static void uisetmouseon( row, col )
-/**********************************/
-    register MOUSEORD        row;
-    register MOUSEORD        col;
+static void uisetmouseon( MOUSEORD row, MOUSEORD col )
+/****************************************************/
 {
     LP_STRING   new;
     SAREA       area;
 
-    if( MouseOn ){
+    if( mouseOn ) {
         new = RegenPos( row, col );
         OldAttr = *new;
         if( UIData->colour == M_MONO ){
@@ -97,10 +95,8 @@ static void uisetmouseon( row, col )
 
 
 
-void UIAPI uisetmouse( row, col )
-/********************************/
-    register MOUSEORD        row;
-    register MOUSEORD        col;
+void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
+/*************************************************/
 {
     if( OldMouseRow == row && OldMouseCol == col ) return;
     uisetmouseoff();
@@ -112,10 +108,10 @@ void UIAPI uimouse( func )
 /*************************/
 {
     if( func == MOUSE_ON ) {
-        MouseOn = TRUE;
+        mouseOn = true;
         uisetmouseon( OldMouseRow, OldMouseCol );
     } else {
         uisetmouseoff();
-        MouseOn = FALSE;
+        mouseOn = false;
     }
 }

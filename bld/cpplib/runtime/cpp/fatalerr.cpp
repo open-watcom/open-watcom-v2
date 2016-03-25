@@ -38,9 +38,8 @@ void CPPLIB(fatal_runtime_error)(   // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 {
-    if( __EnterWVIDEO( msg ) ) {
+    if( __EnterWVIDEO( msg ) )
         exit( code );
-    } else {
-        __exit_with_msg( msg, code );
-    }
+    __exit_with_msg( msg, code );
+    // never return
 }

@@ -47,7 +47,7 @@ enum {
 CV_LAST_REG
 };
 
-#define IMH_FORTRAN	    IMH_BASE
+#define IMH_FORTRAN         IMH_BASE
 
 typedef unsigned long   virt_mem;
 
@@ -89,7 +89,7 @@ struct imp_image_handle {
     unsigned                    map_count;
     seg_desc                    *mapping;
     virt_mem                    types_base;
-    mad_handle                  mad;
+    dig_mad                     mad;
 };
 
 typedef struct {
@@ -119,14 +119,14 @@ extern void                     LocationTrunc( location_list *, unsigned );
 extern dip_status               LocationOneReg( imp_image_handle *, unsigned, location_context *, location_list * );
 extern dip_status               LocationManyReg( imp_image_handle *, unsigned, const unsigned_8 *, location_context *, location_list * );
 
-extern unsigned                 NameCopy( char *, const char *, unsigned, unsigned );
+extern size_t                   NameCopy( char *, const char *, size_t, size_t );
 extern void                     MapLogical( imp_image_handle *, address * );
 extern const void               *GetNumLeaf( const void *, numeric_leaf * );
 extern dip_status               SegIsExecutable( imp_image_handle *, unsigned );
 
 extern search_result            ImpAddrMod( imp_image_handle *, address, imp_mod_handle * );
 
-extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, unsigned * );
+extern dip_status               TypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, size_t * );
 extern dip_status               TypeSymGetType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
@@ -141,7 +141,7 @@ extern dip_status               ImpTypeBase( imp_image_handle *, imp_type_handle
 extern dip_status               TypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
 extern dip_status               SymFillIn( imp_image_handle *, imp_sym_handle *, virt_mem );
-extern dip_status               SymFindMatchingSym( imp_image_handle *, const char *, unsigned, unsigned, imp_sym_handle * );
+extern dip_status               SymFindMatchingSym( imp_image_handle *, const char *, size_t, unsigned, imp_sym_handle * );
 extern dip_status               ImpSymLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status               ImpSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               ImpSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );

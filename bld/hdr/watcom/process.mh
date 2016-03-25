@@ -116,7 +116,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
  #pragma intrinsic(_beginthread);
  _WCRTLINK extern void _WCFAR _endthread( void );
- _WCRTLINK void _WCFAR *__chkstack( void _WCFAR * );
+ _WCRTLINK extern void _WCFAR *__chkstack( void _WCFAR * );
  #ifndef __SW_ZU
   #define _beginthread( __sa, __sb, __ss, __al ) \
           _beginthread( __sa, __chkstack(__sb), __ss, __al )
@@ -165,22 +165,9 @@ _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_co
 :: These functions from the standard library need to be in namspace std
 :: in C++ to avoid conflicts on using declarations if standard headers
 :: are also included.
-#ifdef __cplusplus
-namespace std {
-#endif
-_WCRTLINK extern void   abort( void );
-_WCRTLINK extern void   exit( int __status );
-_WCRTLINK extern char   *getenv( const char *__name );
-_WCRTLINK extern int    system( const char *__cmd );
-#ifdef __cplusplus
-}
-using std::abort;
-using std::exit;
-using std::getenv;
-using std::system;
-#endif
+:include process1.sp
 
-_WCRTLINK extern void   _exit( int __status );
+:include _exit.sp
 
 :segment QNX | LINUX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
@@ -252,6 +239,10 @@ _WCRTLINK extern int    wait( int *__status );
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
+:endsegment
+
+:segment LINUX
+_WCRTLINK extern pid_t  gettid( void );
 :endsegment
 
 :segment QNX | LINUX

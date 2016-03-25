@@ -38,19 +38,15 @@
 #include "modlist.h"
 #include "dbgio.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
+#include "wndsys.h"
+#include "dbgwfil.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwmod.h"
 
 
-extern void             WndFuncInspect( mod_handle mod );
-extern a_window         *WndSrcInspect(address);
-extern void             WndFileInspect( char *file, bool binary );
-extern a_window         *WndAsmInspect(address);
-extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
-extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
-extern void             ClearAllModBreaks( mod_handle handle );
-extern void             BreakAllModEntries( mod_handle handle );
-extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern  bool            ModHasSourceInfo( mod_handle handle );
-extern address          ModFirstAddr( mod_handle mod );
 
 #include "menudef.h"
 static gui_menu_struct ModMenu[] = {
@@ -65,23 +61,22 @@ enum {
 };
 
 typedef struct {
-    unsigned    open : 1;
-    unsigned    source : 1;
+    bool        open : 1;
+    bool        source : 1;
 } modinfo;
 
 typedef struct {
     module_list ___list;
     mod_handle  handle;
-    unsigned    all_modules : 1;
     modinfo     *info;
     gui_ord     max_modlen;
+    bool        all_modules : 1;
 } mod_window;
 
 #define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )
 #define ModList( mod ) ( &((mod)->___list) )
 
 
-static WNDNUMROWS ModNumRows;
 static int ModNumRows( a_window *wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
@@ -98,7 +93,9 @@ static void ModCalcIndent( a_window *wnd )
     for( i = 0; i < size; ++i ) {
         ModListName( ModList( mod ), i, TxtBuff );
         extent = WndExtentX( wnd, TxtBuff );
-        if( extent > max_extent ) max_extent = extent;
+        if( extent > max_extent ) {
+            max_extent = extent;
+        }
     }
     mod->max_modlen = max_extent + WndMidCharX( wnd );
     WndNoSelect( wnd );
@@ -142,15 +139,15 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
         if( handle != NO_MOD ) {
-            WndMenuEnable( wnd, MENU_MODULES_BREAK_SET_ALL, TRUE );
-            WndMenuEnable( wnd, MENU_MODULES_BREAK_CLEAR_ALL, TRUE );
+            WndMenuEnable( wnd, MENU_MODULES_BREAK_SET_ALL, true );
+            WndMenuEnable( wnd, MENU_MODULES_BREAK_CLEAR_ALL, true );
             WndMenuEnable( wnd, MENU_MODULES_ASSEMBLY, !IS_NIL_ADDR( addr ) );
-            WndMenuEnable( wnd, MENU_MODULES_FUNCTIONS, TRUE );
+            WndMenuEnable( wnd, MENU_MODULES_FUNCTIONS, true );
             if( ModHasSourceInfo( handle ) ) {
-                WndMenuEnable( wnd, MENU_MODULES_SOURCE, TRUE );
+                WndMenuEnable( wnd, MENU_MODULES_SOURCE, true );
             }
         }
-        WndMenuEnable( wnd, MENU_MODULES_SHOW_ALL, TRUE );
+        WndMenuEnable( wnd, MENU_MODULES_SHOW_ALL, true );
         WndMenuCheck( wnd, MENU_MODULES_SHOW_ALL, mod->all_modules );
         break;
     case MENU_MODULES_BREAK_SET_ALL:
@@ -162,7 +159,7 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_MODULES_SOURCE:
         if( IS_NIL_ADDR( addr ) ) {
             ModName( handle, TxtBuff, TXT_LEN );
-            WndFileInspect( TxtBuff, FALSE );
+            WndFileInspect( TxtBuff, false );
         } else {
             WndSrcInspect( addr );
         }
@@ -181,7 +178,6 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  WNDMODIFY       ModModify;
 static void     ModModify( a_window *wnd, int row, int piece )
 {
     if( piece == PIECE_SOURCE ) {
@@ -198,7 +194,6 @@ static void     ModModify( a_window *wnd, int row, int piece )
 }
 
 
-static WNDGETLINE ModGetLine;
 static  bool    ModGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -206,27 +201,27 @@ static  bool    ModGetLine( a_window *wnd, int row, int piece,
     mod_window  *mod = WndMod( wnd );
     modinfo     *info;
 
-    if( row >= ModListNumRows( ModList( mod ) ) ) return( FALSE );
+    if( row >= ModListNumRows( ModList( mod ) ) ) return( false );
     handle = ModListMod( ModList( mod ), row );
-    line->tabstop = FALSE;
+    line->tabstop = false;
     switch( piece ) {
     case PIECE_SOURCE:
-        info = &mod->info[ row ];
+        info = &mod->info[row];
         info->source = ModHasSourceInfo( handle );
         info->open = OpenGadget( wnd, line, handle, info->source );
-        return( TRUE );
+        return( true );
     case PIECE_MODULE:
         line->indent = MaxGadgetLength;
-        line->tabstop = TRUE;
+        line->tabstop = true;
         ModListName( ModList( mod ), row, TxtBuff );
         line->text = TxtBuff;
-        return( TRUE );
+        return( true );
     case PIECE_IMAGE:
         line->indent = mod->max_modlen + MaxGadgetLength;
         line->text = ModImageName( handle );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -234,11 +229,11 @@ static void ModSetCurrent( a_window *wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
-    wnd_row     row;
-    int         piece;
+    wnd_row     curr_row;
+    int         curr_piece;
 
-    WndGetCurrent( wnd, &row, &piece );
-    if( row != WND_NO_ROW && ModListMod( ModList( mod ), row ) == ContextMod ) {
+    WndGetCurrent( wnd, &curr_row, &curr_piece );
+    if( curr_row != WND_NO_ROW && ModListMod( ModList( mod ), curr_row ) == ContextMod ) {
         return;
     }
     for( i = 0; i < ModListNumRows( ModList( mod ) ); ++i ) {
@@ -252,13 +247,13 @@ extern void ModNewHandle( a_window *wnd, mod_handle handle )
 {
     mod_window  *mod = WndMod( wnd );
 
-    if( mod->handle == handle ) return;
+    if( mod->handle == handle )
+        return;
     mod->handle = handle;
     ModInit( wnd );
     ModSetCurrent( wnd );
 }
 
-static WNDREFRESH ModRefresh;
 static void     ModRefresh( a_window *wnd )
 {
     int         i;
@@ -270,7 +265,7 @@ static void     ModRefresh( a_window *wnd )
     }
     if( UpdateFlags & UP_OPEN_CHANGE ) {
         for( i = 0; i < ModListNumRows( ModList( mod ) ); ++i ) {
-            info = &mod->info[ i ];
+            info = &mod->info[i];
             info->open = CheckOpenGadget( wnd, i, info->open,
                                           ModListMod( ModList( mod ), i ),
                                           info->source, PIECE_SOURCE );
@@ -287,7 +282,6 @@ static void ModSetOptions( a_window *wnd )
     ModInit( wnd );
 }
 
-static WNDCALLBACK ModEventProc;
 static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
@@ -300,17 +294,17 @@ static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         WndSetKey( wnd, PIECE_MODULE );
         ModSetOptions( wnd );
         ModSetCurrent( wnd );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE:
         ModCalcIndent( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         ModListFree( ModList( mod ) );
         WndFree( mod->info );
         WndFree( mod );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void ModChangeOptions( void )
@@ -344,7 +338,6 @@ extern a_window *DoWndModOpen( mod_handle handle )
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }
 
-extern WNDOPEN WndModOpen;
 extern a_window *WndModOpen( void )
 {
     return( DoWndModOpen( NO_MOD ) );

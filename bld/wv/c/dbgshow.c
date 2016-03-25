@@ -39,21 +39,20 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
+#include "dbginvk.h"
+#include "dbghook.h"
+#include "dbgshow.h"
+#include "dbgparse.h"
+#include "dbgmisc.h"
+#include "addarith.h"
+#include "dbglist.h"
+#include "dbgset.h"
 
 
-extern unsigned int     OptExpr( unsigned int );
-extern int              AddrComp( address , address );
-extern void             ConfigSet( void );
 extern void             ConfigDisp( void );
 extern void             ConfigFont( void );
 extern void             ConfigPaint( void );
-extern void             ConfigFlip( void );
-extern void             ConfigHook( void );
-extern void             ConfigEvent( void );
-extern void             ConfigCalls( void );
-extern void             InvokeAFile( const char * );
-extern void             CreateInvokeFile( const char *name, void(*rtn)(void) );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*
@@ -96,20 +95,21 @@ again:
     for( ;; ) {
         *p++ = ch = *cmds++;
         if( ch == '{' ) {
-            *p = '\0';
+            *p = NULLCHAR;
             DUIDlgTxt( TxtBuff );
             indent += INDENT_AMOUNT;
             goto again;
         } else if( ch == '}' ) {
-            *--p = '\0';
+            *--p = NULLCHAR;
             for( ;; ) {
-                if( p == TxtBuff ) break;
+                if( p == TxtBuff )
+                    break;
                 --p;
                 if( *p != ' ' ) {
                     ++p;
                     break;
                 }
-                *p = '\0';
+                *p = NULLCHAR;
             }
             if( p != TxtBuff ) DUIDlgTxt( TxtBuff );
             p = TxtBuff;
@@ -117,13 +117,13 @@ again:
                 *p++ = ' ';
             }
             *p++ = '}';
-            *p = '\0';
+            *p = NULLCHAR;
             DUIDlgTxt( TxtBuff );
             indent -= INDENT_AMOUNT;
             goto again;
         } else if( ch == '\r' ) {
             --p;
-        } else if( ch == '\0' ) {
+        } else if( ch == NULLCHAR ) {
             if( p != TxtBuff ) {
                 DUIDlgTxt( TxtBuff );
             }
@@ -212,15 +212,15 @@ static void ConfigTypes( void )
 }
 
 static  show_rtn ShowJmpTab[] = {
-    &ConfigPaint,   TRUE,
-    &ConfigDisp,    TRUE,
-    &ConfigFont,    TRUE,
-    &ConfigSet,     TRUE,
-    &ConfigFlip,    TRUE,
-    &ConfigHook,    TRUE,
-    &ConfigEvent,   FALSE,
-    &ConfigCalls,   FALSE,
-    &ConfigTypes,   FALSE,
+    &ConfigPaint,   true,
+    &ConfigDisp,    true,
+    &ConfigFont,    true,
+    &ConfigSet,     true,
+    &ConfigFlip,    true,
+    &ConfigHook,    true,
+    &ConfigEvent,   false,
+    &ConfigCalls,   false,
+    &ConfigTypes,   false,
 };
 
 void ProcShow( void )

@@ -63,21 +63,21 @@
 #pragma aux DoFreeSeg modify [MODIFIES]
 static int DoFreeSeg( __segment seg )
 {
-    #if defined(__WINDOWS_286__)
-        HANDLE hmem;
+  #if defined(__WINDOWS_286__)
+    HANDLE hmem;
 
-        hmem = (HANDLE)GlobalHandle( seg );
-        if( hmem == NULL ) {
-            return( -1 );
-        }
-        GlobalUnlock( hmem );
-        if( GlobalFree( hmem ) == hmem ) {
-            return( -1 );
-        }
-        return( 0 );
-    #else
-        return( DosFreeSeg( seg ) );
-    #endif
+    hmem = (HANDLE)GlobalHandle( seg );
+    if( hmem == NULL ) {
+        return( -1 );
+    }
+    GlobalUnlock( hmem );
+    if( GlobalFree( hmem ) == hmem ) {
+        return( -1 );
+    }
+    return( 0 );
+  #else
+    return( DosFreeSeg( seg ) );
+  #endif
 }
 
 extern int tricky_free_seg( int, int );
@@ -116,20 +116,21 @@ extern int tricky_free_seg( int, int );
 #endif
 
 #pragma aux __DoFreeSeg modify [MODIFIES]
-static int __DoFreeSeg(__segment first)
+static int __DoFreeSeg( __segment first )
 {
-        __segment     last;
-        long          segments;
-        unsigned long size;
-#ifdef __OS2__
-        DosSizeSeg(first, &size);
-#else
-        size = GlobalSize((HGLOBAL)first);
-#endif
-        segments = (size + 65535L) >> 16;
-        last = first + (__segment)((segments - 1L) << _RWD_HShift);
+    __segment     last;
+    long          segments;
+    unsigned long size;
 
-        return (tricky_free_seg(first, last));
+#ifdef __OS2__
+    DosSizeSeg( first, &size );
+#else
+    size = GlobalSize( (HGLOBAL)first );
+#endif
+    segments = (size + 65535L) >> 16;
+    last = first + (__segment)((segments - 1L) << _RWD_HShift);
+
+    return( tricky_free_seg( first, last ) );
 }
 #endif
 
@@ -139,25 +140,25 @@ static int __DoFreeSeg(__segment first)
 #endif
 int __FreeSeg( __segment seg )
 {
-    #if defined(__QNX__)
-        if( qnx_segment_free( seg ) == -1 ) {
-            return( -1 );
-        }
-    #elif defined(__WINDOWS_286__)
-        if( __DoFreeSeg( seg ) ) {
-            return( -1 );
-        }
-    #else
-        tiny_ret_t rc;
+#if defined(__QNX__)
+    if( qnx_segment_free( seg ) == -1 ) {
+        return( -1 );
+    }
+#elif defined(__WINDOWS_286__)
+    if( __DoFreeSeg( seg ) ) {
+        return( -1 );
+    }
+#else
+    tiny_ret_t rc;
 
-        #if defined(__OS2__)
-            rc = __DoFreeSeg( seg );
-        #else
-            rc = TinyFreeBlock( seg );
-        #endif
-        if( TINY_ERROR( rc ) ) {
-            return( __set_errno_dos( TINY_INFO( rc ) ) );
-        }
-    #endif
+  #if defined(__OS2__)
+    rc = __DoFreeSeg( seg );
+  #else
+    rc = TinyFreeBlock( seg );
+  #endif
+    if( TINY_ERROR( rc ) ) {
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
+    }
+#endif
     return( 0 );
 }

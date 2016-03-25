@@ -463,17 +463,19 @@ int main( int argc, char *argv[] )
     lseek( out, MAGIC_OFFSET, SEEK_SET );
     write( out, &tsize, sizeof( tsize ) );
     len = strlen( fname );
-    memset( &fname[len],' ',8 - len );
+    if( len < 8 ) {
+        memset( &fname[len], ' ', 8 - len );
+    }
     updateNHStuff( out, fname, desc );
     close( out );
     if( dllflag ) {
         remove( dll );
-        rename( exe,dll );
-        myPrintf("Created \"%s\" (%ld + %ld = %ld bytes)\n", dll,
-                tsize,totalsize, tsize+totalsize );
+        rename( exe, dll );
+        myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", dll,
+                tsize, totalsize, tsize + totalsize );
     } else {
-        myPrintf("Created \"%s\" (%ld + %ld = %ld bytes)\n", exe,
-                tsize,totalsize, tsize+totalsize );
+        myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe,
+                tsize, totalsize, tsize + totalsize );
     }
 
     return( 0 );

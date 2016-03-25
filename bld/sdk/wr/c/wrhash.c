@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +47,7 @@
 #include "editsym.h"
 #include "addsym.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -1015,7 +1017,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
 static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 {
     HWND        lbox;
-    LRESULT     index;
+    int         index;
     WRHashEntry *entry;
     bool        standard_entry;
     bool        ok;
@@ -1024,7 +1026,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 
     standard_entry = FALSE;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    index = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     ok = (index != LB_ERR);
 
     if( ok ) {
@@ -1033,8 +1035,8 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
     }
 
     if( ok ) {
-        index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+        index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
         ok = (entry != NULL);
     }
 
@@ -1051,7 +1053,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
                          char *symbol, WRHashValue value )
 {
-    LRESULT             index;
+    int                 index;
     WRHashEntry         *entry;
     bool                dup;
     bool                ok;
@@ -1087,13 +1089,13 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
     if( ok ) {
         if( dup ) {
             // this is neccessary if the value of the string was moified
-            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
+            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
                                         (LPARAM)(LPSTR)symbol );
         } else {
-            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
+            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
                                         (LPARAM)(LPSTR)symbol );
             SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
-                                (WPARAM)index, (LPARAM)(LPVOID)entry );
+                                index, (LPARAM)(LPVOID)entry );
         }
         SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, index, 0 );
         WRShowSelectedSymbol( hDlg, table );
@@ -1104,23 +1106,23 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
 
 static WRHashEntry *getHashEntry( HWND hDlg )
 {
-    LRESULT             index;
-    LRESULT             count;
+    int                 index;
+    int                 count;
     WRHashEntry         *entry;
     HWND                lbox;
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     if( count == 0 || count == LB_ERR ) {
         return( NULL );
     }
 
-    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         return( NULL );
     }
 
-    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
 
     return( entry );
 }
@@ -1171,20 +1173,20 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
 
 static bool WRRemoveSymbol( HWND hDlg, WRHashTable *table )
 {
-    LRESULT             index;
-    LRESULT             count;
+    int                 index;
+    int                 count;
     WRHashEntry         *entry;
     HWND                lbox;
     bool                ret;
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     if( count == 0 || count == LB_ERR ) {
         return( true );
     }
 
-    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+    index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
     if( entry == NULL ) {
         return( false );
     }
@@ -1195,7 +1197,7 @@ static bool WRRemoveSymbol( HWND hDlg, WRHashTable *table )
         return( false );
     }
 
-    count = SendMessage( lbox, LB_DELETESTRING, index, 0 );
+    count = (int)SendMessage( lbox, LB_DELETESTRING, index, 0 );
     if( count != 0 ) {
         if( index != 0 && index == count ) {
             index--;
@@ -1378,7 +1380,7 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
 
     case WM_INITDIALOG:
         info = (WREditSymInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         if( info == NULL ) {
             EndDialog( hDlg, FALSE );
             break;
@@ -1558,7 +1560,7 @@ WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LP
     switch( message ) {
     case WM_INITDIALOG:
         info = (WRAddSymInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRSetAddSymInfo( hDlg, info );
         WRSetAddSymOK( hDlg );
         ret = TRUE;

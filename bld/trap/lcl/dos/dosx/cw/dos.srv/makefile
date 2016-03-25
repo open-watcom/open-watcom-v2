@@ -3,9 +3,10 @@
 host_os  = dos
 host_cpu = 386
 
-os = cw
+target_cpu = x86
+target_os  = cw
+
 srv = cw
-cpu = x86
 name = cwhelp
 which = SERVER
 

@@ -203,11 +203,7 @@ mode_clflags   += -"op symf"
 
 !ifeq nomapfile 0
 mode_lflags    += op map
-!ifdef __UNIX__
-mode_clflags   += -\"op map\"
-!else
-mode_clflags   += -"op map"
-!endif
+mode_clflags   += -fm
 !endif
 
 ########################
@@ -308,7 +304,9 @@ cppflags_all    = $(mode_cppflags)
 !endif
 
 cppflags_win    = -DSTRICT
+!ifndef $(proj_name)_nodoslfn
 cppflags_dos    = -D__WATCOM_LFN__
+!endif
 
 ##########################
 # C/C++ COMPILERS SETINGS
@@ -431,7 +429,7 @@ clflags_exe = -fe=$@
 !endif
 
 proj_cl_flags    = $(extra_cl_flags)
-clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe) -fm
+clflags_gen_all  = $(clflags_all) $(cl_fpu_flags) $(cflags_$(host_os)) $(clflags_exe)
 
 clflags_gen      = $(clflags_gen_all) $(clflags_$(host_os)_$(host_cpu)) $(proj_cl_flags)
 

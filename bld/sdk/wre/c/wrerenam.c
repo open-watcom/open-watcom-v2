@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <stdlib.h>
 #include <string.h>
@@ -235,7 +235,7 @@ BOOL CALLBACK WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     switch( message ) {
     case WM_INITDIALOG:
         info = (WREResRenameInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRESetWinInfo( hDlg, info );
         ret = TRUE;
         break;

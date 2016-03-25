@@ -67,10 +67,10 @@ typedef struct {
         CHAR    load_name[2];
 } loadstack_t;
 
-#pragma aux intrface __far modify [];
-#pragma aux (intrface) TrapInit;
-#pragma aux (intrface) TrapAccess;
-#pragma aux (intrface) TrapFini;
+//#pragma aux intrface __far modify [];
+//#pragma aux (intrface) TrapInit;
+//#pragma aux (intrface) TrapAccess;
+//#pragma aux (intrface) TrapFini;
 
 typedef struct watch {
     addr48_ptr  addr;
@@ -145,3 +145,6 @@ void OutNum( ULONG i );
 #define Out( a )
 #define OutNum( a )
 #endif
+
+extern void AppSession( void );
+extern void DebugSession( void );

@@ -45,30 +45,16 @@
 #include "mad.h"
 #include <stddef.h>
 #include "strutil.h"
+#include "dbgloc.h"
+#include "dbgovl.h"
+#include "dbg_dbg.h"
+#include "dbgprog.h"
+#include "dipinter.h"
+#include "addarith.h"
+#include "dbgerr.h"
 
 #include "clibext.h"
 
-
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
-extern int              SectIsLoaded( unsigned, int );
-extern void             AddrSection( address *, unsigned );
-extern bool             SameAddrSpace( address, address );
-extern void             LocationCreate( location_list *, location_type, void * );
-extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
-extern void             LocationSet( location_list *, unsigned, unsigned );
-extern mad_reg_info     *LookupRegName( mad_reg_info *, lookup_item * );
-extern wv_sym_entry     *LookupInternalName( lookup_item * );
-extern wv_sym_entry     *LookupUserName( lookup_item * );
-extern void             InternalValue( unsigned, void * );
-extern void             PurgeUserNames(void);
-extern void             StartupErr( const char * );
-extern void             FreeImage( image_entry * );
-extern void             MapAddrForImage( image_entry *, addr_ptr * );
-extern image_entry      *ImageEntry( mod_handle );
-extern address          DefAddrSpaceForAddr( address );
-extern int              AddrComp( address, address );
-extern void             DeAlias( addr_ptr * );
 
 /*
  * Client support routines
@@ -132,7 +118,7 @@ void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
     }
 }
 
-dip_status RegLocation( machine_state *regs, mad_reg_info const *ri, location_list *ll )
+dip_status RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll )
 {
 
     if( regs == NULL || ri == NULL ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
@@ -152,7 +138,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
     switch( ci ) {
     case CI_FRAME:
         if( lc->maybe_have_frame ) {
-            lc->maybe_have_frame = FALSE;
+            lc->maybe_have_frame = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
             } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
@@ -166,7 +152,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
                 /* nothing to do */
             } else if( lc->execution.mach.offset
                  <= ll->e[0].u.addr.mach.offset+info.rtn_size-info.epilog_size ) {
-                lc->have_frame = TRUE;
+                lc->have_frame = true;
             }
         }
         if( Context.maybe_have_frame
@@ -174,7 +160,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
             && AddrComp( Context.execution, lc->execution ) == 0 ) {
             /* cache result in global context item */
             Context.have_frame = lc->have_frame;
-            Context.maybe_have_frame = FALSE;
+            Context.maybe_have_frame = false;
         }
         if( !lc->have_frame ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
         LocationCreate( ll, LT_ADDR, &lc->frame );
@@ -188,7 +174,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
         return( DS_OK );
     case CI_OBJECT:
         if( lc->maybe_have_object ) {
-            lc->maybe_have_object = FALSE;
+            lc->maybe_have_object = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
             } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
@@ -196,7 +182,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
             } else if( info.kind != SK_PROCEDURE ) {
                 /* nothing to do */
             } else if( SymObjLocation( sh, lc, &lc->object ) == DS_OK ) {
-                lc->have_object = TRUE;
+                lc->have_object = true;
             }
         }
         if( !lc->have_object ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
@@ -217,7 +203,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
 dip_status DIGCLIENT DIPCliAssignLocation( location_list *dst,
                         location_list *src, unsigned long size )
 {
-    return( LocationAssign( dst, src, size, FALSE ) );
+    return( LocationAssign( dst, src, size, false ) );
 }
 
 dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
@@ -236,7 +222,7 @@ void DIGCLIENT DIPCliStatus( dip_status status )
     DIPStatus = status;
 }
 
-mad_handle DIGCLIENT DIPCliCurrMAD( void )
+dig_mad DIGCLIENT DIPCliCurrMAD( void )
 {
     return( SysConfig.mad );
 }
@@ -278,7 +264,10 @@ static char     WVName[] = "Debugger Internal";
 static unsigned DIGREGISTER WVHandleSize( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        0, sizeof( imp_type_handle ), 0, sizeof( imp_sym_handle )
+        0,
+        sizeof( imp_type_handle ),
+        0,
+        sizeof( imp_sym_handle )
     };
     return( Sizes[hk] );
 }
@@ -328,18 +317,18 @@ static walk_result DIGREGISTER WVWalkModList( imp_image_handle *ii, IMP_MOD_WKR 
 
 static const char InternalName[] = "_dbg";
 
-static unsigned DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im,
-                                char *name, unsigned max )
+static size_t DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im, char *name, size_t max )
 {
-    unsigned len;
+    size_t  len;
 
     ii = ii; im = im;
     len = sizeof( InternalName ) - 1;
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( name, InternalName, max );
-        name[max] = '\0';
+        name[max] = NULLCHAR;
     }
     return( len );
 }
@@ -478,11 +467,11 @@ static imp_mod_handle DIGREGISTER WVSymMod( imp_image_handle *ii, imp_sym_handle
     return( WV_INT_MH );
 }
 
-static unsigned DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
+static size_t DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc,
-                        symbol_name sn, char *name, unsigned max )
+                        symbol_name sn, char *name, size_t max )
 {
-    unsigned    len;
+    size_t      len;
     char  const *p;
 
     ii = ii; lc = lc;
@@ -500,7 +489,7 @@ static unsigned DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
         if( max > len )
             max = len;
         memcpy( name, p, max );
-        name[max] = '\0';
+        name[max] = NULLCHAR;
     }
     return( len );
 }
@@ -513,7 +502,7 @@ static dip_status DIGREGISTER WVSymType( imp_image_handle *ii, imp_sym_handle *i
         it->t.k = TK_NONE;
         it->ri = is->ri;
     } else {
-        it->t  = is->p->t;
+        it->t  = is->p->info.t;
         it->ri = NULL;
     }
     return( DS_OK );
@@ -530,12 +519,12 @@ static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handl
     if( is->ri != NULL ) {
         return( RegLocation( lc->regs, is->ri, ll ) );
     }
-    switch( se->sc ) {
+    switch( se->info.sc ) {
     case SC_USER:
-        if( se->t.k == TK_STRING ) {
-            d = se->v.string;
+        if( se->info.t.k == TK_STRING ) {
+            d = se->info.v.string;
         } else {
-            d = &se->v;
+            d = &se->info.v;
         }
         LocationCreate( ll, LT_INTERNAL, d );
         break;
@@ -549,8 +538,8 @@ static dip_status DIGREGISTER WVSymValue( imp_image_handle *ii, imp_sym_handle *
                         location_context *lc, void *d )
 {
     ii = ii; lc = lc;
-    if( is->ri != NULL || is->p->sc != SC_INTERNAL ) return( DS_ERR|DS_BAD_PARM );
-    InternalValue( is->p->v.internal, d );
+    if( is->ri != NULL || is->p->info.sc != SC_INTERNAL ) return( DS_ERR|DS_BAD_PARM );
+    InternalValue( is->p->info.v.internal, d );
     return( DS_OK );
 }
 
@@ -559,12 +548,12 @@ static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *i
 {
     memset( si, 0, sizeof( *si ) );
     ii = ii; lc = lc;
-    si->is_global = TRUE;
+    si->is_global = true;
     if( is->ri != NULL ) {
         si->kind = SK_DATA;
         return( DS_OK );
     }
-    switch( is->p->sc ) {
+    switch( is->p->info.sc ) {
     case SC_USER:
         si->kind = SK_DATA;
         break;
@@ -616,7 +605,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     imp_type_handle     *it;
     imp_sym_handle      *is;
     wv_sym_entry        *se;
-    mad_reg_info        *ri;
+    const mad_reg_info  *ri;
 
     if( li->type != ST_NONE ) return( SR_NONE );
     if( li->scope.start != NULL ) return( SR_NONE );
@@ -687,8 +676,7 @@ static imp_mod_handle DIGREGISTER WVCueMod( imp_image_handle *ii, imp_cue_handle
     return( WV_INT_MH );
 }
 
-static unsigned DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                        char *name, unsigned max )
+static size_t DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
 {
     /* will never get called */
     ii = ii; ic = ic; name = name; max = max;
@@ -775,8 +763,8 @@ static int DIGREGISTER WVCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
 }
 
 
-static unsigned DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
-                unsigned num, symbol_type *tag, char *buff, unsigned max )
+static size_t DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
+                unsigned num, symbol_type *tag, char *buff, size_t max )
 {
     ii = ii; it = it; num = num; tag = tag; buff = buff; max = max;
     return( 0 );
@@ -931,7 +919,7 @@ char *DIPMsgText( dip_status status )
 {
     status &= ~DS_ERR;
     if( status > DS_INVALID_OPERATOR ) status = DS_FAIL;
-    return( *DIPErrTxt[ status ] );
+    return( *DIPErrTxt[status] );
 }
 
 static bool CheckDIPLoad( char *dip, bool defaults )
@@ -940,12 +928,12 @@ static bool CheckDIPLoad( char *dip, bool defaults )
 
     ret = DIPLoad( dip );
     if( ret != DS_OK ) {
-        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( FALSE );
+        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( false );
         DIPFini();
         Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ret ) );
         StartupErr( TxtBuff );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitDbgInfo( void )
@@ -965,23 +953,19 @@ void InitDbgInfo( void )
     dip = DipFiles;
     if( *dip == NULL ) {
         dip_count = 0;
-        p = DIPDefaults;
-        for( ;; ) {
-            if( *p == NULLCHAR ) break;
-            if( CheckDIPLoad( p, TRUE ) ) ++dip_count;
-            p += strlen( p ) + 1;
+        for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
+            if( CheckDIPLoad( p, true ) ) {
+                ++dip_count;
+            }
         }
         if( dip_count == 0 ) {
             DIPFini();
             d = StrCopy( LIT_ENG( No_DIPs_Found ), TxtBuff );
             *d++ = ' ';
             *d++ = '(';
-            p = DIPDefaults;
-            for( ;; ) {
-                if( *p == NULLCHAR ) break;
+            for( p = DIPDefaults; *p != NULLCHAR; p += strlen( p ) + 1 ) {
                 d = StrCopy( p, d );
                 *d++ = ',';
-                p += strlen( p ) + 1;
             }
             --d;
             *d++ = ')';
@@ -990,10 +974,10 @@ void InitDbgInfo( void )
         }
     } else {
         do {
-            CheckDIPLoad( *dip, FALSE );
+            CheckDIPLoad( *dip, false );
             _Free( *dip );
             *dip = NULL;
-        } while( *++dip );
+        } while( *++dip != NULLCHAR );
     }
 }
 
@@ -1008,9 +992,11 @@ bool IsInternalMod( mod_handle mod )
     return( ImageDIP( mod ) == WVName );
 }
 
-bool IsInternalModName( const char *start, unsigned len )
+bool IsInternalModName( const char *start, size_t len )
 {
-    if( len != sizeof( InternalName ) - 1 ) return( FALSE );
-    if( memicmp( start, InternalName, len ) != 0 ) return( FALSE );
-    return( TRUE );
+    if( len != sizeof( InternalName ) - 1 )
+        return( false );
+    if( memicmp( start, InternalName, len ) != 0 )
+        return( false );
+    return( true );
 }

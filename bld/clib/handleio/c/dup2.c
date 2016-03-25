@@ -37,6 +37,7 @@
 #include "tinyio.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 #include "seterrno.h"
 
 _WCRTLINK int dup2( int handle1, int handle2 )

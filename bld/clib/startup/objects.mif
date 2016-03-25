@@ -4,7 +4,6 @@
 !inject _8087086.obj d16                                            o16     q16     w16
 !inject _8087386.obj     d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
 !inject _8087osi.obj                                                                        osi
-!inject abort.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject argcv.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject atexit.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject chk.obj                                     nvc ncl nvl nll
@@ -251,6 +250,8 @@ cmain086_opts =$($(processor)_sub_opts)
 cmain386_opts =$($(processor)_sub_opts)
 cmainosi_opts =$($(processor)_sub_opts)
 cmainqnx_opts =$($(processor)_sub_opts)
+fltused_opts  =-I"$(clib_dir)/streamio/h"
+fltuse80_opts =-I"$(clib_dir)/streamio/h"
 imthread_opts =-I"$(clib_dir)/mthread/h"
 initargv_opts =$($(processor)_sub_opts)
 initrtns_opts =$($(processor)_ac_opts)
@@ -258,6 +259,7 @@ ioexit_opts   =-I"$(clib_dir)/streamio/h"
 libcstrt_opts =-I"$(clib_dir)/mthread/h"
 main2wnt_opts =$($(processor)_xd_opts)
 main4wnt_opts =$($(processor)_xd_opts)
+maino32_opts  =-I"$(clib_dir)/mthread/h"
 
 # these options override C lib standard options
 ################################################
@@ -269,7 +271,6 @@ axp_fpi87_postopts=
 ppc_fpi87_postopts=
 mps_fpi87_postopts=
 
-abort_postopts    =-os
 adifstrt_postopts =$($(processor)_fpi87_postopts)
 adsstart_postopts =$($(processor)_fpi87_postopts)
 atexit_postopts   =-os

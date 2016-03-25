@@ -35,7 +35,7 @@
 #include "farfunc.h"
 
 
-_WCRTLINK int _NEARFAR(mblen,_fmblen)( const unsigned char _FFAR *s, size_t n )
+_WCRTLINK int _NEARFAR(mblen,_fmblen)( const char _FFAR *s, size_t n )
 {
     return( _NEARFAR(mbtowc,_fmbtowc)( NULL, s, n ) );
 }

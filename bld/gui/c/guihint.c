@@ -35,7 +35,7 @@
 #include "guistr.h"
 
 static bool SetStructNum( hintinfo *hint, hint_type type,
-                          gui_hint_struct *hint_struct, int num )
+                          gui_hint_struct *hint_struct, gui_ctl_idx num )
 {
     switch( type ) {
     case MENU_HINT :
@@ -60,7 +60,7 @@ static bool SetStructNum( hintinfo *hint, hint_type type,
 }
 
 static bool GetStructNum( hintinfo *hint, hint_type type,
-                          gui_hint_struct **hint_struct, int *num )
+                          gui_hint_struct **hint_struct, gui_ctl_idx *num )
 {
     switch( type ) {
     case MENU_HINT :
@@ -86,9 +86,9 @@ static bool GetStructNum( hintinfo *hint, hint_type type,
 
 static bool HintTextSet( hintinfo *hint, gui_ctl_id id, hint_type type, const char *text )
 {
-    int                 i;
+    gui_ctl_idx         i;
     gui_hint_struct     *hint_struct;
-    int                 num;
+    gui_ctl_idx         num;
 
     if( GetStructNum( hint, type, &hint_struct, &num ) ) {
         for( i = 0; i < num; i++ ) {
@@ -103,9 +103,9 @@ static bool HintTextSet( hintinfo *hint, gui_ctl_id id, hint_type type, const ch
 
 static const char *HintTextGet( hintinfo *hint, gui_ctl_id id, hint_type type )
 {
-    int                 i;
+    gui_ctl_idx         i;
     gui_hint_struct     *hint_struct;
-    int                 num;
+    gui_ctl_idx         num;
 
     if( GetStructNum( hint, type, &hint_struct, &num ) ) {
         for( i = 0; i < num; i++ ) {
@@ -120,7 +120,7 @@ static const char *HintTextGet( hintinfo *hint, gui_ctl_id id, hint_type type )
 bool GUIHasHintType( gui_window *wnd, hint_type type )
 {
     gui_hint_struct     *hint_struct;
-    int                 num;
+    gui_ctl_idx         num;
 
     if( GetStructNum( &wnd->hint, type, &hint_struct, &num ) ) {
         return( num > 0 );
@@ -162,9 +162,9 @@ bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type )
 
 bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
 {
-    int                 i;
+    gui_ctl_idx         i;
     gui_hint_struct     *new_menu;
-    int                 index;
+    gui_ctl_idx         index;
     bool                found;
 
     found = false;
@@ -180,7 +180,7 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
             new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct )
                                     * ( wnd->hint.num_menu - 1 ) );
             memcpy( new_menu, wnd->hint.menu, sizeof( gui_hint_struct ) * index );
-            memcpy( &new_menu[index], &wnd->hint.menu[index+1],
+            memcpy( &new_menu[index], &wnd->hint.menu[index + 1],
                     sizeof( gui_hint_struct ) * ( wnd->hint.num_menu - index - 1 ) );
             GUIMemFree( wnd->hint.menu );
             wnd->hint.menu = new_menu;
@@ -192,8 +192,8 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
 
 int CountMenus( gui_menu_struct *menu )
 {
-    int i;
-    int num;
+    gui_ctl_idx i;
+    gui_ctl_idx num;
 
     if( menu == NULL ) {
         return( 0 );
@@ -205,9 +205,9 @@ int CountMenus( gui_menu_struct *menu )
     return( num );
 }
 
-void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, int *index )
+void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, gui_ctl_idx *index )
 {
-    int i;
+    gui_ctl_idx i;
 
     hint[*index].id = menu->id;
     hint[*index].hinttext = menu->hinttext;
@@ -219,9 +219,9 @@ void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, int *index )
 
 bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
 {
-    int                 num;
+    gui_ctl_idx         num;
     gui_hint_struct     *hint;
-    int                 new_num;
+    gui_ctl_idx         new_num;
     gui_hint_struct     *new_hint;
 
     if( GetStructNum( &wnd->hint, type, &hint, &num ) ) {
@@ -238,13 +238,13 @@ bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
     return( false );
 }
 
-void GUIInitHint( gui_window *wnd, int num_menus, gui_menu_struct *menu, hint_type type )
+void GUIInitHint( gui_window *wnd, gui_ctl_idx num_menus, gui_menu_struct *menu, hint_type type )
 {
     int                 size;
-    int                 i;
-    int                 index;
+    gui_ctl_idx         i;
+    gui_ctl_idx         index;
     gui_hint_struct     *hint_struct;
-    int                 num;
+    gui_ctl_idx         num;
 
     if( type == TOOL_HINT ) {
         return;
@@ -272,13 +272,13 @@ void GUIInitHint( gui_window *wnd, int num_menus, gui_menu_struct *menu, hint_ty
     }
 }
 
-void GUIInitToolbarHint( gui_window *wnd, int num_items,
+void GUIInitToolbarHint( gui_window *wnd, gui_ctl_idx num_items,
                          gui_toolbar_struct *toolinfo )
 {
-    int                 i;
+    gui_ctl_idx         i;
     int                 size;
     gui_hint_struct     *hint_struct;
-    int                 num;
+    gui_ctl_idx         num;
 
     if( GetStructNum( &wnd->hint, TOOL_HINT, &hint_struct, &num ) ) {
         if( hint_struct != NULL ) {

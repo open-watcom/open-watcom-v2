@@ -34,19 +34,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "sigfunc.h"
-                            
+
 
 _WCRTLINK int (raise)( int sig )
 {
     return( kill( getpid(), sig ) );
 }
-
-
-void __sigabort( void )
-{
-    raise( SIGABRT );
-}
-
 
 _WCRTLINK void _WCI86FAR __sigfpe_handler( int sig )
 {

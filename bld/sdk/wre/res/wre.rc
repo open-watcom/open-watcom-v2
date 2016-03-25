@@ -5,6 +5,8 @@
 #include "rcstr.gh"
 #include "uistr.gh"
 
+#define FIRST_COPYRIGHT_YEAR "1984"
+
 STRINGTABLE
 BEGIN
     #define pick(c,e) c, [ e ]

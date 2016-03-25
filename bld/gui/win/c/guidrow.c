@@ -49,7 +49,7 @@ void GUIWndDirtyRow( gui_window *wnd, gui_ord row )
     GUI_RECTDIM left, top, right, bottom;
 
     height = GUIFromTextY( 1, wnd );
-    rect = wnd->hwnd_client;
+    rect = wnd->hwnd_client_rect;
     h = _wpi_getheightrect( rect);
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
     top = row * height;

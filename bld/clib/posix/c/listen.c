@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,5 +40,5 @@ _WCRTLINK int listen(int s, int backlog)
     unsigned long args[2];
     args[0] = (unsigned long)s;
     args[1] = (unsigned long)backlog;
-    return ( __socketcall( SYS_LISTEN, args ) );
+    return( __socketcall( SYS_LISTEN, args ) );
 }

@@ -33,8 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "fini.h"
 #include "memfuncs.h"
 #include "hashtabl.h"
@@ -140,7 +140,7 @@ static void freeRefList( orl_sec_handle shnd )
     }
 }
 
-orl_return SectionFini( orl_sec_handle shnd )
+static orl_return SectionFini( orl_sec_handle shnd )
 {
     section_type        type;
 

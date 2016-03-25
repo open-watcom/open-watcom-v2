@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +50,7 @@ stdata  std;
 /*
  * STDialog - show a stack frame
  */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam )
+BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 

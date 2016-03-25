@@ -112,6 +112,7 @@
 .sys clock_nanosleep LNX32
 .sys clock_setres QNX16 QNX32
 .sys clock_settime QNX16 QNX32 LNX32
+.sys clone LNX32
 .sys _close DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232 RDOS
 .sys close DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys closedir DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
@@ -235,8 +236,12 @@
 .sys _ellipse_w_87 DOS16 DOS32 QNX16 QNX32
 .sys _ellipse_wxy DOS16 DOS32 QNX16 QNX32
 .sys _enable DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
+.sys endhostent LNX32
 .sys endgrent QNX16 QNX32
+.sys endnetent LNX32
+.sys endprotoent LNX32
 .sys endpwent QNX16 QNX32 LNX32
+.sys endservent LNX32
 .sys _endthread WIN32 QNX32 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys _endthreadex WIN32
 .sys environ NET32
@@ -548,6 +553,8 @@
 .sys geteuid QNX16 QNX32 LNX32
 .sys _getfillmask DOS16 DOS32 QNX16 QNX32
 .sys _getfontinfo DOS16 DOS32 QNX16 QNX32
+.sys gethostbyname LNX32
+.sys gethostent LNX32
 .sys getgid QNX16 QNX32 LNX32
 .sys getgrent QNX16 QNX32
 .sys getgrgid QNX16 QNX32
@@ -565,6 +572,9 @@
 .sys getlogin QNX16 QNX32
 .sys _getmbcp DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232 RDOS
 .sys getmsg NET32
+.sys getnetbyaddr LNX32
+.sys getnetbyname LNX32
+.sys getnetent LNX32
 .sys getnid QNX16 QNX32
 .sys getopt DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32
 .sys _get_osfhandle DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232 LNX32 NET32
@@ -580,12 +590,18 @@
 .sys getppid QNX16 QNX32 LNX32
 .sys getprio QNX16 QNX32
 .sys GetProc16 WIN386
+.sys getprotoent LNX32
+.sys getprotobyname LNX32
+.sys getprotobynumber LNX32
 .sys getpwent QNX16 QNX32 LNX32
 .sys getpwnam QNX16 QNX32 LNX32
 .sys getpwuid QNX16 QNX32 LNX32
 .sys gets DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys gets_s DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys getscheduler QNX16 QNX32
+.sys getservbyname LNX32
+.sys getservbyport LNX32
+.sys getservent LNX32
 .sys getsid QNX16 QNX32
 .sys getsockname LNX32 NET32
 .sys getsockopt LNX32 NET32
@@ -595,6 +611,7 @@
 .sys _gettextposition DOS16 DOS32 QNX16 QNX32
 .sys _gettextsettings DOS16 DOS32 QNX16 QNX32
 .sys _gettextwindow DOS16 DOS32 QNX16 QNX32
+.sys gettid LNX32
 .sys gettimer QNX16 QNX32
 .sys getuid QNX16 QNX32 LNX32
 .sys _getvideoconfig DOS16 DOS32 QNX16 QNX32
@@ -954,8 +971,10 @@
 .sys _mktemp DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232
 .sys mktime DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys mktimer QNX16 QNX32
+.sys mlock LNX32
+.sys mlockall LNX32
 .sys _mmap QNX32
-.sys mmap QNX32
+.sys mmap LNX32 QNX32
 .sys modf MATH
 .sys mount QNX16 QNX32
 .sys mouse_close QNX16 QNX32
@@ -1020,10 +1039,13 @@
 .sys _m_punpckldq MACRO
 .sys _m_punpcklwd MACRO
 .sys _m_pxor MACRO
+.sys msync LNX32
 .sys _msize DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys mtob DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
 .sys _m_to_int MACRO
-.sys munmap QNX32
+.sys munlock LNX32
+.sys munlockall LNX32
+.sys munmap QNX32 LNX32
 .sys nan MATH
 .sys nanf MATH
 .sys nanl MATH
@@ -1273,11 +1295,12 @@
 .sys select QNX16 QNX32 LNX32 NET32
 .sys _selectpalette DOS16 DOS32 QNX16 QNX32
 .sys _select_receive QNX16 QNX32
-.sys sem_destroy QNX16 QNX32
-.sys sem_init QNX16 QNX32
-.sys sem_post QNX16 QNX32
-.sys sem_trywait QNX16 QNX32
-.sys sem_wait QNX16 QNX32
+.sys sem_destroy QNX16 QNX32 LNX32
+.sys sem_getvalue LNX32
+.sys sem_init QNX16 QNX32 LNX32
+.sys sem_post QNX16 QNX32 LNX32
+.sys sem_trywait QNX16 QNX32 LNX32
+.sys sem_wait QNX16 QNX32 LNX32
 .sys Send NET32 MACRO
 .sys Sendfd MACRO
 .sys Sendfdmx MACRO
@@ -1307,6 +1330,7 @@
 .sys setgid QNX16 QNX32 LNX32
 .sys setgrent QNX16 QNX32
 .sys _setgtextvector DOS16 DOS32 QNX16 QNX32
+.sys sethostent LNX32
 .sys _setjmp DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys setjmp MACRO
 .sys _setlinestyle DOS16 DOS32 QNX16 QNX32
@@ -1316,6 +1340,7 @@
 .sys _setmbcp DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
 .sys setmode DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS NET32
 .sys _setmode DOS16 DOS32 WIN16 WIN386 WIN32 OS216 OS216MT OS216DL OS232 RDOS NET32
+.sys setnetent LNX32
 .sys set_new_handler DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 NET32
 .sys _set_new_handler DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 NET32
 .sys setpgid QNX16 QNX32 LNX32
@@ -1325,10 +1350,12 @@
 .sys _setplotaction DOS16 DOS32 QNX16 QNX32
 .sys setprio QNX16 QNX32
 .sys SetProc WIN386
+.sys setprotoent LNX32
 .sys setpwent QNX16 QNX32 LNX32
 .sys setregid QNX16 QNX32 LNX32
 .sys setreuid QNX16 QNX32 LNX32
 .sys setscheduler QNX16 QNX32
+.sys setservent LNX32
 .sys setsid QNX16 QNX32 LNX32
 .sys setsockopt LNX32 NET32
 .sys SetStdHdl QNX32

@@ -37,8 +37,9 @@
 
 _WCRTLINK wint_t btowc( int c )
 {
-    if( c == EOF || _ismbblead( (unsigned char)c ) )
+    if( c == EOF || _ismbblead( (unsigned char)c ) ) {
         return( WEOF );
-    else
-        return( (wint_t)c );
+    } else {
+        return( (wint_t)(unsigned char)c );
+    }
 }

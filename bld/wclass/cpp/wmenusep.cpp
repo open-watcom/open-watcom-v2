@@ -42,9 +42,9 @@ WEXPORT WMenuSeparator::WMenuSeparator()
 }
 
 
-void WMenuSeparator::attachMenu( WWindow *win, int idx ) {
-/********************************************************/
-
+void WMenuSeparator::attachMenu( WWindow *win, gui_ctl_idx position )
+/*******************************************************************/
+{
     gui_menu_struct     menu_item;
 
     menu_item.label = NULL;
@@ -55,10 +55,10 @@ void WMenuSeparator::attachMenu( WWindow *win, int idx ) {
     menu_item.child = NULL;
     if( parent()->isFloatingMain() ) {
         // appending separator to top level floating popup menu
-        GUIInsertMenu( win->handle(), idx, &menu_item, true );
+        GUIInsertMenuByIdx( win->handle(), position, &menu_item, true );
     } else {
         // appending separator to popup menu
-        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), idx,
+        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), position,
                               &menu_item, parent()->isFloatingPopup() );
     }
     setOwner( win );

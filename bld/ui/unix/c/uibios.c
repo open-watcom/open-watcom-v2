@@ -40,12 +40,13 @@
 #include <string.h>
 #include "uidef.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
 
-extern PossibleDisplay DisplayList[];
-char    *UITermType;    /* global so that the debugger can get at it */
+extern PossibleDisplay  DisplayList[];
+
+static const char       *UITermType = NULL; /* global so that the debugger can get at it */
 
 bool UIAPI uiset80col( void )
 {
@@ -59,7 +60,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType( void )
+const char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
@@ -70,36 +71,59 @@ char *GetTermType( void )
     return( UITermType );
 }
 
-int intern initbios( void )
+const char *SetTermType( const char *new_term )
+{
+    const char  *old_term;
+
+    old_term = UITermType;
+    UITermType = new_term;
+    return( old_term );
+}
+
+bool intern initbios( void )
 {
     PossibleDisplay             *curr;
-    int                         error;
 
     if( UIConFile == NULL ) {
-        char *tty;
+        const char  *tty;
 
         tty = getenv( "TTY" );
         if( tty == NULL ) {
             tty = "/dev/tty";
         }
         UIConFile = fopen( tty, "w+" );
-        if( UIConFile == NULL ) return( FALSE );
+        if( UIConFile == NULL )
+            return( false );
         UIConHandle = fileno( UIConFile );
         fcntl( UIConHandle, F_SETFD, 1 );
     }
-    setupterm( GetTermType(), UIConHandle, &error );
-    if( error != 1 ) return( FALSE );
+
+    {
+        const char  *p1;
+        char        *p2;
+
+        p1 = GetTermType();
+        p2 = malloc( strlen( p1 ) + 1 );
+        strcpy( p2, p1 );
+        setupterm( p2, UIConHandle, NULL );
+        free( p2 );
+    }
+    /* will report an error message and exit if any
+       problem with a terminfo */
+
     // Check to make sure terminal is suitable
     if( cursor_address == NULL || hard_copy ) {
         del_curterm( cur_term );
-        return( FALSE );
+        return( false );
     }
 
     curr = DisplayList;
 
     for( ;; ) {
-        if( curr->check == NULL ) return( FALSE );
-        if( curr->check() ) break;
+        if( curr->check == NULL )
+            return( false );
+        if( curr->check() )
+            break;
         ++curr;
     }
     UIVirt = curr->virt;

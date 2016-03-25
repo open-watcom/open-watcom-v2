@@ -61,71 +61,71 @@ _WCRTLINK void _fheapgrow( void )
 #if defined(__SMALL_DATA__)
 
 _WCRTLINK void _heapgrow( void )
-    {
-        _nheapgrow();
-    }
+{
+    _nheapgrow();
+}
 
 #else
 
 _WCRTLINK void _heapgrow( void )
-    {
-        _fheapgrow();
-    }
+{
+    _fheapgrow();
+}
 
 #endif
 
 
 _WCRTLINK void _nheapgrow( void )
-    {
+{
 #if defined( __WINDOWS_286__ ) || !defined( _M_I86 )
-        _nfree( _nmalloc( 1 ) );        /* get something into the heap */
+    _nfree( _nmalloc( 1 ) );        /* get something into the heap */
 #else
-        unsigned max_paras;
-        unsigned curr_paras;
-        unsigned diff_paras;
-        unsigned expand;
+    unsigned max_paras;
+    unsigned curr_paras;
+    unsigned diff_paras;
+    unsigned expand;
 
-        _AccessNHeap();
-        /* calculate # pages which always has extra slack space (ie. 0x10) */
-        curr_paras = (( _curbrk + 0x10 ) & ~0x0f ) >> 4;
-        if( curr_paras == 0 ) {
-            /* we're already at 64k */
-            _ReleaseNHeap();
-            return;
-        }
-#if defined(__QNX__)
-        if( qnx_segment_realloc( _DGroup(), 65536L ) == -1 ) {
-            _ReleaseNHeap();
-            return;
-        }
-        max_paras = PARAS_IN_64K;
-#elif defined(__OS2__)
-        if( DosReallocSeg( 0, _DGroup() ) )  {
-            _ReleaseNHeap();
-            return;
-        }
-        max_paras = PARAS_IN_64K;
-#else
-        if( _RWD_osmode != DOS_MODE ) {                     /* 23-apr-91 */
-            max_paras = PARAS_IN_64K;
-        } else {
-            max_paras = TinyMaxSet( _RWD_psp );
-            /* subtract off code size */
-            max_paras -= _DGroup() - _RWD_psp;
-            if( max_paras > PARAS_IN_64K ) {
-                max_paras = PARAS_IN_64K;
-            }
-        }
-#endif
-        if( max_paras <= curr_paras ) {
-            /* '<' -> something is wrong, '==' -> can't change size */
-            _ReleaseNHeap();
-            return;
-        }
-        diff_paras = max_paras - curr_paras;
-        expand = (( diff_paras + 1 ) << 4 ) - ( _curbrk & 0x0f );
-        expand += __LastFree(); /* compensate for _expand's adjustment */
+    _AccessNHeap();
+    /* calculate # pages which always has extra slack space (ie. 0x10) */
+    curr_paras = (( _curbrk + 0x10 ) & ~0x0f ) >> 4;
+    if( curr_paras == 0 ) {
+        /* we're already at 64k */
         _ReleaseNHeap();
-        _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof(frl) ) ) );
-#endif
+        return;
     }
+#if defined(__QNX__)
+    if( qnx_segment_realloc( _DGroup(), 65536L ) == -1 ) {
+        _ReleaseNHeap();
+        return;
+    }
+    max_paras = PARAS_IN_64K;
+#elif defined(__OS2__)
+    if( DosReallocSeg( 0, _DGroup() ) )  {
+        _ReleaseNHeap();
+        return;
+    }
+    max_paras = PARAS_IN_64K;
+#else
+    if( _RWD_osmode != DOS_MODE ) {
+        max_paras = PARAS_IN_64K;
+    } else {
+        max_paras = TinyMaxSet( _RWD_psp );
+        /* subtract off code size */
+        max_paras -= _DGroup() - _RWD_psp;
+        if( max_paras > PARAS_IN_64K ) {
+            max_paras = PARAS_IN_64K;
+        }
+    }
+#endif
+    if( max_paras <= curr_paras ) {
+        /* '<' -> something is wrong, '==' -> can't change size */
+        _ReleaseNHeap();
+        return;
+    }
+    diff_paras = max_paras - curr_paras;
+    expand = (( diff_paras + 1 ) << 4 ) - ( _curbrk & 0x0f );
+    expand += __LastFree(); /* compensate for _expand's adjustment */
+    _ReleaseNHeap();
+    _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof( frl ) ) ) );
+#endif
+}

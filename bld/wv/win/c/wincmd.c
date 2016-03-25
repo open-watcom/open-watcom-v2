@@ -32,17 +32,16 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dosscrn.h"
+#include "dbgcmdln.h"
+#include "dbglkup.h"
 
-
-extern int              Lookup( const char *, const char *, size_t );
-extern unsigned long    GetMemory( void );
 
 static const char SysOptNameTab[] = {
     "NOSNow\0"
     "Popups\0"
 };
 
-enum { 
+enum {
     OPT_NOSNOW,
     OPT_POPUPS
 };

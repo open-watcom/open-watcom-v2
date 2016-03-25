@@ -39,12 +39,10 @@
 #include "qread.h"
 #include "streamio.h"
 #include "thread.h"
+#include "fillbuf.h"
 
 
 #define DOS_EOF_CHAR    0x1a
-
-extern int  __fill_buffer( FILE * );    /* located in fgetc */
-
 
 _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
 {
@@ -74,7 +72,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
         _ReleaseFile( fp );
         return( n );
     }
-    if( _FP_BASE(fp) == NULL ) {
+    if( _FP_BASE( fp ) == NULL ) {
         __ioalloc( fp );                        /* allocate buffer */
     }
     len_read = 0;
@@ -103,7 +101,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
 
             if( (bytes_left >= fp->_bufsize) || (fp->_flag & _IONBF) ) {
                 bytes = bytes_left;
-                fp->_ptr = _FP_BASE(fp);
+                fp->_ptr = _FP_BASE( fp );
                 fp->_cnt = 0;
                 if( !(fp->_flag & _IONBF) ) {
                     /* if more than a sector, set to multiple of sector size*/

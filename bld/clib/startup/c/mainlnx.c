@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "initfini.h"
@@ -42,7 +43,8 @@
 #include "heapacc.h"
 #include "trdlstac.h"
 #include "cinit.h"
-#include "_exit.h"
+#include "exitwmsg.h"
+
 
 #if defined( __MT__ )
 _WCRTLINK int *__threadid( void )
@@ -83,8 +85,9 @@ void __LinuxInit( struct thread_data *ptr )
     *tmp = _STACKLOW;
 }
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
-    sys_exit( ret_code );
+    _sys_exit( ret_code );
+    // never return
 }

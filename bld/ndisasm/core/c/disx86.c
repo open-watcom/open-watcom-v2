@@ -31,19 +31,11 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
+#include "distypes.h"
+#include "disx86.h"
 
 #include "clibext.h"
-
-
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          X86RangeTable[];
-extern const int                X86RangeTablePos[];
-extern const unsigned char      X86MaxInsName;
-extern const dis_ins_descript   DisInstructionTable[];
-extern const unsigned short     DisRefTypeTable[];
 
 typedef union {
     unsigned_8 full;
@@ -210,7 +202,7 @@ static int GetSByte( void *d, unsigned off )
  * Get Signed Byte
  */
 {
-    return( SEX( GetUByte( d, off ), 7 ) );
+    return( DisSEX( GetUByte( d, off ), 7 ) );
 }
 
 static int GetSShort( void *d, unsigned off )
@@ -218,7 +210,7 @@ static int GetSShort( void *d, unsigned off )
  * Get Signed Word
  */
 {
-    return( SEX( GetUShort( d, off ), 15 ) );
+    return( DisSEX( GetUShort( d, off ), 15 ) );
 }
 
 
@@ -420,7 +412,7 @@ dis_handler_return X86PrefixGS( dis_handle *h, void *d , dis_dec_ins *ins )
 #define SEGOVER ( DIF_X86_CS|DIF_X86_DS|DIF_X86_ES|DIF_X86_FS|DIF_X86_GS|DIF_X86_SS )
 #define X86SegmentOverride( ins )       ( (ins)->flags.u.x86 & SEGOVER )
 
-dis_register X86GetRegister_D( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetRegister_D( WBIT w, RM reg, dis_dec_ins *ins )
 {
     w = w; ins = ins;
 
@@ -437,7 +429,7 @@ dis_register X86GetRegister_D( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetRegister_W( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetRegister_W( WBIT w, RM reg, dis_dec_ins *ins )
 {
     w = w; ins = ins;
 
@@ -454,7 +446,7 @@ dis_register X86GetRegister_W( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetRegister_B( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetRegister_B( WBIT w, RM reg, dis_dec_ins *ins )
 {
     w = w; ins = ins;
 
@@ -471,7 +463,7 @@ dis_register X86GetRegister_B( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get ST  (Floating Point) Register  w - not used
  */
@@ -491,7 +483,7 @@ dis_register X86FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get MM  (Multimedia) Register  w - not used
  */
@@ -511,7 +503,7 @@ dis_register X86GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get SSE  (Streaming SIMD Extensions) Register  w - not used
  */
@@ -531,7 +523,7 @@ dis_register X86GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Control Register
  */
@@ -547,7 +539,7 @@ dis_register X86GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Debug Register
  */
@@ -565,7 +557,7 @@ dis_register X86GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetTRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetTRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Test Register 80486
  */
@@ -582,7 +574,7 @@ dis_register X86GetTRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetSRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetSRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Segment Register
  */
@@ -600,7 +592,7 @@ dis_register X86GetSRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X86GetRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Register
  *                 w   =  1  (default) use full width of operand
@@ -632,7 +624,7 @@ dis_register X86GetRegister( WBIT w, RM reg, dis_dec_ins *ins )
 }
 
 
-dis_register X86GetRegisterAddr( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X86GetRegisterAddr( WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************************
  *  Get Register
  *                 w   =  1  (default) use full width of operand
@@ -1153,7 +1145,7 @@ static void X86GetRelVal( void *d, dis_dec_ins *ins )
 /*               Get Reference Type                                    */
 /*=====================================================================*/
 
-dis_ref_type  X86GetRefType( WBIT w, dis_dec_ins *ins )
+static dis_ref_type  X86GetRefType( WBIT w, dis_dec_ins *ins )
 /*********************************************************************
  * Get Reference Type
  */
@@ -1263,7 +1255,7 @@ dis_ref_type  X86GetRefType( WBIT w, dis_dec_ins *ins )
     return( DRT_X86_BYTE );
 }
 
-dis_ref_type X86FGetRefType( MF_BITS mf, dis_dec_ins * ins )
+static dis_ref_type X86FGetRefType( MF_BITS mf, dis_dec_ins * ins )
 /*********************************************************************
  * Get Reference Type - Floating Point Instructions
  */
@@ -1279,7 +1271,7 @@ dis_ref_type X86FGetRefType( MF_BITS mf, dis_dec_ins * ins )
     }
 }
 
-dis_ref_type X86FGetRefTypeEnv( dis_dec_ins * ins )
+static dis_ref_type X86FGetRefTypeEnv( dis_dec_ins * ins )
 /*********************************************************************
  * Get Reference Type - Floating Point Environment Instructions
  */
@@ -1380,7 +1372,7 @@ static void X86GetXMMRegModRM( DBIT dir, WBIT w, MOD mod, RM rm, RM reg,
     }
 }
 
-void X86GetRegModRM_B( DBIT dir, MOD mod, RM rm, RM reg, void *d, dis_dec_ins *ins )
+static void X86GetRegModRM_B( DBIT dir, MOD mod, RM rm, RM reg, void *d, dis_dec_ins *ins )
 /**********************************************************************/
 //    dir                   1                 0
 //   Destination           Reg              MODRM
@@ -4044,7 +4036,7 @@ static size_t X86FlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( 0 );
 }
 
-char *DisAddUnixReg( dis_register reg, char *p, dis_format_flags flags )
+static char *DisAddUnixReg( dis_register reg, char *p, dis_format_flags flags )
 {
     if( reg == DR_NONE )
         return( p );
@@ -4053,7 +4045,7 @@ char *DisAddUnixReg( dis_register reg, char *p, dis_format_flags flags )
 }
 
 static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     char    *end = p + buff_len;
 
@@ -4100,7 +4092,7 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 }
 
 static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     size_t      len;
     char        *end = p + buff_len;
@@ -4186,7 +4178,7 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
 #define FAR_PTR     "far" PTR_SUFFIX
 
 static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
     char            over;
@@ -4357,7 +4349,7 @@ static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 #define EMU_INT        "; int "
 
 static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
     size_t      len = 0;

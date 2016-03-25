@@ -29,17 +29,11 @@
 ****************************************************************************/
 
 
-#include "vhandle.h"
-
-#include "guitypes.h"
 #if defined( __WINDOWS__ )
-    #include "setupdlg.h"
     #include <windows.h>
 #elif defined( __NT__ )
-    #include "setupdlg.h"
     #include <windows.h>
 #elif defined( __OS2__ )
-    #include "setupdlg.h"
     #define  INCL_DOSMISC
     // For WPI
     #define INCL_DOSDEVICES
@@ -59,6 +53,15 @@
     #define INCL_DOSPROCESS
     #define INCL_ERRORS
     #include <os2.h>
+#endif
+#include "vhandle.h"
+#include "guitypes.h"
+#if defined( __WINDOWS__ )
+    #include "setupdlg.h"
+#elif defined( __NT__ )
+    #include "setupdlg.h"
+#elif defined( __OS2__ )
+    #include "setupdlg.h"
 #endif
 
 #ifdef __OS2__
@@ -93,11 +96,31 @@ enum {
 };
 #endif
 
-extern bool             ConfigModified;
-extern gui_window       *MainWnd;
-
 #define WIDTH  1000
 #define HEIGHT 1100
+
+enum {
+     WND_PLAIN  = GUI_FIRST_UNUSED,
+     WND_TABSTOP ,
+     WND_SELECTED,
+     WND_HOTSPOT,
+     WND_CENSORED,
+     WND_STATUS_BAR,
+     WND_STATUS_TEXT,
+     WND_STATUS_FRAME,
+     WND_NUMBER_OF_COLORS
+};
+
+enum {
+    #define pick( x, y ) x,
+    #include "status.h"
+    #undef pick
+};
+
+#define MAX_DRIVES 10
+
+extern bool             ConfigModified;
+extern gui_window       *MainWnd;
 
 extern bool             SetupPreInit( void );
 extern bool             SetupInit( void );
@@ -134,24 +157,3 @@ extern bool             UpdateODBC( void );
 extern bool             RegUpdateODBC( void );
 extern bool             ApplyLicense( void );
 extern bool             DoDeleteFile( const char * );
-
-enum {
-     WND_PLAIN  = GUI_FIRST_UNUSED,
-     WND_TABSTOP ,
-     WND_SELECTED,
-     WND_HOTSPOT,
-     WND_CENSORED,
-     WND_STATUS_BAR,
-     WND_STATUS_TEXT,
-     WND_STATUS_FRAME,
-     WND_NUMBER_OF_COLORS
-};
-
-#undef pick
-#define pick( x, y ) x,
-enum {
-    #include "status.h"
-};
-#undef pick
-
-#define MAX_DRIVES 10

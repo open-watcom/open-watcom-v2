@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +43,12 @@ static DWORD    AddTotal;
 
 void ShowSelector( HWND list ) {
 
-    LRESULT     index;
+    int         index;
     char        buf[100];
     WORD        sel;
     char        *msgtitle;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_GET_SELECTOR );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -70,11 +71,11 @@ void ShowSelector( HWND list ) {
 
 BOOL GlobDiscardObj( HWND list ) {
 
-    LRESULT     index;
+    int         index;
     char        buf[100];
     char        *msgtitle;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_DISCARD );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -100,14 +101,14 @@ BOOL GlobDiscardObj( HWND list ) {
 
 BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 
-    LRESULT             index;
+    int                 index;
     GLOBALENTRY         ge;
     GLOBALENTRY         *item;
     BOOL                is_newest;
     char                buf[160];
-    MSGID               strid;
+    msg_id              strid;
 
-    index = SendMessage( list, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                     HeapWalkName, MB_OK | MB_ICONEXCLAMATION );
@@ -150,8 +151,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 }
 
 
-BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     HWND        parent;
     RECT        area;
@@ -247,33 +247,31 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
 void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     int         *items;
-    LRESULT     cnt;
+    int         cnt;
     DWORD       total;
-    LRESULT     i;
+    int         i;
     char        buf[100];
 
     total = 0;
-    cnt = SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0L );
+    cnt = (int)SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0L );
     items = MemAlloc( cnt * sizeof( int ) );
     if( cnt != 0 ) {
         if( items == NULL ) {
-            ErrorBox( HeapWalkMainWindow, STR_CANT_COMPLETE_ADD,
-                      MB_OK | MB_ICONINFORMATION );
+            ErrorBox( HeapWalkMainWindow, STR_CANT_COMPLETE_ADD, MB_OK | MB_ICONINFORMATION );
             return;
         }
         SendMessage( lbhwnd, LB_GETSELITEMS, cnt, (LPARAM)items );
         for( i = 0; i < cnt; i++ ) {
-            total += HeapList[ items[i] ]->info.ge.dwBlockSize;
+            total += HeapList[items[i]]->info.ge.dwBlockSize;
         }
     }
-    sprintf( buf, "%lu", cnt );
+    sprintf( buf, "%d", cnt );
     SetStaticText( dialog, ADD_CNT, buf );
     sprintf( buf, "%lu", total );
     SetStaticText( dialog, ADD_TOTAL, buf );
 }
 
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     DWORD       size;
     DWORD       info;

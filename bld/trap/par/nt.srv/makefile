@@ -2,9 +2,10 @@
 host_cpu = 386
 host_os  = nt
 
-os = nt
+target_cpu = x86
+target_os  = nt
+
 srv = par
-cpu = x86
 which = SERVER
 gui = 1
 remote_link = 1

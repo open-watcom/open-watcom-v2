@@ -12,6 +12,8 @@
 
 :include systypes.sp
 
+:include syssock.sp
+
 :include cpluspro.sp
 
 :include lnxkpack.sp
@@ -27,6 +29,9 @@ struct sockaddr_in {
     struct in_addr sin_addr;   /* internet address */
     char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
 };
+
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
 
 #define IPPROTO_IP              0
 #define IPPROTO_ICMP            1
@@ -87,10 +92,10 @@ struct sockaddr_in {
 
 #define IP_LOOPBACKNET          127
 
-_WCRTLINK unsigned long int htonl(unsigned long int hostlong);
-_WCRTLINK unsigned short int htons(unsigned short int hostshort);
-_WCRTLINK unsigned long int ntohl(unsigned long int netlong);
-_WCRTLINK unsigned short int ntohs(unsigned short int netshort);
+_WCRTLINK extern unsigned long int htonl(unsigned long int hostlong);
+_WCRTLINK extern unsigned short int htons(unsigned short int hostshort);
+_WCRTLINK extern unsigned long int ntohl(unsigned long int netlong);
+_WCRTLINK extern unsigned short int ntohs(unsigned short int netshort);
 
 :include poppack.sp
 

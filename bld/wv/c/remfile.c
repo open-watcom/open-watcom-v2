@@ -47,12 +47,13 @@
 #include "dbgio.h"
 #include "trpfile.h"
 #include "filermt.h"
+#include "filelcl.h"
 #include "trapglbl.h"
+#include "remfile.h"
+#include "trpld.h"
 
 
-extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
-
-extern unsigned         MaxPacketLen;
+extern trap_elen        MaxPacketLen;
 
 static trap_shandle     SuppFileId = 0;
 
@@ -145,10 +146,10 @@ bool InitFileSupp( void )
 
     SuppFileId = GetSuppId( FILE_SUPP_NAME );
     if( SuppFileId == 0 )
-        return( FALSE );
+        return( false );
     SUPP_FILE_SERVICE( acc, REQ_FILE_GET_CONFIG );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( RemFile ), &RemFile );
-    return( TRUE );
+    return( true );
 }
 
 bool HaveRemoteFiles( void )
@@ -157,23 +158,23 @@ bool HaveRemoteFiles( void )
 }
 
 //NYI: The 'bool executable' should be changed to allow different file types
-unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
-                                 unsigned res_len )
+size_t RemoteStringToFullName( bool executable, const char *name, char *res,
+                                 trap_elen res_len )
 {
     in_mx_entry         in[2];
     mx_entry            out[2];
     file_string_to_fullpath_req acc;
     file_string_to_fullpath_ret ret;
-    handle              h;
+    file_handle         fh;
 #ifdef __NT__
     char short_filename[MAX_PATH + 1] = "";
 #endif
 
     if( SuppFileId == 0 ) {
-        h = LclStringToFullName( name, strlen( name ), res );
-        if( h == NIL_HANDLE )
+        fh = LclStringToFullName( name, strlen( name ), res );
+        if( fh == NIL_HANDLE )
             return( 0 );
-        FileClose( h );
+        FileClose( fh );
         return( strlen( res ) );
     }
     SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
@@ -192,14 +193,14 @@ unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
         // convert long file name to short "DOS" compatible form
         {
             GetShortPathNameA( name, short_filename, MAX_PATH );
-            if( *short_filename != '\0' ) {
+            if( *short_filename != NULLCHAR ) {
                 in[1].ptr = short_filename;
             }
         }
         break;
     }
 #endif
-    in[1].len = strlen( in[1].ptr ) + 1;
+    in[1].len = (trap_elen)( strlen( in[1].ptr ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = res;
@@ -240,7 +241,7 @@ sys_handle RemoteOpen( const char *name, open_access mode )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -271,14 +272,14 @@ sys_handle RemoteOpen( const char *name, open_access mode )
     }
 }
 
-static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
+static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
 {
     in_mx_entry             in[2];
     mx_entry                out[1];
     file_write_req          acc;
     file_write_ret          ret;
-    unsigned                total;
-    unsigned                buff_len;
+    size_t                  total;
+    trap_elen               piece_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
     acc.handle = hdl;
@@ -288,13 +289,13 @@ static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( acc );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = buff_len;
+        in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -303,15 +304,15 @@ static unsigned doWrite( sys_handle hdl, const void *buff, unsigned len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != buff_len )
+        if( ret.len != piece_len )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + ret.len;
+        len -= ret.len;
     }
     return( total );
 }
 
-unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
+size_t RemoteWrite( sys_handle hdl, const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -319,14 +320,14 @@ unsigned RemoteWrite( sys_handle hdl, const void *buff, unsigned len )
     return( doWrite( hdl, buff, len ) );
 }
 
-static unsigned doWriteConsole( const void *buff, unsigned len )
+static size_t doWriteConsole( const void *buff, size_t len )
 {
     in_mx_entry             in[2];
     mx_entry                out[1];
     file_write_console_req  acc;
     file_write_console_ret  ret;
-    unsigned                total;
-    unsigned                buff_len;
+    size_t                  total;
+    trap_elen               piece_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE_CONSOLE );
     in[0].ptr = &acc;
@@ -334,13 +335,13 @@ static unsigned doWriteConsole( const void *buff, unsigned len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( acc );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( acc ) );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         in[1].ptr = buff;
-        in[1].len = buff_len;
+        in[1].len = piece_len;
         TrapAccess( 2, in, 1, out );
         CONV_LE_32( ret.err );
         CONV_LE_16( ret.len );
@@ -349,15 +350,15 @@ static unsigned doWriteConsole( const void *buff, unsigned len )
             return( ERR_RETURN );
         }
         total += ret.len;
-        if( ret.len != buff_len )
+        if( ret.len != piece_len )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + ret.len;
+        len -= ret.len;
     }
     return( total );
 }
 
-unsigned RemoteWriteConsole( const void *buff, unsigned len )
+size_t RemoteWriteConsole( const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -365,7 +366,7 @@ unsigned RemoteWriteConsole( const void *buff, unsigned len )
     return( doWriteConsole( buff, len ) );
 }
 
-unsigned RemoteWriteConsoleNL( void )
+size_t RemoteWriteConsoleNL( void )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -373,15 +374,15 @@ unsigned RemoteWriteConsoleNL( void )
     return( doWriteConsole( RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
 }
 
-static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
+static size_t doRead( sys_handle hdl, void *buff, size_t len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
     file_read_req       acc;
     file_read_ret       ret;
-    unsigned            total;
-    unsigned            buff_len;
-    unsigned            got_len;
+    size_t              total;
+    trap_elen           piece_len;
+    trap_retval         read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
     acc.handle = hdl;
@@ -391,31 +392,31 @@ static unsigned doRead( sys_handle hdl, void *buff, unsigned len )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
 
-    buff_len = MaxPacketLen - sizeof( file_read_req );
+    piece_len = (trap_elen)( MaxPacketLen - sizeof( file_read_req ) );
     total = 0;
     while( len > 0 ) {
-        if( len < buff_len )
-            buff_len = len;
+        if( piece_len > len )
+            piece_len = (trap_elen)len;
         out[1].ptr = buff;
-        out[1].len = buff_len;
-        acc.len = buff_len;
+        out[1].len = piece_len;
+        acc.len = piece_len;
         CONV_LE_16( acc.len );
-        got_len = TrapAccess( 1, in, 2, out ) - sizeof( ret );
+        read_len = (trap_retval)TrapAccess( 1, in, 2, out ) - sizeof( ret );
         CONV_LE_32( ret.err );
         if( ret.err != 0 ) {
             StashErrCode( ret.err, OP_REMOTE );
             return( ERR_RETURN );
         }
-        total += got_len;
-        if( got_len != buff_len )
+        total += read_len;
+        if( read_len != piece_len )
             break;
-        buff = (char *)buff + buff_len;
-        len -= buff_len;
+        buff = (char *)buff + read_len;
+        len -= read_len;
     }
     return( total );
 }
 
-unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
+size_t RemoteRead( sys_handle hdl, void *buff, size_t len )
 {
     int         locfile;
 
@@ -425,7 +426,7 @@ unsigned RemoteRead( sys_handle hdl, void *buff, unsigned len )
     /* Try reading from local copy first */
     locfile = GetCachedHandle( hdl );
     if( locfile != -1 )
-        return( read( locfile, buff, len ) );
+        return( LocalRead( locfile, buff, len ) );
 
     return( doRead( hdl, buff, len ) );
 }
@@ -457,13 +458,13 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( -1UL );
+        return( ERR_SEEK );
     } else {
         return( ret.pos );
     }
 }
 
-rc_erridx RemoteClose( sys_handle hdl )
+error_handle RemoteClose( sys_handle hdl )
 {
     file_close_req      acc;
     file_close_ret      ret;
@@ -489,7 +490,7 @@ rc_erridx RemoteClose( sys_handle hdl )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-rc_erridx RemoteErase( const char *name )
+error_handle RemoteErase( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -502,7 +503,7 @@ rc_erridx RemoteErase( const char *name )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = (trap_elen)( strlen( name ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
@@ -511,7 +512,7 @@ rc_erridx RemoteErase( const char *name )
 }
 
 #if !defined( BUILD_RFX )
-rc_erridx RemoteFork( const char *cmd, size_t len )
+error_handle RemoteFork( const char *cmd, trap_elen len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

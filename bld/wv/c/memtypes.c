@@ -53,12 +53,12 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
         i = data->num_types;
         MADTypeInfo( th, &tinfo );
         MADCliString( MADTypeName( th ), TxtBuff, TXT_LEN );
-        data->labels[ i ] = DupStr( TxtBuff );
-        data->info[ i ].type = th;
-        data->info[ i ].item_width = GetMADMaxFormatWidth( th );
-        data->info[ i ].item_size = tinfo.b.bits / BITS_PER_BYTE;
-        data->info[ i ].piece_radix = MADTypePreferredRadix( th );
-        ipl = 80 / ( data->info[ i ].item_width + 1 ); // kludge
+        data->labels[i] = DupStr( TxtBuff );
+        data->info[i].type = th;
+        data->info[i].item_width = GetMADMaxFormatWidth( th );
+        data->info[i].item_size = tinfo.b.bits / BITS_PER_BYTE;
+        data->info[i].piece_radix = MADTypePreferredRadix( th );
+        ipl = 80 / ( data->info[i].item_width + 1 ); // kludge
         if( ipl > 16 ) {
             ipl = 16;
         } else if( ipl > 8 ) {
@@ -70,7 +70,7 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
         } else {
             ipl = 1;
         }
-        data->info[ i ].items_per_line = ipl;
+        data->info[i].items_per_line = ipl;
     }
     data->num_types++;
     return( WR_CONTINUE );
@@ -105,9 +105,9 @@ extern void MemFiniTypes( mem_type_walk_data *data )
 
 unsigned GetMADMaxFormatWidth( mad_type_handle th )
 {
-    unsigned            old,new;
+    mad_radix           old_radix, new_radix;
     item_mach           tmp;
-    unsigned            max;
+    size_t              max;
     mad_type_info       mti;
     int                 sign = 0;
     unsigned long       *plong;
@@ -127,10 +127,10 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
         memset( &tmp, 0, sizeof( tmp ) );
         break;
     }
-    new = MADTypePreferredRadix( th );
-    old = NewCurrRadix( new );
+    new_radix = MADTypePreferredRadix( th );
+    old_radix = NewCurrRadix( new_radix );
     max = 0;
-    MADTypeToString( new, &mti, &tmp, TxtBuff, &max );
-    NewCurrRadix( old );
+    MADTypeToString( new_radix, &mti, &tmp, TxtBuff, &max );
+    NewCurrRadix( old_radix );
     return( max + sign );
 }

@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 
 /*
  * language tokens
@@ -54,5 +53,4 @@ char        *ErrorTokens;
 int         *ErrorValues;
 vars        *VarHead, *VarTail;
 long        CurrentSrcLabel;
-unsigned    CurrentSrcLine;
-char        *CurrentSrcData;
+srcline     CurrentSrcLine;

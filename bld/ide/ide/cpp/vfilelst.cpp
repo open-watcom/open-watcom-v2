@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,12 +63,12 @@ typedef struct {
 
 static LRESULT getMaxItemLen( HWND lb )
 {
-    WPARAM      cnt;
+    int         cnt;
     LRESULT     len;
     LRESULT     rc;
-    WPARAM      i;
+    int         i;
 
-    cnt = (WPARAM)SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    cnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0 );
     len = 0;
     for( i = 0; i < cnt; i++ ) {
         rc = SendMessage( lb, LB_GETTEXTLEN, i, 0 );
@@ -81,10 +82,10 @@ static LRESULT getMaxItemLen( HWND lb )
 static void checkRemoveButton( HWND hwnd )
 {
     HWND        ctl;
-    LRESULT     item;
+    int         item;
 
     ctl = GetDlgItem( hwnd, FOD_FILELIST );
-    item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
+    item = (int)SendMessage( ctl, LB_GETCURSEL, 0, 0 );
     if( item == LB_ERR ) {
         ctl = GetDlgItem( hwnd, FOD_REMOVE );
         EnableWindow( ctl, FALSE );
@@ -168,20 +169,20 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
 }
 
 
-static LRESULT findMatchingFile( HWND hwnd, const char *fname )
+static int findMatchingFile( HWND hwnd, const char *fname )
 {
-    LRESULT     rc;
+    int         rc;
     WString     fullname;
     HWND        lb;
 
     getFullFname( hwnd, fname, &fullname );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
 //    fullname.toLower();
-    rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
+    rc = (int)SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     if( rc == LB_ERR ) {
         getRelFname( hwnd, fname, &fullname );
 //        fullname.toLower();
-        rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
+        rc = (int)SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     }
     return( rc );
 }
@@ -189,8 +190,8 @@ static LRESULT findMatchingFile( HWND hwnd, const char *fname )
 static void addFileToList( HWND hwnd, char *fname )
 {
     HWND        ctl;
-    LRESULT     item;
-    LRESULT     match;
+    int         item;
+    int         match;
     WFileName   fullname;
     bool        isLong = false;
 
@@ -216,11 +217,11 @@ static void addFileToList( HWND hwnd, char *fname )
         if( isLong ) {
             fullname.addQuotes();
         }
-        item = SendMessage( ctl, LB_ADDSTRING, 0, (LPARAM)(LPSTR)fullname.gets() );
+        item = (int)SendMessage( ctl, LB_ADDSTRING, 0, (LPARAM)(LPSTR)fullname.gets() );
     } else {
         item = match;
     }
-    SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
+    SendMessage( ctl, LB_SETCURSEL, item, 0 );
     checkRemoveButton( hwnd );
 }
 
@@ -260,8 +261,8 @@ static void addCurrentFile95( HWND hwnd )
 static void addAllFiles( HWND hwnd )
 {
     HWND        ctl;
-    WPARAM      cnt;
-    WPARAM      i;
+    int         cnt;
+    int         i;
     char        *buf;
     LRESULT     alloced;
     LRESULT     len;
@@ -270,7 +271,7 @@ static void addAllFiles( HWND hwnd )
     buf = new char [alloced];
 
     ctl = GetDlgItem( hwnd, FOD_FILES );
-    cnt = (WPARAM)SendMessage( ctl, LB_GETCOUNT, 0, 0 );
+    cnt = (int)SendMessage( ctl, LB_GETCOUNT, 0, 0 );
     for( i = 0; i < cnt; i++ ) {
         len = SendMessage( ctl, LB_GETTEXTLEN, i, 0 );
         len++;
@@ -297,7 +298,7 @@ static void addAllFiles95( HWND hwnd ) {
     HANDLE          find_handle;
     BOOL            found = TRUE;
     char            *fname;
-    
+
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     ext = info->filter;
     n = info->filter_index * 2 - 1;
@@ -328,8 +329,8 @@ static void addAllFiles95( HWND hwnd ) {
 
 void GetResults( HWND hwnd ) {
     char                *buf;
-    WPARAM              cnt;
-    WPARAM              i;
+    int                 cnt;
+    int                 i;
     LRESULT             len;
     HWND                lb;
     GetFilesInfo        *info;
@@ -339,7 +340,7 @@ void GetResults( HWND hwnd ) {
     len = getMaxItemLen( lb );
     buf = (char *)alloca( (size_t)( len + 1 ) );
     *info->result = "";
-    cnt = (WPARAM)SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    cnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0 );
     for( i = 0; i < cnt; i++ ) {
         SendMessage( lb, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
         info->result->concat( buf );
@@ -373,7 +374,7 @@ void doClose( HWND hwnd )
 UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
-    LRESULT     item;
+    int         item;
     LRESULT     rc;
     HWND        ctl;
 
@@ -413,13 +414,13 @@ UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case FOD_REMOVE:
             ctl = GetDlgItem( hwnd, FOD_FILELIST );
-            item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
+            item = (int)SendMessage( ctl, LB_GETCURSEL, 0, 0 );
             if( item != LB_ERR ) {
-                rc = SendMessage( ctl, LB_DELETESTRING, (WPARAM)item, 0 );
+                rc = SendMessage( ctl, LB_DELETESTRING, item, 0 );
                 if( item != 0 ) {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)( item - 1 ), 0 );
+                    SendMessage( ctl, LB_SETCURSEL, item - 1, 0 );
                 } else {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
+                    SendMessage( ctl, LB_SETCURSEL, item, 0 );
                 }
             }
             checkRemoveButton( hwnd );
@@ -449,7 +450,7 @@ UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD            cmd;
-    LRESULT         item;
+    int             item;
     LRESULT         rc;
     HWND            ctl;
     HWND            dlg;
@@ -484,13 +485,13 @@ UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
             break;
         case FOD_REMOVE:
             ctl = GetDlgItem( hwnd, FOD_FILELIST );
-            item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
+            item = (int)SendMessage( ctl, LB_GETCURSEL, 0, 0 );
             if( item != LB_ERR ) {
-                rc = SendMessage( ctl, LB_DELETESTRING, (WPARAM)item, 0 );
+                rc = SendMessage( ctl, LB_DELETESTRING, item, 0 );
                 if( item != 0 ) {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)( item - 1 ), 0 );
+                    SendMessage( ctl, LB_SETCURSEL, item - 1, 0 );
                 } else {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
+                    SendMessage( ctl, LB_SETCURSEL, item, 0 );
                 }
             }
             checkRemoveButton( hwnd );
@@ -569,27 +570,35 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
 #else
     of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc;
 #endif
-#ifdef __NT__
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+#if defined( __NT__ )
+  #if !defined( _WIN64 )
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+        of.lpTemplateName = "ADD_SRC_DLG";
+    } else {
+  #endif
         of.lpTemplateName = "ADD_SRC_DLG_95";
         of.Flags |= OFN_EXPLORER;
         of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc95;
-    } else {
-#endif
-        of.lpTemplateName = "ADD_SRC_DLG";
-#ifdef __NT__
+  #if !defined( _WIN64 )
     }
+  #endif
+#else
+    of.lpTemplateName = "ADD_SRC_DLG";
 #endif
     of.lCustData = (DWORD)info;
     of.lpstrInitialDir = newpath;
     rc = GetOpenFileName( &of );
     last_filter_index = of.nFilterIndex;
 #ifdef __NT__
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
-        return( info->ret_code );
+  #if !defined( _WIN64 )
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+        return( rc );
     }
-#endif
+  #endif
+    return( info->ret_code );
+#else
     return( rc );
+#endif
 }
 
 int GetNewFiles( WWindow *parent, WString *results, const char *caption,

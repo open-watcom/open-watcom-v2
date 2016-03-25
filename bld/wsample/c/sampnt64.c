@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <string.h>
-#include <i86.h>
 #include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -187,7 +186,7 @@ void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
 
 void GetCommArea( void )
 {
-    DWORD       len;
+    SIZE_T      len;
 
     if( commonAddr.segment == 0 ) {     /* can't get the common region yet */
         Comm.cgraph_top = 0;
@@ -197,20 +196,19 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;       /* don't record this sample */
     } else {
-        ReadProcessMemory( processHandle, (LPVOID) commonAddr.offset, &Comm,
+        ReadProcessMemory( processHandle, (LPVOID)commonAddr.offset, &Comm,
                                 sizeof( Comm ), &len );
     }
 }
 
 void ResetCommArea( void )
 {
-    DWORD       len;
+    SIZE_T      len;
 
     if( commonAddr.segment != 0 ) {
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        WriteProcessMemory( processHandle, (LPVOID) (commonAddr.offset + 11),
-                        &Comm.pop_no, 4, &len );
+        WriteProcessMemory( processHandle, (LPVOID) (commonAddr.offset + 11), &Comm.pop_no, 4, &len );
     }
 }
 
@@ -221,14 +219,13 @@ void GetNextAddr( void )
         seg             cs;
         off             ip;
     } stack_entry;
-    DWORD       len;
+    SIZE_T      len;
 
     if( commonAddr.segment == 0 ) {
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadProcessMemory( processHandle, (LPVOID) Comm.cgraph_top,
-                        &stack_entry, sizeof( stack_entry ), &len );
+        ReadProcessMemory( processHandle, (LPVOID) Comm.cgraph_top, &stack_entry, sizeof( stack_entry ), &len );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -388,7 +385,10 @@ static void loadProg( char *exe, char *cmdline )
     int                 rc;
 
     memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.wShowWindow = SW_NORMAL;
+    sinfo.cb = sizeof( sinfo );
+    // set ShowWindow default value for nCmdShow parameter
+    sinfo.dwFlags = STARTF_USESHOWWINDOW;
+    sinfo.wShowWindow = SW_SHOWNORMAL;
     rc = CreateProcess( NULL,           /* application name */
                         cmdline,        /* command line */
                         NULL,           /* process attributes */
@@ -435,7 +435,7 @@ static void myGetThreadContext( DWORD id, CONTEXT *pc )
 /*
  * TimerThread - handle timer ticks
  */
-DWORD __stdcall TimerThread( LPVOID parms )
+DWORD WINAPI TimerThread( LPVOID parms )
 {
     CONTEXT con;
     int i;
@@ -462,7 +462,7 @@ DWORD __stdcall TimerThread( LPVOID parms )
 
 static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
 {
-    DWORD       len;
+    SIZE_T      len;
 
     --max;
     if( ReadProcessMemory( processHandle, p, buff, max, &len ) ) {
@@ -499,7 +499,7 @@ static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
 static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 {
     LPVOID      name;
-    DWORD       len;
+    SIZE_T      len;
     wchar_t     *p;
 
     //NYI: spiffy up to scrounge around in the image
@@ -528,7 +528,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     DWORD       tid;
     CONTEXT     con;
     BOOL        waiting_for_first_bp;
-    DWORD       len;
+    SIZE_T      len;
     DWORD       continue_how;
     BOOL        rc;
     seg_offset  where;
@@ -544,8 +544,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     loadProg( prog, utilBuff );
     tid = debugEvent.dwThreadId;
 
-    tth = CreateThread( NULL, 1024, (LPVOID) TimerThread, NULL,
-                0, &ttid );
+    tth = CreateThread( NULL, 1024, TimerThread, NULL, 0, &ttid );
     if( !tth ) {
         internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
     }
@@ -580,8 +579,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
                     myGetThreadContext( tid, &con );
                     con.Eip--;
                     if(( con.Edx & 0xffff ) != 0 ) {    /* this is a mark */
-                        ReadProcessMemory( processHandle, (LPVOID) con.Eax,
-                                        utilBuff, BUFF_SIZE-1, &len );
+                        ReadProcessMemory( processHandle, (LPVOID)con.Eax, utilBuff, BUFF_SIZE - 1, len );
                         utilBuff[ len ] = '\0';
                         where.segment = con.SegCs;
                         where.offset = con.Eip;

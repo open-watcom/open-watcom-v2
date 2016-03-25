@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,36 +35,41 @@
 #include "posix.h"
 #include "win.h"
 
-static char swapName[L_tmpnam];
-static int swapHandle = -1;
+#include "clibext.h"
+
+#define SWAP_FILE_NAME  "swXXXXXX"
+
+static char     swapName[sizeof( SWAP_FILE_NAME )];
+static int      swapHandle = -1;
 
 /*
  * windowSwapFileOpen - do just that
  */
-static void windowSwapFileOpen( void )
+static vi_rc windowSwapFileOpen( void )
 {
-    vi_rc   rc;
+    char    file[_MAX_PATH];
 
-    if( swapHandle >= 0 ) {
-        return;
+    if( swapHandle == -1 ) {
+        MakeTmpPath( file, SWAP_FILE_NAME );
+        swapHandle = mkstemp( file );
+        if( swapHandle == -1 ) {
+            return( ERR_SWAP_FILE_OPEN );
+        }
+        memcpy( swapName, file + strlen( file ) - ( sizeof( SWAP_FILE_NAME ) - 1 ), sizeof( SWAP_FILE_NAME ) );
     }
-
-    rc = TmpFileOpen( swapName, &swapHandle );
-    if( rc != ERR_NO_ERR ) {
-        swapHandle = -1;
-    }
+    return( ERR_NO_ERR );
 
 } /* windowSwapFileOpen */
 
 /*
  * buffSize - compute the size of a i/o buffer for a window
  */
-static long buffSize( void )
+static size_t buffSize( void )
 {
-    long        tmp;
+    size_t      tmp;
 
-    tmp = (long)EditVars.WindMaxWidth * (long)EditVars.WindMaxHeight * 4L;
-    tmp = tmp / 512;
+    tmp = (size_t)EditVars.WindMaxWidth * (size_t)EditVars.WindMaxHeight * 4L;
+    tmp /= 512;
     tmp++;
     tmp *= 512;
     return( tmp );
@@ -73,7 +79,7 @@ static long buffSize( void )
 /*
  * windowSwap - swap a windows data
  */
-void static windowSwap( wind *w )
+void static windowSwap( window *w )
 {
     int         i, size;
     long        pos;
@@ -106,19 +112,17 @@ void static windowSwap( wind *w )
 void SwapAllWindows( void )
 {
     info        *cinfo;
-    wind        *w;
+    window      *w;
 
-    windowSwapFileOpen();
-    if( swapHandle < 0 ) {
-        return;
-    }
-    if( EditFlags.Verbose ) {
-        Message1( "Swapping window data" );
-    }
-    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        w = Windows[cinfo->CurrentWindow];
-        if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
-            windowSwap( w );
+    if( windowSwapFileOpen() == ERR_NO_ERR ) {
+        if( EditFlags.Verbose ) {
+            Message1( "Swapping window data" );
+        }
+        for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
+            w = WINDOW_FROM_ID( cinfo->current_window_id );
+            if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
+                windowSwap( w );
+            }
         }
     }
 
@@ -127,7 +131,7 @@ void SwapAllWindows( void )
 /*
  * fetchWindow - get contents of a window
  */
-static void fetchWindow( wind *w )
+static void fetchWindow( window *w )
 {
     int         size;
     long        pos;
@@ -149,23 +153,19 @@ static void fetchWindow( wind *w )
 /*
  * AccessWindow - get at window data
  */
-wind *AccessWindow( window_id id )
+void AccessWindow( window *w )
 {
-    wind        *w;
-
-    w = Windows[id];
     w->accessed++;
     if( w->isswapped ) {
         fetchWindow( w );
     }
-    return( w );
 
 } /* AccessWindow */
 
 /*
  * ReleaseWindow - no longer using window
  */
-void ReleaseWindow( wind *w )
+void ReleaseWindow( window *w )
 {
     w->accessed--;
 
@@ -176,6 +176,13 @@ void ReleaseWindow( wind *w )
  */
 void WindowSwapFileClose( void )
 {
-    TmpFileClose( swapHandle, swapName );
+    char    file[_MAX_PATH];
+
+    if( swapHandle != -1 ) {
+        close( swapHandle );
+        swapHandle = -1;
+        MakeTmpPath( file, swapName );
+        remove( file );
+    }
 
 } /* WindowSwapFileClose */

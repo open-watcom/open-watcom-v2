@@ -55,7 +55,7 @@ static int isGMLComment( char *string )
 void InitGMLLine( char *text )
 {
     firstChar = text;
-    while( *text && isspace( *text ) ) {
+    while( *text != '\0' && isspace( *text ) ) {
         text++;
     }
     firstNonWS = text;
@@ -150,7 +150,7 @@ static void getString( ss_block *ss_new, char *start, int skip )
     char    *text = nstart;
 
     ss_new->type = SE_STRING;
-    while( *text && *text != '"' ) {
+    while( *text != '\0' && *text != '"' ) {
         text++;
     }
     if( *text == '\0' ) {

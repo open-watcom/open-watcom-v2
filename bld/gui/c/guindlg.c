@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "guidlg.h"
 
 #if !defined( __NT__ ) || !defined( GUI_IS_GUI )
-static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {
+static gui_colour_set DlgWndColours[GUI_NUM_ATTRS + 1] = {
   /* Fore              Back        */
   { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
   { GUI_BRIGHT_WHITE, GUI_BLUE },           /* GUI_MENU_STANDOUT  */
@@ -58,7 +59,7 @@ static gui_create_info DlgControl = {
     NULL,
 #if !defined( __NT__ ) || !defined( GUI_IS_GUI )
     GUI_NUM_ATTRS + 1,
-    DlgColours,
+    DlgWndColours,
 #else
     0,
     NULL,

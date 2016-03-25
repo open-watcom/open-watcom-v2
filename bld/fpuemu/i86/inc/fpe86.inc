@@ -15,7 +15,7 @@ _OS2  = 2
 
   NC = '$'
 
-ifdef _DEBUG
+ifndef NDEBUG
 public  badop,prtnyi,my87,modrm,memop,stkop,stkop1
 endif
 
@@ -44,7 +44,7 @@ ifndef __QNX__
         extrn   "C",__FPE_handler  : dword
 my87            sarea           <>
 endif
-ifdef _DEBUG
+ifndef NDEBUG
 nyimsg          db ": not yet implemented",0dH,0aH,NC
 illopmsg        db "Illegal instruction encountered by 8087 emulator",0dH,0aH,NC
 endif
@@ -296,12 +296,12 @@ FPOverFlow proc near
         ret                             ; return
 FPOverFlow endp
 
-        xdefp   __Exception_HNDLR
 ;
 ; input:
 ;       AL - exception mask for status and control word
 ;       AH - exception code for signal handler
 
+        xdefp   __Exception_HNDLR
 __Exception_HNDLR proc  near
         or      byte ptr ds:[bp].status,AL   ; indicate exception occurred
         test    byte ptr ds:[bp].control,AL  ; if exception unmasked
@@ -875,7 +875,7 @@ stkop:  dw      s00,s01,s02,s03,s04,s05,s06,s07         ; stack operand
         xrefp   __fxam
         xrefp   __frndint
 
-ifdef _DEBUG
+ifndef NDEBUG
 badop   proc    near
         lea     dx,illopmsg
         mov     ah,9H
@@ -885,12 +885,12 @@ badop   endp
 endif
 
 illop   macro
-ifdef _DEBUG
+ifndef NDEBUG
         call    badop
 endif
         endm
 
-ifdef _DEBUG
+ifndef NDEBUG
 prtnyi  proc    near
         mov     ah,9H
         int     21H
@@ -1209,10 +1209,10 @@ load    macro  where,what                       ; load up hi:lo
         i4ld                                    ; - convert to tbyte
         ELSE                                    ; else if double long (8 bytes)
         IFIDN      <what>,<dlong>               ; - then
-        mov     ax,es:[si]                      ; - load up the 64-bit integer
-        mov     dx,es:2[si]                     ; - ...
+        mov     dx,es:[si]                      ; - load up the 64-bit integer
+        mov     cx,es:2[si]                     ; - ...
         mov     bx,es:4[si]                     ; - ...
-        mov     cx,es:6[si]                     ; - ...
+        mov     ax,es:6[si]                     ; - ...
         _lea    si,where                        ; - ...
         call    __I8LD                          ; - convert to tbyte
         ELSE                                    ; else if float
@@ -1293,10 +1293,10 @@ store   macro   what                            ; store st somewhere
         IFIDN   <what>,<dlong>                  ; - then
         _lea    ax,st                           ; - point to top of stack
         call    __LDI8                          ; - convert to 64-bit integer
-        mov     es:[si],ax                      ; - store it
-        mov     es:2[si],dx                     ; - ...
+        mov     es:[si],dx                      ; - store it
+        mov     es:2[si],cx                     ; - ...
         mov     es:4[si],bx                     ; - ...
-        mov     es:6[si],cx                     ; - ...
+        mov     es:6[si],ax                     ; - ...
         ELSE                                    ; else if st(i)
         IFIDN   <what>,<st(i)>                  ; - then
         mov10   ds,[di+bp].fpstack,ds,[si+bp].fpstack

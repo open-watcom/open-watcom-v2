@@ -54,13 +54,13 @@ typedef struct location_context {
     machine_state       *regs;
     type_handle         *th;
     sym_handle          *sh;
-    unsigned            have_frame              : 1;
-    unsigned            have_stack              : 1;
-    unsigned            have_object             : 1;
-    unsigned            maybe_have_frame        : 1;
-    unsigned            maybe_have_object       : 1;
-    unsigned            up_stack_level          : 1;
     unsigned            use;
+    bool                have_frame              : 1;
+    bool                have_stack              : 1;
+    bool                have_object             : 1;
+    bool                maybe_have_frame        : 1;
+    bool                maybe_have_object       : 1;
+    bool                up_stack_level          : 1;
 } location_context;
 
 typedef struct sym_list {
@@ -85,13 +85,13 @@ typedef struct image_entry      image_entry;
 struct image_entry {
     image_entry         *link;
     map_entry           *map_list;
-    char                *sym_name;
+    char                *symfile_name;
     unsigned long       system_handle;
     mod_handle          dip_handle;
     void                (*mapper)( image_entry *, addr_ptr *, addr_off *, addr_off * );
     address             def_addr_space;
-    unsigned            nofree : 1;
-    unsigned            deferred_symbols : 1;
+    bool                nofree           : 1;
+    bool                deferred_symbols : 1;
     char                image_name[1];          /* variable sized */
 };
 
@@ -114,10 +114,4 @@ typedef enum {
     REMAP_ERROR,
     REMAP_WRONG_IMAGE,
 } remap_return;
-
-search_result   DeAliasAddrMod( address, mod_handle * );
-search_result   DeAliasAddrSym( mod_handle, address, sym_handle * );
-search_result   DeAliasAddrScope( mod_handle, address, scope_block * );
-search_result   DeAliasAddrCue( mod_handle, address, cue_handle * );
-
 #endif

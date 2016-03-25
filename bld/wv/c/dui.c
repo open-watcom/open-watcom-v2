@@ -42,82 +42,51 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgsrc.h"
+#include "dbgbrk.h"
+#include "dbgpend.h"
+#include "envlkup.h"
+#include "dbgwdlg.h"
+#include "wndsys.h"
+#include "dlgexpr.h"
+#include "dbginit.h"
+#include "dbgwdisp.h"
+#include "dbgwinsp.h"
+#include "dbgwio.h"
+#include "dbgwmem.h"
+#include "dbgwpain.h"
+#include "dbgwfing.h"
+#include "dbgwrtrd.h"
+#include "dbgwset.h"
+#include "dbgwtool.h"
+#include "dbgwvar.h"
+#include "dlgasync.h"
+#include "dlgfile.h"
+#include "wndhelp.h"
+#include "wndmenu.h"
+#include "fingmsg.h"
 
 
 extern a_window         *WndMain;
 extern const char       WndNameTab[];
 
-extern unsigned long    CueLine( cue_handle *ch );
 extern GUICALLBACK      WndMainEventProc;
-extern void             TellWinHandle( void );
 extern void             DlgNewProg( void );
-extern void             InitToolBar( void );
-extern void             InitMemWindow( void );
-extern void             InitAboutMessage( void );
-extern void             InitIOWindow( void );
-extern void             InitMenus( void );
-extern void             InitHelp( void );
-extern void             InitGadget( void );
 extern void             InitPaint( void );
-extern void             InitBrowse( void );
-extern void             InitFont( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );
-extern void             FiniMacros( void );
-extern void             FiniBrowse( void );
 extern void             FiniPaint( void );
-extern void             FiniGadget( void );
-extern void             FiniFont( void );
-extern void             FiniAboutMessage( void );
-extern void             FiniMenus( void );
-extern void             FiniIOWindow( void );
-extern void             FiniMemWindow( void );
-extern void             FiniToolBar( void );
 extern void             FiniFileMap( void );
 extern void             FiniScreen( void );
-extern void             WndDlgFini( void );
-extern void             DoProcPending( void );
-extern void             SetTargMenuItems( void );
-extern void             SetBrkMenuItems( void );
-extern void             SetIOMenuItems( void );
-extern void             DoInput( void );
-extern unsigned         EnvLkup( const char *name, char *buff, unsigned buff_len );
-extern void             PopErrBox( const char *buff );
-extern void             KillDebugger( int ret_code );
 
 extern void             InitSuppServices( void );
 
-extern void             AsyncNotify( void );
-extern void             RunThreadNotify( void );
-
-extern void             WndMsgBox( const char *text );
-extern bool             WndDlgTxt( const char *text );
-extern void             WndInfoBox( const char *text );
-extern void             WndUser( void );
-extern void             WndDebug( void );
-extern a_window         *WndClassInspect( wnd_class wndcls );
-extern void             WndFlushKeys( void );
-extern void             PlayDead( bool );
-extern void             WndSysEnd( bool pause );
-extern void             WndSysStart( void );
-extern void             ProcPendingPaint( void );
-extern bool             DlgInfoRelease( void );
-extern bool             VarInfoRelease( void );
-extern void             WndSrcOrAsmInspect( address );
-extern void             WndAddrInspect( address );
-extern void             RemovePoint( brkp *bp );
-extern unsigned         DlgAsyncRun( void );
-extern void             SetNumLines( int num );
-extern void             SetNumColumns( int num );
-extern void             InitRunThreadInfo( void );
-extern void             ScreenOptInit( void );
-extern bool             ScreenOption( const char *start, unsigned len, int pass );
 extern unsigned         ConfigScreen( void );
 
 #define TIMER_MS        250
 
 #if defined( __NT__ ) && defined( __GUI__ )
 
+#include <windows.h>
 #include "guitimer.h"
 
 #define TIMER_ID        200
@@ -291,16 +260,6 @@ void DUIShowLogWindow( void )
     WndClassInspect( WND_DIALOGUE );
 }
 
-wnd_class ReqWndName( void )
-{
-    int     cmd;
-    
-    cmd = ScanCmd( WndNameTab );
-    if( cmd < 0 )
-        Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
-    return( (wnd_class)cmd );
-}
-
 int DUIGetMonitorType( void )
 {
     if( GUIIsGUI() ) {
@@ -374,9 +333,11 @@ void DUIProcPendingPaint( void )
 
 bool DUIInfoRelease( void )
 {
-    if( DlgInfoRelease() ) return( TRUE );
-    if( VarInfoRelease() ) return( TRUE );
-    return( FALSE );
+    if( DlgInfoRelease() )
+        return( true );
+    if( VarInfoRelease() )
+        return( true );
+    return( false );
 }
 
 void *DUIHourGlass( void *x )
@@ -403,10 +364,11 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( FALSE );
-    buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    if( viewhndl == NULL )
+        return( false );
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
-    return( TRUE );
+    return( true );
 }
 
 bool DUIIsDBCS( void )
@@ -414,7 +376,7 @@ bool DUIIsDBCS( void )
     return( GUIIsDBCS() );
 }
 
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }
@@ -440,14 +402,6 @@ void DUIRemoveBreak( brkp *bp )
     RemovePoint( bp );
 }
 
-
-void StartupErr( const char *err )
-/********************************/
-{
-    PopErrBox( err );
-    KillDebugger(1);
-}
-
 void DUICopySize( void *cookie, unsigned long size )
 /**************************************************/
 {
@@ -466,13 +420,7 @@ bool DUICopyCancelled( void * cookie )
 /************************************/
 {
     cookie = cookie;
-    return( FALSE );
-}
-
-bool DUISymbolsCancelled( void )
-/******************************/
-{
-    return( FALSE );
+    return( false );
 }
 
 bool DUIImageLoaded( image_entry *image, bool load,
@@ -487,7 +435,7 @@ bool DUIImageLoaded( image_entry *image, bool load,
         Format( TxtBuff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( TxtBuff );
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIDlgAsyncRun( void )
@@ -523,4 +471,24 @@ bool DUIScreenOption( const char *start, unsigned len, int pass )
 unsigned DUIConfigScreen( void )
 {
     return( ConfigScreen() );
+}
+
+void DUIProcWindow( void )
+{
+    WndProcWindow();
+}
+
+bool DUIDlgGivenAddr( const char *title, address *value )
+{
+    return( DlgGivenAddr( title, value ) );
+}
+
+void DUIFingOpen( void )
+{
+    FingOpen();
+}
+
+void DUIFingClose( void )
+{
+    FingClose();
 }

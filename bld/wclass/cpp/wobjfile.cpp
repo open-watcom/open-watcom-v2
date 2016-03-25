@@ -51,7 +51,7 @@ void WEXPORT WObjectFile::readEOItem()
 #endif
     } else {
 #ifdef DEBUG_WOBJFILE
-        int  c = getch();               // read CR or LF
+        char    c = getch();            // read CR or LF
         assert( (c == '\r') || (c == '\n') );
         if( '\r' == c )
             assert( '\n' == getch() );  // read LF
@@ -179,7 +179,7 @@ void WEXPORT WObjectFile::readObject( char* obj )
 void WEXPORT WObjectFile::readObject( unsigned char* obj )
 {
     if( _version <= 38 ) {
-        *obj = getch();
+        *obj = (unsigned char)getch();
     } else {
         /* changed to use text format */
         *obj = (unsigned char)getl();

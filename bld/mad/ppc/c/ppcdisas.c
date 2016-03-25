@@ -58,18 +58,19 @@ void DisasmFini()
     DisFini( &DH );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
 
     addr = dd->addr;
     addr.mach.offset += off;
-    if( MCReadMem( addr, size, data ) == 0 ) return( DR_FAIL );
+    if( MCReadMem( addr, size, data ) == 0 )
+        return( DR_FAIL );
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -86,7 +87,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, un
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, -(int)sizeof( ins->op[0].value ), &mti );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value ) ), &mti );
         MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_size );
         break;
     }
@@ -127,15 +128,15 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
     return( DisasmOne( dd, a, adj ) );
 }
 
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
     char                *np;
     char                *op;
-    unsigned            nlen;
-    unsigned            olen;
-    unsigned            len;
+    size_t              nlen;
+    size_t              olen;
+    size_t              len;
     dis_format_flags    ff;
 
     nbuff[0] = '\0';
@@ -309,7 +310,7 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
     case DI_PPC_tdi:
        b.u._32[I64LO32] = dd->ins.op[2].value;
        if( dd->ins.op[2].value < 0 ) {
-           b.u._32[I64HI32] = -1;
+           b.u._32[I64HI32] = (unsigned_32)-1L;
        } else {
            b.u._32[I64HI32] = 0;
        }
@@ -525,7 +526,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
     return( MADState->disasm_state );
 }
 
-mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, unsigned radix, mad_registers const *mr, address *a)
+mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, mad_registers const *mr, address *a)
 {
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;

@@ -195,6 +195,7 @@
 #include "trperr.h"
 #include "packet.h"
 #include "nothing.h"
+#include "parlink.h"
 
 
 #if defined(__NT__)
@@ -285,13 +286,6 @@ void _outp( int port, char x )
     #define dbgrtn(x)
 #endif
 
-extern int              NumPrinters( void );
-extern unsigned         PrnAddress( int );
-extern unsigned         AccessPorts( unsigned, unsigned );
-extern void             FreePorts( unsigned, unsigned );
-extern unsigned long    Ticks( void );
-extern char             *InitSys( void );
-extern void             FiniSys( void );
 
 static unsigned DataPort;
 static unsigned CtlPort1;

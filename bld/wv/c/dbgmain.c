@@ -41,109 +41,48 @@
 #include "dbgutil.h"
 #include "dbgsrc.h"
 #include "trapglbl.h"
+#include "dbgcmdln.h"
+#include "dbglog.h"
+#include "dbgmain.h"
+#include "dbginvk.h"
+#include "dbghook.h"
+#include "dbgcall.h"
+#include "dbgshow.h"
+#include "dbgbrk.h"
+#include "dbgpend.h"
+#include "dbgprint.h"
+#include "dbgsys.h"
+#include "dbgprog.h"
+#include "dbgvar.h"
+#include "dbgtrace.h"
+#include "dbgdll.h"
+#include "dbgexdat.h"
+#include "dbgmodfy.h"
+#include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "dbgevent.h"
+#include "dbgset.h"
+#include "namelist.h"
+#include "symcomp.h"
+#include "dbginit.h"
+#include "dbglkup.h"
+#include "dbgio.h"
+#include "dbgwintr.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern void             FingClose( void );
-extern void             FingFront( void );
-extern void             FingOpen( void );
-extern void             FiniAboutMessage( void );
-extern void             FiniBrowse( void );
-extern void             FiniCall( void );
-extern void             FiniCmd( void );
-extern void             FiniDLLList( void );
-extern void             FiniDbgInfo( void );
-extern void             FiniFont( void );
-extern void             FiniGadget( void );
-extern void             FiniHook( void );
-extern void             FiniIOWindow( void );
-extern void             FiniLiterals( void );
-extern void             FiniLocalInfo( void );
-extern void             FiniLook( void );
-extern void             FiniMachState( void );
 extern void             FiniMacros( void );
-extern void             FiniMemWindow( void );
-extern void             FiniMenus( void );
-extern void             FiniPaint( void );
 extern void             FiniToolBar( void );
-extern void             FiniTrace( void );
-extern char             *GetCmdEntry( const char *tab, int index, char *buf );
 extern void             GrabHandlers( void );
-extern void             InitAboutMessage( void );
-extern void             InitBPs( void );
-extern void             InitBrowse( void );
-extern bool             InitCmd( void );
-extern void             InitDLLList( void );
-extern void             InitDbgInfo( void );
-extern void             InitFont( void );
-extern void             InitGadget( void );
-extern void             InitHelp( void );
-extern void             InitHook( void );
-extern void             InitIOWindow( void );
-extern void             InitLiterals( void );
-extern void             InitLocalInfo( void );
-extern void             InitLook( void );
-extern void             InitMachState( void );
-extern void             InitMemWindow( void );
-extern void             InitMenus( void );
-extern void             InitPaint( void );
 extern void             InitToolBar( void );
-extern void             LangSetFini( void );
-extern bool             LangSetInit( void );
-extern void             LoadProg( void );
-extern void             LogFini( void );
-extern void             LogInit( void );
-extern void             PathFini( void );
-extern void             PathInit( void );
-extern void             PointFini( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
-extern void             ProcBreak( void );
-extern void             ProcCall( void );
 extern void             ProcCapture( void );
-extern void             ProcCmd( void );
-extern void             ProcDisplay( void );
-extern void             ProcDo( void );
-extern void             ProcError( void );
-extern void             ProcExamine( void );
-extern void             ProcFlip( void );
-extern void             ProcFont( void );
-extern void             ProcGo( void );
-extern void             ProcHelp( void );
-extern void             ProcHook( void );
-extern void             ProcIf( void );
-extern void             ProcInput( void );
-extern void             ProcInvoke( void );
-extern void             ProcLog( void );
-extern void             ProcNew( void );
-extern void             ProcPaint( void );
-extern void             ProcPrint( void );
-extern void             ProcQuit( void );
-extern void             ProcRegister( void );
-extern void             ProcRemark( void );
-extern void             ProcSet( void );
-extern void             ProcShow( void );
-extern void             ProcSystem( void );
-extern void             ProcThread( void );
-extern void             ProcTrace( void );
-extern void             ProcView( void );
-extern void             ProcWhile( void );
-extern void             ProcWindow( void );
-extern void             ProfileInvoke( char * );
-extern void             RecordFini( void );
-extern void             RecordInit( void );
-extern void             ReleaseProgOvlay( bool );
 extern void             RestoreHandlers( void );
-extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             SupportFini( void );
-extern void             SymCompFini( void );
-extern void             SysFileInit( void );
-extern bool             TBreak( void );
-extern void             VarDisplayFini( void );
-extern void             VarDisplayInit( void );
-extern void             WndDlgFini( void );
 extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;
@@ -152,18 +91,18 @@ OVL_EXTERN void         ProcNil( void );
 
 
 #define pick( a, b, c ) extern void b( void );
-#include "dbgcmd.h"
+#include "_dbgcmd.h"
 #undef pick
 
 static const char CmdNameTab[] = {
     #define pick( a, b, c ) c
-    #include "dbgcmd.h"
+    #include "_dbgcmd.h"
     #undef pick
 };
 
 static void ( * const CmdJmpTab[] )( void ) = {
     #define pick( a, b, c ) &b,
-    #include "dbgcmd.h"
+    #include "_dbgcmd.h"
     #undef pick
 };
 
@@ -188,10 +127,10 @@ void DebugInit( void )
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
     SET_NIL_ADDR( NilAddr );
-    TxtBuff  = &DbgBuffers[0];
-    *TxtBuff = '\0';
-    NameBuff = &DbgBuffers[TXT_LEN+1];
-    *NameBuff = '\0';
+    TxtBuff  = DbgBuffers;
+    *TxtBuff = NULLCHAR;
+    NameBuff = DbgBuffers + TXT_LEN + 1;
+    *NameBuff = NULLCHAR;
     CurrRadix = DefRadix = 10;
     DbgLevel = MIX;
     ActiveWindowLevel = MIX;
@@ -240,7 +179,7 @@ OVL_EXTERN void ProcNil( void )
  *
  */
 
-void ReportTask( task_status task, unsigned code )
+void ReportTask( task_status task, error_handle errh )
 {
     switch( task ) {
     case TASK_NEW:
@@ -250,7 +189,7 @@ void ReportTask( task_status task, unsigned code )
         break;
     case TASK_NOT_LOADED:
         _SwitchOff( SW_HAVE_TASK );
-        Format( TxtBuff, LIT_ENG( Task_Not_Loaded ), code );
+        Format( TxtBuff, LIT_ENG( Task_Not_Loaded ), errh );
         DUIMsgBox( TxtBuff );
         RingBell();
         RingBell();
@@ -326,7 +265,7 @@ void ProcACmd( void )
                 ProcNil();
             }
         } else {
-            (*CmdJmpTab[ cmd ])();
+            (*CmdJmpTab[cmd])();
         }
         break;
     }
@@ -374,19 +313,19 @@ void DebugMain( void )
     ProcCmd();
 
     Spawn( DebugInit );
-    FingOpen();
+    DUIFingOpen();
     DUIFreshAll();
 
     LoadProg();
 
-    save = DUIStopRefresh( TRUE );
+    save = DUIStopRefresh( true );
     FreezeInpStack();
     _SwitchOn( SW_RUNNING_PROFILE );
     Spawn( Profile );           /* run profile command file */
     _SwitchOff( SW_RUNNING_PROFILE );
     PushInitCmdList();
     DUIStopRefresh( save );
-    FingClose();
+    DUIFingClose();
     DUIShow();
 }
 
@@ -408,7 +347,7 @@ void DebugFini( void )
 {
     PointFini();
 #if !( defined( __GUI__ ) && defined( __OS2__ ) )
-    ReleaseProgOvlay( TRUE ); // see dlgfile.c
+    ReleaseProgOvlay( true ); // see dlgfile.c
 #endif
     VarDisplayFini();
     FiniHook();
@@ -437,4 +376,9 @@ void DebugFini( void )
     _Free( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
+}
+
+void ProcWindow( void )
+{
+    DUIProcWindow();
 }

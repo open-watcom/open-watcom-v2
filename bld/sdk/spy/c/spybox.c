@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ static void setCharSize( HWND parent )
  */
 void SpyOut( char *msg, LPMSG pmsg )
 {
-    static LRESULT  i;
+    static int      i;
     char            res[SPYOUT_LENGTH + 1];
 #ifdef __NT__
     LVITEM          lvi;
@@ -142,7 +143,7 @@ void SpyOut( char *msg, LPMSG pmsg )
         }
     } else {
 #endif
-        i = SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
+        i = (int)SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
         if( SpyMessagesAutoScroll ) {
             SendMessage( SpyListBox, LB_SETCURSEL, i, 0L );
         }
@@ -352,12 +353,12 @@ void ResetSpyListBox( void )
  */
 bool GetSpyBoxSelection( char *str )
 {
-    LRESULT sel;
+    int     sel;
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
-        sel = SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
-        if( sel == (WORD)LB_ERR ) {
+        sel = (int)SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
+        if( sel == LB_ERR ) {
             return( false );
         }
         SendMessage( SpyListBox, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );

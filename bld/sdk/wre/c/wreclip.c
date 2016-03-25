@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <limits.h>
 #include <string.h>
 #include <ddeml.h>
@@ -1018,7 +1018,7 @@ BOOL CALLBACK WREResPasteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     switch( message ) {
     case WM_INITDIALOG:
         pdata = (WREPasteData *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)pdata );
+        SET_DLGDATA( hDlg, pdata );
         WRESetPasteInfo( hDlg, pdata );
         ret = TRUE;
         break;

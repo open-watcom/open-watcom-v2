@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ void WdeEnableCustCntlTools( HMENU menu )
 
 static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
 {
-    UINT menu_id;
+    UINT    menu_id;
 
     menu_id = 0;
 
@@ -141,7 +142,7 @@ static void WdeCheckModeMenu( HMENU menu, WdeOrderMode mode, UINT flags )
 
     if( menu_id ) {
         CheckMenuItem( menu, menu_id, flags );
-        WdeSetRibbonItemState( LOWORD( menu_id ), flags == MF_CHECKED );
+        WdeSetRibbonItemState( menu_id, ( flags == MF_CHECKED ) );
     }
 }
 

@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#define _WINDOWS_16_
-#include <wwindows.h>
-#include <toolhelp.h>
+#include "commonui.h"
 #include "pmdbg.h"
 #include "const.h"
 #include "intdlg.h"

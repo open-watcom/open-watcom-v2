@@ -35,13 +35,11 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgname.h"
+#include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
 #if 0
-extern unsigned     GetValue( void );
-extern int          Lookup( const char *, const char *, size_t );
-
-
 static const char SysOptNameTab[] = {
     "\0"
     ""
@@ -66,12 +64,12 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 #if 0
     switch( Lookup( SysOptNameTab, start, len ) ) {
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 #else
     start=start;len=len;
-    return( FALSE );
+    return( false );
 #endif
 }
 

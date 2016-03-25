@@ -39,9 +39,11 @@
 #include "trapaccs.h"
 #include "madinter.h"
 #include "trapglbl.h"
+#include "remcore.h"
+#include "dbgmisc.h"
+#include "remasync.h"
+#include "trpld.h"
 
-extern void             GetSysConfig( void );
-extern dtid_t           RemoteSetThread( dtid_t );
 
 #define SUPP_ASYNC_SERVICE( in, request )        \
         in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE;        \
@@ -54,8 +56,8 @@ bool InitAsyncSupp( void )
 {
     SuppAsyncId = GetSuppId( ASYNC_SUPP_NAME );
     if( SuppAsyncId != 0 )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 bool HaveRemoteAsync( void )
@@ -109,7 +111,7 @@ unsigned MakeAsyncRun( bool single )
     return( ret.conditions );
 }
 
-unsigned PollAsync( )
+unsigned PollAsync( void )
 {
     async_poll_req      acc;
     async_poll_ret      ret;
@@ -152,7 +154,7 @@ unsigned PollAsync( )
     return( ret.conditions );
 }
 
-unsigned StopAsync( )
+unsigned StopAsync( void )
 {
     async_stop_req      acc;
     async_stop_ret      ret;

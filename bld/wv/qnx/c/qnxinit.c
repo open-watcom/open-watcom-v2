@@ -44,14 +44,16 @@
 #include <signal.h>
 #include "dbgdefn.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
 #include "clibint.h"
+
 
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 extern void     __qnx_exit( int );
 
 extern int      DbgConHandle; /* Debugger console file handle */
@@ -122,7 +124,7 @@ void SetCmdArgStart( int num, char *ptr )
     cmdStart = ptr;
 }
 
-void KillDebugger( void )
+void KillDebugger( int rc )
 {
     __qnx_exit( 0 );
 }
@@ -146,16 +148,16 @@ bool TBreak( void )
 
 long _fork( const char *cmd, size_t len )
 {
-    char    buff[256];
-    char    *argv[4];
-    char    *shell;
-    pid_t   pid;
-    int     i;
-    char    iov[10];
-
+    char        buff[256];
+    char        *argv[4];
+    const char  *shell;
+    pid_t       pid;
+    int         i;
+    char        iov[10];
 
     shell = getenv( "SHELL" );
-    if( shell == NULL ) shell = "/bin/sh";
+    if( shell == NULL )
+        shell = "/bin/sh";
 
     argv[0] = shell;
     if( len != 0 ) {
@@ -171,23 +173,21 @@ long _fork( const char *cmd, size_t len )
     iov[0] = DbgConHandle;
     iov[1] = DbgConHandle;
     iov[2] = DbgConHandle;
-    for( i = 3; i < 10; ++i ) iov[i] = (char)-1;
+    for( i = 3; i < 10; ++i )
+        iov[i] = (char)-1;
     fcntl( DbgConHandle, F_SETFD, (int)0 );
     pid = qnx_spawn( 0, 0, 0, -1, -1,
                 _SPAWN_NEWPGRP | _SPAWN_TCSETPGRP | _SPAWN_SETSID,
                 shell, argv, environ, iov, DbgConHandle );
     fcntl( DbgConHandle, F_SETFD, (int)FD_CLOEXEC );
-    if( pid == -1 ) return( 0xffff0000 | errno );
+    if( pid == -1 )
+        return( 0xffff0000 | errno );
     do {
     } while( waitpid( pid, NULL, 0 ) == -1 && errno == EINTR );
     return( 0 );
 }
 
-void SysSetMemLimit( void )
-{
-}
-
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }

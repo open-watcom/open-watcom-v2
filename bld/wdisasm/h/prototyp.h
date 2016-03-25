@@ -93,7 +93,7 @@ extern int_16 PeekDataByte( void );
 extern int_16 GetDataWord( void );
 extern int_32 GetDataLong( void );
 extern int_16 GetNextByte( void );
-extern char EndOfSegment( void );
+extern bool EndOfSegment( void );
 extern char *ToStr( uint_32, uint_16, uint_32 );
 extern char *ToIndex( uint_32, uint_32 );
 extern char *ToBrStr( uint_32, uint_32 );

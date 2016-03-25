@@ -38,3 +38,6 @@ BLDLASTD=bldlastd.txt
 
 # The location of release tree for build server.
 RELROOT=c:\ow\ow\pass
+
+# The command to initialize environment for build server.
+INITCMD=

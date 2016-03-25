@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "bool.h"
 #include "wdebug.h"
 #include "di386.h"

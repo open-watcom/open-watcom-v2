@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,5 +41,5 @@ _WCRTLINK int socket( int domain, int type, int protocol )
     args[0] = (unsigned long)domain;
     args[1] = (unsigned long)type;
     args[2] = (unsigned long)protocol;
-    return ( __socketcall( SYS_SOCKET, args ) );
+    return( __socketcall( SYS_SOCKET, args ) );
 }

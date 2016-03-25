@@ -919,10 +919,10 @@ FPOverFlow endp
 
         xdefp   __Exception_HNDLR
 ;
-;  input:
-;       AL - exception mask
-;       AH - exception code
+;       input:  AL - exception mask
+;               AH - exception code
 ;
+
 __Exception_HNDLR proc  near
       ifdef SEGMENTED
         or      byte ptr ds:[ebp].status,AL   ; indicate exception occurred

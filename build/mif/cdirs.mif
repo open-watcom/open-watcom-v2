@@ -142,6 +142,9 @@ ftest_dir       = $(src_dir)/f77test
 !ifndef clib_dir
 clib_dir        = $(src_dir)/clib
 !endif
+!ifndef clibtest_dir
+clibtest_dir    = $(src_dir)/clibtest
+!endif
 !ifndef mathlib_dir
 mathlib_dir     = $(src_dir)/mathlib
 !endif

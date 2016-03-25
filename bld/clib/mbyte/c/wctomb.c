@@ -48,25 +48,27 @@ _WCRTLINK int _NEARFAR(wctomb,_fwctomb)( char _FFAR *ch, wchar_t wchar )
 #endif
 
     /*** Catch special cases ***/
-    if( ch == 0 )  return( 0 );
+    if( ch == 0 )
+        return( 0 );
 
     /*** Convert the character ***/
-    #ifdef __NT__
-        rc = WideCharToMultiByte( __MBCodePage, WC_COMPOSITECHECK,
-                                  (LPCWSTR)&wchar, 1, (LPSTR)ch,
-                                  MB_LEN_MAX, NULL, NULL );
-        if( rc != FALSE )
-            return( rc );
-        else
-            return( -1 );
-    #else                               /* OS/2 and others */
-        if( wchar & 0xFF00 ) {
-            ch[0] = (wchar&0xFF00) >> 8;        /* store lead byte */
-            ch[1] = wchar & 0x00FF;             /* store trail byte */
-            return( 2 );                        /* return size in bytes */
-        } else {
-            ch[0] = wchar & 0x00FF;             /* store char byte */
-            return( 1 );                        /* return size in bytes */
-        }
-    #endif
+#ifdef __NT__
+    rc = WideCharToMultiByte( __MBCodePage, WC_COMPOSITECHECK,
+                              (LPCWSTR)&wchar, 1, (LPSTR)ch,
+                              MB_LEN_MAX, NULL, NULL );
+    if( rc != 0 ) {
+        return( rc );
+    } else {
+        return( -1 );
+    }
+#else                               /* OS/2 and others */
+    if( wchar & 0xFF00 ) {
+        ch[0] = (wchar&0xFF00) >> 8;        /* store lead byte */
+        ch[1] = wchar & 0x00FF;             /* store trail byte */
+        return( 2 );                        /* return size in bytes */
+    } else {
+        ch[0] = wchar & 0x00FF;             /* store char byte */
+        return( 1 );                        /* return size in bytes */
+    }
+#endif
 }

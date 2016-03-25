@@ -64,37 +64,37 @@ module_start:
         dw      _Functions - module_start
 
 strcat_body     macro
-        mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        or      cx,-1                   ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     di                      ; point to null character
         _loop                           ; loop
           mov   al,[si]                 ; - get char from src
           mov   [di],al                 ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           _quif e                       ; - ...
           mov   al,1[si]                ; - get next char
           add   si,2                    ; - bump up pointer
           mov   1[di],al                ; - copy it
           add   di,2                    ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         endm
 
 BD_strcat_body  macro
-        mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        or      cx,-1                   ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     di                      ; point to null character
         _loop                           ; loop
           mov   al,[si]                 ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           _quif e                       ; - ...
           mov   al,1[si]                ; - get next char
           add   si,2                    ; - bump up pointer
           stosb                         ; - copy it
-          cmp   al,0                    ; - check for end of string
+          test  al,al                    ; - check for end of string
         _until  e                       ; until end of string
         endm
 
@@ -138,7 +138,7 @@ beginb  S_strcat
           lodsb                         ; - get char from src
           mov   [di],al                 ; - append to end of dest
           inc   di                      ; - point to next byte
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination string address
 endb    S_strcat
@@ -156,15 +156,15 @@ defsb   ZF_strcat
 beginb  ZF_strcat
         push    di                      ; save destination address
         push    cx                      ; save cx
-        mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        or      cx,-1                   ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     cx                      ; restore cx
         dec     di                      ; point to null character
         _loop                           ; loop (concatenate strings)
           lodsb                         ; - get char from src
           stosb                         ; - append to end of dest
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination string address
 endb    ZF_strcat
@@ -185,15 +185,15 @@ beginb  ZP_strcat
         xchg    si,ax                   ; get offset into si, segment into ax
         mov     ds,ax                   ; load segment
         push    cx                      ; save cx
-        mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        or      cx,-1                   ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     cx                      ; restore cx
         dec     di                      ; point to null character
         _loop                           ; loop (concatenate strings)
           lodsb                         ; - get char from src
           stosb                         ; - append to end of dest
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination string address
         pop     ds                      ; restore ds
@@ -252,14 +252,14 @@ beginb  C_strchr
           mov   al,[si]                 ; - get char from src
           cmp   al,dl                   ; - quit if char found
           je    short E_C_strchr        ; - ...
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           _quif e                       ; - ...
           inc   si                      ; - increment pointer
           mov   al,[si]                 ; - get next char
           cmp   al,dl                   ; - quit if char found
           je    short E_C_strchr        ; - ...
           inc   si                      ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     si,si                   ; return NULL
 endb    C_strchr
@@ -281,7 +281,7 @@ beginb  DF_strchr
           cmp   al,cl                   ; - quit if char found
           je    short E_DF_strchr       ; - ...
           inc   si                      ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     si,si                   ; return NULL
         sub     dx,dx                   ; ...
@@ -305,7 +305,7 @@ beginb  DP_strchr
           cmp   al,cl                   ; - quit if char found
           je    short _DP_strchr9       ; - ...
           inc   si                      ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     si,si                   ; return NULL
         sub     dx,dx                   ; ...
@@ -330,13 +330,13 @@ beginb  C_strcpy
         _loop                           ; loop
           mov   al,[si]                 ; - get char from src
           mov   [di],al                 ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                    ; - quit if end of string
           _quif e                       ; - ...
           mov   al,1[si]                ; - get next char
           add   si,2                    ; - bump up pointer
           mov   1[di],al                ; - copy it
           add   di,2                    ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
 endb    C_strcpy
@@ -357,7 +357,7 @@ beginb  S_strcpy
           lodsb                         ; - get char from src
           mov   [di],al                 ; - store in output buffer
           inc   di                      ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
 endb    S_strcpy
@@ -377,7 +377,7 @@ beginb  ZF_strcpy
         _loop                           ; loop
           lodsb                         ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
 endb    ZF_strcpy
@@ -400,7 +400,7 @@ beginb  ZP_strcpy
         _loop                           ; loop
           lodsb                         ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                    ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
         pop     ds                      ; restore ds
@@ -421,13 +421,13 @@ beginb  DF_strcpy
         _loop                           ; loop
           mov   al,[si]                 ; - get char from src
           mov   es:[di],al              ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           _quif e                       ; - ...
           mov   al,1[si]                ; - get next char
           add   si,2                    ; - bump up pointer
           mov   es:1[di],al             ; - copy it
           add   di,2                    ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
 endb    DF_strcpy
@@ -450,13 +450,13 @@ beginb  DP_strcpy
         _loop                           ; loop
           mov   al,[si]                 ; - get char from src
           mov   es:[di],al              ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           _quif e                       ; - ...
           mov   al,1[si]                ; - get next char
           add   si,2                    ; - bump up pointer
           mov   es:1[di],al             ; - copy it
           add   di,2                    ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     di                      ; restore destination address
         pop     ds                      ; restore ds
@@ -836,7 +836,7 @@ beginb  C_strcmp
         JNZ     E_C_strcmp1
         DEC     DI
         DEC     SI
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX
@@ -901,7 +901,7 @@ beginb  DF_strcmp
         JNZ     E_DF_strcmp1
         DEC     DI
         DEC     SI
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX
@@ -927,7 +927,7 @@ beginb  DP_strcmp
         JNZ     E_DP_strcmp1
         DEC     DI
         DEC     SI
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX
@@ -950,7 +950,7 @@ defsb   C_strlen
 beginb  C_strlen
         MOV     AX,DS
         MOV     ES,AX
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX
@@ -964,7 +964,7 @@ defsb   DF_strlen
         db      "#define DF_strlen_saves HW_NotD_3( HW_AX, HW_CX, HW_DI )",0
         db      0
 beginb  DF_strlen
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX
@@ -978,7 +978,7 @@ defsb   DP_strlen
         db      "#define DP_strlen_saves HW_NotD_3( HW_AX, HW_CX, HW_DI )",0
         db      0
 beginb  DP_strlen
-        MOV     CX,-1
+        OR      CX,-1
         XOR     AX,AX
         REPNZ   SCASB
         NOT     CX

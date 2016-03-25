@@ -40,7 +40,12 @@ objs = &
 
 !ifdef patch
 objs +=             &
-    exetype.obj
+    exetype.obj     &
+    oldfile.obj     &
+    bpatch.obj      &
+    patchio.obj     &
+    myio.obj        &
+    dopatch.obj
 !endif
 
 !ifeq host_os win
@@ -111,7 +116,7 @@ gendeps = $(objs) $(libs) setup.lnk
 extra_cpp_flags += -D_UI
 !endif
 !ifdef patch
-extra_cpp_flags += -DPATCH
+extra_cpp_flags += -DPATCH -DINSTALL_PROGRAM
 !endif
 
 extra_c_flags = -s
@@ -154,7 +159,11 @@ dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc
 # where to find objects
 ########################
 
-.c : ../c;$(bdiff_dir);$(wpack_dir)/c;$(trmem_dir)
+.c : ../c
+!ifdef patch
+.c : $(bdiff_dir)/c;$(wpack_dir)/c
+!endif
+.c : $(trmem_dir)
 .rc : ../res;$(res_dir);$(gui_dir)/h
 .ico : $(res_dir)
 

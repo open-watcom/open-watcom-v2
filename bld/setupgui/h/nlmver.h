@@ -34,13 +34,12 @@
 #ifndef RVERHDR
 #define RVERHDR
 
-#include "watcom.h"
 #include "exenov.h"
 
 #define ESUCCESS    0
 #define EFAILURE    -1
 #define READ_SIZE   512
 
-int     ReturnNLMVersionInfoFromFile( const char *,long *,long *,long *,long *,long *,long *,char *,char *);
+extern int     ReturnNLMVersionInfoFromFile( const char *,long *,long *,long *,long *,long *,long *,char *,char *);
 
 #endif

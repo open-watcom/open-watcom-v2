@@ -42,6 +42,18 @@
 #include "dbgscan.h"
 #include "numscan.h"
 #include "madinter.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgloc.h"
+#include "dbgsem.h"
+#include "dbgdot.h"
+#include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
 
@@ -69,83 +81,20 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern void             DoPlus( void );
-extern void             DoMinus( void );
-extern void             DoMul( void );
-extern void             DoDiv( void );
-extern void             DoMod( void );
-extern void             DoAnd( void );
-extern void             DoOr( void );
-extern void             DoXor( void );
-extern void             DoShift( void );
-extern void             DoAddr( void );
-extern void             DoFAddr( void );
-extern void             DoPoints( type_kind );
-extern void             DoConvert( void );
-extern void             DoLConvert( void );
-extern void             DoMakeComplex( void );
-extern void             DoStringConcat( void );
-extern void             DoField( void );
-extern void             DoScope( void );
-extern void             DoAssign( void );
-extern void             DoCall( unsigned int, bool );
-extern void             DupStack( void );
-extern void             SwapStack( int );
-extern unsigned         TstEQ( unsigned int );
-extern unsigned         TstLT( unsigned int );
-extern unsigned         TstTrue( unsigned int );
-extern unsigned         TstExist( unsigned int );
-extern void             PushName( lookup_item * );
-extern void             PushNum( long );
-extern void             PushNum64( unsigned_64 );
-extern void             PushRealNum( xreal );
-extern void             PushAddr( address );
-extern void             PushLocation( location_list *, dip_type_info * );
-extern void             PushString( void );
-extern void             PushType( type_handle * );
-extern void             PushInt( int );
-extern void             PopEntry( void );
-extern void             MakeAddr( void );
-extern void             ExprValue( stack_entry * );
-extern bool             NameResolve( stack_entry *, bool );
-extern void             LValue( stack_entry * );
-extern void             RValue( stack_entry * );
-extern void             LRValue( stack_entry * );
-extern void             ParseRegSet( bool, location_list *, dip_type_info * );
-extern void             MoveSP( int );
-extern stack_entry      *StkEntry( int );
-extern mod_handle       LookupModName( mod_handle, const char *, int );
 extern void             AddChar( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern void             FreePgmStack( bool );
-extern void             MarkArrayOrder( bool );
-extern void             StartSubscript( void );
-extern void             AddSubscript( void );
-extern void             EndSubscript( void );
-extern address          GetDotAddr( void );
-extern sym_list         *LookupSymList( symbol_source, void *, bool, lookup_item * );
-extern void             PurgeSymHandles( void );
-extern void             LocationAdd( location_list *, long );
-extern bool             IsInternalMod( mod_handle );
-extern sym_list         *Disambiguate( sym_list * );
-extern void             FreeSymHandle( sym_list * );
-extern image_entry      *ImagePrimary( void );
-extern mod_handle       LookupImageName( const char *, unsigned );
-
 
 extern stack_entry      *ExprSP;
-
 
 #define type_bitsII     int
 
 /* SSL Table Variables */
 static type_bitsII      Bits;
-static unsigned         Num;
-static unsigned         EvalSubstring;
+static int              Num;
+static bool             EvalSubstring;
 static struct {
     lookup_item         li;
-    unsigned            multi_module    : 1;
-    unsigned            any_image       : 1;
+    bool                multi_module    : 1;
+    bool                any_image       : 1;
     enum { GET_NAME, GET_OPERATOR, GET_LNUM }   kind;
 }                       CurrGet;
 
@@ -191,16 +140,20 @@ static stack_class TypeInfoToClass( dip_type_info *ti )
     switch( ti->kind ) {
     case TK_INTEGER:
         c = STK_INT;
-        if( ti->modifier == TM_UNSIGNED ) c |= STK_UNSIGNED;
-        if( ti->size == 4 ) c |= STK_LONG;
+        if( ti->modifier == TM_UNSIGNED )
+            c |= STK_UNSIGNED;
+        if( ti->size == 4 )
+            c |= STK_LONG;
         break;
     case TK_POINTER:
         c = STK_FAR_PTR;
-        if( ti->size == 6 ) c |= STK_LONG;
+        if( ti->size == 6 )
+            c |= STK_LONG;
         break;
     case TK_ADDRESS:
         c = STK_ADDR;
-        if( ti->size == 6 ) c |= STK_LONG;
+        if( ti->size == 6 )
+            c |= STK_LONG;
         break;
     case TK_ARRAY:
         c = STK_ARRAY;
@@ -277,7 +230,8 @@ static void FillInDefaults( dip_type_info *info )
 
     switch( info->kind ) {
     case TK_INTEGER:
-        if( info->modifier == TM_NONE ) info->modifier = TM_SIGNED;
+        if( info->modifier == TM_NONE )
+            info->modifier = TM_SIGNED;
         if( info->size == 0 ) {
             if( ModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
@@ -304,7 +258,8 @@ static void FillInDefaults( dip_type_info *info )
                 }
             }
             if( info->size == 0 ) {
-                if( info->modifier == TM_NEAR ) mti.b.bits -= mti.a.seg.bits;
+                if( info->modifier == TM_NEAR )
+                    mti.b.bits -= mti.a.seg.bits;
                 info->size = mti.b.bits / BITS_PER_BYTE;
             }
         }
@@ -312,26 +267,23 @@ static void FillInDefaults( dip_type_info *info )
     }
 }
 
-static unsigned MechMisc( unsigned select, unsigned parm )
+static ssl_value MechMisc( unsigned select, ssl_value parm )
 {
     long                value;
-    unsigned            result = 0;
+    ssl_value           result;
     mad_type_info       mti;
 
+    result = 0;
     switch( select ) {
     case 0:
-        ExprAddrDepth += parm;
+        ExprAddrDepth += SSL2INT( parm );
         result = ExprAddrDepth;
         break;
     case 1:
-        if( _IsOn( SW_EXPR_IS_CALL ) && ExprAddrDepth == 0 ) {
-            result = TRUE;
-        } else {
-            result = FALSE;
-        }
+        result = ( _IsOn( SW_EXPR_IS_CALL ) && ExprAddrDepth == 0 );
         break;
     case 2:
-        SkipCount += parm;
+        SkipCount += SSL2INT( parm );
         break;
     case 3:
         result = SkipCount;
@@ -345,24 +297,21 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         CurrScan[ScanSavePtr++] = ScanPos();
         break;
     case 6:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 )
+            Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         ReScan( CurrScan[--ScanSavePtr] );
         break;
     case 7:
-        if( ScanSavePtr <= 0 ) Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
+        if( ScanSavePtr <= 0 )
+            Error( ERR_INTERNAL, LIT_ENG( ERR_TOO_MANY_SCANRESTORE ) );
         --ScanSavePtr;
         break;
     case 8:
-        if( parm ) {        /* start scan string */
-            scan_string = TRUE;
-            ReScan( ScanPos() );
-        } else {            /* end scan string */
-            scan_string = FALSE;
-            ReScan( ScanPos() );
-        }
+        scan_string = SSL2BOOL( parm );
+        ReScan( ScanPos() );
         break;
     case 9:
-        ReScan( ScanPos() + (int)parm );
+        ReScan( ScanPos() + SSL2INT( parm ) );
         break;
     case 10:
         AddChar();
@@ -371,16 +320,16 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         AddCEscapeChar();
         break;
     case 12:
-        AddActualChar( '\0' );
+        AddActualChar( NULLCHAR );
         break;
     case 13:
-        ScanCCharNum = parm;
+        ScanCCharNum = SSL2BOOL( parm );
         break;
     case 14:
         if( NestedCallLevel == MAX_NESTED_CALL - 1 ) {
             Error( ERR_NONE, LIT_ENG( ERR_TOO_MANY_CALLS ) );
         } else {
-            PgmStackUsage[ ++NestedCallLevel ] = 0;
+            PgmStackUsage[++NestedCallLevel] = 0;
         }
         break;
     case 15:
@@ -392,7 +341,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
             if( value < 0 || value >= ExprSP->info.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
-            LocationAdd( &ExprSP->v.string.loc, value*8 );
+            LocationAdd( &ExprSP->v.string.loc, value * 8 );
             ExprSP->info.size -= value;
             ExprSP->v.string.ss_offset = value;
         } else {
@@ -415,14 +364,15 @@ static unsigned MechMisc( unsigned select, unsigned parm )
         }
         break;
     case 17:
-        EvalSubstring = parm;
-        if( parm ) ExprSP->v.string.ss_offset = 0;
+        EvalSubstring = SSL2BOOL( parm );
+        if( EvalSubstring )
+            ExprSP->v.string.ss_offset = 0;
         break;
     case 18:
         result = EvalSubstring;
         break;
     case 19:
-        FreePgmStack( TRUE );
+        FreePgmStack( true );
         break;
     case 20:
         switch( parm ) { // nyi - begin temp
@@ -460,12 +410,12 @@ static unsigned MechMisc( unsigned select, unsigned parm )
             break;
         case SSL_32_BIT:
             GetMADTypeDefault( MTK_INTEGER, &mti );
-            result = (mti.b.bits >= 32);
+            result = ( mti.b.bits >= 32 );
             break;
         }
         break;
     case 23: // nyi - end temp
-        MarkArrayOrder( parm );
+        MarkArrayOrder( SSL2BOOL( parm ) );
         break;
     case 24:
         StartSubscript();
@@ -483,7 +433,7 @@ static unsigned MechMisc( unsigned select, unsigned parm )
 static bool UserType( type_handle *th )
 {
     unsigned            i;
-    unsigned            len;
+    size_t              len;
     sym_info            info;
 
 
@@ -494,8 +444,7 @@ static bool UserType( type_handle *th )
         ExprSP->v.li.type = ST_TYPE;
         for( i = 0; TagIds[i] != NULL; ++i ) {
             len = strlen( TagIds[i] );
-            if( len == ExprSP->v.li.name.len
-                && memcmp( ExprSP->v.li.name.start, TagIds[i], len ) == 0 ) {
+            if( len == ExprSP->v.li.name.len && memcmp( ExprSP->v.li.name.start, TagIds[i], len ) == 0 ) {
                 ExprSP->v.li.type = ST_STRUCT_TAG + i;
                 ExprSP->v.li.name.start = NamePos();
                 ExprSP->v.li.name.len = NameLen();
@@ -504,13 +453,16 @@ static bool UserType( type_handle *th )
         }
     }
     //NYI: end temp
-    NameResolve( ExprSP, TRUE );
-    if( !(ExprSP->flags & SF_SYM) ) return( FALSE );
-    if( ExprSP->th == NULL ) return( FALSE );
+    NameResolve( ExprSP, true );
+    if( (ExprSP->flags & SF_SYM) == 0 )
+        return( false );
+    if( ExprSP->th == NULL )
+        return( false );
     SymInfo( ExprSP->v.sh, ExprSP->lc, &info );
-    if( info.kind != SK_TYPE ) return( FALSE );
+    if( info.kind != SK_TYPE )
+        return( false );
     HDLAssign( type, th, ExprSP->th );
-    return( TRUE );
+    return( true );
 }
 
 static void PushBaseSize( void )
@@ -596,14 +548,15 @@ static void DoMinusScaled( void )
     DoMinus();
 }
 
-static unsigned MechDo( unsigned select, unsigned parm )
+static ssl_value MechDo( unsigned select, ssl_value parm )
 {
     unsigned long       size;
-    unsigned            result = 0;
+    ssl_value           result;
     DIPHDL( type, th );
     dip_type_info       info;
     mad_type_info       mti;
 
+    result = 0;
     switch( select ) {
     case 0:
         DoAssign();
@@ -643,7 +596,7 @@ static unsigned MechDo( unsigned select, unsigned parm )
         DoField();
         break;
     case 12:
-        DoCall( Num, parm );
+        DoCall( Num, SSL2BOOL( parm ) );
         break;
     case 13:
         DoConvert();
@@ -655,16 +608,16 @@ static unsigned MechDo( unsigned select, unsigned parm )
         MakeAddr();
         break;
     case 16:
-        result = TstEQ( parm );
+        result = ( TstEQ( SSL2INT( parm ) ) != 0 );
         break;
     case 17:
-        result = TstLT( parm );
+        result = ( TstLT( SSL2INT( parm ) ) != 0 );
         break;
     case 18:
-        result = TstTrue( parm );
+        result = ( TstTrue( SSL2INT( parm ) ) != 0 );
         break;
     case 19:
-        result = TstExist( parm );
+        result = ( TstExist( SSL2INT( parm ) ) != 0 );
         break;
     case 20:
         size = ExprSP->info.size;
@@ -723,10 +676,10 @@ static unsigned MechDo( unsigned select, unsigned parm )
         PushType( th );
         break;
     case 31:
-        if( parm ) {
+        if( SSL2BOOL( parm ) ) {
             /* file scope */
             if( ExprSP->flags & SF_NAME ) {
-                ExprSP->v.li.file_scope = TRUE;
+                ExprSP->v.li.file_scope = true;
             } else {
                 Error( ERR_LOC, LIT_ENG( ERR_WANT_NAME ) );
             }
@@ -746,7 +699,8 @@ struct internal_mod {
 
 OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
 {
-    if( !IsInternalMod( mh ) ) return( WR_CONTINUE );
+    if( !IsInternalMod( mh ) )
+        return( WR_CONTINUE );
     ((struct internal_mod *)d)->mh = mh;
     return( WR_STOP );
 }
@@ -771,11 +725,11 @@ static void BasicType( unsigned basic_type )
     PushType( th );
 }
 
-static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
+static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
 {
     location_list       ll;
     dip_type_info       ti;
-    unsigned            result;
+    ssl_value           result;
     const static unsigned       TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),
         TI_CREATE( TK_INTEGER,  TM_UNSIGNED,     1 ),
@@ -790,37 +744,36 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         TI_CREATE( TK_COMPLEX,  TM_NONE,        16 ),
     };
 
-    result = FALSE;
+    result = 0;
     switch( select ) {
     case 0:
-        PushInt( parm );
+        PushInt( SSL2INT( parm ) );
         break;
     case 1:
         PushAddr( GetDotAddr() );
         break;
     case 2:
-        ParseRegSet( TRUE, &ll, &ti );
+        ParseRegSet( true, &ll, &ti );
         if( ti.size != 0 ) {
-            if( ti.kind == TK_NONE ) Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
+            if( ti.kind == TK_NONE )
+                Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             PushLocation( &ll, &ti );
-            result = TRUE;
+            result = true;
         }
         break;
     case 3:
         if( CurrToken == T_INT_NUM ) {
             PushNum64( IntNumVal() );
             Scan();
-            result = TRUE;
+            result = true;
         } else if( CurrToken == T_REAL_NUM ) {
             PushRealNum( RealNumVal() );
             Scan();
-            result = TRUE;
-        } else {
-            result = FALSE;
+            result = true;
         }
         break;
     case 4:
-        BasicType( TypeTbl[ parm ] );
+        BasicType( TypeTbl[parm] );
         break;
     case 5:
         DupStack();
@@ -832,19 +785,16 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
         PushString();
         break;
     case 8:
-        /* here because old debuggers will always return FALSE */
-        switch( parm & SSL_VERSION_MAJOR_MASK ) {
-        case SSL_VERSION_MAJOR_CURR:
+        /* here because old debuggers will always return false */
+        if( (parm & SSL_VERSION_MAJOR_MASK) != SSL_VERSION_MAJOR_CURR ) {
             break;
-        default:
-            return( FALSE );
         }
-        #if SSL_VERSION_MINOR_CURR != 0
-            if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
-                return( FALSE );
-            }
-        #endif
-        result = TRUE;
+#if SSL_VERSION_MINOR_CURR != 0
+        if( (parm & SSL_VERSION_MINOR_MASK) > SS_MINOR_VERSION_CURR ) {
+            break;
+        }
+#endif
+        result = true;
         break;
     case 9:
         BasicType( parm );
@@ -853,44 +803,45 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
     return( result );
 }
 
-static unsigned MechStack( unsigned select, unsigned parm )
+static ssl_value MechStack( unsigned select, ssl_value parm )
 {
-    unsigned    result = 0;
+    ssl_value   result;
     stack_entry *entry;
     sym_info    info;
 
+    result = 0;
     switch( select ) {
     case 0:
-        SwapStack( parm );
+        SwapStack( SSL2INT( parm ) );
         break;
     case 1:
-        MoveSP( parm );
+        MoveSP( SSL2INT( parm ) );
         break;
     case 2:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
         result = TypeInfoToClass( &entry->info ) & (BASE_TYPE | STK_UNSIGNED);
         break;
     case 3:
-        ExprValue( StkEntry( parm ) );
+        ExprValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 4:
-        LValue( StkEntry( parm ) );
+        LValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 5:
-        RValue( StkEntry( parm ) );
+        RValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 6:
-        LRValue( StkEntry( parm ) );
+        LRValue( StkEntry( SSL2INT( parm ) ) );
         break;
     case 7:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
         result = TI_CREATE( entry->info.kind, TM_NONE, 0 );
         break;
     case 8:
-        entry = StkEntry( parm );
-        NameResolve( entry, FALSE );
+        entry = StkEntry( SSL2INT( parm ) );
+        NameResolve( entry, false );
         if( entry->flags & SF_SYM ) {
             SymInfo( entry->v.sh, entry->lc, &info );
             result = info.kind;
@@ -899,11 +850,11 @@ static unsigned MechStack( unsigned select, unsigned parm )
         }
         break;
     case 9:
-        entry = StkEntry( parm );
-        result = NameResolve( entry, FALSE );
+        entry = StkEntry( SSL2INT( parm ) );
+        result = NameResolve( entry, false );
         break;
     case 10:
-        entry = StkEntry( parm );
+        entry = StkEntry( SSL2INT( parm ) );
         if( entry->flags & SF_NAME ) {
             result = 0;
         } else if( entry->flags & SF_SYM ) {
@@ -918,31 +869,32 @@ static unsigned MechStack( unsigned select, unsigned parm )
     return( result );
 }
 
-static unsigned MechNum( unsigned select, unsigned parm )
+static ssl_value MechNum( unsigned select, ssl_value parm )
 {
     switch( select ) {
     case 0:
-        Num = parm;
+        Num = SSL2INT( parm );
         break;
     case 1:
-        Num += parm;
+        Num += SSL2INT( parm );
         break;
     case 2:
         PushInt( Num );
         break;
     case 3:
         /* need to check that top stack entry is an integer value here? */
-        Num = U32FetchTrunc( ExprSP->v.uint );
+        Num = I32FetchTrunc( ExprSP->v.sint );
         PopEntry();
         break;
     }
     return( 0 );
 }
 
-static unsigned MechBits( unsigned select, unsigned parm )
+static ssl_value MechBits( unsigned select, ssl_value parm )
 {
-    unsigned result = 0;
+    ssl_value   result;
 
+    result = 0;
     switch( select ) {
     case 0:
         Bits = parm;
@@ -951,11 +903,11 @@ static unsigned MechBits( unsigned select, unsigned parm )
         result = Bits;
         break;
     case 2:
-        result = (Bits & parm) != 0;
+        result = ( (Bits & parm) != 0 );
         Bits |= parm;
         break;
     case 3:
-        result = (Bits & parm) == 0;
+        result = ( (Bits & parm) == 0 );
         Bits &= parm;
         break;
     }
@@ -968,8 +920,8 @@ typedef struct cue_find {
     cue_fileid          id;
     const char          *name;
     unsigned            len;
-    unsigned            ambig           : 1;
-    unsigned            found_a_file    : 1;
+    bool                ambig           : 1;
+    bool                found_a_file    : 1;
     enum {
         CMP_NONE,
         CMP_INSENSITIVE,
@@ -986,7 +938,8 @@ static walk_result FindCue( cue_handle *ch, void *d )
 
 
     len = CueFile( ch, file, sizeof( file ) );
-    if( len < cd->len ) return( WR_CONTINUE );
+    if( len < cd->len )
+        return( WR_CONTINUE );
     if( memcmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
         match = CMP_SENSITIVE;
     } else if( memicmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
@@ -997,9 +950,9 @@ static walk_result FindCue( cue_handle *ch, void *d )
     if( match > cd->match ) {
         cd->match = match;
         cd->id = CueFileId( ch );
-        cd->ambig = FALSE;
+        cd->ambig = false;
     } else if( match == cd->match ) {
-        cd->ambig = TRUE;
+        cd->ambig = true;
     }
     return( WR_CONTINUE );
 }
@@ -1011,16 +964,17 @@ static walk_result FindModCue( mod_handle mod, void *d )
     unsigned long       curr_line;
 
     fd->id = 0;
-    fd->ambig = FALSE;
+    fd->ambig = false;
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
         WalkFileList( mod, FindCue, fd );
-        if( fd->id == 0 ) return( WR_CONTINUE );
+        if( fd->id == 0 )
+            return( WR_CONTINUE );
         if( fd->ambig ) {
             Error( ERR_NONE, LIT_ENG( ERR_AMBIG_SRC_FILE ), fd->name, fd->len );
         }
     }
-    fd->found_a_file = TRUE;
+    fd->found_a_file = true;
     switch( LineCue( mod, fd->id, CurrGet.li.name.len, 0, ch ) ) {
     case SR_EXACT:
         HDLAssign( cue, fd->best_ch, ch );
@@ -1043,7 +997,7 @@ static search_result FindACue( cue_handle *ch )
 {
     cue_find    data;
 
-    data.found_a_file = FALSE;
+    data.found_a_file = false;
     data.best_line = 0;
     data.best_ch = ch;
     data.name = CurrGet.li.source.start;
@@ -1057,7 +1011,8 @@ static search_result FindACue( cue_handle *ch )
             return( SR_FAIL );
         }
     } else {
-        if( CurrGet.li.mod == NO_MOD ) CurrGet.li.mod = CodeAddrMod;
+        if( CurrGet.li.mod == NO_MOD )
+            CurrGet.li.mod = CodeAddrMod;
         if( FindModCue( CurrGet.li.mod, &data ) == WR_FAIL ) {
             return( SR_FAIL );
         }
@@ -1065,12 +1020,14 @@ static search_result FindACue( cue_handle *ch )
     if( !data.found_a_file ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_SRC_FILE ), data.name, data.len );
     }
-    if( data.best_line == 0 ) return( SR_NONE );
-    if( data.best_line == CurrGet.li.name.len ) return( SR_EXACT );
+    if( data.best_line == 0 )
+        return( SR_NONE );
+    if( data.best_line == CurrGet.li.name.len )
+        return( SR_EXACT );
     return( SR_CLOSEST );
 }
 
-static bool ClosestLineOk = FALSE;
+static bool ClosestLineOk = false;
 
 bool SemAllowClosestLine( bool ok )
 {
@@ -1079,28 +1036,24 @@ bool SemAllowClosestLine( bool ok )
     return( old );
 }
 
-static unsigned MechGet( unsigned select, unsigned parm )
+static ssl_value MechGet( unsigned select, ssl_value parm )
 {
-    unsigned    result;
+    ssl_value   result;
     DIPHDL( cue, ch );
     sym_list    *sym;
     address     addr;
-    unsigned    old;
+    mad_radix   old_radix;
     const char  *save_scan;
     const char  *mod_name;
     unsigned    mod_len;
-    unsigned    mod_spec_token;
+    tokens      mod_spec_token;
 
-    result = FALSE;
+    result = 0;
     switch( select ) {
     case 0: /* init */
         memset( &CurrGet, 0, sizeof( CurrGet ) );
         CurrGet.li.mod = NO_MOD;
-        if( _IsOn( SW_CASE_SENSITIVE ) ) {
-            CurrGet.li.case_sensitive = TRUE;
-        } else {
-            CurrGet.li.case_sensitive = FALSE;
-        }
+        CurrGet.li.case_sensitive = _IsOn( SW_CASE_SENSITIVE );
         break;
     case 1: /* fini */
         switch( CurrGet.kind ) {
@@ -1116,7 +1069,9 @@ static unsigned MechGet( unsigned select, unsigned parm )
             case SR_EXACT:
                 break;
             case SR_CLOSEST:
-                if( ClosestLineOk ) break;
+                if( ClosestLineOk )
+                    break;
+                /* fall down */
             default:
                 Error( ERR_NONE, LIT_ENG( ERR_NO_CODE ), CurrGet.li.name.len );
             }
@@ -1127,7 +1082,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
     case 2: /* mod curr */
     case 3: /* mod name lookup */
         //NYI: temporary gunk
-        CurrGet.multi_module = TRUE;
+        CurrGet.multi_module = true;
         CurrGet.li.mod = NO_MOD;
         save_scan = ScanPos();
         ReScan( "@" );
@@ -1154,10 +1109,9 @@ static unsigned MechGet( unsigned select, unsigned parm )
                     #define ANY_IMAGE_NAME_LEN  (sizeof(ANY_IMAGE_NAME)-1)
                     if( CurrGet.li.name.len != ANY_IMAGE_NAME_LEN
                       || memicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
-                        Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start,
-                                              CurrGet.li.name.len );
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start, CurrGet.li.name.len );
                     } else {
-                        CurrGet.any_image = TRUE;
+                        CurrGet.any_image = true;
                     }
                 }
             }
@@ -1170,20 +1124,19 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrGet.li.name.start != NULL ) {
             CurrGet.li.mod = LookupModName( CurrGet.li.mod, CurrGet.li.name.start, CurrGet.li.name.len );
             if( CurrGet.li.mod == NO_MOD ) {
-                Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start,
-                                      CurrGet.li.name.len );
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MODULE ), CurrGet.li.name.start, CurrGet.li.name.len );
             }
-            CurrGet.multi_module = FALSE;
+            CurrGet.multi_module = false;
         } else if( !CurrGet.any_image && CurrGet.li.mod == NO_MOD ) {
             CurrGet.li.mod = CodeAddrMod;
-            CurrGet.multi_module = FALSE;
+            CurrGet.multi_module = false;
         }
         break;
     case 4: /* file scope */
-        CurrGet.li.file_scope = TRUE;
+        CurrGet.li.file_scope = true;
         break;
     case 5: /* given scope */
-        CurrGet.li.file_scope = FALSE;
+        CurrGet.li.file_scope = false;
         break;
     case 6: /* scope lookup */
         CurrGet.li.scope.start = CurrGet.li.name.start;
@@ -1195,7 +1148,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
             CurrGet.li.name.start = NamePos();
             CurrGet.li.name.len   = NameLen();
             Scan();
-            result = TRUE;
+            result = true;
         }
         break;
     case 8: /* get operator name */
@@ -1214,13 +1167,13 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrToken == T_INT_NUM ) {
             unsigned_64         tmp;
 
-            result = TRUE;
+            result = true;
             CurrGet.kind = GET_LNUM;
-            old = SetCurrRadix( 10 );
+            old_radix = SetCurrRadix( 10 );
             tmp = IntNumVal();
             CurrGet.li.name.len = U32FetchTrunc( tmp );
             Scan();
-            SetCurrRadix( old );
+            SetCurrRadix( old_radix );
         }
         break;
     case 10: /* GetDtorName >>bool */
@@ -1230,11 +1183,11 @@ static unsigned MechGet( unsigned select, unsigned parm )
             CurrGet.li.name.len   = NameLen();
             CurrGet.li.type = ST_DESTRUCTOR;
             addr = Context.execution;
-            sym = LookupSymList( SS_SCOPED, &addr, FALSE, &CurrGet.li );
+            sym = LookupSymList( SS_SCOPED, &addr, false, &CurrGet.li );
             if( sym != NULL ) {
                 PurgeSymHandles();
                 Scan();
-                result = TRUE;
+                result = true;
             } else {
                 CurrGet.li.type = ST_NONE;
             }
@@ -1246,10 +1199,10 @@ static unsigned MechGet( unsigned select, unsigned parm )
     case 12: /* GetQueryName >>bool */
         CurrGet.kind = GET_NAME;
         addr = Context.execution;
-        sym = LookupSymList( SS_SCOPED, &addr, FALSE, &CurrGet.li );
+        sym = LookupSymList( SS_SCOPED, &addr, false, &CurrGet.li );
         if( sym != NULL ) {
             PurgeSymHandles();
-            result = TRUE;
+            result = true;
         } else {
             CurrGet.li.type = ST_NONE;
         }
@@ -1258,8 +1211,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
         if( CurrGet.li.scope.len == 0 ) {
             CurrGet.li.scope = CurrGet.li.name;
         } else {
-            CurrGet.li.scope.len = (CurrGet.li.name.start-CurrGet.li.scope.start)
-                                        + CurrGet.li.name.len;
+            CurrGet.li.scope.len = ( CurrGet.li.name.start - CurrGet.li.scope.start ) + CurrGet.li.name.len;
         }
         break;
     }
@@ -1267,11 +1219,12 @@ static unsigned MechGet( unsigned select, unsigned parm )
 }
 
 
-unsigned SSLSemantic( int action, unsigned parm )
+ssl_value SSLSemantic( ssl_value action, ssl_value parm )
 {
-    unsigned    result = 0;
+    ssl_value   result;
     unsigned    select;
 
+    result = 0;
     select = action & SEM_SELECTOR;
     switch( action & SEM_MECHANISM ) {
     case SEM_MISC:
@@ -1300,13 +1253,15 @@ unsigned SSLSemantic( int action, unsigned parm )
 }
 
 
-int SSLError( unsigned class, unsigned error )
+int SSLError( ssl_error_class class, ssl_value error )
 {
     switch( class ) {
-    case 1: /* syntax */
-        Recog( error ); /* cause error */
+    case TERM_NORMAL:
         break;
-    case 2: /* error stream */
+    case TERM_SYNTAX: /* syntax */
+        Recog( (tokens)error ); /* cause error */
+        break;
+    case TERM_ERROR: /* error stream */
         switch( error ) {
         case 0:
             Error( ERR_NONE, LIT_ENG( ERR_DUPLICATE_TYPE_SPEC ) );
@@ -1334,10 +1289,10 @@ int SSLError( unsigned class, unsigned error )
             break;
         }
         break;
-    case 3: /* stack overflow */
+    case TERM_STK_OVERFLOW: /* stack overflow */
         Error( ERR_LOC, LIT_ENG( ERR_EXPR_STACK_OVER ) );
         break;
-    case 4: /* kill (error in SSL file) */
+    case TERM_KILL: /* kill (error in SSL file) */
         Error( ERR_INTERNAL, LIT_ENG( ERR_PARSE_FILE ) );
         break;
     }
@@ -1345,18 +1300,18 @@ int SSLError( unsigned class, unsigned error )
 }
 
 
-void SSLOutToken( unsigned token )
+void SSLOutToken( tokens token )
 {
     token = token;
 }
 
-unsigned SSLNextToken( void )
+tokens SSLNextToken( void )
 {
     Scan();
     return( CurrToken );
 }
 
-unsigned SSLCurrToken( void )
+tokens SSLCurrToken( void )
 {
     return( CurrToken );
 }

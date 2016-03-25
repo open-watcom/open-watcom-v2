@@ -4,6 +4,8 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
+additional_cleanup = *.gc
+
 exename_i86 = wfc
 exename_386 = wfc386
 exename_axp = wfcaxp
@@ -60,7 +62,7 @@ version_res_exe_nt_x64 = exever.res
 verrc_exe = $(target_exe)
 !include verrc.mif
 
-$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
     $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
 !else
@@ -74,9 +76,6 @@ $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(libs) $(version_res_
     $(wstrip) -q -a -r $@ . errmsg.res
 
 option.obj : option.c optinfo.h
-
-errmsg.res : ../../c/errmsg.rc ../../h/errmsgi.rc ../../h/errmsg3.rc ../../h/errcod.h ../../h/errcodi.h ../../h/errcod3.h
-    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
@@ -92,3 +91,20 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
 
 msg.gh : $(wasm_dir)/h/asmshare.msg
     *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+
+errsrc_opt_i86 = eoic
+errsrc_opt_386 = eo3c
+errsrc_opt_axp = eorc
+
+jerrsrc_opt_i86 = joic
+jerrsrc_opt_386 = jo3c
+jerrsrc_opt_axp = jorc
+
+errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
+    errsrc $[@ $(errsrc_opt_$(target_cpu))
+
+jerrmsg.grc:  ../../../h/error.msg
+    errsrc $[@ $(jerrsrc_opt_$(target_cpu))
+
+errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

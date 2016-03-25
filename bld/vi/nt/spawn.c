@@ -57,7 +57,7 @@ long MySpawn( const char *cmd )
     PROCESS_INFORMATION pinfo;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0x00;
+    cmds.cmd[cmds.len] = '\0';
     strcat( path, " " );
     strcat( path, cmds.cmd );
 
@@ -67,8 +67,10 @@ long MySpawn( const char *cmd )
     SetConsoleMode( inph, mode );
 
     memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.wShowWindow = SW_NORMAL;
     sinfo.cb = sizeof( sinfo );
+    // set ShowWindow default value for nCmdShow parameter
+    sinfo.dwFlags = STARTF_USESHOWWINDOW;
+    sinfo.wShowWindow = SW_SHOWNORMAL;
     if( !CreateProcess( NULL, path, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo ) ) {
         return( -1L );
     } else {

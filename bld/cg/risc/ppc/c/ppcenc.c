@@ -36,6 +36,8 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "cgaux.h"
+#include "ocentry.h"
+#include "optmain.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
 #include "data.h"
@@ -301,6 +303,21 @@ extern  type_length     TempLocation( name *temp )
 }
 
 
+static  void    GenNoReturn( void ) {
+/************************************
+    Generate a noreturn instruction (pseudo instruction)
+*/
+
+    any_oc      oc;
+
+    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 0;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
+    InputOC( &oc );
+}
+
 static  void    doCall( instruction *ins )
 /****************************************/
 {
@@ -313,6 +330,9 @@ static  void    doCall( instruction *ins )
     code = FindAuxInfoSym( sym, CALL_BYTES );
     if( code != NULL ) {
         ObjBytes( code->data, code->length );
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+            GenNoReturn();
+        }
     } else {
         lbl = symLabel( ins->operands[CALL_OP_ADDR] );
         lbl = GetWeirdPPCDotDotLabel( lbl );

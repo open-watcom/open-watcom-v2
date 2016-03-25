@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,6 @@ _WCRTLINK int sigaddset( sigset_t *__set, int signum )
 {
     unsigned long sig = signum - 1;
     __set->sig[sig / 32] |= (1 << (sig % 32));
-    return 0;
+    return( 0 );
 }
 

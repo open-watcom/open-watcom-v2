@@ -52,12 +52,13 @@ static void tix_error( const char *str )
 }
 
 
-static void TrieAdd( unsigned code, char *input )
+static void trieAdd( unsigned code, const char *input )
 {
     fprintf( out_file, "0x%2.2x, 0x%2.2x,    ", code & 0xff, code >> 8 );
     for( ;; ) {
         fprintf( out_file, "0x%2.2x, ", *input );
-        if( *input == '\0' ) break;
+        if( *input == '\0' )
+            break;
         ++input;
     }
     fprintf( out_file, "\n" );
@@ -233,7 +234,7 @@ static tix_status do_parse()
                 if( tok != TT_CODE ) break;
                 strcat( input, buff );
             }
-            TrieAdd( code, input );
+            trieAdd( code, input );
         } else {
             tix_error( "unknown directive" );
             return( TIX_FAIL );

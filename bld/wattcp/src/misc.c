@@ -412,12 +412,14 @@ int __cdecl ffs (int val)
     return (0);
 
 #elif (DOSX) && !defined(OLD_WATCOMC)
-  return ((int __cdecl (*)())
-         "\x0F\xBC\x44\x24\4"    /*     bsf eax, [esp+4] */
-         "\x75\5"                /*     jnz @f           */
-         "\xB8\xFF\xFF\xFF\xFF"  /*     mov eax,-1       */
-         "\x40"                  /* @f: inc eax          */
-         "\xC3") (val);          /*     ret              */
+  __asm {
+         bsf eax, val
+         jnz short L1
+         or eax,-1
+     L1: inc eax
+         mov val,eax
+  }
+  return(val);
 #else
   return ffs_86 (val);
 #endif

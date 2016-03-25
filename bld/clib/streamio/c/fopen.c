@@ -46,13 +46,14 @@
 #include "defwin.h"
 #include "streamio.h"
 #include "thread.h"
+#include "openflag.h"
+
 
 #ifdef __UNIX__
     #define PMODE   (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 #else
     #define PMODE   (S_IREAD | S_IWRITE)
 #endif
-
 
 int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags )
 {
@@ -81,13 +82,13 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
      * The first character in modestr must be 'r', 'w', or 'a'.
      */
     switch( *modestr ) {
-    case 'r':
+    case STRING( 'r' ):
         flags |= _READ;
         break;
-    case 'w':
+    case STRING( 'w' ):
         flags |= _WRITE;
         break;
-    case 'a':
+    case STRING( 'a' ):
         flags |= _WRITE | _APPEND;
         break;
     default:
@@ -109,7 +110,7 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
      */
     while( (*modestr != NULLCHAR) && alive ) {
         switch( *modestr ) {
-        case '+':
+        case STRING( '+' ):
             if( gotplus ) {
                 alive = 0;
             } else {
@@ -117,14 +118,14 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
                 gotplus = 1;
             }
             break;
-        case 't':
+        case STRING( 't' ):
             if( gottextbin ) {
                 alive = 0;
             } else {
                 gottextbin = 1;
             }
             break;
-        case 'b':
+        case STRING( 'b' ):
             if( gottextbin ) {
                 alive = 0;
             } else {
@@ -135,7 +136,7 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
             }
             break;
 #ifndef __NETWARE__
-        case 'c':
+        case STRING( 'c' ):
             if( gotcommit ) {
                 alive = 0;
             } else {
@@ -143,7 +144,7 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
                 gotcommit = 1;
             }
             break;
-        case 'n':
+        case STRING( 'n' ):
             if( gotcommit ) {
                 alive = 0;
             } else {
@@ -163,7 +164,9 @@ int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflag
      */
 #ifndef __UNIX__
     if( !gottextbin ) {
-        if( _RWD_fmode == O_BINARY )  flags |= _BINARY;
+        if( _RWD_fmode == O_BINARY ) {
+            flags |= _BINARY;
+        }
     }
 #endif
 
@@ -187,8 +190,8 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
 
     /* we need the mode character to indicate if the original */
     /* intention is to open for read or for write */
-    mode = __F_NAME(tolower,towlower)( mode );
-    if( mode == 'r' ) {
+    mode = __F_NAME(tolower,towlower)( (UCHAR_TYPE)mode );
+    if( mode == STRING( 'r' ) ) {
         open_mode = O_RDONLY;
         if( file_flags & _WRITE ) {         /* if "r+" mode */
             open_mode = O_RDWR;
@@ -242,7 +245,7 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
 #if defined( __NT__ ) || defined( __OS2__ ) || defined( __UNIX__ )
     _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
 #endif
-    _FP_BASE(fp) = NULL;
+    _FP_BASE( fp ) = NULL;
     if( file_flags & _APPEND ) {
         fseek( fp, 0L, SEEK_END );
     }

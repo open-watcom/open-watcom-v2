@@ -36,12 +36,12 @@
 
 typedef struct {
     char        *name;
-    CMDID       id;
+    ctl_id      id;
     BOOL        sticky;
     char        *downname;
     HBITMAP     hbmp;
     HBITMAP     downbmp;
-    MSGID       tip_id;
+    msg_id      tip_id;
 } button;
 
 #define NONE                    NULL
@@ -57,12 +57,12 @@ typedef struct {
 
 typedef struct {
     int         name;
-    CMDID       id;
+    ctl_id      id;
     BOOL        sticky;
     int         downname;
     HBITMAP     hbmp;
     HBITMAP     downbmp;
-    MSGID       tip_id;
+    msg_id      tip_id;
 } button;
 
 #define NONE                    0

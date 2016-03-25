@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 #include "rcalloc0.h"
 #include "errors.h"
@@ -45,13 +46,13 @@ static void RCMemLayer0InitFreeList( FreeListInfo *freelist, size_t heapsize, si
 
     for( i = 0; i < blocks_per_heap - 1; i++ ) {
 #ifdef RCMEM_DEBUG
-        freelist->next = (char *)freelist + heapsize + 1 + sizeof( DebugMemInfo );
+        freelist->u.next = (FreeListInfo *)( freelist->u.data + heapsize + 1 );
 #else
-        freelist->next = (char *)freelist + heapsize;
+        freelist->u.next = (FreeListInfo *)( freelist->u.data + heapsize );
 #endif
-        freelist = (FreeListInfo *)freelist->next;
+        freelist = freelist->u.next;
     }
-    freelist->next = NULL;
+    freelist->u.next = NULL;
 }
 
 static HeapList *RCMemLayer0AddToHeap( size_t heapsize, size_t blocks_per_heap )
@@ -59,17 +60,16 @@ static HeapList *RCMemLayer0AddToHeap( size_t heapsize, size_t blocks_per_heap )
 {
     FreeListInfo    *freelist;
     HeapList        *data;
-
-#ifdef RCMEM_DEBUG
     size_t          allocsize;
 
-    /* Add 1 in order to store endbyte */
-
-    allocsize = ( heapsize + 1 + sizeof( DebugMemInfo ) ) * blocks_per_heap + sizeof( HeapList );
-    data = malloc( allocsize );
-    memset( data, RCMEM_GARBAGEBYTE, allocsize );
+#ifdef RCMEM_DEBUG
+    allocsize = ( sizeof( DebugMemInfo ) + heapsize + 1 ) * blocks_per_heap + sizeof( HeapList );
 #else
-    data = malloc( heapsize * blocks_per_heap + sizeof( HeapList ) );
+    allocsize = heapsize * blocks_per_heap + sizeof( HeapList );
+#endif
+    data = malloc( allocsize );
+#ifdef RCMEM_DEBUG
+    memset( data, RCMEM_GARBAGEBYTE, allocsize );
 #endif
     if( data == NULL ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
@@ -107,50 +107,42 @@ extern void *RCMemLayer0Malloc( HeapHandle *heap )
 {
     HeapList           *newheap;
     FreeListInfo       *freemem;
-#ifdef RCMEM_DEBUG
-    DebugMemInfo       *debugmem;
-#endif
 
     if( heap->freeList == NULL ) {
         newheap = RCMemLayer0AddToHeap( heap->heapsize, heap->blocksize );
         newheap->next = heap->list;
         heap->list = newheap;
-        heap->freeList = (char *)newheap + sizeof( HeapList );
+        heap->freeList = (FreeListInfo *)( (char *)newheap + sizeof( HeapList ) );
     }
-    freemem = (FreeListInfo *)heap->freeList;
-    heap->freeList = (void *)( freemem->next );
+    freemem = heap->freeList;
+    heap->freeList = freemem->u.next;
 #ifdef RCMEM_DEBUG
-    debugmem = (DebugMemInfo *)freemem;
-    debugmem->size = size;
-    debugmem->startbyte = RCMEM_STARTBYTE;
-
-    freemem = (FreeListInfo *)((char *)freemem + sizeof( DebugMemInfo ) );
-    *((unsigned char *)freemem + size ) = RCMEM_ENDBYTE;
+    freemem->dbg.size = size;
+    freemem->dbg.startbyte = RCMEM_STARTBYTE;
+    freemem->u.data[size] = RCMEM_ENDBYTE;
 #endif
-
-    return( freemem );
+    return( freemem->u.data );
 }
 
 extern void RCMemLayer0Free( void *mem, HeapHandle *heap )
 /********************************************************/
 {
-#ifdef RCMEM_DEBUG
-    DebugMemInfo        *debugmem;
+    FreeListInfo        *freemem;
 
+#ifdef RCMEM_DEBUG
     if( mem == NULL ) {
         RcMsgFprintf( stderr, NULL, "Free NULL pointer\n" );
     }
-    debugmem = (DebugMemInfo *)( (char *)mem - sizeof( DebugMemInfo ) );
-    if( *((unsigned char *)mem + debugmem->size ) != RCMEM_ENDBYTE ) {
+#endif
+    freemem = (FreeListInfo *)( (char *)mem - offsetof( FreeListInfo, u.data ) );
+#ifdef RCMEM_DEBUG
+    if( ((unsigned char *)mem)[freemem->dbg.size] != RCMEM_ENDBYTE ) {
         RcMsgFprintf( stderr, NULL, "(%x) Memory Overrun\n", mem );
     }
-
-    debugmem->startbyte = !RCMEM_STARTBYTE;
-    mem = (unsigned char *)mem - sizeof( DebugMemInfo );
+    freemem->dbg.startbyte = !RCMEM_STARTBYTE;
 #endif
-
-    *( (char **)mem ) = heap->freeList;
-    heap->freeList = mem;
+    freemem->u.next = heap->freeList;
+    heap->freeList = freemem;
 }
 
 #ifdef RCMEM_DEBUG
@@ -158,20 +150,16 @@ extern void RCMemLayer0Free( void *mem, HeapHandle *heap )
 static void RCMemLayer0CheckUnfreed( HeapHandle *heap, char *freelist )
 /*********************************************************************/
 {
-#ifdef RCMEM_DEBUG
-    DebugMemInfo    *debugmem;
-#endif
     size_t          i;
 
     for( i = 0; i < heap->blocksize; i++ ) {
-        debugmem = (DebugMemInfo *)freelist;
-        if( debugmem->startbyte == RCMEM_STARTBYTE ) {
+        if( freelist->dbg.startbyte == RCMEM_STARTBYTE ) {
             RcMsgFprintf( stderr, NULL,
                         "Unfreed Memory Detected (0x%x bytes at 0x%x)\n",
-                        debugmem->size, freelist + sizeof( DebugMemInfo ) );
-            debugmem->startbyte = !RCMEM_STARTBYTE;
+                        freelist->dbg.size, freelist->u.data );
+            freelist->dbg.startbyte = !RCMEM_STARTBYTE;
         }
-        freelist += heap->heapsize + sizeof( DebugMemInfo ) + 1;
+        freelist += sizeof( DebugMemInfo ) + heap->heapsize + 1;
     }
 }
 

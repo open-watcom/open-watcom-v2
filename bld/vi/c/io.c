@@ -34,6 +34,9 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+#include <fnmatch.h>
+#endif
 
 #include "clibext.h"
 
@@ -43,7 +46,7 @@ static int closeAFile( void );
 /*
  * FileExists - test if a file exists
  */
-vi_rc FileExists( char *name )
+vi_rc FileExists( const char *name )
 {
     int     i, en;
     vi_rc   rc;
@@ -105,7 +108,7 @@ vi_rc FileExists( char *name )
 /*
  * FileOpen - open a file, conditional on exist flag
  */
-vi_rc FileOpen( char *name, bool existflag, int stat, int attr, int *_handle )
+vi_rc FileOpen( const char *name, bool existflag, int stat, int attr, int *_handle )
 {
     int         handle, en;
     vi_rc       rc;
@@ -200,7 +203,7 @@ FILE *GetFromEnvAndOpen( const char *path )
     char        tmppath[FILENAME_MAX];
 
     GetFromEnv( path, tmppath );
-    if( tmppath[0] != 0 ) {
+    if( tmppath[0] != '\0' ) {
         return( fopen( tmppath, "r" ) );
     }
     return( NULL );
@@ -213,7 +216,7 @@ FILE *GetFromEnvAndOpen( const char *path )
 void GetFromEnv( const char *what, char *path )
 {
     _searchenv( what, "EDPATH", path );
-    if( path[0] != 0 ) {
+    if( path[0] != '\0' ) {
         return;
     }
     _searchenv( what, "PATH", path );
@@ -238,12 +241,12 @@ void VerifyTmpDir( void )
         i = strlen( EditVars.TmpDir ) - 1;
         if( EditVars.TmpDir[i] == FILE_SEP && i > 2 ) {
             /* this sucks -- we need the '\' IFF it is [drive]:\ */
-            EditVars.TmpDir[i] = 0;
+            EditVars.TmpDir[i] = '\0';
         }
         if( IsDirectory( EditVars.TmpDir ) ) {
             /* strip the following file_sep char for [drive]:\ */
             if( EditVars.TmpDir[i] == FILE_SEP ) {
-                EditVars.TmpDir[i] = 0;
+                EditVars.TmpDir[i] = '\0';
             }
             return;
         }
@@ -254,13 +257,13 @@ void VerifyTmpDir( void )
             char buf[FILENAME_MAX];
             strcpy( buf, env_tmpdir );
             buf[strlen( buf ) - 1] = '\0';
-            AddString2( &EditVars.TmpDir, buf );
+            ReplaceString( &EditVars.TmpDir, buf );
         } else {
-            AddString2( &EditVars.TmpDir, env_tmpdir );
+            ReplaceString( &EditVars.TmpDir, env_tmpdir );
         }
     } else {
         // _mkdir( altTmpDir, DIRFLAGS );
-        AddString2( &EditVars.TmpDir, altTmpDir );
+        ReplaceString( &EditVars.TmpDir, altTmpDir );
     }
 
 } /* VerifyTmpDir */
@@ -268,50 +271,24 @@ void VerifyTmpDir( void )
 /*
  * MakeTmpPath - make a path to a file from TmpDir
  */
-void MakeTmpPath( char *out, char *in )
+char *MakeTmpPath( char *out, const char *in )
 {
-    out[0] = 0;
+    char    *p;
+
+    out[0] = '\0';
     if( EditVars.TmpDir == NULL ) {
         char *env_tmpdir = getenv( "tmp" );
         if( env_tmpdir != NULL ) {
-            StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
+            p = StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
         } else {
-            StrMerge( 3, out, altTmpDir, FILE_SEP_STR, in );
+            p = StrMerge( 3, out, altTmpDir, FILE_SEP_STR, in );
         }
     } else {
-        StrMerge( 3, out, EditVars.TmpDir, FILE_SEP_STR, in );
+        p = StrMerge( 3, out, EditVars.TmpDir, FILE_SEP_STR, in );
     }
+    return( p );
 
 } /* MakeTmpPath */
-
-/*
- * TmpFileOpen - open a tmp file
- */
-vi_rc TmpFileOpen( char *inname, int *_handle )
-{
-    char        file[FILENAME_MAX];
-
-    tmpnam( inname );
-    MakeTmpPath( file, inname );
-    return( FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, _handle ) );
-
-} /* TmpFileOpen */
-
-/*
- * TmpFileClose - close and delete a tmp file
- */
-void TmpFileClose( int handle, char *name )
-{
-    char        file[FILENAME_MAX];
-
-    if( handle < 0 ) {
-        return;
-    }
-    close( handle );
-    MakeTmpPath( file, name );
-    remove( file );
-
-} /* TmpFileClose */
 
 /*
  * FileLower - change case of the file name
@@ -331,40 +308,11 @@ void FileLower( char *str )
  */
 bool FileTemplateMatch( const char *name, const char *template )
 {
-    bool    inExtension = false;
-
-    for( ;; ) {
-        if( *template == '*' ) {
-            if( !inExtension ) {
-                while( *(name + 1) && *(name + 1) != '.' ) {
-                    name++;
-                }
-                inExtension = true;
-            } else {
-                return( true );
-            }
-#ifndef __UNIX__
-        } else if( *template != '?' && tolower( *template ) != tolower( *name ) ) {
+#ifdef __UNIX__
+    return( fnmatch( template, name, FNM_NOESCAPE ) == 0 );
 #else
-        } else if( *template != '?' && *template != *name ) {
+    return( fnmatch( template, name, FNM_NOESCAPE | FNM_IGNORECASE ) == 0 );
 #endif
-            return( false );
-        }
-        name++;
-        template++;
-        if( *template == '\0' || *name == '\0' ) {
-            break;
-        }
-    }
-
-#ifndef __UNIX__
-    if( tolower( *template ) == tolower( *name ) ) {
-#else
-    if( *template == *name ) {
-#endif
-        return( true );
-    }
-    return( false );
 
 } /* FileTemplateMatch */
 

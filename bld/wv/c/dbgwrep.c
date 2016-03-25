@@ -39,19 +39,15 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
-
-extern void             RecordPointStart(void);
-extern void             RecordNewProg(void);
-extern void             PointFini( void );
-extern int              GetStackPos( void );
-extern unsigned         UndoLevel( void );
-extern address          GetRegIP( void );
-extern  a_window        *WndSrcInspect( address addr );
-extern  a_window        *WndAsmInspect( address addr );
-extern unsigned         ReqExpr( void );
-extern char             *CopySourceLine( cue_handle *ch );
-extern char             *GetEventAddress( event_record *ev );
-extern void             ReplayTo( event_record *ev );
+#include "dbgbrk.h"
+#include "dbgparse.h"
+#include "wndsys.h"
+#include "dbgprog.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
 
 
 enum {
@@ -61,7 +57,7 @@ enum {
     PIECE__LAST
 };
 
-static gui_ord          Indents[ PIECE__LAST ];
+static gui_ord          Indents[PIECE__LAST];
 
 
 #include "menudef.h"
@@ -143,8 +139,8 @@ static void RepRefresh( a_window *wnd )
     }
     max_addr += WndMaxCharX( wnd );
     max_cue += WndMaxCharX( wnd );
-    if( Indents[ PIECE_SOURCE ] != max_addr ||
-        Indents[ PIECE_COMMAND ] != max_addr + max_cue ) {
+    if( Indents[PIECE_SOURCE] != max_addr ||
+        Indents[PIECE_COMMAND] != max_addr + max_cue ) {
         WndRepaint( wnd );
     } else {
         row = count;
@@ -153,9 +149,9 @@ static void RepRefresh( a_window *wnd )
         }
     }
     LastEventCount = count;
-    Indents[ PIECE_ADDRESS ] = 0;
-    Indents[ PIECE_SOURCE ] = max_addr;
-    Indents[ PIECE_COMMAND ] = max_addr + max_cue;
+    Indents[PIECE_ADDRESS] = 0;
+    Indents[PIECE_SOURCE] = max_addr;
+    Indents[PIECE_COMMAND] = max_addr + max_cue;
 }
 
 
@@ -169,10 +165,10 @@ static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
         if( ev != NULL ) {
-            WndMenuEnable( wnd, MENU_REPLAY_GOTO, TRUE );
+            WndMenuEnable( wnd, MENU_REPLAY_GOTO, true );
             if( !IS_NIL_ADDR( ev->ip ) ) {
-                WndMenuEnable( wnd, MENU_REPLAY_SOURCE, TRUE );
-                WndMenuEnable( wnd, MENU_REPLAY_ASSEMBLY, TRUE );
+                WndMenuEnable( wnd, MENU_REPLAY_SOURCE, true );
+                WndMenuEnable( wnd, MENU_REPLAY_ASSEMBLY, true );
             }
         }
         break;
@@ -197,24 +193,24 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 
     wnd = wnd;
     ev = RepGetEvent( row );
-    if( ev == NULL ) return( FALSE );
-    line->tabstop = FALSE;
-    if( piece >= PIECE__LAST ) return( FALSE );
-    line->indent = Indents[ piece ];
+    if( ev == NULL ) return( false );
+    line->tabstop = false;
+    if( piece >= PIECE__LAST ) return( false );
+    line->indent = Indents[piece];
     switch( piece ) {
     case PIECE_ADDRESS:
-        line->tabstop = TRUE;
+        line->tabstop = true;
         line->text = ev->addr_string;
-        return( TRUE );
+        return( true );
     case PIECE_SOURCE:
         line->text = ev->cue;
-        return( TRUE );
+        return( true );
     case PIECE_COMMAND:
         line->text = ev->cmd->buff;
         line->attr = WND_STANDOUT;
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -226,9 +222,9 @@ static bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         RepRefresh( wnd );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 wnd_info RepInfo = {

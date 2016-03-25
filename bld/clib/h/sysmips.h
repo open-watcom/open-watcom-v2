@@ -318,6 +318,11 @@ syscall_res sys_call1( u_long func, u_long r_4 );
     parm [$v0] [$a0]                            \
     value [$v1 $v0];
 
+void sys_call1n( u_long func, u_long r_4 );
+#pragma aux sys_call1n =                        \
+    "syscall"                                   \
+    parm [$v0] [$a0];
+
 syscall_res sys_call2( u_long func, u_long r_4, u_long r_5 );
 #pragma aux sys_call2 =                         \
     "syscall"                                   \
@@ -345,3 +350,5 @@ syscall_res sys_call5( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r
     "move $v1,$a3"                              \
     parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
     value [$v1 $v0];
+
+#define _sys_exit(rc)   sys_call1n(SYS_exit, rc)

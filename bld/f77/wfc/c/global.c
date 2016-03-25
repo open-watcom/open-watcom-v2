@@ -41,7 +41,7 @@
 #include "itdefn.h"
 #include "impl.h"
 #include "lex.h"
-#include "scan.h"
+#include "scangbl.h"
 #include "token.h"
 #include "ftnio.h"
 #include "cioconst.h"

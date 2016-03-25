@@ -93,14 +93,6 @@ static int Suffix( char *, char * );
 static void AddInfo( void );
 static void StripInfo( void );
 
-void    Fatal( int, char * );
-int     Msg_Get( int resourceid, char *buffer );
-int     Msg_Init( void );
-int     Msg_Fini( void );
-void    Usage( void );
-void    Banner( void );
-
-
 static char *Buffer;
 
 static char *ExtLst[] = {

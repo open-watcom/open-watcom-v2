@@ -120,7 +120,7 @@ long DWRInfoLength( dr_handle mod )
     dr_handle           finish;
 
     finish = mod + DWRVMReadDWord( mod );
-    mod += COMPILE_UNIT_HDR_SIZE;
+    mod += sizeof( compuhdr_prologue );
     return( (long)( finish - mod ) );
 }
 
@@ -667,7 +667,7 @@ void DWRGetCompileUnitHdr( dr_handle mod, DWRCUWLK fn, void *data )
 
     ctxt.start = compunit->start;
     ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
-    ctxt.start += COMPILE_UNIT_HDR_SIZE;
+    ctxt.start += sizeof( compuhdr_prologue );
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;
@@ -682,7 +682,7 @@ dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
   // return the start of the DW_TAG_compile_unit
   // assume it starts after header
 
-    comp_unit += COMPILE_UNIT_HDR_SIZE;
+    comp_unit += sizeof( compuhdr_prologue );
     return( comp_unit );
 }
 
@@ -735,7 +735,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
         ctxt.compunit = &DWRCurrNode->compunit;
         ctxt.start = ((compunit_info *)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
-        ctxt.start += COMPILE_UNIT_HDR_SIZE;
+        ctxt.start += sizeof( compuhdr_prologue );
         ctxt.classhdl = DR_HANDLE_NUL;
         ctxt.functionhdl = DR_HANDLE_NUL;
         ctxt.stack.size = 0;
@@ -758,7 +758,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
         if( ctxt.compunit ) {
             ctxt.start = ((compunit_info *) ctxt.compunit)->start;
             ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
-            ctxt.start += COMPILE_UNIT_HDR_SIZE;
+            ctxt.start += sizeof( compuhdr_prologue );
         }
     } while( cont && ctxt.compunit != NULL );
 

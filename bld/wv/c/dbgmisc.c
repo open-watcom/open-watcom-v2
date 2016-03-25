@@ -35,44 +35,31 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "dbglit.h"
+#include "madinter.h"
 #include "i64.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexec.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgparse.h"
+#include "dbgdot.h"
+#include "dbgtrace.h"
+#include "dbgtback.h"
+#include "remcore.h"
+#include "dbgmisc.h"
+#include "remthrd.h"
+#include "remrtrd.h"
+#include "dbgreg.h"
+#include "addarith.h"
+#include "dbgevent.h"
+#include "dbgupdt.h"
 
 
-extern unsigned int     ReqExpr( void );
-extern unsigned_64      ReqU64Expr( void );
-extern void             ReqMemAddr( memory_expr ,address *);
-extern unsigned         OptExpr( unsigned );
-extern void             DebugExit( void );
-extern unsigned         Go( bool );
-extern void             PopEntry( void );
-extern void             NormalExpr( void );
-extern char             *GetCmdEntry( const char *, int , char * );
-extern char             *GetCmdName( wd_cmd cmd );
 extern void             FlipScreen( void );
-extern void             DbgUpdate( update_list );
-extern address          GetRegIP( void );
-extern void             RecordSetRegIP( address );
-extern unsigned         RemoteReadUserKey( unsigned );
-extern void             ReadDbgRegs( void );
-extern void             WriteDbgRegs( void );
-extern dtid_t           RemoteGetNextThread( dtid_t, unsigned * );
-extern bool             HaveRemoteRunThread( void );
-extern dtid_t           RemoteGetNextRunThread( dtid_t tid );
-extern void             RemoteUpdateRunThread( thread_state *thd );
-extern dtid_t           RemoteSetThreadWithErr( dtid_t, unsigned * );
-extern dtid_t           RemoteSetRunThreadWithErr( dtid_t, unsigned * );
-extern void             RemoteThdName( dtid_t, char * );
-extern void             RemoteRunThdName( dtid_t, char * );
-extern void             TraceKill( void );
-extern address          ReturnAddress( void );
-extern void             SetCodeDot( address );
-extern void             ChkExpr( void );
-extern bool             AdvMachState( int );
-extern void             RecordCommand( const char *startpos, wd_cmd cmd );
-extern int              AddrComp( address a, address b );
 
 static const char ElseifTab[]         = { "ELSEIF\0" };
 static const char ElseTab[]           = { "ELSE\0" };
@@ -86,7 +73,7 @@ enum {
 };
 
 
-void Flip( unsigned wait )
+void Flip( uint_16 wait )
 {
 //    char        ch;
 
@@ -102,7 +89,7 @@ void Flip( unsigned wait )
 void ProcFlip( void )
 {
     const char  *old;
-    unsigned    wait;
+    uint_16     wait;
 
     wait = 0;
     if( !ScanEOC() ) {
@@ -118,7 +105,7 @@ void ProcFlip( void )
             return;
         default:
             ReScan( old );
-            wait = ReqExpr();
+            wait = (uint_16)ReqExpr();
             ReqEOC();
             break;
         }
@@ -134,7 +121,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( "ON\0OFf\0", _IsOn( SW_FLIP ) ? 0 : 1, p );
+    GetCmdEntry( "ON\0OFf\0", _IsOff( SW_FLIP ), p );
     DUIDlgTxt( TxtBuff );
 }
 
@@ -147,13 +134,13 @@ void ProcRemark( void )
     char        c;
 
     RawScanInit();
-    for( ;; ) {
-        c = RawScanChar();
-        if( c == '\0' ) break;
+    while( (c = RawScanChar()) != NULLCHAR ) {
         RawScanAdvance();
         /* The CR character indicates end of line in a multi-line command
            list. */
-        if( c == '\r' ) break;
+        if( c == '\r' ) {
+            break;
+        }
     }
     RawScanFini();
 }
@@ -191,8 +178,8 @@ void ProcAssign( void )
 static void SetTempBreak( address addr )
 {
     NullStatus( &UserTmpBrk );
-    UserTmpBrk.status.b.has_address = TRUE;
-    UserTmpBrk.status.b.active = TRUE;
+    UserTmpBrk.status.b.has_address = true;
+    UserTmpBrk.status.b.active = true;
     UserTmpBrk.loc.addr = addr;
 }
 
@@ -201,7 +188,7 @@ void GoToAddr( address addr )
 {
     if( IS_NIL_ADDR( addr ) ) return;
     SetTempBreak( addr );
-    Go( TRUE );
+    Go( true );
     NullStatus( &UserTmpBrk );
 }
 
@@ -257,20 +244,20 @@ void ProcGo( void )
     unsigned    conditions;
     int         count;
 
-    have_keep = FALSE;
-    doflip = TRUE;
-    until = FALSE;
+    have_keep = false;
+    doflip = true;
+    until = false;
     while( CurrToken == T_DIV ) {
         Scan();
         switch( ScanCmd( GoOptionTab ) ) {
         case KEEP:
-            have_keep = TRUE;
+            have_keep = true;
             break;
         case NOFLIP:
-            doflip = FALSE;
+            doflip = false;
             break;
         case UNTIL:
-            until = TRUE;
+            until = true;
             break;
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_GO ) );
@@ -279,21 +266,21 @@ void ProcGo( void )
     if( !have_keep ) TraceKill();
     NullStatus( &DbgTmpBrk );
     start = GetRegIP();
-    have_stop = FALSE;
-    have_start = FALSE;
+    have_stop = false;
+    have_start = false;
     if( !ScanEOC() ) {
         stop = start;
         ReqMemAddr( EXPR_GIVEN, &stop );
         if( CurrToken == T_COMMA ) {
             start = stop;
-            have_start = TRUE;
+            have_start = true;
             Scan();
             if( !ScanEOC() ) {
                 ReqMemAddr( EXPR_GIVEN, &stop );
-                have_stop = TRUE;
+                have_stop = true;
             }
         } else {
-            have_stop = TRUE;
+            have_stop = true;
         }
     }
     ReqEOC();
@@ -303,7 +290,7 @@ void ProcGo( void )
             if( have_keep ) {
                 if( UserTmpBrk.status.b.has_address ) {
                     NullStatus( &UserTmpBrk );
-                    UserTmpBrk.status.b.has_address = TRUE;
+                    UserTmpBrk.status.b.has_address = true;
                 } else {
                     NullStatus( &UserTmpBrk );
                 }
@@ -312,7 +299,7 @@ void ProcGo( void )
             SetTempBreak( stop );
         } else if( have_keep ) {
             if( UserTmpBrk.status.b.has_address ) {
-                UserTmpBrk.status.b.active = TRUE;
+                UserTmpBrk.status.b.active = true;
             }
         } else {
             NullStatus( &UserTmpBrk );
@@ -328,7 +315,7 @@ void ProcGo( void )
         if( flip_on ) _SwitchOn( SW_FLIP );
         if( UserTmpBrk.status.b.has_address ) {
             NullStatus( &UserTmpBrk );
-            UserTmpBrk.status.b.has_address = TRUE;
+            UserTmpBrk.status.b.has_address = true;
         } else {
             NullStatus( &UserTmpBrk );
         }
@@ -363,7 +350,7 @@ void ProcIf( void )
     bool                have_true;
 
     true_len = 0;
-    have_true = FALSE;
+    have_true = false;
     for( ;; ) {
         if( have_true ) {
             ChkExpr();
@@ -377,7 +364,7 @@ void ProcIf( void )
         if( U64Test( &res ) != 0 ) {
             true_start = start;
             true_len   = len;
-            have_true  = TRUE;
+            have_true  = true;
         }
         if( ScanCmd( ElseifTab ) < 0 ) {
             break;
@@ -434,10 +421,10 @@ void ProcError( void )
     const char  *start;
     size_t      len;
 
-    ScanItem( FALSE, &start, &len );
+    ScanItem( false, &start, &len );
     ReqEOC();
     memcpy( TxtBuff, start, len );
-    TxtBuff[ len ] = NULLCHAR;
+    TxtBuff[len] = NULLCHAR;
     Error( ERR_NONE, LIT_ENG( ERR_GENERIC ), TxtBuff );
 }
 
@@ -472,20 +459,22 @@ static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
     default:        p1 = "";              break;
     }
     p1 = StrCopy( p1, p );
-    while( (p1 - p) < 10 ) *p1++ = ' ';
+    while( (p1 - p) < 10 )
+        *p1++ = ' ';
     StrCopy( thd->name, p1 );
 }
 
 
 void MakeThdCurr( thread_state *thd )
 {
-    unsigned    err;
+    error_handle    errh;
 
-    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) )
+        return;
     // NYI - PUI - record the thread change?
     WriteDbgRegs();
-    if( RemoteSetThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    if( RemoteSetThreadWithErr( thd->tid, &errh ) == 0 ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, errh );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -496,11 +485,12 @@ void MakeThdCurr( thread_state *thd )
 
 void MakeRunThdCurr( thread_state *thd )
 {
-    unsigned    err;
+    error_handle    errh;
 
-    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
-    if( RemoteSetRunThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) )
+        return;
+    if( RemoteSetRunThreadWithErr( thd->tid, &errh ) == 0 ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MAKE_CURR_THREAD ), thd->tid, errh );
     }
     DbgRegs->tid = thd->tid;
     ReadDbgRegs();
@@ -511,12 +501,13 @@ void MakeRunThdCurr( thread_state *thd )
 
 dtid_t RemoteSetThread( dtid_t tid )
 {
-    unsigned            err;
+    error_handle    errh;
 
-    if( HaveRemoteRunThread() )
-        return( RemoteSetRunThreadWithErr( tid, &err ) );
-    else
-        return( RemoteSetThreadWithErr( tid, &err ) );
+    if( HaveRemoteRunThread() ) {
+        return( RemoteSetRunThreadWithErr( tid, &errh ) );
+    } else {
+        return( RemoteSetThreadWithErr( tid, &errh ) );
+    }
 }
 
 
@@ -557,12 +548,10 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
     thread_state    *thd;
     char            name[UTIL_LEN];
 
-    owner =  &HeadThd;
-    for( ;; ) {
-        thd = *owner;
-        if( thd == NULL ) break;
-        if( tid < thd->tid ) break;
-        if( tid == thd->tid ) {
+    for( owner = &HeadThd; (thd = *owner) != NULL; owner = &thd->link ) {
+        if( thd->tid > tid )
+            break;
+        if( thd->tid == tid ) {
             if( _IsOn( SW_THREAD_EXTRA_CHANGED ) ) {
                 *owner = thd->link;
                 state = thd->state & ~THD_DEAD;
@@ -572,14 +561,15 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
             thd->state &= ~THD_DEAD;
             return( thd );
         }
-        owner = &thd->link;
     }
-    if( HaveRemoteRunThread() )
+    if( HaveRemoteRunThread() ) {
         RemoteRunThdName( tid, name );
-    else
+    } else {
         RemoteThdName( tid, name );
+    }
     _Alloc( thd, sizeof( thread_state ) + strlen( name ) );
-    if( thd == NULL ) return( NULL );
+    if( thd == NULL )
+        return( NULL );
     thd->link = *owner;
     *owner = thd;
     strcpy( thd->name, name );
@@ -598,13 +588,15 @@ dtid_t GetNextTID( void )
     thread_state    *thd;
 
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
-    if( IsThdCurr( thd ) ) {
-        thd = thd -> link;
-        break;
+        if( IsThdCurr( thd ) ) {
+            thd = thd -> link;
+            break;
+        }
     }
-    }
-    if( thd == NULL ) thd = HeadThd;
-    if( thd == NULL ) return( 0 );
+    if( thd == NULL )
+        thd = HeadThd;
+    if( thd == NULL )
+        return( 0 );
     return( thd->tid );
 }
 
@@ -614,8 +606,7 @@ void NameThread( dtid_t tid, const char *name )
 {
     thread_state        **owner, *curr, *new;
 
-    for( owner = &HeadThd; *owner != NULL; owner = &curr->link ) {
-        curr = *owner;
+    for( owner = &HeadThd; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->tid == tid ) {
             _Alloc( new, sizeof( thread_state ) + strlen( name ) );
             *new = *curr;
@@ -642,10 +633,7 @@ static void KillDeadThreads( void )
     thread_state    **owner;
     thread_state    *thd;
 
-    owner = &HeadThd;
-    for( ;; ) {
-        thd = *owner;
-        if( thd == NULL ) break;
+    for( owner = &HeadThd; (thd = *owner) != NULL; ) {
         if( thd->state & THD_DEAD ) {
             *owner = thd->link;
             _Free( thd );
@@ -661,12 +649,11 @@ static void RefreshThreads( bool set_exec )
     thread_state        *thd;
     unsigned            state;
 
-    tid = 0;
-    for( ;; ) {
-        tid = RemoteGetNextThread( tid, &state );
-        if( tid == 0 ) break;
+    for( tid = 0; (tid = RemoteGetNextThread( tid, &state )) != 0; ) {
         thd = AddThread( tid, state );
-        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
+        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) {
+            ExecThd = thd;
+        }
     }
 }
 
@@ -675,13 +662,12 @@ static void RefreshRunThreads( bool set_exec )
     dtid_t              tid;
     thread_state        *thd;
 
-    tid = 0;
-    for( ;; ) {
-        tid = RemoteGetNextRunThread( tid );        
-        if( tid == 0 ) break;
+    for( tid = 0; (tid = RemoteGetNextRunThread( tid )) != 0; ) {
         thd = AddThread( tid, 0 );
         RemoteUpdateRunThread( thd );
-        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
+        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) {
+            ExecThd = thd;
+        }
     }
 }
 
@@ -689,7 +675,7 @@ void CheckForNewThreads( bool set_exec )
 {
     if( set_exec ) ExecThd = NULL;
     MarkThreadsDead();
-    if( HaveRemoteRunThread() ) 
+    if( HaveRemoteRunThread() )
         RefreshRunThreads( set_exec );
     else
         RefreshThreads( set_exec );
@@ -702,8 +688,11 @@ thread_state   *FindThread( dtid_t tid )
 {
     thread_state    *thd;
 
-    for( thd = HeadThd; thd != NULL && thd->tid != tid; thd = thd->link )
-        ;
+    for( thd = HeadThd; thd != NULL; thd = thd->link ) {
+        if( thd->tid == tid ) {
+            break;
+        }
+    }
     return( thd );
 }
 
@@ -715,9 +704,10 @@ void ProcThread( void )
     dtid_t              tid;
     bool                all;
     thread_state        *thd;
-    unsigned            old;
+    mad_radix           old_radix;
 
     cmd = -1;
+    tcmd = T_BAD;
     if( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( ThreadOps );
@@ -727,28 +717,28 @@ void ProcThread( void )
             tcmd = (enum thread_cmds)cmd;
         }
     }
-    CheckForNewThreads( FALSE );
+    CheckForNewThreads( false );
     if( CurrToken == T_MUL ) {
         if( cmd < 0 )
             tcmd = T_SHOW;
         Scan();
-        all = TRUE;
+        all = true;
     } else if( ScanEOC() ) {
         if( cmd < 0 )
             tcmd = T_SHOW;
         if( tcmd == T_SHOW ) {
-            all = TRUE;
+            all = true;
         } else {
             tid = DbgRegs->tid;
-            all = FALSE;
+            all = false;
         }
     } else {
         if( cmd < 0 )
             tcmd = T_CHANGE;
-        old = SetCurrRadix( 16 );
+        old_radix = SetCurrRadix( 16 );
         tid = ReqExpr();
-        all = FALSE;
-        SetCurrRadix( old );
+        all = false;
+        SetCurrRadix( old_radix );
     }
     ReqEOC();
     if( all ) {
@@ -769,9 +759,8 @@ void FreeThreads( void )
 {
     thread_state    *thd;
 
-    while( HeadThd != NULL ) {
-        thd = HeadThd->link;
-        _Free( HeadThd );
-        HeadThd = thd;
+    while( (thd = HeadThd) != NULL ) {
+        HeadThd = thd->link;
+        _Free( thd );
     }
 }

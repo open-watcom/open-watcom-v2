@@ -117,7 +117,7 @@ __STKOVERFLOW:
         call    _putw
         pop     ebx             ; get offset
         call    _putw           ; print low word
-        mov     al,0
+        xor     al,al
         stosb
         push    ss
         pop     ds
@@ -129,8 +129,7 @@ else
         mov     edx,1
 endif
         call    __fatal_runtime_error
-        mov     eax,1
-        int     0x80            ; call SYS_exit system call
+        ; never return
 
 _putw proc near
         mov     edx,ebx         ; save value

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "win.h"
 #ifdef __WIN__
     #include "winrtns.h"
@@ -209,7 +209,7 @@ static void ensureCursorDisplayed( void )
     int         len, wc, diff;
 
     if( EditFlags.Modeless && ( CurrentFile != NULL ) ) {
-        len = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+        len = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
         if( CurrentPos.line < LeftTopPos.line ||
             CurrentPos.line > LeftTopPos.line + len - 1 ) {
             SetCurrentLine( CurrentPos.line );
@@ -386,7 +386,7 @@ void EditMain( void )
             }
             if( doclear ) {
                 if( EditFlags.AutoMessageClear ) {
-                    ClearWindow( MessageWindow );
+                    ClearWindow( message_window_id );
                 }
 #ifndef __WIN__
                 ResetDisplayLine();
@@ -438,7 +438,7 @@ vi_rc AbsoluteNullResponse( void )
 vi_rc NullResponse( void )
 {
     if( !EditFlags.EscapeMessage ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     } else {
         DisplayFileStatus();
     }
@@ -447,16 +447,16 @@ vi_rc NullResponse( void )
 
 } /* NullResponse */
 
-static window_id        repeatWindow = NO_WINDOW;
+static window_id    repeat_window_id = NO_WINDOW;
 
 /*
  * KillRepeatWindow - just like it says
  */
 void KillRepeatWindow( void )
 {
-    if( repeatWindow != NO_WINDOW ) {
-        CloseAWindow( repeatWindow );
-        repeatWindow = NO_WINDOW;
+    if( !BAD_ID( repeat_window_id ) ) {
+        CloseAWindow( repeat_window_id );
+        repeat_window_id = NO_WINDOW;
     }
 }
 
@@ -501,10 +501,10 @@ long GetRepeatCount( void )
 
 } /* GetRepeatCount */
 
-#ifndef __WIN__
-#define UpdateRepeatString( str ) DisplayLineInWindow( repeatWindow, 1, str )
-#else
+#ifdef __WIN__
 extern void UpdateRepeatString( char *str );
+#else
+#define UpdateRepeatString( str ) DisplayLineInWindow( repeat_window_id, 1, str )
 #endif
 
 /*
@@ -526,18 +526,18 @@ vi_rc DoDigit( void )
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
-    if( repeatWindow == NO_WINDOW && EditFlags.RepeatInfo ) {
-        rc = NewWindow2( &repeatWindow, &repcntw_info );
+    if( BAD_ID( repeat_window_id ) && EditFlags.RepeatInfo ) {
+        rc = NewWindow2( &repeat_window_id, &repcntw_info );
         if( rc != ERR_NO_ERR ) {
             DoneRepeat();
             return( rc );
         }
-        WindowTitle( repeatWindow, "Repeat Count" );
+        WindowTitle( repeat_window_id, "Repeat Count" );
     }
 
     RepeatString[RepeatDigits++] = LastEvent;
-    RepeatString[RepeatDigits] = 0;
-    if( repeatWindow != NO_WINDOW ) {
+    RepeatString[RepeatDigits] = '\0';
+    if( BAD_ID( repeat_window_id ) ) {
         UpdateRepeatString( RepeatString );
     }
     return( GOT_A_DIGIT );

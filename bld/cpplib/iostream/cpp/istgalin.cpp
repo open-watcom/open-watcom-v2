@@ -87,7 +87,7 @@ ios::iostate __getaline( std::istream &istrm,
                 }
                 break;
             }
-            if( c == delim ) {
+            if( c == (int)(unsigned char)delim ) {
                 if( !is_get ) {
                     sb->sbumpc();
                 }
@@ -106,7 +106,7 @@ ios::iostate __getaline( std::istream &istrm,
     // characters is not an error if the delim was seen, this seems to
     // be what our competitors do.
     // 
-    if( (offset == 0) && (c != delim) ) {
+    if( (offset == 0) && (c != (int)(unsigned char)delim) ) {
         state |= ios::failbit;
     }
 

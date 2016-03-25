@@ -57,12 +57,12 @@
 #include <unistd.h>
 
 #include "stdui.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "tixparse.h"
 #include "trie.h"
 
-extern char ui_tix_path[];
-extern int ui_tix_missing( const char *name );
+
+#define TC_ERROR    ((unsigned)-1)
 
 typedef enum {
     TT_CODE,
@@ -70,32 +70,34 @@ typedef enum {
     TT_EOF
 } tix_token;
 
-static FILE     *in_file= NULL;
+extern int      ui_tix_missing( const char *name );
+
+extern char     ui_tix_path[];
 
 char            ti_char_map[256][4];
 unsigned char   _ti_alt_map[32];
 
+static FILE     *in_file = NULL;
+
 static void tix_error( const char *str )
-/*************************/
+/**************************************/
 {
-    static char header[]= "\nError in ";
-    extern char *UITermType;
+    const char  *term;
 
-#define uiwrite( s ) write( UIConHandle, s, strlen( s ) );
-
-    write( UIConHandle, header, sizeof( header )-1 );
-    uiwrite( UITermType );
-    uiwrite( ": " );
+    term = GetTermType();
+    uiwritec( "\nError in " );
+    uiwrite( term );
+    uiwritec( ": " );
     uiwrite( str );
-    uiwrite( "\n" );
+    uiwritec( "\n" );
 }
 
 FILE *ti_fopen( const char *fnam )
 /********************************/
 {
     FILE        *res;
-    char        *homeDir;
-    char        fpath[FILENAME_MAX+1];
+    const char  *homeDir;
+    char        fpath[FILENAME_MAX + 1];
 
     if( fnam == NULL || fnam[0] == '\0' ) {
         return( NULL );
@@ -134,24 +136,33 @@ static int init_tix_scanner( const char *name )
     char        tix_name[19];
 
 
-    if( name ) {
-        if( *name ) {
+    if( name != NULL ) {
+        if( *name != '\0' ) {
             strcpy( tix_name, name );
             strcat( tix_name, ".tix" );
             in_file = ti_fopen( tix_name );
-            if( in_file != NULL ) return( 1 );
+            if( in_file != NULL ) {
+                return( 1 );
+            }
         }
         if( strstr( name, "qnx" ) != 0 ) {
             in_file = ti_fopen( "qnx.tix" );
-            if( in_file != NULL ) return( 1 );
+            if( in_file != NULL ) {
+                return( 1 );
+            }
         } else if( strstr( name, "ansi" ) != 0 ) {
             in_file = ti_fopen( "ansi.tix" );
-            if( in_file != NULL ) return( 1 );
+            if( in_file != NULL ) {
+                return( 1 );
+            }
         } else if( strstr( name, "xterm" ) != 0 ) {
             in_file = ti_fopen( "xterm.tix" );
-            if( in_file != NULL ) return( 1 );
+            if( in_file != NULL )
+                return( 1 );
             in_file = ti_fopen( "ansi.tix" );
-            if( in_file != NULL ) return( 1 );
+            if( in_file != NULL ) {
+                return( 1 );
+            }
         }
     }
     in_file = ti_fopen( "default.tix" );
@@ -159,10 +170,11 @@ static int init_tix_scanner( const char *name )
 }
 
 static void close_tix_scanner( void )
-/****************************/
+/***********************************/
 {
-    if( in_file!=NULL ){
+    if( in_file != NULL ) {
         fclose( in_file );
+        in_file = NULL;
     }
 }
 
@@ -177,16 +189,22 @@ static tix_token get_tix_token( char *buff )
 
     for( ;; ) {
         c = getc( in_file );
-        if( c == EOF ) return( TT_EOF );
+        if( c == EOF )
+            return( TT_EOF );
         if( c == '#' ) {
             /* eat a comment */
             for( ;; ) {
                 c = getc( in_file );
-                if( c == EOF ) return( TT_EOF );
-                if( c == '\n' ) break;
+                if( c == EOF )
+                    return( TT_EOF );
+                if( c == '\n' ) {
+                    break;
+                }
             }
         }
-        if( !isspace( c ) ) break;
+        if( !isspace( c ) ) {
+            break;
+        }
     }
     p = buff;
     if( c == '\'' || c == '\"' ) {
@@ -194,13 +212,18 @@ static tix_token get_tix_token( char *buff )
         endc = c;
         for( ;; ) {
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( c == '\r' ) break;
-            if( c == '\n' ) break;
-            if( c == endc ) break;
+            if( c == EOF )
+                break;
+            if( c == '\r' )
+                break;
+            if( c == '\n' )
+                break;
+            if( c == endc )
+                break;
             if( c == '\\' ) {
                 c = getc( in_file );
-                if( c == EOF ) break;
+                if( c == EOF )
+                    break;
                 switch( c ) {
                 case 'a':
                     c = '\a';
@@ -230,7 +253,8 @@ static tix_token get_tix_token( char *buff )
                     num = 0;
                     for( ;; ) {
                         c = getc( in_file );
-                        if( c == EOF ) break;
+                        if( c == EOF )
+                            break;
                         if( isdigit( c ) ) {
                             c = c - '0';
                         } else if( c >= 'A' && c <= 'F' ) {
@@ -255,8 +279,10 @@ static tix_token get_tix_token( char *buff )
         for( ;; ) {
             *p++ = c;
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( isspace( c ) ) break;
+            if( c == EOF )
+                break;
+            if( isspace( c ) )
+                break;
             if( c == '#' ) {
                 ungetc( c, in_file );
                 break;
@@ -264,35 +290,36 @@ static tix_token get_tix_token( char *buff )
         }
         *p = '\0';
         num = strtoul( buff, &end, 0 );
-        if( end != p ) return( TT_STRING );
+        if( end != p )
+            return( TT_STRING );
         buff[0] = num & 0xff;
         buff[1] = num >> 8;
         return( TT_CODE );
     }
 }
 
-static unsigned get_tix_code( unsigned char *buff )
-/*************************************************/
+static unsigned get_tix_code( char *buff )
+/****************************************/
 {
-    if( get_tix_token( (char *)buff ) != TT_CODE ) {
+    if( get_tix_token( buff ) != TT_CODE ) {
         tix_error( "expecting code" );
-        return( ~0U );
+        return( TC_ERROR );
     }
-    return( buff[0] + (buff[1] << 8) );
+    return( *(unsigned char *)buff + ( *(unsigned char *)( buff + 1 ) << 8 ) );
 }
 
-static const char acs_default[] =
-        "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
+static const char acs_default[] = "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
 
 static char find_acs_map( char c, const char *acs )
 /*************************************************/
 {
-    if( acs ) {
-        for( ;; ) {
-            if( acs[0] == '\0' ) break;
-            if( acs[0] == c ) return( acs[1] );
+    if( acs != NULL ) {
+        while( acs[0] != '\0' ) {
+            if( acs[0] == c )
+                return( acs[1] );
             ++acs;
-            if( acs[0] == '\0' ) break;
+            if( acs[0] == '\0' )
+                break;
             ++acs;
         }
     }
@@ -309,24 +336,26 @@ static int do_parse( void )
     char        c;
 
     tok = get_tix_token( buff );
-    for( ;; ) {
-        if( tok == TT_EOF ) break;
+    while( tok != TT_EOF ) {
         if( tok != TT_STRING ) {
             tix_error( "expecting directive" );
             return( 0 );
         }
         if( strcasecmp( buff, "display" ) == 0 ) {
-            code = get_tix_code( (unsigned char *)buff );
-            if( code == ~0U ) return( 0 );
+            code = get_tix_code( buff );
+            if( code == TC_ERROR )
+                return( 0 );
             tok = get_tix_token( buff );
-            if( tok == TT_EOF ) break;
+            if( tok == TT_EOF )
+                break;
             if( tok == TT_STRING ) {
                 if( strcasecmp( buff, "alt" ) != 0 ) {
                     tix_error( "expecting alt" );
                     return( 0 );
                 }
                 tok = get_tix_token( buff );
-                if( tok == TT_EOF ) break;
+                if( tok == TT_EOF )
+                    break;
                 c = find_acs_map( buff[0], acs_chars );
                 if( c != '\0' ) {
                     ti_alt_map_set( code );
@@ -346,12 +375,11 @@ static int do_parse( void )
             ti_char_map[code][0] = buff[0];
             tok = get_tix_token( buff );
         } else if( strcasecmp( buff, "key" ) == 0 ) {
-            code = get_tix_code( (unsigned char *)buff );
-            if( code == ~0U ) return( 0 );
+            code = get_tix_code( buff );
+            if( code == TC_ERROR )
+                return( 0 );
             input[0] = '\0';
-            for( ;; ) {
-                tok = get_tix_token( buff );
-                if( tok != TT_CODE ) break;
+            while( (tok = get_tix_token( buff )) == TT_CODE ) {
                 strcat( input, buff );
             }
             TrieAdd( code, input );
@@ -367,7 +395,7 @@ struct charmap {
     unsigned short unicode;
 };
 
-static struct charmap default_tix[] = {
+static const struct charmap default_tix[] = {
     /* keep zero to handle casestrings */
     {0, 0},
 
@@ -415,9 +443,8 @@ static struct charmap default_tix[] = {
     {'=', 0x2261}, /* UI_EQUIVALENT*/
 };
 
-static char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
-static char alt_num_keys[] = "1234567890-=";
-static char esc_str[] = "\033A";
+static const char alt_keys[] = "QWERTYUIOP[]\r\0ASDFGHJKL;'`\0\\ZXCVBNM,./";
+static const char alt_num_keys[] = "1234567890-=";
 
 /* use above table if no .tix file is found */
 static int do_default( void )
@@ -425,7 +452,11 @@ static int do_default( void )
 {
     unsigned char       c, cmap;
     int                 i;
+    char                esc_str[3];
 
+    esc_str[0] = '\033';
+    esc_str[1] = 'A';
+    esc_str[2] = '\0';
     for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ; i ++ ) {
         cmap = c = default_tix[i].vt100;
         if( (c & 0x80) == 0 ) {
@@ -443,7 +474,7 @@ static int do_default( void )
         ti_char_map[i][0] = cmap;
     }
     for( i = 0; i < sizeof( alt_keys ); i++ ) {
-        if ( alt_keys[i] ) {
+        if( alt_keys[i] ) {
             esc_str[1] = alt_keys[i];
             TrieAdd( 0x110 + i, esc_str );
             if( alt_keys[i] >= 'A' && alt_keys[i] <= 'Z' ) {
@@ -471,13 +502,13 @@ int ti_read_tix( const char *termname )
 {
     int         i;
     int         ret;
-    char        *s;
+    const char  *s;
     int         utf8_mode = 0;
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
     for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
-        ti_char_map[i][0]=i;
+        ti_char_map[i][0] = i;
 
     if( !init_tix_scanner( termname ) ) {
         ret = do_default();
@@ -486,11 +517,13 @@ int ti_read_tix( const char *termname )
         close_tix_scanner();
     }
 
-    if ( ( ( s = getenv( "LC_ALL" ) )   && *s ) ||
-         ( ( s = getenv( "LC_CTYPE" ) ) && *s ) ||
-         ( ( s = getenv( "LANG" ) )     && *s ) )
-        if ( strstr( s, "UTF" ) || strstr( s, "utf" ) )
+    if( ( (s = getenv( "LC_ALL" )) != NULL && *s != '\0' ) ||
+         ( (s = getenv( "LC_CTYPE" )) != NULL && *s != '\0' ) ||
+         ( (s = getenv( "LANG" )) != NULL && *s != '\0' ) ) {
+        if( strstr( s, "UTF" ) || strstr( s, "utf" ) ) {
             utf8_mode = 1;
+        }
+    }
 
     if( utf8_mode ) {
         /* handle at least iso-8859-1 for now */
@@ -498,19 +531,27 @@ int ti_read_tix( const char *termname )
             wctomb( ti_char_map[i], i );
         }
     }
+
+#if 0
+    /* do not play woth utf8 mode setting: all VT are already configured
+       as needed. With this code on there is a problem with line drawing
+       on the linux console (framebuffer mode) */
+
     if( strncmp( termname, "linux", 5 ) == 0 ) {
         /* force UTF-8 mode if the locale is set that way; *
          * we may be on a new VT on the Linux console      */
         if ( utf8_mode ) {
-            write( UIConHandle, "\033%G", 3 );
+            uiwritec( "\033%G" );
             /* use UTF-8 characters instead of ACS */
-            for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ;
-                 i ++ )
+            for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {
                 wctomb( ti_char_map[i], default_tix[i].unicode );
+            }
+        } else {
+            uiwritec( "\033%@" );
         }
-        else
-            write( UIConHandle, "\033%@", 3 );
     }
+#endif
+
     if( strncmp( termname, "xterm", 5 ) == 0 ) {
         /* special xterm keys available in recent xterms */
         TrieAdd( EV_CTRL_CURSOR_UP, "\033[1;5A" );

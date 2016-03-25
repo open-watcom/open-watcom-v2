@@ -31,9 +31,6 @@
 
 #ifndef _EXEELF_H_INCLUDED_
 #define _EXEELF_H_INCLUDED_
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <stdint.h>
 #include "watcom.h"
@@ -766,7 +763,7 @@ typedef struct {
 
 // DT_INITTERM function prototype
 
-typedef unsigned long INITTERM ( unsigned long modhandle, unsigned long flag );
+typedef unsigned long INITTERM( unsigned long modhandle, unsigned long flag );
 
 // elf segment flag bits
 
@@ -919,7 +916,4 @@ typedef struct {
     Elf32_Word  lib_name;
 } Elf32_Library;
 
-#ifdef __cplusplus
-};
-#endif
 #endif // _EXEELF_H_INCLUDED_

@@ -42,13 +42,13 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     memcpy( data, (char *)d + off, size );
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_len )
 {
     char        *p = buff;
 

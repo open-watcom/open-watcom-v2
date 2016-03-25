@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include "watcom.h"
 #include "wpi.h"
@@ -106,7 +107,7 @@ bool RegPushWin( HANDLE instance )
 /*
  * CreatePushWin - create a push window
  */
-HWND CreatePushWin( HWND parent, char *txt, WORD id, HFONT font, HANDLE inst )
+HWND CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst )
 {
     HWND                hwnd;
     PushWinInfo         *info;

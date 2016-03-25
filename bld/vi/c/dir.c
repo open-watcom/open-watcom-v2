@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ void GetCWD1( char **str )
     char        bob[FILENAME_MAX];
 
     GetCWD2( bob, FILENAME_MAX );
-    AddString( str, bob );
+    *str = DupString( bob );
 
 } /* GetCWD1 */
 
@@ -54,7 +55,7 @@ void GetCWD1( char **str )
 void GetCWD2( char *str, int maxlen )
 {
     if( getcwd( str, maxlen - 1 ) == NULL ) {
-        str[0] = 0;
+        str[0] = '\0';
     }
     // Don't lowercase the filename
     //FileLower( str );
@@ -64,22 +65,22 @@ void GetCWD2( char *str, int maxlen )
 /*
  * ChangeDirectory - change to given drive/directory
  */
-vi_rc ChangeDirectory( char *dir )
+vi_rc ChangeDirectory( const char *dir )
 {
     vi_rc       rc;
-    int         shift;
-    char        *tmp;
+    size_t      shift;
+    const char  *tmp;
     int         i;
 
     shift = 0;
     if( dir[1] == ':' ) {
         rc = ChangeDrive( dir[0] );
-        if( rc != ERR_NO_ERR || dir[2] == 0 ) {
+        if( rc != ERR_NO_ERR || dir[2] == '\0' ) {
             return( rc );
         }
         shift = 2;
     }
-    tmp = &(dir[shift]);
+    tmp = dir + shift;
     i = chdir( tmp );
     if( i != 0 ) {
         return( ERR_DIRECTORY_OP_FAILED );
@@ -91,10 +92,10 @@ vi_rc ChangeDirectory( char *dir )
 /*
  * ConditionalChangeDirectory - change dir only if needed
  */
-vi_rc ConditionalChangeDirectory( char *where )
+vi_rc ConditionalChangeDirectory( const char *where )
 {
     if( CurrentDirectory != NULL ) {
-        if( !stricmp( CurrentDirectory, where ) ) {
+        if( stricmp( CurrentDirectory, where ) == 0 ) {
             return( ERR_NO_ERR );
         }
     }
@@ -105,7 +106,7 @@ vi_rc ConditionalChangeDirectory( char *where )
 /*
  * SetCWD - set current working directory
  */
-vi_rc SetCWD( char *str )
+vi_rc SetCWD( const char *str )
 {
     vi_rc   rc;
 
@@ -126,7 +127,7 @@ static int  totalBytes;
 /*
  * addDirData - add directory file data to current buffer
  */
-static void addDirData( file *cfile, char *str )
+static void addDirData( file *cfile, const char *str )
 {
     int k;
 
@@ -168,7 +169,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
      */
     for( i = 0; i < DirFileCount; i++ ) {
         if( DirFiles[i]->attr & _A_SUBDIR ) {
-            if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == 0 ) {
+            if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == '\0' ) {
                 MemFree( DirFiles[i] );
                 for( j = i + 1; j < DirFileCount; j++ ) {
                     DirFiles[j - 1] = DirFiles[j];
@@ -198,7 +199,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
      */
     if( add_drives ) {
         for( i = 'A'; i <= 'Z'; i++ ) {
-            if( DoGetDriveType( i ) != DRIVE_NONE ) {
+            if( DoGetDriveType( i ) != DRIVE_TYPE_NONE ) {
                 MySprintf( str, "  [%c:]", (char) i - 'A' + 'a' );
                 addDirData( cfile, str );
             }

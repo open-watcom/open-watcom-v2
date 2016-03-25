@@ -142,7 +142,7 @@ void sample_dialog()
         if( event == EV_ESCAPE || event == EV_ENTER ) {
             break;
         } else if( event == EV_SCREWUP ) {
-            list_box.data = list_data;
+            list_box.data_handle = list_data;
             uiupdatelistbox( &list_box );
         }
     }

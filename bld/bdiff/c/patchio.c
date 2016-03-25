@@ -31,13 +31,12 @@
 
 
 #include "bdiff.h"
+#include "patchio.h"
+#include "msg.h"
 
-FILE            *PatchFile;
-extern char     *PatchName;
-extern void     PatchError( int, ... );
-extern void     FilePatchError( int, ... );
+FILE        *PatchFile;
 
-PATCH_RET_CODE OpenPatch()
+PATCH_RET_CODE OpenPatch( void )
 {
     PatchFile = fopen( PatchName, "rb" );
     if( PatchFile == NULL ) {
@@ -51,12 +50,12 @@ PATCH_RET_CODE OpenPatch()
     return( PATCH_RET_OKAY );
 }
 
-void ClosePatch()
+void ClosePatch( void )
 {
     fclose( PatchFile );
 }
 
-PATCH_RET_CODE InputPatch( void *tmp, size_t len )
+PATCH_RET_CODE InputPatch( byte *tmp, size_t len )
 {
     if( fread( tmp, len, 1, PatchFile ) != 1 ) {
         FilePatchError( ERR_CANT_READ, PatchName );

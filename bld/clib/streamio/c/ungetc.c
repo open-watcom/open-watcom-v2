@@ -49,24 +49,24 @@
 
 _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
 {
-    if( c == __F_NAME(EOF,WEOF) ) {   /* cannot push EOF */
+    if( c == INTCHAR_EOF ) {    /* cannot push EOF */
         return( c );
     }
-    _ValidFile( fp, __F_NAME(EOF,WEOF) );
+    _ValidFile( fp, INTCHAR_EOF );
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    ORIENT_STREAM(fp,__F_NAME(EOF,WEOF));
+    ORIENT_STREAM( fp, INTCHAR_EOF );
 
     if( fp->_flag & _DIRTY ) {        /* cannot unget after a put */
         _ReleaseFile( fp );
-        return( __F_NAME(EOF,WEOF) );
+        return( INTCHAR_EOF );
     }
     if(( fp->_flag & _READ ) == 0 ) { /* not open for input */
         _ReleaseFile( fp );
-        return( __F_NAME(EOF,WEOF) );
+        return( INTCHAR_EOF );
     }
-    if( _FP_BASE(fp) == NULL ) {      /* no buffer allocated */
+    if( _FP_BASE( fp ) == NULL ) {      /* no buffer allocated */
         __ioalloc( fp );
     }
 #ifdef __WIDECHAR__
@@ -74,10 +74,10 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
         /*** Leave the character in wide form ***/
         if( fp->_cnt == 0 ) {           /* read buffer is empty */
             fp->_cnt = sizeof( wchar_t );
-            fp->_ptr = _FP_BASE(fp) + fp->_bufsize - sizeof( wchar_t );
+            fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - sizeof( wchar_t );
             fp->_flag |= _UNGET;                    /* 10-mar-90 */
             memcpy( fp->_ptr, &c, sizeof( wchar_t ) );
-        } else if( fp->_ptr != _FP_BASE(fp) ) {
+        } else if( fp->_ptr != _FP_BASE( fp ) ) {
             fp->_cnt += sizeof( wchar_t );
             fp->_ptr -= sizeof( wchar_t );
             fp->_flag |= _UNGET;
@@ -100,10 +100,10 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
         /*** Store the converted character ***/
         if( fp->_cnt == 0 ) {           /* read buffer is empty */
             fp->_cnt = mbcLen;
-            fp->_ptr = _FP_BASE(fp) + fp->_bufsize - mbcLen;
+            fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - mbcLen;
             fp->_flag |= _UNGET;                            /* 10-mar-90 */
             _mbccpy( fp->_ptr, mbc );
-        } else if( fp->_ptr != _FP_BASE(fp) ) {
+        } else if( fp->_ptr != _FP_BASE( fp ) ) {
             fp->_cnt += mbcLen;
             fp->_ptr -= mbcLen;
             fp->_flag |= _UNGET;
@@ -116,10 +116,10 @@ _WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
 #else
     if( fp->_cnt == 0 ) {               /* read buffer is empty */
         fp->_cnt = 1;
-        fp->_ptr = _FP_BASE(fp) + fp->_bufsize - 1;
+        fp->_ptr = _FP_BASE( fp ) + fp->_bufsize - 1;
         fp->_flag |= _UNGET;                                /* 10-mar-90 */
         *fp->_ptr = c;
-    } else if( fp->_ptr != _FP_BASE(fp) ) {
+    } else if( fp->_ptr != _FP_BASE( fp ) ) {
         fp->_cnt++;
         fp->_ptr--;
         if( *fp->_ptr != c ) {

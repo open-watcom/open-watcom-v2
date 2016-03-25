@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,49 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of getprotobyname() for Linux.
+* Description:  Implementation of getprotobyname
+*
+* Author: J. Armstrong
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <string.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <netdb.h>
 
-_WCRTLINK struct protoent *getprotobyname( const char *name )
+_WCRTLINK struct protoent *getprotobyname(const char *name)
 {
-    static struct protoent pe;
+    struct protoent *ret;
+    int i;
 
-    /* just a stub for the debug trapfile for now; TODO:parse /etc/protocols.*/
-    if ( strcmp( name, "tcp" ) == 0 ) {
-        pe.p_proto = 6;
-        return &pe;
+    if( name == NULL ) {
+        _RWD_errno = EINVAL;
+        return( NULL );
     }
-    return ( NULL );
+
+    setprotoent( 1 );
+
+    ret = getprotoent();
+    while( ret != NULL ) {
+        if( ret->p_name != NULL && strcmp(name, ret->p_name) == 0 )
+            goto protobyname_cleanup;
+
+        for( i = 0; ret->p_aliases != NULL && ret->p_aliases[i] != NULL; i++ ) {
+            if( strcmp( name, ret->p_aliases[i] ) == 0 ) {
+                goto protobyname_cleanup;
+            }
+        }
+
+        ret = getprotoent();
+    }
+
+protobyname_cleanup:
+
+    endprotoent();
+
+    return( ret );
 }

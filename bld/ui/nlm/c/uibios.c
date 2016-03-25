@@ -53,21 +53,21 @@ static MONITOR ui_data = {
 
 int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
 
-bool UIAPI uiset80col()
-/**********************/
+bool UIAPI uiset80col( void )
+/***************************/
 {
     return( TRUE );
 }
 
-bool intern initmonitor()
-/***********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     WORD height, width;
 
     ScreenHandle = CreateScreen( uigetscreenname(),
                         DONT_CHECK_CTRL_CHARS | AUTO_DESTROY_SCREEN );
     if( ScreenHandle == -1 ) {
-        return( FALSE );
+        return( false );
     }
     SetCurrentScreen( ScreenHandle );
 
@@ -95,15 +95,15 @@ bool intern initmonitor()
         UIData->colour = M_MONO;
     } /* end if */
 
-    return( TRUE );
+    return( true );
 }
 
 
-int intern initbios( void )
-/*******************/
+bool intern initbios( void )
+/**************************/
 {
-    int                 initialized = FALSE;
-    int                 i;
+    bool        initialized = false;
+    int         i;
 
     if( initmonitor() ) {
 
@@ -132,7 +132,7 @@ int intern initbios( void )
 
         UIData->tick_delay      = uiclockdelay( 500 );
 
-        initialized = TRUE;
+        initialized = true;
     } /* end if */
 
     return( initialized );
@@ -172,7 +172,7 @@ void intern physupdate( SAREA *area )
 
     for( i = area->row ; i < area->row + area->height ; ++i ){
         CopyToScreenMemory( 1, area->width,
-                (BYTE *)&(UIData->screen.origin[i*UIData->width+area->col]),
+                (BYTE *)( UIData->screen.origin + i * UIData->width + area->col ),
                 area->col, i );
     } /* end for */
 

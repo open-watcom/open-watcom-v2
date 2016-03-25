@@ -40,7 +40,7 @@ extern int_16 GetNextByte( void );
 extern int_16 GetDataByte( void );
 extern int_16 GetDataWord( void );
 extern int_32 GetDataLong( void );
-extern char EndOfSegment( void );
+extern bool EndOfSegment( void );
 
 extern void  DoCode( instruction *curr, bool use_32 );
 extern void  FormatIns( char *buf, instruction *curr_ins, form_option format );

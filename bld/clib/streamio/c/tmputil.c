@@ -38,6 +38,8 @@
 #include <process.h>
 #include "rtdata.h"
 #include "tmpfname.h"
+#include "pathmac.h"
+#include "tmpfile.h"
 
 
 static unsigned __GetTmpPath( char *buf )
@@ -49,7 +51,7 @@ static unsigned __GetTmpPath( char *buf )
 #endif
     unsigned    i;
 
-    buf[0] = '\0';  // initialize path
+    buf[0] = NULLCHAR;  // initialize path
 #ifdef __NETWARE__
     getcwd( buf, PATH_MAX );    // No environment vars on Netware
 #else
@@ -63,20 +65,21 @@ static unsigned __GetTmpPath( char *buf )
     /*
      * If we didn't match on any environment vars, get current working dir
      */
-    if( buf[0] == '\0' ) {
+    if( buf[0] == NULLCHAR ) {
         getcwd( buf, PATH_MAX );
     }
 #endif
 
     // if last char is not a path delimiter then append one
     i = strlen( buf );
-    if( i > 0 ) i--;
-    if( (buf[i] != '\\') && (buf[i] != '/') ) {
+    if( i > 0 )
+        i--;
+    if( !IS_DIR_SEP( buf[i] ) ) {
         // if buf[i] is a null char then the following has no effect as planned
         i++;
-        buf[i] = '\\';
+        buf[i] = DIR_SEP;
         i++;
-        buf[i] = '\0';
+        buf[i] = NULLCHAR;
     }
     return( i );
 }
@@ -126,7 +129,7 @@ void __MkTmpFile( char *buf, int num )
     ptr[9] = 't';
     ptr[10] = __hex( (num >> 4) & 0x000F );
     ptr[11] = __hex( num & 0x000F );
-    ptr[12] = '\0';
+    ptr[12] = NULLCHAR;
 }
 
 void __RmTmpFile( FILE *fp )

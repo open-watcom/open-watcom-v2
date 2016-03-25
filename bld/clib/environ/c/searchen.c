@@ -46,12 +46,11 @@
 #include "rterrno.h"
 #include "_environ.h"
 #include "thread.h"
+#include "pathmac.h"
 
 #if defined(__UNIX__)
-    #define PATH_SEPARATOR STRING('/')
     #define LIST_SEPARATOR STRING(':')
 #else
-    #define PATH_SEPARATOR STRING('\\')
     #define LIST_SEPARATOR STRING(';')
 #endif
 
@@ -73,18 +72,20 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
         p = buffer;                                 /* JBS 90/3/30 */
         len = 0;                                    /* JBS 04/1/06 */
         for( ;; ) {
-            if( name[0] == PATH_SEPARATOR ) break;
-            if( name[0] == STRING( '.' ) ) break;
+            if( IS_DIR_SEP( name[0] ) )
+                break;
+            if( name[0] == STRING( '.' ) )
+                break;
 #ifndef __UNIX__
-            if( name[0] == STRING( '/' ) ) break;
-            if( name[0] != NULLCHAR && name[1] == STRING( ':' ) ) break;
+            if( name[0] != NULLCHAR && name[1] == DRV_SEP )
+                break;
 #endif
             __F_NAME(getcwd,_wgetcwd)( buffer, _MAX_PATH );
             len = __F_NAME(strlen,wcslen)( buffer );
             p = &buffer[ len ];
-            if( p[-1] != PATH_SEPARATOR ) {
+            if( p[-1] != DIR_SEP ) {
                 if( len < (_MAX_PATH - 1) ) {
-                    *p++ = PATH_SEPARATOR;
+                    *p++ = DIR_SEP;
                     len++;
                 }
             }
@@ -101,7 +102,8 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
             p2 = buffer;
             len = 0;                                /* JBS 04/1/06 */
             while( *p ) {
-                if( *p == LIST_SEPARATOR ) break;
+                if( *p == LIST_SEPARATOR )
+                    break;
                 if( *p != STRING( '"' ) ) {
                     if( len < (_MAX_PATH-1) ) {
                         *p2++ = *p; /* JBS 00/9/29 */
@@ -112,13 +114,13 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
             }
             /* check for zero-length prefix which represents CWD */
             if( p2 != buffer ) {                    /* JBS 90/3/30 */
-                if( p2[-1] != PATH_SEPARATOR
-#ifndef __UNIX__
-                    && p2[-1] != STRING( '/' ) && p2[-1] != STRING( ':' )
+#ifdef __UNIX__
+                if( !IS_DIR_SEP( p2[-1] ) ) {
+#else
+                if( !IS_DIR_SEP( p2[-1] ) && p2[-1] != DRV_SEP ) {
 #endif
-                    ) {
                     if( len < (_MAX_PATH - 1) ) {
-                        *p2++ = PATH_SEPARATOR;
+                        *p2++ = DIR_SEP;
                         len++;
                     }
                 }

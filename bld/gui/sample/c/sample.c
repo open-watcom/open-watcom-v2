@@ -511,10 +511,10 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             back = '\xb0';
             GUISetBackgroundChar( gui, back );
 #if dynamic_menus
-            GUIAppendMenuByOffset( gui, 5, &ModifyColour );
+            GUIAppendMenuByIdx( gui, 5, &ModifyColour );
             GUIAppendMenuToPopup( gui, MENU_MODIFY_COLOUR, &PopupMenu[0], false );
             //GUIAppendMenu( gui, &ChildMenu, false );
-            GUIInsertMenu( gui, 0, ChildMenu, false );
+            GUIInsertMenuByIdx( gui, 0, ChildMenu, false );
             GUIInsertMenuByID( gui, MENU_SEP_QUIT, &ModifyColour );
 #endif
         }

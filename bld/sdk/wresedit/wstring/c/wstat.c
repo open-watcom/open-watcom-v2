@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <mbstring.h>
 #include <stdio.h>
@@ -199,7 +199,7 @@ bool WSetStatusReadyText( WStatBar *wsb )
     return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
 }
 
-bool WSetStatusByID( WStatBar *wsb, MSGID id1, MSGID id2 )
+bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
 {
     char        *str1;
     char        *str2;
@@ -308,7 +308,7 @@ bool WDisplayStatusText( WStatBar *wsb )
 
     hdc = GetDC( wsb->win );
     if( hdc != (HDC)NULL ) {
-        StatusWndDrawLine( wsb->stat, hdc, WStatusFont, wsb->text, -1 );
+        StatusWndDrawLine( wsb->stat, hdc, WStatusFont, wsb->text, DT_ESC_CONTROLLED );
         ReleaseDC( wsb->win, hdc );
     }
 

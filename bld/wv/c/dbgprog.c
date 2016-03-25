@@ -48,65 +48,38 @@
 #include "filelcl.h"
 #include "filermt.h"
 #include "dbgsrc.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgovl.h"
+#include "dbgbrk.h"
+#include "dbgparse.h"
+#include "dbgdot.h"
+#include "dbgprog.h"
+#include "dbgtrace.h"
+#include "remcore.h"
+#include "remfile.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "addarith.h"
+#include "dbgevent.h"
+#include "dbgupdt.h"
+#include "dbglkup.h"
+#include "ntdbgpb.h"
 
 #include "clibext.h"
 
 
-search_result           LineCue( mod_handle, cue_fileid,
-                          unsigned long line, unsigned column, cue_handle *ch );
-extern cue_fileid       CueFileId( cue_handle * );
-extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
-extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );
 extern void             StdOutNew( void );
-extern bool             KillProgOvlay( void );
-extern void             ReportTask( task_status, unsigned );
-extern void             BPsDeac( void );
-extern void             BPsUnHit( void );
-extern unsigned         DoLoad( const char *, unsigned long * );
-extern void             ClearMachState( void );
-extern void             SetupMachState( void );
-extern unsigned long    RemoteGetLibName( unsigned long, char *buff, unsigned buff_len );
-extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
-extern void             RemoteSplitCmd( char *, char **, char ** );
-extern void             SymInfoMvHdl( handle, handle );
-extern handle           PathOpen( const char *, unsigned, const char * );
-extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
-extern void             ChkExpr( void );
-extern unsigned         ReqExpr( void );
-extern void             ReqMemAddr( memory_expr, address * );
 extern void             SetNoSectSeg( void );
-extern void             TraceKill( void );
-extern void             ActPoint( brkp *, bool );
-extern void             AddAliasInfo( unsigned, unsigned );
-extern void             FreeAliasInfo( void );
-extern void             CheckSegAlias( void );
-extern void             SetCodeDot( address );
-extern address          GetRegIP( void );
-extern bool             DlgGivenAddr( const char *title, address *value );
 extern void             SetLastExe( const char *name );
-extern void             SetPointAddr( brkp *bp, address addr );
-extern void             RemoteMapAddr( addr_ptr *, addr_off *, addr_off *, unsigned long handle );
-extern void             AddrSection( address *, unsigned );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
-extern char             *DIPMsgText( dip_status );
-extern address          GetRegSP( void );
-extern bool             FindNullSym( mod_handle, address * );
-extern bool             SetWDPresent( mod_handle );
-extern void             RecordStart( void );
-extern char             *GetCmdName( wd_cmd cmd );
-extern char             *GetCmdEntry( const char *tab, int index, char *buf );
-extern void             RecordEvent( const char * );
-extern bool             HookPendingPush( void );
-extern const char       *CheckForPowerBuilder( const char * );
-extern mod_handle       LookupImageName( const char *start, unsigned len );
-extern mod_handle       LookupModName( mod_handle search, const char *start, unsigned len );
-extern bool             GetBPSymAddr( brkp *bp, address *addr );
-extern void             DbgUpdate( update_list );
+//extern const char       *CheckForPowerBuilder( const char * );
 extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void));
 
 extern bool             DownLoadTask;
@@ -144,15 +117,14 @@ bool InitCmd( void )
             while( *curr == ' ' || *curr == '\t' )
                 ++curr;
             start = curr;
-            while( *curr != ' ' && *curr != '\t' && *curr != '\0' )
+            while( *curr != ' ' && *curr != '\t' && *curr != NULLCHAR )
                 ++curr;
             _Alloc( parm, curr - start + 1 );
             if( parm == NULL )
-                return( FALSE );
+                return( false );
             SymFileName = parm;
-            while( start < curr ) {
+            while( start < curr )
                 *parm++ = *start++;
-            }
             *parm = NULLCHAR;
             while( *curr == ' ' || *curr == '\t' )
                 ++curr;
@@ -165,14 +137,13 @@ bool InitCmd( void )
     }
     total = 0;
     for( argc = 0; (curr = GetCmdArg( argc )) != NULL; ++argc ) {
-        while( *curr++ != NULLCHAR ) {
+        while( *curr++ != NULLCHAR )
             ++total;
-        }
         ++total;
     }
     _Alloc( TaskCmd, total + 2 );
     if( TaskCmd == NULL )
-        return( FALSE );
+        return( false );
     ptr = TaskCmd;
     for( argc = 0; (curr = GetCmdArg( argc )) != NULL; ++argc ) {
         while( (c = *curr++) != NULLCHAR ) {
@@ -198,44 +169,44 @@ bool InitCmd( void )
         memmove( ptr, ptr + 1, end - ptr );
         memmove( end - 2, end, last - end + 1 );
     }
-    return( TRUE );
+    return( true );
 }
 
 void FindLocalDebugInfo( const char *name )
 {
-    char        *buff, *symname;
-    unsigned    len;
-    handle      local;
+    char        *buff, *symfile;
+    size_t      len;
+    file_handle fh;
 
     len = strlen( name );
     _AllocA( buff, len + 1 + 4 + 2 );
-    _AllocA( symname, len + 1 + 4 );
+    _AllocA( symfile, len + 1 + 4 );
     strcpy( buff, "@l" );
     // If a .sym file is present, use it in preference to the executable
-    local = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symname, len + 4 );
-    if( local != NIL_HANDLE ) {
-        strcat( buff, symname );
-        FileClose( local );
+    fh = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symfile, len + 4 );
+    if( fh != NIL_HANDLE ) {
+        strcat( buff, symfile );
+        FileClose( fh );
     } else {
         strcat( buff, name );
     }
-    InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), FALSE );
+    InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
 
 static void DoDownLoadCode( void )
 /********************************/
 {
-    handle local;
+    file_handle     fh;
 
     if( !DownLoadTask )
         return;
-    local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
-    if( local == NIL_HANDLE ) {
+    fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
+    if( fh == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TaskCmd );
     }
-    FileClose( local );
+    FileClose( fh );
     FindLocalDebugInfo( TxtBuff );
-    CopyToRemote( TxtBuff, SkipPathInfo( TxtBuff, OP_LOCAL ), TRUE, NULL );
+    CopyToRemote( TxtBuff, SkipPathInfo( TxtBuff, OP_LOCAL ), true, NULL );
 }
 
 
@@ -308,12 +279,12 @@ OVL_EXTERN void MapAddrSystem( image_entry *image, addr_ptr *addr,
 static bool InMapEntry( map_entry *curr, addr_ptr *addr )
 {
     if( addr->segment != curr->map_addr.segment )
-        return( FALSE );
+        return( false );
     if( addr->offset < curr->map_valid_lo )
-        return( FALSE );
+        return( false );
     if( addr->offset > curr->map_valid_hi )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 void MapAddrForImage( image_entry *image, addr_ptr *addr )
@@ -327,7 +298,7 @@ void MapAddrForImage( image_entry *image, addr_ptr *addr )
     for( owner = &image->map_list; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->pre_map || InMapEntry( curr, addr ) ) {
             curr->map_addr = *addr;
-            curr->pre_map = FALSE;
+            curr->pre_map = false;
             addr->segment = curr->real_addr.segment;
             addr->offset += curr->real_addr.offset;
             return;
@@ -345,7 +316,7 @@ void MapAddrForImage( image_entry *image, addr_ptr *addr )
         curr->map_addr.offset = 0;
         curr->real_addr = *addr;
         curr->real_addr.offset -= map_addr.offset;
-        curr->pre_map = FALSE;
+        curr->pre_map = false;
     }
 }
 
@@ -357,21 +328,21 @@ bool UnMapAddress( mappable_addr *loc, image_entry *image )
 
     if( image == NULL ) {
         if( DeAliasAddrMod( loc->addr, &himage ) == SR_NONE )
-            return( FALSE );
+            return( false );
         image = ImageEntry( himage );
     }
     if( image == NULL )
-        return( FALSE );
+        return( false );
     DbgFree( loc->image_name );
     loc->image_name = DupStr( image->image_name );
     for( map = image->map_list; map != NULL; map = map->link ) {
         if( map->real_addr.segment == loc->addr.mach.segment ) {
             loc->addr.mach.segment = map->map_addr.segment;
             loc->addr.mach.offset = loc->addr.mach.offset - map->real_addr.offset;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -391,7 +362,7 @@ static void UnMapOnePoint( brkp *bp, image_entry *image )
     if( bp->image_name == NULL || bp->mod_name == NULL ) {
         bp->status.b.unmapped = UnMapAddress( &bp->loc, image );
     } else {
-        bp->status.b.unmapped = TRUE;
+        bp->status.b.unmapped = true;
     }
 }
 
@@ -431,7 +402,7 @@ void FreeImage( image_entry *image )
                 next = head->link;
                 _Free( head );
             }
-            _Free( curr->sym_name );
+            _Free( curr->symfile_name );
             _Free( curr );
             break;
         }
@@ -439,28 +410,28 @@ void FreeImage( image_entry *image )
 }
 
 
-static image_entry *DoCreateImage( const char *exe, const char *sym )
+static image_entry *DoCreateImage( const char *exe, const char *symfile )
 {
     image_entry         *image;
     image_entry         **owner;
-    unsigned            len;
+    size_t              len;
 
 
-    len = (exe==NULL) ? 0 : strlen( exe );
+    len = ( exe == NULL ) ? 0 : strlen( exe );
     _ChkAlloc( image, sizeof( *image ) + len, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     if( image == NULL )
         return( NULL );
     memset( image, 0, sizeof( *image ) );
     if( len != 0 )
         memcpy( image->image_name, exe, len + 1 );
-    if( sym != NULL ) {
-        _Alloc( image->sym_name, strlen( sym ) + 1 );
-        if( image->sym_name == NULL ) {
+    if( symfile != NULL ) {
+        _Alloc( image->symfile_name, strlen( symfile ) + 1 );
+        if( image->symfile_name == NULL ) {
             _Free( image );
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
             return( NULL );
         }
-        strcpy( image->sym_name, sym );
+        strcpy( image->symfile_name, symfile );
     }
     image->mapper = MapAddrSystem;
     for( owner = &DbgImageList; *owner != NULL; owner = &(*owner)->link )
@@ -478,7 +449,7 @@ char *GetLastImageName( void )
     return( image->image_name );
 }
 
-static image_entry *CreateImage( const char *exe, const char *sym )
+static image_entry *CreateImage( const char *exe, const char *symfile )
 {
     image_entry         *image;
     bool                local;
@@ -489,8 +460,8 @@ static image_entry *CreateImage( const char *exe, const char *sym )
     char_ring           *curr;
     open_access         ind;
 
-    if( exe != NULL && sym == NULL ) {
-        local = FALSE;
+    if( exe != NULL && symfile == NULL ) {
+        local = false;
         this_name = SkipPathInfo( exe, OP_REMOTE );
         this_len = ExtPointer( exe, OP_REMOTE ) - exe;
         for( curr = LocalDebugInfo; curr != NULL; curr = curr->next ) {
@@ -501,55 +472,53 @@ static image_entry *CreateImage( const char *exe, const char *sym )
             curr_len = ExtPointer( curr_name, OP_LOCAL ) - curr_name;
             local = ( this_len == curr_len && strnicmp( this_name, curr_name, this_len ) == 0 );
             if( local ) {
-                sym = curr->name;
+                symfile = curr->name;
                 break;
             }
         }
     }
 
     _SwitchOn( SW_ERROR_RETURNS );
-    image = DoCreateImage( exe, sym );
+    image = DoCreateImage( exe, symfile );
     _SwitchOff( SW_ERROR_RETURNS );
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, handle h,
+static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
                         unsigned start, unsigned end )
 {
     char        buff[TXT_LEN];
-    char        *name;
+    char        *symfile;
     unsigned    prio;
     char        *endstr;
 
     prio = start;
     for( ;; ) {
         prio = DIPPriority( prio );
-        if( prio == 0 )
-            return( FALSE );
-        if( prio > end )
-            return( FALSE );
+        if( prio == 0 || prio > end )
+            return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( h, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( fh, sizeof( image_entry * ), prio );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
-            name = image->sym_name;
-            if( name == NULL )
-                name = image->image_name;
-            endstr = Format( buff, LIT_ENG( Sym_Info_Load_Failed ), name );
+            symfile = image->symfile_name;
+            if( symfile == NULL )
+                symfile = image->image_name;
+            endstr = Format( buff, LIT_ENG( Sym_Info_Load_Failed ), symfile );
             *endstr++ = ' ';
             StrCopy( DIPMsgText( DIPStatus ), endstr );
             Warn( buff );
-            return( FALSE );
+            return( false );
         }
     }
     *(image_entry **)ImageExtra( image->dip_handle ) = image;
-    return( TRUE );
+    return( true );
 }
 
 
 /*
- * ProcSymInfo -- initialize symbolic information
+ * ProcImgSymInfo -- initialize symbolic information
  *
  * Note: This function should try to open files locally first, for two
  * reasons:
@@ -558,106 +527,106 @@ static bool CheckLoadDebugInfo( image_entry *image, handle h,
  * 2) Remote access goes through extra layer of indirection; this overhead
  *    is completely unnecessary for local debugging.
  */
-static bool ProcSymInfo( image_entry *image )
+static bool ProcImgSymInfo( image_entry *image )
 {
-    handle      h;
+    file_handle fh;
     unsigned    last;
     char        buff[TXT_LEN];
-    char        *sym_name;
+    char        *symfile_name;
     const char  *nopath;
-    unsigned    len;
+    size_t      len;
 
-    image->deferred_symbols = FALSE;
+    image->deferred_symbols = false;
     if( _IsOff( SW_LOAD_SYMS ) )
         return( NO_MOD );
-    if( image->sym_name != NULL ) {
+    if( image->symfile_name != NULL ) {
         last = DIP_PRIOR_MAX;
-        h = PathOpen( image->sym_name, strlen( image->sym_name ), "sym" );
-        if( h == NIL_HANDLE ) {
-            nopath = SkipPathInfo( image->sym_name, OP_REMOTE );
-            h = PathOpen( nopath, strlen( nopath ), "sym" );
-            if( h == NIL_HANDLE ) {
+        fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
+        if( fh == NIL_HANDLE ) {
+            nopath = SkipPathInfo( image->symfile_name, OP_REMOTE );
+            fh = PathOpen( nopath, strlen( nopath ), "sym" );
+            if( fh == NIL_HANDLE ) {
                 /* try the sym file without an added extension */
-                h = FileOpen( image->sym_name, OP_READ );
+                fh = FileOpen( image->symfile_name, OP_READ );
             }
         }
     } else {
         last = DIP_PRIOR_EXPORTS - 1;
-        h = FileOpen( image->image_name, OP_READ );
-        if( h == NIL_HANDLE ) {
-            h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+        fh = FileOpen( image->image_name, OP_READ );
+        if( fh == NIL_HANDLE ) {
+            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
         }
     }
-    if( h != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, last ) ) {
-            return( TRUE );
+    if( fh != NIL_HANDLE ) {
+        if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last ) ) {
+            return( true );
         }
-        FileClose( h );
+        FileClose( fh );
     }
-    if( image->sym_name != NULL )
-        return( FALSE );
-    _AllocA( sym_name, strlen( image->image_name ) + 1 );
-    strcpy( sym_name, image->image_name );
-    sym_name[ExtPointer( sym_name, OP_REMOTE ) - sym_name] = '\0';
-    len = MakeFileName( buff, sym_name, "sym", OP_REMOTE );
-    _Alloc( image->sym_name, len + 1 );
-    if( image->sym_name != NULL ) {
-        memcpy( image->sym_name, buff, len + 1 );
-        h = FileOpen( image->sym_name, OP_READ );
-        if( h == NIL_HANDLE ) {
-            h = FileOpen( image->sym_name, OP_READ | OP_REMOTE );
+    if( image->symfile_name != NULL )
+        return( false );
+    _AllocA( symfile_name, strlen( image->image_name ) + 1 );
+    strcpy( symfile_name, image->image_name );
+    symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
+    len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
+    _Alloc( image->symfile_name, len + 1 );
+    if( image->symfile_name != NULL ) {
+        memcpy( image->symfile_name, buff, len + 1 );
+        fh = FileOpen( image->symfile_name, OP_READ );
+        if( fh == NIL_HANDLE ) {
+            fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
         }
-        if( h == NIL_HANDLE ) {
-            h = PathOpen( image->sym_name, strlen( image->sym_name ), "" );
+        if( fh == NIL_HANDLE ) {
+            fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
         }
-        if( h != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, h, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
-                return( TRUE );
+        if( fh != NIL_HANDLE ) {
+            if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
+                return( true );
             }
-            FileClose( h );
+            FileClose( fh );
         }
-        _Free( image->sym_name );
+        _Free( image->symfile_name );
     }
-    image->sym_name = NULL;
+    image->symfile_name = NULL;
     if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
         if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
-            image->deferred_symbols = TRUE;
+            image->deferred_symbols = true;
         } else {
-            h = FileOpen( image->image_name, OP_READ | OP_REMOTE );
-            if( h != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, h, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
-                    return( TRUE );
+            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+            if( fh != NIL_HANDLE ) {
+                if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+                    return( true );
                 }
-                FileClose( h );
+                FileClose( fh );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
-void UnLoadSymInfo( image_entry *image, bool nofree )
+void UnLoadImgSymInfo( image_entry *image, bool nofree )
 {
     if( image->dip_handle != NO_MOD ) {
         image->nofree = nofree;
         DIPUnloadInfo( image->dip_handle );
         if( nofree ) {
             image->dip_handle = NO_MOD;
-            image->nofree = FALSE;
+            image->nofree = false;
         }
         DbgUpdate( UP_SYMBOLS_LOST );
         FClearOpenSourceCache();
     }
 }
 
-bool ReLoadSymInfo( image_entry *image )
+bool ReLoadImgSymInfo( image_entry *image )
 {
-    if( ProcSymInfo( image ) ) {
+    if( ProcImgSymInfo( image ) ) {
         DIPMapInfo( image->dip_handle, image );
         DbgUpdate( UP_SYMBOLS_ADDED );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -689,15 +658,15 @@ bool ReMapAddress( mappable_addr *loc )
     image_entry         *image;
     for( image = DbgImageList; image != NULL; image = image->link ) {
         if( ReMapImageAddress( loc, image ) == REMAP_REMAPPED ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
 {
-    mod_handle  himage,mod;
+    mod_handle  himage, mod;
     bool        ok;
     address     addr;
     DIPHDL( cue, ch );
@@ -740,11 +709,11 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
         rc = REMAP_REMAPPED;
     }
     if( rc == REMAP_REMAPPED ) {
-        bp->status.b.unmapped = FALSE;
+        bp->status.b.unmapped = false;
     }
     SetPointAddr( bp, bp->loc.addr );
     if( bp->status.b.activate_on_remap ) {
-        ActPoint( bp, TRUE );
+        ActPoint( bp, true );
     }
     return( rc );
 }
@@ -757,8 +726,8 @@ void ReMapPoints( image_entry *image )
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         switch( ReMapOnePoint( bp, image ) ) {
         case REMAP_ERROR:
-            ActPoint( bp, FALSE );
-            bp->status.b.activate_on_remap = TRUE;
+            ActPoint( bp, false );
+            bp->status.b.activate_on_remap = true;
             break;
         case REMAP_REMAPPED:
             bp->countdown = bp->initial_countdown;
@@ -770,7 +739,7 @@ void ReMapPoints( image_entry *image )
         switch( ReMapOnePoint( &UserTmpBrk, image ) ) {
         case REMAP_ERROR:
 // nobody cares about this warning!!        Warn( LIT_ENG( WARN_Unable_To_Remap_Tmp ) );
-            UserTmpBrk.status.b.active = FALSE;
+            UserTmpBrk.status.b.active = false;
             break;
         }
     }
@@ -792,17 +761,17 @@ static void InitImageInfo( image_entry *image )
 bool LoadDeferredSymbols( void )
 {
     image_entry *image;
-    bool        rc = FALSE;
+    bool        rc = false;
     bool        defer;
 
     defer = _IsOn( SW_DEFER_SYM_LOAD );
     _SwitchOff( SW_DEFER_SYM_LOAD );
     for( image = DbgImageList; image != NULL; image = image->link ) {
         if( image->deferred_symbols ) {
-            if( ReLoadSymInfo( image ) ) {
+            if( ReLoadImgSymInfo( image ) ) {
                 InitImageInfo( image );
-                image->deferred_symbols = FALSE;
-                rc = TRUE;
+                image->deferred_symbols = false;
+                rc = true;
             }
         }
     }
@@ -819,42 +788,42 @@ bool AddLibInfo( bool already_stopping, bool *force_stop )
     bool                deleted;
     image_entry         *image;
 
-    added = FALSE;
-    deleted = FALSE;
+    added = false;
+    deleted = false;
     module = 0;
     while( (module = RemoteGetLibName( module, TxtBuff, TXT_LEN )) != 0 ) {
         if( TxtBuff[0] == NULLCHAR ) {
-            deleted = TRUE;
+            deleted = true;
             for( image = DbgImageList; image != NULL; image = image->link ) {
                 if( image->system_handle == module ) {
-                    DUIImageLoaded( image, FALSE, already_stopping, force_stop );
-                    UnLoadSymInfo( image, FALSE );
+                    DUIImageLoaded( image, false, already_stopping, force_stop );
+                    UnLoadImgSymInfo( image, false );
                     break;
                 }
             }
         } else {
-            added = TRUE;
+            added = true;
             image = CreateImage( TxtBuff, NULL );
             if( image != NULL ) {
                 image->system_handle = module;
-                if( ReLoadSymInfo( image ) ) {
+                if( ReLoadImgSymInfo( image ) ) {
                     InitImageInfo( image );
                 }
-                DUIImageLoaded( image, TRUE, already_stopping, force_stop );
+                DUIImageLoaded( image, true, already_stopping, force_stop );
             }
         }
     }
     CheckSegAlias();
     if( deleted ) {
-        HookNotify( TRUE, HOOK_DLL_END );
+        HookNotify( true, HOOK_DLL_END );
     }
     if( added ) {
-        HookNotify( TRUE, HOOK_DLL_START );
+        HookNotify( true, HOOK_DLL_START );
     }
     return( added );
 }
 
-static bool ProgStartHook = TRUE;
+static bool ProgStartHook = true;
 
 bool SetProgStartHook( bool new )
 {
@@ -876,22 +845,22 @@ static void WndNewProg( void )
                UP_REG_CHANGE | UP_MEM_CHANGE |
                UP_THREAD_STATE | UP_NEW_PROGRAM );
     if( ProgStartHook ) {
-        HookNotify( FALSE, HOOK_PROG_START );
+        HookNotify( false, HOOK_PROG_START );
     }
-    HookNotify( FALSE, HOOK_NEW_MODULE );
+    HookNotify( false, HOOK_NEW_MODULE );
 }
 
-static int DoLoadProg( const char *task, const char *sym, unsigned *error )
+static int DoLoadProg( const char *task, const char *symfile, error_handle *errh )
 {
     open_access         loc;
     const char          *name;
     unsigned            len;
     static char         fullname[2048];
     image_entry         *image;
-    handle              local;
+    file_handle         fh;
     unsigned long       system_handle;
 
-    *error = 0;
+    *errh = 0;
 #ifdef __NT__
     task = CheckForPowerBuilder( task );
 #endif
@@ -900,30 +869,30 @@ static int DoLoadProg( const char *task, const char *sym, unsigned *error )
     name = FileLoc( task, &loc );
     if( DownLoadTask ) {
         strcpy( fullname, name );
-        local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
-        if( local != NIL_HANDLE ) {
+        fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
+        if( fh != NIL_HANDLE ) {
             strcpy( fullname, TxtBuff );
-            FileClose( local );
+            FileClose( fh );
         }
     } else {
-        len = RemoteStringToFullName(TRUE, name, fullname, sizeof(fullname));
-        fullname[len] = '\0';
+        len = RemoteStringToFullName( true, name, fullname, sizeof( fullname ) );
+        fullname[len] = NULLCHAR;
     }
-    image = CreateImage( fullname, sym );
+    image = CreateImage( fullname, symfile );
     if( image == NULL )
         return( TASK_NOT_LOADED );
     if( DownLoadTask ) {
         name = SkipPathInfo( name, OP_LOCAL );
     }
-    *error = DoLoad( name, &system_handle );
-    if( *error != 0 ) {
+    *errh = DoLoad( name, &system_handle );
+    if( *errh != 0 ) {
         FreeImage( image );
         return( TASK_NOT_LOADED );
     }
     CheckSegAlias();
     image->system_handle = system_handle;
     SetLastExe( fullname );
-    ProcSymInfo( image );
+    ProcImgSymInfo( image );
     if( image->dip_handle != NO_MOD ) {
         DIPMapInfo( image->dip_handle, image );
     }
@@ -933,7 +902,7 @@ static int DoLoadProg( const char *task, const char *sym, unsigned *error )
 
 void LoadProg( void )
 {
-    unsigned            error = 0;
+    error_handle        errh = 0;
     int                 ret;
     unsigned long       system_handle;
     static char         NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };
@@ -944,22 +913,19 @@ void LoadProg( void )
     if( !DownLoadCode() ) {
         ret =  TASK_NOT_LOADED;
     } else {
-        ret = DoLoadProg( TaskCmd, SymFileName, &error );
+        ret = DoLoadProg( TaskCmd, SymFileName, &errh );
     }
     if( ret != TASK_NEW ) {
         CreateImage( NULL, NULL );
         DoLoad( NullProg, &system_handle );
     }
     /* need to do all these because we might be the QNX low level debugger */
-    AddLibInfo( TRUE, &dummy );
+    AddLibInfo( true, &dummy );
     SetupMachState();
     WndNewProg();
     RecordStart();
-    ReportTask( ret, error );
+    ReportTask( ret, errh );
 }
-
-
-
 
 /*
  * ReleaseProgOvlay -- release segment that was allocated for the user program
@@ -1010,14 +976,14 @@ void FiniMappableAddr( mappable_addr *loc )
 }
 
 
-unsigned GetProgName( char *where, unsigned len )
+size_t GetProgName( char *where, size_t len )
 {
-    unsigned    l;
+    size_t      l;
 
     /*
         Before, we did a:
 
-            RemoteStringToFullName( TRUE, TaskCmd, where, len );
+            RemoteStringToFullName( true, TaskCmd, where, len );
 
         but that screws up when the user specified something other than
         just an executable on the command line. E.g. a PID to connect
@@ -1036,22 +1002,20 @@ static bool ArgNeedsQuotes( const char *src )
     char        ch;
 
     if( *src == NULLCHAR )
-        return( TRUE );
-    for( ;; ) {
-        ch = *src;
-        if( ch == NULLCHAR )
-            return( FALSE );
+        return( true );
+    for( ; (ch = *src) != NULLCHAR; ++src ) {
         if( ch == ' ' )
-            return( TRUE );
-        if( ch == '\t' )
-            return( TRUE );
-        ++src;
+            return( true );
+        if( ch == '\t' ) {
+            return( true );
+        }
     }
+    return( false );
 }
 
-static void AddString( char **dstp, unsigned *lenp, const char *src )
+static void AddString( char **dstp, size_t *lenp, const char *src )
 {
-    unsigned    len;
+    size_t      len;
 
     len = strlen( src );
     if( len > *lenp )
@@ -1061,15 +1025,14 @@ static void AddString( char **dstp, unsigned *lenp, const char *src )
     *lenp -= len;
 }
 
-static unsigned PrepProgArgs( char *where, unsigned len )
+static size_t PrepProgArgs( char *where, size_t len )
 {
     char        *src;
     char        *dst;
 
     --len;      /* leave room for NULLCHAR */
-    src = TaskCmd + strlen( TaskCmd ) + 1;
     dst = where;
-    while( *src != ARG_TERMINATE ) {
+    for( src = TaskCmd + strlen( TaskCmd ) + 1; *src != ARG_TERMINATE; src += strlen( src ) + 1 ) {
         if( dst != where )
             AddString( &dst, &len, " " );
         if( _IsOn( SW_TRUE_ARGV ) && ArgNeedsQuotes( src ) ) {
@@ -1079,20 +1042,19 @@ static unsigned PrepProgArgs( char *where, unsigned len )
         } else {
             AddString( &dst, &len, src );
         }
-        src += strlen( src ) + 1;
     }
     *dst = NULLCHAR;
     return( dst - where );
 }
 
-unsigned GetProgArgs( char *where, unsigned len )
+size_t GetProgArgs( char *where, size_t len )
 {
     len = PrepProgArgs( where, len );
     _SwitchOff( SW_TRUE_ARGV );
     return( len );
 }
 
-void SetSymName( const char *file )
+void SetSymFileName( const char *file )
 {
     if( SymFileName != NULL )
         _Free( SymFileName );
@@ -1102,18 +1064,18 @@ void SetSymName( const char *file )
 
 
 static void DoResNew( bool have_parms, const char *cmd,
-                     unsigned clen, const char *parms, unsigned plen )
+                     size_t clen, const char *parms, size_t plen )
 {
     char                *new;
 
     TraceKill();
     new = DbgMustAlloc( clen + plen + 2 );
-    ReleaseProgOvlay( FALSE );
+    ReleaseProgOvlay( false );
     BPsUnHit();
     memcpy( new, cmd, clen );
-    new[ clen ] = NULLCHAR;
-    memcpy( &new[ clen + 1 ], parms, plen );
-    new[ clen + plen + 1 ] = ARG_TERMINATE;
+    new[clen] = NULLCHAR;
+    memcpy( new + clen + 1, parms, plen );
+    new[clen + plen + 1] = ARG_TERMINATE;
     _Free( TaskCmd );
     TaskCmd = new;
     if( have_parms )
@@ -1124,33 +1086,33 @@ static void DoResNew( bool have_parms, const char *cmd,
 
 extern void LoadNewProg( const char *cmd, const char *parms )
 {
-    unsigned clen,plen;
+    size_t      clen, plen;
     char        prog[FILENAME_MAX];
 
     clen = strlen( cmd );
     plen = strlen( parms );
     GetProgName( prog, sizeof( prog ) );
     if( stricmp( cmd, prog ) == 0 ) {
-        DoResNew( plen != 0, cmd, clen, parms, plen+1 );
+        DoResNew( plen != 0, cmd, clen, parms, plen + 1 );
     } else {
         BPsDeac();
-        DoResNew( plen != 0, cmd, clen, parms, plen+1 );
+        DoResNew( plen != 0, cmd, clen, parms, plen + 1 );
         VarFreeScopes();
     }
 }
 
 
-static unsigned long SizeMinusDebugInfo( handle floc, bool strip )
-/****************************************************************/
+static unsigned long SizeMinusDebugInfo( file_handle fh, bool strip )
+/*******************************************************************/
 {
     TISTrailer          trailer;
     unsigned long       copylen;
 
-    copylen = SeekStream( floc, 0, DIO_SEEK_END );
+    copylen = SeekStream( fh, 0, DIO_SEEK_END );
     if( !strip )
         return( copylen );
-    SeekStream( floc, -sizeof( trailer ), DIO_SEEK_END );
-    if( ReadStream( floc, &trailer, sizeof( trailer ) ) != sizeof( trailer ) )
+    SeekStream( fh, -sizeof( trailer ), DIO_SEEK_END );
+    if( ReadStream( fh, &trailer, sizeof( trailer ) ) != sizeof( trailer ) )
         return( copylen );
     if( trailer.signature != TIS_TRAILER_SIGNATURE )
         return( copylen );
@@ -1161,9 +1123,9 @@ static unsigned long SizeMinusDebugInfo( handle floc, bool strip )
 static bool CopyToRemote( const char *local, const char *remote, bool strip, void *cookie )
 /*****************************************************************************************/
 {
-    handle              floc;
-    handle              frem;
-    unsigned            len;
+    file_handle         fh_lcl;
+    file_handle         fh_rem;
+    size_t              read_len;
     char                *buff;
     unsigned            bsize;
     unsigned long       copylen;
@@ -1179,18 +1141,18 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
 #endif
     remdate = RemoteGetFileDate( remote );
     if( remdate != -1 && lcldate != -1 && remdate == lcldate )
-        return( TRUE );
+        return( true );
     strip = strip; // nyi - strip debug info here
-    floc = FileOpen( local, OP_READ );
-    if( floc == NIL_HANDLE ) {
+    fh_lcl = FileOpen( local, OP_READ );
+    if( fh_lcl == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), local );
-        return( FALSE );
+        return( false );
     }
-    frem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
-    if( frem == NIL_HANDLE ) {
+    fh_rem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
+    if( fh_rem == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
-        FileClose( floc );
-        return( FALSE );
+        FileClose( fh_lcl );
+        return( false );
     }
     bsize = 0x8000;
     _Alloc( buff, bsize );
@@ -1198,31 +1160,33 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
         bsize = 128;
         buff = DbgMustAlloc( bsize );
     }
-    copylen = SizeMinusDebugInfo( floc, strip );
+    copylen = SizeMinusDebugInfo( fh_lcl, strip );
     DUICopySize( cookie, copylen );
-    SeekStream( floc, 0, DIO_SEEK_ORG );
-    delete_file = FALSE;
+    SeekStream( fh_lcl, 0, DIO_SEEK_ORG );
+    delete_file = false;
     copied = 0;
-    while( ( len = ReadStream( floc, buff, bsize ) ) != 0 ) {
-        WriteStream( frem, buff, len );
+    while( (read_len = ReadStream( fh_lcl, buff, bsize )) != 0 ) {
+        if( read_len == ERR_RETURN )
+            break;
+        WriteStream( fh_rem, buff, read_len );
         DUICopyCopied( cookie, copied );
-        copied += len;
+        copied += read_len;
         if( copied >= copylen )
             break;
         if( DUICopyCancelled( cookie ) ) {
-            delete_file = TRUE;
+            delete_file = true;
             break;
         }
     }
-    FileClose( floc );
-    FileClose( frem );
+    FileClose( fh_lcl );
+    FileClose( fh_rem );
     _Free( buff );
     if( delete_file ) {
         RemoteErase( remote );
-        return( FALSE );
+        return( false );
     } else {
         RemoteSetFileDate( remote, lcldate );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -1238,7 +1202,7 @@ static unsigned ArgLen( const char *p )
 }
 
 
-static void DoReStart( bool have_parms, unsigned clen, const char *start, unsigned len )
+static void DoReStart( bool have_parms, size_t clen, const char *start, size_t len )
 {
     DoResNew( have_parms, TaskCmd, clen, start, len );
 }
@@ -1252,14 +1216,14 @@ static void ResNew( void )
     bool                have_parms;
 
     clen = strlen( TaskCmd );
-    if( ScanItem( FALSE, &start, &len ) ) {
+    if( ScanItem( false, &start, &len ) ) {
         memcpy( TxtBuff, start, len );
-        TxtBuff[ len++ ] = NULLCHAR;
-        have_parms = TRUE;
+        TxtBuff[len++] = NULLCHAR;
+        have_parms = true;
     } else {
-        start = &TaskCmd[ clen + 1 ];
+        start = TaskCmd + clen + 1;
         len = ArgLen( start );
-        have_parms = FALSE;
+        have_parms = false;
     }
     ReqEOC();
     if( _IsOff( SW_PROC_ALREADY_STARTED ) && _IsOff( SW_POWERBUILDER ) ) {
@@ -1302,24 +1266,24 @@ static void ProgNew( void )
     char        *parm;
     char        *end;
     char        *new;
-    const char  *sym;
+    const char  *symfile;
     size_t      len;
-    unsigned    clen;
-    unsigned    plen;
+    size_t      clen;
+    size_t      plen;
     bool        have_parms;
     bool        old;
     bool        progstarthook;
 
-    progstarthook = TRUE;
+    progstarthook = true;
     if( CurrToken == T_DIV ) {
         Scan();
         if( ScanCmd( NogoTab ) != 0 ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), "new" );
         }
-        progstarthook = FALSE;
+        progstarthook = false;
     }
     old = SetProgStartHook( progstarthook );
-    if( ScanItem( FALSE, &start, &len ) ) {
+    if( ScanItem( false, &start, &len ) ) {
         _Free( SymFileName );
         SymFileName = NULL;
         SKIP_SPACES;
@@ -1328,32 +1292,32 @@ static void ProgNew( void )
             --len;
             SKIP_SPACES;
             if( len != 0 ) {
-                sym = start;
+                symfile = start;
                 while( len != 0 && *start != ' ' ) {
                     ++start;
                     --len;
                 }
-                new = DbgMustAlloc( start - sym + 1 );
+                new = DbgMustAlloc( start - symfile + 1 );
                 SymFileName = new;
-                memcpy( new, sym, start - sym );
-                new[ start - sym ] = NULLCHAR;
+                memcpy( new, symfile, start - symfile );
+                new[start - symfile] = NULLCHAR;
                 SKIP_SPACES;
             }
         }
         cmd = TxtBuff;
         memcpy( cmd, start, len );
-        cmd[ len++ ] = NULLCHAR;
-        cmd[ len ] = ARG_TERMINATE;
+        cmd[len++] = NULLCHAR;
+        cmd[len] = ARG_TERMINATE;
         RemoteSplitCmd( cmd, &end, &parm );
         clen = end - cmd;
         plen = len - (parm - cmd);
-        have_parms = TRUE;
+        have_parms = true;
     } else {
         cmd = TaskCmd;
         clen = strlen( TaskCmd );
-        parm = &TaskCmd[ clen + 1 ];
+        parm = TaskCmd + clen + 1;
         plen = ArgLen( parm );
-        have_parms = FALSE;
+        have_parms = false;
     }
     BPsDeac();
     ReqEOC();
@@ -1406,17 +1370,17 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
     for( ;; ) {
         switch( addr->segment ) {
         case MAP_FLAT_CODE_SELECTOR:
-            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Code", image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Code", image->symfile_name );
             break;
         case MAP_FLAT_DATA_SELECTOR:
-            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Data", image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Named_Selector ), "Flat Data", image->symfile_name );
             break;
         default:
-            Format( TxtBuff, LIT_ENG( Map_Selector ), addr->segment, image->sym_name );
+            Format( TxtBuff, LIT_ENG( Map_Selector ), addr->segment, image->symfile_name );
         }
         mapped.mach.segment = NO_SEG;
         mapped.mach.offset = 0;
-        if( DlgGivenAddr( TxtBuff, &mapped ) ) {
+        if( DUIDlgGivenAddr( TxtBuff, &mapped ) ) {
             PostProcMapExpr( &mapped );
             mapped.mach.offset += offset;   // add offset back!
             *addr = mapped.mach;
@@ -1441,7 +1405,7 @@ OVL_EXTERN void SymFileNew( void )
     const char  *temp;
     addr_off    dummy;
 
-    if( ! ScanItem( TRUE, &fname, &fname_len ) ) {
+    if( ! ScanItem( true, &fname, &fname_len ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_WANT_FILENAME ) );
     }
     temp = ScanPos();
@@ -1453,10 +1417,10 @@ OVL_EXTERN void SymFileNew( void )
     }
     ReScan( temp );
     memcpy( TxtBuff, fname, fname_len );
-    TxtBuff[ fname_len ] = '\0';
+    TxtBuff[fname_len] = NULLCHAR;
     image = DoCreateImage( NULL, TxtBuff );
     image->mapper = MapAddrUser;
-    if( !ProcSymInfo( image ) ) {
+    if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
@@ -1471,7 +1435,7 @@ OVL_EXTERN void SymFileNew( void )
         *owner = curr;
         owner = &curr->link;
         curr->link = NULL;
-        curr->pre_map = TRUE;
+        curr->pre_map = true;
         curr->real_addr = addr.mach;
         curr->map_valid_lo = 0;
         curr->map_valid_hi = ~(addr_off)0;
@@ -1537,20 +1501,20 @@ OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
 
 bool SymUserModLoad( const char *fname, address *loadaddr )
 {
-    unsigned    fname_len;
+    size_t      fname_len;
     image_entry *image;
     map_entry   **owner;
     map_entry   *curr;
 
     if( !fname )
-        return( TRUE );
+        return( true );
 
     if( ( fname_len = strlen( fname ) ) == 0 )
-        return( TRUE );
+        return( true );
 
     image = DoCreateImage( fname, fname );
     image->mapper = MapAddrUsrMod;
-    if( !ProcSymInfo( image ) ) {
+    if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), fname );
     }
@@ -1566,7 +1530,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     *owner = curr;
     owner = &curr->link;
     curr->link    = NULL;
-    curr->pre_map = TRUE;
+    curr->pre_map = true;
     curr->map_valid_lo = 0;
     curr->map_valid_hi = ~(addr_off)0;
     curr->real_addr    = loadaddr->mach;
@@ -1577,7 +1541,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
     curr = image->map_list->link;
     DbgUpdate( UP_SYMBOLS_ADDED );
     InitImageInfo( image );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1591,13 +1555,13 @@ bool SymUserModUnload( char *fname )
 
     if( fname != NULL ) {
         for( image = ImagePrimary(); image != NULL; image = image->link ) {
-            if( image->sym_name && ( strcmp( image->sym_name, fname ) == 0 ) ) {
-                UnLoadSymInfo( image, FALSE );
-                return( FALSE );
+            if( image->symfile_name != NULL && ( strcmp( image->symfile_name, fname ) == 0 ) ) {
+                UnLoadImgSymInfo( image, false );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static const char NewNameTab[] = {

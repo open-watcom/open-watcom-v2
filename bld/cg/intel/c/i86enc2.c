@@ -33,6 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "cgmem.h"
 #include "system.h"
 #include "escape.h"
@@ -63,7 +64,6 @@ extern  void            LayModRM(name*);
 extern  void            LayOpword(gen_opcode);
 extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
-extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
@@ -334,6 +334,21 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
 }
 
 
+static  void    GenNoReturn( void ) {
+/************************************
+    Generate a noreturn instruction (pseudo instruction)
+*/
+
+    any_oc      oc;
+
+    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 0;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
+    InputOC( &oc );
+}
+
 extern  void    GenCall( instruction *ins ) {
 /********************************************
     Generate a call for "ins". (eg: call foo, or call far ptr foo)
@@ -359,6 +374,9 @@ extern  void    GenCall( instruction *ins ) {
             CodeSequence( code->data, code->length );
         } else {
             CodeBytes( code->data, code->length );
+        }
+        if( cclass & SUICIDAL ) {
+            GenNoReturn();
         }
     } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;

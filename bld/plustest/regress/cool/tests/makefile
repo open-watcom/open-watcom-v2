@@ -1,6 +1,6 @@
 plustest_name = cool
 
-!include testenv.mif
+!include testenv1.mif
 !include ../lib.mif
 
 exes = &

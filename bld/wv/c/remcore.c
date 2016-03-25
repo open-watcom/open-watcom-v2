@@ -40,33 +40,26 @@
 #include "trapaccs.h"
 #include "madinter.h"
 #include "trapglbl.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
+#include "dbgovl.h"
+#include "remcore.h"
+#include "dbgmisc.h"
+#include "trpld.h"
+#include "removl.h"
+#include "addarith.h"
+#include "dbginit.h"
 
-extern void             RestoreHandlers( void );
-extern void             GrabHandlers( void );
-extern int              SameAddrSpace( address, address );
-extern void             SectLoad( unsigned int );
-extern void             FreeThreads( void );
-extern void             RemapSection( unsigned, unsigned );
-extern void             CheckForNewThreads( bool );
-extern void             AddAliasInfo( unsigned, unsigned );
-extern void             GetSysConfig( void );
-extern void             AddrFix( address * );
-extern void             AddrFloat( address * );
-extern void             InvalidateTblCache( void );
-extern void             InitLC( location_context *new, bool use_real_regs );
-extern dtid_t           RemoteSetThread( dtid_t );
-extern void             RemoteSectTblRead( byte * );
-extern void             RemoteSectTblWrite( const byte * );
 
-extern unsigned         MaxPacketLen;
-extern unsigned         CurrRegSize;
+extern trap_elen        MaxPacketLen;
+extern trap_elen        CurrRegSize;
 
 //NYI: We don't know the size of the incoming err msg. Now assume max is 80.
 #define MAX_ERR_MSG_SIZE        80
 
 typedef struct{
     address     addr;
-    unsigned    len;
+    size_t      len;
     char        *data;
 } cache_block;
 
@@ -74,54 +67,53 @@ typedef struct {
     address     addr;
     addr48_off  end;
     unsigned    info;
-    unsigned    len;
+    size_t      len;
     unsigned_8  data[1];        /* variable sized */
 } machine_data_cache;
 
 static cache_block              Cache;
 static machine_data_cache       *MData = NULL;
 
-static bool IsInterrupt( addr_ptr *addr, unsigned size )
+static bool IsInterrupt( addr_ptr *addr, trap_elen size )
 {
     return( MADAddrInterrupt( addr, size, &DbgRegs->mr ) == MS_OK );
 }
 
-static unsigned MemRead( address addr, void *ptr, unsigned size )
+static size_t MemRead( address addr, void *ptr, size_t size )
 {
     read_mem_req        acc;
     bool                int_tbl;
-    unsigned            left;
-    unsigned            piece;
-    unsigned            got;
+    size_t              left;
+    trap_elen           piece_len;
+    trap_retval         read_len;
 
-    if( size == 0 ) return( 0 );
+    if( size == 0 )
+        return( 0 );
     SectLoad( addr.sect_id );
     acc.req = REQ_READ_MEM;
     AddrFix( &addr );
     acc.mem_addr = addr.mach;
+    piece_len = MaxPacketLen;
     left = size;
-    for( ;; ) {
-        if( left > MaxPacketLen ) {
-            piece = MaxPacketLen;
-        } else {
-            piece = left;
-        }
-        acc.len = piece;
-
-        int_tbl = IsInterrupt( &(acc.mem_addr), size );
-        if( int_tbl ) RestoreHandlers();
+    while( left > 0 ) {
+        if( piece_len > left )
+            piece_len = (trap_elen)left;
+        acc.len = piece_len;
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
+        if( int_tbl )
+            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        got = TrapSimpAccess( sizeof( acc ), &acc, piece, ptr );
-        if( int_tbl ) GrabHandlers();
-
-        left -= got;
-        if( left == 0 ) break;
-        if( got != piece ) break;
-        addr.mach.offset += piece;
+        read_len = (trap_retval)TrapSimpAccess( sizeof( acc ), &acc, piece_len, ptr );
+        if( int_tbl )
+            GrabHandlers();
+        left -= read_len;
+        if( read_len != piece_len )
+            break;
+        addr.mach.offset += read_len;
         acc.mem_addr = addr.mach;
-        ptr = (char *)ptr + piece;
+        ptr = (char *)ptr + read_len;
     }
     return( size - left );
 }
@@ -132,14 +124,16 @@ void FiniCache( void )
     Cache.data = NULL;
 }
 
-void InitCache( address addr, unsigned size )
+void InitCache( address addr, size_t size )
 {
     void *ptr;
 
-    if( size == 0 ) return;
+    if( size == 0 )
+        return;
     FiniCache();
     _Alloc( ptr, size );
-    if( ptr == NULL ) return;
+    if( ptr == NULL )
+        return;
     Cache.data = ptr;
     Cache.addr = addr;
     Cache.len = MemRead( addr, ptr, size );
@@ -150,19 +144,24 @@ bool HaveCache( void )
     return( Cache.data != NULL );
 }
 
-static bool ReadCache( address addr, char *data, unsigned len )
+static bool ReadCache( address addr, char *data, size_t len )
 {
-    if( Cache.data == NULL ) return( FALSE );
-    if( !SameAddrSpace( Cache.addr, addr ) ) return( FALSE );
-    if( len > Cache.len ) return( FALSE );
-    if( Cache.addr.mach.offset > addr.mach.offset ) return( FALSE );
+    if( Cache.data == NULL )
+        return( false );
+    if( !SameAddrSpace( Cache.addr, addr ) )
+        return( false );
+    if( len > Cache.len )
+        return( false );
+    if( Cache.addr.mach.offset > addr.mach.offset )
+        return( false );
     addr.mach.offset -= Cache.addr.mach.offset;
-    if( Cache.len - len < addr.mach.offset ) return( FALSE );
-    memcpy( data, &Cache.data[ addr.mach.offset ], len );
-    return( TRUE );
+    if( Cache.len - len < addr.mach.offset )
+        return( false );
+    memcpy( data, &Cache.data[addr.mach.offset], len );
+    return( true );
 }
 
-unsigned ProgPeek( address addr, void *data, unsigned len )
+size_t ProgPeek( address addr, void *data, size_t len )
 {
     if( ReadCache( addr, data, len ) ) {
         return( len );
@@ -171,15 +170,15 @@ unsigned ProgPeek( address addr, void *data, unsigned len )
     }
 }
 
-unsigned ProgPoke( address addr, const void *data, unsigned len )
+size_t ProgPoke( address addr, const void *data, size_t len )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
     write_mem_req       acc;
     write_mem_ret       ret;
     bool                int_tbl;
-    unsigned            left;
-    unsigned            piece;
+    size_t              left;
+    trap_elen           piece_len;
 
     SectLoad( addr.sect_id );
     acc.req = REQ_WRITE_MEM;
@@ -189,36 +188,36 @@ unsigned ProgPoke( address addr, const void *data, unsigned len )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
+    piece_len = MaxPacketLen - sizeof( acc );
     left = len;
-    for( ;; ) {
-        if( left > (MaxPacketLen - sizeof( acc )) ) {
-            piece = MaxPacketLen - sizeof( acc );
-        } else {
-            piece = left;
-        }
+    while( left > 0 ) {
+        if( piece_len > left )
+            piece_len = (trap_elen)left;
         in[1].ptr = data;
-        in[1].len = piece;
+        in[1].len = piece_len;
 
-        int_tbl = IsInterrupt( &(acc.mem_addr), len );
-        if( int_tbl ) RestoreHandlers();
+        int_tbl = IsInterrupt( &(acc.mem_addr), piece_len );
+        if( int_tbl )
+            RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         TrapAccess( 2, in, 1, out );
         CONV_LE_16( ret.len );
-        if( int_tbl ) GrabHandlers();
+        if( int_tbl )
+            GrabHandlers();
 
         left -= ret.len;
-        if( left == 0 ) break;
-        if( ret.len != piece ) break;
-        addr.mach.offset += piece;
+        if( ret.len != piece_len )
+            break;
+        addr.mach.offset += ret.len;
         acc.mem_addr = addr.mach;
-        data = (char *)data + piece;
+        data = (char *)data + ret.len;
     }
     return( len - left );
 }
 
 
-unsigned long ProgChkSum( address addr, unsigned len )
+unsigned long ProgChkSum( address addr, trap_elen len )
 {
 
     checksum_mem_req    acc;
@@ -233,7 +232,7 @@ unsigned long ProgChkSum( address addr, unsigned len )
     return( ret.result );
 }
 
-unsigned PortPeek( unsigned port, void *data, unsigned size )
+trap_retval PortPeek( unsigned port, void *data, uint_8 size )
 {
     read_io_req         acc;
 
@@ -243,7 +242,7 @@ unsigned PortPeek( unsigned port, void *data, unsigned size )
     return( TrapSimpAccess( sizeof( acc ), &acc, size, data ) );
 }
 
-unsigned PortPoke( unsigned port, const void *data, unsigned size )
+trap_retval PortPoke( unsigned port, const void *data, uint_8 size )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -267,7 +266,7 @@ static void ReadRegs( machine_state *state )
     read_regs_req       acc;
 
     acc.req = REQ_READ_REGS;
-    TrapSimpAccess( sizeof(acc), &acc, CurrRegSize, &state->mr );
+    TrapSimpAccess( sizeof( acc ), &acc, CurrRegSize, &state->mr );
     MADRegistersHost( &state->mr );
     if( state->ovl != NULL ) {
         RemoteSectTblRead( state->ovl );
@@ -277,7 +276,7 @@ static void ReadRegs( machine_state *state )
 void ReadDbgRegs( void )
 {
     ReadRegs( DbgRegs );
-    InitLC( &Context, TRUE );
+    InitLC( &Context, true );
 }
 
 static void WriteRegs( machine_state *state )
@@ -307,9 +306,9 @@ void WriteDbgRegs( void )
     WriteRegs( DbgRegs );
 }
 
-unsigned ArgsLen( const char *args )
+trap_elen ArgsLen( const char *args )
 {
-    unsigned    len = 0;
+    trap_elen   len = 0;
 
     while( *args++ != ARG_TERMINATE ) {
         len++;
@@ -327,7 +326,7 @@ void ClearMachineDataCache( void )
  * DoLoad -- load in user program as an overlay
  */
 
-rc_erridx DoLoad( const char *args, unsigned long *phandle )
+error_handle DoLoad( const char *args, unsigned long *phandle )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -355,7 +354,7 @@ rc_erridx DoLoad( const char *args, unsigned long *phandle )
     CheckMADChange();
     ReadDbgRegs();
     DbgRegs->tid = RemoteSetThread( 0 );
-    CheckForNewThreads( TRUE );
+    CheckForNewThreads( true );
     TaskId = ret.task_id;
     if( ret.flags & LD_FLAG_IGNORE_SEGMENTS ) {
         _SwitchOn( SW_IGNORE_SEGMENTS );
@@ -398,7 +397,7 @@ bool KillProgOvlay( void )
     FreeThreads();
     GetSysConfig();
     ClearMachineDataCache();
-    return( ( ret.err == 0 ) ? TRUE : FALSE );
+    return( ( ret.err == 0 ) );
 }
 
 
@@ -447,11 +446,11 @@ bool Redirect( bool input, char *hndlname )
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = FileLoc( hndlname, &loc );
-    in[1].len = strlen( in[1].ptr ) + 1;
+    in[1].len = (trap_elen)( strlen( in[1].ptr ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    return( ret.err == 0 ? TRUE : FALSE );
+    return( ( ret.err == 0 ) );
 }
 
 
@@ -493,7 +492,7 @@ void RemoteSetDebugScreen( void )
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-unsigned RemoteReadUserKey( unsigned wait )
+unsigned RemoteReadUserKey( uint_16 wait )
 {
     read_user_keyboard_req      acc;
     read_user_keyboard_ret      ret;
@@ -505,7 +504,7 @@ unsigned RemoteReadUserKey( unsigned wait )
     return( ret.key );
 }
 
-unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, unsigned buff_len )
+unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, trap_elen buff_len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -527,7 +526,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, unsigned buff
     return( ret.handle );
 }
 
-unsigned RemoteGetMsgText( char *buff, unsigned buff_len )
+unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
 {
     in_mx_entry                 in[1];
     mx_entry                    out[2];
@@ -546,9 +545,9 @@ unsigned RemoteGetMsgText( char *buff, unsigned buff_len )
     return( ret.flags );
 }
 
-unsigned RemoteMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *inp,
-                        unsigned out_size, void *outp )
+unsigned RemoteMachineData( address addr, uint_8 info_type,
+                        dig_elen in_size,  const void *inp,
+                        dig_elen out_size, void *outp )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[2];
@@ -558,9 +557,9 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
     machine_data_cache          *new;
 
     if( info_type == MData->info
-     && addr.mach.offset >= MData->addr.mach.offset
-     && addr.mach.offset <  MData->end
-     && SameAddrSpace( addr, MData->addr ) ) {
+      && addr.mach.offset >= MData->addr.mach.offset
+      && addr.mach.offset <  MData->end
+      && SameAddrSpace( addr, MData->addr ) ) {
         memcpy( outp, MData->data, out_size );
         return( out_size );
     }
@@ -576,12 +575,14 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
     out[1].ptr = outp;
     out[1].len = out_size;
     len = TrapAccess( 2, in, 2, out );
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     len -= sizeof( ret );
     if( len > MData->len ) {
         new = MData;
         _Realloc( new, len + sizeof( *MData ) );
-        if( new == NULL ) return( len );
+        if( new == NULL )
+            return( len );
         MData = new;
     }
     memcpy( MData->data, outp, len );
@@ -620,7 +621,7 @@ void RemoteRestoreBreak( address addr, dword value )
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-bool RemoteSetWatch( address addr, unsigned size, unsigned long *mult )
+bool RemoteSetWatch( address addr, uint_8 size, unsigned long *mult )
 {
     set_watch_req       acc;
     set_watch_ret       ret;
@@ -634,7 +635,7 @@ bool RemoteSetWatch( address addr, unsigned size, unsigned long *mult )
     return( (ret.multiplier & USING_DEBUG_REG) != 0 );
 }
 
-void RemoteRestoreWatch( address addr, unsigned size )
+void RemoteRestoreWatch( address addr, uint_8 size )
 {
     clear_watch_req     acc;
 
@@ -662,8 +663,8 @@ void RemoteSplitCmd( char *cmd, char **end, char **parm )
     TrapAccess( 2, in, 1, out );
     CONV_LE_16( ret.cmd_end );
     CONV_LE_16( ret.parm_start );
-    *end = &cmd[ ret.cmd_end ];
-    *parm = &cmd[ ret.parm_start ];
+    *end = &cmd[ret.cmd_end];
+    *parm = &cmd[ret.parm_start];
 }
 
 
@@ -680,7 +681,8 @@ void CheckSegAlias( void )
         TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
         CONV_LE_16( ret.seg );
         CONV_LE_16( ret.alias );
-        if( ret.seg == 0 ) break;
+        if( ret.seg == 0 )
+            break;
         AddAliasInfo( ret.seg, ret.alias );
         acc.seg = ret.seg;
     }
@@ -703,9 +705,9 @@ bool InitCoreSupp( void )
         ClearMachineDataCache();
         GetSysConfig();
         CheckMADChange();
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

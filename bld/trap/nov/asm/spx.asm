@@ -79,9 +79,9 @@ include struct.inc
         mov     AL,0ffH         ; - return success indictor
         _admit                  ; admit
         add     SP,16           ; - clean up stack
-        mov     AL,0            ; - return error indicator
+        xor     AL,AL           ; - return error indicator
         _endguess               ; endguess
-        mov     AH,0            ; - zero high word of return
+        xor     AH,AH           ; - zero high word of return
         pop     ES              ; restore registers
         pop     DS
         pop     BP
@@ -260,7 +260,7 @@ include struct.inc
         mov     DX,AX           ; set connection id number
         mov     BX,15H          ; set function number
         call    cs:IPXLoc       ; invoke function
-        mov     AH,0            ; clear high part of return
+        xor     AH,AH           ; clear high part of return
         pop     ES              ; restore registers
         pop     DS
         pop     BP

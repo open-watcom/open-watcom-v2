@@ -36,12 +36,15 @@
 #include "dbgwind.h"
 #endif
 #include "dbglit.h"
+#include "dbgerr.h"
+#include "ntdbgpb.h"
 
-extern void     StartupErr( const char *err );
 
 #ifdef __GUI__
 extern a_window *WndMain;
 #endif
+
+extern BOOL         CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam );
 
 static DWORD        PidPB;
 static bool         AlreadyRunning = false;
@@ -59,7 +62,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
             AlreadyRunning = true;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 const char *CheckForPowerBuilder( const char *name )

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <assert.h>
 #ifndef __UNIX__
 #include <direct.h>
 #else
@@ -42,7 +41,6 @@
 #endif
 #include "wio.h"
 #include "diskos.h"
-#include "cmdlhelp.h"
 #include "clcommon.h"
 #ifdef TRMEM
 #include "trmem.h"
@@ -57,20 +55,23 @@
 #endif
 
 flags   Flags;
-FILE    *Fp = NULL;         /* file pointer for Temp_Link         */
-list    *Libs_List;         /* list of libraires from Cmd         */
-char    *Map_Name;          /* name of map file                   */
-list    *Obj_List;          /* linked list of object filenames    */
-char    *Obj_Name;          /* object file name pattern           */
-char    *Exe_Name;          /* name of executable                 */
+DBG_OPT DebugFlag = DBG_NONE;           /* debug info wanted                  */
+DBG_OPT DebugFormat = DBG_FMT_DWARF;    /* debug info format                  */
+char    *StackSize = NULL;              /* size of stack                      */
+list    *Libs_List;                     /* list of libraires from Cmd         */
+char    *Map_Name;                      /* name of map file                   */
+list    *Obj_List;                      /* linked list of object filenames    */
+char    *Obj_Name;                      /* object file name pattern           */
+char    *Exe_Name;                      /* name of executable                 */
+list    *Directive_List;                /* linked list of wlink directives    */
 
-char *DebugOptions[] = {
+static char *DebugOptions[] = {
     "",
-    "debug dwarf\n",
-    "debug dwarf\n",
-    "debug watcom all\n",
-    "debug codeview\n",
-    "debug dwarf\n",
+    " lines",
+    " all",
+    "debug dwarf",
+    "debug watcom",
+    "debug codeview",
 };
 
 #ifdef TRMEM
@@ -78,6 +79,7 @@ static _trmem_hdl   TRMemHandle;
 
 static void memLine( void *fh, const char *buf, size_t size )
 {
+    fh=fh;size=size;
     PrintMsg( buf );
 }
 #endif
@@ -121,55 +123,58 @@ void PrintMsg( const char *fmt, ... )
     }
 }
 
-void  Fputnl( const char *text, FILE *fptr )
-/******************************************/
+void  Fputnl( const char *text, FILE *fp )
+/****************************************/
 {
-    fputs( text, fptr );
-    fputs( "\n", fptr );
+    fputs( text, fp );
+    fputs( "\n", fp );
 }
 
-void FputnlQuoted( const char *text, FILE *fptr )
-/***********************************************/
-{
-    if( text != NULL ) {
-        if( strchr( text, ' ' ) != NULL ) {
-            fputs( "'", fptr );
-            fputs( text, fptr );
-            fputs( "'\n", fptr );
-        } else {
-            fputs( text, fptr );
-            fputs( "\n", fptr );
-        }
-    }
-}
-
-void BuildLinkFile( void )
-/************************/
+void BuildLinkFile( FILE *fp )
+/****************************/
 {
     list    *itm;
+    char    filename[_MAX_PATH];
 
-    fputs( "name ", Fp );
-    FputnlQuoted( Exe_Name, Fp );
+    if( Flags.be_quiet ) {
+        Fputnl( "option quiet", fp );
+    }
+    if( DebugFlag != DBG_NONE ) {
+        fputs( DebugOptions[DebugFormat], fp );
+        Fputnl( DebugOptions[DebugFlag], fp );
+    }
+    if( StackSize != NULL ) {
+        fputs( "option stack=", fp );
+        Fputnl( StackSize, fp );
+    }
+
+    BuildSystemLink( fp );
+
+    /* pass given directives to linker */
+    for( itm = Directive_List; itm != NULL; itm = itm->next ) {
+        Fputnl( itm->item, fp );
+    }
+
+    fputs( "name ", fp );
+    Fputnl( DoQuoted( filename, Exe_Name, '\'' ), fp );
     if( Flags.keep_exename ) {
-        Fputnl( "option noextension", Fp );
+        Fputnl( "option noextension", fp );
     }
     if( Flags.map_wanted ) {
         if( Map_Name == NULL ) {
-            Fputnl( "option map", Fp );
+            Fputnl( "option map", fp );
         } else {
-            fputs( "option map=", Fp );
-            FputnlQuoted( Map_Name, Fp );
+            fputs( "option map=", fp );
+            Fputnl( DoQuoted( filename, Map_Name, '\'' ), fp );
         }
     }
     for( itm = Libs_List; itm != NULL; itm = itm->next ) {
-        fputs( "library ", Fp );
-        FputnlQuoted( itm->item, Fp );
+        fputs( "library ", fp );
+        Fputnl( DoQuoted( filename, itm->item, '\'' ), fp );
     }
     if( Flags.link_ignorecase ) {
-        Fputnl( "option nocaseexact", Fp );
+        Fputnl( "option nocaseexact", fp );
     }
-    fclose( Fp );       /* close Temp_Link */
-    Fp = NULL;
 }
 
 void  MemInit( void )
@@ -225,6 +230,27 @@ char *MemStrDup( const char *str )
     }
     return( ptr );
 }
+
+#if 0
+char *MemStrLenDup( const char *str, size_t len )
+/***********************************************/
+{
+    char        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_alloc( len + 1, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = malloc( len + 1 );
+#endif
+    if( ptr == NULL ) {
+        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
+        exit( 1 );
+    }
+    memcpy( ptr, str, len );
+    ptr[len] = '\0';
+    return( ptr );
+}
+#endif
 
 void  *MemReAlloc( void *p, size_t size )
 /***************************************/
@@ -282,27 +308,21 @@ void ListFree( list *itm_list )
     }
 }
 
-void  AddName( char *name, FILE *link_fp )
-/****************************************/
+void  AddNameObj( const char *name )
+/**********************************/
 {
     list        *curr_name;
     list        *last_name;
     list        *new_name;
-    char        path  [_MAX_PATH ];
+    char        path[_MAX_PATH];
     PGROUP      pg1;
     PGROUP      pg2;
 
     last_name = NULL;
-    curr_name = Obj_List;
-    while( curr_name != NULL ) {
-#ifdef __UNIX__
-        if( strcmp( name, curr_name->item ) == 0 )  // Case-sensitive
-#else
-        if( stricmp( name, curr_name->item ) == 0 ) // Case-insensitive
-#endif
+    for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {
+        if( fname_cmp( name, curr_name->item ) == 0 )
             return;
         last_name = curr_name;
-        curr_name = curr_name->next;
     }
     new_name = MemAlloc( sizeof( list ) );
     if( Obj_List == NULL ) {
@@ -335,8 +355,7 @@ void  AddName( char *name, FILE *link_fp )
         _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
     }
-    fputs( "file ", link_fp );
-    FputnlQuoted( name, link_fp );
+    AddDirectivePath( "file ", name );
 }
 
 
@@ -357,18 +376,19 @@ char  *MakePath( const char *path )
     } else {
         len = p + 1 - path;
         p = MemAlloc( len + 1 );
-        strncpy( p, path, len );
+        memcpy( p, path, len );
         p[len] = '\0';
         return( p );
     }
 }
 
-char  *GetName( const char *path )
-/********************************/
+char  *GetName( const char *path, char *buffer )
+/**********************************************/
 {
+    const char      *p;
 #ifndef __UNIX__
-    static      DIR     *dirp;
-    struct      dirent  *direntp;
+    static DIR      *dirp;
+    struct dirent   *direntp;
 
     if( path != NULL ) {                /* if given a filespec to open,  */
         if( *path == '\0' ) {           /*   but filespec is empty, then */
@@ -378,7 +398,15 @@ char  *GetName( const char *path )
         dirp = opendir( path );         /* try to find matching filenames */
         if( dirp == NULL ) {
             PrintMsg( WclMsgs[UNABLE_TO_OPEN], path );
-            return( NULL );
+            if( strpbrk( path, "?*" ) != NULL )
+                return( NULL );
+            if( (p = strrchr( path, '\\' )) == NULL )
+                p = strrchr( path, ':' );
+            if( p == NULL )
+                p = path - 1;
+            if( *(++p) == '\0' )
+                return( NULL );
+            return( strcpy( buffer, p ) );
         }
     }
 
@@ -390,17 +418,18 @@ char  *GetName( const char *path )
     closedir( dirp );
     return( NULL );
 #else
-    const char      *name;
-
-    if( path == NULL )
+    if( path == NULL || *path == '\0' )
         return( NULL );
-    name = strrchr( path, '/' );
-    if( name == NULL ) {
-        name = path;
-    } else {
-        name++;
+    if( strpbrk( path, "?*" ) != NULL ) {
+//        PrintMsg( WclMsgs[UNABLE_TO_OPEN], path );
+        return( NULL );
     }
-    return( MemStrDup(name) );
+    p = strrchr( path, '/' );
+    if( p == NULL )
+        p = path - 1;
+    if( *(++p) == '\0' )
+        return( NULL );
+    return( strcpy( buffer, p ) );
 #endif
 }
 
@@ -414,78 +443,88 @@ void FindPath( const char *name, char *buf )
     }
 }
 
-int iswsOrOpt( char ch, char opt, char *Switch_Chars )
-{
-    if( ch == ' ' || ch == '\t' )
-        return( 1 );
-
-    if( opt == '-'  ||  opt == Switch_Chars[1] ) {
-        /* if we are processing a switch, stop at a '-' */
-        if( ch == '-' )
-            return( 1 );
-#ifndef __UNIX__
-        if( ch == Switch_Chars[1] ) {
-            return( 1 );
-        }
-#endif
-    }
-    return( 0 );
-}
-
-char *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars )
-/***********************************
- * Finds next free white space character, allowing doublequotes to
- * be used to specify strings with white spaces.
- */
-{
-    char    string_open = 0;
-
-    while( *str != '\0' ) {
-        if( *str == '\\' ) {
-            str++;
-            if( *str != '\0' ) {
-                if( !string_open && iswsOrOpt( *str, opt, Switch_Chars ) ) {
-                    break;
-                }
-                str++;
-            }
-        } else {
-            if( *str == '\"' ) {
-                string_open = !string_open;
-                str++;
-            } else {
-                if( string_open ) {
-                    str++;
-                } else {
-                    if( iswsOrOpt( *str, opt, Switch_Chars ) )
-                        break;
-                    str++;
-                }
-            }
-        }
-    }
-    return( str );
-}
-
-static int needQuotes( const char *name )
-{
-    return( strchr( name, ' ' ) != NULL );
-}
-
-char *DoQuoted( char *buffer, const char *name )
+char *DoQuoted( char *buffer, const char *name, char quote_char )
+/***************************************************************/
 {
     char *p = buffer;
     int  quotes;
 
-    quotes = needQuotes( name );
+    quotes = ( strchr( name, ' ' ) != NULL );
     if( quotes )
-        *p++ = '"';
+        *p++ = quote_char;
     while( (*p = *name) != '\0' ) {
         ++p;
         ++name;
     }
     if( quotes )
-        *p++ = '"';
+        *p++ = quote_char;
     *p = '\0';
     return( buffer );
+}
+
+void AddDirective( const char *directive )
+/****************************************/
+{
+    list    *itm;
+
+    itm = MemAlloc( sizeof( list ) );
+    itm->next = NULL;
+    itm->item = MemAlloc( strlen( directive ) + 1 );
+    strcpy( itm->item, directive );
+    ListAppend( &Directive_List, itm );
+}
+
+void AddDirectivePath( const char *directive, const char *path )
+/**************************************************************/
+{
+    list        *new_item;
+    size_t      len;
+    char        *p;
+
+    len = strlen( directive );
+    new_item = MemAlloc( sizeof( list ) );
+    new_item->next = NULL;
+    p = new_item->item = MemAlloc( len + strlen( path ) + 2 + 1 );
+    memcpy( p, directive, len );
+    p += len;
+    DoQuoted( p, path, '\'' );
+#ifndef __UNIX__
+    while( (p = strchr( p, '/' )) != NULL ) {
+        *p++ = '\\';
+    }
+#endif
+    ListAppend( &Directive_List, new_item );
+}
+
+char *RemoveExt( char *fname )
+/****************************/
+{
+    char    *dot;
+
+    if( (dot = strrchr( fname, '.' )) != NULL )
+        *dot = '\0';
+    return( fname );
+}
+
+int HasFileExtension( const char *p, const char *ext )
+/****************************************************/
+{
+    const char  *dot;
+
+    if( (dot = strrchr( p, '.' )) != NULL ) {
+        if( fname_cmp( dot, ext ) == 0 ) {
+            return( 1 );                /* indicate file extension matches */
+        }
+    }
+    return( 0 );                        /* indicate no match */
+}
+
+
+void  MakeName( char *name, const char *ext )
+/*******************************************/
+{
+    /* If the last '.' is before the last path seperator character */
+    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEPS_STR ) ) {
+        strcat( name, ext );
+    }
 }

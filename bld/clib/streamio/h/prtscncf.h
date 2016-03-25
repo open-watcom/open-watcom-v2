@@ -50,7 +50,7 @@
  */
 #if INTMAX_MAX == LLONG_MAX
     #define JSPEC_IS_LLONG
-    #define JSPEC_CASE_LLONG    case 'j':
+    #define JSPEC_CASE_LLONG    case STRING( 'j' ):
 #else
     #error Could not configure jspec
 #endif
@@ -65,25 +65,25 @@
 #endif
 
 #ifdef ZSPEC_IS_INT
-    #define ZSPEC_CASE_INT      case 'z':
+    #define ZSPEC_CASE_INT      case STRING( 'z' ):
 #else
     #define ZSPEC_CASE_INT
 #endif
 
 #ifdef ZSPEC_IS_LONG
-    #define ZSPEC_CASE_LONG     case 'z':
+    #define ZSPEC_CASE_LONG     case STRING( 'z' ):
 #else
     #define ZSPEC_CASE_LONG
 #endif
 
 #ifdef TSPEC_IS_INT
-    #define TSPEC_CASE_INT      case 't':
+    #define TSPEC_CASE_INT      case STRING( 't' ):
 #else
     #define TSPEC_CASE_INT
 #endif
 
 #ifdef TSPEC_IS_LONG
-    #define TSPEC_CASE_LONG     case 't':
+    #define TSPEC_CASE_LONG     case STRING( 't' ):
 #else
     #define TSPEC_CASE_LONG
 #endif

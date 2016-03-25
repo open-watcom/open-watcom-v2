@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +119,9 @@
 #define DDEMENU_TRK_LINK                122
 #define DDEMENU_TRK_SERVER              123
 #define DDE_TRK_LAST                    DDEMENU_TRK_SERVER
-#define NO_TRK_WND                      (DDE_TRK_LAST - DDE_TRK_FIRST + 1)
+
+#define MAX_DDE_MON                     (DDE_MON_LAST - DDE_MON_FIRST + 1)
+#define MAX_DDE_TRK                     (DDE_TRK_LAST - DDE_TRK_FIRST + 1)
 
 
 /* tracking push window constants */
@@ -211,7 +214,6 @@ typedef struct linkinfo {
 
 typedef struct wndconfiginfo {
     HWND                hwnd;
-    BOOL                visible;        /* used for tracking windows only */
     WORD                state;
     WORD                xsize;
     WORD                ysize;
@@ -219,11 +221,12 @@ typedef struct wndconfiginfo {
     int                 ypos;
     int                 last_xpos;
     int                 last_ypos;
+    bool                visible;        /* used for tracking windows only */
 } WndConfigInfo;
 
 typedef struct {
     DWORD       textid;
-    WORD        id;
+    int         id;
     WORD        size;
 } TrackHeaderInfo;
 
@@ -251,8 +254,8 @@ typedef struct ddeconfiginfo {
 extern HANDLE           Instance;
 extern HWND             DDEMainWnd;
 extern DWORD            DDEInstId;
-extern BOOL             Monitoring[DDE_MON_LAST - DDE_MON_FIRST + 1];
-extern WndConfigInfo    Tracking[NO_TRK_WND];
+extern bool             Monitoring[MAX_DDE_MON];
+extern WndConfigInfo    Tracking[MAX_DDE_TRK];
 extern WndConfigInfo    MainWndConfig;
 extern DDEConfigInfo    ConfigInfo;
 extern AliasHdl         HwndAlias;
@@ -283,7 +286,7 @@ void    ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 /* ddetrack.c */
 void    InitTrackWnd( HWND hwnd );
 BOOL    CreateTrackWnd( void );
-void    DisplayTracking( UINT itemid );
+void    DisplayTracking( unsigned i );
 void    TrackStringMsg( MONHSZSTRUCT *info );
 void    TrackLinkMsg( MONLINKSTRUCT *info );
 void    TrackConvMsg( MONCONVSTRUCT *info );
@@ -313,4 +316,4 @@ void    MakeDDEToolBar( HWND hwnd );
 void    DDEToolBarFini( void );
 void    ResizeTB( HWND owner );
 bool    ToggleTB( HWND parent );
-void    DDESetStickyState( UINT itemid, BOOL isdown );
+void    DDESetStickyState( ctl_id itemid, bool isdown );

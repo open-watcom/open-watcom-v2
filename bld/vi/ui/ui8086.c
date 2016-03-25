@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,10 +63,10 @@ static bool     colorChanged[MAX_COLOR_REGISTERS];
  */
 static void getCursor( int *row, int *col )
 {
-    int x;
+    unsigned short  x;
 
     x = BIOSGetCursor( VideoPage );
-    *row = (x >> 8);
+    *row = ( x >> 8 );
     *col = x & 0xff;
 
 } /* getCursor */
@@ -109,7 +110,7 @@ void RestoreCursor( void )
 
 } /* RestoreCursor */
 
-vi_rc SetFont( char *data )
+vi_rc SetFont( const char *data )
 {
     data = data;
     return( ERR_NO_ERR );
@@ -175,15 +176,15 @@ void SetPosToMessageLine( void )
 /*
  * SetGenericWindowCursor - put cursor in any window at (l,c)
  */
-void SetGenericWindowCursor( window_id wn, int l, int c )
+void SetGenericWindowCursor( window_id wid, int l, int c )
 {
-    wind        *w;
+    window      *w;
     int         row, col;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
 
-    row = w->y1;
-    col = w->x1;
+    row = w->area.y1;
+    col = w->area.x1;
 
     row += l;
     col += c;
@@ -205,12 +206,12 @@ void HideCursor( void )
  */
 static void getColorRegister( vi_color reg, rgb *c )
 {
-    long        res;
+    uint_32     res;
 
     res = BIOSGetColorRegister( colorPalette[reg] );
-    c->red = ((char *)(&res))[1] << 2;
-    c->blue = ((char *)(&res))[2] << 2;
-    c->green = ((char *)(&res))[3] << 2;
+    c->red = (res >> (8 - 2)) & 0xFC;
+    c->blue = (res >> (16 - 2)) & 0xFC;
+    c->green = (res >> (24 - 2)) & 0xFC;
 
 } /* getColorRegister */
 
@@ -288,25 +289,29 @@ void FiniColors( void )
 /*
  * SetAColor - perform a setcolor command
  */
-vi_rc SetAColor( char *data )
+vi_rc SetAColor( const char *data )
 {
     rgb         c;
     int         clr;
     char        token[MAX_STR];
 
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     clr = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.red = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.green = atoi( token );
-    if( NextWord1( data, token ) <= 0 ) {
+    data = GetNextWord1( data, token );
+    if( *token == '\0' ) {
         return( ERR_INVALID_SETCOLOR );
     }
     c.blue = atoi( token );

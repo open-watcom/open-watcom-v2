@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _raise().
+* Description:  Implementation of C library internal function _raise().
+*               ( Interface with assembler code )
 *
 ****************************************************************************/
 

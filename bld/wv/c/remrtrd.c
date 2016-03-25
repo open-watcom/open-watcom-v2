@@ -37,11 +37,13 @@
 #include "madinter.h"
 #include "dui.h"
 #include "trapglbl.h"
+#include "remcore.h"
+#include "dbgmisc.h"
+#include "remrtrd.h"
+#include "trpld.h"
+
 
 #define DEFAULT_TID     1
-
-extern void             CheckForNewThreads( bool set_exec );
-extern void             GetSysConfig( void );
 
 static trap_shandle     SuppRunThreadId = 0;
 
@@ -49,9 +51,9 @@ bool InitRunThreadSupp( void )
 {
     SuppRunThreadId = GetSuppId( RUN_THREAD_SUPP_NAME );
     if( SuppRunThreadId == 0 )
-        return( FALSE );
+        return( false );
     DUIInitRunThreadInfo();
-    return( TRUE );
+    return( true );
 }
 
 bool HaveRemoteRunThread( void )
@@ -59,14 +61,14 @@ bool HaveRemoteRunThread( void )
     return( SuppRunThreadId != 0 );
 }
 
-bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, int maxsize )
+bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char *header, trap_elen maxsize )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
     run_thread_info_req acc;
     run_thread_info_ret ret;
 
-    if( SuppRunThreadId == 0 ) return( FALSE );
+    if( SuppRunThreadId == 0 ) return( false );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -85,9 +87,9 @@ bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char 
     if( ret.info ) {
         *infotype = ret.info;
         *width = ret.width;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -125,7 +127,7 @@ void RemotePollRunThread( void )
         CheckMADChange();
     }
     if( ret.conditions & COND_THREAD ) {
-        CheckForNewThreads( TRUE );
+        CheckForNewThreads( true );
     }
 }
 
@@ -153,7 +155,7 @@ void RemoteUpdateRunThread( thread_state *thd )
 
     thd->state = ret.state;
     thd->cs = ret.cs;
-    thd->eip = ret.eip;    
+    thd->eip = ret.eip;
 }
 
 //NYI: We don't know the size of the incoming name. Now assume max is 80.
@@ -175,7 +177,7 @@ void RemoteRunThdName( dtid_t tid, char *name )
     TrapSimpAccess( sizeof( acc ), &acc, MAX_THD_NAME_LEN, name );
 }
 
-dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_idx *erridx )
+dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_handle *errh )
 {
     run_thread_set_req      acc;
     run_thread_set_ret      ret;
@@ -188,7 +190,7 @@ dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_idx *erridx )
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     if( ret.err != 0 ) {
-        *erridx = StashErrCode( ret.err, OP_REMOTE );
+        *errh = StashErrCode( ret.err, OP_REMOTE );
         return( 0 );
     }
     return( ret.old_thread );
@@ -196,16 +198,17 @@ dtid_t RemoteSetRunThreadWithErr( dtid_t tid, error_idx *erridx )
 
 dtid_t RemoteSetRunThread( dtid_t tid )
 {
-    error_idx   erridx;
+    error_handle    errh;
 
-    return( RemoteSetRunThreadWithErr( tid, &erridx ) );
+    return( RemoteSetRunThreadWithErr( tid, &errh ) );
 }
 
 void RemoteStopThread( thread_state *thd )
 {
     run_thread_stop_req      acc;
 
-    if( SuppRunThreadId == 0 ) return;
+    if( SuppRunThreadId == 0 )
+        return;
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -219,7 +222,8 @@ void RemoteSignalStopThread( thread_state *thd )
 {
     run_thread_signal_stop_req      acc;
 
-    if( SuppRunThreadId == 0 ) return;
+    if( SuppRunThreadId == 0 )
+        return;
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;

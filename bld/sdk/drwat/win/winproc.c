@@ -173,7 +173,6 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             ai.inst = Instance;
             ai.name = AllocRCString( STR_ABOUT_NAME );
             ai.version = AllocRCString( STR_ABOUT_VERSION );
-            ai.first_cr_year = "1993";
             ai.title = AllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );

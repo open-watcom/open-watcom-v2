@@ -33,10 +33,8 @@
 #include "uidef.h"
 
 
-void UIAPI uivattribute( register VSCREEN      *vptr,
-                          register SAREA        area,
-                          register ATTR         attr )
-/****************************************************/
+void UIAPI uivattribute( VSCREEN *vptr, SAREA area, ATTR attr )
+/*************************************************************/
 {
     okopen( vptr );
     oksubarea( area, vptr->area );
@@ -46,9 +44,8 @@ void UIAPI uivattribute( register VSCREEN      *vptr,
 }
 
 
-void UIAPI uivattrflip( register VSCREEN       *vptr,
-                         register SAREA         area )
-/****************************************************/
+void UIAPI uivattrflip( VSCREEN *vptr, SAREA area )
+/*************************************************/
 {
     okopen( vptr );
     oksubarea( area, vptr->area );

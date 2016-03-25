@@ -2,8 +2,9 @@
 host_cpu = i86
 host_os  = dos
 
-os = dos
-cpu = x86
+target_cpu = x86
+target_os  = dos
+
 srv = ads
 which = TRAP
 

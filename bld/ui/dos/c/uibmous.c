@@ -43,7 +43,7 @@ void (intern *EraseCursor)( void ) = NULL;
 extern MOUSEORD MouseRow, MouseCol;
 
 static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
-static bool     MouseOn = FALSE;
+static bool     mouseOn = false;
 static ATTR     OldAttr;
 static int      ColAdjust;
 
@@ -75,8 +75,7 @@ static void uisetmouseoff( void )
     LP_STRING   old;
     SAREA       area;
 
-    if( MouseOn ) {
-
+    if( mouseOn ) {
         if( EraseCursor==NULL ) {
             old = RegenPos( OldMouseRow, OldMouseCol );
             if( uicharlen( *old ) == 2 ) {
@@ -111,7 +110,7 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
     LP_STRING   new;
     SAREA       area;
 
-    if( MouseOn ){
+    if( mouseOn ) {
         if( DrawCursor == NULL ) {
             new = RegenPos( row, col );
             if( uicharlen( *new ) == 2 ) {
@@ -151,10 +150,10 @@ void UIAPI uimouse( int func )
 /*****************************/
 {
     if( func == MOUSE_ON ) {
-        MouseOn = TRUE;
+        mouseOn = true;
         uisetmouseon( OldMouseRow, OldMouseCol );
     } else {
         uisetmouseoff();
-        MouseOn = FALSE;
+        mouseOn = false;
     }
 }

@@ -29,7 +29,8 @@
 ****************************************************************************/
 
 
-#ifndef TRPCORE_H
+#ifndef _TRPCORE_H_INCLUDED
+#define _TRPCORE_H_INCLUDED
 
 #include "trpconf.h"
 #include "trptypes.h"
@@ -37,8 +38,6 @@
 #if defined( __WATCOMC__ )
 #include <_comdef.h>
 #endif
-
-#include "digpck.h"
 
 enum {
     REQ_CONNECT,                        /* 00 */
@@ -78,7 +77,7 @@ enum {
     REQ__LAST                           // for debug trap/server
 };
 
-
+#include "digpck.h"
 typedef struct {
     access_req          req;
     trap_version        ver;
@@ -443,9 +442,6 @@ typedef struct {
     addr48_off          cache_end;
     /* followed by whatever machine specific data is being returned */
 } machine_data_ret;
-
 #include "digunpck.h"
-
-#define TRPCORE_H
 
 #endif

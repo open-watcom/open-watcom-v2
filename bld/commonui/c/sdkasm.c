@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "sdkasm.h"
 
 static DisAsmRtns       *CurRtns;
@@ -119,7 +119,7 @@ int_32 GetDataLong( void )
 /*
  * EndOfSegment
  */
-char EndOfSegment( void )
+bool EndOfSegment( void )
 {
     return( CurRtns->EndOfSegment() );
 

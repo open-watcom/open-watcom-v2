@@ -57,7 +57,7 @@ endif
         xdefp   "C",_dos_read
 ;
 ;       unsigned _dos_read( int handle,
-;                           void far *buf,
+;                           void __far *buf,
 ;                           unsigned count,
 ;                           unsigned *bytes );
 ;
@@ -88,7 +88,7 @@ endif
         xdefp   "C",_dos_write
 ;
 ;       unsigned _dos_write( int handle,
-;                           void far *buf,
+;                           void __far *buf,
 ;                           unsigned count,
 ;                           unsigned *bytes );
 ;

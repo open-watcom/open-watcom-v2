@@ -41,3 +41,5 @@
 #define CTL_OPT_OK 100
 #define CTL_OPT_DEFAULTS 102
 #define CTL_OPT_CANCEL 101
+
+extern bool    DlgOptions( void );

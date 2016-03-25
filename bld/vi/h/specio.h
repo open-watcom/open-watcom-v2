@@ -35,4 +35,4 @@ bool    SpecialOpen( const char *, GENERIC_FILE * );
 bool    SpecialOpen( const char *, GENERIC_FILE *, bool );
 #endif
 void    SpecialFclose( GENERIC_FILE * );
-int     SpecialFgets( char *, int, GENERIC_FILE * );
+bool    SpecialFgets( char *, int, GENERIC_FILE * );

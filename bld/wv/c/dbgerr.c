@@ -39,21 +39,22 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgstk.h"
+#include "dbgexpr.h"
+#include "dbgcall2.h"
+#include "dbgbrk.h"
+#include "dbgpend.h"
+#include "dbgprog.h"
+#include "dbglkup.h"
+#include "dbginit.h"
+#include "dlgcmd.h"
 
 
 extern int              ScanSavePtr;
 
-extern void             ExprPurge( void );
-extern void             UnFreezeRegs( void );
 extern void             CmdError( void );
 extern void             CaptureError( void );
-extern void             BrkCmdError( void );
-extern void             PurgeSymHandles( void );
-extern void             DlgCmd( void );
-extern bool             SetProgStartHook( bool );
-extern void             StartupErr( const char * );
 extern void             Suicide( void );
-extern void             ProcInput( void );
 
 /*
  * Error - output error message and suicide
@@ -91,7 +92,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             break;
         }
     }
-    SetProgStartHook( TRUE );
+    SetProgStartHook( true );
     UnFreezeRegs();
     ScanExpr( NULL );
     ExprPurge();
@@ -127,7 +128,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         RingBell();
         DUIErrorBox( buff );
     }
-    cmderror = FALSE;
+    cmderror = false;
     for( inp = InpStack; inp != NULL; inp = inp->link ) {
         if( inp->type & INP_BREAK_POINT ) {
             BrkCmdError();
@@ -136,7 +137,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             CaptureError();
         }
         if( inp->type & INP_DLG_CMD ) {
-            cmderror = TRUE;
+            cmderror = true;
         }
     }
     PurgeInpStack();
@@ -154,4 +155,11 @@ void PrevError( const char *msg )
     DUIWndDebug();
     RingBell();
     DUIErrorBox( msg );
+}
+
+void StartupErr( const char *err )
+/********************************/
+{
+    PopErrBox( err );
+    KillDebugger(1);
 }

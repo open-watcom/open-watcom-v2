@@ -46,10 +46,10 @@ CHAR_TYPE *__F_NAME(strncat,wcsncat)( CHAR_TYPE *dest, const CHAR_TYPE *src,
     destLen = __F_NAME(strlen,wcslen)( dest );
 
     if( srcLen < n ) {
-        __F_NAME(strncpy,wcsncpy)( dest+destLen, src, srcLen+1 );
+        __F_NAME(strncpy,wcsncpy)( dest + destLen, src, srcLen + 1 );
     } else {
-        __F_NAME(strncpy,wcsncpy)( dest+destLen, src, n );
-        dest[destLen+n] = '\0';
+        __F_NAME(strncpy,wcsncpy)( dest + destLen, src, n );
+        dest[destLen + n] = NULLCHAR;
     }
 
     return( dest );

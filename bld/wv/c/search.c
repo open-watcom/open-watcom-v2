@@ -45,7 +45,7 @@ typedef struct {
 typedef enum { EXACT, MATCH, LOW, HIGH } status;
 
 
-static char GetLine( unsigned handle, buffer *buff, unsigned str_len )
+static bool GetLine( unsigned handle, buffer *buff, unsigned str_len )
 {
     unsigned    keep;
     char        old;
@@ -57,13 +57,16 @@ static char GetLine( unsigned handle, buffer *buff, unsigned str_len )
             memcpy( buff->start, buff->ptr, keep );
             buff->end = ReadStream( handle, buff->start+keep, buff->size-keep )
                                 + buff->start + keep;
-            if( buff->start + str_len >= buff->end ) return( 0 );
+            if( buff->start + str_len >= buff->end )
+                return( false );
             buff->ptr = buff->start;
         }
         old = *buff->ptr;
         buff->ptr += 1;
         ++FilePos;
-        if( old == '\n' ) return( 1 );
+        if( old == '\n' ) {
+            return( true );
+        }
     }
 }
 
@@ -86,13 +89,15 @@ static status FindTag( unsigned handle, buffer *buff, char *str,
 {
     unsigned    diff;
 
-    for( ;; ) {
-        if( !GetLine( handle, buff, str_len ) ) return( HIGH );
+    while( GetLine( handle, buff, str_len ) ) {
         diff = Match( str, buff->ptr );
-        if( diff >= prefix_len ) break;
+        if( diff >= prefix_len ) {
+            if( diff == str_len )
+                return( ( buff->ptr[diff] <= ' ' ) ? EXACT : MATCH );
+            return( ( buff->ptr[diff] > str[diff] ) ? HIGH : LOW );
+        }
     }
-    if( diff == str_len ) return( (buff->ptr[diff] <= ' ') ? EXACT : MATCH );
-    return( (buff->ptr[diff] > str[diff]) ? HIGH : LOW );
+    return( HIGH )
 }
 
 
@@ -102,7 +107,7 @@ int FSearch( unsigned handle, char *str, char *buff_start,
     unsigned long       size;
     unsigned long       offset;
     unsigned long       match_pos;
-    unsigned            str_len;
+    size_t              str_len;
     status              stat;
     buffer              buff;
 
@@ -110,8 +115,8 @@ int FSearch( unsigned handle, char *str, char *buff_start,
     buff.size  = buff_size;
     buff.start = buff_start;
     str_len = strlen( str );
-    match_pos = -1UL;
-    offset = 0UL;
+    match_pos = ERR_SEEK;
+    offset = 0L;
     for( size = SeekStream( handle, 0L, DIO_SEEK_END ) >> 1; size > 0; size >>= 1 ) {
         FilePos = offset + size;
         SeekStream( handle, FilePos, DIO_SEEK_ORG );
@@ -127,7 +132,8 @@ int FSearch( unsigned handle, char *str, char *buff_start,
             offset += size;
         }
     }
-    if( match_pos == -1UL ) return( 0 );
+    if( match_pos == ERR_SEEK )
+        return( 0 );
     SeekStream( handle, match_pos, DIO_SEEK_ORG );
     return( 1 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,7 +234,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     char        *errstr;
     char        *res;
     LRESULT     top;
-    LRESULT     sel;
+    int         sel;
     HWND        id;
     WORD        parm;
     static HWND framedHwnd;
@@ -288,8 +289,8 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         case SELWIN_ADD:
         case SELWIN_DELETE:
         case SELWIN_SHOWINFO:
-            sel = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
-            if( sel == (WORD)LB_ERR ) {
+            sel = (int)SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
+            if( sel == LB_ERR ) {
                 if( parm != SELWIN_LISTBOX ) {
                     errstr = GetRCString( STR_NO_CUR_SELECTION );
                     MessageBox( hwnd, errstr, SpyName, MB_OK );

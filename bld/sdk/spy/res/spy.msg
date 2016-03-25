@@ -61,9 +61,6 @@ pick(   STR_ABOUT_NAME,
 pick(   STR_ABOUT_VERSION,
         banner1p2( _SPY_VERSION_ ),
         banner1p2( _SPY_VERSION_ ) )
-pick(   STR_COPYRIGHT_YEAR,
-        "1993",
-        "1993" )
 pick(   STR_ABOUT_TITLE,
         "About Open Watcom Spy",
         "About Open Watcom Spy" )

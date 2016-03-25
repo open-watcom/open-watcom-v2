@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <mbstring.h>
 #include <stdlib.h>
@@ -279,10 +279,9 @@ bool WREDisplayStatusText( char *str )
         hdc = GetDC( WREStatusWindow );
         if( hdc != (HDC)NULL ) {
             if( str != NULL ) {
-                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont, str, -1 );
+                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont, str, DT_ESC_CONTROLLED );
             } else {
-                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont,
-                                   WREClearStatusText, -1 );
+                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont, WREClearStatusText, DT_ESC_CONTROLLED );
             }
             ReleaseDC( WREStatusWindow, hdc );
         }

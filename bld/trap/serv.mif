@@ -67,15 +67,15 @@ server_ext_nov       = .nlm
 target          = jvmhlp_g.dll
 !else ifeq srv msj
 target          = msjhlp.dll
-!else ifdef server_ext_$(host_os)_$(os)
-target          = $(xname)$(server_ext_$(host_os)_$(os))
+!else ifdef server_ext_$(host_os)_$(target_os)
+target          = $(xname)$(server_ext_$(host_os)_$(target_os))
 !else ifdef server_ext_$(host_os)
 target          = $(xname)$(server_ext_$(host_os))
 !else
 target          = $(xname).exe
 !endif
 
-dig_os = $(os)
+dig_os = $(target_os)
 !include $(dig_dir)/trpcli.mif
 
 !ifndef test

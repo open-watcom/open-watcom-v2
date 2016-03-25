@@ -47,10 +47,10 @@ static long     total = 0;
  */
 static void addToTagList( char *res )
 {
-    int         len;
+    size_t      len;
 
     len = strlen( res ) + 1;
-    tagList = realloc( tagList, (TagCount + 1) * sizeof( char * ) );
+    tagList = realloc( tagList, ( TagCount + 1 ) * sizeof( char * ) );
     if( tagList == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }
@@ -68,28 +68,28 @@ static void addToTagList( char *res )
 /*
  * AddTag - add a new tag to our list
  */
-void AddTag( char *id )
+void AddTag( const char *id )
 {
-    char        *fname;
+    const char  *fname;
     char        *linedata;
     char        res[MAX_STR];
 
     linedata = GetCurrentLineDataPtr();
     fname = GetCurrentFileName();
 #ifdef __ENABLE_FNAME_PROCESSING__
-    if( !strnicmp( id, "__F_NAME", 8 ) ) {
+    if( strnicmp( id, "__F_NAME", 8 ) == 0 ) {
         char *ptr;
 
         id = strchr( id, '(' );
-        if( id ) {
+        if( id != NULL ) {
             ++id;
             ptr = res;
 
-            while( *id && isspace( *id ) ) {
+            while( *id != '\0' && isspace( *id ) ) {
                 ++id;
             }
 
-            while( *id && (*id != ',') ) {
+            while( *id != '\0' && (*id != ',') ) {
                 *ptr++ = *id++;
             }
 
@@ -100,11 +100,11 @@ void AddTag( char *id )
                 ++id;
                 ptr = res;
 
-                while( *id && isspace( *id ) ) {
+                while( *id != '\0' && isspace( *id ) ) {
                     ++id;
                 }
 
-                while( *id && (*id != ')') ) {
+                while( *id != '\0' && (*id != ')') ) {
                     *ptr++ = *id++;
                 }
 
@@ -123,33 +123,29 @@ void AddTag( char *id )
 } /* AddTag */
 
 /*
- * CompareStrings - quicksort comparison
+ * compareStrings - quicksort comparison
  */
-int CompareStrings( char **p1, char **p2 )
+static int compareStrings( const void *p1, const void *p2 )
 {
-    return( strcmp( *p1, *p2 ) );
+    return( strcmp( *(const char **)p1, *(const char **)p2 ) );
 
-} /* CompareStrings */
+} /* compareStrings */
 
 /*
  * GenerateTagsFile - emit a sorted tags file
  */
-void GenerateTagsFile( char *fname )
+void GenerateTagsFile( const char *fname )
 {
     FILE        *f;
     int         i;
-    long        total;
 
-    qsort( tagList, TagCount, sizeof( char * ),
-           (int (*)( const void*, const void* ))CompareStrings );
+    qsort( tagList, TagCount, sizeof( char * ), compareStrings );
     f = fopen( fname, "w" );
     if( f == NULL ) {
         ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
     }
-    if( tagList == NULL ) {
-        total = 0;
-    } else {
-        total = TagCount * sizeof( char * );
+    if( tagList != NULL ) {
+        total += TagCount * sizeof( char * );
     }
     for( i = 0; i < TagCount; i++ ) {
         fprintf( f, "%s\n", tagList[i] );
@@ -165,7 +161,7 @@ void GenerateTagsFile( char *fname )
 /*
  * ReadExtraTags - read in extra tags from tags file
  */
-void ReadExtraTags( char *fname )
+void ReadExtraTags( const char *fname )
 {
     FILE        *f;
     char        res[MAX_STR];

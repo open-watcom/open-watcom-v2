@@ -22,6 +22,10 @@
 
 :include readonly.sp
 
+:segment CNAME
+:include cpponly.sp
+
+:endsegment
 :include mbmax.sp
 
 /*

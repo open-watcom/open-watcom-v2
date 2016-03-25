@@ -48,6 +48,7 @@
 #include "_direct.h"
 #include "_dtaxxx.h"
 #include "liballoc.h"
+#include "pathmac.h"
 
 #ifdef _M_I86
   #define FF_LEVEL      0
@@ -113,14 +114,14 @@ static int is_directory( const CHAR_TYPE *name )
 #ifdef __WIDECHAR__
         curr_ch = *name;
 #else
-        curr_ch = _mbsnextc( name );
+        curr_ch = _mbsnextc( (unsigned char *)name );
 #endif
         if( curr_ch == NULLCHAR ) {
-            if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
+            if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ){
                 /* directory, need add "*.*" */
                 return( 2 );
             }
-            if( prev_ch == '.' ){
+            if( prev_ch == STRING( '.' ) ) {
                 /* directory, need add "\\*.*" */
                 return( 1 );
             }
@@ -128,14 +129,14 @@ static int is_directory( const CHAR_TYPE *name )
             /* need add "\\*.*" if directory */
             return( 0 );
         }
-        if( curr_ch == '*' )
+        if( curr_ch == STRING( '*' ) )
             break;
-        if( curr_ch == '?' )
+        if( curr_ch == STRING( '?' ) )
             break;
 #ifdef __WIDECHAR__
         ++name;
 #else
-        name = _mbsinc( name );
+        name = (char *)_mbsinc( (unsigned char *)name );
 #endif
     }
     /* with wildcards must be file */
@@ -228,7 +229,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
         len = __F_NAME(strlen,wcslen)( dirname );
         memcpy( pathname, dirname, len * sizeof( CHAR_TYPE ) );
         if( i < 2 ) {
-            pathname[len++] = '\\';
+            pathname[len++] = DIR_SEP;
         }
         __F_NAME(strcpy,wcscpy)( &pathname[len], STRING( "*.*" ) );
         if( __F_NAME(___opendir,___wopendir)( pathname, &tmp ) == NULL ) {

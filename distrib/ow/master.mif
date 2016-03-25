@@ -49,6 +49,10 @@ dstdir = $(dstdir_$(host_os)_$(host_cpu))
 
 langdat_keys_ntx64    = -k ntx64
 langdat_keys_linuxx64 = -k lx64
+langdat_keys = $(langdat_keys_$(bld_os)$(bld_cpu))
+!ifdef %USE_FILENAME_VERSION
+langdat_keys += -k newdbg
+!endif
 
 !ifdef __UNIX__
 nulldevice = /dev/null
@@ -65,10 +69,22 @@ skip_build: .symbolic
 skip_build: .symbolic
 !endif
 !endif
+
+!ifdef missing
+
+all: .SYMBOLIC
+    langdat -l filelist $(langdat_keys) -r $(bld_ver) c
+    mkinf -x -i../include c filelist $(%OWRELROOT)
+    langdat -l filelist $(langdat_keys) -r $(bld_ver) f77
+    mkinf -x -i../include f77 filelist $(%OWRELROOT)
+    @rm -rf filelist
+
+!else
+
 all : $(bin_dir)/$(installer_c) $(bin_dir)/$(installer_f77) .SYMBOLIC
 
 $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
-    langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ c
+    langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%OWRELROOT)
     @rm filelist
@@ -82,7 +98,7 @@ $(bin_dir)/$(installer_c) : ../files.dat $(bin_dir) $(setup_c) .ALWAYS
     @rm setup.zip
 
 $(bin_dir)/$(installer_f77) : ../files.dat $(bin_dir) $(setup_f77) .ALWAYS
-    langdat -l filelist $(langdat_keys_$(bld_os)$(bld_cpu)) -c $[@ f77
+    langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
     mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%OWRELROOT)
     @rm filelist
@@ -106,3 +122,5 @@ clean : .symbolic
     @if exist instarch.lst rm instarch.lst
     @if exist setup.exe rm setup.exe
     @if exist setup.inf rm setup.inf
+
+!endif

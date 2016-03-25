@@ -205,4 +205,6 @@ extern global_vars Globals;
 
 #endif
 
+extern const asm_ins    ASMFAR *get_instruction( char *string );
+
 #endif

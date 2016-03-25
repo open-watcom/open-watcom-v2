@@ -39,7 +39,7 @@
 #include "ftnstd.h"
 #include "ifenv.h"
 
-complex CCOS( single rp, single ip ) {
+scomplex CCOS( single rp, single ip ) {
 //====================================
 
 // Return the cosine of arg.
@@ -47,14 +47,14 @@ complex CCOS( single rp, single ip ) {
 //               = ( cis( x ) exp( -y ) + cis( -x ) exp( y ) ) / 2
 //               = cos( x ) cosh( y ) - i sin( x ) sinh( y )
 
-    complex     result;
+    scomplex    result;
 
     result.realpart = cos( rp ) * cosh( ip );
     result.imagpart = -sin( rp ) * sinh( ip );
     return( result );
 }
 
-complex XCCOS( complex *arg ) {
+scomplex XCCOS( scomplex *arg ) {
 //=============================
 
     return( CCOS( arg->realpart, arg->imagpart ) );

@@ -24,6 +24,9 @@ dig_os = os2v2
 inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c"
 
 extra_cpp_flags = -DBUILD_RFX
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 
 extra_c_flags = -s
 

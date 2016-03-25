@@ -32,19 +32,21 @@
 
 #include <stdio.h>
 #include "stdwin.h"
+#include "dbgrmsg.h"
+#include "trpsys.h"
 
 /*
  * hardModeDebugState
  */
-static BOOL hardModeDebugState( void )
+static bool hardModeDebugState( void )
 {
     if( SystemDebugState == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( SystemDebugState == SDS_NOTASKQUEUE ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* hardModeDebugState */
 
@@ -148,12 +150,11 @@ private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task,
             if( msg.lParam != MAGIC_COOKIE ) {
                 continue;
             }
-            if( DebugeeTask != NULL && ( hardModeDebugState()
-                                      || msg.wParam == ASYNCH_STOP ) ) {
+            if( DebugeeTask != NULL && ( hardModeDebugState() || msg.wParam == ASYNCH_STOP ) ) {
                 Out((OUT_SOFT,"Entering HardMode"));
-                HardModeRequired = TRUE;
+                HardModeRequired = true;
             } else {
-                HardModeRequired = FALSE;
+                HardModeRequired = false;
             }
             if( DebuggerWindow != NULL && !InputLocked && msg.wParam != TASK_ENDED && DebugeeTask != NULL ) {
                 if( HardModeRequired || ForceHardMode ) {

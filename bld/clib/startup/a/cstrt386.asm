@@ -242,30 +242,29 @@ ENV_SEG equ     2ch
         and     ebx,0FFFFF000h          ; - ...
         mov     _curbrk,ebx             ; - set first available memory locn
         shr     ebx,12                  ; - calc. # of 4k pages
-        mov     ax,ds                   ; - set ES=data segment
-        mov     es,ax                   ; - ...
+        mov     eax,ds                  ; - set ES=data segment
+        mov     es,eax                  ; - ...
         mov     ah,4Ah                  ; - shrink block to minimum amount
         int     21h                     ; - ...
         pop     eax                     ; - restore version number
-        mov     bx,ds                   ; - get value of Phar Lap data segment
+        mov     ebx,ds                  ; - get value of Phar Lap data segment
         mov     cx,ENV_SEG              ; - PharLap environment segment
         jmp     short know_extender     ; else
 not_pharlap:                            ; - assume DOS/4G or compatible
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
-        mov     ax,gs                   ; - get segment address of kernel
-        cmp     ax,0                    ; - if not zero
+        mov     eax,gs                  ; - get segment address of kernel
+        test    ax,ax                   ; - if not zero
         je      short rat9              ; - then
         mov     __D16Infoseg,ax         ; - - remember it
 rat9:                                   ; - endif
         mov     ax,6                    ; - check data segment base
-        mov     bx,ds                   ; - set up data segment
+        mov     ebx,ds                  ; - set up data segment
         int     31h                     ; - DPMI call
-        mov     al,X_RATIONAL           ; - asssume Rational 32-bit Extender
-        mov     ah,XS_RATIONAL_ZEROBASE ; - extender subtype
+        mov     ax,XS_RATIONAL_ZEROBASE*256+X_RATIONAL ; - asssume Rational 32-bit Extender / extender subtype
         or      dx,cx                   ; - if base is non-zero
         jz      rat10                   ; - then
         mov     ah,XS_RATIONAL_NONZEROBASE; - DOS/4G non-zero based data
@@ -276,7 +275,7 @@ rat10:                                  ; - endif
 know_extender:                          ; endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype
-        mov     es,bx                   ; get access to code segment
+        mov     es,ebx                  ; get access to code segment
         mov     es:__saved_DS,ds        ; save DS value
         mov     dword ptr _Envptr,esi   ; save address of environment strings
         mov     word ptr _Envptr+4,cx   ; save segment of environment area
@@ -295,10 +294,10 @@ know_extender:                          ; endif
         repe    scasb
         lea     esi,-1[edi]
         mov     edi,edx
-        mov     bx,es
-        mov     dx,ds
-        mov     ds,bx
-        mov     es,dx                   ; es:edi is destination
+        mov     ebx,es
+        mov     edx,ds
+        mov     ds,ebx
+        mov     es,edx                  ; es:edi is destination
         je      noparm
         inc     ecx
         rep     movsb
@@ -310,8 +309,7 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        mov     bl,0                    ; assume 'no87=' env. var. not present
-        mov     bh,FLG_LFN              ; assume 'lfn=n' env. var. not present
+        mov     bx,FLG_LFN*256          ; assume 'lfn=n' env. var. not present / assume 'no87=' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
         cmp     eax,37386f6eh           ; check for 'no87'
@@ -381,18 +379,18 @@ _cstart_ endp
 
 ;       don't touch AL in __exit, it has the return code
 
-__exit  proc near
+__exit  proc near                       ; never return
         public  "C",__exit
-ifdef __STACK__
-        pop     eax                     ; get return code into eax
+ifndef __STACK__
+        push    eax                     ; save return code on the stack
 endif
-        jmp     short   ok
+        jmp short L7
 
         public  __do_exit_with_msg__
 
 ; input: ( char *msg, int rc )  always in registers
 
-__do_exit_with_msg__:
+__do_exit_with_msg__:                   ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -403,7 +401,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L6:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L6                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -414,13 +412,11 @@ L6:     lodsb                           ; get char
         mov     ecx,sizeof NewLine      ; . . .
         mov     ah,040h                 ; . . .
         int     021h                    ; . . .
-        pop     eax                     ; restore return code
-ok:
-        push    eax                     ; save return code
-        mov     eax,00H                 ; run finalizers
+L7:
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
-        pop     eax                     ; restore return code
+        pop     eax                     ; restore return code from stack
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit  endp

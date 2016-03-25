@@ -50,12 +50,8 @@ extern dip_status EvalLocAdj( imp_image_handle *ii,
                                location_context *lc,
                                dr_handle         sym,
                                address          *addr );
-extern bool EvalOffset( imp_image_handle *ii,
-                        dr_handle         sym,
-                        uint_32          *ret );
-extern bool EvalSeg( imp_image_handle *ii,
-                     dr_handle         sym,
-                     uint_32          *ret );
+extern bool EvalOffset( imp_image_handle *ii, dr_handle sym, uint_32 *ret );
+extern bool EvalSeg( imp_image_handle *ii, dr_handle sym, addr_seg *ret );
 extern dip_status EvalBasedPtr( imp_image_handle *ii,
                                 location_context *lc,
                                 dr_handle         sym,

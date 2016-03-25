@@ -79,7 +79,6 @@ endif
 ;* caller.
 
 __STKOVERFLOW:
-
         pop     ax
 if _MODEL and _BIG_CODE
         pop     dx
@@ -118,7 +117,7 @@ endif                           ; dx:ax points at retaddr
         mov     ax,bp           ; exit code in bx
         mov     bx,1
         call    __fatal_runtime_error
-
+        ; never return
         endproc __STK
 
 _putw proc near

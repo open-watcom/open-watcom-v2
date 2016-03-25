@@ -63,7 +63,7 @@ DWORD __lib_GetCurrentDirectoryW( DWORD nBufferLength, LPWSTR lpBuffer )
         }
 
         /*** If buffer too small, return required size ***/
-        if( _mbslen( mbBuffer ) + 1  >  nBufferLength ) {
+        if( _mbslen( (unsigned char *)mbBuffer ) + 1  >  nBufferLength ) {
             lib_free( mbBuffer );
             return( osrc );
         }

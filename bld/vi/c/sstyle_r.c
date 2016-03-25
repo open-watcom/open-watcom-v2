@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Support for REX syntax.
 *
 ****************************************************************************/
 
@@ -73,7 +72,7 @@ static int issymbol( int c )
 
 void InitRexxLine( char *text )
 {
-    while( *text && isspace( *text ) ) {
+    while( *text != '\0' && isspace( *text ) ) {
         text++;
     }
     firstNonWS = text;
@@ -86,7 +85,7 @@ static void getHex( ss_block *ss_new, char *start )
     bool    nodigits = true;
 
     ss_new->type = SE_HEX;
-    while( *text && isxdigit( *text ) ) {
+    while( *text != '\0' && isxdigit( *text ) ) {
         text++;
         nodigits = false;
     }
@@ -212,12 +211,12 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     lastc = tolower ( *text );
     if( lastc == 'u' ) {
         ss_new->len++;
-        if( tolower( *(text + 1) ) == 'l' ) {
+        if( tolower( text[1] ) == 'l' ) {
             ss_new->len++;
         }
     } else if( lastc == 'l' ) {
         ss_new->len++;
-        if( tolower( *(text + 1) ) == 'u' ) {
+        if( tolower( text[1] ) == 'u' ) {
             ss_new->len++;
         }
     }
@@ -250,8 +249,7 @@ static void getText( ss_block *ss_new, char *start )
     if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
     } else
-    if( *text == ':' && firstNonWS == start &&
-        *(text + 1) != ':' && *(text + 1) != '>' ) {
+    if( text[0] == ':' && firstNonWS == start && text[1] != ':' && text[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         text++;
         ss_new->type = SE_JUMPLABEL;
@@ -278,11 +276,11 @@ static void getPreprocessor( ss_block *ss_new, char *start )
         // skip the #
         text++;
         // take any spaces present
-        while( *text && isspace( *text ) ) {
+        while( *text != '\0' && isspace( *text ) ) {
             text++;
         }
         // and then the keyword
-        while( *text && !isspace( *text ) ) {
+        while( *text != '\0' && !isspace( *text ) ) {
             text++;
         }
         ss_new->len = text - start;
@@ -291,31 +289,30 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     }
 
     flags.inPreprocessor = true;
-    while( *text ) {
-        if( *text == '"' ) {
+    for( ; *text != '\0'; ++text ) {
+        if( text[0] == '"' ) {
             if( !withinQuotes ) {
                 withinQuotes = true;
-            } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
+            } else if( text[-1] != '\\' || text[-2] == '\\' ) {
                 withinQuotes = false;
             }
         }
-        if( *text == '/' ) {
-            if( *(text + 1) == '*' && !withinQuotes ) {
+        if( text[0] == '/' ) {
+            if( text[1] == '*' && !withinQuotes ) {
                 flags.inCComment = true;
                 lenCComment = 0;
                 break;
-            } else if( *(text + 1) == '/' && !withinQuotes ) {
+            } else if( text[1] == '/' && !withinQuotes ) {
                 flags.inCPPComment = true;
                 flags.inPreprocessor = false;
                 break;
             }
         }
-        text++;
     }
     flags.inString = withinQuotes;
 
-    if( *text == '\0' ) {
-        if( *(text - 1) != '\\' ) {
+    if( text[0] == '\0' ) {
+        if( text[-1] != '\\' ) {
             flags.inPreprocessor = false;
             if( flags.inString ) {
                 ss_new->type = SE_INVALIDTEXT;
@@ -328,17 +325,18 @@ static void getPreprocessor( ss_block *ss_new, char *start )
 
 static void getChar( ss_block *ss_new, char *start, int skip )
 {
-    char    *text = start + skip;
+    char    *text;
+
     ss_new->type = SE_CHAR;
-embedded:
-    while( *text && *text != '\'' ) {
-        text++;
+    for( text = start + skip; *text != '\0'; ++text ) {
+        if( text[0] == '\'' )
+            break;
+        if( text[0] == '\\' && ( text[1] == '\\' || text[1] == '\'' ) ) {
+            ++text;
+        }
     }
-    if( *text == '\0' ) {
+    if( text[0] == '\0' ) {
         ss_new->type = SE_INVALIDTEXT;
-    } else if( *(text - 1) == '\\' ) {
-        text++;
-        goto embedded;
     } else {
         text++;
     }
@@ -362,18 +360,18 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
     char    *text = start + skip;
     lenCComment += skip;
     for( ;; ) {
-        while( *text && *text != '*' ) {
+        while( *text != '\0' && *text != '*' ) {
             lenCComment++;
             text++;
         }
-        if( *text == '\0' ) {
+        if( text[0] == '\0' ) {
             // comment extends to next line
             flags.inCComment = true;
             break;
         }
         text++;
         lenCComment++;
-        if( *text == '/' && lenCComment > 2 ) {
+        if( text[0] == '/' && lenCComment > 2 ) {
             text++;
             // comment definitely done
             flags.inCComment = false;
@@ -387,11 +385,12 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
 static void getCPPComment( ss_block *ss_new, char *start )
 {
     char    *text = start;
-    while( *text ) {
+
+    while( *text != '\0' ) {
         text++;
     }
     flags.inCPPComment = true;
-    if( *start == '\0' || *(text - 1) != '\\' ) {
+    if( *start == '\0' || text[-1] != '\\' ) {
         flags.inCPPComment = false;
     }
     ss_new->type = SE_COMMENT;
@@ -405,11 +404,11 @@ static void getString( ss_block *ss_new, char *start, int skip )
 
     ss_new->type = SE_STRING;
 again:
-    while( *text && *text != '"' ) {
+    while( *text != '\0' && *text != '"' ) {
         text++;
     }
-    if( *text == '\0' ) {
-        if( *(text - 1) != '\\' ) {
+    if( text[0] == '\0' ) {
+        if( text[-1] != '\\' ) {
             // unterminated string
             ss_new->type = SE_INVALIDTEXT;
 
@@ -459,13 +458,11 @@ void InitRexxFlags( linenum line_no )
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
-    rc = GimmePrevLinePtr( &fcb, &line );
-    while( rc == ERR_NO_ERR ) {
+    while( (rc = GimmePrevLinePtr( &fcb, &line )) == ERR_NO_ERR ) {
         if( line->data[line->len - 1] != '\\' ) {
             break;
         }
         inBlock = true;
-        rc = GimmePrevLinePtr( &fcb, &line );
     }
 
     if( rc == ERR_NO_ERR ) {
@@ -485,41 +482,37 @@ void InitRexxFlags( linenum line_no )
     if( inBlock ) {
         // jot down whether it started with #
         text = line->data;
-        while( *text && isspace( *text ) ) {
+        while( *text != '\0' && isspace( *text ) ) {
             text++;
         }
         topChar = *text;
 
         // parse down through lines, noticing /*, */ and "
         while( line != thisline ) {
-            text = line->data;
-            for( ;; ) {
-                while( *text && *text != '/' ) {
-                    if( *text == '"' ) {
+            for( text = line->data; ; ++text ) {
+                for( ; *text != '\0' && *text != '/'; ++text ) {
+                    if( text[0] == '"' ) {
                         if( !withinQuotes ) {
                             withinQuotes = true;
-                        } else if( *(text - 1) != '\\' ||
-                                   *(text - 2) == '\\' ) {
+                        } else if( text[-1] != '\\' || text[-2] == '\\' ) {
                             withinQuotes = false;
                         }
                     }
-                    text++;
                 }
-                if( *text == '\0' ) {
+                if( text[0] == '\0' ) {
                     break;
                 }
                 if( !withinQuotes ) {
-                    if( *(text - 1) == '/' ) {
+                    if( text[-1] == '/' ) {
                         flags.inCPPComment = true;
-                    } else if( *(text + 1) == '*' ) {
+                    } else if( text[1] == '*' ) {
                         flags.inCComment = true;
                         lenCComment = 100;
                     }
                 }
-                if( *(text - 1) == '*' && !withinQuotes ) {
+                if( text[-1] == '*' && !withinQuotes ) {
                     flags.inCComment = false;
                 }
-                text++;
             }
             rc = CGimmeNextLinePtr( &fcb, &line );
         }
@@ -544,13 +537,11 @@ void InitRexxFlags( linenum line_no )
         line = topline;
         do {
             starttext = line->data;
-            text = starttext + line->len;
-            for( ;; ) {
+            for( text = starttext + line->len; ; --text ) {
                 while( text != starttext && *text != '/' ) {
                     text--;
                 }
-                if( *(text + 1) == '*' && *text == '/' &&
-                    *(text - 1) != '/' ) {
+                if( text[1] == '*' && text[0] == '/' && text[-1] != '/' ) {
                     if( text == starttext ) {
                         flags.inCComment = true;
                         lenCComment = 100;
@@ -559,11 +550,10 @@ void InitRexxFlags( linenum line_no )
                     withinQuotes = false;
                     do {
                         text--;
-                        if( *text == '"' ) {
+                        if( text[0] == '"' ) {
                             if( !withinQuotes ) {
                                 withinQuotes = true;
-                            } else if( *(text - 1) != '\\' ||
-                                       *(text - 2) == '\\' ) {
+                            } else if( text[-1] != '\\' || text[-2] == '\\' ) {
                                 withinQuotes = false;
                             }
                         }
@@ -579,13 +569,12 @@ void InitRexxFlags( linenum line_no )
                 if( text == starttext ) {
                     break;
                 }
-                if( *(text - 1) == '*' ) {
+                if( text[-1] == '*' ) {
                     // we may actually be in a string, but that's extreme
                     // (if this becomes a problem, count the "s to beginning
                     // of line, check if multiline, etc. etc.)
                     return;
                 }
-                text--;
             }
             rc = GimmePrevLinePtr( &fcb, &line );
         } while( rc == ERR_NO_ERR );

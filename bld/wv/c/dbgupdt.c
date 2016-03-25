@@ -39,12 +39,16 @@
 #include "dbgio.h"
 #include "dui.h"
 #include "dbgutil.h"
-
-extern void             BrkAddrRefresh( void );
-extern void             InitLC( location_context *new, bool use_real_regs );
-extern void             SetStackPos( location_context *lc, int pos );
-extern void             SymCompFini( void );
-extern address          GetCodeDot( void );
+#include "dbgstk.h"
+#include "dbgexpr.h"
+#include "dbgbrk.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "dbgupdt.h"
+#include "namelist.h"
+#include "symcomp.h"
+#include "dbgdot.h"
 
 
 void DbgUpdate( update_list flags )
@@ -57,7 +61,7 @@ void DbgUpdate( update_list flags )
         BrkAddrRefresh();
     }
     if( flags & (UP_REG_CHANGE|UP_CSIP_CHANGE) ) {
-        InitLC( &Context, TRUE );
+        InitLC( &Context, true );
     }
     if( flags & UP_NEW_PROGRAM ) {
         SetStackPos( &Context, 0 );
@@ -67,7 +71,7 @@ void DbgUpdate( update_list flags )
         prev_mod = ContextMod;
         if( DeAliasAddrMod( Context.execution, &ContextMod ) == SR_NONE ) ContextMod = NO_MOD;
         if( prev_mod != ContextMod ) {
-            HookNotify( FALSE, HOOK_NEW_MODULE );
+            HookNotify( false, HOOK_NEW_MODULE );
         }
     }
     if( flags & (UP_CODE_ADDR_CHANGE | UP_SYM_CHANGE ) ) {

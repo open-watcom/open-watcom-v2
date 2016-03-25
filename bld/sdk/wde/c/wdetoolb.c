@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +91,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     tbar->last_pos = info->dinfo.area;
     tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar = (toolbar)ToolBarInit( parent );
+    tbar->tbar = ToolBarInit( parent );
 
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
@@ -127,7 +128,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
 
     width = info->dinfo.area.right - info->dinfo.area.left;
     height = info->dinfo.area.bottom - info->dinfo.area.top;
-    SetWindowPos( tbar->win, HWND_TOP, 0 ,0 , width, height, SWP_NOMOVE | SWP_NOZORDER );
+    SetWindowPos( tbar->win, (HWND)NULL, 0 ,0 , width, height, SWP_NOMOVE | SWP_NOZORDER );
 
     ShowWindow( tbar->win, SW_SHOWNORMAL );
 
@@ -156,7 +157,7 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     switch( msg ) {
     case WM_USER:
-        WdeHandleToolHint( wParam, (BOOL)lParam );
+        WdeHandleToolHint( LOWORD( wParam ), (BOOL)lParam );
         WdeHandleStickyToolPress( tbar, wParam, lParam );
         break;
 
@@ -190,10 +191,10 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     return( ret );
 }
 
-void WdeHandleToolHint( WPARAM wParam, BOOL pressed )
+void WdeHandleToolHint( ctl_id id, BOOL pressed )
 {
     if( pressed ) {
-        WdeDisplayHint( wParam );
+        WdeDisplayHint( id );
     } else {
         WdeSetStatusText( NULL, "", TRUE );
     }
@@ -209,7 +210,7 @@ void WdeHandleStickyToolPress( WdeToolBar *tbar, WPARAM wParam, LPARAM lParam )
         bstate = BUTTON_DOWN;
     }
 
-    WdeSetToolBarItemState( tbar, wParam, bstate );
+    WdeSetToolBarItemState( tbar, LOWORD( wParam ), bstate );
 }
 
 WdeToolBar *WdeFindToolBar( HWND win )
@@ -321,7 +322,7 @@ void WdeShutdownToolBars( void )
     ListFree( WdeToolBarList );
 }
 
-void WdeSetToolBarItemState( WdeToolBar *tbar, UINT id, UINT state )
+void WdeSetToolBarItemState( WdeToolBar *tbar, ctl_id id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

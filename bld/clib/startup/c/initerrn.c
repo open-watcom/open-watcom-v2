@@ -32,9 +32,8 @@
 #include "variety.h"
 #include <i86.h>
 #include <sys/magic.h>
-#include <errno.h>
+#include "rtdata.h"
 
-#undef  errno
 extern int      errno;  /* this is the real variable */
 
 extern void __initerrno( void )

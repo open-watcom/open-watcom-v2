@@ -53,37 +53,40 @@ typedef union {
 #define         MAX_MSG_SIZE    0x400
 #define         PARM_SIZE       (MAX_MSG_SIZE+0x40)
 #define         STACK_SIZE      4096
+
 /* has to match STATICDATA structure in DSXHDLR.ASM */
-typedef _Packed struct {
-        memptr          orig_vects[NUM_VECTS];
-        memptr          vecttable1[NUM_VECTS];
-        memptr          vecttable2[NUM_VECTS];
-        addr32_off      rm_func;
-        memptr          initfunc;
-        memptr          reqfunc;
-        memptr          finifunc;
-        dos_memory      envseg;
-        memptr          switchaddr;
-        memptr          saveaddr;
-        dos_memory      saveseg;
-        unsigned_16     savesize;
-        addr_seg        pmode_ds;
-        addr_seg        pmode_es;
-        addr_seg        pmode_cs;
-        addr48_off      pmode_eip;
-        addr_seg        pmode_ss;
-        addr48_off      pmode_esp;
-        addr_seg        save_env;
-        addr_seg        save_ss;
-        addr32_off      save_sp;
-        memptr          oldint10;
-        unsigned_8      pending;
-        unsigned_8      fail;
-        unsigned_8      act_font_tbls;
-        unsigned_8      othersaved;
-        unsigned_8      parmarea[PARM_SIZE];
-        unsigned_8      stack[STACK_SIZE];
+#include "pushpck1.h"
+typedef struct {
+    memptr          orig_vects[NUM_VECTS];
+    memptr          vecttable1[NUM_VECTS];
+    memptr          vecttable2[NUM_VECTS];
+    addr32_off      rm_func;
+    memptr          initfunc;
+    memptr          reqfunc;
+    memptr          finifunc;
+    dos_memory      envseg;
+    memptr          switchaddr;
+    memptr          saveaddr;
+    dos_memory      saveseg;
+    unsigned_16     savesize;
+    addr_seg        pmode_ds;
+    addr_seg        pmode_es;
+    addr_seg        pmode_cs;
+    addr48_off      pmode_eip;
+    addr_seg        pmode_ss;
+    addr48_off      pmode_esp;
+    addr_seg        save_env;
+    addr_seg        save_ss;
+    addr32_off      save_sp;
+    memptr          oldint10;
+    unsigned_8      pending;
+    unsigned_8      fail;
+    unsigned_8      act_font_tbls;
+    unsigned_8      othersaved;
+    unsigned_8      parmarea[PARM_SIZE];
+    unsigned_8      stack[STACK_SIZE];
 } rm_data;
+#include "poppck.h"
 
 extern rm_data          __far *PMData;
 extern dos_memory       RMData;
@@ -109,3 +112,5 @@ extern unsigned_8       RMSegEnd[];
 
 extern void Boom( unsigned );
 #pragma aux Boom = "db 0xf, 0xff" parm [eax]
+
+extern const char *DOSEnvFind( const char *name );

@@ -40,25 +40,25 @@
 #include "clibext.h"
 
 
-#define SM_CR                   '\r'
-#define SM_LF                   '\n'
-#define SM_TAB                  '\t'
+#define SM_CR           '\r'
+#define SM_LF           '\n'
+#define SM_TAB          '\t'
 
 typedef struct browser {
-        struct browser          *next;
-        char                    *line_ptr;
-        char                    *line_end;
-        unsigned long           bias;
-        unsigned long           file_off;
-        unsigned long           eof_off;
-        unsigned                cur_line;
-        char                    *cur_line_ptr;
-        char                    *open_name;
-        sm_file_handle          file_ptr;
-        sm_mod_handle           mod;
-        sm_cue_fileid           id;
-        int                     use;
-        char                    line_buf[ SM_BUF_SIZE ];
+    struct browser      *next;
+    char                *line_ptr;
+    char                *line_end;
+    unsigned long       bias;
+    unsigned long       file_off;
+    unsigned long       eof_off;
+    unsigned            cur_line;
+    char                *cur_line_ptr;
+    char                *open_name;
+    sm_file_handle      fp;
+    sm_mod_handle       mod;
+    sm_cue_fileid       id;
+    int                 use;
+    char                line_buf[ SM_BUF_SIZE ];
 } browser;
 
 static browser *FileList = NULL;
@@ -73,10 +73,9 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid
     hndl->next = FileList;
     FileList = hndl;
     hndl->file_off = -SM_BUF_SIZE;
-    hndl->cur_line_ptr = hndl->line_ptr
-                         = hndl->line_end = hndl->line_buf;
+    hndl->cur_line_ptr = hndl->line_ptr = hndl->line_end = hndl->line_buf;
     hndl->cur_line = 1;
-    hndl->file_ptr = fp;
+    hndl->fp = fp;
     hndl->bias = SMSeekStart( fp );
     hndl->eof_off = SMSeekEnd( fp );
     hndl->open_name = NULL;
@@ -126,8 +125,8 @@ unsigned long FSize( browser *hndl )
 {
     unsigned long       old;
 
-    old = SMSeekEnd( hndl->file_ptr );
-    return( SMSeekOrg( hndl->file_ptr, old ) );
+    old = SMSeekEnd( hndl->fp );
+    return( SMSeekOrg( hndl->fp, old ) );
 }
 
 
@@ -140,7 +139,7 @@ unsigned long FLastOffset( browser *hndl )
 int FileIsRemote( browser *hndl )
 {
     hndl = hndl;
-    return( SMFileRemote( hndl->file_ptr ) );
+    return( SMFileRemote( hndl->fp ) );
 }
 
 
@@ -157,9 +156,10 @@ void FDoneSource( browser *hndl )
     if( hndl != NULL ) {
         hndl->use--;
         if( hndl->use == 0 ) {
-            for( owner = &FileList; *owner != hndl; owner = &((*owner)->next) );
+            for( owner = &FileList; *owner != hndl; owner = &((*owner)->next) )
+                ;
             *owner = hndl->next;
-            SMClose( hndl->file_ptr );
+            SMClose( hndl->fp );
             _SMFree( hndl->open_name );
             _SMFree( hndl );
         }
@@ -175,14 +175,14 @@ static int get_block( browser *hndl, unsigned long off )
     if( off >= hndl->eof_off )
         return( 0 );
     loc = hndl->bias + off;
-    if( SMSeekOrg( hndl->file_ptr, loc ) != loc ) {
+    if( SMSeekOrg( hndl->fp, loc ) != loc ) {
         hndl->eof_off = off;
         return( 0 );
     }
     len = SM_BUF_SIZE;
     if( off + len > hndl->eof_off )
         len = hndl->eof_off - off;
-    len = SMReadStream( hndl->file_ptr, hndl->line_buf, len );
+    len = SMReadStream( hndl->fp, hndl->line_buf, len );
     if( len <= 0 ) {       /*sf ReadStream returns -1 on error */
         hndl->eof_off = off;
         return( 0 );
@@ -274,8 +274,7 @@ int FCurrLine( browser *hndl )
 }
 
 
-int FReadLine( browser *hndl, int line, int off,
-               char *buff, int size )
+int FReadLine( browser *hndl, int line, int off, char *buff, int size )
 {
     int         i;
     char        *ptr;

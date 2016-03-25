@@ -29,15 +29,15 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <commdlg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "commonui.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
 #include "wsamprc.h"
+
 
 static FARPROC  oldClassProc;
 static HWND     mainWindow;

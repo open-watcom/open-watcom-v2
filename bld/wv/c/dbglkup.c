@@ -38,16 +38,15 @@
 #include "dbgio.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgprog.h"
+#include "remcore.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbglkup.h"
 
 #include "clibext.h"
-
-
-extern void             ConfigLine( char * );
-extern bool             IsInternalMod( mod_handle );
-extern bool             IsInternalModName( const char *, unsigned );
-extern image_entry      *ImageEntry( mod_handle );
-extern unsigned         ProgPoke( address, const void *, unsigned );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 typedef struct lookup_list {
@@ -67,10 +66,9 @@ static void FreeList( lookup *curr )
 {
     lookup *next;
 
-    while( curr != NULL ) {
+    for( ; curr != NULL; curr = next ) {
         next = curr->next;
         _Free( curr );
-        curr = next;
     }
 }
 
@@ -101,9 +99,9 @@ void InitLook( void )
 {
     DefLookup = NULL;
     // add these in reverse order since AddLookSpec adds to the front of the list
-    AddLookSpec( "*_", 2, FALSE, NULL );
-    AddLookSpec( "_*", 2, FALSE, NULL );
-    AddLookSpec( "*", 1, FALSE, NULL );
+    AddLookSpec( "*_", 2, false, NULL );
+    AddLookSpec( "_*", 2, false, NULL );
+    AddLookSpec( "*", 1, false, NULL );
 }
 
 void FiniLook( void )
@@ -138,22 +136,22 @@ void LookSet( void )
     bool    need_item;
     bool    add;
 
-    respect = TRUE;
-    add = FALSE;
-    just_respect = FALSE;
+    respect = true;
+    add = false;
+    just_respect = false;
     if( CurrToken == T_DIV ) {
         Scan();
         if( ScanCmd( AddTab ) == 0 ) {
-            add = TRUE;
+            add = true;
         } else {
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                respect = FALSE;
-                just_respect = TRUE;
+                respect = false;
+                just_respect = true;
                 break;
             case 1:
-                respect = TRUE;
-                just_respect = TRUE;
+                respect = true;
+                just_respect = true;
                 break;
             default:
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
@@ -162,28 +160,28 @@ void LookSet( void )
         }
     }
     for( curr = new; ; ++curr ) {
-        need_item = FALSE;
+        need_item = false;
         if( CurrToken == T_DIV ) {
             Scan();
             switch( ScanCmd( CaseTab ) ) {
             case 0:
-                respect = FALSE;
-                need_item = TRUE;
-                just_respect = FALSE;
+                respect = false;
+                need_item = true;
+                just_respect = false;
                 break;
             case 1:
-                respect = TRUE;
-                need_item = TRUE;
-                just_respect = FALSE;
+                respect = true;
+                need_item = true;
+                just_respect = false;
                 break;
             default:
                 Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
                 break;
             }
         }
-        if( !ScanItem( TRUE, &curr->start, &curr->len ) )
+        if( !ScanItem( true, &curr->start, &curr->len ) )
             break;
-        just_respect = FALSE;
+        just_respect = false;
         curr->respect = respect;
     }
     if( need_item )
@@ -223,14 +221,14 @@ void LookConf( void )
     char   *ptr;
     bool   respect;
 
-    respect = TRUE;
+    respect = true;
     ptr = TxtBuff;
     for( curr = DefLookup; curr != NULL; curr = curr->next ) {
         if( ptr != TxtBuff ) {
             *ptr = NULLCHAR;
             ConfigLine( TxtBuff );
             ptr = StrCopy( "/add ", TxtBuff );
-            respect = TRUE;
+            respect = true;
         }
         if( respect != curr->respect_case ) {
             respect = curr->respect_case;
@@ -264,7 +262,7 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
     for( k = 0; k < tokenlen; k++ )
         ucwhat[k] = toupper( what[k] );
 
-    for( t = tokenlist; (tc = *t) != '\0'; ++t ) {
+    for( t = tokenlist; (tc = *t) != NULLCHAR; ++t ) {
         w = ucwhat;
         for( ;; ) {
             isuppertc = isupper( tc );
@@ -283,12 +281,12 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
                     break;
                 }
             }
-            if( tc == '\0' )
+            if( tc == NULLCHAR )
                 return( tokennum );
             t++;
             tc = *t;
         }
-        while( *t != '\0' )
+        while( *t != NULLCHAR )
             t++;
         tokennum++;
     }
@@ -405,12 +403,12 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
     bool        check_codeaddr_mod;
     mod_handle  search_mod;
 
-    check_codeaddr_mod = FALSE;
+    check_codeaddr_mod = false;
     if( ss == SS_SCOPED ) {
         if( li->mod == NO_MOD ) {
             DeAliasAddrMod( *(address *)d, &search_mod );
             if( search_mod != CodeAddrMod ) {
-                check_codeaddr_mod = TRUE;
+                check_codeaddr_mod = true;
             }
         } else {
             ss = SS_MODULE;
@@ -491,28 +489,28 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
     dip_status          ret;
 
     if( mh == NO_MOD )
-        return( FALSE );
+        return( false );
     memset( &li, 0, sizeof( li ) );
     li.mod = mh;
     li.name.start = name;
     li.name.len   = strlen( name );
     li.source     = li.name;
-    li.file_scope = TRUE;
-    li.case_sensitive = TRUE;
+    li.file_scope = true;
+    li.case_sensitive = true;
     li.type = ST_NONE;
     switch( LookupSym( SS_MODULE, &mh, &li, &SymListHead ) ) {
     case SR_NONE:
     case SR_FAIL:
-        return( FALSE );
+        return( false );
     }
     ret = SymLocation( SL2SH( SymListHead ), NULL, &ll );
     PurgeSymHandles();
     if( ret != DS_OK )
-        return( FALSE );
+        return( false );
     if( ll.num != 1 || ll.e[0].type != LT_ADDR )
-        return( FALSE );
+        return( false );
     *addr = ll.e[0].u.addr;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -526,7 +524,7 @@ bool SetWDPresent( mod_handle mh )
     address     addr;
 
     if( !GetSymAddr( "__WD_Present", mh, &addr ) && !GetSymAddr( "___WD_Present", mh, &addr ) )
-        return( FALSE );
+        return( false );
     ProgPoke( addr, "\x1", 1 );
-    return( TRUE );
+    return( true );
 }

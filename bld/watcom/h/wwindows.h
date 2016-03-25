@@ -34,5 +34,6 @@
 
 #include <windows.h>
 #include "wi163264.h"
+#include "winexprt.h"
 
 #endif

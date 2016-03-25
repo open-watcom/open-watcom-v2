@@ -31,11 +31,8 @@
 
 
 #include "bdiff.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/utime.h>
 
-void Usage( char *name )
+void Usage( const char *name )
 {
     printf( "Usage: %s <executable> <patch_file>\n", name );
     printf( "       Set the executable's patch level to that indicated\n" );
@@ -45,34 +42,35 @@ void Usage( char *name )
 
 void main( int argc, char **argv )
 {
-    int             io;
+    FILE            *fd;
     unsigned long   pos;
-    char            buffer[ sizeof( PATCH_LEVEL ) ];
+    char            buffer[sizeof( PATCH_LEVEL )];
     static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
 
-    if( argc != 3 ) Usage( argv[0] );
+    if( argc != 3 )
+        Usage( argv[0] );
 
     stat( argv[1], &info );
-    io = open( argv[1], O_BINARY | O_RDWR );
-    if( io == -1 ) {
+    fd = fopen( argv[1], "wb" );
+    if( fd == NULL ) {
         printf( "Can not open executable\n" );
         exit( EXIT_FAILURE );
     }
-    pos = lseek( io, -(long)sizeof( PATCH_LEVEL ), SEEK_END );
-    if( pos == (unsigned long)-1L  ) {
+    if( fseek( fd, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != 0  ) {
         printf( "Error seeking on executable\n" );
         exit( EXIT_FAILURE );
     }
-    if( read( io, buffer, sizeof( PATCH_LEVEL ) ) != sizeof( PATCH_LEVEL ) ||
+    pos = ftell( fd );
+    if( fread( buffer, 1, sizeof( PATCH_LEVEL ), fd ) != sizeof( PATCH_LEVEL ) ||
         memcmp( buffer, LevelBuff, PATCH_LEVEL_HEAD_SIZE ) != 0 ) {
         pos += sizeof( PATCH_LEVEL );
     }
-    lseek( io, pos, SEEK_SET );
-    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff+PATCH_LEVEL_HEAD_SIZE );
-    write( io, LevelBuff, sizeof( LevelBuff ) );
-    close( io );
+    fseek( fd, pos, SEEK_SET );
+    _splitpath( argv[2], NULL, NULL, NULL, LevelBuff + PATCH_LEVEL_HEAD_SIZE );
+    fwrite( LevelBuff, 1, sizeof( LevelBuff ), fd );
+    fclose( fd );
     uinfo.actime = info.st_atime;
     uinfo.modtime = info.st_mtime;
     utime( argv[1], &uinfo );

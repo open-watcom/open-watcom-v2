@@ -36,11 +36,9 @@
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
+#include "rterrno.h"
 
-_WCRTLINK int (unlock)( handle, offset, nbytes )
-int     handle;
-long    offset,
-        nbytes;
+_WCRTLINK int (unlock)( int handle, long offset, long nbytes )
 {
     struct flock flock_buff;
 

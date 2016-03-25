@@ -39,12 +39,11 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbginit.h"
 
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
 
-static unsigned ScrnLines=50;
-static unsigned ScrnColumns=80;
+static unsigned ScrnLines = 50;
+static unsigned ScrnColumns = 80;
 HWND            DebuggerHwnd;
 HWND            HwndFore = NULL;
 
@@ -67,13 +66,15 @@ void InitScreen( void )
     GetConsoleTitle( OldTitle, sizeof( OldTitle ) );
     SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger ) );
     if( uistart() ) {
-        if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+        if( _IsOn( SW_USE_MOUSE ) ) {
+            GUIInitMouse( 1 );
+        }
     }
 }
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreen( void )
@@ -85,13 +86,13 @@ bool DebugScreen( void )
         HwndFore = fore;
     }
     if( !IsIconic( DebuggerHwnd ) ) SetForegroundWindow( DebuggerHwnd );
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
     DebugScreen();
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
@@ -101,7 +102,7 @@ bool UserScreen( void )
     } else {
         HwndFore = NULL;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -116,26 +117,16 @@ void FiniScreen( void )
     uistop();
 }
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
-
+#if 0
 int mygetlasterr( void )
 {
     return( GetLastError() );
 }
-
+#endif
 void SetNumLines( int num )
 {
     ScrnLines = num;

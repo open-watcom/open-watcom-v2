@@ -1,5 +1,7 @@
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 #==========================================================================================================
+!inject __atomic.obj                                                                            l32 lpc lmp
+!inject __futex.obj                                                                             l32 lpc lmp
 !inject __lseek.obj                                                                             l32 lpc lmp
 !inject _llseek.obj                                                                             l32 lpc lmp
 !inject access.obj                                                                              l32 lpc lmp
@@ -40,6 +42,7 @@
 !inject getpwnam.obj                                                                            l32 lpc lmp
 !inject getpwuid.obj                                                                            l32 lpc lmp
 !inject getrlim.obj                                                                             l32 lpc lmp
+!inject gettid.obj                                                                              l32 lpc lmp
 !inject gettmofd.obj                                                                            l32 lpc lmp
 !inject getuid.obj                                                                              l32 lpc lmp
 !inject ioctl.obj                                                                               l32 lpc lmp
@@ -53,7 +56,10 @@
 !inject mkdir.obj                                                                               l32 lpc lmp
 !inject mkfifo.obj                                                                              l32 lpc lmp
 !inject mknod.obj                                                                               l32 lpc lmp
+!inject mlock.obj                                                                               l32 lpc lmp
+!inject mmap.obj                                                                                l32 lpc lmp
 !inject mprotect.obj                                                                            l32 lpc lmp
+!inject msync.obj                                                                               l32 lpc lmp
 !inject nanoslp.obj                                                                             l32 lpc lmp
 !inject nice.obj                                                                                l32 lpc lmp
 !inject pause.obj                                                                               l32 lpc lmp
@@ -70,6 +76,10 @@
 !inject schrrint.obj                                                                            l32 lpc lmp
 !inject schyield.obj                                                                            l32 lpc lmp
 !inject select.obj                                                                              l32 lpc lmp
+!inject sem_getv.obj                                                                            l32 lpc lmp
+!inject sem_init.obj                                                                            l32 lpc lmp
+!inject sem_post.obj                                                                            l32 lpc lmp
+!inject sem_wait.obj                                                                            l32 lpc lmp
 !inject setegid.obj                                                                             l32 lpc lmp
 !inject seteuid.obj                                                                             l32 lpc lmp
 !inject setgid.obj                                                                              l32 lpc lmp
@@ -84,6 +94,7 @@
 !inject sigact.obj                                                                              l32 lpc lmp
 !inject siginter.obj                                                                            l32 lpc lmp
 !inject signal.obj                                                                              l32 lpc lmp
+!inject sigpend.obj                                                                             l32 lpc lmp
 !inject sigpmask.obj                                                                            l32 lpc lmp
 !inject sigsusp.obj                                                                             l32 lpc lmp
 !inject sigtdwai.obj                                                                            l32 lpc lmp

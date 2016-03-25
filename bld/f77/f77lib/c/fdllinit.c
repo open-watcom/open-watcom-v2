@@ -33,13 +33,11 @@
 // Default FORTRAN DLL initialization routine.
 // Used if user does not write his own
 
-#if defined( _M_IX86 )
-  #pragma aux __fdll_initialize "^_"
-#endif
+#include "fdll.h"
 
 
-unsigned        __fdll_initialize( void ) {
-//===================================
+int __fdll_initialize( void ) {
+//=============================
 
     return( 1 );
 }

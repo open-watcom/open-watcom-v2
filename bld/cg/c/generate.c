@@ -48,6 +48,8 @@
 #include "peepopt.h"
 #include "memlimit.h"
 #include "blips.h"
+#include "ocentry.h"
+#include "optmain.h"
 #include "feprotos.h"
 
 
@@ -111,9 +113,6 @@ extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  void            InitQueue( void );
-extern  void            FiniQueue( void );
-extern  void            AbortQueue( void );
 extern  void            TellFreeAllLabels( void );
 extern  bool            FixReturns( void );
 extern  instruction_id  Renumber( void );
@@ -139,7 +138,6 @@ extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 extern  void            PropNullInfo( void );
 extern  void            ReConstFold( void );
-extern  void            FlushQueue( void );
 
 static  bool            abortCG;
 

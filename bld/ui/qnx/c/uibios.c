@@ -56,11 +56,11 @@
 #include "uiproxy.h"
 #include "ctkeyb.h"
 
-extern PossibleDisplay DisplayList[];
+
+extern PossibleDisplay      DisplayList[];
 extern struct _console_ctrl *UIConCtrl;
 
-char    *UITermType;    /* global so that the debugger can get at it */
-
+static const char           *UITermType = NULL; /* global so that the debugger can get at it */
 
 bool UIAPI uiset80col( void )
 {
@@ -74,11 +74,12 @@ unsigned UIAPI uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType( void )
+const char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
-        if( UITermType == NULL ) UITermType = "";
+        if( UITermType == NULL )
+            UITermType = "";
         if( UIConCtrl != NULL && strstr( UITermType, "qnx" ) == 0 ) {
             /* We're always a QNX terminal if UIConCtrol != NULL */
             UITermType = "qnx";
@@ -87,7 +88,16 @@ char *GetTermType( void )
     return( UITermType );
 }
 
-int intern initbios( void )
+const char *SetTermType( const char *new_term )
+{
+    const char  *old_term;
+
+    old_term = UITermType;
+    UITermType = new_term;
+    return( old_term );
+}
+
+bool intern initbios( void )
 {
     PossibleDisplay             *curr;
     struct _dev_info_entry      dev;
@@ -96,34 +106,49 @@ int intern initbios( void )
     int                         error;
 
     my_pid = getpid();
-    if( qnx_psinfo(PROC_PID,my_pid,&psinfo,0,0) != my_pid ) return( FALSE );
+    if( qnx_psinfo( PROC_PID, my_pid, &psinfo, 0, 0 ) != my_pid )
+        return( false );
     UIPGroup = psinfo.pid_group;
     if( UIConHandle == 0 ) {
         UIConHandle = open( "/dev/tty", O_RDWR );
-        if( UIConHandle == -1 ) return( FALSE );
+        if( UIConHandle == -1 )
+            return( false );
         fcntl( UIConHandle, F_SETFD, (int)FD_CLOEXEC );
     }
-    if( dev_info( UIConHandle, &dev ) == -1 ) return( FALSE );
+    if( dev_info( UIConHandle, &dev ) == -1 )
+        return( false );
     UIConNid = dev.nid;
     UIConsole = dev.unit;               // what console did we get?
-    if( !UIProxySetup() ) return( FALSE );
+    if( !UIProxySetup() )
+        return( false );
 
     /* It's OK if this call fails */
     UIConCtrl = console_open( UIConHandle, O_WRONLY );
+    {
+        const char  *p1;
+        char        *p2;
 
-    __setupterm( GetTermType(), UIConHandle, &error );
-    if( error != 1 ) return( FALSE );
+        p1 = GetTermType();
+        p2 = malloc( strlen( p1 ) + 1 );
+        strcpy( p2, p1 );
+        __setupterm( p2, UIConHandle, &error );
+        free( p2 );
+    }
+    if( error != 1 )
+        return( false );
     // Check to make sure terminal is suitable
-    if( (cursor_address[0]=='\0') || hard_copy ) {
+    if( (cursor_address[0] == '\0') || hard_copy ) {
         __del_curterm( __cur_term );
-        return( FALSE );
+        return( false );
     }
 
     curr = DisplayList;
 
     for( ;; ) {
-        if( curr->check == NULL ) return( FALSE );
-        if( curr->check() ) break;
+        if( curr->check == NULL )
+            return( false );
+        if( curr->check() )
+            break;
         ++curr;
     }
     UIVirt = curr->virt;
@@ -136,7 +161,7 @@ void intern finibios( void )
     __del_curterm( __cur_term );
 }
 
-static unsigned RefreshForbid= 0;
+static unsigned RefreshForbid = 0;
 
 void forbid_refresh( void )
 {
@@ -149,15 +174,15 @@ void permit_refresh( void )
         RefreshForbid--;
     }
     if( !RefreshForbid ){
-        _ui_refresh(0);
+        _ui_refresh( 0 );
     }
 }
 
 void intern physupdate( SAREA *area )
 {
-    _physupdate(area);
+    _physupdate( area );
     if( !RefreshForbid ){
-        _ui_refresh(0);
+        _ui_refresh( 0 );
     }
 }
 
@@ -165,18 +190,21 @@ void intern physupdate( SAREA *area )
 
 #include <stdio.h>
 #include <stdarg.h>
+
 void QNXDebugPrintf(const char *f, ...)
 {
-static FILE *file = 0;
-        va_list vargs;
-        if (!file) {
-                if ((file=fopen("QNX.Debug","w")) == 0) {
-                        return;
-                }
+    static FILE *file = NULL;
+    va_list vargs;
+
+    if( file == NULL ) {
+        if( (file = fopen( "QNX.Debug", "w" )) == NULL ) {
+            return;
         }
-        va_start(vargs, f);
-        vfprintf(file, f, vargs);
-        putc('\n',file);
-        fflush( file );
+    }
+    va_start( vargs, f );
+    vfprintf( file, f, vargs );
+    putc( '\n', file );
+    fflush( file );
 }
+
 #endif

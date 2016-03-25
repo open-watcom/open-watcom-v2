@@ -53,4 +53,7 @@
 
 #undef pick
 
+extern void InitLiterals( void );
+extern void FiniLiterals( void );
+
 #endif /* _DBGLIT_H_INCLUDED */

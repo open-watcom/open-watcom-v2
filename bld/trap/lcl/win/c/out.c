@@ -54,7 +54,7 @@ static int _line=0;
 //  MK_FP( _B000H, 0 );
 
 #include "dpmi.h"
-char *GetScreenPointer( void )
+static char *GetScreenPointer( void )
 {
 #if 0
     static short sel;

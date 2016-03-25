@@ -38,21 +38,21 @@
 #include "scanf.h"
 
 
-static int cget_string( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE cget_string( PTR_SCNF_SPECS specs )
 {
-    int     c;
+    INTCHAR_TYPE    c;
 
-    if( (c = *(specs->ptr)) != NULLCHAR ) {
+    if( (c = *(UCHAR_TYPE *)(specs->ptr)) != NULLCHAR ) {
         ++(specs->ptr);
     } else {
-        c = EOF;
+        c = INTCHAR_EOF;
         specs->eoinp = 1;
     }
     return( c );
 }
 
 
-static void uncget_string( int c, PTR_SCNF_SPECS specs )
+static void uncget_string( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     --specs->ptr;
 }

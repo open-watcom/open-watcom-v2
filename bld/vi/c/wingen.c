@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 #include "vi.h"
 #include "win.h"
 #include "mouse.h"
-#include "source.h"
 #include "myprtf.h"
 
 static  bool    cursorNeedsDisplay = false;
@@ -45,11 +45,11 @@ vi_rc NewMessageWindow( void )
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
     }
-    if( MessageWindow != NO_WINDOW ) {
-        CloseAWindow( MessageWindow );
-        MessageWindow = NO_WINDOW;
+    if( !BAD_ID( message_window_id ) ) {
+        CloseAWindow( message_window_id );
+        message_window_id = NO_WINDOW;
     }
-    return( NewWindow2( &MessageWindow, &messagew_info ) );
+    return( NewWindow2( &message_window_id, &messagew_info ) );
 
 } /* NewMessageWindow */
 
@@ -57,11 +57,11 @@ vi_rc NewMessageWindow( void )
 /*
  * NewWindow2 - build a new window, using window_info struct
  */
-vi_rc NewWindow2( window_id *wn, window_info *wi )
+vi_rc NewWindow2( window_id *wid, window_info *wi )
 {
-    return( NewWindow( wn, wi->x1, wi->y1, wi->x2, wi->y2,
+    return( NewWindow( wid, wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2,
                        wi->has_border, wi->border_color1,
-                       wi->border_color2,  &wi->text ) );
+                       wi->border_color2, &wi->text_style ) );
 
 } /* NewWindow2 */
 #endif
@@ -71,22 +71,22 @@ vi_rc NewWindow2( window_id *wn, window_info *wi )
 /*
  * Message1 - display message on line 1
  */
-void Message1( char *str, ... )
+void Message1( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 1, tmp );
+        DisplayLineInWindow( message_window_id, 1, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -96,22 +96,22 @@ void Message1( char *str, ... )
 /*
  * Message1Box - display message on line 1 (differs from Message1 only on Windows)
  */
-void Message1Box( char *str, ... )
+void Message1Box( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
-    ClearWindow( MessageWindow );
+    ClearWindow( message_window_id );
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 1, tmp );
+        DisplayLineInWindow( message_window_id, 1, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -121,21 +121,21 @@ void Message1Box( char *str, ... )
 /*
  * Message2 - display message on line 2
  */
-void Message2( char *str, ... )
+void Message2( const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
 
-    if( !EditFlags.EchoOn || MessageWindow == NO_WINDOW ) {
+    if( !EditFlags.EchoOn || BAD_ID( message_window_id ) ) {
         return;
     }
     va_start( al, str );
     MyVSprintf( tmp,str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
     if( !EditFlags.LineDisplay ) {
-        DisplayLineInWindow( MessageWindow, 2, tmp );
+        DisplayLineInWindow( message_window_id, 2, tmp );
     } else {
         MyPrintf( "%s\n", tmp );
     }
@@ -146,7 +146,7 @@ void Message2( char *str, ... )
 /*
  * WPrintfLine - printf text on a window line
  */
-vi_rc WPrintfLine( window_id w, int line, char *str, ... )
+vi_rc WPrintfLine( window_id wid, int line, char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -154,9 +154,9 @@ vi_rc WPrintfLine( window_id w, int line, char *str, ... )
     va_start( al, str );
     MyVSprintf( tmp, str, al );
     va_end( al );
-    tmp[EditVars.WindMaxWidth - 1] = 0;
+    tmp[EditVars.WindMaxWidth - 1] = '\0';
 
-    return( DisplayLineInWindow( w, line, tmp ) );
+    return( DisplayLineInWindow( wid, line, tmp ) );
 
 } /* WPrintfLine */
 
@@ -184,19 +184,19 @@ void SetWindowCursorForReal( void )
         HideCursor();
         return;
     }
-#ifndef __WIN__
-    SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
-                            VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
-#else
+#ifdef __WIN__
     // for windows assume tabs to be of lenght 1
     if( !EditFlags.RealTabs ){
-        SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+        SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
     } else {
 
-        SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
+        SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) );
     }
+#else
+    SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
+                            VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
 #endif
 
     cursorNeedsDisplay = false;
@@ -206,21 +206,21 @@ void SetWindowCursorForReal( void )
 /*
  * DisplayExtraInfo - display info in extra window
  */
-vi_rc DisplayExtraInfo( window_info *wi, window_id *wn, char _NEAR * _NEAR *data,
+vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, char _NEAR * _NEAR *data,
                       int numopts )
 {
     int     j;
     vi_rc   rc;
 
-    wi->y2 = wi->y1 + numopts + 1;
+    wi->area.y2 = wi->area.y1 + numopts + 1;
 
-    rc = NewWindow2( wn, wi );
+    rc = NewWindow2( wid, wi );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    WindowTitle( *wn, "Special Keys" );
+    WindowTitle( *wid, "Special Keys" );
     for( j = 0; j < numopts; j++ ) {
-        DisplayLineInWindow( *wn, j + 1, data[j] );
+        DisplayLineInWindow( *wid, j + 1, data[j] );
     }
     return( ERR_NO_ERR );
 
@@ -237,7 +237,7 @@ bool ColumnInWindow( int col, int *diff )
         *diff = col - 1;
         return( false );
     }
-    text_cols = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS );
+    text_cols = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS );
     if( col > text_cols ) {
         *diff = col - text_cols;
         return( false );
@@ -255,45 +255,45 @@ void SetWindowSizes( void )
     VarAddGlobalLong( "SH", EditVars.WindMaxHeight );
     EditVars.SpinX = EditVars.WindMaxWidth - 15;
     EditVars.ClockX = EditVars.WindMaxWidth - 9;
-    filecw_info.x2 = EditVars.WindMaxWidth - 5;
-    filecw_info.y2 = EditVars.WindMaxHeight - 8;
-    repcntw_info.y1 = EditVars.WindMaxHeight - 5;
-    repcntw_info.y2 = EditVars.WindMaxHeight - 3;
+    filecw_info.area.x2 = EditVars.WindMaxWidth - 5;
+    filecw_info.area.y2 = EditVars.WindMaxHeight - 8;
+    repcntw_info.area.y1 = EditVars.WindMaxHeight - 5;
+    repcntw_info.area.y2 = EditVars.WindMaxHeight - 3;
 #ifdef __WIN__
-    editw_info.x2 = EditVars.WindMaxWidth - 1;
-    editw_info.y2 = EditVars.WindMaxHeight - 3;
-    cmdlinew_info.x1 = 2;
-    cmdlinew_info.x2 = EditVars.WindMaxWidth - 3;
-    cmdlinew_info.y1 = EditVars.WindMaxHeight - 7;
-    cmdlinew_info.y2 = EditVars.WindMaxHeight - 5;
-    messagew_info.x2 = EditVars.WindMaxWidth - 1;
-    messagew_info.y1 = EditVars.WindMaxHeight - 2;
-    messagew_info.y2 = EditVars.WindMaxHeight - 1;
+    editw_info.area.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.area.y2 = EditVars.WindMaxHeight - 3;
+    cmdlinew_info.area.x1 = 2;
+    cmdlinew_info.area.x2 = EditVars.WindMaxWidth - 3;
+    cmdlinew_info.area.y1 = EditVars.WindMaxHeight - 7;
+    cmdlinew_info.area.y2 = EditVars.WindMaxHeight - 5;
+    messagew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.area.y1 = EditVars.WindMaxHeight - 2;
+    messagew_info.area.y2 = EditVars.WindMaxHeight - 1;
 #else
-    editw_info.x2 = EditVars.WindMaxWidth - 1;
-    editw_info.y2 = EditVars.WindMaxHeight - 2;
-    cmdlinew_info.x1 = 0;
-    cmdlinew_info.x2 = EditVars.WindMaxWidth - 1;
-    cmdlinew_info.y1 = EditVars.WindMaxHeight - 1;
-    cmdlinew_info.y2 = EditVars.WindMaxHeight - 1;
-    messagew_info.x2 = EditVars.WindMaxWidth - 1;
-    messagew_info.y1 = EditVars.WindMaxHeight - 1;
-    messagew_info.y2 = EditVars.WindMaxHeight - 1;
+    editw_info.area.x2 = EditVars.WindMaxWidth - 1;
+    editw_info.area.y2 = EditVars.WindMaxHeight - 2;
+    cmdlinew_info.area.x1 = 0;
+    cmdlinew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    cmdlinew_info.area.y1 = EditVars.WindMaxHeight - 1;
+    cmdlinew_info.area.y2 = EditVars.WindMaxHeight - 1;
+    messagew_info.area.x2 = EditVars.WindMaxWidth - 1;
+    messagew_info.area.y1 = EditVars.WindMaxHeight - 1;
+    messagew_info.area.y2 = EditVars.WindMaxHeight - 1;
 #endif
-    dirw_info.x2 = EditVars.WindMaxWidth - 12;
-    dirw_info.y2 = EditVars.WindMaxHeight - 7;
-    setw_info.y2 = EditVars.WindMaxHeight - 4;
-    filelistw_info.x2 = EditVars.WindMaxWidth - 2;
-    filelistw_info.y2 = EditVars.WindMaxHeight - 7;
-    statusw_info.y1 = EditVars.WindMaxHeight - 2;
-    statusw_info.y2 = EditVars.WindMaxHeight - 1;
+    dirw_info.area.x2 = EditVars.WindMaxWidth - 12;
+    dirw_info.area.y2 = EditVars.WindMaxHeight - 7;
+    setw_info.area.y2 = EditVars.WindMaxHeight - 4;
+    filelistw_info.area.x2 = EditVars.WindMaxWidth - 2;
+    filelistw_info.area.y2 = EditVars.WindMaxHeight - 7;
+    statusw_info.area.y1 = EditVars.WindMaxHeight - 2;
+    statusw_info.area.y2 = EditVars.WindMaxHeight - 1;
 
 } /* SetWindSizes */
 
 /*
- * CurrentWindowResize - as it sounds
+ * ResizeCurrentWindow - as it sounds
  */
-vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
+vi_rc ResizeCurrentWindow( windim x1, windim y1, windim x2, windim y2 )
 {
     int         text_lines;
     linenum     ln;
@@ -301,17 +301,16 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + EditVars.LineNumWinWidth, y2, true );
+            x2 += EditVars.LineNumWinWidth;
         } else {
-            rc = ResizeWindow( CurrentWindow, x1 - EditVars.LineNumWinWidth, y1, x2, y2, true );
+            x1 -= EditVars.LineNumWinWidth;
         }
-    } else {
-        rc = ResizeWindow( CurrentWindow, x1, y1, x2, y2, true );
     }
+    rc = ResizeWindow( current_window_id, x1, y1, x2, y2, true );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     if( CurrentPos.line >= LeftTopPos.line + text_lines ) {
         ln = LeftTopPos.line + text_lines - 1;
         GoToLineNoRelCurs( ln );
@@ -320,23 +319,23 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
     DCDisplayAllLines();
     SetWindowCursor();
     if( EditFlags.LineNumbers ) {
-        CloseAWindow( CurrNumWindow );
+        CloseAWindow( curr_num_window_id );
         rc = LineNumbersSetup();
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     }
-    PositionVerticalScrollThumb( CurrentWindow, LeftTopPos.line,
+    PositionVerticalScrollThumb( current_window_id, LeftTopPos.line,
                                  CurrentFile->fcbs.tail->end_line );
 
     return( ERR_NO_ERR );
 
-} /* CurrentWindowResize */
+} /* ResizeCurrentWindow */
 
 /*
  * SetFileWindowTitle - set the title of the current window
  */
-void SetFileWindowTitle( window_id cw, info *cinfo, bool hilite )
+void SetFileWindowTitle( window_id wid, info *cinfo, bool hilite )
 {
     char        *n;
     char        name[MAX_STR];
@@ -347,10 +346,10 @@ void SetFileWindowTitle( window_id cw, info *cinfo, bool hilite )
     } else {
         n = CurrentFile->name;
     }
-    WindowTitleAOI( cw, n, hilite );
+    WindowTitleAOI( wid, n, hilite );
 #ifdef __WIN__
-    SetWindowText( cw, n );
-    UpdateFileTypeIcon( cw, n );
+    SetWindowText( wid, n );
+    UpdateFileTypeIcon( wid, n );
 #endif
 
 } /* SetFileWindowTitle */
@@ -367,7 +366,7 @@ void ResetAllWindows( void )
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         SaveCurrentInfo();
         BringUpFile( cinfo, false );
-        ResetWindow( &CurrentWindow );
+        ResetWindow( &current_window_id );
     }
 
     if( oldcurr != NULL ) {

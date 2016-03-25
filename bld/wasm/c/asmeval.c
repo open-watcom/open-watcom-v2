@@ -39,8 +39,6 @@
 #define myassert(x)
 #endif
 
-extern void             DefFlatGroup( void );
-
 static struct {
     token_idx           idx;
     bool                close_bracket;

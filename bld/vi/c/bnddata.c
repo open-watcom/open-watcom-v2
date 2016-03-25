@@ -62,7 +62,7 @@ void BoundDataInit( void )
     if( h == -1 ) {
         return;
     }
-    lseek( h, -((long)sizeof( buff )), SEEK_END );
+    lseek( h, SEEK_POSBACK( sizeof( buff ) ), SEEK_END );
     read( h, buff, sizeof( buff ) );
 
     /*
@@ -72,8 +72,8 @@ void BoundDataInit( void )
         close( h );
         return;
     }
-    taillen = *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )]));
-    dataStart = (long) -((long)taillen + (long)sizeof( buff ));
+    taillen = *(bind_size *)( buff + sizeof( MAGIC_COOKIE ) );
+    dataStart = SEEK_POSBACK( taillen + sizeof( buff ) );
     lseek( h, dataStart, SEEK_END );
 
     /*
@@ -106,7 +106,7 @@ void BoundDataInit( void )
     i = dataFcnt * sizeof( bind_size );
     memcpy( dataOffsets, tmp, i );
     tmp += i;
-    memcpy( entryCounts, tmp , dataFcnt * sizeof( bind_size ) );
+    memcpy( entryCounts, tmp, dataFcnt * sizeof( bind_size ) );
 
     BoundData = true;
 
@@ -129,10 +129,10 @@ void BoundDataFini( void )
  */
 bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
 {
-    long        shift = 0;
-    int         h, i;
-    char        a;
-    vi_rc       rc;
+    long            shift = 0;
+    int             h, i;
+    unsigned char   a;
+    vi_rc           rc;
 
     /*
      * process bound file
@@ -162,12 +162,12 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
             } else {
                 shift -= dataStart;
                 gf->data.pos = &BndMemory[shift];
-                a = (int) gf->data.pos[0];
+                a = gf->data.pos[0];
                 gf->data.pos++;
             }
             gf->gf.a.currline = 0;
             gf->gf.a.maxlines = entryCounts[i];
-            gf->gf.a.length = (int)a;
+            gf->gf.a.length = a;
             return( true );
 
         }
@@ -177,7 +177,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
     /*
      * special case - open current buffer
      */
-    if( fn[0] == '.' && fn[1] == 0 ) {
+    if( fn[0] == '.' && fn[1] == '\0' ) {
         gf->type = GF_BUFFER;
         gf->data.cfile = CurrentFile;
         rc = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
@@ -215,23 +215,23 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
+bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
-    int         i, j;
+    size_t      i;
     vi_rc       rc;
 
     switch( gf->type ) {
     case GF_FILE:
         if( fgets( buff, max, gf->data.f ) == NULL ) {
-            return( -1 );
+            return( true );
         }
         for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
             buff[i - 1] = '\0';
         }
-        return( i );
+        break;
     case GF_BOUND:
         if( gf->gf.a.currline >= gf->gf.a.maxlines ) {
-            return( -1 );
+            return( true );
         }
         gf->gf.a.currline++;
         if( BndMemory == NULL ) {
@@ -240,23 +240,21 @@ int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
             memcpy( buff, gf->data.pos, gf->gf.a.length + 1 );
             gf->data.pos += gf->gf.a.length + 1;
         }
-        j = gf->gf.a.length;
-        i = (int) buff[j];
-        buff[j] = 0;
-        gf->gf.a.length = i;
-        return( j );
+        i = gf->gf.a.length;
+        gf->gf.a.length = (unsigned char)buff[i];
+        buff[i] = '\0';
+        break;
     default:
         if( gf->data.cfile == NULL ) {
-            return( -1 );
+            return( true );
         }
-        j= gf->gf.b.cline->len;
-        memcpy( buff, gf->gf.b.cline->data, j + 1 );
-        rc = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb),
-                              &(gf->gf.b.cline) );
+        memcpy( buff, gf->gf.b.cline->data, gf->gf.b.cline->len + 1 );
+        rc = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb), &(gf->gf.b.cline) );
         if( rc != ERR_NO_ERR ) {
             gf->data.cfile = NULL;
         }
-        return( j );
+        break;
     }
+    return( false );
 
 } /* SpecialFgets */

@@ -65,11 +65,11 @@ static a_list listBox = {
 static an_edit_control      editCtl;
 
 static VFIELD helpSearchDialog[] = {
-    {{1,    4,      1,      40},    FLD_EDIT,       &editCtl},
-    {{3,    4,      8,      40},    FLD_LISTBOX,    &listBox},
-    {{1,    -1,     1,      11},    FLD_HOT,        &searchButtons[0]},
-    {{3,    -1,     1,      11},    FLD_HOT,        &searchButtons[1]},
-    {{12,   0,      0,      0},     FLD_VOID,       NULL}
+    {{1,    4,          1,      40},    FLD_EDIT,       &editCtl},
+    {{3,    4,          8,      40},    FLD_LISTBOX,    &listBox},
+    {{1,    (ORD)-1,    1,      11},    FLD_HOT,        &searchButtons[0]},
+    {{3,    (ORD)-1,    1,      11},    FLD_HOT,        &searchButtons[1]},
+    {{12,   0,          0,      0},     FLD_VOID,       NULL}
 };
 
 static VFIELD   *editVField = &helpSearchDialog[0];
@@ -237,6 +237,7 @@ char *HelpSearch( HelpHdl hdl )
     }
     uipushlist( NULL );     /* modal barrier */
     uipushlist( events );
+    ret = NULL;
     done = 0;
     while( !done ) {
         event = uidialog( curHelpDialog );

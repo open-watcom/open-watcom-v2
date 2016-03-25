@@ -50,7 +50,8 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h )
     is->adjustor_offset = 0;
     is->mfunc_idx = 0;
     ref = VMBlock( ii, h, sizeof( ref->procref ) );
-    if( ref == NULL ) return( DS_ERR|DS_FAIL );
+    if( ref == NULL )
+        return( DS_ERR|DS_FAIL );
     if( ref->common.code == S_ALIGN ) {
         h += ref->common.length + sizeof( ref->common.length );
         ref = VMBlock( ii, h, sizeof( ref->procref ) );
@@ -60,10 +61,13 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h )
     case S_DATAREF:
         is->im = ref->procref.f.module;
         cde = FindDirEntry( ii, is->im, sstAlignSym );
-        if( cde == NULL ) return( DS_ERR|DS_FAIL );
+        if( cde == NULL )
+            return( DS_ERR|DS_FAIL );
         h = ref->procref.f.offset + cde->lfo;
         ref = VMBlock( ii, h, sizeof( s_common ) );
-        if( ref == NULL ) return( DS_ERR|DS_FAIL );
+        if( ref == NULL ) {
+            return( DS_ERR|DS_FAIL );
+        }
     }
     is->handle = h;
     is->len = ref->common.length + sizeof( ref->common.length );
@@ -71,22 +75,25 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h )
 }
 
 static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                            const char **name_p, unsigned *name_len_p, s_all **pp )
+                            const char **name_p, size_t *name_len_p, s_all **pp )
 {
     s_all               *p;
-    unsigned            skip = 0;
+    size_t              skip = 0;
     const char          *name;
     numeric_leaf        val;
 
     if( is->containing_type != 0 ) {
         static const s_common dummy = { 0, S_LDATA16 };
 
-        if( pp != NULL ) *pp = (s_all *)&dummy;
+        if( pp != NULL )
+            *pp = (s_all *)&dummy;
         return( TypeSymGetName( ii, is, name_p, name_len_p ) );
     }
     p = VMBlock( ii, is->handle, is->len );
-    if( p == NULL ) return( DS_FAIL );
-    if( pp != NULL ) *pp = p;
+    if( p == NULL )
+        return( DS_FAIL );
+    if( pp != NULL )
+        *pp = p;
     if( p->common.code == S_ENTRYTHIS ) {
         p = (void *) (&p->common + 1 );
     }
@@ -282,7 +289,8 @@ dip_status ImpSymLocation( imp_image_handle *ii,
         return( TypeSymGetAddr( ii, is, lc, ll ) );
     }
     p = VMBlock( ii, is->handle, is->len );
-    if( p == NULL ) return( DS_FAIL );
+    if( p == NULL )
+        return( DS_FAIL );
     switch( p->common.code ) {
     case S_REGISTER:
         return( LocationOneReg( ii, p->register_.f.reg, lc, ll ) );
@@ -330,12 +338,15 @@ dip_status ImpSymLocation( imp_image_handle *ii,
     case S_REGREL16:
         disp = p->regrel16.f.offset;
         ds = LocationOneReg( ii, p->regrel16.f.reg, lc, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         LocationCreate( &tmp_ll, LT_INTERNAL, &tmp.off32 );
         ds = DCAssignLocation( ll, &tmp_ll, sizeof( addr32_off ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ll->e[0].u.addr.mach.offset = tmp.off32 + disp;
         break;
     case S_BPREL32:
@@ -376,12 +387,15 @@ dip_status ImpSymLocation( imp_image_handle *ii,
     case S_REGREL32:
         disp = p->regrel32.f.offset;
         ds = LocationOneReg( ii, p->regrel32.f.reg, lc, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         LocationCreate( &tmp_ll, LT_INTERNAL, &tmp.off48 );
         ds = DCAssignLocation( ll, &tmp_ll, sizeof( addr48_off ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ll->e[0].u.addr.mach.offset = tmp.off48 + disp;
         break;
     case S_LTHREAD32:
@@ -415,8 +429,10 @@ static dip_status ScopeFillIn( imp_image_handle *ii, virt_mem chk,
     s_all       *p;
 
     p = VMBlock( ii, chk, sizeof( s_gproc32 ) );
-    if( pp != NULL ) *pp = p;
-    if( p == NULL ) return( DS_ERR|DS_FAIL );
+    if( pp != NULL )
+        *pp = p;
+    if( p == NULL )
+        return( DS_ERR|DS_FAIL );
     scope->code = p->common.code;
     scope->scope = chk;
     scope->next = 0;
@@ -486,8 +502,10 @@ static dip_status ScopeFillIn( imp_image_handle *ii, virt_mem chk,
     default:
         return( DS_FAIL );
     }
-    if( scope->parent != 0 ) scope->parent += scope->cde->lfo;
-    if( scope->next != 0 ) scope->next += scope->cde->lfo;
+    if( scope->parent != 0 )
+        scope->parent += scope->cde->lfo;
+    if( scope->next != 0 )
+        scope->next += scope->cde->lfo;
     scope->end += scope->cde->lfo;
     MapLogical( ii, &scope->start );
     return( DS_OK );
@@ -503,13 +521,16 @@ static dip_status ScopeFindFirst( imp_image_handle *ii, imp_mod_handle im,
     dip_status          ds;
 
     scope->cde = FindDirEntry( ii, im, sstAlignSym );
-    if( scope->cde == NULL ) return( DS_FAIL );
+    if( scope->cde == NULL )
+        return( DS_FAIL );
     chk = scope->cde->lfo + sizeof( unsigned_32 );
     len = scope->cde->cb - sizeof( unsigned_32 );
     for( ;; ) {
-        if( len == 0 ) return( DS_FAIL );
+        if( len == 0 )
+            return( DS_FAIL );
         p = VMBlock( ii, chk, sizeof( s_ssearch ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL )
+            return( DS_ERR|DS_FAIL );
         if( p->common.code == S_SSEARCH ) {
             scope->start.mach.segment = p->ssearch.f.segment;
             scope->start.mach.offset  = 0;
@@ -525,12 +546,14 @@ static dip_status ScopeFindFirst( imp_image_handle *ii, imp_mod_handle im,
     /* found first scope block, now find correct offset */
     for( ;; ) {
         ds = ScopeFillIn( ii, chk, scope, NULL );
-        if( ds != DS_OK ) return( DS_ERR|ds );
+        if( ds != DS_OK )
+            return( DS_ERR|ds );
         if( addr.mach.offset >= scope->start.mach.offset
           && addr.mach.offset < (scope->start.mach.offset + scope->len) ) {
             break;
         }
-        if( scope->next == 0 ) return( DS_FAIL );
+        if( scope->next == 0 )
+            return( DS_FAIL );
         chk = scope->next;
     }
     /* found enclosing scope block, now find smallest one */
@@ -538,15 +561,16 @@ static dip_status ScopeFindFirst( imp_image_handle *ii, imp_mod_handle im,
     new.cde = scope->cde;
     for( ;; ) {
         ds = ScopeFillIn( ii, chk, &new, NULL );
-        if( ds & DS_ERR ) return( ds );
+        if( ds & DS_ERR )
+            return( ds );
         if( ds == DS_OK ) {
             /* new scope */
             if( !(addr.mach.offset >= new.start.mach.offset
-             && addr.mach.offset <  (new.start.mach.offset + new.len)) ) {
+              && addr.mach.offset <  (new.start.mach.offset + new.len)) ) {
                 /* out of range */
                 chk = new.end;
             } else if( !(new.start.mach.offset >= scope->start.mach.offset
-                   && (new.start.mach.offset+new.len) <= (scope->start.mach.offset+scope->len)) ) {
+                   && (new.start.mach.offset + new.len) <= (scope->start.mach.offset + scope->len)) ) {
                 /* not smaller */
                 chk = new.end;
             } else {
@@ -558,14 +582,16 @@ static dip_status ScopeFindFirst( imp_image_handle *ii, imp_mod_handle im,
             return( DS_OK );
         }
         p = VMBlock( ii, chk, sizeof( p->common ) );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL )
+            return( DS_ERR|DS_FAIL );
         chk += p->common.length + sizeof( p->common.length );
     }
 }
 
 static dip_status ScopeFindNext( imp_image_handle *ii, scope_info *scope )
 {
-    if( scope->parent == 0 ) return( DS_FAIL );
+    if( scope->parent == 0 )
+        return( DS_FAIL );
     return( ScopeFillIn( ii, scope->parent, scope, NULL ) );
 }
 
@@ -584,11 +610,14 @@ static walk_result ScopeOneSymbol( imp_image_handle *ii, cv_directory_entry *cde
     curr = *currp;
     new.cde = cde;
     ds = ScopeFillIn( ii, curr, &new, &p );
-    if( ds & DS_ERR ) return( WR_FAIL );
+    if( ds & DS_ERR )
+        return( WR_FAIL );
     if( ds == DS_OK ) {
         *currp = new.end;
         p = VMBlock( ii, *currp, sizeof( p->common ) );
-        if( p == NULL ) return( WR_FAIL );
+        if( p == NULL ) {
+            return( WR_FAIL );
+        }
     }
     *currp += p->common.length + sizeof( p->common.length );
     switch( new.code ) {
@@ -623,9 +652,11 @@ static walk_result ScopeOneSymbol( imp_image_handle *ii, cv_directory_entry *cde
             break;
         }
         is.im = cde->iMod;
-        if( SymFillIn( ii, &is, curr ) != DS_OK ) return( WR_FAIL );
+        if( SymFillIn( ii, &is, curr ) != DS_OK )
+            return( WR_FAIL );
         wr = wk( ii, SWI_SYMBOL, &is, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE )
+            return( wr );
         break;
     }
     return( WR_CONTINUE );
@@ -640,15 +671,20 @@ static walk_result ScopeWalkOne( imp_image_handle *ii, scope_info *scope,
 
     curr = scope->scope;
     p = VMBlock( ii, curr, sizeof( p->common ) );
-    if( p == NULL ) return( WR_FAIL );
+    if( p == NULL )
+        return( WR_FAIL );
     /* skip over first scope start symbol */
     curr += p->common.length + sizeof( p->common.length );
     for( ;; ) {
         p = VMBlock( ii, curr, sizeof( p->common ) );
-        if( p == NULL ) return( WR_FAIL );
-        if( p->common.code == S_END ) return( WR_CONTINUE );
+        if( p == NULL )
+            return( WR_FAIL );
+        if( p->common.code == S_END )
+            return( WR_CONTINUE );
         wr = ScopeOneSymbol( ii, scope->cde, scope, wk, d, &curr );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
 }
 
@@ -661,13 +697,18 @@ static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
     imp_sym_handle      is;
 
     p = VMBlock( ii, scope->scope, sizeof( *p ) );
-    if( p == NULL ) return( WR_FAIL );
+    if( p == NULL )
+        return( WR_FAIL );
     ds = TypeIndexFillIn( ii, SymTypeIdx( ii, p ), &it );
-    if( ds & DS_ERR ) return( WR_FAIL );
-    if( ds != DS_OK ) return( WR_CONTINUE );
+    if( ds & DS_ERR )
+        return( WR_FAIL );
+    if( ds != DS_OK )
+        return( WR_CONTINUE );
     ds = TypeMemberFuncInfo( ii, &it, &it, NULL, NULL );
-    if( ds & DS_ERR ) return( WR_FAIL );
-    if( ds != DS_OK ) return( WR_CONTINUE );
+    if( ds & DS_ERR )
+        return( WR_FAIL );
+    if( ds != DS_OK )
+        return( WR_CONTINUE );
     return( TypeSymWalkList( ii, &it, wk, &is, d ) );
 }
 
@@ -685,19 +726,24 @@ static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
         return( WR_CONTINUE );
     for( ;; ) {
         wr = ScopeWalkOne( ii, &scope, wk, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE )
+            return( wr );
         switch( scope.code ) {
         case S_LPROC16:
         case S_GPROC16:
         case S_LPROC32:
         case S_GPROC32:
             wr = ScopeWalkClass( ii, &scope, wk, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE )
+                return( wr );
             break;
         }
         ds = ScopeFindNext( ii, &scope );
-        if( ds & DS_ERR ) return( WR_FAIL );
-        if( ds != DS_OK ) return( WR_CONTINUE );
+        if( ds & DS_ERR )
+            return( WR_FAIL );
+        if( ds != DS_OK ) {
+            return( WR_CONTINUE );
+        }
     }
 }
 
@@ -710,14 +756,18 @@ static walk_result ScopeWalkFile( imp_image_handle *ii, imp_mod_handle im,
     walk_result         wr;
 
     cde = FindDirEntry( ii, im, sstAlignSym );
-    if( cde == NULL ) return( WR_CONTINUE );
+    if( cde == NULL )
+        return( WR_CONTINUE );
     curr = cde->lfo;
     end = curr + cde->cb;
     curr += sizeof( unsigned_32 );
     for( ;; ) {
-        if( curr >= end ) return( WR_CONTINUE );
+        if( curr >= end )
+            return( WR_CONTINUE );
         wr = ScopeOneSymbol( ii, cde, NULL, wk, d, &curr );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
 }
 
@@ -741,45 +791,51 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
     }                           curr, best;
 
     cde = FindDirEntry( ii, IMH_GBL, tbl_type );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL )
+        return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
-    if( hdr == NULL ) return( SR_FAIL );
+    if( hdr == NULL )
+        return( SR_FAIL );
     switch( hdr->addrhash ) {
     case 12:
         hash_base = cde->lfo + hdr->cbSymbol + hdr->cbSymHash + sizeof( *hdr );
         p = VMBlock( ii, hash_base, sizeof( unsigned_16 ) );
-        if( p == NULL ) return( SR_FAIL );
+        if( p == NULL )
+            return( SR_FAIL );
         num_segs = *(unsigned_16 *)p;
         hash_base += 2 * sizeof( unsigned_16 );
         best.base = 0;
         best.off = *best_off;
-        i = 0;
-        for( ;; ) {
-            if( i >= num_segs ) break;
+        for( i = 0; i < num_segs; ++i ) {
             chk.mach.segment = i + 1;
             chk.mach.offset = 0;
             MapLogical( ii, &chk );
-            if( DCSameAddrSpace( chk, a ) != DS_OK ) goto next_seg;
+            if( DCSameAddrSpace( chk, a ) != DS_OK )
+                continue;
             p = VMBlock( ii, hash_base + i * sizeof( unsigned_32 ), sizeof( unsigned_32 ) );
-            if( p == NULL ) return( SR_FAIL );
+            if( p == NULL )
+                return( SR_FAIL );
             curr.base = *(unsigned_32 *)p;
             base = hash_base + num_segs * sizeof( unsigned_32 );
             p = VMBlock( ii, base + i * sizeof( unsigned_32 ), sizeof( unsigned_32 ) );
-            if( p == NULL ) return( SR_FAIL );
+            if( p == NULL )
+                return( SR_FAIL );
             offset_count = *(unsigned_32 *)p;
-            if( offset_count == 0 ) goto next_seg;
+            if( offset_count == 0 )
+                continue;
             curr.base += base + num_segs * sizeof( unsigned_32 );
             //NYI: offsets are sorted, so we can binary search this sucker
-            count = 0;
-            for( ;; ) {
-                if( count >= offset_count ) break;
+            curr.off = 0;
+            new_off = 0;
+            for( count = 0; count < offset_count; ++count ) {
                 p = VMBlock( ii, curr.base + sizeof( unsigned_32 ), sizeof( unsigned_32 ) );
-                if( p == NULL ) return( SR_FAIL );
+                if( p == NULL )
+                    return( SR_FAIL );
                 new_off = *(unsigned_32 *)p + chk.mach.offset;
-                if( new_off >= a.mach.offset ) break;
+                if( new_off >= a.mach.offset )
+                    break;
                 curr.off = new_off;
                 curr.base += 2 * sizeof( unsigned_32 );
-                ++count;
             }
             if( new_off == a.mach.offset ) {
                 best.base = curr.base;
@@ -787,17 +843,17 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
                 break;
             }
             if( count != 0
-             && curr.off < a.mach.offset
-             && (curr.off > best.off || best.base == 0 && best.off ==  0) ) {
+              && curr.off < a.mach.offset
+              && (curr.off > best.off || best.base == 0 && best.off ==  0) ) {
                 best.base = curr.base - 2 * sizeof( unsigned_32 );
                 best.off = curr.off;
             }
-next_seg:
-            ++i;
         }
-        if( best.base == 0 ) return( SR_NONE );
+        if( best.base == 0 )
+            return( SR_NONE );
         p = VMBlock( ii, best.base, sizeof( unsigned_32 ) );
-        if( p == NULL ) return( SR_FAIL );
+        if( p == NULL )
+            return( SR_FAIL );
         if( SymFillIn( ii, is, *(unsigned_32 *)p + cde->lfo + sizeof( *hdr ) ) != DS_OK ) {
             return( SR_FAIL );
         }
@@ -809,30 +865,30 @@ next_seg:
     }
 }
 
-static unsigned long CalcHash( const char *name, unsigned len )
+static unsigned long CalcHash( const char *name, size_t len )
 {
     unsigned_32         end;
     unsigned_32         sum;
-    unsigned            i;
+    int                 i;
 
 #define B_toupper( b )  ((b) & 0xdf)
 #define D_toupper( d )  ((d) & 0xdfdfdfdf)
 
     end = 0;
-    for( i = len & 0x3; i != 0; --i ) {
-        end |= B_toupper( name[ len - 1 ] );
+    for( i = len & 0x3; i > 0; --i ) {
+        end |= B_toupper( name[len - 1] );
         end <<= 8;
-        len -= 1;
+        --len;
     }
     len /= 4;
     sum = 0;
-    for( i = 0; i < len; ++i ) {
+    while( len-- > 0 ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )        
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
         sum = _lrotl( sum, 4 );
 #else
         sum = (sum << 4) | (sum >> 28);
-#endif        
+#endif
         name += 4;
     }
     return( sum ^ end );
@@ -841,7 +897,7 @@ static unsigned long CalcHash( const char *name, unsigned len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *ii,
-                int case_sense, const char *name, unsigned name_len,
+                int case_sense, const char *name, size_t name_len,
                 unsigned long hash, imp_sym_handle *is,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -855,7 +911,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    sym_base;
     unsigned long               count;
     const char                  *curr;
-    unsigned                    curr_len;
+    size_t                      curr_len;
     s_all                       *sp;
     search_result               sr;
 
@@ -936,12 +992,13 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
     struct match_data   *md = d;
 
     is = is;
-    if( md->idx != SymTypeIdx( ii, p ) ) return( SR_NONE );
+    if( md->idx != SymTypeIdx( ii, p ) )
+        return( SR_NONE );
     return( SR_EXACT );
 }
 
 dip_status SymFindMatchingSym( imp_image_handle *ii,
-                const char *name, unsigned name_len, unsigned idx, imp_sym_handle *is )
+                const char *name, size_t name_len, unsigned idx, imp_sym_handle *is )
 {
     unsigned long       hash;
     search_result       sr;
@@ -951,13 +1008,17 @@ dip_status SymFindMatchingSym( imp_image_handle *ii,
     hash = CalcHash( name, name_len );
     sr = TableSearchForName( ii, 1, name, name_len, hash, is, MatchSym, &data, sstStaticSym );
     switch( sr ) {
-    case SR_FAIL:       return( DS_ERR|DS_FAIL );
-    case SR_EXACT:      return( DS_OK );
+    case SR_FAIL:
+        return( DS_ERR|DS_FAIL );
+    case SR_EXACT:
+        return( DS_OK );
     }
     sr = TableSearchForName( ii, 1, name, name_len, hash, is, MatchSym, &data, sstGlobalSym );
     switch( sr ) {
-    case SR_FAIL:       return( DS_ERR|DS_FAIL );
-    case SR_EXACT:      return( DS_OK );
+    case SR_FAIL:
+        return( DS_ERR|DS_FAIL );
+    case SR_EXACT:
+        return( DS_OK );
     }
     return( DS_FAIL );
 }
@@ -979,9 +1040,11 @@ static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
 
     is->im = IMH_GBL;
     cde = FindDirEntry( ii, IMH_GBL, tbl_type );
-    if( cde == NULL ) return( WR_CONTINUE );
+    if( cde == NULL )
+        return( WR_CONTINUE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
-    if( hdr == NULL ) return( WR_FAIL );
+    if( hdr == NULL )
+        return( WR_FAIL );
     base = cde->lfo + sizeof( *hdr );
     end = base + hdr->cbSymbol;
     while( base < end ) {
@@ -1005,13 +1068,17 @@ static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
             MapLogical( ii, &addr );
             dummy_off = 0;
             sr = TableSearchForAddr( ii, addr, &dummy, &dummy_off, sstGlobalSym );
-            if( sr == SR_FAIL ) return( WR_FAIL );
-            if( sr == SR_EXACT ) break;
+            if( sr == SR_FAIL )
+                return( WR_FAIL );
+            if( sr == SR_EXACT )
+                break;
             /* fall through */
         default:
-            if( SymFillIn( ii, is, base ) != DS_OK ) return( WR_FAIL );
+            if( SymFillIn( ii, is, base ) != DS_OK )
+                return( WR_FAIL );
             wr = wk( ii, SWI_SYMBOL, is, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE )
+                return( wr );
             break;
 
         }
@@ -1031,7 +1098,8 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
 {
     struct glue_info *gd = d;
 
-    if( is == NULL ) return( gd->wk( ii, swi, NULL, gd->d ) );
+    if( is == NULL )
+        return( gd->wk( ii, swi, NULL, gd->d ) );
     *gd->is = *is;
     return( gd->wk( ii, swi, gd->is, gd->d ) );
 }
@@ -1039,11 +1107,12 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
 static walk_result WalkAModule( imp_image_handle *ii,
                                 cv_directory_entry *cde, void *d )
 {
-    if( cde->subsection != sstModule ) return( WR_CONTINUE );
+    if( cde->subsection != sstModule )
+        return( WR_CONTINUE );
     return( ScopeWalkFile( ii, cde->iMod, WalkGlue, d ) );
 }
 
-walk_result     DoWalkSymList( imp_image_handle *ii,
+static walk_result DoWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -1064,12 +1133,14 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
         im = *(imp_mod_handle *)source;
         if( im == IMH_NOMOD ) {
             wr = WalkDirList( ii, &WalkAModule, &glue );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE )
+                return( wr );
             im = IMH_GBL;
         }
         if( im == IMH_GBL ) {
             wr = TableWalkSym( ii, is, wk, d, sstGlobalSym );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE )
+                return( wr );
             return( TableWalkSym( ii, is, wk, d, sstGlobalPub ) );
         }
         return( ScopeWalkFile( ii, im, WalkGlue, &glue ) );
@@ -1084,7 +1155,8 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
             return( WR_CONTINUE );
         }
         sc_info.cde = FindDirEntry( ii, im, sstAlignSym );
-        if( sc_info.cde == NULL ) return( WR_FAIL );
+        if( sc_info.cde == NULL )
+            return( WR_FAIL );
         ds = ScopeFillIn( ii, sc_block->unique & SCOPE_UNIQUE_MASK,
                                 &sc_info, &p );
         if( ds & DS_ERR )
@@ -1136,12 +1208,12 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
     return( is->im );
 }
 
-static unsigned ImpSymName( imp_image_handle *ii,
+static size_t ImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     const char          *name;
-    unsigned            len;
+    size_t              len;
     location_list       ll;
     dip_status          ds;
     imp_sym_handle      global_ish;
@@ -1154,29 +1226,36 @@ static unsigned ImpSymName( imp_image_handle *ii,
     case SN_OBJECT:
     case SN_DEMANGLED:
         ds = ImpSymLocation( ii, is, lc, &ll );
-        if( ds != DS_OK ) break;
-        if( ll.num != 1 ) break;
-        if( ll.e[0].type != LT_ADDR ) break;
+        if( ds != DS_OK )
+            break;
+        if( ll.num != 1 )
+            break;
+        if( ll.e[0].type != LT_ADDR )
+            break;
         dummy_off = 0;
-        sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global_ish,
-                            &dummy_off, sstGlobalPub );
-        if( sr != SR_EXACT ) break;
-        if( SymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK ) break;
+        sr = TableSearchForAddr( ii, ll.e[0].u.addr, &global_ish, &dummy_off, sstGlobalPub );
+        if( sr != SR_EXACT )
+            break;
+        if( SymGetName( ii, &global_ish, &name, &len, NULL ) != DS_OK )
+            break;
         if( sn == SN_OBJECT ) {
             return( NameCopy( buff, name, buff_size, len ) );
         }
-        if( !__is_mangled( name, len ) ) return( 0 );
+        if( !__is_mangled( name, len ) )
+            return( 0 );
         return( __demangle_l( name, len, buff, buff_size ) );
     }
-    if( sn == SN_DEMANGLED ) return( 0 );
+    if( sn == SN_DEMANGLED )
+        return( 0 );
     /* SN_SOURCE: */
-    if( SymGetName( ii, is, &name, &len, NULL ) != DS_OK ) return( 0 );
+    if( SymGetName( ii, is, &name, &len, NULL ) != DS_OK )
+        return( 0 );
     return( NameCopy( buff, name, buff_size, len ) );
 }
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+                        symbol_name sn, char *buff, size_t buff_size )
 {
     return( ImpSymName( ii, is, lc, sn, buff, buff_size ) );
 }
@@ -1189,7 +1268,8 @@ dip_status ImpSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle
         return( TypeSymGetType( ii, is, it ) );
     }
     p = VMBlock( ii, is->handle, is->len );
-    if( p == NULL ) return( DS_FAIL );
+    if( p == NULL )
+        return( DS_FAIL );
     return( TypeIndexFillIn( ii, SymTypeIdx( ii, p ), it ) );
 }
 
@@ -1218,15 +1298,18 @@ dip_status      ImpSymValue( imp_image_handle *ii,
         return( TypeSymGetValue( ii, is, lc, buff ) );
     }
     p = VMBlock( ii, is->handle, is->len );
-    if( p == NULL ) return( DS_FAIL );
+    if( p == NULL )
+        return( DS_FAIL );
     switch( p->common.code ) {
     case S_CONSTANT:
         GetNumLeaf( (unsigned_8 *)p + sizeof( s_constant ), &val );
         memcpy( buff, val.valp, val.size );
         ds = TypeIndexFillIn( ii, SymTypeIdx( ii, p ), &it );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = ImpTypeInfo( ii, &it, lc, &ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         memset( (unsigned_8 *)buff + val.size, 0, ti.size - val.size );
         return( DS_OK );
     }
@@ -1250,7 +1333,8 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
         return( TypeSymGetInfo( ii, is, lc, si ) );
     }
     p = VMBlock( ii, is->handle, is->len );
-    if( p == NULL ) return( DS_FAIL );
+    if( p == NULL )
+        return( DS_FAIL );
     switch( p->common.code ) {
     case S_PUB16:
         if( SegIsExecutable( ii, p->pub16.f.segment ) == DS_OK ) {
@@ -1370,12 +1454,15 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
         return( DS_ERR|DS_FAIL );
     }
     ds = TypeCallInfo( ii, type, &call, &parm_count );
-    if( ds != DS_OK ) return( ds );
-    if( n > parm_count ) return( DS_NO_PARM );
+    if( ds != DS_OK )
+        return( ds );
+    if( n > parm_count )
+        return( DS_NO_PARM );
     if( n == 0 ) {
         /* return value */
         p = VMRecord( ii, is->handle + is->len );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL )
+            return( DS_ERR|DS_FAIL );
         /* WARNING: assuming that S_RETURN directly follows func defn */
         if( p->common.code == S_RETURN ) {
             switch( p->return_.f.style ) {
@@ -1396,11 +1483,14 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
         }
         /* find out about return type */
         ds = TypeIndexFillIn( ii, type, &it );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = ImpTypeBase( ii, &it, &it );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = ImpTypeInfo( ii, &it, lc, &ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         switch( ti.kind ) {
         case TK_VOID:
             return( DS_BAD_LOCATION );
@@ -1484,12 +1574,16 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
     imp_type_handle     this_it;
 
     ds = ImpSymType( ii, is, &func_it );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = TypeMemberFuncInfo( ii, &func_it, it, &this_it, NULL );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     if( ti != NULL ) {
         ds = ImpTypeInfo( ii, &this_it, NULL, ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) {
+            return( ds );
+        }
     }
     return( DS_OK );
 }
@@ -1499,7 +1593,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                  location_list *ll )
 {
     const char          *name;
-    unsigned            len;
+    size_t              len;
     dip_status          ds;
     virt_mem            check;
     virt_mem            next;
@@ -1510,15 +1604,19 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     unsigned long       adjust;
 
     ds = ImpSymType( ii, is, &it );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = TypeMemberFuncInfo( ii, &it, NULL, &it, &adjust );
-    if( ds != DS_OK ) return( ds );
-    if( it.idx == 0 ) return( DS_FAIL );
+    if( ds != DS_OK )
+        return( ds );
+    if( it.idx == 0 )
+        return( DS_FAIL );
     check = is->handle + is->len;
 #define THIS_NAME       "this"
     for( ;; ) {
         p = VMRecord( ii, check );
-        if( p == NULL ) return( DS_ERR|DS_FAIL );
+        if( p == NULL )
+            return( DS_ERR|DS_FAIL );
         next = check + p->common.length + sizeof( p->common.length );
         switch( p->common.code ) {
         case S_END:
@@ -1526,21 +1624,27 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
             return( DS_FAIL );
         }
         ds = SymFillIn( ii, &parm, check );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ds = SymGetName( ii, &parm, &name, &len, &p );
-        if( ds != DS_OK ) return( ds );
-        if( p->common.code == S_ENTRYTHIS ) break;
-        if( len == (sizeof( THIS_NAME ) - 1) &&
-            memcmp( name, THIS_NAME, sizeof( THIS_NAME ) - 1 ) == 0 ) break;
+        if( ds != DS_OK )
+            return( ds );
+        if( p->common.code == S_ENTRYTHIS )
+            break;
+        if( len == ( sizeof( THIS_NAME ) - 1 ) && memcmp( name, THIS_NAME, sizeof( THIS_NAME ) - 1 ) == 0 )
+            break;
         check = next;
     }
     /* We have a 'this' pointer! Repeat, we have a this pointer! */
     ds = ImpSymLocation( ii, &parm, lc, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = ImpTypeInfo( ii, &it, lc, &ti );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = DoIndirection( ii, &ti, lc, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     LocationAdd( ll, adjust * 8 );
     return( DS_OK );
 }
@@ -1572,7 +1676,8 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
     }
     prev_sr = sr;
     sr = TableSearchForAddr( ii, a, is, &best_off, sstGlobalPub );
-    if( sr == SR_NONE ) sr = prev_sr;
+    if( sr == SR_NONE )
+        sr = prev_sr;
     return( sr );
 }
 
@@ -1588,31 +1693,41 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
     struct search_data  *sd = d;
     lookup_item         *li;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     imp_sym_handle      *new;
     s_all               *p;
 
-    if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
-    if( SymGetName( ii, is, &name, &len, &p ) != DS_OK ) return( WR_FAIL );
+    if( swi != SWI_SYMBOL )
+        return( WR_CONTINUE );
+    if( SymGetName( ii, is, &name, &len, &p ) != DS_OK )
+        return( WR_FAIL );
     li = &sd->li;
     switch( p->common.code ) {
     case S_UDT:
     case S_COBOLUDT:
-        if( li->type != ST_TYPE ) return( WR_CONTINUE );
+        if( li->type != ST_TYPE )
+            return( WR_CONTINUE );
         break;
     default:
-        if( li->type == ST_TYPE ) return( WR_CONTINUE );
+        if( li->type == ST_TYPE )
+            return( WR_CONTINUE );
         break;
     }
-    if( len != li->name.len ) return( WR_CONTINUE );
+    if( len != li->name.len )
+        return( WR_CONTINUE );
     if( li->case_sensitive ) {
-        if( memcmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
+        if( memcmp( li->name.start, name, len ) != 0 ) {
+            return( WR_CONTINUE );
+        }
     } else {
-        if( memicmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
+        if( memicmp( li->name.start, name, len ) != 0 ) {
+            return( WR_CONTINUE );
+        }
     }
     /* Got one! */
     new = DCSymCreate( ii, sd->d );
-    if( new == NULL ) return( WR_FAIL );
+    if( new == NULL )
+        return( WR_FAIL );
     *new = *is;
     sd->found = 1;
     return( WR_CONTINUE );
@@ -1644,7 +1759,8 @@ static search_result SymCreate( imp_image_handle *ii, s_all *p,
 
     p = p;
     new = DCSymCreate( ii, d );
-    if( new == NULL ) return( SR_FAIL );
+    if( new == NULL )
+        return( SR_FAIL );
     *new = *is;
     /* keep on looking for more */
     return( SR_CLOSEST );
@@ -1658,7 +1774,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     unsigned long       hash;
     struct search_data  data;
     imp_sym_handle      *scope_is;
-    unsigned            len;
+    size_t              len;
 
     data.d = d;
     data.found = 0;
@@ -1682,11 +1798,13 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     case ST_ENUM_TAG:
         return( TypeSearchTagName( ii, &data.li, d ) );
     }
+    is.im = IMH_NOMOD;
     switch( ss ) {
     case SS_MODULE:
         is.im = *(imp_mod_handle *)source;
         sr = SearchFileScope( ii, is.im, &data );
-        if( sr != SR_NONE ) return( sr );
+        if( sr != SR_NONE )
+            return( sr );
         break;
     case SS_SCOPED:
         if( ImpAddrMod( ii, *(address *)source, &is.im ) == SR_NONE ) {
@@ -1702,11 +1820,13 @@ static search_result    DoLookupSym( imp_image_handle *ii,
             if( ScopeWalkAll( ii, is.im, *(address *)source, SymFind, &data ) == WR_FAIL ) {
                 return( SR_FAIL );
             }
-            if( data.found ) return( SR_EXACT );
+            if( data.found )
+                return( SR_EXACT );
             break;
         }
         sr = SearchFileScope( ii, is.im, &data );
-        if( sr != SR_NONE ) return( sr );
+        if( sr != SR_NONE )
+            return( sr );
         break;
     case SS_TYPE:
         return( TypeSearchNestedSym( ii, (imp_type_handle *)source, &data.li, d ) );
@@ -1724,10 +1844,12 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     hash = CalcHash( data.li.name.start, data.li.name.len );
     sr = TableSearchForName( ii, data.li.case_sensitive,
         data.li.name.start, data.li.name.len, hash, &is, SymCreate, d, sstStaticSym );
-    if( sr != SR_NONE ) return( sr );
+    if( sr != SR_NONE )
+        return( sr );
     sr = TableSearchForName( ii, data.li.case_sensitive,
         data.li.name.start, data.li.name.len, hash, &is, SymCreate, d, sstGlobalSym );
-    if( sr != SR_NONE ) return( sr );
+    if( sr != SR_NONE )
+        return( sr );
     sr = TableSearchForName( ii, data.li.case_sensitive,
         data.li.name.start, data.li.name.len, hash, &is, SymCreate, d, sstGlobalPub );
     return( sr );
@@ -1736,7 +1858,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
 #define OPERATOR_TOKEN          "operator"
 #define DESTRUCTOR_TOKEN        "~"
 
-search_result   DoImpLookupSym( imp_image_handle *ii,
+static search_result   DoImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
@@ -1744,7 +1866,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     symbol_type         save_type;
     search_result       sr;
     char                *new;
-    unsigned            new_len;
+    size_t              new_len;
 
     lc = lc;
     save_type = li->type;
@@ -1849,8 +1971,10 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         }
     }
     ds = ScopeFindNext( ii, &sc_info );
-    if( ds & DS_ERR ) return( SR_FAIL );
-    if( ds != DS_OK ) return( SR_NONE );
+    if( ds & DS_ERR )
+        return( SR_FAIL );
+    if( ds != DS_OK )
+        return( SR_NONE );
     out->start = sc_info.start;
     out->len   = sc_info.len;
     out->unique= sc_info.scope;
@@ -1861,8 +1985,10 @@ int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 {
     ii = ii;
-    if( is1->handle < is2->handle ) return( -1 );
-    if( is1->handle > is2->handle ) return( +1 );
+    if( is1->handle < is2->handle )
+        return( -1 );
+    if( is1->handle > is2->handle )
+        return( +1 );
     return( 0 );
 }
 

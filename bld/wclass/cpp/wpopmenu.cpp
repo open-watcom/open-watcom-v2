@@ -146,9 +146,9 @@ void WEXPORT WPopupMenu::track( WWindow *owner ) {
 }
 
 
-void WPopupMenu::attachItem( WWindow *win, int idx ) {
-/****************************************************/
-
+void WPopupMenu::attachItem( WWindow *win, gui_ctl_idx position )
+/***************************************************************/
+{
     gui_menu_struct     menu_item;
     unsigned long       menu_style;
 
@@ -173,30 +173,32 @@ void WPopupMenu::attachItem( WWindow *win, int idx ) {
         // appending popup menu to menu bar
         //      or
         // appending popup menu to top level floating popup menu
-        GUIInsertMenu( win->handle(), idx, &menu_item, isFloatingPopup() );
+        GUIInsertMenuByIdx( win->handle(), position, &menu_item, isFloatingPopup() );
     } else {
         // popup menu is a menu item
-        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), idx,
+        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), position,
                               &menu_item, isFloatingPopup() );
     }
 }
 
 
-void WEXPORT WPopupMenu::attachChildren( WWindow *win ) {
-/*******************************************************/
+void WEXPORT WPopupMenu::attachChildren( WWindow *win )
+/*****************************************************/
+{
+    gui_ctl_idx     position;
 
-    for( int idx = 0; idx < _children.count(); ++idx ) {
-        WMenuObject *menu_object = (WMenuObject *)_children[idx];
-        menu_object->attachMenu( win, idx );
+    for( position = 0; position < _children.count(); ++position ) {
+        WMenuObject *menu_object = (WMenuObject *)_children[position];
+        menu_object->attachMenu( win, position );
     }
 }
 
 
-void WEXPORT WPopupMenu::attachMenu( WWindow *win, int idx ) {
-/************************************************************/
-
+void WEXPORT WPopupMenu::attachMenu( WWindow *win, gui_ctl_idx position )
+/***********************************************************************/
+{
     setOwner( win );
-    attachItem( win, idx );
+    attachItem( win, position );
     attachChildren( win );
 }
 

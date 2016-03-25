@@ -40,15 +40,15 @@ extrn   __Int21C_ :near
 _TEXT segment word public 'CODE'
 assume  cs:_TEXT
 
-        public  __Int21_
-        public  __fInt21_
+        public  __Int21
+        public  __fInt21
 
-__fInt21_ proc  far
-        call    __Int21_
+__fInt21 proc  far
+        call    __Int21
         ret
-__fInt21_ endp
+__fInt21 endp
 
-__Int21_ proc   near
+__Int21 proc   near
 ;
 ;       create a union REGS by pushing registers onto stack in correct order
 ;
@@ -68,7 +68,7 @@ __Int21_ proc   near
         pop     esi                     ; ...
         pop     edi                     ; ...
         ret                             ; return
-__Int21_ endp
+__Int21 endp
 
 _TEXT   ends
         end

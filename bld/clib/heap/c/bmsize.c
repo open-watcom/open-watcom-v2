@@ -36,10 +36,10 @@
 #include "heap.h"
 
 
-_WCRTLINK size_t _bmsize( __segment seg, void __based(void) *offset )
+_WCRTLINK size_t _bmsize( __segment seg, void __based( void ) *offset )
 {
-    tag _WCFAR *q;
+    tag     _WCFAR *q;
 
-    q = (tag _WCFAR*) ( ((unsigned char _WCFAR*)(seg:>offset)) - TAG_SIZE );
+    q = (tag _WCFAR *)( ((unsigned char _WCFAR *)(seg :> offset)) - TAG_SIZE );
     return( ( *q & ~1 ) - TAG_SIZE );
 }

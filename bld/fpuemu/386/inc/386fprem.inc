@@ -38,7 +38,9 @@
 ;       int fprem( long double *x, long double *modulus )
 ;                       EAX             EDX
 ;
+
         defp    __fprem
+
         _guess                  ; guess: number is 0
           cmp   word ptr 8[EAX],0; - quit if not 0
           _quif ne              ; - ...
@@ -92,10 +94,12 @@
         pop     ESI             ; restore ESI
         pop     EBP             ; restore EBP
         ret                     ; return
+
         endproc __fprem
 
 
         defp    ___fprem
+
         push    ESI             ; save sign of operand
         push    EDI             ; save high part of modulus
         and     ESI,00007FFFh   ; isolate exponent
@@ -126,13 +130,13 @@ didnt_go:   _rcl  EDI,1         ; - - rotate 1 (if carry set) into quotient word
             _rcl  EDX,1         ; - - . . .
             jc    try
 
-;<> If bit 5 of dividend is set here, we didnt subtract the modulus from the
-;<> dividend (recall that the divisor has a 1 in the msb -- if we subtracted
-;<> it from the dividend without a borrow, the dividend would not have a one
-;<> in its msb to be shifted into bit 5 tested for in the condition above. If
-;<> we are rotating a bit into bit 5, the dividend is now big enough that we
-;<> can be sure of subtracting out the divisor without a borrow, as we have
-;<> shifted it left one digit.
+;   If bit 5 of dividend is set here, we didnt subtract the modulus from the
+;   dividend (recall that the divisor has a 1 in the msb -- if we subtracted
+;   it from the dividend without a borrow, the dividend would not have a one
+;   in its msb to be shifted into bit 5 tested for in the condition above. If
+;   we are rotating a bit into bit 5, the dividend is now big enough that we
+;   can be sure of subtracting out the divisor without a borrow, as we have
+;   shifted it left one digit.
             or    EDX,EDX       ; - - check top bit of dividend
           _until  ns            ; - until
           jmp   short didnt_go  ; - continue
@@ -173,5 +177,6 @@ _done:    sub   ESI,ESI         ; - set ESI to 0
           neg   EDI             ; - negate quotient
         _endif                  ; endif
         ret                     ; return
+
         endproc ___fprem
 

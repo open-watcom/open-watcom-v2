@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC new )
 }
 
 BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
-                      unsigned attr_flags, unsigned id,
+                      unsigned attr_flags, unsigned new_id,
                       HMENU popup, const char *text, BOOL by_position )
 {
     if( !hmenu ) {
@@ -91,16 +92,16 @@ BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
     menu_flags |= ( by_position ? MF_BYPOSITION : MF_BYCOMMAND );
 
     return( InsertMenu( hmenu, pos, menu_flags | attr_flags,
-                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)id ),
+                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)new_id ),
                         text ) );
 }
 
 BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
-                      unsigned attr_flags, unsigned id,
+                      unsigned attr_flags, unsigned new_id,
                       HMENU popup, const char *text )
 {
     return( AppendMenu( hmenu, menu_flags | attr_flags | MF_BYPOSITION,
-                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)id ),
+                        ( (menu_flags & MF_POPUP) ? (UINT_PTR)popup : (UINT_PTR)new_id ),
                         text ) );
 }
 
@@ -149,7 +150,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_posit
         if( !by_position ) {
             return( FALSE );
         }
-        popup = _wpi_getsubmenu( hmenu, id );
+        popup = _wpi_getsubmenu( hmenu, (int)id );
     }
     state = MF_STRING | ((by_position) ? MF_BYPOSITION : MF_BYCOMMAND);
     if( popup != (HMENU)NULLHANDLE ) {

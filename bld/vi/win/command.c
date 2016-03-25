@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,33 +36,29 @@
 #include "utils.h"
 #include "win.h"
 #include "wprocmap.h"
+#include "winifini.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 #define LIST_BOX        1000
 
 extern bool ReadingAString;
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
-
 window CommandWindow = {
     &cmdlinew_info,
-    { 0, 0, 0, 0 },
-    Init,
-    Fini
+    { 0, 0, 0, 0 }
 };
 
-window_id CommandId = NO_WINDOW;
-
-WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
+window_id command_window_id = NO_WINDOW;
 
 static char *className = "CommandWindow";
 
-static bool Init( window *w, void *parm )
+bool CommandWindowInit( void )
 {
     WNDCLASS        wc;
 
-    w = w;
-    parm = parm;
     wc.style = 0;
     wc.lpfnWndProc = GetWndProc( CommandWindowProc );
     wc.cbClsExtra = 0;
@@ -75,10 +72,8 @@ static bool Init( window *w, void *parm )
     return( RegisterClass( &wc ) != 0 );
 }
 
-static bool Fini( window *w, void *parm )
+bool CommandWindowFini( void )
 {
-    w = w;
-    parm = parm;
     return( true );
 }
 
@@ -86,10 +81,11 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
 {
     PAINTSTRUCT ps;
     HDC         hdc;
+    window_id   wid;
 
     switch( msg ) {
     case WM_CREATE:
-        CommandId = hwnd;
+        command_window_id = hwnd;
         SET_WNDINFO( hwnd, (LONG_PTR)&CommandWindow );
         break;
     case WM_SETFOCUS:
@@ -100,7 +96,8 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        if( w && ((HWND) w == Root || GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
+        wid = (window_id)w;
+        if( !BAD_ID( wid ) && ( wid == root_window_id || GetWindow( wid, GW_OWNER ) == edit_container_id ) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );
@@ -114,13 +111,13 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPA
         break;
     case WM_PAINT:
         hdc = BeginPaint( hwnd, &ps );
-        FillRect( hdc, &ps.rcPaint, ColorBrush( WIN_BACKCOLOR( &CommandWindow ) ) );
+        FillRect( hdc, &ps.rcPaint, ColorBrush( WIN_TEXT_BACKCOLOR( &CommandWindow ) ) );
         /* this will cause the command window to redraw itself in readstr.c */
         KeyAdd( VI_KEY( ALT_END ) );
         EndPaint( hwnd, &ps );
         break;
     case WM_DESTROY:
-        CommandId = NO_WINDOW;
+        command_window_id = NO_WINDOW;
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
@@ -134,16 +131,16 @@ window_id NewCommandWindow( void )
     POINT       p;
     int         bottom;
 
-    size = &CommandWindow.area;
+    size = &CommandWindow.def_area;
     bottom = size->bottom;
 
     p.x = size->left;
     p.y = size->top;
-    ClientToScreen( Root, &p );
+    ClientToScreen( root_window_id, &p );
     cmd = CreateWindow( className, "Prompt",
         WS_POPUPWINDOW | WS_CLIPSIBLINGS,
         p.x, p.y,
-        size->right - size->left, bottom - size->top, Root,
+        size->right - size->left, bottom - size->top, root_window_id,
         (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( cmd, SW_SHOWNORMAL );
     UpdateWindow( cmd );

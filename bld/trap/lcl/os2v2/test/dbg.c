@@ -43,6 +43,7 @@
 #include "dbgtoggl.h"
 #include "dbginfo.h"
 #include "dbgio.h"
+#include "trpimp.h"
 
 extern  void    InitTrap(bool);
 extern  void    FiniTrap();
@@ -53,7 +54,6 @@ extern unsigned RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buf
 extern void ReadDbgRegs();
 extern void WriteDbgRegs();
 extern bool KillProgOvlay();
-extern void TellHandles( void __far *hab, void __far *hwnd );
 extern int printf(char*,...);
 
 

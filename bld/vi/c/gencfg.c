@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,9 @@
 
 
 #include "vi.h"
+#include "win.h"
 #include "menu.h"
 #include "parsecl.h"
-#include "source.h"
 #include "sstyle.h"
 #include "banner.h"
 #include "fts.h"
@@ -45,7 +46,7 @@ static bool     isCmdLine;
 /*
  * writeTitle - write a title for each section
  */
-static void writeTitle( FILE *f, char *str )
+static void writeTitle( FILE *f, const char *str )
 {
     if( isCmdLine ) {
         MyFprintf( f,"\n#\n# %s\n#\n", str );
@@ -56,13 +57,12 @@ static void writeTitle( FILE *f, char *str )
 /*
  * doMaps - write map commands
  */
-static void doMaps( FILE *f, key_map *maps, char *extra_str )
+static void doMaps( FILE *f, key_map *maps, const char *extra_str )
 {
     char        *map;
-    vi_key      *str;
+    vi_key      *keymap;
     int         i;
     int         j;
-    int         len;
 
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( maps[i].data != NULL ) {
@@ -76,17 +76,13 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
             if( maps[i].no_input_window ) {
                 MyFprintf( f, "\\x" );
             }
-            str = maps[i].data;
-            // len = strlen( str );
-            for( len = 0; str[len] != 0; len++ );
-            len--;
-
-            for( j = 0; j < len; j++ ) {
-                map = LookUpCharToken( str[j], true );
+            keymap = maps[i].data;
+            for( j = 0; keymap[j] != VI_KEY( NULL ); j++ ) {
+                map = LookUpCharToken( keymap[j], true );
                 if( map == NULL ) {
-                    MyFprintf( f, "%c", str[j] );
+                    MyFprintf( f, "%c", (char)keymap[j] );
                 } else {
-                    if( map[1] == 0 ) {
+                    if( map[1] == '\0' ) {
                         MyFprintf( f, "\\%s", map );
                     } else {
                         MyFprintf( f, "\\<%s>", map );
@@ -108,18 +104,17 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 
     MyFprintf( f, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, true ) );
     if( !colour_only ) {
-        MyFprintf( f, "    dimension %d %d %d %d\n", wi->x1, wi->y1,
-                   wi->x2, wi->y2 );
+        MyFprintf( f, "    dimension %d %d %d %d\n", wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2 );
         if( wi->has_border ) {
             MyFprintf( f, "    border 1 %d %d\n", wi->border_color1, wi->border_color2 );
         } else {
             MyFprintf( f, "    border -1\n" );
         }
     }
-    MyFprintf( f, "    text %d %d %d\n", wi->text.foreground, wi->text.background,
-               wi->text.font );
-    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight.foreground,
-               wi->hilight.background, wi->hilight.font );
+    MyFprintf( f, "    text %d %d %d\n", wi->text_style.foreground, wi->text_style.background,
+               wi->text_style.font );
+    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight_style.foreground,
+               wi->hilight_style.background, wi->hilight_style.font );
     if( wi == &editw_info ) {
         MyFprintf( f, "    whitespace %d %d %d\n", SEType[SE_WHITESPACE].foreground,
                    SEType[SE_WHITESPACE].background, SEType[SE_WHITESPACE].font );
@@ -165,14 +160,13 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 /*
  * outputMatchData - write out data associated with a match string
  */
-static void outputMatchData( FILE *f, char *str )
+static void outputMatchData( FILE *f, const char *str )
 {
-    while( *str ) {
+    for( ; *str != '\0'; ++str ) {
         if( *str == '/' ) {
             fputc( '\\', f );
         }
         fputc( *str, f );
-        str++;
     }
     fputc( '/', f );
 
@@ -198,7 +192,7 @@ static void doHookAssign( FILE *f, hooktype num )
 /*
  * GenerateConfiguration - write out a config file
  */
-vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
+vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
 {
     FILE        *f;
     int         i;
@@ -208,7 +202,6 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     char        *buff;
     int         num;
     rgb         c;
-    char        *fmt;
     char        *res;
 
     if( fname == NULL ) {
@@ -223,11 +216,11 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     if( buff != NULL ) {
         setvbuf( f, buff, _IOFBF, VBUF_SIZE );
     }
-    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n", 
+    MyFprintf( f, "#\n# %s configuration file\n# %s\n#\n",
 #if defined( __WIN__ )
-        banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
+    banner1w1( "Text Editor for Windows" ), banner1w2( _VI_VERSION_ ) );
 #else
-        banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
+    banner1w1( "Vi Text Editor" ), banner1w2( _VI_VERSION_ ) );
 #endif
     if( is_cmdline ) {
         GetDateTimeString( token );
@@ -252,24 +245,33 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
             continue;
         }
         res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, true ) );
-        if( i == SETVAR_T_STATUSSTRING || i == SETVAR_T_FILEENDSTRING ||
-            i == SETVAR_T_HISTORYFILE || i == SETVAR_T_TMPDIR ) {    /* strings with possible spaces */
-            fmt = "set %s = \"%s\"\n";
-        } else {
-            fmt = "set %s = %s\n";
+        switch( i ) {
+        case SETVAR_T_STATUSSTRING:
+        case SETVAR_T_FILEENDSTRING:
+        case SETVAR_T_HISTORYFILE:
+        case SETVAR_T_TMPDIR:
+            /* strings with possible spaces */
+            MyFprintf( f, "set %s = \"%s\"\n", token, res );
+            break;
+        case SETVAR_T_GADGETSTRING:
+            if( !IsGadgetStringChanged( res ) )
+                break;
+            // fall through
+        default:
+            MyFprintf( f, "set %s = %s\n", token, res );
+            break;
         }
-        MyFprintf( f, fmt, token, res );
     }
 
     writeTitle( f, "Boolean Settings" );
     num = GetNumberOfTokens( TokensSetFlag );
     for( i = 0; i < num; i++ ) {
         str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, true ) );
-        boolstr[0] = 0;
+        boolstr[0] = '\0';
         if( str[0] == '0' ) {
             boolstr[0] = 'n';
             boolstr[1] = 'o';
-            boolstr[2] = 0;
+            boolstr[2] = '\0';
         }
         MyFprintf( f, "set %s%s\n", boolstr, token );
     }

@@ -1,3 +1,9 @@
+!ifdef %USE_FILENAME_VERSION
+name = watcom$(bld_ver)
+!else
+name = watcom
+!endif
+
 imp_objs = &
         wataddr.obj &
         watdmnd.obj &
@@ -10,8 +16,6 @@ imp_objs = &
         watmod.obj &
         wattype.obj &
         demangle.obj
-
-name = watcom
 
 extra_incs = -I"$(lib_misc_dir)/h"
 extra_srcs = $(lib_misc_dir)/c

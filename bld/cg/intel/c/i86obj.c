@@ -52,6 +52,8 @@
 #include "wvtypes.h"
 #include "objio.h"
 #include "onexit.h"
+#include "ocentry.h"
+#include "optmain.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -140,7 +142,6 @@ extern  void            TellImportHandle(cg_sym_handle,import_handle);
 extern  import_handle   AskImportHandle(cg_sym_handle);
 extern  void            TellDonePatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
-extern  void            EmptyQueue( void );
 extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
@@ -720,7 +721,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
                 OutGroup( rec->sidx, tgroup_def, &TLSGIndex );
                 rec->base = TLSGIndex;
                 rec->btype = BASE_GRP;
-            } else if( NoDGroup || (seg->attr & NOGROUP) ) {
+            } else if( NoDGroup ) {
                 rec->btype = BASE_SEG;
                 rec->base = SegmentIndex;
             } else {

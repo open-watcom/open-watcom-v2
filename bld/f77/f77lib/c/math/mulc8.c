@@ -38,13 +38,13 @@
 #include "rtenv.h"
 
 
-complex C8Mul( single a, single b, single c, single d ) {
+scomplex C8Mul( single a, single b, single c, single d ) {
 //=======================================================
 
 // Return the real part of the result of multiplying two complex numbers.
 // ( a, b ) * ( c, d ) = ( ac-bd, bc+ad )
 
-    complex     res;
+    scomplex    res;
 
     res.realpart = a * c - b * d;
     res.imagpart = b * c + a * d;

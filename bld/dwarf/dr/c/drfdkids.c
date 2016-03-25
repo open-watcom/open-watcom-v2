@@ -208,7 +208,7 @@ void DRDerivedSearch( dr_handle handle, void *data, DRCLSSRCH callback )
     ctxt.compunit = compunit;
     ctxt.start = compunit->start;
     ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
-    ctxt.start += COMPILE_UNIT_HDR_SIZE;
+    ctxt.start += sizeof( compuhdr_prologue );
     ctxt.classhdl    = DR_HANDLE_NUL;
     ctxt.functionhdl = DR_HANDLE_NUL;
     ctxt.stack.size  = 0;

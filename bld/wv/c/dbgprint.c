@@ -43,6 +43,18 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
+#include "dbgexpr3.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgmain.h"
+#include "dbgovl.h"
+#include "dbgparse.h"
+#include "dbgprint.h"
+#include "remcore.h"
+#include "dbgreg.h"
+#include "dbgio.h"
+
 
 #define BUFLEN  UTIL_LEN
 
@@ -52,31 +64,10 @@
 #define MAX_WIDTH       40
 #define NAME_WIDTH      25
 
-extern void             ChkExpr( void );
-extern void             NormalExpr( void );
-extern void             ExprValue( stack_entry * );
-extern void             PopEntry( void );
-extern void             DupStack( void );
-extern void             DoGivenField( sym_handle * );
-extern void             WriteToPgmScreen( const void *, unsigned );
+#define FMT2RADIX(x)   (((x)<0)?(mad_radix)-(x):(mad_radix)(x))
+
 extern void             GraphicDisplay( void );
-extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern void             PushNum( long );
-extern void             DoPlus( void );
-extern void             DoPoints( type_kind );
-extern void             DefAddr( memory_expr, address * );
-extern void             ChkBreak( void );
-extern void             PushType( type_handle * );
-extern void             MoveSP( int );
-extern void             SetTokens( bool );
-extern void             MakeMemoryAddr( bool, memory_expr, address * );
-extern void             AddrFix( address * );
-extern void             StartSubscript( void );
-extern void             AddSubscript( void );
-extern void             EndSubscript( void );
 extern bool             DlgNewWithSym( const char *title, char *, unsigned);
-extern unsigned         ProgPeek( address, void *, unsigned int );
-extern char             *GetCmdName( wd_cmd cmd );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
@@ -92,8 +83,6 @@ static bool             OutPgm;
 static bool             First;
 
 static const char PrintOps[] = { "Program\0Window\0" };
-
-extern void PrintValue( void );
 
 typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
 
@@ -138,7 +127,7 @@ static void PrtChar( unsigned ch )
 
 extern void EndPrintBuff( void )
 {
-    PrtChar( '\0' );
+    PrtChar( NULLCHAR );
 }
 
 
@@ -161,7 +150,9 @@ static void EndBuff( void )
 static void PrtStr( const char *start, unsigned len )
 {
     PrtNeed( len );
-    for( ; len > 0; --len ) PrtChar( *start++ );
+    for( ; len > 0; --len ) {
+        PrtChar( *start++ );
+    }
 }
 
 
@@ -169,15 +160,15 @@ static void PrtStr( const char *start, unsigned len )
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff, int len )
+static char *CnvRadix( unsigned_64 *value, mad_radix radix, char base, char *buff, int len )
 {
-    char        internal[ 65 ];
+    char        internal[65];
     char        *ptr;
     unsigned    dig;
     unsigned_64 big_radix;
     unsigned_64 remainder;
 
-    ptr = &internal[ 64 ];
+    ptr = &internal[64];
     U32ToU64( radix, &big_radix );
     while( (len > 0) || (U64Test( value ) != 0) ) {
         U64Div( value, &big_radix, value, &remainder );
@@ -188,16 +179,16 @@ static char *CnvRadix( unsigned_64 *value, unsigned radix, char base, char *buff
     }
     len = &internal[64] - ptr;
     memcpy( buff, ptr + 1, len );
-    buff[ len ] = NULLCHAR;
+    buff[len] = NULLCHAR;
     return( buff + len );
 }
 
 
-static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class sign_type, char *buff, unsigned len )
+static char *FmtNum( unsigned_64 num, int radixfmt, char base_letter, sign_class sign_type, char *buff, unsigned len )
 {
     char        *ptr;
     const char  *prefix;
-    unsigned    pref_len;
+    size_t      prefix_len;
 
     if( sign_type == NUM_SIGNED && I64Test( &num ) < 0 ) {
         *buff = '-';
@@ -205,17 +196,16 @@ static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class si
         U64Neg( &num, &num );
     }
     prefix = NULL;
-    if( radix != DefRadix ) {
-        if( radix < 0 )
-            radix = -radix;
-        FindRadixSpec( radix, &prefix, &pref_len );
+    prefix_len = 0;
+    if( radixfmt != DefRadix ) {
+        FindRadixSpec( FMT2RADIX( radixfmt ), &prefix, &prefix_len );
     }
     ptr = buff;
     if( prefix != NULL ) {
-        memcpy( ptr, prefix, pref_len );
-        ptr = buff + pref_len;
+        memcpy( ptr, prefix, prefix_len );
+        ptr = buff + prefix_len;
     }
-    return( CnvRadix( &num, radix, base_letter, ptr, len ) );
+    return( CnvRadix( &num, FMT2RADIX( radixfmt ), base_letter, ptr, len ) );
 }
 
 
@@ -223,18 +213,18 @@ static char *FmtNum( unsigned_64 num, int radix, char base_letter, sign_class si
  * PrintRadix -- print expression in given radix
  */
 
-static void PrintRadix( int radix, char base_letter, sign_class sign_type )
+static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
 {
     char                buff[BUFLEN];
     char                *ptr;
     mad_type_info       mti;
-    unsigned            buff_len;
+    size_t              buff_len;
     item_mach           item;
     mad_type_info       host;
     mad_type_handle     mth;
 
     if( sign_type == NUM_CHECK ) {
-        if( radix != 10 && radix != -10 ) {
+        if( radixfmt != 10 && radixfmt != -10 ) {
             sign_type = NUM_UNSIGNED;
         } else {
             switch( ExprSP->info.kind ) {
@@ -269,11 +259,11 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
 #if 1
         {
             unsigned len = 1;
-            /* If we are printing hex, expand to both nibbles */            
-            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radix == 16 || radix == -16 ) && !_IsOn( SW_DONT_EXPAND_HEX ) )
+            /* If we are printing hex, expand to both nibbles */
+            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( radixfmt == 16 || radixfmt == -16 ) && _IsOff( SW_DONT_EXPAND_HEX ) )
                 len = ExprSP->info.size * 2;
             ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
-            ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type, ptr, len );
+            ptr = FmtNum( ExprSP->v.uint, radixfmt, base_letter, sign_type, ptr, len );
         }
 #endif
         break;
@@ -291,7 +281,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
         MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
         MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
         buff_len = sizeof( buff );
-        MADTypeToString( ( radix < 0 ) ? -radix : radix, &mti, &item, ptr, &buff_len );
+        MADTypeToString( FMT2RADIX( radixfmt ), &mti, &item, ptr, &buff_len );
         ptr += buff_len;
         break;
     case TK_REAL:
@@ -299,7 +289,7 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
             signed_64   tmp;
 
             I32ToI64( LDToD( &ExprSP->v.real ), &tmp );
-            ptr = FmtNum( tmp, ( radix < 0 ) ? -radix : radix, base_letter, NUM_SIGNED, ptr, 1 );
+            ptr = FmtNum( tmp, FMT2RADIX( radixfmt ), base_letter, NUM_SIGNED, ptr, 1 );
         }
         break;
     default:
@@ -314,18 +304,18 @@ static void PrintRadix( int radix, char base_letter, sign_class sign_type )
 
 static void PrintAddress( char fmt )
 {
-    char        buff[ BUFLEN ];
+    char        buff[BUFLEN];
     char        *ptr;
     address     addr;
 
     if( fmt == 'l' ) {
-        MakeMemoryAddr( TRUE, EXPR_CODE, &addr );
+        MakeMemoryAddr( true, EXPR_CODE, &addr );
         ptr = LineAddr( &addr, buff, sizeof( buff ) );
         if( ptr == NULL ) {
             ptr = StrAddr( &addr, buff, sizeof( buff ) );
         }
     } else {
-        MakeMemoryAddr( TRUE, EXPR_DATA, &addr );
+        MakeMemoryAddr( true, EXPR_DATA, &addr );
         ptr = StrAddr( &addr, buff, sizeof( buff ) );
     }
     PrtStr( buff, ptr - buff );
@@ -339,7 +329,7 @@ static void PrintAddress( char fmt )
 static void PrintDouble( char format, xreal *val )
 {
     char        *start, *ptr, *back;
-    char        buff[ MAX_WIDTH+1 ];
+    char        buff[MAX_WIDTH + 1];
     bool        found_dot;
 
     switch( tolower( format ) ) {
@@ -353,17 +343,18 @@ static void PrintDouble( char format, xreal *val )
         LDToS( buff, val, 16, 0, MAX_WIDTH, 1, 0, format - 2, 'G' );
         break;
     }
-    buff[ MAX_WIDTH ] = NULLCHAR;
+    buff[MAX_WIDTH] = NULLCHAR;
     for( start = buff; *start == ' '; ++start )
         ;
-    found_dot = FALSE;
-    ptr = start;
-    for( ;; ) {
-        if( *ptr == '\0' ) break;
-        if( *ptr == 'e' ) break;
-        if( *ptr == 'E' ) break;
-        if( *ptr == '.' ) found_dot = TRUE;
-        ++ptr;
+    found_dot = false;
+    for( ptr = start; *ptr != NULLCHAR; ++ptr ) {
+        if( *ptr == 'e' )
+            break;
+        if( *ptr == 'E' )
+            break;
+        if( *ptr == '.' ) {
+            found_dot = true;
+        }
     }
     back = ptr;
     if( found_dot ) {
@@ -371,7 +362,7 @@ static void PrintDouble( char format, xreal *val )
             ;
         ++ptr;
     }
-    while( (*ptr = *back) != '\0' ) {
+    while( (*ptr = *back) != NULLCHAR ) {
         ++ptr;
         ++back;
     }
@@ -469,12 +460,12 @@ void PrintChar( void )
 
 static void DoPrintString( bool force )
 {
-    int         count;
+    size_t      count;
     address     addr;
-    char        buff[MAX_PRINTSTRING_LEN+10];
+    char        buff[MAX_PRINTSTRING_LEN + 10];
     char        *p;
 
-    MakeMemoryAddr( FALSE, EXPR_DATA, &addr );
+    MakeMemoryAddr( false, EXPR_DATA, &addr );
     if( IS_NIL_ADDR( addr ) && !force ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
@@ -482,32 +473,29 @@ static void DoPrintString( bool force )
     if( count == 0 && !force ) {
         Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
     }
-    p = buff;
-    while( --count >= 0 ) {
-        if( *p == '\0' ) break;
-        if( !force ) {
-            if( count == 0 ) {
+    for( p = buff; *p != NULLCHAR; ++p ) {
+        if( count == 0 ) {
+            if( !force ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NOT_PRINTABLE ), addr );
             }
+            PrtStr( " ...", 4 );
+            break;
         }
         PrtChar( *p );
-        ++p;
-    }
-    if( count < 0 ) {
-        PrtStr( " ...", 4 );
+        --count;
     }
 }
 
 
 void PrintString( void )
 {
-    DoPrintString( FALSE );
+    DoPrintString( false );
 }
 
 
 void ForcePrintString( void )
 {
-    DoPrintString( TRUE );
+    DoPrintString( true );
 }
 
 
@@ -517,30 +505,29 @@ static void PrintCharBlock( void )
     unsigned_16 *unicode_start;
     unsigned    len;
     int         overflow = 0;
-    
+
     PrtChar( '\'' );
     ascii_start = ExprSP->v.string.loc.e[0].u.p;
     len = ExprSP->info.size;
-    
+
     /*
      *  If the memory required to display the string is larger than what we have to display, then
      *  we adjust things so we can display them with a hint that the string is longer than can be displayed
      */
-    
+
     if(len + 2 > BUFLEN){   /* or UTIL_LEN/TXT_LEN? */
-        len = BUFLEN-7; /* 'string'....<NUL> */
+        len = BUFLEN - 7;   /* 'string'....<NUL> */
         overflow = 1;
     }
-    
+
     switch( ExprSP->info.modifier ) {
     case TM_NONE:
     case TM_ASCII:
         PrtNeed( len );
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *ascii_start == NULLCHAR ) break;
+        for( ; len > 0; --len ) {
+            if( *ascii_start == NULLCHAR )
+                break;
             PrtChar( *ascii_start++ );
-            --len;
         }
         break;
     case TM_EBCIDIC:
@@ -550,16 +537,15 @@ static void PrintCharBlock( void )
         unicode_start = (unsigned_16 *)ascii_start;
         len /= 2;
         PrtNeed( len );
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *unicode_start == NULLCHAR ) break;
+        for( ; len > 0; --len ) {
+            if( *unicode_start == NULLCHAR )
+                break;
             PrtChar( *unicode_start++ );
-            --len;
         }
         break;
     }
     PrtChar( '\'' );
-    if(overflow && len == 0){
+    if( overflow && len == 0 ){
         PrtStr( " ...",  4 );
     }
 }
@@ -569,7 +555,7 @@ static void GetExpr( void )
     if( !First && CurrToken == T_COMMA ) Scan();
     NormalExpr();
     if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE ) ReqEOC();
-    First = FALSE;
+    First = false;
 }
 
 /*
@@ -581,7 +567,7 @@ static void DoFormat( const char *fmt_ptr, const char *fmt_end )
     char        z_format;
 
     StartPrintBuff( buff, BUFLEN );
-    First = TRUE;
+    First = true;
     while( fmt_ptr < fmt_end ) {
         if( (*fmt_ptr != '%') || (fmt_end - fmt_ptr == 1) ) {
             PrtChar( *fmt_ptr );
@@ -703,7 +689,7 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, voi
             /* print a space if not at start of a line */
             if( OutPtr != OutBuff ) PrtChar( ' ' );
         }
-        d->first_time = FALSE;
+        d->first_time = false;
         DupStack();
         len = SymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
@@ -722,7 +708,7 @@ static void PrintStruct( void )
 {
     print_fld   d;
 
-    d.first_time = TRUE;
+    d.first_time = true;
     PrtChar( '{' );
     WalkSymList( SS_TYPE, ExprSP->th, PrintDlgField, &d );
     PrtChar( '}' );
@@ -737,7 +723,7 @@ static void PrintArray( void )
     bool                first_time;
     signed_64           tmp;
 
-    first_time = TRUE;
+    first_time = true;
     PrtChar( '{' );
     TypeArrayInfo( ExprSP->th, ExprSP->lc, &ai, NULL );
     while( ai.num_elts != 0 ) {
@@ -765,7 +751,7 @@ static void PrintArray( void )
         PopEntry();
         ai.num_elts--;
         ai.low_bound++;
-        first_time = FALSE;
+        first_time = false;
     }
     PrtChar( '}' );
 }
@@ -787,7 +773,7 @@ OVL_EXTERN walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
     if( SymValue( sh, ExprSP->lc, &val ) != DS_OK ) return( WR_STOP );
     if( U64Cmp( &val, &vd->value ) != 0 ) return( WR_CONTINUE );
     HDLAssign( sym, vd->sh, sh );
-    vd->found = TRUE;
+    vd->found = true;
     return( WR_STOP );
 }
 
@@ -806,7 +792,7 @@ OVL_EXTERN walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
             HDLAssign( sym, vd->sh, sh );
             vd->best_value = val;
-            vd->found = TRUE;
+            vd->found = true;
         }
     }
     return( WR_CONTINUE );
@@ -821,7 +807,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     DIPHDL( sym, sh );
 
     d.sh = sh;
-    d.found = FALSE;
+    d.found = false;
     d.value = ExprSP->v.uint;
     WalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
     if( d.found ) {
@@ -829,18 +815,21 @@ static unsigned ValueToName( char *buff, unsigned len )
     }
     p = buff;
     while( U64Test( &d.value ) != 0 ) {
-        d.found = FALSE;
+        d.found = false;
         WalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
-        if( !d.found ) return( 0 );
+        if( !d.found )
+            return( 0 );
         U64Not( &d.best_value, &d.best_value );
         U64And( &d.value, &d.best_value, &d.value );
         if( p != buff ) {
-            if( len == 0 ) return( 0 );
+            if( len == 0 )
+                return( 0 );
             *p++ = '+';
             --len;
         }
         name_len = SymName( sh, NULL, SN_SOURCE, p, len );
-        if( name_len > len ) return( 0 );
+        if( name_len > len )
+            return( 0 );
         p += name_len;
         len -= name_len;
     }
@@ -852,7 +841,7 @@ void PrintValue( void )
     char                buff[TXT_LEN];
     char                *p;
     const char          *tstr;
-    unsigned            tlen;
+    size_t              tlen;
 
     switch( ExprSP->info.kind ) {
     case TK_VOID:
@@ -879,12 +868,12 @@ void PrintValue( void )
         }
         /* fall through */
     case TK_POINTER:
-        if( IS_NIL_ADDR(ExprSP->v.addr) ) {
-            SetTokens( TRUE );
-            if( !TokenName( TSTR_NULL, &tstr, &tlen ) ) {
+        if( IS_NIL_ADDR( ExprSP->v.addr ) ) {
+            SetTokens( true );
+            if( !TokenName( T_SSL_SPEC_NULL, &tstr, &tlen ) ) {
                 tlen = 0;
             }
-            SetTokens( FALSE );
+            SetTokens( false );
             if( tlen != 0 ) {
                 PrtStr( tstr + 1, tlen - 1 );
             } else {
@@ -932,7 +921,7 @@ void DoPrintList( bool output )
     size_t      fmt_len;
 
     OutPgm = output;
-    First = TRUE;
+    First = true;
     while( !ScanEOC() ) {
         if( ScanQuote( &fmt_start, &fmt_len ) ) {
             DoFormat( fmt_start, fmt_start + fmt_len );
@@ -947,7 +936,7 @@ static void LogPrintList( void )
     if( _IsOn( SW_CMD_INTERACTIVE ) ) {
         DUIShowLogWindow();
     }
-    DoPrintList( FALSE );
+    DoPrintList( false );
 }
 
 void ChkPrintList( void )
@@ -956,16 +945,16 @@ void ChkPrintList( void )
     const char  *start;
     size_t      len;
 
-    first = TRUE;
+    first = true;
     while( !ScanEOC() ) {
         if( ScanQuote( &start, &len ) )
-            first = TRUE;
+            first = true;
         if( !first && CurrToken == T_COMMA )
             Scan();
         ChkExpr();
         if( CurrToken != T_COMMA )
             ReqEOC();
-        first = FALSE;
+        first = false;
     }
 }
 
@@ -984,7 +973,7 @@ void ProcPrint( void )
         Scan();
         switch( ScanCmd( PrintOps ) ) {
         case 0:
-            DoPrintList( TRUE );
+            DoPrintList( true );
             break;
         case 1:
             GraphicDisplay();
@@ -996,7 +985,7 @@ void ProcPrint( void )
     } else {
         if( ScanEOC() ) {
             DlgNewWithSym( LIT_ENG( New_Expression ), PrintBuff, TXT_LEN );
-            if( PrintBuff[0] != '\0' ) {
+            if( PrintBuff[0] != NULLCHAR ) {
                 old = ReScan( PrintBuff );
                 LogPrintList();
                 ReScan( old );

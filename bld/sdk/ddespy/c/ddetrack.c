@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wddespy.h"
 #include <string.h>
 #include <stdio.h>
@@ -78,10 +79,10 @@ static void makePushWin( DDETrackInfo *info, HWND hwnd, TrackHeaderInfo *hdrinfo
  */
 void SetTrackWndDefault( void )
 {
-    WORD        i;
+    int     i;
 
-    for( i = 0; i < NO_TRK_WND; i++ ) {
-        Tracking[i].visible = FALSE;
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
+        Tracking[i].visible = false;
         Tracking[i].xpos = 0;
         Tracking[i].ypos = i * GetSystemMetrics( SM_CYCAPTION );
         Tracking[i].xsize = GetSystemMetrics( SM_CXSCREEN );
@@ -98,19 +99,19 @@ void SetTrackWndDefault( void )
  */
 void InitTrackWnd( HWND hwnd )
 {
-    UINT        itemid;
+    unsigned    i;
     HMENU       mh;
 
     mh = GetMenu( hwnd );
-    for( itemid = 0; itemid < NO_TRK_WND; itemid++ ) {
-        if( Tracking[itemid].visible ) {
-            ShowWindow( Tracking[itemid].hwnd, SW_SHOWNORMAL );
-            CheckMenuItem( mh, itemid + DDE_TRK_FIRST, MF_BYCOMMAND | MF_CHECKED );
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
+        if( Tracking[i].visible ) {
+            ShowWindow( Tracking[i].hwnd, SW_SHOWNORMAL );
+            CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         } else {
-            ShowWindow( Tracking[itemid].hwnd, SW_HIDE );
-            CheckMenuItem( mh, itemid + DDE_TRK_FIRST, MF_BYCOMMAND | MF_UNCHECKED );
+            ShowWindow( Tracking[i].hwnd, SW_HIDE );
+            CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
         }
-        DDESetStickyState( itemid + DDE_TRK_FIRST, Tracking[itemid].visible );
+        DDESetStickyState( DDE_TRK_FIRST + i, Tracking[i].visible );
     }
 
 } /* InitTrackWnd */
@@ -124,10 +125,10 @@ void InitTrackWnd( HWND hwnd )
 BOOL CreateTrackWnd( void )
 {
     WORD        type;
-    WORD        i;
+    int         i;
 
-    for( i = 0; i < NO_TRK_WND; i++ ) {
-        type = i + DDE_TRK_FIRST;
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
+        type = DDE_TRK_FIRST + i;
         Tracking[i].hwnd = CreateWindow(
             TRACKING_CLASS,             /* Window class name */
             "",                         /* Window caption */
@@ -155,9 +156,9 @@ BOOL CreateTrackWnd( void )
  */
 void FiniTrackWnd( void )
 {
-    WORD        i;
+    int     i;
 
-    for( i = 0; i < NO_TRK_WND; i++ ) {
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
         DestroyWindow( Tracking[i].hwnd );
     }
 
@@ -168,13 +169,13 @@ void FiniTrackWnd( void )
  */
 void SetTrackFont( void )
 {
-    unsigned            i;
+    int                 i;
     DDETrackInfo        *info;
     HFONT               font;
     RECT                area;
 
     font = GetMonoFont();
-    for( i = 0; i < NO_TRK_WND; i++ ) {
+    for( i = 0; i < MAX_DDE_TRK; i++ ) {
         info = (DDETrackInfo *)GET_WNDINFO( Tracking[i].hwnd );
         makePushWin( info, Tracking[i].hwnd, info->hdrinfo, info->hdrcnt );
         GetClientRect( Tracking[i].hwnd, &area );
@@ -545,7 +546,7 @@ void TrackStringMsg( MONHSZSTRUCT *info )
 /*
  * doStrSort - handle a change in the sort type of the string tracking window
  */
-static BOOL doStrSort( WORD type, DDETrackInfo *info )
+static bool doStrSort( WORD type, DDETrackInfo *info )
 {
     switch( type ) {
     case PUSH_STR_HDL:
@@ -555,9 +556,9 @@ static BOOL doStrSort( WORD type, DDETrackInfo *info )
         redispStrTrk( info );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* doStrSort */
 
@@ -673,7 +674,7 @@ static int sortLinkByFormat( const void *lnk1, const void *lnk2 )
  *                 window (if islink is true) or refresh the
  *                 conversation tracking window (otherwise)
  */
-static void redispLinkTrk( DDETrackInfo *info, BOOL islink )
+static void redispLinkTrk( DDETrackInfo *info, bool islink )
 {
     comp_fn     fn;
     unsigned    i;
@@ -822,14 +823,14 @@ void TrackLinkMsg( MONLINKSTRUCT *info )
             *itempos = NULL;
         }
     }
-    redispLinkTrk( listinfo, TRUE );
+    redispLinkTrk( listinfo, true );
 
 } /* TrackLinkMsg */
 
 /*
  * doLinkSort - handle a change in the sort type of the link tracking window
  */
-static BOOL doLinkSort( WORD type, DDETrackInfo *info )
+static bool doLinkSort( WORD type, DDETrackInfo *info )
 {
     switch( type ) {
     case PUSH_CLIENT:
@@ -840,12 +841,12 @@ static BOOL doLinkSort( WORD type, DDETrackInfo *info )
     case PUSH_ITEM:
     case PUSH_FORMAT:
         info->sorttype = type;
-        redispLinkTrk( info, TRUE );
+        redispLinkTrk( info, true );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* doLinkSort */
 
@@ -916,14 +917,14 @@ void TrackConvMsg( MONCONVSTRUCT *info )
             *itempos = NULL;
         }
     }
-    redispLinkTrk( listinfo, FALSE );
+    redispLinkTrk( listinfo, false );
 
 } /* TrackConvMsg */
 
 /*
  * doConvSort - change the sort type for the conversation tracking window
  */
-static BOOL doConvSort( WORD type, DDETrackInfo *info )
+static bool doConvSort( WORD type, DDETrackInfo *info )
 {
     switch( type ) {
     case PUSH_CLIENT:
@@ -931,36 +932,34 @@ static BOOL doConvSort( WORD type, DDETrackInfo *info )
     case PUSH_TOPIC:
     case PUSH_SERVICE:
         info->sorttype = type;
-        redispLinkTrk( info, FALSE );
+        redispLinkTrk( info, false );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* doConvSort */
 
 /*
  * DisplayTracking - toggle a tracking window between displayed and hidden
  */
-void DisplayTracking( UINT itemid )
+void DisplayTracking( unsigned i )
 {
     int         action;
-    WORD        index;
     HMENU       mh;
 
     mh = GetMenu( DDEMainWnd );
-    index = itemid - DDE_TRK_FIRST;
-    Tracking[index].visible = !Tracking[index].visible;
-    if( Tracking[index].visible ) {
-        CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_CHECKED );
+    Tracking[i].visible = !Tracking[i].visible;
+    if( Tracking[i].visible ) {
+        CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_CHECKED );
         action = SW_SHOWNORMAL;
     } else {
-        CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( mh, DDE_TRK_FIRST + i, MF_BYCOMMAND | MF_UNCHECKED );
         action = SW_HIDE;
     }
-    DDESetStickyState( itemid, Tracking[index].visible  );
-    ShowWindow( Tracking[itemid - DDE_TRK_FIRST].hwnd, action );
+    DDESetStickyState( DDE_TRK_FIRST + i, Tracking[i].visible  );
+    ShowWindow( Tracking[i].hwnd, action );
 
 } /* DisplayTracking */
 
@@ -1087,7 +1086,7 @@ LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         }
         break;
     case WM_CLOSE:
-        DisplayTracking( info->type );
+        DisplayTracking( info->type - DDE_TRK_FIRST );
         break;
     case WM_DESTROY:
         ptr = info->data;

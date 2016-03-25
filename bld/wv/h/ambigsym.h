@@ -34,3 +34,5 @@ typedef struct {
     location_context    *lc;
     sym_list            *sym;
 } ambig_info;
+
+extern sym_list *Disambiguate( sym_list *sym, location_context *lc );

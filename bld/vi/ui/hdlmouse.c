@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "mouse.h"
 #include "menu.h"
 #include "win.h"
-#include "source.h"
 
 static bool dragThumb;
 
@@ -43,19 +43,19 @@ static bool dragThumb;
  */
 vi_rc HandleMouseEvent( void )
 {
-    int         win_x, win_y;
-    window_id   wn;
+    windim      win_x, win_y;
+    window_id   wid;
     info        *cinfo;
-    wind        *w;
+    window      *w;
     int         i;
     bool        diff_word;
     vi_rc       rc;
 
-    wn = GetMousePosInfo( &win_x, &win_y );
-    if( wn == NO_WINDOW ) {
+    wid = GetMousePosInfo( &win_x, &win_y );
+    if( BAD_ID( wid ) ) {
         return( ERR_NO_ERR );
     }
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     if( !w->has_border ) {
         win_x += 1;
         win_y += 1;
@@ -65,7 +65,7 @@ vi_rc HandleMouseEvent( void )
         if( LastMouseEvent == MOUSE_RELEASE ) {
             dragThumb = false;
         }
-        if( wn != CurrentWindow ) {
+        if( wid != current_window_id ) {
             return( ERR_NO_ERR );
         }
         if( win_x == w->width - 1 ) {
@@ -76,7 +76,7 @@ vi_rc HandleMouseEvent( void )
 
     if( EditFlags.Dragging ) {
         if( LastMouseEvent == MOUSE_DRAG || LastMouseEvent == MOUSE_REPEAT ) {
-            UpdateDrag( wn, win_x, win_y );
+            UpdateDrag( wid, win_x, win_y );
         } else {
             if( LastMouseEvent == MOUSE_PRESS_R || LastMouseEvent == MOUSE_PRESS ) {
                 EditFlags.Dragging = false;
@@ -88,7 +88,7 @@ vi_rc HandleMouseEvent( void )
     }
 
     if( LastMouseEvent == MOUSE_RELEASE_R || LastMouseEvent == MOUSE_DCLICK ) {
-        if( wn == CurrentWindow && InsideWindow( wn, win_x, win_y ) ) {
+        if( wid == current_window_id && InsideWindow( wid, win_x, win_y ) ) {
             diff_word = (LastMouseEvent == MOUSE_DCLICK);
             if( GoToLineRelCurs( LeftTopPos.line + win_y - 1 ) ) {
                 return( ERR_NO_ERR );
@@ -111,18 +111,18 @@ vi_rc HandleMouseEvent( void )
      * all kinds of stuff to do if the button was pressed
      */
     if( LastMouseEvent == MOUSE_PRESS || LastMouseEvent == MOUSE_PRESS_R ) {
-        if( wn != CurrentWindow ) {
+        if( wid != current_window_id ) {
             /*
              * swap to another window
              */
             for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-                if( wn == cinfo->CurrentWindow ) {
+                if( wid == cinfo->current_window_id ) {
                     BringUpFile( cinfo, true );
                     break;
                 }
             }
         }
-        if( wn == CurrentWindow ) {
+        if( wid == current_window_id ) {
             if( !ShiftDown() ) {
                 UnselectRegion();
             }
@@ -152,7 +152,7 @@ vi_rc HandleMouseEvent( void )
             /*
              * check for locate cursor
              */
-            if( InsideWindow( wn, win_x, win_y ) ) {
+            if( InsideWindow( wid, win_x, win_y ) ) {
                 if( ShiftDown() ) {
                     EditFlags.Dragging = true;
                 }
@@ -170,7 +170,7 @@ vi_rc HandleMouseEvent( void )
                 return( ERR_NO_ERR );
             }
         }
-        if( EditFlags.Menus && wn == MenuWindow ) {
+        if( EditFlags.Menus && wid == menu_window_id ) {
             i = GetMenuIdFromCoord( win_x - 1 );
             if( i >= 0 ) {
                 return( SetToMenuId( i ) );
@@ -181,7 +181,7 @@ vi_rc HandleMouseEvent( void )
     /*
      * allow double click to close window
      */
-    if( wn == CurrentWindow && LastMouseEvent == MOUSE_DCLICK ) {
+    if( wid == current_window_id && LastMouseEvent == MOUSE_DCLICK ) {
         if( win_y == 0 && win_x == 0 ) {
             return( NextFile() );
         }
@@ -192,7 +192,7 @@ vi_rc HandleMouseEvent( void )
      */
     if( (LastMouseEvent == MOUSE_REPEAT || LastMouseEvent == MOUSE_DCLICK ||
          LastMouseEvent == MOUSE_PRESS) && w->has_border &&
-        wn == CurrentWindow && win_x == w->width - 1 ) {
+        wid == current_window_id && win_x == w->width - 1 ) {
         if( win_y == w->height - 2 ) {
             return( MoveScreenDown() );
         }
@@ -225,11 +225,11 @@ vi_rc HandleMouseEvent( void )
     /*
      * start dragging
      */
-    if( wn == CurrentWindow && (LastMouseEvent == MOUSE_DRAG ||
+    if( wid == current_window_id && (LastMouseEvent == MOUSE_DRAG ||
                                 LastMouseEvent == MOUSE_DRAG_R ) &&
-        InsideWindow( wn, win_x, win_y ) ) {
+        InsideWindow( wid, win_x, win_y ) ) {
         EditFlags.Dragging = true;
-        UpdateDrag( wn, win_x, win_y );
+        UpdateDrag( wid, win_x, win_y );
     }
 
     return( ERR_NO_ERR );

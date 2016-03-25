@@ -44,22 +44,23 @@ include struct.inc
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<>     long double math library
-;<>
-;<>     inputs: EAX - pointer to long double (op1)
-;<>             EDX - pointer to long double (op2)
-;<>             EBX - pointer to long double (result)
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
         xdefp   __FLDA          ; add real*10 to real*10
         xdefp   __FLDAC         ; add real*10 to real*10 (opnd 2 on stack)
         xdefp   __FLDS          ; subtract real*10 from real*10
         xdefp   ___LDA          ; long double add routine
 
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;       long double math library
+;  
+;       input:  EAX - pointer to long double (op1)
+;               EDX - pointer to long double (op2)
+;               EBX - pointer to long double (result)
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
         defp    __FLDS
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -78,9 +79,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret                     ; return
+
         endproc __FLDS
 
+
         defp    __FLDA
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -99,9 +103,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret                     ; return
+
         endproc __FLDA
 
+
         defp    __FLDAC
+
         push    ESI             ; save ESI
         push    ECX             ; save ECX
         push    EBX             ; save EBX
@@ -120,10 +127,12 @@ endif
         pop     ECX             ; restore ECX
         pop     ESI             ; restore ESI
         ret     12              ; return and clean up stack
+
         endproc __FLDAC
 
 
         defp    ___LDS
+
         push    EDI             ; save EDI
         mov     EDI,80000000h   ; indicate subtract
         jmp     __add           ; do the add
@@ -204,9 +213,12 @@ addnan2:mov     EDX,ECX         ; return op2
         shr     ESI,16          ; shift exponent to bottom
         pop     EDI             ; restore EDI
         ret                     ; return
+
         endproc ___LDS
 
+
         defp    ___LDA
+
         push    EDI             ; save EDI
         sub     EDI,EDI         ; indicate add
 __add:  add     SI,1            ; add 1 to exponent
@@ -286,7 +298,7 @@ ret_op:
             ret                 ; - - return
           _endif                ; - endif
         _endif                  ; endif
-        mov     CH,0            ; zero extend op2
+        xor     CH,CH           ; zero extend op2
         or      ECX,ECX         ; get bit 0 of sign word - value is 0 if
                                 ; both operands have same sign, 1 if not
         _if     s               ; if signs are different
@@ -340,7 +352,7 @@ ret_op:
           neg   EDX             ; - negate the fraction
           neg   EAX             ; - ...
           sbb   EDX,0           ; - ...
-          mov   CH,0            ; - zero top bits
+          xor   CH,CH           ; - zero top bits
           xor   EBP,80000000h   ; - flip the sign
         _endif                  ; endif
         mov     EBX,EAX         ; get result
@@ -401,6 +413,7 @@ add_oflow:                      ; handle overflow
         mov     EDX,80000000h   ; ...
         jmp     short _addret   ; return
 ;;      jmp     F8OverFlow      ; handle overflow
+
         endproc ___LDA
 
 

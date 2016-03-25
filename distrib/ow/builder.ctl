@@ -20,11 +20,7 @@ echo Installer Build: <1> <2> <3> <4> <5>
     # it is dedicated for missing help files which are not
     # buildable on each host platform
     #########################################################
-    langdat c
-    mkinf -x -i../include c filelist <OWRELROOT>
-    langdat f77
-    mkinf -x -i../include f77 filelist <OWRELROOT>
-    rm -rf filelist
+    wmake -h -f master.mif missing=1
 
 [ BLOCK <1> clean ]
 #==================

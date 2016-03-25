@@ -86,6 +86,7 @@ static unsigned scanHyperLink( char *line, TokenType *type,
         *type = TK_PLAIN_LINK;
         endchar = '>';
     }
+    hfname = NULL;
     ++cur;
     topic = cur;
     for( ;; ) {

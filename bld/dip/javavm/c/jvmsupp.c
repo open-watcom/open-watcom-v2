@@ -56,12 +56,12 @@ void LocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
-    unsigned            num;
+    byte                num;
     unsigned long       bits;
 
     bits = sbits;
     if( sbits < 0 ) {
-        bits = -bits;
+        bits = -sbits;
         add = (bits + 7) / 8;
         if( ll->e[0].type == LT_ADDR ) {
             ll->e[0].u.addr.mach.offset -= add;
@@ -96,18 +96,17 @@ void LocationAdd( location_list *ll, long sbits )
 
 void LocationTrunc( location_list *ll, unsigned bits )
 {
-    unsigned    i;
+    byte    i;
 
-    if( bits == 0 ) return;
-    i = 0;
-    for( ;; ) {
-        if( i >= ll->num ) return;
-        if( ll->e[i].bit_length == 0 ) break;
-        if( ll->e[i].bit_length > bits ) break;
-        bits -= ll->e[i].bit_length;
-        ++i;
+    if( bits != 0 ) {
+        for( i = 0; i < ll->num; ++i ) {
+            if( ll->e[i].bit_length == 0 || ll->e[i].bit_length > bits ) {
+                ll->e[i].bit_length = (word)bits;
+                break;
+            }
+            bits -= ll->e[i].bit_length;
+        }
     }
-    ll->e[i].bit_length = bits;
 }
 
 dip_status GetData( ji_ptr off, void *p, unsigned len )
@@ -253,7 +252,7 @@ dip_status      GetAddrCue( struct mad_jvm_findaddrcue_acc *acc, struct mad_jvm_
     return( DCAssignLocation( &dst, &src, sizeof( *ret ) ) );
 }
 
-unsigned NameCopy( char *buff, const char *src, unsigned buff_size, unsigned len )
+size_t NameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 {
     if( buff_size > 0 ) {
         --buff_size;

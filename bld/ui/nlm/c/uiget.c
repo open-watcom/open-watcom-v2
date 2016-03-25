@@ -40,8 +40,8 @@
 // be very careful about setting this true
 static bool EnterForever = FALSE;
 
-void UIAPI uiflush()
-/*******************/
+void UIAPI uiflush( void )
+/************************/
 {
     uiflushevent();
     flushkey();

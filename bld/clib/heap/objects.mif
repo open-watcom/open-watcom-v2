@@ -76,6 +76,10 @@
 axp_ac_opts=
 mem_opts = -ol+t $($(processor)_ac_opts)
 
+grownear_opts = -I"$(win386_dir)/h"
+nheapmin_opts = -I"$(win386_dir)/h"
+sbrk386_opts = -I"$(win386_dir)/h"
+
 # WORKAROUND! The heap code contains a very suspect far pointer truncation,
 # but the code can't be modified without fully understanding it
 nheapchk_postopts = -wcd310

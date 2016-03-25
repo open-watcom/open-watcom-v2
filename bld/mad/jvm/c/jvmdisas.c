@@ -64,14 +64,15 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
 
     addr = dd->addr;
     addr.mach.offset += off;
-    if( MCReadMem( addr, size, data ) == 0 ) return( DR_FAIL );
+    if( MCReadMem( addr, size, data ) == 0 )
+        return( DR_FAIL );
     //NYI: this may break in future virgins of Java
     // (maybe turn on a QUICK bit in the disassembler flags?)
 #define opc_invokevirtual_q    203
@@ -103,7 +104,7 @@ dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
     return( DR_OK );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -119,7 +120,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, un
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value ) ), &mti );
         MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_size );
         break;
     }
@@ -185,7 +186,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, unsigned buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -335,7 +336,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 /*
         Given a string, convert that to an address to be examined.
 */
-mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a)
+mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a)
 {
     //NYI:
     return( MS_FAIL );

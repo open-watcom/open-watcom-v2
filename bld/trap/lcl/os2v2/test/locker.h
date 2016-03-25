@@ -31,7 +31,7 @@
 
 
 extern VOID AbortLocker(HWND hwndFrame,HWND hwndClient);
-
+#if 0
 #define MSGBOXID    1001
 
 #define ID_WINDOW   256
@@ -42,3 +42,4 @@ extern VOID AbortLocker(HWND hwndFrame,HWND hwndClient);
 #define ID_SWITCH   260
 
 #define ID_EXITPROG 261
+#endif

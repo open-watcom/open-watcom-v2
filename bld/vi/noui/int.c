@@ -29,6 +29,10 @@
 *
 ****************************************************************************/
 
+
+#include "vi.h"
+#include "win.h"
+
 void SetInterrupts( void ) {}
 void RestoreInterrupts( void ) {}
 

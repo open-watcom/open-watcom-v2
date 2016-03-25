@@ -1,6 +1,6 @@
 plustest_name = ehmix
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef __OS2__
 check_file = os2386.chk

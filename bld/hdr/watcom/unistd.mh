@@ -77,6 +77,7 @@
 #define _SC_PHYS_PAGES       14
 #define _SC_AVPHYS_PAGES     15
 #define _SC_REALTIME_SIGNALS 16
+#define _SC_SOMAXCONN        17
 /* Execution-time Symbolic Constants for Portability Specifications */
 
 #define _POSIX_CHOWN_RESTRICTED 0       /* restricted use of chown() */
@@ -105,10 +106,6 @@
  *  POSIX 1003.1 Prototypes
  */
 
-:include extunix.sp
-_WCRTLINK extern void   _exit( int __status );
-:include extepi.sp
-
 _WCRTLINK extern int    access( const char *__path, int __mode );
 :segment QNX
 #if defined(__386__)
@@ -118,7 +115,6 @@ _WCRTLINK extern void   _WCNEAR *sbrk(int incr);
 :segment QNX
 #endif
 :endsegment
-_WCRTLINK extern pid_t  clone( int __flags, void *__child_stack );
 _WCRTLINK extern int    close( int __fildes );
 _WCRTLINK extern int    dup( int __fildes );
 :include ext.sp
@@ -247,8 +243,11 @@ extern ssize_t __far_write(int __fildes,void __far *__buffer,size_t __len);
 
 :endsegment
 :endsegment
+
 _WCRTLINK extern int    chdir( const char *__path );
 /* the following are also in process.h, but they are expected to be here */
+:include _exit.sp
+
 _WCRTLINK extern int    execl( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int    execle( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int    execlp( const char *__file, const char *__arg0, ... );

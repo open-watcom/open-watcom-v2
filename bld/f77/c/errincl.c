@@ -32,36 +32,35 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 
-char __FAR *            __FAR *PGroupTable = GroupTable;
-char                    __FAR *PErrWord = ErrWord;
+const unsigned char __FAR * const __FAR *PGroupTable = GroupTable;
+const char          __FAR *PErrWord = ErrWord;
 
 #define CARET_SHIFT  6
 #define LENGTH_MASK  (1 << CARET_SHIFT) - 1
 
 
-static  char    __FAR *GetMsg( unsigned int err ) {
+static const unsigned char  __FAR *GetMsg( unsigned int err )
 // Get pointer to message.
-    unsigned int    num;
-    char            __FAR *msg;
+{
+    unsigned int        num;
+    const unsigned char __FAR *msg;
 
-    msg = PGroupTable[ err / 256 ];
-    num = err % 256;
-    while( num != 0 ) {
+    msg = PGroupTable[err / 256];
+    for( num = err % 256; num != 0; --num ) {
         msg += ( *msg & LENGTH_MASK ) + 1;
-        --num;
     }
     return( msg );
 }
 
 
-static  char    __FAR *GetWord( unsigned int index ) {
+static const char   __FAR *GetWord( unsigned int index )
 // Get pointer to word.
-    char        __FAR *word;
+{
+    const char      __FAR *word;
 
     word = PErrWord;
-    while( index != 0 ) {
-        word += *word + 1;
-        --index;
+    while( index-- > 0 ) {
+        word += *(unsigned char __FAR *)word + 1;
     }
     return( word );
 }
@@ -69,8 +68,8 @@ static  char    __FAR *GetWord( unsigned int index ) {
 
 static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
 // Build error message.
-    char                __FAR *char_ptr;
-    char                __FAR  *phrase_ptr;
+    const char          __FAR *char_ptr;
+    const unsigned char __FAR *phrase_ptr;
     char                *buff_start;
     unsigned int        word_count;
     unsigned int        index;
@@ -83,7 +82,7 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
     buff_start = buffer;
     *buffer = ' ';
     buffer++;
-    for(;;) {
+    for( ;; ) {
         index = 0;
         do {
             len = *phrase_ptr;
@@ -92,9 +91,9 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
             --word_count;
         } while( len == 255 );
         char_ptr = GetWord( index );
-        len = *char_ptr;
+        len = *(const char __FAR *)char_ptr;
         char_ptr++;
-        for(;;) {
+        for( ;; ) {
             chr = *char_ptr;
             char_ptr++;
             if( --len < 0 ) break;

@@ -33,7 +33,6 @@
 #include "vi.h"
 #include "mouse.h"
 #include "win.h"
-#include "source.h"
 #ifdef __WIN__
 #include "font.h"
 #include "utils.h"
@@ -208,18 +207,18 @@ void UnselectRegion( void )
 /*
  * UpdateDrag - update selected region
  */
-void UpdateDrag( window_id id, int win_x, int win_y )
+void UpdateDrag( window_id wid, int win_x, int win_y )
 {
     int         nx, ny, height;
     int         moveCursor;
 
     SelRgn.selected = true;
     moveCursor = 0;
-    height = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    height = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
 #ifdef __WIN__
-    if( id == CurrentWindow && InsideWindow( id, MouseX, MouseY ) ) {
+    if( wid == current_window_id && InsideWindow( wid, MouseX, MouseY ) ) {
 #else
-    if( id == CurrentWindow && InsideWindow( id, win_x, win_y ) ) {
+    if( wid == current_window_id && InsideWindow( wid, win_x, win_y ) ) {
 #endif
         ny = LeftTopPos.line + win_y - 1;
         if( ny > CurrentFile->fcbs.tail->end_line ) {
@@ -234,21 +233,11 @@ void UpdateDrag( window_id id, int win_x, int win_y )
         nx = RealColumnOnCurrentLine( win_x );
         GoToColumnOnCurrentLine( nx );
     } else {
-#ifndef __WIN__
-        if( MouseRow >= WindowAuxInfo( CurrentWindow, WIND_INFO_Y2 ) ) {
-            GoToLineRelCurs( LeftTopPos.line + height );
-        } else if( MouseRow <= WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) ) {
-            GoToLineRelCurs( LeftTopPos.line - 1 );
-        } else if( MouseCol <= WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) ) {
-            GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
-        } else if( MouseCol >= WindowAuxInfo( CurrentWindow, WIND_INFO_X2 ) ) {
-            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ));
-        }
-#else
+#ifdef __WIN__
         {
             RECT            rect;
 
-            GetClientRect( CurrentWindow, &rect );
+            GetClientRect( current_window_id, &rect );
             if( MouseY > rect.bottom ) {
                 ny = LeftTopPos.line + height;
                 if( ny > CurrentFile->fcbs.tail->end_line ) {
@@ -268,12 +257,22 @@ void UpdateDrag( window_id id, int win_x, int win_y )
             } else if( MouseX > rect.right ) {
                 if( EditFlags.Modeless ) {
                     GoToColumnOnCurrentLine( 1 + LeftTopPos.column +
-                        WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS ) );
+                        WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
                 } else {
                     GoToColumnOnCurrentLine( LeftTopPos.column +
-                        WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS ) );
+                        WindowAuxInfo( current_window_id, WIND_INFO_TEXT_COLS ) );
                 }
             }
+        }
+#else
+        if( MouseRow >= WindowAuxInfo( current_window_id, WIND_INFO_Y2 ) ) {
+            GoToLineRelCurs( LeftTopPos.line + height );
+        } else if( MouseRow <= WindowAuxInfo( current_window_id, WIND_INFO_Y1 ) ) {
+            GoToLineRelCurs( LeftTopPos.line - 1 );
+        } else if( MouseCol <= WindowAuxInfo( current_window_id, WIND_INFO_X1 ) ) {
+            GoToColumnOnCurrentLine( LeftTopPos.column - 1 );
+        } else if( MouseCol >= WindowAuxInfo( current_window_id, WIND_INFO_X2 ) ) {
+            GoToColumnOnCurrentLine( LeftTopPos.column + WindowAuxInfo( current_window_id, WIND_INFO_WIDTH ));
         }
 #endif
     }
@@ -359,7 +358,7 @@ vi_rc ReselectRegion( void )
 /*
  * startSelectedRegion - start selection region area from keyboard
  */
-vi_rc startSelectedRegion( bool line_based )
+static vi_rc startSelectedRegion( bool line_based )
 {
     if( ShiftDown() && SelRgn.selected ) {
         EditFlags.Dragging = true;

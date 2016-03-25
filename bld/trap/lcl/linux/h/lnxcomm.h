@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <sys/stat.h>
 #include "machtype.h"
+#include "exeelf.h"
 
 //#define DEBUG_OUT
 
@@ -325,6 +326,7 @@ extern int          DelOneLib( struct link_map * );
 extern void         AddProcess( void );
 extern void         DelProcess( void );
 extern void         print_msg( const char *format, ... );
+extern char         *StrCopy( const char *src, char *dst );
 
 /* Utility functions shared with execution sampler */
 extern unsigned     ReadMem( pid_t pid, void *ptr, addr_off offv, unsigned size );
@@ -332,7 +334,7 @@ extern unsigned     WriteMem( pid_t pid, void *ptr, addr_off offv, unsigned size
 extern Elf32_Dyn    *GetDebuggeeDynSection( const char *exe_name );
 extern int          Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struct r_debug **dbg_rdebug_ptr );
 extern char         *dbg_strcpy( pid_t pid, char *, const char * );
-extern int          SplitParms( char *p, char *args[], unsigned len );
+extern int          SplitParms( char *p, const char **args, unsigned len );
 
 /* Copy of parent's environment */
 extern char     **dbg_environ;

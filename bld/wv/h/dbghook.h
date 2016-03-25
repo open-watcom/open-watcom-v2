@@ -38,4 +38,9 @@ typedef enum {
     HOOK_NUM,
 } hook_type;
 
-extern void             HookNotify( bool, hook_type );
+extern void InitHook( void );
+extern void FiniHook( void );
+extern void ProcHook( void );
+extern void ConfigHook( void );
+extern void HookNotify( bool immediate, hook_type hook );
+extern bool HookPendingPush( void );

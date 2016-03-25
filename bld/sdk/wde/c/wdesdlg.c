@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,7 +268,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
     LIST            *dlist;
     WdeResDlgItem   *ditem;
     WResID          *id;
-    LRESULT         index;
+    int             index;
     int             count;
 
     if( win == NULL ) {
@@ -302,7 +303,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         }
 
         /* add the name to the list box */
-        index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
+        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
         WRMemFree( name );
@@ -642,7 +643,7 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
 
     case WM_INITDIALOG:
         si = (WdeDialogSelectInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)si );
+        SET_DLGDATA( hDlg, si );
         if( !WdeSetSelectInfo( hDlg, si ) ) {
             EndDialog( hDlg, FALSE );
         }

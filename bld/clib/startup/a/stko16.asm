@@ -99,6 +99,8 @@ __STKOVERFLOW:
         mov     ax, offset DGROUP:msg
         mov     bx, 01h                 ; return error
         call    __fatal_runtime_error   ; arrrggg....
+        ; never return
         endproc __STK
+
         endmod
         end

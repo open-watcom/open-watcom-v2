@@ -56,10 +56,13 @@ int FileSysNeedsCR( int handle )
     struct _psinfo      ps_info;
     pid_t               dos_pid;
 
-    if( qnx_fd_query( 0, 0, handle, &fd_info ) != handle ) return( 0 );
+    if( qnx_fd_query( 0, 0, handle, &fd_info ) != handle )
+        return( 0 );
     dos_pid = qnx_name_locate( fd_info.nid, "qnx/dosfsys", 0, NULL );
-    if( dos_pid == -1 ) return( 0 );
-    if( qnx_psinfo( PROC_PID, dos_pid, &ps_info, 0, NULL ) != dos_pid ) return( 0 );
+    if( dos_pid == -1 )
+        return( 0 );
+    if( qnx_psinfo( PROC_PID, dos_pid, &ps_info, 0, NULL ) != dos_pid )
+        return( 0 );
     if( ps_info.flags & _PPF_VID ) {
         qnx_vc_detach( dos_pid );
         dos_pid =  ps_info.un.vproc.remote_pid;
@@ -71,10 +74,10 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory - save the current directory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     GetCWD2( oldPath, _MAX_PATH );
 
 } /* PushDirectory */
@@ -84,7 +87,7 @@ void PushDirectory( char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     ChangeDirectory( CurrentDirectory );
@@ -94,18 +97,18 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
-    int base,nbase;
+    unsigned char   base,nbase;
 
-    id = id;
+    wid = wid;
     if( EditFlags.Monocolor ) {
         base = 14;
     } else {
         base = 16;
     }
-    nbase = (base*(int)(100-ct.height))/100;
-    BIOSNewCursor( (char) nbase, base-1 );
+    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
+    BIOSNewCursor( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -248,7 +251,7 @@ void TurnOffCapsLock( void )
 drive_type DoGetDriveType( int drv )
 {
     drv = drv;
-    return( DRIVE_NONE );
+    return( DRIVE_TYPE_NONE );
 
 } /* DoGetDriveType */
 

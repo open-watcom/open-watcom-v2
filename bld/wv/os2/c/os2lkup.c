@@ -32,25 +32,27 @@
 
 #include "dbgdefn.h"
 #include <stddef.h>
-
 #define INCL_DOSMISC
 #include "os2.h"
+#include "envlkup.h"
 
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  __far *env;
-    unsigned    len;
-    int         output = 0;
+    size_t      len;
+    bool        output;
     char        c;
 
-    if( DosScanEnv( name, &env ) != 0 )
+    if( DosScanEnv( (char *)name, (char __far * __far *)&env ) != 0 )
         return( 0 );
+
+    output = false;
     if( buff_len != 0 && buff != NULL ) {
         --buff_len;
-        output = 1;
+        output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -59,7 +61,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
 }

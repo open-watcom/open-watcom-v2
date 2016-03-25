@@ -1,4 +1,4 @@
-sw_c_common = -we-w8-zl-x-xx-zam-D__RT__
+sw_c_common = -we-w8-zl-x-xx-zam-j-D__RT__
 #sw_c_common = -wx-w8 -wce=307 -wce=308 -wce=309 -zl-x-xx-zam-D__RT__
 sw_a_common = -we
 !ifdef __UNIX__
@@ -208,9 +208,7 @@ bt_msdos      =-bt=dos -D__WATCOM_LFN__
 bt_netware    =-bt=netware
 bt_os2        =-bt=os2
 bt_qnx        =-bt=qnx
-bt_windows_086=
-bt_windows_386=-D__WIN386__
-bt_windows    =$(bt_windows_$(processor)) -bt=windows -DSTRICT
+bt_windows    =-bt=windows -DSTRICT
 bt_winnt      =-bt=nt
 bt_linux      =-bt=linux
 

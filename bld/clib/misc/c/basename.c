@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <libgen.h>
+#include "bool.h"
+#include "pathmac.h"
 
 
 /* Since we may need to delete trailing path separators, the pathname
@@ -42,21 +44,11 @@
  */
 static char     path_buf[FILENAME_MAX];
 
-static int  is_path_sep( const char c )
+static bool is_final_sep_seq( const char *p )
 {
-#ifdef __UNIX__
-    return( c == '/' );
-#else
-    return( c == '/' || c == '\\' );
-#endif
-}
-
-static int  is_final_sep_seq( const char *p )
-{
-    while( *p && is_path_sep( *p ) )
+    while( *p != NULLCHAR && IS_DIR_SEP( *p ) )
         ++p;
-
-    return( !*p );
+    return( *p == NULLCHAR );
 }
 
 /* Note: This would lend itself to regular expressions. Assuming '/' as
@@ -69,9 +61,9 @@ _WCRTLINK char *basename( char *path )
 {
     char    *last_part = path_buf;
 
-    if( path == NULL || *path == '\0' ) {
+    if( path == NULL || *path == NULLCHAR ) {
         path_buf[0] = '.';
-        path_buf[1] = '\0';
+        path_buf[1] = NULLCHAR;
     } else {
         char    *s = path_buf;
 
@@ -80,16 +72,20 @@ _WCRTLINK char *basename( char *path )
             /* If entire path consists of path separators, return
              * a string consisting of just one.
              */
-            path_buf[1] = '\0';
+            path_buf[1] = NULLCHAR;
         } else {
-            while( *s ) {
-                if( is_path_sep( *s++ ) )
+            char    c;
+
+            while( (c = *s++) != NULLCHAR ) {
+                if( IS_DIR_SEP( c ) ) {
                     last_part = s;
+                }
                 /* If the rest of the path is a sequence of path separators,
                  * delete them by inserting a null terminator.
                  */
-                if( is_final_sep_seq( s ) )
-                    *s = '\0';
+                if( is_final_sep_seq( s ) ) {
+                    *s = NULLCHAR;
+                }
             }
         }
     }

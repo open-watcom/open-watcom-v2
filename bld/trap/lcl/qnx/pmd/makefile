@@ -5,9 +5,10 @@
 host_cpu = 386
 host_os  = qnx
 
-os      = qnx
+target_cpu = x86
+target_os  = qnx
+
 srv     = lcl
-cpu     = x86
 name    = pmd
 which = TRAP
 

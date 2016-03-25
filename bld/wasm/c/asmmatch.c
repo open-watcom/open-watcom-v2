@@ -33,18 +33,12 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "asmfixup.h"
-#include "fppatch.h"
 #if defined( _STANDALONE_ )
   #include "directiv.h"
 #endif
 
 
 #define USE_FPU_EMUL    ((floating_point==DO_FP_EMULATION)&&(!rCode->use32)&&(ins->cpu & P_FPU_MASK)!=P_NO87)
-
-#if defined( _STANDALONE_ )
-extern void     AddLinnumDataRef( void );
-#endif
-extern bool     AddFPPatchAndFixups( fp_patches patch );
 
 enum fpe        floating_point = DO_FP_EMULATION;
 

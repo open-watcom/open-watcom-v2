@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +55,9 @@ typedef char __far *va_list[1];
 #include "watcom.h"
 #include "tinyio.h"
 #include "wdebug.h"
-#include "dpmi.h"
-#include "windpmi.h"
+#include "_windpmi.h"
 #include "wininit.h"
+#include "windata.h"
 
 // define FLAT to 1 to get flat address space for entire memory
 #define FLAT    1
@@ -77,7 +78,7 @@ struct  fpu_area {
     unsigned long       data_operand_offset;
     unsigned short      operand_selector;
     unsigned short      unused5;
-    unsigned short      fpregs[5*8];
+    unsigned short      fpregs[5 * 8];
 };
 
 
@@ -104,11 +105,11 @@ struct wstart_vars {
     addr_48     _DLLEntryAddr;
     addr_48     _WEPAddr;
     void        (FAR *_16BitCallBackAddr)();
-    addr_48     gluertns[5];
+    addr_48     gluertns[9];
 };
 #include "poppck.h"
 
-extern DWORD __far deadbeef;
+extern DWORD    __far deadbeef;
 extern WORD     InDebugger;
 extern WORD     _A000H;
 extern WORD     _B000H;
@@ -117,31 +118,11 @@ extern WORD     _C000H;
 extern WORD     _D000H;
 extern WORD     _E000H;
 extern WORD     _F000H;
-extern WORD     DataSelector;
-extern WORD     StackSelector;
-extern DWORD    DataHandle;
-extern DWORD    CodeSelectorBase;
-extern DWORD    DataSelectorBase;
-extern WORD     MyDataSelector;
-extern DWORD    BaseAddr;
-extern DWORD    CodeLoadAddr;
-extern addr_48  CodeEntry;
-extern addr_48  _32BitCallBackAddr;
-extern DWORD    _DLLEntryAddr;
-extern DWORD    _WEPAddr;
-extern DWORD    ReturnCode;
-extern DWORD    SaveSP;
-extern DWORD    StackSize;
-extern DWORD    EDataAddr;              // end of loaded code+data
 extern BYTE     _no87;
-extern WORD     DPL,Has87,HasWGod;
 
 extern void     FAR __CallBack( void );
-void GetDataSelectorInfo( void );
-WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len );
-void CodeRelocate( DWORD __far *reloc, WORD cnt );
 
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
+static void     CodeRelocate( DWORD __far *reloc, WORD cnt );
 
 static char     outOfSelectors[] = "Out of selectors";
 
@@ -188,7 +169,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     DWORD               file_header_size;
     BOOL                tried_global_compact;
     DWORD               save_maxmem;
-    DWORD               adata[2];
+    dpmi_mem_block      adata;
 
     flags = GetWinFlags();
     /*
@@ -293,9 +274,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
     tried_global_compact = FALSE;
     save_maxmem = maxmem;
-    for(;;) {
-        i = DPMIGet32( adata, maxmem );
-        if( i != 5 )  break;
+    while( (i = _DPMIGet32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
             if( tried_global_compact ) {
                 return( Fini( 3,
@@ -319,8 +298,8 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
             }
         }
     }
-    DataHandle = adata[1];
-    BaseAddr   = adata[0] + 0x10000ul;
+    DataHandle = adata.handle;
+    BaseAddr   = adata.linear + 0x10000ul;
 #if FLAT
     i = InitFlatAddrSpace( BaseAddr, 0L );
 #else
@@ -350,14 +329,14 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
     currsize = size - file_header_size;
     _TinySeek( handle, exelen + file_header_size, TIO_SEEK_START );
-    i = DPMIGetAliases( CodeLoadAddr, (LPDWORD) &aliasptr, 0 );
+    i = _DPMIGetAliases( CodeLoadAddr, (LPDWORD)&aliasptr, 0 );
     if( i ) {
         return( Fini( 3,(char _FAR *)"Error ",
                 dwordToStr( i ),
                 (char _FAR *)" getting alias for read" ) );
     }
     dataptr = aliasptr;
-    sel = ((DWORD) dataptr) >> 16;
+    sel = ((DWORD)dataptr) >> 16;
     curroff = CodeLoadAddr;
     while( currsize != 0 ) {
 
@@ -470,7 +449,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
         dataptr->gluertns[j].seg =  (WORD) FP_SEG( Glue[j].rtn );
         dataptr->gluertns[j].off = (DWORD) FP_OFF( Glue[j].rtn );
     }
-    DPMIFreeAlias( sel );
+    _DPMIFreeAlias( sel );
 
     /*
      * check for FPU and WGod
@@ -516,7 +495,7 @@ extern void RelocateWORD( short, long, short );
 /*
  * CodeRelocate - relocate a given chunk of code
  */
-void CodeRelocate( DWORD __far *reloc, WORD cnt )
+static void CodeRelocate( DWORD __far *reloc, WORD cnt )
 {
     WORD        i;
     DWORD       tmp;
@@ -545,7 +524,7 @@ void Cleanup( void )
     FreeDPMIMemBlocks();
 
     if( DataSelector != 0 ) {
-        DPMIFree32( DataHandle );
+        _DPMIFree32( DataHandle );
     }
 
     /*

@@ -49,8 +49,8 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
     /*
      * copy data into buffer and create fcbs
      */
-    j = boff = 0;
-    while( j < maxlist ) {
+    boff = 0;
+    for( j = 0; j < maxlist; ++j ) {
         strcpy( dd, list[j] );
         if( makelower ) {
             FileLower( dd );
@@ -70,7 +70,6 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
         ReadBuffer[boff + k + indent] = CR;
         ReadBuffer[boff + k + indent + 1] = LF;
         boff += k + indent + 2;
-        j++;
     }
 
     CreateFcbData( *cfile, boff );
@@ -110,7 +109,7 @@ vi_rc SelectItem( selectitem *si )
     if( rc == ERR_NO_ERR ) {
         if( sfd.sl == -1 || sfd.sl == 0 ) {
             if( si->result != NULL ) {
-                si->result[0] = 0;
+                si->result[0] = '\0';
             }
             si->num = -1;
         } else {
@@ -137,7 +136,7 @@ vi_rc SelectItem( selectitem *si )
  * SelectItemAndValue - select item from list and give it a value
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
-                        int maxlist, vi_rc (*updatertn)( char *, char *, int * ),
+                        int maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
                         int indent, char **vals, int valoff )
 {
 //    int                 j;

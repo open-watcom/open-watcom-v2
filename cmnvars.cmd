@@ -17,6 +17,9 @@ set OWDEFWATCOM=%WATCOM%
 set OWDEFBEGINLIBPATH=%BEGINLIBPATH%
 :defpath_set
 
+REM Subdirectory to be used for building OW build tools
+set OWOBJDIR=binbuild
+
 REM Subdirectory to be used for build binaries
 set OWBINDIR=%OWROOT%\build\bin
 

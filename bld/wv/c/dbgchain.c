@@ -41,16 +41,16 @@
 #include "mad.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgreg.h"
+#include "addarith.h"
 
 
 extern address          FindLclBlock( address addr );
-extern int              AddrComp(address ,address );
-extern void             GoToAddr( address addr );
 extern bool             DlgBreak(address);
-extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup(address);
-extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos( void );
 
 #define MODEST_CALL_LEVEL       20
 #define MODEST_INCREMENT        10
@@ -70,10 +70,10 @@ static void FreeChainInfo( traceback *curr, int start, int end )
     int         i;
 
     for( i = start; i < end; ++i ) {
-        DbgFree( curr->chain[ i ].source_line );
-        DbgFree( curr->chain[ i ].symbol );
-        curr->chain[ i ].source_line = NULL;
-        curr->chain[ i ].symbol = NULL;
+        DbgFree( curr->chain[i].source_line );
+        DbgFree( curr->chain[i].symbol );
+        curr->chain[i].source_line = NULL;
+        curr->chain[i].symbol = NULL;
     }
 }
 
@@ -84,15 +84,15 @@ static bool ReAllocChain( traceback *curr, int new_size )
     call_chain  *chain;
 
     chain = curr->chain;
-    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( FALSE );
+    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( false );
     new_chain = DbgAlloc( new_size * sizeof(call_chain) );
-    if( new_chain == NULL ) return( FALSE );
+    if( new_chain == NULL ) return( false );
     memset( new_chain, 0, new_size*sizeof( call_chain ) );
     memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
     DbgFree( chain );
     curr->chain = new_chain;
     curr->allocated_size = new_size;
-    return( TRUE );
+    return( true );
 }
 
 static bool EarlyOut( cached_traceback *tb, address execution, address frame )
@@ -106,30 +106,32 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
     curr = tb->curr;
     prev = tb->prev;
     for( i = 0; i < prev->total_depth; ++i ) {
-        chain = &prev->chain[ i ];
-        if( AddrComp( chain->lc.execution, execution ) != 0 ) continue;
-        if( AddrComp( chain->lc.frame, frame ) != 0 ) continue;
+        chain = &prev->chain[i];
+        if( AddrComp( chain->lc.execution, execution ) != 0 )
+            continue;
+        if( AddrComp( chain->lc.frame, frame ) != 0 )
+            continue;
         new_size = curr->current_depth + prev->total_depth - i;
         if( new_size > curr->allocated_size ) {
-            if( !ReAllocChain( curr, new_size ) ) return( FALSE );
+            if( !ReAllocChain( curr, new_size ) ) {
+                return( false );
+            }
         }
         curr->clean_size = prev->total_depth - i;
-        memcpy( &curr->chain[ curr->current_depth ], chain,
+        memcpy( &curr->chain[curr->current_depth], chain,
                 curr->clean_size * sizeof( call_chain ) );
         curr->current_depth = new_size;
-        while( i < prev->total_depth ) {
+        for( ; i < prev->total_depth; ++i ) {
             chain->source_line = NULL; // since we copied the ptr
             chain->symbol = NULL; // since we copied the ptr
             ++chain;
-            ++i;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
-static CALL_CHAIN_RTN RecordTraceBackInfo;
 static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 {
     address     prev_ins;
@@ -144,7 +146,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     curr = tb->curr;
     if( curr->current_depth >= curr->allocated_size ) {
         if( !ReAllocChain( curr, curr->allocated_size + MODEST_INCREMENT ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( curr->current_depth != 0 ) {
@@ -154,11 +156,11 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
             execution.mach.offset -= MADDisasmInsSize( dd );
         }
     }
-    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( FALSE );
-    chain = &curr->chain[ curr->current_depth ];
+    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( false );
+    chain = &curr->chain[curr->current_depth];
     chain->lc = entry->lc;
     chain->lc.execution = execution;
-    chain->open = FALSE;
+    chain->open = false;
     chain->source_line = NULL;
     chain->symbol = NULL;
     if( DeAliasAddrCue( NO_MOD, execution, ch ) != SR_NONE ) {
@@ -169,7 +171,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     chain->symbol = DupStr( TxtBuff );
     chain->sym_len = 0;
     curr->current_depth++;
-    return( TRUE );
+    return( true );
 }
 
 static traceback *DoInitTraceBack( traceback *curr )
@@ -222,7 +224,7 @@ call_chain *GetCallChain( cached_traceback *tb, int row )
 
     curr = tb->curr;
     if( row >= 0 && row < curr->total_depth ) {
-        return( &curr->chain[ curr->total_depth - 1 - row ] );
+        return( &curr->chain[curr->total_depth - 1 - row] );
     } else {
         return( NULL );
     }
@@ -238,10 +240,7 @@ void ShowCalls( void )
 
     InitTraceBack( &tb );
     UpdateTraceBack( &tb );
-    i = 0;
-    for( ;; ) {
-        chain = GetCallChain( &tb, i++ );
-        if( chain == NULL ) break;
+    for( i = 0; (chain = GetCallChain( &tb, i )) != NULL; ++i ) {
         if( chain->source_line != NULL ) {
             source = chain->source_line;
         } else {

@@ -31,17 +31,10 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
-#include "dis.h"
 #include <stdio.h>
-
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          X64RangeTable[];
-extern const int                X64RangeTablePos[];
-extern const unsigned char      X64MaxInsName;
-extern const dis_ins_descript   DisInstructionTable[];
-extern const unsigned short     DisRefTypeTable[];
+#include "dis.h"
+#include "distypes.h"
+#include "disx64.h"
 
 typedef union {
     unsigned_8  full;
@@ -248,7 +241,7 @@ static int GetSByte( void *d, unsigned off )
  * Get Signed Byte
  */
 {
-    return( SEX( GetUByte( d, off ), 7 ) );
+    return( DisSEX( GetUByte( d, off ), 7 ) );
 }
 
 #if 0
@@ -257,7 +250,7 @@ static int GetSShort( void *d, unsigned off )
  * Get Signed Word
  */
 {
-    return( SEX( GetUShort( d, off ), 15 ) );
+    return( DisSEX( GetUShort( d, off ), 15 ) );
 }
 #endif
 
@@ -493,7 +486,7 @@ dis_handler_return X64PrefixES( dis_handle *h, void *d, dis_dec_ins *ins )
 #define X64SegmentOverride( ins )       ( (ins)->flags.u.x64 & SEGOVER )
 
 
-dis_register X64GetRegister_Q( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetRegister_Q( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
     rw = rw; ins = ins;
 
@@ -519,7 +512,7 @@ dis_register X64GetRegister_Q( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetRegister_D( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetRegister_D( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
     rw = rw; ins = ins;
 
@@ -545,7 +538,7 @@ dis_register X64GetRegister_D( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetRegister_W( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetRegister_W( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
     rw = rw; ins = ins;
 
@@ -570,7 +563,7 @@ dis_register X64GetRegister_W( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
     rw = rw; ins = ins;
 
@@ -607,7 +600,7 @@ dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }
 
-//dis_register X64FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
+//static dis_register X64FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
 /***********************************************************
  *  Get ST  (Floating Point) Register  w - not used
  */
@@ -625,7 +618,7 @@ dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }*/
 
-//dis_register X64GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
+//static dis_register X64GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
 /**********************************************************
  *  Get MM  (Multimedia) Register  w - not used
  */
@@ -643,7 +636,7 @@ dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }*/
 
-//dis_register X64GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
+//static dis_register X64GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
 /***********************************************************
  *  Get SSE  (Streaming SIMD Extensions) Register  w - not used
  */
@@ -661,7 +654,7 @@ dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }*/
 
-dis_register X64GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X64GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /***************************************************************
  *  Get Control Register
  */
@@ -678,7 +671,7 @@ dis_register X64GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
+static dis_register X64GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
 /***************************************************************
  *  Get Debug Register
  */
@@ -696,7 +689,7 @@ dis_register X64GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetSRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetSRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 /********************************************************************
  *  Get Segment Register
  */
@@ -714,7 +707,7 @@ dis_register X64GetSRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
     }
 }
 
-dis_register X64GetRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
+static dis_register X64GetRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 /*******************************************************************
  *  Get Register
  *                 rw   =  0  (default) use 64-Bit operand
@@ -1116,7 +1109,7 @@ static void X64GetRelVal( void *d, dis_dec_ins *ins )
 /*               Get Reference Type                                    */
 /*=====================================================================*/
 
-dis_ref_type  X64GetRefType( REGWIDTH rw, dis_dec_ins *ins )
+static dis_ref_type  X64GetRefType( REGWIDTH rw, dis_dec_ins *ins )
 /***********************************************************
  * Get Reference Type
  */
@@ -1319,7 +1312,7 @@ static void X64GetRegModRM( DBIT dir, WBIT w, MOD mod, RM rm, RM reg,
     }
 }*/
 
-void X64GetRegModRM_B( DBIT dir, MOD mod, RM rm, RM reg, void *d, dis_dec_ins *ins )
+static void X64GetRegModRM_B( DBIT dir, MOD mod, RM rm, RM reg, void *d, dis_dec_ins *ins )
 /**********************************************************************************/
 //    dir                   1                 0
 //   Destination           Reg              MODRM
@@ -2853,7 +2846,7 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 /*******************************************************************/
 {
-    unsigned    len;
+    size_t      len;
     char        *p;
     unsigned    op;
     dis_operand save;
@@ -2949,7 +2942,7 @@ static size_t X64FlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( 0 );
 }
 
-char *DisAddUnixRegX64( dis_register reg, char *p, dis_format_flags flags )
+static char *DisAddUnixRegX64( dis_register reg, char *p, dis_format_flags flags )
 {
     if( reg == DR_NONE )
         return( p );
@@ -2958,7 +2951,7 @@ char *DisAddUnixRegX64( dis_register reg, char *p, dis_format_flags flags )
 }
 
 static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     char    *end = p + buff_len;
 
@@ -3005,7 +2998,7 @@ static char *DisOpUnixFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
 }
 
 static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
-                              unsigned i, char *p, unsigned buff_len )
+                              unsigned i, char *p, size_t buff_len )
 {
     size_t      len;
     char        *end = p + buff_len;
@@ -3091,7 +3084,7 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
 #define FAR_PTR    "far" PTR_SUFFIX
 
 static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /******************************************************************/
 {
     char            over;
@@ -3246,7 +3239,7 @@ static void X64PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t X64PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
     // No funky FPU emulation

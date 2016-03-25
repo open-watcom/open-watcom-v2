@@ -43,9 +43,6 @@ extern bool        __Add( intstar4 *arg1, intstar4 *arg2 );
 extern bool        __AllowCommaSep( void );
 extern bool        __DevicesCC( void );
 extern int         __EnableF77RTExceptionHandling( void );
-#if defined( __WATCOMC__ )
-extern int         __EnterWVIDEO( char __far * );
-#endif
 extern void        __InitMultiThreadIO( void );
 extern void        __InitResource( void );
 extern void        __PartialReleaseFIO( void );
@@ -85,7 +82,7 @@ extern int         DfltRecType( ftnfile * );
 extern void        DiscoFile( ftnfile * );
 extern void        DoFreeIn( void );
 extern void        DoOpen( void );
-extern bool        DoSubstring( intstar4, intstar4, uint );
+extern bool        DoSubstring( intstar4, intstar4, int );
 extern bool        DoSubscript( act_dim_list *, intstar4 *, intstar4 * );
 extern void        Drop( char );
 extern void        EndFilef( ftnfile * );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -630,7 +631,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     LRESULT     ret;
     bool        pass_to_def;
     WdeResInfo  *res_info;
-    WORD        wp;
+    int         wp;
     about_info  ai;
 
     if( WdeCleanupStarted ) {
@@ -974,7 +975,6 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             ai.inst = hInstWde;
             ai.name = AllocRCString( WDE_ABOUT_NAME );
             ai.version = AllocRCString( WDE_ABOUT_VERSION );
-            ai.first_cr_year = "1984";
             ai.title = AllocRCString( WDE_ABOUT_TITLE );
             DoAbout( &ai );
             FreeRCString( ai.name );
@@ -1035,7 +1035,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( ret );
 }
 
-bool WdeIsMenuIDValid( HMENU menu, WORD id )
+bool WdeIsMenuIDValid( HMENU menu, unsigned id )
 {
     UINT st;
 
@@ -1338,7 +1338,8 @@ void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 
 WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    UINT        msecs, timer, start;
+    UINT        msecs, start;
+    UINT_PTR    timer;
     HDC         dc, tdc;
     HBITMAP     old;
     HWND        w666;
@@ -1372,8 +1373,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         msecs = *(UINT *)lParam;
         if( msecs ) {
             timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
-            if( timer ) {
-                SET_DLGDATA( hDlg, (LONG)timer );
+            if( timer != 0 ) {
+                SET_DLGDATA( hDlg, timer );
             }
         }
 
@@ -1449,8 +1450,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         break;
 
     case WM_TIMER:
-        timer = (UINT)GET_DLGDATA( hDlg );
-        if( timer ) {
+        timer = (UINT_PTR)GET_DLGDATA( hDlg );
+        if( timer != 0 ) {
             KillTimer( hDlg, timer );
         }
         EndDialog( hDlg, TRUE );

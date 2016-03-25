@@ -31,6 +31,8 @@
 #ifndef ASMFIXUP_H
 #define ASMFIXUP_H
 
+#include "fppatch.h"
+
 extern struct asmfixup  *InsFixups[OPND_MAX];
 extern struct asmfixup  *FixupHead;
 extern struct asmfixup  *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option );
@@ -41,5 +43,6 @@ extern bool             store_fixup( operand_idx index );
 
 extern struct asmfixup  *FixupListHead; // head of list of fixups
 extern struct asmfixup  *FixupListTail;
+extern bool             AddFPPatchAndFixups( fp_patches patch );
 
 #endif

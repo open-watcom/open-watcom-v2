@@ -40,6 +40,7 @@
 #include "wrdmsgi.h"
 #include "selimage.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -234,7 +235,7 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
         if( info == NULL ) {
             EndDialog( hDlg, FALSE );
         }
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRRegisterDialog( hDlg );
         if( !WRSetWinInfo( hDlg, info ) ) {
             EndDialog( hDlg, FALSE );

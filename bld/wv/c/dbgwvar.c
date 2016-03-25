@@ -45,37 +45,22 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "dbgexpr4.h"
+#include "dbgexpr2.h"
+#include "dbgexpr.h"
+#include "dbgprint.h"
+#include "dbgparse.h"
+#include "wndsys.h"
+#include "dbgprog.h"
+#include "addarith.h"
+#include "dlgexpr.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dbgwvar.h"
+#include "dlgnewws.h"
 
-extern void             ChkExpr( void );
-extern void             StartPrintBuff( char *buff, int len );
-extern void             EndPrintBuff( void );
-extern void             PrintChar( void );
-extern void             PrintString( void );
-extern void             ForcePrintString( void );
-extern void             NormalExpr( void );
-extern void             EvalLValExpr( int );
-extern void             ExprValue( stack_entry * );
-extern void             PopEntry( void );
-extern void             DupStack( void );
-extern void             SwapStack( int entry );
-extern void             ExprPurge( void );
-extern void             SetTokens( bool );
-extern void             DoPlus( void );
-extern void             DoPoints( type_kind );
-extern void             DoAssign( void );
-extern int              AddrComp( address, address );
-extern bool             DlgVarExpand( dlg_var_expand * );
-extern bool             DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
-extern WNDOPEN          WndVarOpen;
+
 extern void             WndVarNewWindow( char * );
-extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             FreezeStack( void );
-extern void             UnFreezeStack( bool );
-extern void             PrintValue( void );
-extern void             WndInspectExprSP( const char *item );
-extern void             InitMappableAddr( mappable_addr *loc );
-extern void             FiniMappableAddr( mappable_addr *loc );
-
 
 extern stack_entry      *ExprSP;
 
@@ -84,8 +69,8 @@ typedef struct {
     gui_ord             last_width;     // how wide were we last resize?
     gui_ord             name_end;       // the length of the longest name
     var_type            vtype;          // type of window : locals, expression, etc
-    unsigned            initialized : 1;        // is it just opened
-    unsigned            show_whole_expr : 1;// show foo->bar versus just .bar
+    bool                initialized : 1;        // is it just opened
+    bool                show_whole_expr : 1;// show foo->bar versus just .bar
 } var_window;
 
 #define scroll( s ) s->wnd_data[0]
@@ -121,19 +106,19 @@ static gui_menu_struct VarMenu[] = {
 #define REASONABLE_NAME_WIDTH   30
 
 static char **VarNames[] = {
-    #define pick(e,name,wndcls,icon)    name,
+    #define pick(e,name,wndclass,icon)    name,
     #include "_dbgvar.h"
     #undef pick
 };
 
-static wnd_class VarWndClass[] = {
-    #define pick(e,name,wndcls,icon)    wndcls,
+static wnd_class_wv VarWndClass[] = {
+    #define pick(e,name,wndclass,icon)    wndclass,
     #include "_dbgvar.h"
     #undef pick
 };
 
 static gui_resource *VarIcons[] = {
-    #define pick(e,name,wndcls,icon)    icon,
+    #define pick(e,name,wndclass,icon)    icon,
     #include "_dbgvar.h"
     #undef pick
 };
@@ -174,7 +159,7 @@ extern  bool    WndVarAdd( a_window *wnd, const char *name,
 {
     var_node    *v;
 
-    v = VarAdd1( WndVarInfo( wnd ), name, len, expand, FALSE );
+    v = VarAdd1( WndVarInfo( wnd ), name, len, expand, false );
     VarRepaint( wnd );
     return( v != NULL );
 }
@@ -192,7 +177,7 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     var_window          *var = WndVar( wnd );
     bool                ok;
     bool                followable;
-    unsigned            old;
+    mad_radix           old_radix;
 
     if( row < 0 ) {
         if( var->vtype == VAR_WATCH || var->vtype == VAR_VARIABLE ) {
@@ -205,8 +190,10 @@ static  void    VarModify( a_window *wnd, int row, int piece )
     v = VarFindRow( &var->i, row );
     if( v == NULL ) {
         v = VarFindRowNode( &var->i, row );
-        if( v == NULL ) return;
-        if( piece != VAR_PIECE_GADGET && piece != VAR_PIECE_NAME ) return;
+        if( v == NULL )
+            return;
+        if( piece != VAR_PIECE_GADGET && piece != VAR_PIECE_NAME )
+            return;
         if( v->expand != NULL || v->node_type == NODE_INHERIT ) {
             VarExpandRow( &var->i, v, row );
             WndNewCurrent( wnd, row, VAR_PIECE_NAME );
@@ -228,18 +215,19 @@ static  void    VarModify( a_window *wnd, int row, int piece )
         if( !VarExpandable( class ) ) {
             char *value = DbgAlloc( TXT_LEN );
             char *title = DbgAlloc( TXT_LEN );
-            old = VarNewCurrRadix( v );
+            old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
-            VarBuildName( &var->i, v, FALSE );
+            VarBuildName( &var->i, v, false );
             StrCopy( TxtBuff, title );
             VarPrintText( &var->i, value, PrintValue, TXT_LEN );
             VarKillExprSPCache( &var->i );
             v = VarFindRow( &var->i, row );
             FreezeStack();
             ok = DlgAnyExpr( title, value, TXT_LEN );
-            UnFreezeStack( FALSE );
-            if( ok ) VarDoAssign( &var->i, v, value );
-            NewCurrRadix( old );
+            UnFreezeStack( false );
+            if( ok )
+                VarDoAssign( &var->i, v, value );
+            NewCurrRadix( old_radix );
             WndRowDirty( wnd, row );
             DbgFree( value );
             DbgFree( title );
@@ -283,16 +271,17 @@ static bool VarEdit( a_window *wnd, var_node *v )
     var_window  *var = WndVar( wnd );
 
     if( v == NULL ) {
-        TxtBuff[0] = '\0';
+        TxtBuff[0] = NULLCHAR;
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
     VarRepaint( wnd );
     DlgNewWithSym( LIT_ENG( New_Expression ), TxtBuff, TXT_LEN );
-    if( TxtBuff[0] == '\0' ) return( FALSE );
+    if( TxtBuff[0] == NULLCHAR )
+        return( false );
     VarAddNodeToScope( &var->i, v, TxtBuff );
     VarRepaint( wnd );
-    return( TRUE );
+    return( true );
 }
 
 #if 0
@@ -302,7 +291,8 @@ static void VarMoveToRoot( a_window *wnd, int row, var_node *v )
     int         new_row;
 
     new_row = VarFindRootRow( &var->i, v, row );
-    if( new_row == row ) return;
+    if( new_row == row )
+        return;
     WndMoveCurrent( wnd, new_row, VAR_PIECE_NAME );
 }
 #endif
@@ -321,18 +311,18 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
     bool                noedit;
 
     WndMenuGrayAll( wnd );
-    WndMenuEnable( wnd, MENU_VAR_OPTIONS, TRUE );
-    WndMenuEnable( wnd, MENU_VAR_CLASS, TRUE );
-    WndMenuEnable( wnd, MENU_VAR_TYPE, TRUE );
-    WndMenuEnable( wnd, MENU_VAR_SHOW_MEMBER, TRUE );
-    WndMenuEnable( wnd, MENU_VAR_SHOW_WHOLE_EXPR, TRUE );
+    WndMenuEnable( wnd, MENU_VAR_OPTIONS, true );
+    WndMenuEnable( wnd, MENU_VAR_CLASS, true );
+    WndMenuEnable( wnd, MENU_VAR_TYPE, true );
+    WndMenuEnable( wnd, MENU_VAR_SHOW_MEMBER, true );
+    WndMenuEnable( wnd, MENU_VAR_SHOW_WHOLE_EXPR, true );
     noedit = ( var->vtype == VAR_LOCALS || var->vtype == VAR_FILESCOPE );
     WndMenuIgnore( wnd, MENU_VAR_EDIT_EXPRESSION, noedit );
     WndMenuIgnore( wnd, MENU_VAR_NEW_EXPRESSION, noedit );
     WndMenuIgnore( wnd, MENU_VAR_DELETE, noedit );
     if( !noedit ) {
         WndMenuEnable( wnd, MENU_VAR_EDIT_EXPRESSION, v != NULL && v->parent == NULL );
-        WndMenuEnable( wnd, MENU_VAR_NEW_EXPRESSION, TRUE );
+        WndMenuEnable( wnd, MENU_VAR_NEW_EXPRESSION, true );
         WndMenuEnable( wnd, MENU_VAR_DELETE, v != NULL && v->parent == NULL );
     }
     WndMenuEnable( wnd, MENU_VAR_WATCH, v != NULL );
@@ -341,48 +331,48 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
     if( v != NULL && !VarError ) {
         VarGetStackClass( &class );
         pointer = VarIsPointer( class );
-        WndMenuEnable( wnd, MENU_VAR_TYPE, TRUE );
-        WndMenuEnable( wnd, MENU_VAR_SHOW, TRUE );
-        WndMenuEnable( wnd, MENU_VAR_CLASS, TRUE );
-        WndMenuEnable( wnd, MENU_VAR_OPTIONS, TRUE );
+        WndMenuEnable( wnd, MENU_VAR_TYPE, true );
+        WndMenuEnable( wnd, MENU_VAR_SHOW, true );
+        WndMenuEnable( wnd, MENU_VAR_CLASS, true );
+        WndMenuEnable( wnd, MENU_VAR_OPTIONS, true );
 //      WndMenuEnable( wnd, MENU_VAR_SHOW_ROOT, v->parent != NULL );
         WndMenuEnable( wnd, MENU_VAR_ARRAY_EXPAND, pointer && v->expand == NULL );
         WndMenuEnable( wnd, MENU_VAR_INSPECT_POINTER, pointer );
         WndMenuEnable( wnd, MENU_VAR_INSPECT_CODE, pointer );
         WndMenuEnable( wnd, MENU_VAR_FIELD_TOP, v->node_type == NODE_FIELD );
         WndMenuEnable( wnd, MENU_VAR_INSPECT_MEMORY, VarIsLValue() );
-        WndMenuEnable( wnd, MENU_VAR_WATCH, TRUE );
-        WndMenuEnable( wnd, MENU_VAR_INSPECT, TRUE );
+        WndMenuEnable( wnd, MENU_VAR_WATCH, true );
+        WndMenuEnable( wnd, MENU_VAR_INSPECT, true );
 #ifdef I_EVER_SOLVE_THE_THORNY_HIDE_PROBLEM
         WndMenuEnable( wnd, MENU_VAR_HIDE, v->node_type == NODE_FIELD );
         WndMenuEnable( wnd, MENU_VAR_UNHIDE, v->expand != NULL );
 #endif
-        WndMenuEnable( wnd, MENU_VAR_SHOW_TYPE, TRUE );
+        WndMenuEnable( wnd, MENU_VAR_SHOW_TYPE, true );
 
         WndMenuEnable( wnd, MENU_VAR_POINTER, pointer );
         WndMenuEnable( wnd, MENU_VAR_STRING, pointer );
         if( v->expand == NULL ) {
             if( !VarExpandable( class ) ) {
-                WndMenuEnable( wnd, MENU_VAR_MODIFY, TRUE );
-                WndMenuEnable( wnd, MENU_VAR_BREAK, TRUE );
+                WndMenuEnable( wnd, MENU_VAR_MODIFY, true );
+                WndMenuEnable( wnd, MENU_VAR_BREAK, true );
                 WndMenuEnable( wnd, MENU_VAR_ALLHEX, VarParentIsArray( v ) );
                 WndMenuEnable( wnd, MENU_VAR_ALLDECIMAL, VarParentIsArray( v ) );
                 WndMenuEnable( wnd, MENU_VAR_HEX, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_DECIMAL, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_CHAR, !pointer );
-            } 
+            }
         }
         /* Enable even if already expanded */
         if( VarExpandable( class ) ) {
-            WndMenuEnable( wnd, MENU_VAR_EXPAND_ALL, TRUE );
+            WndMenuEnable( wnd, MENU_VAR_EXPAND_ALL, true );
         }
         if( VarDisplayIsStruct( v ) ) {
-            WndMenuEnable( wnd, MENU_VAR_SHOW_CODE, TRUE );
-            WndMenuEnable( wnd, MENU_VAR_SHOW_INHERIT, TRUE );
-            WndMenuEnable( wnd, MENU_VAR_SHOW_COMPILER, TRUE );
-            WndMenuEnable( wnd, MENU_VAR_SHOW_PRIVATE, TRUE );
-            WndMenuEnable( wnd, MENU_VAR_SHOW_PROTECTED, TRUE );
-            WndMenuEnable( wnd, MENU_VAR_SHOW_STATIC, TRUE );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_CODE, true );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_INHERIT, true );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_COMPILER, true );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_PRIVATE, true );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_PROTECTED, true );
+            WndMenuEnable( wnd, MENU_VAR_SHOW_STATIC, true );
             WndMenuCheck( wnd, MENU_VAR_SHOW_CODE, !VarDisplayIsHidden( v, VARNODE_CODE ) );
             WndMenuCheck( wnd, MENU_VAR_SHOW_INHERIT, !VarDisplayIsHidden( v, VARNODE_INHERIT ) );
             WndMenuCheck( wnd, MENU_VAR_SHOW_COMPILER, !VarDisplayIsHidden( v, VARNODE_COMPILER ) );
@@ -406,9 +396,11 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     array_info          ainfo;
     char                *name;
     bool                need_reset;
-    var_window          *var = WndVar( wnd );
-    piece               =piece;
+    var_window          *var;
 
+    piece=piece;
+
+    var = WndVar( wnd );
     need_reset = VarErrState();
     v = VarFindRow( &var->i, row );
     if( v == NULL && VarError ) {
@@ -476,12 +468,14 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarRepaint( wnd );
         break;
     case MENU_VAR_STRING:
-        if( v->expand != NULL ) VarDeExpand( v );
+        if( v->expand != NULL )
+            VarDeExpand( v );
         VarDisplaySetString( v );
         VarRepaint( wnd );
         break;
     case MENU_VAR_POINTER:
-        if( v->expand != NULL ) VarDeExpand( v );
+        if( v->expand != NULL )
+            VarDeExpand( v );
         VarDisplaySetPointer( v );
         VarRepaint( wnd );
         break;
@@ -535,10 +529,11 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         case TK_POINTER:
             {
                 bool rc;
+
                 FreezeStack();
                 VarRepaint( wnd ); // set early so we flush redundant repaints
                 rc = DlgVarExpand( &varx );
-                UnFreezeStack( FALSE );
+                UnFreezeStack( false );
                 if( rc ) {
                     VarDeExpand( v );
                     VarExpand( &var->i, v, varx.start - start, varx.end - start );
@@ -548,7 +543,7 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         }
         break;
     case MENU_VAR_INSPECT:
-        VarBuildName( &var->i, v, FALSE );
+        VarBuildName( &var->i, v, false );
         name = DupStr( TxtBuff );
         WndInspectExprSP( name );
         WndFree( name );
@@ -560,7 +555,8 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarEdit( wnd, v );
         break;
     case MENU_VAR_NEW_EXPRESSION:
-        if( !VarEdit( wnd, NULL ) ) break;
+        if( !VarEdit( wnd, NULL ) )
+            break;
         WndScrollBottom( wnd );
         break;
     case MENU_VAR_DELETE:
@@ -573,45 +569,42 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             int expand_row = row;
             int num_rows = VarNumRows( wnd );
             var_node * v_sibling = NULL;
-            
+
             /*
              *  If we are a root node, then we have no sibling. If we have a parent, then we may have a sibling but we may
              *  also by the last leaf node of our parent so we need to check out to see who our parents next sibling is and
              *  stop there.
              */
-            if( v->parent ) {
-                var_node * v_iter = v->parent->expand;
-                
-                while( v_iter ) {
-                    
+            if( v->parent != NULL ) {
+                var_node    *v_iter;
+
+                for( v_iter = v->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
                     if( v_iter == v ){
                         v_sibling = v_iter->next;
-                        break;   
+                        break;
                     }
-                    v_iter = v_iter->next;   
                 }
-                
+
                 if( NULL == v_sibling ) {   /* last element, but may be more following. track grandparent */
-                    if( v->parent->parent ) {
-                        var_node * v_iter = v->parent->parent->expand;
-                
-                        while( v_iter ) {
+                    if( v->parent->parent != NULL ) {
+                        var_node    *v_iter;
+
+                        for( v_iter = v->parent->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
                             if( v_iter == v->parent ) {
                                 v_sibling = v_iter->next;
-                                break;   
+                                break;
                             }
-                            v_iter = v_iter->next;   
                         }
                     }
-                }    
+                }
             }
-            
+
             for( ; expand_row < num_rows; expand_row++ ) {
-                
-                var_node * v_next = VarFindRowNode( &var->i, expand_row );
+                var_node    *v_next;
+
+                v_next = VarFindRowNode( &var->i, expand_row );
                 if( v_next == v_sibling )
                     break;
-                    
                 ExpandRowIfPossible( wnd, expand_row, VAR_PIECE_GADGET );
                 num_rows = VarNumRows( wnd );
             }
@@ -619,7 +612,8 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         VarRepaint( wnd );
         break;
     }
-    if( need_reset ) VarOldErrState();
+    if( need_reset )
+        VarOldErrState();
     VarDoneRow( &var->i );
 }
 
@@ -654,22 +648,25 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
 
     if( piece >= VAR_PIECE_LAST ) {
         v = VarGetDisplayPiece( &var->i, row, VAR_PIECE_NAME, &depth, &inherited );
-        if( v == NULL ) return( FALSE );
+        if( v == NULL )
+            return( false );
         line->text = "";
-        line->tabstop = FALSE;
-        line->static_text = TRUE;
+        line->tabstop = false;
+        line->static_text = true;
         if( !var->show_whole_expr ) {
             inherited += depth;
         }
         outdent = piece - VAR_PIECE_LAST + 1;
         line->indent = MaxGadgetLength + ( INDENT_AMOUNT * ( inherited - outdent ) ) * WndAvgCharX( wnd );
-        if( outdent > inherited ) return( FALSE );
+        if( outdent > inherited )
+            return( false );
         if( outdent == 1 ) {
-            if( v->parent == NULL ) return( FALSE );
+            if( v->parent == NULL )
+                return( false );
             if( VarNextVisibleSibling( &var->i, v ) != NULL ) {
-                line->draw_line_hook = TRUE;
+                line->draw_line_hook = true;
             } else {
-                line->draw_hook = TRUE;
+                line->draw_hook = true;
             }
         } else {
             parent = v->parent;
@@ -677,18 +674,20 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
                 parent = parent->parent;
             }
             if( VarNextVisibleSibling( &var->i, parent ) != NULL ) {
-                line->vertical_line = TRUE;
+                line->vertical_line = true;
             }
         }
-        return( TRUE );
+        return( true );
     }
     v = VarGetDisplayPiece( &var->i, row, piece, &depth, &inherited );
-    if( v == NULL ) return( FALSE );
-    line->tabstop = TRUE;
+    if( v == NULL )
+        return( false );
+    line->tabstop = true;
     switch( piece ) {
     case VAR_PIECE_GADGET:
-        line->tabstop = FALSE;
-        if( WndDoingSearch ) break;
+        line->tabstop = false;
+        if( WndDoingSearch )
+            break;
         if( v->gadget == VARGADGET_NONE ) {
             line->text = LIT_ENG( Empty );
         } else {
@@ -697,7 +696,7 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
                      GADGET_CLOSED, GADGET_POINTS, GADGET_UNPOINTS,
                      GADGET_BAD_POINTS, GADGET_INHERIT_OPEN,
                      GADGET_INHERIT_CLOSED };
-            SetGadgetLine( wnd, line, gadgets[ v->gadget ] );
+            SetGadgetLine( wnd, line, gadgets[v->gadget] );
             if( v->gadget == VARGADGET_BADPOINTS ) {
                 line->attr = WND_PLAIN;
             }
@@ -714,13 +713,14 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         if( v->standout ) {
             line->attr = WND_STANDOUT;
         }
-//        on_rhs = TRUE;
+//        on_rhs = true;
         indent = var->last_width - WndExtentX( wnd, line->text );
         good_size = REASONABLE_NAME_WIDTH * WndAvgCharX( wnd );
-        if( indent < 0 ) indent = 0;
+        if( indent < 0 )
+            indent = 0;
         if( indent >= good_size ) {
             indent = good_size;
-//            on_rhs = FALSE;
+//            on_rhs = false;
         }
         if( indent < var->name_end + WndAvgCharX( wnd ) ) {
             indent = var->name_end + WndAvgCharX( wnd );
@@ -728,7 +728,7 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         line->indent = indent;
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -737,7 +737,7 @@ static  void    VarBegPaint( a_window *wnd, int row, int num )
     var_window  *var = WndVar( wnd );
 
     row=row;num=num;
-    VarOkToCache( &var->i, TRUE );
+    VarOkToCache( &var->i, true );
 }
 
 
@@ -746,7 +746,7 @@ static  void    VarEndPaint( a_window *wnd, int row, int piece )
     var_window  *var = WndVar( wnd );
 
     row=row;piece=piece;
-    VarOkToCache( &var->i, FALSE );
+    VarOkToCache( &var->i, false );
 }
 
 
@@ -784,10 +784,10 @@ static  void VarRefresh( a_window *wnd )
     bool        repaint;
     char        *p;
 
-    repaint = FALSE;
+    repaint = false;
     if( !var->initialized ||
       ( UpdateFlags & (UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_REG_CHANGE) ) ) {
-        var->initialized = TRUE;
+        var->initialized = true;
         repaint = VarInfoRefresh( var->vtype, &var->i, &addr, wnd );
         if( var->vtype == VAR_LOCALS ) {
             p = StrCopy( LIT_DUI( WindowLocals ), TxtBuff );
@@ -802,7 +802,7 @@ static  void VarRefresh( a_window *wnd )
     }
     if( UpdateFlags & UP_VAR_DISPLAY ) {
         VarDisplayUpdate( &var->i );
-        repaint = TRUE;
+        repaint = true;
     }
     if( repaint || ( UpdateFlags & (UP_RADIX_CHANGE+UP_SYM_CHANGE) ) != 0 ) {
         VarRepaint( wnd );
@@ -822,49 +822,54 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         VarInitInfo( &var->i );
         VarSetOptions( var );
         VarSetWidth( wnd );
-        var->initialized = FALSE;
+        var->initialized = false;
         VarRefresh( wnd );
         VarRepaint( wnd );
         WndSetKey( wnd, VAR_PIECE_NAME );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE :
         old_width = var->last_width;
         VarSetWidth( wnd );
         delta = old_width - var->last_width;
-        if( delta < 0 ) delta = -delta;
+        if( delta < 0 )
+            delta = -delta;
         if( delta >= 50 ) { // BIG kludge. To be removed
             VarRepaint( wnd );
         }
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         VarFiniInfo( &var->i );
         WndFree( var );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
-static bool VarDoClass( wnd_class wndcls, bool (*rtn)( var_info*, void* ), void *cookie )
+static bool VarDoClass( wnd_class_wv wndclass, bool (*rtn)( var_info*, void* ), void *cookie )
 {
     a_window    *wnd;
 
-    for( wnd = WndFindClass( NULL, wndcls );
-         wnd != NULL; wnd = WndFindClass( wnd, wndcls ) ) {
-        if( rtn( WndVarInfo( wnd ), cookie ) ) return( TRUE );
+    for( wnd = WndFindClass( NULL, wndclass );
+         wnd != NULL; wnd = WndFindClass( wnd, wndclass ) ) {
+        if( rtn( WndVarInfo( wnd ), cookie ) ) {
+            return( true );
+        }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
 {
-    int         i;
+    var_type    i;
 
     for( i = 0; i < ArraySize( VarWndClass ); ++i ) {
-        if( VarDoClass( VarWndClass[ i ], rtn, cookie ) ) return( TRUE );
+        if( VarDoClass( VarWndClass[i], rtn, cookie ) ) {
+            return( true );
+        }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -910,12 +915,12 @@ void VarReMapScopes( image_entry *image )
 
 void VarChangeOptions( void )
 {
-    VarDisplaySetHidden( NULL, VARNODE_CODE, !_IsOn( SW_VAR_SHOW_CODE ) );
-    VarDisplaySetHidden( NULL, VARNODE_INHERIT, !_IsOn( SW_VAR_SHOW_INHERIT ) );
-    VarDisplaySetHidden( NULL, VARNODE_COMPILER, !_IsOn( SW_VAR_SHOW_COMPILER ) );
-    VarDisplaySetHidden( NULL, VARNODE_PRIVATE, !_IsOn( SW_VAR_SHOW_PRIVATE ) );
-    VarDisplaySetHidden( NULL, VARNODE_PROTECTED, !_IsOn( SW_VAR_SHOW_PROTECTED ) );
-    VarDisplaySetHidden( NULL, VARNODE_STATIC, !_IsOn( SW_VAR_SHOW_STATIC ) );
+    VarDisplaySetHidden( NULL, VARNODE_CODE, _IsOff( SW_VAR_SHOW_CODE ) );
+    VarDisplaySetHidden( NULL, VARNODE_INHERIT, _IsOff( SW_VAR_SHOW_INHERIT ) );
+    VarDisplaySetHidden( NULL, VARNODE_COMPILER, _IsOff( SW_VAR_SHOW_COMPILER ) );
+    VarDisplaySetHidden( NULL, VARNODE_PRIVATE, _IsOff( SW_VAR_SHOW_PRIVATE ) );
+    VarDisplaySetHidden( NULL, VARNODE_PROTECTED, _IsOff( SW_VAR_SHOW_PROTECTED ) );
+    VarDisplaySetHidden( NULL, VARNODE_STATIC, _IsOff( SW_VAR_SHOW_STATIC ) );
     VarWndDoAll( DoVarChangeOptions );
 }
 
@@ -944,7 +949,8 @@ static  a_window        *DoWndVarOpen( var_type vtype )
     var = WndMustAlloc( sizeof( var_window ) );
     var->vtype = vtype;
     wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
-    if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
+    if( wnd != NULL )
+        WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }
 
@@ -976,12 +982,14 @@ OVL_EXTERN  void    DoGraphicDisplay( void )
 
     wnd = WndVarOpen();
     while( !ScanEOC() ) {
-        if( CurrToken == T_COMMA ) Scan();
+        if( CurrToken == T_COMMA )
+            Scan();
         name = ScanPos();
         ChkExpr();
         len = ScanPos() - name;
-        if( CurrToken != T_COMMA ) ReqEOC();
-        WndVarAdd( wnd, name, len, FALSE );
+        if( CurrToken != T_COMMA )
+            ReqEOC();
+        WndVarAdd( wnd, name, len, false );
     }
     WndFirstCurrent( wnd );
     WndFreshAll();

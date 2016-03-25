@@ -52,13 +52,13 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     unsigned    c;
 
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     _dos_getdrive( &c );
-    oldDrive = (char) c;
+    oldDrive = (char)c;
     if( orig[1] == ':' ) {
         ChangeDrive( orig[0] );
     }
@@ -73,7 +73,7 @@ void PopDirectory( void )
 {
     unsigned    total;
 
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     _dos_setdrive( oldDrive, &total );
@@ -84,18 +84,18 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
-    int base, nbase;
+    unsigned char   base, nbase;
 
-    id = id;
+    wid = wid;
     if( EditFlags.Monocolor ) {
         base = 14;
     } else {
         base = 16;
     }
-    nbase = (base * (int)(100 - ct.height)) / 100;
-    BIOSNewCursor( (char) nbase, base - 1 );
+    nbase = ( (unsigned)base * ( 100 - ct.height ) ) / 100;
+    BIOSNewCursor( nbase, base - 1 );
 
 } /* NewCursor */
 
@@ -169,8 +169,8 @@ void MyBeep( void )
 
 static void getExitAttr( void )
 {
-    short       cursor;
-    short       x, y;
+    unsigned short  cursor;
+    unsigned short  x, y;
 
     cursor = BIOSGetCursor( VideoPage );
     x = cursor >> 8;
@@ -183,24 +183,26 @@ static void getExitAttr( void )
  */
 void ScreenInit( void )
 {
-    unsigned long       x;
-    U_INT               y;
+    uint_32     mode;
 
-    x = BIOSGetVideoMode();
-    y = (U_INT) x;
-    EditVars.WindMaxWidth = (y >> 8);
-    y &= 0xff;
-    VideoPage = (U_INT) (x >> 24);
+    mode = BIOSGetVideoMode();
+    EditVars.WindMaxWidth = (mode >> 8) & 0xFF;
+    VideoPage = mode >> 24;
 
     /*
      * mode _ get apropos screen ptr
      */
-    if( y == 0x07 ) {
-        EditFlags.Monocolor = true;
-    } else if( y == 0x00 || y == 0x02 ) {
+    switch( (unsigned char)mode ) {
+    case 0x00:
+    case 0x02:
         EditFlags.BlackAndWhite = true;
-    } else {
+        break;
+    case 0x07:
+        EditFlags.Monocolor = true;
+        break;
+    default:
         EditFlags.Color = true;
+        break;
     }
     ScreenPage( 0 );
     EditVars.WindMaxHeight = BIOSGetRowCount() + 1;
@@ -399,16 +401,16 @@ void TurnOffCapsLock( void )
 
 } /* TurnOffCapsLock */
 
-extern short CheckRemovable( char );
+extern unsigned short CheckRemovable( unsigned char );
 #pragma aux CheckRemovable = \
-        "mov    ax, 04408h" \
-        "int    021h" \
-        "cmp    ax, 0fh" \
-        "jne    ok" \
-        "mov    ax, 0" \
-        "jmp    done" \
-        "ok:    inc ax" \
-        "done:" \
+        "mov    ax,4408h" \
+        "int    21h"      \
+        "cmp    ax,0fh"   \
+        "jne short ok"    \
+        "xor    ax,ax"    \
+        "jmp short done"  \
+    "ok: inc    ax"       \
+    "done:"               \
     parm [bl] value[ax];
 
 /*
@@ -416,7 +418,7 @@ extern short CheckRemovable( char );
  */
 drive_type DoGetDriveType( int drv )
 {
-    return( CheckRemovable( drv - 'A' + 1 ) );
+    return( (drive_type)CheckRemovable( (unsigned char)( drv - 'A' + 1 ) ) );
 
 } /* DoGetDriveType */
 
@@ -464,17 +466,17 @@ bool KeyboardHit( void )
  */
 vi_key GetKeyboard( void )
 {
-    unsigned short  key;
-    int             scan;
-    bool            shift;
+    unsigned    code;
+    unsigned    scan;
+    bool        shift;
 
-    key = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
+    code = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
     shift = ShiftDown();
-    scan = key >> 8;
-    key &= 0xff;
-    if( key == 0xE0 && scan != 0 ) {
-        key = 0;
+    scan = code >> 8;
+    code &= 0xff;
+    if( code == 0xE0 && scan != 0 ) {
+        code = 0;
     }
-    return( GetVIKey( key, scan, shift ) );
+    return( GetVIKey( code, scan, shift ) );
 
 } /* GetKeyboard */

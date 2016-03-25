@@ -457,9 +457,6 @@ pick(   WDE_ABOUT_NAME,
 pick(   WDE_ABOUT_VERSION,
         banner1p2( _RESEDIT_VERSION_ ),
         banner1p2( _RESEDIT_VERSION_ ) )
-pick(   WDE_ABOUT_COPYRIGHT_YEAR,
-        "1984",
-        "1984" )
 pick(   WDE_ABOUT_TITLE,
         "About Open Watcom Dialog Editor",
         "About Open Watcom Dialog Editor" )

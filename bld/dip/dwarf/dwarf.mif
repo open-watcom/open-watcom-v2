@@ -1,4 +1,10 @@
+!ifdef %USE_FILENAME_VERSION
+name = dwarf$(bld_ver)
+!else
 name = dwarf
+!endif
+
+dwarf = 1
 
 imp_objs = &
         dfmisc.obj &

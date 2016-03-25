@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,28 +36,28 @@
 #include "dosx.h"
 #include "regexp.h"
 
-char        MinSlots[MAX_MIN_SLOTS];
+bool        MinSlots[MAX_MIN_SLOTS];
 #ifdef __CURSES__
 char_info   WindowNormalAttribute = { ' ', 0 };
 #else
 char_info   WindowNormalAttribute = { ' ', 7 };
 #endif
-wind        *Windows[MAX_WINDS];
+window      *Windows[MAX_WINDS];
 
 char_info   _FAR *Scrn = NULL;
 char_info   _FAR *ClockStart = NULL;
 char_info   _FAR *SpinLoc = NULL;
 window_id   *ScreenImage = NULL;
 
-#ifndef NOXTD
+#if defined( USE_XTD )
 int             XMemBlockArraySize;
 unsigned char   *XMemBlocks = NULL;
 #endif
-#ifndef NOEMS
+#if defined( USE_EMS )
 int             TotalEMSBlocks = 0;
 int             EMSBlocksInUse = 0;
 #endif
-#ifndef NOXMS
+#if defined( USE_XMS )
 int             TotalXMSBlocks = 0;
 int             XMSBlocksInUse = 0;
 #endif

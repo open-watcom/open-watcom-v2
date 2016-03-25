@@ -42,16 +42,10 @@
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
-
-extern int              Lookup( const char *, const char *, size_t );
-extern bool             OptDelim( char );
-extern void             ProcSysOptInit( void );
-extern bool             ProcSysOption( const char *, unsigned, int );
-extern char             *GetCmdArg( int );
-extern void             SetCmdArgStart( int, char * );
-extern void             SysSetMemLimit( void );
-void                    FindLocalDebugInfo( char *name );
-extern void             StartupErr( const char *err );
+#include "dbgcmdln.h"
+#include "dbgprog.h"
+#include "dbglkup.h"
+#include "dbgerr.h"
 
 
 static char             *(*GetArg)( int );
@@ -131,7 +125,7 @@ enum {
 };
 
 
-void SetupChar( void )
+static void SetupChar( void )
 {
    CurrChar = *CurrArgp;
    if( CurrChar == NULLCHAR ) {
@@ -147,7 +141,7 @@ void SetupChar( void )
 }
 
 
-void NextChar( void )
+static void NextChar( void )
 {
     ++CurrArgp;
     SetupChar();
@@ -262,14 +256,14 @@ static void DoGetItem( char *buff, bool stop_on_first )
             break;
         *buff++ = CurrChar;
         NextChar();
-        stop_on_first = TRUE;
+        stop_on_first = true;
     }
     *buff = NULLCHAR;
 }
 
 void GetItem( char *buff )
 {
-    DoGetItem( buff, TRUE );
+    DoGetItem( buff, true );
 }
 
 
@@ -309,7 +303,7 @@ void GetRawItem( char *start )
         }
         *start = NULLCHAR;
     } else {
-        DoGetItem( start, FALSE );
+        DoGetItem( start, false );
     }
 }
 
@@ -402,16 +396,16 @@ static void ProcOptList( int pass )
             _SwitchOn( SW_DEFER_SYM_LOAD );
             break;
         case OPT_DOWNLOAD:
-            DownLoadTask = TRUE;
+            DownLoadTask = true;
             break;
         case OPT_NOEXPORTS:
             _SwitchOn( SW_NO_EXPORT_SYMS );
             break;
         case OPT_LOCALINFO:
             if( pass == 2 ) {
-                char *file = GetFileName( pass );
-                FindLocalDebugInfo( file );
-                _Free( file );
+                char *symfile = GetFileName( pass );
+                FindLocalDebugInfo( symfile );
+                _Free( symfile );
             }
             break;
         case OPT_INVOKE:
@@ -467,13 +461,13 @@ static void ProcOptList( int pass )
             if( pass == 2 )
                 _Free( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
-            TrapTraceFileFlush = TRUE;
+            TrapTraceFileFlush = true;
             break;
         case OPT_TRAP_DEBUG:
             if( pass == 2 )
                 _Free( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
-            TrapTraceFileFlush = FALSE;
+            TrapTraceFileFlush = false;
             break;
 #endif
         case OPT_REMOTE_FILES:
@@ -531,7 +525,7 @@ void ProcCmd( void )
 {
     char        buff[TXT_LEN];
     unsigned    screen_mem;
-    unsigned    have_env;
+    size_t      have_env;
     int         pass;
 
     MemSize = MIN_MEM_SIZE;

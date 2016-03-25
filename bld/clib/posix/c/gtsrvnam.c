@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -26,6 +26,8 @@
 *
 * Description:  Implementation of getservbyname() for Linux.
 *
+* Author: J. Armstrong
+*
 ****************************************************************************/
 
 
@@ -34,9 +36,32 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "rterrno.h"
+
+#define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
 
 _WCRTLINK struct servent *getservbyname( const char *name, const char *proto )
 {
-    /* just a stub for the debug trapfile fornow; TODO: parse /etc/services. */
-    return ( NULL );
+    struct servent *ret;
+
+    if( name == NULL ) {
+        _RWD_errno = EINVAL;
+        return( NULL );
+    }
+
+    setservent( 1 );
+
+    do {
+
+        ret = getservent();
+
+    } while( ret != NULL &&
+             !( SAFE_SAME_STR( name, ret->s_name ) &&
+               ( proto == NULL || SAFE_SAME_STR( proto, ret->s_proto ) ) ) );
+
+    endservent();
+
+    return( ret );
 }

@@ -84,12 +84,16 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
 # Build ide2make tool for idedemo
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
+[ ENDIF ]
 # Miscellaneous libraries/utilities required during installers build
 [ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
+# The following tools are required by F77
+[ INCLUDE <OWSRCDIR>/f77/utils/builder.ctl ]
 
 ## The following tools are required by tests
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
@@ -205,6 +209,7 @@ cdsay .
 [ ENDIF ]
 # The IDE tools
 [ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
@@ -256,6 +261,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
 [ BLOCK . . ]
 #============

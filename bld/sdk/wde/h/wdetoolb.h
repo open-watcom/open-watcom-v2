@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,6 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef void *toolbar;
 
 typedef struct {
     TOOLDISPLAYINFO dinfo;
@@ -51,7 +51,7 @@ typedef struct {
 } WdeToolBarInfo;
 
 typedef struct {
-    toolbar         tbar;
+    toolbar         *tbar;
     WdeToolBarInfo  *info;
     HWND            parent;
     HWND            win;
@@ -61,12 +61,13 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
+
 extern WdeToolBar       *WdeCreateToolBar( WdeToolBarInfo *, HWND );
 extern void             WdeDestroyToolBar( WdeToolBar * );
 extern void             WdeShutdownToolBars( void );
 extern void             WdeFreeToolBarInfo( WdeToolBarInfo * );
 extern WdeToolBarInfo   *WdeAllocToolBarInfo( int );
-extern void             WdeSetToolBarItemState( WdeToolBar *, UINT, UINT );
+extern void             WdeSetToolBarItemState( WdeToolBar *, ctl_id, UINT );
 extern bool             WdeCloseToolBar( WdeToolBar * );
 extern void             WdeFreeToolBar( WdeToolBar * );
 extern void             WdeHandleToolHint( WPARAM, BOOL );

@@ -37,6 +37,7 @@
 #include "wrdmsgi.h"
 #include "memflags.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -158,7 +159,7 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
 
     case WM_INITDIALOG:
         info = (WRMFInfo *)lParam;
-        SET_DLGDATA( hDlg, (LONG_PTR)info );
+        SET_DLGDATA( hDlg, info );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, info );
         ret = TRUE;

@@ -36,8 +36,8 @@
         xrefp   ___LDM          ; multiply
 
         xdefp   __EvalPoly      ; calc polynomial
-        xdefp   __OddPoly       ; calc polynomial
         xdefp   __poly          ; evaluate polynomial
+        xdefp   __OddPoly       ; calc polynomial
 
 
 ;;void _EvalPoly( long double *x, long double *poly, int degree )
@@ -51,6 +51,7 @@
 ;;        } while( --degree != 0 );
 
         defp    __EvalPoly
+
         push    ESI                     ; save registers
         push    ECX                     ; ...
         push    EAX                     ; save address of x
@@ -66,17 +67,19 @@
         pop     ECX                     ; restore registers
         pop     ESI                     ; ...
         ret                             ; return
-__EvalPoly endp
+
+        endproc __EvalPoly
 
 
-;  input:
-;       long double in SI:EDX:EAX
-;       pointer to polynomial in CS:ECX
-;       degree of polynomial in EBX
-;  output:
-;       long double in SI:EDX:EAX
+;
+;       input:  SI:EDX:EAX - long double
+;               CS:ECX     - pointer to polynomial
+;               EBX        - degree of polynomial
+;       output: SI:EDX:EAX - long double
+;
 
         defp    __poly
+
         push    EBP                     ; save EBP
         push    EDI                     ; save registers
         push    ECX                     ; ...
@@ -114,7 +117,8 @@ __EvalPoly endp
         pop     EDI                     ; ...
         pop     EBP                     ; ...
         ret                             ; return
-__poly  endp
+
+        endproc __poly
 
 ;;
 ;;void _OddPoly( long double *x, long double *poly, int degree )
@@ -124,6 +128,7 @@ __poly  endp
 ;;    }
 
         defp    __OddPoly
+
         push    EDI                     ; save registers
         push    ESI                     ; ...
         push    ECX                     ; ...
@@ -154,5 +159,6 @@ __poly  endp
         pop     ESI                     ; restore ESI
         pop     EDI                     ; restore EDI
         ret                             ; return
-__OddPoly endp
+
+        endproc __OddPoly
 

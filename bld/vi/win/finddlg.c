@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,12 @@
 #include "finddlg.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static fancy_find findData =
-    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0 };
+    { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
 
 /*
  * FindDlgProc - callback routine for find dialog
@@ -45,19 +50,21 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     int                 curr;
     int                 i;
     int                 cmd;
-    DWORD               index;
+    int                 index;
     char                find[MAX_INPUT_LINE];
     history_data        *h;
     char                *ptr;
     RECT                pos;
 
+#ifdef __NT__
     lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         if( findData.posx == -1 && findData.posy == -1 ) {
             CenterWindowInRoot( hwnd );
         } else {
-            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy, 
+            SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );
@@ -88,7 +95,7 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         case FIND_LISTBOX:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETCURSEL, 0, 0L );
+                index = (int)SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
@@ -119,7 +126,7 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
                 ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, findData.find ) ) {
-                AddString2( &(h->data[h->curr % h->max]), findData.find );
+                ReplaceString( &(h->data[h->curr % h->max]), findData.find );
                 h->curr += 1;
             }
             GetWindowRect( hwnd, &pos );
@@ -148,7 +155,7 @@ bool GetFindStringDialog( fancy_find *ff )
     findData.find = ff->find;
     findData.findlen = ff->findlen;
     proc = MakeDlgProcInstance( FindDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FINDDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "FINDDLG", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
     SetWindowCursor();
     if( rc ) {

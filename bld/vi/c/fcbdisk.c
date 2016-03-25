@@ -34,11 +34,16 @@
 #include <fcntl.h>
 #include "fcbmem.h"
 
-static char swapFileName[L_tmpnam];
+#include "clibext.h"
 
-static vi_rc  swapFileOpen( void );
-static vi_rc  getNewSwapFilePosition( long * );
-static vi_rc  swapFileWrite( long *, int );
+#define SWAP_FILE_NAME  "swXXXXXX"
+
+static vi_rc    swapFileOpen( void );
+static vi_rc    getNewSwapFilePosition( long * );
+static vi_rc    swapFileWrite( long *, int );
+
+static char     swapFileName[sizeof( SWAP_FILE_NAME )];
+static int      swapFileHandle = -1;
 
 /*
  * SwapToDisk - swap an fcb to disk from memory
@@ -88,7 +93,7 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    rc = FileSeek( SwapFileHandle, fb->offset );
+    rc = FileSeek( swapFileHandle, fb->offset );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -97,7 +102,7 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
      * read in the buffer, create lines
      */
     expect = FcbSize( fb );
-    len = read( SwapFileHandle, ReadBuffer, expect );
+    len = read( swapFileHandle, ReadBuffer, expect );
     if( len != expect ) {
         return( ERR_SWAP_FILE_READ );
     }
@@ -111,17 +116,16 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
  */
 static vi_rc swapFileOpen( void )
 {
-    vi_rc   rc;
+    char    file[_MAX_PATH];
 
-    if( SwapFileHandle >= 0 ) {
-        return( ERR_NO_ERR );
+    if( swapFileHandle == -1 ) {
+        MakeTmpPath( file, SWAP_FILE_NAME );
+        swapFileHandle = mkstemp( file );
+        if( swapFileHandle == -1 ) {
+            return( ERR_SWAP_FILE_OPEN );
+        }
+        memcpy( swapFileName, file + strlen( file ) - ( sizeof( SWAP_FILE_NAME ) - 1 ), sizeof( SWAP_FILE_NAME ) );
     }
-
-    rc = TmpFileOpen( swapFileName, &SwapFileHandle );
-    if( rc != ERR_NO_ERR ) {
-        return( ERR_SWAP_FILE_OPEN );
-    }
-
     return( ERR_NO_ERR );
 
 } /* swapFileOpen */
@@ -131,7 +135,14 @@ static vi_rc swapFileOpen( void )
  */
 void SwapFileClose( void )
 {
-    TmpFileClose( SwapFileHandle, swapFileName );
+    char    file[_MAX_PATH];
+
+    if( swapFileHandle != -1 ) {
+        close( swapFileHandle );
+        swapFileHandle = -1;
+        MakeTmpPath( file, swapFileName );
+        remove( file );
+    }
 
 } /* SwapFileClose */
 
@@ -175,7 +186,7 @@ static vi_rc swapFileWrite( long *pos, int size )
             return( rc );
         }
     }
-    rc = FileSeek( SwapFileHandle, *pos );
+    rc = FileSeek( swapFileHandle, *pos );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -183,7 +194,7 @@ static vi_rc swapFileWrite( long *pos, int size )
     /*
      * write data
      */
-    i = write( SwapFileHandle, WriteBuffer, size );
+    i = write( swapFileHandle, WriteBuffer, size );
     if( i != size ) {
         return( ERR_SWAP_FILE_WRITE );
     }
@@ -209,7 +220,6 @@ void SwapBlockInit( int i )
     }
 
 } /* SwapBlockInit */
-
 
 /*
  * SwapBlockFini

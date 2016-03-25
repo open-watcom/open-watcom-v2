@@ -43,12 +43,11 @@
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
 #include "clibint.h"
-
-extern void     DebugMain( void );
-extern void     DebugFini( void );
-extern void     DebugExit(void);
 
 static char       CmdData[256];
 
@@ -125,8 +124,4 @@ long _fork( const char *cmd, size_t len )
 bool TBreak( void )
 {
     return( false );
-}
-
-void SysSetMemLimit( void )
-{
 }

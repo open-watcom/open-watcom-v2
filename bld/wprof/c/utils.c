@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include "wio.h"
 #include "common.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
@@ -134,9 +135,9 @@ char *FindFile( char *fullname, char *name, char *path_list )
 }
 
 #if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len,
-                const char *ext, char *result, unsigned max_result )
-/******************************************************************/
+dig_fhandle DIGPathOpen( const char *name, size_t name_len,
+                const char *ext, char *result, size_t max_result )
+/****************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char *      filename;
@@ -233,49 +234,45 @@ extern void InitPaths( void )
 #endif
 }
 
-#if defined( __QNX__ )
+size_t BigRead( int fh, void *buffer, size_t size )
+/*************************************************/
+{
+#if defined( __QNX__ ) || defined( _WIN64 )
+
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
+    _WIN64 has max size UINT_MAX
 */
+#if defined( __QNX__ )
 #define MAX_OS_TRANSFER (32U*1024 - 512)
+#else
+#define MAX_OS_TRANSFER INT_MAX
+#endif
+    size_t      total;
+    unsigned    read_len;
+    unsigned    amount;
 
-STATIC unsigned doread( int file, void * buffer, unsigned len )
-/*************************************************************/
-{
-    unsigned    total;
-    int         h;
-    int         amount;
-
+    amount = MAX_OS_TRANSFER;
     total = 0;
-    for( ;; ) {
-        if( len == 0 ) {
-            return( total );
+    while( size > 0 ) {
+        if( amount > size )
+            amount = (unsigned)size;
+        read_len = read( fh, buffer, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( (size_t)-1 );
         }
-        amount = len;
-        if( amount > MAX_OS_TRANSFER ) {
-            amount = MAX_OS_TRANSFER;
-        }
-        h = read( file, buffer, amount );
-        if( h < 0 ) {
-            return( h );
-        }
-        total += h;
-        if( h != amount ) {
+        total += read_len;
+        if( read_len != amount ) {
             return( total );
         }
         buffer = (char *)buffer + amount;
-        len -= amount;
+        size -= amount;
     }
-}
+    return( total );
 #else
-    #define doread( f, b, l )  read( f, b, l )
+    return( read( fh, buffer, size ) );
 #endif
-
-extern unsigned BigRead( int fh, void * buff, unsigned size )
-/***********************************************************/
-{
-    return( doread( fh, buff, size ) );
 }
 
 #if defined( __DOS__ )

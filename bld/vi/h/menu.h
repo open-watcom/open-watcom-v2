@@ -36,22 +36,22 @@
 
 /* menu.c */
 extern void     BarfMenuData( FILE *f );
-extern vi_rc    StartMenu( char *data );
+extern vi_rc    StartMenu( const char *data );
 extern vi_rc    ViEndMenu( void );
-extern vi_rc    MenuItem( char *data );
+extern vi_rc    MenuItem( const char *data );
 extern vi_rc    MenuItemFileList( void );
 extern vi_rc    MenuItemLastFiles( void );
-extern vi_rc    AddMenuItem( char *data );
-extern vi_rc    DoItemDelete( char *data );
-extern vi_rc    DoMenuDelete( char *data );
+extern vi_rc    AddMenuItem( const char *data );
+extern vi_rc    DoItemDelete( const char *data );
+extern vi_rc    DoMenuDelete( const char *data );
 extern vi_rc    InitMenu( void );
 extern void     FiniMenu( void );
 extern vi_rc    DoMenu( void );
 extern int      GetMenuIdFromCoord( int x );
 extern int      GetCurrentMenuId( void );
 extern vi_rc    SetToMenuId( int id );
-extern vi_rc    DoFloatMenu( int id, int slen, int x1, int y1 );
-extern vi_rc    ActivateFloatMenu( char * );
+extern vi_rc    DoFloatMenu( int id, int slen, windim x1, windim y1 );
+extern vi_rc    ActivateFloatMenu( const char * );
 extern vi_rc    DoWindowGadgetMenu( void );
 extern bool     IsMenuHotKey( vi_key );
 

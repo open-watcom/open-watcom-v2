@@ -3,9 +3,10 @@
 host_os  = qnx
 host_cpu = 386
 
-os    = qnx
+target_cpu = x86
+target_os  = qnx
+
 srv   = tcp
-cpu   = x86
 which = SERVER
 remote_link = 1
 

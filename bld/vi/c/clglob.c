@@ -37,9 +37,9 @@
 /*
  * Global - perform global command
  */
-vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
+vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 {
-    char        *sstr, *cmd, *linedata;
+    char        *sstr, *linedata;
     bool        match;
     vi_rc       rc;
     vi_rc       rc1;
@@ -58,16 +58,17 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         return( rc );
     }
     sstr = alloca( MAX_INPUT_LINE );
-    cmd = alloca( MAX_INPUT_LINE );
-    if( cmd == NULL || sstr == NULL ) {
+    if( sstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    RemoveLeadingSpaces( data );
-    if( NextWordSlash( data, sstr ) < 0 ) {
+    data = SkipLeadingSpaces( data );
+    data = GetNextWord( data, sstr, SingleSlash );
+    if( *sstr == '\0' ) {
         return( ERR_INVALID_GLOBAL_CMD );
     }
-    RemoveLeadingSpaces( data );
-    EliminateFirstN( data, 1 );
+    if( *data == '/' )
+        ++data;     // skip one slash character
+    data = SkipLeadingSpaces( data );
 
     /*
      * verify last line
@@ -86,7 +87,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
      * set for start of search
      */
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {
@@ -95,7 +96,6 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     SaveCurrentFilePos();
     StartUndoGroup( UndoStack );
     EditFlags.DisplayHold = true;
-    strcpy( sstr, data );
 
     /*
      * pass one - find all matches
@@ -136,7 +136,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         CurrentFcb->globalmatch = true;
         CurrentLine->u.ld.globmatch = true;
         if( EditFlags.Verbose && EditFlags.EchoOn ) {
-            // WPrintfLine( MessageWindow,1,"Match on line %l",clineno );
+            // WPrintfLine( message_window_id,1,"Match on line %l",clineno );
             Message1( "Match on line %l", pos.line );
         }
     }
@@ -192,8 +192,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
             /*
             * build command line
             */
-            strcpy( cmd, sstr );
-            rc = RunCommandLine( cmd );
+            rc = RunCommandLine( data );
             if( rc > ERR_NO_ERR ) {
                 break;
             }
@@ -246,7 +245,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
 void ProcessingMessage( linenum cln )
 {
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        // WPrintfLine( MessageWindow,1,"Processing line %l",cln );
+        // WPrintfLine( message_window_id,1,"Processing line %l",cln );
         Message1( "Processing line %l", cln );
     }
     

@@ -74,7 +74,6 @@ enum {
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
 extern struct _console_ctrl *UIConCtrl;
-extern unsigned             UIDisableShiftChanges;
 
 static struct termios   SaveTermSet;
 static int              SaveProtocol;
@@ -99,54 +98,54 @@ static const struct {
     evmap( DELETE,              _ky_dc )
     evmap( CURSOR_DOWN,         _ky_down )
     evmap( INSERT,              _ky_ic )
-    evmap( FUNC(1),             _ky_f1 )
-    evmap( FUNC(2),             _ky_f2 )
-    evmap( FUNC(3),             _ky_f3 )
-    evmap( FUNC(4),             _ky_f4 )
-    evmap( FUNC(5),             _ky_f5 )
-    evmap( FUNC(6),             _ky_f6 )
-    evmap( FUNC(7),             _ky_f7 )
-    evmap( FUNC(8),             _ky_f8 )
-    evmap( FUNC(9),             _ky_f9 )
-    evmap( FUNC(10),            _ky_f10 )
-    evmap( FUNC(11),            _ky_f11 )
-    evmap( FUNC(12),            _ky_f12 )
-    evmap( SHIFT_FUNC(1),       _ky_f13 )
-    evmap( SHIFT_FUNC(2),       _ky_f14 )
-    evmap( SHIFT_FUNC(3),       _ky_f15 )
-    evmap( SHIFT_FUNC(4),       _ky_f16 )
-    evmap( SHIFT_FUNC(5),       _ky_f17 )
-    evmap( SHIFT_FUNC(6),       _ky_f18 )
-    evmap( SHIFT_FUNC(7),       _ky_f19 )
-    evmap( SHIFT_FUNC(8),       _ky_f20 )
-    evmap( SHIFT_FUNC(9),       _ky_f21 )
-    evmap( SHIFT_FUNC(10),      _ky_f22 )
-    evmap( SHIFT_FUNC(11),      _ky_f23 )
-    evmap( SHIFT_FUNC(12),      _ky_f24 )
-    evmap( CTRL_FUNC(1),        _ky_f25 )
-    evmap( CTRL_FUNC(2),        _ky_f26 )
-    evmap( CTRL_FUNC(3),        _ky_f27 )
-    evmap( CTRL_FUNC(4),        _ky_f28 )
-    evmap( CTRL_FUNC(5),        _ky_f29 )
-    evmap( CTRL_FUNC(6),        _ky_f30 )
-    evmap( CTRL_FUNC(7),        _ky_f31 )
-    evmap( CTRL_FUNC(8),        _ky_f32 )
-    evmap( CTRL_FUNC(9),        _ky_f33 )
-    evmap( CTRL_FUNC(10),       _ky_f34 )
-    evmap( CTRL_FUNC(11),       _ky_f35 )
-    evmap( CTRL_FUNC(12),       _ky_f36 )
-    evmap( ALT_FUNC(1),         _ky_f37 )
-    evmap( ALT_FUNC(2),         _ky_f38 )
-    evmap( ALT_FUNC(3),         _ky_f39 )
-    evmap( ALT_FUNC(4),         _ky_f40 )
-    evmap( ALT_FUNC(5),         _ky_f41 )
-    evmap( ALT_FUNC(6),         _ky_f42 )
-    evmap( ALT_FUNC(7),         _ky_f43 )
-    evmap( ALT_FUNC(8),         _ky_f44 )
-    evmap( ALT_FUNC(9),         _ky_f45 )
-    evmap( ALT_FUNC(10),        _ky_f46 )
-    evmap( ALT_FUNC(11),        _ky_f47 )
-    evmap( ALT_FUNC(12),        _ky_f48 )
+    evmap( F1,                  _ky_f1 )
+    evmap( F2,                  _ky_f2 )
+    evmap( F3,                  _ky_f3 )
+    evmap( F4,                  _ky_f4 )
+    evmap( F5,                  _ky_f5 )
+    evmap( F6,                  _ky_f6 )
+    evmap( F7,                  _ky_f7 )
+    evmap( F8,                  _ky_f8 )
+    evmap( F9,                  _ky_f9 )
+    evmap( F10,                 _ky_f10 )
+    evmap( F11,                 _ky_f11 )
+    evmap( F12,                 _ky_f12 )
+    evmap( SHIFT_F1,            _ky_f13 )
+    evmap( SHIFT_F2,            _ky_f14 )
+    evmap( SHIFT_F3,            _ky_f15 )
+    evmap( SHIFT_F4,            _ky_f16 )
+    evmap( SHIFT_F5,            _ky_f17 )
+    evmap( SHIFT_F6,            _ky_f18 )
+    evmap( SHIFT_F7,            _ky_f19 )
+    evmap( SHIFT_F8,            _ky_f20 )
+    evmap( SHIFT_F9,            _ky_f21 )
+    evmap( SHIFT_F10,           _ky_f22 )
+    evmap( SHIFT_F11,           _ky_f23 )
+    evmap( SHIFT_F12,           _ky_f24 )
+    evmap( CTRL_F1,             _ky_f25 )
+    evmap( CTRL_F2,             _ky_f26 )
+    evmap( CTRL_F3,             _ky_f27 )
+    evmap( CTRL_F4,             _ky_f28 )
+    evmap( CTRL_F5,             _ky_f29 )
+    evmap( CTRL_F6,             _ky_f30 )
+    evmap( CTRL_F7,             _ky_f31 )
+    evmap( CTRL_F8,             _ky_f32 )
+    evmap( CTRL_F9,             _ky_f33 )
+    evmap( CTRL_F10,            _ky_f34 )
+    evmap( CTRL_F11,            _ky_f35 )
+    evmap( CTRL_F12,            _ky_f36 )
+    evmap( ALT_F1,              _ky_f37 )
+    evmap( ALT_F2,              _ky_f38 )
+    evmap( ALT_F3,              _ky_f39 )
+    evmap( ALT_F4,              _ky_f40 )
+    evmap( ALT_F5,              _ky_f41 )
+    evmap( ALT_F6,              _ky_f42 )
+    evmap( ALT_F7,              _ky_f43 )
+    evmap( ALT_F8,              _ky_f44 )
+    evmap( ALT_F9,              _ky_f45 )
+    evmap( ALT_F10,             _ky_f46 )
+    evmap( ALT_F11,             _ky_f47 )
+    evmap( ALT_F12,             _ky_f48 )
     evmap( HOME,                _ky_home )
     evmap( CURSOR_LEFT,         _ky_left )
     evmap( PAGE_DOWN,           _ky_npage )
@@ -197,11 +196,8 @@ typedef struct {
 
 #define SPECIAL_MAP( name, c )  { c, c, c, EV_ALT_##name }
 #define LETTER_MAP( let, c )    { c+' ', c, c-'@', EV_ALT_##let }
-#define FUNC_MAP( n )           { EV_FUNC(n),EV_SHIFT_FUNC(n),\
-                                EV_CTRL_FUNC(n),EV_ALT_FUNC(n) }
 #define MOTION_MAP( k )         { EV_##k,EV_SHIFT_##k,EV_CTRL_##k,EV_ALT_##k}
-#define EV_SHIFT_INSERT EV_INSERT
-#define EV_SHIFT_DELETE EV_DELETE
+#define FUNC_MAP( k )           MOTION_MAP(k)
 /*
     NOTE: this table has to be in increasing value of the first column.
 */
@@ -246,16 +242,16 @@ static const event_shift_map ShiftMap[] = {
     LETTER_MAP( Y, 'Y' ),
     LETTER_MAP( Z, 'Z' ),
     { EV_TAB_FORWARD, EV_TAB_BACKWARD, EV_CTRL_TAB, EV_TAB_FORWARD },
-    FUNC_MAP( 1 ),
-    FUNC_MAP( 2 ),
-    FUNC_MAP( 3 ),
-    FUNC_MAP( 4 ),
-    FUNC_MAP( 5 ),
-    FUNC_MAP( 6 ),
-    FUNC_MAP( 7 ),
-    FUNC_MAP( 8 ),
-    FUNC_MAP( 9 ),
-    FUNC_MAP( 10 ),
+    FUNC_MAP( F1 ),
+    FUNC_MAP( F2 ),
+    FUNC_MAP( F3 ),
+    FUNC_MAP( F4 ),
+    FUNC_MAP( F5 ),
+    FUNC_MAP( F6 ),
+    FUNC_MAP( F7 ),
+    FUNC_MAP( F8 ),
+    FUNC_MAP( F9 ),
+    FUNC_MAP( F10 ),
     MOTION_MAP( HOME ),
     MOTION_MAP( CURSOR_UP ),
     MOTION_MAP( PAGE_UP ),
@@ -266,8 +262,8 @@ static const event_shift_map ShiftMap[] = {
     MOTION_MAP( PAGE_DOWN ),
     MOTION_MAP( INSERT ),
     MOTION_MAP( DELETE ),
-    FUNC_MAP( 11 ),
-    FUNC_MAP( 12 ),
+    FUNC_MAP( F11 ),
+    FUNC_MAP( F12 ),
 };
 
 void intern clear_shift( void )
@@ -315,7 +311,8 @@ int nextc(int n)
     unsigned char       ch;
     unsigned            least;
 
-    if( UnreadPos < sizeof( UnreadBuffer ) ) return( UnreadBuffer[ UnreadPos++ ] );
+    if( UnreadPos < sizeof( UnreadBuffer ) )
+        return( UnreadBuffer[ UnreadPos++ ] );
 
     least = (n != 0) ? 1 : 0;
 
@@ -326,10 +323,10 @@ int nextc(int n)
     return ch;
 }
 
-void nextc_unget( char *str, int n )
+void nextc_unget( unsigned char *str, int n )
 {
-    UnreadPos-=n;
-    //assert(UnreadPos>=0);
+    UnreadPos -= n;
+    //assert( UnreadPos >= 0 );
     memcpy( &(UnreadBuffer[UnreadPos]), str, n );
 }
 
@@ -400,33 +397,67 @@ EVENT ck_keyboardevent( void )
         real_shift |= S_ALT;
         break;
     case EV_SHIFT_RELEASE:
-        if( !(real_shift & S_SHIFT) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_SHIFT) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_SHIFT;
         break;
     case EV_CTRL_RELEASE:
-        if( !(real_shift & S_CTRL) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_CTRL) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_CTRL;
         break;
     case EV_ALT_RELEASE:
-        if( !(real_shift & S_ALT) ) ev = EV_NO_EVENT;
+        if( (real_shift & S_ALT) == 0 )
+            ev = EV_NO_EVENT;
         real_shift &= ~S_ALT;
         break;
     case EV_NO_EVENT:
         break;
     default:
         if( sticky & S_FUNC ) {
-            if( ev == '0' ) {
-                ev = EV_FUNC( 10 );
-            } else if( ev == 'a' || ev == 'A' ) {
-                ev = EV_FUNC_11;
-            } else if( ev == 'b' || ev == 'B' ) {
-                ev = EV_FUNC_12;
-            } else if( isdigit( ev ) ) {
-                ev = EV_FUNC( ev - '0' );
+            switch( ev ) {
+            case '1':
+                ev = EV_F1;
+                break;
+            case '2':
+                ev = EV_F2;
+                break;
+            case '3':
+                ev = EV_F3;
+                break;
+            case '4':
+                ev = EV_F4;
+                break;
+            case '5':
+                ev = EV_F5;
+                break;
+            case '6':
+                ev = EV_F6;
+                break;
+            case '7':
+                ev = EV_F7;
+                break;
+            case '8':
+                ev = EV_F8;
+                break;
+            case '9':
+                ev = EV_F9;
+                break;
+            case '0':
+                ev = EV_F10;
+                break;
+            case 'A':
+            case 'a':
+                ev = EV_F11;
+                break;
+            case 'B':
+            case 'b':
+                ev = EV_F12;
+                break;
             }
             sticky &= ~S_FUNC;
         }
-        if( !(real_shift & S_CTRL) ) {
+        if( (real_shift & S_CTRL) == 0 ) {
             /*
                 If the ctrl key isn't down (won't ever be on a terminal)
                 then we want to see certain CTRL-? combinations come back
@@ -474,7 +505,8 @@ EVENT tk_keyboardevent( void )
     EVENT       ev;
 
     ev = ck_keyboardevent();
-    if( ev != EV_MOUSE_PRESS ) return( ev );
+    if( ev != EV_MOUSE_PRESS )
+        return( ev );
     QNXDebugPrintf0( "UI: Mouse event handling" );
     tm_saveevent();
     return( EV_NO_EVENT ); /* make UI check for mouse events */
@@ -557,17 +589,18 @@ static int ck_init( void )
 
     tcgetattr( UIConHandle, &SaveTermSet );
 
-    if( !init_trie() ) return( FALSE );
+    if( !init_trie() )
+        return( FALSE );
 
     switch( ti_read_tix( UIConCtrl == NULL ) ) {
     case TIX_FAIL:
         return( FALSE );
     case TIX_NOFILE:
         if( UIConCtrl != NULL ) {
-            for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( &ConEscapes[i] ) + 1 ) {
-                ev = ConEscapes[i+0] + (ConEscapes[i+1] << 8);
+            for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
+                ev = ConEscapes[i + 0] + (ConEscapes[i + 1] << 8);
                 i += 2;
-                if( !TrieAdd( ev, &ConEscapes[i] ) ) {
+                if( !TrieAdd( ev, ConEscapes + i ) ) {
                     return( FALSE );
                 }
             }
@@ -610,11 +643,11 @@ static int ck_save( void )
 static int init_trie( void )
 {
     charoffset  *coffs;         // start of char-offset table
-    char        *str;
     char        buff[2];
     int         i;
 
-    if( !TrieInit() ) return( FALSE );
+    if( !TrieInit() )
+        return( FALSE );
 
     buff[1] = '\0';
     for( i = 0; i < NUM_ELTS( InStandard ); ++i ) {
@@ -627,8 +660,7 @@ static int init_trie( void )
     for( i = 0; i < NUM_ELTS( InTerminfo ); ++i ) {
         coffs = (charoffset *)&__cur_term->_strs;
         coffs = (void *)((char *)coffs + InTerminfo[i].offset );
-        str = &__cur_term->_strtab[*coffs];
-        if( !TrieAdd( InTerminfo[i].ev, str ) ) {
+        if( !TrieAdd( InTerminfo[i].ev, __cur_term->_strtab + *coffs ) ) {
             TrieFini();
             return( FALSE );
         }

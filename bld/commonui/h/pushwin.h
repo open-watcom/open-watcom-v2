@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,13 @@
 #define _PUSHWIN_H_INCLUDED
 
 typedef struct {
-    WORD                id;
+    int                 id;
     HFONT               font;
     HWND                parent;
     char                str[1];         /* dynamic array */
 } PushWinInfo;
 
 bool    RegPushWin( HANDLE instance );
-HWND    CreatePushWin( HWND parent, char *txt, WORD id, HFONT font, HANDLE inst );
+HWND    CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst );
 
 #endif /* _PUSHWIN_H_INCLUDED */

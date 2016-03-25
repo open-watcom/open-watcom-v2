@@ -175,9 +175,9 @@ void WndPaintDirt( a_window *wnd )
     gui_coord           size;
     gui_coord           half_char;
     a_window            *next;
-    a_window            *last;
+//    a_window            *last;
 
-    last = NULL;
+//    last = NULL;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
         next = WndNext( wnd );
         if( wnd->vscroll_pending != 0 ) {

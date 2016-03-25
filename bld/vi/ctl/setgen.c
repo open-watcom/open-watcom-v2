@@ -31,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setgen.h"
 #include "stddef.h"
 #include "ctltype.h"
@@ -39,6 +38,10 @@
 #include "util.h"
 #include "globals.h"
 #include "wprocmap.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define WORDWIDTH               30
 #define TMPDIRWIDTH             129
@@ -64,8 +67,9 @@ typedef struct {
     char        HistoryFile[HISTORYFILEWIDTH];
 } dlg_data;
 
-static  dlg_data    dlgData;
 extern  char        *WordDefnDefault;
+
+static  dlg_data    dlgData;
 
 static dyn_dim_type dynGetAutoSave( HWND hwndDlg, bool initial )
 {
@@ -76,15 +80,17 @@ static dyn_dim_type dynGetAutoSave( HWND hwndDlg, bool initial )
     return( DYN_DIM );
 }
 
-static bool dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsAutoSave( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETGEN_AUTOSAVE && cmd == BN_CLICKED ) {
         return( true );
     }
@@ -167,7 +173,7 @@ static void setdlgDataDefaults( void )
 /*
  * SetGenProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -178,7 +184,7 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETGEN_DEFAULTS:
             setdlgDataDefaults();
             ctl_dlg_reset( GET_HINSTANCE( hwndDlg ),
@@ -198,8 +204,8 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setgen, wParam, lParam );
-        dyn_tpl_process( &Dyn_setgen, hwndDlg, wParam, lParam );
+        ctl_dlg_process( &Ctl_setgen, wparam, lparam );
+        dyn_tpl_process( &Dyn_setgen, hwndDlg, wparam, lparam );
     }
 
     return( FALSE );
@@ -214,7 +220,7 @@ bool GetSetGenDialog( void )
     bool        rc;
 
     proc = MakeDlgProcInstance( SetGenProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETGEN", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct

@@ -516,7 +516,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 int SetToolType( int toolid )
 {
     HMENU       hmenu;
-    int         i;
+    unsigned    i;
     int         prev_tool;
     img_node    *node;
 

@@ -30,17 +30,18 @@
 
 
 #include "madregs.h"
-#include "trpimp.h"
+#include "trptypes.h"
 #include "trpld.h"
-
-#ifdef ENABLE_TRAP_LOGGING
+#if defined( __WINDOWS__ ) && !defined( SERVER )
+#include <windows.h>
+#include "trpsys.h"
+#elif defined( ENABLE_TRAP_LOGGING )
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 #include <winbase.h>    /* For GetSystemTime */
 #endif
 
-extern void     DoHardModeCheck(void);
 
 trap_version    TrapVer;
 trap_req_func   *ReqFunc;
@@ -103,7 +104,7 @@ void TrapSetAccessCallBack( void (*func)(void) )
     pAccess = func;
 }
 
-void TrapFailAllRequests()
+void TrapFailAllRequests( void )
 {
     ReqFunc = NULL;
 }
@@ -182,7 +183,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 }
 
 
-unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_mx, mx_entry_p mx_out  )
+unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out  )
 {
     trap_retval     result;
 
@@ -194,17 +195,15 @@ unsigned TrapAccess( unsigned num_in_mx, in_mx_entry_p mx_in, unsigned num_out_m
         Failure();
     }
     Access();
-#if !defined(SERVER)
-#if defined(__WINDOWS__) && defined( _M_I86 )
-    DoHardModeCheck();
-#endif
+#if defined( __WINDOWS__ ) && !defined( SERVER )
+    TrapHardModeCheck();
 #endif
     if( result == REQUEST_FAILED )
         return( (unsigned)-1 );
     return( result );
 }
 
-unsigned TrapSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned TrapSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     in_mx_entry     in[1];
     mx_entry        out[1];

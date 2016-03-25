@@ -40,27 +40,17 @@
 #include "strutil.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
+#include "dbgexpr.h"
+#include "dbgloc.h"
+#include "dbgcall.h"
+#include "dbgcall2.h"
+#include "dbgshow.h"
+#include "dbgprint.h"
+#include "dbgparse.h"
+#include "dbgreg.h"
 
 
 extern stack_entry  *ExprSP;
-
-
-extern void         CallExpr( address *);
-extern void         ChkPrintList( void );
-extern void         DoPrintList( bool );
-extern void         ConfigLine( char * );
-extern void         PushSym( void * );
-extern void         FreezeRegs( void );
-extern void         SwapStack( int );
-extern bool         PerformExplicitCall( address, mad_string, unsigned int );
-extern void         NormalExpr( void );
-extern void         UnFreezeRegs( void );
-extern void         PopEntry( void );
-extern void         FreePgmStack( bool );
-extern void         PushLocation( location_list *, dip_type_info * );
-extern void         ParseRegSet( bool, location_list *, dip_type_info * );
-extern void         LocationCreate( location_list *, location_type, void * );
-
 
 #define MAX_PARMS       10
 
@@ -94,9 +84,9 @@ static void GetLocation( location_list *ll, dip_type_info *ti )
 {
     bool        reg_set;
 
-    reg_set = FALSE;
+    reg_set = false;
     if( CurrToken == T_LEFT_BRACKET ) {
-        reg_set = TRUE;
+        reg_set = true;
         Scan();
     }
     ParseRegSet( reg_set, ll, ti );
@@ -223,14 +213,14 @@ void CallConf( void )
             ptr += MADCliString( DefCallType, ptr, TXT_LEN );
         }
         *ptr++ = '(';
-        first = TRUE;
+        first = true;
         for( i = 0; i < MAX_PARMS; ++i ) {
             if( DefParms[i] != NULL ) {
                 if( !first ) {
                     *ptr++ = ',';
                 }
                 ptr = StrCopy( DefParms[i], ptr );
-                first = FALSE;
+                first = false;
             }
         }
         *ptr++ = ')';
@@ -252,7 +242,7 @@ void CallConf( void )
 OVL_EXTERN void CallResults( void )
 {
     if( CurrToken != T_DIV ) {
-        DoPrintList( FALSE );
+        DoPrintList( false );
     }
 }
 
@@ -271,7 +261,7 @@ void ProcCall( void )
     location_list       ll;
     dip_type_info       ti;
     char                *p;
-    mad_reg_info const **parm_reg;
+    const mad_reg_info  **parm_reg;
 
     if( CurrToken == T_DIV ) {
         Scan();
@@ -354,5 +344,5 @@ void ProcCall( void )
         }
     }
     UnFreezeRegs();
-    FreePgmStack( FALSE );
+    FreePgmStack( false );
 }

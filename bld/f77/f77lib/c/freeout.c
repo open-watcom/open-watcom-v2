@@ -68,10 +68,10 @@ static  void    OutCplx( void ) {
 
     buff = IOCB->buffer;
     *buff = '(';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.complex.realpart );
+    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.realpart );
     buff += strlen( buff );
     *buff = ',';
-    FmtRealRtn( buff + sizeof( char ), &IORslt.complex.imagpart );
+    FmtRealRtn( buff + sizeof( char ), &IORslt.scomplex.imagpart );
     buff += strlen( buff );
     *buff = ')';
     buff[ 1 ] = NULLCHAR;

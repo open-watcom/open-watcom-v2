@@ -49,11 +49,7 @@ static int      overrideKeyPos, overrideKeyEnd;
     #define BUSYWAIT
 #endif
 
-#if defined( __UNIX__ ) || defined( __NT__ ) && !defined( __WIN__ )
-    #define NO_TRANSLATE
-#endif
-
-#if !defined( NO_TRANSLATE )
+#if defined( __DOS__ ) || defined( __OS2__ )
 static unsigned char altLookup[] = { 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
                                      38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47,
                                      17, 45, 21, 44  };
@@ -83,12 +79,12 @@ static void clearSpin( void )
  */
 static vi_key getOverrideKey( void )
 {
-    int         c;
+    vi_key      key;
     bool        mouse = false;
     int         mcnt = 0;
 
     for( ;; ) {
-        c = overrideKeyBuff[overrideKeyPos];
+        key = overrideKeyBuff[overrideKeyPos];
         if( overrideKeyPos == MAX_OVERRIDE_KEY_BUFF - 1 ) {
             overrideKeyPos = 0;
         } else {
@@ -97,75 +93,77 @@ static vi_key getOverrideKey( void )
         if( overrideKeyPos == overrideKeyEnd ) {
             EditFlags.KeyOverride = false;
         }
-        if( c == VI_KEY( MOUSEEVENT ) && !mouse ) {
+        if( mouse ) {
+            if( mcnt == 3 ) {
+                MouseStatus = key;
+                mouse = false;
+                key = VI_KEY( MOUSEEVENT );
+                RedrawMouse( MouseRow, MouseCol );
+                DisplayMouse( true );
+                break;
+            }
+            if( mcnt == 0 ) {
+                LastMouseEvent = key;
+            } else if( mcnt == 1 ) {
+                MouseRow = key;
+            } else if( mcnt == 2 ) {
+                MouseCol = key;
+            }
+            mcnt++;
+        } else if( key == VI_KEY( MOUSEEVENT ) ) {
             mouse = true;
             mcnt = 0;
         } else {
-            if( mouse ) {
-                switch( mcnt ) {
-                case 0:
-                    LastMouseEvent = c;
-                    break;
-                case 1:
-                    MouseRow = c;
-                    break;
-                case 2:
-                    MouseCol = c;
-                    break;
-                case 3:
-                    MouseStatus = c;
-                    mouse = false;
-                    c = VI_KEY( MOUSEEVENT );
-                    RedrawMouse( MouseRow, MouseCol );
-                    DisplayMouse( true );
-                    break;
-                }
-                mcnt++;
-            }
-            if( !mouse ) {
 #ifndef __WIN__
-                if( c == 3 ) {
-//                  ExitWithVerify();
-                }
-#endif
-                break;
+            if( key == VI_KEY( CTRL_C ) ) {
+//                ExitWithVerify();
             }
+#endif
+            break;
         }
     }
-    return( c );
+    return( key );
 
 } /* getOverrideKey */
 
 /*
  * GetVIKey - return a VI equivalent of a given key/scan code
  */
-vi_key GetVIKey( vi_key ch, int scan, bool shift )
+vi_key GetVIKey( unsigned code, unsigned scan, bool shift )
 {
-#if !defined NO_TRANSLATE
+#if defined( __DOS__ ) || defined( __OS2__ )
     int     i;
 #endif
+    vi_key  key;
 
+#if !( defined( __DOS__ ) || defined( __OS2__ ) )
+    scan=scan; shift=shift;
+#endif
     if( EditFlags.EscapedInsertChar ) {
-        return( ch );
+        return( code );
     }
-
-    if( ch != 0 ) {
-        if( ch == 127 && scan == 14 ) {
-            return( VI_KEY( CTRL_BS ) );
-        }
-        if( ch == 8 ) {
-            ch = VI_KEY( BS );
-        } else if( ch == 9 ) {
-            ch = VI_KEY( TAB );
-        } else if( ch == 13 ) {
-            ch = VI_KEY( ENTER );
-        } else if( ch == 27 ) {
-            ch = VI_KEY( ESC );
-        }
-        return( ch );
+#if defined( __DOS__ ) || defined( __OS2__ )
+    if( code == 127 && scan == 14 ) {
+        return( VI_KEY( CTRL_BS ) );
     }
-#if !defined( NO_TRANSLATE )
-
+#endif
+    if( code != 0 ) {
+        if( code == 8 ) {
+            key = VI_KEY( BS );
+        } else if( code == 9 ) {
+            key = VI_KEY( TAB );
+        } else if( code == 13 ) {
+            key = VI_KEY( ENTER );
+        } else if( code == 27 ) {
+            key = VI_KEY( ESC );
+        } else {
+            key = code;
+        }
+        return( key );
+    }
+#if !( defined( __DOS__ ) || defined( __OS2__ ) )
+    return( VI_KEY( NULL ) );
+#else
     /*
      * special characters: fcn keys, and cursor control
      */
@@ -245,15 +243,9 @@ vi_key GetVIKey( vi_key ch, int scan, bool shift )
         if( scan >= 94 && scan <= 103 ) {
             return ( scan - 94 + VI_KEY( CTRL_F1 ) );
         }
-#ifdef __WIN
-        if( scan >= 104 && scan <= 105 ) {
-            return( scan - 104 + VI_KEY( ALT_F1 ) );
-        }
-#else
         if( scan >= 104 && scan <= 113 ) {
             return( scan - 104 + VI_KEY( ALT_F1 ) );
         }
-#endif
     }
     if( scan == 130 ) {
         return( VI_KEY( ALT_HYPHEN ) );
@@ -272,11 +264,6 @@ vi_key GetVIKey( vi_key ch, int scan, bool shift )
         }
     }
     return( VI_KEY( DUMMY ) );
-#else
-    /* avoid warning about unused arguments */
-    (void) scan;
-    (void) shift;
-    return( ch );
 #endif
 
 } /* GetVIKey */
@@ -339,18 +326,18 @@ vi_key GetKey( bool usemouse )
             }
 #endif
             DisplayMouse( false );
-#ifdef __WIN__
-            if( key == 0 ) {
+#ifndef __WIN__
+            if( EditFlags.EscapedInsertChar )
+                break;
+#endif
+            if( key == VI_KEY( NULL ) ) {
                 GetKeyboard();
                 ExitWithVerify();
                 clearSpin();
                 continue;
             }
-#else
-            if( !EditFlags.EscapedInsertChar && (key == VI_KEY( CTRL_C ) || key == 0) ) {
-                if( key == 0 ) {
-                    GetKeyboard();
-                }
+#ifndef __WIN__
+            if( key == VI_KEY( CTRL_C ) ) {
                 ExitWithVerify();
                 clearSpin();
                 continue;
@@ -410,7 +397,7 @@ vi_key GetNextEvent( bool usemouse )
 
         key = CurrentKeyMap[CurrentKeyMapCount++];
 
-        if( key == 0 ) {
+        if( key == VI_KEY( NULL ) ) {
             EditFlags.NoInputWindow = false;
             if( EditFlags.InputKeyMapMode ) {
                 DoneInputKeyMap();
@@ -488,18 +475,16 @@ void KeyAdd( vi_key key )
 /*
  * KeyAddString - add an entire string
  */
-void KeyAddString( char *str )
+void KeyAddString( const char *str )
 {
     key_map     scr;
     vi_rc       rc;
-    vi_key      *s;
+    vi_key      *keys;
 
     rc = AddKeyMap( &scr, str );
     if( rc == ERR_NO_ERR ) {
-        s = scr.data;
-        while( *s != 0 ) {
-            KeyAdd( *s );
-            s++;
+        for( keys = scr.data; *keys != VI_KEY( NULL ); ++keys ) {
+            KeyAdd( *keys );
         }
     }
     MemFree( scr.data );

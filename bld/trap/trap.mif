@@ -65,9 +65,7 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
             export TrapRequest_.3 &
 !ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
             export InfoFunction_.4 &
-            export InterruptProgram_.5 &
-            export Terminate_.6 &
-# remove reference to run-time code
+#           remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
 !endif
             op modname=$^& &
@@ -79,10 +77,10 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 sys_x86_dos  = sys dos
 
 sys_x86_rdos = sys rdos_dll &
-               export TrapInit_ &
-               export TrapFini_ &
-               export TrapRequest_ &
-               $($(proj_name)_dllbase_rdos_386_$(name))
+            export TrapInit_ &
+            export TrapFini_ &
+            export TrapRequest_ &
+            $($(proj_name)_dllbase_rdos_386_$(name))
 
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
@@ -100,8 +98,6 @@ sys_axp_nt   = sys ntaxp_dll initinstance &
             export TrapFini.2 &
             export TrapRequest.3 &
             export InfoFunction.4 &
-            export InterruptProgram.5 &
-            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -110,8 +106,6 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             export TrapFini.2 &
             export TrapRequest.3 &
             export InfoFunction.4 &
-            export InterruptProgram.5 &
-            export Terminate.6 &
             option description $(description) &
             op modname=$^&
 
@@ -119,13 +113,11 @@ sys_jvm_nt   = sys nt_dll initinstance opt dosseg &
             export TrapInit_.1 &
             export TrapFini_.2 &
             export TrapRequest_.3 &
-!ifneq reg_dll 1 # build regular DLL and don't try any funny stuff
             export InfoFunction_.4 &
             export InterruptProgram_.5 &
             export Terminate_.6 &
 # remove reference to run-time code
             alias __DLLstart_='_LibMain@12' &
-!endif
             op modname=$^& &
             option description $(description) &
 !ifneq release 0
@@ -138,16 +130,22 @@ trap_ext_os2_os2v2   = .d32
 trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
-!ifdef trap_ext_$(host_os)_$(os)
-target = $(xname)$(trap_ext_$(host_os)_$(os))
-!else ifdef trap_ext_$(host_os)
-target = $(xname)$(trap_ext_$(host_os))
+!ifdef %USE_FILENAME_VERSION
+target_basename = $(xname)$(bld_ver)
 !else
-target = $(xname).trp
+target_basename = $(xname)
+!endif
+
+!ifdef trap_ext_$(host_os)_$(target_os)
+target = $(target_basename)$(trap_ext_$(host_os)_$(target_os))
+!else ifdef trap_ext_$(host_os)
+target = $(target_basename)$(trap_ext_$(host_os))
+!else
+target = $(target_basename).trp
 !endif
 !ifndef __WATCOM__
 !ifdef ext_lib_shared
-target = $(xname)$(ext_lib_shared)
+target = $(target_basename)$(ext_lib_shared)
 !endif
 !endif
 
@@ -160,9 +158,9 @@ TRAP_common_objs += $(os_prefix)noth.obj
 !endif
 
 TRAP_remote_objs = remote.obj
-!ifeq os win
+!ifeq target_os win
 TRAP_remote_objs += winstub.obj
-!else ifeq os nt
+!else ifeq target_os nt
 TRAP_remote_objs += ntstub.obj
 !endif
 

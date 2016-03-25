@@ -41,12 +41,15 @@ _WCRTLINK int _fmemicmp( const void _WCFAR *v1, const void _WCFAR *v2, size_t le
         const unsigned char _WCFAR *s1;
         const unsigned char _WCFAR *s2;
 
-        for( s1 = v1, s2 = v2 ; len; --len )  {
+        for( s1 = v1, s2 = v2; len > 0; --len )  {
             c1 = *s1;
-            if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
+            if( c1 >= 'A' && c1 <= 'Z' )
+                c1 += 'a' - 'A';
             c2 = *s2;
-            if( c2 >= 'A'  &&  c2 <= 'Z' )  c2 += 'a' - 'A';
-            if( c1 != c2 ) return( c1 - c2 );
+            if( c2 >= 'A' && c2 <= 'Z' )
+                c2 += 'a' - 'A';
+            if( c1 != c2 )
+                return( c1 - c2 );
             ++s1;
             ++s2;
         }

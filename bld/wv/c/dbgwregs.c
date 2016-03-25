@@ -34,16 +34,15 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgitem.h"
+#include "dbgwmadr.h"
+#include "dbgwregs.h"
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class wndcls, gui_resource *icon );
-extern void MadRegChangeOptions( a_window *wnd );
 
 void RegChangeOptions( void )
 {
     WndForAllClass( WND_REGISTER, MadRegChangeOptions );
 }
 
-extern WNDOPEN WndRegOpen;
 extern a_window *WndRegOpen( void )
 {
     return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );

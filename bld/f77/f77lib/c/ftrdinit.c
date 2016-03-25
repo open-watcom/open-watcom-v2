@@ -33,13 +33,10 @@
 // Default FORTRAN thread initialization routine.
 // Used if user does not write his own
 
-#if defined( _M_IX86 )
-  #pragma aux __fthrd_initialize "^_"
-#endif
+#include "fdll.h"
 
-
-unsigned        __fthrd_initialize( void ) {
-//==========================================
+int         __fthrd_initialize( void ) {
+//======================================
 
     return( 1 );
 }

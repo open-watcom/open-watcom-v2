@@ -34,6 +34,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
+#include "optmain.h"
 #include "mipsenc.h"
 #include "reloc.h"
 #include "zoiks.h"
@@ -56,7 +57,6 @@ extern byte             RegTrans( hw_reg_set );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
 extern void             ObjEmitSeq( byte_seq * );
-extern void             InputOC( any_oc * );
 extern opcode_defs      FlipOpcode( opcode_defs );
 extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
@@ -496,6 +496,21 @@ extern  void GenCallLabel( pointer label )
 }
 
 
+static  void    GenNoReturn( void ) {
+/************************************
+    Generate a noreturn instruction (pseudo instruction)
+*/
+
+    any_oc      oc;
+
+    oc.oc_ret.hdr.class = OC_RET | ATTR_NORET;
+    oc.oc_ret.hdr.reclen = sizeof( oc_ret );
+    oc.oc_ret.hdr.objlen = 0;
+    oc.oc_ret.ref = NULL;
+    oc.oc_ret.pops = 0;
+    InputOC( &oc );
+}
+
 static  void doCall( instruction *ins )
 /*************************************/
 {
@@ -511,6 +526,9 @@ static  void doCall( instruction *ins )
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+            GenNoReturn();
+        }
     } else {
         GenCallLabel( symLabel( ins->operands[CALL_OP_ADDR] ) );
     }

@@ -42,10 +42,11 @@
 #include "dbgdata.h"
 #include "autoenv.h"
 #include "strutil.h"
+#include "dbgmain.h"
+#include "envlkup.h"
+#include "dbginit.h"
+#include "dbgcmdln.h"
 
-
-extern void     DebugMain( void );
-extern void     DebugFini( void );
 
 char            *CmdData;
 
@@ -125,11 +126,11 @@ void RestoreHandlers( void )
 {
 }
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
     const char  *env;
-    unsigned    len;
-    int         output = 0;
+    size_t      len;
+    bool        output;
     char        c;
 
     // use getenv() so that autoenv has an effect (we can't
@@ -137,11 +138,13 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
     env = getenv( name );
     if( env == NULL )
         return( 0 );
+
+    output = false;
     if( buff_len != 0 && buff != NULL ) {
         --buff_len;
-        output = 1;
+        output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -150,7 +153,7 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
 }
@@ -159,7 +162,7 @@ long _fork( const char *cmd, size_t len )
 {
     char        *dst;
     char        *args;
-    unsigned    cmd_len;
+    size_t      cmd_len;
     RESULTCODES res;
     APIRET      rc;
     HFILE       savestdin;
@@ -182,9 +185,9 @@ long _fork( const char *cmd, size_t len )
         dst = StrCopy( "/C ", dst );
         memcpy( dst, cmd, len );
         dst += len;
-        *dst++ = '\0';
+        *dst++ = NULLCHAR;
     }
-    *dst = '\0';
+    *dst = NULLCHAR;
 
     savestdin  = 0xffff;
     savestdout = 0xffff;
@@ -225,8 +228,4 @@ bool TBreak( void )
     ret = BrkPending;
     BrkPending = false;
     return( ret );
-}
-
-void SysSetMemLimit( void )
-{
 }

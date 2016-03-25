@@ -34,23 +34,21 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
+#include "madinter.h"
 #include "dbgadget.h"
 #include "namelist.h"
-
-
-extern brkp             *FindBreak( address );
-extern a_window         *WndAsmInspect( address );
-extern a_window         *WndSrcInspect( address );
-extern void             *AddBreak( address );
-extern void             RemoveBreak( address );
-extern bool             DlgBreak( address );
-extern void             GoToAddr( address addr );
-extern bool             HasLineInfo( address );
-extern void             ToggleBreak( address );
-extern char             *FileBreakGadget( a_window *, wnd_line_piece *, bool curr, brkp *bp );
-extern address          GetCodeDot( void );
-extern search_result    DeAliasAddrMod( address a, mod_handle *mh );
-
+#include "dbgbrk.h"
+#include "wndsys.h"
+#include "dbgtrace.h"
+#include "dbgmisc.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgdot.h"
+#include "dbgwfil.h"
+#include "dbgwfunc.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dlgbreak.h"
 
 #include "menudef.h"
 static gui_menu_struct FuncMenu[] = {
@@ -61,9 +59,9 @@ typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
     gui_ord             max_name;
-    unsigned            is_global : 1;
-    unsigned            toggled_break : 1;
-    unsigned            d2_only : 1;
+    bool                is_global     : 1;
+    bool                toggled_break : 1;
+    bool                d2_only       : 1;
 } func_window;
 
 #define WndFunc( wnd ) ( (func_window*)WndExtra( wnd ) )
@@ -83,8 +81,10 @@ static  void    FuncModify( a_window *wnd, int row, int piece )
     func_window *func = WndFunc( wnd );
 
     if( piece == PIECE_BREAK ) {
-        if( row < 0 ) return;
-        if( row >= NameListNumRows( NameList( func ) ) ) return;
+        if( row < 0 )
+            return;
+        if( row >= NameListNumRows( NameList( func ) ) )
+            return;
         addr = NameListAddr( NameList( func ), row );
         func->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
@@ -125,7 +125,9 @@ static void CalcIndent( a_window *wnd )
     for( row = 0; row < rows; ++row ) {
         FuncGetSourceName( wnd, row );
         len = WndExtentX( wnd, TxtBuff );
-        if( len > max ) max = len;
+        if( len > max ) {
+            max = len;
+        }
     }
     WndFunc( wnd )->max_name = max;
 }
@@ -135,7 +137,7 @@ static void FuncSetMod( a_window *wnd, mod_handle mod )
     func_window *func = WndFunc( wnd );
 
     func->mod = mod;
-    NameListAddModules( NameList( func ), mod, func->d2_only, TRUE );
+    NameListAddModules( NameList( func ), mod, func->d2_only, true );
     CalcIndent( wnd );
 }
 
@@ -152,7 +154,9 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     func_window *func = WndFunc( wnd );
 
     piece=piece;
-    addr = ( row == WND_NO_ROW ) ? NilAddr : NameListAddr( NameList( func ), row );
+    addr = NilAddr;
+    if( row != WND_NO_ROW )
+        NameListAddr( NameList( func ), row );
     switch( id ) {
     case MENU_INITIALIZE:
         if( IS_NIL_ADDR( addr ) ) {
@@ -161,7 +165,7 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             WndMenuEnableAll( wnd );
             WndMenuEnable( wnd, MENU_FUNCTIONS_SOURCE, HasLineInfo( addr ) );
         }
-        WndMenuEnable( wnd, MENU_FUNCTIONS_D2_ONLY, TRUE );
+        WndMenuEnable( wnd, MENU_FUNCTIONS_D2_ONLY, true );
         WndMenuCheck( wnd, MENU_FUNCTIONS_D2_ONLY, func->d2_only );
         break;
     case MENU_FUNCTIONS_SOURCE:
@@ -188,34 +192,36 @@ static  bool    FuncGetLine( a_window *wnd, int row, int piece,
     address     addr;
     func_window *func = WndFunc( wnd );
 
-    if( row >= NameListNumRows( NameList( func ) ) ) return( FALSE );
+    if( row >= NameListNumRows( NameList( func ) ) )
+        return( false );
     addr = NameListAddr( NameList( func ), row );
     switch( piece ) {
     case PIECE_BREAK:
-        FileBreakGadget( wnd, line, FALSE, FindBreak( addr ) );
-        return( TRUE );
+        FileBreakGadget( wnd, line, false, FindBreak( addr ) );
+        return( true );
     case PIECE_NAME:
         line->indent = MaxGadgetLength;
         line->text = TxtBuff;
         line->extent = WND_MAX_EXTEND;
         FuncGetSourceName( wnd, row );
-        return( TRUE );
+        return( true );
     case PIECE_DEMANGLED:
         if( NameListName( NameList( func ), row, TxtBuff, SN_DEMANGLED ) == 0 ) {
-            return( FALSE );
+            return( false );
         }
         line->text = TxtBuff;
-        line->use_prev_attr = TRUE;
+        line->use_prev_attr = true;
         line->indent = MaxGadgetLength + func->max_name + 2 * WndAvgCharX( wnd );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
 {
-    if( WndFunc( wnd )->mod == mod ) return;
+    if( WndFunc( wnd )->mod == mod )
+        return;
     FuncNoMod( wnd );
     FuncSetMod( wnd, mod );
     WndZapped( wnd );
@@ -244,7 +250,7 @@ static void FuncRefresh( a_window *wnd )
         }
     } else if( UpdateFlags & UP_BREAK_CHANGE ) {
         if( func->toggled_break ) {
-            func->toggled_break = FALSE;
+            func->toggled_break = false;
         } else {
             WndRepaint( wnd );
         }
@@ -268,10 +274,10 @@ static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         NameListInit( NameList( func ), WF_CODE );
-        func->toggled_break = FALSE;
+        func->toggled_break = false;
         FuncSetOptions( wnd );
         WndSetKey( wnd, PIECE_NAME );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE :
         CalcIndent( wnd );
         WndZapped( wnd );
@@ -279,9 +285,9 @@ static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_DESTROY :
         NameListFree( NameList( func ) );
         WndFree( func );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void FuncChangeOptions( void )
@@ -308,35 +314,33 @@ wnd_info FuncInfo = {
 
 extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
-    func_window *func;
-    wnd_class   wndcls;
-    const char  *title;
+    func_window     *func;
+    wnd_class_wv    wndclass;
+    const char      *title;
 
     func = WndMustAlloc( sizeof( func_window ) );
     func->mod = mod;
     if( is_global ) {
-        wndcls = WND_GBLFUNCTIONS;
-        func->is_global = TRUE;
+        wndclass = WND_GBLFUNCTIONS;
+        func->is_global = true;
     } else {
-        wndcls = WND_FUNCTIONS;
-        func->is_global = FALSE;
+        wndclass = WND_FUNCTIONS;
+        func->is_global = false;
     }
     if( is_global ) {
         title = LIT_DUI( WindowGlobal_Functions );
     } else {
         title = LIT_DUI( WindowFunctions );
     }
-    return( DbgWndCreate( title, &FuncInfo, wndcls, func, &FuncIcon ) );
+    return( DbgWndCreate( title, &FuncInfo, wndclass, func, &FuncIcon ) );
 }
 
-extern WNDOPEN WndFuncOpen;
 extern a_window *WndFuncOpen( void )
 {
-    return( DoWndFuncOpen( FALSE, NO_MOD ) );
+    return( DoWndFuncOpen( false, NO_MOD ) );
 }
 
-extern WNDOPEN WndGblFuncOpen;
 extern a_window *WndGblFuncOpen( void )
 {
-    return( DoWndFuncOpen( TRUE, NO_MOD ) );
+    return( DoWndFuncOpen( true, NO_MOD ) );
 }

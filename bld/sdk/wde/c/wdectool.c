@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,8 +68,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-bool WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -76,7 +75,7 @@ void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 typedef struct {
     char                *up;
     char                *down;
-    WORD                id;
+    int                 id;
     OBJ_ID              obj_id;
     unsigned char       flags;
 } WdeControlBit;
@@ -87,8 +86,8 @@ typedef struct {
 /* static function prototypes                                               */
 /****************************************************************************/
 static void    WdeDestroyControls( void );
-static WORD    WdeGetMenuFromOBJID( OBJ_ID );
-static OBJ_ID  WdeGetOBJIDFromMenu( WORD );
+static int     WdeGetMenuFromOBJID( OBJ_ID );
+static OBJ_ID  WdeGetOBJIDFromMenu( int );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -135,7 +134,7 @@ static WdeControlBit WdeControlBits[] = {
 
 #define NUM_TOOLS (sizeof( WdeControlBits ) / sizeof( WdeControlBit ) - 1)
 
-WORD WdeGetCToolID( void )
+int WdeGetCToolID( void )
 {
     HMENU       menu;
     UINT        state;
@@ -156,46 +155,7 @@ WORD WdeGetCToolID( void )
         }
     }
 
-    return( 0xffff );
-}
-
-bool WdeInitControls( HINSTANCE inst )
-{
-    bool        usingCommonControls;
-    int         i;
-
-    WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
-
-    if( WdeControlsInfo == NULL ) {
-        return( false );
-    }
-
-    usingCommonControls = IsCommCtrlLoaded();
-
-    for( i = 0; i < NUM_TOOLS; i++ ) {
-        if( WdeControlBits[i].flags & WCB_FLAG_COMMON_CONTROL ) {
-            if( !usingCommonControls ) {
-                continue;
-            }
-        }
-        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
-        WdeControlsInfo->items[i].id = WdeControlBits[i].id;
-        WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
-        WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );
-    }
-
-    WdeControlsInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
-    WdeControlsInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
-    WdeControlsInfo->dinfo.border_size.x = TOOL_BORDERX;
-    WdeControlsInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WdeControlsInfo->dinfo.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME;
-    WdeControlsInfo->dinfo.hook = WdeControlsHook;
-    WdeControlsInfo->dinfo.helphook = WdeCToolHelpHook;
-    WdeControlsInfo->dinfo.foreground = NULL;
-    WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
-    WdeControlsInfo->dinfo.is_fixed = FALSE;
-
-    return( true );
+    return( -1 );
 }
 
 void WdeShutdownControls( void )
@@ -275,11 +235,11 @@ bool WdeSetStickyMode( bool mode )
     return( old_mode );
 }
 
-void WdeSetBaseObject( WORD menu_selection )
+void WdeSetBaseObject( int menu_selection )
 {
     HMENU               menu;
     OBJ_ID              obj_id;
-    WORD                id;
+    int                 id;
     WdeToolBar          *tbar;
 
     if( !WdeGetNumRes() ) {
@@ -291,12 +251,12 @@ void WdeSetBaseObject( WORD menu_selection )
     id = WdeGetCToolID();
     obj_id = -1;
 
-    if( id != (WORD)-1 && id != menu_selection ) {
+    if( id != -1 && id != menu_selection ) {
         CheckMenuItem( menu, id, MF_BYCOMMAND | MF_UNCHECKED );
         WdeSetToolBarItemState( tbar, id, BUTTON_UP );
     }
 
-    if( menu_selection != (WORD)-1 ) {
+    if( menu_selection != -1 ) {
         obj_id = WdeGetOBJIDFromMenu( menu_selection );
         if( obj_id != -1 ) {
             SetBaseObjType( obj_id );
@@ -307,12 +267,12 @@ void WdeSetBaseObject( WORD menu_selection )
     }
 }
 
-WORD WdeGetMenuFromOBJID( OBJ_ID id )
+int WdeGetMenuFromOBJID( OBJ_ID obj_id )
 {
     int i;
 
     for( i = 0; WdeControlBits[i].up != NULL; i++ ) {
-        if( WdeControlBits[i].obj_id == id ) {
+        if( WdeControlBits[i].obj_id == obj_id ) {
             return( WdeControlBits[i].id );
         }
     }
@@ -320,7 +280,7 @@ WORD WdeGetMenuFromOBJID( OBJ_ID id )
     return( -1 );
 }
 
-OBJ_ID WdeGetOBJIDFromMenu( WORD id )
+OBJ_ID WdeGetOBJIDFromMenu( int id )
 {
     int i;
 
@@ -337,7 +297,7 @@ bool WdeCreateControlsToolBar( void )
 {
     RECT        t, r, screen;
     HWND        parent;
-    WORD        id;
+    int         id;
     char        *text;
 
     if( WdeControls != NULL ) {
@@ -410,7 +370,7 @@ bool WdeCreateControlsToolBar( void )
 
     if( WdeGetNumRes() != 0 ) {
         id = WdeGetMenuFromOBJID( GetBaseObjType() );
-        if( id != (WORD)-1 ) {
+        if( id != -1 ) {
             WdeSetToolBarItemState( WdeControls, id, BUTTON_DOWN );
         }
         WdeSetStickyMode( WdeStickyMode );
@@ -432,13 +392,13 @@ void WdeHandleShowToolsMenu( void )
     }
 }
 
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
+static void wdeCToolHelpHook( HWND hwnd, ctl_id id, bool pressed )
 {
     _wde_touch( hwnd );
-    WdeHandleToolHint( wParam, pressed );
+    WdeHandleToolHint( id, pressed );
 }
 
-bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO          *minmax;
     WdeToolBar          *tbar;
@@ -447,7 +407,7 @@ bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     char                *text;
     OBJPTR              obj;
     WdeOrderMode        mode;
-    CMDID               cid;
+    ctl_id              cid;
     bool                ignore_msg;
     bool                ret;
 
@@ -562,4 +522,43 @@ bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     }
 
     return( ret );
+}
+
+bool WdeInitControls( HINSTANCE inst )
+{
+    bool        usingCommonControls;
+    int         i;
+
+    WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
+
+    if( WdeControlsInfo == NULL ) {
+        return( false );
+    }
+
+    usingCommonControls = IsCommCtrlLoaded();
+
+    for( i = 0; i < NUM_TOOLS; i++ ) {
+        if( WdeControlBits[i].flags & WCB_FLAG_COMMON_CONTROL ) {
+            if( !usingCommonControls ) {
+                continue;
+            }
+        }
+        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
+        WdeControlsInfo->items[i].id = WdeControlBits[i].id;
+        WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
+        WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );
+    }
+
+    WdeControlsInfo->dinfo.button_size.x = BUTTONX + BUTTON_PAD;
+    WdeControlsInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
+    WdeControlsInfo->dinfo.border_size.x = TOOL_BORDERX;
+    WdeControlsInfo->dinfo.border_size.y = TOOL_BORDERY;
+    WdeControlsInfo->dinfo.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME;
+    WdeControlsInfo->dinfo.hook = wdeControlsHook;
+    WdeControlsInfo->dinfo.helphook = wdeCToolHelpHook;
+    WdeControlsInfo->dinfo.foreground = NULL;
+    WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
+    WdeControlsInfo->dinfo.is_fixed = FALSE;
+
+    return( true );
 }

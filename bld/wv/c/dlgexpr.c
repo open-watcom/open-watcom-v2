@@ -39,33 +39,26 @@
 #include "mad.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgexpr3.h"
+#include "dbgexpr.h"
+#include "dbgparse.h"
+#include "dlgscan.h"
+#include "dlgexpr.h"
+#include "dlgnewws.h"
+
+
+typedef bool rtn_func(const char *,void *);
+typedef bool dlg_func(const char *,char *,unsigned);
 
 /* to be moved to header files ! */
-extern bool             DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
-extern bool             DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
-extern void             ChkExpr( void );
-extern void             ReqMemAddr(memory_expr , address *);
-extern void             NormalExpr(void);
-extern void             FreezeStack();
-extern void             UnFreezeStack( bool );
-extern void             PrevError( const char * );
 extern char             *StrDouble(xreal*,char*);
-extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );
-extern void             PopEntry(void);
 
 extern stack_entry      *ExprSP;
 
 #define EXPR_LEN        128
 
-extern bool DlgScanModName( const char *str, void *value );
-extern bool DlgScanLong( const char *str, void *value );
-extern bool DlgScanCodeAddr( const char *str, void *value );
-extern bool DlgScanDataAddr( const char *str, void *value );
-extern bool DlgScanGivenAddr( const char *str, void *value );
-extern bool DlgScanAny( const char *str, void *value );
-extern bool DlgScanString( const char *str, void *value );
 
-static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, bool (*rtn)(const char *,void *) )
+static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, rtn_func *rtn )
 {
     char        *str;
     bool        ok;
@@ -82,44 +75,44 @@ static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, bool (*rtn)(c
 }
 
 
-extern bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
+bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
 {
-    return( DoDlgGet( gui, id, value, DlgScanLong ) );
+    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanLong ) );
 }
 
-extern bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
+bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
-    return( DoDlgGet( gui, id, value, DlgScanCodeAddr ) );
+    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanCodeAddr ) );
 }
 
-extern bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
+bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
-    return( DoDlgGet( gui, id, value, DlgScanDataAddr ) );
+    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanDataAddr ) );
 }
 
-extern void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
+void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
 {
     CnvLong( value, TxtBuff, TXT_LEN );
     GUISetText( gui, id, TxtBuff );
 }
 
 static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *title,
-                                   void *value, bool (*rtn)(const char*,void*),
-                                   bool (*dlg)(const char*,char*,unsigned) )
+                                   void *value, rtn_func *rtn, dlg_func *dlg )
 {
     bool        rc;
 
     for( ;; ) {
         dlg( title, buff, buff_len );
-        if( buff[0] == '\0' )
-            return( FALSE );
+        if( buff[0] == NULLCHAR )
+            return( false );
         rc = rtn( buff, value );
-        if( rc ) return( TRUE );
+        if( rc )
+            return( true );
         PrevError( TxtBuff );
     }
 }
 
-static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, void *value, bool (*rtn)(const char*,void*) )
+static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, void *value, rtn_func *rtn )
 {
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
@@ -129,19 +122,19 @@ bool    DlgLongExpr( const char *title, long *value )
     char        new[EXPR_LEN];
 
     CnvLong( *value, new, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanLong ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanLong ) );
 }
 
 bool    DlgAnyExpr( const char *title, char *buff, unsigned buff_len )
 {
-    return( DlgGetItem( buff, buff_len, title, NULL, DlgScanAny ) );
+    return( DlgGetItem( buff, buff_len, title, NULL, (rtn_func *)DlgScanAny ) );
 }
 
 
 static void InitAddr( char *new, address *value, unsigned max )
 {
-    if( IS_NIL_ADDR( (*value) ) ) {
-        new[0] = '\0';
+    if( IS_NIL_ADDR( *value ) ) {
+        new[0] = NULLCHAR;
     } else {
         UniqStrAddr( value, new, max );
     }
@@ -152,7 +145,7 @@ bool    DlgCodeAddr( const char *title, address *value )
     char        new[EXPR_LEN];
 
     InitAddr( new, value, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanCodeAddr ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanCodeAddr ) );
 }
 
 bool    DlgDataAddr( const char *title, address *value )
@@ -160,15 +153,15 @@ bool    DlgDataAddr( const char *title, address *value )
     char        new[EXPR_LEN];
 
     InitAddr( new, value, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanDataAddr ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanDataAddr ) );
 }
 
 bool    DlgGivenAddr( const char *title, address *value )
 {
     char        new[EXPR_LEN];
 
-    new[0] = '\0';
-    return( DlgGetItem( new, EXPR_LEN, title, value, DlgScanGivenAddr ) );
+    new[0] = NULLCHAR;
+    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanGivenAddr ) );
 }
 
 bool    DlgModName( const char *title, mod_handle *mod )
@@ -176,7 +169,7 @@ bool    DlgModName( const char *title, mod_handle *mod )
     char        new[EXPR_LEN];
 
     if( *mod == NO_MOD ) {
-        new[0] = '\0';
+        new[0] = NULLCHAR;
     } else {
         ModName( *mod, new, EXPR_LEN );
     }
@@ -187,7 +180,7 @@ bool DlgString( const char *title, char *buff )
 {
     char        new[EXPR_LEN];
 
-    new[0] = '\0';
+    new[0] = NULLCHAR;
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
@@ -196,13 +189,14 @@ bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
     bool                ok;
     mad_type_info       mti;
     char                buff[EXPR_LEN];
-    unsigned            buff_len = sizeof( buff );
+    size_t              buff_len = sizeof( buff );
 
     MADTypeInfo( th, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
     ok = DlgAnyExpr( title, buff, sizeof( buff ) );
-    if( !ok ) return( FALSE );
+    if( !ok )
+        return( false );
     ToItemMAD( ExprSP, value, &mti );
     PopEntry();
-    return( TRUE );
+    return( true );
 }

@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "expr.h"
 
 static long _NEAR   cExpr1( void );
@@ -49,15 +48,15 @@ static long _NEAR   cExpr11( void );
 static long _NEAR   cExpr12( void );
 static token        nextToken( void );
 
-static char     wasString;
-static char     lastString[TBUFF_SIZE];
-static int      nextCh;
-static token    currToken;
-static char     tokenBuff[TBUFF_SIZE];
-static long     constantVal;
-static char     *exprData;
-static jmp_buf  abortAddr;
-static int      tokenBuffCnt;
+static char         wasString;
+static char         lastString[TBUFF_SIZE];
+static int          nextCh;
+static token        currToken;
+static char         tokenBuff[TBUFF_SIZE];
+static long         constantVal;
+static const char   *exprData;
+static jmp_buf      abortAddr;
+static int          tokenBuffCnt;
 
 #define str( a ) #a
 
@@ -108,11 +107,10 @@ static unsigned long ddeNums[] = {
 static void nextChar( void )
 {
     if( exprData == NULL ) {
-        nextCh = 0;
+        nextCh = '\0';
     } else {
-        nextCh = *exprData;
-        exprData++;
-        if( nextCh == 0 ) {
+        nextCh = *exprData++;
+        if( nextCh == '\0' ) {
             exprData = NULL;
         }
     }
@@ -121,7 +119,7 @@ static void nextChar( void )
 /*
  * StartExprParse - get read to parse an expression
  */
-void StartExprParse( char *data, jmp_buf abort_addr )
+void StartExprParse( const char *data, jmp_buf abort_addr )
 {
     exprData = data;
     memcpy( abortAddr, abort_addr, sizeof( jmp_buf ) );
@@ -145,9 +143,9 @@ static token _nextToken( void )
     tokenBuffCnt = 0;
     for( ;; ) {
         ch = nextCh;
-        if( ch == 0 ) {
+        if( ch == '\0' ) {
             nextChar();
-            tokenBuff[tokenBuffCnt] = 0;
+            tokenBuff[tokenBuffCnt] = '\0';
             if( tokenBuffCnt == 0 ) {
                 return( T_EOF );
             }
@@ -164,9 +162,9 @@ static token _nextToken( void )
             if( tokenBuffCnt == 0 ) {
                 for( ;; ) {
                     nextChar();
-                    if( nextCh == '"' || nextCh == 0 ) {
+                    if( nextCh == '"' || nextCh == '\0' ) {
                         nextChar();
-                        tokenBuff[tokenBuffCnt] = 0;
+                        tokenBuff[tokenBuffCnt] = '\0';
                         return( T_STRING );
                     }
                     tokenBuff[tokenBuffCnt++] = nextCh;
@@ -314,7 +312,7 @@ static token _nextToken( void )
         tokenBuff[tokenBuffCnt++] = ch;
         nextChar();
     }
-    tokenBuff[tokenBuffCnt] = 0;
+    tokenBuff[tokenBuffCnt] = '\0';
     return( T_UNKNOWN );
 
 } /* _nextToken */
@@ -342,13 +340,11 @@ static token nextToken( void )
             if( tokenBuff[0] == '.' ) {
                 strcpy( tokenBuff, GetASetVal( &tokenBuff[1] ) );
                 constantVal = strtol( tokenBuff, NULL, 0 );
-                j = tokenBuffCnt - 1;
-                while( j >= 0 ) {
+                for( j = tokenBuffCnt - 1; j >= 0; --j ) {
                     if( !isdigit( tokenBuff[j] ) ) {
                         currToken = T_STRING;
                         break;
                     }
-                    j--;
                 }
            } else if( !strcmp( tokenBuff, "config" ) ) {
                 constantVal = EditFlags.Color * 100 + EditFlags.BlackAndWhite * 10 +
@@ -497,12 +493,13 @@ static long doCompare( long val1, long (_NEAR *fn)( void ) )
 {
     char        tmp1[TBUFF_SIZE];
     char        tmp2[TBUFF_SIZE];
-    char        cmp_str = 0;
+    bool        cmp_str;
     long        val2;
 
+    cmp_str = false;
     if( wasString ) {
         strcpy( tmp1, lastString );
-        cmp_str = 1;
+        cmp_str = true;
     }
     nextToken();
     val2 = fn();
@@ -511,7 +508,7 @@ static long doCompare( long val1, long (_NEAR *fn)( void ) )
         if( !cmp_str ) {
             sprintf( tmp1, "%ld", val1 );
         }
-        cmp_str = 1;
+        cmp_str = true;
     } else if( cmp_str ) {
         sprintf( tmp2, "%ld", val2 );
     }

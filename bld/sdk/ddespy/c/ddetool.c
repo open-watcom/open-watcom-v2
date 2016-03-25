@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wddespy.h"
 
 typedef struct ddetoolinfo {
-    struct toolbar      *hdl;
+    toolbar             *hdl;
     TOOLDISPLAYINFO     info;
     BOOL                fixed;
     RECT                floatrect;
@@ -99,9 +100,9 @@ static void resizeForTB( RECT *area, HWND hwnd )
 } /* resizeForTB */
 
 /*
- * MyToolBarProc - hook message handler for the toolbar
+ * myToolBarProc - hook message handler for the toolbar
  */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MINMAXINFO  *minmax;
 //  HWND        toolhwnd;
@@ -166,7 +167,7 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( false );
 
-} /* MyToolBarProc */
+} /* myToolBarProc */
 
 /*
  * GetFixedTBRect
@@ -189,13 +190,13 @@ void GetFixedTBRect( HWND hwnd, RECT *rect )
 /*
  * showTBHint
  */
-static void showTBHint( HWND hwnd, WPARAM menuid, bool select )
+static void showTBHint( HWND hwnd, ctl_id id, bool select )
 {
     DDEWndInfo          *info;
 
     hwnd = hwnd;
     info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
-    HintToolBar( info->hintbar, (UINT)menuid, select );
+    HintToolBar( info->hintbar, id, select );
 
 } /* showTBHint */
 
@@ -216,7 +217,7 @@ void MakeDDEToolBar( HWND hwnd )
     ToolBar.info.border_size.x = TOOL_OUTLINE_WIDTH;
     ToolBar.info.border_size.y = TOOL_OUTLINE_HITE;
     GetFixedTBRect( hwnd, &ToolBar.info.area );
-    ToolBar.info.hook = MyToolBarProc;
+    ToolBar.info.hook = myToolBarProc;
     ToolBar.info.helphook = showTBHint;
     ToolBar.info.background = 0;
     ToolBar.info.foreground = 0;
@@ -338,7 +339,7 @@ bool ToggleTB( HWND parent )
 /*
  * DDESetStickyState - set the state of a sticky toolbar button
  */
-void DDESetStickyState( UINT itemid, BOOL isdown )
+void DDESetStickyState( ctl_id itemid, bool isdown )
 {
     if( isdown ) {
         ToolBarSetState( ToolBar.hdl, itemid, BUTTON_DOWN );

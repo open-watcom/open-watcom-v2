@@ -85,7 +85,7 @@ _WCRTLINK JSTRING jstrset( JCHAR *str, JMOJI c )
    JCHAR *keep = str;
    size_t count, len;
 
-   len = strlen( str );
+   len = strlen( (char *)str );
    if( jiszen( c ) ) {
       for( count = 0; count < len/2; count++ ) {
          str = jputmoji( str, c );

@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "tinyio.h"
-#include "trpimp.h"
+#include "trptypes.h"
 #include "digio.h"
 #include "servio.h"
 
@@ -52,7 +52,7 @@ extern int KeyGet_pragma( void );
     modify [ax];
 
 #pragma aux KeyGet_pragma =     \
-    "mov    ah,0"               \
+    "xor    ah,ah"              \
     "int    16h"                \
     modify [ax];
 

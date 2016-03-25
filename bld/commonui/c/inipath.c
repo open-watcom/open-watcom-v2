@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-#include "precomp.h"
+#include "commonui.h"
 #include <direct.h>
 #include <string.h>
 #include "wio.h"

@@ -56,7 +56,7 @@ extern mod_handle   WPDipLoadInfo(int f_handle,char *f_name,void *image,int imag
 extern void         ReplaceExt(char *path,char *addext);
 extern void         ErrorMsg(char *msg,... );
 extern image_info   *AddrImage(address *addr);
-extern void         SetCurrentMAD( mad_handle );
+extern void         SetCurrentMAD( dig_mad );
 
 extern sio_data     *SIOData;
 extern sio_data     *CurrSIOData;
@@ -754,7 +754,7 @@ STATIC void calcAggregates( void )
     unsigned            *sorted_idx;
     address             ***sorted_vect;
     massgd_sample_addr  **massgd_data;
-    unsigned            mbuckets;
+//    unsigned            mbuckets;
     unsigned            curr_mbucket;
     unsigned            curr_midx;
     thread_data         *thd;
@@ -797,7 +797,7 @@ STATIC void calcAggregates( void )
     curr = NULL;
     curr_mbucket = 0;
     curr_midx = -1;
-    mbuckets = 1;
+//    mbuckets = 1;
     massgd_data = ProfAlloc( sizeof( *massgd_data ) );
     massgd_data[0] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );
     for( ;; ) {

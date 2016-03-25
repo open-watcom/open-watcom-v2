@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -172,7 +172,7 @@ static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
     MapDialogRect( hDlg, &t );
     new_height = (height != 0 ? height - (crect.top - prect->top + t.bottom)
                               : crect.bottom - crect.top);
-    SetWindowPos( win, (HWND) NULL, 0, 0, prect->right - crect.left - t.bottom,
+    SetWindowPos( win, (HWND)NULL, 0, 0, prect->right - crect.left - t.bottom,
                   new_height, SWP_NOMOVE | SWP_NOZORDER );
     InvalidateRect( win, NULL, TRUE );
 }
@@ -789,7 +789,7 @@ WINEXPORT BOOL CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam,
     case WM_INITDIALOG:
         einfo = (WStringEditInfo *)lParam;
         einfo->edit_dlg = hDlg;
-        SET_DLGDATA( hDlg, (LONG_PTR)einfo );
+        SET_DLGDATA( hDlg, einfo );
         WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
                                 IDM_STREDCMDID, WR_HASHENTRY_ALL );
         ret = TRUE;

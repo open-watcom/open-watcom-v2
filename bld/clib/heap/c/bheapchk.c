@@ -40,23 +40,26 @@
 
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
-    farfrlptr curr;
-    unsigned short seg;
-    struct heapblk _WCFAR *p;
-    unsigned long total_size;
+    farfrlptr       curr;
+    __segment       seg;
+    heapblk         _WCFAR *p;
+    unsigned long   total_size;
 
     total_size = 0;
     seg = req_seg;
-    if( seg == _NULLSEG )  seg = __bheap;
-    for( ; seg ;) {
+    if( seg == _NULLSEG )
+        seg = __bheap;
+    for( ; seg != _NULLSEG; ) {
         p = MK_FP( seg, 0 );
         curr = MK_FP( seg, p->freehead.next );
-        for(;;) {
-            if( FP_OFF(curr) == offsetof(struct heapblk, freehead) ) break;
+        for( ;; ) {
+            if( FP_OFF( curr ) == offsetof( heapblk, freehead ) )
+                break;
             total_size += curr->len;
             curr = MK_FP( seg, curr->next );
         }
-        if( req_seg != _NULLSEG )  break;
+        if( req_seg != _NULLSEG )
+            break;
         seg = p->nextseg;
     }
     *free_size = total_size;
@@ -65,7 +68,7 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
 
 static int checkFree( farfrlptr p )
 {
-    unsigned short seg;
+    __segment seg;
     farfrlptr prev;
     farfrlptr next;
     farfrlptr prev_prev;
@@ -74,12 +77,12 @@ static int checkFree( farfrlptr p )
     seg = FP_SEG( p );
     prev = MK_FP( seg, p->prev );
     next = MK_FP( seg, p->next );
-    if( prev->next != FP_OFF(p) || next->prev != FP_OFF(p) ) {
+    if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
         return( _HEAPBADNODE );
     }
     prev_prev = MK_FP( seg, prev->prev );
     next_next = MK_FP( seg, next->next );
-    if( prev_prev->next != FP_OFF(prev) || next_next->prev != FP_OFF(next) ) {
+    if( prev_prev->next != FP_OFF( prev ) || next_next->prev != FP_OFF( next ) ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );
@@ -91,17 +94,20 @@ _WCRTLINK int _bheapchk( __segment seg )
     int                 heap_status;
     unsigned long       free_size;
 
-    if( seg == _DGroup() ) return( _nheapchk() );
+    if( seg == _DGroup() )
+        return( _nheapchk() );
     _AccessFHeap();
     heap_status = checkFreeList( &free_size, seg );
     if( heap_status == _HEAPOK ) {
         hi._pentry = NULL;
-        for(;;) {
-            heap_status = __HeapWalk( &hi, seg==_NULLSEG ? __bheap:seg, seg);
-            if( heap_status != _HEAPOK ) break;
+        for( ;; ) {
+            heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheap : seg), seg );
+            if( heap_status != _HEAPOK )
+                break;
             if( hi._useflag == _FREEENTRY ) {
                 heap_status = checkFree( hi._pentry );
-                if( heap_status != _HEAPOK ) break;
+                if( heap_status != _HEAPOK )
+                    break;
                 free_size -= hi._size;
             }
         }

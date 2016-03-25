@@ -36,12 +36,12 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void __based(void) *_bcalloc( __segment seg, size_t n, size_t el_size )
+_WCRTLINK void __based( void ) *_bcalloc( __segment seg, size_t n, size_t el_size )
 {
-    void __based(void) *p;
-    unsigned long chk_size;
+    void            __based( void ) *p;
+    unsigned long   chk_size;
 
-    chk_size = (unsigned long) n * el_size;
+    chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
 #ifndef __386__
     if( el_size != chk_size ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 int TBWidth = TB_WIDTH;
 int TBHeight = TB_HEIGHT;
 
-static void             *toolBar;
-static WORD             currentTool;
+static toolbar          *toolBar;
+static ctl_id           currentTool;
 static BOOL             hotspotPresent = FALSE;
 static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
     { CLPRECT,  CLPRECTD,   NULL, NULL },
@@ -55,28 +56,28 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 };
 
 /*
- * ToolBarHelpProc
+ * toolBarHelpProc
  */
-void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
+static void toolBarHelpProc( HWND hwnd, ctl_id id, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
-        ShowHintText( wparam );
+        ShowHintText( id );
     } else {
         SetHintText( " " );
     }
 
-} /* ToolBarHelpProc */
+} /* toolBarHelpProc */
 
 /*
- * ToolBarProc - hook function that intercepts messages to the toolbar
+ * toolBarProc - hook function that intercepts messages to the toolbar
  */
-bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool toolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HMENU               hmenu;
     static HMENU        hsysmenu;
-    short               i;
-    WORD                id;
+    int                 i;
+    ctl_id              id;
     WPI_RECT            rctool;
     HWND                hframe;
     IMGED_DIM           left;
@@ -100,11 +101,10 @@ bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
         break;
 
     case WM_USER:
-        if( !lparam ) {
-            ShowHintText( wparam );
-        }
-
         id = LOWORD( wparam );
+        if( !lparam ) {
+            ShowHintText( id );
+        }
         ToolBarSetState( toolBar, id, lparam ? BUTTON_UP : BUTTON_DOWN );
         if( id != currentTool ) {
             if( lparam ) {
@@ -144,7 +144,7 @@ bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     }
     return( false );
 
-} /* ToolBarProc */
+} /* toolBarProc */
 
 /*
  * InitTools - initializes the image editor toolbar
@@ -156,7 +156,7 @@ void InitTools( HWND hparent )
     WPI_RECT            toolbar_loc;
     TOOLDISPLAYINFO     tdi;
     TOOLITEMINFO        tii;
-    short               i;
+    int                 i;
     HMENU               hmenu;
     HWND                htoolbar;
 
@@ -186,8 +186,8 @@ void InitTools( HWND hparent )
     tdi.area = toolbar_loc;
     tdi.style = TOOLBAR_FLOATNOSIZE_STYLE;
 //    tdi.style = TOOLBAR_FLOAT_STYLE;
-    tdi.hook = ToolBarProc;
-    tdi.helphook = ToolBarHelpProc;
+    tdi.hook = toolBarProc;
+    tdi.helphook = toolBarHelpProc;
     tdi.background = (HBITMAP)0;
     tdi.foreground = (HBRUSH)0;
     tdi.is_fixed = FALSE;
@@ -205,7 +205,7 @@ void InitTools( HWND hparent )
             GetWindowRect( htoolbar, &rect );
             w = _wpi_getwidthrect( rect ) + (TBWidth - w);
             h = _wpi_getheightrect( rect ) + (TBHeight - h);
-            SetWindowPos( htoolbar, HWND_TOP, 0, 0, w, h,
+            SetWindowPos( htoolbar, (HWND)NULL, 0, 0, w, h,
                           SWP_SIZE | SWP_NOZORDER | SWP_NOMOVE );
         }
     }
@@ -290,7 +290,7 @@ void AddHotSpotTool( BOOL faddhotspot )
         ToolBarDeleteItem( toolBar, IMGED_HOTSPOT );
         if( currentTool == IMGED_HOTSPOT ) {
             currentTool = IMGED_FREEHAND;
-            SetToolType( (int)currentTool );
+            SetToolType( currentTool );
             ToolBarSetState( toolBar, currentTool, BUTTON_DOWN );
         }
         hotspotPresent = FALSE;
@@ -306,7 +306,7 @@ void AddHotSpotTool( BOOL faddhotspot )
 /*
  * PushToolButton - push a button on the toolbar
  */
-void PushToolButton( WORD cmdid )
+void PushToolButton( ctl_id cmdid )
 {
     if( cmdid != currentTool ) {
         ToolBarSetState( toolBar, currentTool, BUTTON_UP );

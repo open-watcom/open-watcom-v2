@@ -40,25 +40,26 @@
 #include "madinter.h"
 #include "dbgutil.h"
 #include "trapglbl.h"
+#include "dbgbrk.h"
+#include "wndsys.h"
+#include "dbgevent.h"
+#include "dbgupdt.h"
+#include "dlgexpr.h"
+#include "dlgbreak.h"
 
-extern bool             RemovePoint( brkp * );
-extern brkp             *FindBreak( address );
-extern brkp             *AddBreak( address );
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
-extern bool             DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address* );
-extern bool             DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address* );
-extern void             PrevError( const char * );
-extern void             DbgUpdate( update_list flags );
-extern void             SetPointAddr( brkp *bp, address addr );
-extern void             GetBPText( brkp *bp, char *buff );
+
+typedef struct {
+    brkp            *bp;
+    brkp            tmpbp;
+    gui_ctl_id      last_edit;
+    bool            brand_new       : 1;
+    bool            cancel          : 1;
+    bool            clear           : 1;
+    bool            cmd_error       : 1;
+    bool            cond_error      : 1;
+} dlg_brk;
+
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
-extern void             WndMsgBox( const char * );
-extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
-extern void             RecordNewPoint( brkp *bp );
-extern void             RecordClearPoint( brkp *bp );
-extern void             SetRecord( bool on );
-
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {
@@ -79,7 +80,8 @@ static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
     } else {
         ok = DlgGetDataAddr( gui, CTL_BRK_ADDRESS, &addr );
     }
-    if( ok ) SetPointAddr( &dlg->tmpbp, addr );
+    if( ok )
+        SetPointAddr( &dlg->tmpbp, addr );
     return( ok );
 }
 
@@ -90,7 +92,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
 
     tmp_bp = &dlg->tmpbp;
     GUIDlgBuffGetText( gui, CTL_BRK_COUNTDOWN, TxtBuff, TXT_LEN );
-    if( TxtBuff[0] == '\0' ) {
+    if( TxtBuff[0] == NULLCHAR ) {
         tmp_bp->countdown = 0;
         tmp_bp->initial_countdown = 0;
     } else if( !DlgGetLong( gui, CTL_BRK_COUNTDOWN, &tmp_bp->countdown ) ) {
@@ -127,15 +129,18 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUIDlgBuffGetText( gui, CTL_BRK_CMD_LIST, TxtBuff, TXT_LEN );
     if( tmp_bp->cmds != NULL )
         FreeCmdList( tmp_bp->cmds );
-    if( TxtBuff[0] != '\0' ) {
+    if( TxtBuff[0] != NULLCHAR ) {
         tmp_bp->cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
     } else {
         tmp_bp->cmds = NULL;
     }
     tmp_bp->condition = GUIGetText( gui, CTL_BRK_CONDITION );
-    if( tmp_bp->condition != NULL ) tmp_bp->status.b.use_condition = true;
-    if( tmp_bp->cmds != NULL ) tmp_bp->status.b.use_cmds = true;
-    if( tmp_bp->initial_countdown != 0 ) tmp_bp->status.b.use_countdown = true;
+    if( tmp_bp->condition != NULL )
+        tmp_bp->status.b.use_condition = true;
+    if( tmp_bp->cmds != NULL )
+        tmp_bp->status.b.use_cmds = true;
+    if( tmp_bp->initial_countdown != 0 )
+        tmp_bp->status.b.use_countdown = true;
     tmp_bp->status.b.active = GUIIsChecked( gui, CTL_BRK_ACTIVE );
     tmp_bp->status.b.resume = GUIIsChecked( gui, CTL_BRK_RESUME );
     tmp_bp->status.b.silent = tmp_bp->status.b.resume;
@@ -276,7 +281,7 @@ OVL_EXTERN bool BrkEvent( gui_window *gui, gui_event gui_ev, void *param )
             }
             return( true );
         case CTL_BRK_CLEAR:
-            dlg->clear = TRUE;
+            dlg->clear = true;
             GUICloseDialog( gui );
             return( true );
         case CTL_BRK_CANCEL:

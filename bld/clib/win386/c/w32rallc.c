@@ -32,14 +32,13 @@
 
 #include "variety.h"
 #include "cover.h"
-#include "alloc.h"
+#include "windpmi.h"
+
 
 int __pascal Win32Realloc( DWORD newsize )
 {
-    WORD        rc;
-
-    rc = DPMIResizeDS( newsize );
-    if( rc ) return( 5 );                       /* out of memory */
+    if( DPMIResizeDS( newsize ) )
+        return( 5 );                       /* out of memory */
     return( 0 );
 
 } /* Win32Realloc */

@@ -34,6 +34,7 @@
 #include <i86.h>
 #include <sys/osinfo.h>
 #include "trperr.h"
+#include "parlink.h"
 
 #define INFO_SEG    0x40
 #define PAR_BASE    0x08

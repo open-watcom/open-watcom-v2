@@ -194,16 +194,6 @@ extern unsigned char            __uselfn;   /* LFN support available flag */
 
 #define _RWD_uselfn             __uselfn
 
-/*
-    For the sake of efficiency, tell the compiler
-    that the __exit... routines never return.
-*/
-_WCRTLINK   extern  void    __exit( unsigned );
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
-    #pragma aux     __exit aborts;
-#endif
-
 extern      void    (*__abort)( void );     // Defined in abort.c
-extern      void    __terminate( void );    // Defined in abort.c
 
 #endif // _RTDATA_H_INCLUDED

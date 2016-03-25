@@ -72,7 +72,7 @@ bool UIAPI uiset80col( void )
     return( TRUE );
 }
 
-int intern initbios( void )
+bool intern initbios( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO  sbi;
 
@@ -110,7 +110,7 @@ int intern initbios( void )
     UIData->tick_delay = 500;
     UIData->mouse_speed = 8;
 
-    return( TRUE );
+    return( true );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -149,12 +149,11 @@ void intern physupdate( SAREA *area )
         char    buff[256];
 
 
-        for( j=sr.Top;j<=sr.Bottom;j++ ) {
-            for( i=sr.Left;i<=sr.Right;i++ ) {
-                buff[i-sr.Left] = ((PIXEL *) UIData->screen.origin)
-                                [ j*UIData->width + i ].ch;
+        for( j = sr.Top; j <= sr.Bottom; j++ ) {
+            for( i = sr.Left; i <= sr.Right; i++ ) {
+                buff[i - sr.Left] = ((PIXEL *)UIData->screen.origin)[j * UIData->width + i].ch;
             }
-            buff[i-sr.Left] = 0;
+            buff[i - sr.Left] = 0;
             printf( "%s\n", buff );
         }
     }

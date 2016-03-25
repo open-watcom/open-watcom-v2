@@ -47,8 +47,9 @@ extern address GetRealSeg( address );
 char *StrCopy( char const *src, char *dest )
 {
 
-    if( src == NULL || dest == NULL ) return( NULL );
-    while( (*dest = *src) != 0 ) {
+    if( src == NULL || dest == NULL )
+        return( NULL );
+    while( (*dest = *src) != NULLCHAR ) {
         ++src;
         ++dest;
     }
@@ -59,15 +60,16 @@ char *StrCopy( char const *src, char *dest )
 char *StrTrim( char *str )
 {
     char        *p;
-    unsigned    len;
+    size_t      len;
 
     len = strlen( str );
-    if( len == 0 ) return( str );
+    if( len == 0 )
+        return( str );
     p = str + len - 1;
     while( *p == ' ' ) {
         --p;
     }
-    *++p = '\0';
+    *++p = NULLCHAR;
     return( p );
 }
 
@@ -83,6 +85,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
     address             addr;
     char                *res;
     sym_handle          *sym;
+    error_handle        errh;
     char                save_buff[UTIL_LEN + 1];
 
     while( *fmt != NULLCHAR ) {
@@ -129,8 +132,8 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
                 buff = AddrToIOString( &addr, buff, TXT_LEN ); // nyi - overflow?
                 break;
             case 'e':
-                val = va_arg( args, unsigned );
-                buff = SysErrMsg( val, buff );
+                errh = va_arg( args, error_handle );
+                buff = SysErrMsg( errh, buff );
                 break;
             case 'U':
                 buff = CnvULongDec( va_arg( args, unsigned long), buff, TXT_LEN );
@@ -189,7 +192,7 @@ char *DupStrLen( const char *str, size_t len )
     dup = DbgAlloc( len + 1 );
     if( dup != NULL ) {
         memcpy( dup, str, len );
-        dup[len] = '\0';
+        dup[len] = NULLCHAR;
     }
     return( dup );
 }

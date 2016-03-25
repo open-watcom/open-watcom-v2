@@ -37,23 +37,23 @@
 #include "dbgstk.h"
 #include "dbgtback.h"
 #include "mad.h"
+#include "dbgexpr.h"
+#include "dbgovl.h"
+#include "dipimp.h"
+#include "dipinter.h"
 
-extern bool                     TransOvlRetAddr(address *,unsigned int );
-extern void                     AddrFloat( address * );
-extern void                     InitLC( location_context *, bool );
 
 static unsigned                 OvlLevel;
-
 
 bool FixOvlRetAddr( address *return_addr )
 {
     return_addr->sect_id = 0;
-    return_addr->indirect = FALSE;
+    return_addr->indirect = false;
     if( TransOvlRetAddr( return_addr, OvlLevel ) ) {
-        return( TRUE );
+        return( true );
     } else {
         AddrFloat( return_addr );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -69,39 +69,39 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
     bool                have_sym;
     mad_call_up_data    *mcud;
 
-    InitLC( &entry.lc, TRUE );
+    InitLC( &entry.lc, true );
     _AllocA( mcud, MADCallUpStackSize() );
     mr = (entry.lc.regs != NULL) ? &entry.lc.regs->mr : NULL;
-    if( MADCallUpStackInit( mcud, mr ) != MS_OK ) return( FALSE );
+    if( MADCallUpStackInit( mcud, mr ) != MS_OK ) return( false );
     OvlLevel = 0;
     levels = 0;
     for( ;; ) {
         if( DeAliasAddrSym( NO_MOD, entry.lc.execution, rtn ) != SR_NONE &&
             SymLocation( rtn, NULL, &ll ) == DS_OK ) {
             entry.start = ll.e[0].u.addr;
-            have_sym = TRUE;
+            have_sym = true;
         } else {
             entry.start = entry.lc.execution;
-            have_sym = FALSE;
+            have_sym = false;
         }
         if( !walk( &entry, info ) ) break;
         if( have_sym && entry.start.mach.offset == entry.lc.execution.mach.offset ) {
             /* at start of routine */
-            entry.lc.maybe_have_frame = TRUE;
-            entry.lc.have_frame = FALSE;
+            entry.lc.maybe_have_frame = true;
+            entry.lc.have_frame = false;
         } else {
-            entry.lc.maybe_have_frame = FALSE;
-            entry.lc.have_frame = TRUE;
+            entry.lc.maybe_have_frame = false;
+            entry.lc.have_frame = true;
         }
         ++levels;
         if( have_sym ) {
             if( SymInfo( rtn, NULL, &sinfo ) != DS_OK ) break;
             if( sinfo.kind != SK_PROCEDURE ) {
-                sinfo.ret_addr_offset = DIP_OFFS_INVAL;
+                sinfo.ret_addr_offset = (addr_off)-1L;
                 sinfo.rtn_far = 0;
             }
         } else {
-            sinfo.ret_addr_offset = DIP_OFFS_INVAL;
+            sinfo.ret_addr_offset = (addr_off)-1L;
             sinfo.rtn_far = 0;
         }
 
@@ -116,7 +116,7 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
                                 &mr );
         if( mr == NULL ) entry.lc.regs = NULL;
         if( ms != MS_OK ) break;
-        entry.lc.up_stack_level = TRUE;
+        entry.lc.up_stack_level = true;
         OvlLevel += FixOvlRetAddr( &entry.lc.execution );
     }
     return( levels != 0 );
@@ -128,17 +128,16 @@ typedef struct {
     bool        first;
 } return_info;
 
-OVL_EXTERN CALL_CHAIN_RTN RecordOneLevel;
 OVL_EXTERN bool RecordOneLevel( call_chain_entry *entry, void *_info )
 {
     return_info *info = _info;
 
     if( info->first ) {
-        info->first = FALSE;
-        return( TRUE );
+        info->first = false;
+        return( true );
     } else {
         info->addr = entry->lc.execution;
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -148,7 +147,7 @@ address ReturnAddress( void )
     return_info ret;
 
     ret.addr = NilAddr;
-    ret.first = TRUE;
+    ret.first = true;
     WalkCallChain( RecordOneLevel, &ret );
     return( ret.addr );
 }

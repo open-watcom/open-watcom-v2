@@ -45,7 +45,7 @@
 #include "uishift.h"
 
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "unxuiext.h"
 #include "qdebug.h"
 
 #include "trie.h"
@@ -53,24 +53,23 @@
 
 extern unsigned short   ct_shift_state;
 
-extern char     *GetTermType( void );
-extern void     clear_shift( void );
-extern int      nextc( int n );
-extern void     nextc_unget( char *, int );
-extern EVENT    ck_keyboardevent( void );
-extern EVENT    tk_keyboardevent( void );
-extern EVENT    td_event( void );
-extern void     tm_saveevent( void );
+extern void         clear_shift( void );
+extern int          nextc( int n );
+extern void         nextc_unget( unsigned char *, int );
+extern EVENT        ck_keyboardevent( void );
+extern EVENT        tk_keyboardevent( void );
+extern EVENT        td_event( void );
+extern void         tm_saveevent( void );
 
-extern int      ck_init( void );
-extern int      ck_fini( void );
-extern void     ck_arm( void );
-extern int      ck_save( void );
-extern int      ck_restore( void );
-extern int      ck_flush( void );
-extern int      ck_stop( void );
-extern int      ck_shift_state( void );
-extern int      ck_unevent( EVENT ev );
-extern bool     init_interminfo( void );
-extern int      init_trie( void );
-extern int      kb_wait( int secs, int usecs );
+extern int          ck_init( void );
+extern int          ck_fini( void );
+extern void         ck_arm( void );
+extern int          ck_save( void );
+extern int          ck_restore( void );
+extern int          ck_flush( void );
+extern int          ck_stop( void );
+extern int          ck_shift_state( void );
+extern int          ck_unevent( EVENT ev );
+extern bool         init_interminfo( void );
+extern int          init_trie( void );
+extern int          kb_wait( int secs, int usecs );

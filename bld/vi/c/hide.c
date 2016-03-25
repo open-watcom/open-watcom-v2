@@ -103,12 +103,12 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
 {
     line        *cline, *oline;
     fcb         *cfcb, *ofcb;
-    int         i;
+    vi_rc       rc;
 
     (*s) = (*e) = l;
 
-    i = CGimmeLinePtr( l, &ofcb, &oline );
-    if( i ) {
+    rc = CGimmeLinePtr( l, &ofcb, &oline );
+    if( rc != ERR_NO_ERR ) {
         return;
     }
 
@@ -118,8 +118,8 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
     cfcb = ofcb;
     cline = oline;
     for( ;; ) {
-        i = GimmePrevLinePtr( &cfcb, &cline );
-        if( i ) {
+        rc = GimmePrevLinePtr( &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( cline->u.ld.hidden ) {
@@ -136,8 +136,8 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
     cfcb = ofcb;
     cline = oline;
     for( ;; ) {
-        i = CGimmeNextLinePtr( &cfcb, &cline );
-        if( i ) {
+        rc = CGimmeNextLinePtr( &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( cline->u.ld.hidden ) {
@@ -155,10 +155,9 @@ void GetHiddenRange( linenum l, linenum *s, linenum *e )
  */
 linenum GetHiddenLineBreaks( linenum s, linenum e )
 {
-    linenum     curr;
     line        *cline;
     fcb         *cfcb;
-    int         i;
+    vi_rc       rc;
     linenum     cnt, s1, e1, tmp;
 
     if( s > e ) {
@@ -167,18 +166,15 @@ linenum GetHiddenLineBreaks( linenum s, linenum e )
         e = tmp;
     }
     cnt = 0L;
-    curr = s;
-    while( curr <=e ) {
-        i = CGimmeLinePtr( curr, &cfcb, &cline );
-        if( i ) {
+    for( ; s <= e; ++s ) {
+        rc = CGimmeLinePtr( s, &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( cline->u.ld.hidden ) {
-            GetHiddenRange( curr, &s1, &e1 );
-            curr = e1 + 1;
+            GetHiddenRange( s, &s1, &e1 );
+            s = e1;
             cnt++;
-        } else {
-            curr++;
         }
     }
     return( cnt );
@@ -192,7 +188,7 @@ linenum GetHiddenLineCount( linenum s, linenum e )
 {
     line        *cline;
     fcb         *cfcb;
-    int         i;
+    vi_rc       rc;
     linenum     cnt, tmp;
 
     if( s > e ) {
@@ -200,18 +196,17 @@ linenum GetHiddenLineCount( linenum s, linenum e )
         s = e;
         e = tmp;
     }
-    i = CGimmeLinePtr( s, &cfcb, &cline );
-    if( i ) {
+    rc = CGimmeLinePtr( s, &cfcb, &cline );
+    if( rc != ERR_NO_ERR ) {
         return( 0L );
     }
     cnt = 0L;
-    while( s <= e ) {
+    for( ; s <= e; ++s ) {
         if( cline->u.ld.hidden ) {
             cnt++;
         }
-        s++;
-        i = CGimmeNextLinePtr( &cfcb, &cline );
-        if( i ) {
+        rc = CGimmeNextLinePtr( &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
             break;
         }
     }

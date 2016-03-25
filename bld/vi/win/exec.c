@@ -35,15 +35,22 @@
 #include "wprocmap.h"
 #endif
 
-static bool     doneExec;
-static HMODULE  moduleHandle;
-static HMODULE  instanceHandle;
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data );
 
 #define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
 #define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
 
 #ifdef __WINDOWS_386__
 typedef BOOL (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
+#endif
+
+static bool     doneExec;
+static HMODULE  moduleHandle;
+static HMODULE  instanceHandle;
+
+#ifdef __WINDOWS_386__
 static FARPROC MakeNotifyCallbackProcInstance( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance )
 {
     instance = instance;
@@ -87,14 +94,14 @@ long MySpawn( const char *cmd )
     int                 rc;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[cmds.len] = 0;
+    cmds.cmd[cmds.len] = '\0';
     proc = MakeNotifyCallbackProcInstance( NotifyHandler, InstanceHandle );
     if( !NotifyRegister( (HANDLE)NULLHANDLE, (LPFNNOTIFYCALLBACK)proc, NF_NORMAL ) ) {
         FreeProcInstance( proc );
         return( -1L );
     }
     strcat( path, " " );
-    strcat( path, &(cmds.cmd[0]) );
+    strcat( path, cmds.cmd );
     inst = (HANDLE) WinExec( (LPCSTR)path, SW_SHOWNORMAL );
     if( inst > (HANDLE)32 ) {
         union REGS in_regs, out_regs;

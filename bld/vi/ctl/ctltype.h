@@ -115,7 +115,7 @@ bool ctl_dlg_validate( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, bool );
 bool ctl_dlg_check( WPI_INST, HWND dlg, void * ptr, void * ctl_ptr );
 
 // (MISSING!!!)
-void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 // (MISSING!!!)
 bool ctl_dlg_enable( void *ctl_ptr, int ctl_id );
@@ -216,7 +216,7 @@ typedef struct {
     ctl_elt             elts[1];        // 'num_ctls' elts
                         // The array of control datas is stored in a continuous
                         // block of memory.
-} clt_def;
+} ctl_def;
 
 
 /////////////////////////////////////////////////////////////////////////////////

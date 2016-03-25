@@ -117,7 +117,7 @@ typedef struct {
     dis_cpu     cpu;
 }code_buff;
 
-extern dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
+extern dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     code_buff   *header;
 
@@ -125,7 +125,7 @@ extern dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
     if( ( off + size + header->offset ) > header->length ) {
         size = header->length - ( header->offset + off );
     }
-    memcpy( data, header->start+header->offset+off, size );
+    memcpy( data, header->start + header->offset + off, size );
     return( DR_OK );
 }
 

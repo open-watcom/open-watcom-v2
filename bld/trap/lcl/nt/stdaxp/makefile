@@ -5,9 +5,10 @@
 host_os  = nt
 host_cpu = axp
 
-os      = nt
+target_cpu = axp
+target_os  = nt
+
 srv     = lcl
-cpu     = axp
 which   = TRAP
 
 extra_objs = &

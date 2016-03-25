@@ -45,8 +45,8 @@ static void BrkHandler( int sig_num )
     if( EditFlags.WatchForBreak ) {
         EditFlags.BreakPressed = true;
     }
-    KeyAdd( 3 );
-}
+    KeyAdd( VI_KEY( CTRL_C ) );
+} 
 
 static volatile int     exitThread;
 
@@ -57,7 +57,7 @@ static unsigned char    __far thread_stack[TSTACK_SIZE];
 #define TSTACK_SIZE     10240
 #endif
 
-void TimerThread( void )
+static void TimerThread( void )
 {
     char        date[80];
 

@@ -1,0 +1,2 @@
+clean global : .procedure
+        rm -f *.err *.obj *.exe *.exp *.dll *.res *.log *.sym *.map tmpfile _tmpfile.* $(additional_cleanup)

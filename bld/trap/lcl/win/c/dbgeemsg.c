@@ -35,6 +35,7 @@
 #include <malloc.h>
 #include "wdebug.h"
 #include "stdwin.h"
+#include "trpsys.h"
 
 #ifndef WM_PAINTICON
 #define WM_PAINTICON    0x26
@@ -54,7 +55,7 @@ static FARPROC  EnumTaskProcInstance;
 /*
  * SubClassProc - handle all messages for the stopped task
  */
-long SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
+static long SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
 {
     PAINTSTRUCT ps;
     HDC         dc;

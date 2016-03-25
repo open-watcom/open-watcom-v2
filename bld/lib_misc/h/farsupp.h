@@ -53,7 +53,7 @@
   typedef char          _FAR_SUPPORT_   *FAR_STRING;
 #endif
   typedef char          _FAR_SUPPORT_   *FAR_ASCII_STRING;
-  typedef wchar_t       _FAR_SUPPORT_   *FAR_UNI_STRING;
+  typedef wchar_t       _FAR_SUPPORT_   *FAR_WIDE_STRING;
   typedef int           _FAR_SUPPORT_   *FAR_INT;
   typedef signed char   _FAR_SUPPORT_   *FAR_CHAR;
   typedef short         _FAR_SUPPORT_   *FAR_SHORT;

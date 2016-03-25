@@ -81,9 +81,9 @@ void WEXPORT WMenuItem::hilighted( bool ) {
 }
 
 
-void WMenuItem::attachMenu( WWindow *win, int idx ) {
-/***************************************************/
-
+void WMenuItem::attachMenu( WWindow *win, gui_ctl_idx position )
+/**************************************************************/
+{
     gui_menu_struct     menu_item;
     unsigned long       menu_style;
 
@@ -103,10 +103,10 @@ void WMenuItem::attachMenu( WWindow *win, int idx ) {
     menu_item.child = NULL;
     if( parent()->isFloatingMain() ) {
         // appending menu item to top level floating popup menu
-        GUIInsertMenu( win->handle(), idx, &menu_item, true );
+        GUIInsertMenuByIdx( win->handle(), position, &menu_item, true );
     } else {
         // appending menu item to popup menu
-        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), idx,
+        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), position,
                               &menu_item, parent()->isFloatingPopup() );
     }
     setOwner( win );

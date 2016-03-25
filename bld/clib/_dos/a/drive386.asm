@@ -52,7 +52,7 @@ endif
         mov     AH,19h          ; get current drive
         int21h                  ; ...
         inc     AX              ; increment drive #
-        mov     AH,0            ; zero high part
+        xor     AH,AH           ; zero high part
         mov     [EBX],EAX       ; store drive #
         sub     AX,AX           ; set return code
         pop     EBX             ; restore BX
@@ -76,7 +76,7 @@ endif
         sub     EAX,EAX         ; zero EAX
         mov     AH,0Eh          ; set current drive
         int21h                  ; ...
-        mov     AH,0            ; zero high part of return
+        xor     AH,AH           ; zero high part of return
         mov     [EBX],EAX       ; store total # of drives
         sub     EAX,EAX         ; set return code
         pop     EBX             ; restore BX

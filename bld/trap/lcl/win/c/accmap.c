@@ -159,19 +159,18 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    name = GetOutPtr( sizeof( *ret ) );
-    name[0] = '\0';
-
-    ret->handle = 0;
 
     if( acc->handle != 0 ) {
         CurrentModule = acc->handle + 1;
     }
     Out(( OUT_MAP,"acc->handle = %ld", acc->handle ));
     if( CurrentModule >= ModuleTop ) {
+        ret->handle = 0;
         Out(( OUT_MAP,"Past end of list" ));
-        return( sizeof( *ret ) + 1 );
+        return( sizeof( *ret ) );
     }
+    name = GetOutPtr( sizeof( *ret ) );
+    *name = '\0';
     me.dwSize = sizeof( me );
     Out(( OUT_MAP,"ModuleTop=%d CurrentModule=%d id=%d", ModuleTop, CurrentModule, moduleIDs[ CurrentModule ] ));
     if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {

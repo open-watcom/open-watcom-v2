@@ -63,11 +63,11 @@ double LDToD( xreal *ten )
     } else {
         eight.f.exp = ten->f.exp - 0x3fff + 0x3ff;
     }
-    eight.f.xmant = ten->f.mantissa[ TEN_INDEX( 0 ) ] >> 3;
+    eight.f.xmant = ten->f.mantissa[TEN_INDEX( 0 )] >> 3;
     for( i = 0; i < 6; ++i ) {
-        eight.f.mantissa[ EIGHT_INDEX( i ) ] =
-                                ( ten->f.mantissa[ TEN_INDEX( i ) ] << 5 )
-                              + ( ten->f.mantissa[ TEN_INDEX( i+1 ) ] >> 3 );
+        eight.f.mantissa[EIGHT_INDEX( i )] =
+                                ( ten->f.mantissa[TEN_INDEX( i )] << 5 )
+                              + ( ten->f.mantissa[TEN_INDEX( i+1 )] >> 3 );
     }
 #else
     MADTypeConvert( (mad_type_info *)&F10, ten, (mad_type_info *)&F8, &eight, 0 );
@@ -88,14 +88,14 @@ void DToLD( double d, xreal *ten )
     eight.r = d;
     ten->f.sign = eight.f.sign;
     ten->f.exp = eight.f.exp - 0x3ff + 0x3fff;
-    ten->f.mantissa[ TEN_INDEX( 0 ) ] = 0x80 | eight.f.xmant << 3;
+    ten->f.mantissa[TEN_INDEX( 0 )] = 0x80 | eight.f.xmant << 3;
     for( i = 0; i < 6; ++i ) {
-        ten->f.mantissa[ TEN_INDEX( i ) ] |=
-                   eight.f.mantissa[ EIGHT_INDEX( i ) ] >> 5;
-        ten->f.mantissa[ TEN_INDEX( i+1 ) ] =
-                   eight.f.mantissa[ EIGHT_INDEX( i ) ] << 3;
+        ten->f.mantissa[TEN_INDEX( i )] |=
+                   eight.f.mantissa[EIGHT_INDEX( i )] >> 5;
+        ten->f.mantissa[TEN_INDEX( i+1 )] =
+                   eight.f.mantissa[EIGHT_INDEX( i )] << 3;
     }
-    ten->f.mantissa[ TEN_INDEX( 7 ) ] = 0;
+    ten->f.mantissa[TEN_INDEX( 7 )] = 0;
 #else
     MADTypeConvert( (mad_type_info *)&F8, &d, (mad_type_info *)&F10, ten, 0 );
 #endif
@@ -107,9 +107,9 @@ void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
     double      value = LDToD( v );
 
     sprintf( buff, "%.*g", a, value );
-    if( buff[0] == '0' && buff[1] == '\0' ) {
+    if( buff[0] == '0' && buff[1] == NULLCHAR ) {
         buff[1] = '.';
-        buff[2] = '\0';
+        buff[2] = NULLCHAR;
     }
 // Brian!!! NYI NYI NYI
 //  _FtoS( buff, &value, a, b, c, d, e, format, exp_char );

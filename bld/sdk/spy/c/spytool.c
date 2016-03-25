@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ static button toolList[] = {
     { "NOTONOFF",   SPY_OFFON,                  0,  STR_TIP_OFFON                 }
 };
 
-static void     *toolBar = NULL;
+static toolbar      *toolBar = NULL;
 
 /*
  * addToolButton - add a button to the tool bar
@@ -81,9 +82,9 @@ static void addToolButton( button *tb )
 } /* addToolButton */
 
 /*
- * MyToolBarProc - called by toolbar window proc
+ * myToolBarProc - called by toolbar window proc
  */
-bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     hwnd = hwnd;
     msg = msg;
@@ -91,16 +92,16 @@ bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     l = l;
     return( false );
 
-} /* MyToolBarProc */
+} /* myToolBarProc */
 
 
 /*
  * spyToolBarHint
  */
-static void spyToolBarHint( HWND hwnd, WPARAM menuid, bool select ) {
+static void spyToolBarHint( HWND hwnd, ctl_id id, bool select ) {
 
     hwnd = hwnd;
-    HintToolBar( StatusHdl, (UINT)menuid, select );
+    HintToolBar( StatusHdl, id, select );
 }
 
 /*
@@ -123,7 +124,7 @@ void CreateSpyTool( HWND parent )
     dinfo.style = TOOLBAR_FIXED_STYLE;
     dinfo.is_fixed = TRUE;
     dinfo.area = r;
-    dinfo.hook = MyToolBarProc;
+    dinfo.hook = myToolBarProc;
     dinfo.helphook = spyToolBarHint;
     dinfo.background = NULL;
     dinfo.use_tips = TRUE;

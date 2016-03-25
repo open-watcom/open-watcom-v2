@@ -42,7 +42,7 @@ static  char        *firstNonWS;
 
 void InitHTMLLine( char *text )
 {
-    while( *text && isspace( *text ) ) {
+    while( *text != '\0' && isspace( *text ) ) {
         text++;
     }
     firstNonWS = text;
@@ -51,6 +51,7 @@ void InitHTMLLine( char *text )
 static void getWhiteSpace( ss_block *ss_new, char *start )
 {
     char    *text = start + 1;
+
     while( isspace( *text ) ) {
         text++;
     }
@@ -136,7 +137,7 @@ static void getString( ss_block *ss_new, char *start, int skip )
     char    *text = nstart;
 
     ss_new->type = SE_STRING;
-    while( *text && *text != '"' ) {
+    while( *text != '\0' && *text != '"' ) {
         text++;
     }
     if( *text == '\0' ) {

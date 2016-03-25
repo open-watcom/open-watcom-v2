@@ -39,13 +39,14 @@
 #include "wio.h"
 #include "watcom.h"
 #include "ipxstuff.h"
-#include "trptypes.h"
+#include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
 
 #if defined( __WATCOMC__ ) && defined( __NT__ )
 #pragma library("wsock32")
 #endif
+
 
 #ifdef SERVER
 static HANDLE                   ResponderThreadHandle;
@@ -60,12 +61,6 @@ static char                     ServerName[128];
 
 /* The _SWAPINT is because NT swaps the bytes on us again */
 #define DBG_SAP_ID      SVCID_NETWARE( _SWAPINT( DBG_SERVER_TYPE ) )
-
-bool Terminate( void )
-{
-    // a sideways dive to terminate the link (with failure)
-    return( FALSE );
-}
 
 trap_retval RemoteGet( void *data, trap_elen len )
 {
@@ -244,7 +239,7 @@ static char *InitServer( void )
     memset( &address, 0, sizeof( address ) );
     address.sa_family = AF_IPX;
     bind( ResponderSocket, (struct sockaddr *)&address, sizeof( address ) );
-    ResponderThreadHandle = CreateThread( NULL, 0, &Responder, NULL, 0, &tid );
+    ResponderThreadHandle = CreateThread( NULL, 0, Responder, NULL, 0, &tid );
     if( ResponderThreadHandle == NULL )
         return( "No responder thread" );
     register_bindery( ServerName, TRUE );

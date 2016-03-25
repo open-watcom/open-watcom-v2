@@ -57,15 +57,21 @@ extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
         allowed_in_tab = TRUE;
     }
     GUI_GET_POINT( parm, point );
-    if( point.x < 0 ) point.x = 0;
-    if( point.y < 0 ) point.y = 0;
-    if( row == WND_NO_ROW ) row = GUIGetRow( wnd->gui, &point );
-    if( row > wnd->rows ) return( FALSE );
+    if( point.x < 0 )
+        point.x = 0;
+    if( point.y < 0 )
+        point.y = 0;
+    if( row == WND_NO_ROW )
+        row = GUIGetRow( wnd->gui, &point );
+    if( row > wnd->rows )
+        return( FALSE );
     if( row < wnd->title_size ) {
         row -= wnd->top;
     }
     last_piece = WND_NO_PIECE;
+    last_col = 0;
     last_extended_tab_piece = WND_NO_PIECE;
+    last_extended_tab_col = 0;
     for( piece = 0; ; ++piece ) {
         got = WndGetLine( wnd, row, piece, &line );
         indent.x = line.indent;
@@ -79,7 +85,8 @@ extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
             }
         }
         if( !got || line.indent > point.x ) {
-            if( last_piece == WND_NO_PIECE ) return( FALSE );
+            if( last_piece == WND_NO_PIECE )
+                return( FALSE );
             spot->row = row;
             if( !doing_select && last_extended_tab_piece != WND_NO_PIECE ) {
                 spot->piece = last_extended_tab_piece;
@@ -91,7 +98,8 @@ extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
             return( TRUE );
         }
         if( line.bitmap ) {
-            if( doing_select ) continue;
+            if( doing_select )
+                continue;
             if( line.indent <= point.x && line.indent+line.length > point.x ) {
                 spot->row = row;
                 spot->piece = piece;
@@ -105,8 +113,10 @@ extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
                     spot->piece = last_extended_tab_piece;
                     spot->col = last_extended_tab_col;
                 } else {
-                    if( !allowed_in_tab && line.tabstop ) return( FALSE );
-                    if( line.static_text ) return( FALSE );
+                    if( !allowed_in_tab && line.tabstop )
+                        return( FALSE );
+                    if( line.static_text )
+                        return( FALSE );
                     spot->piece = piece;
                 }
                 spot->row = row;

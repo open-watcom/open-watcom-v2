@@ -109,8 +109,11 @@ void DumpObjectModelClass(      // DUMP OBJECT MODEL: CLASS
 void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     TYPE type )                 // - enum type
 ;
-bool IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
+bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
+;
+bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
+    SYMBOL func )               // - function symbol
 ;
 struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
     char *name )                // - segment name

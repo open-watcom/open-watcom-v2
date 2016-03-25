@@ -2,9 +2,10 @@
 host_cpu = i86
 host_os  = win
 
-os = win
+target_cpu = x86
+target_os  = win
+
 srv = nov
-cpu = x86
 which = TRAP
 remote_link = 1
 

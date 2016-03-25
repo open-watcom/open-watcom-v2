@@ -36,10 +36,10 @@
 #include "guidlg.h"
 #include "modlist.h"
 #include "strutil.h"
+#include "wndsys.h"
 
 
 extern char     *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff );
-extern void     WndMsgBox( const char * );
 
 static const char *ModGetName( const void *data_handle, int item )
 {
@@ -61,8 +61,8 @@ extern void ModComplete( gui_window *gui, gui_ctl_id id )
 
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
-    ModListInit( &list, *match == '\0' ? NULL : match );
-    ModListAddModules( &list, NO_MOD, FALSE );
+    ModListInit( &list, *match == NULLCHAR ? NULL : match );
+    ModListAddModules( &list, NO_MOD, false );
     switch( ModListNumRows( &list ) ) {
     case 0:
         WndMsgBox( LIT_DUI( No_Match_Found ) );

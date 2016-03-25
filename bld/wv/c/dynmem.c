@@ -30,6 +30,8 @@
 
 
 #include "dbglit.h"
+#include <stdlib.h>
+#include <stdio.h>
 #ifdef __WATCOMC__
  /* it's important that <malloc> is included up here */
  #define __fmemneed foo
@@ -52,25 +54,40 @@
  #define TRMemRealloc(p,x)      realloc(p,x)
  #define TRMemFree(p)           free(p)
 #endif
-#include <stdlib.h>
-#include <stdio.h>
 #include "dip.h"
 #include "strutil.h"
+#include "dbginit.h"
+#if defined( __CHAR__ ) && !defined( __NOUI__ )
+#include "stdui.h"
+#endif
 
 
-
-extern bool     VarInfoRelease( void );
-extern bool     DlgInfoRelease( void );
-extern void     PopErrBox( const char * );
-
+#if defined( __DOS__ ) && defined( __386__ )
+#if !defined( __OSI__ )
+extern int _d16ReserveExt( int );
+#pragma aux _d16ReserveExt =    "mov cx,ax" \
+                                "shr eax,16" \
+                                "mov bx,ax" \
+                                "mov dx,1400H" \
+                                "mov ax,0ff00H" \
+                                "int 21H" \
+                                "ror eax,16" \
+                                "mov ax,dx" \
+                                "ror eax,16" \
+                                parm [eax] \
+                                value [eax] \
+                                modify [ebx ecx edx]
+#endif
+#endif
 
 #ifdef TRMEM
+
 static  int             TrackFile;
 static _trmem_hdl       TRMemHandle;
 
 
 /* extern to avoid problems with taking address and overlays */
-static bool Closing = FALSE;
+static bool Closing = false;
 
 static void TRPrintLine( void *handle, const char *buff, size_t len )
 /*******************************************************************/
@@ -162,7 +179,7 @@ static const char TrackErr[] = { "Memory Tracker Errors Detected" };
 
 static void MemTrackFini( void )
 {
-    Closing = TRUE;
+    Closing = true;
     if( TrackFile != STDERR_FILENO ) {
         if( lseek( TrackFile, 0, SEEK_END ) != 0 ) {
             PopErrBox( TrackErr );
@@ -181,17 +198,19 @@ static void MemTrackFini( void )
  */
 
 #ifdef __WATCOMC__
+
 #ifdef __386__
 #define __fmemneed __nmemneed
 #endif
+extern int __saveregs __fmemneed( size_t size );
 
 int __saveregs __fmemneed( size_t size )
 {
     if( DIPMoreMem( size ) == DS_OK )
-        return( TRUE );
+        return( true );
     if( DUIInfoRelease() )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 #endif
 
@@ -199,7 +218,6 @@ void *DbgAlloc( size_t size )
 {
     return( TRMemAlloc( size ) );
 }
-
 
 void *DbgMustAlloc( size_t size )
 {
@@ -216,7 +234,6 @@ void *DbgRealloc( void *chunk, size_t size )
 {
     return( TRMemRealloc( chunk, size ) );
 }
-
 
 void DbgFree( void *ptr )
 {
@@ -251,10 +268,7 @@ void MemFini( void )
     if( getenv( "TRMEMFILE" ) == NULL )
         return;
     h_info._pentry = NULL;
-    for( ;; ) {
-        status = _heapwalk( &h_info );
-        if( status != _HEAPOK )
-            break;
+    while( (status = _heapwalk( &h_info )) == _HEAPOK ) {
 #ifndef NDEBUG
         if( h_info._useflag == _USEDENTRY ) {
             end = Format( buf, "%s block",
@@ -293,7 +307,7 @@ void MemFini( void )
 #endif
 
 
-void MemExpand( void )
+static void MemExpand( void )
 {
     unsigned long   size;
     void            **link;
@@ -320,6 +334,19 @@ void MemExpand( void )
     }
 }
 
+void SysSetMemLimit( void )
+{
+#if defined( __DOS__ ) && defined( __386__ )
+#if !defined(__OSI__)
+    _d16ReserveExt( MemSize + 1*1024UL*1024UL );
+#endif
+    MemExpand();
+    if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
+        _heapenable( 0 );
+    }
+#endif
+}
+
 void MemInit( void )
 {
 #ifdef TRMEM
@@ -328,22 +355,98 @@ void MemInit( void )
     MemExpand();
 }
 
-void *ExtraAlloc( size_t size )
+#if defined( __CHAR__ ) && !defined( __NOUI__ )
+
+#if defined( __DOS__ )
+
+#if defined( _M_I86 )
+
+extern LP_VOID  ExtraAlloc( size_t size );
+extern void     ExtraFree( LP_VOID ptr );
+
+LP_VOID uifaralloc( size_t size )
+{
+    return( ExtraAlloc( size ) );
+}
+
+void uifarfree( LP_VOID ptr )
+{
+    ExtraFree( ptr );
+}
+
+#else
+
+#include <i86.h>
+
+void __far *uifaralloc( size_t size )
 {
     return( TRMemAlloc( size ) );
 }
 
-
-void *ExtraRealloc( void *p, size_t size )
+void uifarfree( void __far *ptr )
 {
-    return( TRMemRealloc( p, size ) );
+    if( ptr != NULL ) {
+        TRMemFree( (void *)FP_OFF( ptr ) );
+    }
 }
 
+#endif
 
-void ExtraFree( void *ptr )
+#elif defined( __LINUX__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+
+void *uifaralloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void uifarfree( void *ptr )
 {
     if( ptr != NULL ) {
         TRMemFree( ptr );
     }
 }
+
+#elif defined( __OS2__ )
+
+#define INCL_SUB
+#include <os2.h>
+
+PVOID uifaralloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void uifarfree( PVOID ptr )
+{
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
+}
+
+#endif
+
+
+void UIMemOpen( void ) {}
+
+void UIMemClose( void ) {}
+
+void *uimalloc( size_t size )
+{
+    return( TRMemAlloc( size ) );
+}
+
+void *uirealloc( void *chunk, size_t size )
+{
+    return( TRMemRealloc( chunk, size ) );
+}
+
+void uifree( void *ptr )
+{
+    if( ptr != NULL ) {
+        TRMemFree( ptr );
+    }
+}
+
+#endif
+
 #endif

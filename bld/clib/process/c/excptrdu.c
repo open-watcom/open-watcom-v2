@@ -109,7 +109,7 @@ int __ReportException( EXCEPTION_POINTERS *rec )
     // if we are active then we've done crashed ourselves.
     if( __ReportInvoked )
         return( EXCEPTION_CONTINUE_SEARCH );
-    
+
     __ReportInvoked = 1;    // indicate that we ran
 
     /*
@@ -290,7 +290,7 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
         break;
     case STATUS_FLOAT_INVALID_OPERATION:
         fpe = FPE_INVALID;
-        eip = (unsigned char *)context->FloatSave.ErrorOffset;
+        eip = (char *)context->FloatSave.ErrorOffset;
 
         if( *(unsigned short *)eip == 0xfad9 ) {        // caused by "fsqrt"
             fpe = FPE_SQRTNEG;
@@ -301,7 +301,7 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
         } else if( *(unsigned short *)eip == 0xf5d9 ) { // caused by "fprem1"
             fpe = FPE_MODERR;
         } else {
-            if(( eip[0] == 0xdb ) || ( eip[0] == 0xdf )) {
+            if(( eip[0] == (char)0xdb ) || ( eip[0] == (char)0xdf )) {
                 if(( eip[1] & 0x30 ) == 0x10 ) {        // caused by "fist(p)"
                     fpe = FPE_IOVERFLOW;
                 }

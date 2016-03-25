@@ -39,25 +39,18 @@
 #include "mad.h"
 #include "strutil.h"
 #include "dbgutil.h"
+#include "dbgbrk.h"
+#include "wndsys.h"
+#include "dbgmisc.h"
+#include "dbgreg.h"
+#include "addarith.h"
+#include "dbgwglob.h"
+#include "dbgwinsp.h"
+#include "dlgbreak.h"
 
 
-extern a_window         *WndSrcInspect( address );
-extern a_window         *WndAsmInspect( address );
 extern address          FindLclBlock( address addr );
-extern int              AddrComp( address, address );
-extern void             GoToAddr( address addr );
-extern bool             DlgBreak( address );
-extern char             *CopySourceLine( cue_handle * );
 extern unsigned         LineNumLkup( address );
-extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos( void );
-
-extern address          FindNextIns( address a );
-extern void             InitTraceBack( cached_traceback * );
-extern call_chain       *GetCallChain( cached_traceback *tb, int row );
-extern void             UpdateTraceBack( cached_traceback *tb );
-extern void             FiniTraceBack( cached_traceback *tb );
-extern void             UnWindToFrame( call_chain *chain, int, int );
 
 #include "menudef.h"
 static gui_menu_struct CallMenu[] = {
@@ -133,8 +126,8 @@ static  bool    CallGetLine( a_window *wnd, int row, int piece, wnd_line_piece *
         return( true );
     case PIECE_SOURCE:
         line->indent = call->max_sym_len + 3 * WndAvgCharX( wnd );
-        line->tabstop = FALSE;
-        line->use_prev_attr = TRUE;
+        line->tabstop = false;
+        line->use_prev_attr = true;
         if( chain->source_line == NULL ) {
             line->text = TxtBuff;
             UnAsm( chain->lc.execution, TxtBuff, TXT_LEN );
@@ -164,7 +157,7 @@ static void     CallInit( a_window *wnd )
         WndRepaint( wnd );
     } else {
         row = curr->total_depth;
-        if( prev->total_depth > row ) {
+        if( row < prev->total_depth ) {
             row = prev->total_depth;
         }
         while( --row >= curr->clean_size ) {
@@ -174,11 +167,11 @@ static void     CallInit( a_window *wnd )
     call->max_sym_len = 0;
     chain = curr->chain;
     for( i = 0; i < curr->current_depth; ++i ) {
-        if( chain[ i ].sym_len == 0 ) {
-            chain[ i ].sym_len = WndExtentX( wnd, chain[ i ].symbol );
+        if( chain[i].sym_len == 0 ) {
+            chain[i].sym_len = WndExtentX( wnd, chain[i].symbol );
         }
-        if( chain[ i ].sym_len > call->max_sym_len ) {
-            call->max_sym_len = chain[ i ].sym_len;
+        if( call->max_sym_len < chain[i].sym_len ) {
+            call->max_sym_len = chain[i].sym_len;
         }
     }
 }

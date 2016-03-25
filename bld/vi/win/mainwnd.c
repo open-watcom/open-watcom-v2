@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,11 @@
     #pragma library( "shell32" )
 #endif
 
+
+/* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK MainWindowProc( HWND, UINT, WPARAM, LPARAM );
-void                       DefaultWindows( RECT *, RECT * );
+
+void    DefaultWindows( RECT *, RECT * );
 
 RECT    RootRect;
 int     RootState;
@@ -117,7 +121,7 @@ window_id CreateMainWindow( HANDLE inst )
     root = CreateWindow( EditorName, EditorName,
                          WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
                          initX, initY, initWidth, initHeight,
-                         (HWND)NULLHANDLE, (HMENU)NULLHANDLE, inst, NULL );
+                         NO_WINDOW, (HMENU)NULLHANDLE, inst, NULL );
     return( root );
 
 } /* CreateMainWindow */
@@ -125,32 +129,26 @@ window_id CreateMainWindow( HANDLE inst )
 /*
  * SetInitialWindowSize - process -P command line parm
  */
-void SetInitialWindowSize( char *arg )
+void SetInitialWindowSize( const char *arg )
 {
     DWORD       a;
-    char        *str;
-    int         len;
 
-    len = strlen( arg );
-    str = alloca( len );
-    strcpy( str, arg );
-
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initX = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initY = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initWidth = a;
 
-    if( !GetDWORD( str, &a ) ) {
+    if( !GetDWORD( &arg, &a ) ) {
         return;
     }
     initHeight = a;
@@ -183,31 +181,31 @@ void ResizeRoot( void )
     if( !EditFlags.WindowsStarted ) {
         return;
     }
-    GetClientRect( Root, &root_rect );
+    GetClientRect( root_window_id, &root_rect );
     DefaultWindows( &root_rect, &rect );
-    if( MessageWindow != NO_WINDOW ) {
+    if( !BAD_ID( message_window_id ) ) {
         NewMessageWindow();
-        if( MessageWindow != NO_WINDOW ) {
-            InvalidateRect( MessageWindow, NULL, FALSE );
-            SendMessage( MessageWindow, WM_PAINT, 0, 0L );
+        if( !BAD_ID( message_window_id ) ) {
+            InvalidateRect( message_window_id, NULL, FALSE );
+            SendMessage( message_window_id, WM_PAINT, 0, 0L );
         }
     }
-    if( StatusWindow != NO_WINDOW ) {
+    if( !BAD_ID( status_window_id ) ) {
         NewStatusWindow();
-        if( StatusWindow != NO_WINDOW ) {
-            InvalidateRect( StatusWindow, NULL, FALSE );
-            SendMessage( StatusWindow, WM_PAINT, 0, 0L );
+        if( !BAD_ID( status_window_id ) ) {
+            InvalidateRect( status_window_id, NULL, FALSE );
+            SendMessage( status_window_id, WM_PAINT, 0, 0L );
         }
     }
     height = rect.bottom - rect.top;
-    MoveWindow( EditContainer, rect.left, rect.top, rect.right - rect.left, height, TRUE );
+    MoveWindow( edit_container_id, rect.left, rect.top, rect.right - rect.left, height, TRUE );
     if( CurrentInfo ) {
-        bufHwnd = CurrentInfo->CurrentWindow;
+        bufHwnd = CurrentInfo->current_window_id;
         if( IsWindow( bufHwnd ) && IsZoomed( bufHwnd ) ) {
             ShowWindow( bufHwnd, SW_SHOWMAXIMIZED );
         }
     }
-    InvalidateRect( Root, NULL, TRUE );
+    InvalidateRect( root_window_id, NULL, TRUE );
 
 } /* ResizeRoot */
 
@@ -227,9 +225,9 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
     switch( msg ) {
     case WM_CREATE:
-        Root = hwnd;
+        root_window_id = hwnd;
         GetClientRect( hwnd, &rect );
-        EditContainer = CreateContainerWindow( &rect );
+        edit_container_id = CreateContainerWindow( &rect );
         InitWindows();
         DragAcceptFiles( hwnd, TRUE );
         timerID = SetTimer( hwnd, TIMER_ID, 60L * 1000L, NULL );
@@ -244,7 +242,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                 if( DragQueryFile( hfileinfo, i, buff + 1, FILENAME_MAX ) == (UINT)-1 ) {
                     break;
                 }
-                strcat( buff, "\"" );
+                strcat( buff, SingleQuote );
                 rc = EditFile( buff, false );
                 if( rc > ERR_NO_ERR ) {
                     Error( GetErrorMsg( rc ) );
@@ -262,7 +260,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         break;
     case WM_SIZE:
-        DefFrameProc( hwnd, EditContainer, msg, wparam, lparam );
+        DefFrameProc( hwnd, edit_container_id, msg, wparam, lparam );
         RootState = wparam;
         if( wparam != SIZE_MINIMIZED ) {
             ResizeRoot();
@@ -273,38 +271,38 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_MOVE:
-        DefFrameProc( hwnd, EditContainer, msg, wparam, lparam );
+        DefFrameProc( hwnd, edit_container_id, msg, wparam, lparam );
         if( RootState != SIZE_MINIMIZED ) {
             GetWindowRect( hwnd, &RootRect );
         }
         return( 0 );
     case WM_ACTIVATEAPP:
-        if( BAD_ID( CurrentWindow ) ) {
+        if( BAD_ID( current_window_id ) ) {
             break;
         }
-        SetFocus( Root );
+        SetFocus( root_window_id );
 #if 0
         if( !wparam ) {
-            InactiveWindow( CurrentWindow );
+            InactiveWindow( current_window_id );
         } else {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
+            SendMessage( edit_container_id, WM_MDIACTIVATE, (WPARAM)current_window_id, 0L );
         }
 #endif
         if( wparam ) {
-            ResetEditWindowCursor( CurrentWindow );
+            ResetEditWindowCursor( current_window_id );
         } else {
-            GoodbyeCursor( CurrentWindow );
+            GoodbyeCursor( current_window_id );
         }
         break;
     case WM_MOUSEACTIVATE:
         SetFocus( hwnd );
         return( MA_ACTIVATE );
     case WM_SETFOCUS:
-        if( BAD_ID( CurrentWindow ) ) {
+        if( BAD_ID( current_window_id ) ) {
             break;
         }
-        if( !IsIconic( CurrentWindow ) ) {
-            SendMessage( EditContainer, WM_MDIACTIVATE, (WPARAM)CurrentWindow, 0L );
+        if( !IsIconic( current_window_id ) ) {
+            SendMessage( edit_container_id, WM_MDIACTIVATE, (WPARAM)current_window_id, 0L );
             DCUpdate();
             SetWindowCursor();
             SetWindowCursorForReal();
@@ -321,9 +319,8 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             if( rc != MENU_COMMAND_NOT_HANDLED ) {
                 DCUpdateAll();
                 if( rc > ERR_NO_ERR ) {
-                    char        *msg;
-                    msg = GetErrorMsg( rc );
-                    Error( msg );
+                    buff = GetErrorMsg( rc );
+                    Error( buff );
                 }
             }
             SetWindowCursor();
@@ -350,16 +347,16 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_CLOSE:
         ExitWithPrompt( true, true );
         return( 0 );
-#ifdef __NT__        
+#ifdef __NT__
     case WM_MOUSEWHEEL:
         {
-            int     i, increment;
+            int     increment;
             ULONG   linesPerNotch;
             HWND    activeWnd;
-            
-            activeWnd = (HWND)SendMessage( EditContainer, WM_MDIGETACTIVE, 0, 0 );
+
+            activeWnd = (HWND)SendMessage( edit_container_id, WM_MDIGETACTIVE, 0, 0 );
             SystemParametersInfo( SPI_GETWHEELSCROLLLINES, 0, &linesPerNotch, 0 );
-            
+
             increment = GET_WHEEL_DELTA_WPARAM( wparam ) / 120;
                 // see WM_MOUSEWHEEL-documentation for information about the "120"
 
@@ -378,12 +375,12 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
     case WM_DESTROY:
         DestroyToolBar();
         DragAcceptFiles( hwnd, FALSE );
-        EditContainer = 0;
+        edit_container_id = NO_WINDOW;
         if( timerID ) {
             KillTimer( hwnd, TIMER_ID );
         }
         return( 0 );
     }
-    return( DefFrameProc( hwnd, EditContainer, msg, wparam, lparam ) );
+    return( DefFrameProc( hwnd, edit_container_id, msg, wparam, lparam ) );
 
 } /* MainWindowProc */

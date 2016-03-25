@@ -46,10 +46,10 @@
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "mad.h"
 #include "madregs.h"
-#include "exeelf.h"
 #include "lnxcomm.h"
 #include "cpuglob.h"
 
@@ -147,27 +147,31 @@ static int GetFlatSegs( u_short *cs, u_short *ds )
 }
 #endif
 
-static pid_t RunningProc( char *name, char **name_ret )
+static pid_t RunningProc( const char *name, const char **name_ret )
 {
     pid_t       pidd;
     char        ch;
-    char        *start;
+    const char  *start;
 
     start = name;
 
     for( ;; ) {
         ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
+        if( ch != ' ' && ch != '\t' )
+            break;
         ++name;
     }
-    if( name_ret != NULL ) *name_ret = name;
+    if( name_ret != NULL )
+        *name_ret = name;
     pidd = 0;
     for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
+        if( *name < '0' || *name > '9' )
+            break;
         pidd = (pidd * 10) + (*name - '0');
         ++name;
     }
-    if( *name != '\0') return( 0 );
+    if( *name != '\0')
+        return( 0 );
     return( pidd );
 }
 
@@ -186,12 +190,12 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
 
 trap_retval ReqProg_load( void )
 {
-    char                        **args;
+    const char                  **args;
     char                        *parms;
     char                        *parm_start;
     int                         i;
     char                        exe_name[PATH_MAX];
-    char                        *name;
+    const char                  *name;
     pid_t                       save_pgrp;
     prog_load_req               *acc;
     prog_load_ret               *ret;
@@ -239,8 +243,8 @@ trap_retval ReqProg_load( void )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = alloca( (i + 2)  * sizeof( *args ) );
-        args[SplitParms( parms, &args[1], len ) + 1] = NULL;
+        args = alloca( ( i + 2 ) * sizeof( *args ) );
+        args[SplitParms( parms, args + 1, len ) + 1] = NULL;
     }
     args[0] = parm_start;
     attached = TRUE;
@@ -625,7 +629,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     file_string_to_fullpath_ret *ret;
     int                         exe;
     int                         len;
-    char                        *name;
+    const char                  *name;
     char                        *fullname;
     pid_t                       pidd;
 
@@ -675,8 +679,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
     trap_version ver;
 
-    parms = parms;
-    remote = remote;
+    parms = parms; remote = remote;
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;

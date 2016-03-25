@@ -33,7 +33,6 @@
 #include "vi.h"
 #include <stddef.h>
 #include "rxsupp.h"
-#include "source.h"
 
 #include "clibext.h"
 
@@ -42,7 +41,7 @@
 /*
  * VarAddGlobalStr
  */
-void VarAddGlobalStr( char *name, char *val )
+void VarAddGlobalStr( const char *name, const char *val )
 {
     VarAddStr( name, val, NULL );
 
@@ -83,7 +82,7 @@ void SetModifiedVar( bool val )
 /*
  * VarAddGlobalLong
  */
-void VarAddGlobalLong( char *name, long val )
+void VarAddGlobalLong( const char *name, long val )
 {
     char ibuff[MAX_NUM_STR];
 
@@ -95,7 +94,7 @@ void VarAddGlobalLong( char *name, long val )
 /*
  * VarAddStr - add a new variable
  */
-void VarAddStr( char *name, char *val, vlist *vl )
+void VarAddStr( const char *name, const char *val, vlist *vl )
 {
     vars        *new, *curr, *head;
     bool        glob;
@@ -117,10 +116,9 @@ void VarAddStr( char *name, char *val, vlist *vl )
      * see if we can just update an existing copy
      */
     len = strlen( val );
-    curr = head;
-    while( curr != NULL ) {
+    for( curr = head; curr != NULL; curr = curr->next ) {
         if( !strcmp( curr->name, name ) ) {
-            AddString2( &curr->value, val );
+            ReplaceString( &curr->value, val );
             curr->len = len;
 #ifndef VICOMP
             if( glob && !EditFlags.CompileAssignmentsDammit ) {
@@ -129,7 +127,6 @@ void VarAddStr( char *name, char *val, vlist *vl )
 #endif
             return;
         }
-        curr = curr->next;
     }
 
     /*
@@ -138,7 +135,7 @@ void VarAddStr( char *name, char *val, vlist *vl )
     name_len = strlen( name );
     new = MemAlloc( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
-    AddString( &new->value, val );
+    new->value = DupString( val );
     new->len = len;
 
     if( glob ) {
@@ -159,12 +156,10 @@ void VarListDelete( vlist *vl )
 {
     vars *curr, *next;
 
-    curr = vl->head;
-    while( curr != NULL ) {
+    for( curr = vl->head; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr->value );
         MemFree( curr );
-        curr = next;
     }
 
 } /* VarListDelete */
@@ -173,18 +168,26 @@ void VarListDelete( vlist *vl )
 /*
  * VarName - parse a variable name of the form %(foo)
  */
-bool VarName( char *name, vlist *vl )
+bool VarName( char *new, const char *name, vlist *vl )
 {
-    if( name[0] != '%' || name[1] == 0 ) {
+    char    tmp[MAX_SRC_LINE];
+    size_t  len;
+
+    if( name[0] != '%' || name[1] == '\0' ) {
         return( false );
     }
-    EliminateFirstN( name, 1 );
+    ++name;
+    len = strlen( name );
     if( name[0] == '(' ) {
-        EliminateFirstN( name, 1 );
-        name[strlen( name ) - 1] = 0;
+        ++name;
+        len -= 2;
     }
-    if( strchr( name, '%' ) != NULL ) {
-        Expand( name, vl );
+    memcpy( tmp, name, len );
+    tmp[len] = '\0';
+    if( strchr( tmp, '%' ) != NULL ) {
+        Expand( new, tmp, vl );
+    } else {
+        strcpy( new, tmp );
     }
     return( true );
 
@@ -193,7 +196,7 @@ bool VarName( char *name, vlist *vl )
 /*
  * VarFind - locate data for a specific variable name
  */
-vars * VarFind( char *name, vlist *vl )
+vars * VarFind( const char *name, vlist *vl )
 {
     vars        *curr;
 
@@ -202,12 +205,10 @@ vars * VarFind( char *name, vlist *vl )
      */
     if( name[0] < 'A' || name[0] > 'Z' ) {
         if( vl != NULL ) {
-            curr = vl->head;
-            while( curr != NULL ) {
+            for( curr = vl->head; curr != NULL; curr = curr->next ) {
                 if( !strcmp( name, curr->name ) ) {
                     return( curr );
                 }
-                curr = curr->next;
             }
         }
         return( NULL );
@@ -216,12 +217,10 @@ vars * VarFind( char *name, vlist *vl )
     /*
      * search globals
      */
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = curr->next ) {
         if( !strcmp( name, curr->name ) ) {
             return( curr );
         }
-        curr = curr->next;
     }
     return( NULL );
 
@@ -233,26 +232,22 @@ void VarFini( void )
 {
     vars *curr, *next;
 
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr->value );
         MemFree( curr );
-        curr = next;
     }
 }
 
-
+#if 0
 void VarDump( void ){
     vars        *curr;
     int         count = 0;
     FILE        *f = fopen( "C:\\vi.out", "a+t" );
 
-    curr = VarHead;
-    while( curr != NULL ) {
+    for( curr = VarHead; curr != NULL; curr = curr->next ) {
         // fprintf( f,"N:%s V:%s %x\n", curr->name, curr->value, curr->next );
         count++;
-        curr = curr->next;
     }
     if( count == 13 ) {
         count = 13;
@@ -266,7 +261,7 @@ void VarSC( char *str )
     /// DEBUG BEGIN
     {
         vars    *currn = VarHead;
-        if( currn ) {
+        if( currn != NULL ) {
             while( currn->next != NULL ) {
                 currn = currn->next;
             }
@@ -277,4 +272,6 @@ void VarSC( char *str )
     }
     /// DEBUG END
 }
+#endif
+
 #endif /* VICOMP */

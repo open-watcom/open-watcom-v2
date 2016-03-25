@@ -34,13 +34,8 @@
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dlglist.h"
-
-extern void         RecordSetDLLBreaks( void );
-extern void         RecordClearDLLBreaks( void );
-extern void         FiniDLLList( void );
-extern char         *DLLListName( char_ring *src );
-extern char_ring    *NextDLLList( char_ring *curr );
-extern void         AddDLLList( const char *start, unsigned len );
+#include "dbgdll.h"
+#include "dlgdll.h"
 
 
 void DlgBreakDLL( void )

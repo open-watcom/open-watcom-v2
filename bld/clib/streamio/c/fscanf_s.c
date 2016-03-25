@@ -41,18 +41,18 @@
 #include "orient.h"
 
 
-static int cget_file( PTR_SCNF_SPECS specs )
+static INTCHAR_TYPE cget_file( PTR_SCNF_SPECS specs )
 {
-    int     c;
+    INTCHAR_TYPE    c;
 
-    if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == __F_NAME(EOF,WEOF) ) {
+    if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == INTCHAR_EOF ) {
         specs->eoinp = 1;
     }
     return( c );
 }
 
 
-static void uncget_file( int c, PTR_SCNF_SPECS specs )
+static void uncget_file( INTCHAR_TYPE c, PTR_SCNF_SPECS specs )
 {
     __F_NAME(ungetc,ungetwc)( c, (FILE *)specs->ptr );
 }
@@ -73,7 +73,7 @@ _WCRTLINK int __F_NAME(fscanf_s,fwscanf_s)( FILE * __restrict stream,
         _AccessFile( stream );
 
         /*** Deal with stream orientation ***/
-        ORIENT_STREAM(stream,0);
+        ORIENT_STREAM( stream, 0 );
 
         specs.ptr        = (CHAR_TYPE *)stream;
         specs.cget_rtn   = cget_file;

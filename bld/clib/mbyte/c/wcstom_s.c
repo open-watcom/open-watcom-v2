@@ -47,7 +47,7 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
                                                      const wchar_t _FFAR * __restrict src,
                                                      rsize_t len )
 {
-    char                mbc[MB_LEN_MAX+1];
+    unsigned char       mbc[MB_LEN_MAX+1];
     size_t              numBytes = 0;
     size_t              ret = 0;
 
@@ -70,7 +70,7 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
                 for( ;; ) {
                     if( *src != L'\0' ) {
                         if(srcend < src) break;               //no null found
-                        ret = wctomb( mbc, *src );
+                        ret = wctomb( (char *)mbc, *src );
                         if( ret == -1 )  {
                             *retval = -1;
                             break;                           //encoding error
@@ -98,7 +98,7 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
 
                     if( *src != L'\0' ) {
                         if(srcend < src) break;               //no null found
-                        ret = wctomb( mbc, *src );
+                        ret = wctomb( (char *)mbc, *src );
                         if( ret == -1 )  {
                             *retval = -1;
                             break;               //encoding error

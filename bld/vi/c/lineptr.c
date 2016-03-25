@@ -186,13 +186,9 @@ vi_rc GimmeLinePtrFromFcb( linenum lineno, fcb *cfcb , line **res )
     }
     FetchFcb( cfcb );
     linecnt = cfcb->start_line;
-    tmp = cfcb->lines.head;
-
-    while( linecnt != lineno ) {
+    for( tmp = cfcb->lines.head; linecnt != lineno; tmp = tmp->next ) {
         linecnt++;
-        tmp = tmp->next;
     }
-
     *res = tmp;
 
     return( ERR_NO_ERR );

@@ -126,7 +126,7 @@ static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked
     }
     ReplaceVars( buff, sizeof( buff ), VarGetStrVal( var_handle ) );
     AddInstallName( buff, false );
-    GUISetText( gui, VarGetId( var_handle ), buff );
+    GUISetText( gui, VH2ID( var_handle ), buff );
 }
 
 
@@ -151,7 +151,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *curr_dialog )
                 SetVariableByHandle( var_handle, "1" );
             }
         }
-        id = VarGetId( var_handle );
+        id = VH2ID( var_handle );
         switch( ControlClass( id, curr_dialog ) ) {
         case GUI_STATIC:
             SetDynamic( gui, var_handle, &drive_checked );
@@ -225,7 +225,7 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool
 
     drive_checked = false;
     for( i = 0; (var_handle = curr_dialog->pVariables[i]) != NO_VAR; i++ ) {
-        id = VarGetId( var_handle );
+        id = VH2ID( var_handle );
         switch( ControlClass( id, curr_dialog ) ) {
         case GUI_STATIC:
             if( !closing ) {
@@ -240,7 +240,7 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *curr_dialog, bool
                         MsgBox( gui, "IDS_NODISKFOROPTION", GUI_OK );
                         GUISetChecked( gui, id, GUI_NOT_CHECKED );
                         if( var_handle == FullInstall ) {
-                            GUISetChecked( gui, VarGetId( SelectiveInstall ), GUI_CHECKED );
+                            GUISetChecked( gui, VH2ID( SelectiveInstall ), GUI_CHECKED );
                         }
                     }
                     SetVariableByHandle( var_handle, "0" );
@@ -277,14 +277,14 @@ static void CheckAnyCheck( gui_window *gui, a_dialog_header *child )
     vhandle             var_handle;
 
     for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
+        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
             SetVariableByHandle( child->any_check, "1" );
-            GUISetChecked( gui, VarGetId( child->any_check ), GUI_CHECKED );
+            GUISetChecked( gui, VH2ID( child->any_check ), GUI_CHECKED );
             return;
         }
     }
     SetVariableByHandle( child->any_check, "0" );
-    GUISetChecked( gui, VarGetId( child->any_check ), GUI_NOT_CHECKED );
+    GUISetChecked( gui, VH2ID( child->any_check ), GUI_NOT_CHECKED );
 }
 
 
@@ -296,12 +296,12 @@ static void CheckChildChecks( a_dialog_header *child )
     vhandle             var_handle;
 
     for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
+        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX && VarGetIntVal( var_handle ) != 0 ) {
             return;
         }
     }
     for( i = 0; (var_handle = child->pVariables[i]) != NO_VAR; i++ ) {
-        if( ControlClass( VarGetId( var_handle ), child ) == GUI_CHECK_BOX ) {
+        if( ControlClass( VH2ID( var_handle ), child ) == GUI_CHECK_BOX ) {
             SetDefaultAutoSetValue( var_handle );
         }
     }
@@ -655,7 +655,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
                         if( child->any_check != NO_VAR ) {
                             old_val = VarGetIntVal( child->any_check );
                             SetVariableByHandle( child->any_check, "1" );
-                            GUISetChecked( gui, VarGetId( child->any_check ), GUI_CHECKED );
+                            GUISetChecked( gui, VH2ID( child->any_check ), GUI_CHECKED );
                             CheckChildChecks( child );
                             return_state = DoDialogByPointer( gui, child );
                             if( return_state != DLG_CAN &&
@@ -663,7 +663,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
                                 CheckAnyCheck( gui, child );
                             } else {
                                 SetVariableByHandle( child->any_check, old_val ? "1" : "0" );
-                                GUISetChecked( gui, VarGetId( child->any_check ), old_val ? GUI_CHECKED : GUI_NOT_CHECKED );
+                                GUISetChecked( gui, VH2ID( child->any_check ), old_val ? GUI_CHECKED : GUI_NOT_CHECKED );
                             }
                         } else {
                             DoDialogByPointer( gui, child );

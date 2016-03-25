@@ -41,15 +41,14 @@
 #endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
  #include <windows.h>
+#elif defined(__WINDOWS_386__)
+ #include "windpmi.h"
 #endif
 #if defined(__OS2__)
  #include <wos2.h>
 #endif
 #if defined(__RDOS__)
  #include <rdos.h>
-#endif
-#if defined(__WINDOWS_386__)
- extern int __pascal DPMIFree(unsigned long);   // windows extender function
 #endif
 #if defined(__CALL21__)
  #include "tinyio.h"

@@ -14,10 +14,10 @@
 .ixfunc2 '&Memory' _fheapset
 .ixfunc2 '&Memory' _nheapset
 #include <malloc.h>
-int  _heapset( unsigned char fill_char );
-int _bheapset( __segment seg, unsigned char fill_char );
-int _fheapset( unsigned char fill_char );
-int _nheapset( unsigned char fill_char );
+int  _heapset( unsigned int fill_char );
+int _bheapset( __segment seg, unsigned int fill_char );
+int _fheapset( unsigned int fill_char );
+int _nheapset( unsigned int fill_char );
 .synop end
 .desc begin
 The

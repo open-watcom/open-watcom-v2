@@ -85,7 +85,7 @@ struct dip_imp_routines {
     void                (DIGENTRY *unload_info)( imp_image_handle * );
 
     walk_result         (DIGENTRY *walk_mod_list)( imp_image_handle *, IMP_MOD_WKR *, void * );
-    unsigned            (DIGENTRY *mod_name)( imp_image_handle *, imp_mod_handle, char *buff, unsigned buff_size );
+    size_t              (DIGENTRY *mod_name)( imp_image_handle *, imp_mod_handle, char *buff, size_t buff_size );
     char                *(DIGENTRY *mod_src_lang)( imp_image_handle *, imp_mod_handle );
     dip_status          (DIGENTRY *mod_info)( imp_image_handle *, imp_mod_handle, handle_kind );
     dip_status          (DIGENTRY *mod_default)( imp_image_handle *, imp_mod_handle, default_kind, dip_type_info * );
@@ -101,11 +101,11 @@ struct dip_imp_routines {
     dip_status          (DIGENTRY *type_ptr_addr_space)( imp_image_handle *, imp_type_handle *, location_context *, address * );
     dip_status          (DIGENTRY *type_thunk_adjust)( imp_image_handle *, imp_type_handle *, imp_type_handle *, location_context *, address * );
     int                 (DIGENTRY *type_cmp)( imp_image_handle *, imp_type_handle *, imp_type_handle * );
-    unsigned            (DIGENTRY *type_name)( imp_image_handle *, imp_type_handle *, unsigned, symbol_type *, char *buff, unsigned buff_size);
+    size_t              (DIGENTRY *type_name)( imp_image_handle *, imp_type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size);
 
     walk_result         (DIGENTRY *walk_sym_list)( imp_image_handle *, symbol_source, void *, IMP_SYM_WKR *, imp_sym_handle *, void * );
     imp_mod_handle      (DIGENTRY *sym_mod)(imp_image_handle *, imp_sym_handle * );
-    unsigned            (DIGENTRY *sym_name)( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name, char *buff, unsigned buff_size );
+    size_t              (DIGENTRY *sym_name)( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size );
     dip_status          (DIGENTRY *sym_type)( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
     dip_status          (DIGENTRY *sym_location)( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
     dip_status          (DIGENTRY *sym_value)( imp_image_handle *, imp_sym_handle *, location_context *, void * );
@@ -121,7 +121,7 @@ struct dip_imp_routines {
 
     walk_result         (DIGENTRY *walk_file_list)( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
     imp_mod_handle      (DIGENTRY *cue_mod)(imp_image_handle *, imp_cue_handle * );
-    unsigned            (DIGENTRY *cue_file)( imp_image_handle *, imp_cue_handle *, char *buff, unsigned buff_size );
+    size_t              (DIGENTRY *cue_file)( imp_image_handle *, imp_cue_handle *, char *buff, size_t buff_size );
     cue_fileid          (DIGENTRY *cue_file_id)( imp_image_handle *, imp_cue_handle * );
     dip_status          (DIGENTRY *cue_adjust)( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
     unsigned long       (DIGENTRY *cue_line)( imp_image_handle *, imp_cue_handle * );
@@ -157,7 +157,7 @@ void            DIGENTRY DIPImpMapInfo( imp_image_handle *, void * );
 void            DIGENTRY DIPImpUnloadInfo( imp_image_handle * );
 
 walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *, IMP_MOD_WKR *, void * );
-unsigned        DIGENTRY DIPImpModName( imp_image_handle *, imp_mod_handle, char *buff, unsigned buff_size );
+size_t          DIGENTRY DIPImpModName( imp_image_handle *, imp_mod_handle, char *buff, size_t buff_size );
 char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *, imp_mod_handle );
 dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *, imp_mod_handle, handle_kind );
 search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *, address, imp_mod_handle * );
@@ -173,7 +173,7 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *, imp_type_handle
 dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *, imp_type_handle *, location_context *, address * );
 dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *, imp_type_handle *, imp_type_handle *, location_context *, address * );
 int             DIGENTRY DIPImpTypeCmp( imp_image_handle *, imp_type_handle *, imp_type_handle * );
-unsigned        DIGENTRY DIPImpTypeName( imp_image_handle *, imp_type_handle *, unsigned, symbol_type *, char *buff, unsigned buff_size);
+size_t          DIGENTRY DIPImpTypeName( imp_image_handle *, imp_type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size);
 dip_status      DIGENTRY DIPImpTypeAddRef( imp_image_handle *, imp_type_handle * );
 dip_status      DIGENTRY DIPImpTypeRelease( imp_image_handle *, imp_type_handle * );
 dip_status      DIGENTRY DIPImpTypeFreeAll( imp_image_handle * );
@@ -181,7 +181,7 @@ dip_status      DIGENTRY DIPImpTypeFreeAll( imp_image_handle * );
 walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *, symbol_source, void *, IMP_SYM_WKR *, imp_sym_handle *, void * );
 walk_result     DIGENTRY DIPImpWalkSymListEx( imp_image_handle *, symbol_source, void *, IMP_SYM_WKR *, imp_sym_handle *, location_context *lc, void * );
 imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *, imp_sym_handle * );
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name, char *buff, unsigned buff_size);
+size_t          DIGENTRY DIPImpSymName( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size);
 dip_status      DIGENTRY DIPImpSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
@@ -201,7 +201,7 @@ dip_status      DIGENTRY DIPImpSymFreeAll( imp_image_handle * );
 
 walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
 imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *, imp_cue_handle * );
-unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *, imp_cue_handle *, char *buff, unsigned buff_size );
+size_t          DIGENTRY DIPImpCueFile( imp_image_handle *, imp_cue_handle *, char *buff, size_t buff_size );
 cue_fileid      DIGENTRY DIPImpCueFileId( imp_image_handle *, imp_cue_handle * );
 dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
 unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *, imp_cue_handle * );
@@ -217,28 +217,28 @@ typedef struct dip_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *alloc)( size_t );
-    void                *(DIGCLIENT *realloc)( void *, size_t );
-    void                (DIGCLIENT *free)( void * );
+    void                *(DIGCLIENT *Alloc)( size_t );
+    void                *(DIGCLIENT *Realloc)( void *, size_t );
+    void                (DIGCLIENT *Free)( void * );
 
-    void                (DIGCLIENT *map_addr)( addr_ptr *, void * );
-    imp_sym_handle      *(DIGCLIENT *sym_create)( imp_image_handle *, void * );
-    dip_status          (DIGCLIENT *item_location)( location_context *, context_item, location_list * );
-    dip_status          (DIGCLIENT *assign_location)( location_list *, location_list *, unsigned long );
-    dip_status          (DIGCLIENT *same_addr_space)( address, address );
-    void                (DIGCLIENT *addr_section)( address * );
+    void                (DIGCLIENT *MapAddr)( addr_ptr *, void * );
+    imp_sym_handle      *(DIGCLIENT *SymCreate)( imp_image_handle *, void * );
+    dip_status          (DIGCLIENT *ItemLocation)( location_context *, context_item, location_list * );
+    dip_status          (DIGCLIENT *AssignLocation)( location_list *, location_list *, unsigned long );
+    dip_status          (DIGCLIENT *SameAddrSpace)( address, address );
+    void                (DIGCLIENT *AddrSection)( address * );
 
-    dig_fhandle         (DIGCLIENT *open)( char const *, dig_open );
-    unsigned long       (DIGCLIENT *seek)( dig_fhandle, unsigned long, dig_seek );
-    unsigned            (DIGCLIENT *read)( dig_fhandle, void *, unsigned );
-    unsigned            (DIGCLIENT *write)( dig_fhandle, void const *, unsigned );
-    void                (DIGCLIENT *close)( dig_fhandle );
-    void                (DIGCLIENT *remove)( char const *, dig_open );
+    dig_fhandle         (DIGCLIENT *Open)( char const *, dig_open );
+    unsigned long       (DIGCLIENT *Seek)( dig_fhandle, unsigned long, dig_seek );
+    size_t              (DIGCLIENT *Read)( dig_fhandle, void *, size_t );
+    size_t              (DIGCLIENT *Write)( dig_fhandle, void const *, size_t );
+    void                (DIGCLIENT *Close)( dig_fhandle );
+    void                (DIGCLIENT *Remove)( char const *, dig_open );
 
-    void                (DIGCLIENT *status)( dip_status );
+    void                (DIGCLIENT *Status)( dip_status );
 
-    mad_handle          (DIGCLIENT *curr_mad)( void );
-    unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
+    dig_mad             (DIGCLIENT *CurrMAD)( void );
+    unsigned            (DIGCLIENT *MachineData)( address, dig_info_type, dig_elen, void const*, dig_elen, void * );
 } dip_client_routines;
 
 #include "digunpck.h"
@@ -252,6 +252,10 @@ DIG_DLLEXPORT dip_init_func DIPLOAD;
 #ifdef __WINDOWS__
 DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #endif
+
+#define DCSEEK_POSBACK(x)   ((unsigned long)-(long)(x))
+#define DCSEEK_ERROR        ((unsigned long)-1L)
+#define DCREAD_ERROR        ((size_t)-1)
 
 void            *DCAlloc( size_t amount );
 void            *DCAllocZ( size_t amount );
@@ -267,16 +271,16 @@ void            DCAddrSection( address * );
 
 dig_fhandle     DCOpen( const char *path, dig_open flags );
 unsigned long   DCSeek( dig_fhandle h, unsigned long p, dig_seek w );
-unsigned        DCRead( dig_fhandle h, void *b, unsigned s );
-dip_status      DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p );
-unsigned        DCWrite( dig_fhandle h, void *b, unsigned s );
+size_t          DCRead( dig_fhandle h, void *b, size_t s );
+dip_status      DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p );
+size_t          DCWrite( dig_fhandle h, void *b, size_t s );
 void            DCClose( dig_fhandle h );
 void            DCRemove( const char *path, dig_open flags );
 
 void            DCStatus( dip_status );
 
-mad_handle      DCCurrMAD(void);
+dig_mad         DCCurrMAD(void);
 
-unsigned        DCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
+unsigned        DCMachineData( address, dig_info_type, dig_elen, void *, dig_elen, void * );
 
 #endif

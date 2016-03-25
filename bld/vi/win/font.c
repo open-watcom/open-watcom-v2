@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,13 +46,13 @@
 typedef struct font {
     HFONT       handle;
     LOGFONT     lf;
-    unsigned    used    : 1;
-    unsigned    fixed   : 1;
     UINT        height;
     UINT        avg_width;
     UINT        max_width;
     UINT        space_width;
-    // bool isFunnyItalic ?
+    bool        used            : 1;
+    bool        fixed           : 1;
+//    bool        isFunnyItalic   : 1; ?
 } font;
 
 LOGFONT Helvetica6 = {
@@ -194,7 +195,7 @@ UINT FontTabWidth( font_type f )
     return( Fonts[f].avg_width * EditVars.HardTab );
 }
 
-UINT GetTextExtentX( HDC hdc, char *str, int cnt )
+static UINT GetTextExtentX( HDC hdc, char *str, int cnt )
 {
 #ifndef __NT__
     return( LOWORD( GetTextExtent( hdc, str, cnt ) ) );
@@ -217,9 +218,9 @@ static void customFont( font *f, LOGFONT *lf )
         }
     }
     f->used = true;
-    f->fixed = lf->lfPitchAndFamily & FIXED_PITCH;
+    f->fixed = ( (lf->lfPitchAndFamily & FIXED_PITCH) != 0 );
     f->handle = CreateFontIndirect( lf );
-    hdc = GetDC( Root );
+    hdc = GetDC( root_window_id );
     old_font = SelectObject( hdc, f->handle );
     GetTextMetrics( hdc, &tm );
     f->height = tm.tmHeight;
@@ -227,7 +228,7 @@ static void customFont( font *f, LOGFONT *lf )
     f->max_width = tm.tmMaxCharWidth;
     f->space_width = GetTextExtentX( hdc, " ", 1 );
     SelectObject( hdc, old_font );
-    ReleaseDC( Root, hdc );
+    ReleaseDC( root_window_id, hdc );
     memcpy( &f->lf, lf, sizeof( LOGFONT ) );
 }
 
@@ -273,29 +274,31 @@ void InitFonts( void )
     customFont( &Fonts[FONT_COURIERBOLD], &CourierBold );
 }
 
-static bool getInt( STUPIDNTINT *dest, char *data )
+static bool getInt( STUPIDNTINT *dest, const char **data )
 {
     char        tmp[MAX_STR];
 
-    if( NextWord1( data, tmp ) <= 0 ) {
+    *data = GetNextWord1( *data, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
     *dest = atoi( tmp );
     return( true );
 }
 
-static bool getByte( BYTE *dest, char *data )
+static bool getByte( BYTE *dest, const char **data )
 {
     char        tmp[MAX_STR];
 
-    if( NextWord1( data, tmp ) <= 0 ) {
+    *data = GetNextWord1( *data, tmp );
+    if( *tmp == '\0' ) {
         return( false );
     }
     *dest = (BYTE)atoi( tmp );
     return( true );
 }
 
-static bool getLogFont( LOGFONT *l, char *data )
+static bool getLogFont( LOGFONT *l, const char **data )
 {
     return( getInt( &l->lfHeight, data ) &&
             getInt( &l->lfWidth, data ) &&
@@ -383,12 +386,12 @@ void PickFont( font_type index, HWND parent )
 /*
  * SetFont - process a set font command
  */
-vi_rc SetFont( char *data )
+vi_rc SetFont( const char *data )
 {
     LOGFONT     l;
     STUPIDNTINT index;
 
-    if( !getInt( &index, data ) ) {
+    if( !getInt( &index, &data ) ) {
         return( ERR_INVALID_FONT );
     }
     if( index >= MAX_FONTS || index < 0 ) {
@@ -404,11 +407,11 @@ vi_rc SetFont( char *data )
         data++;
     }
     if( *data == 0 ) {
-        if( !userPickFont( &l, Root ) ) {
+        if( !userPickFont( &l, root_window_id ) ) {
             return( ERR_NO_ERR );
         }
     } else {
-        if( !getLogFont( &l, data ) ) {
+        if( !getLogFont( &l, &data ) ) {
             return( ERR_INVALID_FONT );
         }
     }

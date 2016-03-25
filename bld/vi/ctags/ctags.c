@@ -205,7 +205,7 @@ static void doOption( int ch )
 /*
  * processFile - process a specified file
  */
-static void processFile( char *arg )
+static void processFile( const char *arg )
 {
     char        buff[_MAX_EXT + 5];
     char        *ext;
@@ -263,11 +263,11 @@ static void processFile( char *arg )
 /*
  * processFileList - process a possible file list
  */
-static void processFileList( char *ptr )
+static void processFileList( const char *ptr )
 {
     DIR                 *dirp;
     struct dirent       *dirent;
-    char                *tmp;
+    const char          *tmp;
     bool                has_wild = false;
     char                buff1[_MAX_PATH2];
     char                buff2[_MAX_PATH2];
@@ -278,7 +278,7 @@ static void processFileList( char *ptr )
     char                path[_MAX_PATH];
 
     tmp = ptr;
-    while( *tmp != 0 ) {
+    while( *tmp != '\0' ) {
         if( *tmp == '*' || *tmp == '?' ) {
             has_wild = true;
             break;
@@ -323,11 +323,12 @@ static void processFileList( char *ptr )
 /*
  * processOptionFile - process an option file
  */
-static void processOptionFile( char *fname )
+static void processOptionFile( const char *fname )
 {
     FILE        *optfile;
     char        option[MAX_STR];
-    char        *ptr, *cmd, *arg;
+    char        *ptr;
+    char        *cmd, *arg;
     int         ch;
 
     optfile = fopen( fname, "r" );
@@ -335,46 +336,45 @@ static void processOptionFile( char *fname )
         printf( "Could not open option file %s\n", fname );
         return;
     }
-    while( fgets( option, sizeof( option ), optfile ) != NULL ) {
-        ptr = option;
+    while( (ptr = fgets( option, sizeof( option ), optfile )) != NULL ) {
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == '#' || *ptr == 0 ) {
+        if( *ptr == '#' || *ptr == '\0' ) {
             continue;
         }
         cmd = ptr;
-        while( !isspace( *ptr ) && *ptr ) {
+        while( !isspace( *ptr ) && *ptr != '\0' ) {
             ptr++;
         }
-        if( *ptr == 0 ) {
+        if( *ptr == '\0' ) {
             continue;
         }
-        *ptr = 0;
+        *ptr = '\0';
         ptr++;
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == 0 ) {
+        if( *ptr == '\0' ) {
             continue;
         }
         if( !stricmp( cmd, "file" ) ) {
             for( ;; ) {
                 arg = ptr;
-                while( !isspace( *ptr ) && *ptr != ',' && *ptr != 0 ) {
+                while( !isspace( *ptr ) && *ptr != ',' && *ptr != '\0' ) {
                     ptr++;
                 }
                 ch = *ptr;
-                *ptr = 0;
+                *ptr = '\0';
                 processFileList( arg );
-                if( ch == 0 ) {
+                if( ch == '\0' ) {
                     break;
                 }
                 ptr++;
                 while( isspace( *ptr ) || *ptr == ',' ) {
                     ptr++;
                 }
-                if( *ptr == 0 ) {
+                if( *ptr == '\0' ) {
                     break;
                 }
             }
@@ -383,13 +383,13 @@ static void processOptionFile( char *fname )
             WantMacros = false;
             WantAllDefines = false;
             WantUSE = false;
-            while( *ptr != 0 ) {
+            while( *ptr != '\0' ) {
                 if( *ptr == 'f' ) {
                     ptr++;
                     while( isspace( *ptr ) ) {
                         ptr++;
                     }
-                    if( *ptr == 0 ) {
+                    if( *ptr == '\0' ) {
                         break;
                     }
                     strcpy( tmpFileName, ptr );
@@ -397,7 +397,7 @@ static void processOptionFile( char *fname )
                     while( !isspace( *ptr ) ) {
                         ptr++;
                     }
-                    *ptr = 0;
+                    *ptr = '\0';
                     optarg = tmpFileName;
                     doOption( 'f' );
                     break;
@@ -479,7 +479,7 @@ int MyStricmp( char **buf, char *literal )
     len = strlen( literal );
     bufptr = *buf;
     save_ch = bufptr[len];
-    bufptr[len] = 0;
+    bufptr[len] = '\0';
     ret = stricmp( *buf, literal );
     bufptr[len] = save_ch;
     if( ret == 0 ) {

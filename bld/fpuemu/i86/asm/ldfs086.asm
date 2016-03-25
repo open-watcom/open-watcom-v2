@@ -4,31 +4,33 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xrefp   FPOverFlow
-
         modstart    ldfs086, word
 
+endif
 
+        xrefp   FPOverFlow
+
+ifdef _BUILDING_MATHLIB
         xdefp   __iLDFS
 else
         xdefp   __EmuLDFS
 endif
 
-
-;       convert long double to float
-;ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX - pointer to long double
-;       SS:DX - pointer to float
-;else
-; input:
-;       DS:BX - pointer to long double
-; output:
-;       DX:AX - float
-;endif
 ;
+;       convert long double to float
+;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double
+;               SS:DX - pointer to float result
+;else
+;       input:  DS:BX - pointer to long double
+;       output: DX:AX - float
+;endif
+
 ifdef _BUILDING_MATHLIB
-__iLDFS proc
+
+        defp    __iLDFS
+
         push    DS              ; save registers
         push    BX              ; ...
         push    DX              ; save return pointer
@@ -36,7 +38,8 @@ __iLDFS proc
         pop     DS              ; ...
         mov     BX,AX           ; get parm
 else
-__EmuLDFS proc  near
+
+        defp    __EmuLDFS
 endif
         mov     DX,8[BX]        ; get exponent+sign
         mov     AX,DX           ; save sign
@@ -83,7 +86,7 @@ endif
               _quif g           ; - - - ...
               mov   AL,AH       ; - - - shift fraction right by 8
               mov   AH,DL       ; - - - ...
-              mov   DL,0        ; - - - ...
+              xor   DL,DL       ; - - - ...
               add   DH,8        ; - - - adjust exponent
             _endloop            ; - - endloop
             _loop               ; - - loop (denormalize number)
@@ -123,10 +126,12 @@ _ret_ldfs:                      ; function epilogue
         pop     BX              ; restore registers
         pop     DS              ; ...
         ret                     ; return
-__iLDFS endp
+
+        endproc __iLDFS
 else
         ret                     ; return
-__EmuLDFS endp
+
+        endproc __EmuLDFS
 endif
 
 ifdef _BUILDING_MATHLIB

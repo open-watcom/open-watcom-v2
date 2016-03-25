@@ -29,15 +29,15 @@
 ****************************************************************************/
 
 
-extern rc_erridx        RemoteErase( char const * );
+extern error_handle     RemoteErase( char const * );
 extern void             RemoteErrMsg( sys_error, char * );
-extern unsigned         RemoteRead( sys_handle, void *, unsigned );
-extern unsigned         RemoteWrite( sys_handle, const void *, unsigned );
+extern size_t           RemoteRead( sys_handle, void *, size_t );
+extern size_t           RemoteWrite( sys_handle, const void *, size_t );
 extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       RemoteOpen( char const *, open_access );
-extern rc_erridx        RemoteClose( sys_handle );
-extern unsigned         RemoteWriteConsole( const void *, unsigned );
-extern unsigned         RemoteWriteConsoleNL( void );
+extern error_handle     RemoteClose( sys_handle );
+extern size_t           RemoteWriteConsole( const void *, size_t );
+extern size_t           RemoteWriteConsoleNL( void );
 extern long             RemoteGetFileDate( const char *name );
 extern bool             RemoteSetFileDate( const char *name, long date );
 

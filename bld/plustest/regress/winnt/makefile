@@ -1,6 +1,6 @@
 plustest_name = winnt
 
-!include testenv.mif
+!include testenv1.mif
 
 !ifdef test1
 test_flags = -oxa-d1

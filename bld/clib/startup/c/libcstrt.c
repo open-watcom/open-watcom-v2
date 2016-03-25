@@ -37,6 +37,7 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
@@ -48,7 +49,8 @@
 #include "snglthrd.h"
 #include "mthread.h"
 #include "trdlstac.h"
-#include "_exit.h"
+#include "wprelude.h"
+
 
 /*****************************************************************************
 //  TLS slot key
@@ -230,27 +232,28 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-extern void __exit( unsigned rc )
+_NORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     _exit( rc );
+    // never return
 }
 
 /*#define INTERCEPT_ALLOCATIONS */
 #ifdef INTERCEPT_ALLOCATIONS
-extern void * calloc(size_t num,size_t size )
+void * calloc(size_t num,size_t size )
 {
     return _NW_calloc(num, size);
 }
-extern void * malloc(size_t size )
+void * malloc(size_t size )
 {
     return _NW_malloc(size);
 }
-extern void free(void * p)
+void free(void * p)
 {
     _NW_free(p);
 }
-extern char * strdup(const char *in)
+char * strdup(const char *in)
 {
     char * newstr = NULL;
     if(NULL != in)
@@ -262,7 +265,7 @@ extern char * strdup(const char *in)
     return newstr;
 }
 
-extern void *realloc(void *old, size_t size)
+void *realloc(void *old, size_t size)
 {
     return(_NW_realloc(old,size));
 }
@@ -278,7 +281,7 @@ extern void *realloc(void *old, size_t size)
 /*****************************************************************************
 //  void * calloc(size_t,size_t);
 *****************************************************************************/
-extern void *_NW_calloc( size_t num,size_t size )
+void *_NW_calloc( size_t num,size_t size )
 {
     size_t  toalloc = num * size;
     void * p = _NW_malloc(toalloc);
@@ -347,6 +350,6 @@ void SetLastError(int error)
 //  Automatically inserted reference by the compiler to force this object
 //  file to be linked in from the library.
 *****************************************************************************/
-extern void __WATCOM_Prelude( void )
+void __WATCOM_Prelude( void )
 {
 }

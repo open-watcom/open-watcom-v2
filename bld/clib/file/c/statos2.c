@@ -54,12 +54,13 @@
 #include "thread.h"
 #include "os2fil64.h"
 #include "find.h"
+#include "pathmac.h"
 
 
 static unsigned short at2mode( OS_UINT attr, char *fname ) {
 
     register unsigned short mode;
-    register char           *ext;
+    register unsigned char  *ext;
 
     if( attr & _A_SUBDIR ) {
         mode = S_IFDIR | S_IXUSR | S_IXGRP | S_IXOTH;
@@ -68,9 +69,9 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
     } else {
         mode = S_IFREG;
         /* determine if file is executable, very PC specific */
-        if( (ext = _mbschr( fname, '.' )) != NULL ) {
+        if( (ext = _mbschr( (unsigned char *)fname, '.' )) != NULL ) {
             ++ext;
-            if( _mbscmp( ext, "EXE" ) == 0 ) {
+            if( _mbscmp( ext, (unsigned char *)"EXE" ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }
@@ -96,29 +97,35 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
     int                 isrootdir = 0;
 
     /* reject null string and names that has wildcard */
-    if( *path == NULLCHAR || __F_NAME(_mbspbrk,wcspbrk)( path, STRING( "*?" ) ) != NULL ) {
+#ifdef __WIDECHAR__
+    if( *path == NULLCHAR || wcspbrk( path, STRING( "*?" ) ) != NULL ) {
+#else
+    if( *path == NULLCHAR || _mbspbrk( (unsigned char *)path, (unsigned char *)STRING( "*?" ) ) != NULL ) {
+#endif
         _RWD_errno = ENOENT;
         return( -1 );
     }
 
     /*** Determine if 'path' refers to a root directory ***/
     if( __F_NAME(_fullpath,_wfullpath)( fullpath, path, _MAX_PATH ) != NULL ) {
-        if( __F_NAME(isalpha,iswalpha)( fullpath[0] )  &&  fullpath[1] == STRING( ':' ) &&
-            fullpath[2] == STRING( '\\' ) && fullpath[3] == NULLCHAR )
-        {
+        if( HAS_DRIVE( fullpath ) && fullpath[2] == DIR_SEP && fullpath[3] == NULLCHAR ) {
             isrootdir = 1;
         }
     }
 
     ptr = path;
-    if( __F_NAME(*_mbsinc(path),path[1]) == STRING( ':' ) )
+#ifdef __WIDECHAR__
+    if( path[1] == DRV_SEP )
+#else
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP )
+#endif
         ptr += 2;
-    if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
+    if( IS_DIR_SEP( ptr[0] ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* handle root directory */
-        int             drv;
+        int     drv;
 
         /* check if drive letter is valid */
-        drv = __F_NAME(tolower,towlower)( *fullpath ) - STRING( 'a' );
+        drv = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*fullpath ) - STRING( 'a' );
         DosQCurDisk( &drive, &drvmap );
         if( ( drvmap & ( 1UL << drv ) ) == 0 ) {
             _RWD_errno = ENOENT;
@@ -202,8 +209,12 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
     }
 
     /* process drive number */
-    if( __F_NAME(*_mbsinc(path),path[1]) == STRING( ':' ) ) {
-        buf->st_dev = __F_NAME(tolower,towlower)( *path ) - STRING( 'a' );
+#ifdef __WIDECHAR__
+    if( path[1] == DRV_SEP ) {
+#else
+    if( *_mbsinc( (unsigned char *)path ) == DRV_SEP ) {
+#endif
+        buf->st_dev = __F_NAME(tolower,towlower)( (UCHAR_TYPE)*path ) - STRING( 'a' );
     } else {
         DosQCurDisk( &drive, &drvmap );
         buf->st_dev = drive - 1;

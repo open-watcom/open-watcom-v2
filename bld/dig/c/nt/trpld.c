@@ -35,31 +35,29 @@
 #include <string.h>
 #include <stdlib.h>
 #include "trptypes.h"
-#include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
+#include "tcerr.h"
 
-typedef void (TRAPENTRY INFO_FUNC)( HWND );
 
 static HANDLE           TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-static void (TRAPENTRY *InfoFunction)( HWND );
+static TRAPENTRY_FUNC_PTR( InfoFunction );
 
-void TellHWND( HWND hwnd )
+void TrapTellHWND( HWND hwnd )
 {
-    if( InfoFunction != NULL ) {
-        InfoFunction( hwnd );
-    }
+    TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
 }
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
+    TRAPENTRY_PTR_NAME( InfoFunction ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
     }
-    InfoFunction = NULL;
     if( TrapFile != 0 ) {
         FreeLibrary( TrapFile );
         TrapFile = 0;
@@ -88,12 +86,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             have_ext = 0;
             break;
         case '.':
+#ifdef USE_FILENAME_VERSION
+            *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+            *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
             have_ext = 1;
             break;
         }
         *dst++ = chr;
     }
     if( !have_ext ) {
+#ifdef USE_FILENAME_VERSION
+        *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+        *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
         *dst++ = '.';
         *dst++ = 'd';
         *dst++ = 'l';
@@ -108,11 +114,10 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
     FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
     ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
-    InfoFunction = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)4 );
-//    LibListFunc = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)5 );
+    TRAPENTRY_PTR_NAME( InfoFunction ) = TRAPENTRY_PTR_CAST( InfoFunction )GetProcAddress( TrapFile, (LPSTR)4 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
-      && InfoFunction != NULL /* && LibListFunc != NULL */ ) {
+      && TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
         parms = ptr;
         if( *parms != '\0' )
             ++parms;

@@ -51,7 +51,7 @@
 #include "madppc.h"
 #endif
 
-#ifdef MD_mips
+#ifdef MD_mps
 #include "madmips.h"
 #endif
 
@@ -76,7 +76,7 @@ union mad_registers {
 #ifdef MD_ppc
     struct ppc_mad_registers    ppc;
 #endif
-#ifdef MD_mips
+#ifdef MD_mps
     struct mips_mad_registers   mips;
 #endif
 #ifdef MD_jvm

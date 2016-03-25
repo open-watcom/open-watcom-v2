@@ -36,15 +36,9 @@
 #if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
     #include <mbstring.h>
 #endif
+#include "pathmac.h"
 
 #undef _makepath
-
-#if defined(__UNIX__)
-  #define PC '/'
-#else   /* DOS, OS/2, Windows, Netware */
-  #define PC '\\'
-  #define ALT_PC '/'
-#endif
 
 
 #if defined(__UNIX__)
@@ -58,61 +52,62 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)(
         const CHAR_TYPE  *fname,
         const CHAR_TYPE  *ext )
 {
-    *path = '\0';
+    *path = NULLCHAR;
 
     if( node != NULL ) {
-        if( *node != '\0' ) {
+        if( *node != NULLCHAR ) {
             __F_NAME(strcpy,wcscpy)( path, node );
             path = __F_NAME(strchr,wcschr)( path, NULLCHAR );
 
             /* if node did not end in '/' then put in a provisional one */
-            if( path[ -1 ] == PC ) {
+            if( path[-1] == DIR_SEP ) {
                 path--;
             } else {
-                *path = PC;
+                *path = DIR_SEP;
             }
         }
     }
     if( dir != NULL ) {
-        if( *dir != '\0' ) {
+        if( *dir != NULLCHAR ) {
             /*  if dir does not start with a '/' and we had a node then
                     stick in a separator
             */
-            if( ( *dir != PC ) && ( *path == PC ) )
+            if( ( *dir != DIR_SEP ) && ( *path == DIR_SEP ) )
                 path++;
 
             __F_NAME(strcpy,wcscpy)( path, dir );
             path = __F_NAME(strchr,wcschr)( path, NULLCHAR );
 
             /* if dir did not end in '/' then put in a provisional one */
-            if( path[ -1 ] == PC )
+            if( path[-1] == DIR_SEP ) {
                 path--;
-            else
-                *path = PC;
+            } else {
+                *path = DIR_SEP;
+            }
         }
     }
 
     if( fname != NULL ) {
-        if( ( *fname != PC ) && ( *path == PC ) )
+        if( ( *fname != DIR_SEP ) && ( *path == DIR_SEP ) )
             path++;
 
         __F_NAME(strcpy,wcscpy)( path, fname );
         path = __F_NAME(strchr,wcschr)( path, NULLCHAR );
 
     } else {
-        if( *path == PC ) {
+        if( *path == DIR_SEP ) {
             path++;
         }
     }
     if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
+        if( *ext != NULLCHAR ) {
+            if( *ext != EXT_SEP )
+                *path++ = EXT_SEP;
             __F_NAME(strcpy,wcscpy)( path, ext );
             path = __F_NAME(strchr,wcschr)( path, NULLCHAR );
         }
     }
-    *path = '\0';
+    *path = NULLCHAR;
 }
 
 #elif defined( __NETWARE__ )
@@ -124,8 +119,8 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)(
 
 static char pickup( char c, char *pc_of_choice )
 {
-    if( c == PC || c == ALT_PC ) {
-        if( *pc_of_choice == '\0' )
+    if( IS_DIR_SEP( c ) ) {
+        if( *pc_of_choice == NULLCHAR )
             *pc_of_choice = c;
         c = *pc_of_choice;
     }
@@ -135,29 +130,29 @@ static char pickup( char c, char *pc_of_choice )
 _WCRTLINK extern void _makepath( char *path, const char *volume,
                 const char *dir, const char *fname, const char *ext )
 {
-    char first_pc = '\0';
+    char first_pc = NULLCHAR;
 
     if( volume != NULL ) {
-        if( *volume != '\0' ) {
+        if( *volume != NULLCHAR ) {
             do {
                 *path++ = *volume++;
-            } while( *volume != '\0' );
-            if( path[ -1 ] != ':' ) {
-                *path++ = ':';
+            } while( *volume != NULLCHAR );
+            if( path[-1] != DRV_SEP ) {
+                *path++ = DRV_SEP;
             }
         }
     }
-    *path = '\0';
+    *path = NULLCHAR;
     if( dir != NULL ) {
-        if( *dir != '\0' ) {
+        if( *dir != NULLCHAR ) {
             do {
                 *path++ = pickup( *dir++, &first_pc );
-            } while( *dir != '\0' );
+            } while( *dir != NULLCHAR );
             /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' )
-                first_pc = PC;
+            if( first_pc == NULLCHAR )
+                first_pc = DIR_SEP;
             /* if dir did not end in path sep then put in a provisional one */
-            if( path[ -1 ] == first_pc ) {
+            if( path[-1] == first_pc ) {
                 path--;
             } else {
                 *path = first_pc;
@@ -165,12 +160,12 @@ _WCRTLINK extern void _makepath( char *path, const char *volume,
         }
     }
     /* if no path separator was specified thus far then pick a default */
-    if( first_pc == '\0' )
-        first_pc = PC;
+    if( first_pc == NULLCHAR )
+        first_pc = DIR_SEP;
     if( fname != NULL ) {
         if( ( pickup( *fname, &first_pc ) != first_pc ) && ( *path == first_pc ) )
             path++;
-        while( *fname != '\0' ) {
+        while( *fname != NULLCHAR ) {
             *path++ = pickup( *fname++, &first_pc );
         }
     } else {
@@ -179,15 +174,15 @@ _WCRTLINK extern void _makepath( char *path, const char *volume,
         }
     }
     if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
-            while( *ext != '\0' ) {
+        if( *ext != NULLCHAR ) {
+            if( *ext != EXT_SEP )
+                *path++ = EXT_SEP;
+            while( *ext != NULLCHAR ) {
                 *path++ = *ext++;
             }
         }
     }
-    *path = '\0';
+    *path = NULLCHAR;
 }
 
 #else
@@ -197,10 +192,10 @@ _WCRTLINK extern void _makepath( char *path, const char *volume,
     we want to return a consistent path character.
 */
 
-static unsigned pickup( unsigned c, unsigned *pc_of_choice )
+static UINT_WC_TYPE pickup( UINT_WC_TYPE c, UINT_WC_TYPE *pc_of_choice )
 {
-    if( c == PC || c == ALT_PC ) {
-        if( *pc_of_choice == '\0' )
+    if( IS_DIR_SEP( c ) ) {
+        if( *pc_of_choice == NULLCHAR )
             *pc_of_choice = c;
         c = *pc_of_choice;
     }
@@ -212,49 +207,49 @@ static unsigned pickup( unsigned c, unsigned *pc_of_choice )
 _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE *drive,
                 const CHAR_TYPE *dir, const CHAR_TYPE *fname, const CHAR_TYPE *ext )
 {
-    unsigned            first_pc = '\0';
+    UINT_WC_TYPE        first_pc = NULLCHAR;
   #ifndef __WIDECHAR__
     char                *pathstart = path;
     unsigned            ch;
   #endif
 
     if( drive != NULL ) {
-        if( *drive != '\0' ) {
-            if( ( drive[ 0 ] == '\\' ) && ( drive[ 1 ] == '\\') ) {
+        if( *drive != NULLCHAR ) {
+            if( ( drive[0] == DIR_SEP ) && ( drive[1] == DIR_SEP ) ) {
                 __F_NAME(strcpy, wcscpy)( path, drive );
                 path += __F_NAME(strlen, wcslen)( drive );
             } else {
                 *path++ = *drive;                               /* OK for MBCS */
-                *path++ = ':';
+                *path++ = DRV_SEP;
             }
         }
     }
-    *path = '\0';
+    *path = NULLCHAR;
     if( dir != NULL ) {
-        if( *dir != '\0' ) {
+        if( *dir != NULLCHAR ) {
             do {
   #ifdef __WIDECHAR__
                 *path++ = pickup( *dir++, &first_pc );
   #else
-                ch = pickup( _mbsnextc( dir ), &first_pc );
-                _mbvtop( ch, path );
-                path[ _mbclen( path ) ] = '\0';
-                path = _mbsinc( path );
-                dir = _mbsinc( dir );
+                ch = pickup( _mbsnextc( (unsigned char *)dir ), &first_pc );
+                _mbvtop( ch, (unsigned char *)path );
+                path[_mbclen( (unsigned char *)path )] = NULLCHAR;
+                path = (char *)_mbsinc( (unsigned char *)path );
+                dir = (char *)_mbsinc( (unsigned char *)dir );
   #endif
-            } while( *dir != '\0' );
+            } while( *dir != NULLCHAR );
             /* if no path separator was specified then pick a default */
-            if( first_pc == '\0' )
-                first_pc = PC;
+            if( first_pc == NULLCHAR )
+                first_pc = DIR_SEP;
             /* if dir did not end in '/' then put in a provisional one */
   #ifdef __WIDECHAR__
-            if( path[ -1 ] == first_pc ) {
+            if( path[-1] == first_pc ) {
                 path--;
             } else {
                 *path = first_pc;
             }
   #else
-            if( *(_mbsdec( pathstart, path )) == first_pc ) {
+            if( *(_mbsdec( (unsigned char *)pathstart, (unsigned char *)path )) == first_pc ) {
                 path--;
             } else {
                 *path = first_pc;
@@ -264,44 +259,44 @@ _WCRTLINK void __F_NAME(_makepath,_wmakepath)( CHAR_TYPE *path, const CHAR_TYPE 
     }
 
     /* if no path separator was specified thus far then pick a default */
-    if( first_pc == '\0' )
-        first_pc = PC;
+    if( first_pc == NULLCHAR )
+        first_pc = DIR_SEP;
     if( fname != NULL ) {
   #ifdef __WIDECHAR__
         if( pickup( *fname, &first_pc ) != first_pc && *path == first_pc )
             path++;
   #else
-        ch = _mbsnextc( fname );
+        ch = _mbsnextc( (unsigned char *)fname );
         if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
             path++;
   #endif
 
-        while( *fname != '\0' ) {
+        while( *fname != NULLCHAR ) {
         //do {
   #ifdef __WIDECHAR__
             *path++ = pickup( *fname++, &first_pc );
   #else
-            ch = pickup( _mbsnextc( fname ), &first_pc );
-            _mbvtop( ch, path );
-            path[ _mbclen( path ) ] = '\0';
-            path = _mbsinc( path );
-            fname = _mbsinc( fname );
+            ch = pickup( _mbsnextc( (unsigned char *)fname ), &first_pc );
+            _mbvtop( ch, (unsigned char *)path );
+            path[_mbclen( (unsigned char *)path )] = NULLCHAR;
+            path = (char *)_mbsinc( (unsigned char *)path );
+            fname = (char *)_mbsinc( (unsigned char *)fname );
   #endif
-        } //while( *fname != '\0' );
+        } //while( *fname != NULLCHAR );
     } else {
         if( *path == first_pc ) {
             path++;
         }
     }
     if( ext != NULL ) {
-        if( *ext != '\0' ) {
-            if( *ext != '.' )
-                *path++ = '.';
-            while( *ext != '\0' ) {
+        if( *ext != NULLCHAR ) {
+            if( *ext != EXT_SEP )
+                *path++ = EXT_SEP;
+            while( *ext != NULLCHAR ) {
                 *path++ = *ext++;     /* OK for MBCS */
             }
         }
     }
-    *path = '\0';
+    *path = NULLCHAR;
 }
 #endif

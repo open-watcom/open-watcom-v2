@@ -3,9 +3,10 @@
 host_os  = dos
 host_cpu = i86
 
-os  = dos
+target_cpu = x86
+target_os  = dos
+
 srv = rsi
-cpu = x86
 which = TRAP
 
 extra_cpp_flags = -DDOS4G

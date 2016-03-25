@@ -100,7 +100,7 @@ cont:           sub     CX,CX
                 push    CX
                 ;; setup std in/out to console
                 mov     AH,45H
-                mov     BX,0
+                xor     BX,BX
                 int     21H
                 mov     cs:savestdin,AX
                 mov     AH,45H
@@ -114,7 +114,7 @@ cont:           sub     CX,CX
                 int     21H
                 jc      notopen
                 mov     BX,AX
-                mov     CX,0
+                xor     CX,CX
                 mov     AH,46H
                 int     21H
                 mov     CX,1
@@ -142,7 +142,7 @@ worked:
                 mov     SS,CS:savess
                 ;; restore std in/out
                 mov     BX,cs:savestdin
-                mov     CX,0
+                xor     CX,CX
                 mov     AH,46H
                 int     21H
                 mov     AH,3eH

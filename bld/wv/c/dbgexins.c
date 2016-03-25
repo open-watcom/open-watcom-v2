@@ -35,13 +35,14 @@
 #include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgscan.h"
+#include "dbgparse.h"
+#include "dbgexins.h"
+#include "dbgdot.h"
 
 
 extern bool             HasLinInfo(address );
-extern void             OptMemAddr(memory_expr ,address *);
 extern void             *WndAsmInspect(address);
 extern void             *WndSrcInspect(address);
-extern address          GetCodeDot( void );
 
 
 /*
@@ -59,7 +60,7 @@ void AsmExam( void )
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
+//    prompt = true;
     ReqEOC();
     WndAsmInspect( addr );
 }
@@ -80,7 +81,7 @@ void SrcExam( void )
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-//    prompt = TRUE;
+//    prompt = true;
     ReqEOC();
     WndSrcInspect( addr );
 }

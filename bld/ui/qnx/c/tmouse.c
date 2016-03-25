@@ -49,16 +49,13 @@
 #include "ctkeyb.h"
 
 
-#define         MOUSE_SCALE             8
+#define MOUSE_SCALE     8
 
+extern ORD              MouseRow;
+extern ORD              MouseCol;
 
-extern          ORD       MouseRow;
-extern          ORD       MouseCol;
-extern          bool      MouseOn;
-
-
-extern          unsigned short          MouseStatus;
-extern          bool                    MouseInstalled;
+extern unsigned short   MouseStatus;
+extern bool             MouseInstalled;
 
 static __segment        SysTimeSel;
 
@@ -71,6 +68,7 @@ static enum {
 
 
 #define MAXBUF    30
+
 static char buf[ MAXBUF + 1 ];
 static int new_sample;
 
@@ -108,7 +106,7 @@ static int new_sample;
 static  void tm_error( void )
 /***************************/
 {
-//    write( UIConHandle, QW_BELL, sizeof( QW_BELL ) - 1 );
+//    uiwritec( QW_BELL );
 }
 
 /*-
@@ -168,13 +166,12 @@ static void XT_parse( void )
 }
 
 
-static int tm_check( unsigned short *status, unsigned short *row,
-                        unsigned short *col, unsigned long *time )
-/****************************************************************/
+static int tm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
+/**********************************************************************************************************/
 {
     if( !MouseInstalled ) {
-         uisetmouse(*row, *col);
-         return 0;
+         uisetmouse( *row, *col );
+         return( 0 );
     }
     QNXDebugPrintf1("mouse_string = '%s'", buf);
     if( new_sample ) {
@@ -193,17 +190,17 @@ static int tm_check( unsigned short *status, unsigned short *row,
     *col = last_col;
     *status = last_status;
     *time = GET_MSECS;
-    uisetmouse(*row, *col);
-    return 0;
+    uisetmouse( *row, *col );
+    return( 0 );
 }
 
 static int tm_stop( void )
 /************************/
 {
-    return 0;
+    return( 0 );
 }
 
-static void DoMouseInit( int type, char *init, char *input )
+static void DoMouseInit( int type, char *init, const char *input )
 {
     struct _osinfo      osinfo;
     MOUSEORD            row;
@@ -211,10 +208,10 @@ static void DoMouseInit( int type, char *init, char *input )
 
     MouseType = type;
     uimouseforceoff();
-    write( UIConHandle, init, strlen( init ) );
+    uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
 
-    MouseInstalled = TRUE;
+    MouseInstalled = true;
 
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
@@ -228,29 +225,30 @@ static void DoMouseInit( int type, char *init, char *input )
     stopmouse();
 }
 
-static int tm_init( bool install )
-/********************************/
+static int tm_init( int install )
+/*******************************/
 {
-    char        *term;
+    const char      *term;
 
-    MouseInstalled = FALSE;
+    MouseInstalled = false;
     MouseType = M_NONE;
 
-    if( !install ) return( FALSE );
+    if( install == 0 )
+        return( false );
 
     term = GetTermType();
     if( strcmp( term, "xterm" ) == 0 ) {
         DoMouseInit( M_XT, XT_INIT, ANSI_HDR "M" );
-        return( TRUE );
+        return( true );
     }
     if( strstr( term, "qnx" ) != 0 ) {
-        write( UIConHandle, QNX_HDR QW_TEST, sizeof( QNX_HDR QW_TEST ) - 1 );
+        uiwritec( QNX_HDR QW_TEST );
         TrieAdd( EV_MOUSE_PRESS, QNX_HDR QW_TEST_RESPONSE );
-        return( TRUE );
+        return( true );
     }
-    write( UIConHandle, ANSI_HDR QW_TEST, sizeof( ANSI_HDR QW_TEST ) - 1 );
+    uiwritec( ANSI_HDR QW_TEST );
     TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
-    return( TRUE );
+    return( true );
 }
 
 static int tm_fini( void )
@@ -258,16 +256,16 @@ static int tm_fini( void )
 {
     switch( MouseType ) {
     case M_QW:
-        write( UIConHandle, QNX_HDR QW_FINI, sizeof( QNX_HDR QW_FINI ) - 1 );
+        uiwritec( QNX_HDR QW_FINI );
         break;
     case M_AW:
-        write( UIConHandle, ANSI_HDR QW_FINI, sizeof( ANSI_HDR QW_FINI ) - 1 );
+        uiwritec( ANSI_HDR QW_FINI );
         break;
     case M_XT:
-        write( UIConHandle, XT_FINI, sizeof( XT_FINI ) - 1 );
+        uiwritec( XT_FINI );
         break;
     }
-    return 0;
+    return( 0 );
 }
 
 static int tm_set_speed( int speed )
@@ -281,7 +279,7 @@ static int tm_set_speed( int speed )
  */
 {
     speed = speed;
-    return 0;
+    return( 0 );
 }
 
 void tm_saveevent( void )
@@ -346,9 +344,9 @@ void tm_saveevent( void )
 }
 
 Mouse TermMouse = {
-        tm_init,
-        tm_fini,
-        tm_set_speed,
-        tm_stop,
-        tm_check,
+    tm_init,
+    tm_fini,
+    tm_set_speed,
+    tm_stop,
+    tm_check,
 };

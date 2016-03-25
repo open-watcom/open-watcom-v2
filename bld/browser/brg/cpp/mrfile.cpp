@@ -299,10 +299,11 @@ void MergeFile::writeULEB128( uint_32 uleb )
     uint_8      b;
 
     for(;;) {
-        b = (uint_8) (uleb & 0x7f);
+        b = (uint_8)(uleb & 0x7f);
         uleb >>= 7;
-        if( uleb == 0 ) break;
-        *buf++ = (uint_8) (b | 0x80);
+        if( uleb == 0 )
+            break;
+        *buf++ = (uint_8)(b | 0x80);
     }
     *buf++ = b;
 
@@ -348,14 +349,28 @@ static uint MergeFile::ULEB128Len( uint_32 uleb )
 //-----------------------------------------------
 {
     uint_8  len = 0;
-    uint_8  b;
 
     do {
-        b = (uint_8) (uleb & 0x7f);
         uleb >>= 7;
         len += 1;
-    } while( uleb );
+    } while( uleb != 0 );
 
+    return len;
+}
+
+static uint MergeFile::SLEB128Len( int_32 sleb )
+//-----------------------------------------------
+{
+    uint_8  len = 0;
+    uint_8  b;
+    int_32  end;
+
+    end = ( sleb < 0 ) ? -1 : 0;
+    do {
+        b = (uint_8) (sleb & 0x7f);
+        sleb >>= 7;
+        len += 1;
+    } while( sleb != end || (b & 0x40) != (end & 0x40) );
     return len;
 }
 

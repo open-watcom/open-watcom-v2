@@ -41,7 +41,7 @@
     #define _NEAR
 #endif
 
-#include "precomp.h"
+#include "commonui.h"
 #include "bool.h"
 #define MSG_RC_BASE     0
 #include "rcstr.gh"
@@ -234,7 +234,7 @@ extern void DoLoadSpyConfig( void );
 extern void FAR HandleMessage( LPMSG pmsg );
 
 /* spymdlgs.c */
-extern void DoMessageDialog( HWND hwnd, WORD wparam );
+extern void DoMessageDialog( HWND hwnd, ctl_id id );
 extern void DoMessageSelDialog( HWND hwnd );
 
 /* spymisc.c */
@@ -266,7 +266,7 @@ extern void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
 /* spypick.c */
 extern void FrameAWindow( HWND hwnd );
 extern void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  );
-extern HWND DoPickDialog( WORD );
+extern HWND DoPickDialog( ctl_id );
 
 /* spyproc.c */
 WINEXPORT extern LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

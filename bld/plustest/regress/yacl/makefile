@@ -2,7 +2,7 @@
 
 plustest_name = yacl
 
-!include testenv.mif
+!include testenv1.mif
 !include base/lib.mif
 !include io/lib.mif
 

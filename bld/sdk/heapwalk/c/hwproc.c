@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,9 +217,9 @@ static void ResetFont( GblWndInfo *info ) {
  */
 static DWORD CheckForLocalSelect( GblWndInfo *info ) {
 
-    LRESULT    index;
+    int    index;
 
-    index = SendMessage( info->list.box, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( info->list.box, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         RCMessageBox( NULL, STR_NO_ITEM_SELECTED, HeapWalkName,
                     MB_OK | MB_ICONEXCLAMATION | MB_TASKMODAL );
@@ -349,7 +350,6 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam,
             ai.inst = Instance;
             ai.name = HWGetRCString( STR_ABOUT_NAME );
             ai.version = HWGetRCString( STR_ABOUT_VERSION );
-            ai.first_cr_year = "1993";
             ai.title = HWGetRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             break;

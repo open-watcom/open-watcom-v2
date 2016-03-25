@@ -40,7 +40,7 @@
 #include "rtenv.h"
 
 
-complex C8Div( single a, single b, single c, single d ) {
+scomplex C8Div( single a, single b, single c, single d ) {
 //=======================================================
 
 // Divide two complex numbers and return the real part of the result.
@@ -48,7 +48,7 @@ complex C8Div( single a, single b, single c, single d ) {
 
     single      tmp;
     single      quo;
-    complex     res;
+    scomplex    res;
 
     if( fabs( d ) < fabs( c ) ) {
         tmp = a;    // convert to (-b,a)/(-d,c)

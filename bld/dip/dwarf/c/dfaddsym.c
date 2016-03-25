@@ -64,6 +64,12 @@ typedef union {
     seg_blk_off     off;
 } seg_blk;  /* general form */
 
+typedef struct {
+    unsigned_16     hi;
+    off_info        *base;
+    addr_off        key;
+    unsigned_16     last;
+} off_cmp;
 
 static off_info *AddMapOffset( seg_off *ctl, off_info *new )
 /**********************************************************/
@@ -81,7 +87,7 @@ static off_info *AddMapOffset( seg_off *ctl, off_info *new )
         blk->next = ctl->head;
         ctl->head = blk;
     }
-    next = &blk->info[rem];
+    next = blk->info + rem;
     *next = *new;
     ++ctl->entry.count;
     return( next );
@@ -125,13 +131,6 @@ extern void AddAddrSym( seg_list *list, addrsym_info *new )
 }
 
 
-typedef struct {
-    unsigned_16     hi;
-    off_info        *base;
-    addr_off        key;
-    unsigned_16     last;
-} off_cmp;
-
 static  long BlkOffSearch( off_cmp *cmp )
 /***************************************/
 // Do a B-search on the blk
@@ -142,28 +141,26 @@ static  long BlkOffSearch( off_cmp *cmp )
     unsigned_16     lo;
     unsigned_16     mid;
     unsigned_16     hi;
-    long            diff;
 
     key = cmp->key;
     base = cmp->base;
     hi = cmp->hi;
     lo = 0;
     for( ;; ) {
-        mid = (lo + hi)/2;
-        curr = &base[mid];
-        diff = (long)key - (long)curr->map_offset;
+        mid = MIDIDX16( lo, hi );
+        curr = base + mid;
         if( mid == lo ) { /* fix up last cmp */
             break;
         }
-        if( diff < 0 ) {              // key < mid
+        if( key < curr->map_offset ) {  // key < mid
             hi = mid;
-        } else {                      // key > mid
+        } else {                        // key > mid
             lo = mid;
         }
     }
     cmp->last = mid;
     cmp->base = curr;
-    return( diff );
+    return( key - curr->map_offset );
 }
 
 // This is a bit screwy, maybe I should do something like dfaddr
@@ -189,10 +186,9 @@ extern  int  FindAddrSym( seg_list     *addr_map,
         if( cmp.hi == 0 ) {
             cmp.hi = OFF_PER_BLK;
         }
-        blk = ctl->off.head;
-        while( blk != NULL ) {
-            cmp.base = &blk->info[0];
-            diff =  BlkOffSearch( &cmp );
+        for( blk = ctl->off.head; blk != NULL; blk = blk->next ) {
+            cmp.base = blk->info;
+            diff = BlkOffSearch( &cmp );
             if( diff >= 0 ) {
                 if( diff < last_find || last_find < 0 ) {
                     info = cmp.base;
@@ -200,21 +196,19 @@ extern  int  FindAddrSym( seg_list     *addr_map,
                     ret->sym = info->sym;
                     ret->map_seg = ctl->entry.real;
                     if( diff == 0 ) {
-                        return( diff );
+                        return( 0 );
                     }
                     last_find = diff;
                 }
             }
             cmp.hi = OFF_PER_BLK;
-            blk = blk->next;
         }
     }
-    if( last_find < 0 ) {
-        last_find = -1;
-    } else if( last_find > 0 ) {
-        last_find = 1;
-    }
-    return( last_find );
+    if( last_find < 0 )
+        return( -1 );
+    if( last_find > 0 )
+        return( 1 );
+    return( 0 );
 }
 
 
@@ -224,15 +218,12 @@ static int  OffCmp( void const *_off1, void const *_off2 )
 {
     off_info const  *off1 = _off1;
     off_info const  *off2 = _off2;
-    long            diff;
 
-    diff = (long)off1->map_offset - (long)off2->map_offset;
-    if( diff < 0 ) {
-        diff = -1;
-    } else if( diff > 0 ) {
-        diff = 1;
-    }
-    return( diff );
+    if( off1->map_offset < off2->map_offset )
+        return( -1 );
+    if( off1->map_offset > off2->map_offset )
+        return( 1 );
+    return( 0 );
 }
 
 
@@ -250,11 +241,11 @@ static bool SortOffsets( void *d, void *_ctl )
     if( blk_count == 0 ) {
         blk_count = OFF_PER_BLK;
     } else {
-        blk = DCRealloc( blk, PTRDIFF( &blk->info[blk_count], blk )  );
+        blk = DCRealloc( blk, PTRDIFF( blk->info + blk_count, blk )  );
         ctl->off.head = blk;
     }
     while( blk != NULL ) {
-        qsort( &blk->info[0], blk_count, sizeof( blk->info[0] ), OffCmp );
+        qsort( blk->info, blk_count, sizeof( blk->info[0] ), OffCmp );
         blk_count = OFF_PER_BLK;
         blk = blk->next;
     }
@@ -293,11 +284,12 @@ static bool WalkOffsets( void *_wlk, void *_ctl )
         blk_count = OFF_PER_BLK;
     }
     while( blk != NULL ) {
-        next = &blk->info[0];
+        next = blk->info;
         while( blk_count > 0 ) {
             info.map_offset = next->map_offset;
             info.sym = next->sym;
-            if( !wlk->fn( wlk->d, &info ) ) goto done;
+            if( !wlk->fn( wlk->d, &info ) )
+                goto done;
             ++next;
             --blk_count;
         }
@@ -334,14 +326,12 @@ static bool FreeSegOffsets( void *d, void *_curr )
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;
-    off_blk     *blk, *old;
+    off_blk     *blk, *next;
 
     d = d;
-    blk = curr->off.head;
-    while( blk != NULL ) {
-        old = blk;
-        blk = blk->next;
-        DCFree( old );
+    for( blk = curr->off.head; blk != NULL; blk = next ) {
+        next = blk->next;
+        DCFree( blk );
     }
     return( TRUE );
 }

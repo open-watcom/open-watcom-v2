@@ -65,7 +65,7 @@ namespace std {
             }
             break;
         }
-        if( c == delim ) {
+        if( c == (int)(unsigned char)delim ) {
             break;
         }
         ++offset;

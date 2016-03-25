@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WREDisplayHint( int id );
+extern void WREDisplayHint( ctl_id id );
 extern void WREHandleMenuSelect( WPARAM, LPARAM );
 extern bool WREInitHints( void );
 extern void WREFiniHints( void );

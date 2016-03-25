@@ -32,12 +32,12 @@
 
 #include <windows.h>
 #include <string.h>
+#include "winexprt.h"
+#include "ideactiv.h"
 
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-#define WINEXPORT   __declspec(dllexport)
-#else
-#define WINEXPORT
-#endif
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam );
 
 #define IDE_WINDOW_CLASS        "GUIClass"
 #define IDE_WIN_CAP_LEN         15

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "wddespy.h"
 
 HANDLE          Instance;
 HWND            DDEMainWnd;
 DWORD           DDEInstId;
-BOOL            Monitoring[DDE_MON_LAST - DDE_MON_FIRST + 1];
-WndConfigInfo   Tracking[NO_TRK_WND];
+bool            Monitoring[MAX_DDE_MON];
+WndConfigInfo   Tracking[MAX_DDE_TRK];
 WndConfigInfo   MainWndConfig;
 DDEConfigInfo   ConfigInfo;
 AliasHdl        HwndAlias;

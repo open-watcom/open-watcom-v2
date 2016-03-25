@@ -34,6 +34,12 @@
 #include "rxsupp.h"
 #include "win.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+#ifdef __WIN__
+WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam );
+#endif
+
 typedef enum {
     CHANGE_OK,
     CHANGE_NO,
@@ -59,11 +65,11 @@ static int      MB_posy = -1;
 WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM lparam )
 {
     char        className[10];
-    HWND        hWnd;
+    window_id   wid;
 
     if( ncode == HCBT_ACTIVATE || ncode == HCBT_MOVESIZE ) {
-        hWnd = (HWND)wparam;
-        GetClassName( hWnd, className, 10 );
+        wid = (window_id)wparam;
+        GetClassName( wid, className, 10 );
         if( strcmp( className, "#32770" ) == 0 ) {
             if( ncode == HCBT_MOVESIZE ) {
                 LPRECT  pos = (LPRECT)lparam;
@@ -72,7 +78,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
                 MB_posy = pos->top;
             } else {
                 if( MB_posx != -1 || MB_posy != -1 ) {
-                    SetWindowPos( hWnd, (HWND)NULLHANDLE, MB_posx, MB_posy, 0, 0,
+                    SetWindowPos( wid, (HWND)NULLHANDLE, MB_posx, MB_posy, 0, 0,
                         SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
                 }
             }
@@ -81,7 +87,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
     return( CallNextHookEx( hhookMB, ncode, wparam, lparam ) );
 }
 
-static int MyMessageBox( window_id hWnd, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
+static int MyMessageBox( window_id wid, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
 {
     FARPROC     fp;
     int         rc;
@@ -92,7 +98,7 @@ static int MyMessageBox( window_id hWnd, char _FAR *lpText, char _FAR *lpCaption
 #else
     hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, InstanceHandle, GetCurrentTask() );
 #endif
-    rc = MessageBox( hWnd, lpText, lpCaption, uType );
+    rc = MessageBox( wid, lpText, lpCaption, uType );
     UnhookWindowsHookEx( hhookMB );
     FreeProcInstance( fp );
     return( rc );
@@ -104,7 +110,7 @@ static change_resp ChangePrompt( void )
 #ifdef __WIN__
     int     i;
 
-    i = MyMessageBox( Root, "Change this occurence?", "Replace Text",
+    i = MyMessageBox( root_window_id, "Change this occurence?", "Replace Text",
                       MB_ICONQUESTION | MB_YESNOCANCEL );
     if( i == IDNO ) {
         return( CHANGE_NO );
@@ -114,7 +120,7 @@ static change_resp ChangePrompt( void )
         return( CHANGE_OK );
     }
 #else
-    vi_key      key = 0;
+    vi_key      key = VI_KEY( NULL );
 
     Message1( "Change? (y)es/(n)o/(a)ll/(q)uit" );
     for( ;; ) {
@@ -136,7 +142,7 @@ static change_resp ChangePrompt( void )
  *                     doing substitute in 2 parts if it has to, that
  *                     appear as 1
  */
-vi_rc TwoPartSubstitute( char *find, char *replace, int prompt, int wrap )
+vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int wrap )
 {
     vi_rc   rc;
     long    changecnt, linecnt;
@@ -183,22 +189,28 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
 /*
  * Substitute - perform substitution
  */
-vi_rc Substitute( linenum n1, linenum n2, char *data )
+vi_rc Substitute( linenum n1, linenum n2, const char *data )
 {
     char        *sstr, *rstr, *newr;
-    char        flag[20], *linedata;
+    char        c;
+    char        *linedata;
     bool        iflag = false;
     bool        gflag = false;
     bool        undoflag = false;
     bool        restline = false;
     bool        splitpending = false;
     bool        undoline = false;
-    int         i, rlen, slen;
+    int         rlen, slen;
     bool        splitme;
     long        changecnt = 0, linecnt = 0;
     linenum     llineno, ll, lastline = 0, extra;
     i_mark      pos;
     vi_rc       rc;
+
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
+    }
 
     LastSubstituteCancelled = 0;
     LastChangeCount = 0;
@@ -208,33 +220,28 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
     if( sstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    strcpy( sstr, data );
-    rc = ModificationTest();
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    strcpy( data, sstr );
     rstr = alloca( MAX_INPUT_LINE  );
     if( rstr == NULL ) {
         return( ERR_NO_STACK );
     }
-    if( NextWordSlash( data, sstr ) < 0 ) {
+    data = GetNextWord( data, sstr, SingleSlash );
+    if( *sstr == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    if( NextWordSlash( data, rstr ) < 0 ) {
+    data = GetNextWord( data, rstr, SingleSlash );
+    if( *rstr == '\0' ) {
         return( ERR_INVALID_SUBS_CMD );
     }
-    slen = NextWord1( data, flag );
-    for( i = 0; i < slen; i++ ) {
-        switch( flag[i] ) {
-        case 'g':
+    if( *data == '/' )
+        ++data;
+    data = SkipLeadingSpaces( data );
+    while( (c = *data) != '\0' ) {
+        if( c == 'g' ) {
             gflag = true;
-            break;
-        case 'i':
-        case 'c':
+        } else if( c == 'i' || c == 'c' ) {
             iflag = true;
-            break;
         }
+        ++data;
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {
@@ -258,7 +265,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
      * set for start of search
      */
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     SaveCurrentFilePos();
     llineno = n1 - 1;
@@ -300,7 +307,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
             change_resp rsp;
 
             if( !restline ) {
-                ClearWindow( MessageWindow );
+                ClearWindow( message_window_id );
             }
             restline = true;
             GoToLineNoRelCurs( pos.line );
@@ -468,7 +475,7 @@ linenum SplitUpLine( linenum cl )
                 for( j = i + 1; j <= WorkLine->len; j++ ) {
                     buff[k++] = WorkLine->data[j];
                 }
-                WorkLine->data[i] = 0;
+                WorkLine->data[i] = '\0';
                 WorkLine->len = i;
                 ReplaceCurrentLine();
                 AddNewLineAroundCurrent( buff, k - 1, INSERT_AFTER );
@@ -480,7 +487,7 @@ linenum SplitUpLine( linenum cl )
             /*
              * at the very end, undo what we did and go back
              */
-            if( WorkLine->data[i] == 0 ) {
+            if( WorkLine->data[i] == '\0' ) {
                 ReplaceCurrentLine();
                 UndoInsert( cl + 1, cl + extra, UndoStack );
                 return( extra );

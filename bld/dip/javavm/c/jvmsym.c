@@ -311,7 +311,8 @@ static char *DoDemangle( char *name, unsigned *add, unsigned *len, char *sig )
     switch( *sig++ ) {
     case SIGNATURE_ARRAY:
         Insert( name, add, len, " []" );
-        while( isdigit( *sig ) ) ++sig;
+        while( isdigit( *sig ) )
+            ++sig;
         sig = DoDemangle( name, add, len, sig );
         break;
     case SIGNATURE_CLASS:
@@ -380,11 +381,11 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
     return( len );
 }
 
-unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
-                        imp_sym_handle *is, location_context *lc,
-                        symbol_name sn, char *buff, unsigned buff_size )
+size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+                    imp_sym_handle *is, location_context *lc,
+                    symbol_name sn, char *buff, size_t buff_size )
 {
-    unsigned    len;
+    size_t      len;
     ji_ptr      sig;
 
     len = GetName( ii, is );
@@ -687,7 +688,7 @@ static walk_result CheckOneSym( imp_image_handle *ii, sym_walk_info swi,
 {
     struct lookup_data  *ld = d;
     imp_sym_handle      *new;
-    unsigned            len;
+    size_t              len;
 
     if( swi != SWI_SYMBOL ) {
         return( ld->static_only ? WR_STOP : WR_CONTINUE );
@@ -705,9 +706,9 @@ static walk_result CheckOneSym( imp_image_handle *ii, sym_walk_info swi,
 static search_result CheckScopeName( struct lookup_data *ld )
 {
     char        scope[MAX_NAME];
-    unsigned    pk_len;
-    unsigned    i;
-    unsigned    j;
+    size_t      pk_len;
+    size_t      i;
+    size_t      j;
     enum {
         SEP_NO,
         SEP_MAYBE,
@@ -771,7 +772,7 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
     ji_ptr              clazz;
     imp_sym_handle      *new;
     search_result       sr;
-    unsigned            len;
+    size_t              len;
     char                *p;
 
     if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_JAVA ) {
@@ -956,7 +957,7 @@ static search_result FindAScope( imp_image_handle *ii, scope_block *scope )
     if( best.idx == ~0 ) {
         scope->len = ii->methods[mb_idx].code_length;
         scope->unique = OBJECT_SCOPE;
-        return( (off ==0) ? SR_EXACT : SR_CLOSEST );
+        return( (off == 0) ? SR_EXACT : SR_CLOSEST );
     }
     scope->start.mach.offset += best.pc;
     scope->len = best.len;

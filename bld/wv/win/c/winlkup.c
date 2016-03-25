@@ -34,10 +34,11 @@
 #include <windows.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
+#include "envlkup.h"
 
 
 #ifndef __NT__
-const char *DOSEnvFind( const char *name )
+static const char *DOSEnvFind( const char *name )
 {
     const char  *env;
     const char  *p;
@@ -55,26 +56,32 @@ const char *DOSEnvFind( const char *name )
     } while( *env != NULLCHAR );
     return( NULL );
 }
+#endif
 
 /*
  * EnvLkup -- lookup up string in environment area
  */
 
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
-    unsigned    len;
+#ifdef __NT__
+    return( GetEnvironmentVariable( name, buff, buff_len ) );
+#else
+    size_t      len;
     const char  *env;
-    int         output = 0;
+    bool        output;
     char        c;
 
     env = DOSEnvFind( name );
     if( env == NULL )
         return( 0 );
+
+    output = false;
     if( buff_len != 0 && buff != NULL ) {
         --buff_len;
-        output = 1;
+        output = true;
     }
-    for( len = 0; (c = *env++) != '\0'; ++len ) {
+    for( len = 0; (c = *env++) != NULLCHAR; ++len ) {
         if( output ) {
             if( len >= buff_len ) {
                 break;
@@ -83,17 +90,8 @@ unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
         }
     }
     if( output ) {
-        buff[len] = '\0';
+        buff[len] = NULLCHAR;
     }
     return( len );
-}
-#else
-/*
- * EnvLkup -- lookup up string in environment area
- */
-
-unsigned EnvLkup( const char *name, char *buff, unsigned buff_len )
-{
-    return( GetEnvironmentVariable( name, buff, buff_len ) );
-}
 #endif
+}

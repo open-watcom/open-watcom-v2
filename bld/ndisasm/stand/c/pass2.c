@@ -31,8 +31,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "global.h"
 #include "dis.h"
+#include "global.h"
 #include "pass2.h"
 #include "buffer.h"
 #include "srcmix.h"
@@ -67,18 +67,20 @@ extern char *                   CommentString;
 static orl_sec_offset   routineBase = 0;
 static orl_sec_size     routineSize = 0;
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *buff )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
 {
     sa_disasm   pd = d;
 
     // Check for overrruns, return 0xFFs for reads beyond the end of section
     if( pd->offs + off + size <= pd->last ) {
         memcpy( buff, pd->data + pd->offs + off, size );
-    } else {
-        unsigned    valid = pd->last - pd->offs - off + 1;
+    } else if( pd->offs + off <= pd->last ) {
+        size_t  valid = pd->last - pd->offs - off + 1;
 
         memcpy( buff, pd->data + pd->offs + off, valid );
         memset( (char *)buff + valid, 0xFF, size - valid );
+    } else {
+        memset( (char *)buff, 0xFF, size );
     }
     return( DR_OK );
 }
@@ -506,13 +508,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     FmtHexNum( buff, size, mask & value, no_prefix );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, unsigned buff_len )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
 {
     struct pass2        *pd = d;
     size_t              len;
     dis_operand         *op;
     ref_flags           rf;
 
+    buff_len = buff_len;
     buff[0] = '\0';
 
     rf = RFLAG_DEFAULT;
@@ -741,12 +744,14 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
             BufferAlignToTab( PREFIX_SIZE_TABS );
         }
         BufferStore( "\t%s", name );
-        pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
-        if( !(DFormat & DFF_ASM) ) {
-            pos_tabs += PREFIX_SIZE_TABS;
+        if( *ops != '\0' ) {
+            pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
+            if( !(DFormat & DFF_ASM) ) {
+                pos_tabs += PREFIX_SIZE_TABS;
+            }
+            BufferAlignToTab( pos_tabs );
+            BufferConcat( ops );
         }
-        BufferAlignToTab( pos_tabs );
-        BufferConcat( ops );
         BufferConcatNL();
         BufferPrint();
     }

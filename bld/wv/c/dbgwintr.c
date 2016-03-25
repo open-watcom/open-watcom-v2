@@ -40,16 +40,16 @@
 #include "wndregx.h"
 #include "strutil.h"
 #include "dbgscan.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgparse.h"
+#include "dbgwdlg.h"
+#include "namelist.h"
+#include "symcomp.h"
+#include "dbgwintr.h"
 
 
-extern char             *GetCmdEntry(const char *,int ,char *);
-extern unsigned         ReqExpr( void );
-extern unsigned         OptExpr( void );
 extern void             WndUserAdd(char *,unsigned int );
-extern void             WndDlgTxt(const char *);
-extern void             SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle );
-extern void             SymCompFini( void );
-extern const char       *GetCmdName( wd_cmd cmd );
 
 extern const char       WndNameTab[];
 
@@ -59,14 +59,14 @@ static void BadCmd( void )
 }
 
 
-void MenuCopy( char *dst, const char *from, char *to )
+static void MenuCopy( char *dst, const char *from, char *to )
 {
     char        ampchar;
     bool        ampdumped;
 
     ampchar = 0;
-    ampdumped = FALSE;
-    while( *from ) {
+    ampdumped = false;
+    while( *from != NULLCHAR ) {
         if( *from == '&' ) {
             ++from;
             ampchar = *from;
@@ -74,7 +74,7 @@ void MenuCopy( char *dst, const char *from, char *to )
         if( *from == '\t' ) {
             ++from;
             if( ampchar && !ampdumped ) {
-                ampdumped = TRUE;
+                ampdumped = true;
                 *to++ = ' ';
                 *to++ = '(';
                 *to++ = ampchar;
@@ -92,11 +92,11 @@ void MenuCopy( char *dst, const char *from, char *to )
         *to++ = ampchar;
         *to++ = ')';
     }
-    *to++ = '\0';
+    *to++ = NULLCHAR;
 }
 
 
-void MenuDump( int indent, int num_popups, gui_menu_struct *child )
+static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
 {
     char        *p;
     int         i;
@@ -104,7 +104,8 @@ void MenuDump( int indent, int num_popups, gui_menu_struct *child )
     while( --num_popups >= 0 ) {
         p = TxtBuff;
         i = indent;
-        while( --i >= 0 ) *p++ = ' ';
+        while( i-- > 0 )
+            *p++ = ' ';
         if( child->style & GUI_SEPARATOR ) {
             StrCopy( "---------", p );
         } else {
@@ -113,14 +114,14 @@ void MenuDump( int indent, int num_popups, gui_menu_struct *child )
         WndDlgTxt( TxtBuff );
         if( child->hinttext && child->hinttext[0] ) {
             p = TxtBuff;
-            i = indent;
-            while( --i >= 0 ) *p++ = ' ';
+            for( i = indent; i > 0; --i )
+                *p++ = ' ';
             p = StrCopy( "- ", p );
             p = StrCopy( child->hinttext, p );
             WndDlgTxt( TxtBuff );
         }
         if( child->num_child_menus != 0 ) {
-            MenuDump( indent+4, child->num_child_menus, child->child );
+            MenuDump( indent + 4, child->num_child_menus, child->child );
         }
         ++child;
     }
@@ -130,19 +131,18 @@ extern gui_menu_struct WndMainMenu[];
 extern int WndNumMenus;
 extern wnd_info *WndInfoTab[];
 
-
-void XDumpMenus( void )
+static void XDumpMenus( void )
 {
-    wnd_class   wndcls;
-    char        *p;
+    wnd_class_wv    wndclass;
+    char            *p;
 
     ReqEOC();
-    for( wndcls = 0; wndcls < WND_CURRENT; ++wndcls ) {
+    for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
         p = StrCopy( "The ", TxtBuff );
-        p = GetCmdEntry( WndNameTab, wndcls, p );
+        p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[wndcls]->num_popups, WndInfoTab[wndcls]->popupmenu );
+        MenuDump( 4, WndInfoTab[wndclass]->num_popups, WndInfoTab[wndclass]->popupmenu );
     }
     WndDlgTxt( "The main menu" );
     MenuDump( 4, WndNumMenus, WndMainMenu );
@@ -150,12 +150,12 @@ void XDumpMenus( void )
 
 static void XTimeSymComp( void )
 {
-    int         i,num;
+    int         i, num;
 
     num = ReqExpr();
     ReqEOC();
     for( i = 0; i < num; ++i ) {
-        SymCompInit( TRUE, TRUE, FALSE, FALSE, NO_MOD );
+        SymCompInit( true, true, false, false, NO_MOD );
         SymCompFini();
     }
 }

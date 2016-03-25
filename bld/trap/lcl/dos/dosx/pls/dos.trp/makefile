@@ -2,9 +2,10 @@
 host_cpu = i86
 host_os  = dos
 
-os = dos
+target_cpu = x86
+target_os  = dos
+
 srv = pls
-cpu = x86
 which = TRAP
 
 extra_cpp_flags = -dPHARLAP

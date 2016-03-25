@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,9 @@
 #include "ex.h"
 #include "win.h"
 
-static window_info      exwInfo =
-    { 0, BLACK, WHITE, { BRIGHT_WHITE, BLACK, 0 }, { WHITE, BLACK, 0 }, 0, 24, 79, 24 };
+static window_info  exwInfo = {
+    BLACK, WHITE, DEF_HILIGHT_STYLE, DEF_TEXT_STYLE, { 0, 24, 79, 24 }, false
+};
 
 /*
  * EnterExMode - start Ex emulation mode
@@ -43,7 +45,7 @@ static window_info      exwInfo =
 vi_rc EnterExMode( void )
 {
     int         i;
-    window_id   clw;
+    window_id   wid;
     char        *st;
     char        *prompt;
     vi_rc       rc;
@@ -53,14 +55,14 @@ vi_rc EnterExMode( void )
         return( ERR_NO_ERR );
     }
     i = EditVars.WindMaxHeight - 1;
-    exwInfo.y1 = exwInfo.y2 = i;
-    exwInfo.x2 = EditVars.WindMaxWidth - 1;
+    exwInfo.area.y1 = exwInfo.area.y2 = i;
+    exwInfo.area.x2 = EditVars.WindMaxWidth - 1;
     SetPosToMessageLine();
     EditFlags.ExMode = true;
     EditFlags.LineDisplay = true;
     EditFlags.ClockActive = false;
     MyPrintf( "\nEntering EX mode (type vi to return)\n" );
-    rc = NewWindow2( &clw, &exwInfo );
+    rc = NewWindow2( &wid, &exwInfo );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -72,7 +74,7 @@ vi_rc EnterExMode( void )
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( clw, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
+        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;
@@ -101,18 +103,18 @@ static char strCmmsg[] = "%l lines %s after line %l";
 /*
  * ProcessEx - process an ex command
  */
-vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
+vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
 {
     vi_rc       rc = ERR_INVALID_COMMAND, i;
-    char        word[MAX_STR], wordback[MAX_STR];
+    char        word[MAX_STR];
     linenum     addr, tlines;
     fcb         *cfcb;
     line        *cline;
     fcb_list    fcblist;
 
-    NextWord1( data, word );
-    strcpy( wordback, word );
-    if( GetAddress( word, &addr ) ) {
+    GetNextWord1( data, word );
+    data = word;
+    if( GetAddress( &data, &addr ) != ERR_NO_ERR ) {
         addr = -1;
     }
     tlines = n2 - n1 + 1;
@@ -185,8 +187,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
         if( !EditFlags.ExMode ) {
             return( ERR_ONLY_VALID_IN_EX_MODE );
         }
-        rc = CGimmeLinePtr( n1, &cfcb, &cline );
-        while( !rc ) {
+        for( rc = CGimmeLinePtr( n1, &cfcb, &cline ); rc == ERR_NO_ERR; rc = CGimmeNextLinePtr( &cfcb, &cline ) ) {
             if( EditFlags.LineNumbers ) {
                 MyPrintf( "%M %s\n", n1, cline->data );
             } else {
@@ -196,11 +197,10 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
                 break;
             }
             n1++;
-            rc = CGimmeNextLinePtr( &cfcb, &cline );
         }
         break;
     case EX_T_MARK:
-        rc = SetGenericMark( n1, 1, word[0] );
+        rc = SetGenericMark( n1, 1, C2VIKEY( word[0] ) );
         break;
     case EX_T_MOVE:
         if( addr < 0 || IsPastLastLine( addr ) ) {
@@ -257,8 +257,8 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
             ReDisplayScreen();
             DoVersion();
         }
-        if( wordback[0] != 0 ) {
-            rc = EditFile( wordback, ( tkn == EX_T_VISUAL_DMT ) );
+        if( word[0] != '\0' ) {
+            rc = EditFile( word, ( tkn == EX_T_VISUAL_DMT ) );
         } else {
             rc = ERR_NO_ERR;
         }

@@ -38,41 +38,34 @@
 #include "dosscrn.h"
 #include "dbgscrn.h"
 #include "guiwin.h"
+#include "dbgcmdln.h"
+#include "wndsys.h"
+#include "trpsys.h"
+#include "dbglkup.h"
+#include "dbginit.h"
+#include "wininit.h"
 
-extern void         *ExtraAlloc( size_t );
-extern void         ExtraFree( void * );
-extern void         SaveMainScreen( char * );
-extern void         RestoreMainScreen( char * );
-extern int          Lookup( const char *, const char *, size_t );
-extern bool         HasEquals( void );
-extern unsigned     GetValue( void );
 
-extern int              HardModeRequired;
 extern a_window         *WndMain;
 extern volatile bool    BrkPending;
-#ifdef __GUI__
-extern void  (__pascal *SetHardMode)( char );
-extern void  (__pascal *UnLockInput)( void );
-#endif
 
 unsigned        ScrnLines = 50;
 unsigned        FlipMech;
 unsigned        ScrnMode;
 HWND            DebuggerHwnd;
 bool            WantFast;
-int             ForceHardMode;
+bool            TrapForceHardMode = false;
 static HWND     FocusWnd;
 
 #if 0
 ToggleHardMode( void )
 {
-    ForceHardMode = !ForceHardMode;
-    #ifdef __GUI__
-        SetHardMode( ForceHardMode );
-        GUICheckMenuItem( WndGui( WndMain ),
-                      MENU_MAIN_WINDOW_HARD_MODE, ForceHardMode );
-    #endif
-    GUISetModalDlgs( ForceHardMode || HardModeRequired );
+    TrapForceHardMode = !TrapForceHardMode;
+#ifdef __GUI__
+    TrapSetHardMode( TrapForceHardMode );
+    GUICheckMenuItem( WndGui( WndMain ), MENU_MAIN_WINDOW_HARD_MODE, TrapForceHardMode );
+#endif
+    GUISetModalDlgs( TrapForceHardMode || TrapHardModeRequired );
 }
 #endif
 
@@ -82,7 +75,7 @@ void InitHookFunc( void )
 
 void FiniHookFunc( void )
 {
-    UnLockInput();
+    TrapUnLockInput();
 }
 
 void Ring_Bell( void )
@@ -96,9 +89,9 @@ unsigned ConfigScreen( void )
     return( 0 );
 }
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
+size_t GetSystemDir( char *buff, size_t buff_len )
 {
-    buff[ 0 ] = '\0';
+    buff[0] = NULLCHAR;
     GetWindowsDirectory( buff, buff_len );
     return( strlen( buff ) );
 }
@@ -107,7 +100,7 @@ void InitScreen( void )
 {
     FocusWnd = GetFocus();
     RestoreMainScreen( "WDWIN" );
-    GUISetModalDlgs( FALSE );
+    GUISetModalDlgs( false );
 }
 
 void FiniScreen( void )
@@ -119,7 +112,7 @@ void FiniScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void DbgScrnMode( void )
@@ -139,28 +132,30 @@ void UnknownScreen( void )
 
 bool DebugScreen( void )
 {
-    if( ScreenState == DEBUG_SCREEN ) return( FALSE );
+    if( ScreenState == DEBUG_SCREEN )
+        return( false );
     if( WndMain ) {
         ScreenState = DEBUG_SCREEN;
-        GUISetModalDlgs( ForceHardMode || HardModeRequired );
+        GUISetModalDlgs( TrapForceHardMode || TrapHardModeRequired );
         SetFocus( GUIGetSysHandle( WndGui( WndMain ) ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
 {
-    if( ScreenState == USER_SCREEN ) return( FALSE );
+    if( ScreenState == USER_SCREEN )
+        return( false );
     if( WndMain ) {
         ScreenState = USER_SCREEN;
-        UnLockInput();
+        TrapUnLockInput();
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -168,19 +163,9 @@ void SaveMainWindowPos( void )
     SaveMainScreen( "WDWIN" );
 }
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 char *GUIGetWindowClassName( void )
@@ -286,9 +271,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

@@ -31,6 +31,7 @@
 
 #ifndef MADMIPS_H
 #define MADMIPS_H
+
 #include "digpck.h"
 enum mips_cputypes {
     MIPS_DUNNO,
@@ -219,6 +220,6 @@ struct mips_mad_registers {
     mipsfloat   f30;
     mipsfloat   f31;
 };
-
 #include "digunpck.h"
+
 #endif

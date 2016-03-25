@@ -39,13 +39,12 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbgprog.h"
+#include "dbginit.h"
 
-extern void         *ExtraAlloc( size_t );
-extern void         ExtraFree( void * );
-extern image_entry  *ImagePrimary(void);
 
-static unsigned ScrnLines=25;
-static unsigned ScrnColumns=80;
+static unsigned ScrnLines = 25;
+static unsigned ScrnColumns = 80;
 
 static char my_key = 0;
 static char debug_key = 0;
@@ -69,7 +68,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreen( void )
@@ -84,13 +83,13 @@ bool DebugScreen( void )
     if( my_key )
         RdosSetFocus( my_key );
         
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
     DebugScreen();
-    return( TRUE );
+    return( true );
 }
 
 bool UserScreen( void )
@@ -109,7 +108,7 @@ bool UserScreen( void )
     if( debug_key )
         RdosSetFocus( debug_key );
 
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -125,14 +124,14 @@ void FiniScreen( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
-
+#if 0
 int mygetlasterr( void )
 {
     return( 0 );
 }
-
+#endif
 void PopErrBox( const char *buff )
 {
     RdosWriteString( buff );

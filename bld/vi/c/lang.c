@@ -60,13 +60,12 @@ static int hashpjw( char *s, int entries )
 {
     unsigned long   h = 0, g;
     
-    while( *s != '\0' ) {
+    for( ; *s != '\0'; ++s ) {
         h = (h << 4) + toupper( *s );
         if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ (g >> 24);
             h = h ^ g;
         }
-        s++;
     }
     return( h % entries );
 }
@@ -158,7 +157,7 @@ static hash_entry *createTable( int entries )
 
 static char *nextKeyword( char *keyword )
 {
-    while( *keyword ) {
+    while( *keyword != '\0' ) {
         keyword++;
     }
     return( keyword + 1 );
@@ -218,7 +217,7 @@ static bool lang_alloc( int cnt )
     return( false );
 }
 
-static bool lang_save( int i, char *buff )
+static bool lang_save( int i, const char *buff )
 {
     i = i; buff = buff;
     return( true );

@@ -34,6 +34,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <libgen.h>
+#include "bool.h"
+#include "pathmac.h"
 
 
 /* Since we may need to insert terminating null characters, the pathname
@@ -43,59 +45,48 @@
  */
 static char     path_buf[FILENAME_MAX];
 
-static int  is_path_sep( const char c )
+static bool is_final_sep_seq( const char *p )
 {
-#ifdef __UNIX__
-    return( c == '/' );
-#else
-    return( c == '/' || c == '\\' );
-#endif
-}
-
-static int  is_final_sep_seq( const char *p )
-{
-    while( *p && is_path_sep( *p ) )
+    while( *p != NULLCHAR && IS_DIR_SEP( *p ) )
         ++p;
-
-    return( !*p );
+    return( *p == NULLCHAR );
 }
 
 _WCRTLINK char *dirname( char *path )
 {
-    if( path == NULL || *path == '\0' ) {
+    if( path == NULL || *path == NULLCHAR ) {
         path_buf[0] = '.';
-        path_buf[1] = '\0';
+        path_buf[1] = NULLCHAR;
     } else {
         char    *s = path_buf;
 
         strlcpy( path_buf, path, sizeof( path_buf ) );
 #ifndef __UNIX__
         /* Skip optional drive designation */
-        if( isalnum( s[0] ) && s[1] == ':' )
+        if( HAS_DRIVE( s ) )
             s += 2;
 #endif
-        if( !is_path_sep( *s++ ) ) {
+        if( !IS_DIR_SEP( *s ) ) {
             /* If path is not absolute, return "."
              */
-            --s;
             s[0] = '.';
-            s[1] = '\0';
+            s[1] = NULLCHAR;
         } else {
-            char    *last_sep = s;
+            char    *last_sep = ++s;
 
-            while( *s ) {
+            while( *s != NULLCHAR ) {
                 /* If the rest of the path is a sequence of path separators,
                  * don't consider them and quit.
                  */
                 if( is_final_sep_seq( s ) )
                     break;
 
-                if( is_path_sep( *s ) )
+                if( IS_DIR_SEP( *s ) )
                     last_sep = s;
 
                 ++s;
             }
-            *last_sep = '\0';
+            *last_sep = NULLCHAR;
         }
     }
     return( path_buf );

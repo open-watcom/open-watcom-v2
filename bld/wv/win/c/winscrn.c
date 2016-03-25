@@ -43,13 +43,13 @@
 #include "dbgscrn.h"
 #include "uidbg.h"
 #include "guigmous.h"
-
-extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
-
-extern int          Lookup( const char *, const char *, size_t );
-extern bool         HasEquals( void );
-extern unsigned     GetValue( void );
-
+#include "dbgcmdln.h"
+#include "dbglkup.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "trpsys.h"
+#include "dbginit.h"
+#include "wininit.h"
 
 
 extern unsigned char    NECBIOSGetMode(void);
@@ -58,8 +58,8 @@ extern unsigned char    NECBIOSGetMode(void);
 0XB4 0X0B       /* mov    ah,b                          */      \
 0XCD 0X18       /* int    18                            */      \
 0X5D            /* pop    bp                            */      \
-        parm caller [ ax ]                                      \
-        modify [ bx ];
+        parm caller [ax]                                      \
+        modify [bx];
 
 
 #define         NEC_20_LINES        0x01
@@ -71,13 +71,13 @@ bool            WantFast;
 flip_types      FlipMech;
 mode_types      ScrnMode = MD_EGA;
 int             ScrnLines = 25;
-bool            WndUseGMouse = FALSE;
+bool            WndUseGMouse = false;
 
 static display_configuration    HWDisplay;
 
 void InitHookFunc( void )
 {
-    HookFunc( win_uihookrtn );
+    TrapInputHook( win_uihookrtn );
 }
 
 void FiniHookFunc( void )
@@ -100,12 +100,14 @@ unsigned ConfigScreen( void )
         switch( HWDisplay.active ) {
         case DISP_VGA_MONO:
         case DISP_VGA_COLOUR:
-            if( ScrnLines > 25 ) ScrnLines = 50;
+            if( ScrnLines > 25 )
+                ScrnLines = 50;
             win_uisetcolor( M_VGA );
             break;
         case DISP_EGA_COLOUR:
         case DISP_EGA_MONO:
-            if( ScrnLines > 25 ) ScrnLines = 43;
+            if( ScrnLines > 25 )
+                ScrnLines = 43;
             // fall thru
         default:
             win_uisetcolor( M_EGA );
@@ -126,7 +128,6 @@ bool UsrScrnMode( void )
     if( UIData->height != ScrnLines ) {
         UIData->height = ScrnLines;
         if( _IsOn( SW_USE_MOUSE ) ) {
-            extern int  initmouse( int );
             /*
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
@@ -135,7 +136,7 @@ bool UsrScrnMode( void )
         }
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void DbgScrnMode( void )
@@ -150,15 +151,15 @@ bool DebugScreen( void )
     if( FlipMech == FLIP_SWAP ) {
         ToCharacter();
         WndDirty( NULL );
-        return( FALSE );
+        return( false );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -166,12 +167,12 @@ bool DebugScreenRecover( void )
  */
 bool UserScreen( void )
 {
-    bool rc = FALSE;
+    bool rc = false;
     if( FlipMech == FLIP_SWAP ) {
         ToGraphical();
-        rc = FALSE;
+        rc = false;
     } else {
-        rc = TRUE;
+        rc = true;
     }
     return( rc );
 }
@@ -186,7 +187,7 @@ void FiniScreen( void )
     uistop();
     if( FlipMech == FLIP_SWAP ) {
         FiniSwapper();
-        InvalidateRect( HWND_DESKTOP, NULL, TRUE );
+        InvalidateRect( HWND_DESKTOP, NULL, true );
     }
 }
 
@@ -200,7 +201,9 @@ void InitScreen( void )
     }
     uistart();
     UIData->height = ScrnLines;
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 1 );
+    }
 }
 
 static bool ChkCntrlr( int port )
@@ -220,14 +223,14 @@ static bool ChkCntrlr( int port )
 
 static bool TstMono( void )
 {
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
+    return( true );
 }
 
 static bool TstColour( void )
 {
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( FALSE );
-    return( TRUE );
+    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
+    return( true );
 }
 
 static void GetDispConfig( void )
@@ -291,16 +294,6 @@ static void GetDispConfig( void )
  *                                                                           *
 \*****************************************************************************/
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 void uirefresh( void )
 {
     if( ScrnState & DBG_SCRN_ACTIVE ) {
@@ -310,7 +303,7 @@ void uirefresh( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 static const char ScreenOptNameTab[] = {
@@ -411,9 +404,9 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         FlipMech = FLIP_TWO;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

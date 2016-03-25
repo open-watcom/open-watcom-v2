@@ -1,6 +1,6 @@
 plustest_name = diagnose
 
-!include testenv.mif
+!include testenv1.mif
 !include source/diagnose.mif
 
 diagnose_opts += -ew -we -wx -e1000 -eq

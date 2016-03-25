@@ -46,18 +46,23 @@
 #include "dbgscan.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"
+#include "dbgexec.h"
+#include "dbgmain.h"
+#include "dbgbrk.h"
+#include "dbgass.h"
+#include "dbgpend.h"
+#include "envlkup.h"
+#include "dbgcmd.h"
+#include "dbgtrace.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgdot.h"
+#include "ntdbgpb.h"
+#include "dlgcmd.h"
+#include "dbgwintr.h"
 
-extern void             DoCmd(char*);
-extern bool             InsMemRef( mad_disasm_data *dd );
-extern address          GetCodeDot( void );
+
 extern void             *WndAsmInspect(address addr);
-extern void             DebugMain( void );
-extern void             DebugFini( void );
-extern void             DoInput(void);
-extern void             DlgCmd( void );
-extern address          GetCodeDot( void );
-extern void             ExecTrace( trace_cmd_type type, debug_level level );
-extern unsigned         Go( bool );
 
 volatile bool           BrkPending;
 
@@ -76,8 +81,8 @@ unsigned DUIConfigScreen( void )
 
 bool DUIClose( void )
 {
-    Done = TRUE;
-    return( TRUE );
+    Done = true;
+    return( true );
 }
 
 var_info        Locals;
@@ -92,14 +97,12 @@ static void DumpLocals( void )
     int         depth;
     var_node    *v;
 
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
+    if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
-        VarOkToCache( &Locals, TRUE );
+        VarOkToCache( &Locals, true );
     }
-    for( row = 0;; ++row ) {
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth );
-        if( v == NULL ) break;
+    for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth )) != NULL; ++row ) {
         v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth );
         v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth );
         switch( v->gadget ) {
@@ -119,11 +122,11 @@ static void DumpLocals( void )
             printf( "<-" );
             break;
         }
-        VarBuildName( v, TRUE );
+        VarBuildName( v, true );
         printf( " %-20s %s\n", TxtBuff, v->value );
     }
-    if( !_IsOn( SW_TASK_RUNNING ) ) {
-        VarOkToCache( &Locals, FALSE );
+    if( _IsOff( SW_TASK_RUNNING ) ) {
+        VarOkToCache( &Locals, false );
         VarOldErrState();
     }
 #endif
@@ -154,14 +157,14 @@ enum {
 
 bool RequestDone;
 
-DWORD WINAPI ControlFunc( void *parm )
+DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     do {
         WaitForSingleObject( Requestsem, INFINITE ); // wait for Request
         switch( Req ) {
         case REQ_GO:
-            Go( TRUE );
+            Go( true );
             break;
         case REQ_TRACE_OVER:
             ExecTrace( TRACE_OVER, DbgLevel );
@@ -203,7 +206,7 @@ int main( int argc, char **argv )
     Requestsem = CreateSemaphore( NULL, 0, 1, NULL );
     Requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
     ReleaseSemaphore( Requestdonesem, 1, NULL ); // signal req done
-    hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
+    hThread = CreateThread( NULL, 0, ControlFunc, NULL, 0, &tid );
     if (hThread == NULL) {
         MessageBox( NULL, "Error creating thread!", "Stubugger", MB_APPLMODAL+MB_OK );
     }
@@ -225,7 +228,7 @@ void DlgCmd( void )
     printf( "DBG>" );
     fflush( stdout );
     gets( buff );
-    if( buff[0] != '\0' && buff[1] == '\0' ) {
+    if( buff[0] != NULLCHAR && buff[1] == NULLCHAR ) {
         switch( tolower( buff[0] ) ) {
         case 'u':
             WndAsmInspect( GetCodeDot() );
@@ -274,8 +277,8 @@ extern char *DUILoadString( int id )
     int         size;
 
     size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    buff[size]='\0';
-    ret = DbgAlloc( size+1 );
+    buff[size] = NULLCHAR;
+    ret = DbgAlloc( size + 1 );
     strcpy( ret, buff );
     return( ret );
 }
@@ -288,7 +291,7 @@ void DUIMsgBox( const char *text )
 bool DUIDlgTxt( const char *text )
 {
     printf( "DLG %s\n", text );
-    return( TRUE );
+    return( true );
 }
 
 void DUIInfoBox( const char *text )
@@ -306,10 +309,10 @@ void DUIStatusText( const char *text )
     printf( "STA %s\n", text );
 }
 
-bool DlgGivenAddr( const char *title, address *value )
+bool DUIDlgGivenAddr( const char *title, address *value )
 {
     // needed when segment's don't map (from new/sym command)
-    return( FALSE );
+    return( false );
 }
 bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 {
@@ -319,34 +322,34 @@ bool DlgNewWithSym( const char *title, char *buff, int buff_len )
 bool DlgUpTheStack( void )
 {
     // used when trying to trace, but we've unwound the stack a bit
-    return( FALSE );
+    return( false );
 }
 bool DlgAreYouNuts( unsigned long mult )
 {
     // used when too many break on write points are set
-    return( FALSE );
+    return( false );
 }
 bool DlgBackInTime( bool warn )
 {
     // used when trying to trace, but we've backed up over a call or asynch
     warn = warn;
-    return( FALSE );
+    return( false );
 }
 bool DlgIncompleteUndo( void )
 {
     // used when trying to trace, but we've backed up over a call or asynch
-    return( FALSE );
+    return( false );
 }
 bool DlgBreak( address addr )
 {
     // used when an error occurs in the break point expression or it is entered wrong
-    return( FALSE );
+    return( false );
 }
 
 bool DUIInfoRelease( void )
 {
     // used when we're low on memory
-    return( FALSE );
+    return( false );
 }
 void DUIUpdate( update_list flags )
 {
@@ -374,7 +377,7 @@ extern bool DUIStopRefresh( bool stop )
 {
     // temporarily turn off/on screen refreshing, cause we're going to run a
     // big command file and we don't want flashing.
-    return( FALSE );
+    return( false );
 }
 extern void DUIShow( void )
 {
@@ -414,7 +417,7 @@ extern void DUIArrowCursor( void )
 bool DUIAskIfAsynchOk( void )
 {
     // we're about to try to replay across an asynchronous event.  Ask user
-    return( FALSE );
+    return( false );
 }
 extern void DUIFlushKeys( void )
 {
@@ -465,11 +468,13 @@ void ProcHelp( void )
     // stub for old UI
     FlushEOC();
 }
+#ifndef NDEBUG
 void ProcInternal( void )
 {
     // stub for old UI
     FlushEOC();
 }
+#endif
 void ProcPaint( void )
 {
     // stub for old UI
@@ -480,7 +485,7 @@ void ProcView( void )
     // stub for old UI
     FlushEOC();
 }
-void ProcWindow( void )
+void DUIProcWindow( void )
 {
     // stub for old UI
     FlushEOC();
@@ -560,11 +565,11 @@ extern void SearchConf( void )
 {
     // stub for old UI
 }
-extern void FingClose( void )
+extern void DUIFingClose( void )
 {
     // open a splash page
 }
-extern void FingOpen( void )
+extern void DUIFingOpen( void )
 {
     // close the splash page
 }
@@ -685,20 +690,18 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( FALSE );
-    buff[ FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = '\0';
+    if( viewhndl == NULL ) return( false );
+    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
-    return( TRUE );
+    return( true );
 }
 
 bool DUIIsDBCS( void )
 {
-    return( FALSE );
+    return( false );
 }
 
-extern unsigned EnvLkup( const char *name, char *buff, unsigned buff_len );
-
-unsigned DUIEnvLkup( const char *name, char *buff, unsigned buff_len )
+size_t DUIEnvLkup( const char *name, char *buff, size_t buff_len )
 {
     return( EnvLkup( name, buff, buff_len ) );
 }
@@ -708,13 +711,6 @@ void DUIDirty( void )
 }
 
 
-void StartupErr( const char *err )
-/********************************/
-{
-    printf( "Fatal error: %s", err );
-    exit( 1 );
-}
-
 void DUISrcOrAsmInspect( address addr )
 {
 }
@@ -723,7 +719,6 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void RemovePoint( brkp *bp );
 extern void DUIRemoveBreak( brkp *bp )
 /************************************/
 {
@@ -764,7 +759,7 @@ bool DUIImageLoaded( image_entry *image, bool load,
         sprintf( buff, "%s '%s'", LIT_ENG( DLL_UnLoaded ), image->image_name );
     }
     DUIDlgTxt( buff );
-    return( FALSE );
+    return( false );
 }
 
 void DUICopySize( void *cookie, unsigned long size )
@@ -785,7 +780,7 @@ bool DUICopyCancelled( void * cookie )
 /************************************/
 {
     cookie = cookie;
-    return( FALSE );
+    return( false );
 }
 
 unsigned DUIDlgAsyncRun( void )

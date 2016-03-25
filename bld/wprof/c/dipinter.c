@@ -142,8 +142,8 @@ void DIGCLIENT DIPCliStatus( dip_status status )
     DIPStatus = status;
 }
 
-mad_handle DIGCLIENT DIPCliCurrMAD( void )
-/****************************************/
+dig_mad DIGCLIENT DIPCliCurrMAD( void )
+/*************************************/
 {
     return( CurrSIOData->config.mad );
 }

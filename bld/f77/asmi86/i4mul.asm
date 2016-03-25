@@ -79,7 +79,7 @@ endproc ChkI4Mul_
 
 defn    i2i2mul                 ; 16-bit * 16-bit
         imul    BX              ; arg1 * arg2
-        mov     CX,0            ; indicate no overflow
+        xor     CX,CX           ; indicate no overflow
         ret                     ; return
 endproc i2i2mul
 

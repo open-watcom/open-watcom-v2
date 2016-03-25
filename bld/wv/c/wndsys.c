@@ -46,9 +46,28 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
+#include "dbgbrk.h"
+#include "dbgwdlg.h"
+#include "wndsys.h"
+#include "remcore.h"
+#include "dipimp.h"
+#include "dipinter.h"
+#include "dbgwass.h"
+#include "dbgwdisp.h"
+#include "dbgwfil.h"
+#include "dbgwfing.h"
+#include "dbgwmac.h"
+#include "dbgwmem.h"
+#include "dbgwset.h"
+#include "dbgwsrch.h"
+#include "wnddump.h"
+#include "wndmenu.h"
+#include "dbgwpain.h"
+#include "dbginit.h"
 
 
-extern wnd_posn         WndPosition[ WND_NUM_CLASSES ];
+extern wnd_posn         WndPosition[WND_NUM_CLASSES];
 extern a_window         *WndMain;
 extern gui_rect         WndMainRect;
 
@@ -56,41 +75,9 @@ extern bool             UsrScrnMode( void );
 extern bool             UserScreen( void );
 extern bool             DebugScreen( void );
 extern bool             DebugScreenRecover( void );
-extern void             RemoteSetUserScreen( void );
-extern void             RemoteSetDebugScreen( void );
-extern void             ProcACmd( void );
-extern void             CheckBPErrors( void );
-extern int              DlgSearch( a_window *, void * );
-extern bool             DlgSearchAll( char **, void * );
-extern gui_colour_set   *GetWndColours( wnd_class wndcls );
-extern bool             WndDlgTxt( const char * );
-extern a_window         *WndSrchOpen( const char * );
-extern void             *GetWndFont( a_window * );
-extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
-extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
-extern bool             HookPendingPush( void );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
-extern bool             IsInternalMod( mod_handle );
-extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
-extern char             LookUpCtrlKey( unsigned key );
-extern bool             MacKeyHit( a_window *wnd, unsigned key );
-extern gui_coord        *WndMainClientSize( void );
-extern void             FingClose( void );
-extern const char       *GetCmdName( wd_cmd cmd );
 extern void             SetUpdateFlags( update_list );
-extern void             ScrnSpawnStart( void );
-extern void             ScrnSpawnEnd( void );
 
-extern void             WndDumpFile( a_window * );
-extern void             WndDumpLog( a_window * );
-extern void             ProcWndSearch( a_window * );
-extern void             ProcWndFindNext( a_window * );
-extern void             ProcWndFindPrev( a_window * );
-extern void             ProcWndPopUp( a_window * );
-extern void             ProcWndTabLeft( a_window * );
-extern void             ProcWndTabRight( a_window * );
-extern void             ProcPUINYI( a_window * );
-extern void             XDumpMenus( void );
 static void             WndBadCmd( a_window * );
 
 #include "menudef.h"
@@ -111,11 +98,11 @@ gui_resource WndGadgetArray[] = {
     { BITMAP_SPLASH, "splash" },
 };
 
-int WndGadgetHintSize = ArraySize( WndGadgetHint );
-int WndGadgetArraySize = ArraySize( WndGadgetArray );
-int WndGadgetSecondary = GADGET_FIRST_SECONDARY;
-wnd_attr WndGadgetAttr = WND_HOTSPOT;
-int             MaxGadgetLength;
+int         WndGadgetHintSize = ArraySize( WndGadgetHint );
+int         WndGadgetArraySize = ArraySize( WndGadgetArray );
+int         WndGadgetSecondary = GADGET_FIRST_SECONDARY;
+wnd_attr    WndGadgetAttr = WND_HOTSPOT;
+int         MaxGadgetLength;
 
 static const char WindowNameTab[] =
 {
@@ -221,17 +208,17 @@ void ProcPUINYI( a_window *wnd )
 
 void ProcWndSearch( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, DlgSearch( wnd, SrchHistory ) );
+    DbgWndSearch( wnd, false, DlgSearch( wnd, SrchHistory ) );
 }
 
 void ProcWndTabLeft( a_window *wnd )
 {
-    WndTabLeft( wnd, TRUE );
+    WndTabLeft( wnd, true );
 }
 
 void ProcWndTabRight( a_window *wnd )
 {
-    WndTabRight( wnd, TRUE );
+    WndTabRight( wnd, true );
 }
 
 void ProcSearchAll( void )
@@ -250,12 +237,12 @@ void ProcWndPopUp( a_window *wnd )
 
 void ProcWndFindNext( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, 1 );
+    DbgWndSearch( wnd, false, 1 );
 }
 
 void ProcWndFindPrev( a_window *wnd )
 {
-    DbgWndSearch( wnd, FALSE, -1 );
+    DbgWndSearch( wnd, false, -1 );
 }
 
 static void WndBadCmd( a_window *wnd )
@@ -264,7 +251,7 @@ static void WndBadCmd( a_window *wnd )
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-void ProcWindow( void )
+void WndProcWindow( void )
 {
     int         cmd;
     a_window    *wnd = WndFindActive();
@@ -303,7 +290,7 @@ void WndSysEnd( bool pause )
 static bool DoScreenSwap( void )
 {
 #if defined(__GUI__) && defined(__WINDOWS__)
-    return( FALSE );
+    return( false );
 #else
     return( _IsOff( SW_REMOTE_LINK ) );
 #endif
@@ -319,8 +306,9 @@ void WndStop( void )
 
 void WndUser( void )
 {
-    if( !(ScrnState & USR_SCRN_ACTIVE) ) {
-        if( !(ScrnState & USR_SCRN_VISIBLE) ) RemoteSetUserScreen();
+    if( (ScrnState & USR_SCRN_ACTIVE) == 0 ) {
+        if( (ScrnState & USR_SCRN_VISIBLE) == 0 )
+            RemoteSetUserScreen();
         ScrnState |= USR_SCRN_ACTIVE | USR_SCRN_VISIBLE;
         GUIGMouseOff();
         if( UserScreen() ) {
@@ -343,8 +331,9 @@ void WndDebug( void )
         }
         _SwitchOff( SW_MIGHT_HAVE_LOST_DISPLAY );
     }
-    if( !(ScrnState & DBG_SCRN_ACTIVE) ) {
-        if( !(ScrnState & DBG_SCRN_VISIBLE) ) RemoteSetDebugScreen();
+    if( (ScrnState & DBG_SCRN_ACTIVE) == 0 ) {
+        if( (ScrnState & DBG_SCRN_VISIBLE) == 0 )
+            RemoteSetDebugScreen();
         ScrnState |= DBG_SCRN_ACTIVE | DBG_SCRN_VISIBLE;
         if( DebugScreen() ) {
             ScrnState |= USR_SCRN_VISIBLE;
@@ -357,12 +346,12 @@ void WndDebug( void )
 }
 
 
-void WndRedraw( wnd_class wndcls )
+void WndRedraw( wnd_class_wv wndclass )
 {
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( WndClass( wnd ) == wndcls ) {
+        if( WndClass( wnd ) == wndclass ) {
             WndZapped( wnd );
         }
     }
@@ -372,9 +361,13 @@ void WndRedraw( wnd_class wndcls )
 static void ProcessMacro( wnd_macro *mac )
 {
     if( mac->type == MACRO_MAIN_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, TRUE );
+        if( mac->menu != NULL ) {
+            AccelMenuItem( mac->menu, true );
+        }
     } else if( mac->type == MACRO_POPUP_MENU ) {
-        if( mac->menu != NULL ) AccelMenuItem( mac->menu, FALSE );
+        if( mac->menu != NULL ) {
+            AccelMenuItem( mac->menu, false );
+        }
     } else {
         PushCmdList( mac->cmd );
     }
@@ -384,12 +377,12 @@ static void ProcessMacro( wnd_macro *mac )
 static bool AmpEqual( const char *label, char ch )
 {
     ch = tolower( ch );
-    while( label[0] != '\0' ) {
+    while( label[0] != NULLCHAR ) {
         if( label[0] == '&' && ch == tolower( label[1] ) )
-            return( TRUE );
+            return( true );
         ++label;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -400,7 +393,8 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
 
     curr = child;
     for( i = 0; i < size; ++i ) {
-        if( AmpEqual( curr->label, ch ) ) return( curr );
+        if( AmpEqual( curr->label, ch ) )
+            return( curr );
         ++curr;
     }
 #ifdef DO_WE_REALLY_WANT_THIS
@@ -409,7 +403,9 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     for( i = 0; i < size; ++i ) {
         if( curr->num_child_menus != NULL ) {
             sub = FindLocalMenu( ch, curr->child, curr->num_child_menus );
-            if( sub != NULL ) return( sub );
+            if( sub != NULL ) {
+                return( sub );
+            }
         }
         ++curr;
     }
@@ -426,33 +422,36 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 
     all = NULL;
     if( WndClass( wnd ) == WND_MACRO && MacKeyHit( wnd, key ) ) {
-        return( TRUE );
+        return( true );
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         if( mac->key == key ) {
-            if( mac->wndcls == WND_ALL ) {
+            if( mac->wndclass == WND_ALL ) {
                 all = mac;
-            } else if( mac->wndcls == WndClass( wnd ) ) {
+            } else if( mac->wndclass == WndClass( wnd ) ) {
                 ProcessMacro( mac );
-                return( TRUE );
+                return( true );
             }
         }
     }
     if( all != NULL ) {
         ProcessMacro( all );
-        return( TRUE );
+        return( true );
     }
-    if( wnd == NULL ) return( FALSE );
+    if( wnd == NULL )
+        return( false );
     ch = LookUpCtrlKey( key );
-    if( ch == 0 ) return( FALSE );
+    if( ch == 0 )
+        return( false );
     menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );//
-    if( menu == NULL ) return( FALSE );
-    AccelMenuItem( menu, FALSE );
-    return( TRUE );
+    if( menu == NULL )
+        return( false );
+    AccelMenuItem( menu, false );
+    return( true );
 }
 
 
-extern void WndSysInit( void )
+void WndSysInit( void )
 {
     ScrnState = DBG_SCRN_ACTIVE | DBG_SCRN_VISIBLE;
 
@@ -468,10 +467,10 @@ extern void WndSysInit( void )
 void SetUnderLine( a_window *wnd, wnd_line_piece *line )
 {
     line->attr = WND_STANDOUT;
-    line->tabstop = FALSE;
-    line->static_text = TRUE;
+    line->tabstop = false;
+    line->static_text = true;
     line->text = LIT_ENG( Empty );
-    line->underline = TRUE;
+    line->underline = true;
     line->indent = 0;
     line->extent = WndWidth( wnd );
 }
@@ -486,8 +485,8 @@ void FiniGadget( void )
     int                 i;
 
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndFree( WndGadgetHint[ i ] );
-        WndGadgetHint[ i ] = NULL;
+        WndFree( WndGadgetHint[i] );
+        WndGadgetHint[i] = NULL;
     }
 }
 
@@ -499,7 +498,7 @@ void InitGadget( void )
     WndGadgetInit();
     MaxGadgetLength = 0;
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[ i ] );
+        WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_int)WndGadgetHint[i] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
         if( GUIGetHotSpotSize( i, &size ) && size.x > MaxGadgetLength ) {
@@ -545,14 +544,14 @@ void WndFlushKeys( void )
     GUIFlushKeys();
 }
 
-extern void WndMsgBox( const char *msg )
+void WndMsgBox( const char *msg )
 {
     FingClose(); // close this if we have a startup error.  2x won't hurt
     WndDebug();
     WndDisplayMessage( msg, "", GUI_INFORMATION+GUI_SYSTEMMODAL);
 }
 
-extern void WndInfoBox( const char *msg )
+void WndInfoBox( const char *msg )
 {
     if( !( WndDlgTxt( msg ) || WndStatusText( msg ) ) ) {
         WndMsgBox( msg );
@@ -565,21 +564,21 @@ void WndSetOpenNoShow( void )
 }
 
 extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
-                                    wnd_class wndcls, void *extra,
+                                    wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
-    a_window    *wnd;
+    a_window            *wnd;
     wnd_create_struct   info;
-    char        *p;
+    char                *p;
 
     WndInitCreateStruct( &info );
-    WndPosToRect( &WndPosition[wndcls], &info.rect, WndMainClientSize() );
-    if( (wnd = WndFindClass( NULL, wndcls )) != NULL ) {
+    WndPosToRect( &WndPosition[wndclass], &info.rect, WndMainClientSize() );
+    if( (wnd = WndFindClass( NULL, wndclass )) != NULL ) {
         info.rect.x += WndMaxCharX( wnd );
         info.rect.y += WndMaxCharY( wnd );
     }
-    switch( wndcls ) {
+    switch( wndclass ) {
     case WND_VARIABLE: // let it draw with it's 'natural' spacing before shrink
         info.rect.x = info.rect.y = 0;
         info.rect.width = info.rect.height = WND_APPROX_SIZE;
@@ -592,31 +591,38 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     p = TxtBuff;
     info.title = p;
     for( ;; ++title ) {
-        if( *title == '&' ) continue;
+        if( *title == '&' )
+            continue;
         *p = *title;
-        if( *p++ == '\0' ) break;
+        if( *p++ == NULLCHAR ) {
+            break;
+        }
     }
     info.info = wndinfo;
-    info.class = wndcls;
+    info.wndclass = wndclass;
     info.extra = extra;
-    info.colour = GetWndColours( wndcls );
+    info.colour = GetWndColours( wndclass );
     info.title_size = title_size;
     info.style |= GUI_INIT_INVISIBLE;
 #if defined(__GUI__) && defined(__OS2__)
     info.style &= ~GUI_CHANGEABLE_FONT;
 #endif
-    if( _IsOn( SW_DETACHABLE_WINDOWS ) ) info.style |= GUI_POPUP;
-    if( !vdrag ) info.scroll &= ~GUI_VDRAG;
+    if( _IsOn( SW_DETACHABLE_WINDOWS ) )
+        info.style |= GUI_POPUP;
+    if( !vdrag )
+        info.scroll &= ~GUI_VDRAG;
     wnd = WndCreateWithStruct( &info );
-    if( wnd == NULL ) return( wnd );
+    if( wnd == NULL )
+        return( wnd );
     WndSetFontInfo( wnd, GetWndFont( wnd ) );
     WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE+WSW_MENU_ACCURATE_ROW );
     WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR+WSW_CACHE_LINES );
-    if( !WndHasCurrent( wnd ) ) WndFirstCurrent( wnd );
+    if( !WndHasCurrent( wnd ) )
+        WndFirstCurrent( wnd );
     if( _IsOff( SW_OPEN_NO_SHOW ) ) {
         WndForcePaint( wnd );
         if( info.rect.width == 0 || info.rect.height == 0 ) {
-            WndShrinkToMouse( wnd, WndMetrics[wndcls] );
+            WndShrinkToMouse( wnd, WndMetrics[wndclass] );
         }
         if( _IsOff( SW_RUNNING_PROFILE ) ) {
             WndShowWindow( wnd );
@@ -628,9 +634,9 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 }
 
 extern a_window *DbgWndCreate( const char *title, wnd_info *info,
-                               wnd_class wndcls, void *extra, gui_resource *icon )
+                               wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
-    return( DbgTitleWndCreate( title, info, wndcls, extra, icon, 0, TRUE ) );
+    return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
 }
 
 static char **RXErrTxt[] = {
@@ -651,45 +657,48 @@ static char **RXErrTxt[] = {
 
 extern void WndRXError( int num )
 {
-    Error( ERR_NONE, *RXErrTxt[ num - 1 ] );
+    Error( ERR_NONE, *RXErrTxt[num - 1] );
 }
 
 #if defined(__GUI__)
-extern unsigned GetSystemDir( char *, unsigned );
-
-static bool GetInitName( char *name, char *buff, unsigned buff_len )
+static bool GetInitName( char *name, char *buff, size_t buff_len )
 {
     buff_len = GetSystemDir( buff, buff_len );
-    if( buff_len == 0 ) return( FALSE );
+    if( buff_len == 0 )
+        return( false );
     buff += buff_len;
     *buff++ = '\\';
     buff = StrCopy( name, buff );
     buff = StrCopy( ".INI", buff );
-    return( TRUE );
+    return( true );
 }
 
 void SaveMainScreen( char *name )
 {
-    handle      f;
+    file_handle fh;
     char        buff[FILENAME_MAX];
 
-    if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
-    f = FileOpen( buff, OP_WRITE|OP_CREATE );
-    if( f == NIL_HANDLE ) return;
-    WriteStream( f, &WndMainRect, sizeof( WndMainRect ) );
-    FileClose( f );
+    if( !GetInitName( name, buff, sizeof( buff ) ) )
+        return;
+    fh = FileOpen( buff, OP_WRITE|OP_CREATE );
+    if( fh == NIL_HANDLE )
+        return;
+    WriteStream( fh, &WndMainRect, sizeof( WndMainRect ) );
+    FileClose( fh );
 }
 
 void RestoreMainScreen( char *name )
 {
-    handle      f;
+    file_handle fh;
     char        buff[FILENAME_MAX];
 
-    if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
-    f = FileOpen( buff, OP_READ );
-    if( f == NIL_HANDLE ) return;
-    ReadStream( f, &WndMainRect, sizeof( WndMainRect ) );
-    FileClose( f );
+    if( !GetInitName( name, buff, sizeof( buff ) ) )
+        return;
+    fh = FileOpen( buff, OP_READ );
+    if( fh == NIL_HANDLE )
+        return;
+    ReadStream( fh, &WndMainRect, sizeof( WndMainRect ) );
+    FileClose( fh );
 }
 
 void WndSetWndMainSize( wnd_create_struct *info )

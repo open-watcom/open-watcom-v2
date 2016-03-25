@@ -54,15 +54,15 @@ void __ioalloc( FILE *fp )
             fp->_bufsize = BUFSIZ;
         }
     }
-    _FP_BASE(fp) = lib_malloc( fp->_bufsize );
-    if( _FP_BASE(fp) == NULL ) {
+    _FP_BASE( fp ) = lib_malloc( fp->_bufsize );
+    if( _FP_BASE( fp ) == NULL ) {
         fp->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
         fp->_flag |= _IONBF;        /* can't get big buffer */
-        _FP_BASE(fp) = (unsigned char *)&(fp->_ungotten);
+        _FP_BASE( fp ) = (unsigned char *)&(fp->_ungotten);
         fp->_bufsize = 1;
     } else {
         fp->_flag |= _BIGBUF;       /* got big buffer */
     }
-    fp->_ptr = _FP_BASE(fp);
+    fp->_ptr = _FP_BASE( fp );
     fp->_cnt = 0;
 }

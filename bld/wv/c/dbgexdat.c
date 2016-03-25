@@ -39,19 +39,16 @@
 #include "dbgmad.h"
 #include "dbgscan.h"
 #include "madinter.h"
+#include "dbgmain.h"
+#include "dbgparse.h"
+#include "dbgdot.h"
+#include "dbgexins.h"
+#include "dbgexdat.h"
 
 
-extern void             AsmExam( void );
-extern void             OptMemAddr( memory_expr, address * );
-extern unsigned int     OptExpr( unsigned int );
-extern void             ChkExpr( void );
-extern void             SrcExam( void );
 extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
 extern void             WndIOInspect( address *, mad_type_handle );
 extern void             WndAddrInspect( address );
-extern void             SetDataDot( address );
-extern address          GetDataDot( void );
-extern char             *GetCmdName( wd_cmd cmd );
 
 
 /*

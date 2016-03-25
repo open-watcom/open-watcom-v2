@@ -131,7 +131,7 @@ void StopBlockTrans( void )
     }
 }
 
-void __far Reader( void )
+static void FAR Reader( void )
 {
     int         data;
     USHORT      read;

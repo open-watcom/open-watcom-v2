@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -633,14 +634,14 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     char                *str;
     WdeHashValue        value;
     bool                found;
-    LRESULT             index;
+    int                 index;
     int                 count;
 
     if( WdeCurrentInfo.res_info->hash_table == NULL ) {
         return;
     }
 
-    count = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0 );
+    count = (int)SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0L );
     if( count == 0 || count == CB_ERR ) {
         return;
     }
@@ -649,7 +650,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hWnd, IDB_INFO_IDSTR );
     } else {
-        index = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCURSEL, 0, 0 );
+        index = (int)SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hWnd, IDB_INFO_IDSTR, index );
         }

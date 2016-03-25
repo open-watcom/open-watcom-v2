@@ -67,10 +67,10 @@ unsigned DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len 
     return( len );
 }
 
-unsigned DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_len )
+size_t DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
 {
-    char msg[10];
-    int len;
+    char    msg[10];
+    size_t  len;
 
     switch( radix ){
     case 16:
@@ -89,7 +89,7 @@ unsigned DIGCLIENT MADCliRadixPrefix( unsigned radix, char *buff, unsigned buff_
         memcpy( buff, msg, buff_len );
         buff[buff_len]='\0';
     }
-    return len;
+    return( len );
 }
 
 void DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
@@ -100,9 +100,9 @@ void DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
     PostMessage( StatHdl, STAT_MAD_NOTIFY, (WPARAM)nt, (LPARAM)d );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
     enum x86_addr_characteristics       *a_char;
 
@@ -129,7 +129,7 @@ mad_status DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_OK );
 }
 
-mad_status DIGCLIENT MADCliMemExpr( const char *expr, unsigned radix, address *a )
+mad_status DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address *a )
 {
     //stub
     return( MS_OK );

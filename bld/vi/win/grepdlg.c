@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,10 @@
 #include "vi.h"
 #include "grep.h"
 #include "wprocmap.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static FARPROC  grepProc;
 static HWND     grepHwnd;
@@ -70,7 +75,7 @@ void InitGrepDialog( void )
 {
     grepProc = MakeDlgProcInstance( GrepDlgProc, InstanceHandle );
     cancelPressed = false;
-    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, (DLGPROC)grepProc );
+    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, (DLGPROC)grepProc );
 
 } /* InitGrepDialog */
 
@@ -79,23 +84,23 @@ void InitGrepDialog( void )
  */
 void FiniGrepDialog( void )
 {
-    BringWindowToTop( Root );
-    SetFocus( Root );
-    if( grepHwnd != NULL ) {
+    BringWindowToTop( root_window_id );
+    SetFocus( root_window_id );
+    if( !BAD_ID( grepHwnd ) ) {
         DestroyWindow( grepHwnd );
     }
     (void)FreeProcInstance( grepProc );
     grepProc = NULL;
-    grepHwnd = (HWND)NULLHANDLE;
+    grepHwnd = NO_WINDOW;
 
 } /* FiniGrepDialog */
 
 /*
  * SetGrepDialogFile - set the current file being used by the dialog
  */
-bool SetGrepDialogFile( char *str )
+bool SetGrepDialogFile( const char *str )
 {
-    if( grepHwnd != NULL ) {
+    if( !BAD_ID( grepHwnd ) ) {
         SetDlgItemText( grepHwnd, GREP_CURRENT_FILE, str );
         MessageLoop( false );
     }

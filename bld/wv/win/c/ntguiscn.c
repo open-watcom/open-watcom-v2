@@ -38,13 +38,10 @@
 #include "dbgwind.h"
 #include "dbgscrn.h"
 #include "guiwin.h"
-
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
-extern void     SaveMainScreen(char*);
-extern void     RestoreMainScreen(char*);
-extern void     DebugExit( void );
-extern void     TellHWND( HWND );
+#include "dbgmain.h"
+#include "wndsys.h"
+#include "trpsys.h"
+#include "dbginit.h"
 
 extern a_window *WndMain;
 
@@ -56,8 +53,9 @@ static HWND     FirstForeWnd = NULL;
 
 void TellWinHandle( void )
 {
-    if( _IsOn( SW_POWERBUILDER ) ) return;
-    TellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( _IsOn( SW_POWERBUILDER ) )
+        return;
+    TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
 }
 
 void Ring_Bell( void )
@@ -70,9 +68,9 @@ unsigned ConfigScreen( void )
     return( 0 );
 }
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
+size_t GetSystemDir( char *buff, size_t buff_len )
 {
-    buff[ 0 ] = '\0';
+    buff[0] = NULLCHAR;
     GetWindowsDirectory( buff, buff_len );
     return( strlen( buff ) );
 }
@@ -85,7 +83,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void DbgScrnMode( void )
@@ -108,8 +106,8 @@ bool DebugScreen( void )
     HWND        hwnd;
     HWND        fore;
 
-    if( ScreenState == DEBUG_SCREEN ) return( FALSE );
-    if( _IsOn( SW_POWERBUILDER ) ) return( FALSE );
+    if( ScreenState == DEBUG_SCREEN ) return( false );
+    if( _IsOn( SW_POWERBUILDER ) ) return( false );
     if( WndMain ) {
         ScreenState = DEBUG_SCREEN;
         hwnd = GUIGetSysHandle( WndGui( WndMain ) );
@@ -123,19 +121,19 @@ bool DebugScreen( void )
             WndRestoreWindow( WndMain );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
 bool UserScreen( void )
 {
-    if( ScreenState == USER_SCREEN ) return( FALSE );
-    if( _IsOn( SW_POWERBUILDER ) ) return( FALSE );
+    if( ScreenState == USER_SCREEN ) return( false );
+    if( _IsOn( SW_POWERBUILDER ) ) return( false );
     if( WndMain ) {
         ScreenState = USER_SCREEN;
         if( _IsOn( SW_POWERBUILDER ) ) {
@@ -148,7 +146,7 @@ bool UserScreen( void )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -166,7 +164,7 @@ void FiniScreen( void )
 
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void SetNumLines( int num )

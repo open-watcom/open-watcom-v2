@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <limits.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"
@@ -64,7 +65,8 @@ sys_handle LocalOpen( const char *name, open_access access )
     if( access & (OP_CREATE|OP_TRUNC) ) {
         ret = TinyCreate( name, TIO_NORMAL );
     } else {
-        if( _osmajor >= 3 ) mode |= 0x80; /* set no inheritance */
+        if( _osmajor >= 3 )
+            mode |= 0x80;       /* set no inheritance */
         ret = TinyOpen( name, mode );
     }
     if( TINY_ERROR( ret ) ) {
@@ -74,28 +76,58 @@ sys_handle LocalOpen( const char *name, open_access access )
     return( TINY_INFO( ret ) );
 }
 
-unsigned LocalRead( sys_handle filehndl, void *ptr, unsigned len )
+size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
     tiny_ret_t  ret;
+    size_t      total;
+    unsigned    piece_len;
+    unsigned    read_len;
 
-    ret = TinyRead( filehndl, ptr, len );
-    if( TINY_ERROR( ret ) ) {
-        StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = TinyRead( filehndl, ptr, piece_len );
+        if( TINY_ERROR( ret ) ) {
+            StashErrCode( TINY_INFO( ret ), OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        read_len = TINY_INFO( ret );
+        total += read_len;
+        if( read_len != piece_len )
+            break;
+        ptr = (char *)ptr + read_len;
+        len -= read_len;
     }
-    return( ret );
+    return( total );
 }
 
-unsigned LocalWrite( sys_handle filehndl, const void *ptr, unsigned len )
+size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
     tiny_ret_t  ret;
+    size_t      total;
+    unsigned    piece_len;
+    unsigned    write_len;
 
-    ret = TinyWrite( filehndl, ptr, len );
-    if( TINY_ERROR( ret ) ) {
-        StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-        return( ERR_RETURN );
+    piece_len = INT_MAX;
+    total = 0;
+    while( len > 0 ) {
+        if( piece_len > len )
+            piece_len = (unsigned)len;
+        ret = TinyWrite( filehndl, ptr, piece_len );
+        if( TINY_ERROR( ret ) ) {
+            StashErrCode( TINY_INFO( ret ), OP_LOCAL );
+            return( ERR_RETURN );
+        }
+        write_len = TINY_INFO( ret );
+        total += write_len;
+        if( write_len != piece_len )
+            break;
+        ptr = (char *)ptr + write_len;
+        len -= write_len;
     }
-    return( ret );
+    return( total );
 }
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method )
@@ -106,12 +138,12 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method 
     ret = TinyLSeek( hdl, npos, method, (u32_stk_ptr)&pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
-        return( -1UL );
+        return( ERR_SEEK );
     }
     return( pos );
 }
 
-rc_erridx LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle filehndl )
 {
     tiny_ret_t  ret;
 
@@ -122,7 +154,7 @@ rc_erridx LocalClose( sys_handle filehndl )
     return( 0 );
 }
 
-rc_erridx LocalErase( const char *name )
+error_handle LocalErase( const char *name )
 {
     tiny_ret_t  ret;
 
@@ -133,12 +165,7 @@ rc_erridx LocalErase( const char *name )
     return( 0 );
 }
 
-sys_handle LocalHandleSys( handle h )
+sys_handle LocalHandleSys( file_handle fh )
 {
-    return( h );
-}
-
-void PopErrBox( const char *buff )
-{
-    WriteText( STD_ERR, buff, strlen( buff ) );
+    return( (sys_handle)fh );
 }

@@ -76,7 +76,7 @@
 
 #define STUB_ALIGN 8    /* for PE format */
 
-#pragma pack(1)
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_8  op1;
@@ -101,7 +101,7 @@ typedef struct {
     unsigned_16 op3;
 } alpha_transfer;
 
-#pragma pack()
+#include "poppck.h"
 
 typedef struct local_import {
     struct local_import *next;
@@ -129,7 +129,8 @@ static unsigned_32 PPCJump[]= {
 #define X64_TRANSFER_OP1    0xff    /* first byte of a "JMP [FOO]" */
 #define X64_TRANSFER_OP2    0x25    /* second byte of a "JMP [FOO]" */
 
-#pragma pack(1)
+#include "pushpck1.h"
+
 typedef struct {
     unsigned_8  op1;
     unsigned_8  op2;
@@ -137,7 +138,8 @@ typedef struct {
 } x64_transfer;
 
 static x64_transfer    X64Jump = { X64_TRANSFER_OP1, X64_TRANSFER_OP2, {0} };
-#pragma pack()
+
+#include "poppck.h"
 
 #define X64_TRANSFER_SIZE (sizeof(x64_transfer))
 

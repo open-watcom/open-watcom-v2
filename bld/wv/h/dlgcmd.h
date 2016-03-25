@@ -39,8 +39,5 @@
 #define CTL_CMD_CANCEL 101
 
 #ifndef RC
-    typedef struct dlg_command {
-        char            cmd[ TXT_LEN ];
-    } dlg_command;
+extern  void    DlgCmd( void );
 #endif
-

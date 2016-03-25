@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1004,7 +1005,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_createdialog( inst, id, hwnd, proc ) \
                                         CreateDialog( inst, id, hwnd, proc )
 
-    #define _wpi_enablewindow( hwnd, bool ) EnableWindow( hwnd, bool )
+    #define _wpi_enablewindow( hwnd, enable ) EnableWindow( hwnd, enable )
 
     #define _wpi_ismenuitemvalid( hwnd, id ) \
                                 ( GetMenuState( hwnd, id, MF_BYCOMMAND ) == -1 )
@@ -1115,11 +1116,11 @@ extern void _wpi_setrestoredrect( HWND hwnd, WPI_RECT *prect );
 extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newproc );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text, BOOL by_position );
 
 extern BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
-                             unsigned attr_flags, unsigned id,
+                             unsigned attr_flags, unsigned new_id,
                              HMENU popup, const char *text );
 
 extern BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
@@ -1129,13 +1130,13 @@ extern void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state,
                                         unsigned *menu_flags,
                                         unsigned *attr_flags );
 
-    #define _wpi_ismenucheckedfromstate( pstate ) ( *(pstate) & MF_CHECKED )
+    #define _wpi_ismenucheckedfromstate( pstate ) ( (*(pstate) & MF_CHECKED) != 0 )
 
-    #define _wpi_ismenuenabledfromstate( pstate ) ( !(*(pstate) & MF_DISABLED) )
+    #define _wpi_ismenuenabledfromstate( pstate ) ( (*(pstate) & MF_DISABLED) == 0 )
 
-    #define _wpi_ismenuseparatorfromstate( pstate ) ( *(pstate) & MF_SEPARATOR )
+    #define _wpi_ismenuseparatorfromstate( pstate ) ( (*(pstate) & MF_SEPARATOR) != 0 )
 
-    #define _wpi_ismenupopupfromstate( pstate ) ( *(pstate) & MF_POPUP )
+    #define _wpi_ismenupopupfromstate( pstate ) ( (*(pstate) & MF_POPUP) != 0 )
 
 extern BOOL _wpi_modifymenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,

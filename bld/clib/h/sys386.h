@@ -353,6 +353,11 @@ syscall_res sys_call1( u_long func, u_long r_ebx );
     parm [eax] [ebx]                            \
     value [eax];
 
+void sys_call1n( u_long func, u_long r_ebx );
+#pragma aux sys_call1n =                        \
+    "int    0x80"                               \
+    parm [eax] [ebx] aborts;
+
 syscall_res sys_call2( u_long func, u_long r_ebx, u_long r_ecx );
 #pragma aux sys_call2 =                         \
     "int    0x80"                               \
@@ -376,3 +381,5 @@ syscall_res sys_call5( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_
     "int    0x80"                               \
     parm [eax] [ebx] [ecx] [edx] [esi] [edi]    \
     value [eax];
+
+#define _sys_exit(rc)   sys_call1n(SYS_exit, rc)

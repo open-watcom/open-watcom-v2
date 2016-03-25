@@ -37,42 +37,47 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "trptypes.h"
-#include "tcerr.h"
 #include "trpld.h"
+#include "trpsys.h"
+#include "tcerr.h"
+
 
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
-static unsigned_16      (TRAPENTRY *InfoFunc)( void *, void * );
-static char             (TRAPENTRY *HardFunc)( char );
+static TRAPENTRY_FUNC_PTR( TellHandles );
+static TRAPENTRY_FUNC_PTR( TellHardMode );
 
-bool IsTrapFilePumpingMessageQueue()
+bool IsTrapFilePumpingMessageQueue( void )
 {
-    return( InfoFunc != NULL );
+    return( TRAPENTRY_PTR_NAME( TellHandles ) != NULL );
 }
 
-void TellHandles( void __far *hab, void __far *hwnd )
+bool TrapTellHandles( void __far *hab, void __far *hwnd )
 {
-    if( InfoFunc == NULL ) return;
-    InfoFunc( hab, hwnd );
+    if( TRAPENTRY_PTR_NAME( TellHandles ) == NULL )
+        return( false );
+    TRAPENTRY_PTR_NAME( TellHandles )( hab, hwnd );
+    return( true );
 }
 
 
-char TellHardMode( char hard )
+char TrapTellHardMode( char hard )
 {
-    if( HardFunc == NULL ) return( 0 );
-    return( HardFunc( hard ) );
+    if( TRAPENTRY_PTR_NAME( TellHardMode ) == NULL )
+        return( 0 );
+    return( TRAPENTRY_PTR_NAME( TellHardMode )( hard ) );
 }
 
 void KillTrap( void )
 {
     ReqFunc = NULL;
+    TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
+    TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
     if( FiniFunc != NULL ) {
         FiniFunc();
         FiniFunc = NULL;
     }
-    InfoFunc = NULL;
-    HardFunc = NULL;
     if( TrapFile != 0 ) {
         DosFreeModule( TrapFile );
         TrapFile = 0;
@@ -93,8 +98,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         ;
     len = ptr - parms;
     memcpy( trpfile, parms, len );
-    trpfile[len] = '\0';
-    if( !stricmp( trpfile, "std" ) ) {
+    if( stricmp( trpfile, "std" ) == 0 ) {
         unsigned        version;
         char            os2ver;
 
@@ -107,8 +111,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             trpfile[len++] = '1';
             trpfile[len++] = '6';
         }
-        trpfile[len] = 0;
     }
+#ifdef USE_FILENAME_VERSION
+    trpfile[len++] = ( USE_FILENAME_VERSION / 10 ) + '0';
+    trpfile[len++] = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
+    trpfile[len] = '\0';
     rc = DosLoadModule( NULL, 0, trpfile, &TrapFile );
     if( rc != 0 ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
@@ -118,11 +126,11 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     if( DosGetProcAddr( TrapFile, "#1", (PFN FAR *)&init_func ) == 0
       && DosGetProcAddr( TrapFile, "#2", (PFN FAR *)&FiniFunc ) == 0
       && DosGetProcAddr( TrapFile, "#3", (PFN FAR *)&ReqFunc ) == 0 ) {
-        if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
-            InfoFunc = NULL;
+        if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&TRAPENTRY_PTR_NAME( TellHandles ) ) != 0 ) {
+            TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
         }
-        if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
-            HardFunc = NULL;
+        if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&TRAPENTRY_PTR_NAME( TellHardMode ) ) != 0 ) {
+            TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
         }
         parms = ptr;
         if( *parms != '\0' )

@@ -33,11 +33,10 @@
 #include "app.h"
 
 
-extern int DlgSearch( a_window *, void * );
 extern int DlgOptions( void );
 
 extern void DlgCmd( void );
-extern void Password( char *, char *, int );
+extern void Password( const char *, char *, unsigned );
 extern gui_colour_set WndColours[];
 
 void *SrchHistory;
@@ -122,9 +121,8 @@ static const char *FmtNum( const void *data_handle, int item )
 }
 
 
-void TimeIt( void )
+static void TimeIt( void )
 {
-    extern wnd_attr     WndPlainAttr;
     char        buff[80];
     int         len;
     long        iters;
@@ -163,7 +161,7 @@ static gui_toolbar_struct ToolBar[] = {
 {"5", BITMAP_FIVE,      MENU_OPEN5, "Open window number 5" },
 };
 
-void OpenTools( void )
+static void OpenTools( void )
 {
     WndCreateToolBar( 867, TRUE, ArraySize( ToolBar ), ToolBar );
 }
@@ -201,7 +199,7 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_GET_FILE:
         if( DlgFileBrowse( "Enter File Name", FilterList, FileBrowsed,
-                           sizeof( FileBrowsed ), OFN_OVERWRITEPROMPT ) ) {
+                           sizeof( FileBrowsed ), FN_OVERWRITEPROMPT ) ) {
             Say( FileBrowsed );
         }
         break;

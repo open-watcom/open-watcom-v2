@@ -55,14 +55,14 @@ static pid_t            OrigPGrp;
 process_info        ProcInfo;
 
 //#define MAX_WP  32
-//struct _watch_struct    WatchPoints[ MAX_WP ];
+//struct _watch_struct    WatchPoints[MAX_WP];
 short               WatchCount = 0;
 
 
 unsigned nto_node( void )
 {
     unsigned    node;
-    
+
     if( ND_NODE_CMP( ProcInfo.node, ND_LOCAL_NODE ) == 0 ) {
         return( ND_LOCAL_NODE );
     }
@@ -128,7 +128,7 @@ trap_retval ReqChecksum_mem( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    dbg_print(( "mem checksum at %08x, %d bytes\n", 
+    dbg_print(( "mem checksum at %08x, %d bytes\n",
                 (unsigned)acc->in_addr.offset, acc->len ));
     sum = 0;
     if( ProcInfo.pid && !ProcInfo.at_end ) {
@@ -140,10 +140,12 @@ trap_retval ReqChecksum_mem( void )
             size = (length > sizeof( buf )) ? sizeof( buf ) : length;
             amount = ReadMem( ProcInfo.procfd, buf, offv, size );
             for( i = amount; i != 0; --i )
-                sum += buf[ i - 1 ];
+                sum += buf[i - 1];
             offv += amount;
             length -= amount;
-            if( amount != size ) break;
+            if( amount != size ) {
+                break;
+            }
         }
     }
     ret->result = sum;
@@ -313,21 +315,25 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, char *args[], unsigned len )
+static int SplitParms( char *p, const char **args, unsigned len )
 {
     int     i;
     char    endc;
 
     i = 0;
-    if( len == 1 ) goto done;
+    if( len == 1 )
+        goto done;
     for( ;; ) {
         for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
+            if( len == 0 )
+                goto done;
+            if( *p != ' ' && *p != '\t' )
+                break;
             ++p;
             --len;
         }
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         if( *p == '"' ) {
             --len;
             ++p;
@@ -340,7 +346,8 @@ static int SplitParms( char *p, char *args[], unsigned len )
         }
         ++i;
         for( ;; ) {
-            if( len == 0 ) goto done;
+            if( len == 0 )
+                goto done;
             if( *p == endc
              || *p == '\0'
              || (endc == ' ' && *p == '\t' ) ) {
@@ -349,7 +356,8 @@ static int SplitParms( char *p, char *args[], unsigned len )
                 }
                 ++p;
                 --len;
-                if( len == 0 ) goto done;
+                if( len == 0 )
+                    goto done;
                 break;
             }
             ++p;
@@ -374,12 +382,12 @@ static pid_t proc_attach( pid_t pid, int *pfd, pthread_t *ptid )
         dbg_print(("failed to open proc file '%s'\n", path));
         return( 0 );
     }
-    
+
     if( devctl( ctl_fd, DCMD_PROC_STOP, &status, sizeof( status ), 0 ) != EOK ) {
         dbg_print(("failed to stop process\n"));
         return( 0 );
     }
-    
+
     /* Define a sigevent for process stopped notification. The OS will deliver
      * SIGUSR1 to us whenever the debuggee stops. We block SIGUSR1 and only
      * unblock it temporarily when expecting a notification.
@@ -390,7 +398,7 @@ static pid_t proc_attach( pid_t pid, int *pfd, pthread_t *ptid )
     event.sigev_value.sival_ptr = NULL;
     event.sigev_priority = -1;
     devctl( ctl_fd, DCMD_PROC_EVENT, &event, sizeof( event ), 0 );
-    
+
     if( devctl( ctl_fd, DCMD_PROC_STATUS, &status, sizeof( status ), 0 ) == EOK
       && status.flags & _DEBUG_FLAG_STOPPED ) {
         dbg_print(( "debuggee stopped - sending SIGCONT to pid %d\n", pid ));
@@ -409,7 +417,7 @@ static void proc_detach( char *args )
     if( args ) {
         sig = atoi( args );
     }
-    
+
     if( sig ) {
         SignalKill( nto_node(), ProcInfo.pid, 0, sig, 0, 0 );
     }
@@ -451,7 +459,7 @@ static pid_t RunningProc( char *name, char **name_ret )
 static int nto_breakpoint( addr_off addr, int type, int size )
 {
     procfs_break    brk;
-    
+
     brk.type = type;
     brk.addr = addr;
     brk.size = size;
@@ -470,7 +478,7 @@ static bool setup_rdebug( void )
     if( GetLdInfo( ProcInfo.procfd, ProcInfo.dynsec_va, &ProcInfo.rdebug_va, &ProcInfo.ld_bp_va ) ) {
         struct r_debug      rdebug;
 
-        dbg_print(( "rdebug at %08x, ld breakpoint at %08x\n", 
+        dbg_print(( "rdebug at %08x, ld breakpoint at %08x\n",
                     (unsigned)ProcInfo.rdebug_va, (unsigned)ProcInfo.ld_bp_va ));
         ReadMem( ProcInfo.procfd, &rdebug, ProcInfo.rdebug_va, sizeof( rdebug ) );
         AddLibs( ProcInfo.procfd, (addr_off)rdebug.r_map );
@@ -500,7 +508,7 @@ static size_t pid_to_name( pid_t pid, char *exe_name, size_t len )
     if( procfd != -1 ) {
         dbg_info = (procfs_debuginfo *)buf;
         dbg_info->path[0] = '\0';
-    
+
         if( devctl( procfd, DCMD_PROC_MAPDEBUG_BASE, dbg_info, sizeof( buf ), 0 ) == EOK ) {
             if( strncmp( dbg_info->path, "./", 2 ) && (*dbg_info->path != '/') ) {
                 // Bug in QNX? Initial '/' seems to be missing sometimes.
@@ -516,7 +524,7 @@ static size_t pid_to_name( pid_t pid, char *exe_name, size_t len )
 
 trap_retval ReqProg_load( void )
 {
-    char                    **args;
+    const char              **args;
     char                    *parms;
     char                    *parm_start;
     int                     i;
@@ -560,7 +568,7 @@ trap_retval ReqProg_load( void )
         for( ;; ) {
             if( len == 0 ) break;
             if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
+                args[i++] = parms + 1;
             }
             ++parms;
             --len;
@@ -574,8 +582,8 @@ trap_retval ReqProg_load( void )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = alloca( (i + 2) * sizeof( *args ) );
-        args[ SplitParms( parms, &args[1], len ) + 1 ] = NULL;
+        args = alloca( ( i + 2 ) * sizeof( *args ) );
+        args[SplitParms( parms, args + 1, len ) + 1] = NULL;
     }
     args[0] = parm_start;
     ProcInfo.pid = RunningProc( args[0], &name );
@@ -687,7 +695,7 @@ trap_retval ReqSet_break( void )
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
     ret = GetOutPtr( 0 );
-    dbg_print(( "setting breakpoint at %04x:%08x\n", acc->break_addr.segment, 
+    dbg_print(( "setting breakpoint at %04x:%08x\n", acc->break_addr.segment,
                (unsigned)acc->break_addr.offset ));
     nto_breakpoint( acc->break_addr.offset, _DEBUG_BREAK_EXEC, 0 );
     return( sizeof( *ret ) );
@@ -701,7 +709,7 @@ trap_retval ReqClear_break( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    dbg_print(( "clearing breakpoint at %04x:%08x\n", acc->break_addr.segment, 
+    dbg_print(( "clearing breakpoint at %04x:%08x\n", acc->break_addr.segment,
                (unsigned)acc->break_addr.offset ));
     nto_breakpoint( acc->break_addr.offset, _DEBUG_BREAK_EXEC, -1 );
     return( 0 );
@@ -711,7 +719,7 @@ trap_retval ReqClear_break( void )
 static int nto_watchpoint( int addr, int len, int type )
 {
     procfs_break    brk;
-    
+
     switch( type ) {
     case 1:			/* Read */
         brk.type = _DEBUG_BREAK_RD;
@@ -726,7 +734,7 @@ static int nto_watchpoint( int addr, int len, int type )
     brk.type |= _DEBUG_BREAK_HW;	/* Always ask for HW watchpoint */
     brk.addr = addr;
     brk.size = len;
-    
+
     if( devctl( ProcInfo.procfd, DCMD_PROC_BREAK, &brk, sizeof( brk ), 0 ) != EOK ) {
         dbg_print(( "Failed to manipulate hardware watchpoint\n" ));
         return( -1 );
@@ -766,7 +774,7 @@ trap_retval ReqClear_watch( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->watch_addr.offset );
     CONV_LE_16( acc->watch_addr.segment );
-    dbg_print(( "clearing watchkpoint at %04x:%08x\n", acc->watch_addr.segment, 
+    dbg_print(( "clearing watchkpoint at %04x:%08x\n", acc->watch_addr.segment,
                (unsigned)acc->watch_addr.offset ));
     nto_watchpoint( acc->watch_addr.offset, -1, 1 );
     return( 0 );
@@ -801,7 +809,7 @@ static void Resume( int step )
     if( step ) {
         ProcInfo.run.flags |= _DEBUG_RUN_STEP;
     }
-    
+
     sigemptyset( (sigset_t *)&ProcInfo.run.fault );
 
     sigaddset( (sigset_t *)&ProcInfo.run.fault, FLTBPT );
@@ -896,7 +904,7 @@ static int RunIt( unsigned step )
             int     wait_val = 0;
 
             waitpid( ProcInfo.pid, &wait_val, WNOHANG );
-            dbg_print(( "debuggee terminated (pid %d), status collected (%d)\n", 
+            dbg_print(( "debuggee terminated (pid %d), status collected (%d)\n",
                         ProcInfo.pid, wait_val ));
             ProcInfo.at_end = TRUE;
             ret |= COND_TERMINATE;
@@ -954,7 +962,7 @@ static unsigned ProgRun( bool step )
             }
         }
     }
-    dbg_print(( "stopped at %04x:%08x because of %x\n", ret->program_counter.segment, 
+    dbg_print(( "stopped at %04x:%08x because of %x\n", ret->program_counter.segment,
                (unsigned)ret->program_counter.offset, ret->conditions ));
 
     // Note: Some trap files always set COND_CONFIG here. This should only be
@@ -1107,7 +1115,7 @@ trap_retval ReqMachine_data( void )
     machine_data_req    *acc;
     machine_data_ret    *ret;
     unsigned_8          *data;
-    
+
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
@@ -1289,8 +1297,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     trap_version    ver;
     sigset_t        sig_set;
 
-    parms = parms;
-    remote = remote;
+    parms = parms; remote = remote;
 
     /* We use SIGUSR1 to gain control after blocking wait for a process. */
     sigemptyset( &sig_set );

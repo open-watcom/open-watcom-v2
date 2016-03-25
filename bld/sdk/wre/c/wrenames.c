@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
@@ -81,6 +82,8 @@ WRETypeName WRETypeNames[] = {
     { (uint_16)(pointer_int)RT_MESSAGETABLE, WRE_MESSAGETABLENAME,   FALSE },
     { (uint_16)(pointer_int)RT_VERSION,      WRE_VERSIONNAME,        FALSE },
     { (uint_16)(pointer_int)RT_DLGINCLUDE,   WRE_DLGINCLUDENAME,     FALSE },
+    { (uint_16)(pointer_int)RT_HTML,         WRE_HTMLNAME,           FALSE },
+    { (uint_16)(pointer_int)RT_MANIFEST,     WRE_MANIFESTNAME,       FALSE },
     { 0,                                     0,                      FALSE }
 };
 
@@ -99,14 +102,14 @@ static void WREResetListbox( HWND lbox )
 static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNode )
 {
     WResTypeNode        *tnode;
-    LRESULT             count;
-    LRESULT             i;
+    int                 count;
+    int                 i;
     bool                ok;
 
     ok = (lbox != (HWND)NULL);
 
     if( ok ) {
-        count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+        count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
         ok = (count != LB_ERR);
     }
 
@@ -225,13 +228,13 @@ bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
 }
 
 bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
-                             WResID *name, LRESULT index )
+                             WResID *name, int index )
 {
     HWND                resLbox;
     HWND                typeLbox;
     LRESULT             typeIndex;
     WResTypeNode        *tnode;
-    LRESULT             max_index;
+    int                 max_index;
     char                *str;
     bool                ok;
 
@@ -255,8 +258,8 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
         if( type != 0 ) {
             typeIndex = WREFindTypeLBoxIndex( typeLbox, type, &tnode );
         } else {
-            LRESULT count;
-            count = SendMessage( typeLbox, LB_GETCOUNT, 0, 0 );
+            int count;
+            count = (int)SendMessage( typeLbox, LB_GETCOUNT, 0, 0 );
             if( count != 0 && count != LB_ERR ) {
                 tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, typeIndex, 0 );
             }
@@ -282,14 +285,14 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
             index = LB_ERR;
             str = WResIDToStr( name );
             if( str != NULL ) {
-                index = SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
+                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
                 WRMemFree( str );
             }
             if( index == LB_ERR ) {
                 index = 0;
             }
         }
-        max_index = SendMessage( resLbox, LB_GETCOUNT, 0, 0 );
+        max_index = (int)SendMessage( resLbox, LB_GETCOUNT, 0, 0 );
         if( max_index == LB_ERR ) {
             max_index = 0;
         }
@@ -311,7 +314,7 @@ bool WREAddResNames( WREResInfo *info )
     HWND                typeLbox;
     WResTypeNode        *tnode;
     bool                redrawOff;
-    LRESULT             index;
+    int                 index;
     bool                ok;
 
     redrawOff = false;
@@ -328,7 +331,7 @@ bool WREAddResNames( WREResInfo *info )
         SendMessage( resLbox, WM_SETREDRAW, FALSE, 0 );
         redrawOff = true;
         WREResetListbox( resLbox );
-        index = SendMessage( typeLbox, LB_GETCURSEL, 0, 0 );
+        index = (int)SendMessage( typeLbox, LB_GETCURSEL, 0, 0 );
         ok = (index != LB_ERR);
     }
 
@@ -386,7 +389,7 @@ void WRESetTotalText( WREResInfo *info )
 {
     HWND        total;
     HWND        lbox;
-    LRESULT     count;
+    int         count;
     char        *buf;
 
     if( info == NULL || WRETotalText == NULL || WRETotalTextOne == NULL ||
@@ -400,7 +403,7 @@ void WRESetTotalText( WREResInfo *info )
         return;
     }
 
-    count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     if( count == LB_ERR ) {
         count = 0;
     }

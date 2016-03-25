@@ -40,4 +40,3 @@ enum {
     GADGET_SPLASH
 };
 extern int              MaxGadgetLength;
-extern void             SetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type );

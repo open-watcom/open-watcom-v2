@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,14 @@
 
 #include "vi.h"
 #include <stddef.h>
-#include "source.h"
 #include "ddedef.h"
 #include "wprocmap.h"
+
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem,
+                             ULONG_PTR data1, ULONG_PTR data2 );
 
 typedef struct hsz_list {
     struct hsz_list     *next;
@@ -44,14 +50,14 @@ typedef struct hsz_list {
 } hsz_list;
 static hsz_list *hszHead, *hszTail;
 
-DWORD           DDERet;
+HDDEDATA        DDERet;
 DWORD           DDEInstId;
 UINT            ClipboardFormat = CF_TEXT;
 UINT            ServerCount;
 bool            UseDDE;
 
 #ifdef __WINDOWS_386__
-typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, DWORD, DWORD );
+typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, ULONG_PTR, ULONG_PTR );
 static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
 {
     instance = instance;
@@ -66,8 +72,8 @@ static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
  * DDECallback - callback routine for DDE
  */
 WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
-                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
-                             DWORD data2 )
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem,
+                             ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        tmp[64];
     vi_rc       rc;
@@ -82,49 +88,49 @@ WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
     case XTYP_DISCONNECT:
     case XTYP_REQUEST:
     case XTYP_POKE:
-        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD) hconv,
-                   (DWORD) topicstrh, (DWORD) itemstrh, (DWORD) hmem );
-        DDERet = 0;
+        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD)hconv,
+                   (DWORD)topicstrh, (DWORD)itemstrh, (DWORD)hmem );
         rc = SourceHookData( SRC_HOOK_DDE, tmp );
         if( rc != ERR_NO_ERR ) {
-            DDERet = (DWORD)DdeCreateDataHandle( (DWORD)DDEInstId, (LPBYTE)"err",
-                                                 (DWORD)4, (DWORD)0, (HSZ)itemstrh,
-                                                 (UINT)fmt, (UINT)0 );
+            DDERet = DdeCreateDataHandle( DDEInstId, (LPBYTE)"err", 4, 0, itemstrh, fmt, 0 );
         } else {
-            DDERet = (DWORD)DdeCreateDataHandle( DDEInstId, (LPBYTE)"ok", 3, 0,
-                                                 itemstrh, fmt, 0 );
+            DDERet = DdeCreateDataHandle( DDEInstId, (LPBYTE)"ok", 3, 0, itemstrh, fmt, 0 );
         }
-        return( (HDDEDATA) DDERet );
+        return( DDERet );
     }
-    return( (HDDEDATA) NULL );
+    return( (HDDEDATA)NULL );
 
 } /* DDECallback */
 
 /*
  * CreateStringHandle - build a kept string handle
  */
-bool CreateStringHandle( char *name, HSZ *hdl )
+bool CreateStringHandle( const char *name, HSZ *hdl )
 {
     hsz_list    *hlptr;
     int         len;
     HSZ         ohdl;
+    char        buff[256];
 
     if( hdl == NULL ) {
         hdl = &ohdl;
     }
-
-    *hdl = DdeCreateStringHandle( DDEInstId, name, 0 );
+    len = strlen( name );
+    if( len > 255 )
+        len = 255;
+    memcpy( buff, name, len );
+    buff[len] = '\0';
+    *hdl = DdeCreateStringHandle( DDEInstId, buff, 0 );
     if( *hdl == 0 ) {
         return( false );
     }
     if( !DdeKeepStringHandle( DDEInstId, *hdl ) ) {
         return( false );
     }
-    len = strlen( name );
     hlptr = MemAlloc( offsetof( hsz_list, string ) + len + 1 );
 
     hlptr->hsz = *hdl;
-    memcpy( hlptr->string, name, len + 1 );
+    memcpy( hlptr->string, buff, len + 1 );
     AddLLItemAtEnd( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
     return( true );
 

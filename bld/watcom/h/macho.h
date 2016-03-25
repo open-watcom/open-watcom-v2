@@ -105,7 +105,7 @@ typedef int32_t     cpu_subtype_t;
 #define CPU_SUBTYPE_POWERPC_750     9
 #define CPU_SUBTYPE_POWERPC_7400    10
 #define CPU_SUBTYPE_POWERPC_7450    11
-#define CPU_SUBTYPE_POWERPC_970	    100
+#define CPU_SUBTYPE_POWERPC_970     100
 
 
 /* From mach-o/loader.h */

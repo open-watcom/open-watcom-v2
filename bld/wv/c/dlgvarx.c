@@ -36,10 +36,8 @@
 #include "guidlg.h"
 #include "dlgvarx.h"
 #include "dbgerr.h"
+#include "dlgexpr.h"
 
-
-extern void             DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
-extern bool             DlgGetLong( gui_window *gui, gui_ctl_id id, long *value );
 
 static bool GetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 {

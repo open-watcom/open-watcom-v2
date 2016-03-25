@@ -35,7 +35,7 @@ typedef struct call_chain {
     char        *source_line;
     char        *symbol;
     unsigned    sym_len;
-    unsigned    open : 1;
+    bool        open : 1;
 } call_chain;
 
 typedef struct traceback {
@@ -53,3 +53,12 @@ typedef struct cached_traceback {
     traceback   *curr;
     traceback   *prev;
 } cached_traceback;
+
+
+extern address      FindNextIns( address a );
+extern void         InitTraceBack( cached_traceback *tb );
+extern void         FiniTraceBack( cached_traceback *tb );
+extern void         UpdateTraceBack( cached_traceback *tb );
+extern call_chain   *GetCallChain( cached_traceback *tb, int row );
+extern void         ShowCalls( void );
+extern void         UnWindToFrame( call_chain *chain, int row, int rows );

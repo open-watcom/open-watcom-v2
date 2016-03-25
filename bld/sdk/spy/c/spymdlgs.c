@@ -51,7 +51,7 @@ WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     static int  which, firstmsg, pages;
     bool        fl;
     HWND        nwnd, pwnd;
-    WORD        cmdid;
+    ctl_id      cmdid;
     char        *fmtstr;
     char        title[100];
 
@@ -180,7 +180,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     int         i;
     bool        fl;
-    WORD        cmdid;
+    ctl_id      cmdid;
     char        *rcstr;
     int         id;
 
@@ -253,7 +253,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 /*
  * DoMessageDialog
  */
-void DoMessageDialog( HWND hwnd, WORD cmdid )
+void DoMessageDialog( HWND hwnd, ctl_id cmdid )
 {
     FARPROC     fp;
     INT_PTR     rc;
@@ -335,7 +335,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam,
 {
     int         i;
     WORD        id;
-    WORD        cmdid;
+    ctl_id      cmdid;
     LPSTR       ptr;
     char        str[256];
     char        tmp[20];
@@ -357,7 +357,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam,
         str[i] = 0;
         strptr = MemAlloc( strlen( str ) + 1 );
         strcpy( strptr, str );
-        SET_DLGDATA( hwnd, (LONG_PTR)strptr );
+        SET_DLGDATA( hwnd, strptr );
         setMessageName( hwnd, str );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
         id = strtol( &str[SPYOUT_MSG], &endptr, 16 );

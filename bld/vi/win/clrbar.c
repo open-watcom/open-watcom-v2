@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,10 @@
 #include "utils.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 HWND        hColorbar;
 
 /*
@@ -41,9 +46,9 @@ HWND        hColorbar;
  */
 WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
+#ifdef __NT__
     lparam = lparam;
-    wparam = wparam;
-    hwnd = hwnd;
+#endif
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -52,15 +57,15 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         return( TRUE );
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
-            case IDOK:
-            case IDCANCEL:
-                EndDialog( hwnd, TRUE );
-                return( TRUE );
+        case IDOK:
+        case IDCANCEL:
+            EndDialog( hwnd, TRUE );
+            return( TRUE );
         }
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
-        hColorbar = (HWND)NULLHANDLE;
+        hColorbar = NO_WINDOW;
         // update editflags (may have closed from system menu)
         EditFlags.Colorbar = false;
         break;
@@ -77,17 +82,17 @@ void RefreshColorbar( void )
     static FARPROC      proc = NULL;
 
     if( EditFlags.Colorbar ) {
-        if( hColorbar != NULL ) {
+        if( !BAD_ID( hColorbar ) ) {
             return;
         }
         // if( proc ){
         //     proc = NULL;
         // }
         proc = MakeDlgProcInstance( ClrDlgProc, InstanceHandle );
-        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, (DLGPROC)proc );
+        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, (DLGPROC)proc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
-        if( hColorbar == NULL ) {
+        if( BAD_ID( hColorbar ) ) {
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );

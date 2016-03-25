@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +59,8 @@ typedef struct {
     addr48_ptr  loc;
     DWORD       value;
     DWORD       linear;
-    short       dregs;
-    short       len;
+    word        dregs;
+    word        len;
 } watch_point;
 
 static watch_point      wpList[ MAX_WP ];
@@ -75,7 +76,7 @@ BOOL IsOurBreakpoint( WORD sel, DWORD off )
 {
     int i;
 
-    for( i=0;i<numBreaks;i++ ) {
+    for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
             if( brkList[i].loc.segment == sel && brkList[i].loc.offset == off ) {
                 return( TRUE );
@@ -94,19 +95,18 @@ void ResetBreakpoints( WORD sel )
     int         i;
     char        ch;
 
-    for( i=0;i<numBreaks;i++ ) {
+    for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].in_use ) {
             if( brkList[i].loc.segment == sel ) {
                 ch = '\xCC';
-                WriteMem( brkList[i].loc.segment, brkList[i].loc.offset,
-                                &ch, sizeof( BYTE ) );
+                WriteMem( brkList[i].loc.segment, brkList[i].loc.offset, &ch, sizeof( BYTE ) );
             }
         }
     }
 
 } /* ResetBreakpoints */
 
-break_point __far * findBrkEntry( void )
+static break_point __far * findBrkEntry( void )
 {
     int         i;
     int         old_num;
@@ -114,7 +114,6 @@ break_point __far * findBrkEntry( void )
     for( i = 0; i < numBreaks; i++ ) {
         if( !brkList[i].in_use ) {
             return( &brkList[i] );
-            break;
         }
     }
     old_num = numBreaks;
@@ -123,7 +122,7 @@ break_point __far * findBrkEntry( void )
         brkHandle = GlobalAlloc( GMEM_FLAGS, numBreaks * sizeof( brkList[0] ) );
     } else {
         GlobalUnlock( brkHandle );
-        brkHandle = GlobalReAlloc( brkHandle, numBreaks*sizeof( brkList[0] ), GMEM_FLAGS );
+        brkHandle = GlobalReAlloc( brkHandle, numBreaks * sizeof( brkList[0] ), GMEM_FLAGS );
     }
     brkList = (break_point __huge *)GlobalLock( brkHandle );
     return( &brkList[old_num] );
@@ -221,7 +220,8 @@ void ClearDebugRegs( void )
     int i;
 
     if( WDebug386 ) {
-        for( i=0;i<4;i++) SetDRn( i,0L,0L );
+        for( i = 0; i < 4; i++)
+            SetDRn( i,0L,0L );
         setDR6( 0 );
         setDR7( 0 );
     }
@@ -234,17 +234,19 @@ BOOL SetDebugRegs( void )
     DWORD       dr7;
     watch_point *wp;
 
-    if( !WDebug386 ) return( FALSE );
+    if( !WDebug386 )
+        return( FALSE );
 
     needed = 0;
-    for( i=0;i<WPCount;i++ ) {
+    for( i = 0; i < WPCount; i++ ) {
         needed += wpList[i].dregs;
     }
-    if( needed > 4 ) return( FALSE );
+    if( needed > 4 )
+        return( FALSE );
 
     dr  = 0;
     dr7 = 0;
-    for( wp = wpList, i=0; i<WPCount; wp++, i++ ) {
+    for( wp = wpList, i = 0; i < WPCount; wp++, i++ ) {
         dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
         dr++;
         if( wp->dregs == 2 ) {
@@ -264,7 +266,7 @@ BOOL CheckWatchPoints( void )
     DWORD       value;
     int         i;
 
-    for( i=0;i<WPCount;i++ ) {
+    for( i = 0; i < WPCount; i++ ) {
         ReadMem( wpList[i].loc.segment, wpList[i].loc.offset, &value, sizeof( value ) );
         if( value != wpList[i].value ) {
             return( TRUE );
@@ -278,7 +280,7 @@ trap_retval ReqSet_watch( void )
     set_watch_req       *acc;
     set_watch_ret       *ret;
     DWORD               value;
-    int                 i,needed;
+    int                 i, needed;
     watch_point         *curr;
     WORD                desc[4];
     DWORD               linear;
@@ -292,23 +294,25 @@ trap_retval ReqSet_watch( void )
         curr = wpList + WPCount;
         curr->loc.segment = acc->watch_addr.segment;
         curr->loc.offset = acc->watch_addr.offset;
-        ReadMem( acc->watch_addr.segment, acc->watch_addr.offset, &value, sizeof(DWORD) );
+        ReadMem( acc->watch_addr.segment, acc->watch_addr.offset, &value, sizeof( DWORD ) );
         curr->value = value;
         GetDescriptor( curr->loc.segment, desc );
-        linear = (DWORD) desc[1] + ((DWORD) (desc[2]&0xFF) << 16L) +
-                 ((DWORD) (desc[3]>>8) << 24L);
+        linear = (DWORD)desc[1] + ( (DWORD)( desc[2] & 0xFF ) << 16L ) +
+                 ( (DWORD)( desc[3] >> 8 ) << 24L );
         linear += curr->loc.offset;
         curr->linear = linear;
         curr->len = acc->size;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = ( linear & (curr->len-1) ) ? 2 : 1;
+        curr->linear &= ~( curr->len - 1 );
+        curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
         WPCount++;
         if( WDebug386 ) {
             needed = 0;
             for( i = 0; i < WPCount; ++i ) {
                 needed += wpList[ i ].dregs;
             }
-            if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
+            if( needed <= 4 ) {
+                ret->multiplier |= USING_DEBUG_REG;
+            }
         }
     }
     return( sizeof( *ret ) );
@@ -323,7 +327,7 @@ trap_retval ReqClear_watch( void )
 
     acc = GetInPtr( 0 );
     dst = src = wpList;
-    for( i=0;i<WPCount;i++ ) {
+    for( i = 0; i < WPCount; i++ ) {
         if( src->loc.segment != acc->watch_addr.segment
          || src->loc.offset != acc->watch_addr.offset ) {
             dst->loc.offset = src->loc.offset;

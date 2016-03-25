@@ -109,6 +109,7 @@ index   equ     iflag-4
 
 
         defp    __sincos
+
         push    EBP                     ; save EBP
         push    EDI                     ; save registers
         push    EDX                     ; ...
@@ -382,44 +383,58 @@ __endif1:; _endif                       ; endif
         pop     EDI                     ; ...
         pop     EBP                     ; restore EBP
         ret                             ; return
-__sincos endp
+
+        endproc __sincos
+
 ;;    }
 ;;
 ;;
 ;;void sin( long double *x )
 ;;    {
 ;;        return _sincos( x, 0 );
+
         defp    __sin
+
         push    ESI                     ; save registers
         sub     ESI,ESI                 ; indicate sin
         call    __sincos                ; evaluate sin
         pop     ESI                     ; restore ESI
         ret                             ; return
-__sin   endp
+
+        endproc __sin
+
 ;;    }
 ;;
 ;;
 ;;void cos( long double *x )
 ;;    {
 ;;        return _sincos( x, 2 );
+
         defp    __cos
+
         push    ESI                     ; save registers
         mov     ESI,2                   ; indicate cos
         call    __sincos                ; evaluate cos
         pop     ESI                     ; restore ESI
         ret                             ; return
-__cos   endp
+
+        endproc __cos
+
 ;;    }
 ;;
 ;;
 ;;void tan( long double *x )
 ;;    {
 ;;        return _sincos( x, 1 );
+
         defp    __tan
+
         push    ESI                     ; save registers
         mov     ESI,1                   ; indicate tan
         call    __sincos                ; evaluate tan
         pop     ESI                     ; restore ESI
         ret                             ; return
-__tan   endp
+
+        endproc __tan
+
 ;;    }

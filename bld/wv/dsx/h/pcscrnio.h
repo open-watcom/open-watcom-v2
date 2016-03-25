@@ -158,8 +158,8 @@ extern void BIOSSetPage( unsigned_8 pagenb );
         " mov    ah, 5          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ al ]                                     \
-        modify exact [ ah ];
+        parm [al]                                     \
+        modify exact [ah];
 
 extern unsigned_8 BIOSGetPage( void );
 #pragma aux BIOSGetPage =                               \
@@ -167,8 +167,8 @@ extern unsigned_8 BIOSGetPage( void );
         " mov    ah, 0fh        "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        modify exact [ ax bh ]                          \
-        value [ bh ];
+        modify exact [ax bh]                          \
+        value [bh];
 
 extern unsigned_8 BIOSGetMode( void );
 #pragma aux BIOSGetMode =                               \
@@ -176,16 +176,16 @@ extern unsigned_8 BIOSGetMode( void );
         " mov    ah, 0fh        "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        modify exact [ ax bh ];
+        modify exact [ax bh];
 
 extern void BIOSSetMode( unsigned_8 mode );
 #pragma aux BIOSSetMode =                               \
         " push   ebp            "                       \
-        " mov    ah, 0          "                       \
+        " xor    ah, ah         "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ al ]                                     \
-        modify exact [ ah ];
+        parm [al]                                     \
+        modify exact [ah];
 
 extern unsigned_16 BIOSGetCurPos( unsigned_8 pagenb );
 #pragma aux BIOSGetCurPos =                             \
@@ -193,9 +193,9 @@ extern unsigned_16 BIOSGetCurPos( unsigned_8 pagenb );
         " mov    ah, 3          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ bh ]                                     \
-        modify exact [ cx dx ]                          \
-        value [ dx ];
+        parm [bh]                                     \
+        modify exact [cx dx]                          \
+        value [dx];
 
 extern void BIOSSetCurPos( unsigned_16 rowcol, unsigned_8 pagenb );
 #pragma aux BIOSSetCurPos =                             \
@@ -203,8 +203,8 @@ extern void BIOSSetCurPos( unsigned_16 rowcol, unsigned_8 pagenb );
         " mov    ah, 2          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ dx ] [ bh ]                              \
-        modify exact [ ah ];
+        parm [dx] [bh]                              \
+        modify exact [ah];
 
 extern unsigned_16 BIOSGetCurTyp( unsigned_8 pagenb );
 #pragma aux BIOSGetCurTyp =                             \
@@ -212,9 +212,9 @@ extern unsigned_16 BIOSGetCurTyp( unsigned_8 pagenb );
         " mov    ah, 3          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ bh ]                                     \
-        modify exact [ ah cx dx ]                       \
-        value [ cx ];
+        parm [bh]                                     \
+        modify exact [ah cx dx]                       \
+        value [cx];
 
 extern void BIOSSetCurTyp( unsigned_16 startend );
 #pragma aux BIOSSetCurTyp =                             \
@@ -222,8 +222,8 @@ extern void BIOSSetCurTyp( unsigned_16 startend );
         " mov    ah, 1          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ cx ]                                     \
-        modify exact [ ah ];
+        parm [cx]                                     \
+        modify exact [ah];
 
 extern unsigned_8 BIOSGetAttr( unsigned_8 pagenb );
 #pragma aux BIOSGetAttr =                               \
@@ -231,28 +231,28 @@ extern unsigned_8 BIOSGetAttr( unsigned_8 pagenb );
         " mov    ah, 8          "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm  [ bh ]                                    \
-        modify exact [ ax ]                             \
-        value [ ah ];
+        parm  [bh]                                    \
+        modify exact [ax]                             \
+        value [ah];
 
 extern void BIOSSetAttr( unsigned_8 attr );
 #pragma aux BIOSSetAttr =                               \
         " push   ebp            "                       \
-        " mov    cx, 0          "                       \
+        " xor    cx, cx         "                       \
         " mov    dx, 3250h      "                       \
         " mov    ax, 600h       "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ bh ]                                     \
-        modify exact [ ax cx dx ];
+        parm [bh]                                     \
+        modify exact [ax cx dx];
 
 extern uint_8 _ReadCRTCReg( uint_16 vidport, uint_8 regnb );
 #pragma aux _ReadCRTCReg =                      \
         "out    dx, al          ",              \
         "inc    dx              ",              \
         "in     al, dx          "               \
-        parm [ dx ] [ al ]                      \
-        modify exact [ al dx ];
+        parm [dx] [al]                      \
+        modify exact [al dx];
 
 extern void _WriteCRTCReg( uint_16 vidport, uint_8 regnb, uint_8 value );
 #pragma aux _WriteCRTCReg =                     \
@@ -260,8 +260,8 @@ extern void _WriteCRTCReg( uint_16 vidport, uint_8 regnb, uint_8 value );
         "inc    dx              ",              \
         "mov    al, ah          ",              \
         "out    dx, al          "               \
-        parm [ dx ] [ al ] [ ah ]               \
-        modify exact [ al dx ];
+        parm [dx] [al] [ah]               \
+        modify exact [al dx];
 
 #if 0
 
@@ -271,8 +271,8 @@ extern unsigned_8 VIDGetRow( unsigned_16 vidport );
         " out    dx, al         ",                      \
         " inc    dx             ",                      \
         " in     al, dx         "                       \
-        parm [ dx ]                                     \
-        modify exact [ al dx ];
+        parm [dx]                                     \
+        modify exact [al dx];
 
 extern void VIDSetRow( unsigned_16 vidport, unsigned_8 row );
 #pragma aux VIDSetRow =                                 \
@@ -281,8 +281,8 @@ extern void VIDSetRow( unsigned_16 vidport, unsigned_8 row );
         " inc    dx             ",                      \
         " mov    al, ah         ",                      \
         " out    dx, al         "                       \
-        parm [ dx ] [ ah ]                              \
-        modify exact [ ax dx ];
+        parm [dx] [ah]                              \
+        modify exact [ax dx];
 
 extern void VIDSetPos( unsigned_16 vidport, unsigned_16 cursorpos );
 #pragma aux VIDSetPos =                                 \
@@ -297,8 +297,8 @@ extern void VIDSetPos( unsigned_16 vidport, unsigned_16 cursorpos );
         " inc    dx             ",                      \
         " mov    al, bh         ",                      \
         " out    dx, al         "                       \
-        parm [ dx ] [ bx ]                              \
-        modify exact [ al dx ];
+        parm [dx] [bx]                              \
+        modify exact [al dx];
 
 extern unsigned_16 VIDGetPos( unsigned_16 vidport );
 #pragma aux VIDGetPos =                                 \
@@ -313,8 +313,8 @@ extern unsigned_16 VIDGetPos( unsigned_16 vidport );
         " inc    dx             ",                      \
         " in     al, dx         ",                      \
         " xchg   ah, al         "                       \
-        parm [ dx ]                                     \
-        modify exact [ ax dx ];
+        parm [dx]                                     \
+        modify exact [ax dx];
 
 extern unsigned_8 VIDGetCol( unsigned_16 vidport );
 #pragma aux VIDGetCol =                                 \
@@ -322,8 +322,8 @@ extern unsigned_8 VIDGetCol( unsigned_16 vidport );
         " out    dx, al         ",                      \
         " inc    dx             ",                      \
         " in     al, dx         "                       \
-        parm [ dx ]                                     \
-        modify exact [ al dx ];
+        parm [dx]                                     \
+        modify exact [al dx];
 
 extern void VIDSetCurTyp( unsigned_16 vidport, unsigned_16 cursortyp );
 #pragma aux VIDSetCurTyp =                              \
@@ -339,8 +339,8 @@ extern void VIDSetCurTyp( unsigned_16 vidport, unsigned_16 cursortyp );
         " inc    dx             ",                      \
         " pop    ax             ",                      \
         " out    dx, al         "                       \
-        parm [ dx ] [ ax ]                              \
-        modify exact [ al dx ];
+        parm [dx] [ax]                              \
+        modify exact [al dx];
 
 extern unsigned_16 VIDGetCurTyp( unsigned_16 vidport );
 #pragma aux VIDGetCurTyp =                              \
@@ -355,8 +355,8 @@ extern unsigned_16 VIDGetCurTyp( unsigned_16 vidport );
         " inc    dx             ",                      \
         " in     al, dx         ",                      \
         " xchg   ah, al         "                       \
-        parm [ dx ]                                     \
-        modify exact [ ax dx ];
+        parm [dx]                                     \
+        modify exact [ax dx];
 
 #endif
 
@@ -364,7 +364,7 @@ extern void VIDWait( void );
 #pragma aux VIDWait =                                   \
         " jmp  x                "                       \
         " x:                    "                       \
-        modify exact [ ];
+        modify exact [];
 
 extern unsigned BIOSEGAInfo( void );
 #pragma aux BIOSEGAInfo =                               \
@@ -375,59 +375,59 @@ extern unsigned BIOSEGAInfo( void );
         " shl    ebx, 10h       "                       \
         " mov    bx, cx         "                       \
         " pop    ebp            "                       \
-        modify exact [ ah ebx cx ]                      \
-        value [ ebx ];
+        modify exact [ah ebx cx]                      \
+        value [ebx];
 
 extern unsigned_8 BIOSGetRows( void );
 #pragma aux BIOSGetRows =                               \
         " push  es              "                       \
         " push  ebp             "                       \
         " mov   ax, 1130h       "                       \
-        " mov   bh, 0           "                       \
+        " xor   bh, bh          "                       \
         _INT_10                                         \
         " inc   dl              "                       \
         " pop   ebp             "                       \
         " pop   es              "                       \
-/*      modify exact [ ax bh cx dl ] */                 \
-        modify exact [ ax ebx ecx edx edi ] /* workaround bug in DOS4G */\
-        value [ dl ];
+/*      modify exact [ax bh cx dl] */                 \
+        modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */\
+        value [dl];
 
 extern unsigned_16 BIOSGetPoints( void );
 #pragma aux BIOSGetPoints =                             \
         " push  es              "                       \
         " push  ebp             "                       \
         " mov   ax, 1130h       "                       \
-        " mov   bh, 0           "                       \
+        " xor   bh,bh           "                       \
         _INT_10                                         \
         " pop   ebp             "                       \
         " pop   es              "                       \
-/*      modify exact [ ax bh cx dl ] */                 \
-        modify exact [ ax ebx ecx edx edi ] /* workaround bug in DOS4G */\
-        value [ cx ];
+/*      modify exact [ax bh cx dl] */                 \
+        modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */\
+        value [cx];
 
 extern void BIOSEGAChrSet( unsigned_8 vidroutine );
 #pragma aux BIOSEGAChrSet =                             \
         " push   ebp            "                       \
         " mov    ah, 11h        "                       \
-        " mov    bl, 0          "                       \
+        " xor    bl, bl         "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
-        parm [ al ]                                     \
-        modify exact [ ah bl ];
+        parm [al]                                     \
+        modify exact [ah bl];
 
 extern void _ega_write( unsigned_16, unsigned_8, unsigned_8 );
 #pragma aux _ega_write =                                \
         " out    dx, ax         "                       \
-        parm [ dx ] [ al ] [ ah ]                       \
-        modify exact [ ];
+        parm [dx] [al] [ah]                       \
+        modify exact [];
 
 extern unsigned_8 _vga_read( unsigned_16, unsigned_8 );
 #pragma aux _vga_read =                                 \
         " out    dx, al         ",                      \
         " inc    dx             ",                      \
         " in     al, dx         "                       \
-        parm [ dx ] [ al ]                              \
-        modify exact [ al dx ];
+        parm [dx] [al]                              \
+        modify exact [al dx];
 
 extern void _disablev( unsigned_16 );
 #pragma aux _disablev =                                 \
@@ -438,10 +438,10 @@ extern void _disablev( unsigned_16 );
         " mov    dx, 3c0h       ",                      \
         " mov    al, 11h        ",                      \
         " out    dx, al         ",                      \
-        " mov    al, 0          ",                      \
+        " xor    al, al         ",                      \
         " out    dx, al         "                       \
-        parm [ dx ]                                     \
-        modify exact [ al dx ];
+        parm [dx]                                     \
+        modify exact [al dx];
 
 extern void _enablev( unsigned_16 );
 #pragma aux _enablev =                                  \
@@ -452,10 +452,10 @@ extern void _enablev( unsigned_16 );
         " mov    dx, 3c0h       ",                      \
         " mov    al, 31h        ",                      \
         " out    dx, al         ",                      \
-        " mov    al, 0          ",                      \
+        " xor    al, al         ",                      \
         " out    dx, al         "                       \
-        parm [ dx ]                                     \
-        modify exact [ al dx ];
+        parm [dx]                                     \
+        modify exact [al dx];
 
 extern unsigned_16 _vidstatesize( unsigned_16 requestedstate );
 #pragma aux _vidstatesize =                             \
@@ -463,15 +463,15 @@ extern unsigned_16 _vidstatesize( unsigned_16 requestedstate );
         _INT_10                                         \
         " cmp    al, 1ch        "                       \
         " je     end            "                       \
-        " mov    bx, 0          "                       \
+        " xor    bx, bx         "                       \
         " end:                  "                       \
-        parm [ cx ]                                     \
-        modify exact [ ax bx ]                          \
-        value [ bx ];
+        parm [cx]                                     \
+        modify exact [ax bx]                          \
+        value [bx];
 
 extern void Fillb( void __far *dst, unsigned_8 value, unsigned_16 count );
 #pragma aux Fillb =                                     \
         "db 0x65"                                       \
         " rep   stosb           "                       \
-        parm [ gs edi ] [ al ] [ ecx ]                  \
-        modify exact [ edi ecx ];
+        parm [gs edi] [al] [ecx]                  \
+        modify exact [edi ecx];

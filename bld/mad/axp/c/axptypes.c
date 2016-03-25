@@ -106,7 +106,7 @@ mad_string      DIGENTRY MITypeName( mad_type_handle th )
     return( TypeArray[th].name );
 }
 
-unsigned        DIGENTRY MITypePreferredRadix( mad_type_handle th )
+mad_radix       DIGENTRY MITypePreferredRadix( mad_type_handle th )
 {
     return( TypeArray[th].hex ? 16 : 10 );
 }
@@ -192,7 +192,7 @@ static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const 
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+mad_status      DIGENTRY MITypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     mad_status          ms;
     const mad_type_info *new;

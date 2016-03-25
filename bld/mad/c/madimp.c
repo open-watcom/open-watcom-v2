@@ -45,7 +45,7 @@
   #endif
 #endif
 
-mad_client_routines     *MadClient;
+mad_client_routines     *MADClient;
 
 mad_imp_routines        MadImpInterface = {
     MAD_MAJOR,
@@ -146,119 +146,119 @@ const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
 
 DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_client_routines *client )
 {
-    MadClient = client;
+    MADClient = client;
     *status = MS_OK;
     return( &MadImpInterface );
 }
 
 void            *MCAlloc( size_t amount )
 {
-    return( MadClient->MADCliAlloc( amount ) );
+    return( MADClient->Alloc( amount ) );
 }
 
 void            *MCRealloc( void *p, size_t amount )
 {
-    return( MadClient->MADCliRealloc( p, amount ) );
+    return( MADClient->Realloc( p, amount ) );
 }
 
 void            MCFree( void *p )
 {
-    MadClient->MADCliFree( p );
+    MADClient->Free( p );
 }
 
 dig_fhandle     MCOpen( const char *name, dig_open mode )
 {
-    return( MadClient->MADCliOpen( name, mode ) );
+    return( MADClient->Open( name, mode ) );
 }
 
 unsigned long   MCSeek( dig_fhandle h, unsigned long p, dig_seek m )
 {
-    return( MadClient->MADCliSeek( h, p, m ) );
+    return( MADClient->Seek( h, p, m ) );
 }
 
-unsigned        MCRead( dig_fhandle h, void *d, unsigned l )
+size_t          MCRead( dig_fhandle h, void *d, size_t l )
 {
-    return( MadClient->MADCliRead( h, d, l ) );
+    return( MADClient->Read( h, d, l ) );
 }
 
 void            MCClose( dig_fhandle h )
 {
-    MadClient->MADCliClose( h );
+    MADClient->Close( h );
 }
 
-unsigned        MCReadMem( address a, unsigned size, void *buff )
+size_t          MCReadMem( address a, size_t size, void *buff )
 {
-    return( MadClient->MADCliReadMem( a, size, buff ) );
+    return( MADClient->ReadMem( a, size, buff ) );
 }
 
-unsigned        MCWriteMem( address a, unsigned size, void *buff )
+size_t          MCWriteMem( address a, size_t size, void *buff )
 {
-    return( MadClient->MADCliWriteMem( a, size, buff ) );
+    return( MADClient->WriteMem( a, size, buff ) );
 }
 
-unsigned        MCString( mad_string id, char *buff, unsigned buff_size )
+size_t          MCString( mad_string id, char *buff, size_t buff_size )
 {
-    return( MadClient->MADCliString( id, buff, buff_size ) );
+    return( MADClient->String( id, buff, buff_size ) );
 }
 
 mad_status      MCAddString( mad_string id, const char *buff )
 {
-    return( MadClient->MADCliAddString( id, buff ) );
+    return( MADClient->AddString( id, buff ) );
 }
 
-unsigned        MCRadixPrefix( unsigned radix, char *buff, unsigned buff_size )
+size_t          MCRadixPrefix( mad_radix radix, char *buff, size_t buff_size )
 {
-    return( MadClient->MADCliRadixPrefix( radix, buff, buff_size ) );
+    return( MADClient->RadixPrefix( radix, buff, buff_size ) );
 }
 
 void            MCNotify( mad_notify_type nt, void *d )
 {
-    MadClient->MADCliNotify( nt, d );
+    MADClient->Notify( nt, d );
 }
 
-unsigned        MCMachineData( address a, unsigned info_type, unsigned in_size,  void *in, unsigned out_size, void *out )
+unsigned        MCMachineData( address a, dig_info_type info_type, dig_elen in_size,  void *in, dig_elen out_size, void *out )
 {
-    return( MadClient->MADCliMachineData( a, info_type, in_size, in, out_size, out ) );
+    return( MADClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, unsigned buff_size )
+mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, size_t buff_size )
 {
-    return( MadClient->MADCliAddrToString( a, th, lk, buff, buff_size ) );
+    return( MADClient->AddrToString( a, th, lk, buff, buff_size ) );
 }
 
-mad_status      MCMemExpr( const char *expr, unsigned radix, address *a )
+mad_status      MCMemExpr( const char *expr, mad_radix radix, address *a )
 {
-    return( MadClient->MADCliMemExpr( expr, radix, a ) );
+    return( MADClient->MemExpr( expr, radix, a ) );
 }
 
 void            MCAddrSection( address *a )
 {
-    MadClient->MADCliAddrSection( a );
+    MADClient->AddrSection( a );
 }
 
 mad_status      MCAddrOvlReturn( address *a )
 {
-    return( MadClient->MADCliAddrOvlReturn( a ) );
+    return( MADClient->AddrOvlReturn( a ) );
 }
 
 system_config   *MCSystemConfig( void )
 {
-    return( MadClient->MADCliSystemConfig() );
+    return( MADClient->SystemConfig() );
 }
 
 mad_status      MCTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
 {
-    return( MadClient->MADCliTypeInfoForHost( tk, size, mti ) );
+    return( MADClient->TypeInfoForHost( tk, size, mti ) );
 }
 
 mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
-    return( MadClient->MADCliTypeConvert( in_t, in_d, out_t, out_d, seg ) );
+    return( MADClient->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-mad_status      MCTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+mad_status      MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
-    return( MadClient->MADCliTypeToString( radix, mti, data, buff, buff_size_p ) );
+    return( MADClient->TypeToString( radix, mti, data, buff, buff_size_p ) );
 }
 
 void            MCStatus( mad_status ms )

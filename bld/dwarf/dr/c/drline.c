@@ -197,7 +197,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 break;
             case DW_LNS_const_add_pc:
                 value = 255 - opcode_base;
-                info->state.offset += value / line_range * min_ins_len;
+                info->state.offset += ( value / line_range ) * min_ins_len;
                 break;
             case DW_LNS_fixed_advance_pc:
                 info->state.offset += DWRVMReadWord( curr );
@@ -239,16 +239,16 @@ static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
 
     rdr->seg = seg;
     rdr->finish = start + 4 + DWRVMReadDWord( start );
-    rdr->start = start + STMT_PROLOGUE_HDR_PROLOGUE_LEN + 4 + DWRVMReadDWord( start + STMT_PROLOGUE_HDR_PROLOGUE_LEN );
+    rdr->start = start + offsetof( stmt_prologue, prologue_length ) + 4 + DWRVMReadDWord( start + offsetof( stmt_prologue, prologue_length ) );
     rdr->curr = rdr->start;
-    rdr->min_ins_len = DWRVMReadByte( start + STMT_PROLOGUE_HDR_MIN_INS_LEN );
-    rdr->def_is_stmt = DWRVMReadByte( start + STMT_PROLOGUE_HDR_DEF_IN_STMT );
-    rdr->line_base   = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_BASE );
-    rdr->line_range  = DWRVMReadByte( start + STMT_PROLOGUE_HDR_LINE_RANGE );
-    rdr->opcode_base = DWRVMReadByte( start + STMT_PROLOGUE_HDR_OPCODE_BASE );
+    rdr->min_ins_len = DWRVMReadByte( start + offsetof( stmt_prologue, minimum_instruction_length ) );
+    rdr->def_is_stmt = DWRVMReadByte( start + offsetof( stmt_prologue, default_is_stmt ) );
+    rdr->line_base   = DWRVMReadByte( start + offsetof( stmt_prologue, line_base ) );
+    rdr->line_range  = DWRVMReadByte( start + offsetof( stmt_prologue, line_range ) );
+    rdr->opcode_base = DWRVMReadByte( start + offsetof( stmt_prologue, opcode_base ) );
     len = rdr->opcode_base - 1;
     rdr->op_lens = DWRALLOC( len );
-    pos = start + STMT_PROLOGUE_STANDARD_OPCODE_LENGTHS;
+    pos = start + offsetof( stmt_prologue, standard_opcode_lengths );
     for( index = 0; index < len; index++ ) {
         rdr->op_lens[index] = DWRVMReadByte( pos++ );
     }

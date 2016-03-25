@@ -57,7 +57,7 @@
 #include "osmain.h"
 #include "cmain.h"
 #include "maxthrds.h"
-#include "_exit.h"
+
 
 #if defined( __MT__ )
 
@@ -99,7 +99,7 @@ int             _nothread;
 /* End of static data - used in OS/2 DLL to find beginning of near heap */
 extern char     end;
 
-_WCRTLINK void _WCI86FAR  __null_FPE_handler( int fpe_type )
+static void _WCI86FAR  __null_FPE_handler( int fpe_type )
 {
     fpe_type = fpe_type;
 }
@@ -216,8 +216,8 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 }
 
 
-_WCRTLINK void  __exit( unsigned ret_code )
-/*****************************************/
+_WCRTLINK _NORETURN void  __exit( unsigned ret_code )
+/***************************************************/
 {
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD
@@ -226,4 +226,5 @@ _WCRTLINK void  __exit( unsigned ret_code )
 #else
     DosExit( EXIT_PROCESS, ret_code );
 #endif
+    // never return
 }

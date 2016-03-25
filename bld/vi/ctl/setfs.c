@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "vi.h"
-#include "source.h"
 #include "setfs.h"
 #include "stddef.h"
 #include "ctltype.h"
@@ -40,13 +40,16 @@
 #include <assert.h>
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define VI_LANG_FIRST   VI_LANG_LANG0
 #define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
 
 #define TAGFILENAMEWIDTH        129
 #define GREPDEFAULTWIDTH        20
 #define FT_TITLE                "File Specific Options ("
-
 
 typedef struct {
     int         Language;
@@ -76,7 +79,7 @@ static int          dlgDataArray_size = 0;
 static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
 {
     int sel;
-    
+
     initial = initial;
     sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGESELECT, CB_GETCURSEL, 0, 0L );
     switch( sel ) {
@@ -96,30 +99,34 @@ static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, bool initial )
     return( DYN_VISIBLE );
 }
 
-static bool dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsLanguage( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE ) {
         return( true );
     }
     return( false );
 }
 
-static bool dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
 
     hwndDlg = hwndDlg;
-    lParam = lParam;
-    id = LOWORD( wParam );
-    cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+#ifdef __NT__
+    lparam = lparam;
+#endif
+    id = LOWORD( wparam );
+    cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id == SETFS_CRLFAUTODETECT && cmd == BN_CLICKED ) {
         return( true );
     }
@@ -203,10 +210,10 @@ static void dlgDataToGlobal( dlg_data *data )
      * language specific variables with extra handling
      */
     if( strcmp( EditVars.TagFileName, data->TagFileName ) ) {
-        AddString2( &EditVars.TagFileName, data->TagFileName );
+        ReplaceString( &EditVars.TagFileName, data->TagFileName );
     }
     if( strcmp( EditVars.GrepDefault, data->GrepDefault ) ) {
-        AddString2( &EditVars.GrepDefault, data->GrepDefault );
+        ReplaceString( &EditVars.GrepDefault, data->GrepDefault );
     }
 }
 
@@ -226,7 +233,7 @@ static void dlgDataFini( void )
     MemFree( dlgDataArray );
 }
 
-static void filldlgData( dlg_data *data, char *match, info *useInfo )
+static void filldlgData( dlg_data *data, const char *match, info *useInfo )
 {
     // setup default values
     memset( useInfo, 0, sizeof( info ) );
@@ -262,7 +269,7 @@ static void fillFileType( HWND hwndDlg )
         template1 = template = FTSGetFirstTemplate( fts );
         str[0] = '\0';
         strLen = 0;
-        while( template ) {
+        while( template != NULL ) {
             strLen += strlen( template->data ) + 2;
             if( strLen > sizeof( str ) ) {
                 break;
@@ -299,7 +306,7 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
     int     totallen;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
 
     if( title ) {
         totallen = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
@@ -357,7 +364,7 @@ static void writeSettings( HWND hwndDlg )
     FTSInit();
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     for( index = 0; index < dlgDataArray_count; index++ ) {
         // put back in order we got them
@@ -369,7 +376,7 @@ static void writeSettings( HWND hwndDlg )
         FTSEnd();
         MemFree( template );
     }
-    if( CurrentFile ) {
+    if( CurrentFile != NULL ) {
         FTSRunCmds( CurrentFile->name );
     }
 }
@@ -383,9 +390,9 @@ static long deleteSelectedFT( HWND hwndDlg )
     int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
-    index = SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndCB, CB_GETCURSEL, 0, 0L );
     if( index == CB_ERR ) {
         MessageBox( hwndDlg, "No item selected", "", MB_ICONINFORMATION | MB_OK );
         return( 1L );
@@ -426,7 +433,7 @@ static long insertFT( HWND hwndDlg )
     int     dlgDataArray_count;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    dlgDataArray_count = SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
+    dlgDataArray_count = (int)SendMessage( hwndCB, CB_GETCOUNT, 0, 0L );
 
     // get new template
     len = GetWindowTextLength( hwndCB );
@@ -434,7 +441,7 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
+    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
     if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
         MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );
@@ -457,7 +464,7 @@ static long insertFT( HWND hwndDlg )
 /*
  * SetFSProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         index;
     HWND        ctlhwnd;
@@ -472,17 +479,17 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
         return( TRUE );
 
     case WM_COMMAND:
-        switch( LOWORD( wParam ) ) {
+        switch( LOWORD( wparam ) ) {
         case SETFS_FILETYPE:
-            cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+            cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == CBN_SELCHANGE ) {
 //                rc = ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, &oldData, &Ctl_setfs );
 //                assert( rc != 0 );
                 updateDialogSettings( hwndDlg, true );
             } else if( cmd == CBN_SETFOCUS ) {
                 // if we are getting the focus, something probably changed
-                ctlhwnd = GET_WM_COMMAND_HWND( wParam, lParam );
-                index = SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
+                ctlhwnd = GET_WM_COMMAND_HWND( wparam, lparam );
+                index = (int)SendMessage( ctlhwnd, CB_GETCURSEL, 0, 0L );
 
                 // this may bump focus back to a bad field
                 if( ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
@@ -497,7 +504,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
             insertFT( hwndDlg );
             return( TRUE );
         case IDOK:
-            index = SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ), CB_GETCURSEL, 0, 0L );
+            index = (int)SendMessage( GetDlgItem( hwndDlg, SETFS_FILETYPE ), CB_GETCURSEL, 0, 0L );
             if( !ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
                 return( TRUE );
             }
@@ -509,8 +516,8 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
             return( TRUE );
         }
 
-        ctl_dlg_process( &Ctl_setfs, wParam, lParam );
-        dyn_tpl_process( &Dyn_setfs, hwndDlg, wParam, lParam );
+        ctl_dlg_process( &Ctl_setfs, wparam, lparam );
+        dyn_tpl_process( &Dyn_setfs, hwndDlg, wparam, lparam );
     }
     return( FALSE );
 }
@@ -524,7 +531,7 @@ bool GetSetFSDialog( void )
     bool        rc;
 
     proc = MakeDlgProcInstance( SetFSProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct

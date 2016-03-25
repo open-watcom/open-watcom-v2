@@ -42,18 +42,15 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgmain.h"
+#include "dbgshow.h"
+#include "dbgpend.h"
 
 #define SET_HOOK_BIT(x)     HookPendingBits |= ((hook_bits)1 << x)
 #define RESET_HOOK_BIT(x)   HookPendingBits &= ~((hook_bits)1 << x)
 #define TEST_HOOK_BIT(x)    ((HookPendingBits & ((hook_bits)1 << x)) != 0)
 
 typedef unsigned long   hook_bits;
-
-extern char             *GetCmdEntry(const char *,int ,char *);
-extern char             *GetCmdName( wd_cmd cmd );
-extern void             ConfigCmdList( char *cmds, int indent );
-extern void             DoProcPending(void);
-
 
 static hook_bits        HookPendingBits;
 static cmd_list         *HookCmdLists[HOOK_NUM];
@@ -70,7 +67,7 @@ void InitHook( void )
 {
     HookPendingBits = 0;
     /* this is so we run the src/asm stuff after first load */
-    HadSrcInfo = TRUE;
+    HadSrcInfo = true;
 }
 
 void FiniHook( void )
@@ -96,7 +93,7 @@ void ProcHook( void )
     } else {
         list = NULL;
         if( ScanEOC() ) {
-        } else if( ScanItem( FALSE, &start, &len ) ) {
+        } else if( ScanItem( false, &start, &len ) ) {
             ReqEOC();
             while( len > 0 && *start == '\r' ) {
                 ++start;
@@ -123,7 +120,7 @@ void ConfigHook( void )
         p = GetCmdEntry( HookNames, hook, p );
         *p++ = ' ';
         *p++ = '{';
-        *p++ = '\0';
+        *p++ = NULLCHAR;
         DUIDlgTxt( TxtBuff );
         if( HookCmdLists[hook] != NULL ) {
             ConfigCmdList( HookCmdLists[hook]->buff, 0 );
@@ -159,7 +156,7 @@ bool HookPendingPush( void )
     bool            have_src_info;
 
     if( HookPendingBits == 0 )
-        return( FALSE );
+        return( false );
     test = 0;
     list = HookCmdLists;
     while( !TEST_HOOK_BIT( test ) ) {
@@ -172,9 +169,9 @@ bool HookPendingPush( void )
         TypeInpStack( INP_HOOK );
     }
     if( test != HOOK_NEW_MODULE )
-        return( TRUE );
+        return( true );
     if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) )
-        return( TRUE );
+        return( true );
     /*
        If the module has changed, we have to see if we've changed
        from a region with no source information to one with or
@@ -189,5 +186,5 @@ bool HookPendingPush( void )
             SET_HOOK_BIT( HOOK_SRC_END );
         }
     }
-    return( TRUE );
+    return( true );
 }

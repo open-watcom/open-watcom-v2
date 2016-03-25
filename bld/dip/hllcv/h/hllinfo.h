@@ -202,7 +202,7 @@ extern void                 hllLocationTrunc( location_list *, unsigned );
 extern dip_status           hllLocationOneReg( imp_image_handle *, unsigned, location_context *, location_list * );
 extern dip_status           hllLocationManyReg( imp_image_handle *, unsigned, const unsigned_8 *, location_context *, location_list * );
 
-extern unsigned             hllNameCopy( char *, const char *, unsigned, unsigned );
+extern size_t               hllNameCopy( char *, const char *, size_t, size_t );
 extern void                 hllMapLogical( imp_image_handle *, address * );
 extern void *               hllGetNumLeaf( void *, numeric_leaf * );
 extern bool                 hllIsSegExecutable( imp_image_handle *, unsigned );

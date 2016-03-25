@@ -42,7 +42,7 @@
 #include "impl.h"
 #include "lex.h"
 #include "token.h"
-#include "scan.h"
+#include "scangbl.h"
 #include "symbol.h"
 #include "prdefn.h"
 #include "progsw.h"

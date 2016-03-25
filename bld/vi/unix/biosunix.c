@@ -37,13 +37,13 @@
 extern int      PageCnt;
 extern bool     UserForcedTermRefresh;
 
-void BIOSGetColorPalette( void *a ) {}
-long BIOSGetColorRegister( short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr( void ) {}
-void BIOSSetBlinkAttr( void ) {}
-void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
+void    BIOSGetColorPalette( void *a ) {}
+uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
+void    BIOSSetNoBlinkAttr( void ) {}
+void    BIOSSetBlinkAttr( void ) {}
+void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
 
-void BIOSSetCursor( char page, char row, char col )
+void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
     int             type, attr;
     unsigned char   oldrow, oldcol;
@@ -53,14 +53,14 @@ void BIOSSetCursor( char page, char row, char col )
     _uisetcursor( row, col, type, attr );
 }
 
-short BIOSGetCursor( char page )
+unsigned short BIOSGetCursor( unsigned char page )
 {
     unsigned char   row, col;
     int             type, attr;
 
     page = page;
     _uigetcursor( &row, &col, &type, &attr );
-    return( (row << 8) | col );
+    return( ( row << 8 ) | col );
 }
 
 static unsigned short vi_keys[EV_FIRST_UNUSED];
@@ -114,14 +114,14 @@ static struct map events[] = {
     { EV_CTRL_PAGE_DOWN,        VI_KEY( CTRL_PAGEDOWN ) },
     { EV_ALT_PAGE_UP,           VI_KEY( CTRL_PAGEUP )   },
     { EV_ALT_PAGE_DOWN,         VI_KEY( CTRL_PAGEDOWN ) },
-    { EV_FUNC_11,               VI_KEY( F11 )           },
-    { EV_FUNC_12,               VI_KEY( F12 )           },
-    { EV_SHIFT_FUNC_11,         VI_KEY( SHIFT_F11 )     },
-    { EV_SHIFT_FUNC_12,         VI_KEY( SHIFT_F12 )     },
-    { EV_CTRL_FUNC_11,          VI_KEY( CTRL_F11 )      },
-    { EV_CTRL_FUNC_12,          VI_KEY( CTRL_F12 )      },
-    { EV_ALT_FUNC_11,           VI_KEY( ALT_F11 )       },
-    { EV_ALT_FUNC_12,           VI_KEY( ALT_F12 )       },
+    { EV_F11,                   VI_KEY( F11 )           },
+    { EV_F12,                   VI_KEY( F12 )           },
+    { EV_SHIFT_F11,             VI_KEY( SHIFT_F11 )     },
+    { EV_SHIFT_F12,             VI_KEY( SHIFT_F12 )     },
+    { EV_CTRL_F11,              VI_KEY( CTRL_F11 )      },
+    { EV_CTRL_F12,              VI_KEY( CTRL_F12 )      },
+    { EV_ALT_F11,               VI_KEY( ALT_F11 )       },
+    { EV_ALT_F12,               VI_KEY( ALT_F12 )       },
     { EV_ALT_A,                 VI_KEY( ALT_A )         },
     { EV_ALT_B,                 VI_KEY( ALT_B )         },
     { EV_ALT_C,                 VI_KEY( ALT_C )         },
@@ -171,17 +171,17 @@ static vi_key get_vi_key( EVENT ev )
     if( iseditchar( ev ) ) {
         return( (vi_key)ev );
     }
-    if( ev >= EV_FUNC( 1 ) && ev <= EV_FUNC( 10 ) ) {
-        return( VI_KEY( F1 ) + ev - EV_FUNC( 1 ) );
+    if( ev >= EV_F1 && ev <= EV_F10 ) {
+        return( VI_KEY( F1 ) + ( ev - EV_F1 ) );
     }
-    if( ev >= EV_SHIFT_FUNC( 1 ) && ev <= EV_SHIFT_FUNC( 10 ) ) {
-        return( VI_KEY( SHIFT_F1 ) + ev - EV_SHIFT_FUNC( 1 ) );
+    if( ev >= EV_SHIFT_F1 && ev <= EV_SHIFT_F10 ) {
+        return( VI_KEY( SHIFT_F1 ) + ( ev - EV_SHIFT_F1 ) );
     }
-    if( ev >= EV_CTRL_FUNC( 1 ) && ev <= EV_CTRL_FUNC( 10 ) ) {
-        return( VI_KEY( CTRL_F1 ) + ev - EV_CTRL_FUNC( 1 ) );
+    if( ev >= EV_CTRL_F1 && ev <= EV_CTRL_F10 ) {
+        return( VI_KEY( CTRL_F1 ) + ( ev - EV_CTRL_F1 ) );
     }
-    if( ev >= EV_ALT_FUNC( 1 ) && ev <= EV_ALT_FUNC( 10 ) ) {
-        return( VI_KEY( ALT_F1 ) + ev - EV_FUNC( 1 ) );
+    if( ev >= EV_ALT_F1 && ev <= EV_ALT_F10 ) {
+        return( VI_KEY( ALT_F1 ) + ( ev - EV_ALT_F1 ) );
     }
     return( VI_KEY( DUMMY ) );
 }
@@ -189,7 +189,7 @@ static vi_key get_vi_key( EVENT ev )
 int BIOSKeyboardInit( void )
 {
     int i;
-    
+
     for( i = 0; i < EV_FIRST_UNUSED; i++ ) {
         vi_keys[i] = get_vi_key( i );
     }
@@ -202,10 +202,10 @@ int BIOSKeyboardInit( void )
 /*
  * BIOSGetKeyboard - get a keyboard char
  */
-vi_key BIOSGetKeyboard( int *scan )
+unsigned BIOSGetKeyboard( unsigned *scan )
 {
-    vi_key  key;
-    EVENT   ev;
+    vi_key      key;
+    EVENT       ev;
 
     key = VI_KEY( DUMMY );
     do {
@@ -213,7 +213,7 @@ vi_key BIOSGetKeyboard( int *scan )
         if ( ev < EV_FIRST_UNUSED ) {
             key = vi_keys[ev];
         }
-    } while ( key == VI_KEY( DUMMY ) );
+    } while( key == VI_KEY( DUMMY ) );
     if( scan != NULL ) {
         *scan = 0;
     }
@@ -233,13 +233,13 @@ bool BIOSKeyboardHit( void )
     _uisetcursor( row, col, C_NORMAL, attr );
     _ui_refresh( 0 );
     return( ( kb_wait( 0, 0 ) != 0 ) );
-    
+
 } /* BIOSKeyboardHit */
 
 /*
  * BIOSUpdateScreen - update the screen
  */
-void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
+void  BIOSUpdateScreen( size_t offset, unsigned nchars )
 {
     SAREA       area;
 

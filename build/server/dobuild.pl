@@ -32,6 +32,7 @@ use strict;
 
 use Common;
 use Config;
+use File::Path qw( make_path );
 
 $\ = "\n";
 
@@ -59,7 +60,7 @@ if ($^O eq 'MSWin32') {
     $OStype = 'WIN32';
     $ext    = 'bat';
     $setenv = 'set';
-    if ($Config{archname} =~ /64/) {
+    if ($Config{archname} =~ /x64/) {
         $build_platform = 'win32-x64';
     } else {
         $build_platform = 'win32-x86';
@@ -68,7 +69,7 @@ if ($^O eq 'MSWin32') {
     $OStype = 'UNIX';
     $ext    = 'sh';
     $setenv = 'export';
-    if ($Config{archname} =~ /64/) {
+    if ($Config{archname} =~ /x86_64/) {
         $build_platform = 'linux-x64';
     } else {
         $build_platform = 'linux-x86';
@@ -139,7 +140,7 @@ sub batch_output_set_test_env
     print BATCH "$setenv WATCOM=", $relroot;
     if ($^O eq 'MSWin32') {
         print BATCH "$setenv INCLUDE=%WATCOM%\\h;%WATCOM%\\h\\nt";
-        if ($Config{archname} =~ /64/) {
+        if ($Config{archname} =~ /x64/) {
             print BATCH "$setenv PATH=%WATCOM%\\binnt64;%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%";
         } else {
             print BATCH "$setenv PATH=%WATCOM%\\binnt;%WATCOM%\\binw;%PATH%";
@@ -150,7 +151,7 @@ sub batch_output_set_test_env
         print BATCH "$setenv BEGINLIBPATH=%WATCOM%\\binp\\dll;%BEGINLIBPATH%";
     } elsif ($^O eq 'linux') {
         print BATCH "$setenv INCLUDE=\$WATCOM/lh";
-        if ($Config{archname} =~ /64/) {
+        if ($Config{archname} =~ /x86_64/) {
             print BATCH "$setenv PATH=\$WATCOM/binl64:\$WATCOM/binl:\$PATH";
         } else {
             print BATCH "$setenv PATH=\$WATCOM/binl:\$PATH";
@@ -169,7 +170,7 @@ sub batch_output_reset_env
 
 sub batch_output_build_wmake_builder_rm
 {
-    # Create fresh builder tools to prevent lockup build server 
+    # Create fresh builder tools to prevent lockup build server
     # if builder tools from previous build are somehow broken
     #
     # Create new wmake tool, previous clean removed it.
@@ -211,6 +212,9 @@ sub batch_output_build_wmake_builder_rm
 sub make_boot_batch
 {
     open(BATCH, ">$build_boot_batch_name") || die "Unable to open $build_boot_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -239,6 +243,9 @@ sub make_boot_batch
 sub make_build_batch
 {
     open(BATCH, ">$build_batch_name") || die "Unable to open $build_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -272,6 +279,9 @@ sub make_build_batch
 sub make_docs_batch
 {
     open(BATCH, ">$docs_batch_name") || die "Unable to open $docs_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -311,6 +321,9 @@ sub make_docs_batch
 sub make_test_batch
 {
     open(BATCH, ">$test_batch_name") || die "Unable to open $test_batch_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -326,8 +339,8 @@ sub make_test_batch
         print BATCH "$setenv OWDOSBOX=", $Common::config{'DOSBOX'};
     }
     print BATCH '';
-    if ($^O eq 'MSWin32') { 
-        if ($Config{archname} =~ /64/) {
+    if ($^O eq 'MSWin32') {
+        if ($Config{archname} =~ /x64/) {
 #            print BATCH "if not '%OWDOSBOX%' == '' $setenv EXTRA_ARCH=i86";
         } else {
             print BATCH "$setenv EXTRA_ARCH=i86";
@@ -338,6 +351,7 @@ sub make_test_batch
     print BATCH 'rm -f wasmtest/*.log';
     print BATCH 'rm -f f77test/*.log';
     print BATCH 'rm -f plustest/*.log';
+    print BATCH 'rm -f clibtest/*.log';
     print BATCH 'builder -i test';
     close(BATCH);
     # On Windows it has no efect
@@ -347,6 +361,9 @@ sub make_test_batch
 sub make_installer_batch
 {
     open(BATCH, ">$build_installer_name") || die "Unable to open $build_installer_name file.";
+    if (($Common::config{'INITCMD'} || '') ne '') {
+        print BATCH $Common::config{'INITCMD'};
+    }
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
@@ -389,7 +406,7 @@ sub process_log
                     print REPORT "\t\t$project_name\t$arch_test";
                     $result = 'fail';
                 }
-            }                   
+            }
             @fields = split;
             $project_name = Common::remove_OWloc($fields[2]);
             $arch_test = '';
@@ -411,7 +428,7 @@ sub process_log
         }
         print REPORT "\t\t$project_name\t$arch_test";
         $result = 'fail';
-      } 
+      }
     }
 
     # This is what we want to see.
@@ -451,16 +468,17 @@ sub display_CVS_messages
 
     foreach $message (@CVS_messages) {
         print REPORT "$message";
-    }   
+    }
     print REPORT $cvs_cmd, ' Messages end';
 }
 
 sub run_tests
 {
-    my($aresult) = 'fail';
-    my($cresult) = 'fail';
-    my($fresult) = 'fail';
-    my($presult) = 'fail';
+    my($aresult)    = 'fail';
+    my($cresult)    = 'fail';
+    my($fresult)    = 'fail';
+    my($presult)    = 'fail';
+    my($crtlresult) = 'fail';
 
     # Run regression tests for the Fortran, C, C++ compilers and WASM.
 
@@ -469,13 +487,14 @@ sub run_tests
     print REPORT 'REGRESSION TESTS COMPLETED : ', get_datetime();
     print REPORT '';
 
-    $fresult = process_log("\tFortran Compiler :", "$OW\/bld\/f77test\/result.log");
-    $cresult = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
-    $presult = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
-    $aresult = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
+    $fresult    = process_log("\tFortran Compiler :", "$OW\/bld\/f77test\/result.log");
+    $cresult    = process_log("\tC Compiler       :", "$OW\/bld\/ctest\/result.log");
+    $presult    = process_log("\tC++ Compiler     :", "$OW\/bld\/plustest\/result.log");
+    $aresult    = process_log("\tWASM             :", "$OW\/bld\/wasmtest\/result.log");
+    $crtlresult = process_log("\tC run-time libr. :", "$OW\/bld\/clibtest\/result.log");
     print REPORT '';
 
-    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success') {
+    if ($aresult eq 'success' && $cresult eq 'success' && $fresult eq 'success' && $presult eq 'success' && $crtlresult eq 'success') {
         return 'success';
     } else {
         return 'fail';
@@ -593,7 +612,7 @@ sub CVS_check_sync
         return 'fail';
     }
     get_prev_changeno;
-    
+
     if ($prev_report_stamp ne '') {
         print REPORT "\tBuilt through change   : $prev_changeno on $prev_report_stamp";
     } else {
@@ -648,9 +667,7 @@ if ($home eq $OW) {
 my $shortdate_stamp = get_shortdate();
 my $date_stamp = get_date();
 my $report_directory = "$Common::config{'REPORTS'}\/$shortdate_stamp";
-if (!stat($report_directory)) {
-    mkdir($report_directory);
-}
+make_path($report_directory);
 my $report_name = "$report_directory\/$date_stamp-report-$build_platform.txt";
 my $bak_name    = "$report_directory\/$date_stamp-report-$build_platform.txt.bak";
 if (stat($report_name)) {

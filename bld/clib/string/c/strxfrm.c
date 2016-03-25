@@ -46,7 +46,7 @@ _WCRTLINK size_t __F_NAME(strxfrm,wcsxfrm)( CHAR_TYPE *dst, const CHAR_TYPE *src
     for( ;; ) {
         if( len < n ) 
             *dst = *src;
-        if( *src == __F_NAME('\0',L'\0') )
+        if( *src == NULLCHAR )
             break;
         ++src;
         ++dst;

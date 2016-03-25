@@ -59,6 +59,7 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     EXCEPTIONREGISTRATIONRECORD     xcpt;
 
 #ifdef __SW_BR
+    reserved = reserved;
     __hmodule = hmod;
     env = env;
     cmd = cmd;
@@ -74,8 +75,8 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
 #else
     thread_data     *tdata;
 
+    reserved = reserved;
     __InitRtns( INIT_PRIORITY_THREAD );
-
     tdata = __alloca( __ThreadDataSize );
     memset( tdata, 0, __ThreadDataSize );
     // tdata->__allocated = 0;
@@ -84,5 +85,4 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     __OS2MainInit( &xcpt, tdata, hmod, env, cmd );
     __F_NAME(__CMain,__wCMain)();
 #endif
-    reserved = reserved;
 }

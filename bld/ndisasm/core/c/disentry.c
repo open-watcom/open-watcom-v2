@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
+#include "distypes.h"
 #include "distbls.gh"
 
 #include "clibext.h"
@@ -61,7 +61,7 @@ extern const dis_cpu_data       SPARCData;
 extern const dis_cpu_data       MIPSData;
 #endif
 
-long SEX( unsigned long v, unsigned bit )
+long DisSEX( unsigned long v, unsigned bit )
 {
     unsigned long chk;
 
@@ -74,10 +74,10 @@ long SEX( unsigned long v, unsigned bit )
 
 #define LENGTH_BIT      0x80
 
-unsigned DisGetString( unsigned index, char *buff, bool to_upper )
+size_t DisGetString( size_t index, char *buff, bool to_upper )
 {
-    unsigned            len;
-    unsigned            i;
+    size_t              len;
+    size_t              i;
     const unsigned char *src;
     int                 c;
 
@@ -96,12 +96,6 @@ unsigned DisGetString( unsigned index, char *buff, bool to_upper )
     }
     *buff = '\0';
     return( len );
-}
-
-dis_handler_return DisDummyHandler( dis_handle *h, void *d, dis_dec_ins *ins )
-{
-    h = h; d = d; ins = ins;
-    return( DHR_INVALID );
 }
 
 dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
@@ -249,7 +243,7 @@ char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
 }
 
 char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
-                        unsigned i, char *p, unsigned buff_len )
+                        unsigned i, char *p, size_t buff_len )
 {
     const char chLbrac = ( h->cpu == DISCPU_sparc ) ? '[' : '(';
     const char chRbrac = ( h->cpu == DISCPU_sparc ) ? ']' : ')';
@@ -321,7 +315,7 @@ char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags fl
 }
 
 dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
-                dis_format_flags flags, char *name, unsigned name_len, char *opers, unsigned opers_len )
+                dis_format_flags flags, char *name, size_t name_len, char *opers, size_t opers_len )
 // Format up an instruction name or operands or both
 {
     unsigned    i;
@@ -330,6 +324,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     size_t      len;
     char        *end;
 
+    name_len = name_len;
     ins = *ins_p;       /* so we can fiddle it around */
 
     if( name != NULL ) name[0] = '\0';

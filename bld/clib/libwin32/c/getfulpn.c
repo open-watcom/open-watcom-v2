@@ -82,7 +82,7 @@ DWORD __lib_GetFullPathNameW( LPCWSTR lpFileName, DWORD nBufferLength,
         }
 
         /*** If the buffer is too small, return required length ***/
-        len = _mbslen( mbBuffer ) + 1;
+        len = _mbslen( (unsigned char *)mbBuffer ) + 1;
         if( len > nBufferLength ) {
             lib_free( mbBuffer );
             return( len );
@@ -98,7 +98,7 @@ DWORD __lib_GetFullPathNameW( LPCWSTR lpFileName, DWORD nBufferLength,
         /*** Convert file part pointer ***/
         p = mbBuffer;
         for( len=0; p<mbFilePart; len++ ) {
-            p = _mbsinc( p );
+            p = (char *)_mbsinc( (unsigned char *)p );
         }
         *lpFilePart = lpBuffer + len;
 

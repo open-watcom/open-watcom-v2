@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2008-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2008-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -43,6 +43,6 @@ _WCRTLINK int recvfrom(int s, void *buf, size_t len, int flags, struct sockaddr 
     args[3] = (unsigned long)flags;
     args[4] = (unsigned long)from;
     args[5] = (unsigned long)fromlen;
-    return ( __socketcall( SYS_RECVFROM, args ) );
+    return( __socketcall( SYS_RECVFROM, args ) );
 }
 

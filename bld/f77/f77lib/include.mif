@@ -1,4 +1,4 @@
-include_default = -I"../../h" -I"../../../h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+include_default = -I. -I"../../h" -I"../../../h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 include_watcom = -I"$(watcom_dir)/h"
 
 # include_c_(system)

@@ -107,7 +107,7 @@ void _MoveLineDown( LPWDATA w )
             _ShiftWindow( w, 1 );
             lp = _GetLineDataPointer( w, bot );
             if( lp != NULL ) {
-                _DisplayLineInWindow( w, w->height-1, lp->data );
+                _DisplayLineInWindow( w, w->height - 1, lp->data );
             }
             w->CurrentLineNumber++;
             w->TopLineNumber++;

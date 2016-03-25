@@ -48,43 +48,43 @@
 #define KEY_ALT_PRESSED         0x2
 #define KEY_SHIFT_PRESSED       0x1
 
-int                  WaitHandle;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+extern bool             MouseOn;
+extern bool             MouseInstalled;
+extern unsigned short   MouseStatus;
 
-static int                  KeyInstalled;
+int                     WaitHandle;
 
-static ORD                  currMouseRow;
-static ORD                  currMouseCol;
-static ORD                  currMouseStatus;
+static int              KeyInstalled;
 
-extern MOUSEORD             MouseRow;
-extern MOUSEORD             MouseCol;
-extern bool                 MouseOn;
-extern bool                 MouseInstalled;
-extern unsigned short int   MouseStatus;
+static ORD              currMouseRow;
+static ORD              currMouseCol;
+static ORD              currMouseStatus;
 
-static          EVENT                   EventsPress[]   = {
-                EV_SHIFT_PRESS,
-                EV_ALT_PRESS,
-                EV_CTRL_PRESS,
-                EV_NO_EVENT,
-                EV_SCROLL_PRESS,
-                EV_NO_EVENT,
-                EV_CAPS_PRESS,
-                EV_NUM_PRESS
+static EVENT    EventsPress[] = {
+    EV_SHIFT_PRESS,
+    EV_ALT_PRESS,
+    EV_CTRL_PRESS,
+    EV_NO_EVENT,
+    EV_SCROLL_PRESS,
+    EV_NO_EVENT,
+    EV_CAPS_PRESS,
+    EV_NUM_PRESS
 };
 
-static          EVENT                   EventsRelease[] = {
-                EV_SHIFT_RELEASE,
-                EV_ALT_RELEASE,
-                EV_CTRL_RELEASE,
-                EV_NO_EVENT,
-                EV_SCROLL_RELEASE,
-                EV_NO_EVENT,
-                EV_CAPS_RELEASE,
-                EV_NUM_RELEASE
+static EVENT    EventsRelease[] = {
+    EV_SHIFT_RELEASE,
+    EV_ALT_RELEASE,
+    EV_CTRL_RELEASE,
+    EV_NO_EVENT,
+    EV_SCROLL_RELEASE,
+    EV_NO_EVENT,
+    EV_CAPS_RELEASE,
+    EV_NUM_RELEASE
 };
 
-static EVENT KeyEventProc()
+static EVENT KeyEventProc( void )
 {
     int                 ext;
     int                 keystate;
@@ -100,27 +100,26 @@ static EVENT KeyEventProc()
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
+        ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( scan + 0x100 >= EV_HOME && scan + 0x100 <= EV_DELETE ) {
+        if( ev >= EV_HOME && ev <= EV_DELETE ) {
             if( ( keystate & KEY_NUM_ACTIVE ) == 0 ) {
                 if( ( keystate & KEY_SHIFT_PRESSED ) != 0 ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
-        if( ascii == 0 ) {
-            ev = 0x100 + scan;
-        } else {
+        if( ascii != 0 ) {
             ev = ascii;
             if( ( keystate & KEY_ALT_PRESSED ) && ( ascii == ' ' ) ) {
                 ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
-                switch( ev + 0x100 ) {
+                switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
-                case EV_RETURN:
+                case EV_ENTER:
                 case EV_ESCAPE:
-                    ev += 0x100;
+                    ev = ascii + 0x100;
                     break;
                 }
             }
@@ -130,7 +129,7 @@ static EVENT KeyEventProc()
         if( changed != 0 ) {
             key = 0;
             scan = 1;
-            while( scan < 256 ) {
+            while( scan < (1 << 8) ) {
                 if( ( changed & scan ) != 0 ) {
                     if( ( keystate & scan ) != 0 ) {
                         UIData->old_shift |= scan;
@@ -149,7 +148,7 @@ static EVENT KeyEventProc()
     return( ev );
 }
 
-static EVENT MouseEventProc()
+static EVENT MouseEventProc( void )
 {
     ORD stat = 0;
     int row;
@@ -193,7 +192,7 @@ bool intern initkeyboard( void )
     }
     KeyInstalled = TRUE;
     
-    return( TRUE );
+    return( true );
 }
 
 void intern finikeyboard( void )
@@ -238,12 +237,12 @@ void uimousespeed( unsigned speed )
     }
 }
 
-bool UIAPI initmouse( int install )
+int UIAPI initmouse( int install )
 {
-    unsigned long tmp;
+    unsigned long   tmp;
 
     if( install == 0 ) {
-        return( FALSE );
+        return( false );
     }
     UIData->mouse_xscale = 8;
     UIData->mouse_yscale = 8;
@@ -257,15 +256,15 @@ bool UIAPI initmouse( int install )
         RdosSetMouseMickey( 8, 8 );
     }
 
-    MouseOn = FALSE;
-    MouseInstalled = TRUE;
+    MouseOn = false;
+    MouseInstalled = true;
 
-    UIData->mouse_swapped = FALSE;
+    UIData->mouse_swapped = false;
     checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 
-void intern finimouse( void )
+void UIAPI finimouse( void )
 {
     if( MouseInstalled ) {
         uioffmouse();
@@ -274,7 +273,7 @@ void intern finimouse( void )
             RdosCloseWait( WaitHandle );
             WaitHandle = 0;
         }
-        MouseInstalled = FALSE;
+        MouseInstalled = false;
     }
 }
 
@@ -283,8 +282,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
-                        MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;
@@ -296,8 +294,8 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
 unsigned char UIAPI uicheckshift( void )
 /***************************************/
 {
-    unsigned char kst = 0;
-    int state = RdosGetKeyboardState();
+    unsigned char   kst = 0;
+    int             state = RdosGetKeyboardState();
     
     if( state & KEY_NUM_ACTIVE )
         kst |= 0x20;

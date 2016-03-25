@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include "watcom.h"
 #include "wresall.h"
 #include "wglbl.h"

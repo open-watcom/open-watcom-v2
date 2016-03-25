@@ -173,7 +173,7 @@ ifdef __386__
           fstsw AX              ; - store status word
           test  AX,0400h        ; - check C2
         _until  e               ; until C2 is clear
-        mov     AL,0            ; set octant # to 0
+        xor     AL,AL           ; set octant # to 0
         test    AH,02h          ; if C1 is on
         _if     ne              ; then
           or    AL,1            ; - set low order bit of octant
@@ -234,7 +234,7 @@ else
           mov   AX,status[BP]   ; - get status
           test  AX,0400h        ; - check C2
         _until  e               ; until C2 is clear
-        mov     AL,0            ; set octant # to 0
+        xor     AL,AL           ; set octant # to 0
         test    AH,02h          ; if C1 is on
         _if     ne              ; then
           or    AL,1            ; - set low order bit of octant
@@ -265,7 +265,7 @@ else
         add     BL,AL           ; add in octant adjustment
         and     BL,7            ; reduce to mod 8
         shl     BL,1            ; double it for index
-        mov     BH,0            ; zero high byte
+        xor     BH,BH           ; zero high byte
         lea     BX,octtab[BX]   ; point to table entry
         mov     AX,cs:[BX]      ; get address of routine from table
         pop     BX              ; clean up the stack

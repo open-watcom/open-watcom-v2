@@ -41,28 +41,29 @@
    and item "size" bytes from the near heap. */
 
 _WCRTLINK unsigned int _freect( size_t size )
-    {
-        unsigned int count;
-        size_t memsize;
-        size_t size_of_chunk;
-        frlptr pnext;
-        mheapptr mhp;
+{
+    unsigned int    count;
+    size_t          memsize;
+    size_t          size_of_chunk;
+    frlptr          pnext;
+    mheapptr        mhp;
 
-        count = 0;
-        size_of_chunk = (size + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
-        if( size_of_chunk < size )  return( 0 );
-        if( size_of_chunk < FRL_SIZE ) {
-            size_of_chunk = FRL_SIZE;
-        }
-        _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            pnext = mhp->freehead.next;
-            while( pnext != (frlptr) &mhp->freehead ) {
-                memsize = pnext->len;
-                count += memsize / size_of_chunk;
-                pnext = pnext->next;
-            }
-        }
-        _ReleaseNHeap();
-        return( count );
+    count = 0;
+    size_of_chunk = (size + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    if( size_of_chunk < size )
+        return( 0 );
+    if( size_of_chunk < FRL_SIZE ) {
+        size_of_chunk = FRL_SIZE;
     }
+    _AccessNHeap();
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
+        pnext = mhp->freehead.next;
+        while( pnext != (frlptr)&mhp->freehead ) {
+            memsize = pnext->len;
+            count += memsize / size_of_chunk;
+            pnext = pnext->next;
+        }
+    }
+    _ReleaseNHeap();
+    return( count );
+}

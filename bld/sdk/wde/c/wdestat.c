@@ -277,10 +277,9 @@ bool WdeDisplayStatusText( char *str )
         hdc = GetDC( WdeStatusWindow );
         if( hdc != (HDC)NULL ) {
             if( str != NULL ) {
-                StatusWndDrawLine( WdeStatusBar, hdc, WdeStatusFont, str, -1 );
+                StatusWndDrawLine( WdeStatusBar, hdc, WdeStatusFont, str, DT_ESC_CONTROLLED );
             } else {
-                StatusWndDrawLine( WdeStatusBar, hdc, WdeStatusFont,
-                                   WdeClearStatusText, -1 );
+                StatusWndDrawLine( WdeStatusBar, hdc, WdeStatusFont, WdeClearStatusText, DT_ESC_CONTROLLED );
             }
             ReleaseDC( WdeStatusWindow, hdc );
         }

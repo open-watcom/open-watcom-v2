@@ -64,7 +64,7 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
         hscroll = 0;
     }
 
-    win_height = _wpi_getheightrect( wnd->hwnd_client );
+    win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
     pos.x = rect->x;
     pos.y = rect->y;
@@ -172,12 +172,16 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         coord.x = 1;
         win_style = PS_DASHDOTDOT;
         break;
+    default:
+        coord.x = 0;
+        win_style = 0;
+        break;
     }
     pen = _wpi_createpen( win_style, coord.x, colour );
 
     old_pen = _wpi_selectpen( wnd->hdc, pen );
 
-    win_height = _wpi_getheightrect( wnd->hwnd_client );
+    win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
     pt.x = my_start.x - hscroll;
     pt.y = my_start.y - vscroll;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,22 +37,18 @@
 #include "statwnd.h"
 #include "wstatus.h"
 #include <assert.h>
+#include "winifini.h"
 
-static bool Init( window *, void * );
-static bool Fini( window *, void * );
-
-static int      capIndex = -1;
-static short    *sections;
-static void     *sw = NULL;
+static int          capIndex = -1;
+static section_size *sections;
+static statwnd      *sw = NULL;
 
 window StatusBar = {
     &statusw_info,
-    { 0, 0, 0, 0 },
-    Init,
-    Fini
+    { 0, 0, 0, 0 }
 };
 
-void StatusWndSetSeparatorsWithArray( short *source, int num )
+void StatusWndSetSeparatorsWithArray( section_size *source, int num )
 {
     status_block_desc   *list;
     int                 i;
@@ -69,19 +66,16 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
 
 bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
-static bool Init( window *w, void *parm )
+bool StatusBarInit( void )
 {
     bool    rc;
-
-    parm = parm;
-    w = w;
 
     rc = StatusWndInit( InstanceHandle, StatusHookProc, sizeof( LPVOID ), (HCURSOR)NULLHANDLE );
     sw = StatusWndStart();
 #if defined( __NT__ )
     StatusWndChangeSysColors( GetSysColor( COLOR_BTNFACE ), GetSysColor( COLOR_BTNTEXT ),
 #else
-    StatusWndChangeSysColors( GetRGB( statusw_info.text.background ), GetRGB( statusw_info.text.foreground ),
+    StatusWndChangeSysColors( GetRGB( statusw_info.text_style.background ), GetRGB( statusw_info.text_style.foreground ),
 #endif
                               GetSysColor( COLOR_BTNHIGHLIGHT ), GetSysColor( COLOR_BTNSHADOW ) );
     if( EditVars.NumStatusSections > 0 ) {
@@ -90,20 +84,18 @@ static bool Init( window *w, void *parm )
     return( rc );
 }
 
-static bool Fini( window *w, void *parm )
+bool StatusBarFini( void )
 {
-    w = w;
-    parm = parm;
     StatusWndDestroy( sw );
     StatusWndFini();
     return( true );
 }
 
-int setCursor( short x )
+static int setCursor( int x )
 {
     int     i;
     for( i = 0; i < EditVars.NumStatusSections; i++ ) {
-        if( abs( x - (EditVars.StatusSections[i]) ) < MOUSE_ALLOWANCE ) {
+        if( abs( x - EditVars.StatusSections[i] ) < MOUSE_ALLOWANCE ) {
             CursorOp( COP_STATMOVE );
             return( i );
         }
@@ -112,13 +104,13 @@ int setCursor( short x )
     return( -1 );
 }
 
-void processMouseMove( WPARAM w, LPARAM l )
+static void processMouseMove( WPARAM w, LPARAM l )
 {
     int         deep, delta, maxmove, movedby, i, next;
-    short       x;
+    int         x;
     int         secIndex;
 
-    x = (short)LOWORD( l ) - CURSOR_CORRECT;
+    x = GET_X( l ) - CURSOR_CORRECT;
     w = w;
 
     if( capIndex == -1 ) {
@@ -168,33 +160,33 @@ void processMouseMove( WPARAM w, LPARAM l )
     }
 
     StatusWndSetSeparatorsWithArray( sections + 1, EditVars.NumStatusSections );
-    InvalidateRect( StatusWindow, NULL, TRUE );
-    UpdateWindow( StatusWindow );
+    InvalidateRect( status_window_id, NULL, TRUE );
+    UpdateWindow( status_window_id );
 }
 
-void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
+static void processLButtonDown( HWND hwnd, WPARAM w, LPARAM l )
 {
     RECT        rect;
 
     w = w;
-    capIndex = setCursor( (short)LOWORD( l ) - CURSOR_CORRECT );
+    capIndex = setCursor( GET_X( l ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( short ) );
-        GetClientRect( StatusWindow, &rect );
-        memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( short ) );
+        sections = MemAlloc( (EditVars.NumStatusSections + 2) * sizeof( section_size ) );
+        GetClientRect( status_window_id, &rect );
+        memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
         sections[0] = 0;
         sections[EditVars.NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH + CURSOR_CORRECT;
     }
 }
 
-void processLButtonUp( void )
+static void processLButtonUp( void )
 {
     if( capIndex != -1 ) {
         CursorOp( COP_ARROW );
         ReleaseCapture();
         capIndex = -1;
-        memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( short ) );
+        memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( section_size ) );
         MemFree( sections );
     }
 }
@@ -211,7 +203,7 @@ bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         SET_WNDINFO( hwnd, (LONG_PTR)&StatusBar );
         break;
     case WM_SETFOCUS:
-        SetFocus( Root );
+        SetFocus( root_window_id );
         return( true );
     case WM_MOUSEMOVE:
         processMouseMove( w, l );
@@ -232,15 +224,15 @@ bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
  */
 window_id NewStatWindow( void )
 {
-    window_id   stat;
+    window_id   wid;
     RECT        size;
 
-    size = StatusBar.area;
+    size = StatusBar.def_area;
     size.left -= 1;
     size.right += 1;
     size.bottom += 1;
-    stat = StatusWndCreate( sw, Root, &size, InstanceHandle, NULL );
-    return( stat );
+    wid = StatusWndCreate( sw, root_window_id, &size, InstanceHandle, NULL );
+    return( wid );
 
 } /* NewStatWindow */
 
@@ -258,14 +250,14 @@ void StatusLine( int line, char *str, int format )
     if( line != 1 ) {
         return;
     }
-    if( !AllowDisplay || BAD_ID( StatusWindow ) ) {
+    if( !AllowDisplay || BAD_ID( status_window_id ) ) {
         return;
     }
-    hdc = TextGetDC( StatusWindow, WIN_STYLE( &StatusBar ) );
-    font = WIN_FONT( &StatusBar );
+    hdc = TextGetDC( status_window_id, WIN_TEXT_STYLE( &StatusBar ) );
+    font = WIN_TEXT_FONT( &StatusBar );
     hfont = FontHandle( font );
-    StatusWndDrawLine( sw, hdc, hfont, str, (UINT) -1 );
-    TextReleaseDC( StatusWindow, hdc );
+    StatusWndDrawLine( sw, hdc, hfont, str, DT_ESC_CONTROLLED );
+    TextReleaseDC( status_window_id, hdc );
 
 } /* StatusLine */
 

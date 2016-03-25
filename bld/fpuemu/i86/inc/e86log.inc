@@ -12,9 +12,10 @@
         xrefp   __EvalPoly      ; evaluate polynomial
         xrefp   __Poly          ; poly
 
-        xdefp   __log           ; calc log(fac1)
-        xdefp   __fyl2x         ; calc. log2([ax]) * [dx]
         xdefp   __fyl2xp1       ; calc. log2([ax]+1.0) * [dx]
+        xdefp   __fyl2x         ; calc. log2([ax]) * [dx]
+        xdefp   __log           ; calc log(fac1)
+
 
 one_over_loge2  dt      1.4426950408889634075
 OneHalf         dt      0.5
@@ -30,8 +31,8 @@ BPoly   dt   1.0
         dt   0.31203222091924532844e+3
         dt  -0.76949932108494879777e+3
 
-
         defp    __fyl2xp1
+
         push    DX                      ; save registers
         push    BX                      ; ...
         push    DI                      ; ...
@@ -64,10 +65,11 @@ BPoly   dt   1.0
 ;
 ;       fall into __fyl2x routine
 ;
-__fyl2xp1 endp
+        endproc __fyl2xp1
 
 
         defp    __fyl2x
+
         push    DX                      ; save registers
         push    BX                      ; ...
         push    DI                      ; ...
@@ -111,7 +113,8 @@ __fyl2xp1 endp
         pop     BX                      ; restore BX
         pop     DX                      ; restore DX
         ret                             ; return
-__fyl2x endp
+
+        endproc __fyl2x
 
 
 
@@ -126,6 +129,7 @@ __fyl2x endp
 ;;    } else {
 
         defp    __log
+
         push    BP                      ; save registers
         push    DI                      ; ...
         push    SI                      ; ...
@@ -265,5 +269,6 @@ __fyl2x endp
         pop     DI                      ; ...
         pop     BP                      ; ...
         ret                             ; return
-__log   endp
+
+        endproc __log
 

@@ -4,20 +4,32 @@ include mdef.inc
 include struct.inc
 
         modstart    ldfd086, word
+
 endif
 
         xrefp   FPOverFlow
 
+ifdef _BUILDING_MATHLIB
+        xdefp   __iLDFD
+else
+        xdefp   __EmuLDFD
+endif
+
 ;
 ;       convert long double to double
 ;
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to long double
+;               SS:DX - pointer to double result
+;else
+;       input:  DS:BX       - pointer to long double
+;       output: AX:BX:CX:DX - double
+;endif
+
 ifdef _BUILDING_MATHLIB
-; input:
-;       SS:AX - pointer to long double
-;       SS:DX - pointer to double
-;
-        xdefp   __iLDFD
-__iLDFD proc
+
+        defp    __iLDFD
+
         push    BX              ; save registers
         push    CX              ; ...
         push    DI              ; ...
@@ -30,13 +42,9 @@ __iLDFD proc
         mov     DX, [BP]        ; get fraction
         mov     BX,4[BP]        ; get fraction
 else
-; input:
-;       DS:BX - pointer to long double
-; output:
-;       AX:BX:CX:DX - double
-;
-        xdefp   __EmuLDFD
-__EmuLDFD  proc    near
+
+        defp    __EmuLDFD
+
         push    DI              ; save di
         mov     DI,8[BX]        ; get exponent and sign
         mov     AX,6[BX]        ; get fraction
@@ -68,7 +76,7 @@ endif
           mov       BL,BH       ; ...
           mov       BH,AL       ; ...
           mov       AL,AH       ; ...
-          mov       AH,0        ; ...
+          xor       AH,AH       ; ...
           _shl      DI,1        ; get sign
           rcr       AX,1        ; shift number right one more is 9
           rcr       BX,1        ; ...
@@ -113,7 +121,7 @@ endif
                 mov CH,BL       ; - - - ...
                 mov BL,BH       ; - - - ...
                 mov BH,AL       ; - - - ...
-                mov AL,0        ; - - - ...
+                xor AL,AL       ; - - - ...
                 add DI,8        ; - - - adjust exponent
               _endloop          ; - - endloop
               _loop             ; - - loop (denormalize number)
@@ -149,7 +157,8 @@ ifdef _BUILDING_MATHLIB
         pop     CX              ; ...
         pop     BX              ; ...
         ret                     ; return
-__iLDFD endp
+
+        endproc __iLDFD
 
         endmod
 
@@ -158,7 +167,8 @@ __iLDFD endp
 else
         pop     DI              ; restore di
         ret                     ; return
-__EmuLDFD  endp
+
+        endproc __EmuLDFD
 
         endf    equ <>
 

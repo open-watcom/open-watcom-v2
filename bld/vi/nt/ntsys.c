@@ -45,16 +45,17 @@ static char oldDir[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
+    handle=handle;
     return( true );
 }
 
 /*
  * PushDirectory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldDir[0] = 0;
+    oldDir[0] = '\0';
     GetCWD2( oldDir, _MAX_PATH );
 
 } /* PushDirectory */
@@ -64,7 +65,7 @@ void PushDirectory( char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldDir[0] != 0 ) {
+    if( oldDir[0] != '\0' ) {
         ChangeDirectory( oldDir );
     }
     ChangeDirectory( CurrentDirectory );
@@ -74,11 +75,11 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct )
+void NewCursor( window_id wid, cursor_type ct )
 {
     CONSOLE_CURSOR_INFO ci;
 
-    id = id;
+    wid = wid;
     ci.dwSize = ct.height;
     ci.dwSize += 18;
     if( ci.dwSize > 100 ) {
@@ -130,9 +131,9 @@ void ScreenInit( void )
     Scrn = malloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     ScreenPage( 0 );
 
-    tmp[0] = 0;
+    tmp[0] = '\0';
     GetConsoleTitle( tmp, sizeof( tmp ) );
-    AddString( &oldConTitle, tmp );
+    oldConTitle = DupString( tmp );
     if( !EditFlags.Quiet ) {
         SetConsoleTitle( "Open Watcom vi" );
     }
@@ -188,7 +189,7 @@ vi_rc ChangeDrive( int drive )
     dir[0] = drive;
     dir[1] = ':';
     dir[2] = '.';
-    dir[3] = 0;
+    dir[3] = '\0';
 
     if( !SetCurrentDirectory( dir ) ) {
         return( ERR_NO_SUCH_DRIVE );
@@ -235,15 +236,15 @@ drive_type DoGetDriveType( int drv )
     path[0] = drv;
     path[1] = ':';
     path[2] = '\\';
-    path[3] = 0;
+    path[3] = '\0';
     type = GetDriveType( path );
-    if( type == 1 ) {
-        return( DRIVE_NONE );
+    if( type == DRIVE_NO_ROOT_DIR ) {
+        return( DRIVE_TYPE_NONE );
     }
     if( type == DRIVE_REMOVABLE ) {
-        return( DRIVE_IS_REMOVABLE );
+        return( DRIVE_TYPE_IS_REMOVABLE );
     }
-    return( DRIVE_IS_FIXED );
+    return( DRIVE_TYPE_IS_FIXED );
 
 } /* DoGetDriveType */
 
@@ -275,7 +276,7 @@ bool KeyboardHit( void )
     return( BIOSKeyboardHit() );
 }
 
-void MyVioShowBuf( unsigned offset, unsigned nchars )
+void MyVioShowBuf( size_t offset, unsigned nchars )
 {
     BIOSUpdateScreen( offset, nchars );
 }

@@ -55,61 +55,61 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
   #include "dpmihost.h"
 
   extern  void pharlap_setvect( unsigned, pfun );
-  #pragma aux  pharlap_setvect =  0x1e   /* push ds    */\
-                               0x8e 0xd9 /* mov ds,cx  */\
-                               0x88 0xc1 /* mov cl,al  */\
-                               0xb0 0x06 /* mov al,06  */\
-                               0xb4 0x25 /* mov ah,25h */\
-                               0xcd 0x21 /* int 21h    */\
-                               0x1f      /* pop ds     */\
-                        parm caller [al] [cx edx];
+  #pragma aux  pharlap_setvect = \
+            "push ds"       \
+            "mov  ds,ecx"   \
+            "mov  cl,al"    \
+            "mov  ax,2506h" \
+            "int 21h"       \
+            "pop  ds"       \
+        parm caller [al] [cx edx];
 
   extern  pfun pharlap_rm_getvect( unsigned );
-  #pragma aux  pharlap_rm_getvect =     \
-                        "mov ax,2503h"  \
-                        "int 21h"       \
-                        "mov cx,bx"     \
-                        "shr ebx,16"    \
-                        "mov edx,ebx"   \
-                        parm caller [cl] value [cx edx] modify [ax ebx];
+  #pragma aux  pharlap_rm_getvect = \
+            "mov ax,2503h"  \
+            "int 21h"       \
+            "mov cx,bx"     \
+            "shr ebx,16"    \
+            "mov edx,ebx"   \
+        parm caller [cl] value [cx edx] modify [ax ebx];
 
   extern  void pharlap_rm_setvect( unsigned, pfun );
-  #pragma aux  pharlap_rm_setvect =     \
-                        "mov ebx,eax"   \
-                        "shl ebx,16"    \
-                        "mov bx,dx"     \
-                        "mov ax,2505h"  \
-                        "int 21h"       \
-                        parm caller [cl] [dx eax] modify [ebx];
+  #pragma aux  pharlap_rm_setvect = \
+            "mov ebx,eax"   \
+            "shl ebx,16"    \
+            "mov bx,dx"     \
+            "mov ax,2505h"  \
+            "int 21h"       \
+        parm caller [cl] [dx eax] modify [ebx];
 
   extern  pfun pharlap_pm_getvect( unsigned );
-  #pragma aux  pharlap_pm_getvect =     \
-                        "push es"       \
-                        "mov ax,2502h"  \
-                        "int 21h"       \
-                        "mov cx,es"     \
-                        "pop es"        \
-                        parm caller [cl] value [cx ebx] modify [ax];
+  #pragma aux  pharlap_pm_getvect = \
+            "push es"       \
+            "mov ax,2502h"  \
+            "int 21h"       \
+            "mov ecx,es"    \
+            "pop es"        \
+        parm caller [cl] value [cx ebx] modify [ax];
 
   extern  void pharlap_pm_setvect( unsigned, pfun );
-  #pragma aux  pharlap_pm_setvect =     \
-                        "push ds"       \
-                        "mov ds,dx"     \
-                        "mov edx,eax"   \
-                        "mov ax,2504h"  \
-                        "int 21h"       \
-                        "pop ds"        \
-                        parm caller [cl] [dx eax];
+  #pragma aux  pharlap_pm_setvect = \
+            "push ds"       \
+            "mov ds,edx"    \
+            "mov edx,eax"   \
+            "mov ax,2504h"  \
+            "int 21h"       \
+            "pop ds"        \
+        parm caller [cl] [dx eax];
 
   extern void _WCFAR *set_stack( void _WCFAR * );
-  #pragma aux set_stack = \
-                        "mov bx,ss"     \
-                        "mov ecx,esp"   \
-                        "mov ss,dx"     \
-                        "mov esp,eax"   \
-                        "mov dx,bx"     \
-                        "mov eax,ecx"   \
-                        parm [dx eax] value [dx eax] modify [bx ecx];
+  #pragma aux set_stack =       \
+            "mov ebx,ss"    \
+            "mov ecx,esp"   \
+            "mov ss,edx"    \
+            "mov esp,eax"   \
+            "mov edx,ebx"   \
+            "mov eax,ecx"   \
+        parm [dx eax] value [dx eax] modify [bx ecx];
 
  #endif
 #endif
@@ -138,6 +138,7 @@ static void _WCINTERRUPT _WCFAR __int23_handler( void )
 #if defined( __386__ )
     unsigned save_stacklow;
     void _WCFAR *save_stack;
+
     save_stack = set_stack( &(my_stack[MY_STACK_SIZE-1]) );
     save_stacklow = _STACKLOW;
     _STACKLOW = (unsigned)&my_stack;
@@ -167,6 +168,7 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 #if defined( __386__ )
     unsigned save_stacklow;
     void _WCFAR *save_stack;
+
     save_stack = set_stack( &(my_stack[(sizeof(my_stack)-sizeof(my_stack[0]))]) );
     save_stacklow = _STACKLOW;
     _STACKLOW = (unsigned)&my_stack;

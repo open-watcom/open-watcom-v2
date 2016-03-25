@@ -117,7 +117,7 @@ static lib_load_info *FindLib( addr_off dynsection )
 
     for( i = 0; i < ModuleTop; ++i ) {
         if( ModuleInfo[i].dbg_dyn_sect == dynsection )
-            return( &ModuleInfo[i] );
+            return( ModuleInfo + i );
     }
     return( NULL );
 }
@@ -148,7 +148,7 @@ static void InitLibMap( void )
     memset( ModuleInfo, 0, sizeof( lib_load_info ) );
     ModuleTop = 1;
 
-    lli = &ModuleInfo[0];
+    lli = ModuleInfo;
 
     lli->offset = 0;    // main executable won't be relocated
     lli->filename[0] = '\0';
@@ -178,7 +178,7 @@ static void DoAddLib( pid_t pid, struct link_map *lmap )
     memcpy( lli, ModuleInfo, (ModuleTop - 1) * sizeof( lib_load_info ) );
     free( ModuleInfo );
     ModuleInfo = lli;
-    lli = &ModuleInfo[ModuleTop - 1];
+    lli = ModuleInfo + ModuleTop - 1;
 
     lli->offset = lmap->l_addr;
     lli->dbg_dyn_sect = (addr_off)lmap->l_ld;
@@ -261,11 +261,11 @@ unsigned NextThread( unsigned tid )
 {
     if( tid == MaxThread )
         return( 0 );
-    Samples = SamplesP[ tid ];
-    SampleIndex = SampleIndexP[ tid ];
+    Samples = SamplesP[tid];
+    SampleIndex = SampleIndexP[tid];
     if( CallGraphMode ) {
-        CallGraph = CallGraphP[ tid ];
-        SampleCount = SampleCountP[ tid ];
+        CallGraph = CallGraphP[tid];
+        SampleCount = SampleCountP[tid];
     }
     return( tid + 1 );
 }
@@ -320,11 +320,11 @@ static void GrowArrays( unsigned tid )
     }
     while( max < tid ) {
         AllocSamples( max + 1 );
-        SamplesP[ max ] = Samples;
-        SampleIndexP[ max ] = SampleIndex;
+        SamplesP[max] = Samples;
+        SampleIndexP[max] = SampleIndex;
         if( CallGraphMode ) {
-            CallGraphP[ max ] = CallGraph;
-            SampleCountP[ max ] = SampleCount;
+            CallGraphP[max] = CallGraph;
+            SampleCountP[max] = SampleCount;
         }
         ++max;
     }
@@ -341,36 +341,36 @@ void RecordSample( unsigned offset, unsigned tid )
         GrowArrays( tid );
     }
     --tid;
-    LastSampleIndex = SampleIndexP[ tid ];
-    if( SampleIndexP[ tid ] == 0 ) {
-        SamplesP[ tid ]->pref.tick = CurrTick;
+    LastSampleIndex = SampleIndexP[tid];
+    if( SampleIndexP[tid] == 0 ) {
+        SamplesP[tid]->pref.tick = CurrTick;
         if( CallGraphMode ) {
-            CallGraphP[ tid ]->pref.tick = CurrTick;
+            CallGraphP[tid]->pref.tick = CurrTick;
         }
     }
     ++CurrTick;
-    SamplesP[ tid ]->d.sample.sample[ SampleIndexP[ tid ] ].offset = offset;
-    SamplesP[ tid ]->d.sample.sample[ SampleIndexP[ tid ] ].segment = FlatSeg;
-    SampleIndexP[ tid ]++;
+    SamplesP[tid]->d.sample.sample[SampleIndexP[tid]].offset = offset;
+    SamplesP[tid]->d.sample.sample[SampleIndexP[tid]].segment = FlatSeg;
+    SampleIndexP[tid]++;
     if( CallGraphMode ) {
-        SampleCountP[ tid ]++;
+        SampleCountP[tid]++;
     }
     if( CallGraphMode && tid == 0 ) {
         old_sample_count = SampleCount;
         old_samples = Samples;                  /* since RecordCGraph isn't */
         old_sample_index = SampleIndex;         /* used to threads, we fool */
-        Samples = SamplesP[ tid ];              /* it into storing the info */
-        SampleIndex = SampleIndexP[ tid ];      /* in the right place by    */
-        SampleCount = SampleCountP[ tid ];
+        Samples = SamplesP[tid];              /* it into storing the info */
+        SampleIndex = SampleIndexP[tid];      /* in the right place by    */
+        SampleCount = SampleCountP[tid];
         RecordCGraph();                         /* changing its pointers    */
-        SamplesP[ tid ] = Samples;              /* and restoring them later */
-        SampleIndexP[ tid ] = SampleIndex;
-        SampleCountP[ tid ] = SampleCount;
+        SamplesP[tid] = Samples;              /* and restoring them later */
+        SampleIndexP[tid] = SampleIndex;
+        SampleCountP[tid] = SampleCount;
         Samples = old_samples;
         SampleIndex = old_sample_index;
         SampleCount = old_sample_count;
     }
-    if( SampleIndexP[ tid ] >= Margin ) {
+    if( SampleIndexP[tid] >= Margin ) {
         StopAndSave();
     }
 }
@@ -461,7 +461,7 @@ static int ProcessMark( pid_t pid, user_regs_struct *regs )
         for( ;; ) {
             if( len >= (BUFF_SIZE - 1) )
                 break;
-            ReadMem( pid, &buff[len], regs->eax + len, 1 );
+            ReadMem( pid, buff + len, regs->eax + len, 1 );
             if( buff[len] == '\0' )
                 break;
             ++len;
@@ -746,15 +746,15 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     if( pid == 0 || ptrace( PTRACE_ATTACH, pid, NULL, NULL ) == -1 ) {
         int         num_args;
         size_t      len;
-        char        **argv;
+        const char  **argv;
 
         Attached = FALSE;
 
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
         num_args = SplitParms( full_args, NULL, len );
-        argv = alloca( (num_args + 2)  * sizeof( *argv ) );
-        argv[SplitParms( full_args, &argv[1], len ) + 1] = NULL;
+        argv = alloca( ( num_args + 2 ) * sizeof( *argv ) );
+        argv[SplitParms( full_args, argv + 1, len ) + 1] = NULL;
         argv[0] = prog;
 
         Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );

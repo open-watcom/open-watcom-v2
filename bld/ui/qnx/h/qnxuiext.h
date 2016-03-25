@@ -30,12 +30,16 @@
 ****************************************************************************/
 
 
-
 #ifndef qnxuiext_h
 #define qnxuiext_h
+
 #ifndef __TYPES_H_INCLUDED
 #include <sys/types.h>
 #endif
+
+
+#define uiwrite(s)      write( UIConHandle, s, strlen( s ) )
+#define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
 
 extern unsigned         UIConsole;
 extern unsigned         UIConHandle;
@@ -44,9 +48,12 @@ extern pid_t            UILocalProxy;
 extern pid_t            UIRemProxy;
 extern nid_t            UIConNid;
 extern pid_t            UIPGroup;
-extern unsigned         UIWantShiftChanges;
+extern bool             UIWantShiftChanges;
 extern unsigned long    MouseTime;
+extern bool             UserForcedTermRefresh;
+extern bool             UIDisableShiftChanges;
 
-
+extern const char       *GetTermType( void );
+extern const char       *SetTermType( const char * );
 
 #endif

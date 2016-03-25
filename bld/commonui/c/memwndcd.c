@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <io.h>
 #include <ctype.h>
@@ -110,7 +111,7 @@ int_32 MemWndGetDataLong( void )
 /*
  * MemWndEndOfSegment
  */
-char MemWndEndOfSegment( void )
+bool MemWndEndOfSegment( void )
 {
     return( _Offset > Limit );
 
@@ -242,7 +243,7 @@ void DumpMemAsm( MemWndInfo *info, int hdl )
 
     _Offset = 0;
     Limit = info->limit;
-    Is32Bit = (info->disp_type == MEMINFO_CODE_32);
+    Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     while( _Offset < Limit ) {
         sprintf( buf, "%08lX  ", _Offset );
@@ -267,7 +268,7 @@ bool NeedScrollBar( MemWndInfo *info )
     _Offset = 0;
     Limit = info->limit;
     Sel = info->sel;
-    is_32 = (info->disp_type == MEMINFO_CODE_32);
+    is_32 = ( info->disp_type == MEMINFO_CODE_32 );
     for( line = 0; line < info->lastline; line ++ ) {
         MiscDoCode( &ins, is_32, &DisasmInfo );
     }
@@ -280,10 +281,10 @@ bool NeedScrollBar( MemWndInfo *info )
  */
 static DWORD genAsmLine( MemWndInfo *info, DWORD ins_cnt, char *buf )
 {
-    instruction         ins;
-    DWORD               offset;
+    instruction     ins;
+    DWORD           offset;
 
-    Is32Bit = (info->disp_type == MEMINFO_CODE_32);
+    Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     Limit = info->limit;
     gotoIns( info, ins_cnt );
@@ -357,7 +358,7 @@ DWORD GetInsCnt( MemWndInfo *info, DWORD offset )
     WORD        i;
     instruction ins;
 
-    Is32Bit = (info->disp_type == MEMINFO_CODE_32);
+    Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     Limit = info->limit;
     asm = info->asm;
@@ -570,7 +571,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
     } else {
         asm = info->asm;
     }
-    Is32Bit = (info->disp_type == MEMINFO_CODE_32);
+    Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     Limit = info->limit;
 
@@ -634,7 +635,7 @@ void RedrawAsCode( HDC dc, MemWndInfo *info )
     HFONT       old_font;
 
     old_font = SelectObject( dc, GetMonoFont() );
-    Is32Bit = (info->disp_type == MEMINFO_CODE_32);
+    Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
     Limit = info->limit;
     gotoIns( info, info->ins_cnt );

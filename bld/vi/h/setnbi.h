@@ -34,6 +34,6 @@
 PICK( int,          CurrFIgnore,            0  )
 PICK( int,          MouseRepeatStartDelay,  5  )
 PICK( int,          NumStatusSections,      0  )
-PICK( short,        WindMaxWidth,           80 )
-PICK( short,        WindMaxHeight,          25 )
+PICK( windim,       WindMaxWidth,           80 )
+PICK( windim,       WindMaxHeight,          25 )
 PICK( char,         ExtendedKeyboard,       0 )

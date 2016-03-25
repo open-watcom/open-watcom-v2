@@ -35,8 +35,9 @@
 #include "dbgio.h"
 #include "digtypes.h"
 #include "digcli.h"
+#include "trptypes.h"
+#include "remcore.h"
 
-extern unsigned         RemoteMachineData( address addr, unsigned, unsigned, const void *, unsigned, void * );
 
 void *DIGCLIENT DIGCliAlloc( size_t amount )
 {
@@ -67,12 +68,12 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
     return( SeekStream( h, p, k ) );
 }
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void *b , unsigned s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
 {
     return( ReadStream( h, b, s ) );
 }
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, unsigned s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
 {
     return( WriteStream( h, b, s ) );
 }
@@ -87,9 +88,9 @@ void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
     FileRemove( name, mode );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
-    return( RemoteMachineData( addr, info_type, in_size, in, out_size, out ) );
+    return( RemoteMachineData( addr, (uint_8)info_type, in_size, in, out_size, out ) );
 }

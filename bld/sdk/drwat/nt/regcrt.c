@@ -42,7 +42,7 @@
 
 static unsigned getMADMaxFormatWidth( mad_type_handle th )
 {
-    unsigned            new;
+    mad_radix           radix;
     void                *tmp;
     unsigned            max;
     mad_type_info       mti;
@@ -67,9 +67,9 @@ static unsigned getMADMaxFormatWidth( mad_type_handle th )
         memset( tmp, 0, mti.b.bits );
         break;
     }
-    new = MADTypePreferredRadix( th );
+    radix = MADTypePreferredRadix( th );
     max = 0;
-    MADTypeToString( new, &mti, tmp, TxtBuff, &max );
+    MADTypeToString( radix, &mti, tmp, TxtBuff, &max );
     return( max + sign );
 }
 
@@ -114,7 +114,7 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
 {
     mad_type_handle mtype;
     mad_type_info   mti;
-    unsigned        new;
+    mad_radix       radix;
     const mad_reg_info    *rinfo;
     void            *value;
     unsigned        max_len;
@@ -141,9 +141,9 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
         MADTypeInfo( rinfo->type, &mti );
         value = alloca( mti.b.bits / BITS_PER_BYTE );
         BitGet( value, (unsigned char *)regs, rinfo->bit_start, rinfo->bit_size );
-        new = MADTypePreferredRadix( mtype );
+        radix = MADTypePreferredRadix( mtype );
         max_len = create[i].length + 1;
-        MADTypeHandleToString( new, mtype, value, create[i].value, &max_len );
+        MADTypeHandleToString( radix, mtype, value, create[i].value, &max_len );
     } else {
         create[i].value[0] = '\0';
     }

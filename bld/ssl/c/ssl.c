@@ -47,7 +47,7 @@ FILE            *TblFile;
 FILE            *PrsFile;
 char            CurrFile[256];
 unsigned        LineNum;
-char            Language;
+bool            Language;
 unsigned        Offset;
 int             SavedChar;
 
@@ -62,8 +62,8 @@ void OutByte( unsigned char byte )
             Offset = 0;
         }
         fputs( " 0x", PrsFile );
-        fputc( Digs[ byte >> 4 ] , PrsFile );
-        fputc( Digs[ byte & 0xf ], PrsFile );
+        fputc( Digs[byte >> 4] , PrsFile );
+        fputc( Digs[byte & 0xf], PrsFile );
         fputc( ',', PrsFile );
         Offset += 6;
     } else {
@@ -102,7 +102,8 @@ void Dump( char *fmt, ... )
 {
     va_list     arglist;
 
-    if( TblFile == NULL ) return;
+    if( TblFile == NULL )
+        return;
     va_start( arglist, fmt );
     vfprintf( TblFile, fmt, arglist );
     va_end( arglist );
@@ -153,7 +154,7 @@ unsigned short SrcLine( void )
 }
 
 
-static void OpenFiles( char verbose, char *path, char *out_file )
+static void OpenFiles( bool verbose, char *path, char *out_file )
 {
     char        buff[_MAX_PATH2];
     char        file_name[_MAX_PATH];
@@ -161,7 +162,7 @@ static void OpenFiles( char verbose, char *path, char *out_file )
     char        *dir;
     char        *fname;
     char        *ext;
-    int         given;
+    bool        given;
 
     _splitpath2( path, buff, &drive, &dir, &fname, &ext );
     if( ext == NULL || ext[0] == '\0' ) {
@@ -172,10 +173,10 @@ static void OpenFiles( char verbose, char *path, char *out_file )
     if( PP_Init( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
-    given = 1;
+    given = true;
     if( out_file == NULL ) {
         out_file = path;
-        given = 0;
+        given = false;
     }
     _splitpath2( out_file, buff, &drive, &dir, &fname, &ext );
     if( !given ) {
@@ -188,11 +189,14 @@ static void OpenFiles( char verbose, char *path, char *out_file )
     }
     _makepath( file_name, drive, dir, fname, ext );
     PrsFile = fopen( file_name, Language ? "wt" : "wb" );
-    if( PrsFile == NULL ) Error( "can not open '%s'", file_name );
+    if( PrsFile == NULL )
+        Error( "can not open '%s'", file_name );
     if( verbose ) {
         _makepath( file_name, drive, dir, fname, ".tbl" );
         TblFile = fopen( file_name, "w" );
-        if( TblFile == NULL ) Error( "can not open '%s'", file_name );
+        if( TblFile == NULL ) {
+            Error( "can not open '%s'", file_name );
+        }
     }
 }
 
@@ -200,7 +204,9 @@ static void OpenFiles( char verbose, char *path, char *out_file )
 static void CloseFiles( void )
 {
     fclose( PrsFile );
-    if( TblFile != NULL ) fclose( TblFile );
+    if( TblFile != NULL ) {
+        fclose( TblFile );
+    }
 }
 
 
@@ -209,9 +215,11 @@ unsigned short GetNum( void )
     char        *end;
     unsigned    value;
 
-    if( CurrToken != T_NAME ) Error( "expecting number" );
+    if( CurrToken != T_NAME )
+        Error( "expecting number" );
     value = strtol( TokenBuff, &end, 0 );
-    if( *end != '\0' ) Error( "invalid number" );
+    if( *end != '\0' )
+        Error( "invalid number" );
     return( value );
 }
 
@@ -236,10 +244,12 @@ void Scan( void )
             do {
                 ch = NextChar();
             } while( ch == ' ' || ch == '\t' );
-            if( ch != '\n' ) break;
+            if( ch != '\n' )
+                break;
             ++LineNum;
         }
-        if( ch != '%' ) break;
+        if( ch != '%' )
+            break;
         /* eat comment */
         do {
             ch = NextChar();
@@ -270,8 +280,10 @@ void Scan( void )
         CurrToken = T_LITERAL;
         for( ;; ) {
             ch = NextChar();
-            if( ch == term ) break;
-            if( ch == '\\' ) ch = NextChar();
+            if( ch == term )
+                break;
+            if( ch == '\\' )
+                ch = NextChar();
             if( ch == '\n' || ch == EOF ) {
                 Error( "missing closing quote" );
             }
@@ -294,17 +306,18 @@ void Scan( void )
             return;
         }
     }
-    if( TokenBuff[0]==PreProcChar && strcmp( &TokenBuff[1], "line" )==0 ) {
+    if( TokenBuff[0] == PreProcChar && strcmp( &TokenBuff[1], "line" ) == 0 ) {
         Scan();
         LineNum = strtoul( TokenBuff, NULL, 0 ) - 1;
         Scan();
         strcpy( CurrFile, TokenBuff );
         Scan();
-    } else if( TokenBuff[0]==PreProcChar && strcmp( &TokenBuff[1], "error" )==0 ) {
+    } else if( TokenBuff[0] == PreProcChar && strcmp( &TokenBuff[1], "error" ) == 0 ) {
         TokenLen = 0;
         for( ;; ) {
             ch = NextChar();
-            if( ch == '\n' || ch == EOF ) break;
+            if( ch == '\n' || ch == EOF )
+                break;
             TokenBuff[TokenLen++] = ch;
         }
         TokenBuff[TokenLen] = '\0';
@@ -315,7 +328,8 @@ void Scan( void )
 
 void WantColon( void )
 {
-    if( CurrToken != T_COLON ) Error( "expecting ':'" );
+    if( CurrToken != T_COLON )
+        Error( "expecting ':'" );
     Scan();
 }
 
@@ -323,7 +337,8 @@ void WantColon( void )
 static void Parse( void )
 {
     Decls();
-    if( CurrToken != T_RULES ) Error( "expecting rules" );
+    if( CurrToken != T_RULES )
+        Error( "expecting rules" );
     Scan();
     Rules();
 }
@@ -332,23 +347,27 @@ static void Parse( void )
 int main( int argc, char *argv[] )
 {
     char        *file;
-    char        verbose;
+    bool        verbose;
 
-    if( argc < 2 ) Usage();
+    if( argc < 2 )
+        Usage();
     file = argv[1];
-    if( strcmp( file, "?" ) == 0 ) Usage();
-    verbose = 0;
-    Language = 0;
+    if( strcmp( file, "?" ) == 0 )
+        Usage();
+    verbose = false;
+    Language = false;
     for( ;; ) {
         file = *++argv;
-        if( file == 0 ) Usage();
-        if( file[0] != '-' ) break;
+        if( file == NULL )
+            Usage();
+        if( file[0] != '-' )
+            break;
         switch( file[1] ) {
         case 'v':
-            verbose = 1;
+            verbose = true;
             break;
         case 'c':
-            Language = 1;
+            Language = true;
             break;
         default:
             Usage();

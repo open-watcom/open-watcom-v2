@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +37,18 @@
 /*
  * ResetOverlap - set so no overlap of window
  */
-void ResetOverlap( wind *w )
+void ResetOverlap( window *w )
 {
     window_id   *over;
     window_id   *whoover;
-    int         i, j;
+    windim      i, j;
 
-    AccessWindow( w->id );
+    AccessWindow( w );
     over = w->overlap;
     whoover = w->whooverlapping;
 
-    for( j = w->y1; j <= w->y2; j++ ) {
-        for( i = w->x1; i <= w->x2; i++ ) {
+    for( j = w->area.y1; j <= w->area.y2; j++ ) {
+        for( i = w->area.x1; i <= w->area.x2; i++ ) {
             *over++ = NO_WINDOW;
             *whoover++ = NO_WINDOW;
         }
@@ -63,33 +64,36 @@ void ResetOverlap( wind *w )
 /*
  * MarkOverlap - mark who a "new" window has overlapped
  */
-void MarkOverlap( window_id wn )
+void MarkOverlap( window_id wid )
 {
-    wind        *w, *wo;
-    int         i, j, k;
+    window      *w, *wo;
+    int         i, j;
+    size_t      k;
     window_id   *whoover;
     window_id   *img;
 
-    w = AccessWindow( wn );
+    w = WINDOW_FROM_ID( wid );
+    AccessWindow( w );
     whoover = w->whooverlapping;
 
-    for( j = w->y1; j <= w->y2; j++ ) {
-        img = &ScreenImage[w->x1 + j * EditVars.WindMaxWidth];
-        for( i = w->x1; i <= w->x2; i++ ) {
+    for( j = w->area.y1; j <= w->area.y2; j++ ) {
+        img = &ScreenImage[w->area.x1 + j * EditVars.WindMaxWidth];
+        for( i = w->area.x1; i <= w->area.x2; i++ ) {
             /*
              * if there is a character under us,
              * mark the window it belongs to as being overlapped,
              * and mark us as overlapping it
              */
-            if( *img != NO_WINDOW ) {
-                wo = AccessWindow( *img );
-                k = (i - wo->x1) + (j - wo->y1) * wo->width;
-                wo->overlap[k] = wn;
-                wo->overcnt[j - wo->y1]++;
+            if( !BAD_ID( *img ) ) {
+                wo = WINDOW_FROM_ID( *img );
+                AccessWindow( wo );
+                k = (i - wo->area.x1) + (j - wo->area.y1) * wo->width;
+                wo->overlap[k] = wid;
+                wo->overcnt[j - wo->area.y1]++;
                 ReleaseWindow( wo );
             }
             *whoover = *img;
-            *img = wn;
+            *img = wid;
             img++;
             whoover++;
         }
@@ -102,30 +106,32 @@ void MarkOverlap( window_id wn )
  * RestoreOverlap - restore overlap information from a window that is
  *                  "going away" - either relocating or dying
  */
-void RestoreOverlap( window_id wn, bool scrflag )
+void RestoreOverlap( window_id wid, bool scrflag )
 {
-    wind                *w, *wo, *o;
-    int                 i, j, k, l;
+    window              *w, *wo, *o;
+    windim              i, j;
+    size_t              k, l;
     window_id           *whoover;
     window_id           *over;
     window_id           *img;
     char_info           _FAR *scr;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.Quiet ) {
         scrflag = false;
     }
-    w = AccessWindow( wn );
+    w = WINDOW_FROM_ID( wid );
+    AccessWindow( w );
     whoover = w->whooverlapping;
     over = w->overlap;
     scr = NULL;
-    for( j = w->y1; j <= w->y2; j++ ) {
-        oscr = w->x1 + j * EditVars.WindMaxWidth;
+    for( j = w->area.y1; j <= w->area.y2; j++ ) {
+        oscr = w->area.x1 + j * EditVars.WindMaxWidth;
         if( scrflag ) {
             scr = &Scrn[oscr];
         }
         img = &ScreenImage[oscr];
-        for( i = w->x1; i <= w->x2; i++ ) {
+        for( i = w->area.x1; i <= w->area.x2; i++ ) {
 
             /*
              * if we are over someone, then reset the screen
@@ -133,9 +139,10 @@ void RestoreOverlap( window_id wn, bool scrflag )
              *
              * if we are not over someone, check for over us
              */
-            if( *whoover != NO_WINDOW ) {
-                wo = AccessWindow( *whoover );
-                k = (i - wo->x1) + (j - wo->y1) * wo->width;
+            if( !BAD_ID( *whoover ) ) {
+                wo = WINDOW_FROM_ID( *whoover );
+                AccessWindow( wo );
+                k = (i - wo->area.x1) + (j - wo->area.y1) * wo->width;
                 /*
                  * if we are being overlapped at the same
                  * spot, then point the guy overlapping us
@@ -145,15 +152,16 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  * as not being overlapped, and restore his
                  * text to the screen
                  */
-                if( *over != NO_WINDOW ) {
-                    o = AccessWindow( *over );
-                    l = (i - o->x1) + (j - o->y1) * o->width;
+                if( !BAD_ID( *over ) ) {
+                    o = WINDOW_FROM_ID( *over );
+                    AccessWindow( o );
+                    l = (i - o->area.x1) + (j - o->area.y1) * o->width;
                     o->whooverlapping[l] = *whoover;
                     wo->overlap[k] = *over;
                     ReleaseWindow( o );
                 } else {
                     wo->overlap[k] = NO_WINDOW;
-                    wo->overcnt[j - wo->y1]--;
+                    wo->overcnt[j - wo->area.y1]--;
                     if( scrflag ) {
                         WRITE_SCREEN( *scr, wo->text[k] );
                     }
@@ -169,9 +177,10 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  *
                  * if not, clear the screen
                  */
-                if( *over != NO_WINDOW ) {
-                    o = AccessWindow( *over );
-                    l = (i - o->x1) + (j - o->y1) * o->width;
+                if( !BAD_ID( *over ) ) {
+                    o = WINDOW_FROM_ID( *over );
+                    AccessWindow( o );
+                    l = (i - o->area.x1) + (j - o->area.y1) * o->width;
                     o->whooverlapping[l] = NO_WINDOW;
                     ReleaseWindow( o );
                 } else {
@@ -201,12 +210,12 @@ void RestoreOverlap( window_id wn, bool scrflag )
 /*
  * TestOverlap - test if window is overlapped at all
  */
-bool TestOverlap( window_id wn )
+bool TestOverlap( window_id wid )
 {
-    wind        *w;
-    int         i;
+    window      *w;
+    windim      i;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] ) {
             return( true );
@@ -220,9 +229,9 @@ bool TestOverlap( window_id wn )
 /*
  * TestVisible - test if a window is visible at all
  */
-bool TestVisible( wind *w )
+bool TestVisible( window *w )
 {
-    int i;
+    windim  i;
 
     for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] != w->width ) {
@@ -237,11 +246,11 @@ bool TestVisible( wind *w )
 /*
  * WindowIsVisible - check if given window id is visible
  */
-bool WindowIsVisible( window_id id )
+bool WindowIsVisible( window_id wid )
 {
-    wind        *w;
+    window      *w;
 
-    w = Windows[id];
+    w = WINDOW_FROM_ID( wid );
     return( TestVisible( w ) );
 
 } /* WindowIsVisible */
@@ -249,20 +258,20 @@ bool WindowIsVisible( window_id id )
 /*
  * WhoIsUnder - determine who is under a given x,y, and return the real x,y
  */
-window_id WhoIsUnder( int *x, int *y )
+window_id WhoIsUnder( windim *x, windim *y )
 {
-    window_id   id;
-    wind        *w;
-    int         win_x, win_y;
+    window_id   wid;
+    window      *w;
+    windim      win_x, win_y;
 
-    id = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];
-    if( id != NO_WINDOW ) {
-        w = Windows[id];
-        win_x = (*x) - w->x1;
-        win_y = (*y) - w->y1;
+    wid = ScreenImage[(*x) + (*y) * EditVars.WindMaxWidth];
+    if( !BAD_ID( wid ) ) {
+        w = WINDOW_FROM_ID( wid );
+        win_x = (*x) - w->area.x1;
+        win_y = (*y) - w->area.y1;
         *x = win_x;
         *y = win_y;
     }
-    return( id );
+    return( wid );
 
 } /* WhoIsUnder */

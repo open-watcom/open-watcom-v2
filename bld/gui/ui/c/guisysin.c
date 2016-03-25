@@ -34,9 +34,9 @@
 #include "swap.h"
 #include "guigmous.h"
 
-int GUISysInit( int param )
+bool GUISysInit( int param )
 {
-    int init;
+    bool    init;
 
 #ifdef __WINDOWS__
     InitSwapper( false );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,5 +42,5 @@ _WCRTLINK int recv( int s, void *buf, size_t len, int flags )
     args[1] = (unsigned long)buf;
     args[2] = (unsigned long)len;
     args[3] = (unsigned long)flags;
-    return ( __socketcall( SYS_RECV, args ) );
+    return( __socketcall( SYS_RECV, args ) );
 }

@@ -55,9 +55,6 @@
 // If too slow make hash size bigger
 #define HASH_SIZE   1021
 
-#define ID2VH(x)    ((vhandle)((x) - FIRST_UNUSED_ID))
-#define VH2ID(x)    ((gui_ctl_id)((x) + FIRST_UNUSED_ID))
-
 typedef struct  a_variable {
     char        *name;
     char        *strval;    /* value */

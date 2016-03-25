@@ -46,7 +46,7 @@ const byte __FAR        SizeVars[] = {
         sizeof( single ),
         sizeof( double ),
         sizeof( extended ),
-        sizeof( complex ),
+        sizeof( scomplex ),
         sizeof( dcomplex ),
         sizeof( xcomplex ),
         sizeof( string )

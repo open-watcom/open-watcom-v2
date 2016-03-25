@@ -3,15 +3,16 @@
 host_os  = win
 host_cpu = i86
 
+target_cpu = x86
+target_os  = win
+
 sys_windowed = 1
 
 #
 # Create the Windows 3.x std.dll
 #
 
-os      = win
 srv     = lcl
-cpu     = x86
 which = TRAP
 
 extra_objs = &
@@ -57,7 +58,7 @@ extra_linker = &
 
 !include $(commonui_dir)/windbg.mif
 
-inc_dirs = $(windbg_inc_dirs)
+inc_dirs = -I"$(trap_dir)/lcl/win/h" $(windbg_inc_dirs)
 extra_libs = $(windbg_lib)
 
 !include $(trap_dir)/lcl/win/win.mif

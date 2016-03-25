@@ -58,7 +58,7 @@ vi_rc Cut( linenum s, int scol, linenum e, int ecol, bool delflag )
      */
     cline = fcblist.head->lines.head;
     strcpy( WorkLine->data, cline->data );
-    WorkLine->data[scol] = 0;
+    WorkLine->data[scol] = '\0';
 
     /*
      * prune start line
@@ -84,7 +84,7 @@ vi_rc Cut( linenum s, int scol, linenum e, int ecol, bool delflag )
      * prune last line
      */
     fcblist.tail->byte_cnt -= cline->len;
-    cline->data[ecol] = 0;
+    cline->data[ecol] = '\0';
     cline->len = strlen( cline->data );
     fcblist.tail->byte_cnt += cline->len;
 

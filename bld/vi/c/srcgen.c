@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +33,15 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "parsecl.h"
 #include "ex.h"
 #include "specio.h"
+#include "source.h"
 
-static sfile    *tmpTail;
-static bool     freeSrcData, hasVar;
-static labels   *cLab;
-static jmp_buf  genExit;
+static sfile        *tmpTail;
+static bool         hasVar;
+static labels       *cLab;
+static jmp_buf      genExit;
 
 void AbortGen( vi_rc rc )
 {
@@ -48,9 +49,32 @@ void AbortGen( vi_rc rc )
 }
 
 /*
+ * initItems - generate a src file item
+ */
+static sfile *initItems( void )
+{
+    sfile       *tsf;
+
+    tsf = MemAlloc( sizeof( sfile ) );
+    tsf->next = NULL;
+    tsf->prev = NULL;
+    tsf->arg1 = NULL;
+    tsf->arg2 = NULL;
+    tsf->data = NULL;
+    tsf->token = SRC_T_NULL;
+    tsf->sline = 0;
+    tsf->hasvar = false;
+    tsf->branchcond = COND_FALSE;
+    tsf->data = NULL;
+    tmpTail = tsf;
+    return( tsf );
+
+} /* initItems */
+
+/*
  * genItem - generate a src file item
  */
-static void genItem( int token, label where )
+static void genItem( int token, const char *where )
 {
     sfile       *tsf;
 
@@ -60,12 +84,12 @@ static void genItem( int token, label where )
     tsf->arg2 = NULL;
     tsf->data = NULL;
     tsf->token = token;
-    tsf->line = CurrentSrcLine;
+    tsf->sline = CurrentSrcLine;
     tsf->hasvar = hasVar;
     tsf->branchcond = COND_FALSE;
 
     if( where != NULL ) {
-        AddString( &(tsf->data), where );
+        tsf->data = DupString( where );
     }
 
     InsertLLItemAfter( (ss **)&tmpTail, (ss *)tmpTail, (ss *)tsf );
@@ -75,7 +99,7 @@ static void genItem( int token, label where )
 /*
  * GenJmpIf - jump based on last expression result
  */
-void GenJmpIf( branch_cond when, label where )
+void GenJmpIf( branch_cond when, const char *where )
 {
 #ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled ) {
@@ -92,7 +116,7 @@ void GenJmpIf( branch_cond when, label where )
 /*
  * GenJmp - stick a jump before current statment
  */
-void GenJmp( label where )
+void GenJmp( const char *where )
 {
     genItem( SRC_T_GOTO, where );
     tmpTail->branchcond = COND_JMP;
@@ -101,9 +125,9 @@ void GenJmp( label where )
 } /* GenJmp */
 
 /*
- * GenLabel - stick a label before current statment
+ * GenLabel1 - stick a label before current statment
  */
-void GenLabel( label where )
+static const char *GenLabel1( const char *where )
 {
     vi_rc   rc;
 
@@ -112,24 +136,30 @@ void GenLabel( label where )
         AbortGen( rc );
     }
     tmpTail->hasvar = false;
-    strcpy( where, cLab->name[cLab->cnt - 1] );
+    return( cLab->name[cLab->cnt - 1] );
+
+} /* GenLabel */
+
+/*
+ * GenLabel - stick a label before current statment
+ */
+void GenLabel( char *where )
+{
+    strcpy( where, GenLabel1( where ) );
 
 } /* GenLabel */
 
 /*
  * GenTestCond - generate test condition for current statement
  */
-void GenTestCond( void )
+void GenTestCond( const char *data )
 {
-    char        v1[MAX_SRC_LINE];
-
     /*
      * process syntax of test condition
      * IF expr
      */
-    strcpy( v1, CurrentSrcData );
-    RemoveLeadingSpaces( v1 );
-    if( v1[0] == 0 ) {
+    data = SkipLeadingSpaces( data );
+    if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
 
@@ -139,11 +169,11 @@ void GenTestCond( void )
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        genItem( SRC_T_IF, v1 );
+        genItem( SRC_T_IF, data );
 #ifndef VICOMP
     } else {
         genItem( SRC_T_IF, NULL );
-        AddString( &tmpTail->arg1, v1 );
+        tmpTail->arg1 = DupString( data );
     }
 #endif
 
@@ -152,9 +182,9 @@ void GenTestCond( void )
 /*
  * genExpr - gen an expression assignment
  */
-static void genExpr( void )
+static void genExpr( const char *data )
 {
-    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
+    char        v1[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
 #ifndef VICOMP
     expr_oper   oper = EXPR_EQ;
 #endif
@@ -163,13 +193,15 @@ static void genExpr( void )
      * get expression syntax :
      * EXPR %v = v1
      */
-    if( NextWord1( CurrentSrcData, v1 ) <= 0 ) {
+    data = GetNextWord1( data, v1 );
+    if( *v1 == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    if( NextWord1( CurrentSrcData, tmp ) <= 0 ) {
+    data = GetNextWord1( data, tmp );
+    if( *tmp == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
-    if( tmp[1] == '=' && tmp[2] == 0 ) {
+    if( tmp[1] == '=' && tmp[2] == '\0' ) {
         switch( tmp[0] ) {
 #ifndef VICOMP
         case '+': oper = EXPR_PLUSEQ; break;
@@ -187,19 +219,18 @@ static void genExpr( void )
             break;
         }
     } else {
-        if( tmp[0] != '=' || tmp[1] != 0 ) {
+        if( tmp[0] != '=' || tmp[1] != '\0' ) {
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
-    strcpy( v2, CurrentSrcData );
-    RemoveLeadingSpaces( v2 );
-    if( v2[0] == 0 ) {
+    data = SkipLeadingSpaces( data );
+    if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
 #ifndef VICOMP
     if( EditFlags.CompileScript ) {
 #endif
-        genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, v2 ) );
+        genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, data ) );
 #ifndef VICOMP
     } else {
         /*
@@ -207,8 +238,8 @@ static void genExpr( void )
          */
         genItem( SRC_T_EXPR, NULL );
         tmpTail->u.oper = oper;
-        AddString( &tmpTail->arg1, v1 );
-        AddString( &tmpTail->arg2, v2 );
+        tmpTail->arg1 = DupString( v1 );
+        tmpTail->arg2 = DupString( data );
     }
 #endif
 
@@ -223,7 +254,7 @@ label NewLabel( void )
     label       tmp;
 
     MySprintf( buff, "_l_%l", CurrentSrcLabel++ );
-    AddString( &tmp, buff );
+    tmp = DupString( buff );
     return( tmp );
 
 } /* NewLabel */
@@ -234,10 +265,10 @@ label NewLabel( void )
 vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
-    int                 i, token, k, len;
-    sfile               *tsf;
-    char                tmp[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
-    char                tmp3[MAX_SRC_LINE];
+    int                 i, token;
+    char                tmp1[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
+    char                *tmp3;
+    char                *tmp;
     bool                ret;
 #ifdef VICOMP
     bool                AppendingFlag = false;
@@ -267,16 +298,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
      * init control
      */
     CSInit();
-    CurrentSrcLine = 0L;
 
-    tsf = MemAlloc( sizeof( sfile ) );
-    tsf->next = NULL;
-    tsf->prev = NULL;
-    tsf->arg1 = NULL;
-    tsf->arg2 = NULL;
-    tsf->data = NULL;
-    tsf->token = SRC_T_NULL;
-    *sf = tmpTail = tsf;
+    *sf = initItems();
+
+    CurrentSrcLine = 0;
     cLab = lab;
 
     /*
@@ -291,7 +316,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * process each line
      */
-    while( SpecialFgets( tmp, MAX_SRC_LINE - 1, &gf ) >= 0 ) {
+    while( !SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf ) ) {
 
         /*
          * prepare this line
@@ -300,22 +325,13 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            RemoveLeadingSpaces( tmp );
-            k = strlen( tmp );
-            memcpy( tmp3, tmp, k + 1 );
-            if( (len = NextWord1( tmp, tmp2 )) <= 0 ) {
+            tmp = SkipLeadingSpaces( tmp1 );
+            if( tmp[0] == '\0' || tmp[0] == '#' ) {
                 continue;
             }
-            if( tmp2[0] == '#' ) {
-                continue;
-            }
-            hasVar = false;
-            for( i = 0; i < k; i++ ){
-                if( tmp3[i] == '%' ) {
-                    hasVar = true;
-                    break;
-                }
-            }
+            tmp3 = tmp;
+            tmp = GetNextWord1( tmp, tmp2 );
+            hasVar = ( strchr( tmp3, '%' ) != NULL );
 
             /*
              * if we are appending (ie, an append token was encounterd
@@ -334,9 +350,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #ifndef VICOMP
         } else {
-            len = NextWord1( tmp, tmp2 );
+            tmp = GetNextWord1( tmp1, tmp2 );
             hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
+            tmp3 = tmp;
         }
 #endif
         /*
@@ -344,7 +361,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
          */
         if( token != TOK_INVALID ) {
 
-            RemoveLeadingSpaces( tmp );
+            tmp = SkipLeadingSpaces( tmp );
             if( token > SRC_T_NULL ) {
                 genItem( token, tmp );
                 continue;
@@ -353,27 +370,25 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             /*
              * get parm
              */
-            AddString( &CurrentSrcData, tmp );
-            freeSrcData = true;
 
             /*
              * process token
              */
             switch( token ) {
             case SRC_T_EXPR:
-                genExpr();
+                genExpr( tmp );
                 break;
             case SRC_T_LABEL:
-                GenLabel( tmp );
+                GenLabel1( tmp );
                 break;
             case SRC_T_IF:
-                CSIf();
+                CSIf( tmp );
                 break;
             case SRC_T_QUIF:
-                CSQuif();
+                CSQuif( tmp );
                 break;
             case SRC_T_ELSEIF:
-                CSElseIf();
+                CSElseIf( tmp );
                 break;
             case SRC_T_ELSE:
                 CSElse();
@@ -389,10 +404,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 CSEndLoop();
                 break;
             case SRC_T_WHILE:
-                CSWhile();
+                CSWhile( tmp );
                 break;
             case SRC_T_UNTIL:
-                CSUntil();
+                CSUntil( tmp );
                 break;
             case SRC_T_BREAK:
                 CSBreak();
@@ -405,9 +420,9 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                 if( token == SRC_T_GOTO ) {
 #ifndef VICOMP
                     if( EditFlags.ScriptIsCompiled ) {
-                        NextWord1( CurrentSrcData, tmp );
-                        tmpTail->branchcond = atoi( CurrentSrcData );
-                        strcpy( CurrentSrcData, tmp );
+                        tmp = GetNextWord1( tmp, tmp2 );
+                        tmpTail->branchcond = atoi( tmp );
+                        tmp = tmp2;
                     } else {
 #endif
                         tmpTail->branchcond = COND_JMP;
@@ -415,20 +430,17 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                     }
 #endif
                 }
-                tmpTail->data = CurrentSrcData;
-                freeSrcData = false;
+                tmpTail->data = DupString( tmp );
                 break;
             }
-            if( freeSrcData ) {
-                MemFree( CurrentSrcData );
-            }
+
         /*
          * set all other tokens to be processed at run time
          */
         } else {
 #ifndef VICOMP
             if( EditFlags.ScriptIsCompiled ) {
-                RemoveLeadingSpaces( tmp );
+                tmp = SkipLeadingSpaces( tmp );
                 genItem( token, tmp );
                 continue;
             }
@@ -495,7 +507,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_ACTIVEMENUWINDOW:
             case PCL_T_GREYEDMENUWINDOW:
             case PCL_T_ACTIVEGREYEDMENUWINDOW:
-                RemoveLeadingSpaces( tmp );
+                tmp = SkipLeadingSpaces( tmp );
                 token += SRC_T_NULL + 1;
                 genItem( token, tmp );
                 break;
@@ -503,14 +515,14 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_SET:
                 token += SRC_T_NULL + 1;
 #ifdef VICOMP
-                WorkLine->data[0] = 0;
+                WorkLine->data[0] = '\0';
                 Set( tmp );
                 genItem( token, WorkLine->data );
 #else
                 if( EditFlags.CompileScript ) {
                     vi_rc   rc;
 
-                    WorkLine->data[0] = 0;
+                    WorkLine->data[0] = '\0';
                     rc = Set( tmp );
                     if( rc != ERR_NO_ERR ) {
                         Error( GetErrorMsg( rc ) );
@@ -524,7 +536,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 
             default:
                 if( AppendingFlag ) {
-                    if( tmp3[0] == '.' && tmp3[1] == 0 ) {
+                    if( tmp3[0] == '.' && tmp3[1] == '\0' ) {
                         AppendingFlag = false;
                     }
                 } else if( token == TOK_INVALID ) {
@@ -535,7 +547,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                      */
                     token = Tokenize( TokensEx, tmp2, false );
                     if( token == TOK_INVALID ) {
-                        if( NextWord1( tmp, tmp2 ) >= 0 ) {
+                        tmp = GetNextWord1( tmp, tmp2 );
+                        if( *tmp2 != '\0' ) {
                             token = Tokenize( TokensEx, tmp2, false );
                             if( token == EX_T_APPEND ) {
                                 AppendingFlag = true;
@@ -543,14 +556,12 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                         }
                     }
                 }
-                if( tmp3[0] == '>' ) {
-                    tmp3[0] = ' ';
-                }
+                if( tmp3[0] == '>' )
+                    ++tmp3;
                 genItem( TOK_INVALID, tmp3 );
                 break;
             }
         }
-
     }
 
     SpecialFclose( &gf );

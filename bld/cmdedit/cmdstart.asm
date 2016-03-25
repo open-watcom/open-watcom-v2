@@ -64,8 +64,8 @@ assume cs:_TEXT,ds:DGROUP,ss:DGROUP
 
 public  CMDStart_
 CMDStart_       proc    far
-    push    si
-    push    di
+        push    si
+        push    di
         push    es
         push    ds
         push    dx
@@ -73,22 +73,22 @@ CMDStart_       proc    far
         mov     ds,dx
         mov     ax,offset DGROUP:alias_
         call    InitRetrieve_
-    push    ds
-    mov ax,offset globalseg
-    push    ax
-    push    ds
-    mov ax,offset localseg
-    push    ax
-    call    DosGetInfoSeg
-    mov es,localseg
-    mov ax,es:[0]
-    mov pid,ax
+        push    ds
+        mov     ax,offset globalseg
+        push    ax
+        push    ds
+        mov     ax,offset localseg
+        push    ax
+        call    DosGetInfoSeg
+        mov     es,localseg
+        mov     ax,es:[0]
+        mov     pid,ax
         mov     ax,1                    ; tell os2 things are ok.
         pop     dx
         pop     ds
         pop     es
-    pop di
-    pop si
+        pop     di
+        pop     si
         ret
 CMDStart_       endp
 
@@ -96,8 +96,8 @@ CMDStart_       endp
 public  OS2Edit_
 OS2Edit_        proc    far
         enter   0,0
-    push    di
-    push    si
+        push    di
+        push    si
         push    es
         push    ds
         push    dx
@@ -105,51 +105,51 @@ OS2Edit_        proc    far
         push    cx
         mov     dx,DGROUP
         mov     ds,dx
-    push    ds
-    mov ax,offset globalseg
-    push    ax
-    push    ds
-    mov ax,offset localseg
-    push    ax
-    call    DosGetInfoSeg
-    mov es,localseg
-    mov ax,es:[0]
-    cmp pid,ax
-    jne diffid
-    mov want_alias,1
-    jmp endid
-diffid: mov want_alias,0
-endid:  mov si,10[bp]
-    mov index,si
-    xor cx,cx
-    cmp index,5
-    jne not5
-    ; KbdStringIn
+        push    ds
+        mov     ax,offset globalseg
+        push    ax
+        push    ds
+        mov     ax,offset localseg
+        push    ax
+        call    DosGetInfoSeg
+        mov     es,localseg
+        mov     ax,es:[0]
+        cmp     pid,ax
+        jne diffid
+        mov     want_alias,1
+        jmp endid
+diffid: mov     want_alias,0
+endid:  mov     si,10[bp]
+        mov     index,si
+        xor     cx,cx
+        cmp     index,5
+        jne not5
+        ; KbdStringIn
         mov     ax,24[bp]
         mov     dx,26[bp]
-    mov     bx,20[bp]
+        mov     bx,20[bp]
         mov     cx,22[bp]
-    jmp theend
-not5:   cmp index,0
-    jne not0
-    ; KbdCharIn
+        jmp theend
+not5:   cmp     index,0
+        jne not0
+        ; KbdCharIn
         mov     ax,20[bp]
         mov     dx,22[bp]
-    jmp theend
-    ; KbdPeek
+        jmp theend
+        ; KbdPeek
 not0:   mov     ax,18[bp]
         mov     dx,20[bp]
 theend: push    index
         push    want_alias
         call    StringIn_
-    mov ax,0
+        xor     ax,ax
 epi:    pop     cx
         pop     bx
         pop     dx
         pop     ds
         pop     es
-    pop si
-    pop di
+        pop     si
+        pop     di
         leave
         ret
 OS2Edit_        endp

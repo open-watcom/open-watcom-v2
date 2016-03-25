@@ -31,7 +31,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include "digtypes.h"
 #include "digcli.h"
@@ -115,7 +114,7 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
         case DIG_END:   whence = SEEK_END; break;
         default:
             dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", h, p, k ));
-            return( -1 );
+            return( DCSEEK_ERROR );
     }
 
     off = lseek( h, p, whence );
@@ -123,19 +122,67 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
     return( off );
 }
 
-unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void *b , unsigned s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
 {
-    unsigned    rc = read( h, b, s );
+    size_t      rc;
+#ifdef _WIN64
+    unsigned    read_len;
+    unsigned    amount;
 
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, s, rc ));
+    amount = INT_MAX;
+    rc = 0;
+    while( s > 0 ) {
+        if( amount > s )
+            amount = (unsigned)s;
+        read_len = read( h, b, amount );
+        if( read_len == (unsigned)-1 ) {
+            rc = (size_t)-1;
+            break;
+        }
+        rc += read_len;
+        if( read_len != amount ) {
+            break;
+        }
+        buffer = (char *)b + amount;
+        s -= amount;
+    }
+#else
+    rc = read( h, b, s );
+#endif
+
+    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, unsigned s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
 {
-    unsigned    rc = write( h, b, s );
+    size_t      rc;
+#ifdef _WIN64
+    unsigned    write_len;
+    unsigned    amount;
 
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, s, rc ));
+    amount = INT_MAX;
+    rc = 0;
+    while( s > 0 ) {
+        if( amount > s )
+            amount = (unsigned)s;
+        write_len = write( h, b, amount );
+        if( write_len == (unsigned)-1 ) {
+            rc = (size_t)-1;
+            break;
+        }
+        rc += write_len;
+        if( write_len != amount ) {
+            break;
+        }
+        buffer = (char *)b + amount;
+        s -= amount;
+    }
+#else
+    rc = write( h, b, s );
+#endif
+
+    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
@@ -153,9 +200,9 @@ void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
     mode = mode;
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
-                        unsigned in_size,  const void *in,
-                        unsigned out_size, void *out )
+unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+                        dig_elen in_size,  const void *in,
+                        dig_elen out_size, void *out )
 {
     dprintf(( "DIGCliMachineData: \n" ));
     return( 0 ); /// @todo check this out out.

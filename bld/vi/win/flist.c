@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,10 @@
 #include "filelist.h"
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
+
 static info *findInfo( char *file_name )
 {
     info    *i;
@@ -52,7 +57,7 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     info    *info;
     char    *name;
 
-    count = SendMessage( list_box, LB_GETCOUNT, 0, 0L );
+    count = (int)SendMessage( list_box, LB_GETCOUNT, 0, 0L );
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
             name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
@@ -100,12 +105,14 @@ static int fillBox( HWND list_box )
     return( count );
 }
 
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
+WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND    list_box;
     bool    (*func)( info * );
 
-    l = l;
+#ifdef __NT__
+    lparam = lparam;
+#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( dlg );
@@ -115,7 +122,7 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
     case WM_COMMAND:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
         func = NULL;
-        switch( LOWORD( w ) ) {
+        switch( LOWORD( wparam ) ) {
         case ID_GOTO:
             func = doGoto;
             break;
@@ -127,7 +134,7 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
             EndDialog( dlg, ERR_NO_ERR );
             break;
         case ID_FILE_LIST:
-            if( GET_WM_COMMAND_CMD( w, l ) == LBN_DBLCLK ) {
+            if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
                 func = doGoto;
             }
             break;
@@ -150,7 +157,7 @@ vi_rc EditFileFromList( void )
     vi_rc       rc;
 
     proc = MakeDlgProcInstance( FileListProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, (DLGPROC)proc );
     FreeProcInstance( proc );
     return( rc );
 }

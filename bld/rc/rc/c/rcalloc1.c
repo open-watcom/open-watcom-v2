@@ -246,9 +246,10 @@ extern void *RCMemLayer1Realloc( void *mem, size_t size )
         if( reallocptr->size < size ) {
             FreeBigListNode( mem, false );
             headersize = sizeof( BigMemList ) + sizeof( HeapId );
-            reallocsize = size + headersize;
 #ifdef RCMEM_DEBUG
-            reallocsize++;
+            reallocsize = size + headersize + 1;
+#else
+            reallocsize = size + headersize;
 #endif
             newnode = realloc( reallocptr, reallocsize );
             if( newnode == NULL ) {

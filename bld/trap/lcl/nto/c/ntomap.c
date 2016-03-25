@@ -310,7 +310,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_ret    *ret;
     char                *name;
     unsigned            i;
-    unsigned            ret_len = sizeof( *ret );
+    unsigned            ret_len;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->handle );
@@ -318,8 +318,7 @@ trap_retval ReqGet_lib_name( void )
     name = GetOutPtr( sizeof( *ret ) );
 
     ret->handle = 0;    /* debugger won't look for more if handle is zero */
-
-    *name = '\0';
+    ret_len = sizeof( *ret );
 
     /* The first slot is reserved for the main executable; also, we always
      * look for the next module, not the one whose handle the debugger
@@ -329,10 +328,11 @@ trap_retval ReqGet_lib_name( void )
     for( i = acc->handle + 1; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             /* Indicate that lib is gone */
+            *name = '\0';
             dbg_print(( "(lib unloaded, '%s')\n", moduleInfo[i].filename ));
             moduleInfo[i].newly_unloaded = FALSE;
             ret->handle = i;
-            ret_len += 1;
+            ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
             strcpy( name, moduleInfo[i].filename );

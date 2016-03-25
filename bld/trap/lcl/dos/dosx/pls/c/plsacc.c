@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,17 +130,17 @@ static unsigned long    ObjOffReloc[MAX_OBJECTS];
 
 #define DBE_BASE        1000
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
     dword       linear;
-    short       dregs;
-    short       len;
-} watch;
+    word        dregs;
+    word        len;
+} watch_point;
 
 #define MAX_WP  32
-watch   WatchPoints[ MAX_WP ];
-int     WatchCount;
+watch_point WatchPoints[MAX_WP];
+int         WatchCount;
 
 typedef struct {
         long    have_vmm;
@@ -237,9 +238,12 @@ static bool IsProtSeg( USHORT seg )
 {
     CD_DES      desc;
 
-    if( dbg_rdsdes( seg, 1, &desc ) != 0 ) return( FALSE );
-    if( ( desc.arights & AR_CODE ) == AR_CODE ) return( TRUE );
-    if( ( desc.arights & AR_DATA ) == AR_DATA ) return( TRUE );
+    if( dbg_rdsdes( seg, 1, &desc ) != 0 )
+        return( FALSE );
+    if( ( desc.arights & AR_CODE ) == AR_CODE )
+        return( TRUE );
+    if( ( desc.arights & AR_DATA ) == AR_DATA )
+        return( TRUE );
     return( FALSE );
 }
 
@@ -286,7 +290,8 @@ static int RunProgram()
     temp.msb_ebp = Mach.msb_ebp;
     temp.msb_esp = Mach.msb_esp;
     temp.msb_eip = Mach.msb_eip;
-    for( i = 0; i <= 7; ++i ) temp.msb_dreg[ i ] = Mach.msb_dreg[ i ];
+    for( i = 0; i <= 7; ++i )
+        temp.msb_dreg[i] = Mach.msb_dreg[i];
     temp.msb_eflags = Mach.msb_eflags;
     dbg_wrmsb( &temp );
     rc = dbg_go();
@@ -329,10 +334,9 @@ static unsigned short ReadWrite( rtn, addr, buff, requested )
         addr->offset += requested;
         return( requested );
     }
-    len = requested;
-    while( len != 0 ) {
-        if( rtn( addr, 1UL, buff++ ) != 0 ) break;
-        --len;
+    for( len = requested; len != 0; --len ) {
+        if( rtn( addr, 1UL, buff++ ) != 0 )
+            break;
         addr->offset++;
     }
     return( requested - len );
@@ -358,16 +362,17 @@ trap_retval ReqChecksum_mem( void )
     while( len >= BUFF_SIZE ) {
         read = ReadWrite( ReadMemory, &addr, UtilBuff, BUFF_SIZE );
         for( i = 0; i < read; ++i ) {
-            ret->result += UtilBuff[ i ];
+            ret->result += UtilBuff[i];
         }
-        if( read != BUFF_SIZE ) return( sizeof( *ret ) );
+        if( read != BUFF_SIZE )
+            return( sizeof( *ret ) );
         len -= BUFF_SIZE;
     }
     if( len != 0 ) {
         read = ReadWrite( ReadMemory, &addr, UtilBuff, len );
         if( read == len ) {
             for( i = 0; i < len; ++i ) {
-                ret->result += UtilBuff[ i ];
+                ret->result += UtilBuff[i];
             }
         }
     }
@@ -403,8 +408,8 @@ trap_retval ReqWrite_mem( void )
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
     ret->len = ReadWrite( WriteMemory, &addr,
-                          GetInPtr( sizeof(*acc) ),
-                          GetTotalSize() - sizeof(*acc) );
+                          GetInPtr( sizeof( *acc ) ),
+                          GetTotalSize() - sizeof( *acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -552,7 +557,7 @@ trap_retval ReqWrite_regs( void )
 {
     mad_registers       *mr;
 
-    mr = GetInPtr(sizeof(write_regs_req));
+    mr = GetInPtr( sizeof( write_regs_req ) );
     WriteCPU( &mr->x86.cpu );
     TaskFPExec( (ULONG)&Write387, &mr->x86.u.fpu );
     return( 0 );
@@ -560,7 +565,8 @@ trap_retval ReqWrite_regs( void )
 
 static int map_dbe( int err )
 {
-    if( err == 0 ) return( err );
+    if( err == 0 )
+        return( err );
     return( -err + DBE_BASE );
 }
 
@@ -576,7 +582,8 @@ static void CheckForPE( char *name )
     }   head;
 
     handle = open( name, O_BINARY | O_RDONLY, 0 );
-    if( handle == -1 ) return;
+    if( handle == -1 )
+        return;
     read( handle, &head.dos, sizeof( head.dos ) );
     if( head.dos.signature != DOS_SIGNATURE ) {
         close( handle );
@@ -615,7 +622,8 @@ trap_retval ReqProg_load( void )
     dst = UtilBuff + 1;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
-    while( *src++ != '\0' ) {}
+    while( *src++ != '\0' )
+        {}
     len = GetTotalSize() - ( src - name ) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
@@ -629,7 +637,7 @@ trap_retval ReqProg_load( void )
         *dst++ = ch;
     }
     *dst = '\r';
-    UtilBuff[ 0 ] = dst - (UtilBuff + 1);
+    UtilBuff[0] = dst - (UtilBuff + 1);
     ret->err = map_dbe( dbg_load( name, NULL, UtilBuff ) );
     if( ret->err == 0 ) {
         HavePSP = TRUE;
@@ -687,9 +695,9 @@ int MapReturn()
     switch( Mach.msb_event )
     {
     case 1:
-        if( Mach.msb_dreg[ 6 ] & DR6_BS ) {
+        if( Mach.msb_dreg[6] & DR6_BS ) {
             return( COND_TRACE );
-        } else if( Mach.msb_dreg[ 6 ] & ( DR6_B0+DR6_B1+DR6_B2+DR6_B3 ) ) {
+        } else if( Mach.msb_dreg[6] & ( DR6_B0 + DR6_B1 + DR6_B2 + DR6_B3 ) ) {
             return( COND_WATCH );
         } else {
             return( COND_EXCEPTION );
@@ -724,7 +732,8 @@ static int Execute()
     int         err;
     int         trap;
 
-    if( !GrabVects() ) return( COND_EXCEPTION );
+    if( !GrabVects() )
+        return( COND_EXCEPTION );
     err = RunProgram();
     if( err != 0 ) {
         AtEnd = TRUE;
@@ -739,21 +748,24 @@ static int Execute()
     if( FakeBreak ) {
         FixFakeBreak();
         FakeBreak = FALSE;
-        if( !AtEnd ) trap = COND_USER;
+        if( !AtEnd ) {
+            trap = COND_USER;
+        }
     }
-    if( AtEnd ) return( COND_TERMINATE );
+    if( AtEnd )
+        return( COND_TERMINATE );
     return( trap );
 }
 
 
 trap_retval ReqSet_watch( void )
 {
-    dword        l;
-    watch        *curr;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
-    int                 i,needed;
-    ULONG       linear;
+    dword           l;
+    watch_point     *curr;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    int             i, needed;
+    ULONG           linear;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
@@ -770,14 +782,16 @@ trap_retval ReqSet_watch( void )
         dbg_ptolin( &acc->watch_addr, &linear );
         curr->linear = linear;
         curr->len = acc->size;
-        curr->linear &= ~(curr->len-1);
-        curr->dregs = ( linear & (curr->len-1) ) ? 2 : 1;
+        curr->linear &= ~( curr->len - 1 );
+        curr->dregs = ( linear & ( curr->len - 1 ) ) ? 2 : 1;
         ++WatchCount;
         needed = 0;
         for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[ i ].dregs;
+            needed += WatchPoints[i].dregs;
         }
-        if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
+        if( needed <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
     }
     return( sizeof( *ret ) );
 }
@@ -819,8 +833,8 @@ trap_retval ReqClear_break( void )
 
 static void SetDRnBW( int dr, ULONG linear, int len ) /* Set DRn for break on write */
 {
-    Mach.msb_dreg[ dr ] = linear;
-    Mach.msb_dreg[ 7 ] |= ( (DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
+    Mach.msb_dreg[dr] = linear;
+    Mach.msb_dreg[7] |= ( (DRLen( len )+DR7_BWR) << DR7_RWLSHIFT( dr ) )
                        |  ( DR7_GEMASK << DR7_GLSHIFT( dr ) );
 }
 
@@ -830,20 +844,21 @@ static bool SetDebugRegs()
     int         needed;
     int         i;
     int         dr;
-    watch       *wp;
+    watch_point *wp;
 
     needed = 0;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         needed += wp->dregs;
     }
-    if( needed > 4 ) return( FALSE );
+    if( needed > 4 )
+        return( FALSE );
     dr = 0;
-    Mach.msb_dreg[ 7 ] = DR7_GE;
+    Mach.msb_dreg[7] = DR7_GE;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         SetDRnBW( dr, wp->linear, wp->len );
         ++dr;
         if( wp->dregs == 2 ) {
-            SetDRnBW( dr, wp->linear+wp->len, wp->len );
+            SetDRnBW( dr, wp->linear + wp->len, wp->len );
             ++dr;
         }
     }
@@ -853,14 +868,14 @@ static bool SetDebugRegs()
 
 static unsigned ProgRun( bool step )
 {
-    watch       *wp;
+    watch_point *wp;
     int         i;
     dword       value;
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
-    Mach.msb_dreg[ 6 ] = 0;
-    Mach.msb_dreg[ 7 ] = 0;
+    Mach.msb_dreg[6] = 0;
+    Mach.msb_dreg[7] = 0;
     if( AtEnd ) {
         ret->conditions = COND_TERMINATE;
     } else if( step ) {
@@ -870,15 +885,18 @@ static unsigned ProgRun( bool step )
     } else if( WatchCount != 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = Execute();
-            Mach.msb_dreg[ 6 ] = 0;
-            Mach.msb_dreg[ 7 ] = 0;
+            Mach.msb_dreg[6] = 0;
+            Mach.msb_dreg[7] = 0;
         } else {
             for( ;; ) {
                 Mach.msb_eflags |= EF_TF;
                 ret->conditions = Execute();
-                if( ret->conditions & COND_TERMINATE ) break;
-                if( Mach.msb_event != 1 ) break;
-                if( !( Mach.msb_dreg[6] & DR6_BS ) ) break;
+                if( ret->conditions & COND_TERMINATE )
+                    break;
+                if( Mach.msb_event != 1 )
+                    break;
+                if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
+                    break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                     ReadMemory( &wp->addr, 4UL, &value );
                     if( value != wp->value ) {
@@ -948,13 +966,13 @@ trap_retval ReqGet_err_text( void )
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
     if( acc->err < ERR_LAST ) {
-        strcpy( err_txt, DosErrMsgs[ acc->err ] );
+        strcpy( err_txt, DosErrMsgs[acc->err] );
     } else {
         err = acc->err - DBE_BASE;
         strcpy( err_txt, DBG_ERROR );
         err_txt += sizeof( DBG_ERROR ) - 1;
         if( err < -DBE_MIN && err > -DBE_MAX ) {
-            strcpy( err_txt, DBErrors[ err ] );
+            strcpy( err_txt, DBErrors[err] );
         } else {
             ultoa( acc->err, err_txt, 16 );
         }
@@ -974,7 +992,7 @@ trap_retval ReqGet_message_text( void )
     char                        *err_txt;
 
     ret = GetOutPtr( 0 );
-    err_txt = GetOutPtr( sizeof(*ret) );
+    err_txt = GetOutPtr( sizeof( *ret ) );
     if( Mach.msb_event == (USHORT)-1 ) {
         err_txt[0] = '\0';
     } else {
@@ -991,14 +1009,11 @@ trap_retval ReqGet_message_text( void )
 
 trap_retval ReqGet_lib_name( void )
 {
-    char                *ch;
     get_lib_name_ret    *ret;
 
     ret = GetOutPtr( 0 );
     ret->handle = 0;
-    ch = GetOutPtr( sizeof( *ret ) );
-    *ch = '\0';
-    return( sizeof( *ret ) + 1 );
+    return( sizeof( *ret ) );
 }
 
 
@@ -1031,7 +1046,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     GrabPrtScrn();
     if( error_num != 0 ) {
         strcpy( err, DBG_ERROR );
-        strcpy( err + sizeof( DBG_ERROR )-1, DBErrors[ -error_num ] );
+        strcpy( err + sizeof( DBG_ERROR )-1, DBErrors[-error_num] );
     }
     Mach.msb_event = -1;
     _DBG(( "outof TrapInit\r\n" ));

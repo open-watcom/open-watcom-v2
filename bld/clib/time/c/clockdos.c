@@ -39,13 +39,13 @@
 
 unsigned long   __ibm_biosint_get_ticks( void );
 #pragma aux __ibm_biosint_get_ticks =   \
-    "mov    ah,0"                       \
+    "xor    ah,ah"                      \
     "int    1ah"                        \
     "shl    ecx,16"                     \
     "mov    cx,dx"                      \
     value [ecx] modify exact [eax ecx edx] nomemory;
 
-unsigned long __ibm_bios_get_ticks( void )
+static unsigned long __ibm_bios_get_ticks( void )
 {
     volatile unsigned long  *tick_count_ptr;
 
@@ -64,7 +64,7 @@ unsigned long __ibm_bios_get_ticks( void )
 
 #include <dos.h>
 
-unsigned long __ibm_bios_get_ticks( void )
+static unsigned long __ibm_bios_get_ticks( void )
 {
     volatile unsigned short _WCFAR  *tick_count_ptr;
     unsigned short                  lo_word, hi_word;

@@ -38,38 +38,31 @@
 #include "clibext.h"
 
 
-void intern drawbox( BUFFER     *bptr,
-                     SAREA      area,
-                     char       *box,
-                     ATTR       attr,
-                     int        fill )
-/************************************/
+void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, int fill )
+/**************************************************************************************/
 {
     register    ORD                     row;
 
-    bpixel( bptr, area.row, area.col, attr, box[ 0 ] );
-    bfill( bptr, area.row, area.col + 1, attr, box[ 4 ], area.width - 2 );
-    bpixel( bptr, area.row, area.col + area.width - 1, attr, box[ 1 ] );
+    bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
+    bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
+    bpixel( bptr, area.row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
     for( row = area.row + 1 ; row < area.row + area.height - 1 ; ++row ) {
-        bpixel( bptr, row, area.col, attr, box[ 7 ] );
+        bpixel( bptr, row, area.col, attr, BOX_CHAR( box, LEFT_LINE ) );
         if( fill ) {
             bfill( bptr, row, area.col + 1, attr, ' ', area.width - 2 );
         }
-        bpixel( bptr, row, area.col + area.width - 1, attr, box[ 5 ] );
+        bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, RIGHT_LINE ) );
     }
-    bpixel( bptr, row, area.col, attr, box[ 3 ] );
-    bfill( bptr, row, area.col + 1, attr, box[ 6 ], area.width - 2 );
-    bpixel( bptr, row, area.col + area.width - 1, attr, box[ 2 ] );
+    bpixel( bptr, row, area.col, attr, BOX_CHAR( box, BOTTOM_LEFT ) );
+    bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
+    bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, BOTTOM_RIGHT ) );
     physupdate( &area );
 }
 
 
 
-void intern blowup( register BUFFER     *bptr,
-                    register SAREA      area,
-                    register char       *box,
-                    register ATTR       attr )
-/********************************************/
+void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
+/***************************************************************************/
 {
 //    register    ORD                     rows;
 //    register    ORD                     cols;
@@ -108,8 +101,7 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
         return;
     }
 
-    drawbox( &(vs->window.type.buffer), *area, (char *)&UiGChar[ UI_SBOX_TOP_LEFT ],
-             attr, FALSE );
+    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, FALSE );
 
     if( title == NULL ) {
         return;

@@ -32,10 +32,10 @@
 #ifndef _CONST_INCLUDED
 #define _CONST_INCLUDED
 
-#ifndef __WIN__
-    #define CFG_NAME    "ed.cfg"
-#else
+#ifdef __WIN__
     #define CFG_NAME    "weditor.ini"
+#else
+    #define CFG_NAME    "ed.cfg"
 #endif
 
 #define VI_2F_ID        0xfc
@@ -47,9 +47,9 @@
 #define GET_BOOL_PREFIX(b)  ((b) ? "" : "no")
 
 typedef enum {
-    DRIVE_NONE,
-    DRIVE_IS_REMOVABLE,
-    DRIVE_IS_FIXED
+    DRIVE_TYPE_NONE,
+    DRIVE_TYPE_IS_REMOVABLE,
+    DRIVE_TYPE_IS_FIXED
 } drive_type;
 
 typedef enum {
@@ -66,7 +66,7 @@ typedef enum {
     #define _A_SUBDIR       0x10    /* Subdirectory */
     #define _A_ARCH         0x20    /* Archive file */
 #endif
-    
+
 #if defined( __UNIX__ )
     #define FILE_SEP            '/'
     #define FILE_SEP_STR        "/"
@@ -125,7 +125,7 @@ typedef enum {
 #define MIN_STACK_K             10
 #define MAX_DUPLICATE_FILES     10
 
-#define MAX_IO_BUFFER   0x2000
+#define MAX_IO_BUFFER           0x2000
 
 #define MAPFLAG_DAMMIT          0x01
 #define MAPFLAG_UNMAP           0x02
@@ -296,8 +296,8 @@ typedef enum vi_key {
 } vi_key;
 
 #define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
-#define VI_KEY_HANDLED          VI_KEY( NULL )
-#define VI_KEY_DUMMY            MAX_EVENTS
+
+#define C2VIKEY(x)      ((vi_key)(unsigned char)(x))
 
 enum border_char {
     #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) enum,

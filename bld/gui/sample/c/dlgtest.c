@@ -63,7 +63,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_ctl_id  id;
     char        *new;
     char        *text;
-    int         num;
+    gui_ctl_idx num;
 
     ret = true;
     switch( gui_ev ) {
@@ -236,7 +236,7 @@ void ResDialogCreate( gui_window *parent )
     res_name_or_id  dlg_id;
     char            *text;
     char            *ep;
-    unsignd long    id;
+    unsigned long   id;
 
     dlg_id = NULL;
     while( dlg_id == NULL ) {

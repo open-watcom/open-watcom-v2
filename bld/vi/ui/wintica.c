@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,10 @@
 vi_rc WindowTile( int maxx, int maxy )
 {
     int         cnt = 0, max = maxx * maxy, xdiv, ydiv, tc = 0, i;
-    int         xstart = editw_info.x1;
-    int         xend = editw_info.x2;
-    int         ystart = editw_info.y1;
-    int         yend = editw_info.y2;
+    int         xstart = editw_info.area.x1;
+    int         xend = editw_info.area.x2;
+    int         ystart = editw_info.area.y1;
+    int         yend = editw_info.area.y2;
     int         ystep, xstep, x, y, xextra, yextra, xx, yy, sxextra;
     info        *cinfo, *cwinfo;
     vi_rc       rc;
@@ -58,16 +59,16 @@ vi_rc WindowTile( int maxx, int maxy )
     if( maxx == 1 && maxy == 1 ) {
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
             BringUpFile( cinfo, false );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR,
-                             editw_info.text.foreground );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR,
-                             editw_info.text.background );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_FONT,
-                             editw_info.text.font );
-            WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2,
+            WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_COLOR,
+                             editw_info.text_style.foreground );
+            WindowAuxUpdate( current_window_id, WIND_INFO_BACKGROUND_COLOR,
+                             editw_info.text_style.background );
+            WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_FONT,
+                             editw_info.text_style.font );
+            WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2,
                              editw_info.border_color2 );
-            CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2,
-                                 editw_info.y2 );
+            ResizeCurrentWindow( editw_info.area.x1, editw_info.area.y1, editw_info.area.x2,
+                                 editw_info.area.y2 );
         }
         BringUpFile( cwinfo, false );
         return( ERR_NO_ERR );
@@ -136,17 +137,17 @@ vi_rc WindowTile( int maxx, int maxy )
                     if( tc > EditVars.MaxTileColors )
                         tc = 0;
                     if( EditVars.TileColors[tc].foreground != -1 && EditVars.TileColors[tc].background != -1 ) {
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR, EditVars.TileColors[tc].foreground );
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_TEXT_COLOR, EditVars.TileColors[tc].foreground );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
                         /* tile fonts? Nah... sounds real stupid... */
-                        WindowAuxUpdate( CurrentWindow, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
+                        WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
                         tc++;
                         break;
                     }
                 }
             }
 
-            rc = CurrentWindowResize( xstart, ystart, xstart + xx + xstep - 1,
+            rc = ResizeCurrentWindow( xstart, ystart, xstart + xx + xstep - 1,
                                      ystart + yy + ystep - 1 );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
@@ -167,7 +168,7 @@ vi_rc WindowTile( int maxx, int maxy )
             }
 
         }
-        xstart = editw_info.x1;
+        xstart = editw_info.area.x1;
         xextra = sxextra;
         ystart += ystep + yy;
 
@@ -184,10 +185,10 @@ vi_rc WindowTile( int maxx, int maxy )
 vi_rc WindowCascade( void )
 {
     int         cnt, i, j;
-    int         xstart = editw_info.x1;
-    int         xend = editw_info.x2;
-    int         ystart = editw_info.y1;
-    int         yend = editw_info.y2;
+    int         xstart = editw_info.area.x1;
+    int         xend = editw_info.area.x2;
+    int         ystart = editw_info.area.y1;
+    int         yend = editw_info.area.y2;
     info        *cinfo;
 //    info        *cwinfo;
     vi_rc       rc;
@@ -222,7 +223,7 @@ vi_rc WindowCascade( void )
     for( i = 0; i < cnt; i++ ) {
 
         BringUpFile( cinfo, false );
-        rc = CurrentWindowResize( xstart, ystart, xend, yend );
+        rc = ResizeCurrentWindow( xstart, ystart, xend, yend );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }

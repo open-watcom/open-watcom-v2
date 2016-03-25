@@ -3,17 +3,9 @@ extern void InitTrap( const char *parms );
 extern void FiniTrap( void );
 extern void InitSuppServices( void );
 extern void FiniSuppServices( void );
-extern bool InitCoreSupp( void );
-extern void FiniCoreSupp( void );
 
 extern bool InitCapabilities( void );
-extern bool InitFileSupp( void );
 extern bool InitFileInfoSupp( void );
-extern bool InitEnvSupp( void );
-extern bool InitOvlSupp( void );
-extern bool InitThreadSupp( void );
-extern bool InitRunThreadSupp( void );
-extern bool InitAsyncSupp( void );
 
 extern trap_shandle GetSuppId( char *name );
 

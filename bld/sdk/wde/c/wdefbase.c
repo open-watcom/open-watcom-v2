@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -617,7 +618,7 @@ BOOL WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
             obj = ListElement( base_obj->children );
             MakeObjectCurrent( obj );
         } else {
-            WdeSetBaseObject ( IDM_SELECT_MODE );
+            WdeSetBaseObject( IDM_SELECT_MODE );
             WdeSetBaseObjectMenu( base_obj->res_info->hash_table != NULL );
 
             memset ( &is, 0, sizeof( WdeInfoStruct ) );

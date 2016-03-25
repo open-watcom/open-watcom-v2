@@ -44,12 +44,14 @@
 #include "thread.h"
 #include "sigtab.h"
 #include "initsig.h"
+#include "exitwmsg.h"
+
 
 unsigned        char    __ExceptionHandled;
 
 #define XCPT_FPE        -1      /* trap all floating-point exceptions */
 
-sigtab  _SignalTable[] = {
+static sigtab  _SignalTable[] = {
     { SIG_IGN, 0 },                                 /* unused  */
     { SIG_DFL, 0 },                                 /* SIGABRT */
     { SIG_DFL, XCPT_FPE },                          /* SIGFPE  */
@@ -71,9 +73,9 @@ _WCRTLINK int   __sigfpe_handler( int fpe )
 {
     __sig_func  func;
 
-    func = _RWD_sigtab[ SIGFPE ].func;
+    func = _RWD_sigtab[SIGFPE].func;
     if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
-        _RWD_sigtab[ SIGFPE ].func = SIG_DFL;
+        _RWD_sigtab[SIGFPE].func = SIG_DFL;
         (*(__sigfpe_func)func)( SIGFPE, fpe );
         return( 0 );
     } else if( func == SIG_IGN ) {
@@ -166,7 +168,7 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
             DosAcknowledgeSignalException( pxcpt->ExceptionInfo[0] );
         }
         for( sig = 1; sig <= __SIGLAST; sig++ ) {
-            if( pxcpt->ExceptionNum == _RWD_sigtab[ sig ].os_sig_code ) {
+            if( pxcpt->ExceptionNum == _RWD_sigtab[sig].os_sig_code ) {
                 if( sig == SIGINT &&
                     pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_INTR ) {
                     continue;
@@ -179,11 +181,11 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                     pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_KILLPROC ) {
                     continue;
                 }
-                if( (_RWD_sigtab[ sig ].func == SIG_IGN) ) {
+                if( (_RWD_sigtab[sig].func == SIG_IGN) ) {
                     return( XCPT_CONTINUE_EXECUTION );
                 }
-                if( (_RWD_sigtab[ sig ].func == SIG_DFL) ||
-                    (_RWD_sigtab[ sig ].func == SIG_ERR) ) {
+                if( (_RWD_sigtab[sig].func == SIG_DFL) ||
+                    (_RWD_sigtab[sig].func == SIG_ERR) ) {
                     return( XCPT_CONTINUE_SEARCH );
                 }
                 __ExceptionHandled = 1;
@@ -208,7 +210,7 @@ static void __SigInit( void )
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {
-        _RWD_sigtab[ i ] = _SignalTable[ i ];
+        _RWD_sigtab[i] = _SignalTable[i];
     }
 #endif
     __XCPTHANDLER->prev_structure = NULL;
@@ -235,9 +237,9 @@ static void __SigFini( void )
 }
 
 
-void    __sigabort( void ) {
-/***************************/
-
+static void __sigabort( void )
+/*********************/
+{
     raise( SIGABRT );
 }
 
@@ -263,35 +265,35 @@ _WCRTLINK __sig_func signal( int sig, __sig_func func ) {
     }
     _RWD_abort = __sigabort;            /* change the abort rtn address */
     if(( func != SIG_DFL ) && ( func != SIG_ERR )) {
-        if( _RWD_sigtab[ sig ].os_sig_code != 0 ) {
+        if( _RWD_sigtab[sig].os_sig_code != 0 ) {
             if( __XCPTHANDLER->prev_structure == NULL ) {
                 DosSetExceptionHandler( __XCPTHANDLER );
                 __int23_exit = restore_handler;
             }
-            if( _RWD_sigtab[ sig ].os_sig_code == XCPT_SIGNAL ) {
+            if( _RWD_sigtab[sig].os_sig_code == XCPT_SIGNAL ) {
                 DosSetSignalExceptionFocus( SIG_SETFOCUS, &nesting );
             }
         }
     } else {
-        if( _RWD_sigtab[ sig ].os_sig_code == XCPT_SIGNAL ) {
+        if( _RWD_sigtab[sig].os_sig_code == XCPT_SIGNAL ) {
             APIRET rc;
             do {
                 rc = DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
             } while( rc == NO_ERROR && nesting > 0 );
         }
     }
-    prev_func = _RWD_sigtab[ sig ].func;
-    _RWD_sigtab[ sig ].func = func;
+    prev_func = _RWD_sigtab[sig].func;
+    _RWD_sigtab[sig].func = func;
     return( prev_func );
 }
 
 
-_WCRTLINK int raise( int sig ) {
-/*****************************/
-
+_WCRTLINK int raise( int sig )
+/****************************/
+{
     __sig_func  func;
 
-    func = _RWD_sigtab[ sig ].func;
+    func = _RWD_sigtab[sig].func;
     switch( sig ) {
     case SIGFPE:
         __sigfpe_handler( FPE_EXPLICITGEN );
@@ -300,6 +302,7 @@ _WCRTLINK int raise( int sig ) {
         if( func == SIG_DFL ) {
             __terminate();
         }
+        /* fall down */
     case SIGILL:
     case SIGINT:
     case SIGSEGV:
@@ -311,7 +314,7 @@ _WCRTLINK int raise( int sig ) {
     case SIGIDIVZ:
     case SIGIOVFL:
         if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
-            _RWD_sigtab[ sig ].func = SIG_DFL;
+            _RWD_sigtab[sig].func = SIG_DFL;
             if( func ) {
                 (*func)( sig );
             }
@@ -324,7 +327,8 @@ _WCRTLINK int raise( int sig ) {
 }
 
 
-static void __SetSigInit( void ) {
+static void __SetSigInit( void )
+{
     __sig_init_rtn = __SigInit;
     __sig_fini_rtn = __SigFini;
     _RWD_FPE_handler = (FPEhandler *)__sigfpe_handler;

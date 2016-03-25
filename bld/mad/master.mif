@@ -38,12 +38,16 @@ ext_rdos_386  = .dll
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include dllbase.mif
 
 !include $(disasm_dir)/dis.mif
 
 # cflags stuff
 ###############
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 
 extra_c_flags = -s
 extra_c_flags_i86 = -zu
@@ -82,10 +86,16 @@ version_res_dll_nt_x64 = version.res
 verrc_dll = $(name)
 !include verrc.mif
 
-xname = mad$(target_cpu)$(ext_$(host_os)_$(host_cpu))
+!ifdef %USE_FILENAME_VERSION
+xname_basename = mad$(target_cpu)$(bld_ver)
+!else
+xname_basename = mad$(target_cpu)
+!endif
+
+xname = $(xname_basename)$(ext_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
 !ifdef ext_lib_shared
-xname = mad$(target_cpu)$(ext_lib_shared)
+xname = $(xname_basename)$(ext_lib_shared)
 !endif
 !endif
 

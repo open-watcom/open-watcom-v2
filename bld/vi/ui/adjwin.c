@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,11 @@ static char_info    *tmpImage;
 /*
  * drawTmpBorder - display border
  */
-static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
+static void drawTmpBorder( int color, windim x1, windim y1, windim x2, windim y2 )
 {
-    int                 i, tl, bl, tr, br, height, width, k;
+    windim              i;
+    size_t              tl, bl, tr, br, k;
+    windim              height, width;
     char_info           what = {0, 0};
 
     height = y2 - y1 + 1;
@@ -95,10 +98,11 @@ static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
 /*
  * swapTmp - exchange border and tmpImage
  */
-static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
-                     int x2, int y2 )
+static void swapTmp( char_info _FAR *src, char_info _FAR *dest, windim x1, windim y1, windim x2, windim y2 )
 {
-    int i, tl, bl, tr, br, height, width, k;
+    windim  i;
+    size_t  tl, bl, tr, br, k;
+    windim  height, width;
 
     height = y2 - y1 + 1;
     width = x2 - x1 + 1;
@@ -143,16 +147,18 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
 /*
  * dickWithAWindow - resize window based on keys/mouse
  */
-static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
-                             windim *wd, bool mouse )
+static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *doresize,
+                             winarea *wd, bool mouse )
 {
     vi_key      key;
     bool        done = false;
-    int         x1, x2, y1, y2, nx1, nx2, ny1, ny2;
+    windim      x1, x2, y1, y2;
+    windim      nx1, nx2, ny1, ny2;
     int         mrow = 0;
     int         mcol = 0;
-    int         dx, dy, bclr;
-    wind        *cwd;
+    windim      dx, dy;
+    int         bclr;
+    window      *w;
 
     /*
      * get original window dimensions, save copy of old border
@@ -164,12 +170,12 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
         DisplayMouse( false );
     }
     *doresize = false;
-    cwd = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
-    x1 = cwd->x1;
-    x2 = cwd->x2;
-    y1 = cwd->y1;
-    y2 = cwd->y2;
+    x1 = w->area.x1;
+    x2 = w->area.x2;
+    y1 = w->area.y1;
+    y2 = w->area.y2;
     if( move ) {
         bclr = EditVars.MoveColor;
     } else {
@@ -302,7 +308,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
         /*
          * do the resize
          */
-        if( ValidDimension( nx1, ny1, nx2, ny2, cwd->has_border ) ) {
+        if( ValidDimension( nx1, ny1, nx2, ny2, w->has_border ) ) {
             swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
             x1 = nx1; x2 = nx2; y1 = ny1; y2 = ny2;
             swapTmp( Scrn, tmpImage, x1, y1, x2, y2 );
@@ -320,7 +326,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
 static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 {
     bool        resize;
-    windim      w;
+    winarea     w;
     vi_rc       rc;
 
     resize = false;
@@ -328,9 +334,9 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
     w.y1 = 0;
     w.x2 = 0;
     w.y2 = 0;
-    dickWithAWindow( CurrentWindow, topcorner, move, &resize, &w, mouse );
+    dickWithAWindow( current_window_id, topcorner, move, &resize, &w, mouse );
     if( resize ) {
-        rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );
+        rc = ResizeCurrentWindow( w.x1, w.y1, w.x2, w.y2 );
         if( mouse ) {
             DisplayMouse( true );
         }

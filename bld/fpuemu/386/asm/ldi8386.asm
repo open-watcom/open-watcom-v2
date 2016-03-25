@@ -37,25 +37,26 @@ include struct.inc
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __LDI8 - convert long double into 8-byte integer with truncation
-;<>          it is assumed that the long double has already been rounded
-;<>          to an integer by calling __frndint.
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  EAX - pointer to long double operand 
-;<>             EDX - pointer to 8-byte integer
-;<>   else
-;<>     input:  EAX - pointer to long double operand
-;<>     output: EDX:EAX - 8-byte integer
-;<>   endif
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
         xdefp   __LDI8
 
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __LDI8 - convert long double into 8-byte integer with truncation
+;            it is assumed that the long double has already been rounded
+;            to an integer by calling __frndint.
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  EAX - pointer to long double operand 
+;               EDX - pointer to 8-byte integer result
+;else
+;       input:  EAX     - pointer to long double operand 
+;       output: EDX:EAX - 8-byte integer
+;endif
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
         defp    __LDI8
+
         push    EBX             ; save EBX
 
 ;       high bit of BH is sign bit

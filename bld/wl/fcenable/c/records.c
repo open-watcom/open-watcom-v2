@@ -42,6 +42,7 @@
 #define MINOR_OBJ_VERSION 1
 
 #include "pushpck1.h"
+
 typedef struct {
     byte        class;
     ushort      length;
@@ -70,6 +71,7 @@ typedef struct {
         THEADR_REC  theadr;
     } u;
 } OBJECT_REC;
+
 #include "poppck.h"
 
 #define         LIBRARY_HEADER  0xf0

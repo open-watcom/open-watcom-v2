@@ -92,7 +92,7 @@
 extern void beep( void );
 #pragma aux beep = \
     "mov    ax,0e07h" \
-    "mov    bx,0" \
+    "xor    bx,bx" \
     "int 10h" \
     modify [ax bx]
 
@@ -155,7 +155,7 @@ static int hook_interrupts[] = { 1, 2, 3, 0x21 };
 extern void outc( char );
 #pragma aux outc = \
     "mov    ah,0eh" \
-    "mov    bx,0" \
+    "xor    bx,bx" \
     "int 10h" \
     parm [al] modify [ax bx]
 

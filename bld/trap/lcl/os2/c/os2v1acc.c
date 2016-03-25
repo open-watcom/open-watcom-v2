@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,7 @@
 #include "miscx87.h"
 #include "cpuglob.h"
 #include "os2extx.h"
+#include "os2v2acc.h"
 
 typedef void (*excfn)();
 
@@ -81,14 +83,15 @@ __GINFOSEG              __far *GblInfo;
 const char              OS2ExtList[] = OS2EXTLIST;
 
 
-typedef struct watch {
+typedef struct watch_point {
     addr48_ptr  addr;
     dword       value;
-} watch;
+} watch_point;
 
 #define MAX_WP  32
-watch   WatchPoints[ MAX_WP ];
-short   WatchCount = 0;
+
+watch_point WatchPoints[ MAX_WP ];
+short       WatchCount = 0;
 
 #if 0
 static void Out( char __far *str )
@@ -761,7 +764,7 @@ trap_retval ReqProg_load( void )
     ExceptNum = -1;
     AtEnd = FALSE;
     prog = GetInPtr( sizeof( prog_load_req ) );
-    if( FindFilePath( prog, exe_name, OS2ExtList ) != 0 ) {
+    if( FindProgFile( prog, exe_name, OS2ExtList ) != 0 ) {
         exe_name[0] = '\0';
     }
     parms = AddDriveAndPath( exe_name, UtilBuff );
@@ -920,8 +923,8 @@ trap_retval ReqSet_watch( void )
 trap_retval ReqClear_watch( void )
 {
     clear_watch_req     *wp;
-    watch               *dst;
-    watch               *src;
+    watch_point         *dst;
+    watch_point         *src;
     int                 i;
 
     wp = GetInPtr( 0 );
@@ -991,7 +994,7 @@ static unsigned MapReturn( unsigned changes )
 
 static unsigned ProgRun( bool step )
 {
-    watch              *wp;
+    watch_point         *wp;
     int                 i;
     PFNSIGHANDLER       prev_brk_hdl;
     USHORT              prev_brk_act;
@@ -1018,7 +1021,7 @@ static unsigned ProgRun( bool step )
             Buff.cmd = PT_CMD_SINGLE_STEP;
             DosPTrace( &Buff );
             if( Buff.cmd != PT_RET_STEP ) break;
-            for( wp = WatchPoints,i = WatchCount; i > 0; ++wp, --i ) {
+            for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                 Buff.cmd = PT_CMD_READ_MEM_D;
                 Buff.segv = wp->addr.segment;
                 Buff.offv = wp->addr.offset;

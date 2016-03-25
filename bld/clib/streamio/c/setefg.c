@@ -33,6 +33,8 @@
 #include <stdio.h>
 #include "farsupp.h"
 #include "ftos.h"
+#include "setefg.h"
+
 
 _WMRTLINK extern FAR_STRING (*__get_EFG_Format())();
 _WMRTLINK extern void       (*__get__cnvs2d())();

@@ -31,6 +31,7 @@
 
 
 #include "trpimp.h"
+#include "trpcomm.h"
 
 trap_retval ReqSplit_cmd( void )
 {

@@ -144,12 +144,12 @@ static char *get_typename( char *src )
     return( src );
 }
 
-static a_sym *make_sym( char *name, token_n value )
+static a_sym *make_sym( char *name, token_n tokval )
 {
     a_sym *p;
 
     p = addsym( name );
-    p->token = value;
+    p->token = tokval;
     return( p );
 }
 
@@ -202,20 +202,20 @@ static void tlist_remove( char *name )
     }
 }
 
-static void tlist_add( char *name, token_n value )
+static void tlist_add( char *name, token_n tokval )
 {
     y_token *tmp;
     y_token *curr;
 
     for( curr = tokens_head; curr != NULL; curr = curr->next ) {
         if( strcmp( name, curr->name ) == 0 ) {
-            curr->value = value;
+            curr->value = tokval;
             return;
         }
     }
     tmp = (y_token *)MALLOC( strlen( name ) + sizeof( y_token ), char );
     strcpy( tmp->name, name );
-    tmp->value = value;
+    tmp->value = tokval;
     tmp->next = NULL;
     if( tokens_head == NULL ) {
         tokens_head = tmp;
@@ -763,7 +763,7 @@ static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
     p->rules = r;
 }
 
-static void insertUniqueAction( rule_n pnum, char *buf, a_sym *lhs )
+static void insertUniqueAction( rule_n pnum, char *action, a_sym *lhs )
 {
     uniq_case   **p;
     uniq_case   *c;
@@ -771,20 +771,20 @@ static void insertUniqueAction( rule_n pnum, char *buf, a_sym *lhs )
 
     p = &caseActions;
     for( c = *p; c != NULL; c = c->next ) {
-        if( strcmp( c->action, buf ) == 0 ) {
+        if( strcmp( c->action, action ) == 0 ) {
             ++actionsCombined;
             addRuleToUniqueCase( c, pnum, lhs );
             /* promote to front */
             *p = c->next;
             c->next = caseActions;
             caseActions = c;
-            FREE( buf );
+            FREE( action );
             return;
         }
         p = &(c->next);
     }
     n = MALLOC( 1, uniq_case );
-    n->action = buf;
+    n->action = action;
     n->rules = NULL;
     n->next = *p;
     *p = n;
@@ -801,7 +801,7 @@ static char *strpcpy( char *d, char *s )
 
 static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsigned n )
 {
-    char        *b;
+    char        *action;
     char        *p;
     char        *s;
     char        *type;
@@ -829,8 +829,8 @@ static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsign
             }
         }
         if( total_errs == 0 ) {
-            b = MALLOC( total_len, char );
-            p = b;
+            action = MALLOC( total_len, char );
+            p = action;
             for( s = buf; *s != '\0'; ) {
                 if( *s == '$' ) {
                     s = checkAttrib( s, &type, buff, &errs, lhs, rhs, base, n );
@@ -845,7 +845,7 @@ static void copyact( rule_n pnum, a_sym *lhs, a_sym **rhs, unsigned base, unsign
                 }
             }
             *p = '\0';
-            insertUniqueAction( pnum, b, lhs );
+            insertUniqueAction( pnum, action, lhs );
         }
         return;
     }
@@ -1230,14 +1230,13 @@ static int eatcrud( void )
 {
     int prev;
 
-    for( ;; ) {
+    for( ;; nextc() ) {
         switch( ch ) {
         case ' ':
         case '\t':
         case '\r':
         case '\n':
         case '\f':
-            nextc();
             break;
         case '/':
             if( nextc() != '*' ) {
@@ -1245,20 +1244,13 @@ static int eatcrud( void )
                     --lineno;
                 }
                 ungetc( ch, yaccin );
-                ch = '/';
-                return( ch );
+                return( '/' );
             }
-            prev = '\0';
-            for( ;; ) {
-                if( nextc() == '/' && prev == '*' ) {
-                    break;
-                }
+            for( prev = '\0'; nextc() != '/' || prev != '*'; prev = ch ) {
                 if( ch == EOF ) {
-                    return( EOF );
+                    return( ch );
                 }
-                prev = ch;
             }
-            nextc();
             break;
         default:
             return( ch );
@@ -1285,7 +1277,7 @@ static int lastc( void )
     return( '\0' );
 }
 
-static void addbuf( int ch )
+static void addbuf( int c )
 {
     if( bufused == bufmax ) {
         bufmax += BUF_INCR;
@@ -1295,7 +1287,7 @@ static void addbuf( int ch )
             buf = MALLOC( bufmax, char );
         }
     }
-    buf[bufused++] = (char)ch;
+    buf[bufused++] = (char)c;
 }
 
 static char *dupbuf( void )

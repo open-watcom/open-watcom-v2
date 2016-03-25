@@ -37,13 +37,15 @@
 #include "dbgdefn.h"
 #include "dsxutil.h"
 #include "dbglit.h"
+#include "dbgcmdln.h"
+#include "dbgmain.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "trpsys.h"
+#include "dbginit.h"
+#include "dbgio.h"
+#include "dbgerr.h"
 
-extern void                     ProcCmd( void );
-extern void                     DebugMain( void );
-extern void                     DebugFini( void );
-extern void                     StartupErr( const char * );
-extern void                     SaveOrigVectors( void );
-extern void                     RestoreOrigVectors( void );
 
 static memptr                   OldInt1b;
 static memptr                   OldInt23;
@@ -128,7 +130,6 @@ static void Cleanup( void )
     }
 }
 
-#pragma aux KillDebugger aborts;
 void KillDebugger( int rc )
 {
     RestoreHandlers();
@@ -191,5 +192,10 @@ void WndCleanUp( void )
 
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
+}
+
+void PopErrBox( const char *buff )
+{
+    WriteText( STD_ERR, buff, strlen( buff ) );
 }

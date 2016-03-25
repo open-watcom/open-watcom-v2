@@ -31,14 +31,9 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "distypes.h"
 #include "dis.h"
-
-extern long SEX( unsigned long v, unsigned bit );
-
-extern const dis_range          AXPRangeTable[];
-extern const int                AXPRangeTablePos[];
-extern const unsigned char      AXPMaxInsName;
+#include "distypes.h"
+#include "disaxp.h"
 
 typedef union {
     unsigned_32 full;
@@ -107,7 +102,7 @@ dis_handler_return AXPMemory( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.memory.ra + DR_AXP_r0;
     ins->op[1].type = DO_MEMORY_ABS;
-    ins->op[1].value = SEX( code.memory.disp, 15 );
+    ins->op[1].value = DisSEX( code.memory.disp, 15 );
     ins->op[1].base = code.memory.rb + DR_AXP_r0;
     ins->num_ops = 2;
     switch( code.memory.opcode & 0x0b ) {
@@ -199,7 +194,7 @@ dis_handler_return AXPBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.branch.ra + DR_AXP_r0;
     ins->op[1].type = DO_RELATIVE;
-    ins->op[1].value = (SEX( code.branch.disp, 20 ) + 1) * sizeof( unsigned_32 );
+    ins->op[1].value = (DisSEX( code.branch.disp, 20 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 2;
     return( DHR_DONE );
 }
@@ -552,7 +547,7 @@ static size_t AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 }
 
 static size_t AXPOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     dis_operand *op;
 
@@ -598,7 +593,7 @@ static void AXPPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 
 static size_t AXPPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
-        dis_format_flags flags, unsigned op_num, char *op_buff, unsigned buff_len )
+        dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
     // Nothing to do
     h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;

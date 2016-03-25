@@ -33,7 +33,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "trpimp.h"
+#include "trptypes.h"
+#include "trpcore.h"
+#include "trpld.h"
+#include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
 #include "tcerr.h"

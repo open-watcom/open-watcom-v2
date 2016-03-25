@@ -143,7 +143,7 @@ _cstart_ proc near
         push    ebx
         push    edx
         mov     al,08
-        mov     edx,0
+        xor     edx,edx
         mov     ebx,29
         int     0f2h
         pop     edx
@@ -169,9 +169,9 @@ endif
         mov     _endheap,ecx
         add     _endheap,ebx
 
-        pop     eax         ; argc
-        mov     edx,esp         ; argv
-        lea     ebx,4[edx+eax*4] ; arge
+        pop     eax                 ; argc
+        mov     edx,esp             ; argv
+        lea     ebx,4[edx+eax*4]    ; arge
         jmp     __CMain
 
 ;
@@ -190,11 +190,11 @@ __exit proc near
 ifndef __STACK__
         push    eax                     ; only if not already on the stack
 endif
-        mov     dx,ss
-        mov     ds,dx
+        mov     edx,ss
+        mov     ds,edx
         cld                             ; check lower region for altered values
         mov     edi,offset DGROUP:__nullarea; set es:di for scan
-        mov     es,dx
+        mov     es,edx
         mov     ecx,offset DGROUP:end_null
         sub     ecx,edi
         shr     ecx,1
@@ -213,7 +213,8 @@ else
         mov     eax,offset DGROUP:NullAssign; point to msg
 endif
         call    __fatal_runtime_error
-        jmp     __qnx_exit
+        ; never return
+
 __exit endp
 
 _TEXT   ends

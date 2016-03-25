@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
@@ -183,7 +183,7 @@ void WInitDataFromAccelTable( WAccelTable *tbl, void *tdata )
         data32 = (AccelTableEntry32 *)tdata;
         while( entry != NULL ) {
             i++;
-            data32[i] = entry->entry32;
+            data32[i] = entry->u.entry32;
             entry = entry->next;
         }
         data32[i].Flags |= ACCEL_LAST;
@@ -191,7 +191,7 @@ void WInitDataFromAccelTable( WAccelTable *tbl, void *tdata )
         data = (AccelTableEntry *)tdata;
         while( entry != NULL ) {
             i++;
-            data[i] = entry->entry;
+            data[i] = entry->u.entry;
             entry = entry->next;
         }
         data[i].Flags |= ACCEL_LAST;
@@ -217,8 +217,8 @@ void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
         do {
             i++;
             entry->is32bit = true;
-            entry->entry32 = data32[i];
-            entry->entry32.Flags &= ~ACCEL_LAST;
+            entry->u.entry32 = data32[i];
+            entry->u.entry32.Flags &= ~ACCEL_LAST;
             entry = entry->next;
         } while( entry != NULL && !(data32[i].Flags & ACCEL_LAST) );
     } else {
@@ -226,8 +226,8 @@ void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
         do {
             i++;
             entry->is32bit = false;
-            entry->entry = data[i];
-            entry->entry.Flags &= ~ACCEL_LAST;
+            entry->u.entry = data[i];
+            entry->u.entry.Flags &= ~ACCEL_LAST;
             entry = entry->next;
         } while( entry != NULL && !(data[i].Flags & ACCEL_LAST) );
     }
@@ -420,7 +420,7 @@ bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
 
     if( ok ) {
         ((BYTE *)(*data))[0] = entry->is32bit;
-        memcpy( (BYTE *)(*data) + 1, &entry->entry, *dsize );
+        memcpy( (BYTE *)(*data) + 1, &entry->u.entry, *dsize );
     }
 
     return( ok );
@@ -444,7 +444,7 @@ bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
     }
 
     if( ok ) {
-        memcpy( &entry->entry, (BYTE *)data + 1, len );
+        memcpy( &entry->u.entry, (BYTE *)data + 1, len );
     }
 
     return( ok );
@@ -479,9 +479,9 @@ bool WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->is32bit ) {
-            id = entry->entry32.Id;
+            id = entry->u.entry32.Id;
         } else {
-            id = (uint_16)entry->entry.Id;
+            id = (uint_16)entry->u.entry.Id;
         }
         vlist = WRLookupValue( symbol_table, id );
         ok = (vlist != NULL && vlist->next == NULL);
@@ -516,9 +516,9 @@ bool WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->is32bit ) {
-            entry->entry32.Id = (uint_16)hv;
+            entry->u.entry32.Id = (uint_16)hv;
         } else {
-            entry->entry.Id = (uint_16)hv;
+            entry->u.entry.Id = (uint_16)hv;
         }
     }
 

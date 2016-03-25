@@ -53,11 +53,11 @@
 
 _WCRTLINK int _bfreeseg( __segment seg )
 {
-    __segment           heap_seg;
-    __segment           prev_seg;
-    struct heapblk _WCFAR *heap;
-    struct heapblk _WCFAR *next_heap;
-    struct heapblk _WCFAR *prev_heap;
+    __segment   heap_seg;
+    __segment   prev_seg;
+    heapblk     _WCFAR *heap;
+    heapblk     _WCFAR *next_heap;
+    heapblk     _WCFAR *prev_heap;
 
     _AccessFHeap();
     heap = MK_FP( seg, 0 );
@@ -69,7 +69,7 @@ _WCRTLINK int _bfreeseg( __segment seg )
         next_heap = MK_FP( seg, 0 );
         next_heap->prevseg = prev_seg;
     }
-    if( prev_seg == 0 ) {
+    if( prev_seg == _NULLSEG ) {
         __bheap = seg;
     } else {
         prev_heap = MK_FP( prev_seg, 0 );

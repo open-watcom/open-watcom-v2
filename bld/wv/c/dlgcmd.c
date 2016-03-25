@@ -41,13 +41,18 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgutil.h"
+#include "dbgcmd.h"
+#include "dbginit.h"
 
-extern bool             TBreak( void );
+
+typedef struct dlg_command {
+    char            cmd[TXT_LEN];
+} dlg_command;
+
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );
-extern void             DoCmd(char*);
 
 
 static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
@@ -82,7 +87,7 @@ static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
         case CTL_CMD_OK:
             text = GUIGetText( gui, CTL_CMD_EDIT );
             if( text != NULL ) {
-                if( text[0] != '\0' )
+                if( text[0] != NULLCHAR )
                     WndSaveToHistory( CmdHistory, text );
                 DoCmd( DupStr( text ) );
                 GUIMemFree( text );
@@ -100,7 +105,7 @@ static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  void    DlgCmd( void )
+void    DlgCmd( void )
 {
     dlg_command *dlg;
 

@@ -38,28 +38,28 @@ void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
 {
     int diff;
 
-    if( (int)wptr->dirty.height <= 0 ) {
-        wptr->dirty = area;
+    if( (int)wptr->dirty_area.height <= 0 ) {
+        wptr->dirty_area = area;
     } else {
-        diff = (int) wptr->dirty.row - (int) area.row;
+        diff = (int)wptr->dirty_area.row - (int)area.row;
         if( diff > 0 ) {
-            wptr->dirty.height += diff;
-            wptr->dirty.row -= diff;
+            wptr->dirty_area.height += diff;
+            wptr->dirty_area.row -= diff;
         }
-        diff = (int) wptr->dirty.col - (int) area.col;
+        diff = (int)wptr->dirty_area.col - (int)area.col;
         if( diff > 0 ) {
-            wptr->dirty.width += diff;
-            wptr->dirty.col -= diff;
+            wptr->dirty_area.width += diff;
+            wptr->dirty_area.col -= diff;
         }
-        diff = (int) area.height + (int) area.row
-                    - (int) wptr->dirty.height - (int) wptr->dirty.row;
+        diff = (int)area.height + (int)area.row
+                    - (int)wptr->dirty_area.height - (int)wptr->dirty_area.row;
         if( diff > 0 ) {
-            wptr->dirty.height += diff;
+            wptr->dirty_area.height += diff;
         }
-        diff = (int) area.width + (int) area.col
-                    - (int) wptr->dirty.width - (int) wptr->dirty.col;
+        diff = (int)area.width + (int)area.col
+                    - (int)wptr->dirty_area.width - (int)wptr->dirty_area.col;
         if( diff > 0 ) {
-            wptr->dirty.width += diff;
+            wptr->dirty_area.width += diff;
         }
     }
 }

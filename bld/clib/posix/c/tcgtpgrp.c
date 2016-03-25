@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ _WCRTLINK  pid_t  tcgetpgrp( int __fildes )
 {
     pid_t pid;
     if ( ioctl( __fildes, TIOCGPGRP, &pid ) == -1 )
-        return -1;
-    return pid;
+        return( -1 );
+    return( pid );
 }
 

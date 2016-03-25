@@ -36,11 +36,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <i64.h>
+#include "bool.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
 #include "madsys.h"
 #include "xfloat.h"
+
 
 #if defined( _M_IX86 ) || defined( _M_X64 ) || defined( __ALPHA__ ) || defined( __PPC__ ) || defined( __MIPS__ )
    #define MNR_HOST_SIGNED      MNR_TWOS_COMP
@@ -55,9 +57,14 @@
     #define ME_HOST             ME_LITTLE
 #endif
 
+#define BITS2BYTES(x)           (((x) + (BITS_PER_BYTE - 1)) / BITS_PER_BYTE)
+#define TYPE2BITS(x)            (sizeof(x) * BITS_PER_BYTE)
+#define BYTESPOS(x)             ((x) / BITS_PER_BYTE)
+#define BITSPOS(x)              ((x) % BITS_PER_BYTE)
+
 const static unsigned EndMap[2][8] = {
-        /* ME_LITTLE */ { 0, 1, 2, 3, 4, 5, 6, 7 },
-        /* ME_BIG */    { 7, 6, 5, 4, 3, 2, 1, 0 },
+    { 0, 1, 2, 3, 4, 5, 6, 7 },     /* ME_LITTLE */
+    { 7, 6, 5, 4, 3, 2, 1, 0 },     /* ME_BIG */
 };
 
 struct mad_state_data {
@@ -65,16 +72,15 @@ struct mad_state_data {
     /* followed by the imp_mad_state structure */
 };
 
-typedef struct mad_entry mad_entry;
-struct mad_entry {
-    mad_entry           *next;
+typedef struct mad_entry {
+    struct mad_entry    *next;
     char                *file;
     char                *desc;
     mad_imp_routines    *rtns;
     mad_state_data      *sl;
-    mad_handle          mh;
+    dig_mad             mad;
     mad_sys_handle      sys_hdl;
-};
+} mad_entry;
 
 static mad_entry        *MADList;
 static mad_entry        *Active;
@@ -94,7 +100,7 @@ static mad_status DIGCLIENT MADCliTypeConvert( const mad_type_info *in_t, const 
     return( MADTypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGCLIENT MADCliTypeToString( unsigned radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+static mad_status DIGCLIENT MADCliTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     return( MADTypeToString( radix, mti, data, buff, buff_size_p ) );
 }
@@ -143,11 +149,19 @@ mad_client_routines MADClientInterface = {
 
 static mad_imp_routines DummyRtns;      /* forward reference */
 
-static mad_entry        Dummy =
-        { NULL, "", "Unknown Architecture", &DummyRtns, NULL, 0 };
+static mad_entry        Dummy = {
+    NULL, "", "Unknown Architecture", &DummyRtns, NULL, 0
+};
 
-static const mad_string EmptyStrList[] = { MAD_MSTR_NIL };
-static const mad_toggle_strings EmptyToggleList[] = { { MAD_MSTR_NIL }, { MAD_MSTR_NIL }, { MAD_MSTR_NIL } };
+static const mad_string EmptyStrList[] = {
+    MAD_MSTR_NIL
+};
+
+static const mad_toggle_strings EmptyToggleList[] = {
+    { MAD_MSTR_NIL },
+    { MAD_MSTR_NIL },
+    { MAD_MSTR_NIL }
+};
 
 static mad_status MADStatus( mad_status ms )
 {
@@ -155,18 +169,24 @@ static mad_status MADStatus( mad_status ms )
     return( ms );
 }
 
-static mad_entry *MADFind( mad_handle mh )
+static mad_entry *MADFind( dig_mad mad )
 {
     mad_entry   *curr;
 
-    if( mh == MAD_NIL ) return( NULL );
-    if( mh == Active->mh ) return( Active );
+    if( mad == MAD_NIL )
+        return( NULL );
+    if( mad == Active->mad )
+        return( Active );
     for( curr = MADList; curr != NULL; curr = curr->next ) {
-        if( curr->mh == mh ) return( curr );
+        if( curr->mad == mad ) {
+            return( curr );
+        }
     }
     return( NULL );
 }
 
+#define quoted(x)   # x
+#define strx(x)     quoted(x)
 
 /*
  *      Control Routines
@@ -175,11 +195,15 @@ static mad_entry *MADFind( mad_handle mh )
 mad_status      MADInit( void )
 {
     static const struct {
-        mad_handle      mh;
+        dig_mad         mad;
         const char      *file;
         const char      *desc;
     } list[] = {
+#ifdef USE_FILENAME_VERSION
+        #define pick_mad(enum,file,desc) {enum,file strx(USE_FILENAME_VERSION),desc},
+#else
         #define pick_mad(enum,file,desc) {enum,file,desc},
+#endif
         #include "madarch.h"
         #undef pick_mad
     };
@@ -190,7 +214,7 @@ mad_status      MADInit( void )
     MADList = NULL;
     Active = &Dummy;
     for( i = 0; i < sizeof( list ) / sizeof( list[0] ); ++i ) {
-        ms = MADRegister( list[i].mh, list[i].file, list[i].desc );
+        ms = MADRegister( list[i].mad, list[i].file, list[i].desc );
         if( ms != MS_OK ) {
             return( ms );
         }
@@ -198,16 +222,16 @@ mad_status      MADInit( void )
     return( ms );
 }
 
-mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
+mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
 {
     mad_entry   **owner;
     mad_entry   *curr;
     mad_entry   *old;
-    unsigned    file_len;
-    unsigned    desc_len;
+    size_t      file_len;
+    size_t      desc_len;
 
     for( owner = &MADList; (curr = *owner) != NULL; owner = &curr->next ) {
-        if( curr->mh == mh ) {
+        if( curr->mad == mad ) {
             *owner = curr->next;
             old = Active;
             Active = curr;
@@ -217,7 +241,7 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
             Active = old;
             if( curr == Active )
                 Active = &Dummy;
-            /* MADUnload( curr->mh );  Did not work from here. */
+            /* MADUnload( curr->mad );  Did not work from here. */
             /* Removed call, and moved fixed functionality here */
             if( curr->rtns != NULL ) {
                 curr->rtns->MIFini();
@@ -234,16 +258,16 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
         return( MS_OK );
     file_len = strlen( file );
     desc_len = strlen( desc );
-    curr = DIGCliAlloc( (sizeof( *curr ) + 2) + file_len + desc_len );
+    curr = DIGCliAlloc( sizeof( *curr ) + 2 + file_len + desc_len );
     if( curr == NULL )
         return( MADStatus( MS_ERR | MS_NO_MEM ) );
     curr->next = *owner;
     *owner = curr;
     curr->file = (char *)curr + sizeof( *curr );
-    curr->desc = &curr->file[ file_len + 1 ];
+    curr->desc = &curr->file[file_len + 1];
     curr->rtns = NULL;
     curr->sl   = NULL;
-    curr->mh   = mh;
+    curr->mad  = mad;
     curr->sys_hdl = NULL_SYSHDL;
     strcpy( curr->file, file );
     strcpy( curr->desc, desc );
@@ -256,14 +280,16 @@ static mad_status DIGREGISTER DummyInit( void )
     return( MS_OK );
 }
 
-mad_status      MADLoad( mad_handle mh )
+mad_status      MADLoad( dig_mad mad )
 {
     mad_entry           *me;
     mad_status          ms;
 
-    me = MADFind( mh );
-    if( me == NULL ) return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
-    if( me->rtns != NULL ) return( MS_OK );
+    me = MADFind( mad );
+    if( me == NULL )
+        return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
+    if( me->rtns != NULL )
+        return( MS_OK );
     ms = MADSysLoad( me->file, &MADClientInterface, &me->rtns, &me->sys_hdl );
     if( ms != MS_OK ) {
         me->rtns = NULL;
@@ -272,19 +298,19 @@ mad_status      MADLoad( mad_handle mh )
     if( MADClientInterface.major != me->rtns->major
      || MADClientInterface.minor > me->rtns->minor ) {
         me->rtns = NULL;
-        MADUnload( mh );
+        MADUnload( mad );
         return( MADStatus( MS_ERR|MS_INVALID_MAD_VERSION ) );
     }
     ms = me->rtns->MIInit();
     if( ms != MS_OK ) {
         me->rtns = NULL;
-        MADUnload( mh );
+        MADUnload( mad );
         return( MADStatus( ms ) );
     }
     if( me->sl == NULL ) {
         me->sl = DIGCliAlloc( sizeof( *me->sl ) + me->rtns->MIStateSize() );
         if( me->sl == NULL ) {
-            MADUnload( mh );
+            MADUnload( mad );
             return( MADStatus( MS_ERR|MS_NO_MEM ) );
         }
         me->rtns->MIStateInit( (imp_mad_state_data *)&me->sl[1] );
@@ -299,42 +325,42 @@ static void DIGREGISTER DummyFini( void )
     /* never actually called */
 }
 
-void            MADUnload( mad_handle mh )
+void            MADUnload( dig_mad mad )
 {
     mad_entry   *me;
 
-    me = MADFind( mh );
-    if( me == NULL )
-        return;
-    if( me->rtns != NULL ) {
-        me->rtns->MIFini();
-        me->rtns = NULL;
-    }
-    if( me->sys_hdl != NULL_SYSHDL ) {
-        MADSysUnload( &me->sys_hdl );
+    me = MADFind( mad );
+    if( me != NULL ) {
+        if( me->rtns != NULL ) {
+            me->rtns->MIFini();
+            me->rtns = NULL;
+        }
+        if( me->sys_hdl != NULL_SYSHDL ) {
+            MADSysUnload( &me->sys_hdl );
+        }
     }
 }
 
-mad_status      MADLoaded( mad_handle mh )
+mad_status      MADLoaded( dig_mad mad )
 {
     mad_entry   *me;
 
-    me = MADFind( mh );
+    me = MADFind( mad );
     if( me == NULL )
         return( MADStatus( MS_ERR|MS_UNREGISTERED_MAD ) );
     return( me->rtns != NULL ? MS_OK : MS_FAIL );
 }
 
-mad_handle      MADActiveSet( mad_handle mh )
+dig_mad         MADActiveSet( dig_mad mad )
 {
-    mad_handle  old;
-    mad_entry   *me;
+    dig_mad         mad_old;
+    mad_entry       *me;
 
-    old = Active->mh;
-    me = MADFind( mh );
+    mad_old = Active->mad;
+    me = MADFind( mad );
     if( me != NULL )
         Active = me;
-    return( old );
+    return( mad_old );
 }
 
 static unsigned DIGREGISTER DummyStateSize( void )
@@ -379,23 +405,20 @@ mad_state_data  *MADStateSet( mad_state_data *msd )
     mad_state_data      **owner;
     mad_state_data      *curr;
 
-    if( msd == NULL ) return( Active->sl );
-    owner = &Active->sl;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) {
-            MADStatus( MS_ERR|MS_NO_MEM );
-            return( Active->sl );
+    if( msd != NULL ) {
+        for( owner = &Active->sl; (curr = *owner) != NULL; owner = &curr->next ) {
+            if( curr == msd ) {
+                curr = Active->sl;
+                *owner = msd->next;
+                msd->next = curr;
+                Active->sl = msd;
+                Active->rtns->MIStateSet( (imp_mad_state_data *)&msd[1] );
+                return( curr );
+            }
         }
-        if( curr == msd ) break;
-        owner = &curr->next;
+        MADStatus( MS_ERR|MS_NO_MEM );
     }
-    curr = Active->sl;
-    *owner = msd->next;
-    msd->next = curr;
-    Active->sl = msd;
-    Active->rtns->MIStateSet( (imp_mad_state_data *)&msd[1] );
-    return( curr );
+    return( Active->sl );
 }
 
 void            MADStateCopy( const mad_state_data *src, mad_state_data *dst )
@@ -408,24 +431,20 @@ void            MADStateDestroy( mad_state_data *msd )
     mad_state_data      **owner;
     mad_state_data      *curr;
 
-    owner = &Active->sl;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) {
-            MADStatus( MS_ERR|MS_INVALID_STATE );
+    for( owner = &Active->sl; (curr = *owner) != NULL; owner = &curr->next ) {
+        if( curr == msd ) {
+            *owner = msd->next;
+            DIGCliFree( msd );
             return;
         }
-        if( curr == msd ) break;
-        owner = &curr->next;
     }
-    *owner = msd->next;
-    DIGCliFree( msd );
+    MADStatus( MS_ERR|MS_INVALID_STATE );
 }
 
 void            MADFini( void )
 {
     while( MADList != NULL ) {
-        MADRegister( MADList->mh, NULL, NULL );
+        MADRegister( MADList->mad, NULL, NULL );
     }
 }
 
@@ -435,18 +454,20 @@ walk_result     MADWalk( MAD_WALKER *wk, void *d )
     mad_entry   *me;
 
     for( me = MADList; me != NULL; me = me->next ) {
-        wr = wk( me->mh, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        wr = wk( me->mad, d );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
 
-unsigned        MADNameFile( mad_handle mh, char *buff, unsigned buff_size )
+size_t MADNameFile( dig_mad mad, char *buff, size_t buff_size )
 {
     mad_entry   *me;
-    unsigned    len;
+    size_t      len;
 
-    me = MADFind( mh );
+    me = MADFind( mad );
     if( me == NULL ) {
         MADStatus( MS_ERR|MS_UNREGISTERED_MAD );
         return( 0 );
@@ -462,12 +483,12 @@ unsigned        MADNameFile( mad_handle mh, char *buff, unsigned buff_size )
     return( len );
 }
 
-unsigned        MADNameDescription( mad_handle mh, char *buff, unsigned buff_size )
+size_t MADNameDescription( dig_mad mad, char *buff, size_t buff_size )
 {
     mad_entry   *me;
-    unsigned    len;
+    size_t      len;
 
-    me = MADFind( mh );
+    me = MADFind( mad );
     if( me == NULL ) {
         MADStatus( MS_ERR|MS_UNREGISTERED_MAD );
         return( 0 );
@@ -501,12 +522,14 @@ void            MADAddrAdd( address *a, long b, mad_address_format af )
 static int DIGREGISTER DummyAddrComp( const address *a, const address *b, mad_address_format af )
 {
     af = af;
-    if( a->mach.offset == b->mach.offset ) return(  0 );
-    if( a->mach.offset >  b->mach.offset ) return( +1 );
-                                           return( -1 );
+    if( a->mach.offset < b->mach.offset )
+        return( -1 );
+    if( a->mach.offset >  b->mach.offset )
+        return( +1 );
+    return( 0 );
 }
 
-int             MADAddrComp( const address *a, const address *b, mad_address_format af )
+int MADAddrComp( const address *a, const address *b, mad_address_format af )
 {
     return( Active->rtns->MIAddrComp( a, b, af ) );
 }
@@ -604,13 +627,13 @@ mad_string      MADTypeName( mad_type_handle th )
     return( Active->rtns->MITypeName( th ) );
 }
 
-static unsigned DIGREGISTER DummyTypePreferredRadix( mad_type_handle th )
+static mad_radix DIGREGISTER DummyTypePreferredRadix( mad_type_handle th )
 {
     th = th;
     return( 0 );
 }
 
-unsigned        MADTypePreferredRadix( mad_type_handle th )
+mad_radix       MADTypePreferredRadix( mad_type_handle th )
 {
     return( Active->rtns->MITypePreferredRadix( th ) );
 }
@@ -643,25 +666,25 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
     tk &= MTK_ALL;
     mti->b.kind = tk;
     mti->b.handler_code = MAD_DEFAULT_HANDLING;
-    mti->b.bits = size * BITS_PER_BYTE;
+    if( size < 0 ) {
+        mti->b.bits = (dig_size_bits)( -size * BITS_PER_BYTE );
+    } else {
+        mti->b.bits = (dig_size_bits)( size * BITS_PER_BYTE );
+    }
     mti->i.endian = ME_HOST;
     switch( tk ) {
     case MTK_INTEGER:
         mti->i.nr = MNR_UNSIGNED;
-        if( size < 0 ) {
+        if( size < 0 )
             mti->i.nr = MNR_HOST_SIGNED;
-            mti->b.bits = -mti->b.bits;
-        }
         mti->i.sign_pos = mti->b.bits - 1;
         break;
     case MTK_ADDRESS:
-        if( size == sizeof( address ) ) {
-            size = sizeof( addr48_ptr );
-            mti->b.bits = sizeof( addr48_ptr ) * BITS_PER_BYTE;
-        }
         mti->a.i.nr = MNR_UNSIGNED;
-        mti->a.seg.bits = sizeof( addr_seg )*BITS_PER_BYTE;
-        mti->a.seg.pos = (size - sizeof( addr_seg )) * BITS_PER_BYTE;
+        if( size == sizeof( address ) )
+            mti->b.bits = TYPE2BITS( addr48_ptr );
+        mti->a.seg.pos = (byte)( mti->b.bits - TYPE2BITS( addr_seg ) );
+        mti->a.seg.bits = TYPE2BITS( addr_seg );
         break;
     case MTK_FLOAT:
         mti->f.exp.base = FLT_RADIX;
@@ -714,9 +737,9 @@ mad_type_handle MADTypeDefault( mad_type_kind tk, mad_address_format af, const m
 }
 
 
-static mad_status DIGREGISTER DummyTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+static mad_status DIGREGISTER DummyTypeConvert( const mad_type_info *ti_src, const void *src, const mad_type_info *ti_dst, void *dst, addr_seg seg )
 {
-    in_t = in_t; in_d = in_d; out_t = out_t; out_d = out_d; seg = seg;
+    ti_src = ti_src; src = src; ti_dst = ti_dst; dst = dst; seg = seg;
     return( MS_UNSUPPORTED );
 }
 
@@ -744,24 +767,24 @@ typedef union {
 
 /* Convert integer of specified type to native representation (64-bit) */
 // NYI: non-two's complement support
-static mad_status DecomposeInt( const mad_type_info *mti, const void *d,
+static mad_status DecomposeInt( const mad_type_info *mti, const void *src,
                                 decomposed_item *v )
 {
     unsigned    bytes;
     unsigned    i;
-    unsigned    sign_bit;
+    unsigned    bit_shift;
     unsigned_8  *dst = &v->i.u._8[0];
 
-    bytes = mti->b.bits / BITS_PER_BYTE;
+    bytes = BYTESPOS( mti->b.bits );
 #if defined( __BIG_ENDIAN__ )
     dst += DI_SIZE - bytes;     /* low bytes are higher in memory */
 #endif
     /* copy significant (low) bytes */
     if( mti->i.endian == ME_HOST ) {
-        memcpy( dst, d, bytes );
+        memcpy( dst, src, bytes );
     } else {
         for( i = 0; i < bytes; i++ ) {
-            dst[i] = ((unsigned_8 *)d)[EndMap[ME_BIG][DI_SIZE - bytes + i]];
+            dst[i] = ((unsigned_8 *)src)[EndMap[ME_BIG][DI_SIZE - bytes + i]];
         }
     }
     /* clear high bytes */
@@ -772,10 +795,10 @@ static mad_status DecomposeInt( const mad_type_info *mti, const void *d,
 #endif
     /* sign extend if necessary */
     if( mti->i.nr != MNR_UNSIGNED ) {
-        i = mti->i.sign_pos / BITS_PER_BYTE;
-        sign_bit = mti->i.sign_pos % BITS_PER_BYTE;
-        if( v->i.u._8[i] & (1 << sign_bit) ) {
-            v->i.u._8[i] |= 0xff << sign_bit;
+        i = BYTESPOS( mti->i.sign_pos );
+        bit_shift = BITSPOS( mti->i.sign_pos );
+        if( v->i.u._8[i] & (1 << bit_shift) ) {
+            v->i.u._8[i] |= 0xff << bit_shift;
             ++i;
 #if defined( __BIG_ENDIAN__ )
             memset( &v->i.u._8[0], 0xff, DI_SIZE - i );
@@ -787,17 +810,17 @@ static mad_status DecomposeInt( const mad_type_info *mti, const void *d,
     return( MS_OK );
 }
 
-static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
+static mad_status DecomposeAddr( const mad_type_info *mti, const void *src,
                                 addr_seg seg, decomposed_item *v )
 {
     const void          *valp;
 
-    valp = d;
+    valp = src;
     if( mti->a.seg.pos == 0 ) {
         /* segment is at the low end - offset above it */
-        if( (mti->a.seg.bits % BITS_PER_BYTE) != 0 )
+        if( BITSPOS( mti->a.seg.bits ) != 0 )
             return( MS_UNSUPPORTED );
-        valp = (const unsigned_8 *)d + mti->a.seg.bits / BITS_PER_BYTE;
+        valp = (const unsigned_8 *)src + BYTESPOS( mti->a.seg.bits );
     }
 // NYI - address endianness translation doesn't work yet
 //    if( mti->i.endian == ME_HOST ) {
@@ -806,7 +829,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
             v->a.offset = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.offset = *(unsigned_32 *)valp;
+            v->a.offset = (addr_seg)*(unsigned_32 *)valp;
             break;
         default:
             return( MS_UNSUPPORTED );
@@ -827,19 +850,19 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
             return( MS_UNSUPPORTED );
         }
         for( i = 0; i < bytes; i++ ) {
-            v->i.u._8[i] = ((unsigned_8 *)d)[EndMap[ME_BIG][DI_SIZE - bytes + i]];
+            v->i.u._8[i] = ((unsigned_8 *)src)[EndMap[ME_BIG][DI_SIZE - bytes + i]];
         }
     }
 #endif
     if( mti->a.seg.bits == 0 ) {
         v->a.segment = seg;
     } else {
-        valp = d;
+        valp = src;
         if( mti->a.seg.pos != 0 ) {
             /* segment is at the high end - offset below it */
-            if( (mti->a.seg.pos % BITS_PER_BYTE) != 0 )
+            if( BITSPOS( mti->a.seg.pos ) != 0 )
                 return( MS_UNSUPPORTED );
-            valp = (const unsigned_8 *)d + mti->a.seg.pos / BITS_PER_BYTE;
+            valp = (const unsigned_8 *)src + BYTESPOS( mti->a.seg.pos );
         }
         // TODO: byte swap segment also
         switch( mti->a.seg.bits ) {
@@ -847,7 +870,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *d,
             v->a.segment = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.segment = *(unsigned_32 *)valp;
+            v->a.segment = (addr_seg)( *(unsigned_32 *)valp );
             break;
         default:
             return( MS_UNSUPPORTED );
@@ -865,108 +888,112 @@ static const unsigned short BitMask[] = {
 
 static void ShiftBits( unsigned bits, int amount, void *d )
 {
-    unsigned_8  *b = d;
     unsigned    bytes;
     unsigned    byte_shift;
+    unsigned    bit_shift;
     unsigned_8  tmp1;
     unsigned_8  tmp2;
     unsigned    i;
     int         j;
+    bool        neg;
 
-    bytes = (bits + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
-    if( amount > 0 ) {
-        /* left shift */
-        byte_shift = amount / BITS_PER_BYTE;
-        if( byte_shift != 0 ) {
-#if defined( __BIG_ENDIAN__ )
-            memmove( b, b + byte_shift, bytes - byte_shift );
-            memset( b + byte_shift, 0, byte_shift );
-            byte_shift = 0;
-#else
-            memmove( b + byte_shift, b, bytes - byte_shift );
-            memset( b, 0, byte_shift );
-#endif
-            amount %= BITS_PER_BYTE;
+    if( amount != 0 ) {
+        bytes = BITS2BYTES( bits );
+        neg = false;
+        if( amount < 0 ) {
+            amount = -amount;
+            neg = true;
         }
-        if( amount != 0 ) {
-            tmp1 = 0;
-            for( i = byte_shift; i < bytes; ++i ) {
-                tmp2 = b[i];
-                b[i] = (b[i] << amount) | (tmp1 >> (BITS_PER_BYTE - amount));
-                tmp1 = tmp2;
+        byte_shift = BYTESPOS( amount );
+        bit_shift = BITSPOS( amount );
+        if( byte_shift != 0 ) {
+            if( !neg ) {
+                /* left shift */
+#if defined( __BIG_ENDIAN__ )
+                memmove( d, (unsigned_8 *)d + byte_shift, bytes - byte_shift );
+                memset( (unsigned_8 *)d + byte_shift, 0, byte_shift );
+                byte_shift = 0;
+#else
+                memmove( (unsigned_8 *)d + byte_shift, d, bytes - byte_shift );
+                memset( d, 0, byte_shift );
+#endif
+            } else {
+                /* right shift */
+#if defined( __BIG_ENDIAN__ )
+                memmove( (unsigned_8 *)d + byte_shift, d, bytes - byte_shift );
+                memset( d, 0, byte_shift );
+                byte_shift = 0;
+#else
+                memmove( d, (unsigned_8 *)d + byte_shift, bytes - byte_shift );
+                memset( (unsigned_8 *)d + bytes - byte_shift, 0, byte_shift );
+#endif
             }
         }
-    } else if( amount < 0 ) {
-        /* right shift */
-        amount = -amount;
-        byte_shift = amount / BITS_PER_BYTE;
-        if( byte_shift != 0 ) {
-#if defined( __BIG_ENDIAN__ )
-            memmove( b + byte_shift, b, bytes - byte_shift );
-            memset( b, 0, byte_shift );
-            byte_shift = 0;
-#else
-            memmove( b, b + byte_shift, bytes - byte_shift );
-            memset( b + bytes - byte_shift, 0, byte_shift );
-#endif
-            amount %= BITS_PER_BYTE;
-        }
-        if( amount != 0 ) {
+        if( bit_shift != 0 ) {
             tmp1 = 0;
-            for( j = bytes - byte_shift - 1; j >= 0; --j ) {
-                tmp2 = b[j];
-                b[j] = (b[j] >> amount) | (tmp1 << (BITS_PER_BYTE - amount));
-                tmp1 = tmp2;
+            if( !neg ) {
+                /* left shift */
+                for( i = byte_shift; i < bytes; ++i ) {
+                    tmp2 = ((unsigned_8 *)d)[i];
+                    ((unsigned_8 *)d)[i] = (((unsigned_8 *)d)[i] << bit_shift) | (tmp1 >> (BITS_PER_BYTE - bit_shift));
+                    tmp1 = tmp2;
+                }
+            } else {
+                /* right shift */
+                for( j = bytes - byte_shift; j-- > 0; ) {
+                    tmp2 = ((unsigned_8 *)d)[j];
+                    ((unsigned_8 *)d)[j] = (((unsigned_8 *)d)[j] >> bit_shift) | (tmp1 << (BITS_PER_BYTE - bit_shift));
+                    tmp1 = tmp2;
+                }
             }
         }
     }
 }
 
-static void ExtractBits( unsigned pos, unsigned len, const void *src, void *dst, int dst_size )
+static void ExtractBits( dig_size_bits pos, dig_size_bits len, const void *src, void *dst, int dst_size )
 {
     unsigned_64         tmp;
     unsigned            bytes;
-    unsigned_8          *d = dst;
+    int                 bit_shift;
 
 #if !defined( __BIG_ENDIAN__ )
     dst_size = dst_size;
 #endif
-    src = (unsigned_8 *)src + (pos / BITS_PER_BYTE);
-    pos %= BITS_PER_BYTE;
-    bytes = (pos + len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
+    src = (unsigned_8 *)src + BYTESPOS( pos );
+    bit_shift = BITSPOS( pos );
+    bytes = BITS2BYTES( bit_shift + len );
     memset( &tmp, 0, sizeof( tmp ) );
     memcpy( &tmp, src, bytes );
-    ShiftBits( pos + len, -(int)pos, &tmp );
-    bytes = len / BITS_PER_BYTE;
-    tmp.u._8[bytes] &= BitMask[ len % BITS_PER_BYTE ];
+    ShiftBits( bit_shift + len, -bit_shift, &tmp );
+    bytes = BYTESPOS( len );
+    tmp.u._8[bytes] &= BitMask[BITSPOS( len )];
 #if defined( __BIG_ENDIAN__ )
-    d += dst_size - (len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
+    dst = (unsigned_8 *)dst + dst_size - BITS2BYTES( len );
 #endif
-    memcpy( d, &tmp, (len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE );
+    memcpy( dst, &tmp, BITS2BYTES( len ) );
 }
 
-static void InsertBits( unsigned pos, unsigned len, const void *src, void *dst )
+static void InsertBits( dig_size_bits pos, dig_size_bits len, const void *src, void *dst )
 {
     unsigned_64         tmp;
     unsigned            bytes;
     unsigned            i;
+    int                 bit_shift;
 
-    dst = (unsigned_8 *)dst + (pos / BITS_PER_BYTE);
-    pos %= BITS_PER_BYTE;
-    bytes = (len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
+    bytes = BITS2BYTES( len );
+    dst = (unsigned_8 *)dst + BYTESPOS( pos );
+    bit_shift = BITSPOS( pos );
     memset( &tmp, 0, sizeof( tmp ) );
     memcpy( &tmp, src, bytes );
-    len += pos;
-    bytes = (len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
-    ShiftBits( len, pos, &tmp );
-    src = &tmp;
+    bytes = BITS2BYTES( bit_shift + len );
+    ShiftBits( bit_shift + len, bit_shift, &tmp );
     for( i = 0; i < bytes; ++i ) {
-        ((unsigned_8 *)dst)[i] |= ((unsigned_8 *)src)[i];
+        ((unsigned_8 *)dst)[i] |= ((unsigned_8 *)&tmp)[i];
     }
 }
 
 //NYI: non radix 2, sign-magnitude floats
-static mad_status DecomposeFloat( const mad_type_info *mti, const void *d,
+static mad_status DecomposeFloat( const mad_type_info *mti, const void *src,
                                     decomposed_item *v )
 {
     unsigned    bytes;
@@ -976,8 +1003,8 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *d,
     unsigned_8  *dst = &v->f.mantissa.u._8[0];
 
     memset( v, 0, sizeof( *v ) );
-    bytes = mti->b.bits / BITS_PER_BYTE;
-    if( memcmp( &v->f.mantissa, d, bytes ) == 0 ) {
+    bytes = BYTESPOS( mti->b.bits );
+    if( memcmp( &v->f.mantissa, src, bytes ) == 0 ) {
         v->f.type = F_ZERO;
         /* number is zero */
         return( MS_OK );
@@ -987,34 +1014,31 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *d,
     dst += DF_SIZE - bytes;     /* low bytes are higher in memory */
 #endif
     if( mti->i.endian == ME_HOST ) {
-        memcpy( dst, d, bytes );
+        memcpy( dst, src, bytes );
     } else {
         for( i = 0; i < bytes; i++ ) {
-            dst[i] = ((unsigned_8 *)d)[EndMap[ME_BIG][DF_SIZE - bytes + i]];
+            dst[i] = ((unsigned_8 *)src)[EndMap[ME_BIG][DF_SIZE - bytes + i]];
         }
     }
 
-    ExtractBits( mti->f.exp.pos, mti->f.exp.data.b.bits,
-                &v->f.mantissa, &v->f.exp, sizeof( v->f.exp ) );
+    ExtractBits( mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.mantissa, &v->f.exp, sizeof( v->f.exp ) );
     /* Assuming IEEE here */
     if( v->f.exp == 0 ) {
         v->f.type = F_DENORMAL;
-    } else if( v->f.exp == BitMask[ mti->f.exp.data.b.bits ] ) {
+    } else if( v->f.exp == BitMask[mti->f.exp.data.b.bits] ) {
         v->f.type = F_SPECIAL;
     }
     v->f.exp -= mti->f.exp.bias;
-    ExtractBits( mti->f.mantissa.sign_pos, 1, &v->f.mantissa,
-                &v->f.sign, sizeof( v->f.sign ) );
+    ExtractBits( mti->f.mantissa.sign_pos, 1, &v->f.mantissa, &v->f.sign, sizeof( v->f.sign ) );
     mant_bits = mti->b.bits - mti->f.exp.data.b.bits - 1;
-    if( mti->f.exp.hidden && (v->f.type != F_DENORMAL) ) mant_bits += 1;
-    ShiftBits( sizeof( v->f.mantissa )*BITS_PER_BYTE,
-        sizeof( v->f.mantissa )*BITS_PER_BYTE - mant_bits, &v->f.mantissa );
+    if( mti->f.exp.hidden && (v->f.type != F_DENORMAL) )
+        mant_bits += 1;
+    ShiftBits( TYPE2BITS( v->f.mantissa ),
+        TYPE2BITS( v->f.mantissa ) - mant_bits, &v->f.mantissa );
     if( v->f.type == F_DENORMAL ) {
-        shifts = 0;
-        for( ;; ) {
-            if( v->f.mantissa.u._8[sizeof(v->f.mantissa)-1] & 0x80 ) break;
-            ShiftBits( sizeof( v->f.mantissa )*BITS_PER_BYTE, 1, &v->f.mantissa );
-            if( ++shifts > sizeof( v->f.mantissa )*BITS_PER_BYTE ) {
+        for( shifts = 0; (v->f.mantissa.u._8[sizeof( v->f.mantissa ) - 1] & 0x80) == 0; ++shifts ) {
+            ShiftBits( TYPE2BITS( v->f.mantissa ), 1, &v->f.mantissa );
+            if( shifts >= TYPE2BITS( v->f.mantissa ) ) {
                 /* mantissa is all zero bits - we must have gotten a -0.0 */
                 v->f.type = F_ZERO;
                 v->f.exp = 0;
@@ -1025,108 +1049,106 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *d,
         v->f.type = F_NORMAL;
     }
     if( mti->f.exp.hidden && (v->f.type != F_DENORMAL) ) {
-        v->f.mantissa.u._8[sizeof(v->f.mantissa)-1] |= 0x80;
+        v->f.mantissa.u._8[sizeof( v->f.mantissa ) - 1] |= 0x80;
     }
     return( MS_OK );
 }
 
 /* Convert native integer to specified representation */
-static mad_status ComposeInt( decomposed_item *v,
-                                const mad_type_info *mti, void *d )
+static mad_status ComposeInt( decomposed_item *v, const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
     unsigned    i;
     unsigned_8  *src = &v->i.u._8[0];
 
-    bytes = mti->b.bits / BITS_PER_BYTE;
+    bytes = BYTESPOS( mti->b.bits );
 #if defined( __BIG_ENDIAN__ )
     src += DI_SIZE - bytes;     /* low bytes are higher in memory */
 #endif
     if( mti->i.endian == ME_HOST ) {
-        memcpy( d, src, bytes );
+        memcpy( dst, src, bytes );
     } else {
         for( i = 0; i < bytes; i++ ) {
-            ((unsigned_8 *)d)[EndMap[ME_BIG][DI_SIZE - bytes + i]] = src[i];
+            ((unsigned_8 *)dst)[EndMap[ME_BIG][DI_SIZE - bytes + i]] = src[i];
         }
     }
     return( MS_OK );
 }
 
 static mad_status ComposeAddr( decomposed_item *v,
-                                const mad_type_info *mti, void *d )
+                                const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
 
     if( mti->a.seg.pos == 0 ) {
-        bytes = mti->a.seg.bits / BITS_PER_BYTE;
-        memcpy( d, &v->a.segment, bytes );
-        d = (unsigned_8 *)d + bytes;
-        bytes = (mti->b.bits - mti->a.seg.bits) / BITS_PER_BYTE;
-        memcpy( d, &v->a.offset, bytes );
+        bytes = BYTESPOS( mti->a.seg.bits );
+        memcpy( dst, &v->a.segment, bytes );
+        dst = (unsigned_8 *)dst + bytes;
+        bytes = BYTESPOS( mti->b.bits - mti->a.seg.bits );
+        memcpy( dst, &v->a.offset, bytes );
     } else {
-        bytes = (mti->b.bits - mti->a.seg.bits) / BITS_PER_BYTE;
-        memcpy( d, &v->a.offset, bytes );
-        d = (unsigned_8 *)d + bytes;
-        bytes = mti->a.seg.bits / BITS_PER_BYTE;
-        memcpy( d, &v->a.segment, bytes );
+        bytes = BYTESPOS( mti->b.bits - mti->a.seg.bits );
+        memcpy( dst, &v->a.offset, bytes );
+        dst = (unsigned_8 *)dst + bytes;
+        bytes = BYTESPOS( mti->a.seg.bits );
+        memcpy( dst, &v->a.segment, bytes );
     }
     return( MS_OK );
 }
 
 static mad_status ComposeFloat( decomposed_item *v,
-                                const mad_type_info *mti, void *d )
+                                const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
     unsigned    mant_bits;
     unsigned    i;
 
-    bytes = mti->b.bits / BITS_PER_BYTE;
-    memset( d, 0, bytes );
+    bytes = BYTESPOS( mti->b.bits );
+    memset( dst, 0, bytes );
     if( v->f.type == F_ZERO ) {
         /* number is zero */
         if( v->f.sign != 0 ) {
-            InsertBits( mti->f.mantissa.sign_pos, 1, &v->f.sign, d );
+            InsertBits( mti->f.mantissa.sign_pos, 1, &v->f.sign, dst );
         }
         return( MS_OK );
     }
     mant_bits = mti->b.bits - mti->f.exp.data.b.bits - 1;
     if( mti->f.exp.hidden ) {
-        v->f.mantissa.u._8[sizeof(v->f.mantissa)-1] &= ~0x80;
+        v->f.mantissa.u._8[sizeof( v->f.mantissa ) - 1] &= ~0x80;
         mant_bits += 1;
     }
     if( v->f.type == F_SPECIAL ) {
-        v->f.exp = BitMask[ mti->f.exp.data.b.bits ];
+        v->f.exp = BitMask[mti->f.exp.data.b.bits];
     } else {
         v->f.exp += mti->f.exp.bias;
         if( v->f.exp <= 0 ) {
             /* denormal */
             if( mti->f.exp.hidden ) {
-                v->f.mantissa.u._8[sizeof(v->f.mantissa)-1] |= 0x80;
+                v->f.mantissa.u._8[sizeof( v->f.mantissa ) - 1] |= 0x80;
             }
-            while( v->f.exp < 0 ) {
-                ShiftBits( sizeof( v->f.mantissa )*BITS_PER_BYTE, -1, &v->f.mantissa );
-                v->f.exp++;
+            for( ; v->f.exp < 0; v->f.exp++ ) {
+                ShiftBits( TYPE2BITS( v->f.mantissa ), -1, &v->f.mantissa );
             }
-        } else if( v->f.exp >= BitMask[ mti->f.exp.data.b.bits ] ) {
+        } else if( v->f.exp >= BitMask[mti->f.exp.data.b.bits] ) {
             /* infinity */
             memset( &v->f.mantissa, 0, sizeof( v->f.mantissa ) );
-            v->f.exp = BitMask[ mti->f.exp.data.b.bits ];
+            v->f.exp = BitMask[mti->f.exp.data.b.bits];
         }
     }
-    ShiftBits( sizeof( v->f.mantissa )*BITS_PER_BYTE,
-        mant_bits - sizeof( v->f.mantissa )*BITS_PER_BYTE, &v->f.mantissa );
-    memcpy( d, &v->f.mantissa, bytes );
-    InsertBits( mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.exp, d );
+    ShiftBits( TYPE2BITS( v->f.mantissa ),
+        mant_bits - TYPE2BITS( v->f.mantissa ), &v->f.mantissa );
+    memcpy( dst, &v->f.mantissa, bytes );
+    InsertBits( mti->f.exp.pos, mti->f.exp.data.b.bits, &v->f.exp, dst );
     if( v->f.sign != 0 ) {
-        InsertBits( mti->f.mantissa.sign_pos, 1, &v->f.sign, d );
+        InsertBits( mti->f.mantissa.sign_pos, 1, &v->f.sign, dst );
     }
     if( mti->i.endian != ME_HOST ) {
         for( i = 0; i < bytes / 2; i++ ) {
             unsigned_8  tmp;
 
-            tmp = ((unsigned_8 *)d)[bytes - i - 1];
-            ((unsigned_8 *)d)[bytes - i - 1] = ((unsigned_8 *)d)[i];
-            ((unsigned_8 *)d)[i] = tmp;
+            tmp = ((unsigned_8 *)dst)[bytes - i - 1];
+            ((unsigned_8 *)dst)[bytes - i - 1] = ((unsigned_8 *)dst)[i];
+            ((unsigned_8 *)dst)[i] = tmp;
         }
     }
     return( MS_OK );
@@ -1137,19 +1159,23 @@ static mad_status DoConversion( const mad_type_info *in_t, const void *in_d, con
     mad_status          ms;
     decomposed_item     value;
 
-    if( in_t->b.kind != out_t->b.kind ) return( MS_UNSUPPORTED );
+    if( in_t->b.kind != out_t->b.kind )
+        return( MS_UNSUPPORTED );
     switch( in_t->b.kind ) {
     case MTK_INTEGER:
         ms = DecomposeInt( in_t, in_d, &value );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         return( ComposeInt( &value, out_t, out_d ) );
     case MTK_ADDRESS:
         ms = DecomposeAddr( in_t, in_d, seg, &value );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         return( ComposeAddr( &value, out_t, out_d ) );
     case MTK_FLOAT:
         ms = DecomposeFloat( in_t, in_d, &value );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK )
+            return( ms );
         return( ComposeFloat( &value, out_t, out_d ) );
     }
     return( MS_UNSUPPORTED );
@@ -1159,17 +1185,18 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
 {
     mad_status  ms;
 
-    if( in_t->b.handler_code  == MAD_DEFAULT_HANDLING
-     && out_t->b.handler_code == MAD_DEFAULT_HANDLING ) {
+    if( in_t->b.handler_code  == MAD_DEFAULT_HANDLING && out_t->b.handler_code == MAD_DEFAULT_HANDLING ) {
         ms = DoConversion( in_t, in_d, out_t, out_d, seg );
-        if( ms == MS_OK ) return( MS_OK );
+        if( ms == MS_OK ) {
+            return( MS_OK );
+        }
     }
     return( Active->rtns->MITypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_info *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status DIGREGISTER DummyTypeToString( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
-    base = base;
+    radix = radix;
     mti = mti;
     d = d;
     buff_size_p = buff_size_p;
@@ -1180,9 +1207,9 @@ static mad_status DIGREGISTER DummyTypeToString( unsigned base, const mad_type_i
 static const char DigitTab[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 //NYI: big endian hosts & targets
-static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length )
+static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_length )
 {
-    unsigned            len;
+    size_t              len;
     char                save;
     int                 digits;
     unsigned_64         rem;
@@ -1193,7 +1220,7 @@ static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length
         digits = bit_length;
         break;
     case 16:
-        digits = bit_length / (BITS_PER_BYTE / 2);
+        digits = 2 * BYTESPOS( bit_length );
         break;
     default:
         digits = 0;
@@ -1202,7 +1229,7 @@ static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length
     U32ToU64( radix, &divisor );
     do {
         U64Div( &val, &divisor, &val, &rem );
-        *--p = DigitTab[ rem.u._32[I64LO32] ];
+        *--p = DigitTab[rem.u._32[I64LO32]];
         --digits;
     } while( val.u._32[I64LO32] != 0 || val.u._32[I64HI32] != 0 || digits > 0 );
     len = MADCliRadixPrefix( radix, NULL, 0 );
@@ -1213,7 +1240,7 @@ static char *U64CvtNum( unsigned_64 val, unsigned radix, char *p, int bit_length
     return( p );
 }
 
-static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length )
+static char *CvtNum( unsigned long val, mad_radix radix, char *p, int bit_length )
 {
     unsigned_64 tmp;
 
@@ -1221,29 +1248,29 @@ static char *CvtNum( unsigned long val, unsigned radix, char *p, int bit_length 
     return( U64CvtNum( tmp, radix, p, bit_length ) );
 }
 
-static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status IntTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
-    int                 neg;
+    bool                neg;
     char                buff1[128];
     char                *p;
-    unsigned            buff_size;
-    unsigned            len;
+    size_t              buff_size;
+    size_t              len;
     mad_status          ms;
 
 
     ms = DecomposeInt( mti, d, &val );
     if( ms != MS_OK )
         return( ms );
-    neg = 0;
+    neg = false;
     if( mti->i.nr != MNR_UNSIGNED && val.i.u.sign.v ) {
-        neg = 1;
+        neg = true;
         U64Neg( &val.i, &val.i );
     }
-    p = U64CvtNum( val.i, radix, &buff1[sizeof( buff1 )], mti->b.bits );
+    p = U64CvtNum( val.i, radix, buff1 + sizeof( buff1 ), mti->b.bits );
     if( neg )
         *--p = '-';
-    len = &buff1[sizeof( buff1 )] - p;
+    len = buff1 + sizeof( buff1 ) - p;
     buff_size = *buff_size_p;
     *buff_size_p = len;
     if( buff_size > 0 ) {
@@ -1256,24 +1283,24 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti, con
     return( MS_OK );
 }
 
-static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status AddrTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     decomposed_item     val;
     char                *p;
-    unsigned            buff_size;
-    unsigned            len;
+    size_t              buff_size;
+    size_t              len;
     char                buff1[80];
     mad_status          ms;
 
     ms = DecomposeAddr( mti, d, 0, &val );
     if( ms != MS_OK )
         return( ms );
-    p = CvtNum( val.a.offset, radix, &buff1[ sizeof( buff1 ) ], mti->b.bits - mti->a.seg.bits );
+    p = CvtNum( val.a.offset, radix, buff1 + sizeof( buff1 ), mti->b.bits - mti->a.seg.bits );
     if( mti->a.seg.bits != 0 ) {
         *--p = ':';
         p = CvtNum( val.a.segment, radix, p, mti->a.seg.bits );
     }
-    len = &buff1[sizeof( buff1 )] - p;
+    len = buff1 + sizeof( buff1 ) - p;
     buff_size = *buff_size_p;
     *buff_size_p = len;
     if( buff_size > 0 ) {
@@ -1297,7 +1324,7 @@ static char *fixup( char *p, int n )
     char    *start = p;
 
     if( n < MAX_DIGITS && isdigit( *p ) ) {
-        while( *p ) {
+        while( *p != '\0' ) {
             p++;
             n--;
         }
@@ -1310,11 +1337,7 @@ static char *fixup( char *p, int n )
     return( start );
 }
 
-static char *__xcvt( long_double *value,
-             int    ndigits,
-             int    *dec,
-             int    *sign,
-             char   *buf )
+static char *__xcvt( long_double *value, int ndigits, int *dec, int *sign, char *buf )
 {
     CVT_INFO    cvt;
 
@@ -1331,14 +1354,14 @@ static char *__xcvt( long_double *value,
 }
 #endif
 
-static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *buff, unsigned buff_size )
+static size_t DoStrReal( long_double *value, mad_type_info const *mti, char *buff, size_t buff_size )
 {
     unsigned    mant_digs;
 //    unsigned    exp_digs;
     char        *p;
     int         sign;
     int         exp;
-    unsigned    len;
+    size_t      len;
     char        buff1[80];
 #ifdef __WATCOMC__
     char        buff2[80];
@@ -1368,12 +1391,12 @@ static unsigned DoStrReal( long_double *value, mad_type_info const *mti, char *b
     return( len );
 }
 
-static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, const void *d, char *buff, unsigned *buff_size_p )
+static mad_status FloatTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
-    unsigned            buff_size;
+    size_t              buff_size;
     mad_type_info       host;
     unsigned_8    const *p;
-    unsigned            len;
+    size_t              len;
     mad_status          ms;
 #if defined( _LONG_DOUBLE_ )
     xreal               val;
@@ -1386,15 +1409,15 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
     case 16:
         p = d;
 #if !defined( __BIG_ENDIAN__ )
-        p += mti->b.bits / BITS_PER_BYTE;
+        p += BYTESPOS( mti->b.bits );
 #endif
-        for( len = 0; len < mti->b.bits / (BITS_PER_BYTE / 2); len += 2 ) {
+        for( len = 0; len < 2 * BYTESPOS( mti->b.bits ); len += 2 ) {
 #if !defined( __BIG_ENDIAN__ )
             --p;
 #endif
             if( len + 1 < buff_size ) {
-                buff[len + 0] = DigitTab[ *p >>   4 ];
-                buff[len + 1] = DigitTab[ *p &  0xf ];
+                buff[len + 0] = DigitTab[*p >> 4];
+                buff[len + 1] = DigitTab[*p & 0x0f];
             }
 #if defined( __BIG_ENDIAN__ )
             ++p;
@@ -1421,7 +1444,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti, c
 
 #endif
 
-mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void *d, char *buff, unsigned *buff_size_p )
+mad_status MADTypeToString( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     if( mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
         switch( mti->b.kind ) {
@@ -1444,7 +1467,7 @@ mad_status MADTypeToString( unsigned radix, const mad_type_info *mti, const void
     return( Active->rtns->MITypeToString( radix, mti, d, buff, buff_size_p ) );
 }
 
-mad_status MADTypeHandleToString( unsigned radix, mad_type_handle th, const void *d, char *buff, unsigned *buff_size_p )
+mad_status MADTypeHandleToString( mad_radix radix, mad_type_handle th, const void *d, char *buff, size_t *buff_size_p )
 {
     mad_type_info       mti;
 
@@ -1529,7 +1552,7 @@ mad_string      MADRegSetName( const mad_reg_set_data *rsd )
     return( Active->rtns->MIRegSetName( rsd ) );
 }
 
-static unsigned DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     rsd = rsd;
     if( buff_size > 0 )
@@ -1537,7 +1560,7 @@ static unsigned DIGREGISTER DummyRegSetLevel( const mad_reg_set_data *rsd, char 
     return( 0 );
 }
 
-unsigned        MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, unsigned buff_size )
+size_t MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIRegSetLevel( rsd, buff, buff_size ) );
 }
@@ -1553,7 +1576,7 @@ unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data *rsd )
     return( Active->rtns->MIRegSetDisplayGrouping( rsd ) );
 }
 
-static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value )
+static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
     rsd = rsd;
     mr = mr;
@@ -1566,7 +1589,7 @@ static mad_status DIGREGISTER DummyRegSetDisplayGetPiece( const mad_reg_set_data
     return( MS_FAIL );
 }
 
-mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, unsigned *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value )
+mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
     return( Active->rtns->MIRegSetDisplayGetPiece( rsd, mr, piece, descript_p,
                 max_descript_p, reg, disp_type, max_value ) );
@@ -1686,8 +1709,8 @@ struct full_name {
     mad_reg_info  const         *ri;
     const char                  *op;
     char                        *buff;
-    unsigned                    buff_size;
-    unsigned                    len;
+    size_t                      buff_size;
+    size_t                      len;
 };
 
 static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *d )
@@ -1698,9 +1721,9 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
     struct full_name_component  *h;
     struct full_name_component  *t;
     walk_result                 wr;
-    unsigned                    op_len;
-    unsigned                    amount;
-    int                         first;
+    size_t                      op_len;
+    size_t                      amount;
+    bool                        first;
 
     curr.parent = name->components;
     name->components = &curr;
@@ -1719,9 +1742,8 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
         }
         name->len -= op_len; /* take off extra op_len */
         /* lay down name */
-        first = 1;
-        p = h;
-        while( p != NULL ) {
+        first = true;
+        for( p = h; p != NULL; p = p->parent ) {
             if( !first ) {
                 amount = name->buff_size;
                 if( amount > op_len )
@@ -1730,14 +1752,13 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
                 name->buff += amount;
                 name->buff_size -= amount;
             }
-            first = 0;
+            first = false;
             amount = strlen( p->ri->name );
             if( amount > name->buff_size )
                 amount = name->buff_size;
             memcpy( name->buff, p->ri->name, amount );
             name->buff += amount;
             name->buff_size -= amount;
-            p = p->parent;
         }
         return( WR_STOP );
     }
@@ -1749,7 +1770,7 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
     return( wr );
 }
 
-unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, unsigned buff_size )
+size_t MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, size_t buff_size )
 {
     struct full_name    name;
 
@@ -1793,7 +1814,7 @@ void            MADRegSpecialSet( mad_special_reg sr, mad_registers *mr, const a
     Active->rtns->MIRegSpecialSet( sr, mr, a );
 }
 
-static unsigned DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     sr = sr;
     mr = mr;
@@ -1803,7 +1824,7 @@ static unsigned DIGREGISTER DummyRegSpecialName( mad_special_reg sr, const mad_r
     return( 0 );
 }
 
-unsigned        MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, unsigned buff_size )
+size_t MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIRegSpecialName( sr, mr, af, buff, buff_size ) );
 }
@@ -1926,7 +1947,7 @@ static mad_status DIGREGISTER DummyCallUpStackInit( mad_call_up_data *cud, const
 {
     cud = cud;
     mr = mr;
-    return MS_OK;
+    return( MS_OK );
 }
 
 mad_status              MADCallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
@@ -1992,11 +2013,11 @@ mad_status              MADDisasm( mad_disasm_data *dd, address *a, int adj )
     return( Active->rtns->MIDisasm( dd, a, adj ) );
 }
 
-static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+static size_t DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     dd = dd;
     radix = radix;
-    if( !(dp & MDP_INSTRUCTION) )
+    if( (dp & MDP_INSTRUCTION) == 0 )
         return( 0 );
     if( buff_size > 0 ) {
         --buff_size;
@@ -2008,7 +2029,7 @@ static unsigned DIGREGISTER DummyDisasmFormat( mad_disasm_data *dd, mad_disasm_p
     return( sizeof( ILL_INSTR ) - 1 );
 }
 
-unsigned    MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     return( Active->rtns->MIDisasmFormat( dd, dp, radix, buff, buff_size ) );
 }
@@ -2060,7 +2081,7 @@ mad_status              MADDisasmInsNext( mad_disasm_data *dd, const mad_registe
     return( Active->rtns->MIDisasmInsNext( dd, mr, a ) );
 }
 
-static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     start = start;
     len = len;
@@ -2070,7 +2091,7 @@ static mad_status DIGREGISTER DummyDisasmInspectAddr( const char *start, unsigne
     return( MS_FAIL );
 }
 
-mad_status              MADDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status              MADDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     return( Active->rtns->MIDisasmInspectAddr( start, len, radix, mr, a ) );
 }
@@ -2204,7 +2225,7 @@ void            MADTraceFini( mad_trace_data *td )
     Active->rtns->MITraceFini( td );
 }
 
-static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     mr = mr;
 
@@ -2214,7 +2235,7 @@ static mad_status DIGREGISTER DummyUnexpectedBreak( mad_registers *mr, char *buf
     return( MS_FAIL );
 }
 
-mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status      MADUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     return( Active->rtns->MIUnexpectedBreak( mr, buff, buff_size_p ) );
 }

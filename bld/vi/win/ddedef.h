@@ -37,12 +37,12 @@ extern DWORD            DDEInstId;
 extern UINT             ClipboardFormat;
 extern UINT             ServerCount;
 extern bool             UseDDE;
-extern DWORD            DDERet;
+extern HDDEDATA         DDERet;
 
 /* dde.c */
 bool    DDEInit( void );
 void    DDEFini( void );
-bool    CreateStringHandle( char *name, HSZ *hdl );
+bool    CreateStringHandle( const char *name, HSZ *hdl );
 void    DeleteStringHandle( HSZ hdl );
 
 #endif

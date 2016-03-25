@@ -117,14 +117,14 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     fdlg.cbSize = sizeof( fdlg );
 
     fdlg.fl = FDS_CENTER | FDS_ENABLEFILELB;
-    if( ofn->flags & OFN_ISSAVE ) {
+    if( ofn->flags & FN_ISSAVE ) {
         fdlg.fl |= FDS_SAVEAS_DIALOG;
         fdlg.pszOKButton = (PSZ)LIT( FDlg_Save_Text );
     } else {
         fdlg.fl |= FDS_OPEN_DIALOG;
         fdlg.pszOKButton = (PSZ)LIT( FDlg_Open_Text );
     }
-    if( ofn->flags & OFN_ALLOWMULTISELECT ) {
+    if( ofn->flags & FN_ALLOWMULTISELECT ) {
         fdlg.fl |= FDS_MULTIPLESEL;
     }
 
@@ -173,7 +173,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         for( i=0; i<fdlg.ulFQFCount; i++ ) {
             flen = strlen( fdlg.papszFQFilename[0][i] );
             if( ( slen + flen + 2 ) > ofn->max_file_name ) {
-                return( OFN_RC_FAILED_TO_INITIALIZE );
+                return( FN_RC_FAILED_TO_INITIALIZE );
             }
             if( slen ) {
                 ofn->file_name[slen++] = ' ';
@@ -187,7 +187,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
     } else {
         if( strlen( fdlg.szFullFile ) > ( ofn->max_file_name - 1 ) ) {
-            return( OFN_RC_FAILED_TO_INITIALIZE );
+            return( FN_RC_FAILED_TO_INITIALIZE );
         } else {
             strcpy( ofn->file_name, fdlg.szFullFile );
             _splitpath( fdlg.szFullFile, NULL, NULL, fname, NULL );
@@ -211,14 +211,14 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
   #endif
 
     if( fdlg.lReturn == DID_CANCEL ) {
-        return( OFN_RC_NO_FILE_SELECTED );
+        return( FN_RC_NO_FILE_SELECTED );
     }
 
     if( rc ) {
-        return( OFN_RC_FILE_SELECTED );
+        return( FN_RC_FILE_SELECTED );
     }
   #endif
-    return( OFN_RC_FAILED_TO_INITIALIZE );
+    return( FN_RC_FAILED_TO_INITIALIZE );
 } /* GUIGetFileName */
 
 #else
@@ -284,7 +284,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     int                 rc;
     unsigned            drive;
 #if defined(HAVE_DRIVES)
-    unsigned            old_drive;
+    unsigned            old_drive = 0;
     unsigned            drives;
 #endif
 
@@ -298,7 +298,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 
     memset( &wofn, 0 , sizeof( wofn ) );
 
-    if( ofn->flags & OFN_ISSAVE ) {
+    if( ofn->flags & FN_ISSAVE ) {
         issave = true;
     } else {
         issave = false;
@@ -308,23 +308,23 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     if( hookFileDlg ) {
         wofn.Flags |= OFN_ENABLEHOOK;
     }
-    if( !(ofn->flags & OFN_CHANGEDIR) ) {
+    if( !(ofn->flags & FN_CHANGEDIR) ) {
         wofn.Flags |= OFN_NOCHANGEDIR;
     }
 
-    if( ofn->flags & OFN_OVERWRITEPROMPT ) {
+    if( ofn->flags & FN_OVERWRITEPROMPT ) {
         wofn.Flags |= OFN_OVERWRITEPROMPT;
     }
-    if( ofn->flags & OFN_HIDEREADONLY ) {
+    if( ofn->flags & FN_HIDEREADONLY ) {
         wofn.Flags |= OFN_HIDEREADONLY;
     }
-    if( ofn->flags & OFN_FILEMUSTEXIST ) {
+    if( ofn->flags & FN_FILEMUSTEXIST ) {
         wofn.Flags |= OFN_FILEMUSTEXIST;
     }
-    if( ofn->flags & OFN_PATHMUSTEXIST ) {
+    if( ofn->flags & FN_PATHMUSTEXIST ) {
         wofn.Flags |= OFN_PATHMUSTEXIST;
     }
-    if( ofn->flags & OFN_ALLOWMULTISELECT ) {
+    if( ofn->flags & FN_ALLOWMULTISELECT ) {
         wofn.Flags |= OFN_ALLOWMULTISELECT;
     }
     wofn.hwndOwner = GUIGetParentFrameHWND( wnd );
@@ -359,7 +359,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         (void)FreeProcInstance( (FARPROC)wofn.lpfnHook );
     }
 
-    if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
+    if( LastPath && ( !rc || !( ofn->flags & FN_WANT_LAST_PATH ) ) ) {
         GUIMemFree( LastPath );
         LastPath = NULL;
     }
@@ -370,12 +370,12 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 #endif
     if( rc ) {
-        return( OFN_RC_FILE_SELECTED );
+        return( FN_RC_FILE_SELECTED );
     }
     if( !CommDlgExtendedError() ) {
-        return( OFN_RC_NO_FILE_SELECTED );
+        return( FN_RC_NO_FILE_SELECTED );
     }
-    return( OFN_RC_FAILED_TO_INITIALIZE );
+    return( FN_RC_FAILED_TO_INITIALIZE );
 } /* _GUIGetFileName */
 
 #endif

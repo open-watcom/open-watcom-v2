@@ -37,13 +37,16 @@
 #include "asctime.h"
 #include "thread.h"
 
+
+#define TO_CHAR_TYPE(c) ((CHAR_TYPE)(unsigned char)(c))
+
 static void convDec( int num, int off, CHAR_TYPE *buf )
 {
     div_t        tens_units;
 
     tens_units   = div( num, 10 );
-    buf[off]     = ( CHAR_TYPE ) ( tens_units.quot + '0' );
-    buf[off + 1] = ( CHAR_TYPE ) ( tens_units.rem + '0' );
+    buf[off]     = tens_units.quot + STRING( '0' );
+    buf[off + 1] = tens_units.rem + STRING( '0' );
 }
 
 
@@ -63,29 +66,29 @@ _WCRTLINK CHAR_TYPE *__F_NAME( _asctime, __wasctime ) ( const struct tm *tm, CHA
     int                 i;
 
     i = tm->tm_wday;
-    buf[0] = weekdays[i];
-    buf[1] = weekdays[i + 7];
-    buf[2] = weekdays[i + 14];
-    buf[3] = ' ';
+    buf[0] = TO_CHAR_TYPE( weekdays[i] );
+    buf[1] = TO_CHAR_TYPE( weekdays[i + 7] );
+    buf[2] = TO_CHAR_TYPE( weekdays[i + 14] );
+    buf[3] = STRING( ' ' );
     i = tm->tm_mon;
-    buf[4] = months[i];
-    buf[5] = months[i + 12];
-    buf[6] = months[i + 24];
-    buf[7] = ' ';
+    buf[4] = TO_CHAR_TYPE( months[i] );
+    buf[5] = TO_CHAR_TYPE( months[i + 12] );
+    buf[6] = TO_CHAR_TYPE( months[i + 24] );
+    buf[7] = STRING( ' ' );
     convDec( tm->tm_mday, 8, buf );                     /* 8-9 */
-    if( buf[8] == '0' )
-        buf[8]= ' ';                                    /* day of month padding */
-    buf[10] = ' ';
+    if( buf[8] == STRING( '0' ) )
+        buf[8] = STRING( ' ' );                          /* day of month padding */
+    buf[10] = STRING( ' ' );
     convDec( tm->tm_hour, 11, buf );                    /* 11-12 */
-    buf[13] = ':';
+    buf[13] = STRING( ':' );
     convDec( tm->tm_min, 14, buf );                     /* 14-15 */
-    buf[16] = ':';
+    buf[16] = STRING( ':' );
     convDec( tm->tm_sec, 17, buf );                     /* 17-18 */
-    buf[19] = ' ';                                      /* 02-nov-90 */
+    buf[19] = STRING( ' ' );
     hundreds_units = div( tm->tm_year, 100 );
     convDec( hundreds_units.quot + 19, 20, buf );       /* 20-21 */
     convDec( hundreds_units.rem, 22, buf );             /* 22-23 */
-    buf[24] = '\n';
+    buf[24] = STRING( '\n' );
     buf[25] = NULLCHAR;
 
     return( buf );
@@ -95,7 +98,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME( _asctime, __wasctime ) ( const struct tm *tm, CHA
 _WCRTLINK CHAR_TYPE *__F_NAME( asctime, _wasctime ) ( const struct tm *tm )
 {
     _INITRESULT;
-    return( __F_NAME( _asctime, __wasctime ) ( tm, ( CHAR_TYPE* ) _RWD_asctime ) );
+    return( __F_NAME( _asctime, __wasctime ) ( tm, ( CHAR_TYPE* )_RWD_asctime ) );
 }
 
 

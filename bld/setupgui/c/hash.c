@@ -106,7 +106,7 @@ vhandle HashFind( hash_table *ht, hash_key k )
 void HashFini( hash_table *ht )
 /*****************************/
 {
-    unsigned int        i;
+    size_t              i;
     hash_element        *he;
     hash_element        *tmp;
 
@@ -126,7 +126,7 @@ void HashFini( hash_table *ht )
 
 
 static unsigned int hashKey( size_t size, hash_key k )
-/**********************************************************/
+/****************************************************/
 {
     unsigned long       hash = 0;
 

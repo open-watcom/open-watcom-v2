@@ -163,7 +163,6 @@ around:
         mov     ds:_STACKTOP,sp         ; set stack top
         mov     ax,bp                   ; place pid in AX
         xor     bp,bp                   ; zero value
-
         jmp    __CMain
 _cstart_ endp
 
@@ -171,7 +170,7 @@ _cstart_ endp
 
 __exit  proc near
         public  "C",__exit
-        push    ax
+        push    ax                      ; save return code on the stack
         mov     dx,DGROUP
         mov     ds,dx
         cld                             ; check lower region for altered values
@@ -181,17 +180,19 @@ __exit  proc near
         shr     cx,1
         mov     ax,INIT_VAL
         repe    scasw
-        pop     ax                      ; restore return code
-        je      ok
+        je      L1
 ;
 ; low memory has been altered
 ;
-        mov     bx,ax                   ; get exit code
+        pop     bx                      ; get exit code
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
         mov     sp,offset DGROUP:end_stk; set a good stack pointer
-        call    __fatal_runtime_error 
-ok:
+        call    __fatal_runtime_error
+        ; never return
+
+L1:
+        pop     ax                      ; restore return code
         jmp     __qnx_exit_
 __exit  endp
 

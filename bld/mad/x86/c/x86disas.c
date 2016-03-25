@@ -137,15 +137,15 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-unsigned DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, unsigned radix, char *buff, unsigned buff_size )
+size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
     char                *np;
     char                *op;
-    unsigned            nlen;
-    unsigned            olen;
-    unsigned            len;
+    size_t              nlen;
+    size_t              olen;
+    size_t              len;
     dis_format_flags    ff;
 
     nbuff[0] = '\0';
@@ -228,7 +228,7 @@ static mad_disasm_control Adjustment( mad_disasm_data *dd )
     switch( dd->ins.op[OP_1].type & DO_MASK ) {
     case DO_IMMED:
     case DO_RELATIVE:
-        if( dd->ins.op[OP_1].value < dd->addr.mach.offset )
+        if( (addr_off)dd->ins.op[OP_1].value < dd->addr.mach.offset )
             return( MDC_TAKEN_BACK );
         return( MDC_TAKEN_FORWARD );
     }
@@ -464,7 +464,7 @@ static dword RegValue( const mad_registers *mr, int idx )
     return( *reg & mask );
 }
 
-int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
+static int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
 {
     if( dd->ins.flags.u.x86 & DIF_X86_CS ) {
         return( DR_X86_cs );
@@ -491,7 +491,7 @@ int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
     }
 }
 
-walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
+static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     mad_type_handle     th;
     address             addr;
@@ -605,7 +605,7 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     mad_type_handle     th;
     int                 i;
 
-    th = (mad_type_handle)-1;
+    th = MAD_NIL_TYPE_HANDLE;
     switch( dd->ins.type ) {
     case DI_X86_ret:
     case DI_X86_ret2:
@@ -638,7 +638,7 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     default:
         break;
     }
-    if( th != (mad_type_handle)-1 ) {
+    if( th != MAD_NIL_TYPE_HANDLE ) {
         wr = wk( GetRegSP( mr ), th, MMK_VOLATILE | MMK_IMPLICIT | MMK_READ, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
@@ -722,7 +722,7 @@ static char *StrCopy( const char *s, char *d )
     return( d );
 }
 
-mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsigned radix, const mad_registers *mr, address *a )
+mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;
@@ -769,7 +769,7 @@ mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, unsign
  * CnvRadix -- convert an unsigned number of a given radix to a string
  */
 
-char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsigned len )
+char *CnvRadix( unsigned long value, mad_radix radix, char base, char *buff, size_t len )
 {
     char        internal[33];
     char        *ptr;
@@ -778,7 +778,7 @@ char *CnvRadix( unsigned long value, unsigned radix, char base, char *buff, unsi
     ptr = &internal[32];
     for( ; len > 0 || value != 0; value /= radix ) {
         dig = value % radix;
-        *ptr = ( dig <= 9 ) ? dig + '0' : dig - 10 + base;
+        *ptr = ( dig <= 9 ) ? (char)dig + '0' : (char)( dig - 10 ) + base;
         --ptr;
         --len;
     }
@@ -835,7 +835,7 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
 }
 
 
-static void ReadMem( address a, unsigned s, void *d )
+static void ReadMem( address a, size_t s, void *d )
 {
 
     if( a.sect_id == Cache.start.sect_id
@@ -886,7 +886,7 @@ void InitCache( address start, unsigned len )
     Cache.len = MCReadMem( start, len, Cache.data );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, size_t size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
@@ -910,7 +910,7 @@ static int GetValueByteSize( unsigned long value )
     return( size );
 }
 
-size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, unsigned buff_size )
+size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, size_t buff_size )
 {
     mad_disasm_data     *dd = d;
     mad_type_info       mti;
@@ -956,7 +956,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
     case DO_MEMORY_REL:
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             // direct memory address
-            MCTypeInfoForHost( MTK_INTEGER, ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2, &mti );
+            size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
+            MCTypeInfoForHost( MTK_INTEGER, size, &mti );
             MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
         } else if( op->value == 0 ) {
             // don't output zero disp in indirect memory address

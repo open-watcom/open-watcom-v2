@@ -71,8 +71,9 @@
 
     #define OS_GET_CMD_LINE()    getcmd(NULL)
 
-#elif defined(__WIN386__)
+#elif defined(__WINDOWS_386__)
 
+    extern char _WCFAR           *_wincmdptr;
     #define OS_GET_CMD_LINE()    _wincmdptr
 
 #elif defined(__OS2_286__)
@@ -128,7 +129,7 @@
 _WCRTLINK int _bgetcmd( char *buffer, int len )
 {
     int         cmdlen;
-#if defined(__WIN386__) || defined(__OS2_286__)
+#if defined(__WINDOWS_386__) || defined(__OS2_286__)
     char _WCFAR *cmd;
     char _WCFAR *tmp;
 #else
@@ -140,13 +141,13 @@ _WCRTLINK int _bgetcmd( char *buffer, int len )
         *buffer = '\0';
 
     cmd = OS_GET_CMD_LINE();
-    if( !cmd )
+    if( cmd == NULL )
         return( 0 );
 
     while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;
 
-    for( cmdlen = 0, tmp = cmd; *tmp; ++tmp, ++cmdlen )
+    for( cmdlen = 0, tmp = cmd; *tmp != '\0'; ++tmp, ++cmdlen )
         ;
 
     if( !buffer || (len <= 0) )

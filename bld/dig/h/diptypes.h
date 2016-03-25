@@ -64,71 +64,75 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_EXPORTS   75
 #define DIP_PRIOR_MAX       100
 
-#define DIP_OFFS_INVAL	    ((addr_off)-1)
-
 typedef unsigned_8 handle_kind; enum {
-                HK_IMAGE,
-                HK_TYPE,
-                HK_CUE,
-                HK_SYM,
-                HK_LAST };
+    HK_IMAGE,
+    HK_TYPE,
+    HK_CUE,
+    HK_SYM,
+    MAX_HK
+};
 
 typedef unsigned_8 symbol_source; enum {
-                SS_MODULE,
-                SS_SCOPED,
-                SS_TYPE,
-                SS_BLOCK,
-                SS_SCOPESYM,
-                SS_LAST };
+    SS_MODULE,
+    SS_SCOPED,
+    SS_TYPE,
+    SS_BLOCK,
+    SS_SCOPESYM,
+    SS_LAST
+};
 
 typedef unsigned_8 sym_walk_info; enum {
-                SWI_SYMBOL,
-                SWI_INHERIT_START,
-                SWI_INHERIT_END,
-                SWI_LAST };
+    SWI_SYMBOL,
+    SWI_INHERIT_START,
+    SWI_INHERIT_END,
+    SWI_LAST
+};
 
 typedef unsigned_8 symbol_name; enum {
-                SN_EXPRESSION,
-                SN_SOURCE,
-                SN_OBJECT,
-                SN_DEMANGLED,
-                SN_SCOPED,
-                SN_LAST };
+    SN_EXPRESSION,
+    SN_SOURCE,
+    SN_OBJECT,
+    SN_DEMANGLED,
+    SN_SCOPED,
+    SN_LAST
+};
 
 typedef unsigned_8 default_kind; enum {
-                DK_INT,
-                DK_DATA_PTR,
-                DK_CODE_PTR,
-                DK_LAST };
+    DK_INT,
+    DK_DATA_PTR,
+    DK_CODE_PTR,
+    DK_LAST
+};
 
 typedef unsigned_16 dip_status; enum {
-                DS_OK,
-                DS_FAIL,
-                DS_TOO_MANY_DIPS,
-                DS_INVALID_DIP_VERSION,
-                DS_NO_MEM,
-                DS_NO_PROCESS,
-                DS_TOO_MANY_IMAGES,
-                DS_TOO_MANY_POINTERS,
-                DS_IMPROPER_TYPE,
-                DS_FOPEN_FAILED,
-                DS_FREAD_FAILED,
-                DS_FWRITE_FAILED,
-                DS_FSEEK_FAILED,
-                DS_INVALID_DIP,
-                DS_BAD_PARM,
-                DS_WRAPPED,
-                DS_INFO_INVALID,
-                DS_INFO_BAD_VERSION,
-                DS_NO_PARM,
-                DS_BAD_LOCATION,
-                DS_NO_CONTEXT,
-                DS_CONTEXT_ITEM_INVALID,
-                DS_NO_READ_MEM,
-                DS_NO_WRITE_MEM,
-                DS_INVALID_OPERATOR,
-                DS_LAST,
-                DS_ERR=0x4000 };
+    DS_OK,
+    DS_FAIL,
+    DS_TOO_MANY_DIPS,
+    DS_INVALID_DIP_VERSION,
+    DS_NO_MEM,
+    DS_NO_PROCESS,
+    DS_TOO_MANY_IMAGES,
+    DS_TOO_MANY_POINTERS,
+    DS_IMPROPER_TYPE,
+    DS_FOPEN_FAILED,
+    DS_FREAD_FAILED,
+    DS_FWRITE_FAILED,
+    DS_FSEEK_FAILED,
+    DS_INVALID_DIP,
+    DS_BAD_PARM,
+    DS_WRAPPED,
+    DS_INFO_INVALID,
+    DS_INFO_BAD_VERSION,
+    DS_NO_PARM,
+    DS_BAD_LOCATION,
+    DS_NO_CONTEXT,
+    DS_CONTEXT_ITEM_INVALID,
+    DS_NO_READ_MEM,
+    DS_NO_WRITE_MEM,
+    DS_INVALID_OPERATOR,
+    DS_LAST,
+    DS_ERR=0x4000
+};
 
 
 typedef struct {
@@ -200,7 +204,7 @@ typedef struct {
 
 typedef struct {
     const char  *start;
-    unsigned    len;
+    size_t      len;
 } lookup_token;
 
 typedef unsigned_8 symbol_type; enum {

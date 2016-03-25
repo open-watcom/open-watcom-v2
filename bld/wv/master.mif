@@ -2,6 +2,7 @@
 # Open Watcom Debugger makefile
 #
 proj_name = wv
+name = $(proj_name)
 
 !ifndef wv_autodepends
 wv_autodepends = .AUTODEPEND
@@ -65,14 +66,6 @@ syshdir = ../h
 sysadir = ../asm
 !endif
 
-# exe_name
-###########
-!ifeq release 0
-exe_name = dv.exe
-!else
-exe_name = wv.exe
-!endif
-
 # cflags
 #########
 !ifeq sys_windowed 1
@@ -80,8 +73,14 @@ extra_cpp_flags = -D__GUI__
 !else
 extra_cpp_flags = -D__CHAR__
 !endif
+!ifdef dll
+extra_cpp_flags += -D__NOUI__
+!endif
 !ifeq release 0
 extra_cpp_flags += -DAUI_DBG
+!endif
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 
@@ -200,11 +199,6 @@ wv_dialogs = &
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 
-!ifeq sys_windowed 1
-verrc_exe = wdw
-!else
-verrc_exe = wd
-!endif
 !include verrc.mif
 
 !ifndef __WATCOM__
@@ -213,19 +207,19 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-$(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
     %create $^&.lnk
+!ifdef ovl_dos
     @%append $^&.lnk option verbose,nocache
+!endif
     @for %i in ($(libs))    do @%append $^&.lnk library %i
     @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
     @%append $^&.lnk file fingmsg.obj
-!ifeq host_os dos
 !ifdef ovl_dos
     @%append $^&.lnk begin autosection
-!endif
 !endif
     @for %i in ($(objs)) do @%append $^&.lnk file %i
     $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)

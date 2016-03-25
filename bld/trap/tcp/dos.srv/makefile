@@ -3,11 +3,12 @@
 host_os  = dos
 host_cpu = i86
 
+target_cpu = x86
+target_os  = dos
+
 memory_model_i86 = l
 
-os  = dos
 srv = tcp
-cpu = x86
 which = SERVER
 remote_link = 1
 

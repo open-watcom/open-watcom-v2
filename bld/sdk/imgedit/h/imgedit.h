@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "precomp.h"
+#include "commonui.h"
 #include "watcom.h"
 #include "macros.h"
 #ifdef __OS2_PM__
@@ -279,7 +280,7 @@ void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );
 void    AddHotSpotTool( BOOL faddhotspot );
-void    PushToolButton( WORD cmdid );
+void    PushToolButton( ctl_id cmdid );
 
 /* ieopen.c */
 void    SetupMenuAfterOpen( void );
@@ -546,7 +547,7 @@ extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, char *file
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
-void    ShowHintText( UINT wparam );
+void    ShowHintText( ctl_id id );
 void    InitMenus( HMENU hmenu );
 
 #else
@@ -571,6 +572,6 @@ BITMAPINFO2 *GetAndBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO2 *bmi );
 
 /* hinttext.c */
-void    ShowHintText( MPARAM wparam );
+void    ShowHintText( ctl_id id );
 
 #endif

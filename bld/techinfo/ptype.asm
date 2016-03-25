@@ -136,7 +136,7 @@ PType_  proc    near
         mov     eax,1                   ; get processor info
         db      0fh,0a2h                ; CPUID
         mov     al,ah                   ; get cpu number
-        mov     ah,0                    ; ...
+        xor     ah,ah                   ; ...
 
 PTExit: POP     BX                      ; restore BX
         POP     CX                      ; restore CX

@@ -35,27 +35,17 @@
 #include "dbgstk.h"
 #include "dbgitem.h"
 #include "madinter.h"
+#include "dbgexec.h"
+#include "dbgexpr4.h"
+#include "dbgexpr.h"
+#include "dbgloc.h"
+#include "dbgcall2.h"
+#include "dbgovl.h"
+#include "dbgreg.h"
+#include "dbgupdt.h"
 
 
 extern stack_entry      *ExprSP;
-
-
-extern unsigned         ExecProg( bool, bool, bool );
-extern void             DbgUpdate( update_list );
-extern bool             ReportTrap( unsigned, bool );
-extern void             DoAssign( void );
-extern stack_entry      *StkEntry( int );
-extern void             SwapStack( int );
-extern void             PopEntry( void );
-extern void             SetRegIP( address );
-extern void             SetRegSP( address );
-extern address          GetRegSP( void );
-extern machine_state    *AllocMachState( void );
-extern void             CopyMachState( machine_state *, machine_state * );
-extern void             FreeMachState( machine_state *);
-extern void             AddrFix( address * );
-extern void             LocationCreate( location_list *, location_type, void * );
-
 
 static machine_state    *FreezeRegSet = NULL;
 static location_context FreezeContext;
@@ -100,19 +90,19 @@ static bool CallRoutine( void )
 
     sp = GetRegSP();
     for( ;; ) {
-        trap = ExecProg( FALSE, TRUE, FALSE );
+        trap = ExecProg( false, true, false );
         if( !(trap & COND_BREAK) ) {
-            ReportTrap( trap, FALSE );
-            return( FALSE );
+            ReportTrap( trap, false );
+            return( false );
         }
         if( MADTraceHaveRecursed( sp, &DbgRegs->mr ) != MS_OK ) {
-            return( TRUE );
+            return( true );
         }
     }
 }
 
 
-bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
+bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
 {
     bool                ret;
     stack_entry         *src;
@@ -124,7 +114,7 @@ bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
     stack = GetRegSP();
     GetMADTypeDefaultAt( stack, MTK_INTEGER, &mti );
     align = mti.b.bits / BITS_PER_BYTE;
-    for( ; num_parms != 0; --num_parms ) {
+    for( ; num_parms > 0; --num_parms ) {
         if( ExprSP->v.loc.e[0].type!=LT_ADDR && ExprSP->v.loc.e[0].u.p==NULL ) {
             /* push item */
             src = StkEntry( 1 );
@@ -149,13 +139,13 @@ bool PerformExplicitCall( address start, mad_string ctype, unsigned num_parms )
     MADCallBuildFrame( ctype, start, start, &DbgRegs->mr, &DbgRegs->mr );
     DbgTmpBrk.loc.addr = start;
     NullStatus( &DbgTmpBrk );
-    DbgTmpBrk.status.b.active = TRUE;
+    DbgTmpBrk.status.b.active = true;
     ret = CallRoutine();
     NullStatus( &DbgTmpBrk );
     return( ret );
 }
 
-bool PerformCall( address start, bool far_rtn, unsigned num_parms )
+bool PerformCall( address start, bool far_rtn, int num_parms )
 {
     const mad_string    *list;
 

@@ -38,17 +38,14 @@
 #include "dbgname.h"
 #include "dbgwind.h"
 #include "dpmi.h"
+#include "dbgcmdln.h"
+#include "dbglkup.h"
 
 
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
 
-
-extern int              Lookup( const char *, const char *, size_t );
-extern unsigned long    GetMemory( void );
-
-
-extern unsigned_8       DPMICheck;
+extern char             DPMICheck;
 extern addr_seg         _psp;
 
 static char             *cmdStart;
@@ -112,9 +109,9 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         DPMICheck = 2;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -136,7 +133,7 @@ void ProcSysOptInit( void )
     }
 #else
     ptr = (char *)( (unsigned_8 *)DPMIGetSegmentBaseAddress( _psp ) + PSP_CMDTAIL_OFF );
-    ptr[ *(unsigned_8 *)ptr + 1 ] = NULLCHAR;
+    ptr[*(unsigned_8 *)ptr + 1] = NULLCHAR;
     cmdStart = (char *)( (unsigned_8 *)ptr + 1 );
 #endif
 }

@@ -24,48 +24,50 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  User program registers access and management.
 *
 ****************************************************************************/
 
 
-#include "madregs.h"
-
-#define MAX_THD_EXTRA_SIZE      40
-
-typedef unsigned long           dtid_t;
-
-struct machine_state {
-    byte                *ovl;
-    dtid_t              tid;
-    mad_handle          mad;
-    unsigned            : 0;    /* for alignment */
-    mad_registers       mr;     /* variable size */
-};
-
-typedef unsigned_8 thread_state_enum; enum {
-                  /* states for clients that freeze execution */
-    THD_THAW,                  
-    THD_FREEZE,
-                  /* states for clients that only freeze debugged threads */
-    THD_WAIT,                   /* waiting for a timeout      */
-    THD_SIGNAL,                 /* waiting for a signal       */
-    THD_KEYBOARD,               /* waiting for keyboard input */
-    THD_BLOCKED,                /* blocked on a resource      */
-    THD_RUN,                    /* running or ready to run    */
-    THD_DEBUG,                  /* thread is in a debug-state */   
-                  /* special dead state */
-    THD_DEAD = 0x40
-};
-
-typedef struct thread_state     thread_state;
-struct thread_state {
-    thread_state        *link;
-    dtid_t              tid;
-    thread_state_enum   state;
-    unsigned_16         cs;
-    unsigned_32         eip;
-    char                extra[MAX_THD_EXTRA_SIZE + 1];
-    char                name[1];        /* variable size */
-};
+extern void             DefAddr( memory_expr def_seg, address *addr );
+extern address          GetRegIP( void );
+extern void             SetRegIP( address addr );
+extern void             RecordSetRegIP( address addr );
+extern void             SetRegSP( address addr );
+extern void             SetRegBP( address addr );
+extern address          GetRegSP( void );
+extern address          GetRegBP( void );
+extern void             SetMemBefore( bool tracing );
+extern void             SetMemAfter( bool tracing );
+extern void             ResizeRegData( void );
+extern void             ClearMachState( void );
+extern void             InitMachState( void );
+extern void             FiniMachState( void );
+extern void             SetupMachState( void );
+extern void             CopyMachState( machine_state *from, machine_state *to );
+extern machine_state    *AllocMachState( void );
+extern void             FreeMachState( machine_state *state );
+extern void             CollapseMachState( void );
+extern bool             CheckStackPos( void );
+extern bool             AdvMachState( int action );
+extern size_t           ChangeMem( address addr, const void *data, size_t size );
+extern unsigned         UndoLevel( void );
+#ifdef DEADCODE
+extern bool             MachStateInfoRelease( void );
+#endif
+extern void             SetStackPos( location_context *lc, int pos );
+extern void             MoveStackPos( int by );
+extern int              GetStackPos( void );
+extern void             PosMachState( int rel_pos );
+extern void             LastMachState( void );
+extern void             LastStackPos( void );
+extern void             ProcRegister( void );
+extern void             ProcUndo( void );
+extern char             *GetActionString( int action );
+extern char             *GetUndoString( void );
+extern char             *GetRedoString( void );
+extern void             ProcStackPos( void );
+extern void             GoHome( void );
+extern void             ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti );
+extern void             RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mach );
+extern void             RegNewValue( const mad_reg_info *reginfo, const item_mach *new_val, mad_type_handle type );

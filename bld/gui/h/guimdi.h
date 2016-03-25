@@ -41,7 +41,7 @@ extern gui_window   *GUIGetRoot( void );
 extern void         EnableMDIActions( bool enable );
 extern void         AddMDIActions( bool has_items, gui_window *wnd );
 extern void         MDIDeleteMenu( gui_ctl_id id );
-extern void         MDIResetMenus( gui_window *wnd, gui_window *parent, int num_menus, gui_menu_struct *menu );
+extern void         MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu );
 extern void         InitMDI( gui_window *wnd, gui_create_info *dlg_info );
 extern void         ChangeTitle( gui_window *wnd );
 extern void         BroughtToFront( gui_window *wnd );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +40,13 @@ typedef struct {
     UINT                text_width;
     UINT                line_cnt;
     HWND                hwnd;
-}LBoxHdl;
+} LBoxHdl;
 
-DWORD LBPrintf( LBoxHdl *lb, DWORD msgid, ... );
-DWORD LBStrPrintf( LBoxHdl *lb, char *str, ... );
-void SetListBoxFont( LBoxHdl *lb );
-void ClearListBox( LBoxHdl *lb );
-void MoveListBox( LBoxHdl *lb, int x, int y, int width, int hieght );
-LBoxHdl *CreateListBox( HWND parent );
-HWND GetListBoxHwnd( LBoxHdl *lb );
-void FiniListBox( LBoxHdl *lb );
+extern int      LBPrintf( LBoxHdl *lb, DWORD msgid, ... );
+extern int      LBStrPrintf( LBoxHdl *lb, char *str, ... );
+extern void     SetListBoxFont( LBoxHdl *lb );
+extern void     ClearListBox( LBoxHdl *lb );
+extern void     MoveListBox( LBoxHdl *lb, int x, int y, int width, int hieght );
+extern LBoxHdl  *CreateListBox( HWND parent );
+extern HWND     GetListBoxHwnd( LBoxHdl *lb );
+extern void     FiniListBox( LBoxHdl *lb );

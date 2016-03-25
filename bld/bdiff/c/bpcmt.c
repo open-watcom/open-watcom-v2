@@ -30,16 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#include <fcntl.h>
 #include "bdiff.h"
 
 
@@ -59,25 +49,29 @@ static char TmpExt[] = "A";
 
 void main( int argc, char *argv[] )
 {
-    size_t size, bufsize;
+    size_t      size, bufsize;
     char        outfile[_MAX_PATH], infile[_MAX_PATH];
     char        drive[_MAX_DRIVE], dir[_MAX_DIR];
     char        name[_MAX_FNAME], ext[_MAX_EXT];
-    int         fpin, fpout, fpcmt;
+    FILE        *fpin, *fpout, *fpcmt;
     char        *pos;
 
 
-    if( argc != 3 )  Usage();
-    if( argv[1][0] == '?' && argv[1][1] == '\0' ) Usage();
+    if( argc != 3 )
+        Usage();
+    if( argv[1][0] == '?' && argv[1][1] == '\0' )
+        Usage();
     bufsize = BUFSIZE;
-    while( ( Buffer = _allocate( bufsize ) ) == NULL ) {
+    while( ( Buffer = bdiff_malloc( bufsize ) ) == NULL ) {
         size = bufsize & (bufsize - 1);
         bufsize = size ? size : ( (bufsize << 1) | (bufsize << 2) );
-        if( bufsize < MXFNAME )  Fatal( "Too low on memory", NULL );
+        if( bufsize < MXFNAME ) {
+            Fatal( "Too low on memory", NULL  );
+        }
     }
 
-    fpcmt = open( argv[1], O_RDONLY | O_BINARY, 0 );
-    if( fpin == -1 ) {
+    fpcmt = fopen( argv[1], "rb" );
+    if( fpcmt == NULL ) {
         Fatal( "Unable to open '*' to read", argv[2] );
     }
 
@@ -85,67 +79,73 @@ void main( int argc, char *argv[] )
     _splitpath( infile, drive, dir, name, ext );
     for( ;; ) {
         _makepath( outfile, drive, dir, "__", TmpExt );
-        if( access( outfile, 0 ) != 0 ) break;
-        TmpExt[ 0 ]++;
-        if( TmpExt[0] > 'Z' ) Fatal( "Cannot create temporary file", NULL );
+        if( access( outfile, 0 ) != 0 )
+            break;
+        TmpExt[0]++;
+        if( TmpExt[0] > 'Z' ) {
+            Fatal( "Cannot create temporary file", NULL );
+        }
     }
 
     /* initialize input file */
-    fpin = open( infile, O_RDONLY | O_BINARY, 0 );
-    if( fpin == -1 ) {
+    fpin = fopen( infile, "rb" );
+    if( fpin == NULL ) {
         Fatal( "Unable to open '*' to read", infile );
     }
 
     /* initialize output file */
-    fpout = open( outfile, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0 );
-    if( fpout == -1 ) {
+    fpout = fopen( outfile, "wb" );
+    if( fpout == NULL ) {
         Fatal( "Unable to create output file '*'", outfile );
     }
     /* write new comment */
-    write( fpout, PATCH_SIGNATURE, sizeof( PATCH_SIGNATURE ) - 1 );
+    fwrite( PATCH_SIGNATURE, 1, sizeof( PATCH_SIGNATURE ) - 1, fpout );
     for( ;; ) {
-        size = read( fpcmt, Buffer, bufsize );
-        if( size == 0 ) break;
+        size = fread( Buffer, 1, bufsize, fpcmt );
+        if( size == 0 )
+            break;
         pos = memchr( Buffer, EOF_CHAR, size );
         if( pos != NULL ) {
             size = pos - Buffer;
-            lseek( fpcmt, 0L, SEEK_END ); /*cause it to quit next time round*/
+            fseek( fpcmt, 0L, SEEK_END ); /*cause it to quit next time round*/
         }
-        write( fpout, Buffer, size );
+        fwrite( Buffer, 1, size, fpout );
     }
     /* strip old comment */
     for( ;; ) {
-        size = read( fpin, Buffer, bufsize );
+        size = fread( Buffer, 1, bufsize, fpin );
         pos = memchr( Buffer, EOF_CHAR, size );
-        if( pos != NULL ) break;
+        if( pos != NULL ) {
+            break;
+        }
     }
-    size -= (pos - Buffer);
-    if( size != 0 ) write( fpout, pos, size );
+    size -= pos - Buffer;
+    if( size != 0 )
+        fwrite( pos, 1, size, fpout );
     /* transfer patch file */
-    for( ;; ) {
-        size = read( fpin, Buffer, bufsize );
-        if( size == 0 ) break;
-        write( fpout, Buffer, size );
+    while( (size = fread( Buffer, 1, bufsize, fpin )) != 0 ) {
+        fwrite( Buffer, 1, size, fpout );
     }
-    close( fpin );
-    close( fpout );
-    close( fpcmt );
+    fclose( fpin );
+    fclose( fpout );
+    fclose( fpcmt );
 
-    if( remove( infile ) )        Fatal( "Cannot erase file '*'", infile );
-    if( rename(outfile,infile) )  Fatal( "Cannot rename file '*'", outfile);
+    if( remove( infile ) )
+        Fatal( "Cannot erase file '*'", infile );
+    if( rename( outfile, infile ) )
+        Fatal( "Cannot rename file '*'", outfile );
     exit( EXIT_SUCCESS );
 }
 
 static void Fatal( char *reason, char *insert )
 /* the reason doesn't have to be good */
 {
-    while( *reason ) {
+    for( ; *reason; ++reason ) {
         if( *reason == '*' ) {
             fputs( insert, stdout );
         } else {
             fputc( *reason, stdout );
         }
-        ++reason;
     }
     puts( "\nbpcmt aborted" );
     exit( EXIT_FAILURE );
@@ -156,9 +156,8 @@ static void Usage( void )
 {
     char **text;
 
-    text = Usetext;
-    while( *text ) {
-        puts( *text++ );
+    for( text = Usetext; *text != NULL; ++text ) {
+        puts( *text );
     }
     exit( EXIT_FAILURE );
 }

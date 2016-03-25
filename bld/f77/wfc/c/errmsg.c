@@ -31,11 +31,6 @@
 
 
 #include "macro.h"
+#include "ftnstd.h"
 
-#if _CPU == 8086
-  #include "errmsgi.c"
-#elif _CPU == 386
-  #include "errmsg3.c"
-#else
-  #include "errmsgr.c"
-#endif
+#include "errmsg.gc"

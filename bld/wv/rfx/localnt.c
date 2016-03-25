@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,7 @@
 #include "dbgio.h"
 #include "trprfx.h"
 #include "local.h"
+#include "rfx.h"
 
 #include "clibext.h"
 
@@ -92,38 +94,38 @@ void LocalGetBuff( char *buff, unsigned size )
     hStdin = GetStdHandle( STD_INPUT_HANDLE );
     if( !ReadFile( hStdin, buff, size, &cRead, NULL ) ) {
         buff[0] = '\r';
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
         return;
     }
     /* Kill the trailing \r\n. */
     if( cRead > 2)
-        buff[cRead - 2] = '\0';
+        buff[cRead - 2] = NULLCHAR;
     else {
         buff[0] = '\r';
-        buff[1] = '\0';
+        buff[1] = NULLCHAR;
     }
 }
 
-rc_erridx LocalRename( const char *from, const char *to )
-/*******************************************************/
+error_handle LocalRename( const char *from, const char *to )
+/**********************************************************/
 {
     return( StashErrCode( rename( from, to ), OP_LOCAL ) );
 }
 
-rc_erridx LocalMkDir( const char *name )
-/**************************************/
+error_handle LocalMkDir( const char *name )
+/*****************************************/
 {
     return( StashErrCode( mkdir( name ), OP_LOCAL ) );
 }
 
-rc_erridx LocalRmDir( const char *name )
-/**************************************/
+error_handle LocalRmDir( const char *name )
+/*****************************************/
 {
     return( StashErrCode( rmdir( name ), OP_LOCAL ) );
 }
 
-rc_erridx LocalSetDrv( int drv )
-/*****************************/
+error_handle LocalSetDrv( int drv )
+/*********************************/
 {
     unsigned    total;
 
@@ -140,15 +142,15 @@ int LocalGetDrv( void )
     return( drive - 1 );
 }
 
-rc_erridx LocalGetCwd( int drive, char *where )
-/*********************************************/
+error_handle LocalGetCwd( int drive, char *where )
+/************************************************/
 {
     drive=drive;
     return( StashErrCode( getcwd( where, 256 ) == NULL, OP_LOCAL ) );
 }
 
-rc_erridx LocalSetCWD( const char *name )
-/***************************************/
+error_handle LocalSetCWD( const char *name )
+/******************************************/
 {
     return( StashErrCode( chdir( name ), OP_LOCAL ) );
 }
@@ -160,7 +162,7 @@ long LocalGetFileAttr( const char *name )
     FILESTATUS3 fileinfo;
 
     if( DosQueryPathInfo( name, FIL_STANDARD, &fileinfo, sizeof( fileinfo ) ) ) {
-        return( -1 );
+        return( -1L );
     }
     return( fileinfo.attrFile );
 #else
@@ -169,8 +171,8 @@ long LocalGetFileAttr( const char *name )
 #endif
 }
 
-rc_erridx LocalSetFileAttr( const char *name, long attr )
-/*******************************************************/
+error_handle LocalSetFileAttr( const char *name, long attr )
+/**********************************************************/
 {
 #if 0
     FILESTATUS3 fileinfo;
@@ -196,8 +198,8 @@ long LocalGetFreeSpace( int drv )
     return( dfre.avail_clusters * dfre.sectors_per_cluster * dfre.bytes_per_sector );
 }
 
-rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
-/*********************************************************************/
+error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+/************************************************************************/
 {
 #if 0
     struct _FILESTATUS fstatus;
@@ -209,14 +211,18 @@ rc_erridx LocalDateTime( sys_handle fh, int *time, int *date, int set )
     ptime = (struct _FTIME *)time;
     if( set ) {
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
         rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 ) {
+            return( StashErrCode( rc, OP_LOCAL ) );
+        }
     } else {
         rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
-        if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
+        if( rc != 0 )
+            return( StashErrCode( rc, OP_LOCAL ) );
         *ptime = fstatus.ftimeLastWrite;
         *pdate = fstatus.fdateLastWrite;
     }
@@ -238,8 +244,8 @@ static void makeDOSDTA( struct find_t *dos, trap_dta *trp )
     strcpy( trp->name, dos->name );
 }
 
-rc_erridx LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
-/****************************************************************************************/
+error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len, int attrib )
+/*******************************************************************************************/
 {
     unsigned        rc;
 
@@ -270,7 +276,7 @@ int LocalFindNext( void *info, unsigned info_len )
 /*
   SIGNAL HANDLING
 */
-static volatile int interruptOccurred;
+static volatile bool    interruptOccurred;
 
 #if 0
 static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_num )
@@ -279,7 +285,7 @@ static void __pascal __far doInterrupt( USHORT signal_argument, USHORT signal_nu
     USHORT action;
 
     signal_argument = signal_argument;
-    interruptOccurred = 1;
+    interruptOccurred = true;
     switch( signal_num ) {
     case SIG_CTRLBREAK:
         DosSetSigHandler( doInterrupt, &handler, &action,
@@ -299,7 +305,7 @@ void InitInt( void )
 //    PFNSIGHANDLER handler;
 //    USHORT action;
 
-    interruptOccurred = 0;
+    interruptOccurred = false;
 //    DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLC);
 //    DosSetSigHandler( doInterrupt, &handler, &action,SIGA_ACCEPT,SIG_CTRLBREAK);
 //    DosError( 0x0002 ); /* disable hard-error processing */
@@ -310,14 +316,14 @@ void FiniInt( void )
 {
 }
 
-int CtrlCHit( void )
+bool CtrlCHit( void )
 /******************/
 {
-    int hit;
+    bool    hit;
 
 //    DosHoldSignal( HLDSIG_DISABLE );
     hit = interruptOccurred;
-    interruptOccurred = 0;
+    interruptOccurred = false;
 //    DosHoldSignal( HLDSIG_ENABLE );
 
     return( hit );

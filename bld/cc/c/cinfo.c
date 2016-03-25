@@ -475,12 +475,16 @@ char *SegClassName( segment_id segid )
         if( useg->segid == segid && useg->class_name != NULL ) {
             classname = useg->class_name;
             if( classname[0] == '\0' ) {
-                len = strlen( useg->name );
-                if( len >= 4 ) {
-                    if( stricmp( useg->name + len - 4, "DATA" ) == 0 ) {
-                        classname = "FAR_DATA";
-                    } else if( stricmp( useg->name + len - 4, "TEXT" ) == 0 ) {
-                        classname = "CODE";
+                if( useg->segtype == SEGTYPE_BASED ) {
+                    classname = "FAR_DATA";
+                } else {
+                    len = strlen( useg->name );
+                    if( len >= 4 ) {
+                        if( stricmp( useg->name + len - 4, "DATA" ) == 0 ) {
+                            classname = "FAR_DATA";
+                        } else if( stricmp( useg->name + len - 4, "TEXT" ) == 0 ) {
+                            classname = "CODE";
+                        }
                     }
                 }
             }
@@ -611,7 +615,7 @@ void    SetSegs( void )
 //          BEDefSeg( segid, INIT | GLOBAL | EXEC, useg->name, 1 );
 //          break;
         case SEGTYPE_DATA:  /* created through #pragma data_seg */
-            BEDefSeg( segid, INIT | GLOBAL | NOGROUP, useg->name, SegAlign( TARGET_INT ) );
+            BEDefSeg( segid, INIT | GLOBAL, useg->name, SegAlign( TARGET_INT ) );
             break;
         case SEGTYPE_BASED:
             BEDefSeg( segid, INIT | PRIVATE | GLOBAL, useg->name, SegAlign( TARGET_INT ) );

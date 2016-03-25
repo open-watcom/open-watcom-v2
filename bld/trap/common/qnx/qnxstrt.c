@@ -31,14 +31,16 @@
 
 #include <stdlib.h>
 #include <malloc.h>
-#include "trpimp.h"
-#include "trpuximp.h"
+#include "trptypes.h"
+#include "trpld.h"
+#include "trpcomm.h"
+#include "qnxcomm.h"
 #include "qnxstrt.h"
 
-void                            *_slib_func[2];
-char                            **dbg_environ;  /* pointer to environment strings */
-const trap_callbacks            *Client;
-extern const trap_requests      ImpInterface;
+void                        *_slib_func[2];
+char                        **dbg_environ;  /* pointer to environment strings */
+static const trap_callbacks *Client;
+static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
 #ifdef __WATCOMC__
 const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
@@ -47,15 +49,13 @@ const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
 const trap_requests *TRAPLOAD( trap_callbacks *client )
 {
     Client = client;
-    if( Client->len <= offsetof(trap_callbacks,signal) ) return( NULL );
-    dbg_environ = *Client->environ;
+    if( Client->len <= offsetof(trap_callbacks,signal) )
+        return( NULL );
+    dbg_environ = *Client->environp;
     _slib_func[0] = Client->_slib_func[0];
     _slib_func[1] = Client->_slib_func[1];
     return( &ImpInterface );
 }
-
-const trap_requests ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
-
 
 void __near *_nmalloc( unsigned size )
 {

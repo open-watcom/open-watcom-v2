@@ -91,7 +91,7 @@ void WFileDialog::makeDialog( const char *filter ) {
     _ofn.base_file_name = NULL;
     _ofn.max_base_file_name = 0;
     _ofn.title = _titleName;
-    _ofn.flags = 0;
+    _ofn.flags = (fn_flags)0;
     _ofn.initial_dir = _dirName;
 }
 
@@ -123,15 +123,16 @@ void WFileDialog::init( const char *fn, const char *title ) {
 
 const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
                                                    const char *title,
-                                                   unsigned style ) {
+                                                   fn_flags style ) {
 /*******************************************************************/
 
     init( fn, title );
-    _ofn.flags = style;
 #if defined( __NT__ )
-    _ofn.flags |= OFN_WANT_LAST_PATH;
+    _ofn.flags = (fn_flags)( style | FN_WANT_LAST_PATH );
+#else
+    _ofn.flags = style;
 #endif
-    if( GUIGetFileName( _parent->handle(), &_ofn ) == OFN_RC_FILE_SELECTED ) {
+    if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
 #if defined( __NT__ )
         WFileName f( _fileName );
         WFileName path( _ofn.last_path );
@@ -150,12 +151,12 @@ const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
 bool WEXPORT WFileDialog::getOpenFileName( WFileNameList &flist,
                                            const char *fn,
                                            const char *title,
-                                           unsigned style ) {
+                                           fn_flags style ) {
 /***********************************************************/
 
     init( fn, title );
-    _ofn.flags = style | OFN_ALLOWMULTISELECT;
-    if( GUIGetFileName( _parent->handle(), &_ofn ) == OFN_RC_FILE_SELECTED ) {
+    _ofn.flags = (fn_flags)( style | FN_ALLOWMULTISELECT );
+    if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
         flist.parseIn( _fileName );
 #if defined( __WINDOWS__ ) || defined( __NT__ )
         if( flist.count() > 1 ) {
@@ -175,12 +176,12 @@ bool WEXPORT WFileDialog::getOpenFileName( WFileNameList &flist,
 
 const char * WEXPORT WFileDialog::getSaveFileName( const char *fn,
                                                    const char *title,
-                                                   unsigned style ) {
+                                                   fn_flags style ) {
 /*******************************************************************/
 
-    _ofn.flags = style | OFN_ISSAVE;
+    _ofn.flags = (fn_flags)( style | FN_ISSAVE );
     init( fn, title );
-    if( GUIGetFileName( _parent->handle(), &_ofn ) == OFN_RC_FILE_SELECTED ) {
+    if( GUIGetFileName( _parent->handle(), &_ofn ) == FN_RC_FILE_SELECTED ) {
         return( _fileName );
     }
     return( NULL );

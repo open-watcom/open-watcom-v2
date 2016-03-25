@@ -67,12 +67,11 @@ int nHelpFiles = sizeof( helpFiles ) / sizeof( char * );
 vi_rc DoHelpOnContext( void )
 {
     //Until we have a global context string, use thi local
-    char *context_str = "Contents";
-    DoHelp( context_str );
+    DoHelp( "Contents" );
     return( ERR_NO_ERR );
 }
 
-vi_rc DoHelp( char *data )
+vi_rc DoHelp( const char *data )
 {
     // Use the windows help till we get one of our own
     LPSTR vi_chmfile = "editor.chm";
@@ -84,19 +83,19 @@ vi_rc DoHelp( char *data )
     LPSTR win_helpfile = "win31wh.hlp";
 #endif
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     if( !strcmp( data, "OnHelp" ) ) {
-        WWinHelp( Root, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
+        WWinHelp( root_window_id, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
     } else if( !strcmp( data, "Contents" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_CONTENTS, (HELP_DATA)0 ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
+        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_CONTENTS, (HELP_DATA)0 ) ) {
+            WWinHelp( root_window_id, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
         }
     } else if( !strcmp( data, "Search" ) ) {
-        if( !WHtmlHelp( Root, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( Root, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+            WWinHelp( root_window_id, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
         }
     } else {
-        WWinHelp( Root, win_helpfile, HELP_KEY, (HELP_DATA)data );
+        WWinHelp( root_window_id, win_helpfile, HELP_KEY, (HELP_DATA)data );
     }
     return ( ERR_NO_ERR );
 }
@@ -108,7 +107,7 @@ vi_rc DoHelpOnContext( void )
     return( ERR_NO_ERR );
 }
 
-vi_rc DoHelp( char *data )
+vi_rc DoHelp( const char *data )
 {
     char        *hfile;
     char        *tstr;
@@ -118,10 +117,10 @@ vi_rc DoHelp( char *data )
     char        tmp[MAX_STR];
     int         i;
 
-    RemoveLeadingSpaces( data );
+    data = SkipLeadingSpaces( data );
     token = Tokenize( helpCmds, data, false );
     if( token == TOK_INVALID ) {
-        if( data[0] == 0 ) {
+        if( data[0] == '\0' ) {
             strcpy( tmp, "Topics: " );
             for( i = 0; i < nHelpFiles; i++ ) {
                 if( i != 0 ) {
@@ -137,7 +136,7 @@ vi_rc DoHelp( char *data )
     }
     hfile = helpFiles[token];
     GetFromEnv( hfile, path );
-    if( path[0] == 0 ) {
+    if( path[0] == '\0' ) {
         Error( "Help file %s not found", hfile );
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }
@@ -153,8 +152,8 @@ vi_rc DoHelp( char *data )
     strcat( tmp, " Help" );
     tmp[0] = toupper( tmp[0] );
     CurrentFile->read_only = false;
-    AddString2( &(CurrentFile->name), tmp );
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
+    ReplaceString( &(CurrentFile->name), tmp );
+    SetFileWindowTitle( current_window_id, CurrentInfo, true );
     DisplayFileStatus();
     return( ERR_NO_ERR );
 

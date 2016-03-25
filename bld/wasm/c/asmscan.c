@@ -40,8 +40,6 @@
 const char              *CurrString; // Current Input Line
 #endif
 
-extern const asm_ins    ASMFAR *get_instruction( char *string );
-
 #if defined( _STANDALONE_ )
 
 bool                    EnumDirective;

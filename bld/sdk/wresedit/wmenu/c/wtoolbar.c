@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <string.h>
 #include <limits.h>
 #include "watcom.h"
@@ -91,7 +92,7 @@ WToolBar *WCreateToolBar( WToolBarInfo *info, HWND parent )
 
     tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar = (toolbar)ToolBarInit( parent );
+    tbar->tbar = ToolBarInit( parent );
 
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
@@ -151,14 +152,14 @@ bool WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         if( lParam ) {
             WSetStatusText( NULL, NULL, "" );
         } else {
-            WDisplayHint( NULL, wParam );
+            WDisplayHint( NULL, LOWORD( wParam ) );
         }
         if( lParam ) {
             bstate = BUTTON_UP;
         } else {
             bstate = BUTTON_DOWN;
         }
-        WSetToolBarItemState( tbar, wParam, bstate );
+        WSetToolBarItemState( tbar, LOWORD( wParam ), bstate );
         break;
 
     case WM_SIZE:
@@ -301,7 +302,7 @@ void WShutdownToolBars( void )
     ListFree( WToolBarList );
 }
 
-void WSetToolBarItemState( WToolBar *tbar, UINT id, UINT state )
+void WSetToolBarItemState( WToolBar *tbar, ctl_id id, UINT state )
 {
     if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
         ToolBarSetState( tbar->tbar, id, state );

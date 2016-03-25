@@ -33,32 +33,57 @@ ifdef _BUILDING_MATHLIB
 
 include mdef.inc
 include struct.inc
+include shiftmac.inc
 
         modstart    ldi4086, word
 
 endif
 
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-;<>
-;<> __LDI4 - convert long double into 4-byte integer
-;<>          it is assumed that the long double has already been rounded
-;<>          to an integer by calling __frndint.
-;<>
-;<>   ifdef _BUILDING_MATHLIB
-;<>     input:  SS:AX - pointer to operand
-;<>     output: DX:AX - 4-byte integer
-;<>   else
-;<>     input:  DS:BX - pointer to operand
-;<>     output: DX:AX - 4-byte integer
-;<>   endif
-;<>
-;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
         xdefp   __LDI4
         xdefp   __LDU4
 
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;  
+;   __LDI4 - convert long double into 4-byte integer
+;            it is assumed that the long double has already been rounded
+;            to an integer by calling __frndint.
+;  
+;ifdef _BUILDING_MATHLIB
+;       input:  SS:AX - pointer to operand
+;else
+;       input:  DS:BX - pointer to operand
+;endif
+;       output: DX:AX - 4-byte integer
+;  
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+__dw_rshift     proc    near
+
+        _loop                   ; loop
+          cmp CL,16             ; - quit if < 16 bits to shift
+          _quif l               ; - ...
+          dw_rshift_16          ; - shift right 16 bits
+          sub CL,16             ; - adjust shift count
+        _endloop                ; endloop
+        cmp CL,8                ; if >= 8 bits to shift
+        _if ge                  ; then
+          dw_rshift_8           ; - shift right 8 bits
+          sub CL,8              ; - adjust shift count
+        _endif                  ; endif
+        or  CL,CL               ; if some bits to shift
+        _if nz                  ; then
+          _loop                 ; - loop
+            dw_rshift_1         ; - - shift right 1 bit
+            dec  CL             ; - - decrement shift count
+          _until z              ; - loop if some bits to shift
+        _endif                  ; endif
+        ret                     ; return
+
+__dw_rshift     endp
+
         defp    __LDI4
         defp    __LDU4
+
 ifdef _BUILDING_MATHLIB
         push    DS              ; save DS
         push    BX              ; save BX
@@ -85,37 +110,14 @@ endif
           mov   CL,AL           ; get shift count
           mov   DX,6[BX]        ; get fraction
           mov   AX,4[BX]        ; ...
-          _loop                   ; loop
-            cmp CL,16           ; - quit if < 16 bits to shift
-            _quif l               ; - ...
-            mov AX,DX           ; - shift right 16
-            sub DX,DX           ; - zero high word
-            sub CL,16           ; - adjust shift count
-          _endloop                ; endloop
-          cmp   CL,8            ; if >= 8 bits to shift
-          _if   ge              ; then
-            mov AL,AH           ; - shift right 8 bits
-            mov AH,DL           ; - ...
-            mov DL,DH           ; - ...
-            mov DH,0            ; - ...
-            sub CL,8            ; - adjust shift count
-          _endif                  ; endif
-          cmp   CL,0            ; if some bits to shift
-          _if   ne              ; then
-            _loop                 ; - loop (bit shift)
-              shr  DX,1          ; - - shift right 1 bit
-              rcr  AX,1          ; - - ...
-              dec  CL            ; - - decrement shift count
-            _until e             ; - until done
-          _endif                  ; endif
-;
+          call __dw_rshift      ; shift fraction right
           mov   CX,8[BX]        ; get sign of the value
           or    CX,CX           ; if negative
           _if   s               ; then
             not DX              ; - negate the value
             neg AX              ; - ...
             sbb DX,-1           ; - ...
-          _endif                  ; endif
+          _endif                ; endif
           pop   CX              ; restore CX
         _endguess
 ifdef _BUILDING_MATHLIB

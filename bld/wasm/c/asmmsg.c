@@ -29,17 +29,16 @@
 ****************************************************************************/
 
 
-#if defined( _STANDALONE_ )
-
 #include "asmglob.h"
 #include <stdarg.h>
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"
 #include "errout.h"
+#include "wompwasm.h"
+#include "standalo.h"
 
 void                    OpenErrFile( void );
-void                    print_include_file_nesting_structure( void );
 
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
@@ -76,6 +75,21 @@ void DoDebugMsg( const char *format, ... )
 }
 #endif
 
+void _AsmNote( int level, int msgnum, ... )
+/*****************************************/
+{
+    va_list args1, args2;
+
+    if( level <= WngLevel ) {
+        va_start( args1, msgnum );
+        va_start( args2, msgnum );
+
+        PrtMsg1( "Note!", msgnum, args1, args2 );
+        va_end( args1 );
+        va_end( args2 );
+    }
+}
+
 void AsmNote( int level, int msgnum, ... )
 /****************************************/
 {
@@ -88,6 +102,7 @@ void AsmNote( int level, int msgnum, ... )
         PrtMsg1( "Note!", msgnum, args1, args2 );
         va_end( args1 );
         va_end( args2 );
+        print_include_file_nesting_structure();
     }
 }
 
@@ -242,4 +257,3 @@ void PrintStats( void )
 #endif
     fflush( stdout );                   /* 27-feb-90 for QNX */
 }
-#endif

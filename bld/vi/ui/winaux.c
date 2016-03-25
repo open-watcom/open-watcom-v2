@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,21 +37,22 @@
 /*
  * WindowAuxInfo - get info about a window
  */
-int WindowAuxInfo( window_id wn, int type )
+int WindowAuxInfo( window_id wid, int type )
 {
-    wind        *w;
+    window      *w;
     int         rc;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wid ) ) {
         return( 1 );
     }
+    w = WINDOW_FROM_ID( wid );
+
     rc = 0;
-    w = Windows[wn];
     switch( type ) {
-    case WIND_INFO_X1: rc = w->x1; break;
-    case WIND_INFO_Y1: rc = w->y1; break;
-    case WIND_INFO_X2: rc = w->x2; break;
-    case WIND_INFO_Y2: rc = w->y2; break;
+    case WIND_INFO_X1: rc = w->area.x1; break;
+    case WIND_INFO_Y1: rc = w->area.y1; break;
+    case WIND_INFO_X2: rc = w->area.x2; break;
+    case WIND_INFO_Y2: rc = w->area.y2; break;
     case WIND_INFO_TEXT_LINES: rc = w->text_lines; break;
     case WIND_INFO_TEXT_COLS: rc = w->text_cols; break;
     case WIND_INFO_HEIGHT: rc = w->height; break;
@@ -70,15 +72,15 @@ int WindowAuxInfo( window_id wn, int type )
 /*
  * WindowAuxUpdate - update stuff for a window
  */
-void WindowAuxUpdate( window_id wn, int type, int data )
+void WindowAuxUpdate( window_id wid, int type, int data )
 {
-    wind *w;
+    window  *w;
 
-    if( wn == NO_WINDOW ) {
+    if( BAD_ID( wid ) ) {
         return;
     }
+    w = WINDOW_FROM_ID( wid );
 
-    w = Windows[wn];
     switch( type ) {
     case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;
     case WIND_INFO_TEXT_COLOR: w->text_color = data; break;

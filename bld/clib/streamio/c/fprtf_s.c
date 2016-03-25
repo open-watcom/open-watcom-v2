@@ -48,9 +48,9 @@ extern  int     __flush( FILE * );
  * file_putc -- write a character to a file
  */
 static slib_callback_t file_putc; // setup calling convention
-static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, int op_char )
+static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    __F_NAME(fputc,fputwc)( op_char, (FILE *)specs->_dest );
+    __F_NAME(fputc,fputwc)( (UCHAR_TYPE)op_char, (FILE *)specs->_dest );
     specs->_output_count++;
 }
 
@@ -73,12 +73,12 @@ int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
         _AccessFile( stream );
 
         /*** Deal with stream orientation ***/
-        ORIENT_STREAM(stream,0);
+        ORIENT_STREAM( stream, 0 );
 
         oflag = stream->_flag & (_SFERR | _EOF);
         stream->_flag &= ~(_SFERR | _EOF);
 
-        if( _FP_BASE(stream) == NULL ) {
+        if( _FP_BASE( stream ) == NULL ) {
             __ioalloc( stream );            /* allocate buffer */
         }
         not_buffered = 0;

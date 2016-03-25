@@ -41,18 +41,13 @@
 #include "dbgscrn.h"
 #include "strutil.h"
 #include "dbgscan.h"
-
-
-extern a_window         *WndFileInspect( char *name, bool binary );
-extern void             SaveConfigToFile( const char * );
-extern void             RestoreConfigFromFile( char * );
-extern void             SaveBreaksToFile( const char * );
-extern void             RestoreBreaksFromFile( const char * );
-extern void             SaveReplayToFile( const char * );
-extern void             RestoreReplayFromFile( const char * );
-extern bool             OkToSaveReplay( void );
-extern void             FiniHelp( void );
-extern bool             KillProgOvlay( void );
+#include "dbgshow.h"
+#include "dbgbrk.h"
+#include "remcore.h"
+#include "dbgevent.h"
+#include "dbgwinsp.h"
+#include "dlgfile.h"
+#include "wndhelp.h"
 
 
 #if defined(__UNIX__)
@@ -166,12 +161,12 @@ void FiniBrowse( void )
     LastRep = NULL;
 }
 
-static bool DoFileBrowse( char **last, char *title, char *filter, unsigned long flags )
+static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags )
 {
     bool        rc;
 
     if( *last == NULL ) {
-        TxtBuff[0] = '\0';
+        TxtBuff[0] = NULLCHAR;
     } else {
         strcpy( TxtBuff, *last );
     }
@@ -203,33 +198,33 @@ static bool AskIfKillPB( void )
                              GUI_YES_NO ) == GUI_RET_YES );
 }
 
-static bool     WndDead = FALSE;
+static bool     WndDead = false;
 bool WndShutDownHook( void )
 {
 
     if( WndDead )
-        return( TRUE );
-    WndDead = TRUE;
-    HookNotify( TRUE, HOOK_QUIT );
+        return( true );
+    WndDead = true;
+    HookNotify( true, HOOK_QUIT );
     if( _IsOn( SW_POWERBUILDER ) && _IsOn( SW_HAVE_TASK ) && !AskIfKillPB() ) {
-        WndDead = FALSE;
-        return( FALSE );
+        WndDead = false;
+        return( false );
     }
     WritableConfig();
-    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != '\0' ) {
+    if( _IsOn( SW_AUTO_SAVE_CONFIG ) && LastCfg != NULL && *LastCfg != NULLCHAR ) {
         SaveConfigToFile( LastCfg );
         SaveMainWindowPos();
     }
     FiniHelp();
-    #if defined(__GUI__) && defined(__OS2__)
-        KillProgOvlay(); // must be done before windows are shut down
-    #endif
-    return( TRUE );
+#if defined(__GUI__) && defined(__OS2__)
+    KillProgOvlay(); // must be done before windows are shut down
+#endif
+    return( true );
 }
 
 
 #define OFN_FLAGS( writing ) \
-    ( writing ? (OFN_HIDEREADONLY+OFN_ISSAVE+OFN_OVERWRITEPROMPT) : 0 )
+    ( writing ? (FN_HIDEREADONLY|FN_ISSAVE|FN_OVERWRITEPROMPT) : 0 )
 
 bool ConfigSave( bool writing )
 {
@@ -241,24 +236,23 @@ bool ConfigSave( bool writing )
         } else {
             RestoreConfigFromFile( TxtBuff );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 bool BreakSave( bool writing )
 {
-    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter,
-                      OFN_FLAGS( writing ) ) ) {
+    if( DoFileBrowse( &LastBrk, LIT_DUI( Breakpoint_File_Name ), ConfigFilter, OFN_FLAGS( writing ) ) ) {
         if( writing ) {
             SaveBreaksToFile( TxtBuff );
         } else {
             RestoreBreaksFromFile( TxtBuff );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -271,17 +265,17 @@ bool ReplaySave( bool writing )
             } else {
                 RestoreReplayFromFile( TxtBuff );
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 extern void FileBrowse( void )
 {
     if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
-        WndFileInspect( TxtBuff, FALSE );
+        WndFileInspect( TxtBuff, false );
     }
 }
 

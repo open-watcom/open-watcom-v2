@@ -56,17 +56,17 @@ typedef int     (*_CRT_REPORT_HOOK)( int, char *, int * );
  * Function prototypes.
  */
 
-_WCRTLINK void              _CrtDbgBreak( void );
+_WCRTLINK extern void              _CrtDbgBreak( void );
 
-_WCRTLINK int               _CrtSetReportMode( int reporttype,
+_WCRTLINK extern int               _CrtSetReportMode( int reporttype,
                                                int reportmode );
 
-_WCRTLINK _HFILE            _CrtSetReportFile( int reporttype,
+_WCRTLINK extern _HFILE            _CrtSetReportFile( int reporttype,
                                                _HFILE reportfile );
 
-_WCRTLINK _CRT_REPORT_HOOK  _CrtSetReportHook( _CRT_REPORT_HOOK hook );
+_WCRTLINK extern _CRT_REPORT_HOOK  _CrtSetReportHook( _CRT_REPORT_HOOK hook );
 
-_WCRTLINK int               _CrtDbgReport( int reporttype,
+_WCRTLINK extern int               _CrtDbgReport( int reporttype,
                                            const char *filename,
                                            int linenumber,
                                            const char *modulename,

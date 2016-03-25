@@ -252,7 +252,7 @@ static void     AddFile( list **l, char *fname )
     *l = p;
 }
 
-void    main( int argc, char *argv[] ) {
+int     main( int argc, char *argv[] ) {
 //======================================
 
     int         rc;
@@ -328,6 +328,7 @@ void    main( int argc, char *argv[] ) {
     free( Word );
     free( cmd );
     wfl_exit( rc == 0 ? 0 : 1 );
+    return( 0 );
 }
 
 static  int     Parse( int argc, char **argv ) {
@@ -358,11 +359,11 @@ static  int     Parse( int argc, char **argv ) {
     // Skip the first entry - it's the current program's name
     opt_index = 1;
     cmp_opt_index = 0;
-    
+
     while( opt_index < argc ) {
         cmd = argv[opt_index];
         opt = *cmd;
-        
+
         if( ( opt == '-' ) || ( opt == SwitchChars[1] ) ) {
             cmd++;
         } else {
@@ -591,24 +592,24 @@ static int     IsOption( char *cmd, size_t cmd_len, char *opt ) {
  *
  */
 
-static DIR  *parent = NULL;  /* we need this across invocations */
-static char *path = NULL;
-static char *pattern = NULL;
+static DIR  *wildparent = NULL;  /* we need this across invocations */
+static char *wildpath = NULL;
+static char *wildpattern = NULL;
 
 void DoWildCardClose( void )
 /*********************************/
 {
-    if( path != NULL ) {
-        free( path );
-        path = NULL;
+    if( wildpath != NULL ) {
+        free( wildpath );
+        wildpath = NULL;
     }
-    if( pattern != NULL ) {
-        free( pattern );
-        pattern = NULL;
+    if( wildpattern != NULL ) {
+        free( wildpattern );
+        wildpattern = NULL;
     }
-    if( parent != NULL ) {
-        closedir( parent );
-        parent = NULL;
+    if( wildparent != NULL ) {
+        closedir( wildparent );
+        wildparent = NULL;
     }
 }
 
@@ -625,25 +626,25 @@ const char *DoWildCard( const char *base )
             return( base );
         }
         // create directory name and pattern
-        path = MemAlloc( _MAX_PATH );
-        pattern = MemAlloc( _MAX_PATH );
-        strcpy( path, base );
-        _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        _makepath( path, pg.drive, pg.dir, ".", NULL );
+        wildpath = MemAlloc( _MAX_PATH );
+        wildpattern = MemAlloc( _MAX_PATH );
+        strcpy( wildpath, base );
+        _splitpath2( wildpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        _makepath( wildpath, pg.drive, pg.dir, ".", NULL );
         // create file name pattern
-        _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
-        parent = opendir( path );
-        if( parent == NULL ) {
+        _makepath( wildpattern, NULL, NULL, pg.fname, pg.ext );
+        wildparent = opendir( wildpath );
+        if( wildparent == NULL ) {
             DoWildCardClose();
             return( NULL );
         }
     }
-    if( parent == NULL ) {
+    if( wildparent == NULL ) {
         return( NULL );
     }
-    while( (entry = readdir( parent )) != NULL ) {
+    while( (entry = readdir( wildparent )) != NULL ) {
         if( ISVALIDENTRY( entry ) ) {
-            if( fnmatch( pattern, entry->d_name, FNM_OPTIONS ) == 0 ) {
+            if( fnmatch( wildpattern, entry->d_name, FNM_OPTIONS ) == 0 ) {
                 break;
             }
         }
@@ -652,9 +653,9 @@ const char *DoWildCard( const char *base )
         DoWildCardClose();
         return( NULL );
     }
-    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
-    return( path );
+    _splitpath2( wildpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( wildpath, pg.drive, pg.dir, entry->d_name, NULL );
+    return( wildpath );
 }
 
 static char *FindToolPath( tool_type utl )
@@ -674,20 +675,20 @@ static int tool_exec( tool_type utl, char *target, char **options )
     int     rc;
     int     pass_argc;
     char    *pass_argv[MAX_OPTIONS+3];
-    
+
     FindToolPath( utl );
-    
+
     pass_argv[0] = tools[utl].name;
-    pass_argc = 1; 
-    
+    pass_argc = 1;
+
     while(options != NULL && options[pass_argc-1] != NULL && pass_argc < MAX_OPTIONS) {
         pass_argv[pass_argc] = options[pass_argc-1];
         pass_argc++;
-    } 
-    
+    }
+
     pass_argv[pass_argc++] = target;
     pass_argv[pass_argc] = NULL;
-    
+
     if( !Flags.quiet ) {
         fputs( "\t", stdout );
         for( pass_argc=0; pass_argv[pass_argc] != NULL; pass_argc++ ) {
@@ -732,7 +733,7 @@ static  int     CompLink( void ) {
     int         i;
     list        *currobj;
     list        *nextobj;
-    
+
     if( Flags.quiet ) {
         Fputnl( "option quiet", Fp );
     }
@@ -864,7 +865,7 @@ static  void    MakeName( char *name, char *ext ) {
 //=================================================
 
     PGROUP  pg;
-    
+
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
         pg.ext = ext;

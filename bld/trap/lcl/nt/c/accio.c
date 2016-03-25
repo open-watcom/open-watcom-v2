@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -287,7 +288,7 @@ trap_retval ReqFile_string_to_fullpath( void )
         } else {
             ext_list = NtExtList;
         }
-        ret->err = FindFilePath( name, fullname, ext_list );
+        ret->err = FindProgFile( name, fullname, ext_list );
     }
     if( ret->err != 0 )
         *fullname = '\0';

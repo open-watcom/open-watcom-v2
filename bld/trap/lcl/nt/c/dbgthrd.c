@@ -36,6 +36,7 @@
 #include "srvcdbg.h"
 #include "stdnt.h"
 #include "trperr.h"
+#include "trpimp.h"
 
 
 typedef enum {
@@ -235,7 +236,7 @@ static void RequestDone( void )
     }
 }
 
-static DWORD WINAPI ControlFunc( void *parm )
+static DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     for( ;; ) {
@@ -573,7 +574,9 @@ static BOOL StartDebuggee( void )
              */
             memset( &sinfo, 0, sizeof( sinfo ) );
             sinfo.cb = sizeof( sinfo );
-            sinfo.wShowWindow = SW_NORMAL;
+            // set ShowWindow default value for nCmdShow parameter
+            sinfo.dwFlags = STARTF_USESHOWWINDOW;
+            sinfo.wShowWindow = SW_SHOWNORMAL;
             rc = CreateProcess( NULL,           /* application name */
                                 "wowdeb.exe",   /* command line */
                                 NULL,           /* process attributes */
@@ -602,7 +605,9 @@ static BOOL StartDebuggee( void )
     } else {
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.cb = sizeof( sinfo );
-        sinfo.wShowWindow = SW_NORMAL;
+        // set ShowWindow default value for nCmdShow parameter
+        sinfo.dwFlags = STARTF_USESHOWWINDOW;
+        sinfo.wShowWindow = SW_SHOWNORMAL;
         rc = CreateProcess( NULL,               /* application name */
                             Shared.name,        /* command line */
                             NULL,               /* process attributes */
@@ -762,7 +767,7 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
 
         Shared.requestsem = CreateSemaphore( NULL, 0, 1, NULL );
         Shared.requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
-        Shared.hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
+        Shared.hThread = CreateThread( NULL, 0, ControlFunc, NULL, 0, &tid );
         if( Shared.hThread == NULL ) {
             MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger, MB_APPLMODAL + MB_OK );
         }

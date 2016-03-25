@@ -32,9 +32,7 @@
 
 #ifndef __WINDOWS_INCLUDED__
 #define __WINDOWS_INCLUDED__
-#include <windows.h>
-#include <toolhelp.h>
-#endif
+
 #include "wdebug.h"
 #include "segmem.h"
 #include "mythelp.h"
@@ -138,3 +136,5 @@ char *ResName( char * );
 
 /* winopts.c */
 BOOL GetFileName( HINSTANCE, int, char * );
+
+#endif

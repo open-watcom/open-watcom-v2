@@ -40,10 +40,8 @@
 #include "dbgscrn.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbginit.h"
 
-
-extern void     __FAR *ExtraAlloc( size_t );
-extern void     ExtraFree( void __FAR * );
 
 unsigned            NumLines;
 unsigned            NumColumns;
@@ -82,7 +80,9 @@ void InitScreen( void )
         VioSetMode( &new, 0 );
     }
     uistart();
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 1 );
+    }
 }
 
 
@@ -92,7 +92,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -107,12 +107,12 @@ void DbgScrnMode( void )
 
 bool DebugScreen( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -122,7 +122,7 @@ bool DebugScreenRecover( void )
 
 bool UserScreen( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -143,19 +143,9 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void __FAR *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-
-void uifarfree( void __FAR *ptr )
-{
-    ExtraFree( ptr );
-}
 bool SysGUI( void )
 {
-    return( FALSE );
+    return( false );
 }
 void PopErrBox( const char *buff )
 {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ void SetGadgetString( char *str )
 {
     int     i;
 
-    if( str != NULL ) {
+    if( str != NULL && *str != '\0' ) {
         i = strlen( str );
         if( i > GADGET_SIZE ) {
             i = GADGET_SIZE;
@@ -75,19 +76,24 @@ void SetGadgetString( char *str )
         memset( EditVars.GadgetString, ' ', GADGET_SIZE );
         memcpy( EditVars.GadgetString, str, i );
     } else {
-        AddString2( &EditVars.GadgetString, WindowBordersG );
+        ReplaceString( &EditVars.GadgetString, WindowBordersG );
     }
+}
+
+bool IsGadgetStringChanged( char *str )
+{
+    return( strcmp( str, WindowBordersG ) != 0 );
 }
 
 /*
  * DrawBorder - display border
  */
-void DrawBorder( window_id wn )
+void DrawBorder( window_id wid )
 {
-    wind                *w;
-    int                 i, k, stc, etc, ctc;
-    int                 tl, bl, tr, br;
-    int                 xtl, xbl, xtr, xbr;
+    window              *w;
+    windim              i, stc, etc, ctc;
+    size_t              tl, bl, tr, br, k;
+    size_t              xtl, xbl, xtr, xbr;
     window_id           *over;
     char                c;
     viattr_t            clr;
@@ -96,15 +102,16 @@ void DrawBorder( window_id wn )
     char_info           *txt;
     int                 topscol, topecol, topccol;
     char                *wb;
-    unsigned            oscr;
+    size_t              oscr;
 
     if( EditFlags.Quiet ) {
         return;
     }
-    if( !Windows[wn]->has_border ) {
+    w = WINDOW_FROM_ID( wid );
+    if( !w->has_border ) {
         return;
     }
-    w = AccessWindow( wn );
+    AccessWindow( w );
     txt = w->text;
     over = w->overlap;
 
@@ -135,10 +142,10 @@ void DrawBorder( window_id wn )
         topecol = topscol + strlen( w->borderdata ) - 1;
     }
 
-    tl = (w->x1) + (w->y1) * EditVars.WindMaxWidth;
-    tr = (w->x2) + (w->y1) * EditVars.WindMaxWidth;
-    bl = (w->x1) + (w->y2) * EditVars.WindMaxWidth;
-    br = (w->x2) + (w->y2) * EditVars.WindMaxWidth;
+    tl = (w->area.x1) + (w->area.y1) * EditVars.WindMaxWidth;
+    tr = (w->area.x2) + (w->area.y1) * EditVars.WindMaxWidth;
+    bl = (w->area.x1) + (w->area.y2) * EditVars.WindMaxWidth;
+    br = (w->area.x2) + (w->area.y2) * EditVars.WindMaxWidth;
     xtl = 0;
     xtr = w->width - 1;
     xbl = (w->height - 1) * w->width;
@@ -152,22 +159,22 @@ void DrawBorder( window_id wn )
      */
     what.cinfo_char = wb[WB_TOPLEFT];
     WRITE_SCREEN_DATA( txt[xtl], what );
-    if( over[xtl] == NO_WINDOW ) {
+    if( BAD_ID( over[xtl] ) ) {
         WRITE_SCREEN( Scrn[tl], what );
     }
     what.cinfo_char = wb[WB_TOPRIGHT];
     WRITE_SCREEN_DATA( txt[xtr], what );
-    if( over[xtr] == NO_WINDOW ) {
+    if( BAD_ID( over[xtr] ) ) {
         WRITE_SCREEN( Scrn[tr], what );
     }
     what.cinfo_char = wb[WB_BOTTOMLEFT];
     WRITE_SCREEN_DATA( txt[xbl], what );
-    if( over[xbl] == NO_WINDOW ) {
+    if( BAD_ID( over[xbl] ) ) {
         WRITE_SCREEN( Scrn[bl], what );
     }
     what.cinfo_char = wb[WB_BOTTOMRIGHT];
     WRITE_SCREEN_DATA( txt[xbr], what );
-    if( over[xbr] == NO_WINDOW ) {
+    if( BAD_ID( over[xbr] ) ) {
         WRITE_SCREEN( Scrn[br], what );
     }
 
@@ -179,7 +186,7 @@ void DrawBorder( window_id wn )
     oscr = tl + EditVars.WindMaxWidth;
     for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
             MyVioShowBuf( oscr, 1 );
@@ -197,7 +204,7 @@ void DrawBorder( window_id wn )
     oscr = tr + EditVars.WindMaxWidth;
     for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
             MyVioShowBuf( oscr, 1 );
@@ -232,13 +239,13 @@ void DrawBorder( window_id wn )
         }
         what.cinfo_char = c;
         WRITE_SCREEN_DATA( txt[k], what );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[tl + i] , what );
         }
 
         k = xbl + i;
         WRITE_SCREEN_DATA( txt[k], what2 );
-        if( over[k] == NO_WINDOW ) {
+        if( BAD_ID( over[k] ) ) {
             WRITE_SCREEN( Scrn[bl + i] , what2 );
         }
     }
@@ -249,7 +256,7 @@ void DrawBorder( window_id wn )
     if( w->has_gadgets || w->has_scroll_gadgets ) {
         what.cinfo_char = wb[WB_UPTRIANGLE];
         WRITE_SCREEN_DATA( txt[xtr + w->width], what );
-        if( over[xtr + w->width] == NO_WINDOW ) {
+        if( BAD_ID( over[xtr + w->width] ) ) {
             oscr = tr + EditVars.WindMaxWidth;
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
@@ -258,7 +265,7 @@ void DrawBorder( window_id wn )
         }
         what.cinfo_char = wb[WB_DOWNTRIANGLE];
         WRITE_SCREEN_DATA( txt[xbr - w->width], what );
-        if( over[xbr - w->width] == NO_WINDOW ) {
+        if( BAD_ID( over[xbr - w->width] ) ) {
             oscr = br - EditVars.WindMaxWidth;
             WRITE_SCREEN( Scrn[oscr], what );
 #ifdef __VIO__
@@ -280,22 +287,22 @@ void DrawBorder( window_id wn )
 /*
  * SetBorderGadgets - set whether or not border has gadgets
  */
-void SetBorderGadgets( window_id wn, bool how )
+void SetBorderGadgets( window_id wid, bool how )
 {
-   Windows[wn]->has_gadgets = how;
+   WINDOW_FROM_ID( wid )->has_gadgets = how;
 
 } /* SetBorderGadgets */
 
 /*
  * WindowBorderData - set up window border data
  */
-void WindowBorderData( window_id wn, char *data, int col )
+void WindowBorderData( window_id wid, const char *data, int col )
 {
-    wind        *w;
+    window      *w;
 
-    w = Windows[wn];
+    w = WINDOW_FROM_ID( wid );
     if( w->has_border ) {
-        AddString2( &(w->borderdata), data );
+        ReplaceString( &(w->borderdata), data );
         w->bordercol = col;
     }
 

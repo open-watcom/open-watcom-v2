@@ -40,7 +40,6 @@
 
         xdefp   __f2xm1         ; calc 2**x - 1
 
-
 ;;const0:
 ;;        dt      20.813771196523035
 ;;const1:
@@ -68,7 +67,9 @@ ExpConsts dt    1.0442737824274138403   ;/*   sqrt(sqrt(sqrt(sqrt(2))))  */
 ;;    double              b;
 ;;    double              ee;
 ;;
+
         defp    __f2xm1
+
         push    EBP                     ; save EBP
         push    EDI                     ; save registers
         push    ESI                     ; ...
@@ -284,5 +285,6 @@ ExpConsts dt    1.0442737824274138403   ;/*   sqrt(sqrt(sqrt(sqrt(2))))  */
         pop     EDI                     ; ...
         pop     EBP                     ; ...
         ret                             ; return
-__f2xm1 endp
+
+        endproc __f2xm1
 

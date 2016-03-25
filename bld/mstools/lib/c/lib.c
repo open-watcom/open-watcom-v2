@@ -100,10 +100,13 @@ static int lib( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     int                 count;
     CmdLine *           spawnCmdLine;
 
-
     /*** Make the command file ***/
     args = MergeCmdLine( cmdLine, INVALID_MERGE_CMDLINE );
     cmdFileName = tmpnam( NULL );
+#if defined( _MSC_VER )
+    if( *cmdFileName == '\\' )
+        ++cmdFileName;
+#endif
     if( !cmdOpts->noinvoke ) {
         fp = fopen( cmdFileName, "wt" );
         if( fp == NULL ) {

@@ -46,24 +46,21 @@
 #include "dbgscrn.h"
 #include "guigmous.h"
 #include "guiwin.h"
+#include "wndsys.h"
+#include "trpld.h"
+#include "trpsys.h"
+#include "dbginit.h"
+
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
-extern HMQ      GUIPMmq;
-
-extern void     *ExtraAlloc( size_t );
-extern void     ExtraFree( void * );
-extern void     TellHandles( HAB hab, HWND hwnd );
-extern void     SaveMainScreen( char * );
-extern void     RestoreMainScreen( char * );
-extern bool     IsTrapFilePumpingMessageQueue( void );
-
+extern HMQ              GUIPMmq;
+extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
-int                     ForceHardMode;
-bool                    ToldWinHandle = FALSE;
-extern a_window         *WndMain;
+bool                    TrapForceHardMode = false;
+bool                    ToldWinHandle = false;
 //TODO: see if these two event sems could be replaced by single mutex
 HEV                     PumpMessageSem = NULLHANDLE;
 HEV                     PumpMessageDoneSem = NULLHANDLE;
@@ -78,9 +75,8 @@ void WndInitWndMain( wnd_create_struct *info )
 
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle ) {
-        TellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) );
-        ToldWinHandle = TRUE;
+    if( !ToldWinHandle && TrapTellHandles( GUIGetHAB(), GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
+        ToldWinHandle = true;
     }
 }
 
@@ -104,12 +100,12 @@ unsigned ConfigScreen( void )
 }
 
 
-unsigned GetSystemDir( char *buff, unsigned buff_len )
-/****************************************************/
+size_t GetSystemDir( char *buff, size_t buff_len )
+/************************************************/
 {
     // inst
     PRFPROFILE                  prof;
-    unsigned                    i;
+    size_t                      i;
 
     prof.cchUserName = 0L;
     prof.cchSysName = 0L;
@@ -134,7 +130,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
             }
         }
     }
-    buff[i] = '\0';
+    buff[i] = NULLCHAR;
     return( strlen( buff ) );
 } /* _wpi_getinidirectory */
 
@@ -142,7 +138,7 @@ unsigned GetSystemDir( char *buff, unsigned buff_len )
  * InitScreen
  */
 
-VOID PumpMessageQueue( VOID )
+static VOID PumpMessageQueue( VOID )
 {
     char        class_name[80];
     QMSG        qmsg;
@@ -173,8 +169,8 @@ void InitScreen( void )
     TID                 tid;
 
     RestoreMainScreen( "WDPM" );
-    DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, FALSE );
-    DosCreateEventSem( NULL, &PumpMessageSem, 0, FALSE );
+    DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, false );
+    DosCreateEventSem( NULL, &PumpMessageSem, 0, false );
     DosCreateThread( &tid, (PFNTHREAD)PumpMessageQueue, 0, 0, STACK_SIZE );
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }
@@ -186,7 +182,7 @@ void InitScreen( void )
 
 bool UsrScrnMode( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -204,7 +200,7 @@ static HWND FocusWnd, ActiveWnd;
 bool DebugScreen( void )
 {
     if( !WndMain )
-        return FALSE;
+        return( false );
     if( FocusWnd && WinIsWindow( GUIGetHAB(), FocusWnd ) &&
         FocusWnd != WinQueryFocus( HWND_DESKTOP ) ) {
         WinSetFocus(HWND_DESKTOP, FocusWnd);
@@ -213,13 +209,13 @@ bool DebugScreen( void )
         ActiveWnd != WinQueryActiveWindow( HWND_DESKTOP ) ) {
         WinSetActiveWindow( HWND_DESKTOP, ActiveWnd );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -230,10 +226,10 @@ bool DebugScreenRecover( void )
 bool UserScreen( void )
 {
     if( !WndMain )
-        return( FALSE );
+        return( false );
     FocusWnd = WinQueryFocus( HWND_DESKTOP );
     ActiveWnd = WinQueryActiveWindow( HWND_DESKTOP );
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -254,19 +250,9 @@ void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-void *uifaralloc( size_t size )
-{
-    return( ExtraAlloc( size ) );
-}
-
-void uifarfree( void *ptr )
-{
-    ExtraFree( ptr );
-}
-
 bool SysGUI( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void PopErrBox( const char *buff )
@@ -276,7 +262,7 @@ void PopErrBox( const char *buff )
                   MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL );
 }
 
-unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned out_num, mx_entry_p out_mx )
+unsigned OnAnotherThreadAccess( trap_elen in_num, in_mx_entry_p in_mx, trap_elen out_num, mx_entry_p out_mx )
 {
     unsigned    result;
     ULONG       ulCount;
@@ -293,7 +279,7 @@ unsigned OnAnotherThreadAccess( unsigned in_num, in_mx_entry_p in_mx, unsigned o
     }
 }
 
-unsigned OnAnotherThreadSimpAccess( unsigned in_len, in_data_p in_data, unsigned out_len, out_data_p out_data )
+unsigned OnAnotherThreadSimpAccess( trap_elen in_len, in_data_p in_data, trap_elen out_len, out_data_p out_data )
 {
     unsigned    result;
     ULONG       ulCount;

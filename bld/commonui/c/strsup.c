@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "precomp.h"
+#include "commonui.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -48,7 +48,7 @@ static HANDLE   curInst;
  *             - the pointer is only valid until the next call to
  *               GetString
  */
-char *GetRCString( MSGID msgid )
+char *GetRCString( msg_id msgid )
 {
     LoadString( curInst, msgid, getStringBuffer, LDSTR_MAX_STR_LEN );
     return( getStringBuffer );
@@ -59,7 +59,7 @@ char *GetRCString( MSGID msgid )
  * AllocRCString - return a pointer to a string from the resource file
  *               - the caller must free the memory
  */
-char *AllocRCString( MSGID id )
+char *AllocRCString( msg_id id )
 {
     char        *ret;
     int         len;
@@ -76,7 +76,7 @@ char *AllocRCString( MSGID id )
 /*
  * CopyRCString - copy a string from the resource file into a buffer
  */
-int CopyRCString( MSGID id, char *buf, int bufsize )
+int CopyRCString( msg_id id, char *buf, int bufsize )
 {
     int         len;
 

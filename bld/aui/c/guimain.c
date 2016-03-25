@@ -93,7 +93,7 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
     WndInitWndMain( &info );
     info.title = title;
     info.info = &NoInfo;
-    info.class = WND_NO_CLASS;
+    info.wndclass = WND_NO_CLASS;
     info.extra = NULL;
     WndSetWndMainSize( &info );
     WndMain = WndCreateWithStructAndMenuRes( &info, resource_menu );
@@ -349,7 +349,8 @@ static void DoMainEventProc( spawn_parms *spawnp )
         break;
     case GUI_CLICKED:
         GUI_GETID( parm, id );
-        if( WndClickHook != NULL && WndClickHook( wnd, id ) ) break;
+        if( WndClickHook != NULL && WndClickHook( wnd, id ) )
+            break;
         cursor = WndHourGlass( NULL );
         WndClick( wnd, id );
         WndHourGlass( cursor );
@@ -370,7 +371,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         break;
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
-        if( GUI_CTRL( state ) ) {
+        if( GUI_CTRL_STATE( state ) ) {
             switch( key ) {
             case GUI_KEY_TAB:
                 key = GUI_KEY_CTRL_I;
@@ -399,14 +400,16 @@ static void DoMainEventProc( spawn_parms *spawnp )
         if( !WndProcMacro( wnd, key ) ) {
             switch( key ) {
             case GUI_KEY_HOME:
-                if( GUI_SHIFT( state ) ) WndToSelectMode( wnd );
+                if( GUI_SHIFT_STATE( state ) )
+                    WndToSelectMode( wnd );
                 WndCursorStart( wnd );
                 break;
             case GUI_KEY_ESCAPE:
                 WndKeyEscape( wnd );
                 break;
             case GUI_KEY_END:
-                if( GUI_SHIFT( state ) ) WndToSelectMode( wnd );
+                if( GUI_SHIFT_STATE( state ) )
+                    WndToSelectMode( wnd );
                 WndCursorEnd( wnd );
                 break;
             case GUI_KEY_BACKSPACE:
@@ -422,11 +425,13 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndTabRight( wnd, TRUE );
                 break;
             case GUI_KEY_LEFT:
-                if( GUI_SHIFT( state ) ) WndToSelectMode( wnd );
+                if( GUI_SHIFT_STATE( state ) )
+                    WndToSelectMode( wnd );
                 WndCursorLeft( wnd );
                 break;
             case GUI_KEY_RIGHT:
-                if( GUI_SHIFT( state ) ) WndToSelectMode( wnd );
+                if( GUI_SHIFT_STATE( state ) )
+                    WndToSelectMode( wnd );
                 WndCursorRight( wnd );
                 break;
             case GUI_KEY_PAGEDOWN:
@@ -441,7 +446,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 if( _Is( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
                     WndScrollUp( wnd );
                 } else {
-                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT( state ) ) {
+                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
                         WndToSelectMode( wnd );
                     }
                     WndCursorUp( wnd );
@@ -451,7 +456,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 if( _Is( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
                     WndScrollDown( wnd );
                 } else {
-                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT( state ) ) {
+                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
                         WndToSelectMode( wnd );
                     }
                     WndCursorDown( wnd );
@@ -553,7 +558,7 @@ void *WndArrowCursor( void )
     }
 }
 
-void *WndSetCursor( void *to )
+static void *WndSetCursor( void *to )
 {
     if( GUIIsGUI() ) {
         wndCursorType = GUI_ARROW_CURSOR;

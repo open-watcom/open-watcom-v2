@@ -99,7 +99,7 @@ static  HEV             BeginThreadSem = NULLHANDLE;
 // PROC     HookProc;  /*  Address of the hook procedure that is about to be called. */
 // BOOL     f;         /*  Indicates whether or not the hook HookProc should be called: */
 
-BOOL APIENTRY CallHookProc(HMQ hmqCurrent, HMQ hmqCreated, PID pid, TID tid, SHORT hookType, PFN hookProc)
+static BOOL APIENTRY CallHookProc(HMQ hmqCurrent, HMQ hmqCreated, PID pid, TID tid, SHORT hookType, PFN hookProc)
 {
     // Returning TRUE will stop PM from trying to call hooks. We could try to be clever
     // and decide which hooks are safe to call and which are not. For now just don't call any.

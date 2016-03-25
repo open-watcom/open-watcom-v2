@@ -36,6 +36,12 @@
 #include <assert.h>
 #include "wprocmap.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
+typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
+
 static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
                           "C Files (*.c;*.h)\0*.c;*.h\0"
                           "C++ Files (*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
@@ -56,9 +62,6 @@ static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0
                           "All Files (*.*)\0*.*\0"
                           "\0";
 static char *FileNameList;
-
-typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
-
 
 WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -100,14 +103,14 @@ WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 /*
  * SelectFileOpen - use common dialog file open to pick a file to edit
  */
-vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
+vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool want_all_dirs )
 {
     OPENFILENAME        of;
     bool                rc;
     static long         filemask = 1;
     bool                is_chicago = false;
 
-#ifdef __NT__
+#if defined( __NT__ ) && !defined( _WIN64 )
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
@@ -118,10 +121,10 @@ vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
 
     mask = mask;
     want_all_dirs = want_all_dirs;
-    *result[0] = 0;
+    *result[0] = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
-    of.hwndOwner = Root;
+    of.hwndOwner = root_window_id;
     of.lpstrFilter = (LPSTR) filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = filemask;
@@ -169,7 +172,7 @@ vi_rc SelectFileSave( char *result )
     strcpy( result, CurrentFile->name );
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
-    of.hwndOwner = Root;
+    of.hwndOwner = root_window_id;
     of.lpstrFilter = (LPSTR) filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;
@@ -177,7 +180,7 @@ vi_rc SelectFileSave( char *result )
     of.nMaxFile = FILENAME_MAX;
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = CurrentFile->home;
-#ifdef __NT__
+#if defined( __NT__ ) && !defined( _WIN64 )
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 )
         is_chicago = true;
 #endif
@@ -210,11 +213,11 @@ char *GetInitialFileName( void )
     vi_rc       rc;
 
     CloseStartupDialog();
-    path[0] = 0;
+    path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     ShowStartupDialog();
-    if( rc == ERR_NO_ERR && path[0] != 0 ) {
-        AddString( &ptr, path );
+    if( rc == ERR_NO_ERR && path[0] != '\0' ) {
+        ptr = DupString( path );
     } else {
         ptr = NULL;
     }

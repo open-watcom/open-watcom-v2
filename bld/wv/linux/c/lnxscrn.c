@@ -58,16 +58,12 @@
 #include "strutil.h"
 #include "gui.h"
 #include "guigmous.h"
+#include "dbgcmdln.h"
+#include "dbgprog.h"
+#include "dbginit.h"
+#include "dbglkup.h"
+#include "dbgerr.h"
 
-extern void     StartupErr( const char * );
-extern void     ReleaseProgOvlay( bool );
-extern void     KillDebugger( int );
-extern int      Lookup( const char *, const char *, size_t );
-extern void     WantEquals(void);
-extern void     GetRawItem( char * );
-extern char     *GetFileName( int pass );
-
-extern char     *UITermType;
 
 char            XConfig[2048];
 char            *DbgTerminal;
@@ -91,15 +87,15 @@ pid_t           XTermPid;
 #define VT_RESIZE       0x5609  /* set kernel's idea of screensize */
 
 struct vt_sizes {
-        unsigned short v_rows;          /* number of rows */
-        unsigned short v_cols;          /* number of columns */
-        unsigned short v_scrollsize;    /* number of lines of scrollback */
+    unsigned short v_rows;          /* number of rows */
+    unsigned short v_cols;          /* number of columns */
+    unsigned short v_scrollsize;    /* number of lines of scrollback */
 };
 
 struct vt_stat {
-        unsigned short v_active;        /* active vt */
-        unsigned short v_signal;        /* signal to send */
-        unsigned short v_state;         /* vt bitmask */
+    unsigned short v_active;        /* active vt */
+    unsigned short v_signal;        /* signal to send */
+    unsigned short v_state;         /* vt bitmask */
 };
 /* ... */
 
@@ -128,7 +124,7 @@ static void HupHandler( int signo )
 {
     /* Xqsh has gone away -- nothing to do except die */
     signo = signo;
-    ReleaseProgOvlay( TRUE );
+    ReleaseProgOvlay( true );
     KillDebugger( 0 );
 }
 
@@ -148,35 +144,38 @@ static bool TryXWindows( void )
     struct termios termio;
 
     /* we're in the X (or helper)environment */
-    if ( getenv("DISPLAY") == NULL )
-        return( FALSE );
-    masterfd = open("/dev/ptmx", O_RDWR);
-    if ( masterfd < 0 )
-        return( FALSE );
+    if ( getenv( "DISPLAY" ) == NULL )
+        return( false );
+    masterfd = open( "/dev/ptmx", O_RDWR );
+    if( masterfd < 0 )
+        return( false );
     fcntl( masterfd, F_SETFD, 0 );
     ioctl( masterfd, TIOCGPTN, &slavefd ); /* slavefd = ptsname(masterfd); */
     ioctl( masterfd, TIOCSPTLCK, &unlock ); /* unlockpt(masterfd); */
-    sprintf(slavename + 9, "%d", slavefd);
-    slavefd = open(slavename, O_RDWR);
+    sprintf( slavename + 9, "%d", slavefd );
+    slavefd = open( slavename, O_RDWR );
     DbgConHandle = slavefd;
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );
-        return( FALSE );
+        return( false );
     }
-    tcgetattr(slavefd, &termio);
+    tcgetattr( slavefd, &termio );
     termio.c_lflag &= ~ECHO;
-    tcsetattr(slavefd, TCSANOW, &termio);
+    tcsetattr( slavefd, TCSANOW, &termio );
     argc = 0;
     p = XConfig;
     for( ;; ) {
-        while( isspace( *p ) ) ++p;
-        while( !isspace( *p ) && *p != '\0' ) ++p;
-        if( *p == '\0' ) break;
+        while( isspace( *p ) )
+            ++p;
+        while( !isspace( *p ) && *p != NULLCHAR )
+            ++p;
+        if( *p == NULLCHAR )
+            break;
         ++argc;
-        *p++ = '\0';
+        *p++ = NULLCHAR;
     }
     end = p;
-    _AllocA( argv, (argc + 16) * sizeof( *argv ) );
+    _AllocA( argv, ( argc + 16 ) * sizeof( *argv ) );
 
     argv[0] = "xterm";
     argv[1] = "-title";
@@ -187,14 +186,17 @@ static bool TryXWindows( void )
 
     if( DbgLines != 0 || DbgColumns != 0 ) {
         argv[argc++] = "-geometry";
-        if( DbgLines == 0 ) DbgLines = 25;
-        if( DbgColumns == 0 ) DbgColumns = 80;
+        if( DbgLines == 0 )
+            DbgLines = 25;
+        if( DbgColumns == 0 )
+            DbgColumns = 80;
         p = Format( buff, "%ux%u+0+0", DbgColumns, DbgLines ) + 1;
         argv[argc++] = buff;
     }
 
     for( p = XConfig; p < end; p += strlen( p ) + 1 ) {
-        while( isspace( *p ) ) ++p;
+        while( isspace( *p ) )
+            ++p;
         argv[argc++] = p;
     }
     Format( p, "-SXX%u", masterfd );
@@ -203,7 +205,7 @@ static bool TryXWindows( void )
 
     fcntl( slavefd, F_SETFD, FD_CLOEXEC );
     XTermPid = fork();
-    if (XTermPid == 0) { /* child */
+    if( XTermPid == 0 ) { /* child */
         setpgid( 0, 0 );
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
         execvp( argv[0], (char * const *)argv );
@@ -216,10 +218,10 @@ static bool TryXWindows( void )
         StartupErr( "unable to create console helper process" );
     }
     do { /* xterm transmits a window ID -- ignore */
-        res = read(slavefd, &buf, 1);
-    } while ( res != -1 && buf != '\n' );
+        res = read( slavefd, &buf, 1 );
+    } while( res != -1 && buf != '\n' );
     termio.c_lflag |= ECHO;
-    tcsetattr(slavefd, TCSANOW, &termio);
+    tcsetattr( slavefd, TCSANOW, &termio );
 
     /* make slavefd a controlling tty */
     setpgid( 0, XTermPid );
@@ -227,41 +229,43 @@ static bool TryXWindows( void )
     ioctl( slavefd, TIOCSCTTY, 1 );
 
     signal( SIGHUP, &HupHandler );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryVC( void )
 {
-    char                        *ptr;
-    struct vt_stat vt_state;
-    struct winsize winsize;
+    char            *ptr;
+    struct vt_stat  vt_state;
+    struct winsize  winsize;
     struct vt_sizes vt_sizes;
-    char tty_name[20];
-    int len;
+    char            tty_name[20];
+    int             len;
 
     len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
     if ( len < 0 )
-        return( FALSE );
-    tty_name[ len ] = '\0';
+        return( false );
+    tty_name[len] = NULLCHAR;
     if( DbgConsole == 0 ) {
         DbgConHandle = open( tty_name, O_RDWR );
         if( DbgConHandle == -1 )
-            return( FALSE );
+            return( false );
         if( ioctl( DbgConHandle, VT_OPENQRY, &DbgConsole ) )
-            return( FALSE );
+            return( false );
         close( DbgConHandle );
     }
-    ptr = &tty_name[ len ];
+    ptr = &tty_name[len];
     for( ;; ) {
         --ptr;
-        if( *ptr < '0' || *ptr > '9' ) break;
+        if( *ptr < '0' || *ptr > '9' ) {
+            break;
+        }
     }
     sprintf ( ptr + 1, "%d", DbgConsole );
     DbgConHandle = open( tty_name, O_RDWR );
     if ( DbgConHandle == -1 )
-        return( FALSE );
+        return( false );
     if( ioctl( DbgConHandle, VT_GETSTATE, &vt_state ) )
-        return( FALSE );
+        return( false );
     InitConsole = vt_state.v_active;
     ioctl( DbgConHandle, TIOCGWINSZ, &winsize );
     PrevLines = winsize.ws_row;
@@ -269,7 +273,7 @@ static bool TryVC( void )
     vt_sizes.v_rows = DbgLines;
     vt_sizes.v_cols = DbgColumns;
     ioctl( DbgConHandle, VT_RESIZE, &vt_sizes );
-    return( TRUE );
+    return( true );
 }
 
 static bool TryTTY( void )
@@ -277,24 +281,25 @@ static bool TryTTY( void )
     unsigned long       num;
     char                *end;
 
-    if( DbgTerminal == NULL ) return( FALSE );
+    if( DbgTerminal == NULL )
+        return( false );
     num = strtoul( DbgTerminal, &end, 10 );
     if( *end == NULLCHAR && num < 100 ) {
         DbgConsole = num;
-        return( FALSE );
+        return( false );
     }
     /* guy gave an explicit terminal name */
     end = strchr( DbgTerminal, ':' );
     if( end != NULL ) {
         /* and also told us the terminal type */
         *end = NULLCHAR;
-        UITermType = strdup( end + 1 );
+        SetTermType( strdup( end + 1 ) );
     }
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
     }
-    return( TRUE );
+    return( true );
 }
 
 void InitScreen( void )
@@ -323,7 +328,9 @@ void InitScreen( void )
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );
     }
-    if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
+    if( _IsOn( SW_USE_MOUSE ) ) {
+        GUIInitMouse( 1 );
+    }
     DebugScreen();
 }
 
@@ -336,11 +343,11 @@ bool UsrScrnMode( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -351,7 +358,7 @@ void DbgScrnMode( void )
 
 static int DebugPutc( int c )
 {
-    return fputc( c, UIConFile );
+    return( fputc( c, UIConFile ) );
 }
 
 /*
@@ -365,10 +372,10 @@ bool DebugScreen( void )
 
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_CURTTY:
         _physupdate( NULL );
-        UserForcedTermRefresh = TRUE;
+        UserForcedTermRefresh = true;
         tputs( enter_ca_mode, 1, DebugPutc );
         break;
     case C_VC:
@@ -380,12 +387,12 @@ bool DebugScreen( void )
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DebugScreenRecover( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -397,7 +404,7 @@ bool UserScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
-        return( TRUE );
+        return( true );
     case C_CURTTY:
         tputs( exit_ca_mode, 1, DebugPutc );
         break;
@@ -408,7 +415,7 @@ bool UserScreen( void )
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 void SaveMainWindowPos( void )
@@ -419,7 +426,8 @@ void FiniScreen( void )
 {
     struct vt_sizes vt_sizes;
 
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     switch( ConMode ) {
     case C_VC:
@@ -441,20 +449,30 @@ void FiniScreen( void )
 
 void ScrnSpawnStart( void )
 {
-    char        *term;
+    const char  *term;
+    const char  *curr_term;
 
-    if( InitConsole == -1 && UITermType != NULL ) {
-        term = getenv( "TERM" );
-        if( term == NULL ) term = "";
-        strcpy( TxtBuff, term );
-        setenv( "TERM", UITermType, 1 );
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            term = getenv( "TERM" );
+            if( term == NULL )
+                term = "";
+            strcpy( TxtBuff, term );
+            setenv( "TERM", curr_term, 1 );
+        }
     }
 }
 
 void ScrnSpawnEnd( void )
 {
-    if( InitConsole == -1 && UITermType != NULL ) {
-        setenv( "TERM", TxtBuff, 1 );
+    const char  *curr_term;
+
+    if( InitConsole == -1 ) {
+        curr_term = GetTermType();
+        if( curr_term != NULL ) {
+            setenv( "TERM", TxtBuff, 1 );
+        }
     }
 }
 
@@ -506,7 +524,7 @@ bool ScreenOption( const char *start, unsigned len, int pass )
         break;
     case OPT_XCONFIG:
         WantEquals();
-        p = &XConfig[ strlen( XConfig ) ];
+        p = XConfig + strlen( XConfig );
         *p++ = ' ';
         GetRawItem( p );
         if( pass == 1 )

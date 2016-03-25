@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 #include "expr.h"
 
 /*
@@ -40,14 +39,15 @@
  */
 vi_rc SrcIf( sfile **sf, vlist *vl )
 {
-    char        v1[MAX_SRC_LINE];
+    char        tmp1[MAX_SRC_LINE];
+    const char  *v1;
     long        val;
     int         i;
     jmp_buf     jmpaddr;
 
-    strcpy( v1, (*sf)->arg1 );
+    v1 = (*sf)->arg1;
     if( (*sf)->hasvar ) {
-        Expand( v1, vl );
+        v1 = Expand( tmp1, v1, vl );
     }
     i = setjmp( jmpaddr );
     if( i != 0 ) {
@@ -63,7 +63,7 @@ vi_rc SrcIf( sfile **sf, vlist *vl )
 /*
  * GetErrorTokenValue
  */
-vi_rc GetErrorTokenValue( int *value, char *str )
+vi_rc GetErrorTokenValue( int *value, const char *str )
 {
     int     i;
     vi_rc   rc;
@@ -89,7 +89,7 @@ static bool err_alloc( int cnt )
     return( true );
 }
 
-static bool err_save( int i, char *buff )
+static bool err_save( int i, const char *buff )
 {
     ErrorValues[i] = atoi( buff );
     return( true );

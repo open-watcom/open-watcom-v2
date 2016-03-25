@@ -52,4 +52,6 @@ extern void     MemFini( void );
 #define _AllocA( res, size )            res = __alloca( size )
 #define _Free( ptr )                    DbgFree( ptr )
 
+extern void SysSetMemLimit( void );
+
 #endif

@@ -39,14 +39,17 @@
 #include <process.h>
 #include <i86.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "packet.h"
 #include "servio.h"
 #include "dosxlink.h"
 
 #ifdef ACAD
-    extern void LetACADDie(void);
-    #include "adslib.h"
-    #define _DBG(x) // printf x; fflush( stdout );
+
+extern void LetACADDie(void);
+#include "adslib.h"
+#define _DBG(x) // printf x; fflush( stdout );
+
 #else
 
 #ifdef DEBUG_TRAP
@@ -56,6 +59,7 @@
 #define _DBG1( x ) // cputs x
 #define _DBG( x )
 #endif
+
 #endif
 
 
@@ -114,19 +118,20 @@ static void Initialize( void )
     const char  *err;
 
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLinkX( "\0", TRUE );
+    err = RemoteLinkX( "", TRUE );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
     }
     if( err != NULL ) {
-    #ifdef ACAD
-        for( ;; ) ads_link( RSERR );
-    #else
+#ifdef ACAD
+        for( ;; ) {
+            ads_link( RSERR );
+        }
+#else
         StartupErr( err );
-    #endif
+#endif
     }
-    RWBuff[0] = '\0';
     _DBG(( "No Remote link error. About to TrapInit." ));
     TrapVer = TrapInit( "", RWBuff, FALSE );
     if( RWBuff[0] != '\0' ) {

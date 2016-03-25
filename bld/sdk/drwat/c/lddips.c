@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 
 #include <string.h>
-#include <windows.h>
 #include "bool.h"
 #include "drwatcom.h"
 #include "dip.h"
@@ -66,8 +66,7 @@ void initDipMsgs( void ) {
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                  LPARAM lparam )
+BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     WORD        i;

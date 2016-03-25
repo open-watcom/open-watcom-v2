@@ -37,27 +37,32 @@
 #include "charmap.h"
 #include "biosui.h"
 
-#define  CURSOR_HEIGHT 14                       /* Mouse cursor height      */
 
-#define  DEFCHAR    0xD5
-#define  DEFCHAR2   0xD7
+#define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
 
-#define  VidCol     (UIData->width)
-#define  VidRow     (UIData->height)
+#define DEFCHAR         0xD5
+#define DEFCHAR2        0xD7
 
-extern   MOUSEORD   MouseRow;
-extern   MOUSEORD   MouseCol;
+#define VidCol          (UIData->width)
+#define VidRow          (UIData->height)
 
-extern   void (intern *DrawCursor)(void);
-extern   void (intern *EraseCursor)(void);
-extern   int  MouseInstalled;
+extern MOUSEORD         MouseRow;
+extern MOUSEORD         MouseCol;
+
+extern void             (intern *DrawCursor)( void );
+extern void             (intern *EraseCursor)( void );
+extern bool             MouseInstalled;
 
 static char             SaveChars[2][2];        /* Overwritten characters  */
 extern unsigned short   Points;                 /* Number of lines / char  */
 static unsigned char    CharDefs[64];           /* Character definitons.    */
 static unsigned char    SaveDefs[64];           /* Saved character defs     */
 
-enum   Function    { ERASE, DRAW, SAVE };
+enum Function {
+    ERASE,
+    DRAW,
+    SAVE
+};
 
 // Masks for the cursor
 
@@ -100,30 +105,30 @@ static char     MouInit( void );
 static void     MouDeinit( void );
 static char     CheckEgaVga( void );
 
-void intern     DrawEgaVgaCursor(void);
+void intern     DrawEgaVgaCursor( void );
 void intern     EraseEgaVgaCursor( void );
 
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
 static void PlotEgaVgaCursor( unsigned action )
 {
-    unsigned width, height, disp, i, j, x, y;
-    static int lsavex = 0, lsavey = 0;
-    LP_PIXEL screen;
+    unsigned    width, height, disp, i, j, x, y;
+    static int  lsavex = 0, lsavey = 0;
+    LP_PIXEL    screen;
 
     switch( action ) {
-        case ERASE :                        /* Erase grid, put save info    */
-            x = lsavex;
-            y = lsavey;
-            break;
-        case DRAW :                         /* Draw grid                    */
-            x = MouseCol/8;
-            y = MouseRow/Points;
-            break;
-        case SAVE :                         /* Save grid                    */
-            x = lsavex = MouseCol/8;
-            y = lsavey = MouseRow/Points;
-            break;
+    case ERASE :                        /* Erase grid, put save info    */
+        x = lsavex;
+        y = lsavey;
+        break;
+    case DRAW :                         /* Draw grid                    */
+        x = MouseCol/8;
+        y = MouseRow/Points;
+        break;
+    case SAVE :                         /* Save grid                    */
+        x = lsavex = MouseCol/8;
+        y = lsavey = MouseRow/Points;
+        break;
     }
 
     width = VidCol - x;
@@ -172,16 +177,16 @@ static void PlotEgaVgaCursor( unsigned action )
 
 void intern DrawEgaVgaCursor(void)
 {
-    unsigned short off,  shift, addmask, i, j, s1, s2;
-    unsigned short *defs, *masks;
+    unsigned short  off,  shift, addmask, i, j, s1, s2;
+    unsigned short  *defs, *masks;
 
-    PlotEgaVgaCursor(SAVE);                     /* Save the current grid    */
+    PlotEgaVgaCursor( SAVE );                   /* Save the current grid    */
 
     SetSequencer();                             /* Program the sequencer    */
     off = 0;
     for( i = 0; i < 4;  i += 2 ) {              /* The grid is 2 chars high */
-        s1 = ( (char *) SaveChars )[i    ] * 32;
-        s2 = ( (char *) SaveChars )[i + 1] * 32;
+        s1 = ( (char *)SaveChars )[i    ] * 32;
+        s2 = ( (char *)SaveChars )[i + 1] * 32;
         for( j = 0; j < Points; j++ ) {
             CharDefs[off++] = _peekb( 0xa000, s2++ );
             CharDefs[off++] = _peekb( 0xa000, s1++ );
@@ -192,14 +197,14 @@ void intern DrawEgaVgaCursor(void)
     addmask = 0xFF00 << (8 - shift);
 
     masks   = MouScreenMask;
-    defs    = ( (unsigned short *) CharDefs ) + MouseRow % Points;
+    defs    = ( (unsigned short *)CharDefs ) + MouseRow % Points;
 
     for( i = 0; i < CURSOR_HEIGHT; i++ ) {
         *defs++ &= (*masks++ >> shift) | addmask;
     }
 
     masks   = MouCursorMask;
-    defs    = ( (unsigned short *) CharDefs ) + MouseRow % Points;
+    defs    = ( (unsigned short *)CharDefs ) + MouseRow % Points;
 
     for( i = 0; i < CURSOR_HEIGHT; i++ ) {
         *defs++ |= *masks++ >> shift;
@@ -219,15 +224,15 @@ void intern DrawEgaVgaCursor(void)
 
     ResetSequencer();
 
-    PlotEgaVgaCursor(DRAW);                     /* Plot the new grid        */
+    PlotEgaVgaCursor( DRAW );                   /* Plot the new grid        */
 }
 
 static char MouInit( void )
 {
-    char  savedmode;
+    char            savedmode;
     unsigned short  off, i, j, s1, s2;
-    int   ret;
-    static int first_time = TRUE;
+    int             ret;
+    static int      first_time = TRUE;
 
     Points = _POINTS;
 
@@ -242,12 +247,12 @@ static char MouInit( void )
     */
     if( first_time ) {
         first_time = FALSE;
-        savedmode = _peekb( BIOS_PAGE, 0x49 );    /* Save video mode      */
-        _pokeb( BIOS_PAGE, 0x49, 6);           /* Set magic mode           */
+        savedmode = _peekb( BIOS_PAGE, 0x49 );  /* Save video mode          */
+        _pokeb( BIOS_PAGE, 0x49, 6 );           /* Set magic mode           */
 
-        ret = MouseInt( 0, 0, 0, 0 );    /* Reset driver for change  */
+        ret = MouseInt( 0, 0, 0, 0 );           /* Reset driver for change  */
 
-        _pokeb( BIOS_PAGE, 0x49, savedmode);       /* Put the old mode back    */
+        _pokeb( BIOS_PAGE, 0x49, savedmode );   /* Put the old mode back    */
 
         if( ret != -1 ) {
             return( FALSE );
@@ -272,15 +277,15 @@ static char MouInit( void )
 
 static void MouDeinit( void )
 {
-    unsigned short    i, j, s1, s2, off ;
+    unsigned short  i, j, s1, s2, off ;
 
     SetSequencer();
     SetWriteMap();                          /* Put characters back      */
 
     off = 0;
     for( i = 0; i < 2; i++ ) {              /* The grid is 2 chars high */
-        s1 = (DEFCHAR  + i ) * 32;
-        s2 = (DEFCHAR2 + i ) * 32;
+        s1 = ( DEFCHAR  + i ) * 32;
+        s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
             _pokeb( 0xA000, s2++, SaveDefs[off++] );
             _pokeb( 0xA000, s1++, SaveDefs[off++] );
@@ -299,15 +304,15 @@ void intern EraseEgaVgaCursor( void )
 
 void UIAPI uifinigmouse( void )
 {
-    if( MouseInstalled && DrawCursor!=NULL ) {
+    if( MouseInstalled && DrawCursor != NULL ) {
         uioffmouse();
         MouDeinit();
     }
 }
 
-bool UIAPI uiinitgmouse( register int install )
+bool UIAPI uiinitgmouse( int install )
 {
-    MouseInstalled = FALSE;
+    MouseInstalled = false;
     if( install > 0 && installed( BIOS_MOUSE ) ) {
         if( install > 1 ) {
             if( CheckEgaVga() ) {
@@ -331,13 +336,13 @@ bool UIAPI uiinitgmouse( register int install )
 static char CheckEgaVga( void )
 {
     if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
-        && !UIData->desqview
-        && !UIData->no_graphics
-/*      && UIData->height == 25     */
+      && !UIData->desqview
+      && !UIData->no_graphics
+/*     && UIData->height == 25     */
         ) {
-            DrawCursor  = DrawEgaVgaCursor;
-            EraseCursor = EraseEgaVgaCursor;
-            return( TRUE );
+        DrawCursor  = DrawEgaVgaCursor;
+        EraseCursor = EraseEgaVgaCursor;
+        return( TRUE );
     }
     return( FALSE );
 }

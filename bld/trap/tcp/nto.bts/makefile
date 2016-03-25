@@ -5,9 +5,10 @@ bootstrap = 1
 host_os  = nto
 host_cpu = 386
 
-os    = nto
+target_cpu = x86
+target_os  = nto
+
 srv   = tcp
-cpu   = x86
 which = SERVER
 remote_link = 1
 builtin_trap = 1

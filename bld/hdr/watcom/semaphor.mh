@@ -1,0 +1,35 @@
+/*
+ *  semaphore.h for Linux
+ *
+:include crwatcnt.sp
+ */
+#ifndef _SEMAPHORE_H_INCLUDED
+#define _SEMAPHORE_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:segment LINUX
+
+typedef struct {
+    int value;
+} sem_t;
+
+/* We only support this currently on Intel chips */
+#ifdef __386__
+_WCRTLINK extern int sem_init( sem_t *__sem, int __pshared, unsigned int __value );
+_WCRTLINK extern int sem_destroy( sem_t *__sem );
+_WCRTLINK extern int sem_getvalue( sem_t *__sem, int *__value );
+_WCRTLINK extern int sem_post( sem_t *__sem );
+_WCRTLINK extern int sem_trywait( sem_t *__sem );
+_WCRTLINK extern int sem_wait( sem_t *__sem );
+#endif
+
+:endsegment
+
+:include cplusepi.sp
+
+#endif /* _SEMAPHORE_H_INCLUDED */

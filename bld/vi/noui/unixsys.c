@@ -44,10 +44,10 @@ int FileSysNeedsCR( int handle )
 /*
  * PushDirectory
  */
-void PushDirectory( char *orig )
+void PushDirectory( const char *orig )
 {
     orig = orig;
-    oldPath[0] = 0;
+    oldPath[0] = '\0';
     GetCWD2( oldPath, _MAX_PATH );
 
 } /* PushDirectory */
@@ -57,7 +57,7 @@ void PushDirectory( char *orig )
  */
 void PopDirectory( void )
 {
-    if( oldPath[0] != 0 ) {
+    if( oldPath[0] != '\0' ) {
         ChangeDirectory( oldPath );
     }
     ChangeDirectory( CurrentDirectory );
@@ -67,7 +67,7 @@ void PopDirectory( void )
 /*
  * NewCursor - change cursor to insert mode type
  */
-void NewCursor( window_id id, cursor_type ct ) {}
+void NewCursor( window_id wid, cursor_type ct ) {}
 
 /*
  * MyBeep - ring beeper
@@ -155,7 +155,7 @@ void TurnOffCapsLock( void )
 drive_type DoGetDriveType( int drv )
 {
     drv = drv;
-    return( DRIVE_NONE );
+    return( DRIVE_TYPE_NONE );
 
 } /* DoGetDriveType */
 

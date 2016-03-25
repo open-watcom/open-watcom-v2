@@ -51,9 +51,9 @@
 #include "fileacc.h"
 #include "heapacc.h"
 #include "trdlstac.h"
+#include "exitwmsg.h"
 #include "osmain.h"
 #include "cmain.h"
-#include "_exit.h"
 
 
 extern void _cexit_( unsigned ret_code );
@@ -121,7 +121,8 @@ void __RdosMain( void )
     __CMain();
 }
 
-_WCRTLINK void __exit( unsigned ret_code )
+_WCRTLINK _NORETURN void __exit( unsigned ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
+    // never return
 }

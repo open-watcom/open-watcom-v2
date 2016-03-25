@@ -76,7 +76,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
             LockIt();
             break;
         case ID_UNLOCK:
-        //        WinInvalidateRegion( hwnd, 0L, FALSE );
+        //        WinInvalidateRegion( hwnd, 0L, false );
             UnLockIt();
             break;
         case ID_EXITPROG:
@@ -88,7 +88,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
         break;
 
     case WM_ERASEBACKGROUND:
-        return( FALSE );
+        return( false );
 
     case WM_PAINT:
         hps = WinBeginPaint( hwnd, 0L, &rc );
@@ -103,7 +103,7 @@ MRESULT EXPENTRY MyWindowProc( HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2 )
         return( WinDefWindowProc( hwnd, msg, mp1, mp2 ) );
 
     }
-    return( FALSE );
+    return( false );
 }
 
 INT main( int argc, char **argv )

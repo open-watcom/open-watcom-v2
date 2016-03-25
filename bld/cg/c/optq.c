@@ -33,9 +33,9 @@
 #include "optwif.h"
 
 
-extern  void    InsertQueue( ins_entry *old, ins_entry *new ) {
-/***********************************************************/
-
+void    InsertQueue( ins_entry *old, ins_entry *new )
+/***************************************************/
+{
   optbegin
     if( FirstIns == NULL ) {
         FirstIns = old;
@@ -63,9 +63,9 @@ extern  void    InsertQueue( ins_entry *old, ins_entry *new ) {
 }
 
 
-extern  void    DeleteQueue( ins_entry *old ) {
-/********************************************/
-
+void    DeleteQueue( ins_entry *old )
+/***********************************/
+{
   optbegin
     if( old == FirstIns ) {
         FirstIns = FirstIns->ins.next;

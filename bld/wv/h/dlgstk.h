@@ -36,3 +36,10 @@
 #define CTL_STK_YES      100
 #define CTL_STK_NO       101
 #define CTL_STK_CANCEL   102
+
+
+#ifndef RC
+extern bool DlgUpTheStack( void );
+extern bool DlgBackInTime( bool lost_mem_state );
+extern bool DlgIncompleteUndo( void );
+#endif

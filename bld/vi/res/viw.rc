@@ -23,6 +23,8 @@
 #include "../ctl/setscr.h"
 #include "../ctl/setgen.h"
 
+#define FIRST_COPYRIGHT_YEAR "1989"
+
 #ifdef __NT__
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 #endif

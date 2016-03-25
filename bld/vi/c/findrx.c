@@ -58,7 +58,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      */
     if( wrapMsgPrinted ) {
         wrapMsgPrinted = false;
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     sline = pos1->line;
     if( flags & FINDFL_WRAP ) {
@@ -80,7 +80,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      * loop until string found
      */
     data = &cline->data[scol];
-    while( !(found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) ) {
+    while( (found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) == 0 ) {
         if( RegExpError != ERR_NO_ERR ) {
             return( RegExpError );
         }
@@ -150,7 +150,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
      */
     if( wrapMsgPrinted ) {
         wrapMsgPrinted = false;
-        ClearWindow( MessageWindow );
+        ClearWindow( message_window_id );
     }
     sline = pos1->line;
     rc = CGimmeLinePtr( sline, &cfcb, &cline );

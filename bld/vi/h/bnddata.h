@@ -31,5 +31,7 @@
 
 #define MAGIC_COOKIE    "CGEXXX"
 
+#define SEEK_POSBACK(p) (-(long)(p))
+
 typedef unsigned short  bind_size;
 

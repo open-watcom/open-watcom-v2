@@ -35,7 +35,8 @@
 #include "watcom.h"
 #include "clibi64.h"
 
-extern const char __based(__segname("_CONST")) __Alphabet[];
+
+#define TO_WIDE(c)  ((CHAR_TYPE)(c))
 
 typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 
@@ -182,6 +183,8 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
 #endif
 #endif
 
+extern const char __based(__segname("_CONST")) __Alphabet[];
+
 _WCRTLINK CHAR_TYPE *__F_NAME(ulltoa,_ulltow)(
         unsigned long long int value,
         CHAR_TYPE *buffer,
@@ -205,7 +208,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(ulltoa,_ulltow)(
         *q = __Alphabet[ rem ];
         ++q;
     } while( value );
-    while( *p++ = (CHAR_TYPE)*--q )
+    while( (*p++ = TO_WIDE( *--q )) != NULLCHAR )
         ;
     return( buffer );
 }
@@ -220,7 +223,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(lltoa,_lltow)(
 
     if( radix == 10 ) {
         if( value < 0 ) {
-            *p++ = '-';
+            *p++ = STRING( '-' );
             value = -value;
         }
     }

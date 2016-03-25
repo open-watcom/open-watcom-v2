@@ -38,11 +38,10 @@
 /*
  * ReadAFile - read a file into text
  */
-vi_rc ReadAFile( linenum afterwhich, char *name )
+vi_rc ReadAFile( linenum afterwhich, const char *name )
 {
     file        *cfile;
     char        *dir;
-    int         len;
     long        bytecnt = 0;
     linenum     lnecnt = 0;
     status_type lastst;
@@ -56,9 +55,9 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    len = NextWord1( name, fn );
-    if( len <= 0 || IsDirectory( fn ) ) {
-        if( len > 0 ) {
+    GetNextWord1( name, fn );
+    if( *fn == '\0' || IsDirectory( fn ) ) {
+        if( *fn != '\0' ) {
             dir = fn;
         } else {
             dir = CurrentDirectory;
@@ -71,7 +70,7 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
             MemFree( fn );
             return( rc );
         }
-        if( fn[0] == 0 ) {
+        if( fn[0] == '\0' ) {
             MemFree( fn );
             return( ERR_NO_ERR );
         }
@@ -81,9 +80,9 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
      * read directory
      */
     if( fn[0] == '$' ) {
-        if( fn[1] == 0 ) {
+        if( fn[1] == '\0' ) {
             fn[1] = '*';
-            fn[2] = 0;
+            fn[2] = '\0';
         }
         GetSortDir( &fn[1], false );
         cfile = FileAlloc( NULL );
@@ -101,7 +100,7 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
         for( ; rc == ERR_NO_ERR; ) {
             rc = ReadFcbData( cfile, NULL );
             lnecnt += cfile->fcbs.tail->end_line - cfile->fcbs.tail->start_line + 1L;
-            bytecnt += (long) cfile->fcbs.tail->byte_cnt;
+            bytecnt += (long)cfile->fcbs.tail->byte_cnt;
         }
 #ifdef __WIN__
         ToggleHourglass( false );

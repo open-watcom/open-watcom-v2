@@ -42,17 +42,17 @@ farfrlptr __fheapchk_current;
 
 static int checkFreeList( unsigned long *free_size )
 {
-    farfrlptr curr;
-    unsigned short seg;
-    struct heapblk _WCFAR *p;
-    unsigned long total_size;
+    farfrlptr       curr;
+    __segment       seg;
+    heapblk         _WCFAR *p;
+    unsigned long   total_size;
 
     total_size = 0;
-    for( seg = __fheap; seg ;) {
+    for( seg = __fheap; seg != _NULLSEG; ) {
         p = MK_FP( seg, 0 );
         __fheapchk_current = curr = MK_FP( seg, p->freehead.next );
-        for(;;) {
-            if( FP_OFF(curr) == offsetof(struct heapblk, freehead) )
+        for( ;; ) {
+            if( FP_OFF( curr ) == offsetof( heapblk, freehead ) )
                 break;
             total_size += curr->len;
             __fheapchk_current = curr = MK_FP( seg, curr->next );
@@ -65,22 +65,22 @@ static int checkFreeList( unsigned long *free_size )
 
 static int checkFree( farfrlptr p )
 {
-    unsigned short seg;
-    farfrlptr prev;
-    farfrlptr next;
-    farfrlptr prev_prev;
-    farfrlptr next_next;
+    __segment   seg;
+    farfrlptr   prev;
+    farfrlptr   next;
+    farfrlptr   prev_prev;
+    farfrlptr   next_next;
 
     __fheapchk_current = p;
     seg = FP_SEG( p );
     prev = MK_FP( seg, p->prev );
     next = MK_FP( seg, p->next );
-    if( prev->next != FP_OFF(p) || next->prev != FP_OFF(p) ) {
+    if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
         return( _HEAPBADNODE );
     }
     prev_prev = MK_FP( seg, prev->prev );
     next_next = MK_FP( seg, next->next );
-    if( prev_prev->next != FP_OFF(prev) || next_next->prev != FP_OFF(next) ) {
+    if( prev_prev->next != FP_OFF( prev ) || next_next->prev != FP_OFF( next ) ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );
@@ -96,9 +96,9 @@ _WCRTLINK int _heapchk( void )
 
 _WCRTLINK int _fheapchk( void )
 {
-    struct _heapinfo hi;
-    int heap_status;
-    unsigned long free_size;
+    struct _heapinfo    hi;
+    int                 heap_status;
+    unsigned long       free_size;
 
     _AccessFHeap();
     heap_status = checkFreeList( &free_size );
@@ -107,7 +107,7 @@ _WCRTLINK int _fheapchk( void )
         return( heap_status );
     }
     hi._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         heap_status = __HeapWalk( &hi, __fheap, 0 );
         if( heap_status != _HEAPOK )
             break;

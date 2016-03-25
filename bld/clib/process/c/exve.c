@@ -242,7 +242,7 @@ _WCRTLINK int execve( path, argv, envp )
 
     strncpy( buffer, path, 75 );
     name = strrchr( buffer, '\\' );
-    if( strchr( name == NULL ? buffer : name, '.' ) ) {
+    if( strchr( name == NULL ? buffer : name, '.' ) != NULL ) {
         file = open( buffer, O_BINARY|O_RDONLY, 0 );
         _RWD_errno = ENOENT;
         if( file == -1 ) {

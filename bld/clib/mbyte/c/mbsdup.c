@@ -47,9 +47,10 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsdup,_fmbsdup)( unsigned char _FFAR *
     unsigned char _FFAR *   dst;
     int                     bytes;
 
-    bytes = _NEARFAR(strlen,_fstrlen)( src ) + 1;
-    dst = (unsigned char _FFAR*) malloc( bytes );
+    bytes = _NEARFAR(strlen,_fstrlen)( (char _FFAR *)src ) + 1;
+    dst = (unsigned char _FFAR *)malloc( bytes );
 
-    if( dst != NULL )  _NEARFAR(memcpy,_fmemcpy)( dst, src, bytes );
+    if( dst != NULL )
+        _NEARFAR(memcpy,_fmemcpy)( dst, src, bytes );
     return( dst );
 }

@@ -45,9 +45,7 @@
 #include "iomode.h"
 #include "streamio.h"
 #include "thread.h"
-
-
-extern int      __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *, int * );
+#include "openflag.h"
 
 
 #ifndef __NETWARE__
@@ -122,7 +120,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         fp->_flag &= ~(_READ | _WRITE); /* 2-dec-90 */
         fp->_flag |= flags;
         fp->_cnt = 0;
-        _FP_BASE(fp) = NULL;
+        _FP_BASE( fp ) = NULL;
         fp->_bufsize = 0;                   /* was BUFSIZ JBS 91/05/31 */
 #ifndef __NETWARE__
         _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
@@ -132,7 +130,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         _FP_PIPEDATA(fp).isPipe = 0;    /* not a pipe */
 #endif
         fp->_handle = handle;               /* BJS 91-07-23 */
-        if( __F_NAME(tolower,towlower)( *access_mode ) == 'a' ) {
+        if( __F_NAME(tolower,towlower)( (UCHAR_TYPE)*access_mode ) == STRING( 'a' ) ) {
             fseek( fp, 0, SEEK_END );
         }
         __chktty( fp );                     /* JBS 31-may-91 */

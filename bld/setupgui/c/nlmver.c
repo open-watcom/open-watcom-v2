@@ -35,6 +35,7 @@
 #include <string.h>
 #include <errno.h>
 #include "wio.h"
+#include "watcom.h"
 #include "gui.h"
 #include "guiutil.h"
 #include "setup.h"

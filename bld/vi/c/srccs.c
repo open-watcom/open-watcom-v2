@@ -32,7 +32,6 @@
 
 #include "vi.h"
 #include <setjmp.h>
-#include "source.h"
 
 #define FreeLabel( a ) MemFree( a )
 
@@ -75,7 +74,7 @@ static void Push( cstype type )
     TOS->end = NewLabel();
     TOS->top = NewLabel();
     TOS->type = type;
-    TOS->srcline = CurrentSrcLine;
+    TOS->sline = CurrentSrcLine;
 
 } /* Push */
 
@@ -116,12 +115,10 @@ vi_rc CSFini( void )
 {
     bool        iserr = false;
 
-#ifndef VICOMP
-    if( !EditFlags.ScriptIsCompiled ) {
-#endif
+    if( TOS != NULL ) {
         while( TOS->type != CS_EOS ) {
             iserr = true;
-            MyError( "unfinished c.s. at line %u", TOS->srcline );
+            MyError( "unfinished c.s. at line %u", TOS->sline );
             Pop();
         }
 
@@ -129,20 +126,7 @@ vi_rc CSFini( void )
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }
         Pop();
-#ifndef VICOMP
-    } else {
-        if( TOS ){
-            // why the heck shouldn't I pop it!
-            cs_entry    *crap;
-
-            crap = TOS;
-            TOS = TOS->next;
-            FreeLabel( crap->end );
-            FreeLabel( crap->top );
-            MemFree( crap );
-        }
     }
-#endif
     return( ERR_NO_ERR );
 
 } /* CSFini */
@@ -150,10 +134,10 @@ vi_rc CSFini( void )
 /*
  * CSIf - if {elseif {elseif {...}} {else} endif
  */
-void CSIf( void )
+void CSIf( const char *data )
 {
     Push( CS_IF );
-    GenTestCond();
+    GenTestCond( data );
     GenJmpIf( COND_FALSE, TOS->top );
 
 } /* if */
@@ -161,7 +145,7 @@ void CSIf( void )
 /*
  * CSElseIf - emit elseif labels/branches
  */
-void CSElseIf( void )
+void CSElseIf( const char *data )
 {
     if( TOS->type != CS_IF ) {
         oopsBob( "elseif", "if" );
@@ -170,7 +154,7 @@ void CSElseIf( void )
     GenLabel( TOS->top );
     FreeLabel( TOS->top );
     TOS->top = NewLabel();
-    GenTestCond();
+    GenTestCond( data );
     GenJmpIf( COND_FALSE, TOS->top );
 
 } /* CSElseIf */
@@ -207,11 +191,11 @@ void CSEndif( void )
 /*
  * CSWhile - loop/endloop - while/endloop - loop/until - while/until
  */
-void CSWhile( void )
+void CSWhile( const char *data )
 {
     Push( CS_LOOP );
     GenLabel( TOS->top );
-    GenTestCond();
+    GenTestCond( data );
     GenJmpIf( COND_FALSE, TOS->end );
 
 } /* CSWhile */
@@ -244,12 +228,12 @@ void CSEndLoop( void )
 /*
  * CSUntil - until labels/branches
  */
-void CSUntil( void )
+void CSUntil( const char *data )
 {
     if( TOS->type != CS_LOOP ) {
         oopsBob( "until", _strlw );
     }
-    GenTestCond();
+    GenTestCond( data );
     GenJmpIf( COND_FALSE, TOS->top );
     GenLabel( TOS->end );
     Pop();
@@ -263,20 +247,18 @@ static cs_entry *FindLoop( void )
 {
     cs_entry *s;
 
-    s = TOS;
-    for( s = TOS; s->type != CS_EOS; s = s->next ) {
-        if( s->type == CS_LOOP ) {
-            return( s );
+    if( TOS != NULL ) {
+        for( s = TOS; s->type != CS_EOS; s = s->next ) {
+            if( s->type == CS_LOOP ) {
+                return( s );
+            }
         }
     }
 
     // prevent compiler from giving dead code warning because oopsBob is
     // defined as an aborting function
-    if( s->type == CS_EOS ) {
-        oopsBob( "break/quif", _strlw );
-    }
-
-    return( 0 );
+    oopsBob( "continue/break/quif", _strlw );
+    return( NULL );
 
 } /* FindLoop */
 
@@ -301,9 +283,9 @@ void CSBreak( void )
 /*
  * CSQuif - quit if labels/branches
  */
-void CSQuif( void )
+void CSQuif( const char *data )
 {
-    GenTestCond();
+    GenTestCond( data );
     GenJmpIf( COND_TRUE, FindLoop()->end );
 
 } /* CSQuif */
