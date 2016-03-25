@@ -60,6 +60,12 @@ else
     else
         builder build
         RC=$?
+        if [ $RC -ne 0 ]; then
+            echo "builder bootstrap build error"
+        else
+            builder rel
+            RC=$?
+	fi
     fi
 fi
 cd $OWROOT
