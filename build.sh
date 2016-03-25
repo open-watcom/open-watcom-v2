@@ -62,4 +62,7 @@ else
     fi
 fi
 cd $OWROOT
+if [ $RC -eq 0 ]; then
+    echo "Now you can run 'cd bld && builder rel' to produce the final binaries"
+fi
 exit $RC
