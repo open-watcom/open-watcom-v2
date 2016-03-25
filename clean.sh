@@ -1,5 +1,6 @@
 #!/bin/sh
 
+find -name \*~ -delete
 if [ -z "$OWROOT" ]; then
     source ./setvars.sh
 fi
