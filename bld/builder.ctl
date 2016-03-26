@@ -202,11 +202,15 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
 # Other GUI tools
 [ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
+[ ENDIF ]
 # The IDE tools
 [ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
+[ ENDIF ]
 # The miscelaneous tools
 [ INCLUDE <OWSRCDIR>/cmdedit/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cvpack/builder.ctl ]
@@ -219,7 +223,9 @@ cdsay .
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
+[ ENDIF ]
 # Build help viewer
 [ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 # Build help compilers
@@ -234,7 +240,9 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 
 # only test build for now
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
+[ ENDIF ]
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
