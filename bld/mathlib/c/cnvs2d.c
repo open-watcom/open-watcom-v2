@@ -31,17 +31,23 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdarg.h>
+#include "myvalist.h"
+#include "xfloat.h"
+#include "farsupp.h"
+#include "printf.h"
+#include "fltsupp.h"
 
 
 /* This routine is called from scnf.c */
 
-_WMRTLINK void __cnvs2d( char *buf, double *value )
+VISIBILITY void __cnvs2d( char *buf, double *value )
 {
     *value = strtod( buf, NULL );
 }
 
-#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
-_WMRTLINK void (*__get__cnvs2d( void ))( char *, double * )
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cnvs2d *__get_EFG_cnvs2d( void )
 {
     return( &__cnvs2d );
 }

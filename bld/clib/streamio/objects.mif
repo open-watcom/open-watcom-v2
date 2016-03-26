@@ -119,17 +119,17 @@
 !inject vprintf.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject vprntf_s.obj d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject vscanf_s.obj d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
- 
+
 !include ../../../../objlist.mif
- 
+
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 #==========================================================================================================
 !inject dsetefg.obj                      nt nta ntp                     o32                         lpc lmp
- 
+
 objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
- 
+
 comtflag_opts    =-I"$(clib_dir)/startup/h"
 ufgetc_postopts  =-os
 ufgetcha_postopts=-os

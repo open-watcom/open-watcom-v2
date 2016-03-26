@@ -76,7 +76,7 @@ namespace std {
 
     /* convert this double into a long double */
     double_value = f;
-    __EFG__FDLD( &double_value, &ld );
+    __EFG_cnvd2ld( &double_value, &ld );
 #else
     ld.value = f;
 #endif
@@ -105,7 +105,7 @@ namespace std {
     cvt.ndigits = precision;
     cvt.expchar = ( format_flags & std::ios::uppercase ) ? 'E' : 'e';
     cvt.expwidth = 0;
-    __EFG_LDcvt( &ld, &cvt, stkbuf );
+    __EFG_cvtld( &ld, &cvt, stkbuf );
     // put all the pieces together
     len = cvt.n1 + cvt.nz1 + cvt.n2 + cvt.nz2 + 1;
     if( cvt.sign < 0 ) {
@@ -144,7 +144,7 @@ namespace std {
         i += cvt.nz2;
     }
     x[i] = '\0';
-                
+
     if( opfx() ) {
         setstate( __WATCOM_ios::writeitem( *this, x, ::strlen( x ), digit_offset ) );
         osfx();

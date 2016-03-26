@@ -31,7 +31,8 @@
 
 
 #include "variety.h"
-#include "mathlib.h"
+#include "cplx.h"
+#include "mathcode.h"
 
 
 _WMRTLINK dcomplex _IF_C16PowI( double a, double b, intstar4 i )

@@ -31,7 +31,8 @@
 
 
 #include "variety.h"
-#include "mathlib.h"
+#include "cplx.h"
+#include "mathcode.h"
 
 /*
 extern  extended          QSIN(extended);
@@ -40,7 +41,6 @@ extern  extended          QLOG(extended);
 extern  extended          QEXP(extended);
 extern  extended          QATAN2(extended,extended);
 */
-dcomplex _IF_C16Pow( double a, double b, double c, double d );
 
 _WMRTLINK xcomplex _IF_C32Pow( extended a, extended b, extended c, extended d )
 //=============================================================================

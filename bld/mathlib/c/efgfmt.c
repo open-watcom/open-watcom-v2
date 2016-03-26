@@ -30,22 +30,22 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "printf.h"
 #include "myvalist.h"
 #include "xfloat.h"
 #include "farsupp.h"
+#include "printf.h"
 #include "rtcntrl.h"
+#include "fltsupp.h"
 
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
 
-_WMRTLINK FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
+VISIBILITY FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
 {
     int         digits;
     int         fmt;
@@ -111,9 +111,9 @@ _WMRTLINK FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *
     return( buffer );
 } /* _EFG_Format() */
 
-#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
-_WMRTLINK FAR_STRING (*__get_EFG_Format( void ))( char *, my_va_list *, SPECS __SLIB * )
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_Format *__get_EFG_Format( void )
 {
-    return( &_EFG_Format );
+    return( _EFG_Format );
 }
 #endif

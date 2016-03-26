@@ -92,7 +92,7 @@
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 
 #ifndef __cplusplus
-#ifndef max 
+#ifndef max
 #define max(x,y) (((x)>(y))?(x):(y))
 #endif
 #ifndef min

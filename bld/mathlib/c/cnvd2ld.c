@@ -31,17 +31,22 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <stdarg.h>
+#include "myvalist.h"
 #include "xfloat.h"
+#include "farsupp.h"
+#include "printf.h"
+#include "fltsupp.h"
 
 /* This routine is called from C++ iostream class */
 
-_WMRTLINK void __cnvd2ld( dbl_arg src, ld_arg dst )
+VISIBILITY void __cnvd2ld( dbl_arg src, ld_arg dst )
 {
     __iFDLD( src, dst );
 }
 
-#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
-_WMRTLINK void (*__get__cnvd2ld( void ))( dbl_arg src, ld_arg dst )
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cnvd2ld *__get_EFG_cnvd2ld( void )
 {
     return( &__cnvd2ld );
 }

@@ -33,7 +33,10 @@
 #include <stdio.h>
 #include "exitwmsg.h"
 #include "farsupp.h"
-#include "ftos.h"
+#include "myvalist.h"
+#include "xfloat.h"
+#include "printf.h"
+#include "fltsupp.h"
 
 
 static void _no_support_loaded( void )
@@ -41,5 +44,5 @@ static void _no_support_loaded( void )
     __fatal_runtime_error( "Floating-point support not loaded", 1 );
 }
 
-_WCRTLINK _type_EFG_printf __EFG_printf = (_type_EFG_printf)_no_support_loaded;
-_WCRTLINK _type_EFG_scanf  __EFG_scanf  = (_type_EFG_scanf)_no_support_loaded;
+_type_EFG_printf __EFG_printf = (_type_EFG_printf)_no_support_loaded;
+_type_EFG_scanf  __EFG_scanf  = (_type_EFG_scanf)_no_support_loaded;

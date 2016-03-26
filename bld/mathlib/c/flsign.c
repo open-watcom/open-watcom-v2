@@ -34,7 +34,7 @@
 #include "xfloat.h"
 
 
-int __LDSign( long_double *ld )
+static int __LDSign( long_double *ld )
 {
 #ifdef _LONG_DOUBLE_
     return( ld->exponent >> 15 );

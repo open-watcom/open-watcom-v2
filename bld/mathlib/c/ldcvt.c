@@ -35,6 +35,7 @@
 #include <string.h>
 #include "xfloat.h"
 
+
 #define NDIG            8
 
 // this is defined in float.h
@@ -59,84 +60,84 @@
 #if defined( __386__ )
  char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
  #pragma aux    Fmt8Digits = \
-                "       push    ecx"\
-                "       push    edx"\
-                "       call    fmt8"\
-                "       jmp     short L4"\
-                "fmt8:  mov     ecx,10000"\
-                "       sub     edx,edx"\
-                "       cmp     eax,ecx"\
-                "       xchg    eax,edx"\
-                "       jb      short L1"\
-                "       xchg    eax,edx"\
-                "       div     ecx"\
-                "L1:    push    edx"\
-                "       call    fmt4"\
-                "       pop     eax"\
-                "fmt4:  mov     ecx,100"\
-                "       sub     edx,edx"\
-                "       cmp     eax,ecx"\
-                "       xchg    eax,edx"\
-                "       jb      short L2"\
-                "       xchg    eax,edx"\
-                "       div     cx"\
-                "L2:    push    edx"\
-                "       call    fmt2"\
-                "       pop     eax"\
-                "fmt2:  mov     cl,10"\
-                "       cmp     al,cl"\
-                "       xchg    al,ah"\
-                "       jb      short L3"\
-                "       xchg    al,ah"\
-                "       div     cl"\
-                "L3:    add     ah,'0'"\
-                "       add     al,'0'"\
-                "       mov     [ebx],al"\
-                "       inc     ebx"\
-                "       mov     [ebx],ah"\
-                "       inc     ebx"\
-                "       ret"\
-                "L4:    pop     edx"\
-                "       pop     ecx"\
-                "       xor     al,al"\
-                "       mov     [ebx],al"\
-                parm caller [eax] [ebx] value [ebx];
+        "       push    ecx"\
+        "       push    edx"\
+        "       call    fmt8"\
+        "       jmp     short L4"\
+        "fmt8:  mov     ecx,10000"\
+        "       sub     edx,edx"\
+        "       cmp     eax,ecx"\
+        "       xchg    eax,edx"\
+        "       jb      short L1"\
+        "       xchg    eax,edx"\
+        "       div     ecx"\
+        "L1:    push    edx"\
+        "       call    fmt4"\
+        "       pop     eax"\
+        "fmt4:  mov     ecx,100"\
+        "       sub     edx,edx"\
+        "       cmp     eax,ecx"\
+        "       xchg    eax,edx"\
+        "       jb      short L2"\
+        "       xchg    eax,edx"\
+        "       div     cx"\
+        "L2:    push    edx"\
+        "       call    fmt2"\
+        "       pop     eax"\
+        "fmt2:  mov     cl,10"\
+        "       cmp     al,cl"\
+        "       xchg    al,ah"\
+        "       jb      short L3"\
+        "       xchg    al,ah"\
+        "       div     cl"\
+        "L3:    add     ah,'0'"\
+        "       add     al,'0'"\
+        "       mov     [ebx],al"\
+        "       inc     ebx"\
+        "       mov     [ebx],ah"\
+        "       inc     ebx"\
+        "       ret"\
+        "L4:    pop     edx"\
+        "       pop     ecx"\
+        "       xor     al,al"\
+        "       mov     [ebx],al"\
+    parm caller [eax] [ebx] value [ebx];
 #elif defined( _M_I86 )
  char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
  #pragma aux    Fmt8Digits = \
-                "       push    cx"\
-                "       call    fmt8"\
-                "       jmp     short L4"\
-                "fmt8:  mov     cx,10000"\
-                "       div     cx"\
-                "       push    dx"\
-                "       call    fmt4"\
-                "       pop     ax"\
-                "fmt4:  mov     cx,100"\
-                "       sub     dx,dx"\
-                "       cmp     ax,cx"\
-                "       xchg    ax,dx"\
-                "       jb      short L2"\
-                "       xchg    ax,dx"\
-                "       div     cx"\
-                "L2:    push    dx"\
-                "       call    fmt2"\
-                "       pop     ax"\
-                "fmt2:  mov     cl,10"\
-                "       cmp     al,cl"\
-                "       xchg    al,ah"\
-                "       jb      short L3"\
-                "       xchg    al,ah"\
-                "       div     cl"\
-                "L3:    add     ax,3030h"\
-                "       mov     ss:[bx],ax"\
-                "       inc     bx"\
-                "       inc     bx"\
-                "       ret"\
-                "L4:    pop     cx"\
-                "       xor     al,al"\
-                "       mov     ss:[bx],al"\
-                parm caller [dx ax] [bx] value [bx];
+        "       push    cx"\
+        "       call    fmt8"\
+        "       jmp     short L4"\
+        "fmt8:  mov     cx,10000"\
+        "       div     cx"\
+        "       push    dx"\
+        "       call    fmt4"\
+        "       pop     ax"\
+        "fmt4:  mov     cx,100"\
+        "       sub     dx,dx"\
+        "       cmp     ax,cx"\
+        "       xchg    ax,dx"\
+        "       jb      short L2"\
+        "       xchg    ax,dx"\
+        "       div     cx"\
+        "L2:    push    dx"\
+        "       call    fmt2"\
+        "       pop     ax"\
+        "fmt2:  mov     cl,10"\
+        "       cmp     al,cl"\
+        "       xchg    al,ah"\
+        "       jb      short L3"\
+        "       xchg    al,ah"\
+        "       div     cl"\
+        "L3:    add     ax,3030h"\
+        "       mov     ss:[bx],ax"\
+        "       inc     bx"\
+        "       inc     bx"\
+        "       ret"\
+        "L4:    pop     cx"\
+        "       xor     al,al"\
+        "       mov     ss:[bx],al"\
+    parm caller [dx ax] [bx] value [bx];
 #else
 static unsigned long IntPow10[] = {
     1,
@@ -505,7 +506,7 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
 
 /* NB: Just like _EFG_Format(), the following assumes ASCII character  encoding */
 
-_WMRTLINK void __LDcvt( long_double *pld, CVT_INFO *cvt, char *buf )
+VISIBILITY void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
 {
     int         i;
     int         n;
@@ -755,4 +756,16 @@ end_cvt:;
 #if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
     __Set87CW( _8087cw );               // restore old control word
 #endif
+}
+
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cvtld *__get_EFG_cvtld( void )
+{
+    return( __cvtld );
+}
+#endif
+
+_WMRTLINK void __LDcvt( long_double *pld, CVT_INFO *cvt, char *buf )
+{
+    __cvtld( pld, cvt, buf );
 }

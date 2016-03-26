@@ -34,23 +34,8 @@
 #include "variety.h"
 #include <float.h>
 #include "xfloat.h"
+#include "fltsupp.h"
 
 extern std::ios::iostate __GetLDFloat( streambuf *, char *);
-
-_WPRTLINK typedef void  (*_type_EFG_cnvs2d)( char *, double * );
-_WPRTLINK typedef int   (*_type_EFG_cnvd2f)( double *, float * );
-_WPRTLINK typedef void  (*_type_EFG_LDcvt)( long_double *, CVT_INFO *, char * );
-_WPRTLINK typedef char  *(*_type_EFG_fcvt)( double, int, int *, int * );
-#ifdef _LONG_DOUBLE_
-_WPRTLINK typedef void  (*_type_EFG__FDLD)( dbl_arg, ld_arg );
-#endif
-
-_WPRTLINK extern _type_EFG_cnvs2d __EFG_cnvs2d;
-_WPRTLINK extern _type_EFG_cnvd2f __EFG_cnvd2f;
-_WPRTLINK extern _type_EFG_LDcvt  __EFG_LDcvt;
-_WPRTLINK extern _type_EFG_fcvt   __EFG_fcvt;
-#ifdef _LONG_DOUBLE_
-_WPRTLINK extern _type_EFG__FDLD  __EFG__FDLD;
-#endif
 
 #endif
