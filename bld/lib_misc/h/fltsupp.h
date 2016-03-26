@@ -48,16 +48,18 @@
 extern "C" {
 #endif
 
-    typedef void       _type_EFG_cnvs2d( char *buf, double *value );
+    typedef void                _type_EFG_cnvs2d( char *buf, double *value );
+    typedef _type_EFG_cnvs2d    *_type_EFG_scanf;
 #if defined( __cplusplus ) || defined( _MATHLIB )
   #ifdef _LONG_DOUBLE_
-    typedef void       _type_EFG_cnvd2ld( dbl_arg, ld_arg );
+    typedef void                _type_EFG_cnvd2ld( dbl_arg, ld_arg );
   #endif
-    typedef int        _type_EFG_cnvd2f( double *src, float *tgt );
-    typedef void       _type_EFG_LDcvt( long_double *, CVT_INFO *, char * );
+    typedef int                 _type_EFG_cnvd2f( double *src, float *tgt );
+    typedef void                _type_EFG_LDcvt( long_double *, CVT_INFO *, char * );
 #endif
 #if !defined( __cplusplus ) || defined( _MATHLIB )
-    typedef FAR_STRING _type_EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs );
+    typedef FAR_STRING          _type_EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs );
+    typedef _type_EFG_Format    *_type_EFG_printf;
 #endif
 
 #if defined( __MAKE_DLL_MATHLIB ) || defined( __SW_BR )
@@ -74,6 +76,7 @@ extern "C" {
   #endif
 #else
         extern _type_EFG_cnvs2d         __cnvs2d;
+        extern _type_EFG_scanf          __EFG_scanf;
   #if defined( __cplusplus ) || defined( _MATHLIB )
     #ifdef _LONG_DOUBLE_
         extern _type_EFG_cnvd2ld        __cnvd2ld;
@@ -83,6 +86,7 @@ extern "C" {
   #endif
   #if !defined( __cplusplus ) || defined( _MATHLIB )
         extern _type_EFG_Format         _EFG_Format;
+        extern _type_EFG_printf         __EFG_printf;
   #endif
 #endif
 

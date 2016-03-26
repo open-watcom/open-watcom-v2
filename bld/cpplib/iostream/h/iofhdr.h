@@ -38,11 +38,4 @@
 
 extern std::ios::iostate __GetLDFloat( streambuf *, char *);
 
-extern _type_EFG_cnvs2d  *__EFG_cnvs2d;
-extern _type_EFG_cnvd2f  *__EFG_cnvd2f;
-extern _type_EFG_LDcvt   *__EFG_LDcvt;
-#ifdef _LONG_DOUBLE_
-extern _type_EFG_cnvd2ld *__EFG_cnvd2ld;
-#endif
-
 #endif

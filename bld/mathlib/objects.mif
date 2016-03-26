@@ -200,6 +200,7 @@ cnvs2d_flags=-D_MATHLIB
 efgfmt_flags=-D_MATHLIB
 exp087__flags=-fpi87
 exp387__flags=-fpi87
+ldcvt_flags=-D_MATHLIB
 log087__flags=-fpi87
 log387__flags=-fpi87
 sin087__flags=-fpi87

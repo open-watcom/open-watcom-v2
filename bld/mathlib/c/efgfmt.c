@@ -114,6 +114,6 @@ VISIBILITY FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB 
 #if defined( __MAKE_DLL_MATHLIB )
 _type_EFG_Format *__get_EFG_Format( void )
 {
-    return( &_EFG_Format );
+    return( _EFG_Format );
 }
 #endif

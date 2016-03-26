@@ -47,7 +47,7 @@ static void _no_support_loaded() {
 
 _type_EFG_cnvs2d  *__EFG_cnvs2d  = (_type_EFG_cnvs2d *)_no_support_loaded;
 _type_EFG_cnvd2f  *__EFG_cnvd2f  = (_type_EFG_cnvd2f *)_no_support_loaded;
-_type_EFG_LDcvt   *__EFG_LDcvt   = (_type_EFG_LDcvt *)_no_support_loaded;
+_type_EFG_cvtld   *__EFG_cvtld   = (_type_EFG_cvtld *)_no_support_loaded;
 #ifdef _LONG_DOUBLE_
 _type_EFG_cnvd2ld *__EFG_cnvd2ld = (_type_EFG_cnvd2ld *)_no_support_loaded;
 #endif

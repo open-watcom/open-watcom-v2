@@ -46,14 +46,14 @@ static void __setiofEFGfmt( void ) {
  #ifdef __SW_BR
     __EFG_cnvs2d  = __get_EFG_cnvs2d();
     __EFG_cnvd2f  = __get_EFG_cnvd2f();
-    __EFG_LDcvt   = __get_EFG_LDcvt();
+    __EFG_cvtld   = __get_EFG_cvtld();
   #ifdef _LONG_DOUBLE_
     __EFG_cnvd2ld = __get_EFG_cnvd2ld();
   #endif
  #else
     __EFG_cnvs2d  = __cnvs2d;
     __EFG_cnvd2f  = __cnvd2f;
-    __EFG_LDcvt   = __LDcvt;
+    __EFG_cvtld   = __cvtld;
   #ifdef _LONG_DOUBLE_
     __EFG_cnvd2ld = __cnvd2ld;
   #endif

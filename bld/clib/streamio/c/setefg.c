@@ -34,7 +34,6 @@
 #include "myvalist.h"
 #include "xfloat.h"
 #include "farsupp.h"
-#include "ftos.h"
 #include "setefg.h"
 #include "printf.h"
 #include "fltsupp.h"
@@ -45,10 +44,10 @@
 void __setEFGfmt( void )
 {
 #ifdef __SW_BR
-    __EFG_printf = (_type_EFG_printf)__get_EFG_Format();
-    __EFG_scanf  = (_type_EFG_scanf)__get_EFG_cnvs2d();
+    __EFG_printf = __get_EFG_Format();
+    __EFG_scanf  = __get_EFG_cnvs2d();
 #else
-    __EFG_printf = (_type_EFG_printf)_EFG_Format;
-    __EFG_scanf  = (_type_EFG_scanf)__cnvs2d;
+    __EFG_printf = _EFG_Format;
+    __EFG_scanf  = __cnvs2d;
 #endif
 }
