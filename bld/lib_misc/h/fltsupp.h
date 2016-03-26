@@ -33,10 +33,15 @@
 
 #if defined( __MAKE_DLL_MATHLIB )
     #define DLLEXPIMP __declspec(dllexport)
-#elif defined( __SW_BR )
+#elif defined( __SW_BR ) && defined( __NT__ )
     #define DLLEXPIMP __declspec(dllimport)
 #else
     #define DLLEXPIMP
+#endif
+#if defined( __MAKE_DLL_MATHLIB )
+    #define VISIBILITY  static
+#else
+    #define VISIBILITY
 #endif
 
 #ifdef __cplusplus

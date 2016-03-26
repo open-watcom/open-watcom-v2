@@ -45,11 +45,7 @@
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
 
-#if defined( __MAKE_DLL_MATHLIB )
-static FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
-#else
-FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
-#endif
+VISIBILITY FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
 {
     int         digits;
     int         fmt;

@@ -41,11 +41,7 @@
 /* This routine is called from the C++ istream float extractor */
 
 
-#if defined( __MAKE_DLL_MATHLIB )
-static int __cnvd2f( double *src, float *tgt )
-#else
-int __cnvd2f( double *src, float *tgt )
-#endif
+VISIBILITY int __cnvd2f( double *src, float *tgt )
 // return zero if ok, else non-zero
 {
     double  value = *src;

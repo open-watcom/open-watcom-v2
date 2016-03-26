@@ -40,11 +40,7 @@
 
 /* This routine is called from C++ iostream class */
 
-#if defined( __MAKE_DLL_MATHLIB )
-static void __cnvd2ld( dbl_arg src, ld_arg dst )
-#else
-void __cnvd2ld( dbl_arg src, ld_arg dst )
-#endif
+VISIBILITY void __cnvd2ld( dbl_arg src, ld_arg dst )
 {
     __iFDLD( src, dst );
 }

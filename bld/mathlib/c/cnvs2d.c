@@ -41,11 +41,7 @@
 
 /* This routine is called from scnf.c */
 
-#if defined( __MAKE_DLL_MATHLIB )
-static void __cnvs2d( char *buf, double *value )
-#else
-void __cnvs2d( char *buf, double *value )
-#endif
+VISIBILITY void __cnvs2d( char *buf, double *value )
 {
     *value = strtod( buf, NULL );
 }
