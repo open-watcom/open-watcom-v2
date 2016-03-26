@@ -46,7 +46,7 @@ void __setEFGfmt( void )
 {
 #ifdef __SW_BR
     __EFG_printf = (_type_EFG_printf)__get_EFG_Format();
-    __EFG_scanf  = (_type_EFG_scanf)__get__cnvs2d();
+    __EFG_scanf  = (_type_EFG_scanf)__get_EFG_cnvs2d();
 #else
     __EFG_printf = (_type_EFG_printf)_EFG_Format;
     __EFG_scanf  = (_type_EFG_scanf)__cnvs2d;

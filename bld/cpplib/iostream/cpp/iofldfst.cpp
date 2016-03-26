@@ -56,7 +56,7 @@ void __LDFloatToString( char *buf,
 
     /* convert this double into a long double */
     double_value = *f;
-    __EFG__FDLD( &double_value, &ld );
+    __EFG_cnvd2ld( &double_value, &ld );
 #else
     ld.value = *f;
 #endif

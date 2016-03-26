@@ -31,11 +31,21 @@
 
 #include "variety.h"
 #include <float.h>
+#include <stdarg.h>
+#include "myvalist.h"
 #include "xfloat.h"
+#include "farsupp.h"
+#include "printf.h"
+#include "fltsupp.h"
 
 /* This routine is called from the C++ istream float extractor */
 
-_WMRTLINK int __cnvd2f( double *src, float *tgt )
+
+#if defined( __MAKE_DLL_MATHLIB )
+static int __cnvd2f( double *src, float *tgt )
+#else
+int __cnvd2f( double *src, float *tgt )
+#endif
 // return zero if ok, else non-zero
 {
     double  value = *src;
@@ -53,3 +63,10 @@ _WMRTLINK int __cnvd2f( double *src, float *tgt )
         return( 1 );
     }
 }
+
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cnvd2f *__get_EFG_cnvd2f( void )
+{
+    return( &__cnvd2f );
+}
+#endif

@@ -194,6 +194,10 @@
 
 atan087__flags=-fpi87
 atan387__flags=-fpi87
+cnvd2f_flags=-D_MATHLIB
+cnvd2ld_flags=-D_MATHLIB
+cnvs2d_flags=-D_MATHLIB
+efgfmt_flags=-D_MATHLIB
 exp087__flags=-fpi87
 exp387__flags=-fpi87
 log087__flags=-fpi87

@@ -39,17 +39,25 @@
 #include "stdlib.h"
 #include "rtinit.h"
 #include "iofhdr.h"
-#include "xfloat.h"
+#include "fltsupp.h"
 
 static void __setiofEFGfmt( void ) {
 #ifndef IN_SLIB
-    __EFG_cnvs2d = __cnvs2d;
-    __EFG_cnvd2f = __cnvd2f;
-    __EFG_LDcvt  = __LDcvt;
-    __EFG_fcvt   = _fcvt;
+ #ifdef __SW_BR
+    __EFG_cnvs2d  = __get_EFG_cnvs2d();
+    __EFG_cnvd2f  = __get_EFG_cnvd2f();
+    __EFG_LDcvt   = __get_EFG_LDcvt();
   #ifdef _LONG_DOUBLE_
-    __EFG__FDLD  = __cnvd2ld;
+    __EFG_cnvd2ld = __get_EFG_cnvd2ld();
   #endif
+ #else
+    __EFG_cnvs2d  = __cnvs2d;
+    __EFG_cnvd2f  = __cnvd2f;
+    __EFG_LDcvt   = __LDcvt;
+  #ifdef _LONG_DOUBLE_
+    __EFG_cnvd2ld = __cnvd2ld;
+  #endif
+ #endif
 #endif
 }
 

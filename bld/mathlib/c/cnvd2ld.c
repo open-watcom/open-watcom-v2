@@ -40,13 +40,17 @@
 
 /* This routine is called from C++ iostream class */
 
-_WMRTLINK void __cnvd2ld( dbl_arg src, ld_arg dst )
+#if defined( __MAKE_DLL_MATHLIB )
+static void __cnvd2ld( dbl_arg src, ld_arg dst )
+#else
+void __cnvd2ld( dbl_arg src, ld_arg dst )
+#endif
 {
     __iFDLD( src, dst );
 }
 
-#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
-_WMRTLINK void (*__get__cnvd2ld( void ))( dbl_arg src, ld_arg dst )
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cnvd2ld *__get_EFG_cnvd2ld( void )
 {
     return( &__cnvd2ld );
 }

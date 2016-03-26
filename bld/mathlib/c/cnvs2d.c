@@ -41,13 +41,17 @@
 
 /* This routine is called from scnf.c */
 
-_WMRTLINK void __cnvs2d( char *buf, double *value )
+#if defined( __MAKE_DLL_MATHLIB )
+static void __cnvs2d( char *buf, double *value )
+#else
+void __cnvs2d( char *buf, double *value )
+#endif
 {
     *value = strtod( buf, NULL );
 }
 
-#if defined( __MAKE_DLL_MATHLIB ) || defined( __MAKE_DLL_WRTLIB )
-_WMRTLINK void (*__get__cnvs2d( void ))( char *, double * )
+#if defined( __MAKE_DLL_MATHLIB )
+_type_EFG_cnvs2d *__get_EFG_cnvs2d( void )
 {
     return( &__cnvs2d );
 }
