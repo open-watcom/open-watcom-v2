@@ -31,6 +31,7 @@
 
 include mdef.inc
 include struct.inc
+include exitwmsg.inc
 
         modstart        stk_libc
 
@@ -43,7 +44,7 @@ enddata
     ;
     ;   From OpenWatcom Library
     ;
-        extrn   "C",    __fatal_error_exit              :near
+
     ;
     ;   From LIBC.NLM
     ;
@@ -72,7 +73,7 @@ enddata
         call    NXThreadGetId
         push    eax
         push    offset msg
-        call    __fatal_error_exit
+        jmp     __fatal_runtime_error   ; display msg and exit
         ; never return        
         endproc __STK
 

@@ -54,8 +54,8 @@ include xinit.inc
 
 
         defp    _init_stk
-        mov     SS_seg,SS       ; save original SS value
-        ret                     ; return
+        mov     SS_seg,SS               ; save original SS value
+        ret                             ; return
         endproc _init_stk
 
 
@@ -73,25 +73,25 @@ include xinit.inc
 
 
         defpe   __STK
-        _guess                  ; guess: no overflow
-          cmp   eax,esp         ; - quit if user asking for too much
-          _quif ae              ; - . . .
-          sub   eax,esp         ; - calculate new low point
-          neg   eax             ; - calc what new SP would be
-          cmp   eax,_STACKLOW   ; - quit if too much
-          _quif be              ; - . . .
-          ret                   ; - return
-        _endguess               ; endguess
+        _guess                          ; guess: no overflow
+          cmp   eax,esp                 ; - quit if user asking for too much
+          _quif ae                      ; - . . .
+          sub   eax,esp                 ; - calculate new low point
+          neg   eax                     ; - calc what new SP would be
+          cmp   eax,_STACKLOW           ; - quit if too much
+          _quif be                      ; - . . .
+          ret                           ; - return
+        _endguess                       ; endguess
 
 ;       We could have reached this point because we are in an interrupt
 ;       routine with different SS:ESP values from our DGROUP.
 
-        _guess                  ; guess: SS != DS       07-nov-89
-          mov   ax,ss           ; - get ss
-          cmp   ax,SS_seg       ; - see if SS has been changed
-          _quif e               ; - quit if same
-          ret                   ; - return (running with a different stack)
-        _endguess               ; endguess
+        _guess                          ; guess: SS != DS       07-nov-89
+          mov   ax,ss                   ; - get ss
+          cmp   ax,SS_seg               ; - see if SS has been changed
+          _quif e                       ; - quit if same
+          ret                           ; - return (running with a different stack)
+        _endguess                       ; endguess
 
 
 __STKOVERFLOW:
@@ -102,8 +102,7 @@ else
         mov     eax,offset msg
         mov     edx,1
 endif
-        call    __fatal_runtime_error
-        ; never return
+        jmp     __fatal_runtime_error   ; display msg and exit
         endproc __STK
 
         endmod

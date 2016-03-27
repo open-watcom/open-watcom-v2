@@ -50,47 +50,46 @@ include xinit.inc
         xdefp   "C",__STKOVERFLOW
 
         defp    _init_stk
-        mov     SS_seg,SS       ; save original SS value
-        ret                     ; return
+        mov     SS_seg,SS               ; save original SS value
+        ret                             ; return
 _init_stk endp
 
         defpe   __STK
-        _guess                  ; guess: no overflow
-          cmp   ax,sp           ; - quit if user asking for too much
-          _quif ae              ; - . . .
-          sub   ax,sp           ; - calculate new low point
+        _guess                          ; guess: no overflow
+          cmp   ax,sp                   ; - quit if user asking for too much
+          _quif ae                      ; - . . .
+          sub   ax,sp                   ; - calculate new low point
 if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-          push  ds              ; - save DS
-          push  ax              ; - save AX
-          mov   ax,DGROUP       ; - get access to DGROUP
-          mov   ds,ax           ; - . . .
-          pop   ax              ; - restore AX
+          push  ds                      ; - save DS
+          push  ax                      ; - save AX
+          mov   ax,DGROUP               ; - get access to DGROUP
+          mov   ds,ax                   ; - . . .
+          pop   ax                      ; - restore AX
 endif
-          neg   ax              ; - calc what new SP would be
-          cmp   ax,_STACKLOW    ; - if too much
-          _if   be              ; - then
+          neg   ax                      ; - calc what new SP would be
+          cmp   ax,_STACKLOW            ; - if too much
+          _if   be                      ; - then
 
 ;       We could have reached this point because we are in an interrupt
 ;       routine or DLL with different SS:SP values from our DGROUP.
 
-            mov   ax,ss         ; - - get ss
-            cmp   ax,SS_seg     ; - - see if SS has been changed
-            je    __STKOVERFLOW ; - - stack overflow if same
-          _endif                ; - endif
+            mov   ax,ss                 ; - - get ss
+            cmp   ax,SS_seg             ; - - see if SS has been changed
+            je    __STKOVERFLOW         ; - - stack overflow if same
+          _endif                        ; - endif
 
 if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-          pop   ds              ; - restore DS
+          pop   ds                      ; - restore DS
 endif
-          ret                   ; - return
-        _endguess               ; endguess
+          ret                           ; - return
+        _endguess                       ; endguess
 
 __STKOVERFLOW:
-        push    cs              ; set dx=cs
-        pop     dx              ; . . .
-        mov     ax,offset msg   ; get msg
-        mov     bx,1            ; error code
-        call    __fatal_runtime_error
-        ; never return
+        push    cs                      ; set dx=cs
+        pop     dx                      ; . . .
+        mov     ax,offset msg           ; get msg
+        mov     bx,1                    ; error code
+        jmp     __fatal_runtime_error   ; display msg and exit
         endproc __STK
 
 msg     db      "Stack Overflow!", 0

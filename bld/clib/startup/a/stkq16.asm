@@ -58,22 +58,22 @@ msg_end label byte
 hextab  db      "0123456789ABCDEF"
 
         defpe   __STK
-        _guess                  ; guess: no overflow
-          cmp   ax,sp           ; - quit if user asking for too much
-          _quif ae              ; - . . .
-          sub   ax,sp           ; - calculate new low point
-          neg   ax              ; - calc what new SP would be
+        _guess                          ; guess: no overflow
+          cmp   ax,sp                   ; - quit if user asking for too much
+          _quif ae                      ; - . . .
+          sub   ax,sp                   ; - calculate new low point
+          neg   ax                      ; - calc what new SP would be
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
-          push  ds              ; - save ds
-          mov   ds,cs:dgroupp   ; - load ds from DGROUP
+          push  ds                      ; - save ds
+          mov   ds,cs:dgroupp           ; - load ds from DGROUP
 endif
-          cmp   ax,ds:_STACKLOW ; - quit if too much
+          cmp   ax,ds:_STACKLOW         ; - quit if too much
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
-          pop   ds              ; - restore ds
+          pop   ds                      ; - restore ds
 endif
-          _quif be              ; - . . .
-          ret                   ; - return
-        _endguess               ; endguess
+          _quif be                      ; - . . .
+          ret                           ; - return
+        _endguess                       ; endguess
 
 ;* modified stack overflow code to print the return address of the
 ;* caller.
@@ -84,16 +84,16 @@ if _MODEL and _BIG_CODE
         pop     dx
 else
         mov     dx,cs
-endif                           ; dx:ax points at retaddr
-        add     sp,0100h        ; cream last 256 bytes of stack
+endif                                   ; dx:ax points at retaddr
+        add     sp,0100h                ; cream last 256 bytes of stack
         mov     bp,sp
 
-        push    ax              ; push return address, segment first
-        push    dx              ; to make it easier to print it
+        push    ax                      ; push return address, segment first
+        push    dx                      ; to make it easier to print it
 
 
-        push    ss              ; setup string instrs to copy
-        pop     es              ; exit message onto stack
+        push    ss                      ; setup string instrs to copy
+        pop     es                      ; exit message onto stack
         cld
         mov     di,bp
 
@@ -104,28 +104,28 @@ endif                           ; dx:ax points at retaddr
         pop     ds
         rep     movsb
 
-        pop     bx              ; get segment
+        pop     bx                      ; get segment
         call    _putw
         mov     al,':'
         stosb
-        pop     bx              ; get offset
+        pop     bx                      ; get offset
         call    _putw
         xor     al,al
         stosb
         mov     ds,cs:dgroupp
-        mov     dx,ss           ; ds:ax  points at
-        mov     ax,bp           ; exit code in bx
+        mov     dx,ss                   ; ds:ax  points at
+        mov     ax,bp                   ; exit code in bx
         mov     bx,1
-        call    __fatal_runtime_error
-        ; never return
+        jmp     __fatal_runtime_error   ; display msg and exit
+
         endproc __STK
 
 _putw proc near
-        mov     dx,bx           ; save value
-        mov     cl,12           ; setup shift count
+        mov     dx,bx                   ; save value
+        mov     cl,12                   ; setup shift count
 _lup:
-        mov     bx,dx           ; get value
-        shr     bx,cl           ; put in bottom 4 bits.
+        mov     bx,dx                   ; get value
+        shr     bx,cl                   ; put in bottom 4 bits.
         and     bx,0fh
         mov     al,cs:hextab[bx]
         stosb
