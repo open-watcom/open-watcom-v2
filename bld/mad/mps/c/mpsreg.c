@@ -38,11 +38,15 @@
 #define BIT_OFF( who ) (offsetof( mad_registers, mips.who ) * BITS_PER_BYTE)
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
-/* Macros to get at GP/FP registers based on their number; useful in loops */
-#define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.u0.r0.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_GPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.u0.r0.u._32[I64HI32])) + (2 * idx)))
-#define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64LO32])) + (2 * idx)))
-#define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64HI32])) + (2 * idx)))
+#define MIPS_SWAP_REG_64(x)                         \
+    {                                               \
+        unsigned_32     temp;                       \
+        CONV_BE_32( (x).u._32[I64LO32] );           \
+        CONV_BE_32( (x).u._32[I64HI32] );           \
+        temp = (x).u._32[I64LO32];                  \
+        (x).u._32[I64LO32] = (x).u._32[I64HI32];    \
+        (x).u._32[I64HI32] = temp;                  \
+    }
 
 enum {
     RS_NONE,
@@ -238,7 +242,6 @@ unsigned DIGENTRY MIRegistersSize( void )
 mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
 {
 #if defined( __BIG_ENDIAN__ )
-    unsigned_32     temp;
     int             i;
 
     // Currently harcoded for little endian targets - should be dynamic
@@ -246,26 +249,14 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_GPREG_LO( mr->mips, i ) );
-        CONV_BE_32( TRANS_GPREG_HI( mr->mips, i ) );
-        temp = TRANS_GPREG_LO( mr->mips, i );
-        TRANS_GPREG_LO( mr->mips, i ) = TRANS_GPREG_HI( mr->mips, i );
-        TRANS_GPREG_HI( mr->mips, i ) = temp;
+        MIPS_SWAP_REG_64( (&mr->mips.u0 + i)->r0 );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_FPREG_LO( mr->mips, i ) );
-        CONV_BE_32( TRANS_FPREG_HI( mr->mips, i ) );
-        temp = TRANS_FPREG_LO( mr->mips, i );
-        TRANS_FPREG_LO( mr->mips, i ) = TRANS_FPREG_HI( mr->mips, i );
-        TRANS_FPREG_HI( mr->mips, i ) = temp;
+        MIPS_SWAP_REG_64( (&mr->mips.f0 + i)->u64 );
     }
     // Convert special registers
-    CONV_BE_32( mr->mips.pc.u._32[I64LO32] );
-    CONV_BE_32( mr->mips.pc.u._32[I64HI32] );
-    temp = mr->mips.pc.u._32[I64LO32];
-    mr->mips.pc.u._32[I64LO32] = mr->mips.pc.u._32[I64HI32];
-    mr->mips.pc.u._32[I64HI32] = temp;
+    MIPS_SWAP_REG_64( mr->mips.pc );
 
     CONV_BE_32( mr->mips.lo );
     CONV_BE_32( mr->mips.hi );
@@ -280,31 +271,18 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
 mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
 {
 #if defined( __BIG_ENDIAN__ )
-    unsigned_32     temp;
     int             i;
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_GPREG_LO( mr->mips, i ) );
-        CONV_BE_32( TRANS_GPREG_HI( mr->mips, i ) );
-        temp = TRANS_GPREG_LO( mr->mips, i );
-        TRANS_GPREG_LO( mr->mips, i ) = TRANS_GPREG_HI( mr->mips, i );
-        TRANS_GPREG_HI( mr->mips, i ) = temp;
+        MIPS_SWAP_REG_64( (&mr->mips.u0 + i)->r0 );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        CONV_BE_32( TRANS_FPREG_LO( mr->mips, i ) );
-        CONV_BE_32( TRANS_FPREG_HI( mr->mips, i ) );
-        temp = TRANS_FPREG_LO( mr->mips, i );
-        TRANS_FPREG_LO( mr->mips, i ) = TRANS_FPREG_HI( mr->mips, i );
-        TRANS_FPREG_HI( mr->mips, i ) = temp;
+        MIPS_SWAP_REG_64( (&mr->mips.f0 + i)->u64 );
     }
     // Convert special registers
-    CONV_BE_32( mr->mips.pc.u._32[I64LO32] );
-    CONV_BE_32( mr->mips.pc.u._32[I64HI32] );
-    temp = mr->mips.pc.u._32[I64LO32];
-    mr->mips.pc.u._32[I64LO32] = mr->mips.pc.u._32[I64HI32];
-    mr->mips.pc.u._32[I64HI32] = temp;
+    MIPS_SWAP_REG_64( mr->mips.pc );
 
     CONV_BE_32( mr->mips.lo );
     CONV_BE_32( mr->mips.hi );
