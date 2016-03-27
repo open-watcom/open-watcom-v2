@@ -31,64 +31,72 @@
 ****************************************************************************/
 
 
+#include "xfloat.h"
+#include "myvalist.h"
+#include "farsupp.h"
+#include "printf.h"
+
+
 #if defined( __MAKE_DLL_MATHLIB )
-    #define DLLEXPIMP __declspec(dllexport)
-#elif defined( __SW_BR ) && defined( __NT__ )
-    #define DLLEXPIMP __declspec(dllimport)
+    #define FLTSUPPFUNC static
 #else
-    #define DLLEXPIMP
-#endif
-#if defined( __MAKE_DLL_MATHLIB )
-    #define VISIBILITY  static
-#else
-    #define VISIBILITY
+    #define FLTSUPPFUNC
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    typedef void                _type_EFG_cnvs2d( char *buf, double *value );
-    typedef _type_EFG_cnvs2d    *_type_EFG_scanf;
-#if defined( __cplusplus ) || defined( _MATHLIB )
+// all
+    typedef void        _type_EFG_cnvs2d( char *buf, double *value );
+// CLIB
+    typedef FAR_STRING  _type_EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB *specs );
+// CPPLIB
   #ifdef _LONG_DOUBLE_
-    typedef void                _type_EFG_cnvd2ld( dbl_arg, ld_arg );
+    typedef void        _type_EFG_cnvd2ld( dbl_arg, ld_arg );
   #endif
-    typedef int                 _type_EFG_cnvd2f( double *src, float *tgt );
-    typedef void                _type_EFG_LDcvt( long_double *, CVT_INFO *, char * );
-#endif
-#if !defined( __cplusplus ) || defined( _MATHLIB )
-    typedef FAR_STRING          _type_EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs );
-    typedef _type_EFG_Format    *_type_EFG_printf;
-#endif
+    typedef int         _type_EFG_cnvd2f( double *src, float *tgt );
+    typedef void        _type_EFG_cvtld( long_double *, CVT_INFO *, char * );
 
 #if defined( __MAKE_DLL_MATHLIB ) || defined( __SW_BR )
-        DLLEXPIMP extern _type_EFG_cnvs2d   *__get_EFG_cnvs2d( void );
-  #if defined( __cplusplus ) || defined( _MATHLIB )
-    #ifdef _LONG_DOUBLE_
-        DLLEXPIMP extern _type_EFG_cnvd2ld  *__get_EFG_cnvd2ld( void );
-    #endif
-        DLLEXPIMP extern _type_EFG_cnvd2f   *__get_EFG_cnvd2f( void );
-        DLLEXPIMP extern _type_EFG_LDcvt    *__get_EFG_LDcvt( void );
+// all
+    extern _WMRTLINK _type_EFG_cnvs2d   *__get_EFG_cnvs2d( void );
+// CLIB
+    extern _WMRTLINK _type_EFG_Format   *__get_EFG_Format( void );
+// CPPLIB
+  #ifdef _LONG_DOUBLE_
+    extern _WMRTLINK _type_EFG_cnvd2ld  *__get_EFG_cnvd2ld( void );
   #endif
-  #if !defined( __cplusplus ) || defined( _MATHLIB )
-        DLLEXPIMP extern _type_EFG_Format   *__get_EFG_Format( void );
-  #endif
+    extern _WMRTLINK _type_EFG_cnvd2f   *__get_EFG_cnvd2f( void );
+    extern _WMRTLINK _type_EFG_cvtld    *__get_EFG_cvtld( void );
 #else
-        extern _type_EFG_cnvs2d         __cnvs2d;
-        extern _type_EFG_scanf          __EFG_scanf;
-  #if defined( __cplusplus ) || defined( _MATHLIB )
-    #ifdef _LONG_DOUBLE_
-        extern _type_EFG_cnvd2ld        __cnvd2ld;
-    #endif
-        extern _type_EFG_cnvd2f         __cnvd2f;
-        extern _type_EFG_LDcvt          _LDcvt;
+// all
+    extern _type_EFG_cnvs2d             __cnvs2d;
+// CLIB
+    extern _type_EFG_Format             _EFG_Format;
+  #if defined( __QNX__ )
+    extern _type_EFG_Format             __EFG_Format;
   #endif
-  #if !defined( __cplusplus ) || defined( _MATHLIB )
-        extern _type_EFG_Format         _EFG_Format;
-        extern _type_EFG_printf         __EFG_printf;
+// CPPLIB
+  #ifdef _LONG_DOUBLE_
+    extern _type_EFG_cnvd2ld            __cnvd2ld;
   #endif
+    extern _type_EFG_cnvd2f             __cnvd2f;
+    extern _type_EFG_cvtld              __cvtld;
 #endif
+
+// CLIB
+    typedef _type_EFG_cnvs2d            *_type_EFG_scanf;
+    extern _WCRTDATA _type_EFG_scanf    __EFG_scanf;
+    typedef _type_EFG_Format            *_type_EFG_printf;
+    extern _WCRTDATA _type_EFG_printf   __EFG_printf;
+// CPPLIB
+    extern _WPRTDATA _type_EFG_cnvs2d   *__EFG_cnvs2d;
+    extern _WPRTDATA _type_EFG_cnvd2f   *__EFG_cnvd2f;
+    extern _WPRTDATA _type_EFG_cvtld    *__EFG_cvtld;
+  #ifdef _LONG_DOUBLE_
+    extern _WPRTDATA _type_EFG_cnvd2ld  *__EFG_cnvd2ld;
+  #endif
 
 #ifdef __cplusplus
 };

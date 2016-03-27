@@ -32,15 +32,12 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdarg.h>
-#include "myvalist.h"
-#include "xfloat.h"
-#include "farsupp.h"
-#include "printf.h"
 #include "fltsupp.h"
+
 
 /* This routine is called from C++ iostream class */
 
-VISIBILITY void __cnvd2ld( dbl_arg src, ld_arg dst )
+FLTSUPPFUNC void __cnvd2ld( dbl_arg src, ld_arg dst )
 {
     __iFDLD( src, dst );
 }
@@ -48,6 +45,6 @@ VISIBILITY void __cnvd2ld( dbl_arg src, ld_arg dst )
 #if defined( __MAKE_DLL_MATHLIB )
 _type_EFG_cnvd2ld *__get_EFG_cnvd2ld( void )
 {
-    return( &__cnvd2ld );
+    return( __cnvd2ld );
 }
 #endif

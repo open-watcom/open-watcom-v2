@@ -38,6 +38,7 @@
 #include "ioutil.h"
 #include "lock.h"
 #include "iofhdr.h"
+#include "fltsupp.h"
 
 
 #if 0

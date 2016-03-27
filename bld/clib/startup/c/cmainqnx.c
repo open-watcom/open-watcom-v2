@@ -51,6 +51,7 @@
 #include "cinit.h"
 #include "rtdata.h"
 
+
 extern int main( int, char **, char ** );
 #if defined( _M_I86 )
 #pragma aux main modify [sp];
@@ -209,8 +210,6 @@ static char __far *CALLBACK _s_getenv( const char __far *p )
 static char __far *CALLBACK _s_EFG_printf(
     char __far *buffer, char __far * __far *args, void __far *specs )
 {
-    extern char *(* __EFG_printf)( char *buf, char ** args, void *specs);
-
     return( (*__EFG_printf)( (char *)buffer, (char **)args, (void *)specs ) );
 }
 
@@ -268,10 +267,9 @@ void _CMain( free, n, cmd, stk_bot, pid )
 #else
 
 #pragma aux _s_EFG_printf __far parm [eax] [edx] [ebx]
-static char *_s_EFG_printf(char *buffer, char **args, void *specs)
+static char *_s_EFG_printf( char *buffer, char **args, void *specs )
 {
-    extern char *(* __EFG_printf)( char *buf, char ** args, void *specs);
-    return (*__EFG_printf)(buffer,args,specs);
+    return (*__EFG_printf)( buffer, args, specs );
 }
 
 extern unsigned short   _cs(void);

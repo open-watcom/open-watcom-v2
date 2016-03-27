@@ -31,11 +31,7 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include "myvalist.h"
-#include "xfloat.h"
-#include "farsupp.h"
 #include "setefg.h"
-#include "printf.h"
 #include "fltsupp.h"
 
 

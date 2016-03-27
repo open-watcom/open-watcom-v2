@@ -36,10 +36,11 @@
 #include <errno.h>
 #include <iostream>
 #endif
-#include "stdlib.h"
+#include <stdlib.h>
 #include "rtinit.h"
 #include "iofhdr.h"
 #include "fltsupp.h"
+
 
 static void __setiofEFGfmt( void ) {
 #ifndef IN_SLIB

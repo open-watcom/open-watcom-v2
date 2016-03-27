@@ -34,18 +34,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "myvalist.h"
-#include "xfloat.h"
-#include "farsupp.h"
-#include "printf.h"
 #include "rtcntrl.h"
 #include "fltsupp.h"
 
 
 /* NB: This code assumes ASCII character encoding. Probably not unreasonable. */
 
-
-VISIBILITY FAR_STRING _EFG_Format( char *buffer, my_va_list *args, SPECS __SLIB *specs )
+FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB *specs )
 {
     int         digits;
     int         fmt;
