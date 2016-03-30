@@ -38,7 +38,7 @@
 #include "global.h"
 #include "cgdefs.h"
 #include "cg.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "fcgbls.h"
 #include "cgflags.h"
 #include "cpopt.h"

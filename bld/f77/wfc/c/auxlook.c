@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "global.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "iflookup.h"
 #include "cpopt.h"
 

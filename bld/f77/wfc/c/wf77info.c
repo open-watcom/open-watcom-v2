@@ -35,7 +35,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77defs.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "fcgbls.h"
 #include "ecflags.h"
 #include "segsw.h"

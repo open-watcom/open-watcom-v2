@@ -32,7 +32,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77defs.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "cg.h"
 #include "ecflags.h"
 #include "cpopt.h"

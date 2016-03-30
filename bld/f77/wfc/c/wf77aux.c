@@ -36,7 +36,7 @@
 #include <sys/stat.h>
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"

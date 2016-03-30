@@ -42,7 +42,7 @@
 #include "fcgbls.h"
 #include "prmcodes.h"
 #include "cpopt.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
