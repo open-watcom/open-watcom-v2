@@ -36,6 +36,8 @@
 
 #include "ftnstd.h"
 #include "ftnio.h"
+#include "ftextfun.h"
+
 
 extern  bool                    IsDevice(ftnfile *);
 

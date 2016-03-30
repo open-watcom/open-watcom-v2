@@ -45,10 +45,8 @@
 #include "brow2elf.h"
 #include "ferror.h"
 #include "cspawn.h"
+#include "sdcio.h"
 
-
-extern  void            SDWrite(file_handle,byte *,int);
-extern  bool            SDError(file_handle,char *);
 
 // -- code to generate ELF output ------------------------------------------
 //
@@ -152,9 +150,9 @@ Elf32_Shdr section_header_template = {
 
 static  char    *fName;
 
-void mywrite( FILE *fp, void *data, size_t len ) {
-/*************************************************/
-
+static void mywrite( FILE *fp, void *data, size_t len )
+/*****************************************************/
+{
     char        err_msg[ERR_BUFF_SIZE+1];
 
     SDWrite( fp, data, len );

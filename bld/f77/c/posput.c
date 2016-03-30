@@ -33,21 +33,24 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sysbuff.h"
+#include "poscc.h"
+#include "posput.h"
+#include "posseek.h"
+#include "poserr.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
+
 /* forward declarations */
-static  void    PutTextRec( b_file *io, char *b, int len );
-static  void    PutVariableRec( b_file *io, char *b, uint len );
-static  void    PutFixedRec( b_file *io, char *b, uint len );
-int             SysWrite( b_file *io, char *b, uint len );
-void            ChopFile( b_file *io );
+static  void    PutTextRec( b_file *io, const char *b, int len );
+static  void    PutVariableRec( b_file *io, const char *b, uint len );
+static  void    PutFixedRec( b_file *io, const char *b, uint len );
 
-void    FPutRec( b_file *io, char *b, int len ) {
+void    FPutRec( b_file *io, const char *b, int len )
 // Put a record to a file.
-
+{
     IOOk( io );
     if( io->attrs & REC_TEXT ) {
         PutTextRec( io, b, len );
@@ -66,16 +69,20 @@ void    FPutRec( b_file *io, char *b, int len ) {
 
 #if defined( __RT__ )
 
-void    ChopFile( b_file *io ) {
+void    ChopFile( b_file *io )
+{
     long int    offset;
 
     offset = CurrFileOffset( io );
     if( io->attrs & BUFFERED ) {
-        if( FlushBuffer( io ) < 0 ) return;
+        if( FlushBuffer( io ) < 0 ) {
+            return;
+        }
     }
     // We have to call lseek here, not SysSeek to ensure that the real
     // file offset is actually where we want it.
-    if( lseek( io->handle, offset, SEEK_SET ) < 0 ) return;
+    if( lseek( io->handle, offset, SEEK_SET ) < 0 )
+        return;
     io->phys_offset = offset;
     if( chsize( io->handle, offset ) < 0 ) {
         FSetSysErr( io );
@@ -84,31 +91,34 @@ void    ChopFile( b_file *io ) {
 
 #endif
 
-
-void    PutRec( char *b, int len ) {
+#if 0
+void    PutRec( const char *b, int len )
 // Put a record to standard output device.
-
+{
     FPutRec( FStdOut, b, len );
 }
+#endif
 
-
-static  void    PutTextRec( b_file *io, char *b, int len ) {
+static  void    PutTextRec( b_file *io, const char *b, int len )
 // Put a record to a file with "text" records.
-
+{
     int         cc_len;
-    char        *cc;
+    const char  *cc;
     char        tag[2];
 
     cc_len = 0;
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, *b, &cc );
+        cc_len = FSetCC( (a_file *)io, *b, &cc );
         b++;    // skip carriage control character
         len--;  // ...
     }
     if( io->attrs & CARRIAGE_CONTROL ) {
-        if( SysWrite( io, cc, cc_len ) == -1 ) return;
+        if( SysWrite( io, cc, cc_len ) == -1 ) {
+            return;
+        }
     }
-    if( SysWrite( io, b, len ) == -1 ) return;
+    if( SysWrite( io, b, len ) == -1 )
+        return;
     if( ( io->attrs & CC_NOCR ) == 0 ) {
 #if defined( __UNIX__ )
         tag[0] = LF;
@@ -122,34 +132,41 @@ static  void    PutTextRec( b_file *io, char *b, int len ) {
         }
 #endif
         io->attrs &= ~CC_NOLF;
-        if( SysWrite( io, tag, len ) == -1 ) return;
+        if( SysWrite( io, tag, len ) == -1 ) {
+            return;
+        }
     }
 }
 
 
-static  void    PutVariableRec( b_file *io, char *b, uint len ) {
+static  void    PutVariableRec( b_file *io, const char *b, uint len )
 // Put a record to a file with "variable" records.
-
+{
     unsigned_32 tag;
 
     tag = len;
     if( io->attrs & LOGICAL_RECORD ) {
         tag |= 0x80000000;
     }
-    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 ) return;
-    if( SysWrite( io, b, len ) == -1 ) return;
-    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 ) return;
+    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 )
+        return;
+    if( SysWrite( io, b, len ) == -1 )
+        return;
+    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 ) {
+        return;
+    }
 }
 
 
-static  void    PutFixedRec( b_file *io, char *b, uint len ) {
+static  void    PutFixedRec( b_file *io, const char *b, uint len )
 // Put a record to a file with "fixed" records.
-
+{
     if( SysWrite( io, b, len ) == -1 ) return;
 }
 
 
-uint    writebytes( b_file *io, char *buff, uint len ) {
+uint    writebytes( b_file *io, const char *buff, uint len )
+{
     int         written;
     uint        total;
     uint        amt;
@@ -178,10 +195,12 @@ uint    writebytes( b_file *io, char *buff, uint len ) {
 }
 
 
-int SysWrite( b_file *io, char *b, uint len ) {
+int SysWrite( b_file *io, const char *b, uint len )
+{
     uint        amt;
 
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     if( io->attrs & BUFFERED ) {
         // copy any amt that can fit into remaining portion of current buffer
         amt = io->buff_size - io->b_curs;
@@ -201,13 +220,15 @@ int SysWrite( b_file *io, char *b, uint len ) {
         len -= amt;
         if( len ) {
             // flush the buffer
-            if( FlushBuffer( io ) < 0 ) return( -1 );
+            if( FlushBuffer( io ) < 0 )
+                return( -1 );
             b += amt;
             if( len > io->buff_size ) {
                 // write out a multiple of io->buff_size bytes
                 amt = len - len % io->buff_size;
                 writebytes( io, b, amt );
-                if( io->stat != IO_OK ) return( -1 );
+                if( io->stat != IO_OK )
+                    return( -1 );
                 b += amt;
                 len -= amt;
             }
@@ -222,7 +243,9 @@ int SysWrite( b_file *io, char *b, uint len ) {
         }
     } else {
         writebytes( io, b, len );
-        if( io->stat != IO_OK ) return( -1 );
+        if( io->stat != IO_OK ) {
+            return( -1 );
+        }
     }
     return( 0 );
 }

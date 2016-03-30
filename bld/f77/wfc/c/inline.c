@@ -46,17 +46,16 @@
 #include "inline.h"
 #include "types.h"
 #include "fctypes.h"
+#include "rstutils.h"
+#include "auxlook.h"
+#include "wf77info.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 #include <string.h>
 
 
-extern  sym_id          STAdd(char *name,int length);
-extern  sym_id          STFree(sym_id sym_ptr);
-extern  segment_id      AllocImpSegId(void);
 extern  void            DoPragma(char *);
-extern  aux_info        *AuxLookupName( char *, int );
 
 
 #if _CPU == 386 || _CPU == 8086

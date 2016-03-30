@@ -56,10 +56,6 @@ dcomplex        CDEXP( double rp, double ip ) {
     return( result );
 }
 
-#else
-
-extern  dcomplex        CDEXP(double,double);
-
 #endif
 
 

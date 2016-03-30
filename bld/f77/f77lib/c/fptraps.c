@@ -34,6 +34,8 @@
 #include <float.h>
 #include "ftextfun.h"
 #include "errcod.h"
+#include "fptraps.h"
+
 
 #if (defined( __386__ ) && defined( __OS2__ )) || defined( __NT__ )
   extern        byte    __ExceptionHandled;

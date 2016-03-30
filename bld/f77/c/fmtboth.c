@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
+#include "ftextfun.h"
+
 
 void    FEmCode( int code ) {
 //===========================

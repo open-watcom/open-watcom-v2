@@ -50,10 +50,6 @@ extended QABS( extended arg ) {
     return( fabs( arg ) );
 }
 
-#else
-
-extern  extended                QABS(extended);
-
 #endif
 
 

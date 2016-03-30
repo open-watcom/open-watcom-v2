@@ -35,8 +35,9 @@
 //
 
 #include "rtinit.h"
+#include "ftnstd.h"
+#include "runmain.h"
 
-extern void     __InitUnit6CC( void );
 
 AXI( __InitUnit6CC, INIT_PRIORITY_LIBRARY );
 

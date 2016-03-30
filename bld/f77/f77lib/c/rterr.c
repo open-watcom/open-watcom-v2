@@ -32,7 +32,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "ftextfun.h"
@@ -105,7 +104,7 @@ void    WriteErr( int errcode, va_list args ) {
     _ReleaseFIO();
 }
 
-void    ErrHandler( int errcode, va_list args ) {
+void    RTErrHandler( int errcode, va_list args ) {
 //===============================================
 
 // Print a run-time error message and halt execution.
@@ -113,7 +112,7 @@ void    ErrHandler( int errcode, va_list args ) {
     WriteErr( errcode, args );
     _RWD_XcptFlags |= XF_FATAL_ERROR;
     if( !(_RWD_XcptFlags & XF_IO_INTERRUPTED) ) {
-        Suicide();
+        RTSuicide();
     }
 }
 
@@ -126,6 +125,6 @@ void    RTErr( int errcode, ... ) {
 
     RTSysInit();
     va_start( args, errcode );
-    ErrHandler( errcode, args );
+    RTErrHandler( errcode, args );
     va_end( args );
 }

@@ -37,21 +37,18 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "rtenv.h"
 #include "rundat.h"
 #include "thread.h"
+#include "runmain.h"
+#include "ftextfun.h"
 
-extern  void            Suicide(void);
+
 extern  void            StdWriteNL(char *,int);
 extern  void            StdWrite(char *,int);
 extern  void            FlushStdUnit(void);
-extern  void            StdBuffer(void);
-extern  void            StdFlush(void);
-extern  bool            __DevicesCC( void );
-extern  void            RTSysInit(void);
 
 // this is used by the load and go debugger in _SA_LIBRARY
 
@@ -82,5 +79,5 @@ void    Stop( string PGM *ptr ) {
     }
     _RWD_XcptFlags |= XF_FATAL_ERROR;
     STOP_HOOK();
-    Suicide();
+    RTSuicide();
 }

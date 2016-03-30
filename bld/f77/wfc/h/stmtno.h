@@ -53,3 +53,16 @@ typedef struct stnumbers {
 #define SN_ADD_65535    0x0400  // add 65535 to statement number
 
 #define SN_INIT_MASK    ~SN_ADD_65535
+
+
+extern intstar4    GetStmtNo( void );
+extern sym_id      LookUp( unsigned_32 num );
+extern void        Err( int errcod, sym_id sym_ptr );
+extern sym_id      LkUpStmtNo( void );
+extern sym_id      LkUpFormat( void );
+extern sym_id      FmtPointer( void );
+extern sym_id      LkUpAssign( void );
+extern unsigned_32 LkUpDoTerm( void );
+extern void        DefStmtNo( unsigned_32 num );
+extern void        Update( unsigned_32 num );
+extern void        InitStNumbers( void );

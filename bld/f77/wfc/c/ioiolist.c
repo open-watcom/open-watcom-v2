@@ -34,32 +34,22 @@
 #include "opr.h"
 #include "opn.h"
 #include "iodefs.h"
+#include "rtconst.h"
+#include "fcodes.h"
 #include "global.h"
 #include "stmtsw.h"
 #include "recog.h"
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-
-extern  void            ChkAssumed( void );
-extern  void            TermDo( void );
-extern  void            ImpDo( void );
-extern  void            DelCSNode( void );
-extern  void            GStartIO( void );
-extern  void            GIOItem( void );
-extern  void            GIOArray( void );
-extern  void            GIOStructArray( void );
-extern  void            GStopIO( void );
-extern  sym_id          CkAssignOk( void );
-extern  void            GIOStruct(sym_id);
-extern  bool            Already(uint);
-extern  bool            NotFormatted( void );
-
-/* Forward declarations */
-void    ProcessList( void );
-void    InitImpDo( itnode *lastcomma );
-void    FinishImpDo( void );
-void    ListItem( void );
+#include "csloops.h"
+#include "csutls.h"
+#include "ioiolist.h"
+#include "ioperm.h"
+#include "ioprockw.h"
+#include "ioutls.h"
+#include "upscan.h"
+#include "gio.h"
 
 
 void    IOList( void ) {

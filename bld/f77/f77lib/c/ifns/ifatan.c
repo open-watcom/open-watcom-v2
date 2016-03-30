@@ -50,10 +50,6 @@ single ATAN( single arg ) {
     return( atan( arg ) );
 }
 
-#else
-
-extern  single          ATAN(single);
-
 #endif
 
 

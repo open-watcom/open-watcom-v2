@@ -273,3 +273,61 @@
   #define ADVFillHi     __RT_ADVFillHi
   #define ADVFillHiLo1  __RT_ADVFillHiLo1
 #endif
+
+typedef struct traceback traceback;
+
+extern void     Alloc( unsigned_16 alloc_type, uint num, ... );
+extern void     DeAlloc( intstar4 PGM *stat, uint num, ... );
+extern void     SetRecType( string PGM *recfmptr );
+extern void     SetFmt( void PGM *ptr );
+extern void     SetNml( void PGM *nml, ... );
+extern void     SetUnit( intstar4 unitid );
+extern void     SetIntl( string PGM *internal, unsigned_32 elmts );
+extern void     SetErr( void );
+extern void     SetEnd( void );
+extern void     SetRec( intstar4 rec );
+extern void     SetIOS( intstar4 PGM *iosptr );
+extern void     SetAcc( string PGM *accptr );
+extern void     SetBlnk( string PGM *blnkptr );
+extern void     SetFile( string PGM *filename );
+extern void     SetForm( string PGM *formptr );
+extern void     SetLen( intstar4 PGM *lenptr );
+extern void     SetStat( string PGM *statptr );
+extern void     SetDir( string PGM *dirptr );
+extern void     SetFmtd( string PGM *fmtdptr );
+extern void     SetName( string PGM *nameptr );
+extern void     SetSeq( string PGM *seqptr );
+extern void     SetUnFmtd( string PGM *ufmtdptr );
+extern void     SetExst( logstar4 PGM *exstptr );
+extern void     SetNmd( logstar4 PGM *nmdptr );
+extern void     SetNRec( intstar4 PGM *nrecptr );
+extern void     SetNumb( intstar4 PGM *numbptr );
+extern void     SetOpen( logstar4 PGM *openptr );
+extern void     SetRecl( intstar4 recl );
+extern void     SetNoFmt( void );
+extern void     SetCCtrl( string PGM *cc );
+extern void     SetAction( string PGM *action );
+extern void     SetBlkSize( intstar4 bsize );
+extern void     SetLine( uint src_line );
+extern void     SetModule( traceback *tb );
+extern void     InqBlkSize( intstar4 PGM *bsizeptr );
+extern void     SetShare( string PGM *share );
+extern void     __ReleaseIOSys( void );
+extern int      IOBack( void );
+extern int      IOClose( void );
+extern int      IOEndf( void );
+extern int      IOInq( void );
+extern int      IOOpen( void );
+extern int      IORew( void );
+extern void     FmtScan( string *fmt, uint extend_format );
+extern void     FmtAScan( char PGM *array, long int num_elts, int elt_size, uint extend_format );
+extern void     Stop( string PGM *ptr );
+extern void     Pause( string PGM *ptr );
+extern void     Cat( int num_args, string *dest, ... );
+extern void     TCat( int num_args, string *dest, ... );
+extern void     Move( string *dst, string *src );
+extern void     Substring( string *src, intstar4 start, intstar4 end, string *dst );
+extern intstar4 Subscript( int dims, adv_entry *adv, ... );
+extern void     ADVFillHi( adv_entry *adv, unsigned ss, intstar4 hi );
+extern void     ADVFillHiLo1( adv_entry *adv, unsigned ss, intstar4 hi );
+extern int      LexCmp( string PGM *str1, string PGM *str2 );

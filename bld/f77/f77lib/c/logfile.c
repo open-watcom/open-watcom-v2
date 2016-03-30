@@ -37,14 +37,14 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "rtflags.h"
+#include "ftextfun.h"
 #include "units.h"
+#include "hexcnv.h"
+
 
 extern  void                    SwapIOCBs(void);
-extern  void                    SendInt(intstar4);
 extern  void                    Drop(char);
-extern  void                    BToHS(char *,int,char *);
 extern  void                    SendWSLStr(char *);
-extern  void                    SendStr(char PGM *,int);
 extern  void                    SendEOR(void);
 
 
@@ -52,7 +52,7 @@ void    LogFile( ftnfile *fcb ) {
 //===============================
 
     uint        len;
-    byte        *ptr;
+    char        *ptr;
     pointer     fp;
     char        buff[3];
 

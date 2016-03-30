@@ -50,10 +50,6 @@ double DLOG10( double arg ) {
     return( log10( arg ) );
 }
 
-#else
-
-extern  double          DLOG10(double);
-
 #endif
 
 

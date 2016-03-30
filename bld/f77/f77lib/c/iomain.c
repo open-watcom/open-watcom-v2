@@ -30,7 +30,6 @@
 
 #include "ftnstd.h"
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "ftextfun.h"
@@ -38,6 +37,7 @@
 #include "iotype.h"
 #include "errcod.h"
 #include "thread.h"
+#include "rtenv.h"
 
 void            __ReleaseIOSys( void ) {
 //================================
@@ -58,7 +58,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
     // the time we call IOMain(), no one should be checking IOF_SETIOCB
     IOCB->flags &= ~IOF_SETIOCB;
     io_stmt = IOCB->iostmt;
-    if( ( Spawn( io_rtn ) != 0 ) && ( IOCB->fileinfo != NULL ) &&
+    if( ( RTSpawn( io_rtn ) != 0 ) && ( IOCB->fileinfo != NULL ) &&
         ( ( io_stmt == IO_READ ) || ( io_stmt == IO_WRITE ) ) ) {
         IOCB->fileinfo->col = 0; // so next statement starts new record
         if( ( io_stmt == IO_READ ) &&
@@ -75,7 +75,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
     }
     if( _RWD_XcptFlags & XF_FATAL_ERROR ) {
         __ReleaseIOSys(); // so other threads can continue
-        Suicide();
+        RTSuicide();
     }
     io_stat = IOCB->status;
     if( IOCB->set_flags & SET_IOSPTR ) { // set up IOSTAT

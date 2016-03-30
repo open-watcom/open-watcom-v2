@@ -35,8 +35,8 @@
 //
 
 #include "ftnstd.h"
-#include "global.h"
 #include "fcodes.h"
+#include "global.h"
 #include "rtconst.h"
 #include "types.h"
 #include "iodefs.h"
@@ -45,13 +45,11 @@
 #include "opn.h"
 #include "cpopt.h"
 #include "emitobj.h"
-
-extern  bool            NotFormatted(void);
-extern  uint            IOIndex(void);
-extern  sym_id          GTempString(uint);
-extern  bool            AuxIOStmt(void);
-extern  void            GStmtAddr(sym_id);
-extern  bool            Already(int);
+#include "ioperm.h"
+#include "ioutls.h"
+#include "gio.h"
+#include "gstring.h"
+#include "gflow.h"
 
 
 void    GSetIOCB( void ) {

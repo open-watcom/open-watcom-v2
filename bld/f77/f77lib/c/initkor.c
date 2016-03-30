@@ -35,8 +35,10 @@
 //
 
 #include "rtinit.h"
+#include "ftnstd.h"
+#include "csetinfo.h"
+#include "charset.h"
 
-extern void     __UseKoreanCharSet( void );
 
 AXI( __UseKoreanCharSet, INIT_PRIORITY_LIBRARY );
 

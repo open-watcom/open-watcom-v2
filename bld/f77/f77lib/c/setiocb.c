@@ -30,7 +30,6 @@
 
 #include "ftnstd.h"
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "ftextfun.h"

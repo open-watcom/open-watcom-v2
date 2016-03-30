@@ -39,12 +39,12 @@
 #include "rtconst.h"
 #include "wf77cg.h"
 #include "wf77defs.h"
+#include "wf77auxd.h"
+#include "fcjmptab.h"
+#include "fcrtns.h"
 #include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  call_handle     InitCall(RTCODE);
 
 
 void    FCDbgLine( void ) {

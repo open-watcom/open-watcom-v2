@@ -44,8 +44,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "proctbl.h"
+#include "symtab.h"
 
-extern  sym_id          LkSym(void);
 
 #define ERR_MASK        (SY_IN_EC | SY_SUB_PARM)
 

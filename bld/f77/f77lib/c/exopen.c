@@ -34,6 +34,8 @@
 #include "errcod.h"
 #include "rundat.h"
 #include "rtenv.h"
+#include "runmain.h"
+
 
 //
 // AccModTab - access mode table

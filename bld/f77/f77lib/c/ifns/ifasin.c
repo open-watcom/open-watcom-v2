@@ -50,10 +50,6 @@ single ASIN( single arg ) {
     return( asin( arg ) );
 }
 
-#else
-
-extern  single          ASIN(single);
-
 #endif
 
 

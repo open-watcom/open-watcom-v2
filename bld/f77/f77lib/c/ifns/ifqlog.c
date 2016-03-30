@@ -50,10 +50,6 @@ extended QLOG( extended arg ) {
     return( log( arg ) );
 }
 
-#else
-
-extern  extended                QLOG(extended);
-
 #endif
 
 

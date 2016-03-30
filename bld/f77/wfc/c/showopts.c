@@ -38,6 +38,7 @@
 #include "optflags.h"
 #include "cpopt.h"
 #include "inout.h"
+#include "showopts.h"
 
 #include <string.h>
 

@@ -38,14 +38,13 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "pgmacc.h"
+#include "ftextfun.h"
 #include "iotype.h"
 
 #include <string.h>
 
 extern  void                    IOErr(int,...);
 extern  void                    NextRec(void);
-extern  bool                    IsFixed(void);
-extern  bool                    CheckLogicalRecord(ftnfile *);
 
 /* Forward declarations */
 static  void    StreamUnFmtIn( void );
@@ -68,8 +67,8 @@ void    UnFmtIn( void ) {
 }
 
 
-void    NextUnFmtRec( void ) {
-//======================
+static void NextUnFmtRec( void ) {
+//================================
 
     if( _LogicalRecordOrganization( IOCB->fileinfo ) ) {
         if( CheckLogicalRecord( IOCB->fileinfo ) ) {

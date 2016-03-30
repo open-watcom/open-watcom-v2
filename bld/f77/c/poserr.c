@@ -31,6 +31,7 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "posio.h"
+#include "poserr.h"
 
 #include <string.h>
 #include <errno.h>

@@ -46,18 +46,13 @@
 #if defined( __WINDOWS__ )
 
 #include "fapptype.h"
-
 #include <win386.h>
-
-extern  int     PASCAL  DefaultWinMain(HINSTANCE,HINSTANCE,LPSTR,int,int(*)(int,char**));
-extern  void            FMAIN(void);
-extern  int             main(int,char **);
+#include "fwinmain.h"
 
 extern  char            __FAppType;
 
 
-intstar4        FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline,
-                          int cmdshow ) {
+intstar4    FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow ) {
 //============================================================================
 
     __FAppType = FAPP_DEFAULT_GUI;
@@ -70,7 +65,7 @@ int     main( int argc, char *argv[] ) {
 //======================================
 
     argc = argc; argv = argv;
-    Spawn( &FMAIN );
+    RTSpawn( &FMAIN );
     return( 0 );
 }
 
@@ -86,7 +81,7 @@ int     main( int argc, char *argv[] ) {
 
     argc = argc; argv = argv;
     RTSysInit();
-    Spawn( &FMAIN );
+    RTSpawn( &FMAIN );
     return( 0 );
 }
 

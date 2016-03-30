@@ -36,10 +36,12 @@
 extern void     BIInit( void );
 extern void     BIEnd( void );
 extern void     BIStartSubProg( void );
+extern void     BIEndBlockData( void );
 extern void     BIEndSubProg( void );
 extern void     BIResolveUndefTypes( void );
 extern void     BIOutSymbol( sym_id ste_ptr );
 extern void     BIOutComSymbol( sym_id ste_ptr );
+extern void     BIOutNameList( sym_id ste_ptr );
 extern void     BIOutSrcLine( void );
 extern void     BISetSrcFile( void );
 extern void     BIStartSubroutine( void );
@@ -49,4 +51,5 @@ extern void     BIStartRBorEP( sym_id ste_ptr );
 extern void     BIEndRBorEP( void );
 extern void     BIStartComBlock( sym_id ste_ptr );
 extern void     BIEndComBlock( void );
+extern void     BIStartBlockData( sym_id ste_ptr );
 #endif

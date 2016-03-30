@@ -30,7 +30,7 @@
 
 #include "ftnstd.h"
 #include "ftextfun.h"
-#include "fmterr.h"
+#include "errcod.h"
 
 void    _R_FError( int err_code ) {
 //=================================

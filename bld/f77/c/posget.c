@@ -33,12 +33,16 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sysbuff.h"
+#include "posget.h"
+#include "posseek.h"
+#include "poserr.h"
 
 #include <stdlib.h>
 #include <string.h>
 #if defined( __WINDOWS__ )
 #include <conio.h>
 #endif
+
 
 uint    readbytes( b_file *io, char *buff, uint len ) {
 //=====================================================
@@ -343,7 +347,7 @@ uint    FGetRec( b_file *io, char *b, uint len ) {
     return( GetFixedRec( io, b, len ) );
 }
 
-
+#if 0
 uint    GetRec( char *b, uint len ) {
 //===================================
 
@@ -351,7 +355,7 @@ uint    GetRec( char *b, uint len ) {
 
     return( FGetRec( FStdIn, b, len ) );
 }
-
+#endif
 
 char    GetStdChar( void ) {
 //====================

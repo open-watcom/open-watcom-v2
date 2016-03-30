@@ -38,33 +38,27 @@
 #include "global.h"
 #include "rtconst.h"
 #include "wf77defs.h"
+#include "wf77auxd.h"
 #include "cg.h"
 #include "cpopt.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcstring.h"
+#include "fcstruct.h"
+#include "fcjmptab.h"
+#include "fcsubscr.h"
+#include "fcrtns.h"
+#include "fcstack.h"
+#include "rstmgr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
-
-extern  cg_name         XPop(void);
-extern  void            XPush(cg_name);
-extern  cg_name         GetTypedValue(void);
-extern  cg_name         SymIndex(sym_id,cg_name);
-extern  cg_name         CharItemLen(sym_id);
-extern  cg_name         SCBPtrAddr(cg_name);
-extern  cg_name         SCBLenAddr(cg_name);
-extern  cg_name         StructRef(cg_name,int);
-extern  call_handle     InitCall(RTCODE);
-extern  sym_id          FindAdvShadow(sym_id);
 
 /* Forward declarations */
 static  void    DbSubscript( sym_id arr );
 static  void    VariableDims( sym_id arr );
 static  void    ConstDims( sym_id arr );
 static  void    Index( sym_id arr, cg_name offset );
-void    MakeSCB( sym_id scb, cg_name len );
-
-    
     
 cg_name GetAdv( sym_id arr ) {
 //============================

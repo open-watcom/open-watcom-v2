@@ -50,10 +50,6 @@ extended QCOSH( extended arg ) {
     return( cosh( arg ) );
 }
 
-#else
-
-extern  extended                QCOSH(extended);
-
 #endif
 
 

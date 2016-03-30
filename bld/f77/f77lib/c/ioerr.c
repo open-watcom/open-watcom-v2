@@ -34,11 +34,9 @@
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
+#include "ftextfun.h"
 
-extern  void            Suicide(void);
-extern  void            ErrHandler(int,va_list);
-extern  void            WriteErr(int,va_list);
-extern  void            GetIOErrMsg(ftnfile *,char *);
+
 extern  int             ErrCodOrg(uint);
 
 
@@ -48,7 +46,7 @@ static  void    SysIOErr( int errcode, ... ) {
     va_list     args;
 
     va_start( args, errcode );
-    ErrHandler( errcode, args );
+    RTErrHandler( errcode, args );
     va_end( args );
 }
 
@@ -67,7 +65,7 @@ void    IOErr( int errcode, ... ) {
                 GetIOErrMsg( IOCB->fileinfo, errbuff );
                 SysIOErr( errcode, errbuff );
             } else {
-                ErrHandler( errcode, args );
+                RTErrHandler( errcode, args );
             }
         } else {
             errcode = ErrCodOrg( errcode );
@@ -76,6 +74,6 @@ void    IOErr( int errcode, ... ) {
             }
             IOCB->status = errcode;
         }
-        Suicide();
+        RTSuicide();
     va_end( args );
 }

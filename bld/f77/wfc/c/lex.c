@@ -47,6 +47,7 @@
 #include "comio.h"
 #include "scan.h"
 
+
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];
 

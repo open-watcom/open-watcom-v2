@@ -24,10 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UNION/MAP statement processor
 *
 ****************************************************************************/
 
 
-#include <errcod.h>
+extern void    EndOfStatement( void );

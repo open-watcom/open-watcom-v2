@@ -40,11 +40,12 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "ioperm.h"
+#include "ioutls.h"
+
 
 #define NO      0
 #define YES     1
-
-extern  uint            IOIndex(void);
 
 extern  char            *IOKeywords[];
 

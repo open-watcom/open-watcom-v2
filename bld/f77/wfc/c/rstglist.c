@@ -41,13 +41,13 @@
 #include "iflookup.h"
 #include "ferror.h"
 #include "insert.h"
+#include "cbsize.h"
+#include "rstutils.h"
+#include "rstglist.h"
+#include "rstmgr.h"
 
 #include <string.h>
 
-extern  char            *STGetName(sym_id,char *);
-extern  int             AllocName(int);
-extern  intstar4        GetComBlkSize(sym_id);
-extern  void            SetComBlkSize(sym_id,intstar4);
 
 // Local variables are only added to the GList for relocation purposes.
 // They are never searched for; so we will store them in the bucket

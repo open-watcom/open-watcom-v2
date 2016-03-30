@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "fio.h"
 #include "posio.h"
+#include "poscc.h"
+
 
 static  char            FFSeq[] = { LF, FF };     // for form feeds
 static  char            SpcSeq[] = { LF,          // for single spacing
@@ -51,8 +53,8 @@ void    __LineFeedWithFormFeed( void ) {
 }
 
 
-int     FSetCC( a_file *io, char asa, char **cc ) {
-//=================================================
+int     FSetCC( a_file *io, char asa, const char **cc ) {
+//=======================================================
 
 // Output ASA carriage control character to a file.
 

@@ -33,7 +33,7 @@
 //        that need changing: PRDEFN.H, KWLIST.C, PROCTBL.C, CFTABLE.C
 
 //      id              keyword                          processor         flags
-pick( PR_NULL,         "",                              &BadStmt,        0                          )
+pick( PR_NULL,         "",                              &CpBadStmt,      0                          )
 pick( PR_ADMIT,        "ADMIT",                         &CpAdmit,        BD|NS|BB                   )
 pick( PR_ALLOCATE,     "ALLOCATE",                      &CpAllocate,     SL|DB                      )
 pick( PR_ASSIGN,       "ASSIGN",                        &CpAssign,       SL|DB                      )

@@ -28,9 +28,13 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
+#include "csetinfo.h"
+#include "charset.h"
+
 
 int     ExtractText( char *string, int len ) {
 // Given a string of text, extract as much text as possible up to a maximum

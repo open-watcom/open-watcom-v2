@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "cioconst.h"
 #include "inout.h"
+#include "cmsgproc.h"
 
 #include <stdarg.h>
 

@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "fio.h"
+#include "ftnapi.h"
 
 #include <stddef.h>
 

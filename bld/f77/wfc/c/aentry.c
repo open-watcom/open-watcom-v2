@@ -40,13 +40,14 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "aentry.h"
+#include "proctbl.h"
+#include "arutls.h"
+#include "downscan.h"
+#include "stmtfunc.h"
+#include "symtab.h"
+#include "upscan.h"
 
-extern  void            DownScan(void);
-extern  void            UpScan(void);
-extern  sym_id          LkSym(void);
-extern  void            ScanExpr(void);
-extern  void            AdvError(int);
-extern  void            SFPrologue(void);
 
 #define SF_MASK (SY_SUB_PARM|SY_IN_EC|SY_DATA_INIT|SY_SAVED)
 

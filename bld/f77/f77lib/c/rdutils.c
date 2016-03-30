@@ -32,6 +32,7 @@
 #include "ftextfun.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "ifile.h"
 
 #include <string.h>
 

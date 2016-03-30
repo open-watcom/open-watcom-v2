@@ -50,10 +50,6 @@ single ATAN2( single arg1, single arg2 ) {
     return( atan2( arg1, arg2 ) );
 }
 
-#else
-
-extern  single          ATAN2(single,single);
-
 #endif
 
 

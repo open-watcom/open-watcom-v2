@@ -24,16 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  compile-time subscripting
+* Description:  run/compile-time subscripting
 *
 ****************************************************************************/
 
 #include "ftnstd.h"
 #include "symdefs.h"
+#include "ftextfun.h"
 
-bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res ) {
+bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
 // Do subscript operation for EQUIVALENCE or DATA statements and
 // NAMELIST-directed i/o at run-time.
+{
     int         dims_no;
     intstar4    offset;
     intstar4    multiplier;

@@ -58,10 +58,6 @@ extended QCOTAN( extended arg ) {
     return( 1.0 / tangent );
 }
 
-#else
-
-extern  extended                QCOTAN(extended);
-
 #endif
 
 

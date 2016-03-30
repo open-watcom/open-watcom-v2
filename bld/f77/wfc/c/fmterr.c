@@ -35,12 +35,13 @@
 //
 
 #include "ftnstd.h"
-#include "fmterr.h"
+#include "errcod.h"
 #include "format.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "global.h"
 #include "ferror.h"
+#include "fmterr.h"
 
 
 static  unsigned_16     SetCaret(void) {

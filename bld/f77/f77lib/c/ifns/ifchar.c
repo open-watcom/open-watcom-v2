@@ -33,6 +33,7 @@
 #include "ifenv.h"
 #include "errcod.h"
 
+#if 0
 void    CHAR( intstar4 arg, string PGM *dest ) {
 //==============================================
 
@@ -52,3 +53,4 @@ void    CHAR( intstar4 arg, string PGM *dest ) {
     }
     *dest->strptr = arg;
 }
+#endif

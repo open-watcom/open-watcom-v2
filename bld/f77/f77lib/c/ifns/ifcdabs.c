@@ -60,10 +60,6 @@ double  CDABS( double rp, double ip ) {
     }
 }
 
-#else
-
-extern  double          CDABS(double,double);
-
 #endif
 
 

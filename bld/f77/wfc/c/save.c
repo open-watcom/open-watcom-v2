@@ -45,9 +45,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "proctbl.h"
+#include "symtab.h"
 
-extern  sym_id                  LkCommon(void);
-extern  sym_id                  LkSym(void);
 
 #define SV_ON_OR_OFF    (SY_USAGE | SY_TYPE | SY_IN_DIMEXPR | SY_SUBSCRIPTED | \
                          SY_DATA_INIT | SY_SAVED | SY_IN_EQUIV | SY_REFERENCED)

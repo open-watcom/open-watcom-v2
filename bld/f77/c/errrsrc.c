@@ -38,6 +38,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "errrsrc.h"
 
 #include "clibext.h"
 

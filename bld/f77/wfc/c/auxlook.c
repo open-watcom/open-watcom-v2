@@ -40,13 +40,13 @@
 #include "wf77auxd.h"
 #include "iflookup.h"
 #include "cpopt.h"
+#include "rtconst.h"
+#include "auxlook.h"
+#include "wf77aux.h"
+#include "fcrtns.h"
 
 #include "clibext.h"
 
-
-extern  void            CopyAuxInfo(aux_info *,aux_info *);
-extern  aux_info        *NewAuxEntry(char *,int);
-extern  aux_info        *RTAuxInfo(sym_id);
 
 extern  aux_info        DefaultInfo;
 extern  aux_info        IFVarInfo;

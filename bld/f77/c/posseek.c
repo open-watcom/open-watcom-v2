@@ -31,6 +31,10 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "posio.h"
+#include "posget.h"
+#include "posseek.h"
+#include "poserr.h"
+
 
 void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize ) {
 // Seek to specified record in file.
@@ -163,10 +167,11 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode ) {
     return( 0 );
 }
 
-
+#if 0
 void    FSeekAbs( b_file *io, unsigned_32 offset ) {
     SysSeek( io, offset, SEEK_SET );
 }
+#endif
 
 long int        FGetFilePos( b_file *io ) {
     return( CurrFileOffset( io ) );

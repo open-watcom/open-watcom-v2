@@ -35,8 +35,9 @@
 //
 
 #include "rtinit.h"
+#include "ftnstd.h"
+#include "runmain.h"
 
-extern void     __InitAllowCommaSeparator( void );
 
 AXI( __InitAllowCommaSeparator, INIT_PRIORITY_LIBRARY );
 

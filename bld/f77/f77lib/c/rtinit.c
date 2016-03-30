@@ -34,7 +34,6 @@
   #define INCL_DOSPROCESS
 #endif
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "ftextfun.h"
@@ -96,8 +95,8 @@ static  void    __InitRTData( void ) {
 }
 
 
-void    RTSysFini( void ) {
-//===================
+static void RTSysFini( void ) {
+//=============================
 
     _ExceptionFini();
     // WATFOR-77 calls __ErrorFini() when it terminates

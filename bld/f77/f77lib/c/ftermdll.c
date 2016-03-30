@@ -31,11 +31,11 @@
 
 #include "ftnstd.h"
 #include "rtstack.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "ftextfun.h"
 #include "rmemmgr.h"
 #include "fdll.h"
+
 
 void            __FTermDLL( void ) {
 //==================================

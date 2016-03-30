@@ -31,6 +31,7 @@
 
 #include "ftnstd.h"
 #include "fmemmgr.h"
+#include "chain.h"
 
 
 void    FreeChain( void *_head ) {

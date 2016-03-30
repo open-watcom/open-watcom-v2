@@ -45,12 +45,11 @@
 #include "rtenv.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "fwinmain.h"
 
 
 // Leave this forward declaration to avoid polluting "ftextfun.h"
 // with Windows headers just for one function
-
-extern  intstar4        FWINMAIN(HANDLE,HANDLE,LPSTR,int);
 
 static  int             RetCode;
 static  HANDLE          PrevHandle;
@@ -66,8 +65,7 @@ static  void    CallFWINMAIN( void ) {
 }
 
 
-int     PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
-                         int cmdshow ) {
+int PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow ) {
 //===========================================================================
 
     PgmHandle = thishandle;
@@ -75,7 +73,7 @@ int     PASCAL  WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdli
     CmdLine = cmdline;
     CmdShow = cmdshow;
     RTSysInit();
-    Spawn( &CallFWINMAIN );
+    RTSpawn( &CallFWINMAIN );
 
     return( RetCode );
 }

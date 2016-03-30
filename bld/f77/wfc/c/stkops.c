@@ -41,8 +41,7 @@
 #include "opn.h"
 #include "emitobj.h"
 #include "types.h"
-
-extern  sym_id          STConst(void *,TYPE,uint);
+#include "rstconst.h"
 
 
 void    PushOpn( itnode *itptr ) {

@@ -36,15 +36,13 @@
 
 #include "ftnstd.h"
 #include "ftnio.h"
+#include "runmain.h"
+#include "ftextfun.h"
 
 #include <stdlib.h>
 
-extern  bool            RunEntry(void);
-extern  void            RunExit(void);
-extern  void            Suicide(void);
 
 static  char            IOSysInitialized = { 0 };
-
 
 static  void            IOSysFini( void ) {
 //===================================
@@ -60,9 +58,11 @@ void            IOSysInit( void ) {
 
 // Initialize I/O system.
 
-    if( IOSysInitialized ) return;
+    if( IOSysInitialized )
+        return;
     IOSysInitialized = 1;
     atexit( &IOSysFini );
-    if( RunEntry() ) return;
-    Suicide();
+    if( RunEntry() )
+        return;
+    RTSuicide();
 }

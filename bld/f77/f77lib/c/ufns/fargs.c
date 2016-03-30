@@ -35,6 +35,7 @@
 //
 
 #include "ftnstd.h"
+#include "ftnapi.h"
 
 #include <string.h>
 

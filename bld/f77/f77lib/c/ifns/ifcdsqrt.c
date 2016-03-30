@@ -102,10 +102,6 @@ dcomplex        CDSQRT( double rp, double ip ) {
     return( result );
 }
 
-#else
-
-extern  dcomplex        CDSQRT(double,double);
-
 #endif
 
 

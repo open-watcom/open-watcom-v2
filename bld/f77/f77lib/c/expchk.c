@@ -35,6 +35,8 @@
 //
 
 #include "ftnstd.h"
+#include "expchk.h"
+
 
 // If x is a real or double precision number, let xm be the magnitude of x.
 // If xm is such that 10**d1 <= xm < 10**d2 the output is produced using

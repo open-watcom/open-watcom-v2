@@ -45,6 +45,13 @@
 #include "comio.h"
 #include "inout.h"
 #include "banner.h"
+#include "charset.h"
+#include "mkname.h"
+#include "filescan.h"
+#include "sdcio.h"
+#include "libsupp.h"
+#include "wf77auxd.h"
+#include "wf77aux.h"
 
 #include "clibext.h"
 
@@ -62,27 +69,7 @@
 #endif
 
 extern  void            BISetSrcFile( void );
-extern  lib_handle      IncSearch(char *);
-extern  int             LibRead(lib_handle);
-extern  bool            LibEof(lib_handle);
-extern  bool            LibError(lib_handle,char *);
-extern  void            IncMemClose(lib_handle);
-extern  void            SDSetAttr(file_attr);
-extern  void            SDInitAttr(void);
-extern  void            SDScratch(char *);
-extern  file_handle     SDOpen(char *,int);
-extern  void            SDClose(file_handle);
-extern  uint            SDRead(file_handle,char *,uint);
-extern  void            SDWrite(file_handle,char *,uint);
-extern  bool            SDError(file_handle,char *);
-extern  bool            SDEof(file_handle fp);
-extern  char            *SDSrcExtn(char *fn);
-extern  char            *SDFName(char *fn);
-extern  void            SDInitIO(void);
 extern  void            MsgFormat(char *,char *,...);
-extern  int             CopyMaxStr(char *,char *,int);
-extern  int             MakeName(char *,char *,char *);
-extern  void            AddDependencyInfo(source_t *);
 
 extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];
@@ -99,7 +86,6 @@ extern  file_attr       PrtAttr;
 extern  file_attr       TrmAttr;
 extern  file_attr       ErrAttr;
 extern  file_handle     FStdOut;
-extern  character_set   CharSetInfo;
 
 static char           *ListBuff;      // listing file buffer
 static file_handle    ListFile;       // file pointer for the listing file

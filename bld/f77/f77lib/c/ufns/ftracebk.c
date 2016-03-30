@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "ftextvar.h"
 #include "cioconst.h"
+#include "ftnapi.h"
+
 
 void        __fortran FTRACEBACK( void ) {
 //======================================

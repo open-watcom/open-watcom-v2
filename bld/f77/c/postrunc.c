@@ -30,6 +30,9 @@
 
 #include "ftnstd.h"
 #include "ftextfun.h"
+#include "posput.h"
+#include "poserr.h"
+
 
 void    FTruncate( b_file *io ) {
 // Truncate a file.

@@ -44,3 +44,6 @@ typedef struct lex {
     char        *ptr;
     unsigned_16 len;
 } lex;
+
+
+extern void    MakeITList( void );

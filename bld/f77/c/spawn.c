@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Spawn() and Suicide()
+* Description:  Run-time Spawn() and Suicide()
 *
 ****************************************************************************/
 
@@ -37,9 +37,10 @@
   #include <setjmp.h>
 #endif
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "thread.h"
+#include "ftextfun.h"
+
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
   #define __setjmp      Catch
@@ -63,7 +64,7 @@ static  __jmp_buf       *SpawnStack = { NULL };
 #endif
 
 
-int     Spawn( void (*fn)( void ) ) {
+int     RTSpawn( void (*fn)( void ) ) {
     __jmp_buf   *save_env;
     __jmp_buf   env;
     int         status;
@@ -79,7 +80,9 @@ int     Spawn( void (*fn)( void ) ) {
 }
 
 
-void    Suicide( void ) {
-    if( __SpawnStack == NULL ) exit( -1 );
+void    RTSuicide( void )
+{
+    if( __SpawnStack == NULL )
+        exit( -1 );
     __longjmp( *__SpawnStack, 1 );
 }

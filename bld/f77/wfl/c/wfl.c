@@ -56,6 +56,9 @@
 #include "banner.h"
 #include "errrtns.h"
 #include "swchar.h"
+#include "errrsrc.h"
+#include "showopts.h"
+#include "inout.h"
 
 #include "clibext.h"
 #include "pathgrp.h"
@@ -205,7 +208,7 @@ static  void    PrintMsg( uint msg, ... ) {
 }
 
 
-static  void    PrtBanner( void ) {
+void    PrtBanner( void ) {
 //===========================
 
 #if defined( _BETAVER )
@@ -596,7 +599,7 @@ static DIR  *wildparent = NULL;  /* we need this across invocations */
 static char *wildpath = NULL;
 static char *wildpattern = NULL;
 
-void DoWildCardClose( void )
+static void DoWildCardClose( void )
 /*********************************/
 {
     if( wildpath != NULL ) {
@@ -613,7 +616,7 @@ void DoWildCardClose( void )
     }
 }
 
-const char *DoWildCard( const char *base )
+static const char *DoWildCard( const char *base )
 /***********************************************/
 {
     PGROUP          pg;

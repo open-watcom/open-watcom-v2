@@ -37,19 +37,14 @@
 #include "recog.h"
 #include "insert.h"
 #include "utility.h"
+#include "cpsubpgm.h"
+#include "csutls.h"
+#include "data.h"
+#include "rststruc.h"
+#include "proctbl.h"
+#include "union.h"
+#include "declare.h"
 
-extern  sym_id          VarDecl(uint);
-extern  sym_id          FieldDecl(void);
-extern  void            ArrayDecl(sym_id);
-extern  void            DataInit(itnode *);
-extern  sym_id          STStruct(char *,uint);
-extern  void            Function(TYPE,uint,bool);
-extern  bool            IsFunctionDefn(void);
-extern  void            MustBeTypeDecl(void);
-extern  void            EndOfStatement(void);
-extern  bool            CalcStructSize(sym_id);
-extern  void            CSExtn(void);
-extern  sym_id          STField(char *,uint);
 
 extern  char            *StmtKeywords[];
 

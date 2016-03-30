@@ -50,10 +50,6 @@ single COSH( single arg ) {
     return( cosh( arg ) );
 }
 
-#else
-
-extern  single          COSH(single);
-
 #endif
 
 

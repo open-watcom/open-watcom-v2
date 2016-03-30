@@ -36,17 +36,17 @@
 
 #include "ftnstd.h"
 #include "format.h"
-#include "fmterr.h"
+#include "errcod.h"
 #include "global.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "cpopt.h"
 #include "emitobj.h"
+#include "fmterr.h"
+#include "fmtemit.h"
 
-extern  void            FmtError(int);
 
-
-void    GFEmEnd() {
+void    GFEmEnd( void ) {
 //=================
 
     OutByte( END_FORMAT );

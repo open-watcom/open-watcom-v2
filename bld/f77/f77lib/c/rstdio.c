@@ -33,6 +33,7 @@
 #include "ftextvar.h"
 #include "units.h"
 #include "rundat.h"
+#include "runmain.h"
 
 #include <stdio.h>
 #include <stdlib.h>

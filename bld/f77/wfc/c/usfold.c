@@ -36,15 +36,13 @@
 #include "rtenv.h"
 #include "ferror.h"
 #include "usfold.h"
+#include "lexcmp.h"
+#include "ftextfun.h"
+#include "upscan.h"
+#include "binops.h"
+
 
 extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);
-
-extern  void            AddConst(itnode *);
-extern  int             LexStrCmp(char PGM *,int,char PGM *,int);
-extern  bool            AddIOFlo(intstar4 *,intstar4 *);
-extern  bool            SubIOFlo(intstar4 *,intstar4 *);
-extern  bool            MulIOFlo(intstar4 *,intstar4 *);
-extern  void            ExpOp(TYPE,TYPE,OPTR);
 
 
 static void    MulIOFlow ( ftn_type *arg1, ftn_type *arg2 ) {

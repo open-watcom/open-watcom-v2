@@ -31,7 +31,6 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "ftextfun.h"
 #include "ftextvar.h"

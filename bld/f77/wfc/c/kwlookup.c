@@ -39,11 +39,12 @@
 // sequential search of a subset of the keywords.
 
 #include "ftnstd.h"
+#include "kwlookup.h"
 
 #include <string.h>
 
 
-int     KwLookUp( void **table, int high, char *id, int id_len, bool exact ) {
+int     KwLookUp( char **table, int high, char *id, int id_len, bool exact ) {
 //============================================================================
 
     char        *key;

@@ -34,8 +34,8 @@
 // INITRSRC     : initializer for error messages in resource files
 //
 #include "rtinit.h"
+#include "errrsrc.h"
 
-extern void     __InitResource( void );
 
 AXI( __InitResource, INIT_PRIORITY_LIBRARY );
 

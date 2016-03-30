@@ -31,6 +31,10 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "posio.h"
+#include "posseek.h"
+#include "posrew.h"
+#include "poserr.h"
+
 
 void    FRewind( b_file *io ) {
 // Rewind a file.

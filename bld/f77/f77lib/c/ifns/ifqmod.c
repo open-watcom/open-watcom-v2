@@ -55,10 +55,6 @@ extended QMOD( extended arg1, extended arg2 ) {
     return( fmod( arg1, arg2 ) );
 }
 
-#else
-
-extern  extended                QMOD(extended,extended);
-
 #endif
 
 

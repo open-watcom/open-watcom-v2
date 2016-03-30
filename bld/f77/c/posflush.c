@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "posio.h"
+#include "posput.h"
+
 
 int     FlushBuffer( b_file *io ) {
 // Flush i/o buffer.

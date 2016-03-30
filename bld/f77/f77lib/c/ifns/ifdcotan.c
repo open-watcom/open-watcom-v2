@@ -58,10 +58,6 @@ double DCOTAN( double arg ) {
     return( 1.0 / tangent );
 }
 
-#else
-
-extern  double          DCOTAN(double);
-
 #endif
 
 

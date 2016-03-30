@@ -50,10 +50,6 @@ extended QTAN( extended arg ) {
     return( tan( arg ) );
 }
 
-#else
-
-extern  extended                QTAN(extended);
-
 #endif
 
 

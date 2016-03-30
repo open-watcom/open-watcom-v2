@@ -50,10 +50,6 @@ single ALOG( single arg ) {
     return( log( arg ) );
 }
 
-#else
-
-extern  single          ALOG(single);
-
 #endif
 
 

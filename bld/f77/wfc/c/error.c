@@ -39,6 +39,8 @@
 #include "cioconst.h"
 #include "ferror.h"
 #include "inout.h"
+#include "cmsgproc.h"
+#include "rstutils.h"
 
 #include <stdarg.h>
 #include <string.h>

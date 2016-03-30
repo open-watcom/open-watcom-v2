@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
+#include "errincl.h"
+
 
 const unsigned char __FAR * const __FAR *PGroupTable = GroupTable;
 const char          __FAR *PErrWord = ErrWord;

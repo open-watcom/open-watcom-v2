@@ -39,11 +39,11 @@
 #include "ferror.h"
 #include "comio.h"
 #include "scan.h"
+#include "charset.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-extern  character_set   CharSetInfo;
 
 #define COLUMNS 17
 

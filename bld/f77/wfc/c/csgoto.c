@@ -44,32 +44,22 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "arutls.h"
+#include "proctbl.h"
+#include "csgoto.h"
+#include "csselect.h"
+#include "csutls.h"
+#include "dsname.h"
+#include "ioprockw.h"
+#include "upscan.h"
+#include "cgmagic.h"
+#include "fcodes.h"
+#include "gflow.h"
 
 #include <ctype.h>
 
-extern  sym_id          CkAssignOk( void );
-extern  void            CkSize4( void );
-extern  void            ScanExpr( void );
-extern  label_id        NextLabel( void );
-extern  void            CkTypeDeclared( void );
-extern  sym_id          LkUpAssign( void );
-extern  sym_id          LkUpStmtNo( void );
-extern  void            AddCSNode( byte );
-extern  void            DelCSNode( void );
-extern  case_entry      *NewCase( void );
-extern  void            InitSelect( void );
-extern  void            FiniSelect( void );
-extern  void            GAsgnGoTo( bool );
-extern  void            GAssign( sym_id );
-extern  void            GLabel( label_id );
-extern  void            G3WayBranch( sym_id, sym_id, sym_id );
-extern  void            GBranch( label_id );
-extern  void            GStmtBr( sym_id );
-extern  void            FreeLabel( label_id );
-extern  void            GStmtAddr( sym_id );
-extern  void            GEndBrTab( void );
-extern  void            BIOutSymbol( sym_id );
 
+extern  void            BIOutSymbol( sym_id );
 
 static void UnCondGoto( void )
 {

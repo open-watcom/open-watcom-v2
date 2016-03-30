@@ -47,6 +47,9 @@
 #include "types.h"
 #include "ferror.h"
 #include "dwarfid.h"
+#include "mkname.h"
+#include "filescan.h"
+#include "rstutils.h"
 
 #include "clibext.h"
 
@@ -61,9 +64,6 @@ typedef struct sym_list {
 
 typedef dw_handle (*func)( sym_id ste_ptr, dw_handle handle );
 
-extern  int             AllocName(int);
-extern  int             MakeName(char *,char *,char *);
-extern  char            *SDFName(char *fn);
 static void             BIAdd2List(sym_list **,sym_id,dw_handle);
 static void             BIWalkList(sym_list **,func,int);
 static dw_handle        BIGetAnyType(sym_id);

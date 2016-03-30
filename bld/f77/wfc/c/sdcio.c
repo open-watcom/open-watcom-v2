@@ -35,22 +35,20 @@
 #include "global.h"
 #include "fio.h"
 #include "posio.h"
+#include "ftextfun.h"
+#include "blips.h"
+#include "posopen.h"
+#include "posget.h"
+#include "posput.h"
+#include "posseek.h"
+#include "posrew.h"
+#include "poserr.h"
+#include "sdcio.h"
 
 #include <string.h>
 
-extern  file_handle             Openf(char *,int);
-extern  int                     FGetRec(file_handle,char *,int);
-extern  void                    FPutRec(file_handle,char *,int);
-extern  void                    FSeekRec(file_handle,unsigned_32,int);
-extern  void                    FRewind(file_handle);
-extern  void                    Closef(file_handle);
-extern  bool                    EOFile(file_handle);
-extern  int                     Errorf(file_handle);
-extern  char                    *ErrorMsg(file_handle);
+
 extern  void                    Scratchf(char *);
-extern  void                    CheckBlips(void);
-extern  void                    InitStd(void);
-extern  void                    SetIOBufferSize(uint);
 
 extern  file_handle             FStdOut;
 
@@ -119,20 +117,20 @@ void    SDClose( file_handle fp ) {
 }
 
 
-uint    SDRead( file_handle fp, byte *buff, uint len ) {
+uint    SDRead( file_handle fp, void *buff, uint len ) {
 //======================================================
 
-    return( FGetRec( fp, (char *)buff, len ) );
+    return( FGetRec( fp, buff, len ) );
 }
 
 
-void    SDWrite( file_handle fp, byte *buff, int len ) {
+void    SDWrite( file_handle fp, const void *buff, int len ) {
 //======================================================
 
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRec( fp, (char *)buff, len );
+    FPutRec( fp, buff, len );
 }
 
 

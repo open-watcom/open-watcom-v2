@@ -50,10 +50,6 @@ extended QACOS( extended arg ) {
     return( acos( arg ) );
 }
 
-#else
-
-extern  extended                QACOS(extended);
-
 #endif
 
 

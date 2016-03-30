@@ -213,9 +213,9 @@ void    ChkFileName( void ) {
 //=====================
 
     ChkLogFile();
-    if( Spawn( &SysFileInfo ) != 0 ) {
+    if( RTSpawn( &SysFileInfo ) != 0 ) {
         DiscoFile( IOCB->fileinfo );
-        Suicide();
+        RTSuicide();
     }
 }
 
@@ -318,7 +318,7 @@ void    SysEOF( void ) {
         ReportEOF( IOCB->fileinfo );
         IOErr( IO_FILE_PROBLEM );
     }
-    Suicide();
+    RTSuicide();
 }
 
 

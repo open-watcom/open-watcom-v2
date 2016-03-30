@@ -37,6 +37,8 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "cpopt.h"
+#include "sdcline.h"
+
 
 extern  char            *SkipBlanks(char *);
 

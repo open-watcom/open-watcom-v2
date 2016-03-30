@@ -40,15 +40,15 @@
 #include "inout.h"
 #include "utility.h"
 #include "fcodes.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "csutls.h"
+#include "downscan.h"
+#include "fmtinit.h"
+#include "upscan.h"
+#include "gsubprog.h"
+#include "gflow.h"
 
-extern  void            GBreak(FCODE);
-extern  void            GReturn(void);
-extern  void            CSNoMore(void);
-extern  void            AddConst(itnode *);
-extern  void            GetConst(void);
-extern  void            FScan(int,char *,cs_label);
-extern  sym_id          FmtPointer(void);
-extern  void            BadStmt(void);
 
 extern  char            *StmtKeywords[];
 

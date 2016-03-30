@@ -32,6 +32,9 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
+#include "posget.h"
+#include "posseek.h"
+#include "poserr.h"
 
 
 #define NO_CHAR         0xffff

@@ -36,6 +36,7 @@
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77auxd.h"
+#include "wf77info.h"
 #include "fcgbls.h"
 #include "ecflags.h"
 #include "segsw.h"
@@ -50,6 +51,18 @@
 #include "fctypes.h"
 #include "cspawn.h"
 #include "stdio.h"
+#include "charset.h"
+#include "cbsize.h"
+#include "rstutils.h"
+#include "blips.h"
+#include "filescan.h"
+#include "rststruc.h"
+#include "errinit.h"
+#include "fcsyms.h"
+#include "auxlook.h"
+#include "forcstat.h"
+#include "rstmgr.h"
+#include "fcstack.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -75,27 +88,13 @@
 
 
 extern  int             MakeName(char *,char *,char *);
-extern  char            *SDExtn(char *,char *);
-extern  char            *SDFName(char *);
 extern  char            *STGetName(sym_id,char *);
-extern  char            *STExtractName(sym_id,char *);
-extern  intstar4        GetComBlkSize(sym_id);
-extern  aux_info        *AuxLookup(sym_id);
-extern  void            SendBlip(void);
-extern  void            SendStd(char *);
-extern  char            *STFieldName(sym_id,char *);
-extern  char            *ErrorInitializer(void);
-extern  bool            ForceStatic(unsigned_16);
-extern  sym_id          FindArgShadow(sym_id);
-extern  sym_id          STEqSetShadow(sym_id);
-extern  char *          StackBuffer(int *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
 extern  cgflags_t       CGFlags;
 extern  aux_info        FortranInfo;
 extern  aux_info        DefaultInfo;
-extern  character_set   CharSetInfo;
 extern  char            ProgName[];
 extern  char            ObjExtn[];
 extern  default_lib     *DefaultLibs;
@@ -135,11 +134,6 @@ static  char * DBGNames[] = {
 };
 
 
-extern  sym_id                  STShadow(sym_id);
-extern  sym_id                  FindShadow(sym_id);
-extern  sym_id                  FindEqSetShadow(sym_id);
-extern  uint                    SymAlign(sym_id);
-
 /* Forward declarations */
 static  void    SegBytes( unsigned_32 size );
 static  void    DefineGlobalSeg( global_seg *seg );
@@ -150,7 +144,6 @@ static  void    AllocCommonSegs( void );
 static  void    DefCodeSeg( void );
 static  void    BldCSName( char *buff );
 static  void    AllocComBlk( sym_id cb );
-segment_id       GetGlobalSeg( unsigned_32 g_offset );
 
 
 #define _Shadow( s )    if( (s->u.ns.flags & SY_CLASS) == SY_VARIABLE ) { \
@@ -2157,13 +2150,14 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
     }
 }
 
-
+#if 0
 int     FECodeBytes( const char *buffer, int len )
 //================================================
 // not used - just a stub for JIT compatibility
 {
     return( 0 );
 }
+#endif
 
 const char  *FEGetEnv( char const *name )
 //=======================================

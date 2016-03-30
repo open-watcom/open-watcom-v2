@@ -50,10 +50,6 @@ single ACOS( single arg ) {
     return( acos( arg ) );
 }
 
-#else
-
-extern  single          ACOS(single);
-
 #endif
 
 

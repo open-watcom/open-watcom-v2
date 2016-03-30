@@ -50,10 +50,6 @@ single TANH( single arg ) {
     return( tanh( arg ) );
 }
 
-#else
-
-extern  single          TANH(single);
-
 #endif
 
 

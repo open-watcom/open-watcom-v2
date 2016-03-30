@@ -33,11 +33,12 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sopen.h"
-
-#include "clibext.h"
-
-
+#include "poscc.h"
+#include "posopen.h"
+#include "posput.h"
+#include "poserr.h"
 #if defined( __RT__ )
+#include "runmain.h"
 #include "rmemmgr.h"
 
 #define MEM_ALLOC       RMemAlloc
@@ -50,6 +51,8 @@
 #define MEM_FREE        FMemFree
 
 #endif
+
+#include "clibext.h"
 
 /* Forward declarations */
 #if defined( __RT__ )
@@ -199,16 +202,20 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     return( _AllocFile( retc, attrs, fpos ) );
 }
 
-void    Closef( b_file *io ) {
+void    Closef( b_file *io )
 // Close a file.
+{
     uint        cc_len;
-    char        *cc;
+    const char  *cc;
 
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, ' ', &cc );
-        if( SysWrite( io, cc, cc_len ) == -1 ) return;
+        cc_len = FSetCC( (a_file *)io, ' ', &cc );
+        if( SysWrite( io, cc, cc_len ) == -1 ) {
+            return;
+        }
     }
-    if( FlushBuffer( io ) < 0 ) return;
+    if( FlushBuffer( io ) < 0 )
+        return;
     if( close( io->handle ) < 0 ) {
         FSetSysErr( io );
         return;

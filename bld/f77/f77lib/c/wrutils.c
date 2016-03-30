@@ -35,18 +35,17 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "csetinfo.h"
+#include "ftextfun.h"
+#include "ifile.h"
+#include "charset.h"
+
 
 extern  void            IOErr(int,...);
 extern  bool            NoEOF(ftnfile *);
-extern  void            FPutBuff(ftnfile *);
 extern  void            ChkIOErr(ftnfile *);
-extern  bool            IsCarriage(void);
-extern  bool            IsFixed(void);
-extern  void            SendIFBuff(char *,int,unsigned_32,string PGM *);
 extern  void            UpdateRecNum(ftnfile *);
 
 extern  char            NormalCtrlSeq[];
-extern  character_set   CharSetInfo;
 
 /* Forward declarations */
 void    SendEOR( void );

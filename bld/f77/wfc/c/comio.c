@@ -41,16 +41,16 @@
 #include "ferror.h"
 #include "comio.h"
 #include "inout.h"
+#include "charset.h"
+#include "fmacros.h"
+#include "option.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-extern  char    *SkipBlanks( char * );
-extern  void    SrcOption( void );
-extern  bool    CompileDebugStmts( void );
 
-extern  character_set   CharSetInfo;
+extern  char    *SkipBlanks( char * );
 
 static void Comment( void )
 {

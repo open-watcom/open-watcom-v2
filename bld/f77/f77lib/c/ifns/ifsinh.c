@@ -50,10 +50,6 @@ single SINH( single arg ) {
     return( sinh( arg ) );
 }
 
-#else
-
-extern  single          SINH(single);
-
 #endif
 
 

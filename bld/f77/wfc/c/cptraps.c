@@ -40,6 +40,7 @@
 #if defined( __OSI__ )
 #include "rtfpehdl.h"
 #endif
+#include "cptraps.h"
 
 
 #if defined( __WATCOMC__ )

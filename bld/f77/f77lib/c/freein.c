@@ -532,7 +532,7 @@ static  void    FreeIOErr( uint err ) {
 
     if( IOCB->flags & NML_DIRECTED ) {
         IOCB->flags |= NML_CONTINUE;
-        Suicide();
+        RTSuicide();
     }
     IOErr( err );
 }

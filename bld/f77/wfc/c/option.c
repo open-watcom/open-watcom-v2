@@ -43,26 +43,17 @@
 #include "inout.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "charset.h"
+#include "fmacros.h"
+#include "option.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 
-extern  char            *SkipBlanks( char * );
-extern  void            MacroDEFINE( char *,uint );
-extern  void            MacroUNDEFINE( char *,uint );
-extern  void            MacroIFDEF( char *,uint );
-extern  void            MacroIFNDEF( char *,uint );
-extern  void            MacroELIFDEF( char *,uint );
-extern  void            MacroELIFNDEF( char *,uint );
-extern  void            MacroELSE( void );
-extern  void            MacroENDIF( void );
-extern  void            ProcPragma( char * );
-extern  void            __UseChineseCharSet( void );
-extern  void            __UseJapaneseCharSet( void );
-extern  void            __UseKoreanCharSet( void );
 
-extern  character_set   CharSetInfo;
+extern  char            *SkipBlanks( char * );
+extern  void            ProcPragma( char * );
 
 extern  uint            DataThreshold;
 
@@ -459,7 +450,7 @@ static  void    KorOption( opt_entry *optn, bool negated ) {
 #include "optinfo.h"
 
 
-static  bool    Match( char *buff, const char __FAR *list, bool value ) {
+static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
 //=======================================================================
 
 // Determine if option matches.
@@ -503,7 +494,7 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
         if( optn->flags & CTG ) continue;
-        if( Match( buff, optn->option, optn->flags & VAL ) ) {
+        if( OptMatch( buff, optn->option, optn->flags & VAL ) ) {
             return( optn );
         }
     }
@@ -705,7 +696,7 @@ static  int     GetDirective( char *buff ) {
     offset = 0;
     for(;;) {
         if( drctv[ offset ] == NULL ) return( 0 );
-        if( Match( buff, drctv[ offset ], FALSE ) ) return( offset + 1 );
+        if( OptMatch( buff, drctv[ offset ], FALSE ) ) return( offset + 1 );
         offset++;
     }
 }

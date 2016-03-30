@@ -50,10 +50,6 @@ double DCOSH( double arg ) {
     return( cosh( arg ) );
 }
 
-#else
-
-extern  double          DCOSH(double);
-
 #endif
 
 

@@ -36,11 +36,10 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 #include "insert.h"
+#include "chain.h"
+#include "rstutils.h"
 
 #include <string.h>
-
-extern  void            FreeChain(void *);
-extern  void            *FreeLink(void *);
 
 
 char    *STExtractName( sym_id sym, char *buff ) {
@@ -104,7 +103,7 @@ sym_id  STFree( sym_id sym ) {
 // Free a symbol table entry and return its link field (must not be a
 // common block).
 
-    return( FreeLink( sym ) );
+    return( FreeLink( (void **)sym ) );
 }
 
 

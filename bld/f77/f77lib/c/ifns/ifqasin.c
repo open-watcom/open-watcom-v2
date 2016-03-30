@@ -50,10 +50,6 @@ extended QASIN( extended arg ) {
     return( asin( arg ) );
 }
 
-#else
-
-extern  extended                QASIN(extended);
-
 #endif
 
 

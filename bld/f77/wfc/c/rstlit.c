@@ -33,6 +33,7 @@
 #include "global.h"
 #include "stmtsw.h"
 #include "fmemmgr.h"
+#include "rstlit.h"
 
 #include <string.h>
 

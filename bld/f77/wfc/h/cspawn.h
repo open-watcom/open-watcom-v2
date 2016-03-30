@@ -30,4 +30,7 @@
 
 
 extern  void            CSuicide( void );
+#if defined( __WATCOMC__ )
+#pragma aux CSuicide aborts;
+#endif
 extern  int             CSpawn(void (*)( void ));

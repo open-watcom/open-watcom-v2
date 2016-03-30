@@ -38,6 +38,8 @@
 
 #include "ftnstd.h"
 #include "target.h"
+#include "cnvd2s.h"
+
 
 void    CnvD2S( double *val, char *buff ) {
 // Convert floating point number to string.

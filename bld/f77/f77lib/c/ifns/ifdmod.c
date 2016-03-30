@@ -55,10 +55,6 @@ double DMOD( double arg1, double arg2 ) {
     return( fmod( arg1, arg2 ) );
 }
 
-#else
-
-extern  double          DMOD(double,double);
-
 #endif
 
 

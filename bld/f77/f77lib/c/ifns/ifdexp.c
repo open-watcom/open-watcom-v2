@@ -50,10 +50,6 @@ double DEXP( double arg ) {
     return( exp( arg ) );
 }
 
-#else
-
-extern  double          DEXP(double);
-
 #endif
 
 

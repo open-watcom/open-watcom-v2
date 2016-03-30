@@ -35,8 +35,8 @@
 //
 
 #include "rtinit.h"
+#include "errincl.h"
 
-extern void     __InitError( void );
 
 AXI( __InitError, INIT_PRIORITY_LIBRARY );
 

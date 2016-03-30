@@ -50,10 +50,6 @@ single COS( single arg ) {
     return( cos( arg ) );
 }
 
-#else
-
-extern  single          COS(single);
-
 #endif
 
 

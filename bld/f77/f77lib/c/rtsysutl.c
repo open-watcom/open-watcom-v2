@@ -39,6 +39,12 @@
 #include "posio.h"
 #include "fapptype.h"
 #include "rmemmgr.h"
+#include "posopen.h"
+#include "posget.h"
+#include "posput.h"
+#include "posseek.h"
+#include "posrew.h"
+#include "poserr.h"
 
 #include <string.h>
 #include <ctype.h>

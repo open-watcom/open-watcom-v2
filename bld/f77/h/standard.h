@@ -44,10 +44,6 @@ typedef void            *pointer;
 typedef float           real;
 typedef double          reallong;
 
-#if defined( __WATCOMC__ )
-#pragma aux Suicide aborts;
-#endif
-
 #ifdef _M_I86
 #define __FAR __far
 #else

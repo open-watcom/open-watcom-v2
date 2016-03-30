@@ -46,16 +46,17 @@
 #include "inout.h"
 #include "cspawn.h"
 #include "asmstmt.h"
+#include "chain.h"
+#include "data.h"
+#include "kwlookup.h"
+#include "symtab.h"
+#include "auxlook.h"
+#include "wf77aux.h"
 
 #include "clibext.h"
 
 
-extern  int             KwLookUp(char **,int,char *,int,bool);
-extern  int             MkHexConst(char *,char *,int);
 extern  char            *SkipBlanks(char *);
-extern  aux_info        *AuxLookupName(char *,int);
-extern  sym_id          SymFind(char *,uint);
-extern  void            FreeChain(void *);
 
 static  aux_info        *CurrAux;
 static  char            *TokStart;
@@ -250,9 +251,6 @@ static  void    GetSTRetInfo( void );
 static  void    DupParmInfo( aux_info *dst, aux_info *src );
 static  void    DupObjectName( aux_info *dst, aux_info *src );
 static  void    DupArgInfo( aux_info *dst, aux_info *src );
-void    CopyAuxInfo( aux_info *dst, aux_info *src );
-void    DoPragma( char *ptr );
-
 
 void            InitAuxInfo( void ) {
 //=============================
@@ -720,7 +718,7 @@ static  bool    RecFnToken( char *tok ) {
 
 
 
-void            Pragma( void ) {
+static void     Pragma( void ) {
 //========================
 
 // Process a pragma.

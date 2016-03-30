@@ -50,10 +50,6 @@ double DTAN( double arg ) {
     return( tan( arg ) );
 }
 
-#else
-
-extern  double          DTAN(double);
-
 #endif
 
 

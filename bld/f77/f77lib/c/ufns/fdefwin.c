@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "pgmacc.h"
+#include "ftnapi.h"
 
 #include <malloc.h>
 #include <stddef.h>
@@ -48,8 +49,6 @@
   #include <wdefwin.h>
   #undef __SW_BW
 #endif
-
-intstar2        __fortran SYSHANDLE( intstar4 *unit );
 
 
 intstar4        __fortran DWFSETAPPTITLE( string PGM *title ) {
