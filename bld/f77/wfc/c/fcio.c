@@ -31,7 +31,7 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "fcdata.h"
+#include "fcdatad.h"
 #include "wf77defs.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"

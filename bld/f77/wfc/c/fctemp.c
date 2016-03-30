@@ -34,7 +34,7 @@
 #include "wf77defs.h"
 #include "tmpdefs.h"
 #include "global.h"
-#include "fcdata.h"
+#include "fcdatad.h"
 #include "model.h"
 #include "cgprotos.h"
 #include "fmemmgr.h"

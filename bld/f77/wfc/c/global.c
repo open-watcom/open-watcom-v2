@@ -52,7 +52,7 @@
 
 #define gbl_defn
 #include "fmtdefn.h"
-#include "fcdata.h"
+#include "fcdatad.h"
 #include "prdefn.h"
 #include "progsw.h"
 #include "segsw.h"

@@ -32,4 +32,4 @@
 
 #define gbl_defn extern
 #include "cg.h"
-#include "fcdata.h"
+#include "fcdatad.h"
