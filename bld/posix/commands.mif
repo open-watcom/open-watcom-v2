@@ -43,6 +43,7 @@
 !inject rmdir     all               #
 !inject sed       all qnx boot      # build     test
 !inject sleep     all     boot      #           test
+!inject sort      all     boot      #           test
 !inject split     all qnx           #
 !inject strings   all qnx           #
 !inject tail      all qnx           #
