@@ -38,7 +38,6 @@
 #include "rundat.h"
 #include "rtenv.h"
 
-#include <stdarg.h>
 
 extern  void                    NmlExec(void);
 extern  void                    NmlAddrs(va_list);

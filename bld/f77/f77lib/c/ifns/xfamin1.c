@@ -34,10 +34,9 @@
 // XFAMIN1      : min function for REAL argumemts
 //
 
-#include <stdarg.h>
-
 #include "ftnstd.h"
 #include "ifenv.h"
+
 
 #if defined( _M_IX86 )
   #define VAR_SINGLE    single

@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include "rtenv.h"
 
-#include <stdarg.h>
 #include <string.h>
 
 

@@ -39,7 +39,6 @@
 #include "inout.h"
 #include "cmsgproc.h"
 
-#include <stdarg.h>
 
 extern  void            (*__BldErrMsg)(uint,char *,va_list);
 

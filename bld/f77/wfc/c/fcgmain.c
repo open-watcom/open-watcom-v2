@@ -59,8 +59,6 @@
 #include "cgprotos.h"
 #include "cgcli.h"
 
-#include <stdarg.h>
-
 
 extern  void            FreeGlobalSegs(void);
 

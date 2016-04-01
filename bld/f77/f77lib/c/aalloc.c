@@ -27,13 +27,14 @@
 * Description:  allocation/deallocation of allocatable arrays
 *
 ****************************************************************************/
+
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rtenv.h"
 #include "errcod.h"
 #include "falloc.h"
 
-#include <stdarg.h>
 #include <malloc.h>
 #include <limits.h>
 #if defined( _M_IX86 )

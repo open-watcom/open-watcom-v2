@@ -34,8 +34,6 @@
 // XFI1MIN0     : min function for integer*1 argumemts
 //
 
-#include <stdarg.h>
-
 #include "ftnstd.h"
 #include "ifenv.h"
 

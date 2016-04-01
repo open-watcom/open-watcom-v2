@@ -28,7 +28,6 @@
 *
 ****************************************************************************/
 
-#include <stdarg.h>
 
 extern  void    (* __BldErrMsg)(uint,char *,va_list);
 extern  void    (* __ErrorInit)(const char *);

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "errcod.h"
@@ -42,7 +43,6 @@
 #include "cmsgproc.h"
 #include "rstutils.h"
 
-#include <stdarg.h>
 #include <string.h>
 
 

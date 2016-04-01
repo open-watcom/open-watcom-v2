@@ -28,12 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "errrtns.h"
 #include "cioconst.h"
 #include "ftextfun.h"
-
-#include <stdarg.h>
 
 
 #if defined( _SA_LIBRARY )

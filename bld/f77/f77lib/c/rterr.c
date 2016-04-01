@@ -28,8 +28,8 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include <stdarg.h>
 #include <string.h>
 #include "frtdata.h"
 #include "fthread.h"

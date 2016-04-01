@@ -30,17 +30,16 @@
 ****************************************************************************/
 
 
+#include "ftnstd.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include <stdarg.h>
 
 #include "watcom.h"
 #include "dw.h"
 #include "dwarf.h"
-#include "ftnstd.h"
 #include "errcod.h"
 #include "fio.h"
 #include "cioconst.h"

@@ -31,8 +31,6 @@
 #ifndef _F77_EXTERNAL_FUNCS_H
 #define _F77_EXTERNAL_FUNCS_H 1
 
-#include <stdarg.h>
-
 #include "fio.h"
 #include "ftnio.h"
 #include "errrtns.h"

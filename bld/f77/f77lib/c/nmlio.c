@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
@@ -40,9 +41,9 @@
 #include "nmlinfo.h"
 #include "nmlio.h"
 
-#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+
 
 static  unsigned_32     NmlInCount;
 static  PTYPE           NmlInType;

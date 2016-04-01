@@ -41,8 +41,6 @@
 #include "rstutils.h"
 #include "rststruc.h"
 
-#include <stdarg.h>
-
 
 extern  void            MsgBuffer(uint,char *,...);
 
