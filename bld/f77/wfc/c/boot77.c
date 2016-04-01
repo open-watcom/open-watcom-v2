@@ -45,6 +45,7 @@
 #include "fmacros.h"
 #include "option.h"
 #include "initopt.h"
+#include "errutil.h"
 
 
 #if _CPU == 8086
@@ -58,8 +59,6 @@
 #else
 #error Unknown System
 #endif
-
-extern  void            MsgBuffer(uint,char *,...);
 
 extern  char            *UsageLines[];
 

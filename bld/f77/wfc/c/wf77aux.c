@@ -37,6 +37,7 @@
 #include "global.h"
 #include "fcgbls.h"
 #include "wf77auxd.h"
+#include "wf77aux.h"
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
@@ -51,7 +52,6 @@
 #include "kwlookup.h"
 #include "symtab.h"
 #include "auxlook.h"
-#include "wf77aux.h"
 
 #include "clibext.h"
 
@@ -79,15 +79,6 @@ extern  hw_reg_set      WinParms[];
 extern  hw_reg_set      StackParms[];
 #endif
 #endif
-extern  aux_info        IFInfo;
-extern  aux_info        IFCharInfo;
-extern  aux_info        IFChar2Info;
-extern  aux_info        IFVarInfo;
-extern  aux_info        IFXInfo;
-extern  aux_info        CoRtnInfo;
-extern  aux_info        RtRtnInfo;
-extern  aux_info        RtVarInfo;
-extern  aux_info        RtStopInfo;
 
 extern  char            MsHexConst[];
 extern  char            MsPragCallBytes[];
@@ -219,8 +210,6 @@ static  char            _wresppc[] = { "wresppc" };
                                     "value struct float struct routine [ax]"
                                     "modify [ax bx cx dx]" };
 #endif
-
-extern  aux_info        DefaultInfo;
 
 default_lib             *DefaultLibs;
 aux_info                *AuxInfo;

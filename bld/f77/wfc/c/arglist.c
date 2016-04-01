@@ -39,10 +39,7 @@
 #include "arglist.h"
 #include "impltab.h"
 #include "rstmgr.h"
-
-
-extern  void            GArgList(entry_pt *,uint,PTYPE);
-extern  void            GArgInfo(sym_id,PTYPE,PTYPE);
+#include "gsubprog.h"
 
 
 static  void    GetImplType( sym_id sym ) {

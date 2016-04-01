@@ -29,6 +29,21 @@
 ****************************************************************************/
 
 
+extern  aux_info        DefaultInfo;
+extern  aux_info        IFVarInfo;
+extern  aux_info        IFCharInfo;
+extern  aux_info        IFChar2Info;
+extern  aux_info        IFXInfo;
+extern  aux_info        IFInfo;
+extern  aux_info        FortranInfo;
+extern  aux_info        ProgramInfo;
+extern  aux_info        *AuxInfo;
+
+extern  aux_info        RtRtnInfo;
+extern  aux_info        RtVarInfo;
+extern  aux_info        RtStopInfo;
+extern  aux_info        CoRtnInfo;
+
 extern void            InitAuxInfo( void );
 extern void            FiniAuxInfo( void );
 extern void            SubAuxInit( void );

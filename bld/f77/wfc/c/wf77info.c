@@ -36,6 +36,7 @@
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77auxd.h"
+#include "wf77aux.h"
 #include "wf77info.h"
 #include "fcgbls.h"
 #include "ecflags.h"
@@ -93,8 +94,6 @@ extern  char            *STGetName(sym_id,char *);
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
 extern  cgflags_t       CGFlags;
-extern  aux_info        FortranInfo;
-extern  aux_info        DefaultInfo;
 extern  char            ProgName[];
 extern  char            ObjExtn[];
 extern  default_lib     *DefaultLibs;

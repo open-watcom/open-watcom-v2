@@ -28,69 +28,10 @@
 *
 ****************************************************************************/
 
-#include "ftnstd.h"
-#include "ftextvar.h"
-#include "blderr.h"
-#include "errrtns.h"
-#include "errutil.h"
 
-
-const unsigned char  __FAR *PGrpCodes = GrpCodes;
-
-void    BldErrCode( unsigned int error_num, char *buffer )
-// Build error code.
-{
-    const unsigned char __FAR *group;
-    unsigned int        num;
-
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    num = ( error_num % 256 ) + 1;
-    buffer[0] = ' ';
-    buffer[1] = group[0];
-    buffer[2] = group[1];
-    buffer[3] = '-';
-    buffer[4] = num / 10 + '0';
-    buffer[5] = num % 10 + '0';
-    buffer[6] = NULLCHAR;
-}
-
-
+extern void    BldErrCode( unsigned int error_num, char *buffer );
 #if !defined( __RT__ ) && !defined( __WFL__ )
-
-extern const unsigned char  __FAR CaretTable[];
-const unsigned char         __FAR *PCaretTable = CaretTable;
-
-uint    CarrotType( uint error_num )
-// Return the type of caret.
-{
-    const unsigned char __FAR *group;
-    const unsigned char __FAR *grp;
-    uint                idx;
-
-    idx = error_num % 256;
-    group = &PGrpCodes[( error_num / 256 ) * 3];
-    for( grp = PGrpCodes; grp != group; grp += 3 ) {
-        idx += *(grp + 2);
-    }
-    return( PCaretTable[idx] );
-}
-
+extern uint    CarrotType( uint error_num );
 #endif
-
-void    MsgFormat( char *msg, char *buff, ... ) {
-// Format a message.
-    va_list     args;
-
-    va_start( args, buff );
-    Substitute( msg, buff, args );
-    va_end( args );
-}
-
-void    MsgBuffer( uint msg, char *buff, ...  ) {
-// Format message to buffer.
-    va_list     args;
-
-    va_start( args, buff );
-    __BldErrMsg( msg, buff, args );
-    va_end( args );
-}
+extern void    MsgFormat( char *msg, char *buff, ... );
+extern void    MsgBuffer( uint msg, char *buff, ...  );

@@ -43,6 +43,7 @@
 #include "prmcodes.h"
 #include "cpopt.h"
 #include "wf77auxd.h"
+#include "wf77aux.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
@@ -56,8 +57,6 @@
 #include "auxlook.h"
 #include "gflow.h"
 
-
-extern  aux_info        ProgramInfo;
 
 /* Forward declarations */
 static  int     DumpArgInfo( itnode *node );

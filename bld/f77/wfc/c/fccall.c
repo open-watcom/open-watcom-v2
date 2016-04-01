@@ -68,7 +68,6 @@
 extern  cg_name         CmplxAddr(cg_name,cg_name);
 extern  void            FiniTmps(void);
 
-extern  aux_info        FortranInfo;
 extern  back_handle     TraceEntry;
 extern  segment_id      CurrCodeSegId;
 

@@ -43,6 +43,7 @@
 #include "cmsgproc.h"
 #include "rstutils.h"
 #include "errrtns.h"
+#include "errutil.h"
 
 #include <string.h>
 

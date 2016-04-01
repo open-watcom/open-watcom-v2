@@ -52,6 +52,7 @@
 #include "libsupp.h"
 #include "wf77auxd.h"
 #include "wf77aux.h"
+#include "errutil.h"
 
 #include "clibext.h"
 
@@ -69,7 +70,6 @@
 #endif
 
 extern  void            BISetSrcFile( void );
-extern  void            MsgFormat(char *,char *,...);
 
 extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];

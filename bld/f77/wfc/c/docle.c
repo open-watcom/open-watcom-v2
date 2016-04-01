@@ -50,11 +50,10 @@
 #include "mkname.h"
 #include "compprog.h"
 #include "docle.h"
+#include "errutil.h"
 
 #include "clibext.h"
 
-
-extern  void            MsgBuffer(uint,char *,...);
 
 extern  unsigned_32     CompTime;
 

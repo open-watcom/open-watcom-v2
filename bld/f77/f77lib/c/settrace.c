@@ -38,6 +38,7 @@
 #include "rtenv.h"
 #include "errcod.h"
 #include "thread.h"
+#include "errutil.h"
 
 
 static  void    TraceInfo( char *buff ) {

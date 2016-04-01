@@ -40,9 +40,8 @@
 #include "utility.h"
 #include "rstutils.h"
 #include "rststruc.h"
+#include "errutil.h"
 
-
-extern  void            MsgBuffer(uint,char *,...);
 
 extern  char            *StmtKeywords[];
 

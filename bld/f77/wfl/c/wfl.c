@@ -58,6 +58,7 @@
 #include "errrsrc.h"
 #include "showopts.h"
 #include "inout.h"
+#include "errutil.h"
 
 #include "clibext.h"
 #include "pathgrp.h"
