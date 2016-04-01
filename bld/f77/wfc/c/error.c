@@ -42,6 +42,7 @@
 #include "inout.h"
 #include "cmsgproc.h"
 #include "rstutils.h"
+#include "errrtns.h"
 
 #include <string.h>
 

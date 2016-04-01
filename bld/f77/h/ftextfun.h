@@ -194,7 +194,6 @@ extern int         RTSpawn( void (*)( void ) );
 extern void        SysClearEOF( ftnfile * );
 extern void        SysCreateFile( ftnfile * );
 extern void        SysEOF( void );
-extern void        Substitute( char *, char *, va_list );
 extern void        TrimStr( string PGM *src, string *res );
 extern void        UnFmtIn( void );
 extern void        UnFmtOut( void );
@@ -206,6 +205,5 @@ extern void        _AllocBuffer( ftnfile *fcb );
 extern bool        GetReal( extended *value );
 extern void        WriteErr( int errcode, va_list args );
 extern void        RTErrHandler( int errcode, va_list args );
-extern int         ErrCodOrg( uint error );
 
 #endif

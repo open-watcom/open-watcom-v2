@@ -46,6 +46,7 @@
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 #include "thread.h"
 
+
 #if defined( __WINDOWS__ )
   #if defined( __386__ )
     // so compile-generated symbol "__fthread_init" is defined

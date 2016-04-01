@@ -32,13 +32,14 @@
 #include <malloc.h>
 #include "wio.h"
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "cioconst.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
 #include "errrsrc.h"
+#include "blderr.h"
+#include "errrtns.h"
 
 #include "clibext.h"
 

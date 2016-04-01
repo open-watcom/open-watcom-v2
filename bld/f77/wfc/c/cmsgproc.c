@@ -38,9 +38,7 @@
 #include "cioconst.h"
 #include "inout.h"
 #include "cmsgproc.h"
-
-
-extern  void            (*__BldErrMsg)(uint,char *,va_list);
+#include "errrtns.h"
 
 
 void    MsgPrtLstNL( uint msg, ... ) {

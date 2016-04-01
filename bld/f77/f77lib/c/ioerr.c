@@ -35,9 +35,7 @@
 #include "rundat.h"
 #include "cioconst.h"
 #include "ftextfun.h"
-
-
-extern  int             ErrCodOrg(uint);
+#include "blderr.h"
 
 
 static  void    SysIOErr( int errcode, ... ) {

@@ -29,8 +29,10 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
+#include "blderr.h"
+#include "errrtns.h"
+
 
 const unsigned char  __FAR *PGrpCodes = GrpCodes;
 

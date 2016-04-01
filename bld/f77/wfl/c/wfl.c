@@ -49,7 +49,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "errcod.h"
 #include "optflags.h"
 #include "cioconst.h"

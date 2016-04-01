@@ -24,36 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  run-time message processing
+* Description:  Build an error message.
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "errrtns.h"
-#include "cioconst.h"
-
-
-#if defined( _SA_LIBRARY )
-extern  void            useLGTables(void);
-extern  void            useDfltTables(void);
-#endif
-
-void    MsgLine( uint msg, ... ) {
-// Display message.
-
-    char        buff[LIST_BUFF_SIZE+1];
-
-    va_list     args;
-
-#if defined( _SA_LIBRARY )
-    useLGTables();
-#endif
-    va_start( args, msg );
-    __BldErrMsg( msg, buff, args );
-    va_end( args );
-#if defined( _SA_LIBRARY )
-    useDfltTables();
-#endif
-    SendLine( buff );
-}
+extern void    Substitute( char *msg, char *buffer, va_list args );
+extern int     ErrCodOrg( uint error );

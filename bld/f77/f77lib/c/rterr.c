@@ -41,6 +41,7 @@
 #include "cioconst.h"
 #include "rtenv.h"
 #include "thread.h"
+#include "errrtns.h"
 
 
 #define ERR_PREF_SIZE   5
