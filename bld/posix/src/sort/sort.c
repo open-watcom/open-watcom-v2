@@ -64,7 +64,7 @@ static int compareI( const void *p1, const void *p2 )
 {
     const char  **cp1 = (const char **)p1;
     const char  **cp2 = (const char **)p2;
-    return( strcasecmp( *cp1, *cp2 ) );
+    return( stricmp( *cp1, *cp2 ) );
 }
 
 static int compareRev( const void *p1, const void *p2 )
@@ -78,7 +78,7 @@ static int compareRevI( const void *p1, const void *p2 )
 {
     const char  **cp1 = (const char **)p1;
     const char  **cp2 = (const char **)p2;
-    return( strcasecmp( *cp2, *cp1 ) );
+    return( stricmp( *cp2, *cp1 ) );
 }
 
 void main( int argc, char **argv )
