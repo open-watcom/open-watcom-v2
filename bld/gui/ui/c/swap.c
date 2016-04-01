@@ -33,6 +33,7 @@
 #include <windows.h>
 #include <dos.h>
 #include "dpmi.h"
+#include "swapline.h"
 #include "swap.h"
 
 
@@ -305,8 +306,6 @@ static HDC              screenMemDC;
 
 static int              oldCursorCount;
 static POINT            oldCursorPos;
-
-extern int              SwapScrnLines( void );
 
 static void doAnInt10( void )
 {
