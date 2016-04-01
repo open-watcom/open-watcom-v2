@@ -51,13 +51,13 @@
 #include "guizlist.h"
 #include "guistr.h"
 #include "guiextnm.h"
+#include "guiuiev.h"
 
 #include "clibext.h"
 
 
 extern bool GUIMainTouched;
 
-extern EVENT GUIUIProcessEvent( EVENT );
 extern bool GUIIsInit( void );
 extern void GUIDoneEventProcessing( void );
 extern void GUIStartEventProcessing( void );
