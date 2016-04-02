@@ -37,6 +37,7 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "rdwr.h"
 
 #include <string.h>
 

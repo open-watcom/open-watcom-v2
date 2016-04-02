@@ -33,6 +33,7 @@
 #include "ftextvar.h"
 #include "rundat.h"
 #include "rtutls.h"
+#include "cctrl.h"
 
 #include <string.h>
 

@@ -42,6 +42,7 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "ftextfun.h"
 
 #include <string.h>
 

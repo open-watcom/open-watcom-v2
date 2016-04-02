@@ -45,6 +45,8 @@
 #include "hexcnv.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "cctrl.h"
+#include "wrutils.h"
 
 #include <stdlib.h>
 #include <ctype.h>

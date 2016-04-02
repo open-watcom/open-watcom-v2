@@ -45,6 +45,7 @@
 #include "ioerr.h"
 #include "substr.h"
 #include "subscr.h"
+#include "wrutils.h"
 
 #include <string.h>
 #include <ctype.h>

@@ -32,6 +32,7 @@
 #include "ftnstd.h"
 #include "errrtns.h"
 #include "cioconst.h"
+#include "wrutils.h"
 
 
 #if defined( _SA_LIBRARY )

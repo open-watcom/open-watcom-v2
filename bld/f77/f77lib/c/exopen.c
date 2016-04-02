@@ -40,6 +40,7 @@
 #include "iomain.h"
 #include "exutil.h"
 #include "ioerr.h"
+#include "rdwr.h"
 
 
 //

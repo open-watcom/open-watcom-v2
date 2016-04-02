@@ -43,7 +43,6 @@
 #include "rundat.h"
 #include "thread.h"
 #include "runmain.h"
-#include "ftextfun.h"
 #include "rtspawn.h"
 #include "rt_init.h"
 #include "rstdio.h"

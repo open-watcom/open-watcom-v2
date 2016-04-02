@@ -41,17 +41,11 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "wrutils.h"
+#include "rdwr.h"
 
-
-extern  void            UpdateRecNum(ftnfile *);
 
 extern  char            NormalCtrlSeq[];
-
-/* Forward declarations */
-void    SendEOR( void );
-void    SendWSLStr( char *str );
-void    SendChar( char ch, int rep );
-void    Drop( char ch );
 
 
 void    F_SendData( char *str, uint width ) {

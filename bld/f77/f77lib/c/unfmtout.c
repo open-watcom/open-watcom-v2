@@ -39,9 +39,8 @@
 #include "iotype.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "wrutils.h"
 
-
-extern  void            SendEOR(void);
 
 /* Forward declarations */
 static  void    OUnString( void );

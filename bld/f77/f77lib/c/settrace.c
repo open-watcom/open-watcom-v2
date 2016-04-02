@@ -33,7 +33,6 @@
 #include <string.h>
 #include "frtdata.h"
 #include "fthread.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "rtenv.h"

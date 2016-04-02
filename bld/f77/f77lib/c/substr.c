@@ -30,7 +30,7 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "substr.h"
 
 
 bool    DoSubstring( intstar4 first, intstar4 last, int len ) {

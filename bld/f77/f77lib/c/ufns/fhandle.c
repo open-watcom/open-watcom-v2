@@ -44,6 +44,7 @@
 #include "posopen.h"
 #include "poserr.h"
 #include "rtsysutl.h"
+#include "rdwr.h"
 
 #include <stddef.h>
 #include <sys/types.h>

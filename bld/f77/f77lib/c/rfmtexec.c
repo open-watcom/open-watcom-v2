@@ -38,6 +38,7 @@
 #include "iotype.h"
 #include "rterr.h"
 #include "ioerr.h"
+#include "wrutils.h"
 
 
 /* Forward declarations */

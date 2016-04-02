@@ -31,7 +31,7 @@
 
 #include "ftnstd.h"
 #include "symdefs.h"
-#include "ftextfun.h"
+#include "subscr.h"
 
 
 bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )

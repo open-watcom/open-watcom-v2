@@ -24,56 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Run-time READ statement processor
+* Description:  carriage control processing
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
-#include "rundat.h"
-#include "rtenv.h"
-#include "units.h"
-#include "exread.h"
-#include "rtsysutl.h"
-#include "rtutls.h"
-#include "iomain.h"
-#include "rdwr.h"
-
-
-static  void    ExRead( void ) {
-//========================
-
-    IOCB->flags &= ~IOF_OUTPT;
-    IOPrologue();
-    if( IOCB->flags & IOF_NOFMT ) {
-        UnFmtIn();
-    } else {
-        if( IOCB->set_flags & SET_FMTPTR ) {
-            FmtRoutine();
-        } else {
-            FreeIn();
-        }
-    }
-    if( IOCB->set_flags & SET_INTERNAL ) {
-        DiscoFile( IOCB->fileinfo );
-    } else {
-        IOCB->fileinfo->flags &= ~FTN_LOGICAL_RECORD;
-        if( _LogicalRecordOrganization( IOCB->fileinfo ) ) {
-            SkipLogicalRecord( IOCB->fileinfo );
-        }
-    }
-}
-
-
-int     DoRead( void ) {
-//================
-
-    IOCB->iostmt = IO_READ;
-    if( ( IOCB->set_flags & SET_UNIT ) == 0 ) {
-        IOCB->unitid = STANDARD_INPUT;
-        IOCB->set_flags |= SET_UNIT;
-    }
-    return( IOMain( &ExRead ) );
-}
+extern void     CheckCCtrl( void );

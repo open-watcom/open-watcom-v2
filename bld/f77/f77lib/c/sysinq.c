@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "ftnio.h"
 #include "rtsysutl.h"
+#include "ftextfun.h"
 
 
 int     InqSeq( ftnfile *fcb ) {

@@ -38,6 +38,7 @@
 #include "rtspawn.h"
 #include "rterr.h"
 #include "rtsysutl.h"
+#include "ioerr.h"
 
 
 static  void    SysIOErr( int errcode, ... ) {

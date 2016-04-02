@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
 #include "sopen.h"

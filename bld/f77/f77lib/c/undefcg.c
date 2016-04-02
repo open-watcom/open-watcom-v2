@@ -40,6 +40,7 @@
 #include "ftextfun.h"
 #include "expchk.h"
 #include "chrutils.h"
+#include "wrutils.h"
 
 #include <stdlib.h>
 #include <string.h>

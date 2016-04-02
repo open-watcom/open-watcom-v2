@@ -28,11 +28,14 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "iotype.h"
+#include "wrutils.h"
+
 
 static  void    NextArrayItem(void) {
 //===============================

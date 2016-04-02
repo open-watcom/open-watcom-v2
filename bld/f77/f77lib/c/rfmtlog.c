@@ -28,9 +28,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rundat.h"
+#include "wrutils.h"
+
 
 void    R_FmtLog( uint width ) {
 //==============================

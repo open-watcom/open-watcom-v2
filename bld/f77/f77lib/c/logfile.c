@@ -40,12 +40,10 @@
 #include "ftextfun.h"
 #include "units.h"
 #include "hexcnv.h"
+#include "wrutils.h"
 
 
 extern  void                    SwapIOCBs(void);
-extern  void                    Drop(char);
-extern  void                    SendWSLStr(char *);
-extern  void                    SendEOR(void);
 
 
 void    LogFile( ftnfile *fcb ) {
