@@ -45,6 +45,7 @@
 #include "posseek.h"
 #include "posrew.h"
 #include "poserr.h"
+#include "chrutils.h"
 
 #include <string.h>
 #include <ctype.h>

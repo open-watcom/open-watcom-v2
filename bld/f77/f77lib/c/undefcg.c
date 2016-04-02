@@ -39,6 +39,7 @@
 #include "target.h"
 #include "ftextfun.h"
 #include "expchk.h"
+#include "chrutils.h"
 
 #include <stdlib.h>
 #include <string.h>

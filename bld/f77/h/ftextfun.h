@@ -116,7 +116,6 @@ extern void        IOSysInit( void );
 extern bool        IsFixed( void );
 extern bool        IsCarriage( void );
 extern bool        IsDevice( ftnfile * );
-extern char        *JmpBlanks(char *);
 extern pointer     LocFile( char * );
 extern pointer     LocUnit( int );
 extern bool        MulIOFlo( intstar4 *, intstar4 * );

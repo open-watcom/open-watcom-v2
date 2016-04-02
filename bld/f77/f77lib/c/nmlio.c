@@ -40,6 +40,7 @@
 #include "lgadv.h"
 #include "nmlinfo.h"
 #include "nmlio.h"
+#include "chrutils.h"
 
 #include <string.h>
 #include <ctype.h>

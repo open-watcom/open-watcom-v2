@@ -24,49 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  run/compile-time subscripting
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "symdefs.h"
-#include "ftextfun.h"
-
-
-bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
-// Do subscript operation for EQUIVALENCE or DATA statements and
-// NAMELIST-directed i/o at run-time.
-{
-    int         dims_no;
-    intstar4    offset;
-    intstar4    multiplier;
-    intstar4    ss;
-    intstar4    lo;
-    intstar4    hi;
-    intstar4    *bounds;
-
-    *res = 0;
-    dims_no = _DimCount( dims->dim_flags );
-    bounds = &dims->subs_1_lo;
-    multiplier = 1;
-    offset = 0;
-    for(;;) {
-        ss = *subscrs;
-        subscrs++;
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
-        if( ss < lo ) return( FALSE );
-        if( ss > hi ) return( FALSE );
-        offset += ( ss - lo ) * multiplier;
-        if( offset < 0 ) return( FALSE );
-        if( offset > dims->num_elts ) return( FALSE );
-        dims_no--;
-        if( dims_no == 0 ) break;
-        multiplier *= ( hi - lo + 1 );
-    }
-    *res = offset;
-    return( TRUE );
-}
+extern char    *JmpBlanks( char *buff );
