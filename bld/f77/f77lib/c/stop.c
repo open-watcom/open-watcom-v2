@@ -46,10 +46,9 @@
 #include "ftextfun.h"
 #include "rtspawn.h"
 #include "rt_init.h"
+#include "rstdio.h"
 
 
-extern  void            StdWriteNL(char *,int);
-extern  void            StdWrite(char *,int);
 extern  void            FlushStdUnit(void);
 
 // this is used by the load and go debugger in _SA_LIBRARY

@@ -43,11 +43,14 @@
 #include "rmemmgr.h"
 #include "runmain.h"
 #include "hexcnv.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 #include <stdlib.h>
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
+
 
 /* Forward declarations */
 static  void    HexFlip( char *src, int len );

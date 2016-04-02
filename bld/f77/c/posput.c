@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
 #include "sysbuff.h"
@@ -37,6 +36,7 @@
 #include "posput.h"
 #include "posseek.h"
 #include "poserr.h"
+#include "posflush.h"
 
 #include <stdlib.h>
 #include <string.h>

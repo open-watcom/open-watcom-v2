@@ -44,11 +44,10 @@
 #include "posrew.h"
 #include "poserr.h"
 #include "sdcio.h"
+#include "posdel.h"
 
 #include <string.h>
 
-
-extern  void                    Scratchf(char *);
 
 extern  file_handle             FStdOut;
 

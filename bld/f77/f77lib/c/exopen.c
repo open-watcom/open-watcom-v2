@@ -35,6 +35,11 @@
 #include "rundat.h"
 #include "rtenv.h"
 #include "runmain.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "iomain.h"
+#include "exutil.h"
+#include "ioerr.h"
 
 
 //

@@ -30,11 +30,12 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "rtenv.h"
 #include "ftnio.h"
 #include "rt_init.h"
 #include "rterr.h"
+#include "rtsysutl.h"
+#include "rstdio.h"
 
 #include <string.h>
 

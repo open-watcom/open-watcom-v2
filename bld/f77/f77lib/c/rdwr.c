@@ -28,13 +28,17 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 #include <string.h>
+
 
 void    DoOpen( void ) {
 //================

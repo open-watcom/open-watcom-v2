@@ -24,54 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Run-time utilities for READ
+* Description:  I/O error processing
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "ftextfun.h"
-#include "rundat.h"
-#include "errcod.h"
-#include "ifile.h"
-#include "rtsysutl.h"
-#include "rtutls.h"
-#include "ioerr.h"
-
-#include <string.h>
-
-
-void    NextRec( void ) {
-    ftnfile     *fcb;
-
-    fcb = IOCB->fileinfo;
-    if( fcb->flags & FTN_EOF ) {
-        IOErr( IO_PAST_EOF );
-    } else {
-        if( fcb->internal != NULL ) {
-            if( fcb->recnum > IOCB->elmts ) {
-                fcb->flags |= FTN_EOF;
-            }
-            fcb->len = fcb->internal->len;
-            NextIFBuff( fcb->buffer, fcb->len, fcb->recnum, fcb->internal );
-            fcb->recnum++;
-        } else {
-            UpdateRecNum( fcb );
-            FGetBuff( fcb );
-            ChkIOErr( fcb );
-            if( ( IOCB->set_flags & SET_FMTPTR ) &&
-                ( ( IOCB->flags & NML_DIRECTED ) == 0 ) ) {
-                memset( fcb->buffer + fcb->len, ' ', fcb->bufflen - fcb->len  );
-                fcb->len = fcb->bufflen;
-            }
-            fcb->buffer[ fcb->len ] = NULLCHAR;
-        }
-        if( fcb->flags & FTN_EOF ) {
-            if( !NoEOF( fcb ) && !_NoRecordOrganization( fcb ) ) {
-                fcb->eofrecnum = fcb->recnum - 1;
-            }
-            SysEOF();
-        }
-        fcb->col = 0;
-    }
-}
+extern void    IOErr( int errcode, ... );

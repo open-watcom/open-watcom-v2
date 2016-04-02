@@ -312,7 +312,6 @@ extern void     SetLine( uint src_line );
 extern void     SetModule( traceback *tb );
 extern void     InqBlkSize( intstar4 PGM *bsizeptr );
 extern void     SetShare( string PGM *share );
-extern void     __ReleaseIOSys( void );
 extern int      IOBack( void );
 extern int      IOClose( void );
 extern int      IOEndf( void );

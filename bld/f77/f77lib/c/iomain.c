@@ -33,7 +33,6 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
 #include "rundat.h"
 #include "iotype.h"
 #include "errcod.h"
@@ -41,11 +40,14 @@
 #include "rtenv.h"
 #include "rtspawn.h"
 #include "rterr.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "iomain.h"
 
 
-void            __ReleaseIOSys( void ) {
-//================================
-
+static void     __ReleaseIOSys( void )
+//====================================
+{
     IOCB->flags &= ~IOF_ACTIVE;
     _ReleaseFIO();
     IOTypeRtn = &IOType;

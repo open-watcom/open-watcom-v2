@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
@@ -35,6 +36,10 @@
 #include "rtenv.h"
 #include "units.h"
 #include "exread.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "iomain.h"
+
 
 static  void    ExRead( void ) {
 //========================

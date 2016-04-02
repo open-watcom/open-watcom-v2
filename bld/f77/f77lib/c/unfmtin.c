@@ -38,12 +38,14 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "pgmacc.h"
-#include "ftextfun.h"
 #include "iotype.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 #include <string.h>
 
-extern  void                    IOErr(int,...);
+
 extern  void                    NextRec(void);
 
 /* Forward declarations */

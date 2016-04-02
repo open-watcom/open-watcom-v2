@@ -39,15 +39,12 @@
 #include "deffname.h"
 #include "rtspawn.h"
 #include "rterr.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 #include <string.h>
 
-
-/* Forward declarations */
-void    F_Connect( void );
-void    ChkFileName( void );
-void    GetFileInfo( void );
-void    ChkLogFile( void );
 
 static ftnfile *SearchFtnFile( int unit ) {
 //=========================================

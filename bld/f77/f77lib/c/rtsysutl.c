@@ -30,7 +30,6 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
@@ -46,6 +45,13 @@
 #include "posrew.h"
 #include "poserr.h"
 #include "chrutils.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
+#include "posflush.h"
+#include "posdel.h"
+#include "postrunc.h"
+#include "posback.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -60,10 +66,10 @@
   #endif
 #endif
 
+
 /* Forward declarations */
 static  void    SysIOInfo( ftnfile *fcb );
 static  void    ChkDisk( ftnfile *fcb );
-int     _FileAttrs( ftnfile *fcb );
 
 /*
 extern  file_handle     FStdIn;

@@ -666,8 +666,7 @@ static void BIOutSPDumInfo( sym_id ste_ptr ) {
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWFormalParameter( cBIId, BIGetAnyType( ste_ptr ), 0, 0,
-                                strncpy( name, ste_ptr->u.ns.name,
-                                        ste_ptr->u.ns.u2.name_len ),
+                                strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
                                 DW_DEFAULT_NONE );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );

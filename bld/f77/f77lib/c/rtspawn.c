@@ -40,6 +40,7 @@
 #include "fthread.h"
 #include "thread.h"
 #include "ftextfun.h"
+#include "rtspawn.h"
 
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )

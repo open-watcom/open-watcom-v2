@@ -34,7 +34,6 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "errcod.h"
 #include "rundat.h"
@@ -45,6 +44,9 @@
 #include "rtspawn.h"
 #include "rt_init.h"
 #include "rterr.h"
+#include "rstdio.h"
+#include "posflush.h"
+#include "errutil.h"
 
 
 #define ERR_PREF_SIZE   5

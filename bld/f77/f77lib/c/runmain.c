@@ -33,13 +33,15 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
+#include "fio.h"
 #include "rundat.h"
 #include "rmemmgr.h"
 #include "thread.h"
 #include "runmain.h"
 #include "posopen.h"
 #include "rtspawn.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
 
 
 static  bool    __IsUnit6CC = { FALSE };

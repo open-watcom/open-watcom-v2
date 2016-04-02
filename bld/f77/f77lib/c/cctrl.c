@@ -28,12 +28,14 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
+#include "rtutls.h"
 
 #include <string.h>
+
 
 void            CheckCCtrl( void ) {
 //============================

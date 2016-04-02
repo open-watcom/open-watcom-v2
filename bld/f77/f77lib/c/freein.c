@@ -39,6 +39,7 @@
 #include "pgmacc.h"
 #include "chrutils.h"
 #include "rtspawn.h"
+#include "ioerr.h"
 
 #include <ctype.h>
 

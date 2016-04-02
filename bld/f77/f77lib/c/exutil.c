@@ -28,12 +28,16 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "errcod.h"
 #include "rundat.h"
+#include "rtutls.h"
+#include "exutil.h"
+#include "ioerr.h"
 
 #include <string.h>
+
 
 #define MAX_KW_LEN      15      // longest keyword in following tables
 

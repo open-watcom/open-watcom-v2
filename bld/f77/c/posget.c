@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
 #include "sysbuff.h"
 #include "posget.h"
 #include "posseek.h"
 #include "poserr.h"
+#include "posflush.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -44,9 +44,9 @@
 #endif
 
 
-uint    readbytes( b_file *io, char *buff, uint len ) {
-//=====================================================
-
+uint    readbytes( b_file *io, char *buff, uint len )
+//===================================================
+{
     int         bytes_read;
     uint        total;
     int         amt;
@@ -78,9 +78,9 @@ uint    readbytes( b_file *io, char *buff, uint len ) {
 }
 
 
-static  int     FillBuffer( b_file *io ) {
-//========================================
-
+static  int     FillBuffer( b_file *io )
+//======================================
+{
     uint        bytes_read;
 
     if( FlushBuffer( io ) < 0 ) return( -1 );
@@ -93,9 +93,9 @@ static  int     FillBuffer( b_file *io ) {
 }
 
 
-uint    SysRead( b_file *io, char *b, uint len ) {
-//================================================
-
+uint    SysRead( b_file *io, char *b, uint len )
+//==============================================
+{
     uint        bytes_read;
     uint        amt;
     uint        offs_in_b;
@@ -159,11 +159,10 @@ uint    SysRead( b_file *io, char *b, uint len ) {
 }
 
 
-static  uint    GetTextRec( b_file *io, char *b, uint len ) {
-//===========================================================
-
+static  uint    GetTextRec( b_file *io, char *b, uint len )
+//=========================================================
 // Get a record from a TEXT file.
-
+{
     char        ch;
     uint        read;
     char        rs[2];
@@ -291,11 +290,10 @@ static  uint    GetTextRec( b_file *io, char *b, uint len ) {
 }
 
 
-static  uint    GetVariableRec( b_file *io, char *b, uint len ) {
-//===============================================================
-
+static  uint    GetVariableRec( b_file *io, char *b, uint len )
+//=============================================================
 // Get a record from a file with "variable" records.
-
+{
     unsigned_32 tag;
     unsigned_32 save_tag;
 
@@ -325,22 +323,20 @@ static  uint    GetVariableRec( b_file *io, char *b, uint len ) {
 }
 
 
-static  uint    GetFixedRec( b_file *io, char *b, uint len ) {
-//============================================================
-
+static  uint    GetFixedRec( b_file *io, char *b, uint len )
+//==========================================================
 // Get a record from a file with "fixed" records.
-
+{
     len = SysRead( io, b, len );
     if( len == READ_ERROR ) return( 0 );
     return( len );
 }
 
 
-uint    FGetRec( b_file *io, char *b, uint len ) {
-//================================================
-
+uint    FGetRec( b_file *io, char *b, uint len )
+//==============================================
 // Get a record from a file.
-
+{
     IOOk( io );
     if( io->attrs & REC_TEXT ) return( GetTextRec( io, b, len ) );
     if( io->attrs & REC_VARIABLE ) return( GetVariableRec( io, b, len ) );
@@ -348,20 +344,18 @@ uint    FGetRec( b_file *io, char *b, uint len ) {
 }
 
 #if 0
-uint    GetRec( char *b, uint len ) {
-//===================================
-
+uint    GetRec( char *b, uint len )
+//=================================
 // Get a record from standard input device.
-
+{
     return( FGetRec( FStdIn, b, len ) );
 }
 #endif
 
-char    GetStdChar( void ) {
-//====================
-
+char    GetStdChar( void )
+//========================
 // Get a character from standard input.
-
+{
     char        ch;
 
 #if defined( __WINDOWS__ )
@@ -385,9 +379,9 @@ char    GetStdChar( void ) {
 
 #if defined( __RT__ )
 
-int     FCheckLogical( b_file *io ) {
-//===================================
-
+int     FCheckLogical( b_file *io )
+//=================================
+{
     unsigned_32 tag;
     int         rc;
 
@@ -407,9 +401,9 @@ int     FCheckLogical( b_file *io ) {
 }
 
 
-int     FSkipLogical( b_file *io ) {
-//==================================
-
+int     FSkipLogical( b_file *io )
+//================================
+{
     unsigned_32 tag;
     unsigned_32 save_tag;
     int         rc;
@@ -438,9 +432,9 @@ int     FSkipLogical( b_file *io ) {
 }
 
 
-signed_32       FGetVarRecLen( b_file *io ) {
-//===========================================
-
+signed_32       FGetVarRecLen( b_file *io )
+//=========================================
+{
     unsigned_32 tag;
     unsigned_32 save_tag;
     int         rc;
@@ -478,7 +472,8 @@ signed_32       FGetVarRecLen( b_file *io ) {
             return( -1 );
         }
     }
-    if( SysSeek( io, pos, SEEK_SET ) < 0 ) return( -1 );
+    if( SysSeek( io, pos, SEEK_SET ) < 0 )
+        return( -1 );
     return( size );
 }
 

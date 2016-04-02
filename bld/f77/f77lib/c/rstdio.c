@@ -32,7 +32,7 @@
 #include "ftnstd.h"
 #include "fapptype.h"
 #include "posio.h"
-#include "ftextfun.h"
+#include "rstdio.h"
 
 #include <string.h>
 #include <errno.h>

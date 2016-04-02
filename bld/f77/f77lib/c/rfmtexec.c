@@ -37,6 +37,7 @@
 #include "format.h"
 #include "iotype.h"
 #include "rterr.h"
+#include "ioerr.h"
 
 
 /* Forward declarations */

@@ -37,8 +37,10 @@
 
 #include <string.h>
 #include "iotype.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
-extern  void            IOErr(int,...);
+
 extern  void            SendEOR(void);
 
 /* Forward declarations */

@@ -28,11 +28,16 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "rtenv.h"
+#include "rtutls.h"
+#include "iomain.h"
+#include "ioerr.h"
+
 
 static  void    ExInquire( void ) {
 //===========================

@@ -34,10 +34,10 @@
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
-#include "ftextfun.h"
 #include "blderr.h"
 #include "rtspawn.h"
 #include "rterr.h"
+#include "rtsysutl.h"
 
 
 static  void    SysIOErr( int errcode, ... ) {

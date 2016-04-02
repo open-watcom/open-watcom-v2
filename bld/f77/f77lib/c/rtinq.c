@@ -33,6 +33,8 @@
 #include "undef.h"
 #include "rundat.h"
 #include "pgmacc.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
 
 #include <string.h>
 

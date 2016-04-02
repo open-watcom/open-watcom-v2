@@ -34,6 +34,8 @@
 #include "units.h"
 #include "rundat.h"
 #include "runmain.h"
+#include "rtutls.h"
+#include "rtsysutl.h"
 
 #include <stdio.h>
 #include <stdlib.h>

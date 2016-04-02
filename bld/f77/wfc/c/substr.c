@@ -24,54 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Run-time utilities for READ
+* Description:  substring at compile-time
 *
 ****************************************************************************/
 
-
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "rundat.h"
-#include "errcod.h"
-#include "ifile.h"
-#include "rtsysutl.h"
-#include "rtutls.h"
-#include "ioerr.h"
+#include "substr.h"
 
-#include <string.h>
-
-
-void    NextRec( void ) {
-    ftnfile     *fcb;
-
-    fcb = IOCB->fileinfo;
-    if( fcb->flags & FTN_EOF ) {
-        IOErr( IO_PAST_EOF );
-    } else {
-        if( fcb->internal != NULL ) {
-            if( fcb->recnum > IOCB->elmts ) {
-                fcb->flags |= FTN_EOF;
-            }
-            fcb->len = fcb->internal->len;
-            NextIFBuff( fcb->buffer, fcb->len, fcb->recnum, fcb->internal );
-            fcb->recnum++;
-        } else {
-            UpdateRecNum( fcb );
-            FGetBuff( fcb );
-            ChkIOErr( fcb );
-            if( ( IOCB->set_flags & SET_FMTPTR ) &&
-                ( ( IOCB->flags & NML_DIRECTED ) == 0 ) ) {
-                memset( fcb->buffer + fcb->len, ' ', fcb->bufflen - fcb->len  );
-                fcb->len = fcb->bufflen;
-            }
-            fcb->buffer[ fcb->len ] = NULLCHAR;
-        }
-        if( fcb->flags & FTN_EOF ) {
-            if( !NoEOF( fcb ) && !_NoRecordOrganization( fcb ) ) {
-                fcb->eofrecnum = fcb->recnum - 1;
-            }
-            SysEOF();
-        }
-        fcb->col = 0;
-    }
+bool    DoSubstring( intstar4 first, intstar4 last, int len ) {
+// Do substring operation for EQUIVALENCE or DATA statement and
+// NAMELIST-directed i/o at run-time.
+    if( first <= 0 ) return( FALSE );
+    if( last > len ) return( FALSE );
+    if( first > last ) return( FALSE );
+    return( TRUE );
 }

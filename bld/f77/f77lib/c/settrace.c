@@ -41,6 +41,7 @@
 #include "thread.h"
 #include "errutil.h"
 #include "rt_init.h"
+#include "rstdio.h"
 
 
 static  void    TraceInfo( char *buff ) {

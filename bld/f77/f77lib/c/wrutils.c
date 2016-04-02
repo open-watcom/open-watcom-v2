@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -35,14 +36,13 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "csetinfo.h"
-#include "ftextfun.h"
 #include "ifile.h"
 #include "charset.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 
-extern  void            IOErr(int,...);
-extern  bool            NoEOF(ftnfile *);
-extern  void            ChkIOErr(ftnfile *);
 extern  void            UpdateRecNum(ftnfile *);
 
 extern  char            NormalCtrlSeq[];

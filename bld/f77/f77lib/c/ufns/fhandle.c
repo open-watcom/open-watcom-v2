@@ -43,12 +43,11 @@
 #include "ftnapi.h"
 #include "posopen.h"
 #include "poserr.h"
+#include "rtsysutl.h"
 
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-extern  int             _FileAttrs(ftnfile *);
 
 
 intstar2        __fortran SYSHANDLE( intstar4 *unit ) {

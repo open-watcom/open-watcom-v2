@@ -24,54 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  Run-time utilities for READ
+* Description:  Run-time utilities.
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "ftextfun.h"
-#include "rundat.h"
-#include "errcod.h"
-#include "ifile.h"
-#include "rtsysutl.h"
-#include "rtutls.h"
-#include "ioerr.h"
-
-#include <string.h>
-
-
-void    NextRec( void ) {
-    ftnfile     *fcb;
-
-    fcb = IOCB->fileinfo;
-    if( fcb->flags & FTN_EOF ) {
-        IOErr( IO_PAST_EOF );
-    } else {
-        if( fcb->internal != NULL ) {
-            if( fcb->recnum > IOCB->elmts ) {
-                fcb->flags |= FTN_EOF;
-            }
-            fcb->len = fcb->internal->len;
-            NextIFBuff( fcb->buffer, fcb->len, fcb->recnum, fcb->internal );
-            fcb->recnum++;
-        } else {
-            UpdateRecNum( fcb );
-            FGetBuff( fcb );
-            ChkIOErr( fcb );
-            if( ( IOCB->set_flags & SET_FMTPTR ) &&
-                ( ( IOCB->flags & NML_DIRECTED ) == 0 ) ) {
-                memset( fcb->buffer + fcb->len, ' ', fcb->bufflen - fcb->len  );
-                fcb->len = fcb->bufflen;
-            }
-            fcb->buffer[ fcb->len ] = NULLCHAR;
-        }
-        if( fcb->flags & FTN_EOF ) {
-            if( !NoEOF( fcb ) && !_NoRecordOrganization( fcb ) ) {
-                fcb->eofrecnum = fcb->recnum - 1;
-            }
-            SysEOF();
-        }
-        fcb->col = 0;
-    }
-}
+extern bool    FindFtnFile( void );
+extern void    *RChkAlloc( uint size );
+extern void    F_Connect( void );
+extern void    ConnectFile( void );
+extern void    GetFileInfo( void );
+extern void    DiscoFile( ftnfile *old );
+extern void    ChkFileName( void );
+extern void    ChkLogFile( void );
+extern void    ChkIOOperation( ftnfile *fcb );
+extern bool    GetIOErr( ftnfile *fcb );
+extern void    ChkIOErr( ftnfile *fcb );
+extern void    ChkUnitId( void );
+extern void    ChkConnected( void );
+extern void    SetEOF( void );
+extern void    ClearEOF( void );
+extern void    SysEOF( void );
+extern bool    IsFixed( void );
+extern bool    IsCarriage( void );
+extern void    ChkRecordStructure( void );
+extern void    ChkSequential( int errmsg );
+extern void    ChkExist( void );
+extern uint    StrItem( string PGM *strptr, char *buff, uint buff_len );
