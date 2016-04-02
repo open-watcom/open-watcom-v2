@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
@@ -36,8 +37,11 @@
 #include "errcod.h"
 #include "rmemmgr.h"
 #include "deffname.h"
+#include "rtspawn.h"
+#include "rterr.h"
 
 #include <string.h>
+
 
 /* Forward declarations */
 void    F_Connect( void );

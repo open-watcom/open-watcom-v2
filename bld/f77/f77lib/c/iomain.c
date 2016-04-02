@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "frtdata.h"
 #include "fthread.h"
@@ -38,6 +39,9 @@
 #include "errcod.h"
 #include "thread.h"
 #include "rtenv.h"
+#include "rtspawn.h"
+#include "rterr.h"
+
 
 void            __ReleaseIOSys( void ) {
 //================================

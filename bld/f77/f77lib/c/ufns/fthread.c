@@ -38,10 +38,11 @@
 #include "rundat.h"
 #include "rmemmgr.h"
 #include "thread.h"
-#include "ftextfun.h"
 #include "ftnapi.h"
 #include "fthrdini.h"
 #include "rttraps.h"
+#include "rtspawn.h"
+#include "rt_init.h"
 
 
 typedef struct {

@@ -28,9 +28,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "errcod.h"
+#include "rterr.h"
+
 
 void    _R_FError( int err_code ) {
 //=================================

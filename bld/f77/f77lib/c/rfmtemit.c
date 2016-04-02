@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "format.h"
@@ -35,6 +36,8 @@
 #include "rundat.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
+#include "rterr.h"
+
 
 void    R_FEmInit( void ) {
 //===================

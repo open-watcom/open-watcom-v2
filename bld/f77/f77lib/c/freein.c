@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rundat.h"
@@ -37,8 +38,10 @@
 #include "target.h"
 #include "pgmacc.h"
 #include "chrutils.h"
+#include "rtspawn.h"
 
 #include <ctype.h>
+
 
 /* Forward declarations */
 static  void    RptNum( void );

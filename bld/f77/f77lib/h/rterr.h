@@ -24,66 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  FORTRAN 77 run-time mainline
+* Description:  Run-time error processor (for optimizing code generator)
 *
 ****************************************************************************/
 
-#include "ftnstd.h"
-#include <stdlib.h>
-#include "xfflags.h"
-#include "rtenv.h"
-#include "rundat.h"
-#include "errcod.h"
-#include "rtspawn.h"
-#include "rt_init.h"
 
-// FORTRAN 77 run-time system must be initialized before we call
-// user's program. Part of the run-time initialization includes
-// floating-point exception handling which must be done before any
-// floating-point code is executed by the user's program.
-// If a FORTRAN 77 subprogram is called by a C or C++ mainline, an
-// explicit call to RTSysInit() must be made by the caller.
-
-#if defined( __WINDOWS__ )
-
-#include "fapptype.h"
-#include <win386.h>
-#include "fwinmain.h"
-
-extern  char            __FAppType;
-
-
-intstar4    FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow ) {
-//============================================================================
-
-    __FAppType = FAPP_DEFAULT_GUI;
-    DefaultWinMain( thisinst, previnst, cmdline, cmdshow, &main );
-    return( 1 );
-}
-
-
-int     main( int argc, char *argv[] ) {
-//======================================
-
-    argc = argc; argv = argv;
-    RTSpawn( &FMAIN );
-    return( 0 );
-}
-
-#else
-
-extern  void            FMAIN(void);
-
-
-int     main( int argc, char *argv[] ) {
-//======================================
-
-// Call user's program.
-
-    argc = argc; argv = argv;
-    RTSysInit();
-    RTSpawn( &FMAIN );
-    return( 0 );
-}
-
-#endif
+extern void    FlushStdUnit( void );
+extern void    WriteErr( int errcode, va_list args );
+extern void    RTErrHandler( int errcode, va_list args );
+extern void    RTErr( int errcode, ... );

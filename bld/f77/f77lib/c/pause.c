@@ -28,12 +28,16 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rtenv.h"
 #include "ftnio.h"
+#include "rt_init.h"
+#include "rterr.h"
 
 #include <string.h>
+
 
 // this is used by the load and go debugger in _SA_LIBRARY
 

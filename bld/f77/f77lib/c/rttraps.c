@@ -51,7 +51,7 @@
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
   #include "extender.h"
 #endif
-#include "ftextfun.h"
+#include "rterr.h"
 #include "errcod.h"
 #include "rundat.h"
 #if defined( __NT__ )

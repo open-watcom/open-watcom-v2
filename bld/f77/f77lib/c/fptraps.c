@@ -32,7 +32,7 @@
 #include "ftnstd.h"
 #include <signal.h>
 #include <float.h>
-#include "ftextfun.h"
+#include "rterr.h"
 #include "errcod.h"
 #include "fptraps.h"
 #include "rttraps.h"

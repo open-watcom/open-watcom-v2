@@ -28,17 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "rundat.h"
 #include "units.h"
 #include "errcod.h"
 #include "rtenv.h"
 #include "thread.h"
 #include "ioinit.h"
+#include "rt_init.h"
 
 
 void SetIOCB( void ) {

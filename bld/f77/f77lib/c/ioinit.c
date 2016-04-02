@@ -37,8 +37,8 @@
 #include "ftnstd.h"
 #include "ftnio.h"
 #include "runmain.h"
-#include "ftextfun.h"
 #include "ioinit.h"
+#include "rtspawn.h"
 
 #include <stdlib.h>
 

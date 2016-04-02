@@ -41,11 +41,12 @@
   #endif
 #endif
 #include "xfflags.h"
-#include "ftextfun.h"
 #include "rtenv.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "fwinmain.h"
+#include "rtspawn.h"
+#include "rt_init.h"
 
 
 // Leave this forward declaration to avoid polluting "ftextfun.h"

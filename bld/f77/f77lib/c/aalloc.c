@@ -30,7 +30,7 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "rtenv.h"
 #include "errcod.h"
 #include "falloc.h"

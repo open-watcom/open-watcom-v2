@@ -87,7 +87,6 @@ extern bool        FindFName( void );
 extern bool        FindFtnFile( void );
 extern int         FindKWord( char **, int, int, string PGM * );
 extern int         FlushBuffer( b_file * );
-extern void        FlushStdUnit( void );
 extern int         FmtS2F( char *, int, int, bool, int, int, extended *, bool, int *, bool);
 extern int         FmtS2I( char *, int, bool, intstar4 *, bool, int * );
 extern void        FPutBuff( ftnfile *fcb );
@@ -157,8 +156,6 @@ extern bool        RecEOS( void );
 extern void        ReportEOF( ftnfile * );
 extern void        ReportNExist( ftnfile * );
 extern void        Rewindf( ftnfile * );
-extern void        RTErr( int, ... );
-extern unsigned    RTSysInit( void );
 extern bool        SameFile( char *, char * );
 extern void        SeekFile( ftnfile * );
 extern void        SendChar( char, int );
@@ -178,11 +175,6 @@ extern void        StdFlush( void );
 extern void        StdWrite( char *, int );
 extern void        StdWriteNL( char *, int );
 extern bool        SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
-extern void        RTSuicide( void );
-#if defined( __WATCOMC__ )
-#pragma aux RTSuicide aborts;
-#endif
-extern int         RTSpawn( void (*)( void ) );
 extern void        SysClearEOF( ftnfile * );
 extern void        SysCreateFile( ftnfile * );
 extern void        SysEOF( void );
@@ -195,7 +187,5 @@ extern void        SendLine( char *str );
 extern void        SendInt( intstar4 );
 extern void        _AllocBuffer( ftnfile *fcb );
 extern bool        GetReal( extended *value );
-extern void        WriteErr( int errcode, va_list args );
-extern void        RTErrHandler( int errcode, va_list args );
 
 #endif

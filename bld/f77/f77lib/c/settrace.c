@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include <string.h>
 #include "frtdata.h"
@@ -39,6 +40,7 @@
 #include "errcod.h"
 #include "thread.h"
 #include "errutil.h"
+#include "rt_init.h"
 
 
 static  void    TraceInfo( char *buff ) {

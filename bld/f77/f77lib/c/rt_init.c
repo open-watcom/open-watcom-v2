@@ -45,6 +45,7 @@
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 #include "thread.h"
 #include "rttraps.h"
+#include "rt_init.h"
 
 
 #if defined( __WINDOWS__ )
@@ -107,7 +108,8 @@ static void RTSysFini( void ) {
 unsigned        RTSysInit( void ) {
 //===========================
 
-    if( RTSysInitialized ) return( 0 );
+    if( RTSysInitialized )
+        return( 0 );
 #if defined( __OS2__ ) && defined( __386__ )
     {
         TIB     *ptib;
@@ -162,7 +164,7 @@ XI( __fthread_data_size, __InitThreadDataSize, INIT_PRIORITY_THREAD )
 // Alternative Stack Activation for non-Intel
 #if !defined( _M_IX86 )
 
-#define F77_ALT_STACK_SIZE      8*1024
+#define F77_ALT_STACK_SIZE      8 * 1024
 
 static void     __InitAlternateStack( void ) {
 //======================================

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rundat.h"
@@ -35,6 +36,8 @@
 #include "fmtdef.h"
 #include "format.h"
 #include "iotype.h"
+#include "rterr.h"
+
 
 /* Forward declarations */
 static  void    FmtPrepOp( void );

@@ -44,6 +44,8 @@
 #include "thread.h"
 #include "runmain.h"
 #include "ftextfun.h"
+#include "rtspawn.h"
+#include "rt_init.h"
 
 
 extern  void            StdWriteNL(char *,int);

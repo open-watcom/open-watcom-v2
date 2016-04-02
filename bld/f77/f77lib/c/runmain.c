@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "frtdata.h"
 #include "fthread.h"
@@ -38,6 +39,7 @@
 #include "thread.h"
 #include "runmain.h"
 #include "posopen.h"
+#include "rtspawn.h"
 
 
 static  bool    __IsUnit6CC = { FALSE };

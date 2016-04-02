@@ -28,10 +28,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "errcod.h"
 #include "rtenv.h"
+
 
 void    Substring( string *src, intstar4 start, intstar4 end, string *dst ) {
 //===========================================================================

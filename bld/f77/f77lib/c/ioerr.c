@@ -36,6 +36,8 @@
 #include "cioconst.h"
 #include "ftextfun.h"
 #include "blderr.h"
+#include "rtspawn.h"
+#include "rterr.h"
 
 
 static  void    SysIOErr( int errcode, ... ) {

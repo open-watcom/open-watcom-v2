@@ -42,6 +42,9 @@
 #include "rtenv.h"
 #include "thread.h"
 #include "errrtns.h"
+#include "rtspawn.h"
+#include "rt_init.h"
+#include "rterr.h"
 
 
 #define ERR_PREF_SIZE   5

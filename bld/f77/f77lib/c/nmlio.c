@@ -41,6 +41,7 @@
 #include "nmlinfo.h"
 #include "nmlio.h"
 #include "chrutils.h"
+#include "rtspawn.h"
 
 #include <string.h>
 #include <ctype.h>
