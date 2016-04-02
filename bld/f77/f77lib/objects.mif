@@ -13,14 +13,14 @@ ufns =
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# dep_rt 
-!inject fdllinit.obj                 nt nta ntp         o32                        
-!inject fdllterm.obj                 nt nta ntp         o32                        
-!inject finitdll.obj                 nt nta ntp         o32                        
-!inject ftermdll.obj                 nt nta ntp         o32                        
-!inject ftrdinit.obj                 nt nta ntp         o32                        
-!inject ftrdterm.obj                 nt nta ntp         o32                        
-!inject rtlbmain.obj                 nt nta ntp         o32                        
+# dep_rt
+!inject fdllinit.obj                 nt nta ntp         o32
+!inject fdllterm.obj                 nt nta ntp         o32
+!inject finitdll.obj                 nt nta ntp         o32
+!inject ftermdll.obj                 nt nta ntp         o32
+!inject ftrdinit.obj                 nt nta ntp         o32
+!inject ftrdterm.obj                 nt nta ntp         o32
+!inject rtlbmain.obj                 nt nta ntp         o32
 #===============================================================================
 
 
@@ -29,22 +29,22 @@ ufns =
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# rt 
-!inject finittrd.obj                 nt nta ntp nov     o32     q32         l32       
-!inject ftermtrd.obj                 nt nta ntp nov     o32     q32         l32       
-!inject fthrdini.obj                 nt nta ntp nov     o32     q32         l32       
-!inject thrdutil.obj                 nt nta ntp nov     o32     q32         l32       
+# rt
+!inject finittrd.obj                 nt nta ntp nov     o32     q32         l32
+!inject ftermtrd.obj                 nt nta ntp nov     o32     q32         l32
+!inject fthrdini.obj                 nt nta ntp nov     o32     q32         l32
+!inject thrdutil.obj                 nt nta ntp nov     o32     q32         l32
 # dep_rt
-!inject fiosem.obj                   nt nta ntp nov     o32     q32         l32       
-!inject initftrd.obj                 nt nta ntp nov     o32     q32         l32       
-# ufns 
-!inject fthread.obj                  nt nta ntp nov     o32     q32         l32       
+!inject fiosem.obj                   nt nta ntp nov     o32     q32         l32
+!inject initftrd.obj                 nt nta ntp nov     o32     q32         l32
+# ufns
+!inject fthread.obj                  nt nta ntp nov     o32     q32         l32
 #===============================================================================
 
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# rt 
+# rt
 #===============================================================================
 
 rt += &
@@ -140,7 +140,7 @@ aalloc_postopts = -wcd310
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# both 
+# both
 #===============================================================================
 
 both += &
@@ -162,15 +162,15 @@ both += &
     japanese.obj &
     korean.obj &
     lexcmp.obj &
-    spawn.obj
+    rtspawn.obj
 
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# dep_rt 
-!inject fwinmain.obj                 nt nta ntp                     w16 w32        
-!inject intovfrt.obj                    nta                                        
-!inject realvec.obj          d32                                                   
+# dep_rt
+!inject fwinmain.obj                 nt nta ntp                     w16 w32
+!inject intovfrt.obj                    nta
+!inject realvec.obj          d32
 #===============================================================================
 
 dep_rt += &
@@ -204,8 +204,8 @@ dep_rt += &
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# dep_both 
-!inject i4mul.obj        d16     dpm                o16     q16     w16            
+# dep_both
+!inject i4mul.obj        d16     dpm                o16     q16     w16
 #===============================================================================
 
 dep_both += &
@@ -228,7 +228,7 @@ dep_both += &
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# math 
+# math
 #===============================================================================
 
 math += &
@@ -263,7 +263,7 @@ math += &
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# ifns 
+# ifns
 #===============================================================================
 
 ifns += &
@@ -477,7 +477,7 @@ ifns += &
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# xfns 
+# xfns
 #===============================================================================
 
 xfns += &
@@ -501,7 +501,7 @@ xfns += &
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
 #===============================================================================
-# ufns 
+# ufns
 !inject fdefwin.obj                  nt nta ntp         o32         w16 w32
 !inject fintr.obj        d16 d32 dpm                                w16 w32
 !inject fspawn.obj       d16 d32 dpm nt nta ntp nov o16 o32             w32 l32
