@@ -127,7 +127,7 @@ rt += &
     rsubstr.obj &
     rsubscr.obj &
     runmain.obj &
-    rstdio.obj &
+    fstdio.obj &
     stracc.obj &
     subscr.obj &
     substr.obj
