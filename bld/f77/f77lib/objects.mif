@@ -193,7 +193,7 @@ dep_rt += &
     rdata.obj &
     expchk.obj &
     rtmain.obj &
-    rtinit.obj &
+    rt_init.obj &
     rttraps.obj &
     fptraps.obj &
     undefcg.obj &
