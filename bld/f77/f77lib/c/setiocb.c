@@ -38,6 +38,8 @@
 #include "errcod.h"
 #include "rtenv.h"
 #include "thread.h"
+#include "ioinit.h"
+
 
 void SetIOCB( void ) {
 //=========================

@@ -112,7 +112,6 @@ extern void        IOErr( int, ... );
 extern void        IOItemResult( char PGM *, PTYPE );
 extern int         IOMain( void (*)( void ) );
 extern void        IOPrologue( void );
-extern void        IOSysInit( void );
 extern bool        IsFixed( void );
 extern bool        IsCarriage( void );
 extern bool        IsDevice( ftnfile * );

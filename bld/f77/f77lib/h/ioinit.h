@@ -30,40 +30,4 @@
 ****************************************************************************/
 
 
-//
-// IOINIT       : I/O system initialization
-//
-
-#include "ftnstd.h"
-#include "ftnio.h"
-#include "runmain.h"
-#include "ftextfun.h"
-#include "ioinit.h"
-
-#include <stdlib.h>
-
-
-static  char            IOSysInitialized = { 0 };
-
-static  void            IOSysFini( void ) {
-//===================================
-
-// Finalize I/O system.
-
-    RunExit();
-}
-
-
-void            IOSysInit( void ) {
-//===========================
-
-// Initialize I/O system.
-
-    if( IOSysInitialized )
-        return;
-    IOSysInitialized = 1;
-    atexit( &IOSysFini );
-    if( RunEntry() )
-        return;
-    RTSuicide();
-}
+extern void     IOSysInit( void );
