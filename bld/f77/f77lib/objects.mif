@@ -188,7 +188,7 @@ dep_rt += &
     initcoma.obj &
     ioinit.obj &
     rtsysutl.obj &
-    stdio.obj &
+    rstdio.obj &
     sysinq.obj &
     rdata.obj &
     expchk.obj &
