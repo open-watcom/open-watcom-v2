@@ -48,6 +48,8 @@
 #include "fcgmain.h"
 #include "fcstack.h"
 #include "wf77info.h"
+#include "substr.h"
+#include "subscr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -64,8 +66,6 @@
 #include "fltcnv.h"
 #include <string.h>
 
-
-extern  bool            DoSubstring(intstar4,intstar4,int);
 
 extern  void            (* __FAR FCJmpTab[])( void );
 extern  void            (* __FAR DataJmpTab[])( void );

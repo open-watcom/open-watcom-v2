@@ -52,8 +52,6 @@ extern void        CloseDeleteFile( ftnfile * );
 extern void        DfltInq( void );
 extern void        DoFreeIn( void );
 extern void        DoOpen( void );
-extern bool        DoSubstring( intstar4, intstar4, int );
-extern bool        DoSubscript( act_dim_list *, intstar4 *, intstar4 * );
 extern void        Drop( char );
 extern void        ExtractInfo( char *, ftnfile * );
 extern int         ExtractText( char *, int );

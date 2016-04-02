@@ -36,13 +36,13 @@
 #include "progsw.h"
 #include "fmemmgr.h"
 #include "insert.h"
-#include "ftextfun.h"
 #include "comdump.h"
 #include "stresolv.h"
 #include "forcstat.h"
+#include "substr.h"
+#include "subscr.h"
 
 
-extern  bool            DoSubstring(intstar4,intstar4,int);
 extern  void            BIFiniStartOfSubroutine( void );
 
 /* Forward declarations */
@@ -222,7 +222,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     byte        p_type;
     byte        q_type;
 
-    /* if an entry is marked static, then b must be too */    
+    /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
         unsigned_16     sym_flags = a->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
         b->name_equived->u.ns.flags |= sym_flags;

@@ -43,6 +43,8 @@
 #include "chrutils.h"
 #include "rtspawn.h"
 #include "ioerr.h"
+#include "substr.h"
+#include "subscr.h"
 
 #include <string.h>
 #include <ctype.h>
