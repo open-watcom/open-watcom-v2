@@ -37,7 +37,6 @@
 #include "symdefs.h"
 
 extern bool        __Add( intstar4 *arg1, intstar4 *arg2 );
-extern int         __EnableF77RTExceptionHandling( void );
 extern bool        __Sub( intstar4 *arg1, intstar4 *arg2 );
 extern ftnfile     *_InitStandardInput( void );
 extern ftnfile     *_InitStandardOutput( void );
@@ -153,8 +152,6 @@ extern void        R_FOF( void );
 extern void        R_FOE ( int, char );
 extern void        R_FOG( void );
 extern void        R_NewRec( void );
-extern void        R_TrapFini( void );
-extern void        R_TrapInit( void );
 extern void        *RChkAlloc( uint );
 extern bool        RecEOS( void );
 extern void        ReportEOF( ftnfile * );

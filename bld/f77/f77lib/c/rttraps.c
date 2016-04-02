@@ -59,6 +59,7 @@
 #endif
 #include "thread.h"
 #include "fptraps.h"
+#include "rttraps.h"
 
 
 #if defined( __OS2_286__ )

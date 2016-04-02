@@ -36,7 +36,6 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
@@ -45,6 +44,7 @@
 #include "errrtns.h"
 #include "_defwin.h"    /* for _WindowsStdout() declaration */
 #include "thread.h"
+#include "rttraps.h"
 
 
 #if defined( __WINDOWS__ )

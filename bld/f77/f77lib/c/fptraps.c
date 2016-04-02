@@ -35,6 +35,7 @@
 #include "ftextfun.h"
 #include "errcod.h"
 #include "fptraps.h"
+#include "rttraps.h"
 
 
 #if (defined( __386__ ) && defined( __OS2__ )) || defined( __NT__ )

@@ -41,10 +41,8 @@
 #include "ftextfun.h"
 #include "ftnapi.h"
 #include "fthrdini.h"
+#include "rttraps.h"
 
-
-extern  void            R_TrapInit(void);
-extern  void            R_TrapFini(void);
 
 typedef struct {
     void        (*rtn)(void *);
