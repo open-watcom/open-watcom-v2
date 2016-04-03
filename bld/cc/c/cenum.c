@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include "i64.h"
+#include "dumpapi.h"
 
 void EnumInit( void )
 {
@@ -355,4 +356,5 @@ void DumpEnumTable( void )
         printf( "---------%d----------\n", h );
     }
 }
+
 #endif
