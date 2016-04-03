@@ -346,6 +346,7 @@ typedef enum {
                           | TF1_LOADDS
                           | TF1_INTRINSIC
                           | TF1_NAKED
+                          | TF1_NORETURN
                           | TF1_PURE
                           | TF1_EXPLICIT
                           ),
