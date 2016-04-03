@@ -41,6 +41,7 @@
 #include <io.h>
 #include <time.h>
 #include "bool.h"
+#include "watcom.h"
 #include "wpi.h"
 #include "font.h"
 #include "segmem.h"
@@ -58,6 +59,12 @@
 #include "ldstr.h"
 #include "uistr.gh"
 #include "wprocmap.h"
+
+
+/* Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define ISCODE( x )     ((x)->disp_type == MEMINFO_CODE_16 || \
                         (x)->disp_type == MEMINFO_CODE_32)
@@ -95,8 +102,6 @@ static DWORD Disp_Types[] = {
 };
 
 /* forward declarations */
-WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
@@ -819,7 +824,7 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
 /*
  * OffsetProc
  */
-WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                buf[41];
     unsigned long       offset;
@@ -897,7 +902,7 @@ WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 /*
  * MemDisplayProc
  */
-WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC                 dc;
     MemWndInfo          *info;
@@ -1154,7 +1159,7 @@ static void positionSegInfo( HWND hwnd )
 /*
  * SegInfoProc
  */
-WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     HMENU       mh;

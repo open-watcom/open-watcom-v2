@@ -39,13 +39,17 @@
 #include "pushwin.h"
 #include "wprocmap.h"
 
+
+/* Window callback functions prototypes */
+WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define WPI_GET_WNDINFO( w )    ((PushWinInfo *)_wpi_getwindowlongptr( w, 0 ))
 #define WPI_SET_WNDINFO( w, d ) (_wpi_setwindowlongptr( w, 0, d ))
 
 /*
  * PushWinProc - push window procedure
  */
-WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     PushWinInfo         *info;
     PAINTSTRUCT         paint;

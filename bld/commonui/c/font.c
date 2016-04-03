@@ -36,6 +36,16 @@
 #include "font.h"
 #include "wprocmap.h"
 
+
+/* Window callback functions prototypes */
+#if defined( __WINDOWS_386__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+#elif defined( __WINDOWS__ )
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
+#else
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
+#endif
+
 #define MAX_STR 256
 
 static LOGFONT  logFont;
@@ -49,11 +59,11 @@ static char     *fontKey = "Font";
  * EnumFunc - enumerate fonts
  */
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data )
+int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data )
 #elif defined( __WINDOWS__ )
-WINEXPORT int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data )
+int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data )
 #else
-WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
+int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
 #endif
 {
 #ifdef __WINDOWS_386__

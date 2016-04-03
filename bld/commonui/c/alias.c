@@ -45,6 +45,10 @@
 #include "uistr.gh"
 #include "wprocmap.h"
 
+
+/* Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define CONST_LEN       15
 
 static AliasHdl         CurHdl;         /* used for dialog box processing */
@@ -207,7 +211,7 @@ static AnAlias *findAliasFromText( AliasHdl hdl, char *alias )
 /*
  * AliasDlgProc - alias list dialog procedure
  */
-WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     AnAlias     *cur;
     size_t      len;

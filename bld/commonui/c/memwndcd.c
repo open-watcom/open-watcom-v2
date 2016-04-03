@@ -35,11 +35,14 @@
 #include <io.h>
 #include <ctype.h>
 #include "bool.h"
+#include "watcom.h"
 #include "memwnd.h"
 #include "segmem.h"
 #include "sdkasm.h"
 #include "font.h"
 #include "mem.h"
+#include "memwndcd.h"
+
 
 #define MAX_BACKUPS             1000
 #define BYTES_PER_BACKUP        100
@@ -47,15 +50,15 @@
 extern WORD             FontWidth;
 extern WORD             FontHeight;
 
-static DWORD            _Offset;    // conflicts with extern in wdisasm/h/global.h
+static uint_32          _Offset;    // conflicts with extern in wdisasm/h/global.h
 static WORD             Sel;
-static DWORD            Limit;
+static uint_32          Limit;
 static bool             Is32Bit;
 static char             StatBuf[50];
 static DisAsmRtns       DisasmInfo;
 static bool             DisasmRegistered;
 
-static void gotoIns( MemWndInfo *info, DWORD ins_cnt );
+static void gotoIns( MemWndInfo *info, uint_32 ins_cnt );
 
 /*
  * MemWndGetDataByte
@@ -120,7 +123,7 @@ bool MemWndEndOfSegment( void )
 /*
  * MemWndGetOffset
  */
-DWORD MemWndGetOffset( void )
+uint_32 MemWndGetOffset( void )
 {
     return( _Offset );
 
@@ -130,7 +133,7 @@ DWORD MemWndGetOffset( void )
  * MemWndToStr - return a string of length 'length' containing 'value'
  *               in hex notation
  */
-char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
+char *MemWndToStr( uint_32 value, uint_16 len, uint_32 addr )
 {
     int         i;
 
@@ -147,7 +150,7 @@ char *MemWndToStr( uint_32 value, uint_16 len, DWORD addr )
 /*
  * MemWndJmpLabel - return a string containing addr in segment:offset form
  */
-char *MemWndJmpLabel( uint_32 addr, DWORD off )
+char *MemWndJmpLabel( uint_32 addr, uint_32 off )
 {
     unsigned    len;
 
@@ -161,7 +164,7 @@ char *MemWndJmpLabel( uint_32 addr, DWORD off )
 /*
  * MemWndToBrStr - return a string representing 'value' in hex form enclosed in []
  */
-char *MemWndToBrStr( uint_32 value, DWORD addr )
+char *MemWndToBrStr( uint_32 value, uint_32 addr )
 {
     unsigned    len;
 
@@ -195,7 +198,7 @@ char *MemWndToIndex( uint_32 value, uint_32 addr )
 /*
  * MemWndToSegStr - convert to seg:off form
  */
-char *MemWndToSegStr( DWORD value, WORD seg, DWORD addr )
+char *MemWndToSegStr( uint_32 value, WORD seg, uint_32 addr )
 {
     unsigned    len;
 
@@ -279,10 +282,10 @@ bool NeedScrollBar( MemWndInfo *info )
 /*
  * genAsmLine
  */
-static DWORD genAsmLine( MemWndInfo *info, DWORD ins_cnt, char *buf )
+static uint_32 genAsmLine( MemWndInfo *info, uint_32 ins_cnt, char *buf )
 {
     instruction     ins;
-    DWORD           offset;
+    uint_32         offset;
 
     Is32Bit = ( info->disp_type == MEMINFO_CODE_32 );
     Sel = info->sel;
@@ -302,7 +305,7 @@ static DWORD genAsmLine( MemWndInfo *info, DWORD ins_cnt, char *buf )
  */
 static void genBackup( AsmInfo *asm )
 {
-    DWORD       cnt;
+    uint_32     cnt;
     WORD        *wptr;
     instruction ins;
 
@@ -326,13 +329,13 @@ static void genBackup( AsmInfo *asm )
  */
 static void genBigBackup( AsmInfo *asm )
 {
-    DWORD       cnt;
-    DWORD       *dwptr;
+    uint_32     cnt;
+    uint_32     *dwptr;
     instruction ins;
 
     if( asm->usage_cnt < MAX_BACKUPS ) {
         cnt = asm->increment;
-        dwptr = (DWORD *)asm->data;
+        dwptr = (uint_32 *)asm->data;
         _Offset = dwptr[asm->usage_cnt];
         while( cnt > 0 ) {
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
@@ -348,12 +351,12 @@ static void genBigBackup( AsmInfo *asm )
  * GetInsCnt - finds the number of instructions before the one that
  *             straddles offset
  */
-DWORD GetInsCnt( MemWndInfo *info, DWORD offset )
+uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset )
 {
     AsmInfo     *asm;
-    DWORD       *dwptr;
-    DWORD       old_offset;
-    DWORD       ins_cnt;
+    uint_32     *dwptr;
+    uint_32     old_offset;
+    uint_32     ins_cnt;
     WORD        *wptr;
     WORD        i;
     instruction ins;
@@ -363,7 +366,7 @@ DWORD GetInsCnt( MemWndInfo *info, DWORD offset )
     Limit = info->limit;
     asm = info->asm;
     if( asm->big ) {
-        dwptr = (DWORD *)asm->data;
+        dwptr = (uint_32 *)asm->data;
         while( dwptr[asm->usage_cnt] < offset ) {
             if( asm->usage_cnt == MAX_BACKUPS ) {
                 break;
@@ -419,7 +422,7 @@ void ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
     HFONT       old_font;
     HBRUSH      wbrush;
     char        buf[80];
-    DWORD       offset;
+    uint_32     offset;
 
     wparam = wparam;
     pos = pos;
@@ -539,11 +542,11 @@ void ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
  * gotoIns - sets _Offset to the instruction ins_cnt instructions
  *           from the beginning of the item
  */
-static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
+static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
 {
     instruction ins;
-    DWORD       cnt;
-    DWORD       *dwptr;
+    uint_32     cnt;
+    uint_32     *dwptr;
     WORD        *wptr;
     WORD        size;
     WORD        backup_cnt;
@@ -553,7 +556,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
         size = sizeof( AsmInfo );
         backup_cnt = MAX_BACKUPS;
         if( info->limit > 0xffff ) {
-            size += backup_cnt * sizeof( DWORD );
+            size += backup_cnt * sizeof( uint_32 );
         } else {
             size += backup_cnt * sizeof( WORD );
         }
@@ -580,7 +583,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
      */
     if( ins_cnt >= asm->increment * (asm->usage_cnt + 1) && asm != NULL ) {
         if( asm->big ) {
-            dwptr = (DWORD *)asm->data;
+            dwptr = (uint_32 *)asm->data;
             dwptr += asm->usage_cnt;
             _Offset = *dwptr;
             cnt = ins_cnt - (ins_cnt % asm->increment);
@@ -593,7 +596,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
         } else {
             wptr = (WORD *)asm->data;
             wptr += asm->usage_cnt;
-            _Offset = (DWORD)*wptr;
+            _Offset = *(uint_32 *)wptr;
             cnt = ins_cnt - (ins_cnt % asm->increment);
             cnt -= asm->usage_cnt * asm->increment;
             cnt /= asm->increment;
@@ -605,7 +608,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
     }
     if( asm != NULL ) {
         if( asm->big ) {
-            dwptr = (DWORD *)asm->data;
+            dwptr = (uint_32 *)asm->data;
             _Offset = dwptr[ins_cnt / asm->increment];
         } else {
             wptr = (WORD *)asm->data;
@@ -627,7 +630,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt )
  */
 void RedrawAsCode( HDC dc, MemWndInfo *info )
 {
-    DWORD       line;
+    uint_32     line;
     char        buf[80];
     RECT        area;
     HBRUSH      wbrush;

@@ -48,6 +48,11 @@
 #include "wprocmap.h"
 
 
+/* Window callback functions prototypes */
+WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR  CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR  CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static LogInfo          LogCurInfo;
 static char             *BufLines[NO_BUF_LINES];
 static WORD             LinesUsed;
@@ -57,7 +62,7 @@ static WORD             LinesUsed;
 /*
  * LogSaveHook - hook used called by common dialog - for 3D controls
  */
-WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -149,7 +154,7 @@ static void flushLog( bool free )
 /*
  * LogExistsDlgProc - handle the log exists dialog
  */
-WINEXPORT INT_PTR CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -174,7 +179,7 @@ WINEXPORT INT_PTR CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
 /*
  * ConfigLogDlgProc - handle the configure log dialog
  */
-WINEXPORT INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *buf;
 

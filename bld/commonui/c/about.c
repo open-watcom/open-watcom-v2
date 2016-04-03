@@ -49,10 +49,13 @@
 #endif
 
 
+/* Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * AboutProc - callback routine for settings dialog
  */
-WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     LPABOUTINFO pai;

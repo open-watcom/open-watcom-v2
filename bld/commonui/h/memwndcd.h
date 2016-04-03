@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,36 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  Disassembler interface.
+* Description:  Memory display window, with disassembly.
 *
 ****************************************************************************/
 
 
-#ifndef _SDKASM_H_INCLUDED
-#define _SDKASM_H_INCLUDED
-
-#include "standard.h"
-#include "deasm.h"
-
-typedef struct disasmrtns {
-    GetDataByte_func    *GetDataByte;
-    GetDataWord_func    *GetDataWord;
-    GetNextByte_func    *GetNextByte;
-    GetDataLong_func    *GetDataLong;
-    EndOfSegment_func   *EndOfSegment;
-    GetOffset_func      *GetOffset;
-    DoWtk_func          *DoWtk;
-    IsWtk_func          *IsWtk;
-    ToStr_func          *ToStr;
-    JmpLabel_func       *JmpLabel;
-    ToBrStr_func        *ToBrStr;
-    ToIndex_func        *ToIndex;
-    ToSegStr_func       *ToSegStr;
-    GetWtkInsName_func  *GetWtkInsName;
-} DisAsmRtns;
-
-extern void     RegisterRtns( DisAsmRtns *rtns );
-extern void     MiscDoCode( instruction *, bool, DisAsmRtns * );
-extern void     MiscFormatIns( char *, instruction *, form_option, DisAsmRtns * );
-
-#endif /* _SDKASM_H_INCLUDED */
+extern GetDataByte_func   MemWndGetDataByte;
+extern GetDataWord_func   MemWndGetDataWord;
+extern GetNextByte_func   MemWndGetNextByte;
+extern GetDataLong_func   MemWndGetDataLong;
+extern EndOfSegment_func  MemWndEndOfSegment;
+extern GetOffset_func     MemWndGetOffset;
+extern ToStr_func         MemWndToStr;
+extern JmpLabel_func      MemWndJmpLabel;
+extern ToBrStr_func       MemWndToBrStr;
+extern ToIndex_func       MemWndToIndex;
+extern ToSegStr_func      MemWndToSegStr;
+extern GetWtkInsName_func MemWndGetWtkInsName;
+extern DoWtk_func         MemWndDoWtk;
+extern IsWtk_func         MemWndIsWtk;

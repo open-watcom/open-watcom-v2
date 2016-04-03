@@ -41,6 +41,16 @@
 #include "wprocmap.h"
 
 
+/* Window callback functions prototypes */
+WINEXPORT WPI_MRESULT CALLBACK  ToolBarWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+#ifdef __NT__
+WINEXPORT LRESULT CALLBACK      WinToolWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT LRESULT CALLBACK      ToolContainerWndProc( HWND, UINT, WPARAM, LPARAM );
+#endif
+#ifdef __OS2__
+WINEXPORT WPI_MRESULT CALLBACK  FrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+#endif
+
 #define HNULL                   0
 
 #define BORDER_WIDTH( bar )     1
@@ -56,15 +66,6 @@ typedef int     tb_idx;
 
 #ifdef __NT__
 HBITMAP TB_CreateTransparentBitmap( HBITMAP, int, int );
-#endif
-
-WINEXPORT WPI_MRESULT CALLBACK    ToolBarWndProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-#ifdef __NT__
-WINEXPORT LRESULT CALLBACK    WinToolWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT LRESULT CALLBACK    ToolContainerWndProc( HWND, UINT, WPARAM, LPARAM );
-#endif
-#ifdef __OS2__
-WINEXPORT WPI_MRESULT CALLBACK FrameProc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 #endif
 
 static char     *className = "WTool";
@@ -647,7 +648,7 @@ bool ToolBarDeleteItem( toolbar *bar, ctl_id id )
 /*
  * FrameProc - frame procedure for use on OS/2 PM
  */
-WINEXPORT WPI_MRESULT CALLBACK FrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK FrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND        client;
 
@@ -1369,7 +1370,7 @@ bool FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, ctl_
 /*
  * ToolBarWndProc - callback routine for the tool bar
  */
-WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     toolbar         *bar;
     tool            *tool;
@@ -1538,7 +1539,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
 /*
  * WinToolWndProc - callback for native toolbars
  */
-WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     toolbar         *bar;
     ctl_id          id;
@@ -1603,7 +1604,7 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
 /*
  * ToolContainerWndProc - window procedure for the frame window containing a native toolbar
  */
-WINEXPORT LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        otherwnd;
     toolbar     *bar;
