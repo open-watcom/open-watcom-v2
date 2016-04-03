@@ -30,16 +30,19 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef __WATCOMC__
 #include <malloc.h>
 #include <process.h>
 #endif
+#include "bool.h"
+#include "dbg.h"
 
 
 typedef struct                  // ALLOCED -- allocated entry
-{   void *_pentry;        	    // - entry
+{   void *_pentry;                  // - entry
     size_t _size;               // - size
 } ALLOCED;
 

@@ -415,7 +415,7 @@ SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
 #ifndef NDEBUG
 
 
-void DbgDumpTypeSigEnt(         // DUMP TYPE_SIG_ENT entries
+static void DbgDumpTypeSigEnt(  // DUMP TYPE_SIG_ENT entries
     TYPE_SIG_ENT* hdr )         // - first entry
 {
     TYPE_SIG_ENT* sig;          // - current entry

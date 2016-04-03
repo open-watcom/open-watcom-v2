@@ -59,6 +59,8 @@
 #include "icopmask.h"
 #include "pragdefn.h"
 #include "rtti.h"
+#include "dbgdumpf.h"
+
 
 #ifndef NDEBUG
     #include "dbg.h"

@@ -292,7 +292,7 @@ SYMBOL_NAME HashLookup( HASHTAB hash, NAME name )
 
 
 #ifndef NDEBUG
-double dragonStat( HASHTAB hash )
+static double dragonStat( HASHTAB hash )
 /*******************************/
 {
     unsigned i;

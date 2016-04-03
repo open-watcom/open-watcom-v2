@@ -42,6 +42,8 @@
 #include "cdopt.h"
 #include "reposit.h"
 #include "scoperes.h"
+#include "dbgdumpf.h"
+
 
 //typedef struct unr_usage        UNR_USAGE;          // unresolved usage
 typedef struct scope_res        SCOPE_RES;          // unresolved scope

@@ -40,8 +40,11 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
+#include "dbgdumpf.h"
+
 
 typedef struct ibrp IBRP;
+
 struct ibrp                     // IBRP -- inline bound reference parameters
 {   IBRP *next;                 // - next in ring
     cg_name handle;             // - handle of called function
@@ -96,7 +99,7 @@ static unsigned parm_no;            // parm # being defined
         return ibrps == NULL;
     }
 
-    void IbpDump()                  // DEBUG -- dump all entries
+    void IbpDump( void )            // DEBUG -- dump all entries
     {
         if( IbpEmpty() ) {
             printf( "IBRP -- no bound references\n" );

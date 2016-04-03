@@ -84,6 +84,9 @@ const char *DbgOperator(        // GET CGOP NAME
 void DbgPrintPTREE(             // PRINT A PARSE-TREE BEAUTIFULLY
     PTREE root )                // - root of tree to be printed
 ;
+void DbgPrintPTREEtyped(        // PRINT BEAUTIFUL PTREE, WITH TYPES
+    PTREE root )                // - root of tree
+;
 void DbgRedirectBeg             // START REDIRECTION
     ( void )
 ;

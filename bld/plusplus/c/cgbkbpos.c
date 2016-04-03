@@ -40,6 +40,8 @@
 #include "toggle.h"
 #include "vstk.h"
 #include "initdefs.h"
+#include "dbgdumpf.h"
+
 
 struct blk_posn                 // BLK_POSN -- current block position
 {   SCOPE scope;                // - defining scope
@@ -59,7 +61,7 @@ static VSTK_CTL stack_blk_posn;     // stack: current block position
     #include "pragdefn.h"
 
 
-void DbgDumpBlkPosn(            // DUMP A BLK_POSN
+static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
     BLK_POSN* bpos,             // - entry
     const char* text )          // - text
 {

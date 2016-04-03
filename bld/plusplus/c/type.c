@@ -62,6 +62,8 @@
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
+#include "dbgdumpf.h"
+
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
 #define TYPE_HASH_MASK          (TYPE_HASH_MODULUS-1)// mask for above modulus
@@ -1559,7 +1561,7 @@ static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
     return vector;
 }
 
-void dumpTypeTables( void )
+void DumpTypeTables( void )
 {
     DUMP_STATS stats;
     int i;

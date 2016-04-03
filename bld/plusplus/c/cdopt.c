@@ -221,13 +221,13 @@ static const char *cdopt_names[] = {
     #undef CDO_DEF
 };
 
-
+#if 0
 static const char *tis_names[] = {
     #define TIS_DEF(a) # a
     TIS_DEFS
     #undef TIS_DEF
 };
-
+#endif
 
 static const char *titer_names[] = {
     #define TITER_DEF(a) # a
@@ -236,31 +236,31 @@ static const char *titer_names[] = {
 };
 
 
-const char *__fmt_TOB( TOB tob )    // FORMAT TOB
+static const char *__fmt_TOB( TOB tob )    // FORMAT TOB
 {
     return ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[ tob ];
 }
 
 
-const char *__fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
+static const char *__fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
 {
     return ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[ cdot ];
 }
 
-
-const char *__fmt_TIS( TIS tis )
+#if 0
+static const char *__fmt_TIS( TIS tis )
 {
     return ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[ tis ];
 }
+#endif
 
-
-const char *__fmt_TITER( TITER val )
+static const char *__fmt_TITER( TITER val )
 {
     return ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[ val ];
 }
 
 
-void DumpCdoptIter(             // DUMP ITERATOR
+static void DumpCdoptIter(      // DUMP ITERATOR
     CDOPT_ITER* iter,           // - iterator
     const char* text1,          // - and some text
     const char* text2 )         // - and some text
@@ -283,7 +283,7 @@ void DumpCdoptIter(             // DUMP ITERATOR
 }
 
 
-void DumpCdoptClElem(           // DUMP A CLASS ELEMENT
+static void DumpCdoptClElem(    // DUMP A CLASS ELEMENT
     CL_ELEM* elem )             // - the element
 {
     if( elem != NULL ) {
@@ -311,7 +311,7 @@ void DumpCdoptClElem(           // DUMP A CLASS ELEMENT
 }
 
 
-void DumpCdoptInfo(             // DUMP CD_DESCR
+static void DumpCdoptInfo(      // DUMP CD_DESCR
     CD_DESCR *info )            // - control information
 {
     CL_ELEM* elem;              // - current element
@@ -341,7 +341,7 @@ void DumpCdoptInfo(             // DUMP CD_DESCR
     }
 }
 
-void DumpCdoptIn(               // DUMP INPUT STACK ENTRY
+static void DumpCdoptIn(        // DUMP INPUT STACK ENTRY
     STKIN *inp,                 // - input stack
     const char* text )          // - descriptive text
 {
@@ -356,7 +356,7 @@ void DumpCdoptIn(               // DUMP INPUT STACK ENTRY
 }
 
 
-void DumpClIter(                // DUMP STACK ENTRY
+static void DumpClIter(         // DUMP STACK ENTRY
     CL_ITER* exp,               // - stack entry
     const char* text )          // - and some text
 {
@@ -384,7 +384,7 @@ static void dumpRing(           // DUMP A RING
 }
 
 
-void DumpCdoptCaches(           // DUMP CDOPT CACHES
+static void DumpCdoptCaches(    // DUMP CDOPT CACHES
     void )
 {
     int saved = PragDbgToggle.cdopt;
