@@ -89,7 +89,7 @@ struct free_t {
     }
 
 #ifndef NDEBUG
-bool    restoreFromZapped( cv_t *cv )
+static bool    restoreFromZapped( cv_t *cv )
 {
     unsigned elm_size;
     free_t *free_list;
@@ -259,7 +259,7 @@ static blk_t *withinABlock( carve_t cv, void *elm )
     return( NULL );
 }
 
-void CarveDebugFree( carve_t cv, void *elm )
+static void CarveDebugFree( carve_t cv, void *elm )
 {
     free_t *check;
     blk_t *block;
