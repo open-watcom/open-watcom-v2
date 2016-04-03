@@ -729,7 +729,7 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
 /*
  * FreeLinkInfo - free memory holding information about a link
  */
-void FreeLinkInfo( LinkInfo *info )
+static void FreeLinkInfo( LinkInfo *info )
 {
     MemFree( info->service );
     MemFree( info->topic );

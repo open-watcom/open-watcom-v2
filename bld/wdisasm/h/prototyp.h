@@ -76,7 +76,7 @@ extern void EmitLoc( void );
 extern void EmitBytes( void );
 extern void EmitSrc( void );
 extern void InitAsm( void );
-extern bool IsWtk( instruction * );
+extern bool IsWtk( void );
 extern void FiniAsm( void );
 extern void EmitDups( void );
 extern char *SegName( void );

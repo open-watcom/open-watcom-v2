@@ -413,15 +413,16 @@ DWORD DrWatGetOffset( void )
 
 } /* DrWatGetOffset */
 
-char *DrWatGetWtkInsName( unsigned ins ) {
+char *DrWatGetWtkInsName( uint_16 ins ) {
     ins = ins; return( "" );
 }
 
 void DrWatDoWtk( void ) {
 }
 
-int DrWatIsWtk() {
-    return( 0 );
+bool DrWatIsWtk( void )
+{
+    return( false );
 }
 
 /*

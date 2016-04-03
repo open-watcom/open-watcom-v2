@@ -55,23 +55,22 @@ static operand  LocalOp[ 3 ];
  *          one step further in finding the offset.
  */
 #if defined( O2A )
-bool IsWtk( instruction * curr_ins )
-//=================================
+bool IsWtk( void )
+//================
 {
-    operand *   op  = &curr_ins->op[ curr_ins->mem_ref_op ];
+    operand *   op  = &CurrIns->op[ CurrIns->mem_ref_op ];
     char *      sym = FindSymbol( InsAddr + op->offset );
     bool        retn = false;
 
-    if( /* Pass == 2  &&   so that didAnyWtk can be set */
-        ( Options & FORM_DO_WTK ) ) {
+    if( /* Pass == 2 && so that didAnyWtk can be set */ ( Options & FORM_DO_WTK ) ) {
         if( strstr( sym, WTLBASEStr ) != NULL ) {
-            fixup *     fix = FindFixup( InsAddr + op->offset, Segment );
+            fixup *fix = FindFixup( InsAddr + op->offset, Segment );
             if( fix != NULL ) {
                 WtkAddr = fix->imp_address + ( fix->seg_address << 4 );
                 retn = true;
             }
-        } else if( WtlsegPresent  &&  ( curr_ins->pref & PREF_FS )  &&
-                   curr_ins->seg_used == FS_REG  &&  sym == NULL ) {
+        } else if( WtlsegPresent && ( CurrIns->pref & PREF_FS ) &&
+                   CurrIns->seg_used == FS_REG && sym == NULL ) {
             WtkAddr = op->disp;
             retn = true;
         }

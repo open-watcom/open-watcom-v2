@@ -212,7 +212,7 @@ char *MemWndToSegStr( uint_32 value, WORD seg, uint_32 addr )
 /*
  * MemWndGetWtkInsName
  */
-char *MemWndGetWtkInsName( unsigned ins )
+char *MemWndGetWtkInsName( uint_16 ins )
 {
     ins = ins;
     return( "" );
@@ -229,9 +229,9 @@ void MemWndDoWtk( void )
 /*
  * MemWndIsWtk
  */
-int MemWndIsWtk( void )
+bool MemWndIsWtk( void )
 {
-    return( 0 );
+    return( false );
 
 } /* MemWndIsWtk */
 

@@ -182,7 +182,7 @@ char *ToSegStr( uint_32 value, uint_16 seg, uint_32 addr )
 /*
  * GetWtkInsName
  */
-char *GetWtkInsName( unsigned ins )
+char *GetWtkInsName( uint_16 ins )
 {
     return( CurRtns->GetWtkInsName( ins ) );
 
@@ -200,7 +200,7 @@ void DoWtk( void )
 /*
  * IsWtk
  */
-int IsWtk( void )
+bool IsWtk( void )
 {
     return( CurRtns->IsWtk() );
 

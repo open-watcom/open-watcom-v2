@@ -60,15 +60,13 @@ static AnAlias *findAlias( AliasHdl hdl, unsigned long id )
 {
     AnAlias     *cur;
 
-    cur = hdl->data;
-    while( cur != NULL ) {
+    for( cur = hdl->data; cur != NULL; cur = cur->next ) {
         if( cur->id == id ) {
             return( cur );
         }
         if( cur->id > id ) {
             break;
         }
-        cur = cur->next;
     }
     return( NULL );
 
@@ -147,14 +145,12 @@ void AddAlias( AliasHdl hdl, char *text, unsigned long id )
 void FreeAlias( AliasHdl hdl )
 {
     AnAlias     *cur;
-    AnAlias     *tmp;
+    AnAlias     *next;
 
-    cur = hdl->data;
-    while( cur != NULL ) {
+    for( cur = hdl->data; cur != NULL; cur = next ) {
+        next = cur->next;
         MemFree( cur->name );
-        tmp = cur;
-        cur = cur->next;
-        MemFree( tmp );
+        MemFree( cur );
     }
     MemFree( hdl );
 
@@ -197,12 +193,10 @@ static AnAlias *findAliasFromText( AliasHdl hdl, char *alias )
 {
     AnAlias     *cur;
 
-    cur = hdl->data;
-    while( cur != NULL ) {
+    for( cur = hdl->data; cur != NULL; cur = cur->next ) {
         if( !strcmp( alias, cur->name ) ) {
             break;
         }
-        cur = cur->next;
     }
     return( cur );
 
@@ -226,15 +220,13 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
     switch( msg ) {
     case WM_INITDIALOG:
-        cur = CurHdl->data;
         if( (char *)lparam != NULL ) {
             SetWindowText( hwnd, (char *)lparam );
         }
         SendDlgItemMessage( hwnd, ALIAS_TEXT, EM_LIMITTEXT, 20, 0 );
-        while( cur != NULL ) {
-            sprintf( buf, "0x%08X", cur->id );
+        for( cur = CurHdl->data; cur != NULL; cur = cur->next ) {
+            sprintf( buf, "0x%08lX", cur->id );
             SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (LPARAM)buf );
-            cur = cur->next;
         }
         break;
 #ifndef NOUSE3D
@@ -284,7 +276,7 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 if( cur == NULL ) {
                     AddAlias( CurHdl, alias, id );
                 } else {
-                    RCsprintf( msgbuf, ALIAS_NO_DUPLICATES_ALLOWED, alias, (DWORD)cur->id );
+                    RCsprintf( msgbuf, ALIAS_NO_DUPLICATES_ALLOWED, alias, cur->id );
                     MessageBox( hwnd, msgbuf, "", MB_OK );
                     MemFree( alias );
                     break;
@@ -341,11 +333,9 @@ void EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ),
 {
     AnAlias     *cur;
 
-    cur = hdl->data;
-    while( cur != NULL ) {
+    for( cur = hdl->data; cur != NULL; cur = cur->next ) {
         enumfn( cur->id, cur->name, userdata );
-        cur = cur->next;
     }
-    enumfn( (DWORD)-1, NULL, userdata );
+    enumfn( (unsigned long)-1L, NULL, userdata );
 
 } /* EnumAliases */
