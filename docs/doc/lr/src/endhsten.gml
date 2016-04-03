@@ -1,7 +1,7 @@
 .func endhostent
 .synop begin
 #include <netdb.h>
-void endhostent( );
+void endhostent( void );
 .synop end
 .desc begin
 The

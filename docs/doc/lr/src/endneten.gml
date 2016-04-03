@@ -1,7 +1,7 @@
 .func endnetent
 .synop begin
 #include <netdb.h>
-void endnetent( );
+void endnetent( void );
 .synop end
 .desc begin
 The

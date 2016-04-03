@@ -1,33 +1,35 @@
-.func getpid
+.func getpid _getpid
 .synop begin
-#include <process.h>
-int getpid(void);
+#include <sys/types.h>
+#include <unistd.h>
+pid_t getpid( void );
+.if &'length(&_func.) ne 0 .do begin
+pid_t _getpid( void );
+.do end
 .synop end
 .desc begin
 The
 .id &funcb.
-function returns the process id for the current process.
+function returns the process ID for the current process.
 .desc end
 .return begin
-The
-.id &funcb.
-function returns the process id for the current process.
+The process ID for the current process.
 .return end
-.* .see begin
-.* .seelist getpid _threadid
-.* .see end
+.see begin
+.seelist getpid getppid gettid
+.see end
 .exmp begin
+/*
+ * print out the ID of this process
+ */
 #include <stdio.h>
-#include <process.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-void main()
+int main( void )
   {
-    unsigned int process_id;
-    auto char filename[13];
-.exmp break
-    process_id = getpid();
-    /* use this to create a unique file name */
-    sprintf( filename, "TMP%4.4x.TMP", process_id );
+    printf( "I'm process %d\n", getpid() );
+    return( 0 );
   }
 .exmp end
 .class POSIX 1003.1

@@ -1,7 +1,7 @@
 .func endservent
 .synop begin
 #include <netdb.h>
-void endservent( );
+void endservent( void );
 .synop end
 .desc begin
 The

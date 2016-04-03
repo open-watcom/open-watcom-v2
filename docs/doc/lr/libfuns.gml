@@ -436,14 +436,14 @@
 .fnc getdelim                   getdelim.gml    DOS QNX W WIN32
 .fnc _getdiskfree               getdiskf.gml    DOS       WIN32
 .fnc _getdrive                  getdrive.gml    DOS       WIN32
-.fnc getegid                    getegid.gml         QXO
+.fnc getegid                    getegid.gml     DOS QXO
 .fnc getenv                     getenv.gml      DOS QNX W WIN32
 .fnw _wgetenv                   getenv.gml      DOS QNX W WIN32
 .fnc getenv_s                   getenv_s.gml    DOS QNX W WIN32
-.fnc geteuid                    geteuid.gml         QXO
+.fnc geteuid                    geteuid.gml     DOS QXO
 .fnc _getfillmask               gr_getfm.gml    DOS QNX W GRAPH
 .fnc _getfontinfo               gr_getfi.gml    DOS QNX W GRAPH
-.fnc getgid                     getgid.gml          QXO
+.fnc getgid                     getgid.gml      DOS QXO
 .fnc getgrent                   getgrent.gml        QXO
 .fnc endgrent                   getgrent.gml        QXO
 .fnc setgrent                   getgrent.gml        QXO
@@ -474,7 +474,7 @@
 .fnc _getpixel                  gr_getpx.gml    DOS QNX W GRAPH
 .fnc _getpixel_w                gr_getpx.gml    DOS QNX W GRAPH
 .fnc _getplotaction             gr_getpa.gml    DOS QNX W GRAPH
-.fnc getppid                    getppid.gml         QXO
+.fnc getppid                    getppid.gml     DOS QXO
 .fnc getprio                    getprio.gml         QXO
 .fnc getprotobyname             gtpronam.gml    DOS     W WIN32
 .fnc getprotobynumber           gtpronum.gml    DOS     W WIN32
@@ -495,7 +495,7 @@
 .fnc _gettextsettings           gr_getts.gml    DOS QNX W GRAPH
 .fnc _gettextwindow             gr_gettw.gml    DOS QNX W GRAPH
 .fnc gettid                     gettid.gml      DOS QXO   WIN32
-.fnc getuid                     getuid.gml          QXO
+.fnc getuid                     getuid.gml      DOS QXO
 .fnc _getvideoconfig            gr_getvc.gml    DOS QNX W GRAPH
 .fnc _getviewcoord              gr_getlc.gml    DOS QNX W GRAPH
 .fnc _getviewcoord_w            gr_getlc.gml    DOS QNX W GRAPH

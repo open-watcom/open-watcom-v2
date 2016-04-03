@@ -7,7 +7,7 @@ struct passwd *getpwuid( uit_t uid );
 The
 .id &funcb.
 function locates and returns a parsed password database entry
-for the user with the specified user id.  If a matching entry is
+for the user with the specified user ID.  If a matching entry is
 not found or an error occurs, a null pointer will be returned.
 .np
 The structure returned is defined as:
@@ -45,7 +45,7 @@ A matching parsed password database entry, or NULL if no match is found.
 .exmp begin
 .blktext begin
 The following program will locate and print out the user name corresponding
-to a user id of 1000.
+to a user ID of 1000.
 .blktext end
 .blkcode begin
 #include <stdio.h>
@@ -54,7 +54,7 @@ to a user id of 1000.
 void main()
   {
     struct passwd *pw;
-    
+
     pw = getpwuid( (uid_t)1000 );
     if(pw)
         printf("The corresponding username is '%s'\n", pw->pw_name);

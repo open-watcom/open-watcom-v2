@@ -1,7 +1,7 @@
 .func sethostent
 .synop begin
 #include <netdb.h>
-void sethostent(int stayopen);
+void sethostent( int stayopen );
 .synop end
 .desc begin
 The

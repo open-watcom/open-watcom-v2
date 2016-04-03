@@ -38,9 +38,9 @@ The following bits may also be specified in
 .termhd1 Permission
 .termhd2 Meaning
 .term S_ISUID
-set user id on execution
+set user ID on execution
 .term S_ISGID
-set group id on execution
+set group ID on execution
 .endterm
 .np
 If the calling process does not have appropriate privileges,

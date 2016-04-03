@@ -1794,7 +1794,7 @@ These functions provide memory mapping capabilities.
 .fd *fun="tcgetattr" get terminal attributes
 .fd *fun="tcgetpgrp" return value of process group ID of the foreground process group associated with the terminal
 .fd *fun="tcsetattr" set terminal attributes
-.fd *fun="tcsetct" make the terminal device, associated with the specified file descriptor, a controlling terminal which is associated with the specified process id
+.fd *fun="tcsetct" make the terminal device, associated with the specified file descriptor, a controlling terminal which is associated with the specified process ID
 .fd *fun="tcsetpgrp" set foreground process group ID associated with the terminal
 .fd *fun="tcsendbreak" transmit a terminal "break" for a specified time
 .fdend
