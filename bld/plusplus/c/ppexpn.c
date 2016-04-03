@@ -38,7 +38,7 @@
 #include "stack.h"
 #include "initdefs.h"
 #include "carve.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 #define L       I64LO32

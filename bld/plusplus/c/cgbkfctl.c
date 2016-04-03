@@ -42,7 +42,7 @@
 #ifndef NDEBUG
     #include "dbg.h"
 #endif
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 static VSTK_CTL stack_files;        // stack: files

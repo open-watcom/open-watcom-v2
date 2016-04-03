@@ -30,16 +30,18 @@
 
 
 #ifndef NDEBUG
-extern void CallGraphDump( void );
-extern void DumpBlkPosns( void );
-extern void FnctlDump( void );
-extern void IbpDump( void );
-extern void DumpUnresolved( void );
-extern void CgFileDump( void );
-extern void DumpClasses( void );
-extern void DumpNestedMacros( void );
-extern void DbgDumpOperatorStack( void );
-extern void DbgDumpOperandStack( void );
-extern void DumpTypeTables( void );
-extern void DumpOfRefs( void );
+
+extern void     CallGraphDump( void );
+extern void     DumpBlkPosns( void );
+extern void     FnctlDump( void );
+extern void     IbpDump( void );
+extern void     DumpUnresolved( void );
+extern void     CgFileDump( void );
+extern void     DumpClasses( void );
+extern void     DumpNestedMacros( void );
+extern void     DbgDumpOperatorStack( void );
+extern void     DbgDumpOperandStack( void );
+extern void     DumpTypeTables( void );
+extern void     DumpOfRefs( void );
+
 #endif

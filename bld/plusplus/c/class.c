@@ -48,7 +48,7 @@
 #include "class.h"
 #include "brinfo.h"
 #include "pragdefn.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 #include "clibext.h"
 

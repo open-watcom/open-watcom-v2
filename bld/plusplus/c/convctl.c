@@ -35,7 +35,7 @@
 #include "convctl.h"
 #include "template.h"
 #include "class.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 static CNV_DIAG diagImpossible  // DIAGNOSIS FOR IMPOSSIBLE CONVERT FAILURE

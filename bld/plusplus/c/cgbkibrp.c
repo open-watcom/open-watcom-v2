@@ -40,7 +40,7 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 typedef struct ibrp IBRP;

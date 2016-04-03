@@ -43,7 +43,7 @@
 #include "ioptypes.h"
 #include "stats.h"
 #include "module.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 static CGFILE *cg_file_ring;    // ring of virtual files (live)

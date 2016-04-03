@@ -62,7 +62,7 @@
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed

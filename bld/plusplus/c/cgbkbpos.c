@@ -40,7 +40,7 @@
 #include "toggle.h"
 #include "vstk.h"
 #include "initdefs.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 struct blk_posn                 // BLK_POSN -- current block position

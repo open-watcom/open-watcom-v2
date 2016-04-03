@@ -59,7 +59,7 @@
 #include "icopmask.h"
 #include "pragdefn.h"
 #include "rtti.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 #ifndef NDEBUG

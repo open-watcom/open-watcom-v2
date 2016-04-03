@@ -40,7 +40,7 @@
 #include "initdefs.h"
 #include "yydriver.h"
 #include "carve.h"
-#include "dbgdumpf.h"
+#include "dumpapi.h"
 
 
 #define T_UNEXPANDABLE_ID       T_LAST_TOKEN
