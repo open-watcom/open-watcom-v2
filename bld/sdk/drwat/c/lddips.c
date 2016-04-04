@@ -32,7 +32,6 @@
 
 
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "dip.h"
 #include "dipload.h"

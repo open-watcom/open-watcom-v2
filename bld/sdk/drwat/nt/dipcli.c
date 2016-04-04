@@ -35,12 +35,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "dip.h"
 #include "dipcli.h"
 #include "mem.h"
-#include "drwatcom.h"
 
 /*
  * mapAddress

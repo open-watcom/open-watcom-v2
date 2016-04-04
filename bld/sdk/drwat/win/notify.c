@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "bool.h"
 #include "drwatcom.h"
 
 typedef struct {

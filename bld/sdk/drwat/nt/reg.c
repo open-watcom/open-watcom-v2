@@ -31,10 +31,8 @@
 
 
 #include <stdio.h>
-#include <windows.h>
 #include <process.h>
 #include <ctype.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 

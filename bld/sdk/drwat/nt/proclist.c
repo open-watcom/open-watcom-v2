@@ -31,9 +31,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "priority.h"

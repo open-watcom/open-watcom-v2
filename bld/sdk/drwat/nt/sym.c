@@ -31,7 +31,6 @@
 
 
 #include <io.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 #include "mad.h"

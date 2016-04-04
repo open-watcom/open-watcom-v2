@@ -30,18 +30,15 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "srchmsg.h"
 #include "madrtn.h"
 #include "madx86.h"
-
 #include <string.h>
 #include "dip.h"
 #include <malloc.h>
 #include "madsys1.h"
 #include "madcli.h"
-#include "drwatcom.h"
 
 msglist MADMsgs[] = {
     #define pick( r, e, j ) MAD_##r,(char *)(pointer_int)r,

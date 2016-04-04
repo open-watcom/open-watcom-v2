@@ -36,9 +36,8 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 #include "dump.h"
 #include "tinyio.h"
 #include "getcsip.h"

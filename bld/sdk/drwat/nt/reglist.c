@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "regstr.h"
 #include "reglist.h"
-#include "drwatcom.h"
 #include "mem.h"
 #include <malloc.h>
 #include "bitman.h"

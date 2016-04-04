@@ -35,7 +35,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <dos.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "sdkasm.h"
 

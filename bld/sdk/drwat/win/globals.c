@@ -31,9 +31,8 @@
 
 
 #include <stdlib.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 
 interrupt_struct        IntData;
 HTASK                   DeadTask;

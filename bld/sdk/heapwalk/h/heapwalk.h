@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include "commonui.h"
 #include "bool.h"
+#include "watcom.h"
 #include "heapwlk.h"
 #include "hwbiglb.h"
 #include "segmem.h"

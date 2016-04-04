@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
-#include "font.h"
 #include "drwatcom.h"
+#include "font.h"
 #include "intdlg.h"
 #include "inipath.h"
 #include "watini.h"

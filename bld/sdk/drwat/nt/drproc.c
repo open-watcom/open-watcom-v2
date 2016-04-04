@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "bool.h"
 #include "drwatcom.h"
 #include "menu.h"
 #include "aboutdlg.h"

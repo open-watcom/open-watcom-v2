@@ -31,7 +31,6 @@
 
 
 #include <stdlib.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "notelog.h"
 #include "jdlg.h"

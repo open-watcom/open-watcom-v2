@@ -31,6 +31,7 @@
 
 
 #include "commonui.h"
+#include "bool.h"
 #include "pmdbg.h"
 #include "const.h"
 #include "intdlg.h"
@@ -47,7 +48,6 @@
 #include "segmem.h"
 #include "ismod32.h"
 #include "di386.h"
-#include "memwnd.h"
 #include "listbox.h"
 #include "rcstr.gh"
 #include "ldstr.h"

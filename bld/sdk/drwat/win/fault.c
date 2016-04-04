@@ -34,9 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 #include "intdata.h"
 #include "jdlg.h"
 

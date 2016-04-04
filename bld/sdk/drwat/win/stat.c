@@ -36,11 +36,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "watcom.h"
+#include "wdebug.h"
 #include "segmap.h"
 #include "jdlg.h"
+#include "memwnd.h"
 
 static ADDRESS          currAddr;
 static ADDRESS          firstAddr;

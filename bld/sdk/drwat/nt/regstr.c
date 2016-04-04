@@ -31,12 +31,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>
-#include "drwatcom.h"
 #include "mem.h"
 #include "regcmbo.h"
 #include "jdlg.h"

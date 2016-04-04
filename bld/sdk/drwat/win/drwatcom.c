@@ -35,10 +35,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
-#include "bool.h"
 #include "drwatcom.h"
+#include "watcom.h"
 #include "wdebug.h"
 #include "jdlg.h"
+#include "memwnd.h"
 
 static char     className[] = "drwatcom";
 static FARPROC  faultFN, notifyFN;

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "savelbox.h"
 #include "mark.h"

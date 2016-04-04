@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "segmap.h"
 #include "jdlg.h"
@@ -44,6 +43,7 @@
 #include "madrtn.h"
 #include "madcli.h"
 #include "reglist.h"
+#include "memwnd.h"
 
 typedef struct{
     address curr_addr;

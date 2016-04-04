@@ -38,11 +38,9 @@
 #define MD_axp
 #endif
 
-#include "bool.h"
+#include "drwatcom.h"
 #include "mad.h"
 #include "madcli.h"
-#include "drwatcom.h"
-#include <windows.h>
 #include "mem.h"
 
 size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )

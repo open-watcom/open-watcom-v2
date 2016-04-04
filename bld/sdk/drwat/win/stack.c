@@ -34,9 +34,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <dos.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 #include "jdlg.h"
 
 typedef struct x {

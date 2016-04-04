@@ -40,7 +40,6 @@
 #include <io.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "intdlg.h"

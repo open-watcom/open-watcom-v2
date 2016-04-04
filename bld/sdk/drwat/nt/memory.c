@@ -31,9 +31,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 #include "memory.h"

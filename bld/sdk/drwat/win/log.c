@@ -38,10 +38,9 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "tinyio.h"
 #include "wdebug.h"
-#include "drwatcom.h"
 #include "commdlg.h"
 #include "jdlg.h"
 

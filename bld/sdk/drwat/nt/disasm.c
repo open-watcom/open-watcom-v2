@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
-#include "mad.h"
 #include "drwatcom.h"
+#include "mad.h"
 #include "madcli.h"
 #include <malloc.h>
 #include <string.h>

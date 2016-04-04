@@ -32,7 +32,6 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 #include "menu.h"
