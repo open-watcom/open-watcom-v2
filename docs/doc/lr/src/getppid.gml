@@ -1,6 +1,8 @@
 .func getppid
 .synop begin
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 pid_t getppid(void);
 .synop end
@@ -20,7 +22,9 @@ The process parent's process ID.
  * Print the parent's process ID.
  */
 #include <stdio.h>
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 
 int main( void )

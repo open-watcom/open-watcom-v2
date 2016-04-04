@@ -1,6 +1,8 @@
 .func getgid
 .synop begin
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 gid_t getgid( void );
 .synop end
@@ -20,7 +22,9 @@ The group ID for the current process.
  * Print the group ID of the process.
  */
 #include <stdio.h>
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 
 int main( void )

@@ -1540,14 +1540,14 @@ system variables.
 .fd *fun="ctermid" return name of controlling terminal
 .fd *fun="cuserid" generate login name of process owner
 .fd *fun="getcmd" get command line
-.fd *fun="getegid" get effective group ID
+.fd *fun="getegid" get effective group ID of calling process
 .fd *fun="getenv" get environment variable value
 .fd *fun="geteuid" get effective user ID
-.fd *fun="getgid" get real group ID
+.fd *fun="getgid" get real group ID of calling process
 .fd *fun="getgroups" get supplementary group IDs
 .fd *fun="getlogin" get user's login name
 .fd *fun="getnid" get netword ID
-.fd *fun="getpgrp" get process group ID
+.fd *fun="getpgrp" get process group ID of calling process
 .fd *fun="getpid" get process ID of calling process
 .fd *fun="_getpid" get process ID of calling process
 .fd *fun="getppid" get parent process ID of calling process

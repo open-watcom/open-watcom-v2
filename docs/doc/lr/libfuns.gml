@@ -467,7 +467,7 @@
 .fnc getnetent                  gtnetent.gml    DOS     W WIN32
 .fnc getopt                     getopt.gml      DOS QXO   WIN32
 .fn7 _get_osfhandle             getosfha.gml    DOS       WIN32
-.fnc getpgrp                    getpgrp.gml         QXO
+.fnc getpgrp                    getpgrp.gml     DOS QXO
 .fnc _getphyscoord              gr_getpc.gml    DOS QNX W GRAPH
 .fnc getpid                     getpid.gml      DOS QXO   WIN32
 .fnc _getpid                    getpid.gml      DOS QXO   WIN32

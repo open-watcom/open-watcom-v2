@@ -1,6 +1,8 @@
 .func getuid
 .synop begin
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 uid_t getuid( void );
 .synop end
@@ -20,7 +22,9 @@ The user ID for the calling process
  * Print the user ID of this process.
  */
 #include <stdio.h>
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 
 int main( void )

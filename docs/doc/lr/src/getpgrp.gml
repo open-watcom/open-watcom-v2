@@ -1,25 +1,25 @@
-.func geteuid
+.func getpgrp
 .synop begin
 .if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
 .do end
 #include <unistd.h>
-uid_t geteuid( void );
+gid_t getpgrp( void );
 .synop end
 .desc begin
 The
 .id &funcb.
-function returns the efective user ID for the calling process.
+function returns the process group ID for the current process.
 .desc end
 .return begin
-The efective user ID for the calling process
+The process group ID for the current process.
 .return end
 .see begin
-.seelist getuid getgid getegid
+.seelist getuid geteuid getegid
 .see end
 .exmp begin
 /*
- * Print the effective user ID of the process.
+ * Print the process group ID of the process.
  */
 #include <stdio.h>
 .if '&machsys' eq 'QNX' .do begin
@@ -29,8 +29,8 @@ The efective user ID for the calling process
 
 int main( void )
   {
-    printf( "My effective user ID is %d\n", geteuid() );
-    return( 0 );
+     printf( "I belong to group ID %d\n", getpgrp() );
+     return( 0 );
   }
 .exmp end
 .class POSIX 1003.1

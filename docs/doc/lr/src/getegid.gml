@@ -1,6 +1,8 @@
 .func getegid
 .synop begin
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 gid_t getegid( void );
 .synop end
@@ -20,7 +22,9 @@ The efective group ID for the current process.
  * Print the effective group ID of the process.
  */
 #include <stdio.h>
+.if '&machsys' eq 'QNX' .do begin
 #include <sys/types.h>
+.do end
 #include <unistd.h>
 
 int main( void )
