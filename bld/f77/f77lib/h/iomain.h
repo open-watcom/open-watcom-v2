@@ -30,3 +30,4 @@
 
 
 extern int      IOMain( void (*io_rtn)( void ) );
+extern void     __ReleaseIOSys( void );             /* used by assembly code */

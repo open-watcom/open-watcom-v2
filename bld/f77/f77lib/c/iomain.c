@@ -45,8 +45,8 @@
 #include "iomain.h"
 
 
-static void     __ReleaseIOSys( void )
-//====================================
+void     __ReleaseIOSys( void )
+//=============================
 {
     IOCB->flags &= ~IOF_ACTIVE;
     _ReleaseFIO();
