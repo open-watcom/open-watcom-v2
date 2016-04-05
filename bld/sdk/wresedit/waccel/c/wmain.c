@@ -62,6 +62,7 @@
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "wrdll.h"
+#include "dllmain.h"
 
 #include "wwinhelp.h"
 #include "jdlg.h"
@@ -673,7 +674,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
 
-void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
+static void setLastMenuSelect( WAccelEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 {
     if( MENU_CLOSED( wParam, lParam ) ) {
         einfo->last_menu_select = -1;
@@ -1084,7 +1085,7 @@ void WHandleRename( WAccelEditInfo *einfo )
     }
 }
 
-bool WQueryClearRes( WAccelEditInfo *einfo )
+static bool WQueryClearRes( WAccelEditInfo *einfo )
 {
     int         ret;
     UINT        style;

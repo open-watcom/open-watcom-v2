@@ -41,6 +41,7 @@
 #include "grid.def"
 
 #include "eatom.h"
+#include "eatom.def"
 
 /* This boolean DEFINE controls where eatom's get each their own window */
 /* use the app window. */

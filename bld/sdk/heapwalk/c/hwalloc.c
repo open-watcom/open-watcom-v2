@@ -34,6 +34,10 @@
 #include <stress.h>
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+
 static DWORD    FreeAmt;
 static DWORD    AllocAmt;
 static WORD     DialMode;
@@ -130,8 +134,7 @@ static BOOL MyAllocAllBut( DWORD amt ) {
     return( TRUE );
 } /* MyAllocAllBut */
 
-BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     HWND        parent;
     RECT        area;
@@ -187,8 +190,7 @@ static DWORD ParseAmount( char *buf ) {
 } /* ParseAmount */
 
 
-BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     char        buf[256];
     DWORD       amt;

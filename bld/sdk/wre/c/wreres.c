@@ -66,6 +66,7 @@
 #include "wre_rc.h"
 #include "wrdll.h"
 #include "jdlg.h"
+#include "wreres.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -405,7 +406,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     }
 }
 
-bool pleaseOpenFile( UINT msg )
+bool PleaseOpenFile( UINT msg )
 {
     char                *filter;
     char                *title;

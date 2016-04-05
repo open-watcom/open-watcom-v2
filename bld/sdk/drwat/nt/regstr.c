@@ -47,6 +47,12 @@
 #include <errno.h>
 #include "strcnv.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
+WINEXPORT LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
+
 HWND CreateRegString( HWND parent, int x, int y, int width, int height, char *text, int id )
 {
     HWND    ret;

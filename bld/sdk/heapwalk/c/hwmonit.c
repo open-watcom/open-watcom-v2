@@ -33,6 +33,7 @@
 #include "heapwalk.h"
 #include <string.h>
 
+
 #define   MONITOR_TIMER         500
 #define   REFRESH_TIME          500
 
@@ -206,8 +207,7 @@ static void PaintMonitor( HWND hwnd, HDC dc, LocalMonInfo *info ) {
  * LocalMonitorProc - handle messages while monitoring a local heap
  */
 
-BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     LocalMonInfo        *info;
     HDC                 dc;

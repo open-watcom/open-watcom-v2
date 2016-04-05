@@ -41,6 +41,10 @@
 #include "madsys1.h"
 
 
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 typedef struct {
     DWORD       procid;
     ProcStats   stats;
@@ -657,7 +661,7 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * AddRunningErrMsg
  */
-void AddRunningErrMsg( void *_info ) {
+static void AddRunningErrMsg( void *_info ) {
 
     ProcAttatchInfo   *info = _info;
     char        buf[100];

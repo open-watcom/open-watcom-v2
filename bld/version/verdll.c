@@ -48,6 +48,8 @@
 
 #define _func_name( func ) _xglue( DLL_PREFIX, func )
 
+__declspec(dllexport) extern unsigned WINAPI _func_name( version_dll_num )( void );
+
 #ifdef __WATCOMC__
 #pragma off (unreferenced);
 #endif
@@ -57,8 +59,8 @@ static char VersionStr[] = "Version Verification: "
                             " actual version "
                             _xstr( DLL_VERSION );
 
-__declspec(dllexport) unsigned WINAPI _func_name( version_dll_num )( void ) 
-/*************************************************************************/
+unsigned WINAPI _func_name( version_dll_num )( void ) 
+/***************************************************/
 {
     return( DLL_VERSION );
 }

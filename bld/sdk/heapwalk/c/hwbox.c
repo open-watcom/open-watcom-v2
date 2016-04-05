@@ -30,8 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "heapwalk.h"
+
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam );
 
 static FARPROC  PaintFP;
 
@@ -98,7 +101,7 @@ void ResizeListBox( WORD width, WORD height, ListBoxInfo *info )
     MoveWindow( info->box, SPY_X, info->ypos, nwidth, nheight, TRUE );
 } /* ResizeListBox */
 
-BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
+BOOL FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
 {
     lparam = lparam;
     RedrawWindow( hwnd, NULL, NULL, RDW_ERASE | RDW_INVALIDATE );

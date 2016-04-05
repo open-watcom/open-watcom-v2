@@ -62,5 +62,6 @@ extern ControlClass             *WdeStrToControlClass( char *);
 extern char                     *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *, int );
 extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal( char *str );
 extern OBJ_ID                   WdeGetCommonControlClassFromClassName( char *class_name );
+extern WResHelpID               *WdeCopyWResHelpID( WResHelpID *src );
 
 #endif

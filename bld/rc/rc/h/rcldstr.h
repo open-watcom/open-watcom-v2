@@ -31,5 +31,5 @@
 
 
 extern bool InitRcMsgs( void );
-extern bool GetRcMsg( unsigned, char *, unsigned );
+extern bool GetRcMsg( unsigned, char *, int );
 extern void FiniRcMsgs( void );

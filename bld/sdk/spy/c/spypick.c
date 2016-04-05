@@ -34,6 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static FARPROC  SpyPickInst;
 static HWND     LastFramed;
 static BOOL     Cancelled;
@@ -135,7 +139,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 /*
  * GetWindowID - get window ID from mouse coordinates
  */
-void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
+static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
 {
     POINT       p;
     HWND        child;

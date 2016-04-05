@@ -616,7 +616,7 @@ int WCountMenuChildren( WMenuEntry *entry )
     return( count );
 }
 
-bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
+static bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     bool    ok;
 
@@ -648,7 +648,7 @@ bool WResetPreviewIDs( WMenuEditInfo *einfo )
     return( WResetPreviewID( einfo, einfo->menu->first_entry ) );
 }
 
-bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+static bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
     bool        ok;
@@ -679,7 +679,7 @@ bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+static bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
     bool        ok;
@@ -705,7 +705,7 @@ bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
+static bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
 {
     bool        ok;
     int         pos;

@@ -38,10 +38,14 @@
 #include "wdebug.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 typedef struct x {
-ADDRESS dispaddr;
-ADDRESS faddr;
-STACKTRACEENTRY ste;
+    ADDRESS dispaddr;
+    ADDRESS faddr;
+    STACKTRACEENTRY ste;
 } stdata;
 
 stdata  std;
@@ -49,7 +53,7 @@ stdata  std;
 /*
  * STDialog - show a stack frame
  */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 

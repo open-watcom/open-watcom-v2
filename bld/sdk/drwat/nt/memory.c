@@ -38,6 +38,10 @@
 #include "jdlg.h"
 
 #ifndef CHICAGO
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 typedef struct {
     DWORD       procid;
 } MemDlgInfo;

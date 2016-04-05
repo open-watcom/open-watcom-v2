@@ -188,7 +188,7 @@ WINEXPORT OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPT
     return( WdeMakeCustom( parent, obj_rect, handle, 1 ) );
 }
 
-bool WdeCheckForSmallRect( OBJPTR parent, WdeCustLib *cust_lib,
+static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustLib *cust_lib,
                            UINT cust_index, RECT *obj_rect )
 {
     UINT                width;

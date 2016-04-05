@@ -36,6 +36,10 @@
 #include "mem.h"
 #include "hwbiglb.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam, LONG lparam );
+
 #define TB_CLASS_NAME           "WatTextBox"
 #define STYLE_FLAGS             WS_VISIBLE | LBS_OWNERDRAWFIXED \
                                 | WS_VSCROLL | WS_HSCROLL | LBS_NOTIFY \
@@ -77,7 +81,7 @@ static void CreateTheListBox( HWND parent, TBinfo *info, DWORD style ) {
     SendMessage( info->boxhwnd, WM_SETFONT, (WPARAM)info->font, 0L );
 }
 
-void SizeTheListBox( HWND hwnd, TBinfo *info ) {
+static void SizeTheListBox( HWND hwnd, TBinfo *info ) {
 
     WORD                width, height;
     RECT                area;
@@ -101,8 +105,7 @@ void SizeTheListBox( HWND hwnd, TBinfo *info ) {
     info->old_area.bottom = height;
 }
 
-BOOL __export FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam,
-                LONG lparam )
+BOOL FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam, LONG lparam )
 {
     TBinfo                      *info;
     MEASUREITEMSTRUCT           *mis;

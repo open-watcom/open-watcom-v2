@@ -40,6 +40,7 @@
 #include "wdegetfn.h"
 #include "wdesdup.h"
 #include "wdesvdlg.h"
+#include "wdesvres.h"
 #include "wdesvobj.h"
 
 /****************************************************************************/
@@ -59,8 +60,6 @@ extern char     *WdeDlgSaveIntoTitle;
 extern char     *WdeDlgSaveAsTitle;
 extern char     *WdeDlgSaveTitle;
 extern char     *WdeResSaveFilter;
-
-extern bool WdeCreateDLGName( char *filename, char *newname );
 
 /****************************************************************************/
 /* static variables                                                         */

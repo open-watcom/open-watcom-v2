@@ -318,12 +318,9 @@ void ShowSelector( HWND list );
 BOOL GlobDiscardObj( HWND list );
 BOOL GlobSetObjPos( HWND list, BOOL oldest );
 void RefreshAdd( HWND dialog, HWND lbhwnd );
-BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
+BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+//BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void SetMenusForAdd( HWND hwnd, BOOL start );
 HWND StartAdd( HWND parent, ListBoxInfo *info );
 
@@ -364,8 +361,7 @@ HWND *MakePushWin( HWND hwnd, char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
 /* hwmonit */
-BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
+BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void BeginMonitor( heap_list *item );
 
 /* hwtable */

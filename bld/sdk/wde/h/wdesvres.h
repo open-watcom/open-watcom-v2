@@ -47,5 +47,6 @@
 extern bool             WdeSaveResourceToFile( WdeResInfo * );
 extern WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem );
 extern bool             WdeGetItemData( WdeResDlgItem *, void *, uint_32 * );
+extern bool             WdeCreateDLGName( char *filename, char *newname );
 
 #endif

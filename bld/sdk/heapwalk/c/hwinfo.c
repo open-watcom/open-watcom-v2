@@ -34,6 +34,10 @@
 #include "heapwalk.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+
 static  FARPROC         dialProc;
 static  unsigned        dialCount = 0;
 
@@ -137,8 +141,7 @@ static void fillLclInfoDialog( HWND hwnd ) {
 /*
  * SummaryInfoProc - process messages from summary information dialogs
  */
-BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     wparam = wparam;
     lparam = lparam;

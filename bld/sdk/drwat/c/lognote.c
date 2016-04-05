@@ -34,9 +34,14 @@
 #include "drwatcom.h"
 #include "notelog.h"
 #include "jdlg.h"
+
+
+/* Local Window callback functions prototypes */
+BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define BUF_SIZE        100
 
-BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     int         linecnt;

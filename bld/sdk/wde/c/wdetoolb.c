@@ -60,7 +60,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WdeToolBar *WdeFindToolBar( HWND );
+//static WdeToolBar *WdeFindToolBar( HWND );
 static WdeToolBar *WdeAllocToolBar( void );
 static void        WdeAddToolBar( WdeToolBar * );
 static void        WdeRemoveToolBar( WdeToolBar * );
@@ -139,6 +139,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     return( tbar );
 }
 
+#if 0
 bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
@@ -190,6 +191,7 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     return( ret );
 }
+#endif
 
 void WdeHandleToolHint( ctl_id id, BOOL pressed )
 {
@@ -213,6 +215,7 @@ void WdeHandleStickyToolPress( WdeToolBar *tbar, WPARAM wParam, LPARAM lParam )
     WdeSetToolBarItemState( tbar, LOWORD( wParam ), bstate );
 }
 
+#if 0
 WdeToolBar *WdeFindToolBar( HWND win )
 {
     WdeToolBar *tbar;
@@ -227,6 +230,7 @@ WdeToolBar *WdeFindToolBar( HWND win )
 
     return( NULL );
 }
+#endif
 
 bool WdeCloseToolBar( WdeToolBar *tbar )
 {

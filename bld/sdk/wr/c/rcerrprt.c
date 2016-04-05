@@ -34,9 +34,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include "bool.h"
 #include "wrmaini.h"
 #include "wrmsg.h"
 #include "errprt.h"
+#include "rcldstr.h"
 
 #define ERRPRT_BUFFER 512
 static char buf[ERRPRT_BUFFER];
@@ -103,13 +105,13 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     return( p - buf );
 }
 
-int GetRcMsg( int resid, char *buff, unsigned buff_len )
+bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
     if( LoadString( WRGetInstance(), resid, buff, buff_len ) != 0 ) {
         buff[0] = '\0';
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 }
 
 void InitOutPutInfo( OutPutInfo *info )

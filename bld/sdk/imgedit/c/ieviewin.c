@@ -33,6 +33,11 @@
 #include "imgedit.h"
 #include "ieprofil.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ViewEnumProc( HWND hwnd, LONG lparam );
+WINEXPORT BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam );
+
 static int              showState = SW_SHOWNORMAL;
 static COLORREF         bkgroundColor = BK_WHITE;
 static HWND             hViewWindow;

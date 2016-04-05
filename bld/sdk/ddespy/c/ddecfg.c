@@ -74,12 +74,12 @@ static char iniPath[_MAX_PATH];
  */
 static void setGlobalDefault( void )
 {
-    ConfigInfo.scroll = TRUE;
-    ConfigInfo.alias = TRUE;
-    ConfigInfo.screen_out = TRUE;
-    ConfigInfo.show_tb = TRUE;
-    ConfigInfo.show_hints = TRUE;
-    ConfigInfo.on_top = FALSE;
+    ConfigInfo.scroll = true;
+    ConfigInfo.alias = true;
+    ConfigInfo.screen_out = true;
+    ConfigInfo.show_tb = true;
+    ConfigInfo.show_hints = true;
+    ConfigInfo.on_top = false;
 
 } /* setGlobalDefault */
 
@@ -145,7 +145,7 @@ static void readWindowInfo( WndConfigInfo *info, char *name_ext )
     char        name[30];
 
     makeWndCfgName( name, TRKVIS, name_ext );
-    info->visible = GetPrivateProfileInt( SECT_NAME, name, info->visible, iniPath );
+    info->visible = ( GetPrivateProfileInt( SECT_NAME, name, info->visible, iniPath ) != 0 );
 
     makeWndCfgName( name, TRK_XPOS, name_ext );
     info->xpos = GetPrivateProfileInt( SECT_NAME, name, info->xpos, iniPath );
@@ -178,28 +178,28 @@ void ReadConfig( void )
     SetTrackWndDefault();
     SetMainWndDefault();
 
-    Monitoring[MON_SENT_IND] = GetPrivateProfileInt( SECT_NAME, MONSENT, true, iniPath );
-    Monitoring[MON_POST_IND] = GetPrivateProfileInt( SECT_NAME, MONPOST, true, iniPath );
-    Monitoring[MON_CB_IND] = GetPrivateProfileInt( SECT_NAME, MONCB, true, iniPath );
-    Monitoring[MON_STR_IND] = GetPrivateProfileInt( SECT_NAME, MONSTR, true, iniPath );
-    Monitoring[MON_ERR_IND] = GetPrivateProfileInt( SECT_NAME, MONERR, true, iniPath );
-    Monitoring[MON_LNK_IND] = GetPrivateProfileInt( SECT_NAME, MONLNK, true, iniPath );
-    Monitoring[MON_CONV_IND] = GetPrivateProfileInt( SECT_NAME, MONCONV, true, iniPath );
+    Monitoring[MON_SENT_IND] = ( GetPrivateProfileInt( SECT_NAME, MONSENT, true, iniPath ) != 0 );
+    Monitoring[MON_POST_IND] = ( GetPrivateProfileInt( SECT_NAME, MONPOST, true, iniPath ) != 0 );
+    Monitoring[MON_CB_IND] = ( GetPrivateProfileInt( SECT_NAME, MONCB, true, iniPath ) != 0 );
+    Monitoring[MON_STR_IND] = ( GetPrivateProfileInt( SECT_NAME, MONSTR, true, iniPath ) != 0 );
+    Monitoring[MON_ERR_IND] = ( GetPrivateProfileInt( SECT_NAME, MONERR, true, iniPath ) != 0 );
+    Monitoring[MON_LNK_IND] = ( GetPrivateProfileInt( SECT_NAME, MONLNK, true, iniPath ) != 0 );
+    Monitoring[MON_CONV_IND] = ( GetPrivateProfileInt( SECT_NAME, MONCONV, true, iniPath ) != 0 );
 
     /* global settings */
 
-    ConfigInfo.scroll = GetPrivateProfileInt( SECT_NAME, CFG_SCROLL,
-                                              ConfigInfo.scroll, iniPath );
-    ConfigInfo.alias = GetPrivateProfileInt( SECT_NAME, CFG_ALIAS,
-                                             ConfigInfo.alias, iniPath );
-    ConfigInfo.screen_out = GetPrivateProfileInt( SECT_NAME, CFG_SCREEN,
-                                                  ConfigInfo.screen_out, iniPath );
-    ConfigInfo.show_tb = GetPrivateProfileInt( SECT_NAME, CFG_SHOW_TB,
-                                               ConfigInfo.show_tb, iniPath );
-    ConfigInfo.show_hints = GetPrivateProfileInt( SECT_NAME, CFG_SHOW_HINTS,
-                                                  ConfigInfo.show_hints, iniPath );
-    ConfigInfo.on_top = GetPrivateProfileInt( SECT_NAME, CFG_ON_TOP,
-                                              ConfigInfo.on_top, iniPath );
+    ConfigInfo.scroll = ( GetPrivateProfileInt( SECT_NAME, CFG_SCROLL,
+                                              ConfigInfo.scroll, iniPath ) != 0 );
+    ConfigInfo.alias = ( GetPrivateProfileInt( SECT_NAME, CFG_ALIAS,
+                                             ConfigInfo.alias, iniPath ) != 0 );
+    ConfigInfo.screen_out = ( GetPrivateProfileInt( SECT_NAME, CFG_SCREEN,
+                                                  ConfigInfo.screen_out, iniPath ) != 0 );
+    ConfigInfo.show_tb = ( GetPrivateProfileInt( SECT_NAME, CFG_SHOW_TB,
+                                               ConfigInfo.show_tb, iniPath ) != 0 );
+    ConfigInfo.show_hints = ( GetPrivateProfileInt( SECT_NAME, CFG_SHOW_HINTS,
+                                                  ConfigInfo.show_hints, iniPath ) != 0 );
+    ConfigInfo.on_top = ( GetPrivateProfileInt( SECT_NAME, CFG_ON_TOP,
+                                              ConfigInfo.on_top, iniPath ) != 0 );
 
     /* window size/pos info */
     for( i = 0; i < MAX_DDE_TRK; i++ ) {

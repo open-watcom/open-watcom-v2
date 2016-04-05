@@ -43,6 +43,13 @@
 #include "jdlg.h"
 #include "memwnd.h"
 
+
+/* Local Window callback functions prototypes */
+#ifndef __NT__
+BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#endif
+BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static ADDRESS          currAddr;
 static ADDRESS          firstAddr;
 static interrupt_struct oldIntData;
@@ -279,7 +286,7 @@ static void GetStatRegisters( HWND hwnd )
 } /* GetStatRegisters */
 
 #ifndef __NT__
-BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[128];
     WORD        i;
@@ -337,7 +344,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /*
  * StatDialog - show task status
  */
-BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     FARPROC     fp;

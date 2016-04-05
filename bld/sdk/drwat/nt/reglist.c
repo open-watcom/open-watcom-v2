@@ -39,6 +39,11 @@
 #include "madcli.h"
 #include "regcrt.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam);
+
+
 mad_registers * RegListGetMadRegisters( HWND list )
 {
     HWND stat;

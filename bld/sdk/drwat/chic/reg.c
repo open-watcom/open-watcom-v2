@@ -40,10 +40,11 @@
 
 #define INIT_ALLOCSIZE  20
 #define RE_ALLOCSIZE    10
+
 /*
  * getName
  */
-void getName( DWORD proc_id, DWORD mod_id, char **name )
+static void getName( DWORD proc_id, DWORD mod_id, char **name )
 {
     HANDLE              hdl;
     BOOL                noerror;

@@ -482,16 +482,16 @@ static void processCBStruct( char *buf, MONCBSTRUCT *info )
     char                *fmt;
     char                *task;
     char                *conv;
-    BOOL                type_not_found;
+    bool                type_not_found;
     char                fbuf[40];
 
     fmt = GetFmtStr( info->wFmt, fbuf );
     type = SrchMsg( info->wType, XTypMsgs, NULL );
     if( type == NULL ) {
         type = AllocRCString( STR_UNKNOWN );
-        type_not_found = TRUE;
+        type_not_found = true;
     } else {
-        type_not_found = FALSE;
+        type_not_found = false;
     }
     task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
     conv = deAlias( (unsigned long)info->hConv, DEALIAS_CONV );
@@ -652,12 +652,12 @@ static void processErrStruct( char *buf, MONERRSTRUCT *info )
 /*
  * processHSZStruct - convert information in a MONHSZSTRUCT to a string for display
  */
-static BOOL processHSZStruct( char *buf, MONHSZSTRUCT *info )
+static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
 {
     char                *task;
     msg_id              fmtid;
     char                *str;
-    BOOL                str_alloced;
+    bool                str_alloced;
 #ifdef __NT__
     DWORD               ver;
 #endif
@@ -674,18 +674,18 @@ static BOOL processHSZStruct( char *buf, MONHSZSTRUCT *info )
         fmtid = STR_HSZ_STRUCT_KEPT;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
     str = info->str;
-    str_alloced = FALSE;
+    str_alloced = false;
 #ifdef __NT__
     ver = GetVersion();
 
     /* In NT 3.1 the string is Unicode.  Otherwise it is ASCII. */
     if( (ver & 0xFF) == 3 && (ver & 0xFF00) <= 0x0A00 ) {
         str = MemAlloc( lstrlenW( (LPCWSTR)info->str ) + 1 );
-        str_alloced = TRUE;
+        str_alloced = true;
         wsprintf( str, "%ls", info->str );
     }
 #endif
@@ -694,7 +694,7 @@ static BOOL processHSZStruct( char *buf, MONHSZSTRUCT *info )
         MemFree( str );
     }
     MemFree( task );
-    return( TRUE );
+    return( true );
 
 } /* processHSZStruct */
 
@@ -745,12 +745,12 @@ static void processLinkStruct( char *buf, MONLINKSTRUCT *info )
 /*
  * processMsgStruct - convert information in a MONMSGSTRUCT to a string for display
  */
-static void processMsgStruct( char *buf, MONMSGSTRUCT *info, BOOL posted )
+static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
 {
     char                *msg;
     char                *task;
     char                *tohwnd;
-    char                msg_not_found;
+    bool                msg_not_found;
     msg_id              fmtid;
 
     task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
@@ -758,9 +758,9 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, BOOL posted )
     msg = SrchMsg( info->wMsg, DDEMsgs, NULL );
     if( msg == NULL ) {
         msg = AllocRCString( STR_UNKNOWN );
-        msg_not_found = TRUE;
+        msg_not_found = true;
     } else {
-        msg_not_found = FALSE;
+        msg_not_found = false;
     }
     if( posted ) {
         fmtid = STR_MSG_STRUC_FMT_STR_2;
@@ -813,7 +813,7 @@ HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hs
         //RecordMsg( "MF_SENDMSG msg\n" );
         if( Monitoring[MON_SENT_IND] ) {
             if( DoFilter( ((MONMSGSTRUCT *)info)->wMsg, FILTER_MESSAGE ) ) {
-                processMsgStruct( buf, info, FALSE );
+                processMsgStruct( buf, info, false );
                 RecordMsg( buf );
             }
         }
@@ -822,7 +822,7 @@ HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hs
         //RecordMsg( "MF_POSTMSG msg\n" );
         if( Monitoring[MON_POST_IND] ) {
             if( DoFilter( ((MONMSGSTRUCT *)info)->wMsg, FILTER_MESSAGE ) ) {
-                processMsgStruct( buf, info, TRUE );
+                processMsgStruct( buf, info, true );
                 RecordMsg( buf );
             }
         }

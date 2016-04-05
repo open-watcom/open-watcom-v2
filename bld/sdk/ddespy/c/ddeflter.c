@@ -33,14 +33,14 @@
 #include "wddespy.h"
 
 static struct {
-    char        *filter;
+    bool        *filter;
     WORD        first;
     WORD        last;
 } FilterDlgInfo;
 
 
-static char     MsgFilter[MFILTER_LAST_MSG - MFILTER_FIRST_MSG + 1];
-static char     CBFilter[CFILTER_LAST_MSG - CFILTER_FIRST_MSG + 1];
+static bool     MsgFilter[MFILTER_LAST_MSG - MFILTER_FIRST_MSG + 1];
+static bool     CBFilter[CFILTER_LAST_MSG - CFILTER_FIRST_MSG + 1];
 
 /*
  * The Matching array matches the Filter array elements to the actual
@@ -122,9 +122,9 @@ void SetFilter( char *msgfilter, char *cbfilter )
     i = 0;
     while( msgfilter[i] != '\0' ) {
         if( msgfilter[i] == '1' ) {
-            MsgFilter[i] = TRUE;
+            MsgFilter[i] = true;
         } else {
-            MsgFilter[i] = FALSE;
+            MsgFilter[i] = false;
         }
         i++;
         if( i > MFILTER_LAST_MSG - MFILTER_FIRST_MSG ) {
@@ -134,9 +134,9 @@ void SetFilter( char *msgfilter, char *cbfilter )
     i = 0;
     while( cbfilter[i] != '\0' ) {
         if( cbfilter[i] == '1' ) {
-            CBFilter[i] = TRUE;
+            CBFilter[i] = true;
         } else {
-            CBFilter[i] = FALSE;
+            CBFilter[i] = false;
         }
         i++;
         if( i > CFILTER_LAST_MSG - CFILTER_FIRST_MSG ) {
@@ -147,16 +147,16 @@ void SetFilter( char *msgfilter, char *cbfilter )
 } /* SetFilter */
 
 /*
- * DoFilter - return TRUE if we want to process this message or FALSE
+ * DoFilter - return true if we want to process this message or false
  *            otherwise
  */
-BOOL DoFilter( UINT msg, WORD filter_type )
+bool DoFilter( UINT msg, WORD filter_type )
 {
     WORD        *match;
-    char        *filter;
+    bool        *filter;
     WORD        i;
     WORD        limit;
-    BOOL        ret;
+    bool        ret;
 
     if( filter_type == FILTER_MESSAGE ) {
         match = MsgMatching;
@@ -167,19 +167,19 @@ BOOL DoFilter( UINT msg, WORD filter_type )
         filter = CBFilter;
         limit = CFILTER_LAST_MSG - CFILTER_FIRST_MSG + 1;
     } else {
-        return( FALSE );
+        return( false );
     }
-    ret = FALSE;
+    ret = false;
     for( i = 0; i < limit; i++ ) {
         if( match[i] == msg ) {
             if( filter[i] ) {
-                ret = TRUE;
+                ret = true;
             }
             break;
         }
     }
     if( i >= limit ) {
-        return( TRUE );
+        return( true );
     }
     return( ret );
 
@@ -228,9 +228,9 @@ BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         case IDOK:
             for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
                 if( IsDlgButtonChecked( hwnd, i ) ) {
-                    FilterDlgInfo.filter[i - FilterDlgInfo.first]  = 1;
+                    FilterDlgInfo.filter[i - FilterDlgInfo.first] = true;
                 } else {
-                    FilterDlgInfo.filter[i - FilterDlgInfo.first]  = 0;
+                    FilterDlgInfo.filter[i - FilterDlgInfo.first] = false;
                 }
             }
             EndDialog( hwnd, -1 );

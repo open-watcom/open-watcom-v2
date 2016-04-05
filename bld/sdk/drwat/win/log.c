@@ -293,7 +293,7 @@ static void rcLogPrint( DWORD msgid, ... )
     FreeRCString( str );
 }
 
-void logComment( char *str ) {
+static void logComment( char *str ) {
 
     if( !notesAdded ) {
         rcLogPrint( STR_USER_NOTES_ULINE );

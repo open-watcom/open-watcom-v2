@@ -38,6 +38,10 @@
 #include "watini.h"
 #include "inipath.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define SECT_NAME       "WATCOM Zoom Utility"
 
 #define STICKY_ID       "sticky"
@@ -82,7 +86,7 @@ static BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val ) {
 /*
  * ConfigDlgProc
  */
-WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     HWND                ctl;

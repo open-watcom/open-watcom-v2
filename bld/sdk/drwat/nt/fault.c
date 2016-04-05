@@ -42,6 +42,9 @@
 #include "madsys1.h"
 
 
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 msglist ExceptionMsgs[] = {
     EXCEPTION_ACCESS_VIOLATION,         (char *)(pointer_int)STR_ACCESS_VIOLATION,
     EXCEPTION_BREAKPOINT,               (char *)(pointer_int)STR_NADA,

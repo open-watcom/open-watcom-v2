@@ -41,6 +41,7 @@
 #include "wrdll.h"
 #include "wrmemf.h"
 #include "wresall.h"
+#include "wrememf.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

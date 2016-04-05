@@ -40,6 +40,10 @@
 #include "memwnd.h"
 #include "mem.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 typedef struct {
     HANDLE                      prochdl;
     DWORD                       procid;

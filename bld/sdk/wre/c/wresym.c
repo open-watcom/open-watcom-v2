@@ -49,6 +49,7 @@
 #include "wrtmpfil.h"
 #include "rcstr.gh"
 #include "preproc.h"
+#include "wresym.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

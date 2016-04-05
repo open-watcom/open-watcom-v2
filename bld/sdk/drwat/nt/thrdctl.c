@@ -42,6 +42,10 @@
 #include "retcode.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 typedef struct {
     DWORD       procid;
     ProcStats   procinfo;

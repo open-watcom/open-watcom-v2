@@ -133,7 +133,6 @@ bool WRECreateNewFiles  = FALSE;
 bool WRENoInterface     = false;
 
 bool WRERemoveResource( WREResInfo * );
-bool pleaseOpenFile( UINT msg );
 bool WREIsEditWindowDialogMessage( MSG *msg );
 
 static void *_MemAlloc( size_t size )
@@ -655,7 +654,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     case ACCEL_PLEASE_OPENME:
     case MENU_PLEASE_OPENME:
     case STRING_PLEASE_OPENME:
-        ret = pleaseOpenFile( message );
+        ret = PleaseOpenFile( message );
         pass_to_def = FALSE;
         break;
 

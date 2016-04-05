@@ -57,7 +57,7 @@ bool InitRcMsgs( void )
     return( true );
 }
 
-bool GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
     buff_len = buff_len;
     strcpy( buff, StringTable[resid] );
@@ -106,7 +106,7 @@ bool InitRcMsgs( void )
     return( true );
 }
 
-bool GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
     if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) != 0 ) {
         buff[0] = '\0';

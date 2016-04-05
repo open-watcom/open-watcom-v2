@@ -84,7 +84,7 @@ void DeAllocMadDisasmData(void)
     MemFree(MDData);
 }
 
-unsigned FormatAddr( address *a, char *buffer, unsigned max )
+static unsigned FormatAddr( address *a, char *buffer, unsigned max )
 {
     mad_type_info       host;
     mad_type_info       mti;

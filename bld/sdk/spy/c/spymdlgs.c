@@ -37,6 +37,12 @@
 #include <dde.h>
 #include "wwinhelp.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static int      currBit;
 static bool     *savedBits;
 
@@ -45,7 +51,7 @@ static bool     *savedBits;
 /*
  * SpyMsgDialog - process message range dialogs
  */
-WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i, j, k, max;
     static int  which, firstmsg, pages;
@@ -156,7 +162,7 @@ WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 /*
  * DoSpyMsgDialog
  */
-void DoSpyMsgDialog( HWND hwnd, int which )
+static void DoSpyMsgDialog( HWND hwnd, int which )
 {
     FARPROC     fp;
     bool        *savewatch;
@@ -176,7 +182,7 @@ void DoSpyMsgDialog( HWND hwnd, int which )
 /*
  * MessageDialog - process messages required dialog
  */
-WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     bool        fl;
@@ -331,7 +337,7 @@ static void setMessageName( HWND hwnd, char *str ) {
 /*
  * MessageSelectDialog - a single message item selected
  */
-WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     WORD        id;

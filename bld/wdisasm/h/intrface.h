@@ -30,20 +30,7 @@
 ****************************************************************************/
 
 
-typedef int_16              GetDataByte_func( void );
-typedef int_16              GetDataWord_func( void );
-typedef int_16              GetNextByte_func( void );
-typedef int_32              GetDataLong_func( void );
-typedef bool                EndOfSegment_func( void );
-typedef uint_32             GetOffset_func( void );
-typedef void                DoWtk_func( void );
-typedef bool                IsWtk_func( void );
-typedef char                *ToStr_func( uint_32 value, uint_16 len, uint_32 addr );
-typedef char                *JmpLabel_func( uint_32 addr, uint_32 off );
-typedef char                *ToBrStr_func( uint_32 value, uint_32 addr );
-typedef char                *ToIndex_func( uint_32 value, uint_32 addr );
-typedef char                *ToSegStr_func( uint_32 value, uint_16 seg, uint_32 addr );
-typedef char                *GetWtkInsName_func( uint_16 ins );
+#include "disfunc.h"
 
 extern GetDataByte_func     GetDataByte;
 extern GetDataWord_func     GetDataWord;

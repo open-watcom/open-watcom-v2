@@ -53,6 +53,11 @@
 #include "madcli.h"
 #include "madrtn.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 #define IsNT( x )       ( !( x & 0x80000000 ) )
 #define GetMinVer( x )  ( ( x & 0x0000FF00 ) >> 8 )
 #define GetMajVer( x )  ( x & 0x000000FF )
@@ -167,7 +172,7 @@ static void logStrPrintf( char *str, ... ) {
 /*
  * NotePrint
  */
-void NotePrint( char *str ) {
+static void NotePrint( char *str ) {
     if( !notesAdded ) {
         logPrintf( STR_USER_NOTES );
         notesAdded = TRUE;

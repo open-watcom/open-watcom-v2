@@ -36,6 +36,10 @@
 #include "jdlg.h"
 
 
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+
+
 static FARPROC  DialProc;
 static WORD     DialCount = 0;
 
@@ -186,8 +190,7 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent ) {
     return( hdl );
 }
 
-BOOL __export FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -459,8 +462,7 @@ static void DeleteRes( HWND hwnd ) {
     }
 } /* DeleteRes */
 
-BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     ResInfo             *info;
     HDC                 dc;

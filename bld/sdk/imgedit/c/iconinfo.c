@@ -33,6 +33,11 @@
 #include "imgedit.h"
 #include "iconinfo.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WINEXPORT WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 static icon_info_struct iconInfo[NUM_OF_ICONS];
 static int              iconType;
 static int              iconNumber[NUM_OF_ICONS];
@@ -260,8 +265,7 @@ static short getIconIndex( int icon_type )
 /*
  * SelNonExistingProc - select an icon that does not exist (i.e. for ADD or NEW)
  */
-WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
-                                           WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         index;
     WPI_MRESULT mresult;
@@ -334,8 +338,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg,
 /*
  * SelExistingProc - select an existing icon (i.e. for edit or delete)
  */
-WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg,
-                                        WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_MRESULT mresult;
     int         index;

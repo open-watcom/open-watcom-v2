@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <wwindows.h>
 #include "global.h"
+#include "dllmain.h"
 
 /* imports */
 

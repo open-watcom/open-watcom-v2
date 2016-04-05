@@ -36,6 +36,7 @@
 #include "watini.h"
 #include "mem.h"
 
+
 #define PROFILE_SECT            "Dr_WATCOM_NT"
 #define LOG_NAME                "log_name"
 #define LOG_EDITOR              "log_viewer"
@@ -74,7 +75,7 @@ static void writeProfileInt( int val, char *item ) {
 /*
  * SetDefProfile
  */
-void SetDefProfile( void ) {
+static void SetDefProfile( void ) {
 
     strcpy( LogData.logname, DEF_LOGNAME );
     if( GetSystemMetrics( SM_DBCSENABLED ) ) {

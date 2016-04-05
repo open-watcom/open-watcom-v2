@@ -113,7 +113,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_CREATE:
         mh = GetMenu( DDEMainWnd );
         CheckMenuItem( mh, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_CHECKED );
-        ConfigInfo.show_tb = TRUE;
+        ConfigInfo.show_tb = true;
         break;
 #if 0
     case WM_LBUTTONDBLCLK:
@@ -162,7 +162,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         mh = GetMenu( DDEMainWnd );
         CheckMenuItem( mh, DDEMENU_TOOLBAR, MF_BYCOMMAND | MF_UNCHECKED );
-        ConfigInfo.show_tb = FALSE;
+        ConfigInfo.show_tb = false;
         break;
     }
     return( false );
@@ -208,7 +208,7 @@ void MakeDDEToolBar( HWND hwnd )
     HWND                toolhwnd;
     TOOLITEMINFO        item;
     WORD                i;
-    BOOL                show;
+    bool                show;
 
     show = ConfigInfo.show_tb;
     ToolBar.info.style = TOOLBAR_FIXED_STYLE;
@@ -221,9 +221,9 @@ void MakeDDEToolBar( HWND hwnd )
     ToolBar.info.helphook = showTBHint;
     ToolBar.info.background = 0;
     ToolBar.info.foreground = 0;
-    ToolBar.info.is_fixed = TRUE;
-    ToolBar.info.use_tips = TRUE;
-    ToolBar.fixed = TRUE;
+    ToolBar.info.is_fixed = true;
+    ToolBar.info.use_tips = true;
+    ToolBar.fixed = true;
     ToolBar.floatrect = ToolBar.info.area;
     ToolBar.floatrect.bottom += GetSystemMetrics( SM_CYCAPTION ) +
                                 3 * GetSystemMetrics( SM_CYFRAME );

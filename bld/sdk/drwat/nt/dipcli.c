@@ -120,6 +120,7 @@ sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr ) {
     return( NULL );
 }
 
+#if 0
 /*
  * DIPCliSectLoaded
  */
@@ -130,6 +131,7 @@ dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect ) {
     sect = sect;
     return( DS_OK );
 }
+#endif
 
 /*
  * DIPCliItemLocation

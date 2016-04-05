@@ -37,6 +37,7 @@
 #include <time.h>
 #include "heapwalk.h"
 
+
 typedef struct {
     LOCALENTRY          top;
     LOCALENTRY          sel;
@@ -231,7 +232,7 @@ static BOOL AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
  * SaveLocalListState - save the top item and selected item in the
  *              list box so we can restore them later
  */
-BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
+static BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
 
     int     top, sel;
 
@@ -333,8 +334,8 @@ static HWND *CreateLocalPushWin( HWND hwnd ) {
  * LocalHeapProc - process messages from the local heap window
  */
 
-BOOL __export FAR PASCAL LocalHeapProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam ) {
+BOOL FAR PASCAL LocalHeapProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+{
     LclWndInfo          *info;
     LocalStateStruct    state;
 
