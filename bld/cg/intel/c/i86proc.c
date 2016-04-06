@@ -70,7 +70,7 @@ extern  void        GenPushOffset(byte);
 extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
-extern  void        DoCall(label_handle,bool,bool,oc_class);
+extern  void        DoCall(label_handle,bool,bool,bool);
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
@@ -403,10 +403,10 @@ static void FindIfExported( void ) {
 }
 
 
-extern void RTCall( rt_class rtn, oc_class pop_bit ) {
-/****************************************************/
-
-    DoCall( RTLabel( rtn ), TRUE, _IsTargetModel( BIG_CODE ), pop_bit );
+extern void DoRTCall( rt_class rtn, bool pop )
+/********************************************/
+{
+    DoCall( RTLabel( rtn ), true, _IsTargetModel( BIG_CODE ), pop );
 }
 
 
@@ -426,7 +426,7 @@ static void DoStackCheck( void ) {
     if( CurrProc->prolog_state & GENERATE_GROW_STACK ) {
         if( BlockByBlock || CurrProc->locals.size >= 4 * 1024 ) {
             GenUnkPush( &CurrProc->targ.stack_check );
-            RTCall( RT_GROW, ATTR_POP );
+            DoRTCall( RT_GROW, true );
         }
         return;
     }
@@ -437,13 +437,13 @@ static void DoStackCheck( void ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
         }
         GenUnkMov( HW_STACK_CHECK, &CurrProc->targ.stack_check );
-        RTCall( RT_CHK, EMPTY );
+        DoRTCall( RT_CHK, false );
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_POP );
         }
 #else
         GenUnkPush( &CurrProc->targ.stack_check );
-        RTCall( RT_CHK, ATTR_POP );
+        DoRTCall( RT_CHK, true );
 #endif
     }
 }
@@ -490,10 +490,10 @@ static  void    PrologHook( void )
         CurrProc->targ.base_adjust += size;
     }
 #if _TARGET & _TARG_IAPX86
-    RTCall( RT_PROHOOK, EMPTY );
+    DoRTCall( RT_PROHOOK, false );
 #else
 //    GenPushC( CurrProc->parms.size );
-    RTCall( RT_PROHOOK, EMPTY );
+    DoRTCall( RT_PROHOOK, false );
 #endif
 }
 
@@ -504,7 +504,7 @@ static  void    EpilogHook( void )
     int      size;
 
     if( ( CurrProc->prolog_state & GENERATE_EPILOG_HOOKS ) ) {
-        RTCall( RT_EPIHOOK, EMPTY );
+        DoRTCall( RT_EPIHOOK, false );
     }
     size = ProEpiDataSize();
     if( size != 0 )
@@ -516,7 +516,7 @@ static  void    DoLoadDS( void )
 {
 #if _TARGET & _TARG_80386
     if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
-        RTCall( RT_GETDS, EMPTY );
+        DoRTCall( RT_GETDS, false );
     } else {
 #endif
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
@@ -619,9 +619,9 @@ extern  void    GenProlog( void )
             GenPushC( CurrProc->parms.size );
             GenUnkPush( &CurrProc->targ.stack_check );
             if( NeedStackCheck() ) {
-                RTCall( RT_THUNK_STK, ATTR_POP );
+                DoRTCall( RT_THUNK_STK, true );
             } else {
-                RTCall( RT_THUNK, ATTR_POP );
+                DoRTCall( RT_THUNK, true );
             }
             CurrProc->parms.base += WORD_SIZE;
         }

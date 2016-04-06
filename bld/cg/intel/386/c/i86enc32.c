@@ -49,7 +49,7 @@
 #include "feprotos.h"
 
 
-extern  void            RTCall( rt_class rtn, oc_class pop_bit );
+extern  void            DoRTCall( rt_class rtn, bool pop );
 extern  void            DoSymRef( name *, offset, bool );
 extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );
@@ -718,7 +718,7 @@ void    doProfilingCode( char *fe_name, label_handle *data, bool prolog )
     ILen += 4;
     DoLblRef( *data, (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG ), 0, OFST);
     _Emit;
-    RTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, ATTR_POP );
+    DoRTCall( prolog ? RT_PROFILE_ON : RT_PROFILE_OFF, true );
 }
 
 

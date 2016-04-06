@@ -60,8 +60,8 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            DoCall(label_handle,bool,bool,oc_class);
-extern  void            RTCall( rt_class rtn, oc_class pop_bit );
+extern  void            DoCall(label_handle,bool,bool,bool);
+extern  void            DoRTCall( rt_class rtn, bool pop );
 extern  void            GenMJmp(instruction*);
 extern  void            GenRJmp(instruction*);
 extern  void            GenICall(instruction*);
@@ -631,7 +631,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
 #endif
     _Emit;
     // call __fdiv_fpr
-    RTCall( RT_FDIV_FPREG, 0 );
+    DoRTCall( RT_FDIV_FPREG, false );
     _Code;
     // pop [e]ax
     LayOpbyte( 0x58 );
@@ -762,7 +762,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
         _Zoiks( ZOIKS_114 );
     }
     _Emit;
-    RTCall( rtindex, 0 );
+    DoRTCall( rtindex, false );
     GenJumpLabel( lbl_2 );
     CodeLabel( lbl, 0 );
     _Code;
@@ -1338,7 +1338,7 @@ extern  void    GenObjCode( instruction *ins ) {
             LayOpword( 0xFBD9 );
             break;
         case G_FCHOP:
-            DoCall( RTLabel( RT_CHOP ), TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
+            DoCall( RTLabel( RT_CHOP ), true, _IsTargetModel( BIG_CODE ), false );
             break;
         case G_FTST:
         case G_FCOMPP:
@@ -2435,5 +2435,5 @@ static  void    CallMathFunc( instruction *ins ) {
     Call a runtime routine for a math function instructions
 */
     LookupRoutine( ins );
-    DoCall( RTLabel( RoutineNum ), TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
+    DoCall( RTLabel( RoutineNum ), true, _IsTargetModel( BIG_CODE ), false );
 }
