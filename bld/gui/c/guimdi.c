@@ -38,6 +38,7 @@
 #include "guihook.h"
 #include "guixmdi.h"
 #include "guimdi.h"
+#include "guixwind.h"
 
 #include "clibext.h"
 
@@ -50,7 +51,6 @@ typedef struct {
 } dlg_init;
 
 extern  bool            GUIMDI;
-extern  gui_window      *GUICurrWnd;
 
 static gui_menu_struct MDISecondSepMenu[] = {
     { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }

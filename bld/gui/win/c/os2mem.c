@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 #include "guiwind.h"
+#include "os2dlg.h"
 #include "trmem.h"
 
 extern _trmem_hdl   GUIMemHandle;

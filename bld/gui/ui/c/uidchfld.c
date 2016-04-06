@@ -33,7 +33,8 @@
 #include "guiwind.h"
 #include "guixdlg.h"
 
-extern void uidialogchangefield( a_dialog *ui_dlg_info )
+
+void uidialogchangefield( a_dialog *ui_dlg_info )
 {
     GUIFocusChangeNotify( ui_dlg_info );
 }

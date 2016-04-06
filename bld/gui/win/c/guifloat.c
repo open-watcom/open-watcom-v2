@@ -36,9 +36,10 @@
 #include "guimenus.h"
 #include "guifloat.h"
 #include "guistr.h"
+#include "guixwind.h"
+
 
 extern  HMENU           GUIHFloatingPopup;
-extern  WPI_INST        GUIMainHInst;
 
 static  gui_ctl_id      CurrId       = NO_SELECT;
 static  bool            InitComplete = false;

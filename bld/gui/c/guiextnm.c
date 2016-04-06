@@ -32,13 +32,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bool.h"
+#include "guiextnm.h"
 
 #include "clibext.h"
 
 
 static char   GUIExtName[_MAX_PATH] = "";
 
-extern char * GUIGetExtName( void )
+char *GUIGetExtName( void )
 {
     if( GUIExtName[0] == '\0' ) {
 #if defined( __UNIX__ ) && defined( GUI_EXT_RES )
@@ -53,7 +54,7 @@ extern char * GUIGetExtName( void )
     return( GUIExtName );
 }
 
-extern bool GUISetExtName( char *fname )
+bool GUISetExtName( char *fname )
 {
     if( strlen( fname ) < _MAX_PATH ) {
         strcpy( GUIExtName, fname );

@@ -142,7 +142,7 @@ void GUIMinimizeWindow( gui_window *wnd )
     }
 }
 
-extern void GUIMaximizeWindow( gui_window *wnd )
+void GUIMaximizeWindow( gui_window *wnd )
 {
     if( wnd->style & GUI_MAXIMIZE ) {
         if( GUIIsMDIChildWindow( wnd ) ) {

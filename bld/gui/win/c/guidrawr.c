@@ -34,8 +34,8 @@
 #include "guiscale.h"
 #include "guicolor.h"
 #include "guixutil.h"
+#include "guixwind.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
                       bool fill, bool outline )

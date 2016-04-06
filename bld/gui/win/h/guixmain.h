@@ -30,18 +30,18 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include "guisystr.h"
+#ifndef _GUIXMAIN_H_
+#define _GUIXMAIN_H_
 
+#if defined( __OS2_PM__ )
 
-void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
+extern int  GUIXMain( int argc, char *argv[] );
 
-void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
+#else
+
+extern int  GUIXMain( int argc, char *argv[],
+                    WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
+                    int nShowCmd );
+#endif
+
+#endif // _GUIXMAIN_H_

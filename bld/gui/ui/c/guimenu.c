@@ -38,9 +38,10 @@
 #include "guihook.h"
 #include "guirmenu.h"
 #include <string.h>
+#include "guitool.h"
+
 
 extern  MENUITEM        *GUIPopupMenu;
-extern bool GUIXCreateFixedToolbar( gui_window *wnd );
 
 static gui_menu_struct GUISeparator = {
     NULL,       0,      GUI_SEPARATOR
@@ -854,7 +855,7 @@ bool GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw )
     return( ok );
 }
 
-bool AddMenuItemToPopup( gui_window *wnd, gui_ctl_id id, gui_ctl_idx position,
+static bool AddMenuItemToPopup( gui_window *wnd, gui_ctl_id id, gui_ctl_idx position,
                          gui_menu_struct *info, bool floating )
 {
     bool        vbar;

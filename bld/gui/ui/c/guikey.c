@@ -34,8 +34,8 @@
 #include "guikey.h"
 #include "guixloop.h"
 #include "guixkey.h"
+#include "guixwind.h"
 
-extern gui_window *GUICurrWnd;
 
 bool GUIProcessAltMenuEvent( EVENT ev )
 {

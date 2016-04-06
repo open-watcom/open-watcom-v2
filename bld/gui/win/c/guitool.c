@@ -39,8 +39,9 @@
 #include "guimapky.h"
 #include "guimenus.h"
 #include "guixutil.h"
+#include "guirdlg.h"
 
-extern  WPI_INST        GUIResHInst;
+
 extern  gui_menu_struct GUIHint[];
 
 /* total height/width taken up by outline around  bitmap, on button */
@@ -414,7 +415,7 @@ void GUIResizeToolBar( gui_window *wnd )
     }
 }
 
-extern bool GUIHasToolBar( gui_window *wnd )
+bool GUIHasToolBar( gui_window *wnd )
 {
     return( wnd->tbinfo != NULL );
 }

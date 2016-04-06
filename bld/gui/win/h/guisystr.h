@@ -30,18 +30,16 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include "guisystr.h"
+#ifdef __NT__
 
+/* Changes added to enable use of the system tray */
+// Mmessage sent when system tray is accessed
+#define WM_TRAYCALLBACK WM_USER + 666
 
-void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
+// Function called to process system tray messages. - include in app
+extern void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
 
-void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
+// Function to allow use of system tray when objects are minimized - include in app
+extern void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+
+#endif

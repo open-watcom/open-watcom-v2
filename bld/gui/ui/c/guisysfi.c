@@ -33,6 +33,8 @@
 #include "guiwind.h"
 #include "swap.h"
 #include "guigmous.h"
+#include "guisysfi.h"
+
 
 void GUISysFini( void  )
 {

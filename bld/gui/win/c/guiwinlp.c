@@ -32,8 +32,8 @@
 #include "guiwind.h"
 #include "guiwinlp.h"
 #include "guixutil.h"
+#include "guixwind.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 int GUIWinMessageLoop( void )
 {

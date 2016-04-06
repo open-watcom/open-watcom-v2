@@ -37,6 +37,8 @@
 #include "guiwhole.h"
 #include "guiscale.h"
 #include "guigadgt.h"
+#include "guixwind.h"
+
 
 /*
  * GUIScroll -- scroll the GUICurrWnd the given amount
@@ -127,7 +129,7 @@ static void Scrl( p_gadget gadget, gui_ord scroll_pos, bool scale,
     }
 }
 
-void SetScroll( p_gadget gadget, gui_ord pos )
+static void SetScroll( p_gadget gadget, gui_ord pos )
 {
    GUIScroll( (int)pos - gadget->pos, gadget );
 }

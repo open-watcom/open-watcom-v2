@@ -55,6 +55,10 @@
 #include "os2dlg.h"
 #endif
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 extern  bool            EditControlHasFocus;
 
 static  char            *Font           = NULL;         /* name of font used in dialogs  */
@@ -63,7 +67,6 @@ static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
 
-extern  WPI_INST        GUIMainHInst;
 extern  controls_struct GUIControls[];
 
 void GUISetJapanese( void )
@@ -577,7 +580,7 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
 #endif
 }
 
-void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
+static void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
 {
     pos->x = rect->x;
     pos->y = rect->y;

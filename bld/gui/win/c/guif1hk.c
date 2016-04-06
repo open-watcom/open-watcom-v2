@@ -33,8 +33,16 @@
 #include "guiwind.h"
 #include "guixutil.h"
 #include "guicontr.h"
+#include "guixwind.h"
 
-extern  WPI_INST        GUIMainHInst;
+
+/* Local Window callback functions prototypes */
+#ifdef __OS2_PM__
+int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs );
+#else
+WINEXPORT LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param );
+#endif
+
 
 static  unsigned        F1Hooked = 0;
 static  WPI_PROC        F1ProcInst;

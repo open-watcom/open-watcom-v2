@@ -34,8 +34,8 @@
 #include "guixscal.h"
 #include "guicolor.h"
 #include "guipaint.h"
+#include "guixwind.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 /*
  * GUIPaint -- respond to WM_PAINT message

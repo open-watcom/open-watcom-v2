@@ -53,11 +53,13 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "wprocmap.h"
+#include "guixwind.h"
 
 #include "clibext.h"
 
 
-extern  WPI_INST        GUIMainHInst;
+/* Local Window callback functions prototypes */
+WINEXPORT UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #ifndef __OS2_PM__
 static  char    *LastPath; // this is set in NT for the sake of viper
@@ -224,7 +226,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 #else
 
 #if defined(__NT__)
-char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
+static char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
 {
     char    *cp;
     LRESULT text_length;

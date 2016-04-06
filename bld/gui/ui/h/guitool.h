@@ -30,18 +30,4 @@
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include "guisystr.h"
-
-
-void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
-
-void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
-{
-    hwnd=hwnd; wParam=wParam; lParam=lParam;
-    return;
-}
+extern bool GUIXCreateFixedToolbar( gui_window *wnd );

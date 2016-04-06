@@ -33,8 +33,9 @@
 #include "guiwind.h"
 #include "guigadgt.h"
 #include "guixinit.h"
+#include "guixwind.h"
 
-extern  gui_window      *GUICurrWnd;
+
 static  int             ScrollOffset    =       1;
 
 /*

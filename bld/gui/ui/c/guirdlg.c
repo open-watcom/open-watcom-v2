@@ -33,13 +33,14 @@
 #include "guiwind.h"
 #include <string.h>
 #include <stdlib.h>
+#include "watcom.h"
 #include "guiutil.h"
 #include "guixscal.h"
 #include "guildstr.h"
-#include "watcom.h"
 #include "wressetr.h"
 #include "resdiag.h"
 #include "wresdefn.h"
+#include "guirdlg.h"
 
 #include "clibext.h"
 

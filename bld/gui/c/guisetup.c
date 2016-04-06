@@ -33,6 +33,7 @@
 #include "guiwind.h"
 #include <string.h>
 #include "guix.h"
+#include "guisetup.h"
 
 /*
  *  GUISetupWnd -- set up the window.  Return a pointer to a gui_window.  Does

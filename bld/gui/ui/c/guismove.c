@@ -186,7 +186,7 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
  * MoveResizeCancel -- cancel a move or resize
  */
 
-void MoveResizeCancel( void )
+static void MoveResizeCancel( void )
 {
     uimenudisable( false );
     uibandfini();

@@ -750,6 +750,7 @@ extern gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char
 extern gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text );
 extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
+extern void GUIGetMaxDialogSize( gui_coord * size );
 extern void GUIGetPoint( gui_window* wnd, gui_ord extent, gui_ord row,
                          gui_point *point );
 

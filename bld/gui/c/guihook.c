@@ -58,7 +58,7 @@ void GUICleanupHotSpots( void )
     }
 }
 
-extern void GUISetXChangeTitle( void (*func)(gui_window*) )
+void GUISetXChangeTitle( void (*func)(gui_window*) )
 {
     fXChangeTitle = func;
 }
@@ -70,7 +70,7 @@ void GUIXChangeTitle( gui_window *wnd )
     }
 }
 
-extern void GUISetXInitMDI( bool (*func)(gui_window*) )
+void GUISetXInitMDI( bool (*func)(gui_window*) )
 {
     fXInitMDI = func;
 }

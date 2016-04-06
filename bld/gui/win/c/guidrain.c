@@ -31,9 +31,7 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-
-
-extern  WPI_INST        GUIMainHInst;
+#include "guixwind.h"
 
 
 void GUIDrainEvents( void )

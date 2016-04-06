@@ -33,7 +33,8 @@
 #include "guiwind.h"
 #include "guixutil.h"
 
-extern bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
+
+bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
     WPI_POINT   pt;
 

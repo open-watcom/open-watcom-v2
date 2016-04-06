@@ -61,7 +61,7 @@ static void SetText( gui_window * wnd, WPI_COLOUR fore, WPI_COLOUR back )
     _wpi_setbackcolour( wnd->hdc, _wpi_getnearestcolor( wnd->hdc , back ) );
 }
 
-void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
+static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
                             size_t length, int height, gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
                             bool draw_extent, int bitmap )

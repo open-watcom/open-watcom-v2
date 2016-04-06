@@ -42,14 +42,19 @@
 #ifdef TRMEM
 _trmem_hdl  GUIMemHandle;
 static int  GUIMemFileHandle;   /* stream to put output on */
-static void GUIMemPrintLine( void *, const char * buff, size_t len );
 
 static int  GUIMemOpened = 0;
 
+static void GUIMemPrintLine( void *handle, const char *buff, size_t len )
+/***********************************************************************/
+{
+    write( *(int *)handle, buff, len );
+}
+
 #endif
 
-extern void GUIMemRedirect( int handle )
-/*************************************/
+void GUIMemRedirect( int handle )
+/*******************************/
 {
     handle=handle;
 #ifdef TRMEM
@@ -57,8 +62,8 @@ extern void GUIMemRedirect( int handle )
 #endif
 }
 
-extern void GUIMemOpen( void )
-/***************************/
+void GUIMemOpen( void )
+/*********************/
 {
 #ifdef TRMEM
     char * tmpdir;
@@ -83,8 +88,8 @@ extern void GUIMemOpen( void )
 #endif
 }
 
-extern void GUIMemClose( void )
-/****************************/
+void GUIMemClose( void )
+/**********************/
 {
 #ifdef TRMEM
     _trmem_prt_list( GUIMemHandle );
@@ -99,16 +104,16 @@ extern void GUIMemClose( void )
 #endif
 }
 
-extern void GUIMemPrtUsage( void )
-/*******************************/
+void GUIMemPrtUsage( void )
+/*************************/
 {
 #ifdef TRMEM
     _trmem_prt_usage( GUIMemHandle );
 #endif
 }
 
-extern void *GUIMemAlloc( size_t size )
-/*************************************/
+void *GUIMemAlloc( size_t size )
+/******************************/
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
@@ -117,8 +122,8 @@ extern void *GUIMemAlloc( size_t size )
 #endif
 }
 
-extern void GUIMemFree( void *ptr )
-/*********************************/
+void GUIMemFree( void *ptr )
+/**************************/
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -127,23 +132,12 @@ extern void GUIMemFree( void *ptr )
 #endif
 }
 
-extern void *GUIMemRealloc( void *ptr, size_t size )
-/**************************************************/
+void *GUIMemRealloc( void *ptr, size_t size )
+/*******************************************/
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
 #else
     return( realloc( ptr, size ) );
-#endif
-}
-
-/* extern to avoid problems with taking address and overlays */
-extern void GUIMemPrintLine( void *handle, const char *buff, size_t len )
-/***********************************************************************/
-{
-#ifdef TRMEM
-    write( *(int *)handle, buff, len );
-#else
-    handle=handle; buff=buff; len=len;
 #endif
 }

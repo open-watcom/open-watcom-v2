@@ -190,7 +190,7 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
     return( found );
 }
 
-int CountMenus( gui_menu_struct *menu )
+static int CountMenus( gui_menu_struct *menu )
 {
     gui_ctl_idx i;
     gui_ctl_idx num;
@@ -205,7 +205,7 @@ int CountMenus( gui_menu_struct *menu )
     return( num );
 }
 
-void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, gui_ctl_idx *index )
+static void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, gui_ctl_idx *index )
 {
     gui_ctl_idx i;
 

@@ -32,7 +32,8 @@
 
 #include "guiwind.h"
 
-extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
+
+bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
                                    gui_ord height, int num_items,
                                    gui_toolbar_struct *toolinfo, bool excl,
                                    gui_colour_set *plain,
@@ -49,7 +50,7 @@ extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
     return( false );
 }
 
-extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                               int num_items, gui_toolbar_struct *toolinfo,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout )
@@ -65,7 +66,7 @@ extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     return( false );
 }
 
-extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                                       int num_items, gui_toolbar_struct *toolinfo,
                                       bool excl, gui_colour_set *plain,
                                       gui_colour_set *standout )

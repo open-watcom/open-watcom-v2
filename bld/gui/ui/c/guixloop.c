@@ -51,8 +51,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* includes from guixmain.c */
-extern  gui_window      *GUICurrWnd;
 
 /* statics */
 static  ORD             OldCol          = -1;      /* old column of mouse */
@@ -228,13 +226,14 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
 EVENT GUICreatePopup( gui_window *wnd, gui_coord *point )
 {
     EVENT       ev;
+    gui_point   gpoint;
 
-    point->x -= wnd->screen.area.col;
-    point->y -= (wnd->screen.area.row - 1);
+    gpoint.x = point->x - wnd->screen.area.col;
+    gpoint.y = point->y - (wnd->screen.area.row - 1);
     uipushlist( NULL );
     uipushlist( GUIInternalEvents );
     uipushlist( GUIUserEvents );
-    ev = GUICreateMenuPopup( wnd, point, wnd->menu, GUI_TRACK_LEFT, NULL );
+    ev = GUICreateMenuPopup( wnd, &gpoint, wnd->menu, GUI_TRACK_LEFT, NULL );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* GUIInternalEvents */ );
     uipoplist( /* NULL */ );

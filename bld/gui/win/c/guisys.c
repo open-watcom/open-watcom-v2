@@ -31,7 +31,9 @@
 
 
 #include "guiwind.h"
+#include "guisys.h"
 
-extern void SysCleanUp( void )
+
+void GUISysCleanUp( void )
 {
 }

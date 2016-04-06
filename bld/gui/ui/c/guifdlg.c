@@ -575,7 +575,7 @@ static bool goToDir( gui_window *gui, char *dir )
  * Compare - quicksort comparison with special treatment of indent chars
  */
 /* int Compare( const char **p1, const char **p2 ) */
-int Compare( const void  *p1, const void *p2 )
+static int Compare( const void  *p1, const void *p2 )
 {
     const char  *s1 = *(const char **)p1;
     const char  *s2 = *(const char **)p2;
@@ -1015,7 +1015,7 @@ static process_rc processFileName( gui_window *gui )
 /*
  * ProcessOKorDClick -- user clicked OK or double clicked on a file
  */
-void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
+static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 {
     process_rc  prc;
     gui_ctl_idx sel;
@@ -1117,7 +1117,7 @@ static void InitTextList( gui_window *gui, gui_ctl_id id, const char **text_list
 /*
  * GetFileNameEvent - event handler for GetFileName dialog
  */
-extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     int         sel;

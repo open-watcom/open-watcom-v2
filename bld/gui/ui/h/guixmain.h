@@ -32,6 +32,9 @@
 
 #ifndef _GUIXMAIN_H_
 #define _GUIXMAIN_H_
-extern bool GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
-extern EVENT GUIWndGetEvent( VSCREEN * );
+
+extern bool     GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
+extern EVENT    GUIWndGetEvent( VSCREEN * );
+extern int      GUIXMain( int argc, char * argv[] );
+
 #endif // _GUIXMAIN_H_

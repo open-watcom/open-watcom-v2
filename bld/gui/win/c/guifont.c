@@ -51,9 +51,8 @@ static void SetFont( gui_window *wnd, HFONT font )
     GUISetScroll( wnd );
     GUIEVENTWND( wnd, GUI_FONT_CHANGED, NULL );
 }
-#endif
 
-bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
+static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
 {
 #ifdef __OS2_PM__
     hwnd = hwnd;
@@ -117,6 +116,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     return( ret );
 #endif
 }
+#endif
 
 bool GUIChangeFont( gui_window *wnd )
 {
