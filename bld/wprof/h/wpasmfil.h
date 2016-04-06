@@ -31,6 +31,7 @@
 
 
 #ifndef _WPASMFIL_H
+#define _WPASMFIL_H
 
 typedef struct src_info {
     unsigned long               line;
@@ -68,5 +69,10 @@ typedef struct wp_asmfile {
 #define MAX_ASM_LINE_INDEX      (SHRT_MAX/sizeof(wp_asmline))
 #define MAX_ASM_LINE_SIZE       (MAX_ASM_LINE_INDEX*sizeof(wp_asmline))
 
-#define _WPASMFIL_H
+extern wp_asmline   *WPGetAsmLoc( wp_asmfile * wpasm_file, int row, int * group_loc, int * row_loc );
+extern wp_asmfile   *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet );
+extern void         WPAsmClose( wp_asmfile * wpasm_file );
+extern char         *WPAsmGetLine( a_window * wnd, int line );
+extern int          WPAsmFindSrcLine( sio_data * curr_sio, int line );
+
 #endif

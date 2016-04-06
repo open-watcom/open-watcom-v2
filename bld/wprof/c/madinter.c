@@ -46,18 +46,9 @@
 #include "common.h"
 #include "sampinfo.h"
 #include "msg.h"
+#include "madinter.h"
+#include "support.h"
 
-
-extern void     ErrorMsg(char *msg,... );
-extern void     fatal(char *msg,... );
-extern void     MapAddressIntoSection(address *addr);
-extern bool     IsX86BigAddr( address );
-extern bool     IsX86RealAddr( address );
-extern void     SetExeOffset( address );
-extern int_16   GetDataByte( void );
-extern bool     CnvAddr( address addr, char *buff, size_t buff_len );
-extern void     AsmSize( void );
-extern void     AsmFini( void );
 
 extern sio_data         *CurrSIOData;
 
@@ -199,7 +190,7 @@ void FiniMADInfo( void )
     AsmFini();
 }
 
-void ReportMADFailure( mad_status ms )
+static void ReportMADFailure( mad_status ms )
 {
     dig_mad     mad_old;
     char        buff[256];

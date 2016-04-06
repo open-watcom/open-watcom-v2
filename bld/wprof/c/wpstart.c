@@ -45,17 +45,15 @@
 #include "sampinfo.h"
 #include "memutil.h"
 #include "clibext.h"
+#include "getsamps.h"
+#include "madinter.h"
+#include "utils.h"
+#include "wphelp.h"
 
-extern void WPFiniHelp(void);
+
 extern void WPDipInit(void);
 extern void WPDipFini(void);
-extern bool GetSampleInfo(void);
-extern void InitPaths(void);
-extern void ErrorMsg(char *msg,... );
-extern void fatal(char *msg,... );
 extern void ReportSampleInfo(void);
-extern void InitMADInfo(void);
-extern void FiniMADInfo(void);
 extern void ClearAllSamples( void );
 
 

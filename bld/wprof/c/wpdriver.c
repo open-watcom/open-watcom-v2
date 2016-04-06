@@ -42,19 +42,20 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "clibext.h"
+#include "dlgsamp.h"
+#include "getsamps.h"
+#include "wpcnvt.h"
+#include "wpdriver.h"
+#include "wphelp.h"
+#include "wpsamp.h"
 
-extern void WPProcHelp(gui_help_actions action);
+
 extern void WPFini(void);
 extern void AboutClose(void);
 extern void DlgAbout(void);
-extern void DlgOpenSample(void);
 extern void ClearSample(sio_data *curr_sio);
 extern void DlgGetOptions(a_window *wnd);
-extern void WPConvert(a_window *wnd, gui_ctl_id id);
-extern bool GetSampleInfo(void);
-extern void WPSampleOpen(void);
 extern void AboutSetOff(void);
-extern void ErrorMsg(char *msg,... );
 extern void WPMemPrtUsage( void );
 
 extern char         SamplePath[_MAX_PATH];

@@ -46,9 +46,8 @@
 #include "msg.h"
 #include "memutil.h"
 #include "clibext.h"
+#include "support.h"
 
-
-extern void ErrorMsg(char *msg,... );
 
 #define BYTE_SIZE       (8)      /* Number of bits in a byte */
 #define MAX_INSTR_BYTES (8)

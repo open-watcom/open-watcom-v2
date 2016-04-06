@@ -24,67 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  Sample file open dialog.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "wio.h"
-#include "common.h"
-#include "aui.h"
-#include "guidlg.h"
-#include "wpaui.h"
-#include "dip.h"
-#include "msg.h"
-#include "dlgsamp.h"
-#include "utils.h"
-#include "wpdriver.h"
-
-#include "clibext.h"
-
-
-extern char     SamplePath[_MAX_PATH];
-
-
-static char * sampFilterList = {
-    "Sample Files (*.smp)\0*.smp\0"
-    ALLFILES
-};
-
-
-
-bool WPSampFound( void )
-/**********************/
-{
-    struct stat     file_stat;
-    char            buffer[_MAX_PATH2];
-    char            *ext;
-
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    if( SamplePath[0] == NULLCHAR )
-        return( false );
-    _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR )
-        return( false );
-    ReplaceExt( SamplePath, ".smp" );
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    return( false );
-}
-
-
-
-extern void DlgOpenSample( void )
-/*******************************/
-{
-    for( ;; ) {
-        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,
-                            sizeof( SamplePath ), 0 ) ) break;
-        if( WPSampFound() ) {
-            OpenSample();
-            break;
-        }
-        ErrorMsg( LIT( File_Does_Not_Exist ), SamplePath );
-    }
-}
+extern void SortImage( sio_data * );
+extern void SortMod( sio_data * );
+extern void SortFile( sio_data * );
+extern void SortRtn( sio_data * );
+extern int  GetCurrentSort( sio_data * curr_sio );
+extern void SetCurrentSort( sio_data * curr_sio, int sort_type );
+extern void SortCurrent( sio_data * curr_sio );
+extern void SortImage( sio_data * curr_sio );
+extern void SortMod( sio_data * curr_sio );
+extern void SortFile( sio_data * curr_sio );
+extern void SortRtn( sio_data * curr_sio );

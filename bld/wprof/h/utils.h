@@ -24,67 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Sample file open dialog.
+* Description:  File access utilities.
 *
 ****************************************************************************/
 
 
-#include "wio.h"
-#include "common.h"
-#include "aui.h"
-#include "guidlg.h"
-#include "wpaui.h"
-#include "dip.h"
-#include "msg.h"
-#include "dlgsamp.h"
-#include "utils.h"
-#include "wpdriver.h"
-
-#include "clibext.h"
-
-
-extern char     SamplePath[_MAX_PATH];
-
-
-static char * sampFilterList = {
-    "Sample Files (*.smp)\0*.smp\0"
-    ALLFILES
-};
-
-
-
-bool WPSampFound( void )
-/**********************/
-{
-    struct stat     file_stat;
-    char            buffer[_MAX_PATH2];
-    char            *ext;
-
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    if( SamplePath[0] == NULLCHAR )
-        return( false );
-    _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR )
-        return( false );
-    ReplaceExt( SamplePath, ".smp" );
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    return( false );
-}
-
-
-
-extern void DlgOpenSample( void )
-/*******************************/
-{
-    for( ;; ) {
-        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,
-                            sizeof( SamplePath ), 0 ) ) break;
-        if( WPSampFound() ) {
-            OpenSample();
-            break;
-        }
-        ErrorMsg( LIT( File_Does_Not_Exist ), SamplePath );
-    }
-}
+extern void         ReplaceExt( char * path, char * addext );
+extern char         *FindFile( char *fullname, char *name, char *path_list );
+extern void         InitPaths( void );
+extern size_t       BigRead( int fh, void *buffer, size_t size );
+extern void         Ring( void );

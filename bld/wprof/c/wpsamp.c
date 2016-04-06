@@ -42,6 +42,12 @@
 #include "wpasmfil.h"
 #include "msg.h"
 #include "memutil.h"
+#include "madinter.h"
+#include "utils.h"
+#include "wpbar.h"
+#include "wpgather.h"
+#include "wpsort.h"
+#include "wpsamp.h"
 
 
 extern image_info *SImageGetImage(a_window *wnd,int row);
@@ -59,27 +65,9 @@ extern void WPSetRowHeight(a_window *wnd);
 extern gui_ord WPPixelTruncWidth(gui_ord width);
 extern gui_ord WPPixelWidth(a_window *wnd);
 extern void ClearSample(sio_data *curr_sio);
-extern bool GetCurrentGather(sio_data *curr_sio);
-extern void FlipCurrentGather(sio_data *curr_sio);
-extern void GatherCurrent(sio_data *curr_sio);
-extern int GetCurrentSort(sio_data *curr_sio);
-extern void SetCurrentSort(sio_data *curr_sio,int sort_type);
 extern void SortCurrent(sio_data *curr_sio);
 extern void WPDipSetProc(process_info *dip_proc);
-extern wp_asmfile *WPAsmOpen(sio_data *curr_sio,int src_row,bool quiet);
-extern void WPAsmClose(wp_asmfile *wpasm_file);
-extern char *WPAsmGetLine(a_window *wnd,int line);
-extern int WPAsmFindSrcLine(sio_data *curr_sio,int line);
-extern wp_asmline *WPGetAsmLoc(wp_asmfile *wpasm_file,int row,int *group_loc,int *row_loc);
-extern bool GetCurrentAbsBar(sio_data *curr_sio);
-extern bool GetCurrentRelBar(sio_data *curr_sio);
-extern bool GetCurrentMaxBar(sio_data *curr_sio);
-extern void FlipCurrentAbsBar(sio_data *curr_sio);
-extern void FlipCurrentRelBar(sio_data *curr_sio);
-extern void FlipCurrentMaxBar(sio_data *curr_sio);
-extern void ErrorMsg(char *msg,... );
 extern int SampleNumRows( a_window * wnd );
-extern void SetCurrentMAD( dig_mad );
 
 
 extern sio_data *       SIOData;
@@ -253,8 +241,8 @@ wnd_info WPSampleInfo = {
 
 
 
-extern void WPSampleOpen( void )
-/******************************/
+void WPSampleOpen( void )
+/***********************/
 {
     if( CurrSIOData->sample_window == NULL ) {
         CurrSIOData->sample_window = sampleCreateWin();
@@ -1311,7 +1299,7 @@ STATIC void sampleRefresh( a_window *wnd )
 
 
 
-extern void WPZoomIn( a_window *wnd, int row )
+static void WPZoomIn( a_window *wnd, int row )
 /********************************************/
 {
     sio_data        *curr_sio;
@@ -1389,7 +1377,7 @@ extern void WPZoomIn( a_window *wnd, int row )
 
 
 
-extern void WPBackOut( a_window * wnd )
+static void WPBackOut( a_window * wnd )
 /*************************************/
 {
     sio_data *      curr_sio;
@@ -1404,8 +1392,8 @@ extern void WPBackOut( a_window * wnd )
 
 
 
-extern void WPDoPopUp( a_window * wnd, gui_menu_struct * gui_menu )
-/*****************************************************************/
+void WPDoPopUp( a_window * wnd, gui_menu_struct * gui_menu )
+/**********************************************************/
 {
     sio_data *      curr_sio;
 

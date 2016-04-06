@@ -35,6 +35,7 @@
 #include "common.h"
 #include "dip.h"
 #include "sampinfo.h"
+#include "wpbar.h"
 
 //#include "wpbar.def"
 

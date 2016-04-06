@@ -63,7 +63,10 @@
 #include "pathlist.h"
 #include "digcli.h"
 #include "digio.h"
+#include "utils.h"
+
 #include "clibext.h"
+
 
 #if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"
@@ -72,14 +75,12 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
-extern void             fatal(char *msg, ...);
-
 char   *HelpPathList = NULL;
 char   *FilePathList = NULL;
 char   *DipExePathList = NULL;
 
-extern void ReplaceExt( char * path, char * addext )
-/**************************************************/
+void ReplaceExt( char * path, char * addext )
+/*******************************************/
 {
     char        buff[ _MAX_PATH2 ];
     char *      drive;
@@ -166,8 +167,8 @@ unsigned DIGPathClose( dig_fhandle h )
 }
 #endif
 
-char *AddPath( char *old_list, const char *path_list )
-/***************************************************/
+static char *AddPath( char *old_list, const char *path_list )
+/***********************************************************/
 {
     size_t          len;
     size_t          old_len;
@@ -196,8 +197,8 @@ char *AddPath( char *old_list, const char *path_list )
     return( new_list );
 }
 
-extern void InitPaths( void )
-/***************************/
+void InitPaths( void )
+/********************/
 {
     char        *env;
 #if defined(__UNIX__)
@@ -285,8 +286,8 @@ extern void DoRingBell( void );
         modify exact [ ax ];
 #endif
 
-extern void Ring( void )
-/**********************/
+void Ring( void )
+/***************/
 {
 #if defined( __DOS__ )
     DoRingBell();
@@ -300,8 +301,8 @@ extern void Ring( void )
 }
 
 #ifndef NDEBUG
-extern void AssertionFailed( char * file, unsigned line )
-/*******************************************************/
+void AssertionFailed( char * file, unsigned line )
+/************************************************/
 {
     char        path[ _MAX_PATH2 ];
     char        buff[ 13 + _MAX_FNAME ];

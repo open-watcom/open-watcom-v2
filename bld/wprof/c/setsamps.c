@@ -42,6 +42,11 @@
 #include "myassert.h"
 #include "sampinfo.h"
 #include "memutil.h"
+#include "madinter.h"
+#include "setsamps.h"
+#include "support.h"
+#include "utils.h"
+
 #include "clibext.h"
 
 
@@ -53,10 +58,6 @@ extern process_info *WPDipProc(void);
 extern void         WPDipDestroyProc(process_info *dip_proc);
 extern void         WPDipSetProc(process_info *dip_proc);
 extern mod_handle   WPDipLoadInfo(int f_handle,char *f_name,void *image,int image_size,unsigned int dip_start,unsigned int dip_end);
-extern void         ReplaceExt(char *path,char *addext);
-extern void         ErrorMsg(char *msg,... );
-extern image_info   *AddrImage(address *addr);
-extern void         SetCurrentMAD( dig_mad );
 
 extern sio_data     *SIOData;
 extern sio_data     *CurrSIOData;

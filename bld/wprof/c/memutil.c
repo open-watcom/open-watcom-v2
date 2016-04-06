@@ -42,7 +42,6 @@
 #endif
 
 
-extern void fatal(char *msg,... );
 extern int WalkMem( void ) ;
 
 

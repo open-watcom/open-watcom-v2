@@ -37,6 +37,7 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "sampinfo.h"
+#include "wpcnvt.h"
 
 
 extern void DlgGetConvert(a_window *wnd);

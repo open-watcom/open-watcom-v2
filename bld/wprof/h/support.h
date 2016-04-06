@@ -24,67 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  Sample file open dialog.
+* Description:  Profiler support functions dealing with executable formats.
 *
 ****************************************************************************/
 
 
-#include "wio.h"
-#include "common.h"
-#include "aui.h"
-#include "guidlg.h"
-#include "wpaui.h"
-#include "dip.h"
-#include "msg.h"
-#include "dlgsamp.h"
-#include "utils.h"
-#include "wpdriver.h"
-
-#include "clibext.h"
-
-
-extern char     SamplePath[_MAX_PATH];
-
-
-static char * sampFilterList = {
-    "Sample Files (*.smp)\0*.smp\0"
-    ALLFILES
-};
-
-
-
-bool WPSampFound( void )
-/**********************/
-{
-    struct stat     file_stat;
-    char            buffer[_MAX_PATH2];
-    char            *ext;
-
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    if( SamplePath[0] == NULLCHAR )
-        return( false );
-    _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR )
-        return( false );
-    ReplaceExt( SamplePath, ".smp" );
-    if( stat( SamplePath, &file_stat ) != -1 )
-        return( true );
-    return( false );
-}
-
-
-
-extern void DlgOpenSample( void )
-/*******************************/
-{
-    for( ;; ) {
-        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,
-                            sizeof( SamplePath ), 0 ) ) break;
-        if( WPSampFound() ) {
-            OpenSample();
-            break;
-        }
-        ErrorMsg( LIT( File_Does_Not_Exist ), SamplePath );
-    }
-}
+extern void         AsmSize( void );
+extern void         AsmFini( void );
+extern file_handle  ExeOpen( char * name );
+extern void         ExeClose( file_handle fh );
+extern void         SetExeOffset( address a );
+extern void         SetExeImage( image_info *image );
+extern bool         SetExeFile( file_handle fh, bool overlay );
+extern image_info   *AddrImage( address *addr );
+extern void         MapAddressToActual( image_info *curr_image, addr_ptr *addr );
+extern void         MapAddressToMap( addr_ptr *addr );
+extern void         MapAddressIntoSection( address *addr );
+extern bool         LoadImageOverlays( void );
+extern void         SetNumBytes( uint_16 num );
+extern void         CodeAdvance( address *addr );
+extern size_t       FormatAddr( address a, char *buffer, size_t max );
+extern void         GetFullInstruct( address a, char * buffer, size_t max );
+extern bool         CnvAddr( address addr, char *buff, size_t buff_len );
+extern bool         IsX86BigAddr( address a );
+extern bool         IsX86RealAddr( address a );
+extern int_16       GetDataByte( void );
+extern bool         EndOfSegment( void );

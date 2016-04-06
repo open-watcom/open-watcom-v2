@@ -42,11 +42,8 @@
 
 extern void WPSourceClose(wp_srcfile *wpsrc_file);
 extern void WPDipDestroyProc(process_info *dip_proc);
-extern void WPAsmClose(wp_asmfile *wpasm_file);
 
 extern sio_data *       SIOData;
-
-
 
 extern void ClearMassaged( sio_data * curr_sio )
 /**********************************************/

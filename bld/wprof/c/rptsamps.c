@@ -39,14 +39,12 @@
 #include "machtype.h"
 #include "msg.h"
 #include "sampinfo.h"
+#include "support.h"
 
-extern unsigned         FormatAddr( address a, char *buffer, unsigned max );
 
 extern sio_data         *SIOData;
 
 STATIC FILE             *df;
-
-
 
 STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
 /****************************************************************/

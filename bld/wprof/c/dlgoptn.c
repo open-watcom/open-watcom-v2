@@ -40,15 +40,11 @@
 #include "dlgoptn.h"
 #include "sampinfo.h"
 #include "msg.h"
+#include "setsamps.h"
 
 //#include "dlgoptn.def"
 //#include "wpdriver.def"
 //#include "setsamps.def"
-extern void GatherSetAll(sio_data *curr_sio,bool gather_active);
-extern void AbsSetAll(sio_data *curr_sio,bool abs_bar);
-extern void RelSetAll(sio_data *curr_sio,bool rel_bar);
-extern void StretchSetAll(sio_data *curr_sio,bool bar_max);
-extern void SortSetAll(sio_data *curr_sio,int sort_type);
 
 
 bool    OptStretchGlobal   = false;

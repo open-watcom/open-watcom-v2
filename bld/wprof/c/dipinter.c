@@ -42,14 +42,11 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"
+#include "support.h"
 
 //#include "dipinter.def"
 //#include "support.def"
 //#include "msg.def"
-extern void ErrorMsg(char *msg,... );
-extern void fatal(char *msg,... );
-extern void MapAddressToActual(image_info *curr_image,addr_ptr *addr);
-extern void MapAddressIntoSection(address *addr);
 
 
 extern char *           WProfDips;
