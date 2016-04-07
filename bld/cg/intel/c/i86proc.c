@@ -44,12 +44,14 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "flowsave.h"
+#include "object.h"
+#include "i86enc2.h"
+#include "encode.h"
 #include "feprotos.h"
 
 extern  void        OutDLLExport(uint,cg_sym_handle);
 extern  void        GenLeaSP(long);
 extern  void        Gcld( void );
-extern  void        GenReturn(int,bool,bool);
 extern  void        GenLeave( void );
 extern  void        GenWindowsProlog( void );
 extern  void        GenCypWindowsProlog( void );
@@ -70,18 +72,13 @@ extern  void        GenPushOffset(byte);
 extern  void        RelocParms( void );
 extern  type_length AdjustBase( void );
 extern  hw_reg_set  SaveRegs( void );
-extern  void        DoCall(label_handle,bool,bool,bool);
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
-extern  void        CodeLabel(label_handle,unsigned);
 extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
-extern  unsigned    DepthAlign( unsigned );
-extern  void        EyeCatchBytes(const byte*,byte_seq_len);
-extern  void        GenSelEntry(bool);
 extern  void        TellKeepLabel(label_handle);
 extern  void        GenKillLabel(label_handle);
 extern  void        GFstpM(pointer);
@@ -1078,8 +1075,8 @@ static  void    DoEnter( int level ) {
 }
 
 
-extern  void    GenEpilog( void ) {
-/***************************/
+void    GenEpilog( void ) {
+/*************************/
 
     type_length stack;
     fe_attr attr;

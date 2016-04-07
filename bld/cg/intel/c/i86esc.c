@@ -54,7 +54,6 @@ extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
-extern  byte            ReverseCondition(byte);
 extern  void            TellScrapLabel(label_handle);
 extern  void            GenKillLabel(label_handle);
 extern  void            TellKeepLabel(label_handle);

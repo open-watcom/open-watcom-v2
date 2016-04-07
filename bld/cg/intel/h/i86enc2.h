@@ -24,19 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel instruction encoding, part II. Processes labels,
+*               jumps and the like.
 *
 ****************************************************************************/
 
 
-extern void CodeLabel( label_handle, unsigned );
-extern void CodeLineNumber( unsigned_32, bool );
-extern void CodeHandle( oc_class, obj_length, label_handle );
-
-extern void GenCondJump( instruction *ins );
-extern void GenJumpLabel( label_handle );
-extern void GenKillLabel( label_handle );
-
-extern byte CondCode( instruction * );
-extern void GenSetCC( instruction * );
+extern void     DoCall( label_handle lbl, bool imported, bool big, bool pop );
+extern void     GenCall( instruction *ins );
+extern void     GenICall( instruction *ins );
+extern void     GenRCall( instruction *ins );
+extern void     GenSelEntry( bool starts );
+extern void     Gen1ByteValue( byte value );
+extern void     Gen2ByteValue( unsigned_16 value );
+extern void     Gen4ByteValue( unsigned_32 value );
+extern void     GenCodePtr( pointer label );
+extern void     GenMJmp( instruction *ins );
+extern void     GenRJmp( instruction *ins );
+extern void     EyeCatchBytes( const byte *src, byte_seq_len len );
+extern void     GenReturn( int pop, bool is_long, bool iret );
+extern void     CodeBytes( const byte *src, byte_seq_len len );

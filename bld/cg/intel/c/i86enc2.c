@@ -49,6 +49,8 @@
 #include "types.h"
 #include "utils.h"
 #include "objout.h"
+#include "object.h"
+#include "i86enc2.h"
 #include "feprotos.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -73,9 +75,6 @@ extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
-
-extern  void            CodeBytes( const byte *src, byte_seq_len len );
-extern  void            GenReturn( int pop, bool is_long, bool iret );
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);

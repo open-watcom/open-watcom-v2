@@ -54,6 +54,7 @@
 #include "dfsyms.h"
 #include "rsccvsup.h"
 #include "objio.h"
+#include "object.h"
 #include "feprotos.h"
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
@@ -1094,8 +1095,8 @@ extern  bool    AskNameROM( pointer hdl, cg_class class )
 }
 
 
-extern  unsigned DepthAlign( unsigned depth )
-/*******************************************/
+unsigned DepthAlign( unsigned depth )
+/***********************************/
 {
     depth = depth;
     return( 4 );

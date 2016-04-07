@@ -369,8 +369,8 @@ extern  void    DelSeg( instruction *ins ) {
     ins = ins;
 }
 
-extern  void    GenSetCC( instruction *ins ) {
-/********************************************/
+void    GenSetCC( instruction *ins ) {
+/************************************/
 
     ins = ins;
     _Zoiks( 102 );

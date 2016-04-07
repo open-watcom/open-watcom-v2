@@ -38,11 +38,12 @@
 #include "data.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "object.h"
+#include "ocentry.h"
+#include "encode.h"
 #include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
-extern  unsigned        DepthAlign( unsigned );
-extern  void            CodeLabel( label_handle, unsigned );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
@@ -502,8 +503,8 @@ extern  void    GenProlog( void )
 }
 
 
-extern  void    GenEpilog( void )
-/*******************************/
+void    GenEpilog( void )
+/***********************/
 {
     segment_id          old;
     offset              lc;

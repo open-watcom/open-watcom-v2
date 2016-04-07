@@ -32,13 +32,13 @@
 
 #include "optwif.h"
 #include "model.h"
+#include "optmain.h"
 
 extern  ins_entry       *ValidIns( ins_entry * );
 extern  ins_entry       *AliasLabels( ins_entry *, ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
 extern  void            ChgLblRef( ins_entry *, label_handle );
-extern  byte            ReverseCondition( byte );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  void            SetBranches( void );
 extern  ins_entry       *NextIns( ins_entry * );

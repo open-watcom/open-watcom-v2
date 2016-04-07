@@ -52,6 +52,8 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "objprof.h"
+#include "i86enc2.h"
+#include "encode.h"
 #include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
@@ -60,13 +62,7 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            DoCall(label_handle,bool,bool,bool);
 extern  void            DoRTCall( rt_class rtn, bool pop );
-extern  void            GenMJmp(instruction*);
-extern  void            GenRJmp(instruction*);
-extern  void            GenICall(instruction*);
-extern  void            GenRCall(instruction*);
-extern  void            GenCall(instruction*);
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            DoRepOp( instruction *ins );
@@ -98,9 +94,7 @@ extern  name            *DeAlias(name*);
 extern  void            AddWData(signed_32,type_class_def );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
-extern  void            CodeLabel(label_handle, unsigned);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
-extern  void            GenJumpLabel( label_handle );
 extern  void            GenKillLabel( label_handle );
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );
@@ -847,8 +841,8 @@ static  void    DoP5Divide( instruction *ins ) {
 }
 #endif
 
-extern  void    GenObjCode( instruction *ins ) {
-/***********************************************
+void    GenObjCode( instruction *ins ) {
+/***************************************
     Generate object code for the instruction "ins" based on gen_table->generate
 */
 

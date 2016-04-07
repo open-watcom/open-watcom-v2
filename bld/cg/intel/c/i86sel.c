@@ -47,6 +47,11 @@
 #include "cgprotos.h"
 #include "bldsel.h"
 #include "bldselco.h"
+#include "cgaux.h"
+#include "i86enc2.h"
+#include "ocentry.h"
+#include "encode.h"
+
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
@@ -69,15 +74,9 @@
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 extern  an              BGDuplicate(an);
-extern  void            Gen4ByteValue(unsigned_32);
 extern  an              TreeGen(tn);
-extern  void            CodeLabel(label_handle, unsigned );
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  void            GenCodePtr(pointer);
-extern  void            GenSelEntry(bool);
-extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
-extern  void            Gen1ByteValue(byte);
 extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
 

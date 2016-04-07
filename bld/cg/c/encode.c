@@ -43,8 +43,6 @@
 #include "dumpio.h"
 
 
-extern  void            GenSetCC( instruction * );
-extern  byte            CondCode( instruction * );
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 
@@ -79,8 +77,8 @@ extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum
 }
 #endif
 
-extern  void    CodeLabel( label_handle label, unsigned align ) {
-/****************************************************************
+void    CodeLabel( label_handle label, unsigned align ) {
+/********************************************************
     Drop label into the queue
 */
     if( OptForSize > 50 || align == 0 )
@@ -236,8 +234,8 @@ extern  void    GenCondJump( instruction *cond ) {
     }
 }
 
-extern  void    GenJumpLabel( label_handle label ) {
-/**********************************************
+void    GenJumpLabel( label_handle label ) {
+/*******************************************
     generate an unconditional jump to "label"
 */
 

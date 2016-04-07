@@ -24,19 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate object code from symbolic instructions.
 *
 ****************************************************************************/
 
 
-extern void CodeLabel( label_handle, unsigned );
-extern void CodeLineNumber( unsigned_32, bool );
-extern void CodeHandle( oc_class, obj_length, label_handle );
+#if 0
+extern  void            FreeBlock( void );
+extern  void            CodeLineNum(cg_linenum,bool);
+extern  void            InitZeroPage( void );
+extern  void            FiniZeroPage( void );
+extern  void            TellReachedLabel(label_handle);
+extern  void            InitStackDepth(block*);
+extern  block           *FindBlockWithLbl( label_handle label );
+extern  void            Zoiks( int );
+extern  void            ClearBlockBits( block_class );
+extern  bool_maybe      ReDefinedBy( instruction *, name * );
 
-extern void GenCondJump( instruction *ins );
-extern void GenJumpLabel( label_handle );
-extern void GenKillLabel( label_handle );
+extern  void            *EdgeStackInit( void );
+extern  void            EdgeStackFini( void * );
+extern  bool            EdgeStackEmpty( void * );
+extern  void            EdgeStackPush( void *, block_edge * );
+extern  block_edge      *EdgeStackPop( void * );
+#endif
 
-extern byte CondCode( instruction * );
-extern void GenSetCC( instruction * );
+extern  unsigned        DepthAlign( unsigned );
+extern  void            GenCallLabel(pointer);
+extern  void            GenLabelReturn( void );
+extern  void            GenObjCode(instruction*);
+extern  void            GenEpilog( void );
+extern  void            TellCondemnedLabel(label_handle);
+
+extern  void    GenObject( void );
+extern  void    SortBlocks( void );

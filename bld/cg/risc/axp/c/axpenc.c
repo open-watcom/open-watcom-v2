@@ -48,7 +48,9 @@
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "rscconst.h"
+#include "object.h"
 #include "feprotos.h"
+
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
@@ -455,8 +457,8 @@ extern  void    GenCallLabelReg( pointer label, uint reg ) {
     GenBRANCH( 0x34, reg, label );
 }
 
-extern  void    GenCallLabel( pointer label ) {
-/*********************************************/
+void    GenCallLabel( pointer label ) {
+/*************************************/
 
     CodeHandle( OC_CALL, 4, label );
 }
@@ -923,8 +925,8 @@ static  void    Encode( instruction *ins ) {
 #endif
 }
 
-extern  void    GenObjCode( instruction *ins )  {
-/********************************************/
+void    GenObjCode( instruction *ins )  {
+/***************************************/
 
     _AlignmentCheck( ins, 8 );
     Encode( ins );
@@ -946,21 +948,21 @@ extern  void    GenJumpIf( instruction *ins, pointer label ) {
 }
 #endif
 
-extern  void    GenLabelReturn() {
-/********************************/
+void    GenLabelReturn( void ) {
+/******************************/
 
     GenRET();
 }
 
 
-extern  byte    ReverseCondition( byte cond ) {
-/*********************************************/
-
+byte    ReverseCondition( byte cond )
+/***********************************/
+{
     return( FlipOpcode( cond ) );
 }
 
-extern  byte    CondCode( instruction *ins ) {
-/********************************************/
-
+byte    CondCode( instruction *ins )
+/**********************************/
+{
     return( ins->head.opcode );
 }

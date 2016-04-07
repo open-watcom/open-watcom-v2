@@ -46,6 +46,8 @@
 #include "objout.h"
 #include "i86obj.h"
 #include "objprof.h"
+#include "object.h"
+#include "encode.h"
 #include "feprotos.h"
 
 
@@ -82,8 +84,6 @@ extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
 
-extern  void            CodeLabel( label_handle, unsigned );
-extern  unsigned        DepthAlign( unsigned );
 extern  void            TellOptimizerByPassed( void );
 extern  void            SetUpObj( bool );
 extern  void            OutDataByte( byte );
