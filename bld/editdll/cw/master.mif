@@ -23,7 +23,6 @@ extra_l_flags_dll_win = library ddeml
 extra_l_flags_dll_win += op stack=8k, rwr
 extra_l_flags_dll_win += segment _TEXT PRELOAD FIXED
 extra_l_flags_dll_win += segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
-extra_l_flags_dll_win += export WEP RESIDENT
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
