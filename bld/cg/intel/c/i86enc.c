@@ -54,6 +54,7 @@
 #include "objprof.h"
 #include "i86enc2.h"
 #include "encode.h"
+#include "object.h"
 #include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);

@@ -38,6 +38,8 @@
 #include "zoiks.h"
 #include "x87.h"
 #include "objout.h"
+#include "ocentry.h"
+#include "encode.h"
 
 
 /* KLUDGEY crud for segment register */
