@@ -37,6 +37,7 @@
 #include "i87sched.h"
 #include "data.h"
 #include "x87.h"
+#include "edge.h"
 
 
 extern  int     Max87Stk;
@@ -53,7 +54,6 @@ extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
 extern  bool_maybe      ReDefinedBy(instruction *,name *);
 extern  name            *DeAlias(name *);
-extern  void            MoveEdge( block_edge *edge, block *new_dest );
 extern  block           *AddPreBlock( block *postblk );
 extern  void            RevCond( instruction * );
 extern  int             FPStkReq( instruction * );

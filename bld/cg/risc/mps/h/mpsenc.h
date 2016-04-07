@@ -24,30 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Generate object code from symbolic instructions.
+* Description:  MIPS instruction encoding.
 *
 ****************************************************************************/
 
 
+extern void         GenCallLabelReg( pointer label, uint reg );
 #if 0
-extern  void            FreeBlock( void );
-extern  void            CodeLineNum(cg_linenum,bool);
-extern  void            InitZeroPage( void );
-extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(label_handle);
-extern  void            InitStackDepth(block*);
-extern  block           *FindBlockWithLbl( label_handle label );
-extern  void            Zoiks( int );
-extern  void            ClearBlockBits( block_class );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
+extern void         EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type );
+extern void         GenLOADS32( signed_32 value, uint_8 reg );
+extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type );
+extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
+extern void         GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
+extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt );
+extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
+extern void         GenJType( uint_8 opcode, pointer label );
+extern void         GenRET( void );
+extern type_length  TempLocation( name *temp );
+extern void         GenObjCode( instruction *ins );
+extern void         GenLabelReturn( void );
+extern byte         ReverseCondition( byte cond );
+extern byte         CondCode( instruction *ins );
 #endif
-
-extern  unsigned        DepthAlign( unsigned );
-extern  void            GenCallLabel(pointer);
-extern  void            GenLabelReturn( void );
-extern  void            GenObjCode(instruction*);
-extern  void            GenEpilog( void );
-extern  void            TellCondemnedLabel(label_handle);
-
-extern  void    GenObject( void );
-extern  void    SortBlocks( void );

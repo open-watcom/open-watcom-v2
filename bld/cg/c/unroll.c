@@ -44,11 +44,11 @@
 #include "dumpio.h"
 #include "namelist.h"
 #include "blips.h"
+#include "edge.h"
+
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
-extern  void            MoveEdge(block_edge*,block*);
-extern  void            PointEdge(block_edge*,block*);
 extern  bool            AnalyseLoop(induction*,bool*,instruction**,block**);
 extern  name            *DeAlias(name*);
 extern  name            *SAllocIndex(name *,name *,type_length ,type_class_def ,type_length );

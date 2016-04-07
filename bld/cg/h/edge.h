@@ -30,8 +30,21 @@
 ****************************************************************************/
 
 
-extern  void    *       EdgeStackInit();
-extern  bool            EdgeStackEmpty( void *stk );
-extern  void            EdgeStackPush( void *stk, block_edge *edge );
-extern  block_edge *    EdgeStackPop( void *stk );
-extern  void            EdgeStackFini( void *stk );
+typedef struct edge_entry {
+    struct edge_entry   *next;
+    block_edge          *edge;
+} edge_entry;
+
+typedef struct edge_stack {
+    edge_entry          *top;
+} edge_stack;
+
+extern edge_stack   *EdgeStackInit( void );
+extern void         EdgeStackFini( edge_stack * );
+extern bool         EdgeStackEmpty( edge_stack * );
+extern void         EdgeStackPush( edge_stack *, block_edge * );
+extern block_edge   *EdgeStackPop( edge_stack * );
+extern void         PointEdge( block_edge *edge, block *new_dest );
+extern void         RemoveEdge( block_edge *edge );
+extern void         MoveEdge( block_edge *edge, block *new_dest );
+extern block        *SplitBlock( block *blk, instruction *ins );

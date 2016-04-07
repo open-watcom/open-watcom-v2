@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "zoiks.h"
-#include "edgestk.h"
+#include "edge.h"
 #include "data.h"
 #include "dominate.h"
 

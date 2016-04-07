@@ -48,6 +48,7 @@
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
+#include "mpsenc.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );

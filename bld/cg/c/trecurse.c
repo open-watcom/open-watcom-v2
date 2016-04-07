@@ -36,13 +36,14 @@
 #include "makeins.h"
 #include "stack.h"
 #include "namelist.h"
+#include "edge.h"
+
 
 extern  bool            SideEffect(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            ReplIns(instruction *,instruction *);
 extern  void            RemoveInputEdge( block_edge * );
-extern  void            PointEdge( block_edge *, block * );
 
 static  name            *ReturnValue;
 

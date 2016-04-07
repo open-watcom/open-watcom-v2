@@ -40,6 +40,7 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "object.h"
+#include "mpsenc.h"
 #include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
@@ -56,7 +57,6 @@ extern  void            OutFuncStart( label_handle label, offset start, int line
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern  byte            RegTrans( hw_reg_set );
-extern  void            GenCallLabelReg( pointer label, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            TellKeepLabel( label_handle );

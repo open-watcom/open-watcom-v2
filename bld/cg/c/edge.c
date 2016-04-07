@@ -33,14 +33,16 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "utils.h"
+#include "edge.h"
+
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            RemoveIns(instruction *);
 extern  void            FixBlockIds(void);
 
-extern  void    PointEdge( block_edge *edge, block *new_dest )
-/*************************************************************
+void    PointEdge( block_edge *edge, block *new_dest )
+/*****************************************************
     Make edge point to block new_dest
 */
 {
@@ -54,8 +56,8 @@ extern  void    PointEdge( block_edge *edge, block *new_dest )
     edge->source->targets++;
 }
 
-extern  void    RemoveEdge( block_edge *edge )
-/*********************************************
+void    RemoveEdge( block_edge *edge )
+/*************************************
     Remove the given edge from it's block.
 */
 {
@@ -76,8 +78,8 @@ extern  void    RemoveEdge( block_edge *edge )
     edge->source->targets--;
 }
 
-extern  void    MoveEdge( block_edge *edge, block *new_dest )
-/************************************************************
+void    MoveEdge( block_edge *edge, block *new_dest )
+/****************************************************
     Move edge to point to block new_dest
 */
 {
@@ -85,8 +87,8 @@ extern  void    MoveEdge( block_edge *edge, block *new_dest )
     PointEdge( edge, new_dest );
 }
 
-extern  block   *SplitBlock( block *blk, instruction *ins )
-/**********************************************************
+block   *SplitBlock( block *blk, instruction *ins )
+/**************************************************
     Split a block in two before the given instruction. The first block
     will simply jump to the second block, which will receive all the
     edges from the previous block.
@@ -125,17 +127,8 @@ extern  block   *SplitBlock( block *blk, instruction *ins )
     return( new_blk );
 }
 
-typedef struct edge_entry {
-    struct edge_entry   *next;
-    block_edge          *edge;
-} edge_entry;
-
-typedef struct edge_stack {
-    edge_entry          *top;
-} edge_stack;
-
-extern  edge_stack      *EdgeStackInit( void )
-/********************************************/
+edge_stack      *EdgeStackInit( void )
+/************************************/
 {
     edge_stack          *stk;
 
@@ -144,14 +137,14 @@ extern  edge_stack      *EdgeStackInit( void )
     return( stk );
 }
 
-extern  bool            EdgeStackEmpty( edge_stack *stk )
-/*******************************************************/
+bool            EdgeStackEmpty( edge_stack *stk )
+/***********************************************/
 {
     return( stk->top == NULL );
 }
 
-extern  void            EdgeStackPush( edge_stack *stk, block_edge *edge )
-/************************************************************************/
+void            EdgeStackPush( edge_stack *stk, block_edge *edge )
+/****************************************************************/
 {
     edge_entry          *new_entry;
 
@@ -161,8 +154,8 @@ extern  void            EdgeStackPush( edge_stack *stk, block_edge *edge )
     stk->top = new_entry;
 }
 
-extern  block_edge      *EdgeStackPop( edge_stack *stk )
-/******************************************************/
+block_edge      *EdgeStackPop( edge_stack *stk )
+/**********************************************/
 {
     edge_entry          *top;
     block_edge          *edge;
@@ -177,8 +170,8 @@ extern  block_edge      *EdgeStackPop( edge_stack *stk )
     return( NULL );
 }
 
-extern  void            EdgeStackFini( edge_stack *stk )
-/******************************************************/
+void            EdgeStackFini( edge_stack *stk )
+/**********************************************/
 {
     while( !EdgeStackEmpty( stk ) ) {
         EdgeStackPop( stk );

@@ -49,6 +49,7 @@
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
+#include "axpenc.h"
 #include "feprotos.h"
 
 
@@ -451,8 +452,8 @@ extern  type_length     TempLocation( name *temp ) {
     return( offset + base->t.location + temp->v.offset - base->v.offset );
 }
 
-extern  void    GenCallLabelReg( pointer label, uint reg ) {
-/**********************************************************/
+void    GenCallLabelReg( pointer label, uint reg ) {
+/**************************************************/
 
     GenBRANCH( 0x34, reg, label );
 }

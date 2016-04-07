@@ -24,30 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  Generate object code from symbolic instructions.
+* Description:  Alpha AXP instruction encoding.
 *
 ****************************************************************************/
 
 
+extern void         GenCallLabelReg( pointer label, uint reg );
 #if 0
-extern  void            FreeBlock( void );
-extern  void            CodeLineNum(cg_linenum,bool);
-extern  void            InitZeroPage( void );
-extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(label_handle);
-extern  void            InitStackDepth(block*);
-extern  block           *FindBlockWithLbl( label_handle label );
-extern  void            Zoiks( int );
-extern  void            ClearBlockBits( block_class );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
+extern void         EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type );
+extern void         GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c );
+extern void         GenLOADS32( signed_32 value, uint_8 reg );
+extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type );
+extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
+extern void         GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );
+extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement );
+extern void         GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
+extern void         GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
+extern void         GenRET( void );
+extern type_length  TempLocation( name *temp );
+extern void         GenObjCode( instruction *ins );
+#if 0
+extern void         GenJumpIf( instruction *ins, pointer label );
 #endif
-
-extern  unsigned        DepthAlign( unsigned );
-extern  void            GenCallLabel(pointer);
-extern  void            GenLabelReturn( void );
-extern  void            GenObjCode(instruction*);
-extern  void            GenEpilog( void );
-extern  void            TellCondemnedLabel(label_handle);
-
-extern  void    GenObject( void );
-extern  void    SortBlocks( void );
+extern void         GenLabelReturn( void );
+extern byte         ReverseCondition( byte cond );
+extern byte         CondCode( instruction *ins );
+#endif
