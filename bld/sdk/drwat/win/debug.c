@@ -33,7 +33,6 @@
 #include <dos.h>
 #include <stdio.h>
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "wdebug.h"
 

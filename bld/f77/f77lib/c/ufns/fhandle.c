@@ -36,19 +36,19 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
+#include "ftextfun.h"
 #include "fio.h"
 #include "posio.h"
 #include "units.h"
+#include "ftnapi.h"
+#include "posopen.h"
+#include "poserr.h"
+#include "rtsysutl.h"
+#include "rdwr.h"
 
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-extern  b_file          *_AllocFile(int,f_attrs,long int);
-extern  void            _AllocBuffer(ftnfile *);
-extern  int             _FileAttrs(ftnfile *);
-extern  int             Errorf(a_file *);
-extern  void            Closef(a_file *);
 
 
 intstar2        __fortran SYSHANDLE( intstar4 *unit ) {

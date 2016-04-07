@@ -34,8 +34,9 @@
 #include "csetinfo.h"
 #include "fio.h"
 #include "fmttab.h"
+#include "charset.h"
 
-extern  character_set    CharSetInfo;
+
 extern  b_file           *FStdErr;
 extern  b_file           *FStdIn;
 extern  b_file           *FStdOut;

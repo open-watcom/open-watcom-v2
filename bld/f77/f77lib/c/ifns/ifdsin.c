@@ -50,10 +50,6 @@ double DSIN( double arg ) {
     return( sin( arg ) );
 }
 
-#else
-
-extern  double          DSIN(double);
-
 #endif
 
 

@@ -50,6 +50,7 @@
 #include "blips.h"
 #include "ocentry.h"
 #include "optmain.h"
+#include "object.h"
 #include "feprotos.h"
 
 
@@ -116,7 +117,6 @@ extern  void            ProcMessage( msg_class );
 extern  void            TellFreeAllLabels( void );
 extern  bool            FixReturns( void );
 extern  instruction_id  Renumber( void );
-extern  void            GenEpilog( void );
 extern  void            SplitVars( void );
 extern  name            *DeAlias( name * );
 extern  void            AssignOtherLocals( void );

@@ -43,6 +43,8 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"
+#include "support.h"
+#include "utils.h"
 
 #define MD_x86
 #define MD_axp
@@ -50,10 +52,6 @@
 #include "mad.h"
 #include "madregs.h"
 
-
-extern size_t   BigRead( int, void *, size_t );
-extern bool     IsX86BigAddr( address );
-extern bool     IsX86RealAddr( address );
 
 extern sio_data         *CurrSIOData;
 

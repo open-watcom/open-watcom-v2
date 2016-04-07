@@ -37,3 +37,5 @@ extern  void    EmptyQueue( void );
 extern  void    FlushQueue( void );
 extern  void    FiniQueue( void );
 extern  void    AbortQueue( void );
+
+extern  byte    ReverseCondition( byte );

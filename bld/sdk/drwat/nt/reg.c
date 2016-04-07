@@ -31,10 +31,8 @@
 
 
 #include <stdio.h>
-#include <windows.h>
 #include <process.h>
 #include <ctype.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 
@@ -979,7 +977,8 @@ GETMEMINFO_ERROR:
 /*
  * freeCostlyInfo
  */
-static void freeCostlyInfo( void ) {
+static void freeCostlyInfo( void )
+{
     if( costlyData != NULL ) {
         MemFree( costlyData );
     }
@@ -992,8 +991,8 @@ static void freeCostlyInfo( void ) {
 /*
  * DoCostlyRefresh
  */
-void DoCostlyRefresh( void *dum ) {
-
+static void DoCostlyRefresh( void *dum )
+{
     dum = dum;
     WaitForSingleObject( costlyWriteMutex, INFINITE );
     freeCostlyInfo();
@@ -1014,7 +1013,7 @@ void RefreshCostlyInfo( void ) {
 /*
  * freeInfo - free all info except costly info and reset pointers to NULL
  */
-void freeInfo( void ) {
+static void freeInfo( void ) {
     if( titleIndex != NULL ) {
         MemFree( titleIndex );
         titleIndex = NULL;

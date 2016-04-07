@@ -35,7 +35,13 @@
 #include "guixutil.h"
 #include "guitimer.h"
 
+
 #if defined(__NT__)
+
+/* Local Window callback functions prototypes */
+WINEXPORT VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime );
+
+
 VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime )
 {
     gui_window      *wnd;

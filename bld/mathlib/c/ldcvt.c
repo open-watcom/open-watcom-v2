@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include "xfloat.h"
+#include "fltsupp.h"
 
 
 #define NDIG            8
@@ -506,7 +506,7 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
 
 /* NB: Just like _EFG_Format(), the following assumes ASCII character  encoding */
 
-VISIBILITY void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
+FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
 {
     int         i;
     int         n;

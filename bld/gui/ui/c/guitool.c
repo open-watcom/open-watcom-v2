@@ -37,6 +37,7 @@
 #include "guiutil.h"
 #include "guistr.h"
 #include <string.h>
+#include "guitool.h"
 
 #define FIX_TOOLBAR     1
 
@@ -73,7 +74,7 @@ static gui_control_info Button = {
     0
 };
 
-extern bool GUIXCreateFixedToolbar( gui_window *wnd )
+bool GUIXCreateFixedToolbar( gui_window *wnd )
 {
     int                 i;
     int                 j;

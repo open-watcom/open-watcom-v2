@@ -28,12 +28,17 @@
 *
 ****************************************************************************/
 
-#include "ftnstd.h"
-#include "ftextfun.h"
-#include "posio.h"
 
-void    Scratchf( char *fn ) {
+#include "ftnstd.h"
+#include "fio.h"
+#include "posio.h"
+#include "poserr.h"
+#include "posdel.h"
+
+
+void    Scratchf( char *fn )
 // Erase a file.
+{
     if( unlink( fn ) != 0 ) {
         FSetSysErr( NULL );
     }

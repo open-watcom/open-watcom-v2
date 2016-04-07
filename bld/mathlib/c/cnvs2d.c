@@ -32,16 +32,12 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdarg.h>
-#include "myvalist.h"
-#include "xfloat.h"
-#include "farsupp.h"
-#include "printf.h"
 #include "fltsupp.h"
 
 
 /* This routine is called from scnf.c */
 
-VISIBILITY void __cnvs2d( char *buf, double *value )
+FLTSUPPFUNC void __cnvs2d( char *buf, double *value )
 {
     *value = strtod( buf, NULL );
 }
@@ -49,6 +45,6 @@ VISIBILITY void __cnvs2d( char *buf, double *value )
 #if defined( __MAKE_DLL_MATHLIB )
 _type_EFG_cnvs2d *__get_EFG_cnvs2d( void )
 {
-    return( &__cnvs2d );
+    return( __cnvs2d );
 }
 #endif

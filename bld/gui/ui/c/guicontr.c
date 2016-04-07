@@ -300,7 +300,7 @@ bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
     return( false );
 }
 
-extern bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 {
     SAREA       area;
     a_dialog    *ui_dlg_info;

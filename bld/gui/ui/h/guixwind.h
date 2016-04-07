@@ -32,6 +32,10 @@
 
 #ifndef _GUIXWIND_H_
 #define _GUIXWIND_H_
+
+extern gui_window   *GUICurrWnd;
+
 extern void GUIDestroyDialog( gui_window *wnd );
 extern bool GUICloseWnd( gui_window *wnd );
+
 #endif // _GUIXWIND_H_

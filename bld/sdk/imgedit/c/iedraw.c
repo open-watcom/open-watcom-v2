@@ -35,6 +35,11 @@
 #include "iedraw.h"
 #include "iemem.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam );
+WINEXPORT void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam );
+
 #define MIN_DRAW_WIN_WIDTH      150
 
 static WPI_POINT        pointSize = { 0, 0 };

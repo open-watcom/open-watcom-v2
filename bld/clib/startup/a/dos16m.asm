@@ -36,6 +36,7 @@
         .286p
 
 include xinit.inc
+include exitwmsg.inc
 
         name    dos16m
         .dosseg
@@ -45,7 +46,6 @@ include xinit.inc
         extrn   __CMain                 : far
         extrn   __FInitRtns             : far
         extrn   __FFiniRtns             : far
-        extrn   __fatal_runtime_error_  : far
         extrn   stackavail_             : far
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
         extrn   _end                    : byte  ; end of BSS (start of STACK)
@@ -315,11 +315,10 @@ NewLine         db      0Dh,0Ah
 msg_notPM       db      'requires DOS/16M', 0Dh, 0Ah, '$'
 
 _Not_Enough_Memory_:
-        mov     bx,1                    ; - set exit code
+        mov     bx,1                    ; set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
-        call    __fatal_runtime_error_  ; - display msg and exit
-        ; never return
+        jmp     __fatal_runtime_error   ; display msg and exit
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there

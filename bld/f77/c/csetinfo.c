@@ -30,5 +30,6 @@
 
 #include "ftnstd.h"
 #include "csetinfo.h"
+#include "charset.h"
 
 character_set           CharSetInfo;

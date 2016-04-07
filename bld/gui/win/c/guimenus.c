@@ -135,6 +135,7 @@ static HMENU GetPopupHMENU( gui_window *wnd, HMENU hmenu, gui_ctl_id id,
     return( NULLHANDLE );
 }
 
+#if 0
 void GetStateForMenu( gui_window *wnd, gui_ctl_id id, WPI_MENUSTATE *mstate )
 {
     HMENU               hmenu, popup, parent;
@@ -171,6 +172,7 @@ bool GUIIsMenuItemEnabled( gui_window *wnd, gui_ctl_id id )
 
     return( _wpi_ismenuenabledfromstate( &mstate ) );
 }
+#endif
 
 void GUISetMenu( gui_window *wnd, HMENU hmenu )
 {
@@ -423,12 +425,12 @@ bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
     return( true );
 }
 
-void CheckItem( HMENU hmenu, gui_ctl_id id, bool check )
+static void CheckItem( HMENU hmenu, gui_ctl_id id, bool check )
 {
     _wpi_checkmenuitem( hmenu, id, ( check ) ? TRUE : FALSE, FALSE );
 }
 
-void CheckPopup( HMENU hmenu, gui_ctl_idx position, bool check )
+static void CheckPopup( HMENU hmenu, gui_ctl_idx position, bool check )
 {
     _wpi_checkmenuitem( hmenu, position, ( check ) ? TRUE : FALSE, TRUE );
 }
@@ -468,12 +470,12 @@ bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating
     return( true );
 }
 
-void EnableItem( HMENU hmenu, gui_ctl_id id, bool enable )
+static void EnableItem( HMENU hmenu, gui_ctl_id id, bool enable )
 {
     _wpi_enablemenuitem( hmenu, id, ( enable ) ? TRUE : FALSE, FALSE );
 }
 
-void EnablePopup( HMENU hmenu, gui_ctl_idx position, bool enable )
+static void EnablePopup( HMENU hmenu, gui_ctl_idx position, bool enable )
 {
     _wpi_enablemenuitem( hmenu, position, ( enable ) ? TRUE : FALSE, TRUE );
 }
@@ -533,7 +535,7 @@ bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floati
  * GUISetMenuText -- change the text of a menu item
  */
 
-extern bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating )
+bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating )
 {
     HMENU       hmenu, popup, parent;
     gui_ctl_idx position;

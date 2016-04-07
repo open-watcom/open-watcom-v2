@@ -39,9 +39,8 @@
 #include <dos.h>
 #include <malloc.h>
 #include <io.h>
-#include "bool.h"
-#include "sopen.h"
 #include "drwatcom.h"
+#include "sopen.h"
 #include "dip.h"
 #include "dipcli.h"
 
@@ -53,7 +52,7 @@ static dig_fhandle      curFileHdl;
 static BOOL             dipIsLoaded;
 
 
-
+#if 0
 dig_fhandle PathOpen( char *name, unsigned len, char *ext ) {
 
     char        path[ _MAX_PATH ];
@@ -78,6 +77,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext ) {
         return( DIGCliOpen( path, DIG_READ ) );
     }
 }
+#endif
 
 /*
  * InitSymbols
@@ -158,8 +158,8 @@ BOOL LoadDbgInfo( void ) {
 /*
  * doFindSymbol
  */
-BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo ) {
-
+static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
+{
     sym_handle          *symhdl;
     cue_handle          *cue;
     search_result       sr;
@@ -380,6 +380,7 @@ sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr ) {
     return( NULL );
 }
 
+#if 0
 /*
  * DIPCliSectLoaded
  */
@@ -390,6 +391,7 @@ dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect ) {
     sect = sect;
     return( DS_OK );
 }
+#endif
 
 /*
  * DIPCliItemLocation

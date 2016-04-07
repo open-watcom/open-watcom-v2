@@ -38,13 +38,13 @@
 #include "symtypes.h"
 #include "optr.h"
 #include "opr.h"
+#include "itdefn.h"
+#include "asgnop.h"
+#include "binops.h"
+#include "logops.h"
+#include "relops.h"
+#include "fieldops.h"
 
-extern  void            LogOp(TYPE,TYPE,OPTR);
-extern  void            AsgnOp(TYPE,TYPE,OPTR);
-extern  void            RelOp(TYPE,TYPE,OPTR);
-extern  void            BinOp(TYPE,TYPE,OPTR);
-extern  void            ExpOp(TYPE,TYPE,OPTR);
-extern  void            FieldOp(TYPE,TYPE,OPTR);
 
 void    (* const __FAR GenOprTable[])(TYPE,TYPE,OPTR) = {
     #define pick(id,const,gener) gener,

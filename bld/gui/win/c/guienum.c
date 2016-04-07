@@ -34,10 +34,14 @@
 #include <string.h>
 #include "guixutil.h"
 #include "wprocmap.h"
+#include "guixwind.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam );
 
 #define CLASS_LENGTH    8
 
-extern  WPI_INST        GUIMainHInst;
 extern  char            GUIClass[];
 
 typedef struct {
@@ -74,7 +78,7 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     return( TRUE );
 }
 
-extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
+void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
     WPI_ENUMPROC    fp;
     enum_info       info;

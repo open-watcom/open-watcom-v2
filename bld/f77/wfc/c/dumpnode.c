@@ -33,8 +33,10 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "opr.h"
+#include "dumpnode.h"
 
 #include <stdio.h>
+
 
 static  char    *Opn[] = {
     "OPN_PHI",

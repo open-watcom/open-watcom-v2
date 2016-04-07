@@ -30,17 +30,22 @@
 ****************************************************************************/
 
 
-extern char *JmpLabel( uint_32 addr, uint_32 off );
-extern char *ToStr( uint_32 value, uint_16 length, uint_32 addr );
-extern char *ToIndex( uint_32 addr, uint_32 value );
-extern char *ToBrStr( uint_32 value, uint_32 addr );
-extern char *ToSegStr( uint_32 value, uint_16 seg, uint_32 addr );
-extern uint_32 GetOffset( void );
-extern int_16 GetNextByte( void );
-extern int_16 GetDataByte( void );
-extern int_16 GetDataWord( void );
-extern int_32 GetDataLong( void );
-extern bool EndOfSegment( void );
+#include "disfunc.h"
+
+extern GetDataByte_func     GetDataByte;
+extern GetDataWord_func     GetDataWord;
+extern GetNextByte_func     GetNextByte;
+extern GetDataLong_func     GetDataLong;
+extern EndOfSegment_func    EndOfSegment;
+extern GetOffset_func       GetOffset;
+extern ToStr_func           ToStr;
+extern JmpLabel_func        JmpLabel;
+extern ToBrStr_func         ToBrStr;
+extern ToIndex_func         ToIndex;
+extern ToSegStr_func        ToSegStr;
+extern GetWtkInsName_func   GetWtkInsName;
+extern DoWtk_func           DoWtk;
+extern IsWtk_func           IsWtk;
 
 extern void  DoCode( instruction *curr, bool use_32 );
 extern void  FormatIns( char *buf, instruction *curr_ins, form_option format );

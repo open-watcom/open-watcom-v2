@@ -45,6 +45,8 @@
 #include "dumpio.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
+#include "object.h"
+#include "encode.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -795,8 +797,8 @@ static  void    Encode( instruction *ins )
 }
 
 
-extern  void    GenObjCode( instruction *ins )
-/********************************************/
+void    GenObjCode( instruction *ins )
+/************************************/
 {
     Encode( ins );
     if( ins->u.gen_table->generate == G_CMP ||
@@ -810,8 +812,8 @@ extern  void    GenObjCode( instruction *ins )
 
 static byte Zeros[MAX_ALIGNMENT];
 
-extern  void    CodeLabel( label_handle label, unsigned alignment )
-/*****************************************************************/
+void    CodeLabel( label_handle label, unsigned alignment )
+/*********************************************************/
 {
     offset      loc;
     offset      modulus;
@@ -848,8 +850,8 @@ extern  void    CodeLineNum( cg_linenum line, bool label )
 }
 
 
-extern  void    GenJumpLabel( label_handle label )
-/*********************************************/
+void    GenJumpLabel( label_handle label )
+/****************************************/
 {
     GenBRANCH( 18, label, FALSE, FALSE );
 #ifndef NDEBUG
@@ -906,21 +908,21 @@ extern  void    GenKillLabel( label_handle lbl )
 }
 
 
-extern  void    GenCallLabel( pointer label )
-/*******************************************/
+void    GenCallLabel( pointer label )
+/***********************************/
 {
     label = label;
 }
 
 
-extern  void    GenLabelReturn( void )
-/************************************/
+void    GenLabelReturn( void )
+/****************************/
 {
 }
 
 
-extern  byte    ReverseCondition( byte cond )
-/*******************************************/
+byte    ReverseCondition( byte cond )
+/***********************************/
 {
     return( cond );
 }

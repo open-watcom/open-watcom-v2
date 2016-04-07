@@ -36,7 +36,7 @@
 #include "guiscale.h"
 #include "guigetx.h"
 
-bool GetExtent( gui_window *wnd, const char *text, size_t length, gui_coord *coord )
+static bool GetExtent( gui_window *wnd, const char *text, size_t length, gui_coord *coord )
 {
     size_t    my_length;
     bool      got_new;
@@ -79,7 +79,7 @@ gui_ord GUIGetExtentY( gui_window *wnd, const char *text )
     return( 0 );
 }
 
-bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES *dc )
+static bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES *dc )
 {
     if ( wnd && wnd->hwnd ) {
         *hwnd = _wpi_getdlgitem( wnd->hwnd, id );
@@ -91,7 +91,7 @@ bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES *dc )
     return( false );
 }
 
-bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, size_t length, gui_coord *coord )
+static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, size_t length, gui_coord *coord )
 {
     int         my_length;
     WPI_PRES    dc;

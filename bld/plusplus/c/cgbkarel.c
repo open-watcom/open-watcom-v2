@@ -58,7 +58,7 @@ struct auto_sym {
     #include "toggle.h"
     #include "pragdefn.h"
 
-    void __dump_sym( AUTO_SYM*asym, const char* msg )
+    static void __dump_sym( AUTO_SYM*asym, const char* msg )
     {
         if( PragDbgToggle.dump_auto_rel ) {
             printf( "AUTO_SYM[%p] rels(%p) sym(%p) %s\n"

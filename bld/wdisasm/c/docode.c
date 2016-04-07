@@ -33,6 +33,7 @@
 #include <string.h>
 #include "disasm.h"
 
+
 instruction             CurrIns;
 
 static  char            W_Bit;
@@ -291,7 +292,7 @@ void  DoCode( instruction *curr, bool use_32 )
 #endif
         }
     }
-    if( IsWtk( &CurrIns ) ) {
+    if( IsWtk() ) {
         DoWtk( /*&CurrIns*/ );
     }
     CurrIns.ins_size = InsOffset();

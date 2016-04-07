@@ -43,12 +43,11 @@
 #include "recog.h"
 #include "emitobj.h"
 #include "utility.h"
-
-extern  void            GSPProlog(void);
-extern  sym_id          StaticAlloc(uint,TYPE);
-extern  label_id        NextLabel(void);
-extern  bool            TypeCmplx(TYPE typ);
-extern  TYPE            MapTypes(TYPE,uint);
+#include "tcmplx.h"
+#include "cgmagic.h"
+#include "gsubprog.h"
+#include "declare.h"
+#include "gflow.h"
 
 
 void    GStmtAddr( sym_id stmtno ) {

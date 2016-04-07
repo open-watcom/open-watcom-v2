@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-#include "bool.h"
 #include "drwatcom.h"
 
 /*

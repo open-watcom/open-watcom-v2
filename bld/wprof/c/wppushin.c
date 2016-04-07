@@ -38,9 +38,8 @@
 #include "dip.h"
 #include "sampinfo.h"
 #include "memutil.h"
+#include "setsamps.h"
 
-
-extern void SetSampleInfo(sio_data *curr_sio);
 
 /* Forward declarations */
 extern int  WPPopEvent( void );

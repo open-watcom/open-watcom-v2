@@ -71,3 +71,5 @@ typedef struct funion {
     byte                typ;                    // type of field
     struct fmap         *record;                // pointer to map
 } funion;
+
+extern void    StructResolve( void );

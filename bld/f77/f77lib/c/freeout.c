@@ -34,8 +34,11 @@
 #include "rundat.h"
 #include "iotype.h"
 #include "undefrtn.h"
+#include "cctrl.h"
+#include "wrutils.h"
 
 #include <string.h>
+
 
 static  void    OutReal( void ) {
 //=========================

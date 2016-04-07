@@ -34,18 +34,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 #include "intdata.h"
 #include "jdlg.h"
+
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WORD __cdecl FAR FaultHandler( fault_frame ff );
 
 static BOOL doLog;
 
 /*
  * IntDialog - handles input from user when a fault is received
  */
-BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     WORD        tmp;

@@ -38,14 +38,13 @@
 #include "ifenv.h"
 #include "rtenv.h"
 
-extern int              LexCmp(string *,string *);
-
 
 logstar4 LLE( string *arg1, string *arg2 ) {
 //==========================================
 
 // Return true if arg1 <= arg2 else return false.
 
-    if( LexCmp( arg1, arg2 ) <= 0 ) return( _LogValue( TRUE ) );
+    if( LexCmp( arg1, arg2 ) <= 0 )
+        return( _LogValue( TRUE ) );
     return( _LogValue( FALSE ) );
 }

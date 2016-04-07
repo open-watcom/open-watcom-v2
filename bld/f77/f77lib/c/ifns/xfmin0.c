@@ -34,8 +34,6 @@
 // XFMIN0       : min function for integer argumemts
 //
 
-#include <stdarg.h>
-
 #include "ftnstd.h"
 #include "ifenv.h"
 

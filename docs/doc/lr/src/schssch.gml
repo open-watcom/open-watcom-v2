@@ -34,11 +34,11 @@ is appropriately set.
 .termhd1 Constant
 .termhd2 Meaning
 .term ESRCH;
-The process id
+The process ID
 .arg pid
 could not be found
 .term EINVAL
-The process id
+The process ID
 .arg pid
 , policy value
 .arg policy

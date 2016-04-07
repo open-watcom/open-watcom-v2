@@ -46,19 +46,21 @@
 #endif
 #include "rtstack.h"
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
   #include "extender.h"
 #endif
-#include "ftextfun.h"
+#include "rterr.h"
 #include "errcod.h"
 #include "rundat.h"
 #if defined( __NT__ )
   #include "enterdb.h"
 #endif
 #include "thread.h"
+#include "fptraps.h"
+#include "rttraps.h"
+
 
 #if defined( __OS2_286__ )
   #define       _handler        __interrupt __pascal __far
@@ -103,9 +105,8 @@ typedef void            (*fsig_func)( intstar4 );
         "mov  esp,eax"        \
         parm [eax] modify [esp];
 
-  extern unsigned long _dos_getrealvect(int);
-  extern void          _dos_setrealvect(int,unsigned long);
-  extern void          _dos_setvectp(int,void (__interrupt __far *)(void));
+  #include "realvec.h"
+
 #endif
 
 
@@ -326,6 +327,7 @@ void    R_TrapFini( void ) {
     FPTrapFini();
 }
 
+#if 0
 extern void             (*_ExceptionInit)( void );
 extern void             (*_ExceptionFini)( void );
 
@@ -335,3 +337,4 @@ void    __InitExceptionVectors( void ) {
     _ExceptionInit = &R_TrapInit;
     _ExceptionFini = &R_TrapFini;
 }
+#endif

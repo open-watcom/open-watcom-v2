@@ -39,10 +39,11 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "object.h"
+#include "mpsenc.h"
 #include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
-extern  unsigned        DepthAlign( unsigned );
 extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
@@ -56,8 +57,6 @@ extern  void            OutFuncStart( label_handle label, offset start, int line
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern  byte            RegTrans( hw_reg_set );
-extern  void            GenCallLabel( label_handle lbl );
-extern  void            GenCallLabelReg( pointer label, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            TellKeepLabel( label_handle );
@@ -616,8 +615,8 @@ extern  void GenProlog( void )
 }
 
 
-extern  void GenEpilog( void )
-/****************************/
+void GenEpilog( void )
+/********************/
 {
     segment_id          old;
 

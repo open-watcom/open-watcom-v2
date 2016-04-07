@@ -30,13 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
-#include <tlhelp32.h>
 #include <process.h>
 #include <ctype.h>
-#include "bool.h"
 #include "drwatcom.h"
+#include <tlhelp32.h>
 #include "mem.h"
 
 #define INIT_ALLOCSIZE  20
@@ -44,7 +42,7 @@
 /*
  * getName
  */
-void getName( DWORD proc_id, DWORD mod_id, char **name )
+static void getName( DWORD proc_id, DWORD mod_id, char **name )
 {
     HANDLE              hdl;
     BOOL                noerror;

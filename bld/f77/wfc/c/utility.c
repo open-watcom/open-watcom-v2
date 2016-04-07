@@ -42,12 +42,10 @@
 #include "insert.h"
 #include "frl.h"
 #include "utility.h"
+#include "aentry.h"
+#include "downscan.h"
 
 #include <string.h>
-
-extern  void            GetConst(void);
-extern  void            GetIntConst(void);
-extern  void            EatExpr(void);
 
 
 void    AdvanceITPtr( void ) {

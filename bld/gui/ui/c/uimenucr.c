@@ -33,7 +33,8 @@
 #include "guiwind.h"
 #include "guifloat.h"
 
-extern void uimenucurr( MENUITEM *menu )
+
+void uimenucurr( MENUITEM *menu )
 {
     GUIProcessMenuCurr( menu );
 }

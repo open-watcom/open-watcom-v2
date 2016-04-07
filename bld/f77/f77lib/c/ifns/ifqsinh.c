@@ -50,10 +50,6 @@ extended QSINH( extended arg ) {
     return( sinh( arg ) );
 }
 
-#else
-
-extern  extended                QSINH(extended);
-
 #endif
 
 

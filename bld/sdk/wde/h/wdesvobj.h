@@ -46,4 +46,5 @@
 /****************************************************************************/
 extern bool WdeSaveObject( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, WResLangType *, bool, bool );
 
+
 #endif

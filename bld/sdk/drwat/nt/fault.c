@@ -32,7 +32,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "mem.h"
@@ -42,6 +41,9 @@
 #include "malloc.h"
 #include "madsys1.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 msglist ExceptionMsgs[] = {
     EXCEPTION_ACCESS_VIOLATION,         (char *)(pointer_int)STR_ACCESS_VIOLATION,

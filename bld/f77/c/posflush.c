@@ -29,11 +29,15 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "fio.h"
 #include "posio.h"
+#include "posput.h"
+#include "posflush.h"
 
-int     FlushBuffer( b_file *io ) {
+
+int     FlushBuffer( b_file *io )
 // Flush i/o buffer.
+{
     uint        amt;
     int         bytes_written;
     int         rc;

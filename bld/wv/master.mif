@@ -103,7 +103,12 @@ extra_c_flags_srcmgt = $(incl_file_opts)__srcmgt.h
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)" -Ih -I"$(rdir)/strings"
 !ifndef dll
 inc_dirs += $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
-inc_dirs += -I"$(gui_dir)/ui/h" -I"$(hlpview_dir)/h"
+!ifeq sys_windowed 1
+inc_dirs += -I"$(gui_dir)/win/h"
+!else
+inc_dirs += -I"$(gui_dir)/ui/h"
+!endif
+inc_dirs += -I"$(hlpview_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"

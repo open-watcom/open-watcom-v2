@@ -36,6 +36,10 @@
 #include "heapwalk.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+
 /* static variables used by the add function */
 static FARPROC  DialProc;
 static WORD     AddCount;
@@ -151,7 +155,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 }
 
 
-BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     HWND        parent;
     RECT        area;
@@ -271,7 +275,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     SetStaticText( dialog, ADD_TOTAL, buf );
 }
 
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     DWORD       size;
     DWORD       info;

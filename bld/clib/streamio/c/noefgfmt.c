@@ -32,10 +32,6 @@
 #include "variety.h"
 #include <stdio.h>
 #include "exitwmsg.h"
-#include "farsupp.h"
-#include "myvalist.h"
-#include "xfloat.h"
-#include "printf.h"
 #include "fltsupp.h"
 
 

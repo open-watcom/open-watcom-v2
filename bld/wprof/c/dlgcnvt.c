@@ -41,11 +41,9 @@
 #include "dlgcnvt.h"
 #include "sampinfo.h"
 #include "msg.h"
+#include "utils.h"
+
 #include "clibext.h"
-
-
-extern void ReplaceExt(char *path,char *addext);
-extern void ErrorMsg(char *msg,... );
 
 
 static char * cnvtFilterList = {

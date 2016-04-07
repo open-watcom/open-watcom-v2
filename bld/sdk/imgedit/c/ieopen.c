@@ -50,6 +50,10 @@
 #endif
 #endif
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static signed short     imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
 
@@ -439,7 +443,7 @@ BOOL ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
 /*
  * doReadCursor
  */
-BOOL doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
+static BOOL doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
                    WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;

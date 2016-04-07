@@ -31,6 +31,8 @@
 #include "ftnstd.h"
 #include "ftextvar.h"
 #include "scangbl.h"
+#include "csetinfo.h"
+#include "charset.h"
 
 // Modified:    By:             Reason:
 // --------     ---             -------

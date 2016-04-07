@@ -49,30 +49,21 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "compstmt.h"
+#include "cpsubpgm.h"
+#include "data.h"
+#include "rstalloc.h"
+#include "rststruc.h"
+#include "symtab.h"
+#include "gsublist.h"
+#include "proctbl.h"
+#include "declare.h"
+#include "implicit.h"
 
 #include <string.h>
 
-extern  void            Function( TYPE, uint, bool );
-extern  act_dim_list    *STSubsList( act_dim_list * );
-extern  sym_id          LkSym( void );
-extern  bool            LenSpec( TYPE, uint * );
-extern  warp_label      GBegSList( void );
-extern  void            GSLoBound( int,sym_id );
-extern  void            GSHiBound( int,sym_id );
-extern  void            GForceHiBound( int, sym_id );
-extern  void            GEndSList( sym_id );
-extern  void            DataInit( itnode * );
-extern  void            RemKeyword( itnode *, int );
-extern  void            CkDefStmtNo( void );
-extern  void            DefProg( void );
-extern  void            FreeWarpLabel( warp_label );
-extern  sym_id          STField( char *, uint );
 
 extern  char            *StmtKeywords[];
-
-/* Forward declarations */
-void    ArrayDecl( sym_id sym );
-
 
 #define ERR_MASK                (SY_DATA_INIT | SY_CLASS | SY_USAGE)
 #define SSB_CONSTANT            0    // lo/hi subscript bound is constant

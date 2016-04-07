@@ -35,21 +35,9 @@
 //
 
 #include "ftnstd.h"
+#include "winapi.h"
 
 #include <stddef.h>
-
-#define GMEM_MOVEABLE   0x0002
-#define LMEM_MOVEABLE   0x0002
-
-#define DWORD           unsigned long
-#define WORD            unsigned int
-
-typedef WORD            HANDLE;
-
-extern  HANDLE          __far __pascal GlobalReAlloc(HANDLE,DWORD,WORD);
-extern  HANDLE          __far __pascal LocalReAlloc(HANDLE,WORD,WORD);
-extern  HANDLE          __far __pascal LockSegment(WORD);
-extern  HANDLE          __far __pascal UnLockSegment(WORD);
 
 
 HANDLE          GlobalDiscard( HANDLE h ) {
@@ -66,19 +54,17 @@ HANDLE          LocalDiscard( HANDLE h ) {
 }
 
 
-#pragma off (unreferenced);
 HANDLE          LockData( HANDLE dummy ) {
-#pragma on (unreferenced);
 //========================================
 
+    dummy=dummy;
     return( LockSegment( 0xffff ) );
 }
 
 
-#pragma off (unreferenced);
 HANDLE          UnLockData( HANDLE dummy ) {
-#pragma on (unreferenced);
 //==========================================
 
+    dummy=dummy;
     return( UnLockSegment( 0xffff ) );
 }

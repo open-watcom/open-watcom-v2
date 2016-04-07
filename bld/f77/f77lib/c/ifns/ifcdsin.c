@@ -57,10 +57,6 @@ dcomplex        CDSIN( double rp, double ip ) {
     return( result );
 }
 
-#else
-
-extern  dcomplex        CDSIN(double,double);
-
 #endif
 
 

@@ -33,6 +33,8 @@
 #ifndef _GUIRDLG_H_
 #define _GUIRDLG_H_
 
+extern WPI_INST             GUIResHInst;
+
 extern gui_control_class    GUIGetControlClassFromHWND( HWND cntl );
 extern gui_control_styles   GUIGetControlStylesFromHWND( HWND cntl, gui_control_class class );
 extern bool                 GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data );

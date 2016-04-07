@@ -37,26 +37,15 @@
 #include "ftnstd.h"
 #include <string.h>
 #include "global.h"
+#include "wf77auxd.h"
 #include "wf77aux.h"
 #include "iflookup.h"
 #include "cpopt.h"
+#include "rtconst.h"
+#include "auxlook.h"
+#include "fcrtns.h"
 
 #include "clibext.h"
-
-
-extern  void            CopyAuxInfo(aux_info *,aux_info *);
-extern  aux_info        *NewAuxEntry(char *,int);
-extern  aux_info        *RTAuxInfo(sym_id);
-
-extern  aux_info        DefaultInfo;
-extern  aux_info        IFVarInfo;
-extern  aux_info        IFCharInfo;
-extern  aux_info        IFChar2Info;
-extern  aux_info        IFXInfo;
-extern  aux_info        IFInfo;
-extern  aux_info        FortranInfo;
-extern  aux_info        ProgramInfo;
-extern  aux_info        *AuxInfo;
 
 
 aux_info    *AuxLookupName( char *name, int name_len ) {

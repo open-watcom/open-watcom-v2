@@ -50,10 +50,6 @@ double DCOS( double arg ) {
     return( cos( arg ) );
 }
 
-#else
-
-extern  double          DCOS(double);
-
 #endif
 
 

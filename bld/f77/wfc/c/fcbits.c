@@ -35,16 +35,14 @@
 //
 
 #include "ftnstd.h"
+#include "emitobj.h"
+#include "fcjmptab.h"
 #include "cgdefs.h"
 #include "cg.h"
+#include "fctypes.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-#include "emitobj.h"
-#include "fctypes.h"
-
-extern  void            XPush(cg_name);
-extern  cg_name         XPopValue(cg_type);
-extern  cg_name         XPop(void);
 
 
 static  cg_name BitPosition( unsigned_16 typ_info ) {

@@ -33,8 +33,8 @@
 #include "global.h"
 #include "csetinfo.h"
 #include "types.h"
-
-extern  character_set   CharSetInfo;
+#include "charset.h"
+#include "impltab.h"
 
 
 static  unsigned char   CharIndex( char chr ) {

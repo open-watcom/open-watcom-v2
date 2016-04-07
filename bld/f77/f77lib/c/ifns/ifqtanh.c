@@ -50,10 +50,6 @@ extended QTANH( extended arg ) {
     return( tanh( arg ) );
 }
 
-#else
-
-extern  extended                QTANH(extended);
-
 #endif
 
 

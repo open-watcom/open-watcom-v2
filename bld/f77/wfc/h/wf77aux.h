@@ -24,80 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Auxiliary information processing.
 *
 ****************************************************************************/
 
 
-#include "cgaux.h"
+extern  aux_info        DefaultInfo;
+extern  aux_info        IFVarInfo;
+extern  aux_info        IFCharInfo;
+extern  aux_info        IFChar2Info;
+extern  aux_info        IFXInfo;
+extern  aux_info        IFInfo;
+extern  aux_info        FortranInfo;
+extern  aux_info        ProgramInfo;
+extern  aux_info        *AuxInfo;
 
-// The following describes argument information:
+extern  aux_info        RtRtnInfo;
+extern  aux_info        RtVarInfo;
+extern  aux_info        RtStopInfo;
+extern  aux_info        CoRtnInfo;
 
-typedef enum {
-    PASS_BY_REFERENCE       = 0x0001,
-    PASS_BY_VALUE           = 0x0002,
-    PASS_BY_DESCRIPTOR      = 0x0004,
-    PASS_BY_NODESCRIPTOR    = 0x0008,
-    PASS_BY_DATA            = 0x0010,
-
-    ARG_SIZE_1              = 0x0800,
-    ARG_SIZE_2              = 0x1000,
-    ARG_SIZE_4              = 0x2000,
-    ARG_SIZE_8              = 0x4000,
-    ARG_SIZE_16             = 0x8000
-} pass_info;
-
-#if _CPU == 386
-#define ARG_NEAR            ARG_SIZE_4
-#define ARG_FAR             ARG_SIZE_8
-#else
-#define ARG_NEAR            ARG_SIZE_2
-#define ARG_FAR             ARG_SIZE_4
-#endif
-
-typedef struct pass_by {
-    struct pass_by      *link;
-    pass_info           info;
-} pass_by;
-
-typedef struct aux_info {
-    struct aux_info     *link;
-    call_class          cclass;
-    hw_reg_set          save;
-    hw_reg_set          returns;
-    hw_reg_set          *parms;
-    byte_seq            *code;
-    hw_reg_set          streturn;
-    char                *objname;
-    pass_by             *arg_info;
-    byte                sym_len;
-    char                sym_name[1];
-} aux_info;
-
-typedef struct aux_entry {
-    struct aux_info     *info;
-    struct aux_entry    *next;
-    pass_by             *arg_info;
-    byte                sym_len;
-    char                sym_name[1];
-} aux_entry;
-
-typedef struct default_lib {
-    struct default_lib  *link;
-    char                lib[2]; // 1 for priority and 1 for NULLCHAR
-} default_lib;
-
-typedef struct arr_info {
-    struct arr_info     *link;
-    char                arr[1];
-} arr_info;
-
-#include <time.h>
-
-typedef struct dep_info {
-    struct dep_info     *link;
-    time_t              time_stamp;
-    char                fn[1];
-} dep_info;
-
+extern void            InitAuxInfo( void );
+extern void            FiniAuxInfo( void );
+extern void            SubAuxInit( void );
+extern void            SubAuxFini( void );
+extern void            AddDependencyInfo( source_t *fi );
+extern void            DefaultLibInfo( void );
+extern aux_info        *NewAuxEntry( char *name, int name_len );
+extern void            DoPragma( char *ptr );
+extern void            ProcPragma( char *ptr );
+extern void            CopyAuxInfo( aux_info *dst, aux_info *src );

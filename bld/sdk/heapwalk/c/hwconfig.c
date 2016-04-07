@@ -36,6 +36,10 @@
 #include "watini.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+
 #define         SECT_NAME       "WATCOM heapwalker"
 #define         LSORT           "LSortType"
 #define         GSORT           "GSortType"
@@ -288,8 +292,7 @@ static void doFileBrowse( HWND hwnd, WORD id ) {
 /*
  * ConfigDlgProc - handle messages from the configure dialog
  */
-BOOL __export FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     MemWndConfig        info;
     HeapConfigInfo      heapdef;

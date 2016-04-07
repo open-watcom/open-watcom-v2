@@ -35,6 +35,10 @@
 #include "ieprofil.h"
 #include "iemem.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 static int      stretchClipPaste;
 static int      rotateType;
 static BOOL     fCheckSquareGrid = FALSE;
@@ -46,8 +50,7 @@ static BOOL     fWrapShift;
 /*
  * CurrentSettingsProc - display the current settings and allows for change
  */
-WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg,
-                                            WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL                err;
     char                *title;

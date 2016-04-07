@@ -34,11 +34,12 @@
 #include "cgmem.h"
 #include "data.h"
 #include "makeins.h"
+#include "edge.h"
+
 
 extern  void            TellScrapLabel( label_handle );
 extern  void            FreeABlock( block * );
 extern  instruction_id  Renumber( void );
-extern  void            RemoveEdge( block_edge * );
 
 /* forward declarations */
 extern  void    RemoveInputEdge( block_edge *edge );

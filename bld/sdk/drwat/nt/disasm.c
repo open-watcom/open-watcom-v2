@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
-#include "mad.h"
 #include "drwatcom.h"
+#include "mad.h"
 #include "madcli.h"
 #include <malloc.h>
 #include <string.h>
@@ -86,7 +84,7 @@ void DeAllocMadDisasmData(void)
     MemFree(MDData);
 }
 
-unsigned FormatAddr( address *a, char *buffer, unsigned max )
+static unsigned FormatAddr( address *a, char *buffer, unsigned max )
 {
     mad_type_info       host;
     mad_type_info       mti;

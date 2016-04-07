@@ -57,10 +57,6 @@ dcomplex        CDLOG( double rp, double ip ) {
     return( result );
 }
 
-#else
-
-extern  dcomplex        CDLOG(double,double);
-
 #endif
 
 

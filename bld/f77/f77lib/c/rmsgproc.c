@@ -28,13 +28,13 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "errrtns.h"
 #include "cioconst.h"
+#include "wrutils.h"
 
-#include <stdarg.h>
 
-extern  void            SendLine(char *);
 #if defined( _SA_LIBRARY )
 extern  void            useLGTables(void);
 extern  void            useDfltTables(void);

@@ -35,6 +35,7 @@
 //
 
 #include "ftnstd.h"
+#include "ftnapi.h"
 
 #include <stddef.h>
 #include <time.h>
@@ -42,8 +43,7 @@
 extern  uint            __getctime(struct tm *);
 
 
-void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins,
-                        intstar2 *secs, intstar2 *tics ) {
+void    __fortran GETTIM( intstar2 *hrs, intstar2 *mins, intstar2 *secs, intstar2 *tics ) {
 //========================================================
 
     struct tm   tod;

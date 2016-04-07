@@ -38,14 +38,15 @@
 #include "fcgbls.h"
 #include "fmthdr.h"
 #include "cg.h"
+#include "fcflow.h"
+#include "fcformat.h"
 #include "emitobj.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
-//=========================================================================
 
-extern  back_handle     GetFmtLabel(label_id);
+//=========================================================================
 
 
 void    DumpFormats( void ) {

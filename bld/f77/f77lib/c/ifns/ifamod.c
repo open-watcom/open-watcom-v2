@@ -55,10 +55,6 @@ single AMOD( single arg1, single arg2 ) {
     return( fmod( arg1, arg2 ) );
 }
 
-#else
-
-extern  single          AMOD(single,single);
-
 #endif
 
 

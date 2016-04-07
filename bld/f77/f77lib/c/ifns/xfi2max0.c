@@ -34,8 +34,6 @@
 // XFI2MAX0     : max function for integer*2 argumemts
 //
 
-#include <stdarg.h>
-
 #include "ftnstd.h"
 #include "ifenv.h"
 

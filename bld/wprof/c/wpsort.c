@@ -37,14 +37,9 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
+#include "wpsort.h"
+
 #include "clibext.h"
-
-
-extern void SortImage( sio_data * );
-extern void SortMod( sio_data * );
-extern void SortFile( sio_data * );
-extern void SortRtn( sio_data * );
-
 
 STATIC int imageCountCmp( pointer *, pointer * );
 STATIC int modCountCmp( pointer *, pointer * );
@@ -74,8 +69,8 @@ static void * rtnSortCmp[] = {
 
 
 
-extern int GetCurrentSort( sio_data * curr_sio )
-/**********************************************/
+int GetCurrentSort( sio_data * curr_sio )
+/***************************************/
 {
     int     sort_type;
 
@@ -95,8 +90,8 @@ extern int GetCurrentSort( sio_data * curr_sio )
 
 
 
-extern void SetCurrentSort( sio_data * curr_sio, int sort_type )
-/**************************************************************/
+void SetCurrentSort( sio_data * curr_sio, int sort_type )
+/*******************************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->sort_type = sort_type;
@@ -115,8 +110,8 @@ extern void SetCurrentSort( sio_data * curr_sio, int sort_type )
 
 
 
-extern void SortCurrent( sio_data * curr_sio )
-/********************************************/
+void SortCurrent( sio_data * curr_sio )
+/*************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         SortImage( curr_sio );
@@ -131,8 +126,8 @@ extern void SortCurrent( sio_data * curr_sio )
 
 
 
-extern void SortImage( sio_data * curr_sio )
-/******************************************/
+void SortImage( sio_data * curr_sio )
+/***********************************/
 {
     if( curr_sio->sort_needed ) {
         qsort( curr_sio->images, curr_sio->image_count,
@@ -142,8 +137,8 @@ extern void SortImage( sio_data * curr_sio )
 
 
 
-extern void SortMod( sio_data * curr_sio )
-/****************************************/
+void SortMod( sio_data * curr_sio )
+/*********************************/
 {
     if( curr_sio->curr_image->sort_needed ) {
         qsort( curr_sio->curr_image->module, curr_sio->curr_image->mod_count,
@@ -153,8 +148,8 @@ extern void SortMod( sio_data * curr_sio )
 
 
 
-extern void SortFile( sio_data * curr_sio )
-/*****************************************/
+void SortFile( sio_data * curr_sio )
+/**********************************/
 {
     if( curr_sio->curr_mod->sort_needed ) {
         qsort( curr_sio->curr_mod->mod_file, curr_sio->curr_mod->file_count,
@@ -164,8 +159,8 @@ extern void SortFile( sio_data * curr_sio )
 
 
 
-extern void SortRtn( sio_data * curr_sio )
-/****************************************/
+void SortRtn( sio_data * curr_sio )
+/*********************************/
 {
     if( curr_sio->curr_file->sort_needed ) {
         qsort( curr_sio->curr_file->routine, curr_sio->curr_file->rtn_count,

@@ -36,7 +36,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "segmap.h"
 #include "jdlg.h"
@@ -44,6 +43,14 @@
 #include "madrtn.h"
 #include "madcli.h"
 #include "reglist.h"
+#include "memwnd.h"
+
+
+/* Local Window callback functions prototypes */
+#ifndef __NT__
+BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#endif
+BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam );
 
 typedef struct{
     address curr_addr;
@@ -284,8 +291,7 @@ static void InitStatDialog( HWND hwnd )
 } /* InitStatDialog */
 
 #ifndef __NT__
-BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam )
+BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[128];
     WORD        i;

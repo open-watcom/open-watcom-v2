@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include "commonui.h"
+#include "bool.h"
 #include "listbox.h"
 #include "font.h"
 #include "procctl.h"

@@ -35,20 +35,21 @@
 //
 
 #include "ftnstd.h"
-#include "fmterr.h"
+#include "errcod.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "format.h"
 #include "global.h"
 #include "fmttab.h"
+#include "fmterr.h"
+#include "fmtinit.h"
+#include "cgformat.h"
+#include "fmtemit.h"
+#include "fcodes.h"
+#include "gflow.h"
 
-extern  void            GFEmEnd(void);
-extern  void            GFEmNum(int);
-extern  void            FmtError(int);
-extern  void            GStmtLabel(sym_id);
+
 extern  void            R_FDoSpec(void);
-extern  void            StartFmt(cs_label);
-extern  void            EndFmt(void);
 
 extern  const FmtElements CFmtStruct;
 

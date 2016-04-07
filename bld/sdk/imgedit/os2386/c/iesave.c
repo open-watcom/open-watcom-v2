@@ -35,6 +35,7 @@
 #include <math.h>
 #include "..\h\wbitmap.h"
 
+
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
 

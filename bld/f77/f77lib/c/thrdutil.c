@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include <stdlib.h>
 #include "rtstack.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "thread.h"
 

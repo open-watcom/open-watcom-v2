@@ -62,6 +62,8 @@
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
+#include "dumpapi.h"
+
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
 #define TYPE_HASH_MASK          (TYPE_HASH_MODULUS-1)// mask for above modulus
@@ -1559,7 +1561,7 @@ static TYPE* dumpTypeVector(    // DUMP VECTOR OF TYPE RINGS
     return vector;
 }
 
-void dumpTypeTables( void )
+void DumpTypeTables( void )
 {
     DUMP_STATS stats;
     int i;
@@ -2089,7 +2091,7 @@ static DECL_SPEC *makeDeclSpec( void )
     spec->stg_class = STG_NULL;
     spec->scalar = STM_NULL;
     spec->specifier = STY_NULL;
-    spec->ms_declspec = STS_NULL;
+    spec->ms_declspec = MSDS_NULL;
     spec->type_defined = FALSE;
     spec->type_declared = FALSE;
     spec->ctor_name = FALSE;
@@ -2220,7 +2222,7 @@ static void checkMSDeclspec( DECL_SPEC *d1, DECL_SPEC *d2 )
     }
     /* any type modifiers to the right of a class name remove
        the possibility of the decl-spec being a constructor name */
-    if( d2->ms_declspec != STS_NULL ) {
+    if( d2->ms_declspec != MSDS_NULL ) {
         d1->ctor_name = 0;
     }
 }
@@ -2413,8 +2415,8 @@ static void noExtraDeclSpec( DECL_SPEC *dspec )
         dspec->stg_class = STG_NULL;
         CErr1( ANSI_TYPE_SPECIFIER_STGCLASS );
     }
-    if( dspec->ms_declspec != STS_NULL ) {
-        dspec->ms_declspec = STS_NULL;
+    if( dspec->ms_declspec != MSDS_NULL ) {
+        dspec->ms_declspec = MSDS_NULL;
         CErr1( ERR_UNEXPECTED_DECLSPEC_MOD );
     }
 }
@@ -2458,15 +2460,15 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
     name = id->u.id.name;
     spec = makeDeclSpec();
     if( strcmp( NameStr( name ), "dllimport" ) == 0 ) {
-        spec->ms_declspec = STS_DLLIMPORT;
+        spec->ms_declspec = MSDS_DLLIMPORT;
     } else if( strcmp( NameStr( name ), "dllexport" ) == 0 ) {
-        spec->ms_declspec = STS_DLLEXPORT;
+        spec->ms_declspec = MSDS_DLLEXPORT;
     } else if( strcmp( NameStr( name ), "thread" ) == 0 ) {
-        spec->ms_declspec = STS_THREAD;
+        spec->ms_declspec = MSDS_THREAD;
     } else if( strcmp( NameStr( name ), "naked" ) == 0 ) {
-        spec->ms_declspec = STS_NAKED;
+        spec->ms_declspec = MSDS_NAKED;
     } else if( strcmp( NameStr( name ), "noreturn" ) == 0 ) {
-        spec->ms_declspec = STS_NORETURN;
+        spec->ms_declspec = MSDS_NORETURN;
     } else {
         PTreeErrorExprName( id, ERR_UNSUPPORTED_DECLSPEC, name );
     }
@@ -2483,7 +2485,7 @@ DECL_SPEC *PTypeMSDeclSpecModifier( DECL_SPEC *dspec, TYPE fnmod_type )
     DECL_SPEC *spec;
 
     spec = makeDeclSpec();
-    spec->ms_declspec = STS_MODIFIER;
+    spec->ms_declspec = MSDS_MODIFIER;
     spec->ms_declspec_fnmod = fnmod_type;
     if( dspec != NULL ) {
         spec = PTypeCombine( dspec, spec );
@@ -3330,36 +3332,36 @@ static TYPE linkAfterPrev( TYPE list, TYPE prev, TYPE head, TYPE tail )
 
 static TYPE makeMSDeclSpecType( DECL_SPEC *dspec )
 {
-    ms_declspec_t ms_dspec;
+    ms_declspec_t ms_declspec;
     type_flag flags;
     TYPE type;
     TYPE fnmod_type;
 
-    ms_dspec = dspec->ms_declspec;
+    ms_declspec = dspec->ms_declspec;
     flags = TF1_NULL;
-    if( ms_dspec & STS_DLLEXPORT ) {
+    if( ms_declspec & MSDS_DLLEXPORT ) {
         flags = TF1_DLLEXPORT;
-    } else if( ms_dspec & STS_DLLIMPORT ) {
+    } else if( ms_declspec & MSDS_DLLIMPORT ) {
         flags = TF1_DLLIMPORT;
     }
-    if( ms_dspec & STS_THREAD ) {
+    if( ms_declspec & MSDS_THREAD ) {
         flags |= TF1_THREAD;
     }
     type = NULL;
     if( flags != TF1_NULL ) {
         type = MakeFlagModifier( flags );
     }
-    if( ms_dspec & STS_MODIFIER ) {
+    if( ms_declspec & MSDS_MODIFIER ) {
         fnmod_type = dspec->ms_declspec_fnmod;
         fnmod_type->of = type;
         type = fnmod_type;
     }
-    if( ms_dspec & STS_NAKED ) {
+    if( ms_declspec & MSDS_NAKED ) {
         fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NAKED );
         fnmod_type->of = type;
         type = fnmod_type;
     }
-    if( ms_dspec & STS_NORETURN ) {
+    if( ms_declspec & MSDS_NORETURN ) {
         fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NORETURN );
         fnmod_type->of = type;
         type = fnmod_type;
@@ -3418,7 +3420,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     /* outermost modifers must be moved to the end of the list */
     any_fn_mod = NULL;
     outermost_list = NULL;
-    if( dspec->ms_declspec != STS_NULL ) {
+    if( dspec->ms_declspec != MSDS_NULL ) {
         outermost_list = makeMSDeclSpecType( dspec );
         for( outer = outermost_list; outer != NULL; outer = outer->of ) {
             if( outer->flag & (TF1_TYP_FUNCTION|TF1_HUG_FUNCTION) ) {
@@ -4156,7 +4158,7 @@ TYPE MakeClassModDeclSpec( DECL_SPEC *dspec )
     TYPE type;
 
     type = NULL;
-    if( dspec->ms_declspec != STS_NULL ) {
+    if( dspec->ms_declspec != MSDS_NULL ) {
         type = makeMSDeclSpecType( dspec );
         type->flag |= TF1_OUTERMOST;
         DbgAssert( type->of == NULL );

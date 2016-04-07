@@ -1,7 +1,7 @@
 .func gethostent
 .synop begin
 #include <netdb.h>
-struct hostent *gethostent( );
+struct hostent *gethostent( void );
 .synop end
 .desc begin
 The
@@ -59,7 +59,7 @@ exist or an error occurred.
 .see end
 .exmp begin
 .blktext begin
-The following program will print out each user and their user id in
+The following program will print out each user and their user ID in
 the system's password database
 .blktext end
 .blkcode begin
@@ -70,7 +70,7 @@ the system's password database
 int main(int argc, char *argv[])
   {
   struct hostent *e;
-    
+
     sethostent(1);
     e = gethostent();
     while(e != NULL) {
@@ -78,11 +78,11 @@ int main(int argc, char *argv[])
         printf("%s - %d.%d.%d.%d\n", 
                e->h_name, 
                ia[0],ia[1],ia[2],ia[3]
-               
+
         );
         e = gethostent();
     }
-    
+
     endhostent();
     return 0;
   }

@@ -39,10 +39,9 @@
 #include "errcod.h"
 #include "ferror.h"
 #include "asmstmt.h"
+#include "errutil.h"
 
 #if _INTEL_CPU
-
-extern  void    MsgBuffer(uint,char *,...);
 
 void    AsmError( int msg ) {
 //===========================

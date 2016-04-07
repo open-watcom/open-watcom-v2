@@ -48,11 +48,9 @@
 #if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
-#include "myvalist.h"
-#include "farsupp.h"
-#include "printf.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
+#include "fltsupp.h"
 
 #define BUF_SIZE    72  /* 64-bit ints formatted as binary can get big */
 #define TRUE        1
@@ -72,8 +70,6 @@
 #else
     #define EFG_PRINTF (*__EFG_printf)
 #endif
-
-extern FAR_STRING EFG_PRINTF( char *buffer, my_va_list *args, _mbcs_SPECS __SLIB *specs );
 
 
 #if defined( __WIDECHAR__ )

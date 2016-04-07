@@ -32,12 +32,15 @@
 
 #include "guiwind.h"
 #include "guicontr.h"
+#include "guixdlg.h"
+#include "guirdlg.h"
+#include "guixwind.h"
 
-extern  WPI_INST                GUIMainHInst;
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam );
+
 WPI_INST                        GUIResHInst;
-extern  WPI_DLGRESULT CALLBACK  GUIDialogFunc( HWND hwnd, WPI_MSG message,
-                                               WPI_PARAM1 wparam,
-                                               WPI_PARAM2 lparam );
 
 typedef struct GetClassMap {
     gui_control_class   control_class;

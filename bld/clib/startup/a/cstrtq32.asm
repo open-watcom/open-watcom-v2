@@ -212,9 +212,7 @@ else
         mov     edx,eax                 ; get exit code
         mov     eax,offset DGROUP:NullAssign; point to msg
 endif
-        call    __fatal_runtime_error
-        ; never return
-
+        jmp     __fatal_runtime_error   ; display msg and exit
 __exit endp
 
 _TEXT   ends

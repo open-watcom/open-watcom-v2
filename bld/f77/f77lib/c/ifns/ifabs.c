@@ -50,10 +50,6 @@ single ABS( single arg ) {
     return( fabs( arg ) );
 }
 
-#else
-
-extern  single          ABS(single);
-
 #endif
 
 

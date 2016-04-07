@@ -1,7 +1,7 @@
 .func getpwent
 .synop begin
 #include <pwd.h>
-struct passwd *getpwent( );
+struct passwd *getpwent( void );
 .synop end
 .desc begin
 The
@@ -47,7 +47,7 @@ exist or an error occurred.
 .see end
 .exmp begin
 .blktext begin
-The following program will print out each user and their user id in
+The following program will print out each user and their user ID in
 the system's password database
 .blktext end
 .blkcode begin
@@ -57,14 +57,14 @@ the system's password database
 void main()
   {
     struct passwd *pw;
-    
-    setpwent( );
-    
-    while((pw = getpwent( )) != NULL) {
+
+    setpwent();
+
+    while((pw = getpwent()) != NULL) {
         printf("User id %d is %s\n", (int)pw->pw_uid, pw->pw_name);
     }
-    
-    endpwent( );
+
+    endpwent();
 
   }
 .blkcode end

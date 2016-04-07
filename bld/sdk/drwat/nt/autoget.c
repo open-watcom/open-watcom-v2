@@ -33,7 +33,6 @@
 #include <windows.h>
 #include <stdio.h>
 #include <process.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "menu.h"
 
@@ -86,7 +85,7 @@ static void addDontAttatch( DWORD pid ) {
 /*
  * ErrAdding
  */
-void ErrAdding( void *_info ) {
+static void ErrAdding( void *_info ) {
 
     ProcAttatchInfo   *info = _info;
 #ifdef DEBUG
@@ -152,7 +151,7 @@ static void removeDeadProcs( void ) {
 }
 
 //DWORD WINAPI AutoAttatchMain( void *dum ) {
-void AutoAttatchMain( void *dum ) {
+static void AutoAttatchMain( void *dum ) {
 
     HANDLE      hdl;
 

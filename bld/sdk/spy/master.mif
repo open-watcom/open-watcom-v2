@@ -56,7 +56,7 @@ extra_l_flags_nt  += alias '_WinMain'='_WinMain@16'
 
 extra_l_flags_dll = option implib
 
-extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED export WEP RESIDENT
+extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED
 extra_l_flags_dll_nt  = initglobal
 
 .c: ../c

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rundat.h"
@@ -36,8 +37,12 @@
 #include "fltcnv.h"
 #include "target.h"
 #include "pgmacc.h"
+#include "chrutils.h"
+#include "rtspawn.h"
+#include "ioerr.h"
 
 #include <ctype.h>
+
 
 /* Forward declarations */
 static  void    RptNum( void );
@@ -532,7 +537,7 @@ static  void    FreeIOErr( uint err ) {
 
     if( IOCB->flags & NML_DIRECTED ) {
         IOCB->flags |= NML_CONTINUE;
-        Suicide();
+        RTSuicide();
     }
     IOErr( err );
 }

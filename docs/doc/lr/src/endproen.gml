@@ -1,7 +1,7 @@
 .func endprotoent
 .synop begin
 #include <netdb.h>
-void endprotoent( );
+void endprotoent( void );
 .synop end
 .desc begin
 The

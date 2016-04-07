@@ -42,6 +42,7 @@
 #ifndef NDEBUG
     #include "dbg.h"
 #endif
+#include "dumpapi.h"
 
 
 static VSTK_CTL stack_files;        // stack: files
@@ -218,7 +219,7 @@ INITDEFN( fn_ctl, fnCtlInit, fnCtlFini )
 
 #include "module.h"
 
-void FnctlDump()                // DEBUGGING -- dump stack
+void FnctlDump( void )          // DEBUGGING -- dump stack
 {
     FN_CTL *fctl;               // - current function information
 

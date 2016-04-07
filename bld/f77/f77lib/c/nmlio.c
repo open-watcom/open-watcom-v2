@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
@@ -38,10 +39,17 @@
 #include "iotype.h"
 #include "lgadv.h"
 #include "nmlinfo.h"
+#include "nmlio.h"
+#include "chrutils.h"
+#include "rtspawn.h"
+#include "ioerr.h"
+#include "substr.h"
+#include "subscr.h"
+#include "wrutils.h"
 
-#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+
 
 static  unsigned_32     NmlInCount;
 static  PTYPE           NmlInType;
@@ -52,7 +60,7 @@ static  void    NmlIn( void );
 static  void    NmlOut( void );
 
 
-char            *Scanner( void ) {
+static char *Scanner( void ) {
 //==========================
 
 // Point to where we are currently scanning.
@@ -64,7 +72,7 @@ char            *Scanner( void ) {
 }
 
 
-bool            ScanChar( char chr ) {
+static bool     ScanChar( char chr ) {
 //====================================
 
 // Scan a character.
@@ -77,7 +85,7 @@ bool            ScanChar( char chr ) {
 }
 
 
-bool            ScanEOL( void ) {
+static bool ScanEOL( void ) {
 //=========================
 
 // Check for end-of-line.
@@ -86,7 +94,7 @@ bool            ScanEOL( void ) {
 }
 
 
-char            *ScanName( uint *len ) {
+static char     *ScanName( uint *len ) {
 //======================================
 
 // Scan a name.
@@ -109,7 +117,7 @@ char            *ScanName( uint *len ) {
 }
 
 
-bool            ScanSNum( signed_32 PGM *num ) {
+static bool     ScanSNum( signed_32 PGM *num ) {
 //==============================================
 
 // Scan a signed number.
@@ -542,14 +550,14 @@ static  void    NmlIn( void ) {
             break;
         }
         Blanks();
-        if( Spawn( &DoFreeIn ) != 0 ) {
-            // Suicide() was called - make sure it really was an error
+        if( RTSpawn( &DoFreeIn ) != 0 ) {
+            // RTSuicide() was called - make sure it really was an error
             if( IOCB->flags & NML_CONTINUE ) {
                 IOCB->flags &= ~NML_CONTINUE;
                 continue;
             }
             // we got an error during NAMELIST input
-            Suicide();
+            RTSuicide();
         }
     }
     IOTypeRtn = &IOType;

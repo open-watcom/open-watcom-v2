@@ -50,10 +50,6 @@ single SIN( single arg ) {
     return( sin( arg ) );
 }
 
-#else
-
-extern  single          SIN(single);
-
 #endif
 
 

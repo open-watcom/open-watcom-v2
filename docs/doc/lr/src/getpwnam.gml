@@ -44,7 +44,7 @@ A matching parsed password database entry, or NULL if no match is found.
 .see end
 .exmp begin
 .blktext begin
-The following program will locate and print out the user id corresponding
+The following program will locate and print out the user ID corresponding
 to a user name 'root.'
 .blktext end
 .blkcode begin
@@ -54,12 +54,13 @@ to a user name 'root.'
 void main()
   {
     struct passwd *pw;
-    
+
     pw = getpwnam( "root" );
-    if(pw)
+    if(pw) {
         printf("The user id for root is %d\n", (int)pw->pw_uid);
-    else
+    } else {
         printf("User 'root' was not found.\n");
+    }
   }
 .blkcode end
 .exmp end

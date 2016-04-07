@@ -34,9 +34,9 @@
 #include "block.h"
 #include "data.h"
 #include "objout.h"
+#include "optmain.h"
 
 extern  void            TryScrapLabel(label_handle);
-extern  byte            ReverseCondition(byte);
 extern  void            AddNewJump(ins_entry*,label_handle);
 extern  label_handle    AddNewLabel(ins_entry*,obj_length);
 extern  ins_entry       *PrevIns(ins_entry*);

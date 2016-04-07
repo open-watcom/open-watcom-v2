@@ -49,6 +49,7 @@
 extern ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND, int, bool *);
 extern WResID           *WdeGetWResIDFromEdit( HWND, int, bool *);
 extern void             WdeSetEditWithWResID( WResID *, HWND, int );
+extern void             WdeSetEditWithWResHelpID( WResHelpID *, HWND, int );
 extern void             WdeSetEditWithResNameOr( ResNameOrOrdinal *, HWND, int );
 extern void             WdeSetEditWithControlClass( ControlClass *, HWND, int );
 extern ControlClass     *WdeGetControlClassFromEdit( HWND, int, bool * );

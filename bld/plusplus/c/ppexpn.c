@@ -38,6 +38,8 @@
 #include "stack.h"
 #include "initdefs.h"
 #include "carve.h"
+#include "dumpapi.h"
+
 
 #define L       I64LO32
 #define H       I64HI32
@@ -91,6 +93,8 @@ static const char *TokenNames[] = {
     #undef define_precedence
     #undef pick
 };
+
+void DbgDumpToken( TOKEN token );
 #endif
 
 #define LAST_TOKEN_PREC (sizeof( Prec ) / sizeof( Prec[0] ))
@@ -133,10 +137,7 @@ static carve_t carve_pptoken_stack;      // carver: operator stack entries
 
 static int Pos = 0;                     // position of CurToken in parsing
 
-#ifdef NDEBUG
-    #define DbgDumpOperatorStack()
-    #define DbgDumpOperandStack()
-#else
+#ifndef NDEBUG
 
 #include "pragdefn.h"
 

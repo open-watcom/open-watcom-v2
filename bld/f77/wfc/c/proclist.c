@@ -44,24 +44,13 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-
-extern  void            GFiniSS( itnode *, itnode * );
-extern  void            GInitSS( itnode * );
-extern  void            GSubStr( itnode * );
-extern  void            GBegCall( itnode * );
-extern  int             GParms( itnode * );
-extern  void            GEndCall( itnode *, int );
-extern  void            GBegSubScr( itnode * );
-extern  void            GSubScr( void );
-extern  void            GEndSubScr( itnode * );
-extern  void            GBegSSStr( itnode * );
-extern  void            GBegFSS( itnode * );
-extern  void            GBegSFSS( itnode * );
-extern  void            GSFCall( itnode * );
-extern  void            GSFArg( sym_id );
-extern  void            GSFRetVal( itnode * );
-extern  void            AdjSFList( itnode * );
-extern  void            GFieldSCB( inttarg );
+#include "gsfunc.h"
+#include "gsubprog.h"
+#include "gsubscr.h"
+#include "proclist.h"
+#include "optr.h"
+#include "fieldops.h"
+#include "gsubstr.h"
 
 
 static  void    SubStrArgs( itnode *sym_node ) {

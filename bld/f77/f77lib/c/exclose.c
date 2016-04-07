@@ -29,10 +29,15 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "rtenv.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "iomain.h"
+#include "exutil.h"
+#include "ioerr.h"
+
 
 //
 // ClStatTab - close status table

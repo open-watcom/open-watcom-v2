@@ -36,20 +36,19 @@
 #include "progsw.h"
 #include "fmemmgr.h"
 #include "insert.h"
+#include "comdump.h"
+#include "stresolv.h"
+#include "forcstat.h"
+#include "substr.h"
+#include "subscr.h"
 
-extern  void            STComDump(void);
-extern  bool            DoSubstring(intstar4,intstar4,int);
-extern  bool            DoSubscript(act_dim_list *,intstar4 *,intstar4 *);
-extern  void            StructResolve(void);
+
 extern  void            BIFiniStartOfSubroutine( void );
-extern  bool            ForceStatic( unsigned_16 );
 
 /* Forward declarations */
 static  void    SetHigh( sym_id sym );
 static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
                              intstar4 a_offset, intstar4 b_offset );
-void    EquivResolve( void );
-                             
 
 void    STResolve( void ) {
 //===================
@@ -223,7 +222,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     byte        p_type;
     byte        q_type;
 
-    /* if an entry is marked static, then b must be too */    
+    /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
         unsigned_16     sym_flags = a->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
         b->name_equived->u.ns.flags |= sym_flags;

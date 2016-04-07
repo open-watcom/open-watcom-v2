@@ -47,13 +47,13 @@
 #include "comio.h"
 #include "inout.h"
 #include "cspawn.h"
+#include "mkname.h"
+#include "compprog.h"
+#include "docle.h"
+#include "errutil.h"
 
 #include "clibext.h"
 
-
-extern  void            CompProg(void);
-extern  void            MsgBuffer(uint,char *,...);
-extern  uint            MakeName(char *,char *,char *);
 
 extern  unsigned_32     CompTime;
 

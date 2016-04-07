@@ -30,6 +30,7 @@
 
 
 #include "ftnstd.h"
+#include "fiosem.h"
 
 #include <stddef.h>
 

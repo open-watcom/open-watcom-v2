@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -35,24 +36,16 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "csetinfo.h"
+#include "ifile.h"
+#include "charset.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
+#include "wrutils.h"
+#include "rdwr.h"
 
-extern  void            IOErr(int,...);
-extern  bool            NoEOF(ftnfile *);
-extern  void            FPutBuff(ftnfile *);
-extern  void            ChkIOErr(ftnfile *);
-extern  bool            IsCarriage(void);
-extern  bool            IsFixed(void);
-extern  void            SendIFBuff(char *,int,unsigned_32,string PGM *);
-extern  void            UpdateRecNum(ftnfile *);
 
 extern  char            NormalCtrlSeq[];
-extern  character_set   CharSetInfo;
-
-/* Forward declarations */
-void    SendEOR( void );
-void    SendWSLStr( char *str );
-void    SendChar( char ch, int rep );
-void    Drop( char ch );
 
 
 void    F_SendData( char *str, uint width ) {

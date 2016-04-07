@@ -33,11 +33,13 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sopen.h"
-
-#include "clibext.h"
-
-
+#include "poscc.h"
+#include "posopen.h"
+#include "posput.h"
+#include "poserr.h"
+#include "posflush.h"
 #if defined( __RT__ )
+#include "runmain.h"
 #include "rmemmgr.h"
 
 #define MEM_ALLOC       RMemAlloc
@@ -50,6 +52,8 @@
 #define MEM_FREE        FMemFree
 
 #endif
+
+#include "clibext.h"
 
 /* Forward declarations */
 #if defined( __RT__ )
@@ -86,8 +90,9 @@ void    InitStd( void )
 
 #if defined( __RT__ )
 
-static  void    ChkRedirection( b_file *fp ) {
+static  void    ChkRedirection( b_file *fp )
 // Check for redirection of standard i/o devices.
+{
     struct stat         info;
 
     if( fstat( fp->handle, &info ) == -1 ) return;
@@ -98,15 +103,17 @@ static  void    ChkRedirection( b_file *fp ) {
 
 #endif
 
-void    SetIOBufferSize( uint buff_size ) {
+void    SetIOBufferSize( uint buff_size )
+{
     if( buff_size < MIN_BUFFER ) {
         buff_size = MIN_BUFFER;
     }
     IOBufferSize = buff_size;
 }
 
-b_file  *_AllocFile( int h, f_attrs attrs, long int fpos ) {
+b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
 // Allocate file structure.
+{
     b_file      *io;
     struct stat info;
     int         buff_size;
@@ -153,8 +160,9 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos ) {
     return( io );
 }
 
-b_file  *Openf( char *f, f_attrs attrs ) {
+b_file  *Openf( char *f, f_attrs attrs )
 // Open a file.
+{
     int         retc;
     long int    fpos;
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
@@ -199,16 +207,20 @@ b_file  *Openf( char *f, f_attrs attrs ) {
     return( _AllocFile( retc, attrs, fpos ) );
 }
 
-void    Closef( b_file *io ) {
+void    Closef( b_file *io )
 // Close a file.
+{
     uint        cc_len;
-    char        *cc;
+    const char  *cc;
 
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, ' ', &cc );
-        if( SysWrite( io, cc, cc_len ) == -1 ) return;
+        cc_len = FSetCC( (a_file *)io, ' ', &cc );
+        if( SysWrite( io, cc, cc_len ) == -1 ) {
+            return;
+        }
     }
-    if( FlushBuffer( io ) < 0 ) return;
+    if( FlushBuffer( io ) < 0 )
+        return;
     if( close( io->handle ) < 0 ) {
         FSetSysErr( io );
         return;

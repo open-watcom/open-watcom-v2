@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-void    ComRead( void );
-void    ProcInclude( void );
-void    LinePrint( void );
-void    ComPrint( void );
-void    FmtInteger( char *buff, int num, int width );
+extern void    ComRead( void );
+extern void    ProcInclude( void );
+extern void    LinePrint( void );
+extern void    ComPrint( void );
+extern void    FmtInteger( char *buff, int num, int width );

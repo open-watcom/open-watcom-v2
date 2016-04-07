@@ -37,15 +37,13 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "fio.h"
+#include "ftnapi.h"
+#include "posseek.h"
 
 #include <stddef.h>
 
-extern  int             SysSeek(b_file *,long int,int);
-extern  long int        FGetFilePos(b_file *);
 
-
-intstar4        __fortran SEEKUNIT( intstar4 *unit, intstar4 *offset,
-                                  intstar4 *origin ) {
+intstar4        __fortran SEEKUNIT( intstar4 *unit, intstar4 *offset, intstar4 *origin ) {
 //====================================================
 
     ftnfile     *fcb;

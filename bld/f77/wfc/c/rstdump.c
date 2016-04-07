@@ -40,20 +40,16 @@
 #include "iflookup.h"
 #include "ferror.h"
 #include "insert.h"
+#include "rstutils.h"
+#include "ifused.h"
+#include "rstalloc.h"
+#include "rstdump.h"
+#include "rstglist.h"
+#include "rstnlist.h"
+#include "rststmt.h"
+#include "forcstat.h"
+#include "gsegs.h"
 
-
-extern  sym_id          STFreeName(sym_id);
-extern  bool            IsIFUsed(IFF);
-extern  sym_id          AddSP2GList(sym_id);
-extern  sym_id          AddCB2GList(sym_id);
-extern  unsigned_32     GetStmtNum(sym_id);
-extern  char            *STGetName(sym_id,char *);
-extern  char            *STNmListName(sym_id,char *);
-extern  sym_id          STFree(sym_id);
-extern  void            FreeSFHeader(sym_id);
-extern  void            AllocGlobal(unsigned_32,bool);
-extern  bool            ForceStatic(unsigned_16);
-extern  void            CkSymDeclared( sym_id );
 
 extern  uint            DataThreshold;
 extern  sym_id          ReturnValue;

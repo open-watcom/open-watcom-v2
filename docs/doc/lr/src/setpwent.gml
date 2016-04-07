@@ -2,10 +2,10 @@
 .synop begin
 #include <pwd.h>
 .if '&machsys' eq 'QNX' .do begin
-int setpwent( );
+int setpwent( void );
 .do end
 .el .do begin
-void setpwent( );
+void setpwent( void );
 .do end
 .synop end
 .desc begin
@@ -21,7 +21,7 @@ entry.
 .see end
 .exmp begin
 .blktext begin
-The following program will print out each user and their user id in
+The following program will print out each user and their user ID in
 the system's password database
 .blktext end
 .blkcode begin
@@ -31,14 +31,14 @@ the system's password database
 void main()
   {
     struct passwd *pw;
-    
-    setpwent( );
-    
-    while((pw = getpwent( )) != NULL) {
+
+    setpwent();
+
+    while((pw = getpwent()) != NULL) {
         printf("User id %d is %s\n", (int)pw->pw_uid, pw->pw_name);
     }
-    
-    endpwent( );
+
+    endpwent();
   }
 .blkcode end
 .exmp end

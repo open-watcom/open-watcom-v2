@@ -50,10 +50,6 @@ double DASIN( double arg ) {
     return( asin( arg ) );
 }
 
-#else
-
-extern  double          DASIN(double);
-
 #endif
 
 

@@ -39,7 +39,7 @@
  * firstInstInit - register classes and do other initializiation that
  *                 is only done by the first instance of the spy
  */
-static BOOL firstInstInit( void )
+static bool firstInstInit( void )
 {
     WNDCLASS    wc;
 
@@ -55,7 +55,7 @@ static BOOL firstInstInit( void )
     wc.lpszMenuName = "DDEMENU";
     wc.lpszClassName = MAIN_CLASS;
     if( !RegisterClass( &wc ) ) {
-        return( FALSE );
+        return( false );
     }
 
     /* tracking windows */
@@ -73,14 +73,14 @@ static BOOL firstInstInit( void )
         return( FALSE );
     }
     RegPushWin( Instance );
-    return( TRUE );
+    return( true );
 
 } /* firstInstInit */
 
 /*
  * everyInstInit - do initialization required by every instance of the spy
  */
-static BOOL everyInstInit( int cmdshow )
+static bool everyInstInit( int cmdshow )
 {
     MemStart();
     JDialogInit();
@@ -106,16 +106,16 @@ static BOOL everyInstInit( int cmdshow )
         NULL );                 /* Create parameters */
 
     if( DDEMainWnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( !CreateTrackWnd() ) {
-        return( FALSE );
+        return( false );
     }
     InitTrackWnd( DDEMainWnd );
 
     ShowWindow( DDEMainWnd, cmdshow );
     UpdateWindow( DDEMainWnd );
-    return( TRUE );
+    return( true );
 
 } /* everyInstInit */
 

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "format.h"
@@ -35,13 +36,15 @@
 #include "rundat.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
+#include "rterr.h"
+
 
 void    R_FEmInit( void ) {
 //===================
 
 }
 
-void    CheckHole( uint size ) {
+static void CheckHole( uint size ) {
 //==============================
 
     if( IOCB->fmtlen < size ) {
@@ -91,7 +94,7 @@ void    R_FEmEnd( void ) {
 void    R_FEmByte( int signed_num ) {
 //=============================
 
-    uint num = signed_num;	// needed to match signature
+    uint num = signed_num;      // needed to match signature
 
     CheckHole( sizeof( byte ) );
     if( num > 256 ) {

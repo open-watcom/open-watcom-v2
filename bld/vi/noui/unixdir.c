@@ -48,8 +48,8 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
     strcpy( tmpname, path );
     len = strlen( tmpname );
     if( tmpname[len - 1] != FILE_SEP ) {
-            tmpname[len] = FILE_SEP;
-            tmpname[len + 1] = '\0';
+        tmpname[len] = FILE_SEP;
+        tmpname[len + 1] = '\0';
     }
     strcat( tmpname, nd->d_name );
     stat( tmpname, &st );

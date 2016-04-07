@@ -36,8 +36,9 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "cgdefs.h"
+#include "wf77defs.h"
 #include "cg.h"
+#include "wf77auxd.h"
 #include "wf77aux.h"
 #include "fcgbls.h"
 #include "cgflags.h"
@@ -45,21 +46,15 @@
 #include "types.h"
 #include "fctypes.h"
 #include "rtconst.h"
+#include "rstutils.h"
+#include "fcrtns.h"
+#include "wf77info.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 #include <string.h>
 
 
-extern  sym_id          STAdd(char *name,int length);
-extern  sym_id          STFree(sym_id sym_ptr);
-extern  segment_id      AllocImpSegId(void);
-
-extern  aux_info        RtRtnInfo;
-extern  aux_info        IFInfo;
-extern  aux_info        RtVarInfo;
-extern  aux_info        RtStopInfo;
-extern  aux_info        CoRtnInfo;
 extern  cgflags_t       CGFlags;
 
 typedef struct rt_rtn {

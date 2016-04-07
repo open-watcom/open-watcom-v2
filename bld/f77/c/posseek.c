@@ -29,12 +29,17 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "fio.h"
 #include "posio.h"
+#include "posget.h"
+#include "posseek.h"
+#include "poserr.h"
+#include "posflush.h"
 
-void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize ) {
+
+void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
 // Seek to specified record in file.
-
+{
     IOOk( io );
     if( io->attrs & SEEK ) {
         if( io->attrs & REC_TEXT ) {
@@ -52,7 +57,8 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize ) {
     }
 }
 
-long int        CurrFileOffset( b_file *io ) {
+long int        CurrFileOffset( b_file *io )
+{
     long int    offs;
 
     offs = io->phys_offset + io->b_curs;
@@ -63,7 +69,8 @@ long int        CurrFileOffset( b_file *io ) {
 }
 
 
-int     SysSeek( b_file *io, long int new_offset, int seek_mode ) {
+int     SysSeek( b_file *io, long int new_offset, int seek_mode )
+{
     long int    curr_offset;
     long int    new_page;
     long int    page_offset;
@@ -163,11 +170,14 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode ) {
     return( 0 );
 }
 
-
-void    FSeekAbs( b_file *io, unsigned_32 offset ) {
+#if 0
+void    FSeekAbs( b_file *io, unsigned_32 offset )
+{
     SysSeek( io, offset, SEEK_SET );
 }
+#endif
 
-long int        FGetFilePos( b_file *io ) {
+long int        FGetFilePos( b_file *io )
+{
     return( CurrFileOffset( io ) );
 }

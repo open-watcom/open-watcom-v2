@@ -50,10 +50,6 @@ extended QSQRT( extended arg ) {
     return( sqrt( arg ) );
 }
 
-#else
-
-extern  extended                QSQRT(extended);
-
 #endif
 
 

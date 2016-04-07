@@ -46,25 +46,21 @@
 #include "frl.h"
 #include "inout.h"
 #include "utility.h"
+#include "compstmt.h"
+#include "proctbl.h"
+#include "cpsubpgm.h"
+#include "csloops.h"
+#include "dsname.h"
+#include "iodefs.h"
+#include "kwlook.h"
+#include "stresolv.h"
+#include "symtab.h"
+#include "gdbginfo.h"
+#include "tdinit.h"
 
 #include <string.h>
 #include <ctype.h>
 
-extern  sym_id  LkSym( void );
-extern  void    MakeITList( void );
-extern  STMT    RecStmtKW( void );
-extern  void    TermDo( void );
-extern  void    TermDoWhile( void );
-extern  void    DefStmtNo(unsigned_32);
-extern  void    Update(unsigned_32);
-extern  void    STResolve( void );
-extern  void    GSetDbugLine( void );
-extern  void    Prologue( void );
-extern  void    DefProg( void );
-extern  bool    SubStrung( void );
-extern  void    GSetSrcLine( void );
-extern  void    TDStmtInit( void );
-extern  void    TDStmtFini( void );
 
 extern  char    *StmtKeywords[];
 extern  void    (* const __FAR ProcTable[])( void );
@@ -78,9 +74,6 @@ static void     DefStmtType( void );
 static void     RemCheck( void );
 static void     CheckDoEnd( void );
 static void     FiniDo( void );
-void            RemKeyword( itnode *itptr, int remove_len );
-void            ClearRem( void );
-void            CkDefStmtNo( void );
 
 static  void    ChkStatementSequence( void )
 {
@@ -416,7 +409,7 @@ static void CheckOrder( void )
 }
 
 
-void BadStmt( void )
+void CpBadStmt( void )
 {
     // consider:
     //          suborutine x() ! misspelled subroutine

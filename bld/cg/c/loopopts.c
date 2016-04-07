@@ -45,6 +45,7 @@
 #include "namelist.h"
 #include "propind.h"
 #include "blips.h"
+#include "edge.h"
 #include "feprotos.h"
 
 
@@ -84,8 +85,6 @@ extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_
 extern  int             CountIns(block*);
 extern  void            FixBlockIds(void);
 extern  bool            UnRoll(void);
-extern  void            MoveEdge(block_edge*,block*);
-extern  void            PointEdge(block_edge*,block*);
 
 
 static    int           NumIndVars;

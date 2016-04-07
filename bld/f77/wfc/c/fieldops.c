@@ -42,8 +42,8 @@
 #include "optr.h"
 #include "emitobj.h"
 #include "types.h"
-
-extern  sym_id          GTempString(uint);
+#include "gstring.h"
+#include "fieldops.h"
 
 
 void    GFieldSCB( inttarg size ) {

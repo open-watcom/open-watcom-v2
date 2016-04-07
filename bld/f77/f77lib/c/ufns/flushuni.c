@@ -37,10 +37,10 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "fio.h"
+#include "ftnapi.h"
+#include "posflush.h"
 
 #include <stddef.h>
-
-extern  int             FlushBuffer(file_handle);
 
 
 intstar4        __fortran FLUSHUNIT( intstar4 *unit ) {

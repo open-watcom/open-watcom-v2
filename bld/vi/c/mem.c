@@ -41,6 +41,9 @@
     #include "trmem.h"
 #endif
 #include "memdmp.h"
+#if defined( __LINUX__ )
+    #include "stdui.h"
+#endif
 
 #ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, trmemHandle )

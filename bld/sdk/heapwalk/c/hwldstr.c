@@ -43,7 +43,7 @@ static DWORD    BytesLeft;
 
 #define MEM_BLOCK_SIZE          ( 6 * 1024 )
 
-BOOL AllocNewBuf( void ) {
+static BOOL AllocNewBuf( void ) {
 
     MemBlocks = MemReAlloc( MemBlocks, ( MemBlocksCnt + 1 ) * sizeof( void * ) );
     if( MemBlocks == NULL ) return( FALSE );
@@ -54,7 +54,7 @@ BOOL AllocNewBuf( void ) {
     return( TRUE );
 }
 
-BOOL AddString( msg_id msgid ) {
+static BOOL AddString( msg_id msgid ) {
 
     int         len;
 
@@ -109,8 +109,10 @@ void HWFreeRCString( char *str ) {
     str = str;
 }
 
+#if 0
 int HWCopyRCString( UINT id, char *buf, int bufsize ) {
 
     strncpy( buf, StringTbl[ id ], bufsize );
     return( strlen( StringTbl[ id ] ) );
 }
+#endif

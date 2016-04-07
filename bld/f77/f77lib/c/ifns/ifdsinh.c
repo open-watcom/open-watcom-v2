@@ -50,10 +50,6 @@ double DSINH( double arg ) {
     return( sinh( arg ) );
 }
 
-#else
-
-extern  double          DSINH(double);
-
 #endif
 
 

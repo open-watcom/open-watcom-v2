@@ -50,10 +50,6 @@ double DABS( double arg ) {
     return( fabs( arg ) );
 }
 
-#else
-
-extern  double          DABS(double);
-
 #endif
 
 

@@ -31,12 +31,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>
-#include "drwatcom.h"
 #include "mem.h"
 #include "regcmbo.h"
 #include "jdlg.h"
@@ -48,6 +46,12 @@
 #include "reglist.h"
 #include <errno.h>
 #include "strcnv.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
+WINEXPORT LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 
 HWND CreateRegString( HWND parent, int x, int y, int width, int height, char *text, int id )
 {

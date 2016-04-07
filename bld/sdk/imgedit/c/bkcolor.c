@@ -33,6 +33,10 @@
 #include "imgedit.h"
 #include "ieclrpal.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 static palette_box      screenColor;
 static palette_box      inverseColor;
 static palette_box      availColor[16];

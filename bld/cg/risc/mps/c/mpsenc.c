@@ -47,6 +47,8 @@
 #include "dumpio.h"
 #include "dbsyms.h"
 #include "rscconst.h"
+#include "object.h"
+#include "mpsenc.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -468,8 +470,8 @@ extern  type_length TempLocation( name *temp )
 }
 
 
-extern  void GenCallLabelReg( pointer label, uint reg )
-/*****************************************************/
+void GenCallLabelReg( pointer label, uint reg )
+/*********************************************/
 {
     // This is used for calling into certain cg support routines. We'd
     // kinda like to use 'jal', except we must use something other
@@ -489,8 +491,8 @@ extern  void GenCallLabelReg( pointer label, uint reg )
 }
 
 
-extern  void GenCallLabel( pointer label )
-/****************************************/
+void GenCallLabel( pointer label )
+/********************************/
 {
     CodeHandle( OC_CALL, 4, label );
 }
@@ -1035,30 +1037,30 @@ static  void Encode( instruction *ins )
 }
 
 
-extern  void GenObjCode( instruction *ins )
-/*****************************************/
+void GenObjCode( instruction *ins )
+/*********************************/
 {
     _AlignmentCheck( ins, 4 );
     Encode( ins );
 }
 
 
-extern  void GenLabelReturn( void )
-/*******************************/
+void GenLabelReturn( void )
+/*************************/
 {
     GenRET();
 }
 
 
-extern  byte ReverseCondition( byte cond )
-/****************************************/
+byte ReverseCondition( byte cond )
+/********************************/
 {
     return( FlipOpcode( cond ) );
 }
 
 
-extern  byte CondCode( instruction *ins )
-/***************************************/
+byte CondCode( instruction *ins )
+/*******************************/
 {
     return( ins->head.opcode );
 }

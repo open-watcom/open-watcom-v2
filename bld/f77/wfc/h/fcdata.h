@@ -24,51 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DATA statement processor.
 *
 ****************************************************************************/
 
 
-//========================================================================
-//
-// DO NOT disturb the order of these variables as the IBM PC relies on
-// this order for proper alignment.
-//
-//========================================================================
-
-gbl_defn pointer                StkPtr;         // F-Code stack pointer
-gbl_defn unsigned_32            CodeSize;       // size of program object code
-gbl_defn label_id               LabelIdx;       // label index
-gbl_defn sym_id                 WildLabel;      // label of a wild goto
-gbl_defn pointer                LabelList;      // list of labels
-gbl_defn obj_ptr                FormatList;     // pointer to format list
-gbl_defn obj_ptr                PrologLabel;    // prologue location
-gbl_defn label_id               EpilogLabel;    // epilogue label
-gbl_defn sym_id                 CommonEntry;    // common entry point
-gbl_defn sym_id                 EPValue;        // entry point identifier
-gbl_defn sym_id                 ReturnValue;    // function return value
-gbl_defn void         (* __FAR *FCTablePtr)(void);  // pointer to F-Code jump table
-gbl_defn obj_ptr                DtConstList;    // DATA statement constants
-gbl_defn PTYPE                  DtConstType;    // type of DATA constant
-gbl_defn intstar4               DtRepCount;     // repitition count
-gbl_defn sym_id                 DtConst;        // DATA constant
-gbl_defn segment_id             DtSegment;      // DATA initialization segment
-gbl_defn seg_offset             DtSegOffset;    // offset in DATA initialized
-                                                // segment
-gbl_defn intstar4               DtOffset;       // offset relative to variable
-                                                // being initialized
-gbl_defn unsigned_8             DtFlags;        // DATA intialization flags
-
-gbl_defn int                    EndEqLabel;     // END= label
-gbl_defn int                    ErrEqLabel;     // ERR= label
-gbl_defn obj_ptr                AtEndFCode;     // pointer to ATEND F-Code
-
-gbl_defn unsigned_32            MaxSegSize;     // maximum segment size
-
-gbl_defn uint                   DataThreshold;  // data threshold
-
-gbl_defn seg_offset             LDSegOffset;    // offset into LDATA
-gbl_defn seg_offset             GSegOffset;     // offset into global segments
-
-gbl_defn int                    NumSubProgs;    // # of subprograms compiled
+extern bool     IntType( PTYPE typ );

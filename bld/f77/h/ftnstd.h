@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+
+#include <stdarg.h>
 #include "macro.h"
 #include "standard.h"
 #include "prmtypes.h"

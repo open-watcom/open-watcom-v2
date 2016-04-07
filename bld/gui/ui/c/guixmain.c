@@ -60,8 +60,6 @@
 #endif
 
 
-extern int GUIXMain( int argc, char * argv[] );
-
 // This makes sure that the main routine is actually linked in
 bool GUIMainTouched = false;
 

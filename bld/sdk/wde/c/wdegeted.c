@@ -363,6 +363,7 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
     return( rp );
 }
 
+#if 0
 WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResHelpID  *rp;
@@ -393,6 +394,7 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 
     return( rp );
 }
+#endif
 
 int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *mod )
 {

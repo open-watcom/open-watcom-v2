@@ -67,16 +67,16 @@ hextab  db      "0123456789ABCDEF"
         defpe   __CHK
         push    eax
         mov     eax,8[esp]
-        _guess                  ; guess: no overflow
-          cmp   eax,esp         ; - quit if user asking for too much
-          _quif ae              ; - . . .
-          sub   eax,esp         ; - calculate new low point
-          neg   eax             ; - calc what new SP would be
-          cmp   eax,_STACKLOW   ; - quit if too much
-          _quif be              ; - . . .
-          pop   eax             ; - restore EAX
-          ret   4               ; - return
-        _endguess               ; endguess
+        _guess                          ; guess: no overflow
+          cmp   eax,esp                 ; - quit if user asking for too much
+          _quif ae                      ; - . . .
+          sub   eax,esp                 ; - calculate new low point
+          neg   eax                     ; - calc what new SP would be
+          cmp   eax,_STACKLOW           ; - quit if too much
+          _quif be                      ; - . . .
+          pop   eax                     ; - restore EAX
+          ret   4                       ; - return
+        _endguess                       ; endguess
 
         endproc __CHK
 
@@ -85,19 +85,19 @@ hextab  db      "0123456789ABCDEF"
 
 __STKOVERFLOW:
 
-        pop     eax             ; throw away saved eax value
-        pop     eax             ; get return addr
+        pop     eax                     ; throw away saved eax value
+        pop     eax                     ; get return addr
         xor     edx,edx
         mov     dx,cs
-        add     esp,0100h       ; cream last 256 bytes of stack
+        add     esp,0100h               ; cream last 256 bytes of stack
         mov     ebp,esp
 
-        push    eax             ; push return address, segment first
-        push    edx             ; to make it easier to print it
+        push    eax                     ; push return address, segment first
+        push    edx                     ; to make it easier to print it
 
 
-        push    ss              ; setup string instrs to copy
-        pop     es              ; exit message onto stack
+        push    ss                      ; setup string instrs to copy
+        pop     es                      ; exit message onto stack
         cld
         mov     edi,ebp
 
@@ -108,15 +108,15 @@ __STKOVERFLOW:
         pop     ds
         rep     movsb
 
-        pop     ebx             ; get segment
+        pop     ebx                     ; get segment
         call    _putw
         mov     al,':'
         stosb
-        mov     ebx,[esp]       ; get offset
-        shr     ebx,16          ; print high word
+        mov     ebx,[esp]               ; get offset
+        shr     ebx,16                  ; print high word
         call    _putw
-        pop     ebx             ; get offset
-        call    _putw           ; print low word
+        pop     ebx                     ; get offset
+        call    _putw                   ; print low word
         xor     al,al
         stosb
         push    ss
@@ -128,15 +128,14 @@ else
         mov     eax,ebp
         mov     edx,1
 endif
-        call    __fatal_runtime_error
-        ; never return
+        jmp     __fatal_runtime_error   ; display msg and exit
 
 _putw proc near
-        mov     edx,ebx         ; save value
-        mov     cl,12           ; setup shift count
+        mov     edx,ebx                 ; save value
+        mov     cl,12                   ; setup shift count
 _lup:
-        mov     ebx,edx         ; get value
-        shr     ebx,cl          ; put in bottom 4 bits.
+        mov     ebx,edx                 ; get value
+        shr     ebx,cl                  ; put in bottom 4 bits.
         and     ebx,0fh
         mov     al,cs:hextab[ebx]
         stosb

@@ -50,10 +50,6 @@ single EXP( single arg ) {
     return( exp( arg ) );
 }
 
-#else
-
-extern  single          EXP(single);
-
 #endif
 
 

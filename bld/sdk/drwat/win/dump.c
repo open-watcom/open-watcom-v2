@@ -36,13 +36,18 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
-#include "bool.h"
-#include "wdebug.h"
 #include "drwatcom.h"
+#include "wdebug.h"
 #include "dump.h"
 #include "tinyio.h"
 #include "getcsip.h"
 #include "jdlg.h"
+
+
+/* Local Window callback functions prototypes */
+BOOL __export FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HTASK            currTask;
 
@@ -320,7 +325,7 @@ void DoDump( HWND hwnd )
 /*
  * DumpDialog - get dump info
  */
-BOOL __export FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -450,7 +455,7 @@ static void FillTaskList( HWND hwnd )
 /*
  * DebuggerOptDlg - manage the dialog to get debugger options
  */
-BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
 
@@ -482,7 +487,7 @@ BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPA
 /*
  * DumpAnyDialog - select a task to dump
  */
-BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
     int         i, j;

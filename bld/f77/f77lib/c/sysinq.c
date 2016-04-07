@@ -36,8 +36,8 @@
 
 #include "ftnstd.h"
 #include "ftnio.h"
-
-extern  bool                    IsDevice(ftnfile *);
+#include "rtsysutl.h"
+#include "ftextfun.h"
 
 
 int     InqSeq( ftnfile *fcb ) {

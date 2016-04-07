@@ -37,32 +37,22 @@
 #include "data.h"
 #include "objout.h"
 #include "objprof.h"
+#include "object.h"
+#include "ocentry.h"
+#include "encode.h"
+#include "edge.h"
 #include "feprotos.h"
 
-extern  void            CodeLabel(label_handle,unsigned);
-extern  void            GenObjCode(instruction*);
-extern  void            GenJumpLabel(label_handle);
-extern  void            GenEpilog( void );
-extern  void            GenCallLabel(pointer);
-extern  void            GenLabelReturn( void );
-extern  void            TellCondemnedLabel(label_handle);
 extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
 extern  void            TellReachedLabel(label_handle);
-extern  unsigned        DepthAlign( unsigned );
 extern  void            InitStackDepth(block*);
 extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 extern  bool_maybe      ReDefinedBy( instruction *, name * );
-
-extern  void            *EdgeStackInit( void );
-extern  void            EdgeStackFini( void * );
-extern  bool            EdgeStackEmpty( void * );
-extern  void            EdgeStackPush( void *, block_edge * );
-extern  block_edge      *EdgeStackPop( void * );
 
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,

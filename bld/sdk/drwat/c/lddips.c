@@ -32,7 +32,6 @@
 
 
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "dip.h"
 #include "dipload.h"
@@ -40,6 +39,10 @@
 #include "rcstr.gh"
 #include "mem.h"
 #include "jdlg.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     char        *loadmsg;
@@ -54,7 +57,7 @@ static unsigned         dipCnt;
 extern HINSTANCE        DIPLastHandle;
 #endif
 
-void initDipMsgs( void ) {
+static void initDipMsgs( void ) {
     char        *ptr;
 
     ptr = DIPDefaults;

@@ -73,14 +73,14 @@ typedef struct asminfo{
 
 typedef struct memdata {
     WORD            sel;                    /* selector being displayed */
-    DWORD           limit;                  /* limit of this selector */
-    DWORD           base;                   /* base offset */
+    uint_32         limit;                  /* limit of this selector */
+    uint_32         base;                   /* base offset */
     unsigned        lastline;
     unsigned        disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
     unsigned char   bytesdisp;
-    DWORD           ins_cnt;
+    uint_32         ins_cnt;
     AsmInfo         *asm;
-    DWORD           offset;
+    uint_32         offset;
     HWND            scrlbar;                /* handle of scroll bar */
     HWND            parent;                 /* parent of this window */
     HWND            dialog;                 /* handle of mem info wnd */
@@ -157,9 +157,9 @@ char    MkHexDigit( char ch );
 void    RedrawAsCode( HDC dc, MemWndInfo *info );
 void    ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info );
 bool    NeedScrollBar( MemWndInfo *info );
-void    SetFuzzyOffset( MemWndInfo *info, DWORD offset );
+void    SetFuzzyOffset( MemWndInfo *info, uint_32 offset );
 void    DumpMemAsm( MemWndInfo *info, int hdl );
 void    RegDisasmRtns( void );
-DWORD   GetInsCnt( MemWndInfo *info, DWORD offset );
+uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset );
 
 #endif /* _MEMWND_H_INCLUDED */

@@ -31,7 +31,7 @@
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "format.h"
-#include "fmterr.h"
+#include "errcod.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
 

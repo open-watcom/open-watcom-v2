@@ -53,7 +53,7 @@ typedef struct                  // SYM_TRANS -- symbol translation
     #include "toggle.h"
     #include "pragdefn.h"
 
-    void dump( const char* msg, SYM_TRANS* tr )
+    static void dump( const char* msg, SYM_TRANS* tr )
     {
         if( PragDbgToggle.dump_exec_ic ) {
             printf( "SYM_TRANS( %s ) src(%p) tgt(%p) id(%x)\n"

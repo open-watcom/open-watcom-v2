@@ -333,7 +333,7 @@ is the exit status of the child process.
 .term P_NOWAIT
 then the return value from
 .idbold &function.
-is the process id (or process handle
+is the process ID (or process handle
 under Win32) of the child process.
 To obtain the exit code for a process spawned with
 .kw P_NOWAIT
@@ -346,7 +346,7 @@ or
 .kw cwait
 (under OS/2 or Win32)
 .do end
-function specifying the process id/handle.
+function specifying the process ID/handle.
 If the child process terminated normally, then the low order byte of
 the returned status word will be set to 0, and the high order byte
 will contain the low order byte of the return code that the child
@@ -356,7 +356,7 @@ function.
 .term P_NOWAITO
 then the return value from
 .idbold &function.
-is the process id of the child process.
+is the process ID of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
 .ct .li .

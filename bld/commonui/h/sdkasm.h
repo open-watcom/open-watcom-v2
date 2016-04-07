@@ -36,24 +36,24 @@
 #include "deasm.h"
 
 typedef struct disasmrtns {
-    int_16              (*GetDataByte)( void );
-    int_16              (*GetDataWord)( void );
-    int_16              (*GetNextByte)( void );
-    int_32              (*GetDataLong)( void );
-    bool                (*EndOfSegment)( void );
-    DWORD               (*GetOffset)( void );
-    void                (*DoWtk)( void );
-    int                 (*IsWtk)( void );
-    char                *(*ToStr)( uint_32 value, uint_16 len, DWORD addr );
-    char                *(*JmpLabel)( uint_32 addr, DWORD off );
-    char                *(*ToBrStr)( uint_32 value, DWORD addr );
-    char                *(*ToIndex)( uint_32 value, uint_32 addr );
-    char                *(*ToSegStr)( DWORD value, WORD seg, DWORD addr );
-    char                *(*GetWtkInsName)( unsigned ins );
+    GetDataByte_func    *GetDataByte;
+    GetDataWord_func    *GetDataWord;
+    GetNextByte_func    *GetNextByte;
+    GetDataLong_func    *GetDataLong;
+    EndOfSegment_func   *EndOfSegment;
+    GetOffset_func      *GetOffset;
+    DoWtk_func          *DoWtk;
+    IsWtk_func          *IsWtk;
+    ToStr_func          *ToStr;
+    JmpLabel_func       *JmpLabel;
+    ToBrStr_func        *ToBrStr;
+    ToIndex_func        *ToIndex;
+    ToSegStr_func       *ToSegStr;
+    GetWtkInsName_func  *GetWtkInsName;
 } DisAsmRtns;
 
-void    RegisterRtns( DisAsmRtns *rtns );
-void    MiscDoCode( instruction *, bool, DisAsmRtns * );
-void    MiscFormatIns( char *, instruction *, form_option, DisAsmRtns * );
+extern void     RegisterRtns( DisAsmRtns *rtns );
+extern void     MiscDoCode( instruction *, bool, DisAsmRtns * );
+extern void     MiscFormatIns( char *, instruction *, form_option, DisAsmRtns * );
 
 #endif /* _SDKASM_H_INCLUDED */

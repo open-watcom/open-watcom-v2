@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "fmath.h"
+#include "ftnapi.h"
 
 #include <stddef.h>
 

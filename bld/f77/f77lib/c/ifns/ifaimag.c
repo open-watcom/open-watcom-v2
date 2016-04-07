@@ -38,13 +38,12 @@
 #include "ifenv.h"
 
 
-#pragma off (unreferenced);
 single  AIMAG( single rp, single ip ) {
-#pragma on (unreferenced);
 //=====================================
 
 // Return the imaginary part of arg.
 
+    rp=rp;
     return( ip );
 }
 

@@ -50,10 +50,6 @@ double DTANH( double arg ) {
     return( tanh( arg ) );
 }
 
-#else
-
-extern  double          DTANH(double);
-
 #endif
 
 

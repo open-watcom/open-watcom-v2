@@ -192,6 +192,7 @@ void FnovFreeDiag(              // FREE MEMORY IN DIAGNOSIS LISTS
 );
 
 #ifndef NDEBUG
+void PrintFnovList( FNOV_LIST *root );
 void PrintFnovResolution(       // PRETTY DISPLAY OF OVERLOAD RESOLUTION
     FNOV_RESULT result,         // - resolution result
     arg_list *alist,            // - args compared

@@ -40,6 +40,8 @@
 #include "initdefs.h"
 #include "yydriver.h"
 #include "carve.h"
+#include "dumpapi.h"
+
 
 #define T_UNEXPANDABLE_ID       T_LAST_TOKEN
 
@@ -606,6 +608,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
 
 
 #ifndef NDEBUG
+#if 0
 void DumpMTokens( MACRO_TOKEN *mtok )
 {
     puts( "---" );
@@ -618,6 +621,7 @@ void DumpMTokens( MACRO_TOKEN *mtok )
     }
     puts( "---" );
 }
+#endif
 void DumpNestedMacros( void )
 {
     NESTED_MACRO *nested;

@@ -28,12 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "rtenv.h"
 #include "units.h"
+#include "exread.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "iomain.h"
+#include "rdwr.h"
+
 
 static  void    ExRead( void ) {
 //========================

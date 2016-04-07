@@ -40,18 +40,15 @@
 #if defined( __OS2_PM__ )
 #include "rcdef.h"
 #endif
+#include "dlgsamp.h"
+#include "wpdriver.h"
+#include "wphelp.h"
+#include "wpsamp.h"
 
-extern void WPInitHelp(void);
+
 extern void WPInit(void);
 extern void AboutOpen(void);
-extern void DlgOpenSample(void);
-extern bool WPSampFound(void);
-extern void OpenSample(void);
-extern void WPFindDoPopUp(a_window *wnd,gui_ctl_id id);
-extern void WPDoPopUp(a_window *wnd,gui_menu_struct *gui_menu);
 extern void ReportSampleInfo(void);
-
-
 
 extern gui_colour_set   WndColours[];
 extern int              WndNumColours;

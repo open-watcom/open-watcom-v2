@@ -154,6 +154,11 @@ typedef struct {                    // OLINF -- overload information
     unsigned have_user_type     :1; // - TRUE ==> have a class,enum operand
 } OLINF;
 
+#ifndef NDEBUG
+void DumpOpovLoad               // DEBUG -- DUMP ROUTINE
+    ( OLINF* oli )              // - overload info
+;
+#endif
 
 ExtraRptCtr( ctrBoolConv );
 ExtraRptCtr( ctrBoolRes );

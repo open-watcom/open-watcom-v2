@@ -35,13 +35,13 @@
 #include "aui.h"
 #include "dip.h"
 #include "msg.h"
+#include "utils.h"
+#include "wphelp.h"
+
 #include "clibext.h"
 
 #define HELPNAME        "wprof.hlp"
 #define HTMLHELPNAME    "wprof.chm"
-
-extern void ErrorMsg(char *msg,... );
-extern char *FindFile(char *path, char *name, char *path_list);
 
 extern a_window             *WndMain;
 extern char                 *HelpPathList;

@@ -39,6 +39,7 @@
 #include "global.h"
 #include "prmcodes.h"
 #include "utility.h"
+#include "parmcode.h"
 
 
 PCODE   ParmClass( itnode *arg ) {

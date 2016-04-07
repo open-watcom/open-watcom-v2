@@ -38,15 +38,15 @@
 #include "recog.h"
 #include "ferror.h"
 #include "utility.h"
+#include "dsname.h"
+#include "stmtfunc.h"
+#include "symtab.h"
+#include "rstmgr.h"
+#include "fcodes.h"
+#include "gflow.h"
+
 
 extern  void            BIEndSF( sym_id ste_ptr );
-extern  void            GStartSF(void);
-extern  void            GEndSF(void);
-extern  sym_id          LkSym(void);
-extern  sym_id          STShadow(sym_id);
-extern  void            STUnShadow(sym_id);
-extern  void            CkTypeDeclared(void);
-
 
 void    SFPrologue( void ) {
 //====================

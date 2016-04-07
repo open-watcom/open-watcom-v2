@@ -33,23 +33,16 @@
 #include "errcod.h"
 #include "global.h"
 #include "fmemmgr.h"
+#include "chain.h"
+#include "rstutils.h"
+#include "rstalloc.h"
 
 #include <string.h>
 
-extern  void            FreeSFHeader(sym_id);
-extern  sym_id          STFree(sym_id);
-extern  void            FreeChain(void *);
-extern  void            *FreeLink(void *);
-extern  void            FreeRList( sym_id sym );
 
 /* Forward declarations */
 static  void    FreeList( sym_id sym_ptr );
 static  void    FreeMList( sym_id sym_ptr );
-void    FreeNameList( sym_id sym_ptr );
-void    FreeLocalLists( void );
-void    FreeNmList( sym_id sym );
-
-
 
 
 grp_entry       *STGroupEntry( void ) {
@@ -146,7 +139,7 @@ void    FreeNmList( sym_id sym ) {
 
     while( sym != NULL ) {
         FreeChain( &sym->u.nl.group_list );
-        sym = FreeLink( sym );
+        sym = FreeLink( (void **)sym );
     }
 }
 
@@ -165,9 +158,9 @@ sym_id  FreeREntry( sym_id sym ) {
                 FMemFree( fd->u.fd.dim_ext );
             }
         }
-        fd = FreeLink( fd );
+        fd = FreeLink( (void **)fd );
     }
-    return( FreeLink( sym ) );
+    return( FreeLink( (void **)sym ) );
 }
 
 
@@ -209,7 +202,7 @@ sym_id        STFreeName( sym_id sym_ptr ) {
 // Free a symbol name.
 
     if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_COMMON ) {
-        sym_ptr = FreeLink( sym_ptr );
+        sym_ptr = FreeLink( (void **)sym_ptr );
     } else {
         if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
             if( sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {

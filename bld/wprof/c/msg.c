@@ -37,6 +37,7 @@
 #include "myassert.h"
 #include "msg.h"
 #include "aui.h"
+#include "utils.h"
 
 #define MAX_MSG_LEN     200
 
@@ -101,8 +102,8 @@ STATIC void doErr( char * msg, va_list args )
 }
 
 
-extern void ErrorMsg( char * msg, ... )
-/*************************************/
+void ErrorMsg( char * msg, ... )
+/******************************/
 {
     va_list     args;
 
@@ -112,8 +113,8 @@ extern void ErrorMsg( char * msg, ... )
 }
 
 
-extern void fatal( char * msg, ... )
-/**********************************/
+void fatal( char * msg, ... )
+/***************************/
 {
     va_list     args;
 

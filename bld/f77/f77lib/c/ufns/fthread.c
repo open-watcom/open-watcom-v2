@@ -33,19 +33,17 @@
 #include <process.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
 #include "rundat.h"
 #include "rmemmgr.h"
 #include "thread.h"
+#include "ftnapi.h"
+#include "fthrdini.h"
+#include "rttraps.h"
+#include "rtspawn.h"
+#include "rt_init.h"
 
-
-extern  int             Spawn(void (*)(void));
-extern  void            Suicide(void);
-extern  void            R_TrapInit(void);
-extern  void            R_TrapFini(void);
-extern  unsigned        RTSysInit(void);
 
 typedef struct {
     void        (*rtn)(void *);
@@ -113,7 +111,7 @@ static  void    ThreadHelper( void *arg_ti ) {
     __FTHREADDATAPTR->__rtn = ti->rtn;
     __FTHREADDATAPTR->__arglist = ti->arglist;
     RMemFree( ti );
-    Spawn( ThreadStarter );
+    RTSpawn( ThreadStarter );
     FThreadFini();
     __EndThread();
 }
@@ -139,7 +137,7 @@ int FBeginThread( void (*rtn)(void *), void *stack, unsigned stk_size, void *arg
 void FEndThread( void ) {
 //=======================
 
-    Suicide();
+    RTSuicide();
 }
 
 

@@ -28,10 +28,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "ifenv.h"
 #include "errcod.h"
+
 
 intstar4        ICHAR( string PGM *arg ) {
 //========================================

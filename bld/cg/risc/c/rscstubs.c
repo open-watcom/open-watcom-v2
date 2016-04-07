@@ -38,6 +38,8 @@
 #include "zoiks.h"
 #include "x87.h"
 #include "objout.h"
+#include "ocentry.h"
+#include "encode.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -369,8 +371,8 @@ extern  void    DelSeg( instruction *ins ) {
     ins = ins;
 }
 
-extern  void    GenSetCC( instruction *ins ) {
-/********************************************/
+void    GenSetCC( instruction *ins ) {
+/************************************/
 
     ins = ins;
     _Zoiks( 102 );

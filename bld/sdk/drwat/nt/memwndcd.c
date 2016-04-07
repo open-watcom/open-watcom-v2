@@ -38,6 +38,7 @@
 
 #include <windows.h>
 #include "bool.h"
+#include "watcom.h"
 #include "memwnd.h"
 
 void DumpMemAsm( MemWndInfo *info, int hdl ) {
@@ -58,7 +59,7 @@ bool NeedScrollBar( MemWndInfo *info ) {
     return( FALSE );
 }
 
-DWORD GetInsCnt( MemWndInfo *info, DWORD offset ) {
+uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset ) {
     info = info;
     offset = offset;
     return( 0 );

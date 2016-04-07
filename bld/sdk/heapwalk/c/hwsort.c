@@ -35,6 +35,13 @@
 #include "heapwalk.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+#if 0
+BOOL __export FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+#endif
+
+
 /*
  * SortByGlobType - is in hwlist.c
  */
@@ -135,8 +142,7 @@ static int SortByLRU( heap_list **p1, heap_list **p2 )
 } /* SortByLRU */
 
 #if(0)
-BOOL __export FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     char        buf[50];
     char        test[50];

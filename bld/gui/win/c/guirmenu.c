@@ -31,6 +31,7 @@
 
 
 #include "guiwind.h"
+#include "guirmenu.h"
 
 void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
 {

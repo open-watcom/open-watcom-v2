@@ -38,19 +38,13 @@
 #include "types.h"
 #include "ferror.h"
 #include "utility.h"
+#include "proctbl.h"
+#include "csselect.h"
+#include "csutls.h"
+#include "cgmagic.h"
+#include "fcodes.h"
+#include "gflow.h"
 
-extern  void            AddCSNode( byte );
-extern  void            DelCSNode( void );
-extern  void            CSNoMore( void );
-extern  void            Match( void );
-extern  void            CSExtn( void );
-extern  void            ColonLabel( void );
-extern  label_id        NextLabel( void );
-extern  void            GLabel( label_id );
-extern  void            FiniSelect( void );
-extern  void            InitSelect( void );
-extern  void            GBranch( label_id );
-extern  void            FreeLabel( label_id );
 
 /* forward declarations */
 void            CpOtherwise( void );

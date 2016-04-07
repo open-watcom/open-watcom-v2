@@ -94,7 +94,7 @@ static void defargFreePtrees( void )  // FREE ALL DEFARG PTREES
     DefargList = NULL;
 }
 
-PTREE storeIfDebug(PTREE defarg_info)
+static PTREE storeIfDebug( PTREE defarg_info )
 {
     PTREE link_node;
 
@@ -110,7 +110,7 @@ PTREE storeIfDebug(PTREE defarg_info)
     return link_node;
 }
 
-PTREE retrieveIfDebug(PTREE defarg_info)
+static PTREE retrieveIfDebug( PTREE defarg_info )
 {
     return defarg_info == NULL ? NULL : defarg_info->u.subtree[0];
 }

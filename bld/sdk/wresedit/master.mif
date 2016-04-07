@@ -57,7 +57,7 @@ rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
 extra_l_flags_dll = op implib
 extra_l_flags_dll_nt = op heap=16k commit heap=8k
-extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
+extra_l_flags_dll_win = library commdlg op stack=8k,rwr
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res

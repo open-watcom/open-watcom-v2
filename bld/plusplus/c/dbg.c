@@ -765,7 +765,7 @@ void PrintFullType(             // PRINT FULL TYPE INFORMATION
     VbufFree( &suffix );
 }
 
-void DumpExpandedType(          // DUMP EXPANDED TYPE
+static void DumpExpandedType(   // DUMP EXPANDED TYPE
     TYPE tp )                   // - type
 {
     if( tp == NULL ) {

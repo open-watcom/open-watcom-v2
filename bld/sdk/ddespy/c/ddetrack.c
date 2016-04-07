@@ -122,7 +122,7 @@ void InitTrackWnd( HWND hwnd )
  *                   is running
  *                 - when not visible they are hidden, not destroyed
  */
-BOOL CreateTrackWnd( void )
+bool CreateTrackWnd( void )
 {
     WORD        type;
     int         i;
@@ -144,10 +144,10 @@ BOOL CreateTrackWnd( void )
             Instance,                   /* Program instance handle */
             &type );                    /* Create parameters */
         if( Tracking[i].hwnd == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 
 } /* CreateTrackWnd */
 
@@ -729,7 +729,7 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
 /*
  * FreeLinkInfo - free memory holding information about a link
  */
-void FreeLinkInfo( LinkInfo *info )
+static void FreeLinkInfo( LinkInfo *info )
 {
     MemFree( info->service );
     MemFree( info->topic );

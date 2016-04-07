@@ -51,6 +51,7 @@ extern  void    OpenLst( void );
 extern  void    ReOpenLst( void );
 extern  void    ChkPntLst( void );
 extern  bool    WasStmtListed( void );
+extern  void    TOutBanner( void );
 extern  void    GetBanner( char *buff );
 extern  void    GetCopyright( char *buff );
 extern  void    GetTrademark( char *buff );

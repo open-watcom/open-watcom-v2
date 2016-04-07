@@ -36,20 +36,22 @@
 
 #include "ftnstd.h"
 #include "wf77defs.h"
+#include "wf77auxd.h"
 #include "rtconst.h"
 #include "cg.h"
 #include "tmpdefs.h"
 #include "global.h"
 #include "fcgbls.h"
+#include "fcjmptab.h"
+#include "fctemp.h"
+#include "fcrtns.h"
+#include "wf77info.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 
-extern  cg_name         XPop(void);
-extern  call_handle     InitCall(RTCODE);
 extern  void            *GetPtr(void);
-extern  void            *ConstBack(sym_id);
-extern  void            FreeTmps(void);
 
 
 void    FCDone( void ) {

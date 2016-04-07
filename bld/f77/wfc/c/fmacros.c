@@ -37,6 +37,7 @@
 #include "cpopt.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "fmacros.h"
 
 #include "clibext.h"
 
@@ -64,7 +65,6 @@ static  char            DebugMacro[] = { "__debug__" };
 static  void    FreeMacros( bool free_perm );
 static  void    MacroCondition( bool cond );
 static  void    IFCondition( bool cond );
-void    MacroDEFINE( char *macro, uint macro_len );
 
 
 void    InitMacroProcessor( void ) {

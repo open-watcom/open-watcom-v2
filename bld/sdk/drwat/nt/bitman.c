@@ -34,6 +34,9 @@
 #include <string.h>
 #include "watcom.h"
 #include "machtype.h"
+#include "bitman.h"
+
+
 /*
  * get bits from unbyte aligned src and put in aligned dst
  */

@@ -28,12 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "ifile.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
+#include "rdwr.h"
 
 #include <string.h>
+
 
 void    NextRec( void ) {
     ftnfile     *fcb;

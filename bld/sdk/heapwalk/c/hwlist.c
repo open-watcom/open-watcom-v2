@@ -169,7 +169,8 @@ BOOL GetDGroupItem( char *owner, heap_list *hl ) {
  * AddToBuff - add a string to the current formatted selector
  */
 static char *_buff;
-void AddToBuff( char *str, ... )
+
+static void AddToBuff( char *str, ... )
 {
     va_list     al;
     char        tmp[256];
@@ -437,7 +438,7 @@ static char GetMemFlag( heap_list *hl ) {
  * FindModuleName - find the name of the owner of a piece of memory.
  *                  modhdl may be a task id or a module id so we try both
  */
-void FindModuleName( char *buf, HANDLE modhdl ) {
+static void FindModuleName( char *buf, HANDLE modhdl ) {
 
     MODULEENTRY         me;
     TASKENTRY           te;

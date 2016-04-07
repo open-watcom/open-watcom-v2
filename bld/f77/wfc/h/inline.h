@@ -38,4 +38,9 @@ enum {
     INLINE_STRBLAST_NE
 };
 
+
+extern void         InitInlinePragmas( void );
+extern call_handle  InitInlineCall( int rtn_id );
+extern void         FreeInlinePragmas( void );
+
 #endif

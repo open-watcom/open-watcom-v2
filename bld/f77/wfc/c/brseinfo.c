@@ -47,6 +47,9 @@
 #include "types.h"
 #include "ferror.h"
 #include "dwarfid.h"
+#include "mkname.h"
+#include "filescan.h"
+#include "rstutils.h"
 
 #include "clibext.h"
 
@@ -61,9 +64,6 @@ typedef struct sym_list {
 
 typedef dw_handle (*func)( sym_id ste_ptr, dw_handle handle );
 
-extern  int             AllocName(int);
-extern  int             MakeName(char *,char *,char *);
-extern  char            *SDFName(char *fn);
 static void             BIAdd2List(sym_list **,sym_id,dw_handle);
 static void             BIWalkList(sym_list **,func,int);
 static dw_handle        BIGetAnyType(sym_id);
@@ -666,8 +666,7 @@ static void BIOutSPDumInfo( sym_id ste_ptr ) {
 
     memset( name, 0, MAX_SYMLEN+1 );
     handle = DWFormalParameter( cBIId, BIGetAnyType( ste_ptr ), 0, 0,
-                                strncpy( name, ste_ptr->u.ns.name,
-                                        ste_ptr->u.ns.u2.name_len ),
+                                strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
                                 DW_DEFAULT_NONE );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );

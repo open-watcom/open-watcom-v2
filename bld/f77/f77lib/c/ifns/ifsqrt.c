@@ -50,10 +50,6 @@ single SQRT( single arg ) {
     return( sqrt( arg ) );
 }
 
-#else
-
-extern  single          SQRT(single);
-
 #endif
 
 

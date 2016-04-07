@@ -35,19 +35,9 @@
 #include "common.h"
 #include "dip.h"
 #include "sampinfo.h"
-
-//#include "wpgather.def"
-
-
-extern void GatherImage( sio_data *, bool );
-extern void GatherMod( sio_data *, bool );
-extern void GatherFile( sio_data *, bool );
-extern void GatherRtn( sio_data *, bool );
-
+#include "wpgather.h"
 
 extern int      OptGatherCut;
-
-
 
 bool GetCurrentGather( sio_data * curr_sio )
 /******************************************/

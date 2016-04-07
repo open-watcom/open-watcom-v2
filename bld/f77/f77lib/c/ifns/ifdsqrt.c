@@ -50,10 +50,6 @@ double DSQRT( double arg ) {
     return( sqrt( arg ) );
 }
 
-#else
-
-extern  double          DSQRT(double);
-
 #endif
 
 

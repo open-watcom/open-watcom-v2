@@ -35,6 +35,7 @@
 //
 
 #include "ftnstd.h"
+#include "chrutils.h"
 
 
 char    *JmpBlanks( char *buff ) {

@@ -149,13 +149,13 @@ typedef enum {
 } scalar_t;
 
 typedef enum {
-    STS_DLLIMPORT       = 0x0001,
-    STS_DLLEXPORT       = 0x0002,
-    STS_NAKED           = 0x0004,
-    STS_THREAD          = 0x0008,
-    STS_MODIFIER        = 0x0010,
-    STS_NORETURN        = 0x0020,
-    STS_NULL            = 0x0000
+    MSDS_DLLIMPORT      = 0x0001,
+    MSDS_DLLEXPORT      = 0x0002,
+    MSDS_NAKED          = 0x0004,
+    MSDS_THREAD         = 0x0008,
+    MSDS_MODIFIER       = 0x0010,
+    MSDS_NORETURN       = 0x0020,
+    MSDS_NULL           = 0x0000
 } ms_declspec_t;
 
 // check PTypeCombine if any new fields are added
@@ -346,6 +346,7 @@ typedef enum {
                           | TF1_LOADDS
                           | TF1_INTRINSIC
                           | TF1_NAKED
+                          | TF1_NORETURN
                           | TF1_PURE
                           | TF1_EXPLICIT
                           ),

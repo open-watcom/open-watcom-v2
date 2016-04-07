@@ -32,6 +32,7 @@
 
 #include "imgedit.h"
 #include "wrbitmap.h"
+#include "iebmpdat.h"
 
 /*
  * BitmapFromData - create a device independant bitmap from the data <data> and

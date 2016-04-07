@@ -35,6 +35,7 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wedit.h"
+#include "widn2str.h"
 #include "wrdll.h"
 
 char *WResIDNameToStr( WResIDName *name )

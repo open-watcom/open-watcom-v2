@@ -40,10 +40,10 @@
 // - tracks normal calling convention
 // - this is the funtion that is called from ASM and from C, C++
 // - note there is no #pragma aborts so that debugger can trace out
-_WCRTLINK _NORETURN extern void __exit_with_msg( char _WCI86FAR *, unsigned );
-_WCRTLINK extern void           __fatal_runtime_error( char _WCI86FAR *, unsigned );
-_WCRTLINK extern void           _Not_Enough_Memory( void );
-_WCRTLINK _NORETURN extern void __exit( unsigned );
+extern _WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *, unsigned );
+extern _WCRTLINK _NORETURN void __fatal_runtime_error( char _WCI86FAR *, unsigned );
+extern _WCRTLINK _NORETURN void _Not_Enough_Memory( void );
+extern _WCRTLINK _NORETURN void __exit( unsigned );
 
 // ASM interface
 // - always uses register calling convention
@@ -62,7 +62,7 @@ _WCRTLINK _NORETURN extern void __exit( unsigned );
     #define _EWM_PARM2
 #endif
 
-_NORETURN extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
+extern _NORETURN void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #ifdef _M_IX86
     #pragma aux __do_exit_with_msg "*__" parm caller [_EWM_PARM1] [_EWM_PARM2];
 #endif
@@ -72,12 +72,12 @@ _NORETURN extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 
 // WVIDEO interface
 
-_WCRTDATA extern char volatile __WD_Present;
+extern _WCRTDATA char volatile __WD_Present;
 
 // this function should be called before __exit_with_msg()
 // to allow Watcom Debugger (nee WVIDEO) to trap runtime errors.
 // this really needs to be far!!!
-_WCRTLINK extern int __EnterWVIDEO( char _WCFAR *string );
+extern _WCRTLINK int __EnterWVIDEO( char _WCFAR *string );
 
 #ifdef __cplusplus
     };

@@ -102,14 +102,14 @@ static void *vstkPushBlk(       // PUSH THE BLOCK
 }
 
 #ifndef NDEBUG
-void _VstkIntegrity( VSTK_CTL const *stack )
+static void _VstkIntegrity( VSTK_CTL const *stack )
 {
     if( stack->current == NULL ) return;
     if( !vstkInBlk( stack->top, stack->current, vstkDataSize( stack ) ) ) {
         _FatalAbort( "vstk: curr is not in top blk" );
     }
 }
-void _VstkPushZapPop( VSTK_CTL *stack )
+static void _VstkPushZapPop( VSTK_CTL *stack )
 {
     VSTK_BLK *blk;              // - current block
     void *cur;                  // - current entry

@@ -58,5 +58,8 @@ extern void         WREFreeResList( void );
 extern bool         WREInitResources( HINSTANCE );
 extern void         WREFiniResources( void );
 extern char         *WREGetQueryName( WREResInfo * );
+extern bool         PleaseOpenFile( UINT msg );
+extern void         WRESetCurrentRes( WREResInfo *res_info );
+extern bool         WREIsResInfoWinMsg( LPMSG pmsg );
 
 #endif

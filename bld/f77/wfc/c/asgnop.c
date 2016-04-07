@@ -40,8 +40,9 @@
 #include "opn.h"
 #include "optr.h"
 #include "emitobj.h"
+#include "asgnop.h"
+#include "gstring.h"
 
-extern  void            AsgnChar(void);
 
 void    AsgnOp( TYPE typ1, TYPE typ2, OPTR opr ) {
 //================================================

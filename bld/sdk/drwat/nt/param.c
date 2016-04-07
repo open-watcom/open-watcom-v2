@@ -32,7 +32,6 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 #include "menu.h"
@@ -42,7 +41,7 @@
 /*
  * AppDebuggerErrMsg
  */
-void AppDebuggerErrMsg( void *_info ) {
+static void AppDebuggerErrMsg( void *_info ) {
 
     ProcAttatchInfo *info = _info;
     char        buf[100];

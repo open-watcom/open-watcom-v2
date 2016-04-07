@@ -32,15 +32,18 @@
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"
+#include "posget.h"
+#include "posseek.h"
+#include "poserr.h"
+#include "posback.h"
 
 
 #define NO_CHAR         0xffff
 
-static  uint    GetPrevChar( b_file *io ) {
-//=========================================
-
+static  uint    GetPrevChar( b_file *io )
+//=======================================
 // Get previous character in file.
-
+{
     if( CurrFileOffset( io ) == 0 ) return( NO_CHAR );
     if( SysSeek( io, -1L, SEEK_CUR ) < 0 ) {
         return( NO_CHAR );
@@ -54,11 +57,10 @@ static  uint    GetPrevChar( b_file *io ) {
 }
 
 
-void    FBackspace( b_file *io, int rec_size ) {
-//==============================================
-
+void    FBackspace( b_file *io, int rec_size )
+//============================================
 // Backspace a file.
-
+{
     uint        ch;
     unsigned_32 u32;
     bool        start_of_logical_record;

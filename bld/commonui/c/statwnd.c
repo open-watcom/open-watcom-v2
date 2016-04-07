@@ -40,6 +40,10 @@
 #include "loadcc.h"
 #include "wprocmap.h"
 
+
+/* Window callback functions prototypes */
+WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+
 /*
  * The window must always be the first member of this structure so that
  * GetHintHwnd() in hint.c will work properly.
@@ -70,6 +74,13 @@ static bool                     hasGDIObjects = true;
 static bool                     classRegistered;
 static WPI_INST                 classHandle;
 static statwnd                  *currentStatWnd;
+
+static WPI_FONT                 oldFont;
+static HBRUSH                   oldBrush;
+static COLORREF                 oldBkColor;
+#ifndef __OS2_PM__
+static COLORREF                 oldTextColor;
+#endif
 
 /*
  * getRect - get a rectangle
@@ -115,13 +126,6 @@ static void getRect( statwnd *sw, WPI_RECT *r, int i )
     _wpi_setrectvalues( r, r_left, r_top, pos, r_bottom );
 
 } /* getRect */
-
-static WPI_FONT oldFont;
-static HBRUSH   oldBrush;
-static COLORREF oldBkColor;
-#ifndef __OS2_PM__
-static COLORREF oldTextColor;
-#endif
 
 /*
  * initPRES - initialize our presentation space for drawing text
@@ -224,7 +228,7 @@ static void outlineRect( statwnd *sw, WPI_PRES pres, WPI_RECT *r )
 /*
  * StatusWndCallback - handle messages for the status window
  */
-WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     PAINTSTRUCT ps;
     WPI_RECT    r;
@@ -585,7 +589,7 @@ void StatusWndDraw3DBox( statwnd *sw, WPI_PRES pres )
 /*
  * outputText - output a text string
  */
-void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags,
+static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags,
                  int curr_block )
 {
     WPI_RECT    ir;

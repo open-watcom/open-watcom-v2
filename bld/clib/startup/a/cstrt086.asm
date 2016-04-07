@@ -285,8 +285,7 @@ _Not_Enough_Memory_:
         mov     bx,1                    ; - set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
-        call    __fatal_runtime_error   ; - display msg and exit
-        ; never return
+        jmp     __fatal_runtime_error   ; - display msg and exit
 
 enuf_mem:                               ; endif
         mov     ax,es                   ; point to data segment

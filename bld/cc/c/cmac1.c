@@ -33,6 +33,7 @@
 #include "scan.h"
 #include "pragdefn.h"
 #include "cfeinfo.h"
+#include "dumpapi.h"
 
 #include "clibext.h"
 
@@ -63,16 +64,18 @@ typedef struct nested_macros {
     bool                    substituting_parms;
 } NESTED_MACRO;
 
+typedef struct special_macro_names {
+    char            *name;
+    special_macros  value;
+} special_macro_names;
+
+extern void         DumpMTokens( MACRO_TOKEN *mtok );
+
 static NESTED_MACRO *NestedMacros;
 static MACRO_TOKEN  *TokenList;
 static size_t       MTokenLen;              /* macro token length */
 
 static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning );
-
-typedef struct special_macro_names {
-    char            *name;
-    special_macros  value;
-} special_macro_names;
 
 static struct special_macro_names  SpcMacros[] = {
     { "__DATE__",           MACRO_DATE          },

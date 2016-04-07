@@ -38,13 +38,12 @@
 #include "ifenv.h"
 
 
-#pragma off (unreferenced);
 double  DIMAG( double rp, double ip ) {
-#pragma on (unreferenced);
 //=====================================
 
 // Return the imaginary part of arg.
 
+    rp=rp;
     return( ip );
 }
 

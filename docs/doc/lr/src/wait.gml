@@ -16,16 +16,16 @@ processes so the
 .id &funcb.
 function cannot and does not wait for child
 processes to terminate.
-To wait for any process, you must specify its process id.
+To wait for any process, you must specify its process ID.
 For this reason, the
 .kw cwait
-function should be used (one of its arguments is a process id).
+function should be used (one of its arguments is a process ID).
 .im waitstat
 .desc end
 .return begin
 The
 .id &funcb.
-function returns the child's process id if the child process
+function returns the child's process ID if the child process
 terminated normally.
 Otherwise,
 .id &funcb.

@@ -43,6 +43,8 @@
 #include "ioptypes.h"
 #include "stats.h"
 #include "module.h"
+#include "dumpapi.h"
+
 
 static CGFILE *cg_file_ring;    // ring of virtual files (live)
 static CGFILE *cg_thunk_ring;   // ring of virtual thunks (live)

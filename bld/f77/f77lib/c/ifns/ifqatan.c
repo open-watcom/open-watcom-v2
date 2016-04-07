@@ -50,10 +50,6 @@ extended QATAN( extended arg ) {
     return( atan( arg ) );
 }
 
-#else
-
-extern  extended                QATAN(extended);
-
 #endif
 
 

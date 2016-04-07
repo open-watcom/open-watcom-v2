@@ -36,10 +36,10 @@
 #include "global.h"
 #include "optr.h"
 #include "emitobj.h"
-
-extern  bool            TypeCmplx(TYPE);
-extern  bool            OptimalChSize(uint);
-extern  TYPE            MapTypes(TYPE,uint);
+#include "tcmplx.h"
+#include "upscan.h"
+#include "relops.h"
+#include "declare.h"
 
 
 static  int     CharLength( itnode *op ) {

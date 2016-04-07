@@ -38,12 +38,16 @@
 #endif
 #include "wprocmap.h"
 
-static void             (*WriteFn)( char * );
+
+/* Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
+static void     (*WriteFn)( char * );
 
 /*
  * MarkDlgProc - handle messages from the mark dialog
  */
-WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[MARK_LEN];
     char        boxbuf[MARK_LEN];

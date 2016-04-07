@@ -32,6 +32,8 @@
 
 #include "optwif.h"
 #include "zoiks.h"
+#include "inslist.h"
+#include "object.h"
 
 extern  void            GenKillLabel(label_handle);
 
@@ -153,8 +155,8 @@ extern  void    TellScrapLabel( label_handle lbl )
 }
 
 
-extern  void    TellCondemnedLabel( label_handle lbl )
-/****************************************************/
+void    TellCondemnedLabel( label_handle lbl )
+/********************************************/
 {
   optbegin
     _ValidLbl( lbl );

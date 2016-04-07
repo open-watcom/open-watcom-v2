@@ -46,12 +46,8 @@
 #include "memutil.h"
 
 
-extern void ErrorMsg(char *msg,... );
-
 STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,
                             file_info *, rtn_info *  );
-
-
 
 extern char * WPSourceGetLine( a_window * wnd, int line )
 /*******************************************************/

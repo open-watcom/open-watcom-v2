@@ -51,6 +51,9 @@
 #include "clibext.h"
 
 
+/* Window callback functions prototypes */
+WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /*
  * writeListBoxContents
  */
@@ -87,7 +90,7 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
 /*
  * LBSaveHook - hook used called by common dialog - for 3D controls
  */
-WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;

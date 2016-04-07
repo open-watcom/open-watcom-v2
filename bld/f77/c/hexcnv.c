@@ -29,9 +29,11 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#include "hexcnv.h"
 
 #include <string.h>
 #include <ctype.h>
+
 
 static const char __FAR HexDigits[ 16 ] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
@@ -39,10 +41,10 @@ static const char __FAR HexDigits[ 16 ] = {
 };
 
 
-byte    Hex( byte data ) {
+char    Hex( char data ) {
 //========================
 
-    if( isdigit( data ) == 0 ) {
+    if( isdigit( (unsigned char)data ) == 0 ) {
         data += 9;
     }
     data &= 0x0f;
@@ -50,14 +52,15 @@ byte    Hex( byte data ) {
 }
 
 
-uint    HSToB( char *src, uint src_len, byte *dst ) {
+uint    HSToB( char *src, uint src_len, char *dst ) {
 //===================================================
 
     uint        length;
 
     length = 0;
     if( ( src_len % 2 ) != 0 ) {
-        if( isxdigit( *src ) == 0 ) return( 0 );
+        if( isxdigit( *src ) == 0 )
+            return( 0 );
         *dst = Hex( *src );
         ++dst;
         ++length;
@@ -65,11 +68,13 @@ uint    HSToB( char *src, uint src_len, byte *dst ) {
         --src_len;
     }
     while( src_len != 0 ) {
-        if( isxdigit( *src ) == 0 ) return( length );
+        if( isxdigit( *src ) == 0 )
+            return( length );
         *dst = Hex( *src ) * 0x10;
         ++src;
         --src_len;
-        if( isxdigit( *src ) == 0 ) return( length );
+        if( isxdigit( *src ) == 0 )
+            return( length );
         *dst += Hex( *src );
         ++src;
         --src_len;
@@ -80,19 +85,21 @@ uint    HSToB( char *src, uint src_len, byte *dst ) {
 }
 
 
-char    *BToHS( byte *mem, int length, char *fmt_buf ) {
+char    *BToHS( char *mem, int length, char *fmt_buf ) {
 //==============================================================
 
-    byte        data;
+    char        data;
 
     for(;;) {
-        if( --length < 0 ) break;
+        if( --length < 0 )
+            break;
         data = *mem;
         ++mem;
-        *fmt_buf = HexDigits[ ( data >> 4 ) & 0x0f ];
+        *fmt_buf = HexDigits[( (unsigned char)data >> 4 ) & 0x0f];
         ++fmt_buf;
-        if( --length < 0 ) break;
-        *fmt_buf = HexDigits[ data & 0x0f ];
+        if( --length < 0 )
+            break;
+        *fmt_buf = HexDigits[(unsigned char)data & 0x0f];
         ++fmt_buf;
     }
     *fmt_buf = NULLCHAR;

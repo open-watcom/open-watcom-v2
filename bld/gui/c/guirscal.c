@@ -32,7 +32,8 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-extern void GUIGetRoundScale( gui_coord * scale )
+
+void GUIGetRoundScale( gui_coord * scale )
 {
     gui_rect screen;
 

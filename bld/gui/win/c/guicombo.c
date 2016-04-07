@@ -37,9 +37,13 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "wprocmap.h"
+#include "guixwind.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam );
 
 extern  controls_struct GUIControls[];
-extern  WPI_INST        GUIMainHInst;
 
 typedef struct {
     bool        success;

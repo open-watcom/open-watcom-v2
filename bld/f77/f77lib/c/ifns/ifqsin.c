@@ -50,10 +50,6 @@ extended QSIN( extended arg ) {
     return( sin( arg ) );
 }
 
-#else
-
-extern  extended                QSIN(extended);
-
 #endif
 
 

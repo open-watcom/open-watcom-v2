@@ -45,24 +45,15 @@
 #include "srcmgt.h"
 #include "msg.h"
 #include "memutil.h"
+#include "setsamps.h"
+#include "support.h"
 
 
 extern massgd_sample_addr *WPGetMassgdSampData(sio_data *curr_sio,clicks_t click_index);
-extern void ErrorMsg(char *msg,... );
-extern int AddrCmp(address *addr1,address *addr2);
-extern file_handle ExeOpen(char *name);
-extern void ExeClose(file_handle fh);
-extern void SetExeOffset( address );
-extern void SetExeImage(image_info *image);
-extern bool SetExeFile(file_handle fh, bool overlay);
-extern void SetNumBytes(uint_16 num);
-extern void CodeAdvance( address * );
-extern void GetFullInstruct( address, char *buffer,int max);
-extern char EndOfSegment(void );
 
 #define MAX_ASM_BUFF_LEN    256
 
-extern wp_asmline * WPGetAsmLoc( wp_asmfile * wpasm_file, int row,
+wp_asmline * WPGetAsmLoc( wp_asmfile * wpasm_file, int row,
                                     int * group_loc, int * row_loc )
 /******************************************************************/
 {
@@ -198,8 +189,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
 
 
 
-extern void WPAsmClose( wp_asmfile * wpasm_file )
-/***********************************************/
+void WPAsmClose( wp_asmfile * wpasm_file )
+/****************************************/
 {
     wp_asmline *        asm_line;
     int                 row;
@@ -237,8 +228,8 @@ extern void WPAsmClose( wp_asmfile * wpasm_file )
 
 
 
-extern char * WPAsmGetLine( a_window * wnd, int line )
-/****************************************************/
+char * WPAsmGetLine( a_window * wnd, int line )
+/*********************************************/
 {
     sio_data *      curr_sio;
     wp_asmfile *    wpasm_file;
@@ -284,8 +275,8 @@ extern char * WPAsmGetLine( a_window * wnd, int line )
 
 
 
-extern int WPAsmFindSrcLine( sio_data * curr_sio, int line )
-/**********************************************************/
+int WPAsmFindSrcLine( sio_data * curr_sio, int line )
+/***************************************************/
 {
     wp_asmfile *    wpasm_file;
     wp_asmline *    asm_line;

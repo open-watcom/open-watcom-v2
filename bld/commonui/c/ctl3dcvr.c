@@ -73,27 +73,27 @@ static LPFN_Ctl3dWinIniChange   cvrCtl3dWinIniChange    = NULL;
 
  #if defined( __WINDOWS_386__ )
 
-BOOL _DLLFAR _CB_Ctl3dUnregister( HANDLE h )
+static BOOL _DLLFAR _CB_Ctl3dUnregister( HANDLE h )
 {
     return( Ctl3dUnregister( h ) );
 }
 
-BOOL _DLLFAR _CB_Ctl3dSubclassDlg( HWND h, WORD w )
+static BOOL _DLLFAR _CB_Ctl3dSubclassDlg( HWND h, WORD w )
 {
     return( Ctl3dSubclassDlg( h, w ) );
 }
 
-BOOL _DLLFAR _CB_Ctl3dColorChange( void )
+static BOOL _DLLFAR _CB_Ctl3dColorChange( void )
 {
     return( Ctl3dColorChange() );
 }
 
-BOOL _DLLFAR _CB_Ctl3dSubclassCtl( HWND h )
+static BOOL _DLLFAR _CB_Ctl3dSubclassCtl( HWND h )
 {
     return( Ctl3dSubclassCtl( h ) );
 }
 
-HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
+static HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
 {
   #if 0
     return( Ctl3dCtlColorEx( wm, wp, lp ) );
@@ -148,11 +148,11 @@ static void CvrCtl3DDLLFini( void )
 static int CvrCtl3DDLLInit( void )
 {
  #if defined( __WINDOWS_386__ )
-    cvrCtl3dUnregister  = &_CB_Ctl3dUnregister;
-    cvrCtl3dSubclassDlg = &_CB_Ctl3dSubclassDlg;
-    cvrCtl3dSubclassCtl = &_CB_Ctl3dSubclassCtl;
-    cvrCtl3dColorChange = &_CB_Ctl3dColorChange;
-    cvrCtl3dCtlColorEx  = &_CB_Ctl3dCtlColorEx;
+    cvrCtl3dUnregister  = _CB_Ctl3dUnregister;
+    cvrCtl3dSubclassDlg = _CB_Ctl3dSubclassDlg;
+    cvrCtl3dSubclassCtl = _CB_Ctl3dSubclassCtl;
+    cvrCtl3dColorChange = _CB_Ctl3dColorChange;
+    cvrCtl3dCtlColorEx  = _CB_Ctl3dCtlColorEx;
  #else
   #ifdef __NT__
     ctlDLLLib = LoadLibrary( "CTL3D32.DLL" );

@@ -34,8 +34,6 @@
 // XFDMIN1      : min function for REAL*8 argumemts
 //
 
-#include <stdarg.h>
-
 #include "ftnstd.h"
 #include "ifenv.h"
 

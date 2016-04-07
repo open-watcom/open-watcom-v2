@@ -80,7 +80,7 @@ void __LDFloatToString( char *buf,
     cvt.ndigits = precision;
     cvt.expchar = (format_flags & std::ios::uppercase) ? 'E' : 'e';
     cvt.expwidth = 0;
-    __EFG_LDcvt( &ld, &cvt, stkbuf );
+    __EFG_cvtld( &ld, &cvt, stkbuf );
     // put all the pieces together
     i = 0;
     if( cvt.sign < 0 ) {

@@ -38,6 +38,9 @@
 #include "wprocmap.h"
 
 
+/* Window callback functions prototypes */
+WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static HBITMAP  deskTopBitmap;
 static short    screenWidth;
 static short    screenHeight;
@@ -53,7 +56,7 @@ void SetDeskTopHook( deskNThook hook )
 /*
  * DesktopProc - creates and displays the bitmap for the desktop (NT version).
  */
-WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HBITMAP      oldbmp;
     PAINTSTRUCT         ps;

@@ -49,6 +49,8 @@
 #include "types.h"
 #include "utils.h"
 #include "objout.h"
+#include "object.h"
+#include "i86enc2.h"
 #include "feprotos.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -73,9 +75,6 @@ extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
-
-extern  void            CodeBytes( const byte *src, byte_seq_len len );
-extern  void            GenReturn( int pop, bool is_long, bool iret );
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
@@ -143,8 +142,8 @@ static issigned Signed[] = {
         UNSIGNED };     /* XX*/
 
 
-extern unsigned DepthAlign( unsigned depth )
-/******************************************/
+unsigned DepthAlign( unsigned depth )
+/***********************************/
 {
     static unsigned char AlignArray[10] = { 0 };
 
@@ -175,8 +174,8 @@ extern unsigned DepthAlign( unsigned depth )
     return( AlignArray[depth + 1] );
 }
 
-extern  byte    CondCode( instruction *cond ) {
-/**********************************************
+byte    CondCode( instruction *cond ) {
+/**************************************
     Return the condition code number for the encoding, associated with "cond"
 */
 
@@ -194,8 +193,8 @@ extern  byte    CondCode( instruction *cond ) {
     }
 }
 
-extern  void    GenSetCC( instruction *cond ) {
-/**********************************************
+void    GenSetCC( instruction *cond ) {
+/**************************************
     given a conditional "cond", generate the correct setxx instruction
 */
 
@@ -210,29 +209,38 @@ extern  void    GenSetCC( instruction *cond ) {
     _Emit;
 }
 
-extern  byte    ReverseCondition( byte cond ) {
-/**********************************************
+byte    ReverseCondition( byte cond ) {
+/**************************************
     reverse the sense of a conditional jump (already encoded)
 */
 
     return( RevCond[cond] );
 }
 
-extern  void    DoCall( label_handle lbl, bool imported, bool big, oc_class pop_bit )
-/************************************************************************************
+void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
+/********************************************************************
     call routine "lbl".
 */
 {
+    oc_class    occlass;
+    obj_length  len;
+
     imported = imported;
+    occlass = OC_CALL;
+    if( pop )
+        occlass |= ATTR_POP;
+    if( big )
+        occlass |= ATTR_FAR;
     if( !big ) {
-        CodeHandle( OC_CALL | pop_bit, OptInsSize( OC_CALL, OC_DEST_NEAR ), lbl );
+        len = OptInsSize( OC_CALL, OC_DEST_NEAR );
     } else if( AskIfRTLabel( lbl )
             || imported //NYI:multi-code-segment, this can go when FORTRAN is fixed up
             || AskCodeSeg() != FESegID( AskForLblSym( lbl ) ) ) {
-        CodeHandle( OC_CALL | ATTR_FAR | pop_bit, OptInsSize( OC_CALL, OC_DEST_FAR  ), lbl );
+        len = OptInsSize( OC_CALL, OC_DEST_FAR );
     } else {
-        CodeHandle( OC_CALL | ATTR_FAR | pop_bit, OptInsSize( OC_CALL, OC_DEST_CHEAP ), lbl );
+        len = OptInsSize( OC_CALL, OC_DEST_CHEAP );
     }
+    CodeHandle( occlass, len, lbl );
 }
 
 
@@ -349,15 +357,14 @@ static  void    GenNoReturn( void ) {
     InputOC( &oc );
 }
 
-extern  void    GenCall( instruction *ins ) {
-/********************************************
+void    GenCall( instruction *ins ) {
+/************************************
     Generate a call for "ins". (eg: call foo, or call far ptr foo)
 */
 
     name                *op;
     cg_sym_handle       sym;
-    bool                big;
-    oc_class            pop_bit;
+    bool                imp;
     call_class          cclass;
     byte_seq            *code;
     label_handle        lbl;
@@ -387,29 +394,22 @@ extern  void    GenCall( instruction *ins ) {
             CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), lbl );
         }
     } else {
-        if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-            pop_bit = ATTR_POP;
-        } else {
-            pop_bit = 0;
-        }
-        if( cclass & FAR_CALL ) {
-            big = TRUE;
-        } else {
-            big = FALSE;
-        }
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
-            DoCall( FEBack( sym )->lbl, (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
+            lbl = FEBack( sym )->lbl;
+            imp = (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0;
         } else {
             // handles mismatch Fix it!
-            DoCall( (label_handle)sym, TRUE, big, pop_bit );
+            lbl = (label_handle)sym;
+            imp = true;
         }
+        DoCall( lbl, imp, (cclass & FAR_CALL) != 0, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
     }
 }
 
 
-extern  void    GenICall( instruction *ins ) {
-/*********************************************
+void    GenICall( instruction *ins ) {
+/*************************************
     Generate an indirect call for "ins" (eg: call dword ptr [eax])
 */
 
@@ -442,23 +442,17 @@ extern  void    GenICall( instruction *ins ) {
 }
 
 
-extern  void    GenRCall( instruction *ins ) {
-/*********************************************
+void    GenRCall( instruction *ins )
+/*****************************************
     generate a call to a register (eg: call eax)
 */
-
+{
     name                *op;
-    oc_class            pop_bit;
 
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-        pop_bit = ATTR_POP;
-    } else {
-        pop_bit = 0;
-    }
-    ReFormat( OC_CALLI | pop_bit );
+    ReFormat( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ? OC_CALLI | ATTR_POP : OC_CALLI );
     LayOpword( M_CJINEAR );
     op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );
@@ -475,12 +469,12 @@ static  void    Pushf( void ) {
 }
 
 
-extern  void    GenSelEntry( bool starts ) {
+void    GenSelEntry( bool starts )
 /*******************************************
     dump a queue that a select table is starting/ending ("starts") into
     the code segment queue.
 */
-
+{
     any_oc      oc;
 
     oc.oc_select.hdr.class = OC_INFO + INFO_SELECT;
@@ -491,18 +485,18 @@ extern  void    GenSelEntry( bool starts ) {
 }
 
 
-extern  void    Gen1ByteValue( byte value ) {
-/********************************************
+void    Gen1ByteValue( byte value )
+/****************************************
     drop an 8 bit integer into the queue.
 */
-
+{
     _Code;
     AddByte( value );
     _Emit;
 }
 
 
-extern  void    Gen2ByteValue( unsigned_16 value ) {
+void    Gen2ByteValue( unsigned_16 value ) {
 /***************************************************
     drop a 16 bit integer into the queue.
 */
@@ -514,7 +508,7 @@ extern  void    Gen2ByteValue( unsigned_16 value ) {
 }
 
 
-extern  void    Gen4ByteValue( unsigned_32 value ) {
+void    Gen4ByteValue( unsigned_32 value ) {
 /***************************************************
     drop a 32 bit integer into the queue.
 */
@@ -528,7 +522,7 @@ extern  void    Gen4ByteValue( unsigned_32 value ) {
 }
 
 
-extern  void    GenCodePtr( pointer label ) {
+void    GenCodePtr( pointer label ) {
 /********************************************
     Dump a near reference to a label into the code segment.
 */
@@ -537,16 +531,16 @@ extern  void    GenCodePtr( pointer label ) {
 }
 
 
-extern  void    GenCallLabel( pointer label ) {
+void    GenCallLabel( pointer label ) {
 /**********************************************
     generate a call to a label within the procedure (near call)
 */
 
-    DoCall( label, FALSE, FALSE, EMPTY );
+    DoCall( label, false, false, false );
 }
 
 
-extern  void    GenLabelReturn( void ) {
+void    GenLabelReturn( void ) {
 /*********************************
     generate a return from CALL_LABEL instruction (near return)
 */
@@ -554,7 +548,7 @@ extern  void    GenLabelReturn( void ) {
     GenReturn( 0, FALSE, FALSE );
 }
 
-extern  void    GenReturn( int pop, bool is_long, bool iret ) {
+void    GenReturn( int pop, bool is_long, bool iret ) {
 /**************************************************************
     Generate a return instruction
 */
@@ -581,7 +575,7 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     InputOC( &oc );
 }
 
-extern  void    GenMJmp( instruction *ins ) {
+void    GenMJmp( instruction *ins ) {
 /********************************************
     Generate a jump indirect through memory instruction.
 */
@@ -609,7 +603,7 @@ extern  void    GenMJmp( instruction *ins ) {
     }
 }
 
-extern  void    GenRJmp( instruction *ins ) {
+void    GenRJmp( instruction *ins ) {
 /********************************************
     Generate a jump to register instruction (eg: jmp eax)
 */
@@ -677,13 +671,13 @@ static  void    DoCodeBytes( const byte *src, byte_seq_len len, oc_class class )
     CGFree( oc );
 }
 
-extern  void    CodeBytes( const byte *src, byte_seq_len len ) {
+void    CodeBytes( const byte *src, byte_seq_len len ) {
 /**************************************************************/
 
     DoCodeBytes( src, len, OC_BDATA );
 }
 
-extern  void    EyeCatchBytes( const byte *src, byte_seq_len len ) {
+void    EyeCatchBytes( const byte *src, byte_seq_len len ) {
 /******************************************************************/
 
     DoCodeBytes( src, len, OC_IDATA );

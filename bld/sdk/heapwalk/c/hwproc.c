@@ -38,6 +38,7 @@
 #include "wwinhelp.h"
 #include "jdlg.h"
 
+
 static  BOOL    NoRefresh = FALSE;
 
 /*
@@ -234,8 +235,7 @@ static DWORD CheckForLocalSelect( GblWndInfo *info ) {
 /*
  * HeapWalkProc - show task status
  */
-BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    LPARAM lparam )
+BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HMENU       mh;
     HMENU       mh2;

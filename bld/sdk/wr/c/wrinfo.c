@@ -170,7 +170,7 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     return( count );
 }
 
-int WRRelinkDir( WResDir dest, WResDir src )
+static int WRRelinkDir( WResDir dest, WResDir src )
 {
     WResLangType    lt;
     WResTypeNode    *dtnode;

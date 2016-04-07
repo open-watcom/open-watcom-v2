@@ -38,8 +38,9 @@
 #include "global.h"
 #include "fcodes.h"
 #include "emitobj.h"
+#include "upscan.h"
+#include "gsublist.h"
 
-extern  void            AddConst(itnode *);
 
 static  obj_ptr         WarpLabel;
 

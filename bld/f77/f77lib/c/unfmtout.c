@@ -33,13 +33,14 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "pgmacc.h"
+#include "ftextfun.h"
 
 #include <string.h>
 #include "iotype.h"
+#include "rtutls.h"
+#include "ioerr.h"
+#include "wrutils.h"
 
-extern  void            IOErr(int,...);
-extern  void            SendEOR(void);
-extern  bool            IsFixed(void);
 
 /* Forward declarations */
 static  void    OUnString( void );

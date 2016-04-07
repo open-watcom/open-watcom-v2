@@ -37,9 +37,11 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "fio.h"
+#include "ftextfun.h"
+#include "ftnapi.h"
+#include "posget.h"
+#include "poserr.h"
 
-extern  void            IOOk(b_file *);
-extern  unsigned_32     FGetVarRecLen(b_file *);
 
 intstar4        __fortran FNEXTRECL( intstar4 *unit ) {
 //===================================================

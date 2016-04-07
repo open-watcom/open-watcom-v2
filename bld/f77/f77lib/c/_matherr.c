@@ -28,11 +28,13 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "fmath.h"
 #include "fmthcode.h"
 #include "errcod.h"
+
 
 intstar4 __imath2err( unsigned int err_info, intstar4 *a1, intstar4 *a2 ) {
 //=========================================================================

@@ -40,8 +40,8 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "emitobj.h"
-
-extern  sym_id          GTempString(uint);
+#include "gstring.h"
+#include "gsubscr.h"
 
 
 void    GBegSubScr( itnode *array_node ) {

@@ -38,10 +38,9 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "tinyio.h"
 #include "wdebug.h"
-#include "drwatcom.h"
 #include "commdlg.h"
 #include "jdlg.h"
 
@@ -294,7 +293,7 @@ static void rcLogPrint( DWORD msgid, ... )
     FreeRCString( str );
 }
 
-void logComment( char *str ) {
+static void logComment( char *str ) {
 
     if( !notesAdded ) {
         rcLogPrint( STR_USER_NOTES_ULINE );

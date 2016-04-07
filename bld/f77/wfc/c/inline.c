@@ -38,7 +38,7 @@
 #include "global.h"
 #include "cgdefs.h"
 #include "cg.h"
-#include "wf77aux.h"
+#include "wf77auxd.h"
 #include "wf77defs.h"
 #include "fcgbls.h"
 #include "cgflags.h"
@@ -46,17 +46,16 @@
 #include "inline.h"
 #include "types.h"
 #include "fctypes.h"
+#include "rstutils.h"
+#include "auxlook.h"
+#include "wf77info.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
 #include <string.h>
 
 
-extern  sym_id          STAdd(char *name,int length);
-extern  sym_id          STFree(sym_id sym_ptr);
-extern  segment_id      AllocImpSegId(void);
 extern  void            DoPragma(char *);
-extern  aux_info        *AuxLookupName( char *, int );
 
 
 #if _CPU == 386 || _CPU == 8086

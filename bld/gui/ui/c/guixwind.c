@@ -41,9 +41,10 @@
 #include "guistat.h"
 #include "guihook.h"
 #include "guizlist.h"
+#include "guixwind.h"
 
-/* includes from guixmain.c */
-extern gui_window *GUICurrWnd;
+
+gui_window      *GUICurrWnd = NULL;
 
 static void DeleteChild( gui_window * parent, gui_window * child )
 {

@@ -50,10 +50,6 @@ extended QCOS( extended arg ) {
     return( cos( arg ) );
 }
 
-#else
-
-extern  extended                QCOS(extended);
-
 #endif
 
 

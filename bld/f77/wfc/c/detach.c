@@ -43,8 +43,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
+#include "detach.h"
+#include "upscan.h"
 
-extern  bool    OptimalChSize(uint);
 
 /* Forward declarations */
 static  void    SubStrArgs( itnode *cit );

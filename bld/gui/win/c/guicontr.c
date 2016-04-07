@@ -45,8 +45,7 @@
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
 
-extern  WPI_INST        GUIMainHInst;
-extern  gui_window      *GUICurrWnd;
+
 extern  bool            EditControlHasFocus;
 
 WPI_MRESULT CALLBACK GUIEditFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );

@@ -32,14 +32,24 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcgbls.h"
+#include "wf77defs.h"
+#include "cg.h"
 #include "errcod.h"
 #include "types.h"
 #include "typclass.h"
 #include "emitobj.h"
 #include "ferror.h"
 #include "insert.h"
-#include "cgdefs.h"
-#include "cg.h"
+#include "ftextfun.h"
+#include "cnvd2s.h"
+#include "rststruc.h"
+#include "fcjmptab.h"
+#include "fcdata.h"
+#include "fcgmain.h"
+#include "fcstack.h"
+#include "wf77info.h"
+#include "substr.h"
+#include "subscr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -52,26 +62,10 @@
 //      PRINT *, X - Y
 //      END
 // The result should be 0.
-#include "fltcnv.h"
-#include "wf77defs.h"
-#include <string.h>
-extern  void            CnvS2S(float *,char *);
-extern  void            CnvD2S(double *,char *);
-extern  void            CnvX2S(extended *,char *);
 
-extern  void            DtInit(segment_id,seg_offset);
-extern  void            DtBytes(byte *,int);
-extern  void            DtIBytes(byte,int);
-extern  segment_id      GetDataSegId(sym_id);
-extern  seg_offset      GetDataOffset(sym_id);
-extern  void            DXPush(intstar4);
-extern  intstar4        DXPop(void);
-extern  bool            DoSubscript(act_dim_list *,intstar4 *,intstar4 *);
-extern  bool            DoSubstring(intstar4,intstar4,int);
-extern  void            FCodeSequence(void);
-extern  char            *STFieldName(sym_id,char *);
-extern  void            DtStartSequence(void);
-extern  void            DtFiniSequence(void);
+#include "fltcnv.h"
+#include <string.h>
+
 
 extern  void            (* __FAR FCJmpTab[])( void );
 extern  void            (* __FAR DataJmpTab[])( void );
@@ -1292,7 +1286,7 @@ void    DtFlip( void ) {
 }
 
 
-static  bool    Subscript( act_dim_list *dim, intstar4 *offset ) {
+static  bool    CSubscript( act_dim_list *dim, intstar4 *offset ) {
 //================================================================
 
 // Data initialize an array element.
@@ -1318,7 +1312,7 @@ void    DtSubscript( void ) {
     intstar4    offset;
 
     InitVar = GetPtr();
-    if( !Subscript( InitVar->u.ns.si.va.u.dim_ext, &offset ) ) {
+    if( !CSubscript( InitVar->u.ns.si.va.u.dim_ext, &offset ) ) {
         NameStmtErr( EV_SSCR_INVALID, InitVar, PR_DATA );
     }
     DtOffset = offset * _SymSize( InitVar );
@@ -1370,7 +1364,7 @@ void    DtFieldSubscript( void ) {
 
     base = DXPop();
     fd = GetPtr();
-    if( Subscript( fd->u.fd.dim_ext, &offset ) ) {
+    if( CSubscript( fd->u.fd.dim_ext, &offset ) ) {
         if( fd->u.fd.typ == FT_STRUCTURE ) {
             offset *= fd->u.fd.xt.record->size;
         } else {

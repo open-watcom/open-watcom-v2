@@ -57,10 +57,6 @@ dcomplex        CDCOS( double rp, double ip ) {
     return( result );
 }
 
-#else
-
-extern  dcomplex        CDCOS(double,double);
-
 #endif
 
 

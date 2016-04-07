@@ -31,8 +31,10 @@
 
 
 #include "guiwind.h"
+#include "guigsysh.h"
 
-extern unsigned GUIGetSysHandle( gui_window *wnd )
+
+unsigned GUIGetSysHandle( gui_window *wnd )
 {
     wnd=wnd;
     return( 0 );

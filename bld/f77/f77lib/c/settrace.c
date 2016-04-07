@@ -28,17 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include <string.h>
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
-#include "ftextfun.h"
 #include "ftextvar.h"
 #include "rundat.h"
 #include "rtenv.h"
 #include "errcod.h"
 #include "thread.h"
+#include "errutil.h"
+#include "rt_init.h"
+#include "rstdio.h"
 
 
 static  void    TraceInfo( char *buff ) {

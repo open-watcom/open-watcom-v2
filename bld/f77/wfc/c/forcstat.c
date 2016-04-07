@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "segsw.h"
+#include "forcstat.h"
 
 
 bool    ForceStatic( unsigned_16 sym_flags ) {

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
@@ -36,14 +37,14 @@
 #include "errcod.h"
 #include "rmemmgr.h"
 #include "deffname.h"
+#include "rtspawn.h"
+#include "rterr.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+#include "ioerr.h"
 
 #include <string.h>
 
-/* Forward declarations */
-void    F_Connect( void );
-void    ChkFileName( void );
-void    GetFileInfo( void );
-void    ChkLogFile( void );
 
 static ftnfile *SearchFtnFile( int unit ) {
 //=========================================
@@ -213,9 +214,9 @@ void    ChkFileName( void ) {
 //=====================
 
     ChkLogFile();
-    if( Spawn( &SysFileInfo ) != 0 ) {
+    if( RTSpawn( &SysFileInfo ) != 0 ) {
         DiscoFile( IOCB->fileinfo );
-        Suicide();
+        RTSuicide();
     }
 }
 
@@ -318,7 +319,7 @@ void    SysEOF( void ) {
         ReportEOF( IOCB->fileinfo );
         IOErr( IO_FILE_PROBLEM );
     }
-    Suicide();
+    RTSuicide();
 }
 
 

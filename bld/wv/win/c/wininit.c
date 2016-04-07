@@ -47,13 +47,13 @@
 #include "dbgmem.h"
 #include "autoenv.h"
 #include "strutil.h"
-#include "guiwin.h"
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
 #include "trptypes.h"
 #include "trpsys.h"
 #include "wininit.h"
+#include "guigsysh.h"
 
 #include "clibint.h"
 

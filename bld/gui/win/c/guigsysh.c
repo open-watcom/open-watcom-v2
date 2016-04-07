@@ -32,9 +32,9 @@
 
 #include "guiwind.h"
 #include "guixutil.h"
-#include "guiwin.h"
+#include "guigsysh.h"
+#include "guixwind.h"
 
-extern  WPI_INST        GUIMainHInst;
 
 HWND GUIGetSysHandle( gui_window *wnd )
 {

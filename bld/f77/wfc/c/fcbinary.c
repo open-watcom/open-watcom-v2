@@ -37,20 +37,18 @@
 #include "ftnstd.h"
 #include "cgdefs.h"
 #include "wf77cg.h"
+#include "tmpdefs.h"
 #include "global.h"
 #include "cpopt.h"
 #include "types.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcjmptab.h"
+#include "fccmplx.h"
+#include "fctemp.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  void            XPush(cg_name);
-extern  cg_name         XPopValue(cg_type);
-extern  void            XPopCmplx(cg_cmplx *,cg_type);
-extern  cg_name         XPop(void);
-extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 
 
 static  void    XBinary( int op_code ) {

@@ -243,12 +243,12 @@ typedef struct ddetrackinfo {
 } DDETrackInfo;
 
 typedef struct ddeconfiginfo {
-    BOOL                scroll;
-    BOOL                alias;
-    BOOL                screen_out;
-    BOOL                show_tb;
-    BOOL                show_hints;
-    BOOL                on_top;
+    bool                scroll;
+    bool                alias;
+    bool                screen_out;
+    bool                show_tb;
+    bool                show_hints;
+    bool                on_top;
 } DDEConfigInfo;
 
 extern HANDLE           Instance;
@@ -285,7 +285,7 @@ void    ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 
 /* ddetrack.c */
 void    InitTrackWnd( HWND hwnd );
-BOOL    CreateTrackWnd( void );
+bool    CreateTrackWnd( void );
 void    DisplayTracking( unsigned i );
 void    TrackStringMsg( MONHSZSTRUCT *info );
 void    TrackLinkMsg( MONLINKSTRUCT *info );
@@ -296,7 +296,7 @@ void    SetTrackWndDefault( void );
 void    SetTrackFont( void );
 
 /* ddefltr.c */
-BOOL    DoFilter( UINT msg, WORD filter_type );
+bool    DoFilter( UINT msg, WORD filter_type );
 void    SetFilter( char *msgfilter, char *cbfilter );
 void    GetFilter( char *msgfilter, char *cbfilter );
 

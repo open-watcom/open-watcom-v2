@@ -32,9 +32,14 @@
 
 #ifndef _GUIXWIND_H_
 #define _GUIXWIND_H_
+
+extern WPI_INST     GUIMainHInst;
+extern gui_window   *GUICurrWnd;
+
 extern bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                             gui_window *wnd, gui_event gui_ev,
                             bool force_current );
 extern void GUIResizeBackground( gui_window *wnd, bool force_msg );
 extern void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size );
+
 #endif // GUIXWIND_H_

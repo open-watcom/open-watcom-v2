@@ -21,9 +21,9 @@ The
 .arg process_id
 argument specifies which process to wait for.
 Under Win32, any process can wait for any other process for which the
-process id is known.
+process ID is known.
 Under OS/2, a process can wait for any of its child processes.
-For example, a process id is returned by certain forms of the
+For example, a process ID is returned by certain forms of the
 .kw spawn&grpsfx
 functions that is used to start a child process.
 .np
@@ -50,7 +50,7 @@ Under Win32, there is no parent-child relationship.
 .return begin
 The
 .id &funcb.
-function returns the (child's) process id if the (child)
+function returns the (child's) process ID if the (child)
 process terminated normally.
 Otherwise,
 .id &funcb.
@@ -63,7 +63,7 @@ to one of the following values:
 .term EINVAL
 Invalid action code
 .term ECHILD
-Invalid process id, or the child does not exist.
+Invalid process ID, or the child does not exist.
 .term EINTR
 The child process terminated abnormally.
 .endterm

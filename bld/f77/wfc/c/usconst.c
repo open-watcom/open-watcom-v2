@@ -42,12 +42,11 @@
 #include "usfold.h"
 #include "errcod.h"
 #include "ferror.h"
+#include "upscan.h"
+#include "usconst.h"
 
 #include <string.h>
 
-extern  void            AddConst(itnode *);
-extern  void            GenExp(TYPE);
-extern  void            ExpI(byte,ftn_type *,intstar4);
 
 #define UAR_TAB_ROWS    9
 #define UAR_TAB_COLS    2
@@ -242,7 +241,9 @@ void    ConstCat( int size ) {
 }
 
 void    (* const __FAR ConstTable[])(TYPE, TYPE, OPTR) = {
+    #define OPTR_SUFFIX _c
     #define pick(id,const,gener) const,
     #include "optrdefn.h"
     #undef pick
+    #undef OPTR_SUFFIX
 };

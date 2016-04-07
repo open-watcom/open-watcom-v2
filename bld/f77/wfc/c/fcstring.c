@@ -38,29 +38,25 @@
 #include "global.h"
 #include "rtconst.h"
 #include "wf77defs.h"
+#include "wf77auxd.h"
+#include "tmpdefs.h"
 #include "cg.h"
 #include "cpopt.h"
 #include "inline.h"
 #include "emitobj.h"
 #include "fctypes.h"
+#include "fcrelops.h"
+#include "fcjmptab.h"
+#include "fcstring.h"
+#include "fcstruct.h"
+#include "fcsubscr.h"
+#include "fctemp.h"
+#include "fcrtns.h"
+#include "fcstack.h"
+#include "rstmgr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
-
-extern  cg_name         XPop(void);
-extern  cg_name         XPopValue(cg_type);
-extern  void            XPush(cg_name);
-extern  cg_name         SymAddr(sym_id);
-extern  call_handle     InitCall(RTCODE);
-extern  call_handle     InitInlineCall(int);
-extern  cg_name         StructRef(cg_name,int);
-extern  cg_name         StkElement(int);
-extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
-extern  void            PopStkElements(int);
-extern  void            MakeSCB(sym_id,cg_name);
-extern  cg_name         GetChOp(cg_type);
-extern  sym_id          FindArgShadow(sym_id);
-extern  cg_name         GetTypedValue(void);
 
 #define CAT_TEMP        0x8000
 

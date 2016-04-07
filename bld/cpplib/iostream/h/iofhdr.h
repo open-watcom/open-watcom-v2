@@ -33,8 +33,6 @@
 
 #include "variety.h"
 #include <float.h>
-#include "xfloat.h"
-#include "fltsupp.h"
 
 extern std::ios::iostate __GetLDFloat( streambuf *, char *);
 

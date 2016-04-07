@@ -40,18 +40,17 @@
 #include "fcgbls.h"
 #include "boot77.h"
 #include "errrtns.h"
+#if defined( __INCL_ERRMSGS__ )
+#include "errincl.h"
+#else
+#include "errrsrc.h"
+#endif
+#include "filescan.h"
+#include "sdcline.h"
+#include "fmacros.h"
 
 #include "clibext.h"
 
-
-#if defined( __INCL_ERRMSGS__ )
-extern  void            __InitError(void);
-#else
-extern  void            __InitResource(void);
-#endif
-extern  bool            MainCmdLine(char **,char **,char **,char *);
-extern  char            *SDSrcExtn(char *);
-extern  void            InitPredefinedMacros(void);
 
 static  char            CmdBuff[2*128];
 

@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextfun.h"
 #include "errcod.h"
@@ -39,8 +40,11 @@
 #include "cioconst.h"
 #include "ferror.h"
 #include "inout.h"
+#include "cmsgproc.h"
+#include "rstutils.h"
+#include "errrtns.h"
+#include "errutil.h"
 
-#include <stdarg.h>
 #include <string.h>
 
 

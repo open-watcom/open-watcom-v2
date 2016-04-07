@@ -43,25 +43,14 @@
 #include "recog.h"
 #include "insert.h"
 #include "utility.h"
+#include "proctbl.h"
+#include "allocate.h"
+#include "ioprockw.h"
+#include "symtab.h"
+#include "upscan.h"
+#include "galloc.h"
+#include "gsublist.h"
 
-extern  sym_id          LkSym( void );
-extern  void            GSLoBound( int, sym_id );
-extern  void            GSHiBound( int, sym_id );
-extern  void            GSHiBoundLo1( int, sym_id );
-extern  void            GBegAllocate( void );
-extern  void            GAllocate( sym_id );
-extern  void            GAllocateString( sym_id );
-extern  void            GSCBLength( sym_id );
-extern  void            GEndAllocate( void );
-extern  void            GBegDeAllocate( void );
-extern  void            GDeAllocate( sym_id );
-extern  void            GDeAllocateString( sym_id );
-extern  void            GEndDeAllocate( void );
-extern  void            GAllocStat( void );
-extern  void            GAllocLoc( void );
-extern  void            GAllocEOL( void );
-extern  void            CkSize4( void );
-extern  sym_id          CkAssignOk( void );
 
 /* forward declarations */
 static  void    AllocStat( void );

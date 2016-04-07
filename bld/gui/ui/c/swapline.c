@@ -30,7 +30,10 @@
 ****************************************************************************/
 
 
-int SwapScrnLines()
+#include "swapline.h"
+
+
+int SwapScrnLines( void )
 {
     return( 25 );
 }

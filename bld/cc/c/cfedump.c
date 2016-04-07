@@ -32,6 +32,7 @@
 #include "cvars.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
+#include "dumpapi.h"
 
 static char *_Ops[] = {
     #define pick1(enum,dump,cgenum) dump,
@@ -86,7 +87,7 @@ void DumpALDNL( long_double *pld )
 }
 #endif
 
-void DumpOpnd( TREEPTR opnd )
+static void DumpOpnd( TREEPTR opnd )
 {
     SYM_ENTRY   sym;
 
@@ -129,7 +130,7 @@ void DumpOpnd( TREEPTR opnd )
     }
 }
 
-void DumpPrefix( TREEPTR node )
+static void DumpPrefix( TREEPTR node )
 {
     TREEPTR     op1;
 
@@ -175,7 +176,7 @@ void DumpPrefix( TREEPTR node )
     }
 }
 
-void DumpInfix( TREEPTR node )
+static void DumpInfix( TREEPTR node )
 {
     SYM_ENTRY   sym;
 
@@ -244,7 +245,7 @@ void DumpInfix( TREEPTR node )
     }
 }
 
-void DumpPostfix( TREEPTR node )
+static void DumpPostfix( TREEPTR node )
 {
     TREEPTR     op1;
 
@@ -275,7 +276,7 @@ void DumpExpr( TREEPTR tree )
     printf( "\n" );
 }
 
-void DumpStmt( TREEPTR tree )
+static void DumpStmt( TREEPTR tree )
 {
     printf( "line %3.3u: ", tree->op.u2.src_loc.line );
     WalkExprTree( tree->right, DumpOpnd, DumpPrefix, DumpInfix, DumpPostfix );

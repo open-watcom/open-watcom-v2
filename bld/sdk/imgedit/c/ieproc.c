@@ -132,7 +132,7 @@ static void enableMainItems( HMENU hmenu )
 /*
  * createClientWindow - create the client window required by MDI
  */
-void createClientWindow( HWND hwnd )
+static void createClientWindow( HWND hwnd )
 {
     CLIENTCREATESTRUCT  ccs;
     RECT                clientrect;

@@ -31,18 +31,20 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "drwatcom.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "bool.h"
-#include "drwatcom.h"
 #include "mem.h"
 #include "thrdctl.h"
 #include "srchmsg.h"
 #include "priority.h"
 #include "retcode.h"
 #include "jdlg.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     DWORD       procid;

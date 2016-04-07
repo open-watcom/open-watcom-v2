@@ -36,6 +36,10 @@
 #include "title.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+
 #define TITLE_TIMER       666
 
 static HINSTANCE        wMainInst = NULL;

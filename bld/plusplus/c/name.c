@@ -459,7 +459,7 @@ static void init(               // INITIALIZATION
 }
 
 #ifndef NDEBUG
-void dumpNames( void )
+static void dumpNames( void )
 {
     unsigned sum;
     unsigned length;

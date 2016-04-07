@@ -28,15 +28,21 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "frtdata.h"
-#include "trcback.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextfun.h"
+#include "fio.h"
 #include "rundat.h"
 #include "rmemmgr.h"
 #include "thread.h"
+#include "runmain.h"
+#include "posopen.h"
+#include "rtspawn.h"
+#include "rtsysutl.h"
+#include "rtutls.h"
+
 
 static  bool    __IsUnit6CC = { FALSE };
 static  bool    __AllowCommaSeparator = { FALSE };
@@ -66,8 +72,8 @@ bool    __AllowCommaSep( void ) {
     return( __AllowCommaSeparator );
 }
 
-int    _InitIO( void ) {
-//================
+static int _InitIO( void ) {
+//==========================
 
     InitStd();
     Files = NULL;
@@ -82,20 +88,20 @@ int    _InitIO( void ) {
     return 0;
 }
 
-static  void    DoCloseFile( void ) {
+static void DoCloseFile( void ) {
 //=============================
 
     CloseFile( Files );
 }
 
-void    CloseAllFiles( void ) {
-//=======================
+static void CloseAllFiles( void ) {
+//=================================
 
     while( Files != NULL ) {
         // We must spawn CloseFile() since an error can occur (i.e. a disk full)
         // on the close and if the error does occur, RTErr() will be called and
         // he will suicide to where, your guess is as good as mine!
-        Spawn( &DoCloseFile );
+        RTSpawn( &DoCloseFile );
         if( Files->status == STATUS_SCRATCH ) {
             Scrtched( Files );
         }
@@ -103,8 +109,8 @@ void    CloseAllFiles( void ) {
     }
 }
 
-void    _FiniEx( void ) {
-//=================
+static void _FiniEx( void ) {
+//===========================
 
     CloseAllFiles();
     if( FmtBuff != NULL ) {
@@ -119,7 +125,7 @@ bool    RunEntry( void ) {
 //==================
 
     IOTypeRtn = &IOType;
-    Spawn( (void(*)( void ))_InitIO );
+    RTSpawn( (void(*)( void ))_InitIO );
     return( (_RWD_XcptFlags & XF_FATAL_ERROR) == 0 );
 }
 

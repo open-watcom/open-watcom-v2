@@ -30,7 +30,5 @@
 ****************************************************************************/
 
 
-void BitPut(unsigned_8 *dst,unsigned short start,unsigned_8 *src,
-    unsigned char size );
-void BitGet( unsigned_8 *dst, unsigned_8 *src, unsigned short start,
-    unsigned char size );
+extern void BitPut(unsigned_8 *dst,unsigned short start,unsigned_8 *src, unsigned char size );
+extern void BitGet( unsigned_8 *dst, unsigned_8 *src, unsigned short start, unsigned char size );

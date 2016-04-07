@@ -33,4 +33,7 @@
 #ifndef _GUIRDLG_H_
 #define _GUIRDLG_H_
 
+extern void GUIFreeDialogBoxControlPtrs( DialogBoxControl *dbc );
+extern void GUIFreeDialogBoxHeader( DialogBoxHeader *hdr );
+
 #endif

@@ -35,6 +35,7 @@
 #include "wglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"
+#include "wselft.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

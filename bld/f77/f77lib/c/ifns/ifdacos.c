@@ -50,10 +50,6 @@ double DACOS( double arg ) {
     return( acos( arg ) );
 }
 
-#else
-
-extern  double          DACOS(double);
-
 #endif
 
 

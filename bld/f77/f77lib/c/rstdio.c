@@ -24,77 +24,130 @@
 *
 *  ========================================================================
 *
-* Description:  initialize standard i/o
+* Description:  standard i/o support
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
-#include "units.h"
-#include "rundat.h"
+#include "fapptype.h"
+#include "posio.h"
+#include "rstdio.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
-/*
-BartoszP
-These declarations conflicts with all other modules
-file_handle is effectively void *
-extern  file_handle     FStdIn;
-extern  file_handle     FStdOut;
-*/
+#if defined( __OS2__ ) && defined( __386__ )
+  #define INCL_WINDIALOGS
+  #include <wos2.h>
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
+  #include <windows.h>
+#endif
+
+#if defined( __UNIX__ )
+static  char            NLSequence[] = { "\n" };
+#else
+static  char            NLSequence[] = { "\r\n" };
+#endif
+
+#if defined( __IS_WINDOWED__ )
+  extern        char            __FAppType;
+
+  #define       BUFFLEN         1024
+  static        char            *BuffCursor = { NULL };
+  static        char            Buffer[BUFFLEN] = { NULLCHAR };
+#endif
 
 
-static ftnfile *_GetFtnFile( int unit, int mode, void *fp, char *fname ) {
-//=================================================================
+void    StdBuffer( void ) {
+//===================
 
-    ftnfile     *fcb;
+// Start buffering lines of output.
 
-    fcb = RChkAlloc( sizeof( ftnfile ) );
-    if( fcb == NULL ) return( NULL );
-    memset( fcb, 0, sizeof( ftnfile ) );
-    fcb->link = Files;
-    Files = fcb;
-    IOCB->fileinfo = fcb;
-    fcb->flags |= FTN_FSEXIST;
-    fcb->flags |= FTN_EXIST;
-    fcb->unitid = unit;
-    fcb->action = mode;
-    fcb->formatted = FORMATTED_IO;
-    fcb->accmode = ACCM_SEQUENTIAL;
-    fcb->blanks = BLANK_NULL;
-    fcb->recnum = 1;
-    fcb->fileptr = fp;
-    if( (unit == STANDARD_OUTPUT) && __DevicesCC() ) {
-        fcb->cctrl = CC_YES;
+#if defined( __IS_WINDOWED__ )
+    if( __FAppType == FAPP_GUI ) {
+        BuffCursor = Buffer;
     }
-    fcb->filename = RChkAlloc( strlen( fname ) + sizeof( char ) );
-    if( fcb->filename == NULL ) return( fcb );
-    strcpy( fcb->filename, fname );
-    GetSysIOInfo( fcb );
-    fcb->buffer = RChkAlloc( fcb->bufflen + sizeof( char ) );
-    return( fcb );
+#endif
 }
 
 
-static ftnfile *_SetStd( int unit, int mode, char *term_name, file_handle fp ) {
-//=======================================================================
+void    StdWrite( char *buff, int len ) {
+//=======================================
 
-    return( _GetFtnFile( unit, mode, fp, term_name ) );
+// Write to STDOUT_FILENO.
+    int         rc;
+    static int  console_flag;
+
+#if defined( __IS_WINDOWED__ )
+    if( BuffCursor ) {
+        if( BuffCursor - Buffer + len > BUFFLEN - 1 ) return;
+        for( ; len > 0; --len ) {
+            if( *buff != '\r' ) {
+                *BuffCursor = *buff;
+                ++BuffCursor;
+            }
+            ++buff;
+        }
+        *BuffCursor = NULLCHAR;
+    } else {
+        if( __FAppType == FAPP_GUI ) {
+#if defined( __OS2__ ) && defined( __386__ )
+            WinMessageBox( HWND_DESKTOP, NULLHANDLE, Buffer, "", 0, MB_SYSTEMMODAL | MB_OK );
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
+            MessageBox( (HWND)NULL, Buffer,"", MB_SYSTEMMODAL | MB_OK );
+#endif
+        } else {
+#endif
+#if !defined( __UNIX__ )
+            setmode( fileno( stdout ), O_BINARY );
+#endif
+            rc = write( fileno( stdout ), buff, len );
+            if( ( rc < 0 ) && !console_flag) {
+#ifdef __NT__
+                // Since we could not write to stdout the first time
+                // we guess that this is a NT GUI
+                // hence we try to issue the output via the message box
+                // if the app is not default windowed
+                // also the stdout handle must be bad
+                if( (__FAppType == FAPP_CHARACTER_MODE) && (errno == EBADF) ) {
+                    // Change app type to GUI and initiate display process
+                    __FAppType = FAPP_GUI;
+                    StdBuffer();
+                    StdWrite( buff, len );
+                }
+#endif
+            }
+#if defined( __IS_WINDOWED__ )
+        }
+    }
+#endif
+    console_flag = 1;
 }
 
 
-ftnfile *_InitStandardInput( void ) {
-//=============================
+void    StdFlush( void ) {
+//==================
 
-    return( _SetStd( STANDARD_INPUT, ACTION_READ, SDTermIn, FStdIn ) );
+// Flush buffered lines of output.
+
+#if defined( __IS_WINDOWED__ )
+    uint        len;
+
+    if( __FAppType == FAPP_GUI ) {
+        len = BuffCursor - Buffer;
+        BuffCursor = NULL;
+        StdWrite( Buffer, len );
+    }
+#endif
 }
 
 
-ftnfile *_InitStandardOutput( void ) {
-//==============================
+void    StdWriteNL( char *buff, int len ) {
+//=========================================
 
-    return( _SetStd( STANDARD_OUTPUT, ACTION_WRITE, SDTermOut, FStdOut ) );
+// Write to STDOUT_FILENO.
+
+    StdWrite( buff, len );
+    StdWrite( NLSequence, strlen( NLSequence ) );
 }

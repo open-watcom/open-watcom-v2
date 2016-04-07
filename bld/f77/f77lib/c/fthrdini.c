@@ -37,11 +37,12 @@
 #elif defined( __NT__ )
   #include <windows.h>
 #endif
-#include "trcback.h"
 #include "fthread.h"
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "errcod.h"
+#include "fiosem.h"
+
 
 #if defined( __OS2__ )
 

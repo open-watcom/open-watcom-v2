@@ -159,7 +159,7 @@ static void resetFonts( DDEWndInfo *info )
 /*
  * hideHintBar - hide or show the hint status bar
  */
-static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide )
+static void hideHintBar( HWND hwnd, DDEWndInfo *info, bool hide )
 {
     HMENU               mh;
     RECT                area;
@@ -204,7 +204,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     unsigned            cmd;
     SIZE                sz;
     HWND                hinthwnd;
-    BOOL                alias_state;
+    bool                alias_state;
 
     info = (DDEWndInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {

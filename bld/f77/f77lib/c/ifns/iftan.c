@@ -50,10 +50,6 @@ single TAN( single arg ) {
     return( tan( arg ) );
 }
 
-#else
-
-extern  single          TAN(single);
-
 #endif
 
 

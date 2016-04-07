@@ -36,6 +36,12 @@
 #include <ctype.h>
 #include "spy.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam );
+WINEXPORT BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
 static BOOL     tmpSpyAll;
@@ -51,7 +57,7 @@ void ClearSelectedWindows( void )
 
 } /* ClearSelectedWindows */
 
-HWND *doAddSelectedWindow( HWND hwnd, HWND *list, WORD *cnt )
+static HWND *doAddSelectedWindow( HWND hwnd, HWND *list, WORD *cnt )
 {
     HWND        *ret;
 

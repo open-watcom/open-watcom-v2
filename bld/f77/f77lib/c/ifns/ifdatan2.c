@@ -50,10 +50,6 @@ double DATAN2( double arg1, double arg2 ) {
     return( atan2( arg1, arg2 ) );
 }
 
-#else
-
-extern  double          DATAN2(double,double);
-
 #endif
 
 

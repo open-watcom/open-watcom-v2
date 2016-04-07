@@ -30,16 +30,19 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "bool.h"
+#include "drwatcom.h"
 #include "regstr.h"
 #include "reglist.h"
-#include "drwatcom.h"
 #include "mem.h"
 #include <malloc.h>
 #include "bitman.h"
 #include "madcli.h"
 #include "regcrt.h"
+
+
+/* Local Window callback functions prototypes */
+WINEXPORT LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam);
+
 
 mad_registers * RegListGetMadRegisters( HWND list )
 {

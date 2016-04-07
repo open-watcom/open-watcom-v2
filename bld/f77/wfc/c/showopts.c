@@ -38,10 +38,10 @@
 #include "optflags.h"
 #include "cpopt.h"
 #include "inout.h"
+#include "showopts.h"
+#include "errutil.h"
 
 #include <string.h>
-
-extern  void                    MsgBuffer(uint,char *,...);
 
 extern  opt_entry       CompOptns[];
 

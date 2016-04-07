@@ -59,10 +59,6 @@ single COTAN( single arg ) {
     return( 1.0 / tangent );
 }
 
-#else
-
-extern  single          COTAN(single);
-
 #endif
 
 

@@ -28,15 +28,16 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "rterr.h"
 #include "rtenv.h"
 #include "errcod.h"
 #include "symdefs.h"
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 /* Forward declarations */
 static  void    SubscriptError( int dims, va_list args, char *name );

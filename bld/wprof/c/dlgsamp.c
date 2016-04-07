@@ -36,12 +36,11 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "msg.h"
+#include "dlgsamp.h"
+#include "utils.h"
+#include "wpdriver.h"
+
 #include "clibext.h"
-
-
-extern void OpenSample(void);
-extern void ReplaceExt(char *path,char *addext);
-extern void ErrorMsg(char *msg,... );
 
 
 extern char     SamplePath[_MAX_PATH];

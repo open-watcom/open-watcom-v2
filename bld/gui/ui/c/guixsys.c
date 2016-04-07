@@ -51,18 +51,14 @@
 #include "guizlist.h"
 #include "guistr.h"
 #include "guiextnm.h"
+#include "guiuiev.h"
+#include "guiev.h"
+#include "guixwind.h"
 
 #include "clibext.h"
 
 
 extern bool GUIMainTouched;
-
-extern EVENT GUIUIProcessEvent( EVENT );
-extern bool GUIIsInit( void );
-extern void GUIDoneEventProcessing( void );
-extern void GUIStartEventProcessing( void );
-
-gui_window      *GUICurrWnd     =       NULL;
 
 EVENT GUIAllEvents[] = {
     EV_FIRST_EVENT,     LAST_EVENT,
@@ -159,23 +155,23 @@ static void MainLoop( void )
 {
     bool        loadstrings_ok;
     bool        intstringtable_ok;
-    #ifdef __WINDOWS__
-        SAREA area;
-    #endif
+#ifdef __WINDOWS__
+    SAREA       area;
+#endif
 
     loadstrings_ok    = LoadStrings();
     intstringtable_ok = GUIInitInternalStringTable();
     if( loadstrings_ok  &&  intstringtable_ok ) {
         GUImain();
         if( GUIIsInit() ) {
-            #ifdef __WINDOWS__
-                area.row = 0;
-                area.col = 0;
-                area.width = UIData->width;
-                area.height = UIData->height;
-                uidirty( area );
-                uirefresh();
-            #endif
+#ifdef __WINDOWS__
+            area.row = 0;
+            area.col = 0;
+            area.width = UIData->width;
+            area.height = UIData->height;
+            uidirty( area );
+            uirefresh();
+#endif
 
             MessageLoop();
             GUICleanup();

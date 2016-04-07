@@ -43,19 +43,15 @@
 #include "cpopt.h"
 #include "cgflags.h"
 #include "emitobj.h"
+#include "tcmplx.h"
+#include "rstalloc.h"
+#include "cgformat.h"
+#include "cgmagic.h"
+#include "tdinit.h"
+#include "wf77auxd.h"
+#include "wf77aux.h"
+#include "fcgmain.h"
 
-extern  void            FreeNameList(sym_id);
-extern  void            FreeLocalLists(void);
-extern  void            FiniFormatList(void);
-extern  void            InitFormatList(void);
-extern  bool            TypeCmplx(TYPE);
-extern  label_id        NextLabel(void);
-extern  void            CGPurge(void);
-extern  void            FiniAuxInfo(void);
-extern  void            CGGenSub(void);
-extern  void            DefaultLibInfo(void);
-extern  void            SubAuxInit(void);
-extern  void            SubAuxFini(void);
 
 extern  cgflags_t       CGFlags;
 

@@ -41,6 +41,7 @@
 #include "wrselft.h"
 #include "iemem.h"
 
+
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768

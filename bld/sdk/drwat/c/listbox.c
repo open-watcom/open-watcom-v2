@@ -34,7 +34,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 
 #define MAX_LB_LINES            500
@@ -146,7 +145,7 @@ LBoxHdl *CreateListBox( HWND parent ) {
 /*
  * doLBPrintf - printf to a list box
  */
-int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
+static int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 {
     char        tmp[256];
     HDC         dc;

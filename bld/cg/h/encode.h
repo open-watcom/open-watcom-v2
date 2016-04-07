@@ -37,3 +37,6 @@ extern void CodeHandle( oc_class, obj_length, label_handle );
 extern void GenCondJump( instruction *ins );
 extern void GenJumpLabel( label_handle );
 extern void GenKillLabel( label_handle );
+
+extern byte CondCode( instruction * );
+extern void GenSetCC( instruction * );

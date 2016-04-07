@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "bool.h"
 #include "drwatcom.h"
 #include "savelbox.h"
 #include "mark.h"
@@ -47,7 +46,8 @@
 /*
  * MarkPrint - call back function for processing marks
  */
-void MarkPrint( char *str ) {
+static void MarkPrint( char *str )
+{
     LBStrPrintf( ListBox, str );
 }
 
@@ -73,7 +73,7 @@ static BOOL HandleDialogs( WORD wparam )
 /*
  * SaveExtra - save extra to file
  */
-void SaveExtra( FILE *f )
+static void SaveExtra( FILE *f )
 {
     time_t      tod;
 

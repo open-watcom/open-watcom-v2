@@ -36,10 +36,10 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 #include "insert.h"
+#include "rstutils.h"
+#include "rststruc.h"
 
 #include <string.h>
-
-extern  uint                    AllocName(uint);
 
 
 static  sym_id  AddStruct( char *name, int length ) {
@@ -154,7 +154,7 @@ static  sym_id  *Strut( sym_id *p_field, char *name, uint len ) {
         field = *p_field;
         if( field == NULL ) return( p_field );
         if( field->u.fd.typ == FT_UNION ) {
-	    q_field = NULL;
+            q_field = NULL;
             for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 q_field = Strut( &map->u.sd.fl.sym_fields, name, len );
                 if( *q_field != NULL ) {

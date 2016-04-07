@@ -40,12 +40,12 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "rscconst.h"
+#include "object.h"
+#include "axpenc.h"
 #include "feprotos.h"
 
 extern  uint_32         CountBits( uint_32 );
-extern  unsigned        DepthAlign( unsigned );
 extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
-extern  void            CodeLabel( label_handle, unsigned );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      *ParmRegs( void );
@@ -62,7 +62,6 @@ extern  void            OutFuncEnd( offset end );
 extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
 extern  hw_reg_set      FrameBaseReg(void);
 extern  byte            RegTrans(hw_reg_set);
-extern  void            GenCallLabelReg( label_handle lbl, uint reg );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            EmitFuncStart( label_handle cg_linenum );
@@ -589,8 +588,8 @@ extern  void    GenProlog( void )
 }
 
 
-extern  void    GenEpilog( void )
-/*******************************/
+void    GenEpilog( void )
+/***********************/
 {
     segment_id      old;
 

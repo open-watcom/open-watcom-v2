@@ -44,12 +44,10 @@
 #include "ferror.h"
 #include "insert.h"
 #include "utility.h"
-
-extern  sym_id          LkBCommon(void);
-extern  sym_id          LkCommon(void);
-extern  sym_id          LkSym(void);
-extern  com_eq          *STComEq(void);
-extern  void            ArrayDecl(sym_id);
+#include "proctbl.h"
+#include "rstalloc.h"
+#include "symtab.h"
+#include "declare.h"
 
 
 void    CpCommon(void) {

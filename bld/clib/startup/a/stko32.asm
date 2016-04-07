@@ -96,13 +96,13 @@ endif
 __STKOVERFLOW:
         pop     eax                     ; pop the stack
 ifdef __STACK__
-        push    1                       ; ...
-        push    offset msg              ; print the error message
+        push    1                       ; exit code
+        push    offset msg              ; the error message
 else
-        mov     eax,offset msg          ; print the error message
-        mov     edx,1                   ; ...
+        mov     eax,offset msg          ; the error message
+        mov     edx,1                   ; exit code
 endif
-        call    __fatal_runtime_error   ; ...
+        jmp     __fatal_runtime_error   ; display msg and exit
         endproc __STK
 
 

@@ -40,14 +40,14 @@
 #include "sampinfo.h"
 #include "memutil.h"
 #include "clibext.h"
+#include "getsamps.h"
+#include "madinter.h"
+#include "setsamps.h"
+#include "support.h"
+#include "utils.h"
 
 
 extern void ClearSample(sio_data *curr_sio);
-extern size_t BigRead( int, void *, size_t );
-extern void ErrorMsg(char *msg,... );
-extern void SetSampleInfo(sio_data *curr_sio);
-extern bool LoadImageOverlays(void );
-extern void SetCurrentMAD( dig_mad );
 
 extern char             SamplePath[];
 extern system_config    DefSysConfig;

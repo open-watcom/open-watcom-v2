@@ -502,13 +502,13 @@ prepare_wgml_opts : .PROCEDURE
 # layout setting
 #
 !ifeq hbook f77lr
-    @%append $(wgml_optfile) ( file nbpsshad
+    @%append $(wgml_optfile) ( file nbpsshad.opt
 !else ifeq hbook clr
-    @%append $(wgml_optfile) ( file nbpsshad
+    @%append $(wgml_optfile) ( file nbpsshad.opt
 !else ifeq hbook wgmlref
-    @%append $(wgml_optfile) ( file wbrfman
+    @%append $(wgml_optfile) ( file wbrfman.opt
 !else
-    @%append $(wgml_optfile) ( file nb7x9ps
+    @%append $(wgml_optfile) ( file nb7x9ps.opt
 !endif
 #
 # change output format to 8.5x11i
@@ -540,7 +540,7 @@ prepare_wgml_opts : .PROCEDURE
 #
 # output format
 #
-    @%append $(wgml_optfile) ( output (t:100)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (text:100)$(wgml_tmpfile)
 #
 # common setting
 #
@@ -560,10 +560,10 @@ prepare_wgml_opts : .PROCEDURE
 #
 # common setting
 #
-    @%append $(wgml_optfile) ( file whelp
+    @%append $(wgml_optfile) ( file whelp.opt
     @%append $(wgml_optfile) ( passes 2
     @%append $(wgml_optfile) ( setsymbol dohelp 1
-    @%append $(wgml_optfile) ( output (t:2200)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (text:2200)$(wgml_tmpfile)
     @%append $(wgml_optfile) ( setsymbol dotarget $(wgml_target)
 # add default windowing for NT
 #    @%append $(wgml_optfile) ( setsymbol defwinnt 1

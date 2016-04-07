@@ -28,12 +28,17 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
+#include "fio.h"
+#include "posput.h"
+#include "poserr.h"
+#include "postrunc.h"
 
-void    FTruncate( b_file *io ) {
+
+void    FTruncate( b_file *io )
 // Truncate a file.
-
+{
     IOOk( io );
     ChopFile( io );
 }

@@ -38,24 +38,18 @@
 #include "rtconst.h"
 #include "symbol.h"
 #include "wf77cg.h"
+#include "wf77auxd.h"
 #include "wf77defs.h"
 #include "falloc.h"
+#include "fcjmptab.h"
+#include "fcstruct.h"
+#include "fcsubscr.h"
+#include "fcgmain.h"
+#include "fcrtns.h"
+#include "fcstack.h"
 #include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
-
-extern  call_handle     InitCall(RTCODE);
-extern  cg_name         XPop(void);
-extern  cg_name         XPopValue(cg_type);
-extern  cg_name         StructRef(cg_name,int);
-extern  void            FCodeSequence(void);
-extern  void            SymPush(sym_id);
-extern  sym_id          SymPop(void);
-extern  void            XPush(cg_name);
-extern  cg_name         SymAddr(sym_id);
-extern  cg_type         ArrayPtrType(sym_id);
-extern  cg_name         GetAdv(sym_id);
 
 
 #if _CPU == 8086 || _CPU == 386

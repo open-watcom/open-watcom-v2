@@ -31,7 +31,7 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "cgdefs.h"
+#include "wf77defs.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "cgswitch.h"
@@ -42,41 +42,31 @@
 #include "cgflags.h"
 #include "wf77segs.h"
 #include "wf77labe.h"
+#include "wf77auxd.h"
+#include "wf77info.h"
 #include "compcfg.h"
 #include "emitobj.h"
+#include "fcflow.h"
+#include "fcsyms.h"
+#include "tmpdefs.h"
+#include "fctemp.h"
+#include "fcgmain.h"
+#include "rtconst.h"
+#include "fcrtns.h"
+#include "inline.h"
+#include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "cgcli.h"
 
-#include <stdarg.h>
 
-
-extern  void            InitSegs(void);
-extern  void            AllocSegs(void);
-extern  void            FiniSegs(void);
-extern  void            DefTypes(void);
-extern  void            DefStructs(void);
 extern  void            FreeGlobalSegs(void);
-extern  void            InitStack(void);
-extern  void            InitRtRtns(void);
-extern  void            FreeRtRtns(void);
-extern  void            InitInlinePragmas(void);
-extern  void            FreeInlinePragmas(void);
-extern  void            InitLabels(void);
-extern  void            FiniLabels(int);
-extern  void            FreeGlobalData(void);
-extern  void            FreeUsedBacks(bool);
-extern  void            InitTmps(void);
-extern  void            FiniTmps(void);
-extern  void            InitSubSegs(void);
-extern  char            *GetFullSrcName(void);
 
 extern  void            (* __FAR FCJmpTab[])(void);
 
 /* Forward declarations */
 static  void    CGStart( void );
 static  void    InitCG( void );
-void    FCodeSequence( void );
 
 
 cgflags_t               CGFlags = { 0 };

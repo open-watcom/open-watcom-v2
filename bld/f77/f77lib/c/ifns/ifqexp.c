@@ -50,10 +50,6 @@ extended QEXP( extended arg ) {
     return( exp( arg ) );
 }
 
-#else
-
-extern  extended                QEXP(extended);
-
 #endif
 
 
