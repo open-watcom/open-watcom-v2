@@ -44,12 +44,11 @@
 #include "trptypes.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
-#include "guigmous.h"
-#include "guiwin.h"
 #include "wndsys.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
+#include "guigsysh.h"
 
 
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);

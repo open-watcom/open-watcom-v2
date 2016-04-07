@@ -37,13 +37,13 @@
 #include "dbgwind.h"
 #include "dosscrn.h"
 #include "dbgscrn.h"
-#include "guiwin.h"
 #include "dbgcmdln.h"
 #include "wndsys.h"
 #include "trpsys.h"
 #include "dbglkup.h"
 #include "dbginit.h"
 #include "wininit.h"
+#include "guigsysh.h"
 
 
 extern a_window         *WndMain;

@@ -37,11 +37,12 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgscrn.h"
-#include "guiwin.h"
 #include "dbgmain.h"
 #include "wndsys.h"
 #include "trpsys.h"
 #include "dbginit.h"
+#include "guigsysh.h"
+
 
 extern a_window *WndMain;
 
