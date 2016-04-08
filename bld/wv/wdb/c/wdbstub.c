@@ -105,7 +105,7 @@ Done:
 #include "dbgwintr.h"
 
 /**************************************************/
-TODO! review all these prototypes declaration if they are local(static) or external
+/* TODO! review all these prototypes declaration if they are local(static) or external */
 
 void ShowDebuggerPrompt( void );
 void ShowDebuggerError( const char *error_str );

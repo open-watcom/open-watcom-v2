@@ -63,7 +63,7 @@
 
 
 /*********************************************/
-TODO! review all these prototypes declaration if they are local(static) or external
+/* TODO! review all these prototypes declaration if they are local(static) or external */
 
 bool DlgNewWithSym( const char *title, char *buff, int buff_len );
 bool DlgUpTheStack( void );
