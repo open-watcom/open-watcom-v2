@@ -35,6 +35,9 @@
 #include "dfld.h"
 #include "dfcue.h"
 #include "dfmod.h"
+#include "dfmisc.h"
+
+
 /*
    Misc. stuff.
 */
