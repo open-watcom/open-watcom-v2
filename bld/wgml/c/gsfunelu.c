@@ -128,7 +128,7 @@ char    *scr_single_func_l( char * in, char * end, char * * result )
 /*                       subscript or superscript is coded in parm fun     */
 /***************************************************************************/
 
-char    *scr_single_func_sS( char * in, char * end, char * * result, char fun )
+static char    *scr_single_func_sS( char * in, char * end, char * * result, char fun )
 {
     char            *   pchar;
     sub_index           var_ind;

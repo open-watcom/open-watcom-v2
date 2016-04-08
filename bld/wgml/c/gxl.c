@@ -357,7 +357,7 @@ void    gml_ul( gml_tag gtag )
 /*  common :eXXX processing                                                */
 /***************************************************************************/
 
-void    gml_exl_common( gml_tag egtag )
+static void    gml_exl_common( gml_tag egtag )
 {
     char    *   p;
     tag_cb  *   wk;
