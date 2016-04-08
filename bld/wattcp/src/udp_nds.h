@@ -6,6 +6,7 @@ extern int   isaddr   (const char *text);
 extern void  psocket  (const tcp_Socket *s);
 extern int   priv_addr(DWORD ip);
 
+extern DWORD aton_dotless   (const char *str);
 extern int   isaddr_dotless (const char *text, DWORD *ip);
 
 #endif

@@ -6,11 +6,11 @@
 #include "language.h"
 #include "strings.h"
 #include "pctcp.h"
+#include "netback.h"
 #include "wdpmi.h"
 
 #define TIMER_INTR 8
 #define STK_SIZE   1024
-
 
 #if (DOSX)
   void backgroundon (void)

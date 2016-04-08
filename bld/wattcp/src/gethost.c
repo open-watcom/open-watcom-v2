@@ -92,7 +92,7 @@ static __inline struct hostent *FillHostEnt (const _hostent *h)
   ret.h_addr_list = list;
   h_errno         = NETDB_SUCCESS;
   return (&ret);
-}                          
+}
 
 /*
  * Modify an expired cached entry or create a new node to
@@ -471,7 +471,7 @@ void endhostent (void)
   struct _hostent *h, *next = NULL;
 
   if (!netdb_init() || !hostFile)
-     return;   
+     return;
 
   free (hostFname);
   fclose (hostFile);
@@ -487,7 +487,7 @@ void endhostent (void)
   }
   host0 = NULL;
   hostClose = 1;
-}                          
+}
 
 #endif /* USE_BSD_FUNC */
 
@@ -500,7 +500,7 @@ u_long gethostid (void)
   return htonl (my_ip_addr);
 }
 
-u_long sethostid (DWORD ip)
+u_long sethostid (u_long ip)
 {
   return (my_ip_addr = ntohl(ip));
 }
@@ -545,7 +545,7 @@ static __inline int getresult (sock_type *s, char *name)
 {
   answer_t a;
   struct   rrpart *rr;
-  char    *c;    
+  char    *c;
   int      len = sock_fastread (s, (BYTE*)&a, sizeof(a));
 
   if (len < sizeof(struct dhead) ||

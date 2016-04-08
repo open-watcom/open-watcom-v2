@@ -118,7 +118,7 @@ static DWORD clockbits (void)
  *       1.19318 MHz (4.77/4). System tick count (hi) counts up.
  *       Fraction 11/13125 gives us a milli-sec rate count.
  */
-DWORD millisec_clock (void)
+static DWORD millisec_clock (void)
 {
   DWORD hi, lo;
   do

@@ -148,7 +148,7 @@ void _add_server (WORD *counter, WORD max, DWORD *array, DWORD value)
  * E.g. if environment variable ETC is "c:\network\watt\bin",
  * "$(ETC)\hosts" becomes "c:\network\watt\bin\hosts"
  */
-const char *ExpandVarStr (const char *str)
+static const char *ExpandVarStr (const char *str)
 {
   static char buf[MAX_PATHLEN];
   char   env[30];
@@ -384,7 +384,7 @@ static void do_include_file (const char *value, int len)
     /* Recursion, but we're reentrant.
      * !!Fix-me: recursion depth should be limited to prevent stack overflow
      */
-    tcp_config (p); 
+    tcp_config (p);
   }
   else if (*value != '?')
   {

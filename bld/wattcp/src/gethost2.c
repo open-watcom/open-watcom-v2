@@ -120,7 +120,7 @@ static __inline struct hostent *FillHostEnt (struct _hostent *h)
   ret.h_addr_list = list;
   h_errno         = NETDB_SUCCESS;
   return (&ret);
-}                          
+}
 
 /*
  * return the next (non-commented) line from the host-file
@@ -240,7 +240,7 @@ struct hostent *gethostbyname (const char *name)
 
   /* interrupted by _resolve_hook()
    */
-  if (_resolve_exit)    
+  if (_resolve_exit)
   {
     free (ret.h_name);
     h_errno = NETDB_INTERNAL;
@@ -361,7 +361,7 @@ void endhostent (void)
     free_nodes (host_root);
   }
   hostClose = 1;
-}                          
+}
 
 /*------------------------------------------------------------------*/
 
@@ -370,7 +370,7 @@ u_long gethostid (void)
   return htonl (my_ip_addr);
 }
 
-u_long sethostid (DWORD ip)
+u_long sethostid (u_long ip)
 {
   return (my_ip_addr = ntohl(ip));
 }
@@ -415,7 +415,7 @@ static __inline int getresult (udp_Socket *s, char *name)
 {
   answer_t a;
   struct   rrpart *rr;
-  char    *c;    
+  char    *c;
   int      len = sock_fastread ((sock_type*)s, (BYTE*)&a, sizeof(a));
 
   if (len < sizeof(struct dhead) ||

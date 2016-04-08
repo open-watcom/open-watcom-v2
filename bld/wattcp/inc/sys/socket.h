@@ -279,6 +279,7 @@ extern  int    recv (int, void *, int, int);
 extern  int    recvfrom (int, void *, int, int, struct sockaddr *, int *);
 extern  int    send (int, const void *, int, int);
 extern  int    sendto (int, const void *, int, int, const struct sockaddr *, int);
+extern  u_long sethostid (u_long);
 extern  int    setsockopt (int, int, int, const void *, int);
 extern  int    shutdown (int, int);
 extern  int    socket (int, int, int);

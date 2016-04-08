@@ -15,6 +15,7 @@
 #include "wattcp.h"
 #include "wdpmi.h"
 #include "misc.h"
+#include "country.h"
 
 char _country_info[35];
 
@@ -61,7 +62,7 @@ int GetCountryCode (void)
 
     if (_watt_dosTbSize < sizeof(_country_info))
        return (0);
- 
+
     reg.x.edx = 0;
     sreg.ds   = _watt_dosTbSeg;
     reg.x.eax = 0x3800;
@@ -78,7 +79,7 @@ int GetCountryCode (void)
 #elif (DOSX == 0)        /* real-mode */
     union  REGS  reg;
     struct SREGS sreg;
- 
+
     reg.x.dx = FP_OFF (_country_info);
     sreg.ds  = FP_SEG (_country_info);
     reg.x.ax = 0x3800;
