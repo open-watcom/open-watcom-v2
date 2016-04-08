@@ -50,6 +50,7 @@
 #include "mthread.h"
 #include "trdlstac.h"
 #include "wprelude.h"
+#include "getds.h"
 
 
 #define MAX_CMDLINE     500
@@ -339,14 +340,14 @@ extern void __VersionEnforcement( void )
 }
 #endif
 
-_NORETURN extern void __exit( unsigned rc )
+_NORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
     _exit( rc );
     // never return
 }
 
-extern unsigned short __GETDS( void )
+unsigned short __GETDS( void )
 {
     return( _saved_DS );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,24 +29,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <i86.h>
-#include "rtinit.h"
-#include "getds.h"
-
-static unsigned short __saved_ds;
-
-extern void __load_ds( void );
-#pragma aux __load_ds = "mov ds, cs:__saved_ds";
-
-void __GETDS( void )
-{
-    __load_ds();
-}
-
-static void __save_ds( void )
-{
-    __saved_ds = FP_SEG( &__saved_ds );
-}
-
-AXI( __save_ds, INIT_PRIORITY_RUNTIME );
+#ifdef __NETWARE__
+extern unsigned short __GETDS( void );
+#else
+extern void _WCI86NEAR __GETDS( void );
+#endif
+#ifdef _M_IX86
+#pragma aux __GETDS "*";
+#endif
