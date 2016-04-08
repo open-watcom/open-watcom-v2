@@ -30,7 +30,13 @@
 
 
 #include <sys/types.h>
+#ifdef __UNIX__
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#else
 #include <direct.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,16 +64,16 @@
     wchar_t                     TmpFilePrefix[256];
     #define MBYTE_NAMES
 #else
-    #define _tDIR               struct dirent
+    #define _tDIR               DIR
 #ifdef __RDOS__
     #define TMPDIR              "tmpdir"
     #define TMPDIRNAME          "tmpdir"
     #define TMPFILEPREFIX       "tmpfile"
-#else    
+#else
     #define TMPDIR              "_T_M_P_"
     #define TMPDIRNAME          "_T_M_P_"
     #define TMPFILEPREFIX       "_TMPFILE"
-#endif    
+#endif
 #endif
 
 #define NUM_OPEN        5
@@ -93,7 +99,7 @@ void main( int argc, char *argv[] )
     int                 ctr;
     FILE                *fp;
     _tDIR               *dirp;
-    _tDIR               *direntp;
+    struct dirent       *direntp;
     unsigned            checkbits = 0;
     unsigned            save_checkbits;
 
@@ -113,7 +119,10 @@ void main( int argc, char *argv[] )
     VERIFY( __F_NAME(getcwd,_wgetcwd)( buffer, 256 ) != NULL );
     VERIFY( __F_NAME(strcmp,wcscmp)( buffer, cwd ) == 0 );
     free( cwd );
+#ifdef __UNIX__
+#else
     VERIFY( __F_NAME(mkdir,_wmkdir)( TMPDIR ) == 0 );
+#endif
     VERIFY( __F_NAME(chdir,_wchdir)( TMPDIR ) == 0 );
     VERIFY( ( cwd = __F_NAME(getcwd,_wgetcwd)( NULL, 0 ) ) != NULL );
     if( buffer[__F_NAME(strlen,wcslen)(buffer)-1] != '\\' ) {
