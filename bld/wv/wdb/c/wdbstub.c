@@ -1355,10 +1355,6 @@ bool ProcessDebuggerCmd( char *cmd )
     return( true );
 }
 
-void WndMemInit( void )
-{
-}
-
 unsigned DUIConfigScreen( void )
 {
     return( 0 );

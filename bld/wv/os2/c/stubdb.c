@@ -75,10 +75,6 @@ extern stack_entry      *ExprSP;
 unsigned                NumLines;
 unsigned                NumColumns;
 
-void WndMemInit( void )
-{
-}
-
 unsigned DUIConfigScreen( void )
 {
     return( 0 );

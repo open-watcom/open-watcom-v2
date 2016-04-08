@@ -70,10 +70,6 @@ static char             *CmdData;
 static bool             Done;
 
 
-void WndMemInit( void )
-{
-}
-
 unsigned DUIConfigScreen( void )
 {
     return( 0 );

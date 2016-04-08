@@ -83,7 +83,6 @@ extern void             ProcAccel( void );
 extern void             ProcCapture( void );
 extern void             RestoreHandlers( void );
 extern void             Suicide( void );
-extern void             WndMemInit( void );
 
 extern int              ScanSavePtr;
 
@@ -307,7 +306,6 @@ void DebugMain( void )
 
     GrabHandlers();
     SysFileInit();
-    WndMemInit();
     InitLiterals();
     InitLocalInfo();
     ProcCmd();
