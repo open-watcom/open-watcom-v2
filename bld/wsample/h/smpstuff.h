@@ -29,8 +29,18 @@
 ****************************************************************************/
 
 
+#if defined( __DOS__ ) && !defined( _RSI ) && !defined( _PLS )
+#define REPORT_TYPE __interrupt
+#else
+#define REPORT_TYPE
+#endif
+
 typedef unsigned short seg;
-#include "offset.h"
+#ifdef SHORT_OFF
+typedef unsigned short off;
+#else
+typedef unsigned long off;
+#endif
 
 typedef struct {
     off         offset;

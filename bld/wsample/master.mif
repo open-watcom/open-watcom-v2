@@ -54,16 +54,16 @@ objs_linux_x64  = samplnx.obj sysinit.obj sampexe.obj lnxutl.obj
 objs = $(objs_$(target)_$(host_cpu)) sample.obj sampdata.obj io.obj sysio.obj wmsg.obj
 
 !ifneq bootstrap 1
-report_type_dos_dos =__interrupt
 far_ptr_dos_dos =__far
 far_ptr_dos_rsi =__far
 far_ptr_win_win =__far
 !endif
-extra_cpp_flags =-DREPORT_TYPE=$(report_type_$(host_os)_$(target))
-extra_cpp_flags += -DFAR_PTR=$(far_ptr_$(host_os)_$(target))
+extra_cpp_flags = -DFAR_PTR=$(far_ptr_$(host_os)_$(target))
 
 !ifeq target pls
 extra_cpp_flags_dos =-D_PLS
+!else ifeq target rsi
+extra_cpp_flags_dos =-D_RSI
 !endif
 
 !ifeq target dos
@@ -138,7 +138,7 @@ inc_dirs = -I"../h" -I"$(dig_dir)/h"
 !endif
 .c: .;../c
 !ifeq target pls
-.c: $(plslib)
+.c: $(plsdir)
 !endif
 
 .asm: ../asm

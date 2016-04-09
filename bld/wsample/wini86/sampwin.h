@@ -96,7 +96,6 @@ extern HANDLE                   WaitForInt1;
 
 /* somewhere in the common part of the sampler */
 extern int sample_main( char __far * );
-extern void REPORT_TYPE report( void );
 extern void             SaveSamples( void );
 extern int              SampWrite( void FAR_PTR *, unsigned );
 extern void             WriteCodeLoad( seg_offset, char *, samp_block_kinds );
