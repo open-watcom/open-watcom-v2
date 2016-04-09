@@ -82,6 +82,7 @@ void Output( char FAR_PTR *str )
 {
     char FAR_PTR *p = str;
     int len = 0;
-    while( *p++ ) ++len;
+    while( *p++ )
+        ++len;
     SysWrite( 2, str, len );
 }

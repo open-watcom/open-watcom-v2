@@ -70,12 +70,13 @@ static char __near      Stack[STACK_SIZE];
 
 unsigned NextThread( unsigned tid )
 {
-    if( tid == MaxThread ) return( 0 );
-    Samples = SamplesP[ tid ];
-    SampleIndex = SampleIndexP[ tid ];
+    if( tid == MaxThread )
+        return( 0 );
+    Samples = SamplesP[tid];
+    SampleIndex = SampleIndexP[tid];
     if( CallGraphMode ) {
-        CallGraph = CallGraphP[ tid ];
-        SampleCount = SampleCountP[ tid ];
+        CallGraph = CallGraphP[tid];
+        SampleCount = SampleCountP[tid];
     }
     return( tid+1 );
 }
@@ -97,7 +98,7 @@ unsigned long TimerRate( void )
 
 unsigned SafeMargin( void )
 {
-    return( Ceiling-10 );
+    return( Ceiling - 10 );
 }
 
 #define EXE_LX  0x584c
@@ -111,15 +112,22 @@ static int IsLX( void )
     unsigned_16         flags;
 
     f = open( ExeName, O_BINARY | O_RDONLY );
-    if( f == -1 ) return( 0 );
-    if( lseek( f, 0x3c, SEEK_SET ) != 0x3c ) return( 0 );
-    if( read( f, &offset, sizeof( offset ) ) != sizeof( offset ) ) return( 0 );
-    if( lseek( f, offset, SEEK_SET ) != offset ) return( 0 );
-    if( read( f, &sig, sizeof( sig ) ) != sizeof( sig ) ) return( 0 );
+    if( f == -1 )
+        return( 0 );
+    if( lseek( f, 0x3c, SEEK_SET ) != 0x3c )
+        return( 0 );
+    if( read( f, &offset, sizeof( offset ) ) != sizeof( offset ) )
+        return( 0 );
+    if( lseek( f, offset, SEEK_SET ) != offset )
+        return( 0 );
+    if( read( f, &sig, sizeof( sig ) ) != sizeof( sig ) )
+        return( 0 );
     if( sig == EXE_NE ) {
         offset += 12;
-        if( lseek( f, offset, SEEK_SET ) != offset ) return( 0 );
-        if( read( f, &flags, sizeof(flags) ) != sizeof(flags) ) return( 0 );
+        if( lseek( f, offset, SEEK_SET ) != offset )
+            return( 0 );
+        if( read( f, &flags, sizeof( flags ) ) != sizeof( flags ) )
+            return( 0 );
         if( (flags & 0x0300) == 0x0300 ) {
             /* PM app */
             NewSession = 1;
@@ -131,7 +139,7 @@ static int IsLX( void )
 
 static void InternalError( char * str )
 {
-    Output( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
     Output( str );
     Output( "\r\n" );
     _exit( -1 );
@@ -151,14 +159,12 @@ int VersionCheck( void )
 
     DosGetVersion( &OSVer );
     if( OSVer >= 0x1400 && IsLX() ) {
-        if( DosSearchPath( 0x0003, "PATH", OS22SAMPLER,
-                    UtilBuff, sizeof( UtilBuff ) ) ) {
-            InternalError( MsgArray[MSG_SAMPLE_8-ERR_FIRST_MESSAGE] );
-                    }
+        if( DosSearchPath( 0x0003, "PATH", OS22SAMPLER, UtilBuff, sizeof( UtilBuff ) ) ) {
+            InternalError( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
+        }
         DosGetEnv( &env_sel, &cmd_off );
-        if( DosExecPgm( NULL, 0, EXEC_ASYNC, MK_FP( env_sel, cmd_off ),
-                   NULL, &res, UtilBuff ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_9-ERR_FIRST_MESSAGE] );
+        if( DosExecPgm( NULL, 0, EXEC_ASYNC, MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
+            InternalError( MsgArray[MSG_SAMPLE_9 - ERR_FIRST_MESSAGE] );
         }
         _exit( 0 );
     }
@@ -170,19 +176,19 @@ static void GrowArrays( unsigned tid )
     unsigned    max;
 
     max = MaxThread;
-    SamplesP = realloc( SamplesP, tid*sizeof( void * ) );
-    SampleIndexP = realloc( SampleIndexP, tid*sizeof( void * ) );
+    SamplesP = realloc( SamplesP, tid * sizeof( void * ) );
+    SampleIndexP = realloc( SampleIndexP, tid * sizeof( void * ) );
     if( CallGraphMode ) {
-        CallGraphP = realloc( CallGraphP, tid*sizeof( void * ) );
-        SampleCountP = realloc( SampleCountP, tid*sizeof( void * ) );
+        CallGraphP = realloc( CallGraphP, tid * sizeof( void * ) );
+        SampleCountP = realloc( SampleCountP, tid * sizeof( void * ) );
     }
     while( max < tid ) {
-        AllocSamples( max+1 );
-        SamplesP[ max ] = Samples;
-        SampleIndexP[ max ] = SampleIndex;
+        AllocSamples( max + 1 );
+        SamplesP[max] = Samples;
+        SampleIndexP[max] = SampleIndex;
         if( CallGraphMode ) {
-            CallGraphP[ max ] = CallGraph;
-            SampleCountP[ max ] = SampleCount;
+            CallGraphP[max] = CallGraph;
+            SampleCountP[max] = SampleCount;
         }
         ++max;
     }
@@ -191,44 +197,44 @@ static void GrowArrays( unsigned tid )
 
 void RecordSample( unsigned offset, unsigned short segment, USHORT tid )
 {
-    samp_block FAR_PTR *old_samples;
-    unsigned old_sample_index;
-    unsigned old_sample_count;
+    samp_block  FAR_PTR *old_samples;
+    unsigned    old_sample_index;
+    unsigned    old_sample_count;
 
     if( tid > MaxThread ) {
         GrowArrays( tid );
     }
     --tid;
-    LastSampleIndex = SampleIndexP[ tid ];
-    if( SampleIndexP[ tid ] == 0 ) {
-        SamplesP[ tid ]->pref.tick = CurrTick;
+    LastSampleIndex = SampleIndexP[tid];
+    if( SampleIndexP[tid] == 0 ) {
+        SamplesP[tid]->pref.tick = CurrTick;
         if( CallGraphMode ) {
-            CallGraphP[ tid ]->pref.tick = CurrTick;
+            CallGraphP[tid]->pref.tick = CurrTick;
         }
     }
     ++CurrTick;
-    SamplesP[ tid ]->d.sample.sample[ SampleIndexP[ tid ] ].offset = offset;
-    SamplesP[ tid ]->d.sample.sample[ SampleIndexP[ tid ] ].segment = segment;
-    SampleIndexP[ tid ]++;
+    SamplesP[tid]->d.sample.sample[SampleIndexP[tid]].offset = offset;
+    SamplesP[tid]->d.sample.sample[SampleIndexP[tid]].segment = segment;
+    SampleIndexP[tid]++;
     if( CallGraphMode ) {
-        SampleCountP[ tid ]++;
+        SampleCountP[tid]++;
     }
     if( CallGraphMode && tid == 0 ) {
         old_sample_count = SampleCount;
         old_samples = Samples;                  /* since RecordCGraph isn't */
         old_sample_index = SampleIndex;         /* used to threads, we fool */
-        Samples = SamplesP[ tid ];              /* it into storing the info */
-        SampleIndex = SampleIndexP[ tid ];      /* in the right place by    */
-        SampleCount = SampleCountP[ tid ];
+        Samples = SamplesP[tid];              /* it into storing the info */
+        SampleIndex = SampleIndexP[tid];      /* in the right place by    */
+        SampleCount = SampleCountP[tid];
         RecordCGraph();                         /* changing its pointers    */
-        SamplesP[ tid ] = Samples;              /* and restoring them later */
-        SampleIndexP[ tid ] = SampleIndex;
-        SampleCountP[ tid ] = SampleCount;
+        SamplesP[tid] = Samples;              /* and restoring them later */
+        SampleIndexP[tid] = SampleIndex;
+        SampleCountP[tid] = SampleCount;
         Samples = old_samples;
         SampleIndex = old_sample_index;
         SampleCount = old_sample_count;
     }
-    if( SampleIndexP[ tid ] >= Margin ) {
+    if( SampleIndexP[tid] >= Margin ) {
         StopAndSave();
     }
 }
@@ -247,7 +253,7 @@ static void readMemory( seg_offset *from, int size, char *to )
         DosPTrace( &mybuff );
         size--;
         mybuff.offv--;
-        to[ size ] = mybuff.value;
+        to[size] = mybuff.value;
     }
 }
 
@@ -262,7 +268,7 @@ static void writeMemory( seg_offset *to, int size, char *from )
     mybuff.offv = to->offset + size - 1;
     while( size ) {
         size--;
-        mybuff.value = from[ size ];
+        mybuff.value = from[size];
         mybuff.cmd = PT_CMD_WRITE_MEM_D;
         DosPTrace( &mybuff );
         mybuff.offv--;
@@ -280,7 +286,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;       /* don't record this sample */
     } else {
-        readMemory( &CommonAddr, sizeof( Comm ), (char *) &Comm );
+        readMemory( &CommonAddr, sizeof( Comm ), (char *)&Comm );
     }
 }
 
@@ -290,7 +296,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         CommonAddr.offset += 9;
-        writeMemory( &CommonAddr, 4, (char *) &Comm.pop_no );
+        writeMemory( &CommonAddr, 4, (char *)&Comm.pop_no );
         CommonAddr.offset -= 9;
     }
 }
@@ -310,7 +316,7 @@ void GetNextAddr( void )
     } else {
         addr.segment = FP_SEG( Comm.cgraph_top );
         addr.offset = FP_OFF( Comm.cgraph_top );
-        readMemory( &addr, sizeof( stack_entry ), (char *) &stack_entry );
+        readMemory( &addr, sizeof( stack_entry ), (char *)&stack_entry );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -335,8 +341,10 @@ static void CodeLoad( TRACEBUF FAR_PTR *buff, USHORT mte,
     for( i = 1;; ++i ) {
         buff->cmd = PT_CMD_SEG_TO_SEL;
         buff->value = i;
-        if( DosPTrace( buff ) != 0 ) break;
-        if( buff->cmd != PT_RET_SUCCESS ) break;
+        if( DosPTrace( buff ) != 0 )
+            break;
+        if( buff->cmd != PT_RET_SUCCESS )
+            break;
         WriteAddrMap( i, buff->value, 0 );
     }
 }
@@ -349,7 +357,7 @@ USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
     USHORT      rv;
     USHORT      offv;
     USHORT      segv;
-    char        name[ BUFF_SIZE ];
+    char        name[BUFF_SIZE];
 
     cmd = buff->cmd;
     value = buff->value;
@@ -357,8 +365,10 @@ USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
     offv = buff->offv;
     for( ;; ) {
         rv = DosPTrace( buff );
-        if( MainMod == 0 ) MainMod = buff->mte;
-        if( buff->cmd != PT_RET_LIB_LOADED ) return( rv );
+        if( MainMod == 0 )
+            MainMod = buff->mte;
+        if( buff->cmd != PT_RET_LIB_LOADED )
+            return( rv );
         buff->cmd = PT_CMD_GET_LIB_NAME;
         buff->segv = FP_SEG( name );
         buff->offv = FP_OFF( name );
@@ -435,11 +445,11 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.PgmHandle = 0;
         start.PgmControl = 0;
         if( DosStartSession( (void __far *)&start, &SID, &Pid ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
         }
     } else {
         if( DosExecPgm( NULL, 0, EXEC_TRACE, cmd, NULL, &res, cmd ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+            InternalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
         }
         Pid = res.codeTerminate;
     }
@@ -479,7 +489,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         ++dst;
         len = BUFF_SIZE - ( dst - UtilBuff );
         DosQCurDir( drive, (PBYTE)dst, &len );
-        dst[ -1 ] = '\\';
+        dst[-1] = '\\';
         if( *dst == '\\' || *dst == '\0' ) {
             *dst = '\0';
         } else {
@@ -496,7 +506,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     dst += strlen( dst );
     *++dst = '\0';      /* Need two nulls at end */
     LoadProg( UtilBuff, cmd_tail );
-    Output( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+    Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
     Output( UtilBuff );
     Output( "\r\n" );
     Buff.pid = Pid;
@@ -508,20 +518,20 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         CodeLoad( &Buff, MainMod, ExeName, SAMP_MAIN_LOAD );
     }
     InitialCS = Buff.u.r.CS;
-    rc = DosCreateThread( Sleeper, (PUSHORT)&tid, Stack+STACK_SIZE );
+    rc = DosCreateThread( Sleeper, (PUSHORT)&tid, Stack + STACK_SIZE );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_4-ERR_FIRST_MESSAGE] );
+        InternalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
     }
     rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
     if( rc != 0 ) {
-        InternalError( MsgArray[MSG_SAMPLE_5-ERR_FIRST_MESSAGE] );
+        InternalError( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
     }
     Buff.pid = Pid;
     Buff.tid = 1;
     for( ;; ) {
         Buff.cmd = PT_CMD_GO;
         if( LibLoadPTrace( &Buff ) != 0 ) {
-            InternalError( MsgArray[MSG_SAMPLE_7-ERR_FIRST_MESSAGE] );
+            InternalError( MsgArray[MSG_SAMPLE_7 - ERR_FIRST_MESSAGE] );
         }
         if( Buff.cmd == PT_RET_BREAK && Buff.u.r.DX != 0 ) {    /* a mark */
             len = 0;
@@ -530,10 +540,13 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             for( ;; ) {
                 Buff.cmd = PT_CMD_READ_MEM_D;
                 DosPTrace( &Buff );
-                buff[ len ] = Buff.value;
-                if( Buff.cmd != PT_RET_SUCCESS ) buff[ len ] = '\0';
-                if( len == BSIZE ) buff[ len ] = '\0';
-                if( buff[ len ] == '\0' ) break;
+                buff[len] = Buff.value;
+                if( Buff.cmd != PT_RET_SUCCESS )
+                    buff[len] = '\0';
+                if( len == BSIZE )
+                    buff[len] = '\0';
+                if( buff[len] == '\0' )
+                    break;
                 ++len;
                 Buff.offv++;
             }
@@ -556,11 +569,12 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             DosPTrace( &Buff );
             continue;
         }
-        if( Buff.cmd == PT_RET_FUNERAL ) break;
+        if( Buff.cmd == PT_RET_FUNERAL )
+            break;
         if( Buff.cmd != PT_RET_LIB_LOADED
-         && Buff.cmd != PT_RET_STOPPED
-         && Buff.cmd != PT_RET_TRD_TERMINATE ) {
-            InternalError( MsgArray[MSG_SAMPLE_6-ERR_FIRST_MESSAGE] );
+          && Buff.cmd != PT_RET_STOPPED
+          && Buff.cmd != PT_RET_TRD_TERMINATE ) {
+            InternalError( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE] );
             break;
         }
         RecordSample( Buff.u.r.IP, Buff.u.r.CS, Buff.tid );
@@ -585,7 +599,7 @@ void SysParseOptions( char c, char **cmd )
         NewSession = 1;
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

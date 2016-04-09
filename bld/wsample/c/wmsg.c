@@ -43,17 +43,7 @@
 #include "smpstuff.h"
 #ifdef __WATCOMC__
     #include <process.h>
-#else
-    #include "clibext.h"
 #endif
-
-#if defined (__NETWARE__)
-/*
-// process.h exists for netware !!!
-*/
-_WCRTLINK extern char *_cmdname( char *__name );
-#endif
-
 #include "wmsg.h"
 #include "wreslang.h"
 #if defined(__WINDOWS__)
@@ -64,17 +54,29 @@ _WCRTLINK extern char *_cmdname( char *__name );
 #include "watcom.h"
 #endif
 
+#include "clibext.h"
+
+
 #if !defined(__WINDOWS__)
 #ifndef STDOUT_HANDLE
  #define STDOUT_HANDLE   ((int)1)
 #endif
-static  HANDLE_INFO     hInstance = { 0 };
-
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 #endif
 
-char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
+#if defined (__NETWARE__)
+/*
+// process.h exists for netware !!!
+*/
+_WCRTLINK extern char *_cmdname( char *__name );
+#endif
+
+#if !defined(__WINDOWS__)
+static  HANDLE_INFO     hInstance = { 0 };
+#endif
+
+char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 extern void             Output( char FAR_PTR * );
 
 #if !defined(__WINDOWS__)
@@ -124,14 +126,14 @@ int MsgInit( void )
                         }
                         buffer[0] = '\0';
                     }
-                    MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
+                    MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
     
-                    if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL )
+                    if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
                         break;
 #if defined( __I86__ )
-                    _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+                    _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
 #else
-                    strcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+                    strcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
 #endif
                 }
                 CloseResFile( &hInstance );
@@ -180,7 +182,7 @@ void MsgFini( void )
 void MsgPrintfUsage( int first_ln, int last_ln )
 {
     for( ; first_ln <= last_ln; first_ln++ ) {
-        Output( MsgArray[first_ln-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[first_ln - ERR_FIRST_MESSAGE] );
         Output( "\r" );
     }
 }

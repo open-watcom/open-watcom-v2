@@ -107,7 +107,8 @@ BOOL StartOutput( short x, short y )
         NULL                    /* create parms */
         );
 
-    if( !OutputWindow ) return( FALSE );
+    if( !OutputWindow )
+        return( FALSE );
     ShowWindow( OutputWindow, SW_SHOWNORMAL );
     UpdateWindow( OutputWindow );
     return( TRUE );
@@ -135,7 +136,7 @@ long __export FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam,
             DestroyWindow( MainWindowHandle );
             return( 0 );
         }
-        MyOutput( MsgArray[MSG_SAMPLE_13-ERR_FIRST_MESSAGE] );
+        MyOutput( MsgArray[MSG_SAMPLE_13 - ERR_FIRST_MESSAGE] );
         return( 0 );
         break;
     case WM_COMMAND:
@@ -177,8 +178,7 @@ int WindowsInit( HANDLE inst, int showcmd )
     if( !SetTimer( MainWindowHandle, TIMER_ID, 32000, 0L) ) {
         return( FALSE );
     }
-    handle = GlobalAlloc( GMEM_FIXED | GMEM_ZEROINIT,
-                          MAX_SAMPLES * sizeof( samp_save ) );
+    handle = GlobalAlloc( GMEM_FIXED | GMEM_ZEROINIT, MAX_SAMPLES * sizeof( samp_save ) );
     if( handle == NULL ) {
         KillTimer( MainWindowHandle, TIMER_ID);
         return( FALSE );
@@ -220,7 +220,8 @@ int WindowsInit( HANDLE inst, int showcmd )
         NULL                                    /* Pointer not needed.                */
     );
 
-    if( !MainWindowHandle ) return( FALSE );
+    if( !MainWindowHandle )
+        return( FALSE );
 
     ShowWindow( MainWindowHandle, showcmd );
     UpdateWindow( MainWindowHandle );
@@ -251,19 +252,21 @@ void MyOutput( char *str, ... )
     va_end( al );
 
     str = buff;
-    while( (c = *str) != 0 ) {
+    while( (c = *str) != '\0' ) {
         str++;
-        if( c == '\r' ) continue;
+        if( c == '\r' )
+            continue;
         if( c == '\n' ) {
             tmpStr[tmpOff] = 0;
             if( OutputWindow != NULL ) {
-                SendMessage( OutputWindow, LB_ADDSTRING, 0,
-                             (LONG)(LPSTR)tmpStr );
+                SendMessage( OutputWindow, LB_ADDSTRING, 0, (LONG)(LPSTR)tmpStr );
             }
             tmpOff = 0;
         } else {
             tmpStr[tmpOff++] = c;
-            if( tmpOff >= TMPSLEN-1 ) tmpOff--;
+            if( tmpOff >= TMPSLEN - 1 ) {
+                tmpOff--;
+            }
         }
     }
 
@@ -295,8 +298,9 @@ int MessageLoop( void )
  */
 void StartWDebug386( void )
 {
-    if( CheckWin386Debug() != WGOD_VERSION ) return;
-    WDebug386 = TRUE;
+    if( CheckWin386Debug() == WGOD_VERSION ) {
+        WDebug386 = TRUE;
+    }
 } /* StartWDebug386 */
 
 /*
@@ -323,7 +327,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             WinMessage( "Could not find WDEBUG.386" );
             return( FALSE );
         }
-        if( !MsgInit( inst ) ) fatal();
+        if( !MsgInit( inst ) )
+            fatal();
         cmddat.nCmdShow = SW_NORMAL;
         if( cmd == NULL || cmd[0] == 0 ) {
             if( !GetFileName( inst, show, filename ) ) {
@@ -350,9 +355,9 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.lpCmdLine = (char __far *)"";
         parm.lpCmdShow = (void __far *)&cmddat;
         parm.dwReserved = 0;
-        newinst = LoadModule( "wsamplew.exe", (LPVOID) &parm );
+        newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
         if( (UINT)newinst < 32 ) {
-            WinMessage( MsgArray[MSG_SAMPLE_12-ERR_FIRST_MESSAGE] );
+            WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
             CloseShop();
             return( FALSE );
         }
@@ -365,7 +370,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             MessageLoop();
         } while( !IsSecondOK );
         if( IsSecondOK == NOT_OK ) {
-            WinMessage( MsgArray[MSG_SAMPLE_12-ERR_FIRST_MESSAGE] );
+            WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
             CloseShop();
             return( FALSE );
         }
@@ -395,7 +400,8 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
          * to start the samplee, set a timer, and go
          */
         PrevInstance = previnst;
-        if( !MsgInit( inst ) ) fatal();
+        if( !MsgInit( inst ) )
+            fatal();
         if( !WindowsInit( inst, show ) ) {
             IsSecondOK = NOT_OK;
             return( FALSE );

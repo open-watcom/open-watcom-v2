@@ -54,7 +54,9 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
         SharedMemory->SampleHandle = 1;
     } else {
         handle = SysOpen( SampName );
-        if( handle >= 0 ) SysSeek( handle, SharedMemory->SampOffset );
+        if( handle >= 0 ) {
+            SysSeek( handle, SharedMemory->SampOffset );
+        }
     }
     if( handle == -1 ) {
         SharedMemory->FarWriteProblem = 1;

@@ -47,6 +47,14 @@
 #include "exepe.h"
 #include "exedos.h"
 
+
+#define EVENT_NAME      "tickevent"
+#define BUFF_SIZE       2048
+#define STACK_SIZE      4096
+#define CONTEXT_TO_USE  CONTEXT_CONTROL | CONTEXT_INTEGER
+#define LODWORD(a)      (((unsigned_64 *)&(a))->u._32[0])
+#define SEGMENT         (0x0001)
+
 typedef struct {
     char        live;
     DWORD       id;
@@ -57,13 +65,6 @@ typedef struct {
     samp_block  *Samples;
     samp_block  *CallGraph;
 } thread_info;
-
-#define EVENT_NAME      "tickevent"
-#define BUFF_SIZE 2048
-#define STACK_SIZE 4096
-#define CONTEXT_TO_USE  CONTEXT_CONTROL | CONTEXT_INTEGER
-#define LODWORD(a) (((unsigned_64 *)&(a))->u._32[0])
-#define SEGMENT (0x0001)
 
 static char             utilBuff[BUFF_SIZE];
 static ULONG            sleepTime;
@@ -83,7 +84,7 @@ static thread_info *getThreadInfo( DWORD id )
 {
     int i;
 
-    for( i=0;i<threadCount;i++ ) {
+    for( i = 0; i < threadCount; i++ ) {
         if( id == threadInfo[i].id ) {
             return( &threadInfo[i] );
         }
@@ -100,13 +101,13 @@ unsigned NextThread( unsigned tid )
     if( tid == threadCount ) {
         return( 0 );
     }
-    Samples = threadInfo[ tid ].Samples;
-    SampleIndex = threadInfo[ tid ].SampleIndex;
+    Samples = threadInfo[tid].Samples;
+    SampleIndex = threadInfo[tid].SampleIndex;
     if( CallGraphMode ) {
-        CallGraph = threadInfo[ tid ].CallGraph;
-        SampleCount = threadInfo[ tid ].SampleCount;
+        CallGraph = threadInfo[tid].CallGraph;
+        SampleCount = threadInfo[tid].SampleCount;
     }
-    return( tid+1 );
+    return( tid + 1 );
 
 } /* NextThread */
 
@@ -127,7 +128,7 @@ unsigned long TimerRate( void )
 
 unsigned SafeMargin( void )
 {
-    return( Ceiling-10 );
+    return( Ceiling - 10 );
 }
 
 int VersionCheck( void )
@@ -160,8 +161,8 @@ void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
         }
     }
     ++CurrTick;
-    ti->Samples->d.sample.sample[ ti->SampleIndex ].offset = offset;
-    ti->Samples->d.sample.sample[ ti->SampleIndex ].segment = segment;
+    ti->Samples->d.sample.sample[ti->SampleIndex].offset = offset;
+    ti->Samples->d.sample.sample[ti->SampleIndex].segment = segment;
     ti->SampleIndex++;
     if( CallGraphMode ) {
         ti->SampleCount++;
@@ -199,8 +200,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;       /* don't record this sample */
     } else {
-        ReadProcessMemory( processHandle, (LPVOID) commonAddr.offset, &Comm,
-                                sizeof( Comm ), &len );
+        ReadProcessMemory( processHandle, (LPVOID)commonAddr.offset, &Comm, sizeof( Comm ), &len );
     }
 }
 
@@ -211,7 +211,7 @@ void ResetCommArea( void )
     if( commonAddr.segment != 0 ) {
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        WriteProcessMemory( processHandle, (LPVOID) (commonAddr.offset + 11),
+        WriteProcessMemory( processHandle, (LPVOID)( commonAddr.offset + 11 ),
                         &Comm.pop_no, 4, &len );
     }
 }
@@ -229,7 +229,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadProcessMemory( processHandle, (LPVOID) Comm.cgraph_top,
+        ReadProcessMemory( processHandle, (LPVOID)Comm.cgraph_top,
                         &stack_entry, sizeof( stack_entry ), &len );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -241,7 +241,7 @@ void StopProg( void ) {}
 
 static void internalError( char *str )
 {
-    Output( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+    Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
     Output( str );
     Output( "\r\n" );
     _exit( -1 );
@@ -311,8 +311,7 @@ static int getPEHeader( HANDLE handle, pe_header *peh )
 /*
  * codeLoad - handle the loading of a new DLL/EXE
  */
-static void codeLoad( HANDLE handle, DWORD base, char *name,
-                        samp_block_kinds kind )
+static void codeLoad( HANDLE handle, DWORD base, char *name, samp_block_kinds kind )
 {
     seg_offset          ovl;
     int                 i;
@@ -329,10 +328,10 @@ static void codeLoad( HANDLE handle, DWORD base, char *name,
     if( !getPEHeader( handle, &peh ) ) {
         return;
     }
-    for( i=0;i<peh.num_objects;i++ ) {
+    for( i = 0; i < peh.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
-        offset = (DWORD) base + obj.rva;
-        WriteAddrMap( i+1, SEGMENT, offset );
+        offset = (DWORD)base + obj.rva;
+        WriteAddrMap( i + 1, SEGMENT, offset );
     }
 
 } /* codeLoad */
@@ -342,18 +341,18 @@ static void codeLoad( HANDLE handle, DWORD base, char *name,
  */
 static void newThread( DWORD id, HANDLE th )
 {
-    threadInfo = realloc( threadInfo, (threadCount+1)* sizeof( thread_info ) );
-    threadInfo[ threadCount ].id = id;
-    threadInfo[ threadCount ].th = th;
-    threadInfo[ threadCount ].live = TRUE;
-    threadInfo[ threadCount ].index = threadCount;
+    threadInfo = realloc( threadInfo, ( threadCount + 1 ) * sizeof( thread_info ) );
+    threadInfo[threadCount].id = id;
+    threadInfo[threadCount].th = th;
+    threadInfo[threadCount].live = TRUE;
+    threadInfo[threadCount].index = threadCount;
 
     AllocSamples( id );
-    threadInfo[ threadCount ].Samples = Samples;
-    threadInfo[ threadCount ].SampleIndex = SampleIndex;
+    threadInfo[threadCount].Samples = Samples;
+    threadInfo[threadCount].SampleIndex = SampleIndex;
     if( CallGraphMode ) {
-        threadInfo[ threadCount ].CallGraph = CallGraph;
-        threadInfo[ threadCount ].SampleCount = SampleCount;
+        threadInfo[threadCount].CallGraph = CallGraph;
+        threadInfo[threadCount].SampleCount = SampleCount;
     }
     threadCount++;
 
@@ -400,18 +399,18 @@ static void loadProg( char *exe, char *cmdline )
                         &pinfo          /* process info */
                     );
     if( !rc ) {
-        internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
     }
     rc = WaitForDebugEvent( &debugEvent, INFINITE );
     if( !rc || (debugEvent.dwDebugEventCode != CREATE_PROCESS_DEBUG_EVENT) ||
                 (debugEvent.dwProcessId != pinfo.dwProcessId) ) {
-        internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
     }
     taskPid = debugEvent.dwProcessId;
     processHandle = debugEvent.u.CreateProcessInfo.hProcess;
     newThread( debugEvent.dwThreadId, debugEvent.u.CreateProcessInfo.hThread );
     codeLoad( debugEvent.u.CreateProcessInfo.hFile,
-                (DWORD) debugEvent.u.CreateProcessInfo.lpBaseOfImage,
+                (DWORD)debugEvent.u.CreateProcessInfo.lpBaseOfImage,
                 exe,
                 SAMP_MAIN_LOAD );
 
@@ -423,6 +422,7 @@ static void loadProg( char *exe, char *cmdline )
 static void myGetThreadContext( DWORD id, CONTEXT *pc )
 {
     thread_info *ti;
+
     pc->ContextFlags = CONTEXT_TO_USE;
     ti = getThreadInfo( id );
     if( ti != NULL ) {
@@ -434,6 +434,7 @@ static void myGetThreadContext( DWORD id, CONTEXT *pc )
 static void mySetThreadContext( DWORD id, CONTEXT *pc )
 {
     thread_info *ti;
+
     pc->ContextFlags = CONTEXT_TO_USE;
     ti = getThreadInfo( id );
     if( ti != NULL ) {
@@ -448,17 +449,17 @@ static void mySetThreadContext( DWORD id, CONTEXT *pc )
 DWORD WINAPI TimerThread( LPVOID parms )
 {
     CONTEXT con;
-    int i;
+    int     i;
     uint_32 Fir;
 
     parms = parms;
-    while( 1 ) {
+    for( ;; ) {
         Sleep( sleepTime );
         if( doneSample ) {
             break;
         }
         timeOut = TRUE;
-        for( i=0;i<threadCount;i++ ) {
+        for( i = 0; i < threadCount; i++ ) {
             if( threadInfo[i].live ) {
                 myGetThreadContext( threadInfo[i].id, &con );
                 Fir = LODWORD( con.Fir );
@@ -476,13 +477,13 @@ DWORD WINAPI TimerThread( LPVOID parms )
  */
 static void SkipBreakpoint( DWORD tid )
 {
-    CONTEXT con;
-    uint_32 Fir;
+    CONTEXT     con;
+    uint_32     Fir;
     unsigned_64 newFir;
 
     myGetThreadContext( tid, &con );
     Fir = LODWORD( con.Fir );
-    newFir.u._32[0] = Fir+4;
+    newFir.u._32[0] = Fir + 4;
     newFir.u._32[1] = 0;
     con.Fir = *((DWORDLONG *)&newFir);
     mySetThreadContext( tid, &con );
@@ -502,9 +503,12 @@ static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
     len = 0;
     if( unicode ) {
         for( ;; ) {
-            if( max <= 1 ) break;
-            if( !ReadProcessMemory( processHandle, p, buff, 2, NULL ) ) break;
-            if( *(wchar_t *)buff == '\0' ) break;
+            if( max <= 1 )
+                break;
+            if( !ReadProcessMemory( processHandle, p, buff, 2, NULL ) )
+                break;
+            if( *(wchar_t *)buff == '\0' )
+                break;
             buff += sizeof( wchar_t );
             p = (wchar_t *)p + 1;
             max -= sizeof( wchar_t );
@@ -513,9 +517,12 @@ static unsigned GetString( int unicode, LPVOID p, char *buff, unsigned max )
         *(wchar_t *)buff = '\0';
     } else {
         for( ;; ) {
-            if( max == 0 ) break;
-            if( !ReadProcessMemory( processHandle, p, buff, 1, NULL ) ) break;
-            if( *(char *)buff == '\0' ) break;
+            if( max == 0 )
+                break;
+            if( !ReadProcessMemory( processHandle, p, buff, 1, NULL ) )
+                break;
+            if( *(char *)buff == '\0' )
+                break;
             buff += sizeof( char );
             p = (char *)p + 1;
             max -= sizeof( char );
@@ -533,12 +540,16 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
     wchar_t     *p;
 
     //NYI: spiffy up to scrounge around in the image
-    if( ld->lpImageName == 0 ) return( FALSE );
+    if( ld->lpImageName == 0 )
+        return( FALSE );
     ReadProcessMemory( processHandle, ld->lpImageName, &name, sizeof( name ), &len );
-    if( len != sizeof( name ) ) return( FALSE );
-    if( name == 0 ) return( FALSE );
+    if( len != sizeof( name ) )
+        return( FALSE );
+    if( name == 0 )
+        return( FALSE );
     len = GetString( ld->fUnicode, name, buff, max );
-    if( len == 0 ) return( FALSE );
+    if( len == 0 )
+        return( FALSE );
     if( ld->fUnicode ) {
         for( p = (wchar_t *)buff; *p != '\0'; ++p, ++buff ) {
             *buff = *p;
@@ -574,19 +585,19 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 
     tth = CreateThread( NULL, 2048, TimerThread, NULL, 0, &ttid );
     if( !tth ) {
-        internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
     }
     /* Attempt to ensure that we can record our samples in one shot */
     SetThreadPriority( tth, THREAD_PRIORITY_TIME_CRITICAL );
 
-    Output( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+    Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
     Output( prog );
     Output( "\r\n" );
 
     waiting_for_first_bp = TRUE;
     continue_how = DBG_CONTINUE;
 
-    while( 1 ) {
+    for( ;; ) {
         ContinueDebugEvent( taskPid, tid, continue_how );
         rc = WaitForDebugEvent( &debugEvent, INFINITE );
         continue_how = DBG_CONTINUE;
@@ -632,7 +643,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
                 if( debugEvent.u.Exception.dwFirstChance ) {
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                 } else {
-                    Output( MsgArray[MSG_SAMPLE_4-ERR_FIRST_MESSAGE] );
+                    Output( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
                     Output( "\r\n" );
                     doneSample = TRUE;
                     TerminateProcess( processHandle, 0 );
@@ -680,7 +691,7 @@ void SysParseOptions( char c, char **cmd )
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

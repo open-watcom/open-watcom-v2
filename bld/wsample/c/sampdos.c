@@ -46,8 +46,6 @@
 
 #include "ovldbg.h"
 
-char FAR_PTR    *CommonAddr = NULL;
-extern bool     FirstSample;
 
 typedef struct {
     struct samp_block_prefix    pref;
@@ -70,6 +68,8 @@ typedef struct {
 
 typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
 
+extern bool     FirstSample;
+
 extern seg_offset __far SysCallerAddr;
 extern unsigned char __far SysCaught;
 extern unsigned char __far SysNoDOS;
@@ -85,15 +85,16 @@ extern void                 DOSLoadProg( char *, pblock *, report_fn_ptr );
 extern void                 DOSRunProg( seg_offset * );
 extern ovl_dbg_hook_func    ovl_handler;
 
+char                FAR_PTR *CommonAddr = NULL;
 unsigned            OvlSize;
-overlay_record_t 	FAR_PTR *OvlStruct;
+overlay_record_t    FAR_PTR *OvlStruct;
 ovl_dbg_req_func    *OvlHandler;
 
 int                 FirstHook = TRUE;
 
 void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
 {
-    overlay_record_t	FAR_PTR *ovl;
+    overlay_record_t    FAR_PTR *ovl;
     struct {
         struct samp_block_prefix    pref;
         struct samp_remap_sect      remap;
@@ -121,8 +122,8 @@ void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
     }
     ovl->ovl.addr.segment = seg;
     ovl->ovl.addr.offset = offset-1;
-    Info.d.count[ SAMP_OVL_LOAD ].size += size;
-    Info.d.count[ SAMP_OVL_LOAD ].number += 1;
+    Info.d.count[SAMP_OVL_LOAD].size += size;
+    Info.d.count[SAMP_OVL_LOAD].number += 1;
     OvlHandler( OVLDBG_GET_OVERLAY_STATE, ovl->ovl.ovl_map );
     SampWrite( ovl, ovl->pref.length );
     /* find out what overlays moved */
@@ -130,13 +131,13 @@ void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
     remap_blk.pref.length = sizeof( remap_blk );
     remap_blk.pref.kind = SAMP_REMAP_SECTION;
     xlat_addr.sect = 0;
-    for(;;) {
+    for( ;; ) {
         if( !OvlHandler( OVLDBG_GET_MOVED_SECTION, &xlat_addr ) )
             break;
-        remap_blk.remap.data[ 0 ].section = xlat_addr.sect;
-        remap_blk.remap.data[ 0 ].segment = FP_SEG( xlat_addr.addr );
-        Info.d.count[ SAMP_REMAP_SECTION ].size += remap_blk.pref.length;
-        Info.d.count[ SAMP_REMAP_SECTION ].number += 1;
+        remap_blk.remap.data[0].section = xlat_addr.sect;
+        remap_blk.remap.data[0].segment = FP_SEG( xlat_addr.addr );
+        Info.d.count[SAMP_REMAP_SECTION].size += remap_blk.pref.length;
+        Info.d.count[SAMP_REMAP_SECTION].number += 1;
         SampWrite( &remap_blk, remap_blk.pref.length );
     }
     SamplerOff--;
@@ -154,7 +155,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     seg_offset          ovl_tbl;
     struct ovl_header   __far *ovl;
     pblock              parms;
-    overlay_record_t FAR_PTR *ovl_struct;
+    overlay_record_t    FAR_PTR *ovl_struct;
 
     cmd = cmd;
     InstallDOSIntercepts();
@@ -181,7 +182,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         OvlSize = OvlHandler( OVLDBG_GET_STATE_SIZE, NULL );
         ovl_struct = alloca( ( sizeof( overlay_record_t ) - 1 ) + OvlSize );
         if( ovl_struct == NULL ) {
-            Output( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+            Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
             Output( "\r\n" );
             fatal();
         }
@@ -213,8 +214,8 @@ void RecordSample( union INTPACK FAR_PTR *r )
         offset = r->x.ip;
         segment = r->x.cs;
     }
-    Samples->d.sample.sample[ SampleIndex ].offset = offset;
-    Samples->d.sample.sample[ SampleIndex ].segment = segment;
+    Samples->d.sample.sample[SampleIndex].offset = offset;
+    Samples->d.sample.sample[SampleIndex].segment = segment;
     LastSampleIndex = SampleIndex;
     ++SampleIndex;
     ++SampleCount;
@@ -249,8 +250,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        _fmemcpy( &stack_entry, (void FAR_PTR *) Comm.cgraph_top,
-                                                 sizeof( stack_entry ) );
+        _fmemcpy( &stack_entry, (void FAR_PTR *)Comm.cgraph_top, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
         Comm.cgraph_top = stack_entry.ptr;
@@ -284,13 +284,13 @@ void SetInterruptWatch( char **cmd )
 
     intr_num = GetNumber( 0x20, 0xff, cmd, 16 );
     if( ( intr_num >= 0x34 ) && ( intr_num <= 0x3d ) ) {
-        Output( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
     if( intr_num != 0x21 ) {    /* the DOS interrupt is already monitored */
         if( AddInterrupt( intr_num ) ) {
-            Output( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+            Output( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
             Output( "\r\n" );
             fatal();
         }
@@ -313,7 +313,7 @@ void SysParseOptions( char c, char **cmd )
         SysNoDOS = 1;
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

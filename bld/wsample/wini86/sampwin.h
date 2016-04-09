@@ -105,7 +105,7 @@ extern void             WriteMark( char FAR_PTR *str, seg_offset where );
 extern unsigned         GetNumber(unsigned,unsigned,char**,unsigned);
 extern void             AllocSamples( unsigned );
 extern void             SetTimerRate( char ** );
-extern void             fatal(void);
+extern void             fatal( void );
 extern int              MessageLoop( void );
 extern void             RecordCGraph( void );
 

@@ -46,6 +46,10 @@
 #endif
 
 
+#if defined( __WINDOWS__ )
+extern void CloseShop( void );
+#endif
+
 void GetProg( char *cmd, char *eoc )
 {
     char        save;
@@ -70,11 +74,14 @@ void GetProg( char *cmd, char *eoc )
         (char **)&drive, (char **)&dir, (char **)&fname, (char **)&ext );
     *eoc = save;
 #ifdef __NETWARE__
-    if( ext[0] == '\0' ) ext = ".nlm";
+    if( ext[0] == '\0' )
+        ext = ".nlm";
 #elif defined( __DOS__ ) && defined( _PLS )
-    if( ext[0] == '\0' ) ext = ".exp";
+    if( ext[0] == '\0' )
+        ext = ".exp";
 #elif !defined( __UNIX__ )
-    if( ext[0] == '\0' ) ext = ".exe";
+    if( ext[0] == '\0' )
+        ext = ".exe";
 #endif
     _makepath( (char *)prog_name, (char *)drive, (char *)dir, (char *)fname, (char *)ext );
 
@@ -85,7 +92,7 @@ void GetProg( char *cmd, char *eoc )
     }
 
     if( ExeName[0] == '\0' ) {
-        Output( MsgArray[MSG_PROGRAM-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_PROGRAM - ERR_FIRST_MESSAGE] );
         Output( (char *)prog_name );
         Output( "\r\n" );
         fatal();
@@ -100,7 +107,7 @@ void GetProg( char *cmd, char *eoc )
     _splitpath2( ExeName, buff2, &drive, &dir, NULL, NULL );
     a = tolower( drive[0] ) - 'a' + 1;
     _dos_setdrive( a, &b );
-    dir[ strlen( dir ) - 1 ] = 0;
+    dir[strlen( dir ) - 1] = '\0';
     chdir( dir );
 #endif
 
@@ -120,8 +127,8 @@ void GetProg( char *cmd, char *eoc )
     }
 #endif
 
-    _makepath( SampName, (char *)drive, (char *)dir, (char *)(sfname[0] == 0 ? fname : sfname),
-               ext[0] == 0 ? (char *)"smp" : (char *)ext );
+    _makepath( SampName, (char *)drive, (char *)dir, (char *)(sfname[0] == '\0' ? fname : sfname),
+               ext[0] == '\0' ? (char *)"smp" : (char *)ext );
 
 #ifdef __WINDOWS__
     _fstrcpy( SharedMemory->SampName, SampName );
@@ -131,7 +138,6 @@ void GetProg( char *cmd, char *eoc )
 void fatal( void )
 {
 #if defined( __WINDOWS__ )
-extern void CloseShop( void );
     WaitForFirst = FALSE;
     MessageLoop();
     CloseShop();

@@ -48,12 +48,7 @@
 #include "timermod.h"
 
 
-intrptr                 old_timer_handler;
-
-unsigned                Save_Request = FALSE;
-
-
-extern int              InDOS(void);
+extern int              InDOS( void );
 /*
  Located int SAMPLE.C
 */
@@ -61,6 +56,9 @@ extern void             StopAndSave( void );
 extern intrptr          HookTimer(intrptr);
 
 extern void             RecordSample( union INTPACK FAR_PTR *r );
+
+intrptr                 old_timer_handler;
+unsigned                Save_Request = FALSE;
 
 unsigned NextThread( unsigned tid )
 {
@@ -95,64 +93,48 @@ unsigned NextThread( unsigned tid )
 
 void __interrupt __far timer_handler( union INTPACK r )
 {
-    if( --TimerMod == 0 )
-    {
+    if( --TimerMod == 0 ) {
         TimerMod = TimerMult;
         _CHAIN_TO( old_timer_handler );
-    }
-    else
-    {
+    } else {
         /* end of interrupt (expected by 8259 before you do RETI) */
         outp( INT_CTRL, EOI );
     }
 
-    if( ! SamplerOff )
-    {
-        if( InsiderTime == 0 )
-        {
+    if( !SamplerOff ) {
+        if( InsiderTime == 0 ) {
             ++InsiderTime;
-            if( SampleIndex == 0 )
-            {
+            if( SampleIndex == 0 ) {
                 Samples->pref.tick = CurrTick;
-                if( CallGraphMode )
-                {
+                if( CallGraphMode ) {
                     CallGraph->pref.tick = CurrTick;
                 }
             }
             ++CurrTick;
-            #ifdef __NETWARE__
-                /* avoid pointer truncation warning */
-                RecordSample( (union INTPACK *)FP_OFF(&r) );
-            #else
-                RecordSample( &r );
-            #endif
-            if( SampleIndex >= Margin )
-            {
-                if( InDOS() )
-                {
+#ifdef __NETWARE__
+            /* avoid pointer truncation warning */
+            RecordSample( (union INTPACK *)FP_OFF(&r) );
+#else
+            RecordSample( &r );
+#endif
+            if( SampleIndex >= Margin ) {
+                if( InDOS() ) {
                     Save_Request = TRUE;
-                }
-                else
-                {
+                } else {
                     /*
                         We are not in DOS so we can suspend things for a while
                         and save our block of samples
                     */
-                    if( Save_Request )
-                    {
+                    if( Save_Request ) {
                         Save_Request = 0;
                     }
                     StopAndSave();
                 }
-                if( SampleIndex >= Ceiling )
-                {
-                    if( CallGraphMode )
-                    {
+                if( SampleIndex >= Ceiling ) {
+                    if( CallGraphMode ) {
                         --SampleCount;
                         SampleIndex = LastSampleIndex;
-                    }
-                    else
-                    {
+                    } else {
                         --SampleIndex;
                     }
                     LostData = TRUE;
@@ -168,19 +150,18 @@ void __interrupt __far timer_handler( union INTPACK r )
     Following function doesn't start the timer per say. It makes it go through
     our own timer interrupt handler.
 */
-extern short GetCS(void);
+extern short GetCS( void );
 #pragma aux GetCS = 0x8c 0xc8;
 
 void StartTimer( void )
 {
     TimerMod = TimerMult;
-    old_timer_handler = HookTimer( MK_FP( GetCS(), (int)&timer_handler ) );
+    old_timer_handler = HookTimer( MK_FP( GetCS(), (unsigned)&timer_handler ) );
 
     /*
     //  Only access the clock if we have overridden the default
     */
-    if(DEF_MULT != TimerMult)
-    {
+    if( DEF_MULT != TimerMult ) {
         outp( TIMER0, DIVISOR & 0xff );
         outp( TIMER0, DIVISOR >> 8 );
     }

@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-typedef void __interrupt __far (*intrptr)(void);
-extern void chain_intr(void);
+typedef void __interrupt __far (*intrptr)( void );
+extern void chain_intr( void );
 #define _CHAIN_TO( x )  (*x)()

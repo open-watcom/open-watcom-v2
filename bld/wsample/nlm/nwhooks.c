@@ -32,27 +32,26 @@
 
 #include "intrptr.h"
 #include "os.h"
-
 #include "miniproc.h"
 
-#pragma aux GetIDTBaseOff = \
-        0x0f 0x01 0x08 /* sidt  [eax] */ \
-        parm caller [eax];
 
 typedef struct {
-        WORD    limit;
-        LONG    base;
+    WORD    limit;
+    LONG    base;
 } baseoffset;
 
 typedef struct {
-        WORD    loffs;
-        WORD    select;
-        BYTE    wcount;
-        BYTE    arights;
-        WORD    hoffs;
+    WORD    loffs;
+    WORD    select;
+    BYTE    wcount;
+    BYTE    arights;
+    WORD    hoffs;
 } idtentry;
 
 extern void GetIDTBaseOff( baseoffset * );
+#pragma aux GetIDTBaseOff = \
+        0x0f 0x01 0x08 /* sidt  [eax] */ \
+    parm caller [eax];
 
 intrptr HookVect( intrptr new_intrptr, int vect )
 {
@@ -64,12 +63,12 @@ intrptr HookVect( intrptr new_intrptr, int vect )
     GetIDTBaseOff( &idt_baseoff );
     temp = MapAbsoluteAddressToDataOffset( idt_baseoff.base );
     idt_table = (idtentry *)temp;
-    idt_table = &idt_table[ vect ];
+    idt_table = &idt_table[vect];
     temp = idt_table->hoffs;
     temp <<= 16;
     temp += idt_table->loffs;
     old_intrptr = MK_FP( idt_table->select, temp );
-    temp = (int)new_intrptr;
+    temp = (unsigned)new_intrptr;
     Disable();
     idt_table->hoffs = temp >> 16;
     idt_table->loffs = temp;

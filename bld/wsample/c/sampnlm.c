@@ -47,11 +47,6 @@
 
 #include <ownwthrd.h>
 
-extern void StartTimer( void );
-extern void StopTimer( void );
-extern void SetRestoreRate( char **);
-extern void ResolveRateDifferences(void);
-
 /* NETWARE HOOKS */
 
 #include "miniproc.h"
@@ -60,7 +55,27 @@ extern void ResolveRateDifferences(void);
 #include "aesproc.h"
 #include "event.h"
 
-extern void * ImportSymbol(unsigned long /* handle */, const char * /* symbol_name */);
+
+typedef struct code_load {
+    char                buff[512];
+    short               seg;
+    long                off;
+    struct code_load    *next;
+    samp_block_kinds    kind;
+} code_load;
+
+extern short            GetCS( void );
+#pragma aux GetCS = 0x8c 0xc8 value [ax];
+
+extern void             StartTimer( void );
+extern void             StopTimer( void );
+extern void             SetRestoreRate( char **);
+extern void             ResolveRateDifferences( void );
+
+extern unsigned long    count_pit0( void );
+extern unsigned long    cpuspeed( void );
+
+extern void * ImportSymbol( unsigned long /* handle */, const char * /* symbol_name */ );
 
 int                             SamplerThread;
 struct LoadDefinitionStructure  *SampledNLM;
@@ -72,19 +87,7 @@ struct ResourceTagStructure     *SwitchModeTag;
 int                             Suspended;
 int                             Resumed;
 
-
-#pragma aux GetCS = 0x8c 0xc8 value [ ax ];
-extern short GetCS( void );
-
-typedef struct code_load {
-    char                buff[512];
-    short               seg;
-    long                off;
-    struct code_load    *next;
-    samp_block_kinds    kind;
-} code_load;
-
-code_load *LoadedNLMs;
+code_load                       *LoadedNLMs;
 
 
 void SysInit( void )
@@ -94,7 +97,7 @@ void SysInit( void )
         (BYTE *)"Open Watcom Sampler Work Area",
         AllocSignature );
     SwitchModeTag = AllocateResourceTag(
-        (void*) GetNLMHandle(),
+        (void*)GetNLMHandle(),
         (BYTE *)"Open Watcom Sampler ModeSwitchMon",
         EventSignature);
 }
@@ -107,12 +110,12 @@ void StopProg( void )
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
 {
     seg_offset          ovl_tbl;
-    char                buff[ 256 ];
+    char                buff[256];
 
     ovl_tbl.segment = 0;
     ovl_tbl.offset  = 0;
-    memcpy( buff, &loaded->LDFileName[1], loaded->LDFileName[0] );
-    buff[ loaded->LDFileName[ 0 ] ] = '\0';
+    memcpy( buff, loaded->LDFileName + 1, loaded->LDFileName[0] );
+    buff[loaded->LDFileName[0]] = '\0';
     WriteCodeLoad( ovl_tbl, buff, kind );
     WriteAddrMap( 1, GetCS(), loaded->LDCodeImageOffset );
 }
@@ -124,8 +127,8 @@ void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds ki
     new = my_alloc( sizeof( *new ) );
     new->next = LoadedNLMs;
     LoadedNLMs = new;
-    memcpy( new->buff, &loaded->LDFileName[1], loaded->LDFileName[0] );
-    new->buff[ loaded->LDFileName[ 0 ] ] = '\0';
+    memcpy( new->buff, loaded->LDFileName + 1, loaded->LDFileName[0] );
+    new->buff[loaded->LDFileName[0]] = '\0';
     new->seg = GetCS();
     new->off = loaded->LDCodeImageOffset;
     new->kind = kind;
@@ -148,6 +151,7 @@ void WriteRecordedLoads( void )
 }
 
 static volatile unsigned nModeSwitched = 0;
+
 void ModeSwitched( LONG dummy )
 {
     nModeSwitched++;
@@ -155,8 +159,8 @@ void ModeSwitched( LONG dummy )
 
 void WakeMeUp( LONG dummy )
 {
-    static int Already = FALSE;
-    struct LoadDefinitionStructure *loaded;
+    static int                      Already = FALSE;
+    struct LoadDefinitionStructure  *loaded;
 
     if( Already )
         return;
@@ -167,8 +171,9 @@ void WakeMeUp( LONG dummy )
     }
     Already = TRUE;
     Resumed = TRUE;
-    if( Suspended )
+    if( Suspended ) {
         ResumeThread( SamplerThread );
+    }
 }
 
 
@@ -209,18 +214,16 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 
     StartTimer();
 
-    if( LoadModule( systemConsoleScreen, (BYTE *)cmd, 0 ) != 0 )
-    {
+    if( LoadModule( systemConsoleScreen, (BYTE *)cmd, 0 ) != 0 ) {
         StopTimer();
-        cputs( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+        cputs( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
         cputs( cmd );
         cputs( "\r\n" );
         fatal();
     }
     SamplerThread = GetThreadID();
     Suspended = TRUE;
-    if( !Resumed )
-    {
+    if( !Resumed ) {
         Suspended = TRUE;
         SuspendThread( SamplerThread );
     }
@@ -233,7 +236,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 
     if( Samples != NULL ) {
         my_free( Samples );
-	}
+    }
 }
 
 
@@ -246,13 +249,11 @@ void SaveOutSamples( void *dummy )
 
 void RecordSample( union INTPACK FAR_PTR *r ) {
 
-    Samples->d.sample.sample[ SampleIndex ].offset = r->x.eip;
-    Samples->d.sample.sample[ SampleIndex ].segment = r->x.cs;
+    Samples->d.sample.sample[SampleIndex].offset = r->x.eip;
+    Samples->d.sample.sample[SampleIndex].segment = r->x.cs;
     ++SampleIndex;
-    if( SampleIndex > Margin )
-    {
-        if( AES.AProcessToCall == NULL )
-        {
+    if( SampleIndex > Margin ) {
+        if( AES.AProcessToCall == NULL ) {
             AES.AProcessToCall = SaveOutSamples;
             AES.AWakeUpDelayAmount = 0;
             AES.AWakeUpTime = 0;
@@ -304,8 +305,7 @@ void GetProg( char *cmd, char *eoc )
     _splitpath( cmd, volume, dir, fname, ext );
     *eoc = save;
     _splitpath( SampName, volume, dir, sfname, ext );
-    _makepath( SampName, volume, dir, sfname[0] == 0 ? fname : sfname,
-               ext[0] == 0 ? "SMP" : ext );
+    _makepath( SampName, volume, dir, sfname[0] == '\0' ? fname : sfname, ext[0] == '\0' ? "SMP" : ext );
 }
 
 
@@ -323,13 +323,10 @@ void SysDefaultOptions( void )
 {
 }
 
-extern unsigned long count_pit0( void );
-extern unsigned long cpuspeed( void );
-
 static unsigned long RoundSpeed(unsigned long speed)
 {
     unsigned long   modulo = speed % 10;
-    if(modulo == 9)
+    if( modulo == 9 )
         speed++;
     return speed;
 }
@@ -353,44 +350,47 @@ static unsigned long volatile * pRealModeTimerFlag = NULL;
         NULL,
         ModeSwitched );
 
-    if(NULL == pRealModeTimerFlag)
-    {
-        pRealModeTimerFlag = (unsigned long *)ImportSymbol(GetNLMHandle(), "RealModeTimerFlag");
+    if( NULL == pRealModeTimerFlag ) {
+        pRealModeTimerFlag = (unsigned long *)ImportSymbol( GetNLMHandle(), "RealModeTimerFlag" );
     }
 
-    if(pRealModeTimerFlag)
-        while(0 != *pRealModeTimerFlag)
-            delay(100);
+    if( pRealModeTimerFlag ) {
+        while( 0 != *pRealModeTimerFlag ) {
+            delay( 100 );
+        }
+    }
 
-    while(1)
-    {
+    for( ;; ) {
         nModeSwitched = 0;
         hadSwitch = nModeSwitched;
 
-        currCount = RoundSpeed(cpuspeed());
+        currCount = RoundSpeed( cpuspeed() );
 
-        if(hadSwitch == nModeSwitched)
+        if( hadSwitch == nModeSwitched ) {
             break;
-        else
-            Output("Mode switched\n");
+        } else {
+            Output( "Mode switched\n" );
+        }
     }
 
-    ultoa(currCount, EstRate, 10);
-    Output("CPU Speed   - ");
-    Output(EstRate);
-    Output(" Mhz\n");
+    ultoa( currCount, EstRate, 10 );
+    Output( "CPU Speed   - " );
+    Output( EstRate );
+    Output( " Mhz\n" );
 
-    Output("Calculating...\r");
-    if(pRealModeTimerFlag)
-        while(0 != *pRealModeTimerFlag)
-            delay(100);
+    Output( "Calculating...\r" );
+    if( pRealModeTimerFlag ) {
+        while( 0 != *pRealModeTimerFlag ) {
+            delay( 100 );
+        }
+    }
 
     currCount = 0;
-    for(i = 0; i < 4; i++)
-    {
+    for( i = 0; i < 4; i++ ) {
         unsigned long x = count_pit0();
-        if(x > currCount)
+        if( x > currCount ) {
             currCount = x;
+        }
     }
     /*
     //  Don't know if this is really true but I have been informed that there is absolutely NO
@@ -398,12 +398,12 @@ static unsigned long volatile * pRealModeTimerFlag = NULL;
     //  anyway.
     */
     currCount += 2;
-    if(currCount > 0x0000FFFF)      /* count is 16 bit - default is 0 (count of 0x10000) */
+    if( currCount > 0x0000FFFF )      /* count is 16 bit - default is 0 (count of 0x10000) */
         currCount = 0;
-    ultoa(currCount, EstRate, 10);
-    Output("PIT Count   - ");
-    Output(EstRate);
-    Output("\n");
+    ultoa( currCount, EstRate, 10 );
+    Output( "PIT Count   - " );
+    Output( EstRate );
+    Output( "\n" );
 
     UnRegisterEventNotification( modeSwitch );
 }
@@ -412,23 +412,19 @@ void SysParseOptions( char c, char **cmd )
 {
     char        buff[2];
 
-    switch(c)
-    {
+    switch( c ) {
     case 'r':
         SetTimerRate( cmd );
-    break;
-
+        break;
     case 'o':
         SetRestoreRate( cmd );
-    break;
-
+        break;
     case 'e':
         EstimateRate();
         fatal();
-    break;
-
+        break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

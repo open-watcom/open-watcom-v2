@@ -65,8 +65,8 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
         return( CHAIN );
     }
 
-    ff.ESP = (WORD) ff.ESP;
-    ff.EBP = (WORD) ff.EBP;
+    ff.ESP = (WORD)ff.ESP;
+    ff.EBP = (WORD)ff.EBP;
 
     if( !fault32 ) {
         ff.IP--;
@@ -92,19 +92,21 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
             if( Is32BitSel( IntData.CS ) ) {
                 offset = IntData.EAX;
             } else {
-                offset = (DWORD) ((WORD) IntData.EAX );
+                offset = (DWORD)(WORD)IntData.EAX;
             }
-            seg = (WORD) IntData.EDX;
+            seg = (WORD)IntData.EDX;
 
             /*
              * copy the mark data
              */
             len = 0;
-            while( 1 ) {
+            for( ;; ) {
                 ReadMem( seg, offset, &value, sizeof( value ) );
-                buff[ len ] = (char) value;
-                if( len == sizeof( buff ) ) buff[ len ] = '\0';
-                if( buff[ len ] == '\0' ) break;
+                buff[len] = (char)value;
+                if( len == sizeof( buff ) )
+                    buff[len] = '\0';
+                if( buff[len] == '\0' )
+                    break;
                 len++;
                 offset++;
             }

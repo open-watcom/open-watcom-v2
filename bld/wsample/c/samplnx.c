@@ -64,6 +64,15 @@
 
 #define BUFF_SIZE   2048
 
+typedef struct lli {
+    addr_off    offset;
+    addr_off    dbg_dyn_sect;
+    addr_off    code_size;
+    char        newly_unloaded : 1;
+    char        newly_loaded : 1;
+    char        filename[257]; // TODO: This should really be dynamic!
+} lib_load_info;
+
 #ifndef __WATCOMC__
 extern char             **environ;
 #endif
@@ -90,15 +99,6 @@ static opcode_type      saved_opcode;
 
 static seg_offset       CommonAddr;
 
-typedef struct lli {
-    addr_off    offset;
-    addr_off    dbg_dyn_sect;
-    addr_off    code_size;
-    char        newly_unloaded : 1;
-    char        newly_loaded : 1;
-    char        filename[257]; // TODO: This should really be dynamic!
-} lib_load_info;
-
 static lib_load_info    *ModuleInfo;
 static int              ModuleTop;
 
@@ -116,8 +116,9 @@ static lib_load_info *FindLib( addr_off dynsection )
     unsigned    i;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        if( ModuleInfo[i].dbg_dyn_sect == dynsection )
+        if( ModuleInfo[i].dbg_dyn_sect == dynsection ) {
             return( ModuleInfo + i );
+        }
     }
     return( NULL );
 }
@@ -188,8 +189,9 @@ static void DoAddLib( pid_t pid, struct link_map *lmap )
     dbg_printf( "Added library, ofs/dyn = %p/%p'%s'\n", lmap->l_addr, (addr_off)lmap->l_ld, lli->filename );
 
     // no name, not interested
-    if( lli->filename[0] != '\0' )
+    if( lli->filename[0] != '\0' ) {
         CodeLoad( lli->filename, lmap->l_addr, SAMP_CODE_LOAD );
+    }
 }
 
 
@@ -551,8 +553,9 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
 #if defined( MD_x86 )
-        if( ProcessMark( pid, &regs ) )
+        if( ProcessMark( pid, &regs ) ) {
             return( TRUE );
+        }
 #endif
     }
     return( FALSE );
@@ -797,11 +800,13 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         if( !WIFSTOPPED( status ) )
             goto fail;
         if( Attached ) {
-            if( WSTOPSIG( status ) != SIGSTOP )
+            if( WSTOPSIG( status ) != SIGSTOP ) {
                 goto fail;
+            }
         } else {
-            if( WSTOPSIG( status ) != SIGTRAP )
+            if( WSTOPSIG( status ) != SIGTRAP ) {
                 goto fail;
+            }
         }
 
         DbgDyn = GetDebuggeeDynSection( exe_name );
@@ -809,8 +814,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     }
     if( errno != 0 ) {
         pid = 0;
-    }
-    else {
+    } else {
         /* record information about main executable and initialize shared
          * library tracking
          */

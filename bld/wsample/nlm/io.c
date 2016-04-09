@@ -53,7 +53,7 @@ int  SampCreate( char *name )
     SampOffset = 0;
     SampIsDOS = FALSE;
     if( DOSPresent() ) {
-        SampIsDOS = ( name[0] != '\0' && name[ 1 ] == ':' );
+        SampIsDOS = ( name[0] != '\0' && name[1] == ':' );
     }
     if( SampIsDOS ) {
         return( DOSCreate( name, &SampleHandle ) );
@@ -94,7 +94,7 @@ int SampSeek( unsigned long loc )
     if( !SampIsDOS ) {
         if( SysSeek( SampleHandle, loc ) != loc ) {
             return( -1 );
-		}
+        }
     }
     SampOffset = loc;
     return( 0 );
@@ -114,6 +114,7 @@ void Output( char FAR_PTR *str )
 {
     char FAR_PTR *p = str;
     int len = 0;
-    while( *p++ ) ++len;
+    while( *p++ != '\0' )
+        ++len;
     SysWrite( 2, str, len );
 }

@@ -36,6 +36,10 @@
 #include "smpstuff.h"
 #include "sampwin.h"
 
+
+#define MAX_STR         512
+#define MAX_ARRAYS      8
+
 typedef struct {
     HANDLE      task;
     DWORD       data;
@@ -47,11 +51,7 @@ typedef struct {
     TASKENTRY   te;
 } notify;
 
-
 static HANDLE   ourTask = NULL;
-
-#define MAX_STR         512
-#define MAX_ARRAYS      8
 
 /*
  * getNotifyData - get notify data area
@@ -62,8 +62,8 @@ static notify *getNotifyData( DWORD data )
     static notify       notifyData[MAX_ARRAYS];
     notify              *ptr;
 
-    ptr = &notifyData[ currData ];
-    currData = (currData+1) % MAX_ARRAYS;
+    ptr = &notifyData[currData];
+    currData = ( currData + 1 ) % MAX_ARRAYS;
     ptr->task = GetCurrentTask();
     ptr->data = data;
     return( ptr );
@@ -93,7 +93,7 @@ BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data )
 
     switch( id ) {
     case NFY_STARTDLL:
-        _fmemcpy( &ptr->startdll, (LPVOID) data, sizeof( NFYSTARTDLL ) );
+        _fmemcpy( &ptr->startdll, (LPVOID)data, sizeof( NFYSTARTDLL ) );
         MyModuleFindHandle( &ptr->me, ptr->startdll.hModule );
         HandleLibLoad( SAMP_CODE_LOAD, ptr->startdll.hModule );
         break;
@@ -129,7 +129,7 @@ void HandleNotify( WORD wparam, DWORD lparam )
 {
     notify              *ptr;
 
-    ptr = (notify *) lparam;
+    ptr = (notify *)lparam;
 
     switch( wparam ) {
     case NFY_STARTTASK:

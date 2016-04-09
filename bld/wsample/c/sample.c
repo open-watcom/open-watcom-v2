@@ -56,29 +56,29 @@
 #include "clibext.h"
 
 #ifdef __WINDOWS__
-#define Info SharedMemory->Info
-#define SampleIndex SharedMemory->SampleIndex
-#define SampleCount SharedMemory->SampleCount
+#define Info            SharedMemory->Info
+#define SampleIndex     SharedMemory->SampleIndex
+#define SampleCount     SharedMemory->SampleCount
 #define LastSampleIndex SharedMemory->LastSampleIndex
 #define FarWriteProblem SharedMemory->FarWriteProblem
-#define CurrTick SharedMemory->CurrTick
-#define LostData SharedMemory->LostData
+#define CurrTick        SharedMemory->CurrTick
+#define LostData        SharedMemory->LostData
 #endif
 
 #define NL      "\r\n"
 
-samp_header             Header = {
-                                SAMP_SIGNATURE,
-                                SAMP_MAJOR_VER,
-                                SAMP_MINOR_VER,
-                                sizeof( PREFIX_STRING )
-                                };
+samp_header         Header = {
+    SAMP_SIGNATURE,
+    SAMP_MAJOR_VER,
+    SAMP_MINOR_VER,
+    sizeof( PREFIX_STRING )
+};
 
-samp_block_prefix       Last = {
-                                0,
-                                sizeof( samp_block_prefix ),
-                                SAMP_LAST
-                               };
+samp_block_prefix   Last = {
+    0,
+    sizeof( samp_block_prefix ),
+    SAMP_LAST
+};
 
 bool                    FirstSample = TRUE;
 static int              stackSize = 0;
@@ -102,13 +102,13 @@ void WriteMark( char FAR_PTR *str, seg_offset where )
 #else
     proto.pref.tick = CurrTick;
 #endif
-    proto.pref.length = (sizeof( proto ) - 1) + size;
+    proto.pref.length = ( sizeof( proto ) - 1 ) + size;
     proto.pref.kind = SAMP_MARK;
     proto.mark.addr.segment = where.segment;
     proto.mark.addr.offset  = where.offset;
     proto.mark.thread_id = 1;
-    Info.d.count[ SAMP_MARK ].size += proto.pref.length;
-    Info.d.count[ SAMP_MARK ].number++;
+    Info.d.count[SAMP_MARK].size += proto.pref.length;
+    Info.d.count[SAMP_MARK].number++;
     SampWrite( &proto, sizeof( proto ) - 1 );
     SampWrite( str, size );
     SamplerOff--;
@@ -131,17 +131,17 @@ void WriteCodeLoad( seg_offset ovl_tbl, char *name, samp_block_kinds kind )
     code->d.ovl_tab.offset = ovl_tbl.offset;
 #ifndef __NETWARE__
     {
-    struct  stat            state;
-
-    stat( name, (struct stat *)&state );
-    code->d.time_stamp = state.st_mtime;
+        struct  stat            state;
+    
+        stat( name, (struct stat *)&state );
+        code->d.time_stamp = state.st_mtime;
     }
 #else
     code->d.time_stamp = 0;
 #endif
     memcpy( code->d.name, name, len + 1 ); /* including NULLCHAR */
-    Info.d.count[ kind ].size += code->pref.length;
-    Info.d.count[ kind ].number += 1;
+    Info.d.count[kind].size += code->pref.length;
+    Info.d.count[kind].number += 1;
     SampWrite( code, code->pref.length );
 }
 
@@ -160,8 +160,8 @@ void WriteAddrMap( seg map_start,  seg load_start, off load_offset )
     addr.d.data[0].map.offset = 0;
     addr.d.data[0].actual.segment = load_start;
     addr.d.data[0].actual.offset = load_offset;
-    Info.d.count[ SAMP_ADDR_MAP ].size += sizeof( addr );
-    Info.d.count[ SAMP_ADDR_MAP ].number += 1;
+    Info.d.count[SAMP_ADDR_MAP].size += sizeof( addr );
+    Info.d.count[SAMP_ADDR_MAP].number += 1;
     SampWrite( &addr, sizeof( addr ) );
 }
 
@@ -187,66 +187,65 @@ void SaveSamples( void )
     cgraph_sample xfer;
 
     tid = 0;
-    while( (tid = NextThread( tid )) ) {
+    while( (tid = NextThread( tid )) != 0 ) {
         if( !CallGraphMode ) {         /* record actual sample only */
             if( SampleIndex > 0 ) {
                 size = sizeof( samp_block_prefix ) + sizeof( struct samp_samples )
                             + (SampleIndex - 1) * sizeof( samp_address );
                 Samples->pref.length = size;
                 if( SampWrite( Samples, size ) == 0 ) {
-                    Info.d.count[ SAMP_SAMPLES ].size += size;
-                    Info.d.count[ SAMP_SAMPLES ].number += 1;
+                    Info.d.count[SAMP_SAMPLES].size += size;
+                    Info.d.count[SAMP_SAMPLES].number += 1;
                 }
                 SampleIndex = 0;
             }
         } else {        /* record sample and callgraph information */
-            for( i=0; i < SampleIndex; i++ )
-            if( SampleCount > 0 ) {
-                /* write sample record */
-                size = SIZE_PREFIX + SIZE_SAMPLE + SampleCount * SIZE_SAMP_ADDR;
-                Samples->pref.length = size;
-                Info.d.count[ SAMP_SAMPLES ].size += size;
-                Info.d.count[ SAMP_SAMPLES ].number += 1;
-                SampWrite( Samples, SIZE_PREFIX + SIZE_SAMPLE );
-                for( i = 0, j = 0; i < SampleCount; i++ ) {
-                    SampWrite( &Samples->d.sample.sample[ j ], SIZE_SAMP_ADDR );
-                    j += ( Samples->d.sample.sample[ j+1 ].offset >> 16 ) + 2;
-                }
-                /* write callgraph record */
-                size = SIZE_PREFIX + SIZE_CALLGRAPH +      /* prefix stuff */
-                       SampleCount * SIZE_CGRAPH_SAMPLE +  /* push/pop info */
-                       (SampleIndex - 2*SampleCount) *     /* cgraph samples */
-                                            SIZE_SAMP_ADDR;
-                CallGraph->pref.length = size;
-                CallGraph->d.cgraph.number = SampleCount;
-                Info.d.count[ SAMP_CALLGRAPH ].size += size;
-                Info.d.count[ SAMP_CALLGRAPH ].number += 1;
-                SampWrite( CallGraph, SIZE_PREFIX + SIZE_CALLGRAPH);
-                for( i = 0, j = 1; i < SampleCount; i++ ) {
-                    if( Samples->d.sample.sample[ j ].segment == 0 ) {
-                        xfer.pop_n = (uint_16)
-                                Samples->d.sample.sample[ j ].offset;
-                        xfer.push_n =
-                                Samples->d.sample.sample[ j ].offset >> 16;
-                        stackSize -= xfer.pop_n;
-                        if( stackSize < 0 ) {
-                            xfer.pop_n += stackSize;
-                        }
-                        stackSize += xfer.push_n;
-                        SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
-                        SampWrite( &Samples->d.sample.sample[ j + 1 ],
-                                                xfer.push_n * SIZE_SAMP_ADDR );
-                        j += xfer.push_n + 2;
-                    } else {    /* the callgraph info was not available */
-                        xfer.pop_n = -1;        /* flag this condition for */
-                        xfer.push_n = -1;       /* the profiler. */
-                        SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
-                        j += 2;
+            for( i = 0; i < SampleIndex; i++ ) {
+                if( SampleCount > 0 ) {
+                    /* write sample record */
+                    size = SIZE_PREFIX + SIZE_SAMPLE + SampleCount * SIZE_SAMP_ADDR;
+                    Samples->pref.length = size;
+                    Info.d.count[SAMP_SAMPLES].size += size;
+                    Info.d.count[SAMP_SAMPLES].number += 1;
+                    SampWrite( Samples, SIZE_PREFIX + SIZE_SAMPLE );
+                    for( i = 0, j = 0; i < SampleCount; i++ ) {
+                        SampWrite( &Samples->d.sample.sample[j], SIZE_SAMP_ADDR );
+                        j += ( Samples->d.sample.sample[j+1].offset >> 16 ) + 2;
                     }
+                    /* write callgraph record */
+                    size = SIZE_PREFIX + SIZE_CALLGRAPH +      /* prefix stuff */
+                           SampleCount * SIZE_CGRAPH_SAMPLE +  /* push/pop info */
+                           (SampleIndex - 2*SampleCount) *     /* cgraph samples */
+                                                SIZE_SAMP_ADDR;
+                    CallGraph->pref.length = size;
+                    CallGraph->d.cgraph.number = SampleCount;
+                    Info.d.count[SAMP_CALLGRAPH].size += size;
+                    Info.d.count[SAMP_CALLGRAPH].number += 1;
+                    SampWrite( CallGraph, SIZE_PREFIX + SIZE_CALLGRAPH);
+                    for( i = 0, j = 1; i < SampleCount; i++ ) {
+                        if( Samples->d.sample.sample[j].segment == 0 ) {
+                            xfer.pop_n = (uint_16)Samples->d.sample.sample[j].offset;
+                            xfer.push_n = Samples->d.sample.sample[j].offset >> 16;
+                            stackSize -= xfer.pop_n;
+                            if( stackSize < 0 ) {
+                                xfer.pop_n += stackSize;
+                            }
+                            stackSize += xfer.push_n;
+                            SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
+                            SampWrite( &Samples->d.sample.sample[j + 1],
+                                                    xfer.push_n * SIZE_SAMP_ADDR );
+                            j += xfer.push_n + 2;
+                        } else {    /* the callgraph info was not available */
+                            xfer.pop_n = -1;        /* flag this condition for */
+                            xfer.push_n = -1;       /* the profiler. */
+                            SampWrite( &xfer, SIZE_CGRAPH_SAMPLE );
+                            j += 2;
+                        }
+                    }
+                    SampleIndex = 0;
+                    SampleCount = 0;
+                    LastSampleIndex = 0;
                 }
-                SampleIndex = 0;
-                SampleCount = 0;
-                LastSampleIndex = 0;
             }
         }
     }
@@ -278,26 +277,24 @@ void RecordCGraph( void )
         Comm.push_no++;
         Comm.pop_no++;
     }
-    Samples->d.sample.sample[ SampleIndex ].segment = 0;
-    Samples->d.sample.sample[ SampleIndex ].offset = Comm.push_no;
-    Samples->d.sample.sample[ SampleIndex ].offset <<= 16;
-    Samples->d.sample.sample[ SampleIndex ].offset += Comm.pop_no;
+    Samples->d.sample.sample[SampleIndex].segment = 0;
+    Samples->d.sample.sample[SampleIndex].offset = Comm.push_no;
+    Samples->d.sample.sample[SampleIndex].offset <<= 16;
+    Samples->d.sample.sample[SampleIndex].offset += Comm.pop_no;
     SampleIndex++;
 
 /* then we write the cs:ip of the last known routine */
     if( Comm.push_no ) {
-        Samples->d.sample.sample[ SampleIndex ].offset
-                                    = (off) Comm.top_ip;
-        Samples->d.sample.sample[ SampleIndex ].segment
-                                    = (seg) Comm.top_cs;
+        Samples->d.sample.sample[SampleIndex].offset  = (off)Comm.top_ip;
+        Samples->d.sample.sample[SampleIndex].segment = (seg)Comm.top_cs;
         SampleIndex++;
     }
 
 /* finally, record the necessary callgraph information */
-    for( i = 0; i < (int) Comm.push_no - 1; i++ ) {
+    for( i = 0; i < (int)Comm.push_no - 1; i++ ) {
         GetNextAddr();
-        Samples->d.sample.sample[ SampleIndex ].offset = CGraphOff;
-        Samples->d.sample.sample[ SampleIndex ].segment = CGraphSeg;
+        Samples->d.sample.sample[SampleIndex].offset = CGraphOff;
+        Samples->d.sample.sample[SampleIndex].segment = CGraphSeg;
         SampleIndex++;
     }
 
@@ -309,7 +306,7 @@ void RecordCGraph( void )
 static void AllFull( void )
 {
     SampClose();
-    Output( MsgArray[ERR_DISK_FULL-ERR_FIRST_MESSAGE] );
+    Output( MsgArray[ERR_DISK_FULL - ERR_FIRST_MESSAGE] );
     Output( "\r\n" );
     fatal();
 }
@@ -321,9 +318,11 @@ void REPORT_TYPE report( void )
     SaveSamples();
 
     /* write the header on the sample file */
-    Info.d.count[ SAMP_LAST ].number++;
-    if( SampWrite( &Last, sizeof( Last ) ) != 0 ) AllFull();
-    if( SampWrite( &Header, sizeof( Header ) ) != 0 ) AllFull();
+    Info.d.count[SAMP_LAST].number++;
+    if( SampWrite( &Last, sizeof( Last ) ) != 0 )
+        AllFull();
+    if( SampWrite( &Header, sizeof( Header ) ) != 0 )
+        AllFull();
 #if defined(__WINDOWS__)
     Info.pref.tick = WinGetCurrTick();
 #else
@@ -333,11 +332,11 @@ void REPORT_TYPE report( void )
     SampWrite( &Info, sizeof( Info ) );
     SampClose();
     if( LostData )  {
-        Output( MsgArray[ERR_SAMPLES_LOST-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[ERR_SAMPLES_LOST - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
     }
     if( FarWriteProblem ) {
-        Output( MsgArray[ERR_SAMPLE_TRUNCATE-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[ERR_SAMPLE_TRUNCATE - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
@@ -370,7 +369,8 @@ void Usage( void )
 
 char *skip( char *ptr )
 {
-    while( *ptr == ' ' || *ptr == '\t' )  ++ptr;
+    while( *ptr == ' ' || *ptr == '\t' )
+        ++ptr;
     return( ptr );
 }
 
@@ -378,15 +378,15 @@ char *skip( char *ptr )
 unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
 /* handles command line items of the sort "b=23" (up to base 16) */
 {
-    char *scan;
-    int c;
-    unsigned res;
-    unsigned value;
-    char buff[2];
+    char        *scan;
+    int         c;
+    unsigned    res;
+    unsigned    value;
+    char        buff[2];
 
     scan = skip( *atstr );
     if( scan[0] != '=' && scan[0] != '#' ) {
-        Output( MsgArray[MSG_EXPECTING-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_EXPECTING - ERR_FIRST_MESSAGE] );
         buff[0] = scan[0];
         buff[1] = '\0';
         Output( buff );
@@ -395,9 +395,10 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     }
     scan = skip( &scan[1] );
     res = 0;
-    for(;;) {
+    for( ;; ) {
         c = tolower( *scan );
-        if( ! isxdigit( c ) ) break;
+        if( !isxdigit( c ) )
+            break;
         if( isalpha( c ) ) {
             value = ( c - 'a' ) + 10;
         } else {
@@ -407,13 +408,13 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
         res += value;
         ++scan;
     }
-    if( c !='\0' && c !=' ' && c !='\t' ) {
-        Output( MsgArray[MSG_INVALID_CHAR-ERR_FIRST_MESSAGE] );
+    if( c != '\0' && c != ' ' && c != '\t' ) {
+        Output( MsgArray[MSG_INVALID_CHAR - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
     if(( res < min ) || ( res > max )) {
-        Output( MsgArray[MSG_OUT_OF_RANGE-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_OUT_OF_RANGE - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
@@ -421,8 +422,8 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     return( res );
 }
 
-#define CNV_CEIL( size )    ((size*1024U                            \
-        - (sizeof( struct samp_samples )-sizeof( samp_address )))   \
+#define CNV_CEIL( size )    ((size * 1024U                            \
+        - (sizeof( struct samp_samples ) - sizeof( samp_address )))   \
         / sizeof( samp_address ))
 
 
@@ -440,10 +441,11 @@ char *Parse( char *line, char arg[], char **eoc )
     for( ;; ) {
         cmd = skip( cmd );
 #ifdef __UNIX__
-        if( *cmd != '-' ) break;
+        if( *cmd != '-' )
 #else
-        if( (*cmd != '/') && (*cmd != '-') ) break;
+        if( (*cmd != '/') && (*cmd != '-') )
 #endif
+            break;
         cmd = skip( ++cmd );
         c = *(cmd++);
         c = tolower( c );
@@ -458,7 +460,7 @@ char *Parse( char *line, char arg[], char **eoc )
             break;
         case 'f':
             if( *cmd != '=' && *cmd != '#' ) {
-                Output( MsgArray[MSG_EXPECTING-ERR_FIRST_MESSAGE] );
+                Output( MsgArray[MSG_EXPECTING - ERR_FIRST_MESSAGE] );
                 buff[0] = *cmd;
                 buff[1] = '\0';
                 Output( buff );
@@ -491,20 +493,26 @@ char *Parse( char *line, char arg[], char **eoc )
     /* scan over command name */
     ptr = cmd;
     for( ;; ) {
-        if( *ptr == ' ' ) break;
+        if( *ptr == ' ' )
+            break;
 #ifndef __UNIX__
-        if( *ptr == '/' ) break;
+        if( *ptr == '/' )
+            break;
 #endif
-        if( *ptr == '-' ) break;
-        if( *ptr == '\t' ) break;
-        if( *ptr == '\0' ) break;
+        if( *ptr == '-' )
+            break;
+        if( *ptr == '\t' )
+            break;
+        if( *ptr == '\0' )
+            break;
         ++ptr;
     }
     /* collect program arguments - arg will contain DOS-style command tail,
      * possibly truncated (max 126 usable chars).
      */
     *eoc = ptr;
-    arg[0] = len = 0;
+    len = 0;
+    arg[0] = 0;
     if( *ptr != '\0' ) {
         arg[0] = 1;
         arg[1] = *ptr++;
@@ -523,7 +531,7 @@ void AllocSamples( unsigned tid )
     Samples = my_alloc( sizeof( struct samp_samples )
             + Ceiling * sizeof( samp_address ) );
     if( Samples == NULL ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
@@ -532,7 +540,7 @@ void AllocSamples( unsigned tid )
     if( CallGraphMode ) {       /* allocate callgraph prefix storage */
         CallGraph = my_alloc( sizeof( struct samp_block ) );
         if( CallGraph == NULL ) {
-            Output( MsgArray[MSG_CALLGRAPH_BUFF-ERR_FIRST_MESSAGE] );
+            Output( MsgArray[MSG_CALLGRAPH_BUFF - ERR_FIRST_MESSAGE] );
             Output( "\r\n" );
             fatal();
         }
@@ -572,7 +580,7 @@ int main( int argc, char **argv )
     cmd_line = malloc( cmdlen + 1 );
     arg = malloc( cmdlen + 1 );
     if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
@@ -582,19 +590,19 @@ int main( int argc, char **argv )
     cmd_line = malloc( 256 ); /* Just hope for the best */
     arg = malloc( 256 );
     if( ( cmd_line == NULL ) || ( arg == NULL ) ) {
-        Output( MsgArray[MSG_SAMPLE_BUFF-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_BUFF - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
     _fstrcpy( cmd_line, win_cmd );
 #endif
     tmp_cmd = cmd_line;
-    while( *tmp_cmd ) ++tmp_cmd;
-    while( *--tmp_cmd == ' ' || *tmp_cmd == '\t' ) ;
+    while( *tmp_cmd != '\0' )
+        ++tmp_cmd;
+    while( *--tmp_cmd == ' ' || *tmp_cmd == '\t' )
+        ;
     *++tmp_cmd = '\0';
-    cmd = Parse( cmd_line, arg, &eoc );    /*
-          will set Ceiling, Margin, TimerMult, cmd, and arg
-                                 */
+    cmd = Parse( cmd_line, arg, &eoc );    /* will set Ceiling, Margin, TimerMult, cmd, and arg */
     GetProg( cmd, eoc );
 
     AllocSamples( 1 );
@@ -605,14 +613,14 @@ int main( int argc, char **argv )
     FarWriteProblem = FALSE;
 
     if( !VersionCheck() ) {
-        Output( MsgArray[MSG_VERSION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_VERSION - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
 
 #ifndef __WINDOWS__
     if( SampCreate( SampName ) != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_FILE-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_FILE - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }
@@ -639,7 +647,7 @@ int main( int argc, char **argv )
 #endif
     /* record get re-written with other information filled in later */
     SampWrite( &Info, sizeof( Info ) );
-    CurrTick  = 0L;
+    CurrTick = 0L;
     /* Some systems need a simple null-terminated string, others need
      * a DOS-style 128-byte array with length in the first byte and CR
      * at the end. We pass both and let the callee pick & choose.

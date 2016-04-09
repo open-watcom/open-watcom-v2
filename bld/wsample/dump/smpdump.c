@@ -43,26 +43,26 @@
 #include "banner.h"
 
 
-char *Types[] = {
-        "INFO:",
-        "SAMPLES:",
-        "MARK:",
-        "OVL_LOAD:",
-        "CODE_LOAD:",
-        "ADDR_MAP:",
-        "MAIN_LOAD:",
-        "LAST:",
-        "REMAP_SECTIONS:",
-        "CALLGRAPH:",
-        ""
-};
-
 #if defined( __SMALL__ ) || defined( __MEDIUM__ )
     #error must be compiled with a large data model
 #endif
 
 #define COND_SWAP_16( a )   if( byte_swap ) SWAP_16( a );
 #define COND_SWAP_32( a )   if( byte_swap ) SWAP_32( a );
+
+char *Types[] = {
+    "INFO:",
+    "SAMPLES:",
+    "MARK:",
+    "OVL_LOAD:",
+    "CODE_LOAD:",
+    "ADDR_MAP:",
+    "MAIN_LOAD:",
+    "LAST:",
+    "REMAP_SECTIONS:",
+    "CALLGRAPH:",
+    ""
+};
 
 static char path[_MAX_PATH];
 static char drv[_MAX_DRIVE];
@@ -103,8 +103,8 @@ int main( int argc, char **argv )
     if( argc == 3 && strcmp( argv[2], "-q" ) == 0 ) {
         quiet = 1;
     }
-    _splitpath( argv[ 1 ], drv, dir, name, ext );
-    if( ext[ 0 ] == '\0' ) {
+    _splitpath( argv[1], drv, dir, name, ext );
+    if( ext[0] == '\0' ) {
         strcpy( ext, ".smp" );
     }
     _makepath( path, drv, dir, name, ext );
@@ -129,19 +129,21 @@ int main( int argc, char **argv )
     for( ;; ) {
         /* read the prefix of record */
         wanted = sizeof( data->pref );
-        if( read( fd, &data->pref, wanted ) != wanted ) break;
+        if( read( fd, &data->pref, wanted ) != wanted )
+            break;
         COND_SWAP_32( data->pref.tick );
         COND_SWAP_16( data->pref.length );
         COND_SWAP_16( data->pref.kind );
 
         /* read the rest of the record */
         wanted = data->pref.length - sizeof( data->pref );
-        if( read( fd, &data->d, wanted ) != wanted ) break;
+        if( read( fd, &data->d, wanted ) != wanted )
+            break;
 
         /* dump common record data */
         record_type = "** UNKNOWN **";
         if( data->pref.kind < NUM_BLOCK_KINDS ) {
-            record_type = Types[ data->pref.kind ];
+            record_type = Types[data->pref.kind];
         }
         printf( "%s  tick %lu length %u\n", record_type,
                 data->pref.tick, data->pref.length );
@@ -282,23 +284,25 @@ int main( int argc, char **argv )
                                 printf( " -  " );
                             }
                         }
-                        for( k=sptr->push_n; k > 0; k-- ) {
+                        for( k = sptr->push_n; k > 0; k-- ) {
                             printf( "%.4x:%.8lx    ",
                                 sptr->addr[k - 1].segment,
                                 sptr->addr[k - 1].offset );
                         }
                         length += sptr->push_n;
                         printf( "\n" );
-                        sptr = (cgraph_sample *) &(sptr->addr[sptr->push_n]);
+                        sptr = (cgraph_sample *)&(sptr->addr[sptr->push_n]);
                     } else {
                         printf( "** Unknown callgraph info\n" );
-                        sptr = (cgraph_sample *) &(sptr->addr[0]);
+                        sptr = (cgraph_sample *)&(sptr->addr[0]);
                     }
                 }
             }
             break;
         }
-        if( data->pref.kind == SAMP_LAST ) break;
+        if( data->pref.kind == SAMP_LAST ) {
+            break;
+        }
     }
     close( fd );
     return( 0 );
