@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-extern char             *BatchLink( const char *__name );
+extern const char       *BatchLink( const char *__name );
 extern unsigned         BatchMaxCmdLine( void );
 extern unsigned         BatchChdir( const char *__new_dir );
 extern unsigned         BatchSpawn( const char *__cmd );

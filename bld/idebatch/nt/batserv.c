@@ -180,7 +180,7 @@ static void ProcessConnection( void )
     }
 }
 
-BOOL CALLBACK HideWindows( HWND hwnd, LPARAM lp )
+static BOOL CALLBACK HideWindows( HWND hwnd, LPARAM lp )
 {
     DWORD       pid;
 
@@ -193,7 +193,7 @@ BOOL CALLBACK HideWindows( HWND hwnd, LPARAM lp )
     return( TRUE );
 }
 
-BOOL WINAPI Ignore( DWORD CtrlType )
+static BOOL WINAPI Ignore( DWORD CtrlType )
 {
     CtrlType = CtrlType;
     return( TRUE );

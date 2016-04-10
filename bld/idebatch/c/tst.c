@@ -40,7 +40,7 @@ int main( void )
     char                buff[256];
     unsigned long       stat;
     unsigned            len;
-    char                *err;
+    const char          *err;
     int                 linked;
 
     linked = 0;
