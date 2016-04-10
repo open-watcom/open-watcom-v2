@@ -46,19 +46,23 @@
 #include "os.h"
 #define DEFVARS
 #include "timermod.h"
+#include "indos.h"
+#include "rmhooks.h"
+#include "hooks.h"
+#include "realmode.h"
 
 
-extern int              InDOS( void );
 /*
  Located int SAMPLE.C
 */
 extern void             StopAndSave( void );
-extern intrptr          HookTimer(intrptr);
-
-extern void             RecordSample( union INTPACK FAR_PTR *r );
 
 intrptr                 old_timer_handler;
-unsigned                Save_Request = FALSE;
+#ifdef __NETWARE__
+static int              Save_Request = FALSE;
+#else
+int                     Save_Request = FALSE;
+#endif
 
 unsigned NextThread( unsigned tid )
 {
@@ -91,7 +95,7 @@ unsigned NextThread( unsigned tid )
     and things start making sense.
 */
 
-void __interrupt __far timer_handler( union INTPACK r )
+static void __interrupt __far timer_handler( union INTPACK r )
 {
     if( --TimerMod == 0 ) {
         TimerMod = TimerMult;

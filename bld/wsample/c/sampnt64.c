@@ -434,7 +434,7 @@ static void myGetThreadContext( DWORD id, CONTEXT *pc )
 /*
  * TimerThread - handle timer ticks
  */
-DWORD WINAPI TimerThread( LPVOID parms )
+static DWORD WINAPI TimerThread( LPVOID parms )
 {
     CONTEXT con;
     int i;

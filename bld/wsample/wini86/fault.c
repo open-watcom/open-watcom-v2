@@ -35,7 +35,7 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
-#include "intdata.h"
+
 
 /*
  * FaultHandler - C handler for a fault

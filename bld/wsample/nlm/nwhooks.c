@@ -33,6 +33,7 @@
 #include "intrptr.h"
 #include "os.h"
 #include "miniproc.h"
+#include "hooks.h"
 
 
 typedef struct {
@@ -53,7 +54,7 @@ extern void GetIDTBaseOff( baseoffset * );
         0x0f 0x01 0x08 /* sidt  [eax] */ \
     parm caller [eax];
 
-intrptr HookVect( intrptr new_intrptr, int vect )
+static intrptr HookVect( intrptr new_intrptr, int vect )
 {
     LONG        temp;
     intrptr     old_intrptr;
@@ -75,7 +76,6 @@ intrptr HookVect( intrptr new_intrptr, int vect )
     Enable();
     return( old_intrptr );
 }
-
 
 intrptr HookBreak( intrptr new_int03 )
 {

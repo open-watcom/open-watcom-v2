@@ -86,8 +86,7 @@ static BOOL getFile( char *fname )
 /*
  * About2 - processes messages for the about dialog.
  */
-BOOL __export FAR PASCAL About2( HWND hwnd, UINT msg,
-                                WPARAM wparam, LPARAM lparam )
+static BOOL FAR PASCAL About2( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 
@@ -109,8 +108,7 @@ BOOL __export FAR PASCAL About2( HWND hwnd, UINT msg,
 /*
  * StartUpDriver - the main message handling loop
  */
-long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
-                                WPARAM wparam, LPARAM lparam )
+static long FAR PASCAL StartUpDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     farproc;
     HWND        tmpw;
@@ -165,7 +163,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
         break;
 
     default:
-        return( DefWindowProc(hwnd,message,wparam,lparam) );
+        return( DefWindowProc( hwnd, message, wparam, lparam ) );
 
     } /* switch */
     return( 0L );
@@ -175,8 +173,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
 /*
  * SubClassProc - handles sub-classing of edit control
  */
-long __export FAR PASCAL SubClassProc( HWND hwnd, UINT message,
-                                WPARAM wparam, LPARAM lparam )
+static long FAR PASCAL SubClassProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
 
     switch( message ) {
@@ -187,8 +184,7 @@ long __export FAR PASCAL SubClassProc( HWND hwnd, UINT message,
         }
         break;
     }
-    return( CallWindowProc( (WNDPROC)oldClassProc, hwnd, message, wparam,
-            lparam ) );
+    return( CallWindowProc( (WNDPROC)oldClassProc, hwnd, message, wparam, lparam ) );
 
 } /* SubClassProc */
 

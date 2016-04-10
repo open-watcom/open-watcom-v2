@@ -273,7 +273,7 @@ unsigned NextThread( unsigned tid )
 }
 
 
-void SetPid( char **cmd )
+static void SetPid( char **cmd )
 {
     SamplePid = GetNumber( 1, INT_MAX, cmd, 10 );
 }
@@ -333,7 +333,7 @@ static void GrowArrays( unsigned tid )
     MaxThread = max;
 }
 
-void RecordSample( unsigned offset, unsigned tid )
+static void RecordSample( unsigned offset, unsigned tid )
 {
     samp_block  *old_samples;
     unsigned    old_sample_index;

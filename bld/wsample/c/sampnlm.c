@@ -54,6 +54,8 @@
 #include "debugapi.h"
 #include "aesproc.h"
 #include "event.h"
+#include "indos.h"
+#include "realmode.h"
 
 
 typedef struct code_load {
@@ -106,7 +108,7 @@ void StopProg( void )
 {
 }
 
-
+#if 0
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
 {
     seg_offset          ovl_tbl;
@@ -119,8 +121,9 @@ void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
     WriteCodeLoad( ovl_tbl, buff, kind );
     WriteAddrMap( 1, GetCS(), loaded->LDCodeImageOffset );
 }
+#endif
 
-void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
+static void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind )
 {
     code_load           *new;
 
@@ -135,7 +138,7 @@ void RecordCodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds ki
 }
 
 
-void WriteRecordedLoads( void )
+static void WriteRecordedLoads( void )
 {
     seg_offset          ovl_tbl;
     code_load           *curr,*next;
@@ -152,12 +155,12 @@ void WriteRecordedLoads( void )
 
 static volatile unsigned nModeSwitched = 0;
 
-void ModeSwitched( LONG dummy )
+static void ModeSwitched( LONG dummy )
 {
     nModeSwitched++;
 }
 
-void WakeMeUp( LONG dummy )
+static void WakeMeUp( LONG dummy )
 {
     static int                      Already = FALSE;
     struct LoadDefinitionStructure  *loaded;
@@ -240,14 +243,14 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 }
 
 
-void SaveOutSamples( void *dummy )
+static void SaveOutSamples( void *dummy )
 {
     StopAndSave();
     AES.AProcessToCall = NULL;
 }
 
 
-void RecordSample( union INTPACK FAR_PTR *r ) {
+void RecordSample( union INTPACK __far *r ) {
 
     Samples->d.sample.sample[SampleIndex].offset = r->x.eip;
     Samples->d.sample.sample[SampleIndex].segment = r->x.cs;
@@ -289,7 +292,6 @@ int InDOS( void )
 {
     return( TRUE );
 }
-
 
 void GetProg( char *cmd, char *eoc )
 {
@@ -333,7 +335,7 @@ static unsigned long RoundSpeed(unsigned long speed)
 
 static unsigned long volatile * pRealModeTimerFlag = NULL;
 
-/*static */void EstimateRate( void )
+static void EstimateRate( void )
 {
     char            EstRate[16];
     unsigned long   currCount;

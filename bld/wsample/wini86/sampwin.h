@@ -37,6 +37,8 @@
 #include "segmem.h"
 #include "mythelp.h"
 #include "di386.h"
+#include "intdata.h"
+
 
 #define MAX_SAMPLES     10000
 #define TIMER_ID        666
@@ -135,5 +137,8 @@ char *ResName( char * );
 
 /* winopts.c */
 BOOL GetFileName( HINSTANCE, int, char * );
+
+/* fault.c */
+extern WORD __cdecl FAR FaultHandler( fault_frame ff );
 
 #endif

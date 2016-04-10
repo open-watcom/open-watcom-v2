@@ -136,7 +136,7 @@ int VersionCheck( void )
 /*
  * RecordSample - record a sample in a specific thread
  */
-void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
+static void RecordSample( unsigned offset, unsigned short segment, DWORD real_tid )
 {
     samp_block  *old_samples;
     unsigned    old_sample_index;
@@ -435,7 +435,7 @@ static void myGetThreadContext( DWORD id, CONTEXT *pc )
 /*
  * TimerThread - handle timer ticks
  */
-DWORD WINAPI TimerThread( LPVOID parms )
+static DWORD WINAPI TimerThread( LPVOID parms )
 {
     CONTEXT con;
     int i;

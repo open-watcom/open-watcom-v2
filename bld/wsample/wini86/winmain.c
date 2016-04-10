@@ -52,8 +52,7 @@ static char     sampleClass[] = "WsamplewClass";
 /*
  * About - about dialog message handler
  */
-BOOL __export FAR PASCAL About( HWND hwnd, UINT message, WPARAM wparam,
-                                LPARAM lparam )
+static BOOL FAR PASCAL About( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 
@@ -75,7 +74,7 @@ BOOL __export FAR PASCAL About( HWND hwnd, UINT message, WPARAM wparam,
 /*
  * WinMessage - display a message in a message box
  */
-void WinMessage( char *str, ... )
+static void WinMessage( char *str, ... )
 {
     char        st[256];
     va_list     al;
@@ -90,7 +89,7 @@ void WinMessage( char *str, ... )
 /*
  * StartOutput - set up output listbox
  */
-BOOL StartOutput( short x, short y )
+static BOOL StartOutput( short x, short y )
 {
 
     OutputWindow = CreateWindow(
@@ -118,8 +117,7 @@ BOOL StartOutput( short x, short y )
 /*
  * MainDriver - message handler for sampler
  */
-long __export FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam,
-                                        LPARAM lparam )
+static long FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     proc;
 
@@ -168,7 +166,7 @@ long __export FAR PASCAL MainDriver( HWND hwnd, UINT message, WPARAM wparam,
 /*
  * WindowsInit - windows-specific initialization
 */
-int WindowsInit( HANDLE inst, int showcmd )
+static int WindowsInit( HANDLE inst, int showcmd )
 {
     WNDCLASS    wc;
     BOOL        rc;
@@ -294,16 +292,6 @@ int MessageLoop( void )
 } /* MessageLoop */
 
 /*
- * StartWDebug386 - see if wgod is here
- */
-void StartWDebug386( void )
-{
-    if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = TRUE;
-    }
-} /* StartWDebug386 */
-
-/*
  * WinMain - main windows entry point
  */
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
@@ -322,11 +310,11 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
      */
     if( !previnst ) {
         SharedMemory = NULL;
-        StartWDebug386();
-        if( !WDebug386 ) {
+        if( CheckWin386Debug() != WGOD_VERSION ) {
             WinMessage( "Could not find WDEBUG.386" );
             return( FALSE );
         }
+        WDebug386 = TRUE;
         if( !MsgInit( inst ) )
             fatal();
         cmddat.nCmdShow = SW_NORMAL;

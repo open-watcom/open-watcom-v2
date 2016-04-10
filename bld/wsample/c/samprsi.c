@@ -57,7 +57,7 @@ int VersionCheck( void )
     return( TRUE );
 }
 
-void RecordSample( unsigned long offset, unsigned short segment )
+static void RecordSample( unsigned long offset, unsigned short segment )
 {
     if( InsiderTime == 1 && SamplerOff == 0 ) {
         LastSampleIndex = SampleIndex;

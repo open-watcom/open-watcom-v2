@@ -58,7 +58,6 @@
 #define BUFF_SIZE       2048
 #define STACK_SIZE      32768
 
-
 static char             UtilBuff[BUFF_SIZE];
 static uDB_t            Buff;
 static PID              Pid;
@@ -138,7 +137,7 @@ static void GrowArrays( unsigned tid )
     MaxThread = max;
 }
 
-void RecordSample( unsigned offset, unsigned short segment, TID tid )
+static void RecordSample( unsigned offset, unsigned short segment, TID tid )
 {
     samp_block FAR_PTR *old_samples;
     unsigned old_sample_index;
@@ -288,7 +287,7 @@ static void InternalError( char * str )
 }
 
 
-void DebugExecute( uDB_t *buff, ULONG cmd )
+static void DebugExecute( uDB_t *buff, ULONG cmd )
 {
 //    EXCEPTIONREPORTRECORD     ex;
     ULONG                       value;
@@ -408,7 +407,7 @@ void DebugExecute( uDB_t *buff, ULONG cmd )
 }
 
 
-void APIENTRY Sleeper( unsigned long parm )
+static void APIENTRY Sleeper( unsigned long parm )
 {
     static uDB_t    mybuff;
 

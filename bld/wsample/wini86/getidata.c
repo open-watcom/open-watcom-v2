@@ -30,7 +30,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "commonui.h"
+#include "sample.h"
+#include "smpstuff.h"
+#include "sampwin.h"
 
 int GetIData( HINSTANCE inst, void __near *data, unsigned int size )
 {

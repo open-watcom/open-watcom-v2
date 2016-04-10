@@ -44,7 +44,6 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#include "wmsg.h"
 #include "wreslang.h"
 #if defined(__WINDOWS__)
 #include <windows.h>
@@ -53,6 +52,7 @@
 #include "wresset2.h"
 #include "watcom.h"
 #endif
+#include "wmsg.h"
 
 #include "clibext.h"
 
@@ -127,7 +127,7 @@ int MsgInit( void )
                         buffer[0] = '\0';
                     }
                     MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-    
+
                     if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
                         break;
 #if defined( __I86__ )

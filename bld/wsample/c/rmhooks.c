@@ -32,6 +32,8 @@
 
 #include "os.h"
 #include "intrptr.h"
+#include "rmhooks.h"
+#include "hooks.h"
 
 /*
   The timer interrupt (0x08) is special in that the getvect and setvect

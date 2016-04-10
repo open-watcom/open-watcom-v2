@@ -43,6 +43,8 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
+#include "realmode.h"
+#include "sampdos.h"
 
 #include "ovldbg.h"
 
@@ -278,7 +280,7 @@ void SysDefaultOptions( void )
 }
 
 
-void SetInterruptWatch( char **cmd )
+static void SetInterruptWatch( char **cmd )
 {
     unsigned intr_num;
 

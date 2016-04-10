@@ -66,7 +66,7 @@ static int              NewSession;
 static seg_offset       CommonAddr;
 
 #define STACK_SIZE 4096
-static char __near      Stack[STACK_SIZE];
+static unsigned char    __near Stack[STACK_SIZE];
 
 unsigned NextThread( unsigned tid )
 {
@@ -159,7 +159,7 @@ int VersionCheck( void )
 
     DosGetVersion( &OSVer );
     if( OSVer >= 0x1400 && IsLX() ) {
-        if( DosSearchPath( 0x0003, "PATH", OS22SAMPLER, UtilBuff, sizeof( UtilBuff ) ) ) {
+        if( DosSearchPath( 0x0003, "PATH", OS22SAMPLER, (unsigned char *)UtilBuff, sizeof( UtilBuff ) ) ) {
             InternalError( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
         }
         DosGetEnv( &env_sel, &cmd_off );
@@ -195,7 +195,7 @@ static void GrowArrays( unsigned tid )
     MaxThread = max;
 }
 
-void RecordSample( unsigned offset, unsigned short segment, USHORT tid )
+static void RecordSample( unsigned offset, unsigned short segment, USHORT tid )
 {
     samp_block  FAR_PTR *old_samples;
     unsigned    old_sample_index;
@@ -350,7 +350,7 @@ static void CodeLoad( TRACEBUF FAR_PTR *buff, USHORT mte,
 }
 
 
-USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
+static USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
 {
     int         cmd;
     int         value;
@@ -382,7 +382,7 @@ USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
     }
 }
 
-void __far Sleeper( void )
+static void __far Sleeper( void )
 {
     static TRACEBUF     mybuff;
 

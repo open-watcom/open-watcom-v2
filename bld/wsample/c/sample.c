@@ -367,7 +367,7 @@ void Usage( void )
 }
 
 
-char *skip( char *ptr )
+static char *skip( char *ptr )
 {
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
@@ -427,7 +427,7 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
         / sizeof( samp_address ))
 
 
-char *Parse( char *line, char arg[], char **eoc )
+static char *Parse( char *line, char arg[], char **eoc )
 {
     char        *cmd, *ptr;
     int         c, len;

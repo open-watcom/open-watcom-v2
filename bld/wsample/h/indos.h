@@ -24,65 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  System functions for 16-bit DOS.
+* Description:  InDOS function prototype (DOS + Netware)
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <malloc.h>
-#include <dos.h>
-#include "sample.h"
-#include "tinyio.h"
-#include "smpstuff.h"
-#include "sysio.h"
-
-
-void SysInit( void )
-{
-}
-
-int SysCreate( char *name )
-{
-    int     handle;
-
-    if( _dos_creat( name, _A_NORMAL, &handle ) )
-        return( -1 );
-    return( handle );
-}
-
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
-{
-    tiny_ret_t  ret;
-
-    ret = TinyFarWrite( handle, buff, len );
-    if( ret < 0 )
-        return( (unsigned)-1 );
-    return( ret );
-}
-
-unsigned long SysSeek( int handle, unsigned long loc )
-{
-    unsigned long   new_loc;
-
-    if( TINY_ERROR( TinyLSeek( handle, loc, TIO_SEEK_START, (u32_stk_ptr)&new_loc ) ) )
-        return( -1UL );
-    return( new_loc );
-}
-
-int SysClose( int handle )
-{
-    if( _dos_close( handle ) )
-        return( -1 );
-    return( 0 );
-}
-
-void FAR_PTR *my_alloc( int size )
-{
-    return( _fmalloc( size ) );
-}
-
-void my_free( void FAR_PTR *chunk )
-{
-    _ffree( chunk );
-}
+#if defined( __DOS__ )
+extern int      __near InDOS( void );
+#else
+extern int      InDOS( void );
+#endif
