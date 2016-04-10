@@ -121,7 +121,8 @@ static char *       curToken = NULL;
 /*
  *  Strip leading _ and @nn from stdcall names when alpha
  */
-void FuzzyMassageAXPStdcall( char *name ) {
+static void FuzzyMassageAXPStdcall( char *name )
+{
     char *first;
     char *last;
     first = name;

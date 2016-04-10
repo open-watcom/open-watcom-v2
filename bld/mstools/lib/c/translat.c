@@ -400,8 +400,8 @@ static void del_string( OPT_STRING **p )
 /*
  * Create the '.exp' file
  */
-void CreateExp( OPT_STORAGE *cmdOpts, char * name )
-/*************************************************/
+static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
+/********************************************************/
 {
     char *              newstr;
     OPT_STRING *        optStr;
