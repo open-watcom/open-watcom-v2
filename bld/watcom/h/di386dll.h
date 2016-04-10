@@ -29,17 +29,16 @@
 ****************************************************************************/
 
 
-#ifndef _DI386_H_INCLUDED
-#define _DI386_H_INCLUDED
+#ifndef _DI386DLL_H_INCLUDED
+#define _DI386DLL_H_INCLUDED
 
-extern void     (FAR PASCAL *DoneWithInterrupt)( LPVOID );
-extern int      (FAR PASCAL *GetDebugInterruptData)( LPVOID );
-extern void     (FAR PASCAL *ResetDebugInterrupts32)( void );
-extern int      (FAR PASCAL *SetDebugInterrupts32)( void );
-extern int      (FAR PASCAL *IsDebuggerExecuting)( void );
-extern int      (FAR PASCAL *DebuggerIsExecuting)( int );
+#include "di386typ.h"
 
-void Start386Debug( void );
-void Done386Debug( void );
+extern __declspec(dllexport) IsDebuggerExecuting_func     IsDebuggerExecuting;
+extern __declspec(dllexport) DoneWithInterrupt_func       DoneWithInterrupt;
+extern __declspec(dllexport) GetDebugInterruptData_func   GetDebugInterruptData;
+extern __declspec(dllexport) ResetDebugInterrupts32_func  ResetDebugInterrupts32;
+extern __declspec(dllexport) SetDebugInterrupts32_func    SetDebugInterrupts32;
+extern __declspec(dllexport) DebuggerIsExecuting_func     DebuggerIsExecuting;
 
-#endif /* _DI386_H_INCLUDED */
+#endif /* _DI386DLL_H_INCLUDED */

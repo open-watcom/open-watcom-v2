@@ -47,7 +47,7 @@
 #include "font.h"
 #include "segmem.h"
 #include "ismod32.h"
-#include "di386.h"
+#include "di386cli.h"
 #include "listbox.h"
 #include "rcstr.gh"
 #include "ldstr.h"
@@ -115,7 +115,6 @@ extern MODULEENTRY              DTModuleEntry;
 extern HWND                     MainWindow;
 extern WORD                     CharSizeX,CharSizeY;
 extern char                     *AppName;
-extern bool                     WDebug386;
 extern DWORD                    WindowsFlags;
 extern loginfo                  LogInfo;
 extern dumpany                  DumpAny;

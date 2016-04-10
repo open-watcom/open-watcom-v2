@@ -32,16 +32,11 @@
 #include "commonui.h"
 #include "bool.h"
 #include "wdebug.h"
-#include "di386.h"
 
-void            (FAR PASCAL *DoneWithInterrupt)( LPVOID );
-int             (FAR PASCAL *GetDebugInterruptData)( LPVOID );
-void            (FAR PASCAL *ResetDebugInterrupts32)( void );
-int             (FAR PASCAL *SetDebugInterrupts32)( void );
-int             (FAR PASCAL *IsDebuggerExecuting)( void );
-int             (FAR PASCAL *DebuggerIsExecuting)( int );
+#define global_di386
+#include "di386cli.h"
+
 static HANDLE   wint32DLL;
-extern bool     WDebug386;
 
 /*
  * Start386Debug - initialize for 32-bit debugging
