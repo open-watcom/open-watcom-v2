@@ -42,7 +42,7 @@
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
-#include "int32std.h"
+#include "di386cli.h"
 #include "dosextx.h"
 #include "dosfile.h"
 

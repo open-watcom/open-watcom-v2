@@ -40,6 +40,7 @@
 #include "stdwin.h"
 #include "dbg386.h"
 #include "wdebug.h"
+#include "di386cli.h"
 
 /*
  * We keep a breakpoint list to support the "debug debugee only" and
