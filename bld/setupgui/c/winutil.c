@@ -61,7 +61,7 @@
 
 #if defined( __NT__ )
 
-void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
+static void CreateRegEntry( char *hive_key, char *app_name, const char *key_name,
                      char *value, char *file_name, bool add )
 {
     char                buf[_MAX_PATH];
@@ -154,7 +154,7 @@ bool GetRegString( HKEY hive, const char *section, const char *value,
     return( ret );
 }
 
-DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
+static DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
 /*****************************************************************/
 {
     int                         i;
@@ -172,7 +172,7 @@ DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
     return( 0 );
 }
 
-BYTE *ConvertDWORDToData( DWORD number, DWORD type )
+static BYTE *ConvertDWORDToData( DWORD number, DWORD type )
 /**************************************************/
 {
     int                         i;
@@ -189,7 +189,7 @@ BYTE *ConvertDWORDToData( DWORD number, DWORD type )
     return( buff );
 }
 
-signed int AddToUsageCount( const char *path, signed int value )
+static signed int AddToUsageCount( const char *path, signed int value )
 /**************************************************************/
 {
     HKEY                        key_handle;
@@ -263,7 +263,7 @@ signed int DecrementDLLUsageCount( char *path )
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 
-bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int pos )
+static bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int pos )
 /**********************************************************************************/
 {
     FILE        *io;
@@ -307,7 +307,7 @@ bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int p
 #define DEVICE_STRING "device"
 #define ALT_DEVICE    "ecived"
 
-void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
+static void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
 /*****************************************************************************************/
 {
     int         i;
@@ -334,7 +334,7 @@ void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff,
     }
 }
 
-void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
+static void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
                           char *file_name, bool add, char *value, char *tmp_buff )
 /********************************************************************************/
 {
@@ -385,7 +385,7 @@ void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
 
 #if defined( __OS2__ )
 
-void OS2WriteProfile( char *app_name, char *key_name,
+static void OS2WriteProfile( char *app_name, char *key_name,
                       char *value, char *file_name, bool add )
 {
     HAB                 hab;

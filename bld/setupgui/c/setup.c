@@ -43,6 +43,7 @@
 #include "gendlg.h"
 #include "genvbl.h"
 #include "utils.h"
+#include "guiutil.h"
 
 #include "clibext.h"
 
@@ -143,7 +144,7 @@ static bool SetupOperations( void )
 #define MAX_DIAGS 20
 
 #ifdef __WINDOWS__
-bool CheckForSetup32( int argc, char **argv )
+static bool CheckForSetup32( int argc, char **argv )
 {
     DWORD       version = GetVersion();
     int         winver;
@@ -244,8 +245,8 @@ static bool CheckWow64( void )
 #endif
 
 
-bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS function)
-/*********************************************************************************/
+static bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS function )
+/*****************************************************************************************/
 {
     // Not really a stack; stores only one "node"
 
@@ -282,8 +283,8 @@ bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS functi
     }
 }
 
-bool DoMainLoop( dlg_state * state )
-/**********************************/
+static bool DoMainLoop( dlg_state * state )
+/*****************************************/
 {
     const char          *diag_list[MAX_DIAGS + 1];
     const char          *diags;

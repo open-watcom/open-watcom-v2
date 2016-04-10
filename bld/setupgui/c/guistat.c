@@ -48,6 +48,7 @@
   #include "stdui.h"
   #include "uigchar.h"
 #endif
+#include "guistat.h"
 
 #include "clibext.h"
 

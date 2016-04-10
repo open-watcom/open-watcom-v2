@@ -40,6 +40,8 @@
 #include "banner.h"
 #include "genvbl.h"
 #include "utils.h"
+#include "guiutils.h"
+
 
 extern gui_colour_set   MainColours[];
 extern void             GUISetJapanese();

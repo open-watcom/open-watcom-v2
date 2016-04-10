@@ -126,7 +126,7 @@ int ReturnNLMVersionInfoFromFile( const char *__pathName, long *majorVersion,
 
 char sysPath[] = { "SYS:\\SYSTEM\\" };
 
-bool CheckNewer( const char *newNLM, const char *oldNLM )
+static bool CheckNewer( const char *newNLM, const char *oldNLM )
 {
     int  rc;
     long year, month, day;

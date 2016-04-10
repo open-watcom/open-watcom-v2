@@ -55,6 +55,73 @@ typedef enum {
 typedef unsigned long long      disk_size;
 typedef signed long long        disk_ssize;
 
+// Possible return values from sending the SIM_INITIALIZE message.
+typedef enum {
+    SIM_INIT_NOERROR,
+    SIM_INIT_NOMEM,
+    SIM_INIT_NOFILE
+} SIM_INITIALIZE_ERROR;
+
+// Fixes bug in 32-bit comparisons... I hate it when
+// people mix return codes and out params...
+#define SIM_INIT_ERROR          ((unsigned short)(-1))
+
+
+// Defines used by the SETUP program.
+#define MAXBUF          128
+#define MAXVALUE        256
+#define MAXENVVAR       2048
+
+
+typedef enum {
+    NULL_TYPE,
+    STRING_TYPE
+} VBL_TYPE;
+
+typedef enum {
+    DLG_CAN,
+    DLG_NEXT,
+    DLG_PREV,
+    DLG_START,
+    DLG_SAME,
+    DLG_SKIP,
+    DLG_DONE,
+} dlg_state;
+
+typedef struct control_info_ext {
+    char        *pVisibilityConds;
+} control_info_ext;
+
+#define MAX_VARS 75
+typedef struct a_dialog_header {
+    char                        *name;                  /* name of dlg */
+    char                        *condition;
+    int                         rows;
+    int                         cols;
+    int                         num_push_buttons;
+    int                         num_controls;
+    bool                        def_dlg;
+    bool                        defaults_set;
+    bool                        adjusted;
+    gui_control_info            *controls;              /* controls associated with dlg */
+    control_info_ext            *controls_ext;          /* controls ext.info associated with dlg */
+    vhandle                     pVariables[MAX_VARS];   /* pointer to variables */
+    char                        *pConditions[MAX_VARS]; /* pointer to initial value */
+    gui_rect                    original_rect;          /* original window position (used in UpdateControlVisibility() )*/
+    gui_ord                     height_change;          /* how much dialog height has changed (used in UpdateControlVisibiliy() ) */
+    struct a_dialog_header      *next;                  /* next dialog box */
+    struct a_dialog_header      *prev;                  /* prev dialog box */
+    dlg_state                   ret_val;
+    char                        *title;
+    vhandle                     any_check;
+} a_dialog_header;
+
+#define HEIGHT_BORDER  1
+#define WIDTH_BORDER   4
+
+#define DUMMY_VAR_SIZE 25
+
+
 extern void             CheckStateVars();
 extern char             *SimGetTargetDriveLetter( int parm );
 extern bool             SimFileAdd( int parm );
@@ -163,68 +230,6 @@ extern int              SimNumUpgrades();
 extern char             *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
-// Possible return values from sending the SIM_INITIALIZE message.
-typedef enum {
-    SIM_INIT_NOERROR,
-    SIM_INIT_NOMEM,
-    SIM_INIT_NOFILE
-} SIM_INITIALIZE_ERROR;
-
-// Fixes bug in 32-bit comparisons... I hate it when
-// people mix return codes and out params...
-#define SIM_INIT_ERROR          ((unsigned short)(-1))
-
-
-// Defines used by the SETUP program.
-#define MAXBUF          128
-#define MAXVALUE        256
-#define MAXENVVAR       2048
-
-
-typedef enum {
-    NULL_TYPE,
-    STRING_TYPE
-} VBL_TYPE;
-
-typedef enum {
-    DLG_CAN,
-    DLG_NEXT,
-    DLG_PREV,
-    DLG_START,
-    DLG_SAME,
-    DLG_SKIP,
-    DLG_DONE,
-} dlg_state;
-
-typedef struct control_info_ext {
-    char        *pVisibilityConds;
-} control_info_ext;
-
-#define MAX_VARS 75
-typedef struct a_dialog_header {
-    char                        *name;                  /* name of dlg */
-    char                        *condition;
-    int                         rows;
-    int                         cols;
-    int                         num_push_buttons;
-    int                         num_controls;
-    bool                        def_dlg;
-    bool                        defaults_set;
-    bool                        adjusted;
-    gui_control_info            *controls;              /* controls associated with dlg */
-    control_info_ext            *controls_ext;          /* controls ext.info associated with dlg */
-    vhandle                     pVariables[MAX_VARS];   /* pointer to variables */
-    char                        *pConditions[MAX_VARS]; /* pointer to initial value */
-    gui_rect                    original_rect;          /* original window position (used in UpdateControlVisibility() )*/
-    gui_ord                     height_change;          /* how much dialog height has changed (used in UpdateControlVisibiliy() ) */
-    struct a_dialog_header      *next;                  /* next dialog box */
-    struct a_dialog_header      *prev;                  /* prev dialog box */
-    dlg_state                   ret_val;
-    char                        *title;
-    vhandle                     any_check;
-} a_dialog_header;
-
-#define HEIGHT_BORDER  1
-#define WIDTH_BORDER   4
-
-#define DUMMY_VAR_SIZE 25
+extern int              GetOptionVarValue( vhandle var_handle, bool is_minimal );
+extern char             *TrimQuote(char*);
+extern void             SetDefaultAutoSetValue( vhandle var_handle );

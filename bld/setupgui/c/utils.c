@@ -64,6 +64,7 @@
 #include "wpack.h"
 #endif
 #include "errno.h"
+#include "guistat.h"
 
 #include "clibext.h"
 
@@ -251,8 +252,8 @@ static drive_info       Drives[32];
 
 #if defined( __DOS__ )
 
-int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
-/*****************************************************************************************/
+static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
+/**************************************************************************************************/
 {
     deverr = deverr;
     errcode = errcode;
@@ -279,8 +280,8 @@ static void NoHardErrors( void )
 #endif
 
 #ifdef __NT__
-bool NTSpawnWait( char *cmd, DWORD *exit_code, HANDLE in, HANDLE out, HANDLE err )
-/********************************************************************************/
+static bool NTSpawnWait( char *cmd, DWORD *exit_code, HANDLE in, HANDLE out, HANDLE err )
+/***************************************************************************************/
 {
     STARTUPINFO             start;
     PROCESS_INFORMATION     info;
@@ -728,8 +729,8 @@ static int GetDriveInfo( char drive, bool removable )
     return( drive_num );
 }
 
-disk_size GetFreeDiskSpace( char drive, bool removable )
-/****************************************************/
+static disk_size GetFreeDiskSpace( char drive, bool removable )
+/*************************************************************/
 {
     return( Drives[GetDriveInfo( drive, removable )].free_space );
 }
@@ -868,7 +869,7 @@ long ClusterSize( const char *path )
     return( 0 );
 }
 
-bool IsDriveWritable( const char *path )
+static bool IsDriveWritable( const char *path )
 /**************************************/
 {
     int         io;
@@ -897,7 +898,7 @@ bool IsDriveWritable( const char *path )
 #endif
 
 #ifdef UNC_SUPPORT
-bool DriveInfoIsAvailable( const char *path )
+static bool DriveInfoIsAvailable( const char *path )
 /*******************************************/
 {
 #ifdef __NT__
@@ -951,8 +952,8 @@ static void RemoveDstDir( int dir_index, char *buff, size_t buff_len )
 }
 
 
-void MakeParentDir( const char *dir, char *drive, char *path )
-/************************************************************/
+static void MakeParentDir( const char *dir, char *drive, char *path )
+/*******************************************************************/
 {
     char                *parent, *end;
     size_t              path_len;
@@ -978,8 +979,8 @@ void MakeParentDir( const char *dir, char *drive, char *path )
 }
 
 
-bool CreateDstDir( int i, char *buff, size_t buff_len )
-/*****************************************************/
+static bool CreateDstDir( int i, char *buff, size_t buff_len )
+/************************************************************/
 // check for directory exitstance.  If dir exists return true.
 // Else try and create directory.
 {
@@ -1675,8 +1676,8 @@ static void CopySetupInfFile( void )
     }
 }
 
-int UnPackHook( int filenum, int subfilenum, char *name )
-/*******************************************************/
+static int UnPackHook( int filenum, int subfilenum, char *name )
+/**************************************************************/
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -1985,8 +1986,8 @@ static void RemoveExtraFiles( void )
 #endif
 }
 
-void DetermineSrcState( const char *src_dir )
-/*******************************************/
+static void DetermineSrcState( const char *src_dir )
+/**************************************************/
 {
     char        dir[_MAX_PATH];
 
@@ -2337,8 +2338,8 @@ static void DefineVars( void )
     }
 }
 
-char *GetSelfWithPath( char *buff, int len, char **argv )
-/*******************************************************/
+static char *GetSelfWithPath( char *buff, int len, char **argv )
+/**************************************************************/
 {
 #if defined( __UNIX__ )
     int result;
@@ -2440,7 +2441,7 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char
             case 'S':
                 SkipDialogs = true;
                 break;
-                
+
             case 'n':
             case 'N':
                 if( argv[i][2] == 's' || argv[i][2] == 'S' ) {
@@ -2448,7 +2449,7 @@ bool GetDirParams( int argc, char **argv, char **inf_name, char **src_path, char
                 } else if( argv[i][2] == 'p' || argv[i][2] == 'P' ) {
                     ProgramGroups = false;
                 }
-                break; 
+                break;
             }
 
             i++;
