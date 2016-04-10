@@ -43,10 +43,12 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
+#include "rmhooks.h"
+#include "interc.h"
+#include "ovlsupp.h"
 #include "realmode.h"
 #include "sampdos.h"
-
-#include "ovldbg.h"
+#include "timasm.h"
 
 
 typedef struct {
@@ -54,45 +56,16 @@ typedef struct {
     struct samp_ovl_load        ovl;
 } overlay_record_t;
 
-typedef struct pblock {
-    seg         envstring;
-    seg_offset  commandln;
-    seg_offset  fcb01;
-    seg_offset  fcb02;
-    seg_offset  startsssp;
-    seg_offset  startcsip;
-} pblock;
-
 typedef struct {
     void __far  *addr;
     uint_16     sect;
 } ovl_addr;
 
-typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
-
-extern bool     FirstSample;
-
-extern seg_offset __far SysCallerAddr;
-extern unsigned char __far SysCaught;
-extern unsigned char __far SysNoDOS;
-
-extern void StartTimer( void );
-extern void InstallDOSIntercepts( void );
-extern void StopTimer( void );
-extern void RemoveDOSIntercepts( void );
-extern int AddInterrupt( unsigned );
-
-extern seg                  GetPSP( void );
-extern void                 DOSLoadProg( char *, pblock *, report_fn_ptr );
-extern void                 DOSRunProg( seg_offset * );
-extern ovl_dbg_hook_func    ovl_handler;
-
-char                FAR_PTR *CommonAddr = NULL;
-unsigned            OvlSize;
-overlay_record_t    FAR_PTR *OvlStruct;
-ovl_dbg_req_func    *OvlHandler;
-
-int                 FirstHook = TRUE;
+static unsigned         OvlSize;
+static overlay_record_t FAR_PTR *OvlStruct;
+static ovl_dbg_req_func *OvlHandler;
+static char             FAR_PTR *CommonAddr = NULL;
+static int              FirstHook = TRUE;
 
 void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
 {

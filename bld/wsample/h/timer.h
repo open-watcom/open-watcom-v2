@@ -30,15 +30,7 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "sample.h"
-#include "smpstuff.h"
-#include "sampwin.h"
-
-
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
-
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size )
-{
-    return( GetInstanceData( inst, data, size ) );
-}
+extern void     GrabVects( void );
+extern void     ReleVects( void );
+extern void     ReadRealClk( int *hour, int *min, int *sec );
+extern void     SetBiosClk( int count );

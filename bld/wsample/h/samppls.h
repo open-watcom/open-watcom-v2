@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "sample.h"
-#include "smpstuff.h"
-#include "sampwin.h"
+extern unsigned short   InitialCS;
+extern unsigned short   InitialSS;
+extern unsigned char    CGBreak;
+extern unsigned char    FakeBreak;
+extern unsigned char    SavedByte;
+extern unsigned char    XVersion;
 
-
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
-
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size )
-{
-    return( GetInstanceData( inst, data, size ) );
-}
+extern void             RecordSample( unsigned offs, unsigned short segm );
+extern void             DummyCGraph( void );

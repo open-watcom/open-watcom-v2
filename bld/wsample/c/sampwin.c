@@ -66,14 +66,14 @@ void FlushSamples( WORD limit )
     si = GetSampleCount();
     if( si > limit ) {
         StopSampler( &count );
-        if( SharedMemory->SampleIndex == 0 ) {
+        if( SampleIndex == 0 ) {
             GetSample0Tick( &ctick );
             Samples->pref.tick = ctick;
         }
         for( i = 0; i < (WORD)count; i++ ) {
-            Samples->d.sample.sample[SharedMemory->SampleIndex].offset = SampSave[i].offset;
-            Samples->d.sample.sample[SharedMemory->SampleIndex].segment = SampSave[i].seg;
-            SharedMemory->SampleIndex++;
+            Samples->d.sample.sample[SampleIndex].offset = SampSave[i].offset;
+            Samples->d.sample.sample[SampleIndex].segment = SampSave[i].seg;
+            SampleIndex++;
         }
         SaveSamples();
         MyOutput( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
@@ -318,6 +318,6 @@ DWORD WinGetCurrTick( void )
     DWORD       ctick;
 
     GetCurrTick( &ctick );
-    SharedMemory->CurrTick = ctick;
+    CurrTick = ctick;
     return( ctick );
 }

@@ -42,6 +42,7 @@
 #include "wsamprc.h"
 #include "wreslang.h"
 
+
 #define TMPSLEN 256
 #define NOT_OK 1
 #define A_OK 2
@@ -314,7 +315,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             WinMessage( "Could not find WDEBUG.386" );
             return( FALSE );
         }
-        WDebug386 = TRUE;
+        WDebug386 = true;
         if( !MsgInit( inst ) )
             fatal();
         cmddat.nCmdShow = SW_NORMAL;

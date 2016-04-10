@@ -24,21 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS performance sampling core.
 *
 ****************************************************************************/
 
 
-#include "commonui.h"
-#include "sample.h"
-#include "smpstuff.h"
-#include "sampwin.h"
+typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
 
+typedef struct pblock {
+    seg         envstring;
+    seg_offset  commandln;
+    seg_offset  fcb01;
+    seg_offset  fcb02;
+    seg_offset  startsssp;
+    seg_offset  startcsip;
+} pblock;
 
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
-
-int GetIData( HINSTANCE inst, void __near *data, unsigned int size )
-{
-    return( GetInstanceData( inst, data, size ) );
-}
+extern unsigned short   __near GetPSP( void );
+extern void             __near DOSLoadProg( char __near *, pblock __near *, report_fn_ptr );
+extern void             __far DOSRunProg( seg_offset __near * );

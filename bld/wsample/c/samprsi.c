@@ -38,12 +38,12 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
-#define DEFVARS
 #include "timermod.h"
 #include "rsi1632.h"
 
-TSF32   Proc;
-byte    Break;
+
+static TSF32   Proc;
+static byte    Break;
 
 static seg_offset       CommonAddr = { 0, 0 };
 

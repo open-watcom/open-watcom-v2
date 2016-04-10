@@ -69,28 +69,29 @@ typedef struct code_load {
 extern short            GetCS( void );
 #pragma aux GetCS = 0x8c 0xc8 value [ax];
 
-extern void             StartTimer( void );
-extern void             StopTimer( void );
+#if 0
+void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind );
+#endif
+
 extern void             SetRestoreRate( char **);
 extern void             ResolveRateDifferences( void );
 
 extern unsigned long    count_pit0( void );
 extern unsigned long    cpuspeed( void );
 
-extern void * ImportSymbol( unsigned long /* handle */, const char * /* symbol_name */ );
+extern void * ImportSymbol(unsigned long /* handle */, const char * /* symbol_name */);
 
-int                             SamplerThread;
-struct LoadDefinitionStructure  *SampledNLM;
-struct AESProcessStructure      AES;
-struct ResourceTagStructure     *AESTag;
-struct ResourceTagStructure     *AllocTag;
-struct ResourceTagStructure     *EventTag;
-struct ResourceTagStructure     *SwitchModeTag;
-int                             Suspended;
-int                             Resumed;
+struct LoadDefinitionStructure      *SampledNLM;
+struct ResourceTagStructure         *AllocTag;
 
-code_load                       *LoadedNLMs;
-
+static int                          SamplerThread;
+static struct AESProcessStructure   AES;
+static struct ResourceTagStructure  *AESTag;
+static struct ResourceTagStructure  *EventTag;
+static struct ResourceTagStructure  *SwitchModeTag;
+static int                          Suspended;
+static int                          Resumed;
+static code_load                    *LoadedNLMs;
 
 void SysInit( void )
 {

@@ -44,7 +44,6 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSSESMGR
 #include "os2.h"
-
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"

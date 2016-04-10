@@ -44,25 +44,24 @@
 #include "smpstuff.h"
 #include "intrptr.h"
 #include "os.h"
-#define DEFVARS
 #include "timermod.h"
+#include "interc.h"
 #include "indos.h"
 #include "rmhooks.h"
 #include "hooks.h"
 #include "realmode.h"
 
 
-/*
- Located int SAMPLE.C
-*/
+#define _CHAIN_TO( x ) (*x)()
+
 extern void             StopAndSave( void );
 
-intrptr                 old_timer_handler;
 #ifdef __NETWARE__
 static int              Save_Request = FALSE;
 #else
 int                     Save_Request = FALSE;
 #endif
+static intrptr          old_timer_handler;
 
 unsigned NextThread( unsigned tid )
 {
@@ -115,12 +114,7 @@ static void __interrupt __far timer_handler( union INTPACK r )
                 }
             }
             ++CurrTick;
-#ifdef __NETWARE__
-            /* avoid pointer truncation warning */
-            RecordSample( (union INTPACK *)FP_OFF(&r) );
-#else
             RecordSample( &r );
-#endif
             if( SampleIndex >= Margin ) {
                 if( InDOS() ) {
                     Save_Request = TRUE;
@@ -130,7 +124,7 @@ static void __interrupt __far timer_handler( union INTPACK r )
                         and save our block of samples
                     */
                     if( Save_Request ) {
-                        Save_Request = 0;
+                        Save_Request = FALSE;
                     }
                     StopAndSave();
                 }

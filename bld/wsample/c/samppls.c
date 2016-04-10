@@ -50,32 +50,29 @@
 #include "hw386.h"
 #include "dilintf.h"
 #include "dilproto.h"
-#define DEFVARS
 #include "timermod.h"
+#include "timer.h"
+#include "samppls.h"
 
-extern void             GrabVects();
-extern void             ReleVects();
-extern void             ReadRealClk( int *hour, int *min, int *sec );
-extern void             SetBiosClk( int count );
 
-unsigned short  InitialCS;
-unsigned short  InitialSS;
-char            CGBreak;
-char            FakeBreak;
-char            SavedByte;
-char            XVersion;
-char            RateChanged;
+unsigned short          InitialCS;
+unsigned short          InitialSS;
+unsigned char           CGBreak;
+unsigned char           FakeBreak;
+unsigned char           SavedByte;
+unsigned char           XVersion;
 
 static MSB              Mach;
 static SEL_REMAP        SelBlk;
 static PTR386           CommonAddr = { 0, 0 };
+static unsigned char    RateChanged;
 
 unsigned NextThread( unsigned tid )
 {
     return( !tid );
 }
 
-int VersionCheck()
+int VersionCheck( void )
 {
     return( TRUE );
 }
@@ -108,7 +105,7 @@ void RecordSample( unsigned offset, unsigned short segment )
 }
 
 
-void DummyCGraph()
+void DummyCGraph( void )
 {
     Samples->d.sample.sample[SampleIndex].offset = 0;
     Samples->d.sample.sample[SampleIndex].segment = -1;
@@ -116,7 +113,7 @@ void DummyCGraph()
 }
 
 
-void GetCommArea()
+void GetCommArea( void )
 {
     if( CommonAddr.selector == 0 ) {    /* can't get the common region yet */
         Comm.cgraph_top = 0;
@@ -130,7 +127,7 @@ void GetCommArea()
     }
 }
 
-void ResetCommArea()
+void ResetCommArea( void )
 {
     if( CommonAddr.selector != 0 ) {    /* reset common variables */
         Comm.pop_no = 0;
@@ -142,7 +139,7 @@ void ResetCommArea()
 }
 
 
-void GetNextAddr()
+void GetNextAddr( void )
 {
     PTR386      addr;
     struct {
@@ -175,7 +172,7 @@ static void check( int x )
     }
 }
 
-void StopProg()
+void StopProg( void )
 {
 }
 
@@ -189,7 +186,7 @@ static int bcd2hex( int i )
 }
 
 
-void FixTime( void )
+static void FixTime( void )
 {
     int hour,min,sec,count;
 
@@ -210,7 +207,6 @@ void FixTime( void )
 
 void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 {
-
     PTR386      addr;
     char        buff[BSIZE];
     int         len;
@@ -270,7 +266,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             addr.selector = Mach.msb_edx & 0xffff;
             addr.offset = Mach.msb_eax;
             for( ;; ) {
-                dbg_pread( &addr, 1, buff+len );
+                dbg_pread( &addr, 1, (unsigned char *)buff + len );
                 if( len == BSIZE )
                     buff[len] = '\0';
                 if( buff[len] == '\0' )

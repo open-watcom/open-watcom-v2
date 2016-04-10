@@ -39,15 +39,16 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#if defined(__WINDOWS__)
+#include <windows.h>
+#endif
 #include "sample.h"
 #include "smpstuff.h"
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
 #include "wreslang.h"
-#if defined(__WINDOWS__)
-#include <windows.h>
-#else
+#if !defined(__WINDOWS__)
 #include "wressetr.h"
 #include "wresset2.h"
 #include "watcom.h"
@@ -146,6 +147,8 @@ int MsgInit( void )
     return( 0 );
 }
 #else
+
+int MsgInit( HANDLE inst );
 
 int MsgInit( HANDLE inst )
 {

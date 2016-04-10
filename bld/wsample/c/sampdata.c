@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#if defined(__WINDOWS__)
+#include <windows.h>
+#endif
 #include "sample.h"
-#define extern
+#define global_data
 #include "smpstuff.h"

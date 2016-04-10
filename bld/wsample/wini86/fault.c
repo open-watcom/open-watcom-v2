@@ -42,7 +42,7 @@
  */
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
-    BOOL        fault32;
+    int         fault32;
     DWORD       offset;
     WORD        seg;
     WORD        value;

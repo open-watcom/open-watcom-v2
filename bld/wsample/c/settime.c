@@ -40,11 +40,11 @@
 #include <sys/stat.h>
 #include "sample.h"
 #include "smpstuff.h"
-#include "intrptr.h"
 #include "os.h"
-#include "timermod.h"
 #include "wmsg.h"
 
+#define global_timer_data
+#include "timermod.h"
 
 void InitTimerRate( void )
 {

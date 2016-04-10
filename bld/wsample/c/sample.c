@@ -55,36 +55,29 @@
 
 #include "clibext.h"
 
-#ifdef __WINDOWS__
-#define Info            SharedMemory->Info
-#define SampleIndex     SharedMemory->SampleIndex
-#define SampleCount     SharedMemory->SampleCount
-#define LastSampleIndex SharedMemory->LastSampleIndex
-#define FarWriteProblem SharedMemory->FarWriteProblem
-#define CurrTick        SharedMemory->CurrTick
-#define LostData        SharedMemory->LostData
-#endif
-
 #define NL      "\r\n"
 
-samp_header         Header = {
+static samp_header          Header = {
     SAMP_SIGNATURE,
     SAMP_MAJOR_VER,
     SAMP_MINOR_VER,
     sizeof( PREFIX_STRING )
 };
 
-samp_block_prefix   Last = {
+static samp_block_prefix    Last = {
     0,
     sizeof( samp_block_prefix ),
     SAMP_LAST
 };
 
-bool                    FirstSample = TRUE;
 static int              stackSize = 0;
 
 
+#if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
+void __near WriteMark( char FAR_PTR *str, seg_offset where )
+#else
 void WriteMark( char FAR_PTR *str, seg_offset where )
+#endif
 {
     struct {
         struct samp_block_prefix    pref;
@@ -132,7 +125,7 @@ void WriteCodeLoad( seg_offset ovl_tbl, char *name, samp_block_kinds kind )
 #ifndef __NETWARE__
     {
         struct  stat            state;
-    
+
         stat( name, (struct stat *)&state );
         code->d.time_stamp = state.st_mtime;
     }
@@ -607,6 +600,7 @@ int main( int argc, char **argv )
 
     AllocSamples( 1 );
 
+    FirstSample = TRUE;
     LostData = FALSE;
     SamplerOff = 0;
     InsiderTime = 0;    /* set non-zero whenever inside an INT 08H */

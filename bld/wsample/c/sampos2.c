@@ -48,6 +48,7 @@
 #include "os2.h"
 #include "os2dbg.h"
 
+
 #define BUFF_SIZE 512
 static char             UtilBuff[BUFF_SIZE];
 static TRACEBUF         Buff;
@@ -78,7 +79,7 @@ unsigned NextThread( unsigned tid )
         CallGraph = CallGraphP[tid];
         SampleCount = SampleCountP[tid];
     }
-    return( tid+1 );
+    return( tid + 1 );
 }
 
 void InitTimerRate( void )

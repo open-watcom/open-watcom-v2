@@ -59,7 +59,7 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
         }
     }
     if( handle == -1 ) {
-        SharedMemory->FarWriteProblem = 1;
+        FarWriteProblem = 1;
         return( -1 );
     }
 
@@ -70,7 +70,7 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
     } else {
         SysSeek( handle, SharedMemory->SampOffset );
         SysWrite( handle, "", 0 );
-        SharedMemory->FarWriteProblem = 1;
+        FarWriteProblem = 1;
         rc = -1;
     }
     SysClose( handle );
