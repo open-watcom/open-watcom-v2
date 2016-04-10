@@ -31,46 +31,8 @@
 
 
 /*
- *  COVER16.C
+ *  COVER16.H
  */
 
-#include <stdio.h>
-#include <windows.h>    /* required for all Windows applications */
-#include "cover16.h"
-
-
-typedef long (FAR PASCAL *FPROC)();
-
-FPROC DLL_1;
-FPROC DLL_2;
-
-long FAR PASCAL __export Function1( long var1,
-                                     long var2,
-                                     long var3 )
-{
-    return( (long) DLL_1( var1, var2, var3 ) );
-}
-
-long FAR PASCAL __export Function2( long var1, long var2 )
-{
-    return( (long) DLL_2( var1, var2 ) );
-}
-
-#pragma off (unreferenced);
-extern BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment, WORD wHeapSize, LPSTR lpszCmdLine )
-#pragma on (unreferenced);
-{
-    HINSTANCE hlib;
-
-    /* Do our DLL initialization */
-    hlib = LoadLibrary( "vbdll32.dll" );
-    if( (UINT)hlib < 32 ) {
-        MessageBox( (HWND)NULL,
-                    "Make sure your PATH contains VBDLL32.DLL",
-                    "COVER16", MB_OK | MB_ICONEXCLAMATION );
-        return( FALSE );
-    }
-    DLL_1 = (FPROC) GetProcAddress( hlib, "DLL1" );
-    DLL_2 = (FPROC) GetProcAddress( hlib, "DLL2" );
-    return( TRUE );
-}
+extern long FAR PASCAL Function1( long var1, long var2, long var3 );
+extern long FAR PASCAL Function2( long var1, long var2 );
