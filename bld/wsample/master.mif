@@ -33,8 +33,9 @@ xname = $(xname_$(target)_$(host_cpu))
 !include deftarg.mif
 
 !include $(commonui_dir)/windbg.mif
+!ifeq target rsi
 !include $(rsilib_dir)/client.mif
-
+!endif
 !include wres.mif
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
@@ -58,10 +59,10 @@ far_ptr_dos_dos =__far
 far_ptr_dos_rsi =__far
 far_ptr_win_win =__far
 !endif
-extra_cpp_flags = -DFAR_PTR=$(far_ptr_$(host_os)_$(target))
+extra_cpp_flags += -DFAR_PTR=$(far_ptr_$(host_os)_$(target))
 
 !ifeq target pls
-extra_cpp_flags_dos =-D_PLS
+extra_cpp_flags_dos =-D_PLS -D_far=__far
 !else ifeq target rsi
 extra_cpp_flags_dos =-D_RSI
 !endif
