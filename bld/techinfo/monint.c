@@ -33,8 +33,9 @@
 #include <dos.h>
 #include <float.h>
 #include <string.h>
+#include "monint.h"
 
-void techoutput( char *format, ... );
+
 extern int LineCount;
 
 short Control = (                               \
@@ -98,7 +99,7 @@ volatile short int_tick[NUM_INTS] = {
 void (_INTERRUPT *prev_int[NUM_INTS])();
 
 #define intx( N )                                   \
-    void _INTERRUPT int_rtn_##N()             \
+    static void _INTERRUPT int_rtn_##N()             \
     {                                               \
         if( Sample_On ) ++int_tick[N];              \
         if( prev_int[N] != NULL )                   \
@@ -106,7 +107,7 @@ void (_INTERRUPT *prev_int[NUM_INTS])();
     }
 
 #define intx2( N )                                  \
-    void _INTERRUPT int_rtn_##N()             \
+    static void _INTERRUPT int_rtn_##N()             \
     {                                               \
         if( Sample_On ) ++int_tick[N];              \
         __fstenv();                                 \
