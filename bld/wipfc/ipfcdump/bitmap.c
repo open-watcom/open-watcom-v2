@@ -21,8 +21,8 @@ typedef struct {
     uint16_t    length;
 } codepos_t;
 
-unsigned expand( uint8_t *src, uint8_t *dst, size_t length )
-/**********************************************************/
+static unsigned expand( uint8_t *src, uint8_t *dst, size_t length )
+/*****************************************************************/
 {
     uint8_t     *dstStart;      /* Saved start of output buffer */
     uint8_t     *srcStart;      /* Saved start of compressed data */
@@ -32,7 +32,7 @@ unsigned expand( uint8_t *src, uint8_t *dst, size_t length )
     uint16_t    maxCode;
     uint16_t    nextCode;
     uint16_t    newCode;
-    uint16_t    oldCode = 0; 
+    uint16_t    oldCode = 0;
     uint16_t    code;
     uint8_t     character = 0;
     uint8_t     clearFlg = 1;
