@@ -42,7 +42,7 @@
  */
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
-    int         fault32;
+    bool        fault32;
     DWORD       offset;
     WORD        seg;
     WORD        value;
@@ -50,13 +50,12 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     seg_offset  where;
     char        buff[256];
 
+    fault32 = false;
     if( WDebug386 ) {
-        fault32 = GetDebugInterruptData( &IntData );
+        fault32 = (bool)GetDebugInterruptData( &IntData );
         if( fault32 ) {
             ff.intnumber = IntData.InterruptNumber;
         }
-    } else {
-        fault32 = FALSE;
     }
     if( ff.intnumber != INT_3 && ff.intnumber != INT_1 ) {
         if( fault32 ) {
