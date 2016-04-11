@@ -37,7 +37,7 @@ HWND                    MainHwnd;
 LBoxHdl                 *MainLBox;
 HWND                    ThreadDlg;
 char                    *AppName;
-BOOL                    StatShowSymbols;
+bool                    StatShowSymbols;
 LogInfo                 LogData;
 ConfigInfo              ConfigData;
 HWND                    StatHdl;

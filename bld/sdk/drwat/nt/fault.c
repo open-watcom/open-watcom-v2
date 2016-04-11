@@ -291,7 +291,7 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             break;
         case INT_REGISTERS:
             SetDisasmInfo( info->procinfo->prochdl, info->module );
-            StatShowSymbols = TRUE;
+            StatShowSymbols = true;
             if ( DoStatDialog( hwnd ) == 1 ){
                 StoreMADRegisters( info->regs, info->threadinfo->threadhdl );
                 GetCurrAddr(&addr,info->regs);

@@ -398,11 +398,7 @@ BOOL FAR PASCAL StatDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             break;
 #endif
         case STAT_SYMBOLS:
-            if( StatShowSymbols ) {
-                StatShowSymbols = FALSE;
-            } else {
-                StatShowSymbols = TRUE;
-            }
+            StatShowSymbols = !StatShowSymbols;
             CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
             DisplayAsmLines( hwnd, &currAddr, &firstAddr, STAT_DISASM_1,
                         STAT_DISASM_8, STAT_SCROLL );

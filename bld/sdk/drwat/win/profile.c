@@ -137,7 +137,7 @@ void GetProfileInfo( void )
         }
     }
     DumpHow = getProfileLong( DUMP_HOW, DUMP_ALL );
-    AlertOnWarnings = getProfileLong( ALERT_ON_WARNINGS, 1 );
+    AlertOnWarnings = ( getProfileLong( ALERT_ON_WARNINGS, 1 ) != 0 );
     ExceptionAction = getProfileLong( EXCPT_ACTION, INT_TERMINATE );
     GetPrivateProfileString( profID, DEBUG_OPTS, "/swap", DebuggerOpts,
                 sizeof( DebuggerOpts ), iniFile );

@@ -81,7 +81,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         Death( STR_ONLY_ONE_INST_ALLOWED );
     }
     if( cmdline[0] == 'd' && cmdline[1] == 0 ) {
-        AlwaysRespondToDebugInChar = TRUE;
+        AlwaysRespondToDebugInChar = true;
     }
 
     /*

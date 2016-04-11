@@ -155,7 +155,7 @@ extern LogInfo          LogData;
 extern HWND             ThreadDlg;
 extern ConfigInfo       ConfigData;
 
-extern BOOL             StatShowSymbols;
+extern bool             StatShowSymbols;
 extern HWND             StatHdl;
 extern system_config    SysConfig;
 extern HANDLE           ProcessHdl;
