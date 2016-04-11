@@ -32,6 +32,8 @@
 
 #include "bdiff.h"
 #include "diff.h"
+#include "wpatch.h"
+
 
 byte    *PatchFile;
 byte    *OldFile;
