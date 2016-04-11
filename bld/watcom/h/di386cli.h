@@ -49,7 +49,7 @@ global_di386 DebuggerIsExecuting_func    *DebuggerIsExecuting;
 
 extern bool     WDebug386;
 
-extern void     Start386Debug( void );
+extern bool     Start386Debug( void );
 extern void     Done386Debug( void );
 
 #endif /* _DI386CLI_H_INCLUDED */

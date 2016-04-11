@@ -53,7 +53,7 @@ HWND                    DebuggerWindow;
 BOOL                    FaultHandlerEntered;
 int                     SaveStdIn=NIL_HANDLE;
 int                     SaveStdOut=NIL_HANDLE;
-BOOL                    WDebug386;
+bool                    WDebug386;
 HMODULE                 DebugeeModule;
 BOOL                    DebugDebugeeOnly;
 HTASK                   TaskAtFault;

@@ -40,7 +40,7 @@
 #include "trpimp.h"
 #include "trpld.h"
 #include "initfini.h"
-#include "int32std.h"
+#include "di386cli.h"
 
 
 extern TRAPENTRY_FUNC( InfoFunction );
@@ -50,11 +50,10 @@ extern TRAPENTRY_FUNC( HardModeCheck );
 extern TRAPENTRY_FUNC( SetHardMode );
 extern TRAPENTRY_FUNC( UnLockInput );
 
-extern  WORD FAR PASCAL AllocCSToDSAlias( WORD );
+extern WORD FAR PASCAL AllocCSToDSAlias( WORD );
 
 static FARPROC  faultInstance;
 static FARPROC  notifyInstance;
-static HANDLE   wint32;
 
 /*
  * InitDebugging:
@@ -72,37 +71,24 @@ char *InitDebugging( void )
 {
 
     DebuggerState=ACTIVE;
-    StartWDebug386();
+    if( CheckWin386Debug() == WGOD_VERSION ) {
+        WDebug386 = TRUE;
+        UseHotKey( 1 );
+    }
     faultInstance = MakeProcInstance( (FARPROC)IntHandler, Instance );
     if( !InterruptRegister( NULL, faultInstance ) ) {
         return( TRP_WIN_Failed_to_get_interrupt_hook );
     }
     notifyInstance = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
-    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyInstance,
-                         NF_NORMAL | NF_RIP ) ) {
+    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyInstance, NF_NORMAL | NF_RIP ) ) {
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
     Out(( OUT_INIT,"ds=%04x, faultInstance=%Fp, notifyInstance=%Fp,Instance=%04x",
-        FP_SEG( &faultInstance ),
-        faultInstance, notifyInstance, Instance ));
+        FP_SEG( &faultInstance ), faultInstance, notifyInstance, Instance ));
     if( WDebug386 ) {
-        wint32 = LoadLibrary( "wint32.dll" );
-        if( (UINT)wint32 < 32 ) {
-            WDebug386 = FALSE;
-        } else {
-            DoneWithInterrupt = (LPVOID) GetProcAddress( wint32, "DoneWithInterrupt" );
-            GetDebugInterruptData = (LPVOID) GetProcAddress( wint32, "GetDebugInterruptData" );
-            ResetDebugInterrupts32 = (LPVOID) GetProcAddress( wint32, "ResetDebugInterrupts32" );
-            SetDebugInterrupts32 = (LPVOID) GetProcAddress( wint32, "SetDebugInterrupts32" );
-            DebuggerIsExecuting = (LPVOID) GetProcAddress( wint32, "DebuggerIsExecuting" );
-
-            if( !SetDebugInterrupts32() ) {
-                WDebug386 = FALSE;
-                FreeLibrary( wint32 );
-            } else {
-                DebuggerIsExecuting( 1 );
-                Out((OUT_INIT,"Hooked Interrupts"));
-            }
+        if( Start386Debug() ) {
+            DebuggerIsExecuting( 1 );
+            Out((OUT_INIT,"Hooked Interrupts"));
         }
     }
 //    SubClassProcInstance = MakeProcInstance( (FARPROC)SubClassProc, Instance );
@@ -131,9 +117,9 @@ void FinishDebugging( void )
         ResetDebugInterrupts32();
         DebuggerIsExecuting( -1 );
         Out((OUT_INIT,"Debug interrupts reset"));
-        FreeLibrary( wint32 );
+        UseHotKey( 0 );
+        Done386Debug();
     }
-    KillWDebug386();
 //    FreeProcInstance( SubClassProcInstance );
     FiniDebugHook();
     WasInt32 = FALSE;

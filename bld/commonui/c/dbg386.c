@@ -41,16 +41,12 @@ static HANDLE   wint32DLL;
 /*
  * Start386Debug - initialize for 32-bit debugging
  */
-void Start386Debug( void )
+bool Start386Debug( void )
 {
+    WDebug386 = false;
     if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = true;
-    }
-    if( WDebug386 ) {
         wint32DLL = LoadLibrary( "wint32.dll" );
-        if( (UINT)wint32DLL < 32 ) {
-            WDebug386 = false;
-        } else {
+        if( (UINT)wint32DLL >= 32 ) {
             DoneWithInterrupt = (LPVOID)GetProcAddress( wint32DLL, "DoneWithInterrupt" );
             GetDebugInterruptData = (LPVOID)GetProcAddress( wint32DLL, "GetDebugInterruptData" );
             ResetDebugInterrupts32 = (LPVOID)GetProcAddress( wint32DLL, "ResetDebugInterrupts32" );
@@ -58,12 +54,14 @@ void Start386Debug( void )
             IsDebuggerExecuting = (LPVOID)GetProcAddress( wint32DLL, "IsDebuggerExecuting" );
             DebuggerIsExecuting = (LPVOID)GetProcAddress( wint32DLL, "DebuggerIsExecuting" );
 
-            if( !SetDebugInterrupts32() ) {
-                WDebug386 = false;
+            if( SetDebugInterrupts32() ) {
+                WDebug386 = true;
+            } else {
                 FreeLibrary( wint32DLL );
             }
         }
     }
+    return( WDebug386 );
 
 } /* Start386Debug */
 

@@ -38,7 +38,7 @@
 #include "madregs.h"
 #include "miscx87.h"
 #include "fault.h"
-#include "int32std.h"
+#include "di386cli.h"
 
 /*
  * How we get our registers:

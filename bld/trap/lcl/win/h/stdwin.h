@@ -116,7 +116,6 @@ extern int                      CurrentModule;
 extern BOOL                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;
-extern BOOL                     WDebug386;
 extern WORD                     WPCount;
 extern HMODULE                  DebugeeModule;
 extern WORD                     WasInt32;
@@ -200,9 +199,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
-/* wgod.c */
-void StartWDebug386( void );
-void KillWDebug386( void );
+/* debug output */
 #ifdef DEBUG
 #define OUT_BREAK       0x0001
 #define OUT_ERR         0x0002
