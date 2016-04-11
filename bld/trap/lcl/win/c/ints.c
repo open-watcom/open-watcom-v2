@@ -34,6 +34,7 @@
 #include <windows.h>
 #include <string.h>
 #include <dos.h>
+#include "bool.h"
 #include "cpuglob.h"
 #include "wdebug.h"
 #include "di386dll.h"
@@ -41,29 +42,28 @@
 #define MAX_ISTACK      4096
 
 typedef union {
-    char        bytes[8];
-    unsigned    short words[4];
+    char            bytes[8];
+    unsigned short  words[4];
 } idt;
-
-idt     IdtInt1,IdtInt3;
-idt     NewIdtInt1,NewIdtInt3;
-char    IStack[MAX_ISTACK];
-WORD    SetCount = 0;
-WORD    IntAccessed = 0;
 
 extern DWORD    SaveEAX;
 extern WORD     DPL;
-extern WORD     OurOwnInt;
+extern bool     OurOwnInt;
 extern WORD     IDTSel;
 extern WORD     InterruptStackSel;
 extern DWORD    InterruptStackOff;
 
-
 extern void GetIDTSel( void );
 extern void ReleaseIDTSel( void );
 extern void InterruptCallback( void );
-
 extern void ReflectInt1Int3( void );
+
+static idt     IdtInt1,IdtInt3;
+//static idt     NewIdtInt1,NewIdtInt3;
+static char    IStack[MAX_ISTACK];
+static int     SetCount = 0;
+static int     IntAccessed = 0;
+static int     DebuggerCount = 0;
 
 /*
  * SetDebugInterrupts32
@@ -91,7 +91,7 @@ extern void ReflectInt1Int3( void );
  *   next time it runs, it begins execution at the callback routine.
  *   No actual calls occur.
  */
-int __export FAR PASCAL SetDebugInterrupts32( void )
+int FAR PASCAL SetDebugInterrupts32( void )
 {
     SetCount++;
     if( SetCount > 1 ) {
@@ -102,7 +102,7 @@ int __export FAR PASCAL SetDebugInterrupts32( void )
         return( 0 );
     }
     DPL = (GetCS() & 0x03) << 5;
-    OurOwnInt = 0;
+    OurOwnInt = false;
 
     /*
      * set up our IDT
@@ -134,7 +134,7 @@ int __export FAR PASCAL SetDebugInterrupts32( void )
  * trapping 32-bit interrupts.  We restore the IDT, and unregister
  * our interrupt callback
  */
-void __export FAR PASCAL ResetDebugInterrupts32( void )
+void FAR PASCAL ResetDebugInterrupts32( void )
 {
     SetCount--;
     if( SetCount == 0 ) {
@@ -157,16 +157,16 @@ void __export FAR PASCAL ResetDebugInterrupts32( void )
  * This routine must be followed by a DoneWithInterrupt call, otherwise
  * the INT1/INT3 IDT hooks will not be restored.
  */
-BOOL __export FAR PASCAL GetDebugInterruptData( LPVOID data )
+int FAR PASCAL GetDebugInterruptData( LPVOID data )
 {
-    if( OurOwnInt == 0 ) {
-        return( 0 );
+    if( !OurOwnInt ) {
+        return( false );
     }
     if( data != NULL ) {
-        memcpy( data, &SaveEAX, sizeof( interrupt_struct ) );
+        _fmemcpy( data, &SaveEAX, sizeof( interrupt_struct ) );
     }
     IntAccessed++;
-    return( 1 );
+    return( true );
 
 } /* GetDebugInterruptData */
 
@@ -177,21 +177,19 @@ BOOL __export FAR PASCAL GetDebugInterruptData( LPVOID data )
  * are copied back to the data area for reloading by WDEBUG.386, and
  * the IDT is reset to point at our int1/3 handler.
  */
-void __export FAR PASCAL DoneWithInterrupt( LPVOID data )
+void FAR PASCAL DoneWithInterrupt( LPVOID data )
 {
     if( data != NULL ) {
-        memcpy( &SaveEAX, data, sizeof( interrupt_struct ) );
+        _fmemcpy( &SaveEAX, data, sizeof( interrupt_struct ) );
     }
     IntAccessed--;
-    if( (int)IntAccessed <= 0 ) {
+    if( IntAccessed <= 0 ) {
         IDTInit( IDTSel );
         HookIDT( ReflectInt1Int3 );
-        OurOwnInt = 0;
+        OurOwnInt = false;
     }
 
 } /* DoneWithInterrupt */
-
-int DebuggerCount = 0;
 
 /*
  * IsDebuggerExecuting:
@@ -199,7 +197,7 @@ int DebuggerCount = 0;
  * called by Dr. WATCOM (or anyone else in the future) to see if there
  * is a debugger using WINT32.DLL
  */
-BOOL __export FAR PASCAL IsDebuggerExecuting( void )
+int FAR PASCAL IsDebuggerExecuting( void )
 {
     return( DebuggerCount );
 
@@ -213,7 +211,7 @@ BOOL __export FAR PASCAL IsDebuggerExecuting( void )
  * notifications.
  *
  */
-void __export FAR PASCAL DebuggerIsExecuting( int cnt )
+void FAR PASCAL DebuggerIsExecuting( int cnt )
 {
     DebuggerCount += cnt;
 

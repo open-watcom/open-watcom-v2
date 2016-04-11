@@ -31,5 +31,4 @@
 
 
 extern BOOL        ToDebugger( private_msg pmsg );
-extern void        EnableMainMenu( UINT bit );
 extern private_msg DebuggerWaitForMessage( debugger_state state, HANDLE task, WORD dbgeemsg );

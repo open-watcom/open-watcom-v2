@@ -122,7 +122,7 @@ void FinishDebugging( void )
     }
 //    FreeProcInstance( SubClassProcInstance );
     FiniDebugHook();
-    WasInt32 = FALSE;
+    WasInt32 = false;
     if( CSAlias != NULL ) {
         FreeSelector( CSAlias );
     }

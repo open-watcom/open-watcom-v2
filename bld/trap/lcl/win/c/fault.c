@@ -86,7 +86,8 @@ extern WORD     __far RetHow;
 
 #define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
 
-struct fp_state         FPResult;
+bool                WasInt32 = false;
+struct fp_state     FPResult;
 
 /*
  * saveState:
@@ -256,15 +257,14 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     private_msg         pmsg = FAULT_HIT;
     WORD                sig[2];
 
+    WasInt32 = false;
     if( WDebug386 ) {
-        WasInt32 = GetDebugInterruptData( &IntResult );
+        WasInt32 = (bool)GetDebugInterruptData( &IntResult );
         if( WasInt32 ) {
             ff.intf.intnumber = IntResult.InterruptNumber;
             Out((OUT_RUN,"***** 32-bit fault %d, cs:eip=%04x:%08lx *****",
                 IntResult.InterruptNumber, IntResult.CS, IntResult.EIP ));
         }
-    } else {
-        WasInt32 = FALSE;
     }
     newStack( 0, 0L );
 
@@ -273,7 +273,7 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
      */
     Out((OUT_RUN,"***** Fault %d, cs:ip=%04x:%04x, ent=%d, state=%d, WasInt32=%d *****",
         ff.intf.intnumber, ff.intf.CS, ff.intf.IP, FaultHandlerEntered,
-        (WORD) DebuggerState, WasInt32 ));
+        (WORD)DebuggerState, WasInt32 ));
     if( FaultHandlerEntered || DebuggerState == ACTIVE ) {
         if( ff.intf.intnumber == WGOD_ASYNCH_STOP_INT ) {
             setRetHow( RESTART_APP );
@@ -331,7 +331,7 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     if( !WasInt32 ) {
         saveState( &ff );
     }
-    FaultHandlerEntered = TRUE;
+    FaultHandlerEntered = true;
     TaskAtFault = GetCurrentTask();
 
     if( FPUType == X86_NO ) {
@@ -368,12 +368,12 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
         restoreState( &ff );
         newStack( IntResult.SS, IntResult.ESP );
     } else {
-        WasInt32 = FALSE;
+        WasInt32 = false;
         DoneWithInterrupt( &IntResult );
     }
     TaskAtFault = NULL;
 
-    FaultHandlerEntered = FALSE;
+    FaultHandlerEntered = false;
     setRetHow( rc );
     UseHotKey( 1 );
 

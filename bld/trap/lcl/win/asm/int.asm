@@ -31,14 +31,14 @@
 
 .386p
 
-extrn _FaultHandler:near
-extrn TERMINATEAPP:far
+extrn   _FaultHandler:near
+extrn   TERMINATEAPP:far
 
 DGROUP group _DATA
 _DATA segment word public 'DATA'  use16
+
 extrn _CSAlias:word
-public _WasInt32
-_WasInt32       dw      0
+
 _DATA ends
 
 ;*
