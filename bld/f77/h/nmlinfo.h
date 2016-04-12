@@ -35,7 +35,7 @@
 #define NML_TYPE_SHIFT  4
 
 #define _SetNMLType( __b, __v )         ( (__b) |= (__v) << NML_TYPE_SHIFT )
-#define _SetNMLSubScrs( __b, __v )      ( (__b) |= (__v) )
+#define _SetNMLSubScrs( __b, __v )      ( (__b) |= (__v) & NML_SUBSCRS )
 
 #define _GetNMLType( __b )              ( (__b) >> NML_TYPE_SHIFT )
 #define _GetNMLSubScrs( __b )           ( (__b) & NML_SUBSCRS )
