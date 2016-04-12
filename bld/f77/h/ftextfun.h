@@ -57,8 +57,6 @@ extern void        FEmChar(char PGM *);
 extern void        FEmCode( int );
 extern void        FEmNum( int );
 extern bool        FindFName( void );
-extern int         FmtS2F( char *, int, int, bool, int, int, extended *, bool, int *, bool);
-extern int         FmtS2I( char *, int, bool, intstar4 *, bool, int * );
 extern void        FreeIn( void );
 extern void        FreeOut( void );
 extern intstar4    GetNum( void );

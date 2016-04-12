@@ -47,6 +47,7 @@
 #include "ioerr.h"
 #include "cctrl.h"
 #include "wrutils.h"
+#include "fmtcnvt.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -330,7 +331,7 @@ void    R_FIFloat( void ) {
     int         prec;
     int         status;
     bool        comma;
-    int         width;
+    uint        width;
 
     fcb = IOCB->fileinfo;
     fmtptr = &IOCB->fmtptr->fmt2;
@@ -347,11 +348,10 @@ void    R_FIFloat( void ) {
         break;
     default:
         prec = PRECISION_SINGLE;
-    };
+    }
     comma = __AllowCommaSep();
-    status = FmtS2F( &fcb->buffer[ fcb->col ], fmtptr->fld1,
-                     fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
-                     IOCB->scale, prec, &value, comma, &width, FALSE );
+    status = FmtS2F( fcb->buffer + fcb->col, fmtptr->fld1, fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
+                     IOCB->scale, prec, &value, comma, &width, false );
     if( status == FLT_OK ) {
         if( comma && ( fmtptr->fld1 != width ) ) {
             fcb->col += width;
@@ -731,7 +731,7 @@ void    R_FIInt( void ) {
 
     intstar4    value;
     uint        width;
-    int         new_width;
+    uint        new_width;
     int         status;
     ftnfile     *fcb;
     bool        comma;
@@ -740,8 +740,7 @@ void    R_FIInt( void ) {
     width = IOCB->fmtptr->fmt2.fld1;
     ChkBuffLen( width );
     comma = __AllowCommaSep();
-    status = FmtS2I( &fcb->buffer[ fcb->col ], width,
-                     ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
+    status = FmtS2I( fcb->buffer + fcb->col, width, ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
     if( status == INT_INVALID ) {
         IOErr( IO_BAD_CHAR );
     } else if( status == INT_OVERFLOW ) {

@@ -50,12 +50,10 @@
 #include "declare.h"
 #include "proctbl.h"
 #include "implicit.h"
+#include "fmtcnvt.h"
 
 #include <string.h>
 #include <limits.h>
-
-
-extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 
 
 static  bool    ReqChar( void ) {
@@ -140,7 +138,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
     itnode      *save_itptr;
     bool        len_spec;
     itnode      *temp;
-    intstar4    size;
+    intstar4    ivalue;
 
     len_spec = FALSE;
     if( RecMul() ) {
@@ -163,7 +161,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
             if( RecNOpn() && RecNextOpr( OPR_LBR ) ) {
                 AdvanceITPtr();
                 CIntExpr();
-                size = ITIntValue( CITNode );
+                ivalue = ITIntValue( CITNode );
                 AdvanceITPtr();
                 ReqCloseParen();
                 if( RecNOpn() ) {
@@ -171,8 +169,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
                 }
                 len_spec = (AError == FALSE);
             } else if( RecNumber() ) {
-                FmtS2I( CITNode->opnd, CITNode->opnd_size, FALSE, &size, FALSE,
-                        NULL );
+                FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &ivalue, false, NULL );
                 AdvanceITPtr();
                 len_spec = TRUE;
             } else {
@@ -181,9 +178,9 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
                 len_spec = FALSE;
             }
             if( len_spec ) {
-                len_spec = CheckSize( typ, size, save_itptr );
+                len_spec = CheckSize( typ, ivalue, save_itptr );
                 if( len_spec ) {
-                    *size_ptr = size;
+                    *size_ptr = (uint)ivalue;
                 }
             }
         }

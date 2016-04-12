@@ -24,18 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  auxiliary routines for symbol type related info
+* Description:  integer and floating point conversion routines
 *
 ****************************************************************************/
 
 
-#include "itdefn.h"
-
-
-#define SIZE_UNDEF  ((uint)-1)
-
-extern uint         TypeSize( TYPE typ );
-extern uint         StorageSize( TYPE typ );
-extern intstar4     ITIntValue( itnode *it );
-extern char         *TypeKW( TYPE typ );
-extern PTYPE        ParmType( TYPE typ, uint size );
+extern int  FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width );
+extern int  FmtS2F( char *field, uint width, int decimals, bool blanks, int scale, int prec, extended *result, bool stop_ok, uint *new_width, bool extend_flt );

@@ -466,8 +466,10 @@ static  cg_type ArgPtrType( cg_name arg ) {
     cg_type     typ;
 
     typ = CGType( arg );
-    if( typ >= TY_USER_DEFINED ) return( TY_POINTER );
-    if( BETypeLength( typ ) < BETypeLength( TY_POINTER ) ) return( TY_POINTER );
+    if( typ >= TY_USER_DEFINED )
+        return( TY_POINTER );
+    if( BETypeLength( typ ) < BETypeLength( TY_POINTER ) )
+        return( TY_POINTER );
     return( typ );
 }
 

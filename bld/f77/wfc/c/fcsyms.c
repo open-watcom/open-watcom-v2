@@ -126,7 +126,8 @@ static  void            CheckAutoSize( sym_id sym, cg_type typ ) {
 
 #if _CPU == 8086
 
-    if( BETypeLength( typ ) <= 0x7fff ) return;
+    if( BETypeLength( typ ) <= 0x7fff )
+        return;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
         FCMessage( FCMSG_EQUIV_TOO_LARGE, sym );

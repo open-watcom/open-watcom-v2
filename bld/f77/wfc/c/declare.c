@@ -216,8 +216,9 @@ static  void    TypeDecl( TYPE typ ) {
     itnode      *var_node;
     bool        len_spec;
     sym_id      sym;
-    uint        size = ~0U;
+    uint        size;
 
+    size = SIZE_UNDEF;
     default_size = StorageSize( typ );
     if( RecNOpn() ) {
         AdvanceITPtr();
@@ -235,7 +236,7 @@ static  void    TypeDecl( TYPE typ ) {
             }
         }
         for(;;) {
-            size = ~0;
+            size = SIZE_UNDEF;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {

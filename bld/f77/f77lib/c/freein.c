@@ -40,6 +40,7 @@
 #include "chrutils.h"
 #include "rtspawn.h"
 #include "ioerr.h"
+#include "fmtcnvt.h"
 
 #include <ctype.h>
 
@@ -60,11 +61,10 @@ void    Blanks( void );
 void    CheckEor( void );
 
 
-static  char    *GetDelim( char *start, char *buff_end ) {
-//========================================================
-
-    for(;;) {
-        if( start >= buff_end ) break;
+static char *GetDelim( const char *start, const char *buff_end )
+//==============================================================
+{
+    for( ; start < buff_end; ++start ) {
         switch( *start ) {
         case ' ':
         case '\t':
@@ -73,15 +73,14 @@ static  char    *GetDelim( char *start, char *buff_end ) {
         case ')':
             return( start );
         }
-        start++;
     }
     return( start );
 }
 
 
-signed_32       GetNum( void ) {
-//=========================
-
+signed_32   GetNum( void )
+//========================
+{
     ftnfile     *fcb;
     char        ch;
     signed_32   value;
@@ -489,13 +488,13 @@ static  void    GetInt( intstar4 *result ) {
 
     ftnfile     *fcb;
     char        *start;
-    int         len;
+    uint        len;
     int         status;
 
     fcb = IOCB->fileinfo;
-    start = &fcb->buffer[ fcb->col ];
-    len  = GetDelim( start, &fcb->buffer[ fcb->len ] ) - start;
-    status = FmtS2I( start, len, FALSE, result, FALSE, NULL );
+    start = fcb->buffer + fcb->col;
+    len = GetDelim( start, fcb->buffer + fcb->len ) - start;
+    status = FmtS2I( start, len, false, result, false, NULL );
     if( status == INT_OK ) {
         fcb->col += len;
     } else if( status == INT_INVALID ) {
@@ -511,13 +510,13 @@ static  void    GetFloat( extended *result, int prec ) {
 
     ftnfile     *fcb;
     char        *start;
-    int         len;
+    uint        len;
     int         status;
 
     fcb = IOCB->fileinfo;
-    start = &fcb->buffer[ fcb->col ];
-    len  = GetDelim( start, &fcb->buffer[ fcb->len ] ) - start;
-    status = FmtS2F( start, len, 0, FALSE, 0, prec, result, FALSE, NULL, FALSE );
+    start = fcb->buffer + fcb->col;
+    len = GetDelim( start, fcb->buffer + fcb->len ) - start;
+    status = FmtS2F( start, len, 0, false, 0, prec, result, false, NULL, false );
     if( status == FLT_OK ) {
         fcb->col += len;
     } else {

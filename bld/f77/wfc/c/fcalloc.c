@@ -61,7 +61,7 @@
 static cg_name  getFlags( sym_id sym ) {
 //======================================
 
-    int                 tlen;
+    uint                tlen;
     cg_name             fl;
     cg_type             typ;
 
