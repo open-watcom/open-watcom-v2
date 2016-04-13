@@ -315,12 +315,12 @@ static bool MacroBeingExpanded( MACRO_ENTRY *fmentry )
 
     for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
         if( nested->fmentry == fmentry )
-            return( TRUE );
+            return( true );
         if( !nested->rescanning ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
@@ -404,7 +404,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             toklist = toklist->next;
                         }
                         toklist->next = PPTokenList;
-                        i = Expandable( me, mtok->next, FALSE );
+                        i = Expandable( me, mtok->next, false );
                         switch( i ) {
                         case 0:         // macro is currently not expandable
                             mtok->token = PPT_TEMP_ID;
@@ -433,7 +433,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         }
                     }
                 } else {        // expanding a macro parm
-                    if( Expandable( me, mtok->next, TRUE ) ) {
+                    if( Expandable( me, mtok->next, true ) ) {
                         old_tokenlist = PPTokenList;
                         PPTokenList = mtok->next;
                         if( head == mtok ) {
@@ -699,12 +699,12 @@ static bool SharpSharp( MACRO_TOKEN *mtok )
 {
     for( ; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token == PPT_SHARP_SHARP )
-            return( TRUE );
+            return( true );
         if( mtok->token != PPT_WHITE_SPACE ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
@@ -741,7 +741,7 @@ static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
             // macro_parms[mtok->data[0]].arg
             list = DuplicateList( macro_parms[(unsigned char)mtok->data[0]].arg );
             if( prev_token != PPT_SHARP_SHARP && !SharpSharp( mtok->next ) ) {
-                list = ExpandNestedMacros( list, FALSE );
+                list = ExpandNestedMacros( list, false );
             }
             if( list == NULL ) {                        /* 21-apr-93 */
                 list = mtok;
@@ -832,7 +832,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
     nested = (NESTED_MACRO *)PP_Malloc( sizeof( NESTED_MACRO ) );
     nested->fmentry = me;
     nested->rescanning = rescanning;
-    nested->substituting_parms = FALSE;
+    nested->substituting_parms = false;
     nested->macro_parms = NULL;
     if( me->parmcount == PP_SPECIAL_MACRO ) {
         head = BuildSpecialToken( me );
@@ -845,9 +845,9 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
         nested->macro_parms = macro_parms;
         head = BuildMTokenList( me, macro_parms );
         if( macro_parms != NULL ) {
-            nested->substituting_parms = TRUE;
+            nested->substituting_parms = true;
             head = SubstituteParms( head, macro_parms );
-            nested->substituting_parms = FALSE;
+            nested->substituting_parms = false;
         }
         head = GlueTokens( head );
         for( mtok = head; mtok != NULL; mtok = mtok->next ) {
@@ -870,7 +870,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
 
 MACRO_TOKEN *NestedMacroExpansion( MACRO_ENTRY *me )
 {
-    return( ExpandNestedMacros( MacroExpansion( me, FALSE ), TRUE ) );
+    return( ExpandNestedMacros( MacroExpansion( me, false ), true ) );
 }
 
 void DoMacroExpansion( MACRO_ENTRY *me )

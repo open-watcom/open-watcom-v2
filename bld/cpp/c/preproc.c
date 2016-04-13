@@ -865,12 +865,12 @@ static void IncLevel( int value )
     cpp = (CPP_INFO *)PP_Malloc( sizeof( CPP_INFO ) );
     cpp->prev_cpp = PPStack;
     cpp->cpp_type = PP_IF;
-    cpp->processing = FALSE;
+    cpp->processing = false;
     PPStack = cpp;
     if( NestLevel == SkipLevel ) {
         if( value ) {
             ++SkipLevel;
-            cpp->processing = TRUE;
+            cpp->processing = true;
         }
     }
     ++NestLevel;
@@ -938,7 +938,7 @@ static void PP_Elif( const char *ptr )
     } else {
         if( NestLevel == SkipLevel ) {
             --SkipLevel;                /* start skipping else part */
-            PPStack->processing = FALSE;
+            PPStack->processing = false;
             PPStack->cpp_type = PP_ELIF;
         } else if( NestLevel == SkipLevel + 1 ) {
             /* only evaluate the expression when required */
@@ -946,7 +946,7 @@ static void PP_Elif( const char *ptr )
                 value = PPConstExpr( ptr );
                 if( value ) {
                     SkipLevel = NestLevel; /* start including else part */
-                    PPStack->processing = TRUE;
+                    PPStack->processing = true;
                     PPStack->cpp_type = PP_ELIF;
                 }
             }
@@ -962,12 +962,12 @@ static void PP_Else( void )
         } else {
             if( NestLevel == SkipLevel ) {
                 --SkipLevel;            /* start skipping else part */
-                PPStack->processing = FALSE;
+                PPStack->processing = false;
             } else if( NestLevel == SkipLevel + 1 ) {
                 /* cpp_type will be PP_ELIF if an elif was true */
                 if( PPStack->cpp_type == PP_IF ) {
                     SkipLevel = NestLevel;  /* start including else part */
-                    PPStack->processing = TRUE;
+                    PPStack->processing = true;
                 }
             }
             PPStack->cpp_type = PP_ELSE;
