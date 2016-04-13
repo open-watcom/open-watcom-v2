@@ -165,10 +165,8 @@ static  bool    DumpVariable( sym_id sym ) {
                     global_item = CkInCommon( sym );
                 } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                     if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
-                        if( _SymSize( sym ) * _ArrElements( sym ) >
-                            DataThreshold ) {
-                            AllocGlobal( _SymSize( sym )*_ArrElements( sym ),
-                                         (flags & SY_DATA_INIT) != 0 );
+                        if( _SymSize( sym ) * _ArrElements( sym ) > DataThreshold ) {
+                            AllocGlobal( _SymSize( sym ) * _ArrElements( sym ), (flags & SY_DATA_INIT) != 0 );
                         }
                     }
                 }
