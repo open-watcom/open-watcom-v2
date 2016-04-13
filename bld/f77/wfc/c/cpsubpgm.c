@@ -181,9 +181,9 @@ void CpSubroutine( void )
     ProgSw |= PS_IN_SUBPROGRAM;
     if( ReqName( NAME_SUBROUTINE ) ) {
         entry = SubProgName( FT_NO_TYPE, SY_USAGE | SY_SUBPROGRAM | SY_PENTRY |
-                              SY_SUBROUTINE | SY_REFERENCED, 0, TRUE );
+                              SY_SUBROUTINE | SY_REFERENCED, 0, true );
         if( RecOpenParen() ) {
-            ParmList( TRUE, entry );
+            ParmList( true, entry );
             ReqCloseParen();
             ReqNOpn();
             AdvanceITPtr();
@@ -220,7 +220,7 @@ void    Function( TYPE typ, uint size, bool len_spec )
         entry = SubProgName( typ, flags, size, len_spec );
         STFnShadow( SubProgId );
         if( ReqOpenParen() ) {
-            ParmList( FALSE, entry );
+            ParmList( false, entry );
         }
         ReqCloseParen();
         ReqNOpn();
@@ -237,7 +237,7 @@ void    Function( TYPE typ, uint size, bool len_spec )
 
 void CpFunction( void )
 {
-    Function( FT_NO_TYPE, -1, FALSE );
+    Function( FT_NO_TYPE, -1, false );
 }
 
 void CpEntry( void )
@@ -323,8 +323,8 @@ void CpReturn( void )
     AdvanceITPtr();
     ReqEOS();
     GGotoEpilog();
-    Remember.transfer = TRUE;
-    Remember.stop_or_return = TRUE;
+    Remember.transfer = true;
+    Remember.stop_or_return = true;
 }
 
 static void CkSubEnd( void )

@@ -67,7 +67,7 @@ static  unsigned  InitFThreads( void ) {
         return( 0 );
     if( __InitFThreadProcessing() != 0 )
         return( 1 );
-    ThreadsInitialized = TRUE;
+    ThreadsInitialized = true;
     RTSysInit();
     return( 0 );
 }
@@ -195,5 +195,5 @@ void    __InitBeginThread( void ) {
     __EndThread = &FEndThread;
     __InitDataThread = &FInitDataThread;
     __RegisterThreadData( &__BeginThread, &__EndThread, &__InitDataThread );
-    ThreadsInitialized = FALSE;
+    ThreadsInitialized = false;
 }

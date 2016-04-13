@@ -79,7 +79,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     char        buff[MAX_SYMLEN+1];
 
     ChkErrFile();
-    save_list = SetLst( TRUE );
+    save_list = SetLst( true );
     was_listed = WasStmtListed();
     caret = CarrotType( error );
     column = 0;

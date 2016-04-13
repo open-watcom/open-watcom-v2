@@ -118,12 +118,12 @@ static  const logstar1 __FAR    CmpValue[] = {
          // <         =         >    ///operator
          //=====================================
                                      //
-           FALSE,   TRUE,     FALSE, // .EQ.
-           TRUE,    FALSE,    TRUE,  // .NE.
-           TRUE,    FALSE,    FALSE, // .LT.
-           FALSE,   TRUE,     TRUE,  // .GE.
-           TRUE,    TRUE,     FALSE, // .LE.
-           FALSE,   FALSE,    TRUE   // .GT.
+           false,   true,     false, // .EQ.
+           true,    false,    true,  // .NE.
+           true,    false,    false, // .LT.
+           false,   true,     true,  // .GE.
+           true,    true,     false, // .LE.
+           false,   false,    true   // .GT.
            };
 
 

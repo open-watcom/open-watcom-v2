@@ -64,7 +64,7 @@ void    CpParameter( void ) {
     sym_id      sym;
     sym_id      value_id;
     TYPE        typ;
-    byte        assign_val;
+    bool        assign_val;
 
     ReqNOpn();
     AdvanceITPtr();
@@ -73,13 +73,13 @@ void    CpParameter( void ) {
         if( ReqName( NAME_VARIABLE ) ) {
             sym = LkSym();
             typ = sym->u.ns.u1.s.typ;
-            assign_val = TRUE;
+            assign_val = true;
             if( sym->u.ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC) ) {
                 IllName( sym );
-                assign_val = FALSE;
+                assign_val = false;
             } else if( typ == FT_STRUCTURE ) {
                 IllType( sym );
-                assign_val = FALSE;
+                assign_val = false;
             } else {
                 CkSymDeclared( sym );
             }

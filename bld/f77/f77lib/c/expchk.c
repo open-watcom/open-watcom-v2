@@ -52,18 +52,21 @@ bool    ToFFormat( reallong val ) {
     int         exp;
 
     exp = ((unsigned_16 *)(&val))[3] & 0x7ff0;
-    if( exp == 0 ) return( TRUE );
+    if( exp == 0 )
+        return( true );
     exp >>= 4;
     exp -= 0x03ff;      // unbias exponent
     // 2**19 < 10**7 < 2**20
-    if( exp >= 20 ) return( FALSE );
+    if( exp >= 20 )
+        return( false );
     if( exp == 19 ) {
         // 1000000 is  0x412e848000000000
         if( ( ((unsigned_32 *)(&val))[1] & 0x7fffffff ) >= 0x412e8480 ) {
-            return( FALSE );
+            return( false );
         }
     }
     exp = -exp;
-    if( exp >= 12 ) return( FALSE );
-    return( TRUE );
+    if( exp >= 12 )
+        return( false );
+    return( true );
 }

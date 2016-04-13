@@ -361,12 +361,12 @@ void ClearRem( void )
 {
 // Clear the Remember flags for a new statement.
 
-    Remember.read           = FALSE;
-    Remember.end_equals     = FALSE;
-    Remember.transfer       = FALSE;
-    Remember.slct           = FALSE;
-    Remember.endstmt        = FALSE;
-    Remember.stop_or_return = FALSE;
+    Remember.read           = false;
+    Remember.end_equals     = false;
+    Remember.transfer       = false;
+    Remember.slct           = false;
+    Remember.endstmt        = false;
+    Remember.stop_or_return = false;
 }
 
 

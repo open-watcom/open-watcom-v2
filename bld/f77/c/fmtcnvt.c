@@ -197,7 +197,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
     // initialize the canonical form of the number to be collected
 
     canon.exp = 0;
-    canon.neg = FALSE;
+    canon.neg = false;
     canon.col = 0;
     canon.flags = 0;
     canon.blanks = 0;
@@ -222,7 +222,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
             field++;
             start++;
             if( ch != '+' ) {
-                canon.neg = TRUE;
+                canon.neg = true;
             }
         }
     }

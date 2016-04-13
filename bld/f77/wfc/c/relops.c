@@ -91,10 +91,10 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     optr = optr;
     // must check for "flip" before we call "CharLength" since they may
     // call "PushOpn"
-    flip = FALSE;
+    flip = false;
     if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
         ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
-        flip = TRUE;
+        flip = true;
     }
     // must do "CITNode->link" first to get operands in the right order
     i = CharLength( CITNode->link );
@@ -102,10 +102,10 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     opr_code = CITNode->link->opr;
     if( ( opr_code == OPR_EQ ) || ( opr_code == OPR_NE ) ) {
         char_1_cmp = OptimalChSize( i ) && OptimalChSize( j ) && ( i == j );
-        associative = TRUE;
+        associative = true;
     } else {
         char_1_cmp = (i == 1 ) && ( j == 1 );
-        associative = FALSE;
+        associative = false;
     }
     PushOpn( CITNode->link );
     PushOpn( CITNode );

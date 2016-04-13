@@ -70,27 +70,35 @@ static  bool    R_FRecEos( void ) {
     return( Fmt_charptr >= Fmt_end );
 }
 
-static  bool    R_FR_Char( char test_char ) {
+static  bool    R_FR_Char( char test_char )
 // Formatted I/O character recognition.
-// This routine returns TRUE if the specified character is found
+// This routine returns true if the specified character is found
 // Note that the format character is in lower case when the
 // comparison is performed.
-    if( R_FRecEos() ) return( FALSE );
-    if( tolower( *Fmt_charptr ) != test_char ) return( FALSE );
+{
+    if( R_FRecEos() )
+        return( false );
+    if( tolower( *Fmt_charptr ) != test_char )
+        return( false );
     ++Fmt_charptr;
     FSkipSpaces();
-    return( TRUE );
+    return( true );
 }
 
-static  void    R_FSpec( void ) {
+static  void    R_FSpec( void )
 // Process a format specification.
+{
     Fmt_delimited = YES_DELIM;
     for(;;) {
-        if( R_FRecEos() ) return;
-        if( R_FR_Char( ')' ) ) break;
+        if( R_FRecEos() )
+            return;
+        if( R_FR_Char( ')' ) )
+            break;
         GetRepSpec();
         FCode();
-        if( Fmt_paren_level <= 0 ) return;
+        if( Fmt_paren_level <= 0 ) {
+            return;
+        }
     }
     --Fmt_paren_level;
     Fmt_delimited = NO_DELIM;
@@ -142,20 +150,25 @@ static  int     R_FConst( void ) {
     return( result );
 }
 
-static  bool    R_FReqChar( char test_string, int err_code ) {
+static  bool    R_FReqChar( char test_string, int err_code )
 // Formatted I/O token scanner.
 // This routine generates an error condition if the specified character
 // is not found.
-    if( R_FR_Char( test_string ) ) return( TRUE );
+{
+    if( R_FR_Char( test_string ) )
+        return( true );
     R_FError( err_code );
-    return( FALSE );
+    return( false );
 }
 
-static  void    FSkipSpaces( void ) {
+static  void    FSkipSpaces( void )
 // Skip spaces between format codes.
+{
     for(;;) {
-        if( Fmt_charptr >= Fmt_end ) break;
-        if( *Fmt_charptr != ' ' ) break;
+        if( Fmt_charptr >= Fmt_end )
+            break;
+        if( *Fmt_charptr != ' ' )
+            break;
         ++Fmt_charptr;
     }
 }
@@ -188,16 +201,19 @@ static  void    GetRepSpec( void ) {
     }
 }
 
-static  bool    FNoRep( void ) {
+static  bool    FNoRep( void )
 // Make sure that no repeat specification was given.
-// Return TRUE if no repeat spec was given.
-    if( Fmt_rep_spec == -1 ) return( TRUE );
+// Return true if no repeat spec was given.
+{
+    if( Fmt_rep_spec == -1 )
+        return( true );
     R_FError( FM_NO_REP );
-    return( FALSE );
+    return( false );
 }
 
-static  void    R_FLiteral( void ) {
+static  void    R_FLiteral( void )
 // Process a literal format code.
+{
     int         lit_length;
     char        PGM *cur_char_ptr;
 
@@ -208,11 +224,15 @@ static  void    R_FLiteral( void ) {
         for(;;) {
             if( *Fmt_charptr == '\'' ) {
                 ++Fmt_charptr;
-                if( *Fmt_charptr != '\'' ) break;
+                if( *Fmt_charptr != '\'' ) {
+                    break;
+                }
             }
             ++lit_length;
             ++Fmt_charptr;
-            if( Fmt_charptr >= Fmt_end ) break;
+            if( Fmt_charptr >= Fmt_end ) {
+                break;
+            }
         }
         if( Fmt_charptr >= Fmt_end ) {
             R_FError( FM_QUOTE );
@@ -223,7 +243,9 @@ static  void    R_FLiteral( void ) {
             for(;;) {
                 if( *cur_char_ptr == '\'' ) {
                     ++cur_char_ptr;
-                    if( *cur_char_ptr != '\'' ) break;
+                    if( *cur_char_ptr != '\'' ) {
+                        break;
+                    }
                 }
                 FEmChar( cur_char_ptr );
                 ++cur_char_ptr;
@@ -232,10 +254,11 @@ static  void    R_FLiteral( void ) {
     }
 }
 
-static  void    R_FH( void ) {
+static  void    R_FH( void )
 // Process an H format code.
 // Note that Fmt_rep_spec represents the desired length of
 // the H format code.
+{
     FChkDelimiter();
     if( ( Fmt_rep_spec <= 0 ) || ( Fmt_charptr + Fmt_rep_spec >= Fmt_end ) ) {
         R_FError( FM_WIDTH );
@@ -245,13 +268,16 @@ static  void    R_FH( void ) {
         for(;;) {
             FEmChar( Fmt_charptr );
             ++Fmt_charptr;
-            if( --Fmt_rep_spec == 0 ) break;
+            if( --Fmt_rep_spec == 0 ) {
+                break;
+            }
         }
     }
 }
 
-static  void    R_FComma( void ) {
+static  void    R_FComma( void )
 // Process a comma format delimiter/code.
+{
     if( FNoRep() ) {
         if( !R_FRecEos() && ( *Fmt_charptr != ',' ) &&
             ( *Fmt_charptr != ')' ) ) {
@@ -262,37 +288,42 @@ static  void    R_FComma( void ) {
     }
 }
 
-static  bool    FRep( void ) {
+static  bool    FRep( void )
 // Validate and emit the repeat specification.
-// Return TRUE if the repeat spec was valid.
+// Return true if the repeat spec was valid.
+{
     if( Fmt_rep_spec == 0 ) {
         R_FError( FM_INV_REP );
-        return( FALSE );
+        return( false );
     } else if( Fmt_rep_spec > 1 ) {
         FEmCode( REP_FORMAT );
         FEmNum( Fmt_rep_spec );
     }
-    return( TRUE );
+    return( true );
 }
 
-static  void    R_FSlash( void ) {
+static  void    R_FSlash( void )
 // Process a slash format delimeter/code.
+{
     if( FNoRep() ) {
         Fmt_delimited = YES_DELIM;
         Fmt_rep_spec = 0;
         for(;;) {
             ++Fmt_rep_spec;
-            if( !R_FR_Char( '/' ) ) break;
+            if( !R_FR_Char( '/' ) ) {
+                break;
+            }
         }
         FRep();
         FEmCode( SL_FORMAT );
     }
 }
 
-static  void    R_FX( void ) {
+static  void    R_FX( void )
 // Process an X format code.
 // Note that Fmt_rep_spec represents the number of spaces
 // that are desired to skipped.
+{
     FChkDelimiter();
     if( Fmt_rep_spec == -1 ) {
         Fmt_rep_spec = 1;
@@ -304,8 +335,9 @@ static  void    R_FX( void ) {
     FEmNum( Fmt_rep_spec );
 }
 
-static  void    R_FI( void ) {
+static  void    R_FI( void )
 // Process an I format code.
+{
     int         fmt_width;
     int         fmt_min;
 
@@ -328,15 +360,17 @@ static  void    R_FI( void ) {
     }
 }
 
-static  void    R_FColon( void ) {
+static  void    R_FColon( void )
 // Process a colon.
+{
     FNoRep();
     FEmCode( C_FORMAT );
     Fmt_delimited = YES_DELIM;
 }
 
-static  void    R_FA( void ) {
+static  void    R_FA( void )
 // Process an A format code.
+{
     int         fmt_width;
 
     FChkDelimiter();
@@ -354,8 +388,9 @@ static  void    R_FA( void ) {
     }
 }
 
-static  void    R_FT( void ) {
+static  void    R_FT( void )
 // Process a T, TL or TR format specifier.
+{
     int         width;
 
     FChkDelimiter();
@@ -374,8 +409,9 @@ static  void    R_FT( void ) {
     }
 }
 
-static  void    R_FS( void ) {
+static  void    R_FS( void )
 // Process an S, SP or SS format specifier.
+{
     FChkDelimiter();
     if( FNoRep() ) {
         if( R_FR_Char( 'p' ) ) {
@@ -388,8 +424,9 @@ static  void    R_FS( void ) {
     }
 }
 
-static  void    R_FB( void ) {
+static  void    R_FB( void )
 // Process a BN or BZ format specifier.
+{
     FChkDelimiter();
     if( FNoRep() ) {
         if( R_FR_Char( 'n' ) ) {
@@ -401,8 +438,9 @@ static  void    R_FB( void ) {
     }
 }
 
-static  void    R_FL( void ) {
+static  void    R_FL( void )
 // Process an L format code.
+{
     int         width;
 
     FChkDelimiter();
@@ -415,34 +453,40 @@ static  void    R_FL( void ) {
     }
 }
 
-static  void    R_FD( void ) {
+static  void    R_FD( void )
 // Process a D format code.
+{
     FReal( D_FORMAT );
 }
 
-static  void    R_FQ( void ) {
+static  void    R_FQ( void )
 // Process a Q format code.
+{
     R_FExtension( FM_Q_FORMAT );
     FReal( Q_FORMAT );
 }
 
-static  void    R_FF( void ) {
+static  void    R_FF( void )
 // Process an F format code.
+{
     FReal( F_FORMAT );
 }
 
-static  void    R_FE( void ) {
+static  void    R_FE( void )
 // Process an E format code.
+{
     FReal( E_FORMAT );
 }
 
-static  void    R_FG( void ) {
+static  void    R_FG( void )
 // Process a G format code.
+{
     FReal( G_FORMAT );
 }
 
-static  void    FReal( byte format_code ) {
+static  void    FReal( byte format_code )
 // Process an F, D, Q, E or G format code.
+{
     int         fmt_width;
     int         fmt_modifier;
     int         fmt_exp;
@@ -451,10 +495,13 @@ static  void    FReal( byte format_code ) {
         R_FExtension( FM_ASSUME_COMMA );
     }
     Fmt_delimited = NO_DELIM;
-    if( !FRep() ) return;
+    if( !FRep() )
+        return;
     fmt_width = R_FRPConst();
-    if( fmt_width <= 0 ) return;
-    if( !R_FReqChar( '.', FM_DECIMAL ) ) return;
+    if( fmt_width <= 0 )
+        return;
+    if( !R_FReqChar( '.', FM_DECIMAL ) )
+        return;
     fmt_modifier = R_FConst();
     if( ( fmt_modifier < 0 ) || ( fmt_width < fmt_modifier ) ) {
         R_FError( FM_MODIFIER );
@@ -467,7 +514,8 @@ static  void    FReal( byte format_code ) {
                 if( format_code == E_FORMAT ) {
                     if( !R_FR_Char( 'e' ) ) {
                         if( !R_FR_Char( 'd' ) ) {
-                            if( !R_FReqChar( 'q', FM_FMTCHAR ) ) return;
+                            if( !R_FReqChar( 'q', FM_FMTCHAR ) )
+                                return;
                             format_code = EQ_FORMAT;
                             R_FExtension( FM_Q_EXT );
                         } else {
@@ -477,7 +525,8 @@ static  void    FReal( byte format_code ) {
                     }
                 }
                 fmt_exp = R_FRPConst();
-                if( fmt_exp <= 0 ) return;
+                if( fmt_exp <= 0 )
+                    return;
                 if( fmt_width < fmt_modifier ) {
                     R_FError( FM_MODIFIER );
                 }
@@ -493,17 +542,19 @@ static  void    FReal( byte format_code ) {
     }
 }
 
-static  void    R_FP( void ) {
+static  void    R_FP( void )
 // Process a P format delimiter/code.
 // Note that Fmt_rep_spec represents the scale factor.
+{
     FChkDelimiter();
     Fmt_delimited = P_DELIM;
     FEmCode( P_FORMAT );
     FEmNum( Fmt_rep_spec );
 }
 
-static  void    R_FLParen( void ) {
+static  void    R_FLParen( void )
 // Process a left parenthesis.
+{
     FChkDelimiter();
     if( Fmt_paren_level < 2 ) {
         if( Fmt_rep_spec == 0 ) {
@@ -527,8 +578,9 @@ static  void    R_FLParen( void ) {
     R_FSpec();
 }
 
-static  void    R_FZ( void ) {
+static  void    R_FZ( void )
 // Process a z format code (extension).
+{
     int         width;
 
     FChkDelimiter();
@@ -547,17 +599,18 @@ static  void    R_FZ( void ) {
     }
 }
 
-static  void    R_FM( void ) {
+static  void    R_FM( void )
 // Process a $ format code (extension).
+{
     FChkDelimiter();
     FNoRep();
     FEmCode( M_FORMAT );
     R_FExtension(  FM_M_EXT );
 }
 
-static  void    FChkDelimiter( void ) {
+static  void    FChkDelimiter( void )
 // Make sure that an element has been delimited.
-// Return TRUE if the element was delimited.
+{
     if( Fmt_delimited != YES_DELIM ) {
         R_FExtension( FM_ASSUME_COMMA );
     }
@@ -590,8 +643,9 @@ static  const f_procs __FAR FP_Cod[] = {
         NULLCHAR, NULL
 };
 
-static  void    FCode( void ) {
+static  void    FCode( void )
 // Process a format code.
+{
     char                current;
     const f_procs __FAR *f_rtn;
 
@@ -606,7 +660,8 @@ static  void    FCode( void ) {
             R_FError( FM_FMTCHAR );
             return;
         }
-        if( f_rtn->code == current ) break;
+        if( f_rtn->code == current )
+            break;
         f_rtn++;
     }
     if( ( current != '\'' ) && ( current != '(' ) ) {

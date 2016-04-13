@@ -50,9 +50,9 @@ static  void    FmtFloat( char *buff, extended value, int digits, char ch ) {
 //===========================================================================
 
     if( ToFFormat( value ) ) {
-        R_F2F( value, buff, EXTENDED_IO_WINDOW, digits, FALSE, 0 );
+        R_F2F( value, buff, EXTENDED_IO_WINDOW, digits, false, 0 );
     } else {
-        R_F2E( value, buff, EXTENDED_IO_WINDOW, digits, FALSE, 1, EXP_LEN, ch );
+        R_F2E( value, buff, EXTENDED_IO_WINDOW, digits, false, 1, EXP_LEN, ch );
     }
     buff[EXTENDED_IO_WINDOW] = NULLCHAR;
     strcpy( buff, JmpBlanks( buff ) );

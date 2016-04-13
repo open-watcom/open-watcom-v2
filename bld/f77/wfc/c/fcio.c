@@ -196,7 +196,7 @@ static  void    IOStatement( RTCODE stmt ) {
     // don't need label generated for IOSTAT unless it's a READ or WRITE
     // statement that is not NAMELIST-directed
     if( ( (stmt != RT_EX_READ) && (stmt != RT_EX_WRITE) ) || NmlSpecified ) {
-        IOStatSpecified = FALSE;
+        IOStatSpecified = false;
     }
     chkIOErr( CGCall( InitCall( stmt ) ) );
 }
@@ -238,8 +238,8 @@ void    FCSetIOCB( void ) {
     ErrEqLabel = 0;
     EndEqStmt = NULL;
     ErrEqStmt = NULL;
-    IOStatSpecified = FALSE;
-    NmlSpecified = FALSE;
+    IOStatSpecified = false;
+    NmlSpecified = false;
 }
 
 
@@ -780,7 +780,7 @@ void    FCSetNml( void ) {
     sym_id      nl;
     grp_entry   *ge;
 
-    NmlSpecified = TRUE;
+    NmlSpecified = true;
     handle = InitCall( RT_SET_NML );
     nl = GetPtr();
     ReverseList( (void **)&nl->u.nl.group_list );
@@ -1067,7 +1067,7 @@ void    FCSetIOS( void ) {
 // Set IOSTAT=.
 
     IOCall( RT_SET_IOS );
-    IOStatSpecified = TRUE;
+    IOStatSpecified = true;
 }
 
 

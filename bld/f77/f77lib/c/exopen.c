@@ -183,13 +183,13 @@ static  void    ExOpen( void ) {
     // version of the file.
     IOCB->fileinfo->status = status;
     GetFileInfo();
-    log = FALSE;
-    connected = FALSE;
+    log = false;
+    connected = false;
     if( fcb == NULL ) {
         // file not connected
         fcb = IOCB->fileinfo;
     } else {
-        connected = TRUE;
+        connected = true;
         log = (fcb->flags & FTN_LOG_IO) != 0;
         if( fcb->accmode == ACCM_DEFAULT ) {
             // OPEN of a preconnected file

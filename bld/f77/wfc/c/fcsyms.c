@@ -317,7 +317,7 @@ static  void    DumpGlobalSCB( sym_id sym, unsigned_32 g_offset ) {
     segment_id  old_seg;
 
     if( _Allocatable( sym ) ) {
-        DumpSCB( FEBack( sym ), NULL, 0, TRUE, 0 );
+        DumpSCB( FEBack( sym ), NULL, 0, true, 0 );
     } else {
         sym->u.ns.si.va.vi.seg_id = GetGlobalSeg( g_offset );
         old_seg = BESetSeg( sym->u.ns.si.va.vi.seg_id );
@@ -334,10 +334,10 @@ static  void    DumpGlobalSCB( sym_id sym, unsigned_32 g_offset ) {
 bool    SCBRequired( sym_id sym ) {
 //=================================
 
-    if( !(Options & OPT_DESCRIPTOR) ) return( TRUE );
-    if( sym->u.ns.flags & SY_VALUE_PARM ) return( TRUE );
-    if( sym->u.ns.xt.size != 0 ) return( TRUE );
-    return( FALSE );
+    if( !(Options & OPT_DESCRIPTOR) ) return( true );
+    if( sym->u.ns.flags & SY_VALUE_PARM ) return( true );
+    if( sym->u.ns.xt.size != 0 ) return( true );
+    return( false );
 }
 
 
@@ -695,7 +695,7 @@ static  void    DumpNameLists( void ) {
                 _SetNMLSubScrs( nl_info, _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) );
                 DGInteger( nl_info, TY_UINT_1 );
                 DGInteger( sym->u.ns.si.va.u.dim_ext->num_elts, TY_UINT_4 );
-                DumpStaticAdv( sym, FALSE ); // we do not want a name ptr dumped
+                DumpStaticAdv( sym, false ); // we do not want a name ptr dumped
                 if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                     DGInteger( sym->u.ns.xt.size, TY_INTEGER );
                 }
@@ -835,7 +835,7 @@ static  void    DbgVarInfo( sym_id sym ) {
                 loc = DBLocSym( loc, ce_ext->com_blk );
                 loc = DBLocConst( loc, ce_ext->offset + offset );
                 loc = DBLocOp( loc, DB_OP_ADD, 0 );
-                DBGenSym( sym, loc, TRUE );
+                DBGenSym( sym, loc, true );
                 DBLocFini( loc );
             } else {
                 DBLocalSym( sym, TY_DEFAULT );
@@ -845,7 +845,7 @@ static  void    DbgVarInfo( sym_id sym ) {
             loc = DBLocSym( loc, leader );
             loc = DBLocConst( loc, offset - ce_ext->low );
             loc = DBLocOp( loc, DB_OP_ADD, 0 );
-            DBGenSym( sym, loc, TRUE );
+            DBGenSym( sym, loc, true );
             DBLocFini( loc );
         }
     } else {
@@ -855,7 +855,7 @@ static  void    DbgVarInfo( sym_id sym ) {
             loc = DBLocSym( loc, ce_ext->com_blk );
             loc = DBLocConst( loc, ce_ext->offset );
             loc = DBLocOp( loc, DB_OP_ADD, 0 );
-            DBGenSym( sym, loc, TRUE );
+            DBGenSym( sym, loc, true );
             DBLocFini( loc );
         } else {
             DBLocalSym( sym, TY_DEFAULT );
@@ -953,7 +953,7 @@ static  void    AssignStaticAdv( sym_id sym ) {
     sym->u.ns.si.va.u.dim_ext->adv = BENewBack( NULL );
     DGAlign( ALIGN_DWORD );
     DGLabel( sym->u.ns.si.va.u.dim_ext->adv );
-    DumpStaticAdv( sym, TRUE );
+    DumpStaticAdv( sym, true );
 }
 
 
@@ -1173,7 +1173,7 @@ static  void    DumpLitSCBs( void ) {
         data = BENewBack( NULL );
         DGLabel( data );
         DGString( (char *)&sym->u.lt.value, sym->u.lt.length );
-        DumpSCB( ConstBack( sym ), data, sym->u.lt.length, FALSE, 0 );
+        DumpSCB( ConstBack( sym ), data, sym->u.lt.length, false, 0 );
         FreeBackHandle( &data );
     }
 }
@@ -1278,7 +1278,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
     for( sym = NmList; sym != NULL; sym = sym->u.nl.link ) {
         FreeBackHandle( &sym->u.nl.address );
     }
-    FreeUsedBacks( TRUE );
+    FreeUsedBacks( true );
     FiniLabels( FORMAT_LABEL );
     FreeBackHandle( &TraceEntry );
 }

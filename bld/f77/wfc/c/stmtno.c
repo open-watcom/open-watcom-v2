@@ -363,8 +363,8 @@ void    InitStNumbers( void ) {
 
 // Intitialize statement number processing.
 
-    StNumbers.wild_goto  = FALSE;
-    StNumbers.var_format = FALSE;
-    StNumbers.in_remote  = FALSE;
+    StNumbers.wild_goto  = false;
+    StNumbers.var_format = false;
+    StNumbers.in_remote  = false;
     StNumbers.branches   = NextLabel();
 }

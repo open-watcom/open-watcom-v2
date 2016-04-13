@@ -65,7 +65,9 @@ void    IOList( void ) {
             Error( IL_NO_IOLIST );
         }
         for(;;) {
-            if( CITNode->link == NULL ) break;
+            if( CITNode->link == NULL ) {
+                break;
+            }
             ProcessList();
         }
     }
@@ -77,14 +79,18 @@ static  bool    HasUnion( sym_id fld ) {
 //======================================
 
     for(;;) {
-        if( fld == NULL ) return( FALSE );
+        if( fld == NULL )
+            return( false );
         if( fld->u.fd.typ == FT_STRUCTURE ) {
-            if( HasUnion( fld->u.fd.xt.record->fl.sym_fields ) ) break;
+            if( HasUnion( fld->u.fd.xt.record->fl.sym_fields ) ) {
+                break;
+            }
         }
-        if( fld->u.fd.typ == FT_UNION ) break;
+        if( fld->u.fd.typ == FT_UNION )
+            break;
         fld = fld->u.fd.link;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -103,7 +109,7 @@ bool    StartImpDo( void ) {
 //====================
 
 // This procedure scans the i/o list to recognize an implied do.
-// If it is not found FALSE returns, if it is found TRUE returns and:
+// If it is not found false returns, if it is found true returns and:
 // -  the implied DO is initialized
 // -  a terminal operator is placed over the comma at the
 //    end of the i/o list within the implied DO. This is used
@@ -116,8 +122,10 @@ bool    StartImpDo( void ) {
     itnode      *lastcomma;
     int         level;
 
-    if( !RecNOpn() ) return( FALSE );
-    if( !RecNextOpr( OPR_LBR ) ) return( FALSE );
+    if( !RecNOpn() )
+        return( false );
+    if( !RecNextOpr( OPR_LBR ) )
+        return( false );
     citnode = CITNode;
     AdvanceITPtr();
     lastcomma = NULL;
@@ -133,14 +141,16 @@ bool    StartImpDo( void ) {
         }
         if( ( level < 0 ) || RecTrmOpr() ) {
             CITNode = citnode;
-            return( FALSE );
+            return( false );
         }
         AdvanceITPtr();
-        if( RecEquSign() && ( level == 0 ) ) break;
+        if( RecEquSign() && ( level == 0 ) ) {
+            break;
+        }
     }
     if( ( lastcomma == NULL ) || ( lastcomma->link != CITNode ) ) {
         CITNode = citnode;
-        return( FALSE );
+        return( false );
     }
     InitImpDo( lastcomma );
     CITNode = citnode;
@@ -148,7 +158,7 @@ bool    StartImpDo( void ) {
     if( ( RecNextOpr( OPR_TRM ) && RecNOpn() ) ) {
         Error( IL_EMPTY_IMP_DO );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -233,7 +243,8 @@ void    InitImpDo( itnode *lastcomma ) {
             } else if( RecCloseParen() ) {
                 level--;
             }
-            if( level < 0 ) break;
+            if( level < 0 )
+                break;
             if( CITNode->link == NULL ) {
                 DelCSNode();
                 CITNode->opr = OPR_TRM;

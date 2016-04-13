@@ -150,18 +150,14 @@ static const byte __FAR CharSet[] = {
 static  bool    IsDoubleByteBlank( char *ptr ) {
 // Determine if character is a double-byte blank character.
 
-    if( ( (unsigned char)*ptr == 0x81 ) && ( (unsigned char)*(ptr + 1) == 0x40 ) )
-        return( TRUE );
-    return( FALSE );
+    return( ( (unsigned char)*ptr == 0x81 ) && ( (unsigned char)*(ptr + 1) == 0x40 ) );
 }
 
 
 static  bool    IsDoubleByteChar( char ch ) {
 // Determine if character is a double-byte character.
 
-    if( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xfc ) )
-        return( TRUE );
-    return( FALSE );
+    return( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xfc ) );
 }
 
 

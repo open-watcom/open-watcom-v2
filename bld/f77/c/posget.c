@@ -191,8 +191,8 @@ static  uint    GetTextRec( b_file *io, char *b, uint len )
     } else if( io->attrs & BUFFERED ) {
         char            *ptr;
         char            *stop;
-        int             seen_cr;
-        int             trunc;
+        bool            seen_cr;
+        bool            trunc;
         uint            max_valid;
 
         // determine maximum valid position in the buffer
@@ -203,8 +203,8 @@ static  uint    GetTextRec( b_file *io, char *b, uint len )
         stop = io->buffer + max_valid;
         ptr = io->buffer + io->b_curs;
         read = 0;
-        seen_cr = FALSE;
-        trunc = FALSE;
+        seen_cr = false;
+        trunc = false;
         for( ; ; ) {
             if( ptr >= stop ) {
                 io->b_curs = ptr - io->buffer;
@@ -232,23 +232,23 @@ static  uint    GetTextRec( b_file *io, char *b, uint len )
                     break;
                 }
                 if( ch == CR ) {
-                    seen_cr = TRUE;
+                    seen_cr = true;
                 } else if( read < len ) {
                     b[ read ] = ch;
                     ++read;
                 } else {
-                    trunc = TRUE;
+                    trunc = true;
                 }
             } else {
                 if( ch == FF && (io->attrs & CARRIAGE_CONTROL) )
                     break;
                 --ptr;  // give back the char
-                seen_cr = FALSE;
+                seen_cr = false;
                 if( read < len ) {
                     b[ read ] = CR;
                     ++read;
                 } else {
-                    trunc = TRUE;
+                    trunc = true;
                 }
             }
         }

@@ -90,11 +90,13 @@ static  void    PrSFList( void ) {
         AdvanceITPtr();
         done_list = RecCloseParen() || RecColon();
     } else {
-        done_list = FALSE;
+        done_list = false;
         num_parms = 0;
         for(;;) {
-            if( done_list ) break;
-            if( parm == NULL ) break;
+            if( done_list )
+                break;
+            if( parm == NULL )
+                break;
             num_parms++;
             sym_ptr = parm->shadow;
             if( sym_ptr->u.ns.u1.s.typ != CITNode->typ ) {
@@ -127,7 +129,7 @@ static  void    PrSFList( void ) {
             done_list = RecCloseParen() || RecColon();
         }
     }
-    if( ( parm != NULL ) || ( done_list == FALSE ) ) {
+    if( ( parm != NULL ) || !done_list ) {
         while( parm != NULL ) {
             num_parms++;
             parm = parm->link;
@@ -150,7 +152,9 @@ static  void    PrSubList( itnode *array_node ) {
     for(;;) {
         GSubScr();
         AdvanceITPtr();
-        if( RecCloseParen() || RecColon() ) break;
+        if( RecCloseParen() || RecColon() ) {
+            break;
+        }
     }
     GEndSubScr( array_node );
     if( RecColon() ) {

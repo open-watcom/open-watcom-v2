@@ -353,7 +353,7 @@ static  void    DefineCommonSegs( void ) {
             private = 0;
         }
 #endif
-        cb_len = MangleCommonBlockName( sym, cb_name, FALSE );
+        cb_len = MangleCommonBlockName( sym, cb_name, false );
 
         sym->u.ns.si.cb.seg_id = AllocSegId();
         if( CGOpts & CGOPT_ALIGN ) {
@@ -987,7 +987,7 @@ int     FETrue( void ) {
 
 // Return the value for "true".
 
-    return( _LogValue( TRUE ) );
+    return( _LogValue( true ) );
 }
 
 
@@ -1306,7 +1306,7 @@ int     FEMoreMem( unsigned size ) {
 // We can't free any memory for use by the back end.
 
     size = size;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1508,7 +1508,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     dims = 1;
     bounds = &dim_ptr->subs_1_lo;
-    db_arr = DBBegArray( db_type, TY_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
     while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
         lo = *bounds;
         ++bounds;
@@ -1659,7 +1659,7 @@ static  void    DefDbgStruct( sym_id sym ) {
     dbg_struct  db;
 
     if( sym->u.sd.dbi != DBG_NIL_TYPE ) return;
-    db = DBBegStruct( sym->u.sd.cg_typ, TRUE );
+    db = DBBegStruct( sym->u.sd.cg_typ, true );
     DefDbgFields( sym, db, 0 );
     sym->u.sd.dbi = DBEndStruct( db );
 }
@@ -1678,7 +1678,7 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
     com_eq      *com_ext;
 
     BEDefType( UserType, ALIGN_BYTE, GetComBlkSize( sym ) );
-    db = DBBegNameStruct( "COMMON BLOCK", UserType, TRUE );
+    db = DBBegNameStruct( "COMMON BLOCK", UserType, true );
     com_offset = 0;
     sym = sym->u.ns.si.cb.first;
     for(;;) {
@@ -1747,7 +1747,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     idx = 0;
     dims = _DimCount( dim_ptr->dim_flags );
-    db_arr = DBBegArray( db_type, TY_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
     if( dim_ptr->adv == NULL ) {
         // ADV allocated on the stack (debugging API's can't support this)
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
@@ -2094,7 +2094,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
             }
             if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.seg_id )
               && ( (segment_id)(pointer_int)req_handle <= sym->u.ns.si.cb.seg_id + idx )) {
-                MangleCommonBlockName( sym, MangleSymBuff, TRUE );
+                MangleCommonBlockName( sym, MangleSymBuff, true );
                 return( &MangleSymBuff );
             }
         }

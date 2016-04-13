@@ -106,9 +106,6 @@
   #define FNM_OPTIONS       (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
 #endif
 
-#define TRUE            1
-#define FALSE           0
-
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
 #define MAX_CMD 10240
 #else
@@ -731,7 +728,7 @@ static  int     CompLink( void ) {
 
     int         rc;
     const char  *file;
-    int         comp_err;
+    bool        comp_err;
     PGROUP      pg;
     int         i;
     list        *currobj;
@@ -779,7 +776,7 @@ static  int     CompLink( void ) {
 
     }
 
-    comp_err = FALSE;
+    comp_err = false;
     ObjList = NULL;
     for( currobj = FileList; currobj != NULL; currobj = nextobj ) {
         strcpy( Word, currobj->filename );
@@ -794,7 +791,7 @@ static  int     CompLink( void ) {
             if( strcmp( pg.ext, OBJ_EXT ) != 0 ) {  // if not object, compile
                 rc = tool_exec( TYPE_FOR, Word, CmpOpts );
                 if( rc != 0 ) {
-                    comp_err = TRUE;
+                    comp_err = true;
                     if( ( rc == -1 ) || ( rc == 255 ) ) {
                         rc = 1;
                         break;

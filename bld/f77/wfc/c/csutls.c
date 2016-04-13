@@ -184,7 +184,7 @@ void CSNoMore(void)
 void ColonLabel(void)
 {
     if( RecColon() ) {
-        if( RecName() == FALSE ) {
+        if( !RecName() ) {
             Error( SP_BAD_LABEL );
         }
         AdvanceITPtr();

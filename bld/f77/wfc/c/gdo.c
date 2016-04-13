@@ -92,38 +92,38 @@ static bool NeedIncrement( intstar4 limit, intstar4 incr, TYPE do_type ) {
     case FT_INTEGER_1:
         if( incr > 0 ) {
             if( limit > SCHAR_MAX - incr ) {
-                return( TRUE );
+                return( true );
             }
         } else {
             if( limit < SCHAR_MIN - incr ) {
-                return( TRUE );
+                return( true );
             }
         }
         break;
     case FT_INTEGER_2:
         if( incr > 0 ) {
             if( limit > SHRT_MAX - incr ) {
-                return( TRUE );
+                return( true );
             }
         } else {
             if( limit < SHRT_MIN - incr ) {
-                return( TRUE );
+                return( true );
             }
         }
         break;
     case FT_INTEGER:
         if( incr > 0 ) {
             if( limit > INT_MAX - incr ) {
-                return( TRUE );
+                return( true );
             }
         } else {
             if( limit < INT_MIN - incr ) {
-                return( TRUE );
+                return( true );
             }
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 

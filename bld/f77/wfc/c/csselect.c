@@ -59,7 +59,7 @@ case_entry *NewCase( void )
     ptr->low = 0;
     ptr->high = 0;
     ptr->link = NULL;
-    ptr->multi_case = FALSE;
+    ptr->multi_case = false;
     return( ptr );
 }
 
@@ -67,7 +67,7 @@ void CpSelect( void )
 {
 // Compile a SELECT statement.
 
-    Remember.slct = TRUE;
+    Remember.slct = true;
     CSExtn();
     AddCSNode( CS_SELECT );
     CSHead->branch = NextLabel();
@@ -170,7 +170,7 @@ static void CaseHandler( void )
     if( ReqNOpn() ) { // consider: CASE 10
         AdvanceITPtr();
     }
-    multi_case = FALSE;
+    multi_case = false;
     ReqOpenParen();
     for(;;) {
         if( _IsTypeLogical( CSHead->cs_info.cases->sel_type ) ) {
@@ -232,7 +232,7 @@ static void CaseHandler( void )
                     kase->high = high;
                     kase->low = low;
                     kase->multi_case = multi_case;
-                    multi_case = TRUE;
+                    multi_case = true;
                 }
             }
         }
@@ -253,7 +253,7 @@ void CpOtherwise( void )
         GBranch( CSHead->bottom );
         CSHead->typ = CS_OTHERWISE;
         CSHead->cs_info.cases->label.g_label = NextLabel();
-        CSHead->cs_info.cases->multi_case = FALSE;
+        CSHead->cs_info.cases->multi_case = false;
         GLabel( CSHead->cs_info.cases->label.g_label );
         CSHead->block = ++BlockNum;
     } else if( CSHead->typ == CS_OTHERWISE ) {

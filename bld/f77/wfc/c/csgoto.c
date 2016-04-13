@@ -92,7 +92,9 @@ static void CompGoto( void )
         caseptr->high = i;
         AdvanceITPtr();
         i++;
-        if( RecComma() == FALSE ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqCloseParen();
     if( !RecEOS() ) {
@@ -131,11 +133,11 @@ static void AsgnGoto( void )
         CkVarRef();
     }
     if( RecNextOpr( OPR_TRM ) ) {
-        StNumbers.wild_goto = TRUE;
-        GAsgnGoTo( FALSE );
+        StNumbers.wild_goto = true;
+        GAsgnGoTo( false );
         AdvanceITPtr();
     } else {
-        GAsgnGoTo( TRUE );
+        GAsgnGoTo( true );
         AdvanceITPtr();
         if( RecComma() && RecNOpn() ) {
             AdvanceITPtr();
@@ -144,7 +146,9 @@ static void AsgnGoto( void )
         for(;;) {
             GStmtAddr( LkUpStmtNo() );
             AdvanceITPtr();
-            if( RecComma() == FALSE ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         GEndBrTab();
         ReqCloseParen();
@@ -159,13 +163,13 @@ void CpGoto( void )
 // Process a GOTO statement.
 
     if( RecNumber() ) {
-        Remember.transfer = TRUE;
+        Remember.transfer = true;
         UnCondGoto();
     } else if( RecNOpn() ) {
         CompGoto();
         CtrlFlgs &= ~CF_BAD_DO_ENDING;
     } else {
-        Remember.transfer = TRUE;
+        Remember.transfer = true;
         AsgnGoto();
     }
     ReqEOS();
@@ -180,7 +184,7 @@ void CpArithIf( void )
     sym_id      gt_label = NULL;
     itnode      *cit;
 
-    Remember.transfer = TRUE;
+    Remember.transfer = true;
     if( RecNOpn() ) {
         AdvanceITPtr();
     }

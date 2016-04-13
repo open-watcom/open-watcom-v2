@@ -83,9 +83,9 @@ uint    AuxIOStmt(void) {
     case PR_READ:
     case PR_PRINT:
     case PR_WRITE:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

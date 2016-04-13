@@ -45,16 +45,16 @@ static bool UnaryMul( TYPE typ1, TYPE typ2 ) {
 //============================================
 
     if( typ1 > FT_EXTENDED )
-        return( FALSE );
+        return( false );
     if( !_IsTypeInteger( typ2 ) )
-        return( FALSE );
+        return( false );
     if( CITNode->link->opn.us != USOPN_CON )
-        return( FALSE );
+        return( false );
     if( ITIntValue( CITNode->link ) < 0 )
-        return( FALSE );
+        return( false );
     if( ITIntValue( CITNode->link ) > 8 )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 
@@ -107,14 +107,14 @@ static void Binary( TYPE typ1, TYPE typ2, OPTR opr ) {
     bool    associative;
     FCODE   op_code;
 
-    associative = FALSE;
+    associative = false;
     if( ( opr == OPTR_ADD ) || ( opr == OPTR_MUL ) ) {
-        associative = TRUE;
+        associative = true;
     }
-    flip = FALSE;
+    flip = false;
     if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
         ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
-        flip = TRUE;
+        flip = true;
     }
     op_code = opr - OPTR_FIRST_ARITHOP;
     PushOpn( CITNode->link );

@@ -43,13 +43,13 @@ static  char            SpcSeq[] = { LF,          // for single spacing
 #define SPC_SEQ_LEN     sizeof( SpcSeq );
 
 
-static  bool    __lf_with_ff = { FALSE };
+static  bool    __lf_with_ff = false;
 
 
 void    __LineFeedWithFormFeed( void ) {
 //================================
 
-    __lf_with_ff = TRUE;
+    __lf_with_ff = true;
 }
 
 

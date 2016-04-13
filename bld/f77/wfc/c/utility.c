@@ -132,7 +132,7 @@ bool    CmpNode2Str( itnode *itptr, char *str ) {
     int         str_len;
 
     str_len = strlen( str );
-    if( itptr->opnd_size != str_len ) return( FALSE );
+    if( itptr->opnd_size != str_len ) return( false );
     return( memcmp( itptr->opnd, str, str_len ) == 0 );
 }
 
@@ -150,7 +150,7 @@ void    ProcExpr( void ) {
 bool TypeIs( TYPE typ ) {
 //======================
 
-// Return TRUE if current itnode has specified variable type.
+// Return true if current itnode has specified variable type.
 
     switch( CITNode->typ ) {
     case( FT_INTEGER ):
@@ -431,7 +431,7 @@ TYPE   Map2BaseType( TYPE typ ) {
 bool    ClassIs( unsigned_16 class ) {
 //====================================
 
-// Return TRUE if current itnode has specified variable class.
+// Return true if current itnode has specified variable class.
 // ( SY_COMMON, SY_SUBPROGRAM, ... )
 
     return( ( CITNode->flags & SY_CLASS ) == class );
@@ -441,7 +441,7 @@ bool    ClassIs( unsigned_16 class ) {
 bool    Subscripted( void ) {
 //=====================
 
-// Return TRUE if current itnode is a subscripted variable.
+// Return true if current itnode is a subscripted variable.
 
     return( ClassIs( SY_VARIABLE ) && (CITNode->flags & SY_SUBSCRIPTED) != 0 );
 }

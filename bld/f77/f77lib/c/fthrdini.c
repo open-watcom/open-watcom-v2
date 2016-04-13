@@ -70,11 +70,11 @@ int     __InitFThreadProcessing( void ) {
 // Setup for multiple threads.
 
 #if defined( __OS2__ )
-    DosCreateMutexSem( NULL, &__fio_sem, 0, FALSE );
+    DosCreateMutexSem( NULL, &__fio_sem, 0, false );
 #elif defined( __NETWARE__ )
     __fio_sem = OpenLocalSemaphore( 1 );
 #elif defined( __NT__ )
-    __fio_sem = CreateMutex( NULL, FALSE, NULL );
+    __fio_sem = CreateMutex( NULL, false, NULL );
 #elif defined( __LINUX__ )
 // TODO: semaphore support for Linux!
 #endif

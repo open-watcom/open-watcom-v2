@@ -272,7 +272,7 @@ bool    CalcStructSize( sym_id sd ) {
 //===================================
 
 // determine the size of a structure
-// return TRUE if recursion detected, FALSE otherwise
+// return true if recursion detected, false otherwise
 
     sym_id      map;
     sym_id      field;
@@ -281,10 +281,10 @@ bool    CalcStructSize( sym_id sd ) {
     intstar4    total_size;
 
     // in case size of structure already calculated
-    if( sd->u.sd.size != 0 ) return( FALSE );
+    if( sd->u.sd.size != 0 ) return( false );
     saved_link = sd->u.sd.link;
     if( saved_link == sd ) {
-        return( TRUE );         // recursion detected!
+        return( true );         // recursion detected!
     }
     sd->u.sd.link = sd;           // to protect against recursion
     total_size = 0;
@@ -296,7 +296,7 @@ bool    CalcStructSize( sym_id sd ) {
             while( map != NULL ) {
                 if( CalcStructSize( map ) ) {
                     sd->u.sd.link = saved_link;
-                    return( TRUE );             // recursion detected
+                    return( true );             // recursion detected
                 }
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
@@ -312,7 +312,7 @@ bool    CalcStructSize( sym_id sd ) {
                 }
                 if( CalcStructSize( field->u.fd.xt.sym_record ) ) {
                     sd->u.sd.link = saved_link;
-                    return( TRUE );             // recursion detected
+                    return( true );             // recursion detected
                 }
                 size = field->u.fd.xt.record->size;
             } else {
@@ -327,7 +327,7 @@ bool    CalcStructSize( sym_id sd ) {
     }
     sd->u.sd.size = total_size;
     sd->u.sd.link = saved_link;                   // restore saved link
-    return( FALSE );
+    return( false );
 }
 
 

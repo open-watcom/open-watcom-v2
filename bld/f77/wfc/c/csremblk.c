@@ -63,7 +63,7 @@ static bool BlockName( unsigned_16 rb_defined )
     bool        rb_name;
 
     CSExtn();
-    rb_name = FALSE;
+    rb_name = false;
     if( ReqName( NAME_REM_BLOCK ) ) {
         sym_ptr = LkSym();
         if( ( sym_ptr->u.ns.flags & ~SY_REFERENCED ) == 0 ) {
@@ -73,7 +73,7 @@ static bool BlockName( unsigned_16 rb_defined )
         if( ( ( sym_ptr->u.ns.flags & ~(SY_RB_DEFINED | SY_REFERENCED) ) == RB_FLAGS ) &&
             ( ( sym_ptr->u.ns.flags & rb_defined ) == 0 ) ) {
             sym_ptr->u.ns.flags |= rb_defined;
-            rb_name = TRUE;
+            rb_name = true;
         } else {
             IllName( sym_ptr );
         }
@@ -85,7 +85,7 @@ void CpRemBlock( void )
 {
     sym_id      rb;
 
-    if( EmptyCSList() == FALSE ) {
+    if( !EmptyCSList() ) {
         StmtErr( SP_BLK_IN_STRUCTURE );
     }
     AddCSNode( CS_REMOTEBLOCK );
@@ -104,7 +104,7 @@ void CpRemBlock( void )
     }
     AdvanceITPtr();
     ReqEOS();
-    StNumbers.in_remote = TRUE;
+    StNumbers.in_remote = true;
     ClearRem();
 }
 
@@ -125,7 +125,7 @@ void CpEndBlock( void )
         Match();
     }
     CSNoMore();
-    StNumbers.in_remote = FALSE;
+    StNumbers.in_remote = false;
     ClearRem();
     CSNoMore();
     BIEndRBorEP();

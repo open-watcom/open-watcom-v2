@@ -297,9 +297,9 @@ void    R_FILog( void ) {
     } else {
         ch = toupper( fcb->buffer[ fcb->col ] );
         if( ch == 'F' ) {
-            SetLogValue( _LogValue( FALSE ) );
+            SetLogValue( _LogValue( false ) );
         } else if( ch == 'T' ) {
-            SetLogValue( _LogValue( TRUE ) );
+            SetLogValue( _LogValue( true ) );
         }
     }
     if( __AllowCommaSep() ) { // don't flush but search for comma separator
@@ -554,7 +554,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
     }
 #endif
     for(;;) {
-        valid = FALSE;
+        valid = false;
         if( !isxdigit( ch1 ) ) {
             if( ch1 != ' ' ) break;
             ch1 = '0';
@@ -563,7 +563,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
             if( ch2 != ' ' ) break;
             ch2 = '0';
         }
-        valid = TRUE;
+        valid = true;
         *dst = ( Hex( ch1 ) << 4 ) + Hex( ch2 );
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         if( typ == PT_CHAR ) {

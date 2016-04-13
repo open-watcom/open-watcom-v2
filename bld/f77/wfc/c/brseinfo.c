@@ -131,7 +131,7 @@ void    BIInit( void ) {
     dw_init_info        init_dwl;
     dw_cu_info          cu;
 
-    BrInitialized = TRUE;
+    BrInitialized = true;
     if( !_GenerateBrInfo() ) return;
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
@@ -142,7 +142,7 @@ void    BIInit( void ) {
         justJunk = DWLocFini( cBIId, DWLocInit( cBIId ) );
         cu.source_filename=BIMKFullPath( CurrFile->name );
         cu.directory=".";
-        cu.flags = TRUE;
+        cu.flags = true;
         cu.offset_size = ARCHITECTURE;
         cu.segment_size = 0;
         cu.model = DW_MODEL_NONE;
@@ -152,7 +152,7 @@ void    BIInit( void ) {
         DWBeginCompileUnit( cBIId, &cu );
         BISetSrcFile();
     } else {
-        BrInitialized = FALSE;
+        BrInitialized = false;
         Error( SM_BROWSE_ERROR );
     }
     BIInitBaseTypes();
@@ -200,7 +200,7 @@ void    BIFiniStartOfSubroutine( void ) {
                 BIOutDummies( Entries );
             }
         }
-        BIWalkList( &fixSubParms, &BILateRefSym, TRUE );
+        BIWalkList( &fixSubParms, &BILateRefSym, true );
         currState |= BI_STATE_RESOLVED;
     }
 }
@@ -232,7 +232,7 @@ void BIResolveUndefTypes( void ) {
 //==========================
 
     if( _GenerateBrInfo() ) {
-        BIWalkList( &fixStructs, &BIGetStructType, TRUE );
+        BIWalkList( &fixStructs, &BIGetStructType, true );
     }
 }
 
@@ -540,7 +540,7 @@ static void BIOutSP( sym_id ste_ptr ) {
             fret = subProgTyHandle;
         } else {
             if ( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
-                fret = BIStartStructType( ste_ptr, FALSE );
+                fret = BIStartStructType( ste_ptr, false );
             } else {
                 fret = DWHandle( cBIId, DW_ST_NONE );
             }
@@ -741,7 +741,7 @@ static dw_handle BIGetSPType( sym_id ste_ptr ) {
     case( SY_FN_OR_SUB ) :
         if ( ( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) &&
             !( ste_ptr->u.ns.xt.record ) ) {
-            return( BIStartStructType( ste_ptr, TRUE ) );
+            return( BIStartStructType( ste_ptr, true ) );
         }
         return( BIGetType( ste_ptr ) );
     }

@@ -81,7 +81,7 @@ void    FiniMacroProcessor( void ) {
 
 // Finalize macro processor.
 
-    FreeMacros( TRUE );
+    FreeMacros( true );
 }
 
 
@@ -133,7 +133,7 @@ void    FiniMacros( void ) {
     if( NestingLevel != 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
     }
-    FreeMacros( FALSE );
+    FreeMacros( false );
 }
 
 

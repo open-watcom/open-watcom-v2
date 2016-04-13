@@ -106,7 +106,7 @@ void InvokeCompile( void )
 
 static void FiniCompile( void )
 {
-    SetLst( TRUE ); // listing file on for statistics
+    SetLst( true ); // listing file on for statistics
     LFEndSrc();
     CloseErr();
 }

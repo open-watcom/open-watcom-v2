@@ -94,8 +94,8 @@ void    CpStop(void) {
 //================
 
     NumOrLit( RT_STOP );
-    Remember.transfer = TRUE;
-    Remember.stop_or_return = TRUE;
+    Remember.transfer = true;
+    Remember.stop_or_return = true;
 }
 
 
@@ -123,7 +123,7 @@ void    CpEnd(void) {
     if( RecNOpn() ) {
         ProgSw |= PS_END_OF_SUBPROG;
         AdvanceITPtr();
-        Remember.endstmt = TRUE;
+        Remember.endstmt = true;
         ReqEOS();
     } else {
         BadStmt();

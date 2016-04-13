@@ -131,9 +131,9 @@ static  bool    CnvFloat( itnode *cit, int prec ) {
     ext = ( Options & OPT_EXTEND_REAL ) != 0;
     if( FmtS2F( cit->opnd, cit->opnd_size, 0, false, 0, prec, &cit->value.dble, false, NULL, ext ) != FLT_OK ) {
         OpndErr( CN_FLOAT );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -220,11 +220,11 @@ static  bool    Number( void ) {
 
     if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
-        if( !RecPlus() && !RecMin() ) return( FALSE );
+        if( !RecPlus() && !RecMin() ) return( false );
     }
-    if( CITNode->opn.ds < DSOPN_INT ) return( FALSE );
+    if( CITNode->opn.ds < DSOPN_INT ) return( false );
     AdvanceITPtr();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -232,9 +232,9 @@ static  bool    Complex( void ) {
 //=========================
 
     if( Number() && RecComma() && Number() && RecCloseParen() ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

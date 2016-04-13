@@ -280,16 +280,16 @@ void            InitAuxInfo( void ) {
         fpu = 0;
     }
   #if _CPU == 8086
-    fpu_emu = FALSE;
+    fpu_emu = false;
     if( CPUOpts & CPUOPT_FPI ) {
-        fpu_emu = TRUE;
+        fpu_emu = true;
     }
     if( CPUOpts & CPUOPT_FPI87 ) {
-        fpu_emu = FALSE;
+        fpu_emu = false;
     }
     AsmInit( 0, cpu, fpu, fpu_emu );
   #else
-    AsmInit( 1, cpu, fpu, FALSE );
+    AsmInit( 1, cpu, fpu, false );
   #endif
 #elif _CPU == _AXP || _CPU == _PPC
     AsmInit();
@@ -680,8 +680,8 @@ static  bool    CurrToken( char *tok ) {
         tok++;
     }
     if( ( ptr == TokEnd ) && ( *tok == '\0' ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 
@@ -690,9 +690,9 @@ static  bool    RecToken( char *tok ) {
 
     if( CurrToken( tok ) ) {
         ScanToken();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    RecFnToken( char *tok ) {
@@ -700,9 +700,9 @@ static  bool    RecFnToken( char *tok ) {
 
     if( CurrToken( tok ) ) {
         ScanFnToken();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -866,20 +866,20 @@ static  void    ScanToken( void ) {
 //===========================
 
     char    *ptr;
-    int     found_token;
-    int     first;
+    bool    found_token;
+    bool    first;
 
     ptr = TokEnd;
     ptr = SkipBlanks( ptr );
     TokStart = ptr;
-    first = TRUE;
-    found_token = FALSE;
+    first = true;
+    found_token = false;
     for(;;) {
         switch( *ptr ) {
         case ' ' :
         case '\t' :
         case '\0' :
-            found_token = TRUE;
+            found_token = true;
             break;
         case '"' :
             if( first ) {
@@ -893,7 +893,7 @@ static  void    ScanToken( void ) {
                     }
                 }
             }
-            found_token = TRUE;
+            found_token = true;
             break;
         case '[' :
         case ']' :
@@ -905,7 +905,7 @@ static  void    ScanToken( void ) {
             if( first ) {
                 ++ptr;
             }
-            found_token = TRUE;
+            found_token = true;
             break;
         case '\\' :
             if( first ) {
@@ -920,11 +920,11 @@ static  void    ScanToken( void ) {
                 ptr = SkipBlanks( ptr );
                 TokStart = ptr;
             } else {
-                found_token = TRUE;
+                found_token = true;
             }
             break;
         default :
-            first = FALSE;
+            first = false;
             ptr++;
         }
         if( found_token ) {
@@ -938,19 +938,19 @@ static  void    ScanFnToken( void ) {
 //===========================
 
     char    *ptr;
-    int     found_token;
-    int     first;
+    bool    found_token;
+    bool    first;
 
     ptr = TokEnd;
     ptr = SkipBlanks( ptr );
     TokStart = ptr;
-    first = TRUE;
-    for( found_token = FALSE; found_token == FALSE; ) {
+    first = true;
+    for( found_token = false; !found_token; ) {
         switch( *ptr ) {
         case ' ' :
         case '\t' :
         case '\0' :
-            found_token = TRUE;
+            found_token = true;
             break;
         case '"' :
             if( first ) {
@@ -964,10 +964,10 @@ static  void    ScanFnToken( void ) {
                     }
                 }
             }
-            found_token = TRUE;
+            found_token = true;
             break;
         default :
-            first = FALSE;
+            first = false;
             ptr++;
         }
     }
@@ -1249,7 +1249,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
     bool                perform_fixups;
     char                *name;
 
-    perform_fixups = FALSE;
+    perform_fixups = false;
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
@@ -1339,7 +1339,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
         }
         buff = temp;
         i = dst - temp;
-        perform_fixups = TRUE;
+        perform_fixups = true;
     }
     seq = FMemAlloc( offsetof( byte_seq, data ) + i );
     seq->relocs = perform_fixups;
@@ -1421,7 +1421,7 @@ static  void    GetByteSeq( void ) {
     char            *ptr;
     byte            buff[MAXIMUM_BYTESEQ + 32]; // extra for assembler
 #if _CPU == 8086
-    bool            use_fpu_emu = FALSE;
+    bool            use_fpu_emu = false;
 #endif
 
     seq_len = 0;
@@ -1441,9 +1441,9 @@ static  void    GetByteSeq( void ) {
 #if _INTEL_CPU
   #if _CPU == 8086
             AsmLine( TokStart + 1, use_fpu_emu );
-            use_fpu_emu = FALSE;
+            use_fpu_emu = false;
   #else
-            AsmLine( TokStart + 1, FALSE );
+            AsmLine( TokStart + 1, false );
   #endif
 #else
             AsmLine( TokStart + 1 );
@@ -1458,14 +1458,14 @@ static  void    GetByteSeq( void ) {
         } else if( RecToken( "FLOAT" ) ) {
 #if _CPU == 8086
             if( CPUOpts & CPUOPT_FPI ) {
-                use_fpu_emu = TRUE;
+                use_fpu_emu = true;
             }
 #endif
         } else {
 #if _CPU == 8086
             if( use_fpu_emu ) {
                 AddAFix( seq_len, NULL, FIX_SEG, 0 );
-                use_fpu_emu = FALSE;
+                use_fpu_emu = false;
             }
 #endif
             ptr = TokStart;
@@ -1505,7 +1505,7 @@ static  hw_reg_set      RegSet( void ) {
     HW_CAsgn( reg_set, HW_EMPTY );
     for(;;) {
         TokUpper();
-        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd - TokStart, TRUE );
+        reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd - TokStart, true );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );

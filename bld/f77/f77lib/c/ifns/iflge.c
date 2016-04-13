@@ -45,6 +45,6 @@ logstar4        LGE( string PGM *arg1, string PGM *arg2 ) {
 // Return true if arg1 >= arg2 else return false.
 
     if( LexCmp( arg1, arg2 ) >= 0 )
-        return( _LogValue( TRUE ) );
-    return( _LogValue( FALSE ) );
+        return( _LogValue( true ) );
+    return( _LogValue( false ) );
 }

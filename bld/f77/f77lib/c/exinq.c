@@ -47,11 +47,11 @@ static  void    ExInquire( void ) {
     bool        connected;
     bool        inq_by_file;
 
-    connected = TRUE;
+    connected = true;
     if( IOCB->set_flags & SET_FILENAME ) {
         // inquire by file name
-        inq_by_file = TRUE;
-        // FindFName() will set up a dummy fcb if FALSE is returned
+        inq_by_file = true;
+        // FindFName() will set up a dummy fcb if false is returned
         opened = FindFName();
         if( opened ) {
             exist = ( IOCB->fileinfo->flags & FTN_EXIST ) != 0;
@@ -60,7 +60,7 @@ static  void    ExInquire( void ) {
         }
     } else {
         // inquire by unit
-        inq_by_file = FALSE;
+        inq_by_file = false;
         if( IOCB->flags & BAD_UNIT ) {
             IOErr( IO_IUNIT );
         }
@@ -68,7 +68,7 @@ static  void    ExInquire( void ) {
         exist = ( IOCB->unitid <= PREC_MAX_UNIT );
         opened = ( IOCB->fileinfo != NULL );
         if( !opened ) {
-            connected = FALSE;
+            connected = false;
         }
     }
     DfltInq();

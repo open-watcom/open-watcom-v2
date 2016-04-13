@@ -92,9 +92,11 @@ bool    SetImplType( char chr1, char chr2, TYPE typ, uint size ) {
     i = CharIndex( chr1 );
     j = CharIndex( chr2 );
     for(;;) {
-        if( i > j ) return( TRUE );
-        if( ImplicitTab[i].impl_ed ) return( FALSE );
-        ImplicitTab[i].impl_ed = TRUE; // indicate implicit type set
+        if( i > j )
+            return( true );
+        if( ImplicitTab[i].impl_ed )
+            return( false );
+        ImplicitTab[i].impl_ed = true; // indicate implicit type set
         ImplicitTab[i].size = size;
         ImplicitTab[i].typ = typ;
         ++i;
@@ -116,7 +118,7 @@ void    InitImplTab( void ) {
             typ = FT_INTEGER;
         }
         ImplicitTab[i].typ = typ;
-        ImplicitTab[i].impl_ed = FALSE;
+        ImplicitTab[i].impl_ed = false;
         ImplicitTab[i].size = StorageSize( typ );
     }
 }

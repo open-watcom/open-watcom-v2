@@ -67,7 +67,7 @@ static bool CompSProg( void )
     bool        fini_subprog;
 
     InitSubProg();
-    fini_subprog = FALSE;
+    fini_subprog = false;
     for(;;) {
         for(;;) {
             if( CurrFile->flags & INC_PENDING ) {
@@ -78,16 +78,19 @@ static bool CompSProg( void )
                 if( ( ProgSw & PS_DONT_GENERATE ) &&
                     ( ( Options & OPT_SYNTAX ) == 0 ) &&
                     ( ( ProgSw & PS_ERROR ) == 0 ) &&
-                    ( CurrFile->link == NULL ) ) break;
+                    ( CurrFile->link == NULL ) )
+                    break;
                 Conclude();
-                if( CurrFile == NULL ) break;
+                if( CurrFile == NULL )
+                    break;
                 ComRead();
             } else {
                 break;
             }
         }
         Options = NewOptions;
-        if( ProgSw & ( PS_SOURCE_EOF | PS_END_OF_SUBPROG ) ) break;
+        if( ProgSw & ( PS_SOURCE_EOF | PS_END_OF_SUBPROG ) )
+            break;
         CompStatement();
         if( ProgSw & ( PS_SOURCE_EOF | PS_END_OF_SUBPROG ) ) {
             // consider:        call sam
@@ -96,14 +99,16 @@ static bool CompSProg( void )
             // Before we open 'sam', we must finish off the subprogram
             // so we get the correct file name in the traceback.
             FiniSubProg();
-            fini_subprog = TRUE;
+            fini_subprog = true;
         }
-        if( TBreak() ) return( TRUE );
+        if( TBreak() ) {
+            return( true );
+        }
     }
     if( !fini_subprog ) {
         FiniSubProg();
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -111,11 +116,14 @@ static bool CompFile( void )
 {
     bool        tbreak;
 
-    tbreak = FALSE;
+    tbreak = false;
     for(;;) {
-        if( ProgSw & PS_SOURCE_EOF ) break;
+        if( ProgSw & PS_SOURCE_EOF )
+            break;
         tbreak = CompSProg();
-        if( tbreak ) break;
+        if( tbreak ) {
+            break;
+        }
     }
     return( tbreak );
 }

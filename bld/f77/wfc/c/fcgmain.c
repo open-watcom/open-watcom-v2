@@ -423,7 +423,7 @@ void    CGPurge( void ) {
     FiniLabels( 0 );
     FiniLabels( FORMAT_LABEL );
     FiniTmps();
-    FreeUsedBacks( FALSE );
+    FreeUsedBacks( false );
     FreeGlobalSegs();
     FreeRtRtns();
     FreeInlinePragmas();

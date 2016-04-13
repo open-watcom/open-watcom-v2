@@ -97,8 +97,8 @@ void ComRead( void )
     cursor = 0;
     column = FIRST_COL - 1;
     stmt_no = 0;
-    stno_found = FALSE;
-    done_scan = FALSE;
+    stno_found = false;
+    done_scan = false;
     for(;;) {
         ReadSrc();
         if( ProgSw & PS_SOURCE_EOF ) break;
@@ -120,7 +120,7 @@ void ComRead( void )
             // not a comment (but it might be a blank line)
             // try for a statement number
             stmt_no = 0;
-            stno_found = FALSE;
+            stno_found = false;
             for(;;) {
                 chtype = CharSetInfo.character_set[ (unsigned char)ch ];
                 if( chtype == C_EL ) break;
@@ -144,15 +144,15 @@ void ComRead( void )
                     if( ( chtype == C_DI ) && ( column != CONT_COL ) ) {
                         stmt_type = STMT_START;
                         if( column > CONT_COL ) {
-                            done_scan = TRUE;
+                            done_scan = true;
                             break;
                         }
                         stmt_no = 10 * stmt_no + ch - '0';
-                        stno_found = TRUE;
+                        stno_found = true;
                     } else {
                         stmt_type = STMT_START;
                         if( column != CONT_COL ) {
-                            done_scan = TRUE;
+                            done_scan = true;
                             break;
                         }
                         // its in the continuation column
@@ -164,7 +164,7 @@ void ComRead( void )
                             // position to column 7
                             ++column;
                             ++cursor;
-                            done_scan = TRUE;
+                            done_scan = true;
                             break;
                         }
                     }

@@ -277,12 +277,12 @@ static  bool    AlreadyOpen( char *name ) {
 
     src = CurrFile;
     for(;;) {
-        if( src == NULL ) return( FALSE );
+        if( src == NULL ) return( false );
         if( strcmp( name, src->name ) == 0 ) break;
         src = src->link;
     }
     InfoError( CO_ALREADY_OPEN, name );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -356,7 +356,7 @@ void    SrcInclude( char *name ) {
     if( CurrFile != NULL ) {
         NewOptions = Options;
         if( ( Options & OPT_INCLIST ) == 0 ) {
-            SetLst( FALSE );
+            SetLst( false );
         }
     }
     CurrFile = src;
@@ -380,9 +380,9 @@ void    Conclude( void ) {
         Options = NewOptions;
         if( ( ( CurrFile->link == NULL ) && ( Options & OPT_LIST ) ) ||
               ( Options & OPT_INCLIST ) ) {
-            SetLst( TRUE );
+            SetLst( true );
         } else {
-            SetLst( FALSE );
+            SetLst( false );
         }
     }
     if( old->flags & INC_LIB_MEMBER ) {
@@ -460,10 +460,10 @@ void    PrintErr( char *string ) {
 static  bool    ErrToTerm( void ) {
 //=================================
 
-    if( ( Options & OPT_TERM ) == 0 ) return( FALSE );
+    if( ( Options & OPT_TERM ) == 0 ) return( false );
     if( ( Options & OPT_TYPE ) &&
-        ( ListFile != NULL ) ) return( FALSE );
-    return( TRUE );
+        ( ListFile != NULL ) ) return( false );
+    return( true );
 }
 
 
@@ -621,14 +621,14 @@ static  void    OpenListingFile( bool reopen ) {
 void    OpenLst( void ) {
 //=======================
 
-    OpenListingFile( FALSE );
+    OpenListingFile( false );
 }
 
 
 void    ReOpenLst( void ) {
 //=========================
 
-    OpenListingFile( TRUE );
+    OpenListingFile( true );
 }
 
 

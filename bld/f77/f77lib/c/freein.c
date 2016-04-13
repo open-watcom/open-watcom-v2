@@ -61,8 +61,8 @@ void    Blanks( void );
 void    CheckEor( void );
 
 
-static char *GetDelim( const char *start, const char *buff_end )
-//==============================================================
+static const char *GetDelim( const char *start, const char *buff_end )
+//====================================================================
 {
     for( ; start < buff_end; ++start ) {
         switch( *start ) {
@@ -88,17 +88,18 @@ signed_32   GetNum( void )
 
     fcb = IOCB->fileinfo;
     ch = fcb->buffer[ fcb->col ];
-    minus = FALSE;
+    minus = false;
     if( ch == '+' ) {
         fcb->col++;
     } else if( ch == '-' ) {
-        minus = TRUE;
+        minus = true;
         fcb->col++;
     }
     value = 0;
     for(;;) {
         ch = fcb->buffer[ fcb->col ];
-        if( isdigit( ch ) == 0 ) break;
+        if( isdigit( ch ) == 0 )
+            break;
         value = value*10 + ( ch - '0' );
         fcb->col++;
     }
@@ -330,14 +331,15 @@ static  void    InLog( void ) {
     fcb = IOCB->fileinfo;
     chptr = &fcb->buffer[ fcb->col ];
     if( toupper( *chptr ) == 'T' ) {
-        value = _LogValue( TRUE );
+        value = _LogValue( true );
     } else {
-        value = _LogValue( FALSE );
+        value = _LogValue( false );
     }
     for(;;) {
         chptr++;
         fcb->col++;
-        if( fcb->col == fcb->len ) break;
+        if( fcb->col == fcb->len )
+            break;
         switch( *chptr ) {
         case ' ':
         case '\t':

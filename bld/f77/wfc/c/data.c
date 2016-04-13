@@ -192,7 +192,9 @@ static  OPR    FindSlash( itnode **itptr_ptr ) {
             level--;
         }
         AdvanceITPtr();
-        if( ( (RecDiv() || RecCat()) && (level == 0) ) || RecTrmOpr() ) break;
+        if( ( (RecDiv() || RecCat()) && (level == 0) ) || RecTrmOpr() ) {
+            break;
+        }
     }
     *itptr_ptr = CITNode;
     opr = CITNode->opr;
@@ -268,24 +270,29 @@ static  bool    HexConst(void) {
     hex_data = CITNode->opnd;
     hex_len = CITNode->opnd_size;
     if( CITNode->opn.ds != DSOPN_HEX ) {
-        if( !RecName() ) return( FALSE );
-        if( *hex_data != 'Z' ) return( FALSE );
+        if( !RecName() )
+            return( false );
+        if( *hex_data != 'Z' )
+            return( false );
         sym = SymFind( hex_data, hex_len );
         if( sym != NULL ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) return( FALSE );
+            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) {
+                return( false );
+            }
         }
         ++hex_data;
     }
     --hex_len;
     hex_len = MkHexConst( hex_data, CITNode->opnd, hex_len );
-    if( hex_len == 0 ) return( FALSE );
+    if( hex_len == 0 )
+        return( false );
     CITNode->opnd_size = hex_len;
     CITNode->opn.ds = DSOPN_LIT;
     GetConst();
     AddConst( CITNode );
     CITNode->typ = FT_HEX;
     Extension( DA_HEX_CONST );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -337,7 +344,9 @@ static  void    DumpDataSets( int num, itnode *node ) {
     while( --num >= 0 ) {
         for(;;) {
             AdvanceITPtr();
-            if( RecDiv() ) break;
+            if( RecDiv() ) {
+                break;
+            }
         }
         for(;;) {
             if( RecNextOpr( OPR_MUL ) ) {
@@ -351,7 +360,9 @@ static  void    DumpDataSets( int num, itnode *node ) {
             }
             GDataItem( rpt );
             AdvanceITPtr();
-            if( RecDiv() ) break;
+            if( RecDiv() ) {
+                break;
+            }
         }
         GEndDSet();
     }
@@ -409,7 +420,8 @@ int  MkHexConst( char *hex_data, char *dst, int hex_len ) {
     uint        len;
 
     len = HSToB( hex_data, hex_len, dst );
-    if( len != (hex_len+1)/2 ) return( 0 );
+    if( len != (hex_len+1)/2 )
+        return( 0 );
     return( len );
 }
 
