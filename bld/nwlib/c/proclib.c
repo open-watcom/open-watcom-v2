@@ -83,7 +83,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
         }
         ExtractObj( io, arch->name, arch, Options.explode_ext );
     }
-    deleted = FALSE;
+    deleted = false;
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
         if( SameName( arch->name, cmd->name ) ) {
 
@@ -98,7 +98,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
                 }
             }
             if( cmd->ops & OP_DELETE ) {
-                deleted = TRUE;
+                deleted = true;
                 cmd->ops |= OP_DELETED;
             }
             cmd->ops |= OP_FOUND;
@@ -108,7 +108,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
 
     if( deleted ) {
         SkipObject( io );
-        Options.modified = TRUE;
+        Options.modified = true;
     } else {
         AddObjectSymbols( arch, io, LibTell( io ) );
     }
@@ -213,7 +213,7 @@ static void AddModules( void )
             DefaultExtension( buff, EXT_OBJ );
             ProcessLibOrObj( buff, OBJ_PROCESS, AddOneObject );
         }
-        Options.modified = TRUE;
+        Options.modified = true;
         if( Options.ar && Options.verbose ) {
             if( cmd->ops & OP_DELETED ) {
                 Message( "r - %s", cmd->name );

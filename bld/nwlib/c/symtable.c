@@ -442,7 +442,7 @@ static void WriteOmfFileTable( void )
     } else if( Options.page_size == (unsigned short)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    PadOmf( TRUE );
+    PadOmf( true );
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         WriteOmfFile( sfile );
@@ -675,14 +675,14 @@ static void WriteArMlibFileTable( void )
         char        buff[ AR_NAME_LEN + 1 ];
         bool        append_name;
 
-        append_name = FALSE;
+        append_name = false;
         arch = sfile->arch;
         if( sfile->name_offset == -1 ) {
             if( Options.ar_libformat == AR_FMT_BSD ) {
                 // BSD append file name after header and before file image if it is longer then
                 //  max.length or it contains space
                 if( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) {
-                    append_name = TRUE;
+                    append_name = true;
                     arch.size += sfile->name_length;
                     strcpy( buff, AR_NAME_CONTINUED_AFTER );
                     itoa( sfile->name_length, buff + AR_NAME_CONTINUED_AFTER_LEN, 10 );
@@ -894,12 +894,12 @@ bool RemoveObjectSymbols( char *name )
             }
 
             FiniSymFile( sfile );
-            Options.modified = TRUE;
-            return( TRUE );
+            Options.modified = true;
+            return( true );
         }
         prev_sfile = sfile;
     }
-    return( FALSE );
+    return( false );
 }
 
 void AddObjectSymbols( arch_header *arch, libfile io, long offset )
@@ -914,13 +914,13 @@ void AddObjectSymbols( arch_header *arch, libfile io, long offset )
             if( Options.libtype == WL_LTYPE_MLIB ) {
                 FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
             }
-            Options.coff_found = TRUE;
+            Options.coff_found = true;
             obj_type = WL_FTYPE_COFF;
         } else {
             if( Options.omf_found ) {
                 FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
             }
-            Options.elf_found = TRUE;
+            Options.elf_found = true;
             obj_type = WL_FTYPE_ELF;
         }
     } else {
@@ -930,7 +930,7 @@ void AddObjectSymbols( arch_header *arch, libfile io, long offset )
         if( Options.elf_found ) {
             FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
         }
-        Options.omf_found = TRUE;
+        Options.omf_found = true;
         obj_type = WL_FTYPE_OMF;
     }
     NewSymFile( arch );
@@ -948,7 +948,7 @@ void OmfMKImport( arch_header *arch, importType type,
     if( Options.elf_found ) {
         FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
     }
-    Options.omf_found = TRUE;
+    Options.omf_found = true;
     NewSymFile( arch );
     CurrFile->obj_type = WL_FTYPE_OMF;
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
@@ -977,7 +977,7 @@ void CoffMKImport( arch_header *arch, importType type,
     if( Options.elf_found ) {
         FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
     }
-    Options.coff_found = TRUE;
+    Options.coff_found = true;
     NewSymFile( arch );
     CurrFile->obj_type = WL_FTYPE_COFF;
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
@@ -1022,7 +1022,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     if( Options.omf_found ) {
         FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
     }
-    Options.elf_found = TRUE;
+    Options.elf_found = true;
     NewSymFile( arch );
     CurrFile->obj_type = WL_FTYPE_ELF;
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );

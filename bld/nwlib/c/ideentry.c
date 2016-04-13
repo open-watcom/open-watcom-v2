@@ -61,7 +61,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     ideInfo = info;
-    return( FALSE );
+    return( false );
 }
 
 IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
@@ -69,7 +69,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
     char        *argv[ 3 ];
 
     hdl = hdl;
-    *fatalerr = FALSE;
+    *fatalerr = false;
     argv[ 0 ] = "";
     argv[ 1 ] = (char *)opts;
     argv[ 2 ] = NULL;
@@ -83,7 +83,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
     hdl = hdl; argc = argc;
-    *fatal_error = FALSE;
+    *fatal_error = false;
     return( WlibMainLine( argv ) != 0 );
 }
 
@@ -113,8 +113,8 @@ char *WlibGetEnv( char *name )
 {
     char *env;
 
-    if( ideInfo->ignore_env == FALSE && ideCb != NULL ) {
-        if( ideCb->GetInfo( ideHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) == FALSE ) {
+    if( !ideInfo->ignore_env && ideCb != NULL ) {
+        if( !ideCb->GetInfo( ideHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
             return( env );
         }
     }
