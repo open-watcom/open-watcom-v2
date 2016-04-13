@@ -151,7 +151,7 @@ static void __FiniMultipleThread(void)
 } /* FiniMultipleThread() */
 
 
-extern void *_NW_calloc( size_t num,size_t size )
+void *_NW_calloc( size_t num,size_t size )
 {
     void *ptr;
     long to_alloc;
@@ -225,7 +225,7 @@ static void MyExitRtn( void )
 
 #if defined (_THIN_LIB)
 
-extern int __init_environment(void *  reserved)
+int __init_environment(void *  reserved)
 {
     int         retcode = 0;
 
@@ -255,7 +255,7 @@ extern int __init_environment(void *  reserved)
     return( retcode );
 }
 
-extern int     __deinit_environment(void * reserved)
+int     __deinit_environment(void * reserved)
 {
     __FiniMultipleThread();
     __FiniRtns( 0, InitFiniLevel );
@@ -267,7 +267,7 @@ extern int     __deinit_environment(void * reserved)
 
 
 #if !defined(_THIN_LIB)
-extern int _cstart_( void )
+int _cstart_( void )
 {
     int         retcode;
 
@@ -297,7 +297,7 @@ static void InitStackLow( void )
     _STACKLOW = (unsigned)&_end;
 }
 
-extern long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
+long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
                       unsigned char *cmdLineP,
                       unsigned char *loadDirectoryPath,
                       long uninitializedDataLength, long NLMfileHandle,
@@ -319,7 +319,7 @@ extern long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
 }
 
 /* _Stop is the exit procedure for an NLM that uses the C Lib */
-extern void _Stop( void )
+void _Stop( void )
 {
     _TerminateNLM( NCSp, NULL, __ReturnCode );
 }
@@ -334,7 +334,7 @@ void __WATCOM_Prelude( void )
 /* The function __Must_Have_Three_One_Or_Greater is not in CLIB v1.0a
    but is in CLIB v3.1, therefore programs linked with this prelude will
    only run with CLIB v3.1 */
-extern void __VersionEnforcement( void )
+void __VersionEnforcement( void )
 {
     __Must_Have_Three_One_Or_Greater();
 }
