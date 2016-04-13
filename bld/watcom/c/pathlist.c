@@ -25,7 +25,7 @@ char *GetPathElement( const char *path_list, const char *end, char **path )
     bool    is_blank;
     char    c;
 
-    is_blank = TRUE;
+    is_blank = true;
     while( path_list != end && (c = *path_list) != '\0' ) {
         path_list++;
         if( IS_INCLUDE_LIST_SEP( c ) ) {
@@ -33,12 +33,12 @@ char *GetPathElement( const char *path_list, const char *end, char **path )
                 break;
             }
         } else if( IS_DIR_SEP( c ) ) {
-            is_blank = FALSE;
+            is_blank = false;
             *(*path)++ = DIR_SEP;
         } else if( !is_blank ) {
             *(*path)++ = c;
         } else if( c != ' ' ) {
-            is_blank = FALSE;
+            is_blank = false;
             *(*path)++ = c;
         }
     }
