@@ -183,9 +183,9 @@ void NewSegment( seg_leader *seg )
         AddSize( seg->size );
     } else if( FmtData.type & MK_REAL_MODE ) {
         if( group->isautogrp && Ring2First(group->leaders) != seg ) {
-            auto_group = TRUE; /* auto-group segment, but not first one */
+            auto_group = true; /* auto-group segment, but not first one */
         } else {
-            auto_group = FALSE;
+            auto_group = false;
         }
         if( !auto_group ) {
             NormalizeAddr();    /*  to prevent overflows on the alignment */

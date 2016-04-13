@@ -56,11 +56,11 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
     mod_entry       **prev;
 
     if( !CacheOpen( lib ) )
-        return( FALSE );
+        return( false );
     lp = SearchLib( lib, name );
     if( lp == NULL ) {
         CacheClose( lib, 1 );
-        return( FALSE );
+        return( false );
     }
     lib->status |= STAT_LIB_USED;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
@@ -83,7 +83,7 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
     if( FindLibTrace( lp ) ) {
         TraceSymList( lp->publist );
     }
-    return( TRUE );
+    return( true );
 }
 
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
@@ -103,14 +103,14 @@ bool LibFind( char *name, bool old_sym )
         if( old_sym && (lib->status & STAT_OLD_LIB) )
             continue;
         if( SearchAndProcLibFile( lib, name ) )
-            return( TRUE );
+            return( true );
         if( isimpsym ) {
             if( SearchAndProcLibFile( lib, name + PREFIX_LEN ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool ModNameCompare( char *tname, char *membname )
@@ -125,8 +125,8 @@ bool ModNameCompare( char *tname, char *membname )
     lenmember = strlen( membname );
     if( lentheadr == lenmember ) {
         if( memicmp( namestart, membname, lenmember ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

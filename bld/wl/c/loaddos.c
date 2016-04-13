@@ -66,27 +66,27 @@ static void WriteDOSSectRelocs( section *sect, bool repos )
 /*********************************************************/
 /* write all relocs associated with sect to the file */
 {
-    unsigned long       loc;
+    unsigned long       file_loc;
     OUTFILELIST         *out;
 
     if( sect->relocs != 0 ) {
-        loc = sect->u.file_loc + MAKE_PARA( sect->size );
+        file_loc = sect->u.file_loc + MAKE_PARA( sect->size );
         out = sect->outfile;
-        if( out->file_loc > loc ) {
-            SeekLoad( loc );
+        if( out->file_loc > file_loc ) {
+            SeekLoad( file_loc );
         } else {
             if( repos ) {
                 SeekLoad( out->file_loc );
             }
-            if( out->file_loc < loc ) {
-                PadLoad( loc - out->file_loc );
-                out->file_loc = loc;
+            if( out->file_loc < file_loc ) {
+                PadLoad( file_loc - out->file_loc );
+                out->file_loc = file_loc;
             }
         }
-        loc += sect->relocs * sizeof( dos_addr );
+        file_loc += sect->relocs * sizeof( dos_addr );
         DumpRelocList( sect->reloclist );
-        if( loc > out->file_loc ) {
-            out->file_loc = loc;
+        if( file_loc > out->file_loc ) {
+            out->file_loc = file_loc;
         }
     }
 }
@@ -186,7 +186,7 @@ static bool WriteSegData( void *_sdata, void *_start )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool DoCOMGroup( void *_seg, void *chop )
@@ -195,39 +195,39 @@ static bool DoCOMGroup( void *_seg, void *chop )
     seg_leader  *seg = _seg;
     soffset     newstart;
 
-    newstart = *(soffset *)chop + GetLeaderDelta( seg );
+    newstart = *(soffset *)chop + SEG_GROUP_DELTA( seg );
     RingLookup( seg->pieces, WriteSegData, &newstart );
-    return( FALSE );
+    return( false );
 }
 
 static bool WriteCOMGroup( group_entry *group, soffset chop )
 /***********************************************************/
 /* write the data for group to the loadfile */
-/* returns TRUE if the file should be repositioned */
+/* returns true if the file should be repositioned */
 {
-    unsigned long       loc;
+    unsigned long       file_loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
 
-    repos = FALSE;
+    repos = false;
     sect = group->section;
     CurrSect = sect;
     finfo = sect->outfile;
-    loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-    if( loc > finfo->file_loc ) {
-        PadLoad( loc - finfo->file_loc );
-    } else if( loc < finfo->file_loc ) {
-        SeekLoad( loc );
-        repos = TRUE;
+    file_loc = GROUP_FILE_LOC( group );
+    if( file_loc > finfo->file_loc ) {
+        PadLoad( file_loc - finfo->file_loc );
+    } else if( file_loc < finfo->file_loc ) {
+        SeekLoad( file_loc );
+        repos = true;
     }
     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-            &group->grp_addr, sect->ovl_num, loc, finfo->fname ));
+            &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
     COMAmountWritten = 0;
     Ring2Lookup( group->leaders, DoCOMGroup, &chop );
-    loc += COMAmountWritten;
-    if( loc > finfo->file_loc ) {
-        finfo->file_loc = loc;
+    file_loc += COMAmountWritten;
+    if( file_loc > finfo->file_loc ) {
+        finfo->file_loc = file_loc;
     }
     return( repos );
 }
@@ -256,7 +256,7 @@ static void WriteCOMFile( void )
 
     /* write groups */
     for( group = Groups; group != NULL; group = group->next_group ) {
-        chop = SUB_ADDR( group->grp_addr, StartInfo.addr );
+        chop = SUB_REAL_ADDR( group->grp_addr, StartInfo.addr );
         if( chop > 0 ) {
             chop = 0;
         }

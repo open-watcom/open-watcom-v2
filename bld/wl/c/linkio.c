@@ -56,7 +56,7 @@ static bool         BreakCond;
 static break_status CaughtBreak = NOT_HIT;
 static int          OpenFiles;          // the number of open files
 static unsigned     LastResult;
-static int          AuxFilesClosed = FALSE;
+static int          AuxFilesClosed = false;
 static char         Rc_Buffer[RESOURCE_MAX_SIZE];
 
 #define     TOOMANY             4
@@ -71,7 +71,7 @@ void LnkFilesInit( void )
         OpenFiles = 2;      // will be 0 when done closing stdaux & stdprn.
         QClose( STDAUX_HANDLE, "stdaux" );
         QClose( STDPRN_HANDLE, "stdprn" );
-        AuxFilesClosed = TRUE;
+        AuxFilesClosed = true;
         OpenFiles = 0;
     }
 }
@@ -131,7 +131,7 @@ f_handle QOpenR( char *name )
 {
     tiny_ret_t h;
 
-    h = DoOpen( name, FALSE, TIO_READ );
+    h = DoOpen( name, false, TIO_READ );
     if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
@@ -143,7 +143,7 @@ f_handle QOpenRW( char *name )
 {
     tiny_ret_t h;
 
-    h = DoOpen( name, TRUE, TIO_NORMAL );
+    h = DoOpen( name, true, TIO_NORMAL );
     if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
@@ -297,10 +297,10 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     bool            eof;
     char            ch;
 
-    eof = FALSE;
+    eof = false;
     while( --size > 0 ) {
         if( QRead( file, &ch, 1, name ) == 0 ) {
-            eof = TRUE;
+            eof = true;
             break;
         } else if( ch != '\r' ) {
             *dest++ = ch;
@@ -315,9 +315,9 @@ bool QIsDevice( f_handle file )
 /************************************/
 {
     if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );  // don't write the prompt if input not from stdin
+        return( false );  // don't write the prompt if input not from stdin
     }
 }
 
@@ -326,7 +326,7 @@ f_handle ExeCreate( char *name )
 {
     tiny_ret_t      h;
 
-    h = DoOpen( name, TRUE, TIO_NORMAL );
+    h = DoOpen( name, true, TIO_NORMAL );
     LastResult = TINY_INFO( h );
     if( TINY_OK( h ) ) return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
@@ -337,7 +337,7 @@ static f_handle NSOpen( char *name, unsigned mode )
 {
     tiny_ret_t       h;
 
-    h = DoOpen( name, FALSE, mode );
+    h = DoOpen( name, false, mode );
     LastResult = TINY_INFO( h );
     if( TINY_OK( h ) ) return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
@@ -365,7 +365,7 @@ f_handle TempFileOpen( char *name )
 bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
-    return( FALSE );
+    return( false );
 }
 
 bool QModTime( char *name, time_t *time )

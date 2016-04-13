@@ -41,8 +41,8 @@
 static void             (*MultiLine)( void ) = NULL;
 static char *           OptionBuffer;
 static int              BufferLeft;
-static bool             SegWarning = FALSE;
-static bool             GotModName = FALSE;
+static bool             SegWarning = false;
+static bool             GotModName = false;
 static bool             GotOvl;
 
 /* An entry for parsing .def files. */
@@ -340,7 +340,7 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
         ch = tolower( *s++ );
         if( ch == 'k' ) {         // constant of the form 64k
             if( len > 1 ) {
-                return( FALSE );
+                return( false );
             } else {
                 value <<= 10;        // value = value * 1024;
             }
@@ -350,15 +350,15 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
                 isvalid = isdig;
             } else if( radix == 8 ) {
                 if( ch == '8' || ch == '9' || !isdig ) {
-                    isvalid = FALSE;
+                    isvalid = false;
                 } else {
-                    isvalid = TRUE;
+                    isvalid = true;
                 }
             } else {
                 isvalid = isxdigit( ch ) != 0;
             }
             if( !isvalid ) {
-                return( FALSE );
+                return( false );
             }
             value *= radix;
             if( isdig ) {
@@ -369,7 +369,7 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
         }
     }
     *val = value;
-    return( TRUE );
+    return( true );
 }
 
 extern bool GetNumber( unsigned long *val )
@@ -406,7 +406,7 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
             if( plen == 0 && len >= entry->minlen ) {
                 MultiLine = NULL;               // for processdefcommand.
                 (*entry->rtn)();
-                return( TRUE );
+                return( true );
             }
             if( *key == '\0' || tolower( *ptr ) != *key ) break;
             ptr++;
@@ -417,17 +417,17 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
         /* here if this is no match */
     }
     /* here if no match in table */
-    return( FALSE );
+    return( false );
 }
 
 static bool ProcessKeyword( parse_entry *entry )
 /**********************************************/
-// returns TRUE if keyword found.
+// returns true if keyword found.
 {
     bool    ret;
 
-    if( !MakeToken( SEP_NO, FALSE ) ) {
-        return( FALSE );
+    if( !MakeToken( SEP_NO, false ) ) {
+        return( false );
     }
     ret = ProcessKeyList( entry, CmdFile->token, CmdFile->len );
     if( !ret ) {
@@ -456,7 +456,8 @@ static void SetWindows( void )
     unsigned long       bogus;
 
     FmtType = FMT_WINDOWS;
-    if( !MakeToken( SEP_NO, FALSE ) ) return;
+    if( !MakeToken( SEP_NO, false ) )
+        return;
     if( !GetNumber( &bogus ) ) {
         CmdFile->current = CmdFile->token;      // reparse the token later
     }
@@ -486,8 +487,8 @@ static void ProcAppLoader( void )
 /*******************************/
 {
     NotSupported( "apploader" );
-    if( !MakeToken( SEP_QUOTE, TRUE ) ) {
-        MakeToken( SEP_NO, TRUE );
+    if( !MakeToken( SEP_QUOTE, true ) ) {
+        MakeToken( SEP_NO, true );
     }
 }
 
@@ -512,7 +513,7 @@ static void ProcCode( void )
             result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1);
             memcpy( result, buffer, len );
             *(result + len) = '\0';
-            AddCommand( result, OPTION_SLOT, FALSE );
+            AddCommand( result, OPTION_SLOT, false );
         }
     }
 }
@@ -537,7 +538,7 @@ static void ProcData( void )
             result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1);
             memcpy( result, buffer, len );
             *(result + len) = '\0';
-            AddCommand( result, OPTION_SLOT, FALSE );
+            AddCommand( result, OPTION_SLOT, false );
         }
     }
 }
@@ -680,7 +681,7 @@ static void ProcDescription( void )
     #define PREFIX      "description '"
     char        *msg;
 
-    MakeToken( SEP_QUOTE, TRUE );
+    MakeToken( SEP_QUOTE, true );
     msg = alloca( CmdFile->len + (sizeof( PREFIX ) + 1 ) );
     memcpy( msg, PREFIX, sizeof( PREFIX ) );
     memcpy( msg + (sizeof( PREFIX )-1), CmdFile->token, CmdFile->len );
@@ -715,7 +716,7 @@ static void GetExport( void )
     char *          command;
     char *          currloc;
 
-    if( !MakeToken( SEP_NO, TRUE ) ) {
+    if( !MakeToken( SEP_NO, true ) ) {
         Warning( "invalid export name", OPTION_SLOT );
         return;
     }
@@ -724,14 +725,14 @@ static void GetExport( void )
     memcpy( name, CmdFile->token, namelen );
     internal = NULL;
     intlen = 0;
-    if( MakeToken( SEP_EQUALS, TRUE ) ) {   // got an internal name.
+    if( MakeToken( SEP_EQUALS, true ) ) {   // got an internal name.
         internal = alloca( CmdFile->len );  // store it temporarily
         intlen = CmdFile->len;
         memcpy( internal, CmdFile->token, intlen );
         toklen += intlen + 1;        // +1 for = sign.
     }
     value = 0xFFFFF; // arbitrary >64K.
-    if( MakeToken( SEP_AT, TRUE ) ) {       // got an ordinal.
+    if( MakeToken( SEP_AT, true ) ) {       // got an ordinal.
         if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
@@ -739,21 +740,21 @@ static void GetExport( void )
             toklen += 6;      // maximum integer length + dot
         }
     }
-    isresident = FALSE;
+    isresident = false;
     EatWhite();
-    gottoken = MakeToken( SEP_NO, TRUE );
+    gottoken = MakeToken( SEP_NO, true );
     if( gottoken ) {
         if( CmdFile->len == 12 && memicmp(CmdFile->token, "residentname", 12)==0){
-            isresident = TRUE;
-            gottoken = MakeToken( SEP_NO, TRUE );
+            isresident = true;
+            gottoken = MakeToken( SEP_NO, true );
             toklen += 9;           // length of resident + space.
         }
     }
-    gotnodata = FALSE;
+    gotnodata = false;
     if( gottoken ) {
         if( memicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
-            gottoken = MakeToken( SEP_NO, TRUE );
-            gotnodata = TRUE;
+            gottoken = MakeToken( SEP_NO, true );
+            gotnodata = true;
         }
     }
     iopl = 1024;      // arbitrary > 63
@@ -764,12 +765,12 @@ static void GetExport( void )
             toklen += 3;    // maximum iopl length + space.
         }
         if( !gotnodata ) {
-            gottoken = MakeToken( SEP_NO, TRUE );
+            gottoken = MakeToken( SEP_NO, true );
         }
     }
     if( gottoken && !gotnodata ) {
         if( memicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
-            gotnodata = TRUE;
+            gotnodata = true;
         } else {
             CmdFile->current = CmdFile->token;      // reparse the token later
         }
@@ -803,7 +804,7 @@ static void GetExport( void )
     } else {
         *currloc = '\0';
     }
-    AddCommand( command, OPTION_SLOT, FALSE );
+    AddCommand( command, OPTION_SLOT, false );
 }
 
 static void ProcExports( void )
@@ -817,14 +818,14 @@ static void SkipFunction( void )
 /******************************/
 // this skips a function name
 {
-    MakeToken( SEP_SPACE, TRUE );       // skip a function name
+    MakeToken( SEP_SPACE, true );       // skip a function name
 }
 
 static void ProcFunctions( void )
 /*******************************/
 {
     Warning( "Functions style overlay management not directly translatable to watcom", OPTION_SLOT );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    MakeToken( SEP_COLON, false );       // skip number.
     MultiLine = SkipFunction;
 }
 
@@ -833,7 +834,7 @@ static void ProcHeapsize( void )
 {
     unsigned long value;
 
-    if( !MakeToken( SEP_NO, TRUE ) ) {
+    if( !MakeToken( SEP_NO, true ) ) {
         Warning( "argument for heapsize not recognized", OPTION_SLOT );
     } else if( memicmp( CmdFile->token, "maxval", 6 ) == 0 ) {
         AddNumOption( "heapsize", 0xFFFF );
@@ -856,7 +857,7 @@ static void GetImport( void )
     int             toklen;
     char *          currloc;
 
-    if( !MakeToken( SEP_NO, FALSE ) ) {
+    if( !MakeToken( SEP_NO, false ) ) {
         Warning( "import library name is invalid", OPTION_SLOT );
         return;
     }
@@ -865,13 +866,13 @@ static void GetImport( void )
     memcpy( first, CmdFile->token, firstlen );
     second = NULL;
     secondlen = 0;
-    if( MakeToken( SEP_EQUALS, FALSE ) ) {        // got an internal name.
+    if( MakeToken( SEP_EQUALS, false ) ) {        // got an internal name.
         secondlen = CmdFile->len;
         second = alloca( secondlen );
         memcpy( second, CmdFile->token, secondlen );
         toklen += secondlen + 1;                        // name & = sign.
     }
-    if( !MakeToken( SEP_PERIOD, TRUE ) ) {
+    if( !MakeToken( SEP_PERIOD, true ) ) {
         Warning( "import entry is invalid", OPTION_SLOT );
         return;
     }
@@ -916,7 +917,7 @@ static void GetImport( void )
         }
         *currloc = '\0';
     }
-    AddCommand( result, OPTION_SLOT, FALSE );
+    AddCommand( result, OPTION_SLOT, false );
 }
 
 static void ProcImports( void )
@@ -928,7 +929,7 @@ static void ProcImports( void )
 static void ProcInclude ( void )
 /******************************/
 {
-    if( MakeToken( SEP_QUOTE, TRUE ) || MakeToken( SEP_NO, TRUE ) ) {
+    if( MakeToken( SEP_QUOTE, true ) || MakeToken( SEP_NO, true ) ) {
         StartNewFile( ToString() );
         ParseDefFile();
     } else {
@@ -941,13 +942,13 @@ static bool IsInitType( void )
 {
     if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 )==0 ) {
         FmtInfo = DLL_INITGLOBAL;
-        return( TRUE );
+        return( true );
     } else if ( CmdFile->len == 12
                     && memicmp( CmdFile->token, "initinstance", 12 )==0 ) {
         FmtInfo = DLL_INITINSTANCE;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void ProcPrivateLib( void )
@@ -963,7 +964,7 @@ static void ProcLibrary( void )
 
     gotprivate = ProcessKeyword( LibraryTypes );
     FmtInfo = DLL_INITGLOBAL;
-    if( !MakeToken( SEP_NO, TRUE ) ) {
+    if( !MakeToken( SEP_NO, true ) ) {
         return;
     }
     if( !IsInitType() ) {
@@ -973,9 +974,9 @@ static void ProcLibrary( void )
             Warning( "module name multiply defined" , OPTION_SLOT );
         } else {
             AddStringOption( "modname", CmdFile->token, CmdFile->len );
-            GotModName = TRUE;
+            GotModName = true;
         }
-        if( !MakeToken( SEP_NO, TRUE ) ) {
+        if( !MakeToken( SEP_NO, true ) ) {
             return;
         }
     }
@@ -992,7 +993,7 @@ static void ProcName( void )
 {
     int index;
 
-    if( !MakeToken( SEP_NO, TRUE ) ) {
+    if( !MakeToken( SEP_NO, true ) ) {
         return;
     }
     if( !ProcessKeyList( ApplicationTypes, CmdFile->token, CmdFile->len ) ) {
@@ -1000,11 +1001,11 @@ static void ProcName( void )
             Warning( "module name multiply defined", OPTION_SLOT );
         } else {
             AddStringOption( "modname", CmdFile->token, CmdFile->len );
-            GotModName = TRUE;
+            GotModName = true;
         }
     }
     for( index = 0; index < 2; index++ ) {
-        if( !MakeToken( SEP_NO, TRUE ) ) {
+        if( !MakeToken( SEP_NO, true ) ) {
             return;
         }
         if( !ProcessKeyList( ApplicationTypes, CmdFile->token, CmdFile->len ) ) {
@@ -1044,7 +1045,7 @@ static void ProcNewFiles( void )
 static void ProcOld( void )
 /*************************/
 {
-    if( !MakeToken( SEP_QUOTE, TRUE ) ) {
+    if( !MakeToken( SEP_QUOTE, true ) ) {
         Warning( "argument for old not valid", OPTION_SLOT );
     } else {
         AddStringOption( "old", CmdFile->token, CmdFile->len );
@@ -1066,7 +1067,7 @@ static void ProcRealMode( void )
 static void ProcClass( void )
 /***************************/
 {
-    if( !MakeToken( SEP_QUOTE, TRUE ) ) {
+    if( !MakeToken( SEP_QUOTE, true ) ) {
         Warning( "class argument invalid", OPTION_SLOT );
     }
 }
@@ -1074,9 +1075,9 @@ static void ProcClass( void )
 static void ProcOvl( void )
 /*************************/
 {
-    MakeToken( SEP_COLON, FALSE );
+    MakeToken( SEP_COLON, false );
     Warning( "ovl option on segment directive not supported by wlink", OPTION_SLOT );
-    GotOvl = TRUE;
+    GotOvl = true;
 }
 
 static void GetSegments( void )
@@ -1089,8 +1090,8 @@ static void GetSegments( void )
     char *  currloc;
     int     len;
 
-    GotOvl = FALSE;
-    if( MakeToken( SEP_QUOTE, TRUE ) || MakeToken( SEP_NO, TRUE ) ) {
+    GotOvl = false;
+    if( MakeToken( SEP_QUOTE, true ) || MakeToken( SEP_NO, true ) ) {
         seglen = CmdFile->len;
         segname = alloca( seglen );
         memcpy( segname, CmdFile->token, seglen );
@@ -1118,7 +1119,7 @@ static void GetSegments( void )
             *currloc++ = ' ';
             memcpy( currloc, buffer, len );
             *(currloc + len) = '\0';
-            AddCommand( result, OPTION_SLOT, FALSE );
+            AddCommand( result, OPTION_SLOT, false );
         }
     }
     MultiLine = GetSegments;
@@ -1129,7 +1130,7 @@ static void ProcDefSegments( void )
 // try to approximate the microsoft segment keyword.
 {
     if( !SegWarning ) {
-        SegWarning = TRUE;
+        SegWarning = true;
         Warning( "definition file segments keyword handled differently in WLINK", OPTION_SLOT );
     }
     MultiLine = GetSegments;
@@ -1140,7 +1141,7 @@ static void ProcStackSize( void )
 {
     unsigned long value;
 
-    if( !MakeToken( SEP_NO, TRUE ) ) {
+    if( !MakeToken( SEP_NO, true ) ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
     } else if( !GetNumber( &value ) || value >= (64*1024UL) ) {
         Warning( "argument for stacksize is invalid", OPTION_SLOT );
@@ -1152,7 +1153,7 @@ static void ProcStackSize( void )
 static void ProcStub( void )
 /**************************/
 {
-    if( !MakeToken( SEP_QUOTE, TRUE ) ) {
+    if( !MakeToken( SEP_QUOTE, true ) ) {
         Warning( "argument for stub not valid", OPTION_SLOT );
     } else {
         AddStringOption( "stub", CmdFile->token, CmdFile->len );
@@ -1207,7 +1208,7 @@ static void ProcCodeview( const char *arg )
 /*****************************************/
 {
     arg=arg;
-    DebugInfo = TRUE;
+    DebugInfo = true;
 }
 
 static void ProcCParMaxAlloc( const char *arg )
@@ -1323,7 +1324,7 @@ static void ProcMap( const char *arg )
 /************************************/
 {
     arg=arg;
-    MapOption = TRUE;
+    MapOption = true;
     /* Argument is ignored. */
 }
 

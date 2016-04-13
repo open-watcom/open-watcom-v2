@@ -125,8 +125,8 @@ void RefSeg( segdata * seg )
 
     if( seg->isrefd || seg->visited) return;
 //  if( !seg->iscode ) return;
-    seg->isrefd = TRUE;
-    seg->visited = TRUE;
+    seg->isrefd = true;
+    seg->visited = true;
     for( edge = seg->a.refs; edge != NULL; edge = next ) {
         DbgAssert(edge->issym==0);
         next = edge->next;
@@ -134,7 +134,7 @@ void RefSeg( segdata * seg )
         FreeEdge( edge );
     }
     seg->a.refs = NULL;
-    seg->visited = FALSE;
+    seg->visited = false;
 }
 
 void DataRef( symbol * sym )
@@ -168,7 +168,7 @@ void AddEdge( segdata * seg, symbol * sym )
             } else if( !sym->p.seg->isrefd ) {
                 edge = AllocEdge();
                 edge->u.seg = sym->p.seg;
-                edge->issym = FALSE;
+                edge->issym = false;
                 edge->next = seg->a.refs;
                 seg->a.refs = edge;
             }
@@ -181,8 +181,8 @@ void AddEdge( segdata * seg, symbol * sym )
             edge = AllocEdge();
             edge->u.seg = seg;
             edge->next = sym->p.edges;
-            edge->issym = FALSE;
-            edge->reverse_dir = TRUE;
+            edge->issym = false;
+            edge->reverse_dir = true;
             sym->p.edges = edge;
         }
     }
@@ -199,7 +199,7 @@ void AddSymEdge( symbol * srcsym, symbol * targsym )
     } else {
         edge = AllocEdge();
         edge->u.sym = targsym;
-        edge->issym = TRUE;
+        edge->issym = true;
         edge->next = srcsym->p.edges;
         srcsym->p.edges = edge;
     }
@@ -217,7 +217,7 @@ void AddSymSegEdge( symbol *srcsym, segdata *targsdata )
     }
     edge = AllocEdge();
     edge->u.seg = targsdata;
-    edge->issym = FALSE;
+    edge->issym = false;
     if( srcsym->info & SYM_DEFINED ) {
         edge->next = targsdata->a.refs;
         targsdata->a.refs = edge;

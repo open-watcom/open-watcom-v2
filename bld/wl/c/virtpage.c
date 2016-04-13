@@ -98,7 +98,7 @@ void ReleaseInfo( virt_mem v )
 bool SwapOutVirt( void )
 /*****************************/
 {
-    return( FALSE );
+    return( false );
 }
 
 void FreeVirtMem( void )

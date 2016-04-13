@@ -146,7 +146,7 @@ static bool RelocWalkFn( void *data, unsigned_32 size, void *ctx )
 
     memcpy( info->reloc_data, data, size );
     info->reloc_data += size / sizeof( reloc_addr );
-    return( FALSE );   /* don't stop walking */
+    return( false );   /* don't stop walking */
 }
 
 static void write_sel_reloc( unsigned_16 sel, reloc_addr *block_start, reloc_addr *block_end )
@@ -406,9 +406,9 @@ static void SetSegDataAbs( void *_sdata )
     segdata     *sdata = _sdata;
 
     if( !sdata->isdead ) {
-        sdata->isabs = TRUE;
+        sdata->isabs = true;
         sdata->combine = COMBINE_INVALID;
-        sdata->isuninit = TRUE;
+        sdata->isuninit = true;
     }
 }
 

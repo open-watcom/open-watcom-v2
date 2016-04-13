@@ -52,8 +52,8 @@ extern bool ProcRaw( void )
 {
     FmtData.base = 0;                           // Default offset
     LinkState |= MAKE_RELOCS | FMT_DECIDED;     // Make relocations;
-    ProcOne( RawOptions, SEP_NO, TRUE );
-    return( TRUE );
+    ProcOne( RawOptions, SEP_NO, true );
+    return( true );
 }
 
 extern bool ProcRawBIN( void )
@@ -61,7 +61,7 @@ extern bool ProcRawBIN( void )
 {
     Extension = E_BIN;
     FmtData.raw_hex_output = 0;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRawHEX( void )
@@ -69,5 +69,5 @@ extern bool ProcRawHEX( void )
 {
     Extension = E_HEX;
     FmtData.raw_hex_output = 1;
-    return( TRUE );
+    return( true );
 }

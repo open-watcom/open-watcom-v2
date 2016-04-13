@@ -133,13 +133,13 @@ extern void Warning( char *msg, int prompt )
 /******************************************/
 // print a warning to the linker command file in the form of a linker comment.
 {
-    AddCommand( Msg2Splice( "# ", msg ), prompt, TRUE );
+    AddCommand( Msg2Splice( "# ", msg ), prompt, true );
 }
 
 extern void AddOption( char *msg )
 /********************************/
 {
-    AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, TRUE );
+    AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, true );
 }
 
 extern void AddNumOption( char *msg, unsigned value )
@@ -292,7 +292,7 @@ extern void OutPutPrompt( int prompt )
     switch( prompt ) {
     case RUN_SLOT:
         msg = FindObjectName();
-        msg = FileName( msg, strlen( msg ), E_LOAD, TRUE );
+        msg = FileName( msg, strlen( msg ), E_LOAD, true );
         PromptStart( msg, prompt );
         MemFree( msg );
         break;
@@ -302,7 +302,7 @@ extern void OutPutPrompt( int prompt )
             if( msg == NULL ) {
                 msg = FindObjectName();
             }
-            msg = FileName( msg, strlen( msg ), E_MAP, TRUE );
+            msg = FileName( msg, strlen( msg ), E_MAP, true );
             PromptStart( msg, prompt );
             MemFree( msg );
             break;

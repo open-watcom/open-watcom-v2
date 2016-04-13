@@ -70,8 +70,8 @@ extern bool ProcRdos( void )
 /*************************/
 {
     LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
-    ProcOne( RdosOptions, SEP_NO, FALSE );
-    return( TRUE );
+    ProcOne( RdosOptions, SEP_NO, false );
+    return( true );
 }
 
 extern bool ProcRdosDev16( void )
@@ -80,7 +80,7 @@ extern bool ProcRdosDev16( void )
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.mboot = 0;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRdosDev32( void )
@@ -89,7 +89,7 @@ extern bool ProcRdosDev32( void )
     Extension = E_RDV;
     FmtData.u.rdos.bitness = 32;
     FmtData.u.rdos.mboot = 0;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRdosBin16( void )
@@ -98,7 +98,7 @@ extern bool ProcRdosBin16( void )
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.mboot = 0;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRdosBin32( void )
@@ -107,7 +107,7 @@ extern bool ProcRdosBin32( void )
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 32;
     FmtData.u.rdos.mboot = 0;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRdosMboot( void )
@@ -116,7 +116,7 @@ extern bool ProcRdosMboot( void )
     Extension = E_BIN;
     FmtData.u.rdos.bitness = 16;
     FmtData.u.rdos.mboot = 1;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcRdosCodeSel( void )

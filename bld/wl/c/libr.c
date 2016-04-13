@@ -330,13 +330,13 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
             _LnkFree( list->u.dict );
             list->u.dict = NULL;
-            return( FALSE );
+            return( false );
         }
         if( !(LinkFlags & CASE_FLAG) || numdicts == 1 ) {
             SortARDict( &list->u.dict->a );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
@@ -378,7 +378,7 @@ mod_entry *SearchLib( file_list *lib, char *name )
 
     pos = 0;
     if( lib->u.dict == NULL ) {
-        if( CheckLibraryType( lib, &pos, TRUE ) == -1 )
+        if( CheckLibraryType( lib, &pos, true ) == -1 )
             return( NULL );
         if( !(lib->status & STAT_IS_LIB) ) {
             BadLibrary( lib );
@@ -427,13 +427,13 @@ static bool OMFSearchExtLib( file_list *lib, char *name, unsigned long *off )
         for( j = 0; j < NUM_BUCKETS; ++j ) {
             if( dict->buffer[h.bucket] == LIB_NOT_FOUND ) {
                 if( dict->buffer[NUM_BUCKETS] != LIB_FULL_PAGE )
-                    return( FALSE );
+                    return( false );
                 break;
             }
             sector = OMFCompName( name, dict->buffer, h.bucket );
             if( sector != 0 ) {
                 *off = dict->rec_length * sector;
-                return( TRUE );
+                return( true );
             }
             h.bucket += h.bucketd;
             if( h.bucket >= NUM_BUCKETS ) {
@@ -445,7 +445,7 @@ static bool OMFSearchExtLib( file_list *lib, char *name, unsigned long *off )
             h.block -= num_blocks;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void SetDict( file_list *lib, unsigned dict_page )
@@ -548,10 +548,10 @@ bool DiscardDicts( void )
         ptr = &curr->u.dict->o;
     }
     if( ptr == NULL )
-        return( FALSE ); /* no dicts in memory */
+        return( false ); /* no dicts in memory */
     FreeDictCache( ptr->cache, ( ptr->pages / PAGES_IN_CACHE ) + 1 );
     ptr->cache = NULL;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -647,9 +647,9 @@ static bool ARSearchExtLib( file_list *lib, char *name, unsigned long *off )
         } else {
             *off = dict->filepostab[dict->offsettab[tabidx] - 1];
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 char *GetARName( ar_header *header, file_list *list, unsigned long *loc )

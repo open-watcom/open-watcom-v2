@@ -49,8 +49,8 @@
 bool ProcPharLap( void )
 /*****************************/
 {
-    ProcOne( PharModels, SEP_NO, FALSE );
-    return( TRUE );
+    ProcOne( PharModels, SEP_NO, false );
+    return( true );
 }
 
 void SetPharFmt( void )
@@ -63,7 +63,7 @@ void SetPharFmt( void )
     FmtData.u.phar.maxdata = 0xFFFFFFFF;
     FmtData.u.phar.breaksym = NULL;
     FmtData.u.phar.stub = NULL;
-//  FmtData.u.phar.pack = FALSE;
+//  FmtData.u.phar.pack = false;
     FmtData.u.phar.params->minreal = 0;
     FmtData.u.phar.params->maxreal = 0;
     FmtData.u.phar.params->callbufs = 0;
@@ -88,7 +88,7 @@ void FreePharFmt( void )
 bool ProcPharFlat( void )
 /******************************/
 {
-    return( TRUE );
+    return( true );
 }
 
 bool ProcRex( void )
@@ -96,14 +96,14 @@ bool ProcRex( void )
 {
     Extension = E_REX;
     LinkState |= MAKE_RELOCS;       // make relocations;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcPharSegmented( void )
 /***********************************/
 {
     LinkState |= MAKE_RELOCS;       // make relocations;
-    return TRUE;
+    return true;
 }
 
 #if 0
@@ -112,8 +112,8 @@ bool ProcPharSegmented( void )
 bool ProcPackExp( void )
 /*****************************/
 {
-    FmtData.u.phar.pack = TRUE;
-    return( TRUE );
+    FmtData.u.phar.pack = true;
+    return( true );
 }
 #endif
 
@@ -133,13 +133,13 @@ bool ProcUnpriv( void )
 /****************************/
 {
     FmtData.u.phar.params->unpriv = 1;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcPriv( void )
 /**************************/
 {
-    return( TRUE );
+    return( true );
 }
 
 bool ProcFlags( void )
@@ -195,7 +195,7 @@ bool ProcRealBreak( void )
     unsigned_32     value;
     ord_state       ok;
 
-    if( !HaveEquals( TOK_INCLUDE_DOT ) ) return( FALSE );
+    if( !HaveEquals( TOK_INCLUDE_DOT ) ) return( false );
     ok = getatol( &value );
     if( FmtData.u.phar.breaksym != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_MULT_REALBREAKS, NULL );
@@ -207,7 +207,7 @@ bool ProcRealBreak( void )
     } else {
         FmtData.u.phar.params->realbreak = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcCallBufs( void )

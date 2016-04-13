@@ -58,11 +58,11 @@ static IDEInitInfo      InitInfo;
 static IDECallBacks     *IdeCB;
 
 static extra_cmd_info ExtraCmds[] = {
-    IDE_GET_TARGET_FILE,"name    ",     FALSE,
-    IDE_GET_OBJ_FILE,   "file    ",     TRUE,
-    IDE_GET_LIB_FILE,   "lib     ",     TRUE,
-    IDE_GET_RES_FILE,   "opt res=",     FALSE,
-    0,                  "\0",           FALSE
+    IDE_GET_TARGET_FILE,"name    ",     false,
+    IDE_GET_OBJ_FILE,   "file    ",     true,
+    IDE_GET_LIB_FILE,   "lib     ",     true,
+    IDE_GET_RES_FILE,   "opt res=",     false,
+    0,                  "\0",           false
 };
 
 static IDEMsgSeverity SeverityMap[] = {
@@ -79,7 +79,7 @@ static IDEMsgSeverity SeverityMap[] = {
 #if defined( DLLS_IMPLEMENTED )
 bool ExecDLLPgm( char *pname, char *cmdline )
 /********************************************/
-// return TRUE if an error
+// return true if an error
 {
     IDEDRV              inf;
     IDEDRV_STATUS       status;
@@ -155,9 +155,9 @@ static bool GetAddtlCommand( IDEInfoType cmd, char *buf )
 {
     cmd = cmd;
     buf = buf;
-    return FALSE;
+    return false;
 #if 0
-    if( InitInfo.cmd_line_has_files ) return FALSE;
+    if( InitInfo.cmd_line_has_files ) return false;
     return !IdeCB->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam)&buf );
 #endif
 }
@@ -188,9 +188,9 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /****************************************************************/
 {
     hdl = hdl;
-    if( info->ver < IDE_CUR_INFO_VER5 ) return TRUE;
+    if( info->ver < IDE_CUR_INFO_VER5 ) return true;
     InitInfo = *info;
-    return FALSE;
+    return false;
 }
 
 unsigned IDEAPI IDEGetVersion( void )
@@ -220,7 +220,7 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
     IdeHdl = hdl;
     IdeCB = cb;
     InitSubSystems();
-    return FALSE;
+    return false;
 }
 
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )

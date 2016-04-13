@@ -586,14 +586,14 @@ void WLPrtBanner( void )
         WriteStdOutInfo( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK2 ];
         WriteStdOutInfo( msg, BANNER, NULL );
-        BannerPrinted = TRUE;
+        BannerPrinted = true;
     }
 }
 
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return TRUE;
+    if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return true;
 #if defined(__WATCOMC__)
     { int art;
 
@@ -601,7 +601,7 @@ bool SkipSymbol( symbol * sym )
     return !(MapFlags & MAP_ARTIFICIAL) && art == __MANGLED_INTERNAL;
     }
 #else
-    return FALSE;
+    return false;
 #endif
 }
 

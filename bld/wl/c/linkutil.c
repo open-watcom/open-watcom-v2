@@ -94,7 +94,7 @@ void LnkFatal( char *msg )
 
 bool TestBit( byte *array, unsigned num )
 /***********************************************/
-/* return TRUE if the specified bit is on */
+/* return true if the specified bit is on */
 {
     byte        mask;
 

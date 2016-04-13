@@ -254,7 +254,7 @@ static void DoAltDef( comdat_info *info )
         FreeSegData( info->sdata );
     } else {
         Ring2Append( &CurrMod->segs, info->sdata );
-        info->sdata->isdead = TRUE;
+        info->sdata->isdead = true;
         InfoCDatAltDef( info );
     }
 }
@@ -395,7 +395,7 @@ static bool CheckSameComdat( void *info, void *sym )
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "duplicate comdat found" );
         LnkMsg( ERR+MSG_INTERNAL, "s", ((symbol *)sym)->name );
     }
-    return FALSE;
+    return false;
 }
 #endif
 
@@ -424,9 +424,9 @@ void ProcComdat( void )
     attr = *ObjBuff++;
     align = *ObjBuff++;
     if( align == 0 ) {
-        usealign = TRUE;
+        usealign = true;
     } else {
-        usealign = FALSE;
+        usealign = false;
         align = OMFAlignTab[align];
     }
     if( ObjFormat & FMT_32BIT_REC ) {
@@ -470,7 +470,7 @@ void ProcComdat( void )
     if( !CacheIsPerm() ) {
         _ChkAlloc( piece->data, piece->length );
         memcpy( piece->data, ObjBuff, piece->length );
-        piece->free_data = TRUE;
+        piece->free_data = true;
     } else {
         piece->data = ObjBuff;
     }
@@ -482,13 +482,13 @@ void ProcComdat( void )
         sdata = AllocSegData();
         sdata->length = piece->length;
         sdata->combine = COMBINE_ADD;
-        sdata->iscdat = TRUE;
+        sdata->iscdat = true;
         sdata->isabs = seg == NULL;
         sdata->align = align;
         sdata->u.leader = seg->entry->u.leader;
         sdata->iscode = (seg->info & SEG_CODE) != 0;
         if( ObjFormat & FMT_32BIT_REC ) {
-            sdata->is32bit = TRUE;
+            sdata->is32bit = true;
         }
         info = AllocCDatInfo();
         info->sdata = sdata;

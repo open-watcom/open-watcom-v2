@@ -65,6 +65,7 @@
 #include "pass2l1.h"
 #include "sharedio.h"
 #include "exeutil.h"
+#include "newmem.h"
 
 #include "clibext.h"
 
@@ -699,10 +700,10 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
     for( ; limit > 0; --limit ) {
         pagesize = RelocSize( *reloclist );
         if( pagesize != 0 ) {
-            padme = FALSE;
+            padme = false;
             if( ( pagesize / sizeof( pe_reloc_item ) ) & 0x1 ) {
                 pagesize += sizeof( pe_reloc_item );
-                padme = TRUE;
+                padme = true;
             }
             pagesize += 2 * sizeof( unsigned_32 );
             WriteLoad( &pagerva, sizeof( unsigned_32 ) );
@@ -814,7 +815,7 @@ bool RcPadFile( int handle, long pad )
 
     handle = handle;
     PadLoad( pad );
-    return( FALSE );
+    return( false );
 }
 
 void CheckDebugOffset( ExeFileInfo *info )
@@ -957,7 +958,7 @@ static seg_leader *SetLeaderTable( char *name, pe_hdr_table_entry *entry )
 
     leader = FindSegment( Root, name );
     if( leader != NULL ) {
-        entry->rva =  leader->group->linear + GetLeaderDelta( leader );
+        entry->rva =  leader->group->linear + SEG_GROUP_DELTA( leader );
         entry->size = leader->size;
     }
     return( leader );
@@ -1002,7 +1003,7 @@ static bool SetPDataArray( void *_sdata, void *_array )
             data += sizeof( procedure_descriptor );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void SetMiscTableEntries( pe_hdr_table_entry *table )
@@ -1542,7 +1543,7 @@ static void CreateIDataSection( void )
     PrepareToc();
     if( 0 != CalcIDataSize() ) {
         IDataGroup = GetGroup( IDataGrpName );
-        class = FindClass( Root, CoffIDataSegName, TRUE, FALSE );
+        class = FindClass( Root, CoffIDataSegName, true, false );
         class->flags |= CLASS_IDATA | CLASS_LXDATA_SEEN;
         sdata = AllocSegData();
         if( LinkState & HAVE_X64_CODE ) {
@@ -1550,11 +1551,11 @@ static void CreateIDataSection( void )
         } else {
             sdata->align = 2;
         }
-        sdata->is32bit = TRUE;
+        sdata->is32bit = true;
         sdata->length = IData.total_size;
         sdata->u.name = CoffIDataSegName;
         sdata->combine = COMBINE_ADD;
-        sdata->isabs = FALSE;
+        sdata->isabs = false;
         AddSegment( sdata, class );
         sdata->u1.vm_ptr = AllocStg( sdata->length );
         IData.sdata = sdata;
@@ -1642,11 +1643,11 @@ static void CreateTransferSegment( class_entry *class )
         } else {
             sdata->align = 2;
         }
-        sdata->is32bit = TRUE;
+        sdata->is32bit = true;
         sdata->length = size;
         sdata->u.name = TRANSFER_SEGNAME;
         sdata->combine = COMBINE_ADD;
-        sdata->isabs = FALSE;
+        sdata->isabs = false;
         AddSegment( sdata, class );
         sdata->u1.vm_ptr = AllocStg( sdata->length );
         XFerSegData = sdata;
@@ -1755,19 +1756,19 @@ bool ImportPELocalSym( symbol *iatsym )
 
     name = iatsym->name;
     if( memcmp( name, ImportSymPrefix, PREFIX_LEN ) != 0 )
-        return( FALSE );
+        return( false );
     locsym = FindISymbol( name + PREFIX_LEN );
     if( locsym == NULL )
-        return( FALSE );
+        return( false );
     if( IS_SYM_IMPORTED( locsym ) )
-        return( FALSE );
+        return( false );
     LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", locsym->name );
     iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
     if( LinkFlags & STRIP_CODE ) {
         DefStripImpSym( iatsym );
     }
     AddPEImportLocalSym( locsym, iatsym );
-    return( TRUE );
+    return( true );
 }
 
 void FreePELocalImports( void )

@@ -1237,7 +1237,7 @@ symbol * HashReplace( symbol *sym )
         return sym;
     Ring2Prune( &sym->mod->publist, sym );
     if( IS_SYM_COMMUNAL(sym) ) {
-        sym->p.seg->isdead = TRUE;
+        sym->p.seg->isdead = true;
     }
     if( !(LinkFlags & INC_LINK_FLAG) )
         return sym;
@@ -1276,9 +1276,9 @@ static bool SetNewDataSym( void *_dead, void *_sym )
         } else {
             sym->u.datasym = dead->u.datasym;
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 static void CleanAltDefs( symbol *sym )
@@ -1527,7 +1527,7 @@ bool SetCurrentPrefix(const char * pszPrefix, unsigned nLen)
     }
 
     if( (NULL == pStart) || (nLen == 0) ) {
-        return TRUE;
+        return true;
     }
 
     pStart++;   /* skip opening parentheses */
@@ -1540,7 +1540,7 @@ bool SetCurrentPrefix(const char * pszPrefix, unsigned nLen)
     }
 
     if( ('\0' == *pStart) || (0 == nLen) )
-        return FALSE;
+        return false;
 
     /* convert to C string */
     _LnkAlloc( newbuff, nIntLen + 1 );

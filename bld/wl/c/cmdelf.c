@@ -41,15 +41,15 @@
 bool ProcELF( void )
 /*************************/
 {
-    ProcOne( ELFFormatKeywords, SEP_NO, FALSE );
-    return TRUE;
+    ProcOne( ELFFormatKeywords, SEP_NO, false );
+    return true;
 }
 
 bool ProcELFDLL( void )
 /****************************/
 {
-    FmtData.dll = TRUE;
-    return TRUE;
+    FmtData.dll = true;
+    return true;
 }
 
 void SetELFFmt( void )
@@ -79,8 +79,8 @@ void SetELFImportSymbol( symbol * sym )
 bool ProcExportAll( void )
 /*******************************/
 {
-    FmtData.u.elf.exportallsyms = TRUE;
-    return TRUE;
+    FmtData.u.elf.exportallsyms = true;
+    return true;
 }
 
 static bool GetELFImport( void )
@@ -90,12 +90,12 @@ static bool GetELFImport( void )
 
     sym = SymOp( ST_DEFINE_SYM, Token.this, Token.len );
     if( sym == NULL ) {
-        return( TRUE );
+        return( true );
     }
     SET_SYM_TYPE( sym, SYM_IMPORTED );
     sym->info |= SYM_DCE_REF;
     SetELFImportSymbol( sym );
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFImport( void )
@@ -111,10 +111,10 @@ bool ProcELFAlignment( void )
     unsigned_32         value;
     unsigned_32         lessone;        // value without the lowest bit.
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
-        return( FALSE );
+        return( false );
     }
     for( ;; ) {
         lessone = value & (value - 1);  // remove the low order bit.
@@ -122,7 +122,7 @@ bool ProcELFAlignment( void )
         value = lessone;
     }
     FmtData.objalign = value;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcExtraSections( void )
@@ -135,7 +135,7 @@ bool ProcELFNoRelocs( void )
 /*********************************/
 {
     LinkState &= ~MAKE_RELOCS;
-    return TRUE;
+    return true;
 }
 
 static void ParseABITypeAndVersion( void )
@@ -188,7 +188,7 @@ bool ProcELFRNumber( void )
 /********************************/
 {
     ParseABITypeAndVersion();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFRSVR4( void )
@@ -196,7 +196,7 @@ bool ProcELFRSVR4( void )
 {
     FmtData.u.elf.abitype = ELFOSABI_NONE;
     ParseABIVersion();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFRNetBSD( void )
@@ -204,7 +204,7 @@ bool ProcELFRNetBSD( void )
 {
     FmtData.u.elf.abitype = ELFOSABI_NETBSD;
     ParseABIVersion();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFRLinux( void )
@@ -212,7 +212,7 @@ bool ProcELFRLinux( void )
 {
     FmtData.u.elf.abitype = ELFOSABI_LINUX;
     ParseABIVersion();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFRSolrs( void )
@@ -220,7 +220,7 @@ bool ProcELFRSolrs( void )
 {
     FmtData.u.elf.abitype = ELFOSABI_SOLARIS;
     ParseABIVersion();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcELFRFBSD( void )
@@ -228,5 +228,5 @@ bool ProcELFRFBSD( void )
 {
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;
     ParseABIVersion();
-    return( TRUE );
+    return( true );
 }

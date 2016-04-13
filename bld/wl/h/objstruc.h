@@ -186,13 +186,13 @@ typedef struct trace_info {
 typedef enum {
     // DBI_xxxx symbols are also stored here.
     // FMT_xxxx symbols (for deciding .obj format) are also stored here
-    MOD_DBI_SEEN        = 0x00000800, // TRUE if dbi segment seen in this mod.
-    MOD_FIXED           = 0x00001000, // TRUE if mod must stay in spec'd section
-    MOD_VISITED         = 0x00002000, // TRUE if visited in call graph analysis.
-    MOD_NEED_PASS_2     = 0x00004000, // TRUE if pass 2 needed for this module.
-    MOD_LAST_SEG        = 0x00008000, // TRUE if this module should end a group
-    MOD_GOT_NAME        = 0x00010000, // TRUE if already got a source file name
-    MOD_IMPORT_LIB      = 0x00020000, // ORL: TRUE if this is an import lib.
+    MOD_DBI_SEEN        = 0x00000800, // true if dbi segment seen in this mod.
+    MOD_FIXED           = 0x00001000, // true if mod must stay in spec'd section
+    MOD_VISITED         = 0x00002000, // true if visited in call graph analysis.
+    MOD_NEED_PASS_2     = 0x00004000, // true if pass 2 needed for this module.
+    MOD_LAST_SEG        = 0x00008000, // true if this module should end a group
+    MOD_GOT_NAME        = 0x00010000, // true if already got a source file name
+    MOD_IMPORT_LIB      = 0x00020000, // ORL: true if this is an import lib.
     MOD_KILL            = 0x00040000, // module should be removed from list
     MOD_FLATTEN_DBI     = 0x00080000, // flatten DBI found in this mod.
     MOD_DONE_PASS_1     = 0x00100000, // module been through pass 1 already.
@@ -462,24 +462,24 @@ typedef struct segdata {
 
     unsigned        combine    : 2; // how to combine segment with others
     unsigned        alloc      : 2; // comdat: where to allocate segment.
-    unsigned        is32bit    : 1; // TRUE if segment is 32 bits
-    unsigned        iscode     : 1; // TRUE if a code segment.
-    unsigned        isabs      : 1; // TRUE if this is an absolute segment.
-    unsigned        iscdat     : 1; // TRUE if this is a comdat
+    unsigned        is32bit    : 1; // true if segment is 32 bits
+    unsigned        iscode     : 1; // true if a code segment.
+    unsigned        isabs      : 1; // true if this is an absolute segment.
+    unsigned        iscdat     : 1; // true if this is a comdat
 
-    unsigned        isuninit   : 1; // TRUE if seg is uninitialized
-    unsigned        isidata    : 1; // TRUE if segment is .idata (ORL only)
-    unsigned        ispdata    : 1; // TRUE if segment is .pdata
-    unsigned        isreldata  : 1; // TRUE if segment is .reldata
-    unsigned        visited    : 1; // dce: TRUE if visited in graph search.
-    unsigned        isrefd     : 1; // dce: TRUE if this module is referenced.
-    unsigned        isdead     : 1; // dce: TRUE if segdata or segdef killed.
+    unsigned        isuninit   : 1; // true if seg is uninitialized
+    unsigned        isidata    : 1; // true if segment is .idata (ORL only)
+    unsigned        ispdata    : 1; // true if segment is .pdata
+    unsigned        isreldata  : 1; // true if segment is .reldata
+    unsigned        visited    : 1; // dce: true if visited in graph search.
+    unsigned        isrefd     : 1; // dce: true if this module is referenced.
+    unsigned        isdead     : 1; // dce: true if segdata or segdef killed.
     unsigned        isdefd     : 1; // segdata has been defined
 
     unsigned        isfree     : 1; // segdata is free (used in carver stuff)
     unsigned        isprepd    : 1; // has been prepped for inc linking
     unsigned        canfarcall : 1; // OK to do far call optimization here
-    unsigned        hascdatsym : 1; // TRUE if comdat and has a symbol defd
+    unsigned        hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
 typedef struct node {

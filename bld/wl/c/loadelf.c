@@ -183,7 +183,7 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->ph->p_memsz = hdr->ph_size;
     hdr->ph->p_flags = PF_R | PF_X;
     hdr->ph->p_align = 0;
-    InitStringTable( &hdr->secstrtab, FALSE );
+    InitStringTable( &hdr->secstrtab, false );
     AddCharStringTable( &hdr->secstrtab, '\0' );
     InitSections( hdr );
     hdr->curr_off = hdr->eh.e_ehsize + hdr->ph_size;
@@ -423,7 +423,7 @@ void ChkElfData( void )
             NumExports++;
         }
     }
-    InitStringTable( &SymStrTab, FALSE );
+    InitStringTable( &SymStrTab, false );
     AddCharStringTable( &SymStrTab, '\0' );
     ElfSymTab = CreateElfSymTable( NumImports + NumExports + NumGroups,
                                    &SymStrTab);

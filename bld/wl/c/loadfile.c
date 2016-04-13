@@ -479,10 +479,10 @@ void GetStartAddr( void )
 
     if( FmtData.type & MK_NOVELL )
         return;
-    addoff = TRUE;
+    addoff = true;
     switch( StartInfo.type ) {
     case START_UNDEFED:         // NOTE: the possible fall through
-        addoff = FALSE;
+        addoff = false;
         if( !FmtData.dll ) {
             if( Groups == NULL || (FmtData.type & MK_ELF) ) {
                 StartInfo.addr.seg = 0;
@@ -608,33 +608,33 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
 bool WriteDOSGroup( group_entry *group )
 /*********************************************/
 /* write the data for group to the loadfile */
-/* returns TRUE if the file should be repositioned */
+/* returns true if the file should be repositioned */
 {
-    unsigned long           loc;
+    unsigned long       file_loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
 
-    repos = FALSE;
+    repos = false;
     if( group->size != 0 ) {
         sect = group->section;
         CurrSect = sect;
         finfo = sect->outfile;
-        loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-        if( loc > finfo->file_loc ) {
-            PadLoad( loc - finfo->file_loc );
-        } else if( loc != finfo->file_loc ) {
-            SeekLoad( loc );
-            repos = TRUE;
+        file_loc = GROUP_FILE_LOC( group );
+        if( file_loc > finfo->file_loc ) {
+            PadLoad( file_loc - finfo->file_loc );
+        } else if( file_loc != finfo->file_loc ) {
+            SeekLoad( file_loc );
+            repos = true;
         }
         if( FmtData.type & MK_OVERLAYS ) {
-            SetOvlTableLoc( group, loc );
+            SetOvlTableLoc( group, file_loc );
         }
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovl_num, loc, finfo->fname ));
-        loc += WriteDOSGroupLoad( group, repos );
-        if( loc > finfo->file_loc ) {
-            finfo->file_loc = loc;
+                &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
+        file_loc += WriteDOSGroupLoad( group, repos );
+        if( file_loc > finfo->file_loc ) {
+            finfo->file_loc = file_loc;
         }
     }
     return( repos );
@@ -692,7 +692,7 @@ static void SetupImpLib( void )
     ImpLib.handle = NIL_FHANDLE;
     ImpLib.buffer = NULL;
     ImpLib.dllname = NULL;
-    ImpLib.didone = FALSE;
+    ImpLib.didone = false;
     if( FmtData.make_implib ) {
         _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
         if( FmtData.make_impfile ) {
@@ -826,7 +826,7 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
 
     if( ImpLib.handle == NIL_FHANDLE )
         return;
-    ImpLib.didone = TRUE;
+    ImpLib.didone = true;
     intlen = strlen( intname );
     if( ordinal == NOT_IMP_BY_ORDINAL ) {
         otherlen = strlen(extname);
@@ -965,7 +965,7 @@ static bool WriteSegData( void *_sdata, void *_info )
         }
         WriteInfoLoad( sdata->vm_data, sdata->length );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void DoWriteLeader( seg_leader *seg, grpwriteinfo *info )
@@ -979,8 +979,8 @@ void WriteLeaderLoad( void *seg )
 {
     grpwriteinfo    info;
 
-    info.repos = FALSE;
-    info.copy = FALSE;
+    info.repos = false;
+    info.copy = false;
     info.seg_start = PosLoad();
     DoWriteLeader( seg, &info );
 }
@@ -994,10 +994,10 @@ static bool DoGroupLeader( void *_seg, void *_info )
     // If class or sector should not be output, skip it
     if ( !( (seg->class->flags & CLASS_NOEMIT) ||
            (seg->segflags & SEG_NOEMIT) ) ) {
-        info->seg_start = info->grp_start + GetLeaderDelta( seg );
+        info->seg_start = info->grp_start + SEG_GROUP_DELTA( seg );
         DoWriteLeader( seg, info );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool DoDupGroupLeader( void *seg, void *_info )
@@ -1007,9 +1007,9 @@ static bool DoDupGroupLeader( void *seg, void *_info )
 {
     grpwriteinfo    *info = _info;
 
-    info->seg_start = info->grp_start + GetLeaderDelta( seg );
+    info->seg_start = info->grp_start + SEG_GROUP_DELTA( (seg_leader *)seg );
     DoWriteLeader( seg, info );
-    return( FALSE );
+    return( false );
 }
 
 static bool WriteCopyGroups( void *_seg, void *_info )
@@ -1026,7 +1026,7 @@ static bool WriteCopyGroups( void *_seg, void *_info )
         Ring2Lookup( seg->group->leaders, DoDupGroupLeader, info );
         info->grp_start += seg->group->totalsize;
     }
-    return( FALSE );
+    return( false );
 }
 
 offset  WriteDOSGroupLoad( group_entry *group, bool repos )
@@ -1042,11 +1042,11 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
     // If group is a copy group, substitute source group(s) here
     class = group->leaders->class;
     if( class->flags & CLASS_COPY ) {
-        info.copy = TRUE;
+        info.copy = true;
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteCopyGroups, &info );
     } else {
-        info.copy = FALSE;
+        info.copy = false;
         Ring2Lookup( group->leaders, DoGroupLeader, &info );
     }
     return( PosLoad() - grp_start );
@@ -1055,7 +1055,7 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
 offset  WriteGroupLoad( group_entry *group )
 /******************************************/
 {
-    return( WriteDOSGroupLoad( group, FALSE ) );
+    return( WriteDOSGroupLoad( group, false ) );
 }
 
 static void OpenOutFiles( void )

@@ -248,14 +248,14 @@ void CVP1ModuleFinished( mod_entry *obj )
     size = ROUND_UP( size, 4 );
     SectAddrs[CVSECT_MODULE].u.vm_offs += size;
     //  required alignment ???
-    AddSubSection( TRUE );
+    AddSubSection( true );
     if( obj->d.cv->pubsize > 0 ) {
-        AddSubSection( FALSE );
+        AddSubSection( false );
         SectAddrs[CVSECT_MISC].u.vm_offs += sizeof( unsigned_32 );
         obj->d.cv->pubsize += sizeof( unsigned_32 );
     }
     if( obj->d.cv->numlines > 0 ) {
-        AddSubSection( FALSE );
+        AddSubSection( false );
         temp = sizeof( cheesy_module_header );
         temp += ROUND_UP( sizeof( cheesy_file_table ) + namelen, 4 );
         temp += sizeof( cheesy_mapping_table );
@@ -394,7 +394,7 @@ void CVAddLocal( seg_leader *seg, offset length )
 {
     length = length;
     if( IS_DBG_INFO( seg ) ) {
-        AddSubSection( FALSE );
+        AddSubSection( false );
     }
 }
 
@@ -516,7 +516,7 @@ void CVGenLines( lineinfo *info )
         if( info->size & LINE_IS_32BIT ) {
             pair->_386.off += adjust;
             if( pair->_386.off < LineInfo.prevaddr ) {
-                LineInfo.needsort = TRUE;
+                LineInfo.needsort = true;
             }
             LineInfo.prevaddr = pair->_386.off;
             _HostU32toTarg( pair->_386.off, temp_off );
@@ -524,7 +524,7 @@ void CVGenLines( lineinfo *info )
         } else {
             pair->_286.off += adjust;
             if( pair->_286.off < LineInfo.prevaddr ) {
-                LineInfo.needsort = TRUE;
+                LineInfo.needsort = true;
             }
             LineInfo.prevaddr = pair->_286.off;
             _HostU16toTarg( pair->_286.off, temp_off );
@@ -639,7 +639,7 @@ static bool DefLeader( void *_leader, void *group )
 
     leader->group = group;
     RingWalk( leader->pieces, DefLocal );
-    return( FALSE );
+    return( false );
 }
 
 void CVAddrStart( void )
@@ -653,7 +653,7 @@ void CVAddrStart( void )
     unsigned_32 numentries;
     group_entry *group;
 
-    AddSubSection( FALSE );     // for sstSegMap
+    AddSubSection( false );     // for sstSegMap
     numentries = ( SectAddrs[CVSECT_MODDIR].u.vm_offs + SectAddrs[CVSECT_DIRECTORY].u.vm_offs ) / sizeof( cv_directory_entry );
     SectAddrs[CVSECT_MISC].u.vm_offs += sizeof( cv_sst_seg_map ) + ( NumGroups - 1 ) * sizeof( seg_desc );
     SectAddrs[CVSECT_MODDIR].u.vm_offs += sizeof( cv_subsection_directory );
@@ -703,7 +703,7 @@ void CVFini( section *sect )
     DumpInfo( CVSECT_MISC, &map, sizeof( cv_sst_seg_map ) - sizeof( seg_desc ) );
     memset( &desc, 0, sizeof( seg_desc ) );
     desc.u.b.fSel = !( LinkFlags & MK_REAL_MODE );
-    desc.u.b.fRead = TRUE;
+    desc.u.b.fRead = true;
     desc.iSegName = 0xFFFF;
     desc.iClassName = 0xFFFF;
     for( group = Groups; group != NULL; group = group->next_group ) {

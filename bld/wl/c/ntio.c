@@ -52,7 +52,7 @@
 
 static int      OpenFiles;      // the number of open files
 static unsigned LastResult;
-static bool     CaughtBreak;    // set to TRUE if break hit.
+static bool     CaughtBreak;    // set to true if break hit.
 
 #define TOOMANY EMFILE
 
@@ -60,7 +60,7 @@ void TrapBreak( int sig_num )
 /***************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
-    CaughtBreak = TRUE;
+    CaughtBreak = true;
 }
 
 void CheckBreak( void )
@@ -73,7 +73,7 @@ void CheckBreak( void )
     }
 #else
     if( CaughtBreak ) {
-        CaughtBreak = FALSE;        /* prevent recursion */
+        CaughtBreak = false;        /* prevent recursion */
         LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
     }
 #endif
@@ -93,7 +93,7 @@ void LnkFilesInit( void )
 /***********************/
 {
     OpenFiles = 0;
-    CaughtBreak = FALSE;
+    CaughtBreak = false;
 }
 
 void PrintIOError( unsigned msg, char *types, char *name )
@@ -135,7 +135,7 @@ f_handle QOpenR( char *name )
 {
     int     h;
 
-    h = DoOpen( name, O_RDONLY, FALSE );
+    h = DoOpen( name, O_RDONLY, false );
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
@@ -147,7 +147,7 @@ f_handle QOpenRW( char *name )
 {
     int     h;
 
-    h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, FALSE );
+    h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, false );
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
@@ -159,7 +159,7 @@ f_handle ExeCreate( char *name )
 {
     int     h;
 
-    h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, TRUE );
+    h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, true );
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
@@ -171,7 +171,7 @@ f_handle ExeOpen( char *name )
 {
     int     h;
 
-    h = DoOpen( name, O_RDWR, TRUE );
+    h = DoOpen( name, O_RDWR, true );
     if( h != -1 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
@@ -309,10 +309,10 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     bool            eof;
     char            ch;
 
-    eof = FALSE;
+    eof = false;
     while( --size > 0 ) {
         if( QRead( file, &ch, 1, name ) == 0 ) {
-            eof = TRUE;
+            eof = true;
             break;
         } else if( ch != '\r' ) {
             *dest++ = ch;
@@ -336,7 +336,7 @@ static f_handle NSOpen( char *name, unsigned mode )
 {
     int         h;
 
-    h = DoOpen( name, mode, FALSE );
+    h = DoOpen( name, mode, false );
     LastResult = h;
     if( h != -1 )
         return( h );
@@ -358,7 +358,7 @@ f_handle TempFileOpen( char *name )
 bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
-    return( FALSE );
+    return( false );
 }
 
 bool QModTime( char *name, time_t *time )

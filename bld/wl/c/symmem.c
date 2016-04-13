@@ -84,9 +84,9 @@ static bool ShrinkBlock( block_data *block )
     sym_block   *new;
 
     if( block->list == NULL )
-        return( FALSE );
+        return( false );
     if( block->currbrk >= block->list->size )
-        return( FALSE );
+        return( false );
     _LnkReAlloc( new, block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
@@ -95,11 +95,11 @@ static bool ShrinkBlock( block_data *block )
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }
 #endif
-    return( TRUE );
+    return( true );
 #else
     /* There is no guarantee realloc() won't move memory - just don't do it */
     block = block;
-    return( FALSE );
+    return( false );
 #endif
 }
 

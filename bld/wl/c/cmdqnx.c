@@ -51,16 +51,16 @@
 bool ProcQNX( void )
 /*************************/
 {
-    if( !ProcOne( QNXFormats, SEP_NO, FALSE ) ) {
+    if( !ProcOne( QNXFormats, SEP_NO, false ) ) {
         HintFormat( MK_QNX_16 );        // set to 16-bit qnx mode
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXFlat( void )
 /*****************************/
 {
-    return( TRUE );
+    return( true );
 }
 
 void SetQNXFmt( void )
@@ -71,8 +71,8 @@ void SetQNXFmt( void )
     FmtData.u.qnx.priv_level = 0;
     FmtData.u.qnx.seg_flags = NULL;
     FmtData.u.qnx.heapsize = 4096;
-    FmtData.u.qnx.gen_seg_relocs = TRUE;
-    FmtData.u.qnx.gen_linear_relocs = FALSE;
+    FmtData.u.qnx.gen_seg_relocs = true;
+    FmtData.u.qnx.gen_linear_relocs = false;
     ChkBase(4*1024);
 }
 
@@ -97,9 +97,9 @@ static bool GetQNXSegFlags( void )
     qnx_seg_flags * entry;
 
     Token.thumb = REJECT;
-    isclass = ProcOne( QNXSegDesc, SEP_NO, FALSE );
+    isclass = ProcOne( QNXSegDesc, SEP_NO, false );
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
-        return( FALSE );
+        return( false );
     }
     _ChkAlloc( entry, sizeof( qnx_seg_flags ) );
     entry->flags = 0;
@@ -107,7 +107,7 @@ static bool GetQNXSegFlags( void )
     entry->isclass = isclass;
     entry->next = FmtData.u.qnx.seg_flags;
     FmtData.u.qnx.seg_flags = entry;
-    return( ProcOne( QNXSegModel, SEP_NO, FALSE ) );
+    return( ProcOne( QNXSegModel, SEP_NO, false ) );
 }
 
 bool ProcQNXSegment( void )
@@ -120,56 +120,56 @@ bool ProcQNXClass( void )
 /******************************/
 // All processing done for this already.
 {
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXExecuteonly( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_ONLY;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXExecuteread( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_READ;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXReadOnly( void )
 /*********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_ONLY;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXReadWrite( void )
 /**********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_WRITE;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcLongLived( void )
 /********************************/
 {
     FmtData.u.qnx.flags |= _TCF_LONG_LIVED;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXNoRelocs( void )
 /*********************************/
 {
-    FmtData.u.qnx.gen_seg_relocs = FALSE;
-    return( TRUE );
+    FmtData.u.qnx.gen_seg_relocs = false;
+    return( true );
 }
 
 bool ProcLinearRelocs( void )
 /*********************************/
 {
-    FmtData.u.qnx.gen_linear_relocs = TRUE;
-    return( TRUE );
+    FmtData.u.qnx.gen_linear_relocs = true;
+    return( true );
 }
 
 bool ProcQNXHeapSize( void )
@@ -178,14 +178,14 @@ bool ProcQNXHeapSize( void )
     ord_state           ret;
     unsigned_32         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( false );
     ret = getatol( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
     } else {
         FmtData.u.qnx.heapsize = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcQNXPrivilege( void )
@@ -194,12 +194,12 @@ bool ProcQNXPrivilege( void )
     ord_state           ret;
     unsigned_16         value;
 
-    if( !HaveEquals( TOK_NORMAL ) ) return( FALSE );
+    if( !HaveEquals( TOK_NORMAL ) ) return( false );
     ret = getatoi( &value );
     if( ret != ST_IS_ORDINAL || value > 3 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "privilege" );
     } else {
         FmtData.u.qnx.priv_level = value;
     }
-    return( TRUE );
+    return( true );
 }
