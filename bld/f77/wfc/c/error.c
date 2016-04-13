@@ -61,8 +61,8 @@ static  void    WrnIssued( void ) {
 static  void    ErrIssued( void ) {
 // An error message has just been issued.
     if( ( ProgSw & PS_SYMTAB_PROCESS ) == 0 ) {
-        CpError = TRUE;
-        AError = TRUE;
+        CpError = true;
+        AError = true;
     }
     NumErrors++;
     ProgSw |= PS_ERROR;

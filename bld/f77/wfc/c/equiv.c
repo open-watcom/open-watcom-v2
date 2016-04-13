@@ -109,7 +109,7 @@ void    CpEquivalence(void) {
         eq_head = NULL;
         num_equived = 0;
         for(;;) {
-            AError = FALSE;
+            AError = false;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 num_equived++;
                 sym = LkSym();

@@ -162,7 +162,7 @@ static  void    DoLoop( TYPE do_type ) {
         if( RecComma() ) {
             EatDoParm();                        // process e3
             e3_node = CITNode;
-            if( AError == FALSE ) {
+            if( !AError ) {
                 if( (CITNode->opn.us == USOPN_CON) && _IsTypeInteger( do_type ) ) {
                     incr = GetIntValue( CITNode );
                     doptr->incr_value = incr;

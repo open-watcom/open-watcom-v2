@@ -443,7 +443,7 @@ void    GetIntConst( void ) {
 void    DownScan( void ) {
 //==================
 
-    AError = FALSE;
+    AError = false;
     BkLink = NULL;
     FieldNode = NULL;
     for(;;) {
@@ -452,6 +452,8 @@ void    DownScan( void ) {
         }
         DSTable[ CITNode->opn.ds ]();
         MoveDown();
-        if( RecTrmOpr() ) break;
+        if( RecTrmOpr() ) {
+            break;
+        }
     }
 }

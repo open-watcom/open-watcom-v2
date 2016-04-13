@@ -139,7 +139,7 @@ static  void    InitStatement( void )
     TDStmtInit();
     ChkPntLst();
     StmtSw = SS_SCANNING;
-    CpError = FALSE;
+    CpError = false;
     MakeITList();
     StmtSw &= ~SS_SCANNING;
     StmtProc = 0;
@@ -372,7 +372,7 @@ void ClearRem( void )
 
 static void CheckOrder( void )
 {
-    AError = FALSE;
+    AError = false;
     if( (StmtProc == PR_IMP) && (SgmtSw & SG_NO_MORE_IMPLICIT) ) {
         Error( ST_IMPLICIT_LATE );
     } else if( CtrlFlgOn( CF_SPECIFICATION ) && (SgmtSw & SG_NO_MORE_SPECS) ) {
@@ -387,7 +387,7 @@ static void CheckOrder( void )
         }
     } else if( (StmtProc == PR_STMTFUNC) && (SgmtSw & SG_NO_MORE_SF) ) {
         Error( ST_ASF_LATE );
-        AError = FALSE; // so we still process statement function
+        AError = false; // so we still process statement function
     }
     if( !CtrlFlgOn( CF_SUBPROGRAM ) && (StmtProc != PR_FMT) &&
         (StmtProc != PR_INCLUDE) && (StmtProc != PR_ENTRY) &&
@@ -399,7 +399,7 @@ static void CheckOrder( void )
             if( SgmtSw & SG_DEFINING_STRUCTURE ) {
                 Error( SP_UNFINISHED, StmtKeywords[ PR_STRUCTURE ] );
                 SgmtSw &= ~SG_DEFINING_STRUCTURE;
-                AError = FALSE; // so we still process the statement
+                AError = false; // so we still process the statement
             }
             if( StmtProc != PR_STMTFUNC ) {
                 SgmtSw |= SG_NO_MORE_SF;

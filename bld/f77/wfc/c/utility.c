@@ -176,15 +176,16 @@ bool    ConstExpr( TYPE typ ) {
 
     ASType = AST_CEX;
     EatExpr();
-    if( AError ) return( FALSE );
+    if( AError )
+        return( false );
     if( CITNode->opn.us != USOPN_CON ) {
         Error( SX_NOT_CONST_EXPR );
-        return( FALSE );
+        return( false );
     } else if( !TypeIs( typ ) && (typ != FT_NO_TYPE) ) {
         TypeErr( SX_WRONG_TYPE, typ );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -290,7 +291,7 @@ void    CArithExpr( void ) {
 
     if( ConstExpr( FT_NO_TYPE ) &&
         ( ( CITNode->typ < FT_INTEGER_1 ) || ( CITNode->typ > FT_XCOMPLEX ) ) ) {
-       Error( SX_NOT_SIMPLE_NUMBER );
+        Error( SX_NOT_SIMPLE_NUMBER );
     }
 }
 

@@ -88,7 +88,7 @@ void    CpCommon(void) {
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym = LkSym();
                 flags = sym->u.ns.flags;
-                CpError = FALSE;
+                CpError = false;
                 if( ( flags & SY_CLASS ) != SY_VARIABLE ) {
                     IllName( sym );
                 } else if( flags & SY_IN_COMMON ) {

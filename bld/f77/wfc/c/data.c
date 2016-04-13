@@ -82,7 +82,7 @@ void    CpData(void) {
 
     // so that we can issue ST_DATA_TOO_EARLY later
     SgmtSw |= SG_SEEN_DATA;
-    error = FALSE;
+    error = false;
     data_sets = 0;
     CITNode->opr = OPR_COM; // prevent call to FinishImpDo first time
     end_data = GDataProlog();
@@ -92,10 +92,13 @@ void    CpData(void) {
         ++data_sets;
         if( RecNOpn() ) {
             AdvanceITPtr();
-            if( RecTrmOpr() ) break;
+            if( RecTrmOpr() )
+                break;
             ReqComma();
         }
-        if( RecTrmOpr() || error ) break;
+        if( RecTrmOpr() || error ) {
+            break;
+        }
     }
     if( !error ) {
         DumpDataSets( data_sets, ITHead );
@@ -160,7 +163,7 @@ static  void    DoData( void ) {
     save_stmtproc = StmtProc;
     StmtProc = PR_READ; // so I/O processing works correctly
     IOData = 0;         // ...
-    AError = FALSE;
+    AError = false;
     VarList();
     if( !AError ) {
         GEndVarSet();
@@ -212,7 +215,8 @@ static  void    VarList( void ) {
     do_level = 0;
     last_opr = FindSlash( &last_node );
     while( CITNode != last_node ) {
-        if( AError ) break;
+        if( AError )
+            break;
         if( RecTrmOpr() && ( CITNode != ITHead ) ) {
             --do_level;
             FinishImpDo();
@@ -236,7 +240,7 @@ static  void    VarList( void ) {
             }
         } else {
             AdvanceITPtr();
-            AError = TRUE;
+            AError = true;
             break;
         }
     }
@@ -308,9 +312,12 @@ static  void    ConList( void ) {
             AddConst( CITNode );
         }
         AdvanceITPtr();
-        if( CITNode == last_node ) break;
+        if( CITNode == last_node )
+            break;
         ReqComma();
-        if( AError ) break;
+        if( AError ) {
+            break;
+        }
     }
     CITNode->opr = opr;
     ReqDiv();

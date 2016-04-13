@@ -140,7 +140,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
     itnode      *temp;
     intstar4    ivalue;
 
-    len_spec = FALSE;
+    len_spec = false;
     if( RecMul() ) {
         save_itptr = CITNode;
         if( StarStar( typ ) ) {
@@ -155,7 +155,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
                 Extension( IM_CHAR_STAR_STAR );
                 CITNode = temp;
             }
-            len_spec = TRUE;
+            len_spec = true;
         } else {
             CITNode = save_itptr;
             if( RecNOpn() && RecNextOpr( OPR_LBR ) ) {
@@ -167,15 +167,15 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
                 if( RecNOpn() ) {
                     AdvanceITPtr();
                 }
-                len_spec = (AError == FALSE);
+                len_spec = !AError;
             } else if( RecNumber() ) {
                 FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &ivalue, false, NULL );
                 AdvanceITPtr();
-                len_spec = TRUE;
+                len_spec = true;
             } else {
                 Error( SX_EXPECT_INT );
                 AdvanceITPtr();
-                len_spec = FALSE;
+                len_spec = false;
             }
             if( len_spec ) {
                 len_spec = CheckSize( typ, ivalue, save_itptr );
