@@ -135,9 +135,9 @@ bool CFFrlFree( void ) {
 
     if( cfFrlList.head != NULL ) {
         miniFrlFini( &cfFrlList );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void    CFFini( void ) {

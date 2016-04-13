@@ -120,7 +120,8 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
     int         expon;
 
     for(;;) {
-        if( *bstart != ' ' ) break;
+        if( *bstart != ' ' )
+            break;
         bstart++;
     }
     sgn = 1;
@@ -138,25 +139,32 @@ static  void    DoConvert( cfloat *number, const char *bstart ) {
             *fptr++ = *bstart++;
             len++;
             expon++;
-            if( !_IsDigit( *bstart ) ) break;
+            if( !_IsDigit( *bstart ) ) {
+                break;
+            }
         }
         if( *bstart == '.' ) {
             bstart++;
             for(;;) {            /* scan after decimal point*/
-                if( !_IsDigit( *bstart ) ) break;
+                if( !_IsDigit( *bstart ) )
+                    break;
                 *fptr++ = *bstart++;
                 len++;
             }
         }
     } else {
         *fptr = NULLCHAR;
-        if( *bstart != '.' ) return;
+        if( *bstart != '.' )
+            return;
         ++bstart;
-        if( !_IsDigit( *bstart ) ) return;
+        if( !_IsDigit( *bstart ) )
+            return;
         for(;;) {                /* scan after decimal point*/
             *fptr++ = *bstart++;
             len++;
-            if( !_IsDigit( *bstart ) ) break;
+            if( !_IsDigit( *bstart ) ) {
+                break;
+            }
         }
     }
     if( *bstart == 'E' || *bstart == 'e' ) {
@@ -229,12 +237,16 @@ cfloat  *CFRound( cfloat *f ) {
     cfloat      *new;
     int         len;
 
-    if( f->exp < 0 ) return( CFAlloc( 1 ) );
+    if( f->exp < 0 )
+        return( CFAlloc( 1 ) );
     len = f->exp;
-    if( f->len <= len ) return( CFCopy( f ) );
+    if( f->len <= len )
+        return( CFCopy( f ) );
     trim = CFTrunc( f );
-    if( *(f->mant + len) < '5' ) return( trim );
-    if( f->sign < 0 && f->len == ( len + 1 ) ) return( trim );
+    if( *(f->mant + len) < '5' )
+        return( trim );
+    if( f->sign < 0 && f->len == ( len + 1 ) )
+        return( trim );
     addto = CFAlloc( 1 );
     addto->sign = f->sign;
     *addto->mant = '1';
@@ -254,8 +266,9 @@ static  cfloat  *CFCnvLongToF( signed_32 data, bool is_signed ) {
     unsigned_32         dividend;
     char                mant[I32DIGITS+1];
 
-    if( data == 0 ) return( CFAlloc( 0 ) );
-    if( is_signed != FALSE && -data == data ) {
+    if( data == 0 )
+        return( CFAlloc( 0 ) );
+    if( is_signed && -data == data ) {
         /* Aha! It's  -MaxNegI32 */
         new = CFCopy( (cfloat *)&MaxNegI32 );
         return( new );
@@ -289,13 +302,13 @@ static  cfloat  *CFCnvLongToF( signed_32 data, bool is_signed ) {
 cfloat  *CFCnvI32F( signed_32 data ) {
 /************************************/
 
-    return( CFCnvLongToF( data, TRUE ) );
+    return( CFCnvLongToF( data, true ) );
 }
 
 cfloat  *CFCnvU32F( unsigned_32 data ) {
 /**************************************/
 
-    return( CFCnvLongToF( data, FALSE ) );
+    return( CFCnvLongToF( data, false ) );
 }
 
 cfloat  *CFCnvU64F( unsigned_32 low, unsigned_32 high ) {
@@ -324,10 +337,10 @@ cfloat  *CFCnvI64F( unsigned_32 lo, unsigned_32 hi ) {
     bool     neg;
     cfloat      *result;
 
-    neg = FALSE;
+    neg = false;
     if( _HiBitOn( hi ) ) {
         // take the two's complement
-        neg = TRUE;
+        neg = true;
         lo = ~lo;
         hi = ~hi;
         lo++;
@@ -345,14 +358,14 @@ cfloat  *CFCnvI64F( unsigned_32 lo, unsigned_32 hi ) {
 cfloat  *CFCnvIF( int data ) {
 /****************************/
 
-    return( CFCnvLongToF( data, TRUE ) );
+    return( CFCnvLongToF( data, true ) );
 }
 
 
 cfloat  *CFCnvUF( uint data ) {
 /*****************************/
 
-    return( CFCnvLongToF( data, FALSE ) );
+    return( CFCnvLongToF( data, false ) );
 }
 
 static  bool CFIsType( cfloat *f, cfloat *maxval ) {
@@ -361,14 +374,19 @@ static  bool CFIsType( cfloat *f, cfloat *maxval ) {
 // if signed maxval is magnitude of smallest negative number
     int         ord;
 
-    if( f->exp <= 0 || f->exp > maxval->exp ) return( FALSE );/* < 1 or > maxval*/
-    if( f->sign == -1 && maxval->sign == 1 ) return( FALSE ); /* signedness*/
-    if( f->exp < f->len ) return( FALSE );                 /* has decimal pt*/
-    ord = CFOrder( f, maxval);                                /* compare mag*/
-    if( ord == 1 ) return( FALSE );                        /* too big*/
+    if( f->exp <= 0 || f->exp > maxval->exp )   /* < 1 or > maxval*/
+        return( false );
+    if( f->sign == -1 && maxval->sign == 1 )    /* signedness*/
+        return( false );
+    if( f->exp < f->len )                       /* has decimal pt*/
+        return( false );
+    ord = CFOrder( f, maxval);                  /* compare mag*/
+    if( ord == 1 )                              /* too big*/
+        return( false );
     /* can't have pos number equal to maxval if signed */
-    if( ord == 0 && f->sign == 1 && maxval->sign == -1 ) return( FALSE );
-    return( TRUE );
+    if( ord == 0 && f->sign == 1 && maxval->sign == -1 )
+        return( false );
+    return( true );
 }
 
 bool CFIsI8( cfloat *f ) {
@@ -422,17 +440,21 @@ bool CFIsU64( cfloat *f ) {
 bool CFIs32( cfloat * cf ) {
 /**************************/
 
-    if( CFIsI32( cf ) ) return( TRUE );
-    if( CFIsU32( cf ) ) return( TRUE );
-    return( FALSE );
+    if( CFIsI32( cf ) )
+        return( true );
+    if( CFIsU32( cf ) )
+        return( true );
+    return( false );
 }
 
 bool CFIs64( cfloat * cf ) {
 /**************************/
 
-    if( CFIsI64( cf ) ) return( TRUE );
-    if( CFIsU64( cf ) ) return( TRUE );
-    return( FALSE );
+    if( CFIsI64( cf ) )
+        return( true );
+    if( CFIsU64( cf ) )
+        return( true );
+    return( false );
 }
 
 bool CFIsSize( cfloat *f, uint size ) {
@@ -440,22 +462,31 @@ bool CFIsSize( cfloat *f, uint size ) {
 
     switch( size ) {
     case 1:
-        if( CFIsU8( f ) ) return( TRUE );
-        if( CFIsI8( f ) ) return( TRUE );
+        if( CFIsU8( f ) )
+            return( true );
+        if( CFIsI8( f ) )
+            return( true );
         break;
     case 2:
-        if( CFIsU16( f ) ) return( TRUE );
-        if( CFIsI16( f ) ) return( TRUE );
+        if( CFIsU16( f ) )
+            return( true );
+        if( CFIsI16( f ) )
+            return( true );
         break;
     case 4:
-        if( CFIsU32( f ) ) return( TRUE );
-        if( CFIsI32( f ) ) return( TRUE );
+        if( CFIsU32( f ) )
+            return( true );
+        if( CFIsI32( f ) )
+            return( true );
         break;
     case 8:
-        if( CFIsU64( f ) ) return( TRUE );
-        if( CFIsI64( f ) ) return( TRUE );
+        if( CFIsU64( f ) )
+            return( true );
+        if( CFIsI64( f ) )
+            return( true );
+        break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -464,18 +495,23 @@ bool CFSignedSize( cfloat *f, uint size ) {
 
     switch( size ) {
     case 1:
-        if( CFIsI8( f ) ) return( TRUE );
+        if( CFIsI8( f ) )
+            return( true );
         break;
     case 2:
-        if( CFIsI16( f ) ) return( TRUE );
+        if( CFIsI16( f ) )
+            return( true );
         break;
     case 4:
-        if( CFIsI32( f ) ) return( TRUE );
+        if( CFIsI32( f ) )
+            return( true );
         break;
     case 8:
-        if( CFIsI64( f ) ) return( TRUE );
+        if( CFIsI64( f ) )
+            return( true );
+        break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool CFUnSignedSize( cfloat *f, uint size ) {
@@ -483,19 +519,23 @@ bool CFUnSignedSize( cfloat *f, uint size ) {
 
     switch( size ) {
     case 1:
-        if( CFIsU8( f ) ) return( TRUE );
+        if( CFIsU8( f ) )
+            return( true );
         break;
     case 2:
-        if( CFIsU16( f ) ) return( TRUE );
+        if( CFIsU16( f ) )
+            return( true );
         break;
     case 4:
-        if( CFIsU32( f ) ) return( TRUE );
+        if( CFIsU32( f ) )
+            return( true );
         break;
     case 8:
-        if( CFIsU64( f ) ) return( TRUE );
+        if( CFIsU64( f ) )
+            return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
