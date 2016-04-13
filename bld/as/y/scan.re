@@ -262,7 +262,7 @@ empstr  = "";           /* empty string */
 int yylex( void ) {
 //*****************
 
-        if( DirGetNextScanState() == TRUE ) goto getdirop;
+        if( DirGetNextScanState() ) goto getdirop;
 std:    tok = cursor;
 /*!re2c
 ws                      { goto std; }

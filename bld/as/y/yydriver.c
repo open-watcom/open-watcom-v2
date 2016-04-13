@@ -35,8 +35,8 @@ YYSTYPE yylval;
 #define MAXDEPTH        100
 #endif
 
-#define YYABORT         return(1)
-#define YYACCEPT        return(0)
+#define YYABORT         return(true)
+#define YYACCEPT        return(false)
 #define YYERROR         goto yyerrlab
 
 #ifdef AS_DEBUG_DUMP
@@ -73,7 +73,7 @@ static void dump_rule( unsigned rule )
 }
 #endif
 
-int yyparse( void )
+bool yyparse( void )
 {
   short yypnum;
   short yyi, yyk, yylhs, yyaction;

@@ -64,9 +64,10 @@ static unsigned numErrors, numWarnings;
 extern void Banner( void ) {
 //**************************
 
-    static bool printed = FALSE;
+    static bool printed = false;
 
-    if( _IsOption( BE_QUIET ) || printed ) return;
+    if( _IsOption( BE_QUIET ) || printed )
+        return;
 #if defined( AS_ALPHA )
     puts( banner1w( "Alpha AXP Assembler", "0.8" ) );
 #elif defined( AS_PPC )
@@ -80,7 +81,7 @@ extern void Banner( void ) {
     puts( banner2a( "1984" ) );
     puts( banner3 );
     puts( banner3a );
-    printed = TRUE;
+    printed = true;
 }
 
 extern void Usage( void ) {

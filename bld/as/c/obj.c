@@ -51,7 +51,7 @@ owl_file_handle         OwlFile;
 FILE                    *ErrorFile;
 static char             errorFilename[ _MAX_PATH2 ];
 
-static bool             objectDefined = FALSE;
+static bool             objectDefined = false;
 static int              objFile;
 static char             objName[ _MAX_PATH2 ];
 
@@ -77,7 +77,7 @@ void ObjSetObjFile( char *obj_name ) {
 //************************************
 
     strcpy( objName, obj_name );
-    objectDefined = TRUE;
+    objectDefined = true;
 }
 
 typedef struct {
@@ -136,13 +136,13 @@ bool ObjInit( char *fname ) {
             tmpFname = name;
         _makepath( objName, tmpNode, tmpDir, tmpFname, tmpExt );
     }
-    objectDefined = FALSE;      // so that the /fo applies only to the 1st obj
+    objectDefined = false;      // so that the /fo applies only to the 1st obj
     _makepath( errorFilename, NULL, NULL, name, ".err" );
     objFile = open( objName, O_CREAT | O_TRUNC | O_BINARY | O_WRONLY, PMODE_RW );
     if( objFile == -1 ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
         fputc( '\n', stderr );
-        return( FALSE );
+        return( false );
     }
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
@@ -150,7 +150,7 @@ bool ObjInit( char *fname ) {
     OwlFile = OWLFileInit( OwlHandle, fname, (owl_client_file)(pointer_int)objFile, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
-    return( TRUE );
+    return( true );
 }
 
 static owl_sym_linkage linkage_table[] = {
@@ -168,18 +168,18 @@ bool ObjLabelDefined( sym_handle sym ) {
 
     linkage = OWLTellSymbolLinkage( OwlFile, SymObjHandle( sym ) );
     if( linkage != OWL_SYM_UNDEFINED ) {
-        return( TRUE );
+        return( true );
     }
     // Still need the check the labelList
     curr_label = labelList;
     sym_name = SymName( sym );
     while( curr_label ) {
         if( (!curr_label->is_numeric) && strcmp( curr_label->sym_name, sym_name ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
         curr_label = curr_label->next;
     }
-    return( FALSE );
+    return( false );
 }
 
 static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage linkage ) {
@@ -383,7 +383,7 @@ owl_offset ObjTellOffset( owl_section_handle section ) {
 void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool align, bool named_sym ) {
 //**************************************************************************************************************
 // Should be called before emitting the data that has the reloc.
-// (named_sym == TRUE) iff the target is a named label
+// (named_sym == true) iff the target is a named label
 
     owl_offset          offset;
 
@@ -440,7 +440,7 @@ void ObjRelocsFini( void ) {
     sym_handle  sym;
     int_32      numlabel_ref;
 
-    reloc = SymGetReloc( TRUE, &sym );
+    reloc = SymGetReloc( true, &sym );
     while( reloc != NULL ) {
         if( reloc->named ) {
             Error( UNMATCHED_HIGH_RELOC, SymName( sym ) );
@@ -449,23 +449,23 @@ void ObjRelocsFini( void ) {
             Error( UNMATCHED_HIGH_RELOC, "<numeric reference>" );
         }
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( TRUE, &sym );
+        reloc = SymGetReloc( true, &sym );
     }
-    reloc = SymGetReloc( FALSE, &sym );
+    reloc = SymGetReloc( false, &sym );
     while( reloc != NULL ) {
         if( reloc->named ) {
             doEmitReloc( reloc->location.section, reloc->location.offset,
-                SymName( sym ), OWL_RELOC_HALF_LO, TRUE );
+                SymName( sym ), OWL_RELOC_HALF_LO, true );
         } else {
             numlabel_ref = AsNumLabelGetNum( SymName( sym ) );
             doEmitReloc( reloc->location.section, reloc->location.offset,
-                &numlabel_ref, OWL_RELOC_HALF_LO, FALSE );
+                &numlabel_ref, OWL_RELOC_HALF_LO, false );
         }
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( FALSE, &sym );
+        reloc = SymGetReloc( false, &sym );
     }
 #ifdef AS_DEBUG_DUMP
-    (void)SymRelocIsClean( TRUE );
+    (void)SymRelocIsClean( true );
 #endif
     ObjFlushLabels();       // In case there're still pending labels
     AsNumLabelFini();       // resolve all numeric label relocs

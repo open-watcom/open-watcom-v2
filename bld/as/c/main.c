@@ -85,16 +85,16 @@ int main( int argc, char **argv )
                 if( ObjInit( fname ) ) {
                     if( setjmp( AsmParse ) == 0 ) {
                         ErrorCountsReset();
-                        DoReport = TRUE;
+                        DoReport = true;
                         if( !yyparse() ) {
                             CurrLineno--;    // This is the total # of lines
                             ObjRelocsFini(); // Must be done before ErrorReport
                                              // and other finis
                         } else {
-                            DoReport = FALSE;
+                            DoReport = false;
                         }
                     } else { // AbortParse() was invoked
-                        DoReport = FALSE;
+                        DoReport = false;
                     }
                     ErrorReport();
                     AsLexerFini();

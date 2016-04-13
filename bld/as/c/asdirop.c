@@ -49,7 +49,7 @@ static bool dirOpGetNumber( dir_operand *dirop, expr_tree *expr ) {
 // Fills out the content and type fields of the operand.
 // Can be used to fill out the operand or just to evaluate the expression.
 
-    bool    status = TRUE;
+    bool    status = true;
 
     assert( expr != NULL );
     assert( dirop != NULL );
@@ -65,7 +65,7 @@ static bool dirOpGetNumber( dir_operand *dirop, expr_tree *expr ) {
         break;
     default:
         Error( IMPROPERLY_FORMED_DIROP );
-        status = FALSE;
+        status = false;
     }
     ETFree( expr );
     return( status );
@@ -142,13 +142,13 @@ static dir_operand *doDirOpSymbol( asm_reloc_type rtype, void *target, expr_tree
 extern dir_operand *DirOpIdentifier( asm_reloc_type rtype, sym_handle symbol, expr_tree *expr, int sign ) {
 //*********************************************************************************************************
 
-    return( doDirOpSymbol( rtype, symbol, expr, sign, TRUE ) );
+    return( doDirOpSymbol( rtype, symbol, expr, sign, true ) );
 }
 
 extern dir_operand *DirOpNumLabelRef( asm_reloc_type rtype, int_32 label_ref, expr_tree *expr, int sign ) {
 //*********************************************************************************************************
 
-    return( doDirOpSymbol( rtype, &label_ref, expr, sign, FALSE ) );
+    return( doDirOpSymbol( rtype, &label_ref, expr, sign, false ) );
 }
 
 extern dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat ) {
@@ -170,7 +170,7 @@ extern dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat ) {
             dirop->type = DIROP_REP_FLT;
             break;
         default:
-            assert( FALSE );
+            assert( false );
         }
         if( dirOpGetNumber( tmp, repeat ) ) {
             if( tmp->type != DIROP_INTEGER ) {

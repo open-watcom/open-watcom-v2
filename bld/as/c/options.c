@@ -55,7 +55,8 @@ static bool optionsPredefine( const char *str ) {
     const char          *s;
     bool                got_equal, got_macro;
 
-    if( !*str ) return( FALSE );
+    if( !*str )
+        return( false );
     if( ppDefines == NULL ) {
         length = maxNumPredefines * sizeof( char * );
         ppDefines = MemAlloc( length );
@@ -65,24 +66,25 @@ static bool optionsPredefine( const char *str ) {
         ++idx;
     }
     ppDefines[idx] = MemAlloc( strlen( str ) + 1 );
-    got_equal = FALSE;
-    got_macro = FALSE;
+    got_equal = false;
+    got_macro = false;
     s = str;
     i = 0;
     for( ;; ) {
         if( *s == '=' ) {
-            if( got_equal || !got_macro ) return( FALSE );
-            got_equal = TRUE;
+            if( got_equal || !got_macro )
+                return( false );
+            got_equal = true;
             ppDefines[idx][i] = ' ';
         } else {
-            got_macro = TRUE;
+            got_macro = true;
             ppDefines[idx][i] = *s;
             if( *s == '\0' ) break;
         }
         ++i;
         ++s;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern void OptionsPPDefine( void ) {
@@ -250,7 +252,7 @@ extern bool OptionsInit( int argc, char **argv ) {
                 AsOutMessage( stderr, AS_MSG_ERROR );
                 AsOutMessage( stderr, INVALID_OPTION, *argv );
                 fputc( '\n', stderr );
-                return( FALSE );
+                return( false );
                 break;
             }
             memcpy( argv, argv+1, sizeof( *argv ) * argc );
@@ -260,5 +262,5 @@ extern bool OptionsInit( int argc, char **argv ) {
         argc--;
         maxNumPredefines--;
     }
-    return( TRUE );
+    return( true );
 }
