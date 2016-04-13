@@ -97,7 +97,7 @@ static unsigned_8 decomp_stub[] = {
 static char padding[ 16 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 static bool InitOutFileBuffer( FILE *fo )
-/********************************/
+/***************************************/
 {
     fo = fo;
     OutTotal = 0;
@@ -108,13 +108,11 @@ static bool InitOutFileBuffer( FILE *fo )
     SigOutCount = 2;
 
     OutBuffer =  malloc( 2 * BUFFER_LEN );
-    if( OutBuffer == NULL )
-        return( FALSE );
-    return( TRUE );
+    return( OutBuffer != NULL );
 }
 
 static void FiniOutFileBuffer( FILE *fo )
-/********************************/
+/***************************************/
 {
     if( OutBuffer != NULL ) {
         if( OutBitCount ) {
@@ -129,7 +127,7 @@ static void FiniOutFileBuffer( FILE *fo )
 }
 
 static void WriteBit( FILE *fo, int b )
-/******************************/
+/*************************************/
 {
     // Write a bit to output.
     OutWord <<= 1;
@@ -150,14 +148,14 @@ static void WriteBit( FILE *fo, int b )
 }
 
 static void WriteByte( unsigned char c )
-/*******************************/
+/**************************************/
 {
     OutBuffer[ OutPos++ ] = c;
     SigOutCount++;
 }
 
 static void WriteTerminateCmd( FILE *fo )
-/********************************/
+/***************************************/
 {
     WriteBit( fo, 0 );
     WriteBit( fo, 0 );
@@ -168,7 +166,7 @@ static void WriteTerminateCmd( FILE *fo )
 }
 
 static void WriteFlushInpBufCmd( FILE *fo )
-/**********************************/
+/*****************************************/
 {
     WriteBit( fo, 0 );
     WriteBit( fo, 0 );
@@ -179,7 +177,7 @@ static void WriteFlushInpBufCmd( FILE *fo )
 }
 
 static void WriteFlushOutBufCmd( FILE *fo )
-/**********************************/
+/*****************************************/
 {
     WriteBit( fo, 0 );
     WriteBit( fo, 0 );
@@ -191,7 +189,7 @@ static void WriteFlushOutBufCmd( FILE *fo )
 
 
 static void WriteStringCmd( FILE *fo )
-/*****************************/
+/************************************/
 {
     WriteBit( fo, 0 );
     WriteBit( fo, 0 );
@@ -202,7 +200,7 @@ static void WriteStringCmd( FILE *fo )
 }
 
 static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
-/*****************************************************************/
+/************************************************************************/
 {
     unsigned_32 len;
     unsigned_32 trail_len;
@@ -501,7 +499,7 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
 }
 
 static int ProcessEXE( char *fname, char *oname )
-/****************************************/
+/***********************************************/
 {
     FILE            *f;
     FILE            *fo;
@@ -598,7 +596,7 @@ static int ProcessEXE( char *fname, char *oname )
 }
 
 static int usage( void )
-/***************/
+/**********************/
 {
     printf( "Causeway Executable Compressor\n" );
     printf( "Usage: bcwc <input file name> <output file name>\n" );
