@@ -127,9 +127,9 @@ unsigned SafeMargin( void )
     return( Ceiling - 10 );
 }
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*

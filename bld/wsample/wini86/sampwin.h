@@ -108,7 +108,7 @@ void MyOutput(char*, ...);
 char *ResName( char * );
 
 /* winopts.c */
-BOOL GetFileName( HINSTANCE, int, char * );
+extern bool GetFileName( HINSTANCE, int, char * );
 
 /* fault.c */
 extern WORD __cdecl FAR FaultHandler( fault_frame ff );

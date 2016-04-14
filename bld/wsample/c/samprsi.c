@@ -52,9 +52,9 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 static void RecordSample( unsigned long offset, unsigned short segment )

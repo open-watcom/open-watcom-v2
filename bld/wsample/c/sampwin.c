@@ -82,9 +82,9 @@ void FlushSamples( WORD limit )
 
 } /* FlushSamples */
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void GetCommArea( void )

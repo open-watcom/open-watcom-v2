@@ -89,8 +89,8 @@ static struct AESProcessStructure   AES;
 static struct ResourceTagStructure  *AESTag;
 static struct ResourceTagStructure  *EventTag;
 static struct ResourceTagStructure  *SwitchModeTag;
-static int                          Suspended;
-static int                          Resumed;
+static bool                         Suspended;
+static bool                         Resumed;
 static code_load                    *LoadedNLMs;
 
 void SysInit( void )
@@ -163,7 +163,7 @@ static void ModeSwitched( LONG dummy )
 
 static void WakeMeUp( LONG dummy )
 {
-    static int                      Already = FALSE;
+    static bool                     Already = false;
     struct LoadDefinitionStructure  *loaded;
 
     if( Already )
@@ -171,10 +171,10 @@ static void WakeMeUp( LONG dummy )
 
     for( loaded = LoadedList; loaded != NULL; loaded = loaded->LDLink ) {
         RecordCodeLoad( loaded, Already ? SAMP_CODE_LOAD : SAMP_MAIN_LOAD );
-        Already = TRUE;
+        Already = true;
     }
-    Already = TRUE;
-    Resumed = TRUE;
+    Already = true;
+    Resumed = true;
     if( Suspended ) {
         ResumeThread( SamplerThread );
     }
@@ -194,8 +194,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     full_args = full_args;
     dos_args = dos_args;
     SampleIndex = 0;
-    Suspended = FALSE;
-    Resumed = FALSE;
+    Suspended = false;
+    Resumed = false;
     CurrTick  = 0L;
 
     EventTag = AllocateResourceTag(
@@ -226,9 +226,9 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         fatal();
     }
     SamplerThread = GetThreadID();
-    Suspended = TRUE;
+    Suspended = true;
     if( !Resumed ) {
-        Suspended = TRUE;
+        Suspended = true;
         SuspendThread( SamplerThread );
     }
     WriteRecordedLoads();
@@ -284,14 +284,14 @@ void GetNextAddr( void )
 {
 }
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 int InDOS( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void GetProg( char *cmd, char *eoc )

@@ -152,7 +152,7 @@ static void InternalError( char * str )
     If we're running on OS/2 2.x and it's an LX style file, spawn off the
     OS/2 2.x sampler to collect things
 */
-int VersionCheck( void )
+bool VersionCheck( void )
 {
     USHORT          env_sel;
     USHORT          cmd_off;

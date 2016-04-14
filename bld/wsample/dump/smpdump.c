@@ -85,7 +85,7 @@ int main( int argc, char **argv )
     auto struct stat    file_stat;
     time_t              stamp;
     count_info          *count;
-    bool                byte_swap = FALSE;
+    bool                byte_swap = false;
 
 
     puts( banner1w( "Sample File Dump Utility", _WSAMP_VERSION_ ) );
@@ -118,7 +118,7 @@ int main( int argc, char **argv )
     if( head.signature != SAMP_SIGNATURE ) {
         SWAP_16( head.signature );
         if( head.signature == SAMP_SIGNATURE ) {
-            byte_swap = TRUE;
+            byte_swap = true;
             SWAP_32( head.sample_start );
         } else {
             return( 1 );

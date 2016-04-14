@@ -113,7 +113,7 @@ BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data )
     case NFY_EXITTASK:
         if( GetCurrentTask() == ourTask ) { // handle spawned tasks
             QuitSampler( &TotalTime );
-            SharedMemory->TaskEnded = TRUE;
+            SharedMemory->TaskEnded = true;
         }
         break;
     }

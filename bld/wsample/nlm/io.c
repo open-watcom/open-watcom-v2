@@ -51,7 +51,7 @@ static  bool    SampIsDOS;
 int  SampCreate( char *name )
 {
     SampOffset = 0;
-    SampIsDOS = FALSE;
+    SampIsDOS = false;
     if( DOSPresent() ) {
         SampIsDOS = ( name[0] != '\0' && name[1] == ':' );
     }
@@ -83,7 +83,7 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
             SysSeek( SampleHandle, SampOffset );
             SysWrite( SampleHandle, "", 0 );   /* truncate the file */
         }
-        FarWriteProblem = 1;
+        FarWriteProblem = true;
         return( -1 );
     }
 }

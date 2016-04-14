@@ -90,7 +90,7 @@ typedef struct {
     WORD                SampleCount;
     WORD                LastSampleIndex;
     DWORD               CurrTick;
-    WORD                FarWriteProblem;
+    bool                FarWriteProblem;
     info_struct         Info;
     bool                LostData;
     char                SampName[256];
@@ -121,10 +121,10 @@ extern void             StartProg( char *cmd, char *prog, char *full_args, char 
 extern void             StopProg( void );
 extern void             GetProg( char *,char * );
 #if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
-extern int              __near VersionCheck( void );
+extern bool             __near VersionCheck( void );
 extern void             __near WriteMark( char FAR_PTR *str, seg_offset where );
 #else
-extern int              VersionCheck( void );
+extern bool             VersionCheck( void );
 extern void             WriteMark( char FAR_PTR *str, seg_offset where );
 #endif
 extern void             Usage( void );

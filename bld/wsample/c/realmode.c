@@ -57,9 +57,9 @@
 extern void             StopAndSave( void );
 
 #ifdef __NETWARE__
-static int              Save_Request = FALSE;
+static bool             Save_Request = false;
 #else
-int                     Save_Request = FALSE;
+bool                    Save_Request = false;
 #endif
 static intrptr          old_timer_handler;
 
@@ -117,14 +117,14 @@ static void __interrupt __far timer_handler( union INTPACK r )
             RecordSample( &r );
             if( SampleIndex >= Margin ) {
                 if( InDOS() ) {
-                    Save_Request = TRUE;
+                    Save_Request = true;
                 } else {
                     /*
                         We are not in DOS so we can suspend things for a while
                         and save our block of samples
                     */
                     if( Save_Request ) {
-                        Save_Request = FALSE;
+                        Save_Request = false;
                     }
                     StopAndSave();
                 }
@@ -135,7 +135,7 @@ static void __interrupt __far timer_handler( union INTPACK r )
                     } else {
                         --SampleIndex;
                     }
-                    LostData = TRUE;
+                    LostData = true;
                 }
             }
             --InsiderTime;

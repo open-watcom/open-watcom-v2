@@ -65,7 +65,7 @@ static unsigned         OvlSize;
 static overlay_record_t FAR_PTR *OvlStruct;
 static ovl_dbg_req_func *OvlHandler;
 static char             FAR_PTR *CommonAddr = NULL;
-static int              FirstHook = TRUE;
+static bool             FirstHook = true;
 
 void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
 {
@@ -80,7 +80,7 @@ void WriteOvl( unsigned req_ovl, char is_return, unsigned offset, unsigned seg )
     SamplerOff++;
 
     if( FirstHook ) {
-        FirstHook = FALSE;
+        FirstHook = false;
         req_ovl = 0;    /* first req_ovl is garbage */
         SamplerOff--;   /* start sampling after this routine */
     }
@@ -172,7 +172,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     SampleCount = 0;
     CurrTick  = 0L;
     SysCaught = 0;
-    FirstSample = TRUE;
+    FirstSample = true;
 
     DOSRunProg( &parms.startsssp );
 }

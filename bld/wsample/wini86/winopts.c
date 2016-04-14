@@ -42,7 +42,7 @@
 static FARPROC  oldClassProc;
 static HWND     mainWindow;
 static HWND     editChild;
-static BOOL     canContinue = FALSE;
+static bool     canContinue = false;
 static char     *dataPtr;
 static char     startClass[] = "WSampleStart";
 static char     fileFilter[] = \
@@ -149,7 +149,7 @@ static long FAR PASCAL StartUpDriver( HWND hwnd, UINT message, WPARAM wparam, LP
             if( len > _MAX_PATH )
                 len = _MAX_PATH;
             GetWindowText( editChild, dataPtr, len );
-            canContinue = TRUE;
+            canContinue = true;
             tmpw = GetParent( editChild );
             SetWindowLong( editChild, GWL_WNDPROC, (LONG) oldClassProc );
             /* fall through, like exit was picked */
@@ -191,7 +191,7 @@ static long FAR PASCAL SubClassProc( HWND hwnd, UINT message, WPARAM wparam, LPA
 /*
  * GetFileName - create a window, and get file info
  */
-BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
+bool GetFileName( HINSTANCE inst, int shcmd, char *fname )
 {
     BOOL        rc;
     HWND        mh,win;
@@ -216,12 +216,12 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
     wc.lpszClassName = startClass;
     rc = RegisterClass( &wc );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
 
     accel = LoadAccelerators( inst, "ApplAccl" );
     if( accel == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     x = GetSystemMetrics( SM_CXSCREEN );
@@ -242,7 +242,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
         );
 
     if( !mh ) {
-        return( FALSE );
+        return( false );
     }
     ShowWindow( mh, shcmd );
     UpdateWindow( mh );
@@ -291,7 +291,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
 
 
     if( win == NULL ) {
-        return( FALSE );
+        return( false );
     }
     editChild = win;
 

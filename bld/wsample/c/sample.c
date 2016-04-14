@@ -264,7 +264,7 @@ void RecordCGraph( void )
 
 /* first, we record the push/pop values */
     if( FirstSample ) {
-        FirstSample = FALSE;
+        FirstSample = false;
         Comm.push_no++;
     } else if( Comm.push_no != 0 || Comm.pop_no != 0 ) {
         Comm.push_no++;
@@ -449,7 +449,7 @@ static char *Parse( char *line, char arg[], char **eoc )
             break;
 #endif
         case 'c':
-            CallGraphMode = TRUE;
+            CallGraphMode = true;
             break;
         case 'f':
             if( *cmd != '=' && *cmd != '#' ) {
@@ -600,11 +600,11 @@ int main( int argc, char **argv )
 
     AllocSamples( 1 );
 
-    FirstSample = TRUE;
-    LostData = FALSE;
+    FirstSample = true;
+    LostData = false;
     SamplerOff = 0;
     InsiderTime = 0;    /* set non-zero whenever inside an INT 08H */
-    FarWriteProblem = FALSE;
+    FarWriteProblem = false;
 
     if( !VersionCheck() ) {
         Output( MsgArray[MSG_VERSION - ERR_FIRST_MESSAGE] );

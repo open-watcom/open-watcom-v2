@@ -32,7 +32,7 @@
 #ifdef __NETWARE__
 extern void     RecordSample( union INTPACK __far *r );
 #else
-extern int      Save_Request;
+extern bool     Save_Request;
 extern void     RecordSample( union INTPACK FAR_PTR *r );
 #endif
 extern void     StartTimer( void );
