@@ -123,15 +123,15 @@ int ck_init( void )
     tcgetattr( UIConHandle, &SaveTermSet );
 
     if( !init_trie() )
-        return( FALSE );
+        return( false );
 
     if( !ti_read_tix( GetTermType() ) )
-        return( FALSE );
+        return( false );
 
     SavePGroup = tcgetpgrp( UIConHandle );
     tcsetpgrp( UIConHandle, UIPGroup );
     restorekeyb();
-    return( TRUE );
+    return( true );
 }
 
 int ck_fini( void )

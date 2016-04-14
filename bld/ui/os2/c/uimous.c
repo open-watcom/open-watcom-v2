@@ -94,7 +94,7 @@ extern bool             MouseOn;
 
 extern bool             MouseInstalled;
 static HMOU             MouHandle;
-static bool             TwoButtonMouse = FALSE;
+static bool             TwoButtonMouse = false;
 
 static ORD              Row;
 static ORD              Col;
@@ -231,7 +231,7 @@ static void OS2_initmouse( int install )
     if( install > 0 && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
         if( MouGetNumButtons( &num_buttons, MouHandle ) == 0 ) {
             if( num_buttons == 2 ) {
-                TwoButtonMouse = TRUE;
+                TwoButtonMouse = true;
                 mouevents = 0x001f;
                 MouSetEventMask( &mouevents, MouHandle );
             } else if( num_buttons == 3 ) {

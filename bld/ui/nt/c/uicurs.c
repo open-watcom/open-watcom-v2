@@ -49,10 +49,10 @@ void UIAPI uioffcursor( void )
     CONSOLE_CURSOR_INFO ci;
 
     if( UIData->cursor_on ) {
-        ci.bVisible = TRUE;
+        ci.bVisible = true;
         ci.dwSize = 0;
         SetConsoleCursorInfo( OutputHandle, &ci );
-        UIData->cursor_on = FALSE;
+        UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
 }
@@ -68,14 +68,14 @@ void UIAPI uioncursor( void )
     } else {
         ci.dwSize = 25;
     }
-    ci.bVisible = TRUE;
+    ci.bVisible = true;
     SetConsoleCursorInfo( OutputHandle, &ci );
 
     cpos.X = UIData->cursor_col;
     cpos.Y = UIData->cursor_row;
     SetConsoleCursorPosition( OutputHandle, cpos );
 
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -94,7 +94,7 @@ static void swapcursor( void )
     _swap( UIData->cursor_type, OldCursorType );
     _swap( UIData->cursor_col, OldCursorCol );
     _swap( UIData->cursor_row, OldCursorRow );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -138,7 +138,7 @@ void UIAPI uiinitcursor( void )
     UIData->cursor_col = (ORD)-1;
     UIData->cursor_type = C_OFF;
     uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &tmp );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, 0 );
     uioffcursor();
 }

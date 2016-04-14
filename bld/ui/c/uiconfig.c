@@ -53,7 +53,7 @@ bool uiconfig( char *fn, char **envvars )
 
     _unused( envvars );
 
-    UIData->no_snow = TRUE;
+    UIData->no_snow = true;
     uiattrs();
     if( UIData->colour == M_MONO ) {
         colour = "ATTR_MONO";
@@ -101,8 +101,8 @@ bool uiconfig( char *fn, char **envvars )
                 }
             }
             fclose( config );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

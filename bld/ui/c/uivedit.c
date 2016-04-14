@@ -38,7 +38,7 @@
 
 static int isdelim( char ch )
 {
-    if( uicharlen( ch ) == 2 ) return( FALSE );
+    if( uicharlen( ch ) == 2 ) return( false );
     if( isalnum( ch ) ) return( 0 );
     if( ch == '_' ) return( 0 );
     return( 1 );
@@ -73,11 +73,11 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
     register    bool                    ignore_uicharlen; /* ignore dbcs lead character when moving right */
 
     new = EV_NO_EVENT;
-    cleared = FALSE;
-    right = FALSE;
-    ignore_uicharlen = FALSE;
+    cleared = false;
+    right = false;
+    ignore_uicharlen = false;
     if( ev == EV_INSERT ) {
-        buffer->insert = buffer->insert ? FALSE : TRUE ;
+        buffer->insert = buffer->insert ? false : true ;
     } else if( ( ev == EV_CURSOR_LEFT ) || ( ev == EV_RUB_OUT ) ) {
         if( buffer->index > 0 ) {
             --(buffer->index);
@@ -95,7 +95,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
     } else if( iseditchar( ev ) ) {
         if( buffer->index < buffer->length ) {
             if( buffer->index == 0 && buffer->auto_clear ) {
-                cleared = TRUE;
+                cleared = true;
                 clear_buffer( buffer );
             }
             if( buffer->insert ) {
@@ -106,7 +106,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
                         --bptr;
                     }
                     *(buffer->content + buffer->index) = (char) ev;
-                    right = TRUE;
+                    right = true;
                     buffer->dirty = true;
                 }
             } else {
@@ -134,12 +134,12 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
                             *(buffer->content + buffer->index) = (char) ev;
                             *(buffer->content + buffer->index + 1) = 'a';
                         }
-                        ignore_uicharlen = TRUE;
+                        ignore_uicharlen = true;
                     } else {
                         *bptr = (char) ev;
                     }
                 }
-                right = TRUE;
+                right = true;
                 buffer->dirty = true;
             }
         }
@@ -201,11 +201,11 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
                         ' ', buffer->length - buffer->index );
         buffer->dirty = true;
     } else if( ev == EV_CURSOR_RIGHT ) {
-        allblank = TRUE;
+        allblank = true;
         bptr = buffer->content + buffer->index;
         while( bptr < buffer->content + buffer->length ) {
             if( *bptr != ' ' ) {
-                allblank = FALSE;
+                allblank = false;
                 break;
             }
             if( ignore_uicharlen ) {
@@ -217,7 +217,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
         if( allblank ) {
             new = EV_BUMP_RIGHT;
         } else {
-            right = TRUE;
+            right = true;
         }
     } else {
         new = ev;
@@ -235,13 +235,13 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
     } else if( ( ev == EV_DELETE ) || ( ev == EV_RUB_OUT ) ) {
         int     delsize;
 
-        allblank = TRUE;
+        allblank = true;
         if( buffer->index < buffer->length ) {
             bptr = buffer->content + buffer->index;
             delsize = uicharlen( *bptr );
             while( bptr < buffer->content + buffer->length - delsize ) {
                 if( *bptr != ' ' ) {
-                    allblank = FALSE;
+                    allblank = false;
                 }
                 *bptr = *(bptr+delsize);
                 ++bptr;
@@ -259,7 +259,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
         }
     }
     if( (new == EV_NO_EVENT  ||  new == EV_BUFFER_CLEAR) && ev != EV_INSERT ) {
-        buffer->auto_clear = FALSE;
+        buffer->auto_clear = false;
     }
     if( cleared ) {
         if( uiinlist( EV_BUFFER_CLEAR ) ) {

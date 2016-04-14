@@ -115,7 +115,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
             }
             area.row = 0;
             area.col = 0;
-            drawbox( &(vptr->window.type.buffer), area, box, attr, FALSE );
+            drawbox( &(vptr->window.type.buffer), area, box, attr, false );
             if( vptr->title != NULL ) {
 #if 0
 do not delete this stuff
@@ -142,7 +142,7 @@ do not delete this stuff
         area = vptr->area;
         area.row = 0;
         area.col = 0;
-        vptr->open = TRUE;
+        vptr->open = true;
         uivfill( vptr, area, UIData->attrs[ ATTR_NORMAL ], ' ' );
         uivsetcursor( vptr );
 
@@ -163,7 +163,7 @@ void UIAPI uivclose( VSCREEN *vptr )
             }
             bfree( &(vptr->window.type.buffer) );
         }
-        vptr->open = FALSE;
+        vptr->open = false;
     }
 }
 

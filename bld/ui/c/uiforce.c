@@ -49,10 +49,10 @@ static bool Q_ismember( Queue * q, EVENT ev )
 
     for( i = q->head; i != q->tail; i = (i + 1) % FORCED_Q_SIZE ) {
         if( q->Q[ i ] == ev ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 #define _queue_empty( q ) (q).head = (q).tail = 0
@@ -85,9 +85,9 @@ bool UIAPI uiforceevadd( EVENT ev )
     // enter critical section
     if( !_queue_is_full( Forced_Q ) ) {
         _queue_add( Forced_Q, ev );
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     // exit critical section
     return( ret );

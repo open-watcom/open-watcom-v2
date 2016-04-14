@@ -62,7 +62,7 @@ extern          ATTR                    MonoAttrs[];
 bool UIAPI uiset80col( void )
 /****************************/
 {
-    return( TRUE );
+    return( true );
 }
 
 

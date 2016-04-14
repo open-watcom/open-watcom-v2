@@ -590,18 +590,18 @@ static int ck_init( void )
     tcgetattr( UIConHandle, &SaveTermSet );
 
     if( !init_trie() )
-        return( FALSE );
+        return( false );
 
     switch( ti_read_tix( UIConCtrl == NULL ) ) {
     case TIX_FAIL:
-        return( FALSE );
+        return( false );
     case TIX_NOFILE:
         if( UIConCtrl != NULL ) {
             for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
                 ev = ConEscapes[i + 0] + (ConEscapes[i + 1] << 8);
                 i += 2;
                 if( !TrieAdd( ev, ConEscapes + i ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
@@ -615,7 +615,7 @@ static int ck_init( void )
     tcsetpgrp( UIConHandle, UIPGroup );
     restorekeyb();
     signal( SIGTERM, &term_handler );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -647,14 +647,14 @@ static int init_trie( void )
     int         i;
 
     if( !TrieInit() )
-        return( FALSE );
+        return( false );
 
     buff[1] = '\0';
     for( i = 0; i < NUM_ELTS( InStandard ); ++i ) {
         buff[0] = InStandard[i].ch;
         if( !TrieAdd( InStandard[i].ev, buff ) ) {
             TrieFini();
-            return( FALSE );
+            return( false );
         }
     }
     for( i = 0; i < NUM_ELTS( InTerminfo ); ++i ) {
@@ -662,10 +662,10 @@ static int init_trie( void )
         coffs = (void *)((char *)coffs + InTerminfo[i].offset );
         if( !TrieAdd( InTerminfo[i].ev, __cur_term->_strtab + *coffs ) ) {
             TrieFini();
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 Keyboard ConsKeyboard = {

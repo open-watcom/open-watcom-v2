@@ -50,7 +50,7 @@ char            UpPoint[2]          = UP_POINT;
 char            DownPoint[2]        = DOWN_POINT;
 
 static  p_gadget        Pressed         = NULL;   /* pointer to gadget where mouse pressed  */
-static  bool            Drag            = FALSE;
+static  bool            Drag            = false;
 static  EVENT           RepeatEvent     = EV_NO_EVENT;
 static  int             StartPos        = 0;
 
@@ -140,12 +140,12 @@ static void setgadget( p_gadget g, int pos, bool draw )
 
 void uisetgadget( p_gadget g, int pos )
 {
-    setgadget( g, pos, TRUE );
+    setgadget( g, pos, true );
 }
 
 void uisetgadgetnodraw( p_gadget g, int pos )
 {
-    setgadget( g, pos, FALSE );
+    setgadget( g, pos, false );
 }
 
 void uifinigadget( p_gadget g )
@@ -227,7 +227,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                 ( g->total_size <= g->page_size ) ) {
                 return( EV_NO_EVENT );
             } else {
-                Drag = TRUE; /* so we don't send page events on MOUSE_REPEAT */
+                Drag = true; /* so we don't send page events on MOUSE_REPEAT */
                 if( g->slider == EV_NO_EVENT ) {
                     return( EV_NO_EVENT );
                 }
@@ -237,15 +237,15 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                 break;
             }
             if( g->slider == EV_NO_EVENT ) {
-                Drag = FALSE;
+                Drag = false;
             }
             if( Drag ) {
                 if( ( m_anchor < ( g->anchor -1 ) ) || ( m_anchor > (g->anchor+1) ) ) {
                     /* note : must have got EV_MOUSE_RELEASE */
                     pos = StartPos;
-                    setgadget( g, pos, FALSE );
+                    setgadget( g, pos, false );
                     m_linear = g->linear;
-                    Drag = FALSE;
+                    Drag = false;
                 } else {
                     /* mouse drag to first scroll character or further left,
                        so pos = 0 */
@@ -287,7 +287,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                     newev = EV_NO_EVENT;
                 }
                 if( ev == EV_MOUSE_RELEASE ) {
-                    Drag = FALSE;
+                    Drag = false;
                     Pressed = NULL;
                 }
             } else {

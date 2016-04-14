@@ -49,7 +49,7 @@ static MONITOR ui_data = {
 
 bool UIAPI uiset80col( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 bool intern initbios( void )
@@ -109,7 +109,7 @@ void intern physupdate( SAREA *area )
 
 int UIAPI uiisdbcs( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 int UIAPI uicharlen( int ch )

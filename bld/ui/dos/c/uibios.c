@@ -115,7 +115,7 @@ bool UIAPI uiset80col( void )
 {
     register    bool            status;
 
-    status = FALSE;
+    status = false;
     if( UIData->width != 80 ) {
         if( UIData->colour == M_MONO ) {
             setvideomode( 7 );
@@ -124,7 +124,7 @@ bool UIAPI uiset80col( void )
         } else {
             setvideomode( 3 );
         }
-        status = TRUE;
+        status = true;
     }
     return( status );
 }
@@ -274,7 +274,7 @@ static void intern initdbcs( void )
     }
     p->start_range = 0;
     p->end_range = 0;
-    Init = TRUE;
+    Init = true;
 }
 
 int UIAPI uiisdbcs( void )
@@ -390,9 +390,9 @@ bool intern initmonitor( void )
     info = BIOSEGAInfo();
     if( info.switches < 0x0C && info.mono <= 0x01 && info.mem <= 0x03 ) {
         UIData->height = BIOSGetRows();
-        ega = TRUE;
+        ega = true;
     } else {
-        ega = FALSE;
+        ega = false;
     }
     if( ( mode == MONOCHROME ) || ( mode == EGA_HIGH_MONO ) ) {
         UIData->colour = M_MONO;
@@ -444,7 +444,7 @@ bool intern initbios( void )
             UIData->screen.origin =
              (LP_PIXEL)dos_uivideobuffer( UIData->screen.origin );
             if( old_origin != UIData->screen.origin ) {
-                UIData->desqview = TRUE;
+                UIData->desqview = true;
             }
             DBCSCharacterMap(); /* in UIMAPCH.C */
         }

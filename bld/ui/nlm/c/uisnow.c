@@ -47,6 +47,6 @@ bool intern issnow( bptr )
     register        BUFFER*                 bptr;
 {
     bptr = bptr;
-    return( FALSE );
+    return( false );
 }
 

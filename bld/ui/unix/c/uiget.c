@@ -79,7 +79,7 @@ static EVENT doget( bool update )
         screen.width=  UIData->width;
 
         uidirty( screen );
-        UserForcedTermRefresh= TRUE;
+        UserForcedTermRefresh= true;
         physupdate( &screen );
     }
     return( ev );

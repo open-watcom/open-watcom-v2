@@ -539,7 +539,7 @@ typedef struct vscreen {
     ORD             row;
     ORD             col;            /* position of cursor on the screen */
     int             cursor;         /* cursor type                      */
-    bool            open;           /* bool: init to FALSE, set by ui   */
+    bool            open;           /* bool: init to false, set by ui   */
     bool            dynamic_title;  /* title is allocated dynamicaly    */
     UI_WINDOW       window;         /* used by the window manager       */
 } VSCREEN;

@@ -303,7 +303,7 @@ bool uiattrs( void )
         UIData->attrs = local_attrs;
     }
     memcpy( UIData->attrs, from, sizeof( local_attrs ) );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -325,9 +325,9 @@ bool uivgaattrs( void )
     if( UIData->colour == M_VGA || UIData->colour == M_EGA ) {
         setvgacolours();
         memcpy( UIData->attrs, ui_vga_colour_attrs, sizeof( local_attrs ) );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void uisetblinkattr( int on )

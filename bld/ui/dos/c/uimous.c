@@ -105,26 +105,26 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, un
         MickeyRow += (short int)state.dx; /* delta of mickeys */
         if( MickeyRow < 0 ) {
             MickeyRow = 0;
-            change = TRUE;
+            change = true;
         } else {
             /* -2 makes sure one pixel of mouse shows */
             if( MickeyRow > ( UIData->height * Points - 2 ) ) {
                 MickeyRow = UIData->height * Points - 2;
-                change = TRUE;
+                change = true;
             } else {
-                change = FALSE;
+                change = false;
             }
         }
         if( MickeyCol < 0 ) {
             MickeyCol = 0;
-            change = TRUE;
+            change = true;
         } else {
             /* -2 makes sure one pixel of mouse shows */
             if( MickeyCol > ( UIData->width * MOUSE_SCALE - 2 ) ) {
                 MickeyCol = UIData->width * MOUSE_SCALE - 2;
-                change = TRUE;
+                change = true;
             } else {
-                change = FALSE;
+                change = false;
             }
         }
         *row = MickeyRow;

@@ -106,7 +106,7 @@ EVENT uitabfilter( EVENT ev, VTAB *vtab )
     retev = EV_NO_EVENT;
     if( vtab->first != NULL ) {
         if( vtab->curr == NULL ) {
-            curr = fwd_tab( vtab, NULL, TRUE );
+            curr = fwd_tab( vtab, NULL, true );
             if( curr == NULL ) return( ev );
             vtab->home = curr->area.col;
         } else {
@@ -142,10 +142,10 @@ EVENT uitabfilter( EVENT ev, VTAB *vtab )
             }
             break;
         case EV_HOME :
-            curr = fwd_tab( vtab, NULL, TRUE );
+            curr = fwd_tab( vtab, NULL, true );
             break;
         case EV_END :
-            curr = bwd_tab( vtab, NULL, TRUE );
+            curr = bwd_tab( vtab, NULL, true );
             break;
         case EV_ENTER :
             if( !vtab->enter ) return( ev );
@@ -189,11 +189,11 @@ EVENT uitabfilter( EVENT ev, VTAB *vtab )
             break;
         case EV_CURSOR_RIGHT :
         case EV_TAB_FORWARD :
-            curr = fwd_tab( vtab, curr, TRUE );
+            curr = fwd_tab( vtab, curr, true );
             break;
         case EV_CURSOR_LEFT :
         case EV_TAB_BACKWARD :
-            curr = bwd_tab( vtab, curr, TRUE );
+            curr = bwd_tab( vtab, curr, true );
             break;
         default:
             return( ev );

@@ -119,7 +119,7 @@ bool UIAPI uiremovebackground( void )
     }
     UIData->blank.update = backblank;
     UIData->blank.parm = &UIData->attrs[ ATTR_NORMAL];
-    return( TRUE );
+    return( true );
 }
 
 bool UIAPI uikeepbackground( void )

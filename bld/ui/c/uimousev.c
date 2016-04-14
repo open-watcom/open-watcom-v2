@@ -179,7 +179,7 @@ EVENT intern mouseevent( void )
                 flushkey();
             }
             butt = button( diff );
-            MouseRepeat = FALSE;
+            MouseRepeat = false;
             MouseTime = time;
             MouseStatus = status;
             MouseOn = true;
@@ -193,7 +193,7 @@ EVENT intern mouseevent( void )
             if( !MouseRepeat ){
                 if( time - MouseTime > UIData->mouse_acc_delay ){
                     ev = M_REPEAT;
-                    MouseRepeat = TRUE;
+                    MouseRepeat = true;
                     MouseTime = time;
                 }
             } else if( time - MouseTime > UIData->mouse_rpt_delay ){

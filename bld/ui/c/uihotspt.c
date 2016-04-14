@@ -144,7 +144,7 @@ char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
 
     hotkey = uidrawhottext( vs, str, parea, attr, hotattr,
                             (flags & HOT_HIDDEN) != 0,
-                            (flags & HOT_NO_KEY) != 0, TRUE );
+                            (flags & HOT_NO_KEY) != 0, true );
 
     if( parea->height < 1 )
         return( hotkey );   /* no room for shadow */
@@ -300,5 +300,5 @@ bool uiisdefaulthotspot( VFIELD *fields, EVENT ev )
             return( field->u.hs->event == ev );
         }
     }
-    return( FALSE );
+    return( false );
 }

@@ -234,13 +234,13 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
 
     if( ir->EventType == KEY_EVENT ) {
         if( !ir->Event.KeyEvent.bKeyDown ) {
-            return( FALSE );
+            return( false );
         }
         vk = ir->Event.KeyEvent.wVirtualKeyCode;
         if( vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU ) {
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
     if( ir->EventType == MOUSE_EVENT ) {
         currMouseCol = ir->Event.MouseEvent.dwMousePosition.X;
@@ -255,9 +255,9 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         if( st & RIGHTMOST_BUTTON_PRESSED ) {
             currMouseStatus = MOUSE_PRESS_RIGHT;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* eventWeWant */
 

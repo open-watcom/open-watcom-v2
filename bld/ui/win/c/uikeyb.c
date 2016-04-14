@@ -77,7 +77,7 @@ static int CheckState( unsigned info, unsigned down )
     case VK_INSERT:
         if( down ) {
             LastKey = (82 << 8); /* kludge - as if insert pressed */
-            HaveKey = TRUE;
+            HaveKey = true;
         }
         bit = S_INSERT;
         break;
@@ -100,7 +100,7 @@ static int CheckState( unsigned info, unsigned down )
         bit = S_SHIFT;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( bit > S_ALT ) { /* it's a toggle bit */
         if( down ) {
@@ -111,7 +111,7 @@ static int CheckState( unsigned info, unsigned down )
     } else {
         ShiftState &= ~bit;
     }
-    return( TRUE );
+    return( true );
 }
 
 static unsigned PickOne( unsigned alt, unsigned ctrl, unsigned shift, unsigned plain )
@@ -253,7 +253,7 @@ static void MyHookRtn( unsigned event, unsigned info )
                 LastKey = (info & ~0xff) | key;
                 break;
             }
-            HaveKey = TRUE;
+            HaveKey = true;
         }
         break;
     case WM_KEYUP:
@@ -311,7 +311,7 @@ unsigned int intern getkey( void )
     while( !HaveKey )
         {}
     ev = LastKey;
-    HaveKey = FALSE;
+    HaveKey = false;
     return( ev );
 }
 
@@ -345,13 +345,13 @@ static POINT p;
 void HookInQueue( void )
 {
 //  GetCursorPos( &p );
-//  ShowCursor( FALSE );
+//  ShowCursor( false );
 }
 
 void HookOutQueue( void )
 {
 //  SetCursorPos( p.x, p.y );
-//  ShowCursor( TRUE );
+//  ShowCursor( true );
 }
 #endif
 

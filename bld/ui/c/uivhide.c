@@ -38,9 +38,9 @@ bool UIAPI uivhide( VSCREEN *vptr )
     if( vptr->open && !(vptr->flags & V_HIDDEN) ) {
         closewindow( &(vptr->window) );
         vptr->flags |= V_HIDDEN;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -50,7 +50,7 @@ bool UIAPI uivshow( VSCREEN *vptr )
     if( vptr->flags & V_HIDDEN ) {
         openwindow( &(vptr->window) );
         vptr->flags &= ~V_HIDDEN;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

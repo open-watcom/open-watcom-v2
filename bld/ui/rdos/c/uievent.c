@@ -190,7 +190,7 @@ bool intern initkeyboard( void )
 
         RdosAddWaitForKeyboard( WaitHandle, &KeyEventProc );
     }
-    KeyInstalled = TRUE;
+    KeyInstalled = true;
     
     return( true );
 }
@@ -203,7 +203,7 @@ void intern finikeyboard( void )
             WaitHandle = 0;
         }
     }
-    KeyInstalled = FALSE;
+    KeyInstalled = false;
 }
 
 void intern flushkey( void )

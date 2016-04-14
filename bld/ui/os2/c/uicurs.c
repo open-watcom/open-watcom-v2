@@ -60,7 +60,7 @@ void UIAPI uioffcursor( void )
 
            VioSetCurType(&vioCursor,0);
 
-        UIData->cursor_on = FALSE;
+        UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
 }
@@ -110,7 +110,7 @@ void UIAPI uioncursor( void )
                     0);
 
     }
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -134,7 +134,7 @@ static void savecursor( void )
          OldCursorType = C_NORMAL;
     }
     UIData->cursor_on = (  vioCursor.attr != (USHORT) -1 );
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
          OldCursorType = C_OFF;
     }
     /* read character and attribute */
@@ -162,7 +162,7 @@ static void swapcursor( void )
     _swap( UIData->cursor_col, OldCursorCol );
     _swap( UIData->cursor_row, OldCursorRow );
     _swap( UIData->cursor_attr, OldCursorAttr );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -184,7 +184,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
     } else {
         *type = C_NORMAL;
     }
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
         *type = C_OFF;
     }
     /* read character and attribute */

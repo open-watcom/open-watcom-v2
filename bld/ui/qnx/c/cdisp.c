@@ -248,7 +248,7 @@ static int cd_init( void )
 {
     int                 initialized;
 
-    initialized = FALSE;
+    initialized = false;
     if( UIData == NULL ) {
         UIData = &ui_data;
     }

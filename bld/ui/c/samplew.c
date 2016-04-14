@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#define TRUE    1
-#define FALSE   0
-
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
@@ -136,8 +133,8 @@ static VEDITLINE inputline = {
     Buffer,      /* pointer to buffer */
     0,           /* index of cursor in buffer */
     0x70,        /* attribute used to echo buffer */
-    FALSE,       /* bool: user changed buffer contents */
-    TRUE,        /* bool: application altered buffer */
+    false,       /* bool: user changed buffer contents */
+    true,        /* bool: application altered buffer */
 };
 
 static EVENT oplist[] = {
@@ -211,7 +208,7 @@ static void open( void )
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
-        inputline.update = TRUE;
+        inputline.update = true;
         for( ; ; ) {
             ev = uiveditline( &opwin, &inputline );
             if( ev != EV_NO_EVENT ) break;
@@ -239,7 +236,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     char                buff[80];
     an_event_string     *ptr;
     ORD                 evrow = TOP_ROW;
-    BOOL                fixup = FALSE;
+    BOOL                fixup = false;
     int                 mrow, mcol;
     int                 diff;
 
@@ -282,7 +279,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 mrow++;
                 mcol++;
                 uipushlist( evlist );
-                ev = uicreatepopup( mrow, mcol, &filemenu, FALSE, TRUE, NULL );
+                ev = uicreatepopup( mrow, mcol, &filemenu, false, true, NULL );
                 uipoplist();
             }
             switch ( ev ) {
@@ -302,28 +299,28 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 case EV_CURSOR_RIGHT:
                     mainwin.col++;
                     if( mainwin.col >= mainwin.area.width ) mainwin.col--;
-                    fixup = TRUE;
+                    fixup = true;
                     break;
                 case EV_CURSOR_DOWN:
                     mainwin.row++;
                     if( mainwin.row >= mainwin.area.height ) mainwin.row--;
-                    fixup = TRUE;
+                    fixup = true;
                     break;
                 case EV_CURSOR_LEFT:
                     if( mainwin.col > 0 ) {
                         mainwin.col--;
-                        fixup = TRUE;
+                        fixup = true;
                     }
                     break;
                 case EV_CURSOR_UP:
                     if( mainwin.row > 0 ) {
                         mainwin.row--;
-                        fixup = TRUE;
+                        fixup = true;
                     }
                     break;
             }
             if( fixup ) {
-                fixup = FALSE;
+                fixup = false;
                 uivsetcursor( &mainwin );
             }
             if( ev != EV_NO_EVENT ) {

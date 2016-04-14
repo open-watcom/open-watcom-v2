@@ -77,7 +77,7 @@ static EVENT setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD col )
         }
         header->prevfield = prev;
         header->curfield = cur;
-        header->fieldpending = TRUE;
+        header->fieldpending = true;
         ev = EV_FIELD_CHANGE;
     } else {
         ev = EV_NO_EVENT;
@@ -162,10 +162,10 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
     auto        SAREA                   area;
 
     if( header->reset ) {
-        header->reset = FALSE;
+        header->reset = false;
         header->prevfield = NULL;
         header->curfield = NULL;
-        header->cursor = TRUE;
+        header->cursor = true;
         area.height = 1;
         for( cur = header->fieldlist ; cur != NULL ; cur = cur->link ) {
             area.row = cur->row;
@@ -175,27 +175,27 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
         }
     }
     if( header->cursor ) {
-        header->cursor = FALSE;
-        header->delpending = FALSE;
-        header->fieldpending = FALSE;
-        header->cancel = FALSE;
+        header->cursor = false;
+        header->delpending = false;
+        header->fieldpending = false;
+        header->cancel = false;
         if( vptr->cursor == C_OFF ) {
             vptr->cursor = C_NORMAL;
         }
         return( movecursor( vptr, header, vptr->row, vptr->col ) );
     }
     if( header->fieldpending ) {
-        header->update = TRUE;
+        header->update = true;
         if( header->cancel ) {
-            header->cancel = FALSE;
+            header->cancel = false;
             header->curfield = NULL;
             setfield( vptr, header, header->prevfield, 0 );
         }
-        header->fieldpending = FALSE;
+        header->fieldpending = false;
     }
     cur = header->curfield;
     if( header->update ) {
-        header->update = FALSE;
+        header->update = false;
         if( cur ) {     /* this should always be non-NULL */
             uipadblanks( header->buffer, cur->length );
             if( header->delpending ) {
@@ -204,7 +204,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 buffer.index = vptr->col - cur->col;
                 uieditevent( EV_DELETE, &buffer );
                 header->dirty = true;
-                header->delpending = FALSE;
+                header->delpending = false;
             }
             uivtextput( vptr, cur->row, cur->col, header->enter,
                     header->buffer, cur->length );
@@ -223,7 +223,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 buffer.length = cur->length;
                 buffer.index = vptr->col - cur->col;
                 buffer.insert = ( vptr->cursor == C_INSERT );
-                buffer.dirty = FALSE;
+                buffer.dirty = false;
                 uieditevent( ev, &buffer );
                 header->dirty |= buffer.dirty;
             }
@@ -254,7 +254,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 ev = movecursor( vptr, header, vptr->row + 1, vptr->col );
                 break;
             case EV_RUB_OUT:
-                header->delpending = TRUE;
+                header->delpending = true;
                 /* WARNING: this case falls through to the next !!!! */
             case EV_CURSOR_LEFT:
                 if( cur ) {
@@ -285,7 +285,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 } else {
                     ev = EV_NO_EVENT;
                 }
-                header->delpending = FALSE;
+                header->delpending = false;
             }
         }
     }
