@@ -1225,7 +1225,7 @@ static void Set_TP( void )
     char    *togname;
 
     togname = CopyOfParm();
-    SetToggleFlag( togname, TRUE );
+    SetToggleFlag( togname, true );
     CMemFree( togname );
 }
 

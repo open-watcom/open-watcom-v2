@@ -94,13 +94,13 @@ void FrontEndInit( bool reuse )
 //***************************//
 {
     GlobalCompFlags.cc_reuse = reuse;
-    GlobalCompFlags.cc_first_use = TRUE;
-    GlobalCompFlags.ignore_environment = FALSE;
-    GlobalCompFlags.ignore_current_dir = FALSE;
-    GlobalCompFlags.ide_cmd_line_has_files = FALSE;
-    GlobalCompFlags.ide_console_output = FALSE;
-    GlobalCompFlags.progress_messages = FALSE;
-//    GlobalCompFlags.dll_active = FALSE;
+    GlobalCompFlags.cc_first_use = true;
+    GlobalCompFlags.ignore_environment = false;
+    GlobalCompFlags.ignore_current_dir = false;
+    GlobalCompFlags.ide_cmd_line_has_files = false;
+    GlobalCompFlags.ide_console_output = false;
+    GlobalCompFlags.progress_messages = false;
+//    GlobalCompFlags.dll_active = false;
 }
 
 void FrontEndFini( void )
@@ -108,14 +108,14 @@ void FrontEndFini( void )
 // Fini the once only //
 //********************//
 {
-    GlobalCompFlags.cc_reuse = FALSE;
-    GlobalCompFlags.cc_first_use = TRUE;
+    GlobalCompFlags.cc_reuse = false;
+    GlobalCompFlags.cc_first_use = true;
 }
 
 static void ClearGlobals( void )
 {
     InitStats();
-    IsStdIn = FALSE;
+    IsStdIn = false;
     FNames = NULL;
     RDirNames = NULL;
     IAliasNames = NULL;
@@ -154,7 +154,7 @@ int FrontEnd( char **cmdline )
     PurgeMemory();
     FiniMsg();
     CMemFini();
-    GlobalCompFlags.cc_first_use = FALSE;
+    GlobalCompFlags.cc_first_use = false;
     return( ErrCount );
 }
 
@@ -201,10 +201,10 @@ static bool ParseCmdLine( char **cmdline )
     if( *cmd == '?' || *cmd == '\0' ) {
         CBanner();
         CCusage();
-        return( FALSE );
+        return( false );
     }
     GenCOptions( cmdline );
-    return( TRUE );
+    return( true );
 }
 
 static void OpenDepFile( void )
@@ -259,7 +259,7 @@ static void DumpDepFile( void )
     if( DepFile != NULL ) {
         curr = NextDependency( NULL );
         if( curr != NULL ) {
-            fprintf( DepFile, "%s :", ForceSlash( CreateFileName( DependTarget, OBJ_EXT, FALSE ), DependForceSlash ) );
+            fprintf( DepFile, "%s :", ForceSlash( CreateFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
             fprintf( DepFile, " %s", ForceSlash( GetSourceDepName(), DependForceSlash ) );
             for( curr = NextDependency( curr ); curr != NULL; curr = NextDependency( curr ) ) {
                 fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
@@ -356,19 +356,19 @@ static void DoCCompile( char **cmdline )
         ParseAuxFile();
 #endif
         if( CompFlags.cpp_output ) {
-            PrintWhiteSpace = TRUE;
+            PrintWhiteSpace = true;
             if( !CompFlags.disable_ialias ) {
-                CompFlags.cpp_output = FALSE;
-                CompFlags.ignore_fnf = TRUE;
-                OpenSrcFile( "_ialias.h", TRUE );
-                CompFlags.ignore_fnf = FALSE;
+                CompFlags.cpp_output = false;
+                CompFlags.ignore_fnf = true;
+                OpenSrcFile( "_ialias.h", true );
+                CompFlags.ignore_fnf = false;
                 if( SrcFile != NULL ) {
                     CurToken = T_NULL;
                     while( CurToken != T_EOF ) {
                         GetNextToken();
                     }
                 }
-                CompFlags.cpp_output = TRUE;
+                CompFlags.cpp_output = true;
             }
             OpenPgmFile();
             CPP_Parse();
@@ -432,7 +432,7 @@ static void MakePgmName( void )
     char        *ext;
 
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
-        IsStdIn = TRUE;
+        IsStdIn = true;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
@@ -474,15 +474,15 @@ static bool OpenPgmFile( void )
     if( IsStdIn ) {
         if( OpenFCB( stdin, "stdin" ) ) {
             MainSrcFile = SrcFile;
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
     if( !TryOpen( "", WholeFName ) ) {
         if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName ) ) {
             CantOpenFile( WholeFName );
             CSuicide();
-            return( FALSE );
+            return( false );
         }
     }
 #if _CPU == 370
@@ -490,7 +490,7 @@ static bool OpenPgmFile( void )
     SrcFile->trunc = Trunc;
 #endif
     MainSrcFile = SrcFile;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -538,30 +538,30 @@ char *GetSourceDepName( void )
     char *ext;
 
     _splitpath2( WholeFName, buff, NULL, NULL, NULL, &ext );
-    return( CreateFileName( SrcDepName, ext, FALSE ) );
+    return( CreateFileName( SrcDepName, ext, false ) );
 }
 
 
 char *ObjFileName( void )
 {
-    return( CreateFileName( ObjectFileName, OBJ_EXT, FALSE ) );
+    return( CreateFileName( ObjectFileName, OBJ_EXT, false ) );
 }
 
 char *CppFileName( void )
 {
-    return( CreateFileName( ObjectFileName, CPP_EXT, FALSE ) );
+    return( CreateFileName( ObjectFileName, CPP_EXT, false ) );
 }
 
 char *DepFileName( void )
 {
-    return( CreateFileName( DependFileName, DEP_EXT, FALSE ) );
+    return( CreateFileName( DependFileName, DEP_EXT, false ) );
 }
 
 char *ErrFileName( void )
 {
     if( ErrorFileName == NULL )
         return( NULL );
-    return( CreateFileName( ErrorFileName, ERR_EXT, FALSE ) );
+    return( CreateFileName( ErrorFileName, ERR_EXT, false ) );
 }
 
 void CppPrtChar( int c )
@@ -575,7 +575,7 @@ void CppPrtChar( int c )
 static unsigned CppColumn = 0;
 static unsigned CppWidth = 0;
 static unsigned CommentChar = '\0';
-static bool     CppFirstChar = FALSE;
+static bool     CppFirstChar = false;
 
 void SetCppWidth( unsigned width )
 {
@@ -608,7 +608,7 @@ void CppPutc( int ch )
     int     rc;
 
     if( CppFirstChar ) {
-        CppFirstChar = FALSE;
+        CppFirstChar = false;
         if( ch == '\n' ) {
             return;
         }
@@ -672,7 +672,7 @@ static void OpenCppFile( void )
         CppFile = stdout;
     }
     CppColumn = 0;
-    CppFirstChar = TRUE;
+    CppFirstChar = true;
     if( CppFile == NULL ) {
         CantOpenFile( name );
         MyExit( 1 );
@@ -715,7 +715,7 @@ FILE *OpenBrowseFile( void )
     FILE        *mbr_file;
 
     if( CompFlags.cpp_output_to_file ) {
-        strcpy( name, CreateFileName( ObjectFileName, MBR_EXT, TRUE ) );
+        strcpy( name, CreateFileName( ObjectFileName, MBR_EXT, true ) );
     } else {
         _splitpath2( SrcFName, buff, NULL, NULL, &fname, NULL );
         _makepath( name, NULL, NULL, fname, MBR_EXT );
@@ -769,7 +769,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         // try absolute path
         // if drive letter given or path from root given
         if( TryOpen( "", filename ) ) {
-            return( TRUE );
+            return( true );
         }
     } else {
         if( !is_lib ) {
@@ -778,19 +778,19 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
                 _makepath( try, drive, dir, filename, NULL );
                 if( TryOpen( "", try ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 // try current directory
                 if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename ) ) {
-                    return( TRUE );
+                    return( true );
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
                     // physical file name must be used, not logical
                     _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
                     _makepath( try, drive, dir, filename, NULL );
                     if( TryOpen( "", try ) ) {
-                        return( TRUE );
+                        return( true );
                     }
                 }
             }
@@ -810,14 +810,14 @@ bool OpenSrcFile( const char *filename, bool is_lib )
             }
             *p = '\0';
             if( TryOpen( buff, filename ) ) {
-                return( TRUE );
+                return( true );
             }
         }
         if( !is_lib ) {
             if( !CompFlags.ignore_default_dirs ) {
                 // try current ../h directory
                 if( TryOpen( H_PATH, filename ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -886,7 +886,7 @@ void CloseSrcFile( FCB *srcfcb )
             }
         }
         if( CompFlags.cpp_output ) {
-            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, TRUE );
+            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
         }
     } else {
         SrcLineCount = srcfcb->src_line_cnt;
@@ -906,10 +906,10 @@ static bool OpenFCB( FILE *fp, const char *filename )
     }
 
     if( FCB_Alloc( fp, filename ) ) {
-        return( TRUE );
+        return( true );
     }
     CErr1( ERR_OUT_OF_MEMORY );
-    return( FALSE );
+    return( false );
 }
 
 static bool FreeSrcFP( void )
@@ -919,7 +919,7 @@ static bool FreeSrcFP( void )
     FCB     *next;
     bool    ret;
 
-    ret = FALSE;
+    ret = false;
     for( src_file = SrcFile; src_file != NULL; src_file = next ) {
         next = src_file->prev_file;
         if( next == NULL || next->src_fp == NULL ) {
@@ -930,7 +930,7 @@ static bool FreeSrcFP( void )
         src_file->rseekpos = ftell( src_file->src_fp );
         CClose( src_file->src_fp );
         src_file->src_fp = NULL;
-        ret = TRUE;
+        ret = true;
     }
     return( ret );
 }
@@ -944,7 +944,7 @@ static bool TryOpen( const char *path, const char *fname )
     if( IncFileDepth == 0 ) {
         CErr2( ERR_INCDEPTH, MAX_INC_DEPTH );
         CSuicide();
-        return( FALSE );
+        return( false );
     }
     p = filename;
     while( (*p = *path++) != '\0' )
@@ -952,7 +952,7 @@ static bool TryOpen( const char *path, const char *fname )
     while( (*p = *fname++) != '\0' )
         ++p;
     if( IsFNameOnce( filename ) ) {
-        return( TRUE );
+        return( true );
     }
     for( ; (fp = fopen( filename, "rb" )) == NULL; ) {
         if( errno != ENOMEM && errno != ENFILE && errno != EMFILE )
@@ -962,20 +962,20 @@ static bool TryOpen( const char *path, const char *fname )
         }
     }
     if( fp == NULL )
-        return( FALSE );
+        return( false );
 
     if( CompFlags.use_precompiled_header ) {
         CompFlags.use_precompiled_header = 0;
         if( UsePreCompiledHeader( filename ) == 0 ) {
             fclose( fp );
-            return( TRUE );
+            return( true );
         }
     }
     if( OpenFCB( fp, filename ) ) {
-        return( TRUE );
+        return( true );
     }
     fclose( fp );
-    return( FALSE );
+    return( false );
 }
 
 static FNAMEPTR FindFlist( char const *filename )
@@ -1019,8 +1019,8 @@ FNAMEPTR AddFlist( char const *filename )
         flist->next = NULL;
         flist->index = index;
         flist->index_db = DBFILE_INVALID;
-        flist->rwflag = TRUE;
-        flist->once = FALSE;
+        flist->rwflag = true;
+        flist->once = false;
         flist->fullpath = NULL;
         flist->mtime = _getFilenameTimeStamp( filename );
     }
@@ -1079,7 +1079,7 @@ static bool IsFNameOnce( char const *filename )
 
     flist = FindFlist( filename );
     if( flist == NULL )
-        return( FALSE );
+        return( false );
     return( flist->once );
 }
 
@@ -1181,14 +1181,14 @@ void SrcFileReadOnlyDir( char const *dirs )
 bool SrcFileInRDir( FNAMEPTR flist )
 {
     RDIRPTR     dirlist;
-    bool        read_only;      // - TRUE ==> file is in read-only directory
+    bool        read_only;      // - true ==> file is in read-only directory
     char        *fullpath;      // - full path
 
-    read_only = FALSE;
+    read_only = false;
     fullpath = FNameFullPath( flist );
     for( dirlist = RDirNames; dirlist != NULL; dirlist = dirlist->next ) {
         if( strnicmp( dirlist->name, fullpath, strlen( dirlist->name ) ) == 0 ) {
-            read_only = TRUE;
+            read_only = true;
             break;
         }
     }
@@ -1205,7 +1205,7 @@ void SrcFileReadOnlyFile( char const *file )
         flist= FindFlist( file );
     }
     if( flist  != NULL ) {
-        flist->rwflag = FALSE;
+        flist->rwflag = false;
     }
 }
 
@@ -1257,17 +1257,17 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
         if( CompFlags.cpp_output ) {
             if( CppFile == NULL )
                 OpenCppFile();
-            EmitPoundLine( 1, filename, TRUE );
-            CppFirstChar = TRUE;
+            EmitPoundLine( 1, filename, true );
+            CppFirstChar = true;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void SetSrcFNameOnce( void )
 {
-    SrcFile->src_flist->once = TRUE;
+    SrcFile->src_flist->once = true;
 }
 
 static void ParseInit( void )
@@ -1306,14 +1306,14 @@ static void Parse( void )
         // we want to keep in the pre-compiled header
         // any macros that are defined in forced include file
         InitialMacroFlag = MFLAG_NONE;
-        OpenSrcFile( ForceInclude, FALSE );
+        OpenSrcFile( ForceInclude, false );
     }
     CompFlags.ok_to_use_precompiled_hdr = 0;
     CompFlags.use_precompiled_header = 0;
     if( !CompFlags.disable_ialias ) {
-        CompFlags.ignore_fnf = TRUE;
-        OpenSrcFile( "_ialias.h", TRUE );
-        CompFlags.ignore_fnf = FALSE;
+        CompFlags.ignore_fnf = true;
+        OpenSrcFile( "_ialias.h", true );
+        CompFlags.ignore_fnf = false;
     }
     if( ForceInclude == NULL ) {
         CompFlags.ok_to_use_precompiled_hdr = 1;
@@ -1336,7 +1336,7 @@ static void CPP_Parse( void )
 {
     if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
-        OpenSrcFile( ForceInclude, FALSE );
+        OpenSrcFile( ForceInclude, false );
     }
     CurToken = T_NULL;
     while( CurToken != T_EOF ) {
@@ -1364,7 +1364,7 @@ void EmitPoundLine( unsigned line_num, const char *filename, bool newline )
 
 void EmitLine( unsigned line_num, const char *filename )
 {
-    EmitPoundLine( line_num, filename, FALSE );
+    EmitPoundLine( line_num, filename, false );
 }
 
 bool CppPrinting( void )
@@ -1394,7 +1394,7 @@ void CppPrtToken( void )
             if( PrintWhiteSpace || CompFlags.in_pragma ) {
                 CppPrtf( "%s", Tokens[CurToken] );
             } else {
-                PrintWhiteSpace = TRUE; //Toggle
+                PrintWhiteSpace = true; //Toggle
             }
             break;
         default:

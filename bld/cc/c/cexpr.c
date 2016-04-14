@@ -471,7 +471,7 @@ bool IsLValue( TREEPTR tree )
     case OPR_INDEX:
     case OPR_PUSHADDR:
     case OPR_POINTS:
-        return( TRUE );
+        return( true );
     case OPR_DOT:
         while( tree->op.opr == OPR_DOT )
             tree = tree->left;
@@ -482,12 +482,12 @@ bool IsLValue( TREEPTR tree )
             // These are not lvalues
             break;
         default:
-            return( TRUE );
+            return( true );
             break;
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool IsCallValue( TREEPTR tree )
@@ -574,7 +574,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
     } else {
         if( SizeOfCount == 0 ) {
             if( tree->op.flags & OPFLAG_VOLATILE ) {
-                CompFlags.useful_side_effect = TRUE;
+                CompFlags.useful_side_effect = true;
             }
         }
         if( tree->op.opr == OPR_PUSHSYM || tree->op.opr == OPR_PUSHADDR ) {
@@ -911,7 +911,7 @@ static TREEPTR PtrOp( TREEPTR tree )
     tree->op.flags = OpFlags( flags );
     if( SizeOfCount == 0 ) {
         if( tree->op.flags & OPFLAG_VOLATILE ) {
-            CompFlags.useful_side_effect = TRUE;
+            CompFlags.useful_side_effect = true;
         }
     }
     return( tree );
@@ -1071,8 +1071,8 @@ static TREEPTR IncDec( TREEPTR tree, TOKEN opr )
     ChkConst( tree );
     tree = AddOp( tree, opr, IntLeaf( 1 ) );
     tree->op.flags |= volatile_flag;
-    CompFlags.meaningless_stmt = FALSE;
-    CompFlags.useful_side_effect = TRUE;
+    CompFlags.meaningless_stmt = false;
+    CompFlags.useful_side_effect = true;
     return( tree );
 }
 //-----------------------------CEXPR-----------------------------------
@@ -1105,19 +1105,19 @@ bool ConstExprAndType( const_val *val )
             I32ToI64( tree->op.u2.long_value, &val->value );
             break;
         }
-        ret = TRUE;
+        ret = true;
         break;
     case OPR_PUSHFLOAT:
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
         I32ToI64( (int)atof( tree->op.u2.float_value->string ), &val->value );
-        ret = FALSE;
+        ret = false;
         break;
     default:
         if( tree->op.opr != OPR_ERROR ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
         U64Clear( val->value );
-        ret = FALSE;
+        ret = false;
         break;
     }
     FreeExprTree( tree );
@@ -1176,7 +1176,7 @@ static TREEPTR GetExpr( void )
     token_class curclass;
     TYPEPTR     *plist;
 
-    CompFlags.useful_side_effect = FALSE;
+    CompFlags.useful_side_effect = false;
     FirstCallLnk = LastCallLnk;
     tree = NULL;
     plist = NULL;
@@ -1220,8 +1220,8 @@ static TREEPTR GetExpr( void )
             case TC_ASSIGNMENT:  /*  = += -= *= /= %= >>= <<= &= ^= |=  */
                 ChkConst( op1 );
                 tree = AsgnOp( op1, Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = FALSE;
-                CompFlags.useful_side_effect = TRUE;
+                CompFlags.meaningless_stmt = false;
+                CompFlags.useful_side_effect = true;
                 break;
             case TC_TERNARY:
                 MustRecog( T_COLON );
@@ -1230,7 +1230,7 @@ static TREEPTR GetExpr( void )
                 CompFlags.meaningless_stmt &= Token[ExprLevel];
                 --ExprLevel;
                 tree = TernOp( ValueStack[ExprLevel], op1, tree );
-                CompFlags.pending_dead_code = FALSE;
+                CompFlags.pending_dead_code = false;
                 break;
             case TC_OR_OR:
                 if( Token[ExprLevel] == 0 ) {
@@ -1240,8 +1240,8 @@ static TREEPTR GetExpr( void )
                 } else {
                     tree = FlowOp( op1, OPR_OR_OR, BoolExpr( tree ) );
                 }
-                CompFlags.meaningless_stmt = TRUE;
-                CompFlags.pending_dead_code = FALSE;
+                CompFlags.meaningless_stmt = true;
+                CompFlags.pending_dead_code = false;
                 break;
             case TC_AND_AND:
                 if( Token[ExprLevel] == 0 ) {
@@ -1251,54 +1251,54 @@ static TREEPTR GetExpr( void )
                 } else {
                     tree = FlowOp( op1, OPR_AND_AND, BoolExpr( tree ) );
                 }
-                CompFlags.meaningless_stmt = TRUE;
-                CompFlags.pending_dead_code = FALSE;
+                CompFlags.meaningless_stmt = true;
+                CompFlags.pending_dead_code = false;
                 break;
             case TC_OR:
             case TC_XOR:
             case TC_AND:
                 tree = IntOp( op1, Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_EQ_NE:
             case TC_REL_OP:
                 tree = RelOp( op1, Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_SHIFT_OP:
                 tree = ShiftOp( op1, Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_ADD_OP:
                 tree = AddOp( op1, Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_MUL_OP:
                 tree = BinOp( RValue(op1), Token[ExprLevel], tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_PREINC:
                 tree = IncDec( tree, Token[ExprLevel] );
                 break;
             case TC_ADDR:
                 tree = AddrOp( tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_EXCLAMATION:
                 tree = NotOp( RValue( tree ) );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_PLUS:                       /* unary plus */
                 tree = UnaryPlus( tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_MINUS:                      /* unary minus */
                 tree = UMinus( tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_TILDE:
                 tree = UComplement( tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_SIZEOF:
                 typ = tree->u.expr_type;
@@ -1309,24 +1309,24 @@ static TREEPTR GetExpr( void )
                     tree = UIntLeaf( 1 ); //error use this as default
                 }
                 --SizeOfCount;
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_INDIRECTION:
                 tree = PtrOp( RValue( tree ) );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_CAST:
-                tree = CnvOp( tree, TypeOf( op1 ), TRUE );
+                tree = CnvOp( tree, TypeOf( op1 ), true );
                 FreeExprTree( op1 );
                 break;
             case TC_INDEX:
                 tree = IndexOp( op1, tree );
                 curclass = TokenClass[CurToken];
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_SEG_OP:
                 tree = SegOp( op1, tree );
-                CompFlags.meaningless_stmt = TRUE;
+                CompFlags.meaningless_stmt = true;
                 break;
             case TC_PARM_LIST:          /* do func call */
                 {
@@ -1423,14 +1423,14 @@ static TREEPTR GetExpr( void )
             tree = DotOp( tree );
             if( CurToken != T_SEMI_COLON )
                 NextToken();
-            CompFlags.meaningless_stmt = TRUE;
+            CompFlags.meaningless_stmt = true;
             continue;
         case TC_ARROW:
             NextToken();
             tree = ArrowOp( RValue( tree ) );
             if( CurToken != T_SEMI_COLON )
                 NextToken();
-            CompFlags.meaningless_stmt = TRUE;
+            CompFlags.meaningless_stmt = true;
             continue;
         case TC_POSTINC:
             tree = IncDec( tree, CurToken );
@@ -1458,7 +1458,7 @@ static TREEPTR ExprOpnd( void )
     TREEPTR     tree;
     TYPEPTR     typ;
 
-    CompFlags.meaningless_stmt = TRUE;
+    CompFlags.meaningless_stmt = true;
     for( ;; ) {
         ++ExprLevel;
         switch( CurToken ) {
@@ -1557,14 +1557,14 @@ static TREEPTR ExprOpnd( void )
             continue;
         case T_ID:
             tree = ExprId();
-            CompFlags.meaningless_stmt = FALSE;
+            CompFlags.meaningless_stmt = false;
             break;
         case T_SAVED_ID:
             tree = SymLeaf();
             CMemFree( SavedId );
             SavedId = NULL;
             CurToken = LAToken;
-            CompFlags.meaningless_stmt = FALSE;
+            CompFlags.meaningless_stmt = false;
             break;
         case T_CONSTANT:
             tree = ConstLeaf();
@@ -1626,10 +1626,10 @@ static bool IsMacroDefined( void )
         mentry = MacroLookup( Buffer );
         if( mentry != NULL ) {
             mentry->macro_flags |= MFLAG_REFERENCED;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1695,17 +1695,17 @@ static bool LValueArray( TREEPTR tree )
     TYPEPTR     typ;
 
     if( tree->op.opr == OPR_PUSHSTRING ) {
-        return( TRUE );
+        return( true );
     } else if( IsLValue( tree ) ) {
-        return( TRUE );
+        return( true );
     } else {
         typ = tree->u.expr_type;
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_POINTER ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -1761,7 +1761,7 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
             if( (tree_flags & OPFLAG_HUGEPTR)
               || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA
               && (tree_flags & (OPFLAG_NEARPTR | OPFLAG_FARPTR)) == 0) ) {
-                index_expr = CnvOp( index_expr, GetType( TYPE_LONG ), FALSE );
+                index_expr = CnvOp( index_expr, GetType( TYPE_LONG ), false );
             }
         }
 #endif
@@ -1885,7 +1885,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     }
     if( plist != NULL ) {  //do conversion from tree to parm type
         parm_typ = *plist;
-        ParmAsgnCheck( parm_typ, tree, ParmNum(), TRUE );
+        ParmAsgnCheck( parm_typ, tree, ParmNum(), true );
         if( parm_typ != NULL ) {
             parm_typ = SkipTypeFluff( parm_typ );
             if( parm_typ != typ ) {
@@ -1928,14 +1928,14 @@ static bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR s
 
     if( memcmp( sym_name, MathFuncs[i].name, len ) != 0 ) {
         if( (sym->flags & SYM_INTRINSIC) == 0 )
-            return( FALSE );        /* indicate not a math intrinsic function */
+            return( false );        /* indicate not a math intrinsic function */
         for( j = 0; j < len; ++j ) {
             if( sym_name[j] != tolower( (unsigned char)MathFuncs[i].name[j + 2] ) ) {
-                return( FALSE );        /* indicate not a math intrinsic function */
+                return( false );        /* indicate not a math intrinsic function */
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
@@ -2060,7 +2060,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
     target_size     string_len;
     int             optimized;
 //    int             recursive = 0;
-    bool            far16_func = FALSE;
+    bool            far16_func = false;
     unsigned char   parm_count;
     SYM_NAMEPTR     sym_name;
     SYM_ENTRY       sym;
@@ -2090,7 +2090,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
 
             inf = FindInfo( &sym, functree->op.u2.sym_handle );
             if( (inf->flags & AUX_FLAG_FAR16) || (sym.mods & FLAG_FAR16) ) {
-                far16_func = TRUE;
+                far16_func = true;
                 typ = Far16Type( typ );
             }
         }
@@ -2369,8 +2369,8 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
 #ifdef __SEH__
         }
 #endif
-        CompFlags.meaningless_stmt = FALSE;
-        CompFlags.useful_side_effect = TRUE;
+        CompFlags.meaningless_stmt = false;
+        CompFlags.useful_side_effect = true;
         NextToken();                    /* skip over ')' */
     }
     return( tree );

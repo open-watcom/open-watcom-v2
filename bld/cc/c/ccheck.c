@@ -129,22 +129,22 @@ static bool ChkParmPromotion( TYPEPTR typ )
     case TYPE_UCHAR:
     case TYPE_SHORT:
         if( CompFlags.strict_ANSI ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYPE_USHORT:
 #if TARGET_SHORT != TARGET_INT
         if( CompFlags.strict_ANSI )  {
-            return( FALSE );
+            return( false );
         }
 #endif
         break;
     case TYPE_FLOAT:
-        return( FALSE );
+        return( false );
     default:
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 TYPEPTR  SkipTypeFluff( TYPEPTR typ )
@@ -259,13 +259,13 @@ bool ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 )
     typ1 &= MASK_LANGUAGES;
     typ2 &= MASK_LANGUAGES;
     if( typ1 == typ2 ) {
-        return( TRUE );
+        return( true );
     } else if( typ1 == 0 ) {
         return( DftCallConv == GetLangInfo( typ2 ) );
     } else if( typ2 == 0 ) {
         return( DftCallConv == GetLangInfo( typ1 ) );
     } else  {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -345,7 +345,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             typ2_flags = typ2->u.fn.decl_flags;
             if( !ChkCompatibleLanguage( typ1_flags, typ2_flags ) ) {
                 ret_val = NO;
-            } else if( ChkCompatibleFunctionParms( typ1, typ2, FALSE ) != TCE_OK ) {
+            } else if( ChkCompatibleFunctionParms( typ1, typ2, false ) != TCE_OK ) {
                 ret_val = NO;
             } else if( !IdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
@@ -378,13 +378,13 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             }
         }
     } else if( typ1->decl_type == TYPE_UNION && ptr_indir_level > 0 ) {
-        if( InUnion( typ1, typ2, FALSE ) != OK ) {
+        if( InUnion( typ1, typ2, false ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
         }
     } else if( typ2->decl_type == TYPE_UNION && ptr_indir_level > 0 ) {
-        if( InUnion( typ2, typ1, TRUE ) != OK ) {
+        if( InUnion( typ2, typ1, true ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
@@ -504,7 +504,7 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
 void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
 {
     SetDiagType3( typ1, typ2, opr ); /* Called with source, target. */
-    switch( CompatibleType( typ1, typ2, FALSE, FALSE ) ) {
+    switch( CompatibleType( typ1, typ2, false, false ) ) {
     case PT:
     case PX:
         break;
@@ -535,7 +535,7 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
 
 static bool IsNullConst( TREEPTR tree )
 {
-    bool    rc = FALSE;
+    bool    rc = false;
 
     if( tree->op.opr == OPR_PUSHINT ) {
         uint64  val64 = LongValue64( tree );
@@ -584,7 +584,7 @@ static void CompareParms( TYPEPTR *master, TREEPTR parms, bool reverse )
             typ1 = PtrNode( typ1->object, FLAG_WAS_ARRAY, SEG_DATA );
         }
         /* check compatibility of parms */
-        ParmAsgnCheck( typ1, parm, parmno, FALSE );
+        ParmAsgnCheck( typ1, parm, parmno, false );
         typ1 = *master++;
         if( typ1 != NULL && typ1->decl_type == TYPE_DOT_DOT_DOT ) {
             typ1 = NULL;
@@ -665,20 +665,20 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             high = 0xffffffffU >> (MAXSIZE - (typ1->u.f.field_width));
             if( opnd2->op.u2.ulong_value > high ) {
                 if( (opnd2->op.u2.ulong_value | (high >> 1)) != ~0U ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             break;
         case TYPE_CHAR:
             if( opnd2->op.u2.long_value > 127 ||
                 opnd2->op.u2.long_value < -128 ) {
-                return( FALSE );
+                return( false );
             }
             break;
         case TYPE_UCHAR:
             if( opnd2->op.u2.ulong_value > 0xff) {
                 if( (opnd2->op.u2.ulong_value | (0xff >> 1)) != ~0U ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             break;
@@ -690,7 +690,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         case TYPE_USHORT:
             if( opnd2->op.u2.ulong_value > 0xffff ) {
                 if( (opnd2->op.u2.ulong_value | (0xffff >> 1)) != ~0U ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             break;
@@ -702,7 +702,7 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         case TYPE_SHORT:
             if( opnd2->op.u2.long_value > 32767 ||
                 opnd2->op.u2.long_value < -32768 ) {
-                return( FALSE );
+                return( false );
             }
             break;
         default:
@@ -711,24 +711,24 @@ static bool AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
     } else if( opnd2->op.opr == OPR_PUSHFLOAT ) {
         if( typ1->decl_type == TYPE_FLOAT ) {
             if( atof( opnd2->op.u2.float_value->string ) > TARGET_FLT_MAX ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool IsPtrtoFunc( TYPEPTR typ )
 {
     bool    ret;
 
-    ret = FALSE;
+    ret = false;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_POINTER ) {
         typ = typ->object;
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_FUNCTION ) {
-            ret = TRUE;
+            ret = true;
         }
     }
     return( ret );
@@ -753,7 +753,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
     typ2 = opnd2->u.expr_type;
 
     SetDiagType2( typ1, typ2 );
-    switch( CompatibleType( typ1, typ2, TRUE, IsNullConst( opnd2 ) ) ) {
+    switch( CompatibleType( typ1, typ2, true, IsNullConst( opnd2 ) ) ) {
     case NO:
         if( parmno ) {
             CErr2( ERR_PARM_TYPE_MISMATCH, parmno );
@@ -864,7 +864,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
 void TernChk( TYPEPTR typ1, TYPEPTR typ2 )
 {
     SetDiagType3( typ1, typ2, T_QUESTION );
-    switch( CompatibleType( typ1, typ2, FALSE, FALSE ) ) {
+    switch( CompatibleType( typ1, typ2, false, false ) ) {
     case NO:
         CErr1( ERR_TYPE_MISMATCH );
         break;
@@ -913,7 +913,7 @@ void ChkRetType( TREEPTR tree )
         }
     }
     /* check that the types are compatible */
-    ParmAsgnCheck( func_type, tree, 0, TRUE );
+    ParmAsgnCheck( func_type, tree, 0, true );
 }
 
 
@@ -982,7 +982,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
             break;
         }
         if( typ1->decl_type == TYPE_FUNCTION ) {
-            retcode = ChkCompatibleFunctionParms( typ1, typ2, FALSE );
+            retcode = ChkCompatibleFunctionParms( typ1, typ2, false );
             if( retcode != TCE_OK )
                 return( retcode );
             if( typ1->object == NULL || typ2->object == NULL ) {
@@ -1018,14 +1018,14 @@ bool VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
     case TCE_TYPE2_HAS_MORE_INFO:
         /* new= void *, old= something * */
         /* indicate want old definition  */
-        return( TRUE );
+        return( true );
     case TCE_TYPE_MISMATCH:
     case TCE_PARM_COUNT_MISMATCH:
         CErr2p( ERR_TYPE_DOES_NOT_AGREE, sym->name );
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 

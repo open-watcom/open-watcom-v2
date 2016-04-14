@@ -208,16 +208,16 @@ static bool pch_write( const char *buf, size_t len )
                 PH_BufSize = PH_BUF_SIZE;
                 PH_BufPtr = PH_Buffer;
                 if( write( PH_handle, PH_Buffer, PH_BUF_SIZE ) != PH_BUF_SIZE ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     } else if( len > 0 ) {
         if( write( PH_handle, buf, len ) != len ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool pch_align( size_t len )
@@ -227,12 +227,12 @@ static bool pch_align( size_t len )
         char    padding[8] = {0};
         return( pch_write( padding, len ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool PCHWrite( const void *bufptr, size_t len )
 {
-    bool    rc = FALSE;
+    bool    rc = false;
 
     if( len != 0 ) {
         if( PH_computing_size ) {
@@ -254,7 +254,7 @@ static bool PCHWriteUnalign( const void *bufptr, size_t len )
             return( pch_write( bufptr, len ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void FlushPHeader( void )
@@ -668,7 +668,7 @@ static void OutPutAType( TYPEPTR typ )
     bool            rc;
     array_info      *array;
 
-    rc = FALSE;
+    rc = false;
     switch( typ->decl_type ) {
     case TYPE_ARRAY:
         array = typ->u.array;                   // save pointer
@@ -898,7 +898,7 @@ static void OutPutSymHashTable( void )
             ++PH_SymHashCount;
         }
         HashTab[h] = NULL;
-        rc = FALSE;
+        rc = false;
         for( hsym = sym_list; hsym != NULL; hsym = hsym_next_sym ) {
             hsym_next_sym = hsym->next_sym;
             hsym->next_sym = PCHSetUInt( h );
@@ -1034,7 +1034,7 @@ static char *FixupIncFileList( char *p, unsigned incfile_count )
     INCFILE     *ifile;
 
     PCHOldIncFileList = IncFileList;
-    PCHOldIncListValid = TRUE;
+    PCHOldIncListValid = true;
     IncFileList = NULL;
     for( ; incfile_count != 0; --incfile_count ) {
         ifile = (INCFILE *)p;
@@ -1062,7 +1062,7 @@ static void FreeOldIncFileList( void )
             CMemFree( ilist );
         }
         PCHOldIncFileList = NULL;
-        PCHOldIncListValid = FALSE;
+        PCHOldIncListValid = false;
     }
 }
 
@@ -1130,18 +1130,18 @@ static bool VerifyIncludes( const char *filename )
     for( flist = FNameList; flist != NULL; flist = flist->next ) {
         if( fnew != NULL ) {
             if( FNAMECMPSTR( fnew->name, flist->name ) != 0 ) {
-                return( TRUE );                
+                return( true );                
             }
             fnew = fnew->next;
         } else if( filename != NULL ) {
             if( FNAMECMPSTR( filename, flist->name ) != 0 ) {
-                return( TRUE );                
+                return( true );                
             }
             filename = NULL;
         }
         if( flist->rwflag ) {
             if( SrcFileInRDir( flist ) ) {
-                flist->rwflag = FALSE;
+                flist->rwflag = false;
             }
         }
         if( flist->rwflag ) {
@@ -1151,11 +1151,11 @@ static bool VerifyIncludes( const char *filename )
 #if 0
                 printf( "%s old %d new %d\n", flist->name, flist->mtime, mtime );
 #endif
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static char *FixupLibraries( char *p, unsigned library_count )
@@ -1664,9 +1664,9 @@ static bool ValidHeader( pheader *pch )
       && (pch->specialsyms_count == SymGetNumSpecialSyms())
       && (pch->pack_amount == PackAmount)
       && (pch->msgflags_len == MESSAGE_COUNT) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );                // indicate unusable pre-compiled header
+    return( false );                // indicate unusable pre-compiled header
 }
 
 static int LoadPreCompiledHeader( char *p, pheader *pch )
@@ -1767,7 +1767,7 @@ int UsePreCompiledHeader( const char *filename )
     TagArray = NULL;
     PCHMacroHash = NULL;
     PCHOldIncFileList = NULL;
-    PCHOldIncListValid = FALSE;
+    PCHOldIncListValid = false;
     size = read( handle, &pch, sizeof( pheader ) );
     if( size != sizeof( pheader ) ) {
         close( handle );

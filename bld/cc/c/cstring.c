@@ -123,7 +123,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
     const unsigned char *p = (const unsigned char *)inbuf;
 
     olen = 0;
-    error = FALSE;
+    error = false;
     end = p + ilen;
     while( p < end ) {
         c = *p++;
@@ -183,11 +183,11 @@ STR_HANDLE GetLiteral( void )
        the end result is wide or not wide */
     p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
     q = NULL;
-    is_wide = FALSE;
+    is_wide = false;
     do {
         /* if one component is wide then the whole string is wide */
         if( CompFlags.wide_char_string )
-            is_wide = TRUE;
+            is_wide = true;
         if( q != NULL ) {
             p = CMemAlloc( sizeof( STRING_LITERAL ) );
             q->next_string = p;

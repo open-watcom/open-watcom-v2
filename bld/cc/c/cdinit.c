@@ -379,7 +379,7 @@ static void StoreIValue64( DATA_TYPE dtype, int64 value )
     dq.type = dtype;
     dq.flags = Q_DATA;
     dq.u.long64 = value;
-    CompFlags.non_zero_data = TRUE;
+    CompFlags.non_zero_data = true;
     GenDataQuad( &dq, TARGET_LONG64 );
 }
 
@@ -395,7 +395,7 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
         info->state = IS_ADDR;
         info->offset = tree->op.u2.long_value;
         if( info->offset != 0 )
-            CompFlags.non_zero_data = TRUE;
+            CompFlags.non_zero_data = true;
         break;
     case OPR_PUSHFLOAT:
         info->state = IS_ADDR;
@@ -414,32 +414,32 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
 #endif
         }
         if( info->offset != 0 )
-            CompFlags.non_zero_data = TRUE;
+            CompFlags.non_zero_data = true;
         break;
     case OPR_PUSHSTRING:
         info->state = IS_ADDR;
         if( info->addr_set ) {
-            info->is_error = TRUE;
+            info->is_error = true;
         }
-        info->addr_set = TRUE;
-        info->is_str = TRUE;
+        info->addr_set = true;
+        info->is_str = true;
         info->u.str_h = tree->op.u2.string_handle;
         tree->op.u2.string_handle->ref_count++;
-        CompFlags.non_zero_data = TRUE;
+        CompFlags.non_zero_data = true;
         break;
     case OPR_PUSHADDR:
         info->state = IS_ADDR;
     case OPR_PUSHSYM:
         if( info->addr_set ) {
-            info->is_error = TRUE;
+            info->is_error = true;
         }
-        info->addr_set = TRUE;
-        info->is_str = FALSE;
+        info->addr_set = true;
+        info->is_str = false;
         SymGet( &sym, tree->op.u2.sym_handle );
         info->u.sym_h = tree->op.u2.sym_handle;
-        CompFlags.non_zero_data = TRUE;
+        CompFlags.non_zero_data = true;
         if( sym.attribs.stg_class == SC_AUTO ) {
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         break;
     case OPR_INDEX:
@@ -450,10 +450,10 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
             AddrFold( tree->right, info );
             offset = tree->left->op.u2.long_value;
         } else {
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         info->offset += offset * SizeOfArg( tree->u.expr_type );
         if( tree->op.flags & OPFLAG_RVALUE ) {
@@ -477,21 +477,21 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
                 info->offset = tree->left->op.u2.long_value - info->offset;
             }
         } else {
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         break;
     case OPR_ADDROF:
         AddrFold( tree->right, info );
         info->state = IS_ADDR;
-        CompFlags.non_zero_data = TRUE;
+        CompFlags.non_zero_data = true;
         break;
     case OPR_ARROW:
         AddrFold( tree->left, info );
         if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         info->offset += tree->right->op.u2.long_value;
         if( tree->op.flags & OPFLAG_RVALUE ) {
@@ -501,7 +501,7 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
     case OPR_POINTS:
         AddrFold( tree->left, info );
         if( info->state == IS_VALUE ) { // must be foldable
-            info->is_error = TRUE;
+            info->is_error = true;
         }
         if( tree->op.flags & OPFLAG_RVALUE ) {
             info->state = IS_VALUE;
@@ -510,7 +510,7 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
     case OPR_DOT:
         AddrFold( tree->left, info );
         info->offset += tree->right->op.u2.long_value;
-        CompFlags.non_zero_data = TRUE;
+        CompFlags.non_zero_data = true;
         if( tree->op.flags & OPFLAG_RVALUE ) {
             info->state = IS_VALUE;
         }
@@ -522,7 +522,7 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
     case OPR_ERROR:                 // error has already been issued
         break;
     default:
-        info->is_error = TRUE;
+        info->is_error = true;
         break;
     }
 }
@@ -559,18 +559,18 @@ static void StorePointer( TYPEPTR typ, target_size size )
         tree = InitAsgn( typ, tree ); // as if we are assigning
         info.offset = 0;
         info.u.sym_h = SYM_NULL;
-        info.addr_set = FALSE;
+        info.addr_set = false;
         info.state = IS_VALUE;
-        info.is_str = FALSE;
-        info.is_error = FALSE;
+        info.is_str = false;
+        info.is_error = false;
         AddrFold( tree, &info );
         FreeExprTree( tree );
         if( info.state == IS_VALUE ) { // must be foldable  into addr+offset
-            info.is_error = TRUE;
+            info.is_error = true;
         }
         if( info.is_str ) { // need to fix cgen an DATAQUADS to handle str+off
             if( info.offset != 0 ) {
-                info.is_error = TRUE;
+                info.is_error = true;
             }
         }
         if( info.is_error ) {
@@ -622,7 +622,7 @@ static void StoreInt64( TYPEPTR typ )
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
         }
         FreeExprTree( tree );
-        CompFlags.non_zero_data = TRUE;
+        CompFlags.non_zero_data = true;
     }
     GenDataQuad( &dq, TARGET_LONG64 );
 }
@@ -704,14 +704,14 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
 {
     TREEPTR         tree;
     target_size     offs;
-    static bool     new_field = TRUE;
+    static bool     new_field = true;
 
     if( !CompFlags.extensions_enabled && !CompFlags.c99_extensions ) {
         return( field );
     }
 
     if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
-        new_field = TRUE;
+        new_field = true;
         return( field );
     }
 
@@ -719,7 +719,7 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     if(typ != ctyp && new_field)
         return( NULL );
 
-    new_field = FALSE;
+    new_field = false;
     if( typ->decl_type == TYPE_ARRAY ) {
         if( CurToken != T_LEFT_BRACKET )
             return( NULL );
@@ -749,7 +749,7 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     }
 
     if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
-        new_field = TRUE;
+        new_field = true;
         MustRecog( T_EQUAL );
     }
     return( field );
@@ -768,7 +768,7 @@ static bool DesignatedInSubAggregate( DATA_TYPE decl_type )
            in that case the comma was already eaten... */
         return( CurToken == T_DOT || CurToken == T_LEFT_BRACKET );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -1023,10 +1023,10 @@ static bool CharArray( TYPEPTR typ )
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_CHAR || typ->decl_type == TYPE_UCHAR ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1035,10 +1035,10 @@ static bool WCharArray( TYPEPTR typ )
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_SHORT || typ->decl_type == TYPE_USHORT ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void InitCharArray( TYPEPTR typ )
@@ -1073,7 +1073,7 @@ static void InitCharArray( TYPEPTR typ )
     if( size > len ) {                  /* if array > len of literal */
         ZeroBytes( size - len );
     }
-    CompFlags.non_zero_data = TRUE;
+    CompFlags.non_zero_data = true;
 }
 
 
@@ -1111,7 +1111,7 @@ static void InitWCharArray( TYPEPTR typ )
     for( i = 0; i < len; ++i ) {
         value = *pwc++;
         if( value != 0 )
-            CompFlags.non_zero_data = TRUE;
+            CompFlags.non_zero_data = true;
         dq.u_long_value1 = value;
         GenDataQuad( &dq, TARGET_WCHAR );
     }
@@ -1149,7 +1149,7 @@ static void StoreFloat( DATA_TYPE dtype, target_size size )
         }
         FreeExprTree( tree );
         if( dq.u.double_value != 0.0 ) {
-            CompFlags.non_zero_data = TRUE;
+            CompFlags.non_zero_data = true;
         }
     }
     GenDataQuad( &dq, size );
@@ -1173,7 +1173,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
     TYPEPTR             last_array;
 
     GenStaticDataQuad( sym_handle );
-    CompFlags.non_zero_data = FALSE;
+    CompFlags.non_zero_data = false;
     struct_typ = NULL;
     last_array = NULL;
     typ = sym->sym_type;
@@ -1212,7 +1212,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
         if( struct_typ == NULL ) {
             /* Array was not inside struct */
             sym->sym_type = ArrayNode( typ->object );
-            sym->sym_type->u.array->unspecified_dim = TRUE;
+            sym->sym_type->u.array->unspecified_dim = true;
         } else {
             typ = sym->sym_type;
             /* Create new structure type */
@@ -1225,7 +1225,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
                 if( typ->decl_type != TYPE_ARRAY )
                     break;
                 sym->sym_type = ArrayNode( sym->sym_type );
-                sym->sym_type->u.array->unspecified_dim = TRUE;
+                sym->sym_type->u.array->unspecified_dim = true;
                 typ = typ->object;
             }
             typ = last_array;
@@ -1239,11 +1239,11 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
     if( struct_typ != NULL ) {
         /* Structure contains an unspecified length array as last field */
         struct_typ->object->u.array->dimension = typ->u.array->dimension;
-        typ->u.array->unspecified_dim = TRUE;
+        typ->u.array->unspecified_dim = true;
         typ->u.array->dimension = 0;    /* Reset back to 0 */
     }
     if( sym->u.var.segid == SEG_UNKNOWN ) {
-        SetFarHuge( sym, FALSE );
+        SetFarHuge( sym, false );
         SetSegment( sym );
         SetSegAlign( sym );
     }
@@ -1334,11 +1334,11 @@ static bool SimpleUnion( TYPEPTR typ )
     case TYPE_UNION:
     case TYPE_FIELD:
     case TYPE_UFIELD:
-        return( FALSE );        // give up on these
+        return( false );        // give up on these
     default:
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool SimpleStruct( TYPEPTR typ )
@@ -1346,7 +1346,7 @@ static bool SimpleStruct( TYPEPTR typ )
     FIELDPTR    field;
 
     if( typ->decl_type == TYPE_UNION ) {
-        return( FALSE );
+        return( false );
     }
     for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
         typ = field->field_type;
@@ -1360,12 +1360,12 @@ static bool SimpleStruct( TYPEPTR typ )
         case TYPE_STRUCT:
         case TYPE_FIELD:
         case TYPE_UFIELD:
-            return( FALSE );        // give up on these
+            return( false );        // give up on these
         default:
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1406,7 +1406,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_UNKNOWN ) {
-                SetFarHuge( &sym2, FALSE );
+                SetFarHuge( &sym2, false );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
             }
@@ -1419,7 +1419,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_UNKNOWN ) {
-                SetFarHuge( &sym2, FALSE );
+                SetFarHuge( &sym2, false );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
             }

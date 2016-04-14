@@ -67,7 +67,7 @@ static bool ReadBuffer( FCB *srcfcb )
 
     if( srcfcb->src_fp == NULL ) {          /* in-memory buffer */
         CloseSrcFile( srcfcb );
-        return( FALSE );
+        return( false );
     }
     /* ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
@@ -86,10 +86,10 @@ static bool ReadBuffer( FCB *srcfcb )
     if( srcfcb->src_cnt == -1 ) {
         CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
         CloseSrcFile( srcfcb );
-        return( TRUE );
+        return( true );
     } else if( ( srcfcb->src_cnt == 0 ) && ( last_char == '\n' ) ) {
         CloseSrcFile( srcfcb );
-        return( TRUE );
+        return( true );
     } else if( srcfcb->src_cnt != 0 ) {
         last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     }
@@ -99,7 +99,7 @@ static bool ReadBuffer( FCB *srcfcb )
         srcfcb->src_cnt++;
     }
     srcfcb->src_ptr[srcfcb->src_cnt] = '\0';          // mark end of buffer
-    return( FALSE );            // indicate CurrChar does not contain a character
+    return( false );            // indicate CurrChar does not contain a character
 }
 
 
@@ -193,7 +193,7 @@ static char translateTriGraph( char c )
         if( c == p->tri ) {
             if( CompFlags.extensions_enabled ) {
                 if( NestLevel == SkipLevel ) {
-                    CompFlags.trigraph_alert = TRUE;
+                    CompFlags.trigraph_alert = true;
                 }
             }
             return( p->new );

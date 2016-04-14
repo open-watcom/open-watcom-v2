@@ -147,7 +147,7 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     SetDiagPop();
 
     /* check types of parms, including promotion */
-    ChkCompatibleFunction( type_old, type_new, TRUE );
+    ChkCompatibleFunction( type_old, type_new, true );
 }
 
 
@@ -168,9 +168,9 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
-    sym->attribs.rent = FALSE;   // Assume not override aka re-entrant
+    sym->attribs.rent = false;   // Assume not override aka re-entrant
     if( CompFlags.rent && (sym->attribs.declspec == DECLSPEC_DLLIMPORT) ) {
-        sym->attribs.rent = TRUE;
+        sym->attribs.rent = true;
     }
     if( stg_class == SC_REGISTER ||
         stg_class == SC_AUTO ||
@@ -302,9 +302,9 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         CWarn2p( WARN_NO_DATA_TYPE_GIVEN, ERR_NO_DATA_TYPE_GIVEN, sym->name );
     }
     if( CompFlags.rent ) {
-        sym->attribs.rent = TRUE; //Assume instance data
+        sym->attribs.rent = true; //Assume instance data
     } else {
-        sym->attribs.rent = FALSE;//Assume non instance data
+        sym->attribs.rent = false;//Assume non instance data
     }
     if( sym->attribs.naked ) {
         CErr1( ERR_INVALID_DECLSPEC );
@@ -663,12 +663,12 @@ bool DeclList( SYM_HANDLE *sym_head )
                     NextToken();
                 }
                 if( CurToken == T_EOF )
-                    return( FALSE );
+                    return( false );
                 FullDeclSpecifier( &info );
                 if( info.stg != SC_NONE || info.typ != NULL )
                     break;
                 if( SymLevel != 0 )
-                    return( FALSE );
+                    return( false );
                 break;
             }
             state = DECL_STATE_NONE;
@@ -755,7 +755,7 @@ bool DeclList( SYM_HANDLE *sym_head )
                     CurFuncHandle = sym_handle;
                     CurFunc = &CurFuncSym;
                     memcpy( CurFunc, &sym, sizeof( SYM_ENTRY ) );
-                    return( TRUE );     /* indicate this is a function defn */
+                    return( true );     /* indicate this is a function defn */
                 }
             }
             MustRecog( T_SEMI_COLON );
@@ -764,7 +764,7 @@ bool DeclList( SYM_HANDLE *sym_head )
             NextToken();                /* skip over ';' */
         }
     }
-// can't get here!      return( FALSE );
+// can't get here!      return( false );
 }
 
 
@@ -781,10 +781,10 @@ bool LoopDecl( SYM_HANDLE *sym_head )
     prevsym_handle = SYM_NULL;
     *sym_head = SYM_NULL;
     if( CurToken == T_EOF )
-        return( FALSE );
+        return( false );
     FullDeclSpecifier( &info );
     if( info.stg == SC_NONE && info.typ == NULL ) {
-        return( FALSE );    /* No declaration-specifiers, get outta here */
+        return( false );    /* No declaration-specifiers, get outta here */
     }
     if( info.stg != SC_NONE && info.stg != SC_AUTO && info.stg != SC_REGISTER ) {
         CErr1( ERR_INVALID_STG_CLASS_FOR_LOOP_DECL );
@@ -832,7 +832,7 @@ bool LoopDecl( SYM_HANDLE *sym_head )
         //  Chk_Struct_Union_Enum( info.typ );
         NextToken();                /* skip over ';' */
     }
-    return( TRUE );    /* We found a declaration */
+    return( true );    /* We found a declaration */
 }
 
 
@@ -935,7 +935,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
         if( CurToken == T___BASED ) {
             bool    use_seg;
 
-            use_seg = FALSE;
+            use_seg = false;
             NextToken();
             MustRecog( T_LEFT_PAREN );
             info->based_kind = BASED_NONE;
@@ -943,7 +943,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                 NextToken();
                 MustRecog( T___SEGMENT );
                 MustRecog( T_RIGHT_PAREN );
-                use_seg = TRUE;
+                use_seg = true;
             }
             switch( CurToken ) {
             case T_ID:                                  /* __based(variable) */
@@ -1147,7 +1147,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
         if( parm_type != NULL || CurToken == T_RIGHT_PAREN ) {
             type_list = NULL;
             if( parm_type != NULL ) {
-                type_list = MakeParmList( NewParm( parm_type, NULL ), FALSE );
+                type_list = MakeParmList( NewParm( parm_type, NULL ), false );
             }
             typ = FuncNode( typ, info.modifier, type_list );
             typ = PtrNode( typ, FLAG_NONE, SEG_DATA );
@@ -1551,7 +1551,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
     }
     ParmList = parm_namelist;
     /* if void is specified as a parm, it is the only parm allowed */
-    return( MakeParmList( parmlist, FALSE ) );
+    return( MakeParmList( parmlist, false ) );
 }
 
 
@@ -1625,10 +1625,10 @@ static bool VoidType( TYPEPTR typ )
     if( typ != NULL ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_VOID ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static TYPEPTR *FuncProtoType( void )
@@ -1753,10 +1753,10 @@ static bool IsIntComp( TYPEPTR ret1 )
     case TYPE_USHORT:
     case TYPE_INT:
     case TYPE_LONG:
-        ret = TRUE;
+        ret = true;
         break;
     default:
-       ret = FALSE;
+       ret = false;
     }
     return( ret );
 }

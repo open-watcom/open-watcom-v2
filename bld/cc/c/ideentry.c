@@ -180,8 +180,8 @@ IDEBool IDEAPI IDEInitDLL
     HeapUsedHi = 0;
     HeapFreeHi = 0;
 #endif
-    FrontEndInit( TRUE );
-    return FALSE;
+    FrontEndInit( true );
+    return false;
 }
 
 void IDEAPI IDEFreeHeap( void ) {
@@ -304,10 +304,10 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 
     hdl = hdl;
     TBreak();   // clear any pending IDEStopRunning's
-    *fatal_error = FALSE;
+    *fatal_error = false;
     FatalEnv = &env;
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
-        *fatal_error = TRUE;
+        *fatal_error = true;
     } else {
         argv[0] = (char *)opts;
         argv[1] = NULL;
@@ -340,10 +340,10 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
     int                 ret;
 
     TBreak();   // clear any pending IDEStopRunning's
-    *fatal_error = FALSE;
+    *fatal_error = false;
     FatalEnv = &env;
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
-        *fatal_error = TRUE;
+        *fatal_error = true;
     } else {
         argv = getFrontEndArgv( args, argc, infile, outfile );
         ret = FrontEnd( argv );
@@ -372,7 +372,7 @@ IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
 {
     hdl = hdl;
     msg = msg;
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -382,29 +382,29 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 
 //    DbgVerify( hdl == CompInfo.dll_handle, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
-        return( TRUE );
+        return( true );
     }
     if( info->ignore_env ) {
-        GlobalCompFlags.ignore_environment = TRUE;
-        GlobalCompFlags.ignore_current_dir = TRUE;
+        GlobalCompFlags.ignore_environment = true;
+        GlobalCompFlags.ignore_current_dir = true;
     }
     if( info->ver >= 2 ) {
         if( info->cmd_line_has_files ) {
-            GlobalCompFlags.ide_cmd_line_has_files = TRUE;
+            GlobalCompFlags.ide_cmd_line_has_files = true;
         }
         if( info->ver >= 3 ) {
             if( info->console_output ) {
-                GlobalCompFlags.ide_console_output = TRUE;
+                GlobalCompFlags.ide_console_output = true;
             }
             if( info->ver >= 4 ) {
                 if( info->progress_messages ) {
-                    GlobalCompFlags.progress_messages = TRUE;
+                    GlobalCompFlags.progress_messages = true;
                 }
             }
         }
     }
 #if defined( wcc_dll )
-//    GlobalCompFlags.dll_active = TRUE;
+//    GlobalCompFlags.dll_active = true;
 #endif
-    return( FALSE );
+    return( false );
 }

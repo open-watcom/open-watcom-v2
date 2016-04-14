@@ -257,7 +257,7 @@ static int DoSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYPE_INT;
         tree->op.u2.long_value = (target_int)value;
     } else {
-        value = DoOp32( left, tree->op.opr, right, TRUE );
+        value = DoOp32( left, tree->op.opr, right, true );
         if( const_type == TYPE_LONG ) {
             tree->op.u2.long_value = value;
         } else {
@@ -316,7 +316,7 @@ static int DoUnSignedOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYPE_INT;
         tree->op.u2.long_value = (target_int)value;
     } else {
-        value = DoOp32( left, tree->op.opr, right, FALSE );
+        value = DoOp32( left, tree->op.opr, right, false );
         if( const_type == TYPE_ULONG || const_type == TYPE_POINTER ) {
             tree->op.u2.ulong_value = value;
         } else {
@@ -345,36 +345,36 @@ int64 LongValue64( TREEPTR leaf )
 
     switch( leaf->op.u1.const_type ) {
     case TYPE_CHAR:
-        sign = TRUE;
+        sign = true;
         val32 = (signed char)leaf->op.u2.ulong_value;
         break;
     case TYPE_UCHAR:
-        sign = FALSE;
+        sign = false;
         val32 = (unsigned char)leaf->op.u2.ulong_value;
         break;
     case TYPE_SHORT:
-        sign = TRUE;
+        sign = true;
         val32 = (target_short)leaf->op.u2.ulong_value;
         break;
     case TYPE_USHORT:
-        sign = FALSE;
+        sign = false;
         val32 = (target_ushort)leaf->op.u2.ulong_value;
         break;
     case TYPE_INT:
-        sign = TRUE;
+        sign = true;
         val32 = (target_int)leaf->op.u2.ulong_value;
         break;
     case TYPE_UINT:
-        sign = FALSE;
+        sign = false;
         val32 = (target_uint)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG:
-        sign = TRUE;
+        sign = true;
         val32 = (target_long)leaf->op.u2.ulong_value;
         break;
     case TYPE_POINTER:
     case TYPE_ULONG:
-        sign = FALSE;
+        sign = false;
         val32 = (target_ulong)leaf->op.u2.ulong_value;
         break;
     case TYPE_LONG64:
@@ -384,7 +384,7 @@ int64 LongValue64( TREEPTR leaf )
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
     case TYPE_LONG_DOUBLE:
-        sign = TRUE;
+        sign = true;
         flt = leaf->op.u2.float_value;
         if( flt->len == 0 ) {
             ld = flt->ld;
@@ -403,7 +403,7 @@ int64 LongValue64( TREEPTR leaf )
 #endif
         break;
     default:
-        sign = FALSE;
+        sign = false;
         val32 = 0;
         break;
     }
@@ -457,7 +457,7 @@ static int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYPE_INT;
         tree->op.u2.long_value = (target_int)tmp;
     } else {
-        value = DoOp64( left, tree->op.opr, right, FALSE );
+        value = DoOp64( left, tree->op.opr, right, false );
         if( const_type  == TYPE_ULONG64 ) {
             tree->op.u2.long64_value = value;
         } else {
@@ -515,7 +515,7 @@ static int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         const_type = TYPE_INT;
         tree->op.u2.long_value = (target_int)tmp;
     } else {
-        value = DoOp64( left, tree->op.opr, right, TRUE );
+        value = DoOp64( left, tree->op.opr, right, true );
         if( const_type  == TYPE_LONG64 ) {
             tree->op.u2.long64_value = value;
         } else {
@@ -1122,7 +1122,7 @@ static bool FoldableTree( TREEPTR tree )
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 typedef enum {
@@ -1180,8 +1180,8 @@ static void CheckOpndValues( TREEPTR tree )
     case OPR_LSHIFT_EQUAL:
     case OPR_RSHIFT_EQUAL:
         if( IsConstLeaf( tree->right ) ) {
-            bool    shift_too_big = FALSE;
-            bool    shift_negative = FALSE;
+            bool    shift_too_big = false;
+            bool    shift_negative = false;
             int     max_shift;
 
             opnd = tree->right;
@@ -1200,9 +1200,9 @@ static void CheckOpndValues( TREEPTR tree )
 
                 right = opnd->op.u2.long_value;
                 if( right < 0 )
-                    shift_negative = TRUE;
+                    shift_negative = true;
                 else if( right >= max_shift )
-                    shift_too_big = TRUE;
+                    shift_too_big = true;
                 break;
                 }
             case SIGNED_INT64: {
@@ -1212,14 +1212,14 @@ static void CheckOpndValues( TREEPTR tree )
                 right = LongValue64( opnd );
                 I32ToI64( max_shift, &big_shift );
                 if( I64Test( &right ) < 0 )
-                    shift_negative = TRUE;
+                    shift_negative = true;
                 else if( I64Cmp( &right, &big_shift ) >= 0 )
-                    shift_too_big = TRUE;
+                    shift_too_big = true;
                 break;
                 }
             case UNSIGNED_INT:
                 if( (uint_32)opnd->op.u2.long_value >= (uint_32)max_shift )
-                    shift_too_big = TRUE;
+                    shift_too_big = true;
                 break;
             case UNSIGNED_INT64: {
                 uint64      right;
@@ -1228,7 +1228,7 @@ static void CheckOpndValues( TREEPTR tree )
                 right = LongValue64( opnd );
                 U32ToU64( max_shift, &big_shift );
                 if( U64Cmp( &right, &big_shift ) >= 0 )
-                    shift_too_big = TRUE;
+                    shift_too_big = true;
                 break;
                 }
             default:
@@ -1245,7 +1245,7 @@ static void CheckOpndValues( TREEPTR tree )
     case OPR_DIV:
     case OPR_MOD:
         if( IsConstLeaf( tree->right ) ) {
-            bool    zero_divisor = FALSE;
+            bool    zero_divisor = false;
 
             opnd = tree->right;
             r_type = opnd->u.expr_type;
@@ -1255,7 +1255,7 @@ static void CheckOpndValues( TREEPTR tree )
             case SIGNED_INT:
             case UNSIGNED_INT:
                 if( opnd->op.u2.long_value == 0 )
-                    zero_divisor = TRUE;
+                    zero_divisor = true;
                 break;
             case SIGNED_INT64:
             case UNSIGNED_INT64: {
@@ -1263,7 +1263,7 @@ static void CheckOpndValues( TREEPTR tree )
 
                 right = LongValue64( opnd );
                 if( U64Test( &right ) == 0 )
-                    zero_divisor = TRUE;
+                    zero_divisor = true;
                 break;
                 }
             case FLOATING:
@@ -1282,7 +1282,7 @@ static void CheckOpndValues( TREEPTR tree )
     default:
         break;
     }
-    tree->checked = TRUE;
+    tree->checked = true;
 }
 
 

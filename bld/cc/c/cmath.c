@@ -563,20 +563,20 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
         }
     }
 
-    rev_ret = FALSE;
+    rev_ret = false;
     switch( opr ) { // mapped rel ops to equivalent cases
     case T_NE:
-        rev_ret = TRUE;
+        rev_ret = true;
     case T_EQ:
         rel = REL_EQ;
         break;
     case T_GE:
-        rev_ret = TRUE;
+        rev_ret = true;
     case T_LT:
         rel = REL_LT;
         break;
     case T_GT:
-        rev_ret = TRUE;
+        rev_ret = true;
     case T_LE:
         rel = REL_LE;
         break;
@@ -640,7 +640,7 @@ static bool IsZero( TREEPTR tree )
         val64 = LongValue64( tree );
         ret = ( U64Test( &val64 ) == 0 );
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -668,17 +668,17 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
             if( (TargetSwitches & FLAT_MODEL) == 0 ) {
-                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), TRUE );
+                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
             }
 #else
-            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), TRUE );
+            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
 #endif
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
         // If we're converting an arithmetic type to a pointer, first convert
         // it to appropriately sized integer to correctly extend/truncate.
         if( TypeSize( typ1 ) != TypeSize( typ2 ) ) {
-            op2 = CnvOp( op2, GetIntTypeBySize( TypeSize( typ1 ), FALSE, FALSE ), TRUE );
+            op2 = CnvOp( op2, GetIntTypeBySize( TypeSize( typ1 ), false, false ), true );
         }
     }
     return( op2 );
@@ -724,10 +724,10 @@ static bool IsInt( DATA_TYPE op )
     case TYPE_LONG:
     case TYPE_LONG64:
     case TYPE_ULONG64:
-        ret = TRUE;
+        ret = true;
         break;
     default:
-       ret = FALSE;
+       ret = false;
     }
     return( ret );
 }
@@ -1059,7 +1059,7 @@ static bool LValue( TREEPTR op1 )
     TYPEPTR     typ;
 
     if( op1->op.opr == OPR_ERROR )
-        return( TRUE );
+        return( true );
     if( IsLValue( op1 ) ) {
         typ = TypeOf( op1 );
         if( typ->decl_type != TYPE_ARRAY ) {
@@ -1070,11 +1070,11 @@ static bool LValue( TREEPTR op1 )
                 op1->op.flags &= ~(OPFLAG_LVALUE_CAST | OPFLAG_RVALUE);
                 CWarn1( WARN_LVALUE_CAST, ERR_LVALUE_CAST );
             }
-            return( TRUE );
+            return( true );
         }
     }
     CErr1( ERR_MUST_BE_LVALUE );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1194,7 +1194,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             } else if( (op1_tp->u.p.decl_flags & FLAG_HUGE) ||
                       ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op2_type != LNG) && (op2_type != ULN) ) {
-                    op2 = CnvOp( op2, GetType( TYPE_LONG ), TRUE );
+                    op2 = CnvOp( op2, GetType( TYPE_LONG ), true );
                 }
             }
             op2 = MulByConst( op2, size );
@@ -1213,7 +1213,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if( (op2_tp->u.p.decl_flags & FLAG_HUGE)
               || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op1_type != LNG ) && (op1_type != ULN) ) {
-                    op2 = CnvOp( op2, GetType( TYPE_LONG ), TRUE );
+                    op2 = CnvOp( op2, GetType( TYPE_LONG ), true );
                 }
             }
             op1 = MulByConst( op1, size );
@@ -1343,7 +1343,7 @@ TREEPTR InitAsgn( TYPEPTR typ, TREEPTR op2 )
     op2 = RValue( op2 );
     op2 = BoolConv( typ, op2 );
     if( !CompFlags.no_check_inits ) {   // else fuck em
-        ParmAsgnCheck( typ, op2, 0, TRUE );
+        ParmAsgnCheck( typ, op2, 0, true );
     }
     return( op2 );
 }
@@ -1396,7 +1396,7 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         SetSymAssigned( op1 );
         typ = TypeOf( op1 );
         op2 = RValue( op2 );
-        ParmAsgnCheck( typ, op2, 0, TRUE );
+        ParmAsgnCheck( typ, op2, 0, true );
         op2 = BaseConv( typ, op2 );
         op2 = BoolConv( typ, op2 );
         if( opr == T_ASSIGN_LAST )
@@ -1520,12 +1520,12 @@ bool IsFuncPtr( TYPEPTR typ )
 {
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_POINTER )
-        return( FALSE );
+        return( false );
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_FUNCTION )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 /* Check if pointer conversion is losing high (segment) bits.
@@ -1537,7 +1537,7 @@ bool IsFuncPtr( TYPEPTR typ )
  */
 bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
 {
-    bool                is_safe = TRUE;
+    bool                is_safe = true;
     segment_id          new_segid;
     segment_id          old_segid;
     type_modifiers      new_flags;
@@ -1621,7 +1621,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, bool cast_op )
             opnd->u.expr_type = newtyp;
             opnd->op.u2.result_type = newtyp;
             if( cast_op ) {
-                CompFlags.meaningless_stmt = FALSE;
+                CompFlags.meaningless_stmt = false;
             }
         } else if( newtyp->decl_type == TYPE_ENUM ) {
             if( typ->decl_type == TYPE_POINTER ) {
@@ -1669,14 +1669,14 @@ convert:                                /* moved here */
                             SetDiagPop();
                             return( opnd );
                         }
-                        cast_op = TRUE;        /* force a convert */
+                        cast_op = true;        /* force a convert */
                     }
                 } else if( IsFuncPtr( typ ) || IsFuncPtr( newtyp ) ) {
-                    cast_op = TRUE;    /* force a convert */
+                    cast_op = true;    /* force a convert */
                 } else if( TypeSize( typ ) != TypeSize( newtyp ) ) {
-                    cast_op = TRUE;    /* force a convert */
+                    cast_op = true;    /* force a convert */
                 } else if( typ->decl_type != TYPE_POINTER || newtyp->decl_type != TYPE_POINTER ) {
-                    cast_op = TRUE;    /* force a convert */
+                    cast_op = true;    /* force a convert */
                 } else if( opr == OPR_PUSHADDR && opnd->op.opr == OPR_ADDROF ) {
                     opnd->u.expr_type = newtyp;
                     SetDiagPop();

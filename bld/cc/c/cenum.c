@@ -209,8 +209,8 @@ TYPEPTR EnumDecl( type_modifiers flags )
         }
         U32ToU64( 1, &Inc );
         U64Clear( n );
-        minus = FALSE;
-        has_sign = FALSE;
+        minus = false;
+        has_sign = false;
         step = 1;
         prev_lnk = &esym;
         esym = NULL;
@@ -228,23 +228,23 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 case TYPE_ULONG:
                 case TYPE_UINT:
                 case TYPE_ULONG64:
-                    minus = FALSE;
+                    minus = false;
                     break;
                 default:
                     if( val.value.u.sign.v ) {
-                        minus = TRUE;
+                        minus = true;
                         step = 2;
                     } else {
-                        minus = FALSE;
+                        minus = false;
                     }
                     break;
                 }
                 n = val.value;
             } else if( has_sign ) {
                 if( n.u.sign.v ) {
-                    minus = TRUE;
+                    minus = true;
                 } else {
-                    minus = FALSE;
+                    minus = false;
                 }
             }
             for( index = start_index; index < ENUM_SIZE; index += step ) {
@@ -274,7 +274,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 step = 1;
             } else {
                 if( !has_sign && minus ) {
-                    has_sign = TRUE;
+                    has_sign = true;
                     if( index < const_index ) {
                         // round up to signed
                         index = ( const_index + 1 ) & ~1;

@@ -79,7 +79,7 @@ static  segment_id  userSegment;
 
 void AssignSeg( SYMPTR sym )
 {
-    SetFarHuge( sym, TRUE );
+    SetFarHuge( sym, true );
     if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */

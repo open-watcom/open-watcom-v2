@@ -234,11 +234,11 @@ static void GetParmInfo()
 
 static int CheckForOrigin()
     {
-        if( !PragRecog( "origin" ) ) return( FALSE );
-        if( CurToken != T_CONSTANT ) return( FALSE );
+        if( !PragRecog( "origin" ) ) return( false );
+        if( CurToken != T_CONSTANT ) return( false );
         Offset = Constant;
         NextToken();
-        return( TRUE );
+        return( true );
     }
 
 

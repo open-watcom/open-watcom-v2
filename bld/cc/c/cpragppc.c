@@ -119,33 +119,33 @@ static bool GetAliasInfo( void )
 /******************************/
 {
     if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( TRUE );
+        return( true );
     NextToken();
     if( CurToken != T_ID )                  // error
-        return( FALSE );
+        return( false );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
         PragCurrAlias( SavedId );
         AdvanceToken();
         NextToken();
-        return( TRUE );
+        return( true );
     } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
         HashValue = SavedHash;
         SetCurrInfo( SavedId );
         AdvanceToken();
         NextToken();
         if( CurToken != T_ID )              // error
-            return( FALSE );
+            return( false );
         PragCurrAlias( Buffer );
         NextToken();
         if( CurToken == T_RIGHT_PAREN )
             NextToken();
         CopyAuxInfo();
         PragEnding();
-        return( FALSE ); /* process no more! */
+        return( false ); /* process no more! */
     } else {                                // error
         AdvanceToken();
-        return( FALSE ); // shut up the compiler
+        return( false ); // shut up the compiler
     }
 }
 
@@ -194,7 +194,7 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
         str = memcpy( buffer, strreg, len );
         str[len] = '\0';
         // search register or alias name
-        index = PragRegIndex( Registers, str, len, FALSE );
+        index = PragRegIndex( Registers, str, len, false );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
@@ -259,8 +259,8 @@ static bool GetByteSeq( byte_seq **code )
     AsmSysInit( buff );
     PPCTL_ENABLE_MACROS();
     NextToken();
-    too_many_bytes = FALSE;
-    uses_auto = FALSE;
+    too_many_bytes = false;
+    uses_auto = false;
     for( ;; ) {
         if( CurToken == T_STRING ) {
             AsmLine( Buffer );
@@ -277,7 +277,7 @@ static bool GetByteSeq( byte_seq **code )
         if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
             if( !too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                too_many_bytes = TRUE;
+                too_many_bytes = true;
             }
             AsmCodeAddress = 0; // reset index to we don't overrun buffer
         }
@@ -285,7 +285,7 @@ static bool GetByteSeq( byte_seq **code )
     PPCTL_DISABLE_MACROS();
     AsmFini();
     if( too_many_bytes ) {
-        uses_auto = FALSE;
+        uses_auto = false;
     } else {
         byte_seq      *seq;
         byte_seq_len  len;
@@ -388,7 +388,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     auto char           name[8];
 
     AsmFini();
-    uses_auto = FALSE;
+    uses_auto = false;
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );
@@ -399,7 +399,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
         CurrInfo->use = 1;
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         if( too_many_bytes ) {
-             uses_auto = FALSE;
+             uses_auto = false;
         } else {
             byte_seq    *seq;
 
