@@ -39,8 +39,6 @@
  * Minix  port 3/88 by Eric Roskos.
  */
 
-#define TRUE    1
-#define FALSE   0
 
 #define __NO_PHYS__ 1   /* define no physical IO is to take place */
 #ifdef __MSDOS__        /* For Turbo C */

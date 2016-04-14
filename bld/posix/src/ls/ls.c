@@ -39,6 +39,7 @@
 #if defined( __OS2__ )
 #include <os2.h>
 #endif
+#include "bool.h"
 #include "watcom.h"
 #include "misc.h"
 #include "getopt.h"
@@ -71,16 +72,16 @@ long    clsize;
 unsigned fileperlinecnt;
 unsigned maxfileperline;
 unsigned columnwidth;
-int     N1flag=FALSE,
-        Fflag=FALSE,
-        pflag=FALSE,
-        rxflag=FALSE,
-        Rflag=FALSE,
-        lflag=FALSE,
-        hflag=FALSE,
-        rflag=FALSE,
-        sflag=FALSE,
-        tflag=FALSE;
+int     N1flag=false,
+        Fflag=false,
+        pflag=false,
+        rxflag=false,
+        Rflag=false,
+        lflag=false,
+        hflag=false,
+        rflag=false,
+        sflag=false,
+        tflag=false;
 
 static const char *usageMsg[] = {
     "Usage: ls [-?1CFRlhprstX] [files]",
@@ -127,7 +128,7 @@ int main( int argc, char *argv[] )
 #endif
 
     if( !isatty( fileno( stdout ) ) ) {
-        N1flag = TRUE;
+        N1flag = true;
     }
 
     /*
@@ -136,38 +137,38 @@ int main( int argc, char *argv[] )
     while( (ch = GetOpt( &argc, argv, "XRphrtsFl1C", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'R':
-            Rflag=TRUE;
+            Rflag=true;
             break;
         case 'X':
-            rxflag=TRUE;
+            rxflag=true;
             break;
         case 'p':
-            N1flag=TRUE;
-            pflag=TRUE;
+            N1flag=true;
+            pflag=true;
             break;
         case 'r':
-            rflag=TRUE;
+            rflag=true;
             break;
         case 't':
-            tflag=TRUE;
+            tflag=true;
             break;
         case 's':
-            sflag=TRUE;
+            sflag=true;
             break;
         case 'F':
-            Fflag=TRUE;
+            Fflag=true;
             break;
         case 'l':
-            lflag=TRUE;
+            lflag=true;
             break;
         case '1':
-            N1flag=TRUE;
+            N1flag=true;
             break;
         case 'C':
-            N1flag=FALSE;
+            N1flag=false;
             break;
         case 'h':
-            hflag=TRUE;
+            hflag=true;
             break;
         }
     }
@@ -578,7 +579,7 @@ static int IsX( char *file )
     char        *f;
 
     f = file + strlen( file ) - 4;
-    if( f < file ) return( FALSE );
+    if( f < file ) return( false );
     if( !FNameCompare( f, ".com" )
       ||!FNameCompare( f, ".bat" )
       ||!FNameCompare( f, ".exe" )
@@ -586,9 +587,9 @@ static int IsX( char *file )
       ||!FNameCompare( f, ".cmd" )
 #endif
        ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* IsX */
 

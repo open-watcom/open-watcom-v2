@@ -33,11 +33,6 @@
 #ifndef _INCLUDED_FILERX_H
 #define _INCLUDED_FILERX_H
 
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
-
 extern int     FileMatch( void *crx, const char *name );
 extern char    *FileMatchInit( void **crx, const char *wild );
 extern void    FileMatchFini( void *crx );

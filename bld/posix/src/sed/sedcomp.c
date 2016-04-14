@@ -49,7 +49,7 @@ sedcmd          cmds[MAXCMDS + 1];      /* hold compiled commands */
 long            linenum[MAXLINES];      /* numeric-addresses table */
 
                                         /* miscellaneous shared variables */
-bool            nflag = FALSE;          /* -n option flag */
+bool            nflag = false;          /* -n option flag */
 int             eargc;                  /* scratch copy of argument count */
 unsigned char const      bits[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
@@ -134,7 +134,7 @@ static char     **eargv;                /* scratch copy of argument list */
 
 /* compilation flags */
 static int      eflag = 0;              /* -e option flag */
-static bool     gflag = FALSE;          /* -g option flag */
+static bool     gflag = false;          /* -g option flag */
 
 static void     compile( void );
 static int      cmdcomp( register char cchar );
@@ -219,10 +219,10 @@ int main( int argc, char *argv[] )
             fclose( cmdf );
             break;              /* go back for another argument */
         case 'g':
-            gflag = TRUE;       /* set global flag on all s cmds */
+            gflag = true;       /* set global flag on all s cmds */
             break;
         case 'n':
-            nflag = TRUE;       /* no print except on p flag or w */
+            nflag = true;       /* no print except on p flag or w */
             break;
         default:
             fprintf( stderr, UFLAG, flag );
@@ -290,7 +290,7 @@ static void compile( void )
                 break;
             if( *cp == '#' ) {          /* if the first two characters in the script are "#n" , */
                 if( cp[1] == 'n' )
-                    nflag = TRUE;       /* the default output shall be suppressed */
+                    nflag = true;       /* the default output shall be suppressed */
                 continue;
             }
         } else if( *cp != ';' )         /* get a new command line */

@@ -185,8 +185,8 @@ static const char *StrChr( const char *s, char c )
 #define NOTHING 9       /* no   Match empty string. */
 #define STAR    10      /* node Match this (simple) thing 0 or more times. */
 #define PLUS    11      /* node Match this (simple) thing 1 or more times. */
-#define CASEI   12      /* no   Set CASEIGNORE to TRUE */
-#define NOCASEI 13      /* no   Set CASEIGNORE to FALSE */
+#define CASEI   12      /* no   Set CASEIGNORE to true */
+#define NOCASEI 13      /* no   Set CASEIGNORE to false */
 #define OPEN    20      /* no   Mark this point in input as start of #n. */
 /*      OPEN+1 is number 1, etc. */
 #define CLOSE   40      /* no   Analogous to OPEN. */
@@ -288,14 +288,15 @@ regexp *RegComp( const char *instr )
     const char  *longest;
     const char  *exp;
     char        buff[MAX_STR*2];
-    int         flags, ignmag = FALSE;
+    int         flags;
+    bool        ignmag = false;
     unsigned    j;
     size_t      i, k, len;
 
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
         instr++;
-        ignmag = TRUE;
+        ignmag = true;
     }
 #endif
 
@@ -1318,6 +1319,6 @@ void RegAnchor( regexp * reg )
  * occurs at the beginning-of-line only */
 {
     if( reg != NULL ) {
-        reg->reganch = TRUE;
+        reg->reganch = true;
     }
 }

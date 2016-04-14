@@ -85,6 +85,7 @@
 *************************************************************************@H*/
 
 #include <stdio.h>
+#include "bool.h"
 
 #include "compress.h" /* contains the rest of the include file declarations */
 
@@ -294,7 +295,7 @@ int alloc_tables(maxcode, hashsize)
 #ifdef COMP40
 /* table clear for block compress */
 /* this is for adaptive reset present in version 4.0 joe release */
-/* DjG, sets it up and returns TRUE to compress and FALSE to not compress */
+/* DjG, sets it up and returns true to compress and false to not compress */
 int cl_block ()
 {
     register long int rat;
@@ -320,7 +321,7 @@ int cl_block ()
 
     if ( rat > ratio ){
         ratio = rat;
-        return FALSE;
+        return( false );
     }
     else {
         ratio = 0;
@@ -328,9 +329,9 @@ int cl_block ()
         if(debug)
                 fprintf ( stderr, "clear\n" );
 #endif
-        return TRUE;    /* clear the table */
+        return( true );     /* clear the table */
     }
-    return FALSE; /* don't clear the table */
+    return( false ); /* don't clear the table */
 }
 #endif
 
@@ -564,7 +565,7 @@ register int bits;
 int nextcode(codeptr)
 CODE *codeptr;
 /* Get the next code from input and put it in *codeptr.
- * Return (TRUE) on success, or return (FALSE) on end-of-file.
+ * Return (true) on success, or return (false) on end-of-file.
  * Adapted from COMPRESS V4.0.
  */
 {
@@ -599,7 +600,7 @@ CODE *codeptr;
   if ((shift += 8) < bits) code |= *bp << shift;
   *codeptr = code & highcode;
   offset += bits;
-  return (TRUE);
+  return( true );
 }
 
 void decompress()
@@ -626,21 +627,21 @@ void decompress()
             fprintf(stderr, "%s: ",ifname);
         setvbuf(stdout,xbuf,_IOFBF,XBUFSIZE);
     }
-  cleartable = TRUE;
+  cleartable = true;
   savecode = CLEAR;
   offset = 0;
   do {
     if ((code = savecode) == CLEAR && cleartable) {
       highcode = ~(~(CODE)0 << (bits = INITBITS));
-      fulltable = FALSE;
-      nextfree = (cleartable = block_compress) == FALSE ? 256 : FIRSTFREE;
+      fulltable = false;
+      nextfree = (cleartable = block_compress) == false ? 256 : FIRSTFREE;
       if (!nextcode(&prefxcode))
         break;
       putc((sufxchar = (char)prefxcode), stdout);
       continue;
     }
     i = 0;
-    if (code >= nextfree && !fulltable) {
+    if( code >= nextfree && !fulltable ) {
       if (code != nextfree){
         exit_stat = CODEBAD;
         return ;     /* Non-existant code */
@@ -688,7 +689,7 @@ void decompress()
       prefxcode = savecode;
       if (code++ == highcode) {
         if (highcode >= maxcode) {
-          fulltable = TRUE;
+          fulltable = true;
           --code;
         }
         else {

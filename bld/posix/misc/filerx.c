@@ -71,11 +71,11 @@ int FileMatch( void *crx, const char *name )
 {
     int i;
 
-    i = RegExec( crx, name, TRUE );
+    i = RegExec( crx, name, true );
     if( i ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /* FileNameWild - determine if a file name has a wild card */
@@ -89,16 +89,16 @@ int FileNameWild( const char *wild, int isrx )
         ch = wild[i];
         if( !isrx ) {
             if( ch == '*' || ch == '?' ) {
-                return( TRUE );
+                return( true );
             }
         } else {
             if( ch == '[' || ch == ']' || ch == '*' || ch == '+' ||
                 ch == '?' || ch == '(' || ch == ')' ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /* FileMatchInit - start file matching */
@@ -115,7 +115,7 @@ char *FileMatchInit( void **crx, const char *wild )
         the stack all the time.
     */
     MagicString = ".";
-    MagicFlag = FALSE;
+    MagicFlag = false;
     j = 0;
     len = strlen( wild );
     for( i = 0; i < len; i++ ) { /* this loop is closely related to the next */
@@ -250,7 +250,7 @@ int FileMatchNoRx( const char *name, const char *wild )
         len = flen;
     for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cfname[i], fname[i] ) != 0 && fname[i] != '?' ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -259,8 +259,8 @@ int FileMatchNoRx( const char *name, const char *wild )
         len = elen;
     for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cext[i], ext[i] ) != 0 && ext[i] != '?' ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }

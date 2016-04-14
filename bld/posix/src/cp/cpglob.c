@@ -31,12 +31,13 @@
 
 #include <stdio.h>
 #include <dos.h>
+#include "bool.h"
 #include "cp.h"
 
-int rflag = FALSE, iflag = FALSE, npflag = TRUE,  aflag = FALSE;
-int fflag = FALSE, tflag2 = FALSE, Tflag1 = FALSE, dflag2 = FALSE;
-int Dflag1 = FALSE, sflag = FALSE, todflag = FALSE;
-int pattrflag = FALSE,rxflag = FALSE;
+int rflag = false, iflag = false, npflag = true,  aflag = false;
+int fflag = false, tflag2 = false, Tflag1 = false, dflag2 = false;
+int Dflag1 = false, sflag = false, todflag = false;
+int pattrflag = false,rxflag = false;
 
 char OutOfMemory[] = "Out of memory!\n";
 char InvalidTDStr[] = "Invalid time/date string\n";

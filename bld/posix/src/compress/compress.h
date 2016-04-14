@@ -129,12 +129,6 @@
 *                   of the compression and decompression routines.          *
 *************************************************************************@H*/
 
-#ifndef FALSE            /* let's get some sense to this */
-#define FALSE 0
-#define TRUE !FALSE
-#endif
-
-
 
 #ifdef UNIX
 #define NPROTO
@@ -164,7 +158,7 @@ char *malloc();
                         /* may be redefined from the Makefile if desired */
 #endif
 #ifndef VERBOSE
-#define VERBOSE TRUE    /* compatible with original MINIX compress */
+#define VERBOSE true    /* compatible with original MINIX compress */
                         /* may be redefined from the Makefile if desired */
 #endif
 #define NPROTO
@@ -217,7 +211,7 @@ char *malloc();
 #define ALLOCATE(x,y)   lalloc((unsigned long)(x) * ((unsigned long)(y)))
 #define FREEIT(ptr)     free(ptr)
 #define setbinary(fp)    ((fp)->_flag |= _IOBIN)
-#define FILTER  FALSE
+#define FILTER  false
 #endif
 
 
@@ -278,24 +272,24 @@ char *malloc();
 #endif
 
 /* FILTER  if you want the program to operate as a unix type filter */
-/*  if not defined TRUE, then issuing command without parameters will */
+/*  if not defined true, then issuing command without parameters will */
 /*  print a usage and help information                              */
 /*  Use -DFILTER=0 to deactivate filter operation                   */
 #ifndef FILTER
-#define FILTER  TRUE
+#define FILTER  true
 #endif
 
 /* KEEPFLAG determines the default action on successful completion */
-/* Unix convention is FALSE (erase input file)                     */
+/* Unix convention is false (erase input file)                     */
 /* Use -DKEEPFLAG=1 to keep files as default or change here        */
 /* if you don't set it before here and you are compiling the debug */
 /* version, then files will be kept.                               */
 
 #ifndef KEEPFLAG
 #ifdef NDEBUG
-#define KEEPFLAG FALSE
+#define KEEPFLAG false
 #else
-#define KEEPFLAG TRUE
+#define KEEPFLAG true
 #endif
 #endif
 
@@ -378,11 +372,11 @@ extern char *index(), *rindex(), *strcat(), *strcpy(), *strncat(), *strncpy();
 /* #define BIND */
 
 #ifdef INCL_DOSPROCESS
-#define ISOS2 TRUE
+#define ISOS2 true
 #endif
 
 #ifdef BIND
-#define ISOS2 TRUE
+#define ISOS2 true
 #endif
 
 /*  The following is defined in MSC 5.1 stdlib.h
@@ -515,7 +509,7 @@ typedef int FLAG;
 
 #if (MAXBITS < 14)
 #ifdef SMALLMODEL
-#define NEARHEAP TRUE
+#define NEARHEAP true
 #undef FAR
 #define FAR
 #endif
@@ -579,7 +573,7 @@ typedef int FLAG;
 
 # ifdef MAXSEG_64K
 #   if  MAXBITS > 14
-#       define SPLIT_HT   TRUE
+#       define SPLIT_HT   true
 #   else
 #       define SPLIT_HT   0
 #   endif
@@ -589,7 +583,7 @@ typedef int FLAG;
 
 # ifdef MAXSEG_64K
 #   if  MAXBITS > 15
-#       define SPLIT_PFX   TRUE
+#       define SPLIT_PFX   true
 #   else
 #       define SPLIT_PFX   0
 #   endif
@@ -681,10 +675,10 @@ typedef int FLAG;
 
 
 /* The VERBOSE flag defines the default value of the verbose variable */
-/* If it's not already defined, we set it to FALSE here since most */
+/* If it's not already defined, we set it to false here since most */
 /* systems set the default that way.  -Dal */
 #ifndef VERBOSE
-#define VERBOSE FALSE
+#define VERBOSE false
 #endif
 
 
@@ -722,13 +716,13 @@ int maxbits = DFLTBITS;     /* user settable max # bits/code */
 
 int exit_stat = 0;
 int keep = KEEPFLAG;            /* True = don't kill file */
-int keep_error = FALSE;     /* True = keep output file even if error exist */
+int keep_error = false;     /* True = keep output file even if error exist */
 char *prog_name;
 char ifname[_MAX_DIR];
 char inpath[_MAX_DIR];
 char ofname [_MAX_DIR];
 char outpath[_MAX_DIR];
-int is_list = FALSE;            /* flag for file parameters */
+int is_list = false;            /* flag for file parameters */
 char endchar[1];
 char xbuf[XBUFSIZE];
 char zbuf[ZBUFSIZE];
@@ -737,8 +731,8 @@ char separator[] = "\\";
 #else
 char separator[] = "/";
 #endif
-int nomagic = FALSE;  /* Use a 3-byte magic number header, unless old file */
-int zcat_flg = FALSE; /* Write output on stdout, suppress messages */
+int nomagic = false;  /* Use a 3-byte magic number header, unless old file */
+int zcat_flg = false; /* Write output on stdout, suppress messages */
 int quiet = !VERBOSE; /* don't tell me about compression */
 /*
  * block compression parameters -- after all codes are used up,
@@ -755,14 +749,14 @@ int force = 0;
 
 #ifndef NDEBUG
 int verbose = VERBOSE;
-int debug = FALSE;
+int debug = false;
 #endif /* !NDEBUG */
 
 #ifndef NOSIGNAL
 SIGTYPE (*bgnd_flag)();
 #endif
 
-int do_decomp = FALSE;
+int do_decomp = false;
 
 #else               /* not defining instance */
 
