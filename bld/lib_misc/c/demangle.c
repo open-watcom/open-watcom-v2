@@ -60,10 +60,6 @@
 #define IMPORT_PREFIX_LEN       ( sizeof( IMPORT_PREFIX_STR_L ) - 1 )
 #define CHECK_IMPORT_PREFIX(s)  (s[0]=='_'&&(memcmp(s,IMPORT_PREFIX_STR_L,IMPORT_PREFIX_LEN)==0||memcmp(s,IMPORT_PREFIX_STR_U,IMPORT_PREFIX_LEN)==0))
 
-#undef  TRUE
-#undef  FALSE
-#define TRUE                    (1)
-#define FALSE                   (0)
 #define RECURSE_CHECK           (100*sizeof(int))
 #define AUTO_BUFFER_SIZE        80
 #define SUPPRESS_LIMIT          2
@@ -326,9 +322,9 @@ int no_errors;
 unsigned errors;
 #endif
 
-static int scoped_name( output_desc *data, state_desc *state );
-static int type_encoding( output_desc *data, state_desc *state );
-static int recursive_mangled_name( output_desc *data, state_desc *state );
+static bool scoped_name( output_desc *data, state_desc *state );
+static bool type_encoding( output_desc *data, state_desc *state );
+static bool recursive_mangled_name( output_desc *data, state_desc *state );
 static size_t terminateOutput( output_desc *data );
 
 static void zapSpace( output_desc *data )
@@ -637,7 +633,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char cons
 // everything before this point deals with output to the demangled name
 // ==========================================================================
 
-static int typeChar( char c, int grouping )
+static bool typeChar( char c, int grouping )
 {
     int i;
 
@@ -645,7 +641,7 @@ static int typeChar( char c, int grouping )
     if( check_element( i, translate_type_encoding ) ) {
         return( translate_type_encoding[i].grouping == grouping );
     }
-    return( FALSE );
+    return( false );
 }
 
 static int check_recurse( void ) {
@@ -684,12 +680,12 @@ static void advanceChar( output_desc *data )
     }
 }
 
-static int is_identifier( char c )
+static bool is_identifier( char c )
 {
     if( isalnum( c ) || c == UNDERSCORE || c == PERIOD ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -701,39 +697,39 @@ static unsigned char_to_digit( char c )
     return( (unsigned)-1 );
 }
 
-static int base_32_num( output_desc *data, long *value )
+static bool base_32_num( output_desc *data, long *value )
 {
     unsigned    dig;
     long        v;
-    int         rc = FALSE;
+    bool        rc = false;
 
     v = 0;
     for( ; (dig = char_to_digit( currChar( data ) )) < 32; ) {
         v = v * 32 + dig;
         advanceChar( data );
-        rc = TRUE;
+        rc = true;
     }
     *value = v;
     return( rc );
 }
 
-static int base_10_num( output_desc *data, size_t *value )
+static bool base_10_num( output_desc *data, size_t *value )
 {
     unsigned    dig;
     size_t      v;
-    int         rc = FALSE;
+    bool        rc = false;
 
     v = 0;
     for( ; (dig = char_to_digit( currChar( data ) )) < 10; ) {
         v = v * 10 + dig;
         advanceChar( data );
-        rc = TRUE;
+        rc = true;
     }
     *value = v;
     return( rc );
 }
 
-static int get_zz_len( output_desc *data, size_t *pvalue )
+static bool get_zz_len( output_desc *data, size_t *pvalue )
 {
     size_t      value;
     unsigned    uvalue;
@@ -749,16 +745,16 @@ static int get_zz_len( output_desc *data, size_t *pvalue )
                 advanceChar( data );
 #endif
                 *pvalue = value * 36 + uvalue;
-                return( TRUE );
+                return( true );
 #ifdef ZZ_LEN_3
             }
 #endif
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int basic_type( output_desc *data, state_desc *state )
+static bool basic_type( output_desc *data, state_desc *state )
 {
     char  c;
 
@@ -773,12 +769,12 @@ static int basic_type( output_desc *data, state_desc *state )
         advanceChar( data );
         _output2( DM_SET_INDEX, state->prefix );
         _output2( DM_CHAR_ENCODING, c - LOWER_TABLE_LIMIT );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int pointer( output_desc *data, state_desc *state )
+static bool pointer( output_desc *data, state_desc *state )
 {
     char  c;
 
@@ -792,21 +788,21 @@ static int pointer( output_desc *data, state_desc *state )
             if( currChar( data ) == TYPE_NAME_PREFIX ) {
                 advanceChar( data );
                 if( !scoped_name( data, state ) ) {
-                    return( FALSE );
+                    return( false );
                 }
                 if( currChar( data ) != TYPE_NAME_PREFIX ) {
-                    return( FALSE );
+                    return( false );
                 }
                 advanceChar( data );
                 _output1( DM_ZAP_SPACE );
             }
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int dimension( output_desc *data, state_desc *state )
+static bool dimension( output_desc *data, state_desc *state )
 {
     size_t value;
 
@@ -818,12 +814,12 @@ static int dimension( output_desc *data, state_desc *state )
     if( currChar( data ) == ARRAY_SUFFIX ) {
         advanceChar( data );
         _output1( DM_ARRAY_SUFFIX );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int array( output_desc *data, state_desc *state )
+static bool array( output_desc *data, state_desc *state )
 {
     _output1( DM_ARRAY );
     _output2( DM_RESET_INDEX, state->suffix );
@@ -833,18 +829,18 @@ static int array( output_desc *data, state_desc *state )
         _output1( DM_OPEN_PAREN );
         _output2( DM_RESET_INDEX, state->suffix );
         _output1( DM_CLOSE_PAREN );
-        state->right = FALSE;
+        state->right = false;
     }
     while( currChar( data ) == ARRAY_PREFIX ) {
         advanceChar( data );
         if( !dimension( data, state ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     return( type_encoding( data, state ) );
 }
 
-static int function( output_desc *data, state_desc *state )
+static bool function( output_desc *data, state_desc *state )
 {
     auto state_desc new_state;
     size_t          conv_offset = 0;
@@ -863,7 +859,7 @@ static int function( output_desc *data, state_desc *state )
         _output1( DM_OPEN_PAREN );
         _output2( DM_RESET_INDEX, state->suffix );
         _output1( DM_CLOSE_PAREN );
-        state->right = FALSE;
+        state->right = false;
     }
     new_state = *state;
     _output1( DM_FUNCTION_PREFIX );
@@ -876,7 +872,7 @@ static int function( output_desc *data, state_desc *state )
         }
         new_state.prefix = data->index;
         if( !type_encoding( data, &new_state ) ) {
-            return( FALSE );
+            return( false );
         }
         first_arg = 1;
     }
@@ -894,14 +890,14 @@ static int function( output_desc *data, state_desc *state )
     }
     new_state.prefix = data->index;
     if( type_encoding( data, &new_state ) ) {
-        data->cv_pending = FALSE;
-        return( TRUE );
+        data->cv_pending = false;
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-static int tq_function( output_desc *data, state_desc *state )
+static bool tq_function( output_desc *data, state_desc *state )
 {
     char c;
     char const *tq_ptr;
@@ -929,13 +925,13 @@ static int tq_function( output_desc *data, state_desc *state )
                 }
                 _output1( DM_ZAP_SPACE );
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int unmodified_type( output_desc *data, state_desc *state )
+static bool unmodified_type( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -946,7 +942,7 @@ static int unmodified_type( output_desc *data, state_desc *state )
         if( scoped_name( data, state ) ) {
             if( currChar( data ) == TYPE_NAME_SUFFIX ) {
                 advanceChar( data );
-                return( TRUE );
+                return( true );
             }
         }
     } else if( c == FUNCTION_PREFIX ) {
@@ -959,16 +955,16 @@ static int unmodified_type( output_desc *data, state_desc *state )
         return( array( data, state ) );
     } else if( typeChar( c, CHAR_POINTER ) ) {
         if( pointer( data, state ) ) {
-            state->right = TRUE;
+            state->right = true;
             return( type_encoding( data, state ) );
         }
     } else {
         return( basic_type( data, state ) );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int based_encoding( output_desc *data, state_desc *state )
+static bool based_encoding( output_desc *data, state_desc *state )
 {
     char   c;
     size_t len;
@@ -980,14 +976,12 @@ static int based_encoding( output_desc *data, state_desc *state )
         advanceChar( data );
         _output1( DM_BASED_SELF );
         _output1( DM_BASED_SUFFIX );
-        return( TRUE );
-        break;
+        return( true );
     case 'V':
         advanceChar( data );
         _output1( DM_BASED_VOID );
         _output1( DM_BASED_SUFFIX );
-        return( TRUE );
-        break;
+        return( true );
     case 'L':
         advanceChar( data );
         if( get_zz_len( data, &len ) ) {
@@ -998,7 +992,7 @@ static int based_encoding( output_desc *data, state_desc *state )
             }
             _output1( DM_BASED_STRING_SUFFIX );
             _output1( DM_BASED_SUFFIX );
-            return( TRUE );
+            return( true );
         }
         break;
     case 'A':
@@ -1015,15 +1009,15 @@ static int based_encoding( output_desc *data, state_desc *state )
                 _output2( DM_RESET_INDEX, new_state.suffix );
                 _output1( DM_ZAP_SPACE );
                 _output1( DM_BASED_SUFFIX );
-                return( TRUE );
+                return( true );
             }
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
-static int modifier_list( output_desc *data, state_desc *state )
+static bool modifier_list( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -1039,20 +1033,20 @@ static int modifier_list( output_desc *data, state_desc *state )
         }
         if( c == 'J' ) {
             if( !based_encoding( data, state ) ) {
-                return( FALSE );
+                return( false );
             }
         }
         c = currChar( data );
     }
-    return( TRUE );
+    return( true );
 }
 
-static int type_encoding( output_desc *data, state_desc *state )
+static bool type_encoding( output_desc *data, state_desc *state )
 {
-    int ret;
+    bool ret;
     char c;
 
-    ret = FALSE;
+    ret = false;
     _output1( DM_TYPE_ENCODING );
     c = currChar( data );
     if( typeChar( c, CHAR_MODIFIER ) ) {
@@ -1072,7 +1066,7 @@ static int type_encoding( output_desc *data, state_desc *state )
     return( ret );
 }
 
-static int template_arg( output_desc *data, state_desc *state )
+static bool template_arg( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -1087,12 +1081,12 @@ static int template_arg( output_desc *data, state_desc *state )
                 advanceChar( data );
                 _output2( DM_SET_INDEX, state->prefix );
                 _output2( DM_INTEGER, value );
-                return( TRUE );
+                return( true );
             } else if( c == NEGATIVE_INT ) {
                 advanceChar( data );
                 _output2( DM_SET_INDEX, state->prefix );
                 _output2( DM_INTEGER, -value );
-                return( TRUE );
+                return( true );
             }
         }
     } else if( c == TEMPLATE_TYPE ) {
@@ -1104,10 +1098,10 @@ static int template_arg( output_desc *data, state_desc *state )
             return( recursive_mangled_name( data, state ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int template_name( output_desc *data, state_desc *state )
+static bool template_name( output_desc *data, state_desc *state )
 {
     auto state_desc new_state;
     int             first_arg = 0;
@@ -1126,7 +1120,7 @@ static int template_name( output_desc *data, state_desc *state )
         }
         new_state.prefix = data->index;
         if( !template_arg( data, &new_state ) ) {
-            return( FALSE );
+            return( false );
         }
         first_arg = 1;
         c = currChar( data );
@@ -1136,10 +1130,10 @@ static int template_name( output_desc *data, state_desc *state )
         _output1( DM_ZAP_SPACE );
     }
     _output1( DM_TEMPLATE_SUFFIX );
-    return( TRUE );
+    return( true );
 }
 
-static int watcom_object( output_desc *data, state_desc *state )
+static bool watcom_object( output_desc *data, state_desc *state )
 {
     key_desc srch;
     int      i;
@@ -1176,13 +1170,13 @@ static int watcom_object( output_desc *data, state_desc *state )
         }
         if( currChar( data ) == TYPE_NAME_SUFFIX ) {
             advanceChar( data );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int special_type_names( output_desc *data, state_desc *state )
+static bool special_type_names( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -1194,14 +1188,14 @@ static int special_type_names( output_desc *data, state_desc *state )
         for( ; (c = currChar( data )) != NULL_CHAR; ) {
             advanceChar( data );
             if( c == TYPE_NAME_SUFFIX ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int operator_function( output_desc *data, state_desc *state )
+static bool operator_function( output_desc *data, state_desc *state )
 {
     int i;
 
@@ -1211,12 +1205,12 @@ static int operator_function( output_desc *data, state_desc *state )
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
         _output2( DM_OPERATOR_FUNCTION, i );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int relational_function( output_desc *data, state_desc *state )
+static bool relational_function( output_desc *data, state_desc *state )
 {
     int i;
 
@@ -1226,12 +1220,12 @@ static int relational_function( output_desc *data, state_desc *state )
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
         _output2( DM_RELATIONAL_FUNCTION, i );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int assignment_function( output_desc *data, state_desc *state )
+static bool assignment_function( output_desc *data, state_desc *state )
 {
     int i;
 
@@ -1241,72 +1235,72 @@ static int assignment_function( output_desc *data, state_desc *state )
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_OPERATOR_PREFIX );
         _output2( DM_ASSIGNMENT_FUNCTION, i );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int op_new( output_desc *data, state_desc *state )
+static bool op_new( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
     _output1( DM_OPERATOR_NEW );
-    return( TRUE );
+    return( true );
 }
 
-static int op_new_array( output_desc *data, state_desc *state )
+static bool op_new_array( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
     _output1( DM_OPERATOR_NEW_ARRAY );
-    return( TRUE );
+    return( true );
 }
 
-static int dtor( output_desc *data, state_desc *state )
+static bool dtor( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_DESTRUCTOR_CHAR );
     _output1( DM_DESTRUCTOR );
     data->pending_loc = data->count - data->index;
-    data->ctdt_pending = TRUE;
-    return( TRUE );
+    data->ctdt_pending = true;
+    return( true );
 }
 
-static int op_delete( output_desc *data, state_desc *state )
+static bool op_delete( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
     _output1( DM_OPERATOR_DELETE );
-    return( TRUE );
+    return( true );
 }
 
-static int op_delete_array( output_desc *data, state_desc *state )
+static bool op_delete_array( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
     _output1( DM_OPERATOR_DELETE_ARRAY );
-    return( TRUE );
+    return( true );
 }
 
-static int ctor( output_desc *data, state_desc *state )
+static bool ctor( output_desc *data, state_desc *state )
 {
     state = state;
     _output1( DM_CONSTRUCTOR );
     data->pending_loc = data->count - data->index;
-    data->ctdt_pending = TRUE;
-    return( TRUE );
+    data->ctdt_pending = true;
+    return( true );
 }
 
-static int user_conversion( output_desc *data, state_desc *state )
+static bool user_conversion( output_desc *data, state_desc *state )
 {
     _output2( DM_SET_INDEX, state->prefix );
     _output1( DM_OPERATOR_PREFIX );
     _output1( DM_OPERATOR_CONVERT );
-    data->cv_pending = TRUE;
-    return( TRUE );
+    data->cv_pending = true;
+    return( true );
 }
 
-static int op_name( output_desc *data, state_desc *state )
+static bool op_name( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -1369,10 +1363,10 @@ static int op_name( output_desc *data, state_desc *state )
         return( watcom_object( data, state ) );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
-static int name( output_desc *data, state_desc *state )
+static bool name( output_desc *data, state_desc *state )
 {
     char c;
 
@@ -1395,10 +1389,10 @@ static int name( output_desc *data, state_desc *state )
             _output2( DM_RESET_INDEX, data->pending_loc );
             _output1( DM_CTOR_DTOR_NAME );
             _output3( DM_IDENTIFIER, len, id );
-            data->ctdt_pending = FALSE;
+            data->ctdt_pending = false;
         }
         if( data->scope_name && data->scope_index == 0 ) {
-            data->scope_name = FALSE;
+            data->scope_name = false;
             data->scope_ptr = id;
             data->scope_len = len;
         }
@@ -1406,7 +1400,7 @@ static int name( output_desc *data, state_desc *state )
         _output3( DM_IDENTIFIER, len, id );
         _output1( DM_EMIT_SPACE );
         advanceChar( data );
-        return( TRUE );
+        return( true );
     } else {
         char const *ptr = data->input;
         size_t  len = 0;
@@ -1416,7 +1410,7 @@ static int name( output_desc *data, state_desc *state )
             c = currChar( data );
         }
         if( data->scope_name && data->scope_index == 0 ) {
-            data->scope_name = FALSE;
+            data->scope_name = false;
             data->scope_ptr = ptr;
             data->scope_len = len;
         }
@@ -1426,7 +1420,7 @@ static int name( output_desc *data, state_desc *state )
                 _output2( DM_RESET_INDEX, data->pending_loc );
                 _output1( DM_CTOR_DTOR_NAME );
                 _output3( DM_IDENTIFIER, len, ptr );
-                data->ctdt_pending = FALSE;
+                data->ctdt_pending = false;
             }
             _output2( DM_SET_INDEX, state->prefix );
             _output3( DM_IDENTIFIER, len, ptr );
@@ -1436,13 +1430,13 @@ static int name( output_desc *data, state_desc *state )
                 replicate[next_replicate].len = len;
                 next_replicate++;
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static int sym_name( output_desc *data, state_desc *state )
+static bool sym_name( output_desc *data, state_desc *state )
 {
     _output1( DM_NAME );
     if( currChar( data ) == OPNAME_PREFIX ) {
@@ -1453,7 +1447,7 @@ static int sym_name( output_desc *data, state_desc *state )
     }
 }
 
-static int scope( output_desc *data, state_desc *state, size_t *symbol_length )
+static bool scope( output_desc *data, state_desc *state, size_t *symbol_length )
 {
     char c;
 
@@ -1479,10 +1473,10 @@ static int scope( output_desc *data, state_desc *state, size_t *symbol_length )
         *symbol_length = data->index - state->prefix - 1;
         return( rc );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int scoped_name( output_desc *data, state_desc *state )
+static bool scoped_name( output_desc *data, state_desc *state )
 {
     size_t symbol_length;
 
@@ -1496,32 +1490,32 @@ static int scoped_name( output_desc *data, state_desc *state )
                 _output1( DM_SCOPE_SEPARATOR );
             }
             if( !scope( data, state, &symbol_length ) ) {
-                return( FALSE );
+                return( false );
             }
             _output1( DM_ZAP_SPACE );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int mangled_name( output_desc *data )
+static bool mangled_name( output_desc *data )
 {
     auto state_desc new_state;
 
     _output1( DM_MANGLED_NAME );
     new_state.prefix = 0;
     new_state.suffix = 0;
-    new_state.right = FALSE;
+    new_state.right = false;
     if( scoped_name( data, &new_state ) ) {
         _output2( DM_RESET_INDEX, 0 );
         _output1( DM_ZAP_SPACE );
         return( type_encoding( data, &new_state ) );
     }
-    return( FALSE );
+    return( false );
 }
 
-static int full_mangled_name( output_desc *data )
+static bool full_mangled_name( output_desc *data )
 {
     unsigned advances;
 
@@ -1543,14 +1537,14 @@ static int full_mangled_name( output_desc *data )
             for( ; advances != 0; --advances ) {
                 advanceChar( data );
                 if( currChar( data ) == NULL_CHAR ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             return( mangled_name( data ) );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static void do_demangle( output_desc *data )
@@ -1672,7 +1666,7 @@ static size_t demangle_recursive( char const *input, char *buff, size_t buff_siz
     return( data.input - input );
 }
 
-static int recursive_mangled_name( output_desc *data, state_desc *state )
+static bool recursive_mangled_name( output_desc *data, state_desc *state )
 {
     auto char buff[AUTO_BUFFER_SIZE];
 
@@ -1681,7 +1675,7 @@ static int recursive_mangled_name( output_desc *data, state_desc *state )
     _output1( DM_RECURSE_END );
     _output2( DM_SET_INDEX, state->prefix );
     _output3( DM_COPY_STRING, 0, buff );
-    return( TRUE );
+    return( true );
 }
 
 size_t __demangle_l(                            // DEMANGLE A C++ NAME
@@ -1768,12 +1762,12 @@ mangled_type __is_mangled_internal( char const *name, size_t len )
     return( __NOT_MANGLED );
 }
 
-int __unmangled_name(                           // FIND UNMANGLED BASE NAME
+bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
     char const *name,                           // - mangled C++ name
     size_t len,                                 // - length of mangled name
     char const **basep,                         // - location of C++ base name
     size_t *base_sizep )                        // - size of C++ base name
-{                                               // return TRUE if name mangled
+{                                               // return true if name mangled
     char const *end;
     int   mangled;
     size_t base_size;
@@ -1785,7 +1779,7 @@ int __unmangled_name(                           // FIND UNMANGLED BASE NAME
     if( !mangled ) {
         *basep = name;
         *base_sizep = len;
-        return( FALSE );
+        return( false );
     }
     end = name + len;
     name += mangled; // skip magic cookie
@@ -1805,7 +1799,7 @@ int __unmangled_name(                           // FIND UNMANGLED BASE NAME
         }
     }
     *base_sizep = base_size;
-    return( TRUE );
+    return( true );
 }
 
 #if !defined( __WLINK__ )
@@ -1830,7 +1824,7 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     data.suppress_output = 0;
     new_state.prefix = 0;
     new_state.suffix = 0;
-    new_state.right = FALSE;
+    new_state.right = false;
     type_encoding( &data, &new_state );
     outlen = terminateOutput( &data );
     /* size does not include '\0' */
@@ -1872,13 +1866,13 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
 
 #endif // !__DIP__
 
-int __scope_name(                               // EXTRACT A C++ SCOPE
+bool __scope_name(                               // EXTRACT A C++ SCOPE
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     unsigned index,                             // - scope wanted
     char const **scopep,                        // - location of C++ scope name
     size_t *scope_sizep )                       // - size of C++ scope name
-{                                               // returns TRUE on success
+{                                               // returns true on success
     int                 mangled;
     auto output_desc    data;
 
@@ -1887,18 +1881,18 @@ int __scope_name(                               // EXTRACT A C++ SCOPE
     *scope_sizep = 0;
     mangled = __is_mangled( input, len );
     if( !mangled ) {
-        return( FALSE );
+        return( false );
     }
     init_descriptor( &data, &demangleEmit, &data, input, len, NULL, 0 );
-    data.scope_name = TRUE;
+    data.scope_name = true;
     data.scope_index = index;
     do_demangle( &data );
     if( data.scope_len != 0 ) {
         *scopep = data.scope_ptr;
         *scope_sizep = data.scope_len;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
