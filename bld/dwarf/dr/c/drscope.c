@@ -116,9 +116,9 @@ static bool AContainer( dr_handle enclose, int index, void *_df )
     df->head = new;
     new->handle = enclose;
     if( enclose == df->target ) {
-        cont = FALSE;
+        cont = false;
     } else {
-        cont = TRUE;
+        cont = true;
     }
     return( cont );
 }

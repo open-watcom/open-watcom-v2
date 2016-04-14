@@ -128,8 +128,8 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
     dr_handle   infoOffset;
     unsigned_8  opcode;
     dr_ref_info registers = { { 0, 0, NULL }, 0L, NULL, 1L, 1 };
-    bool        quit = FALSE;
-    bool        inScope = FALSE;
+    bool        quit = false;
+    bool        inScope = false;
 
     loc = DWRCurrNode->sections[ DR_DEBUG_REF ].base;
     end = loc + DWRCurrNode->sections[ DR_DEBUG_REF ].size;
@@ -146,13 +146,13 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             loc += sizeof( unsigned_32 );
             ScopePush( &registers.scope, owning_node );
             if( (which & REFERSTO) != 0 && owning_node == entry ) {
-                inScope = TRUE;
+                inScope = true;
             }
             break;
 
         case REF_END_SCOPE:
             ScopePop( &registers.scope );
-            inScope = FALSE;
+            inScope = false;
             break;
 
         case REF_SET_FILE:
@@ -194,7 +194,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
                 loc += sizeof( unsigned_32 );
             }
 
-            quit = FALSE; /* don't terminate */
+            quit = false; /* don't terminate */
             if( do_callback( &registers, data1 ) || inScope ) {
                 char    *name = NULL;
 

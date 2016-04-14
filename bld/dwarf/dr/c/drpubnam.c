@@ -77,7 +77,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
         unit_end = pos + sizeof( uint_32 ) + header.len;
         pos += sizeof( header );
         pubname.dbg_cu = dbg_base + header.dbg_pos;
-        pubname.is_start = TRUE;
+        pubname.is_start = true;
         for( ;; ) {
             dbg_handle = DWRVMReadDWord( pos );
             if( dbg_handle == 0 )
@@ -101,7 +101,7 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             if( !callback( data, &pubname ) ) {
                 break;
             }
-            pubname.is_start = FALSE;
+            pubname.is_start = false;
         }
         pos = unit_end;
     }

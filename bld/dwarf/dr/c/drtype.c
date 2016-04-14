@@ -43,7 +43,7 @@ static bool   DWRGetConstAT( dr_handle abbrev, dr_handle info,
     dw_formnum  form;
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     for( ;; ) {
         attrib = DWRVMReadULEB128( &abbrev );
         if( attrib == at )
@@ -55,7 +55,7 @@ static bool   DWRGetConstAT( dr_handle abbrev, dr_handle info,
     }
     if( attrib != 0 ) {
         *where = DWRReadConstant( abbrev, info );
-        ret = TRUE;
+        ret = true;
     }
     return( ret );
 }
@@ -170,8 +170,8 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
             info->kind = DR_TYPEK_VOID;
             info->mclass = DR_MOD_BASE;
             info->size = 0;
-            info->modifier.sign = FALSE;
-            return( TRUE );
+            info->modifier.sign = false;
+            return( true );
         }
         tag = DWRReadTag( &entry, &abbrev );
         abbrev++;   /* skip child flag */
@@ -264,11 +264,11 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
             switch( value ) {
             case DW_ATE_address:
                 info->kind = DR_TYPEK_ADDRESS;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_boolean:
                 info->kind = DR_TYPEK_BOOL;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_complex_float:
                 info->kind = DR_TYPEK_COMPLEX;
@@ -278,25 +278,25 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
                 break;
             case DW_ATE_signed:
                 info->kind = DR_TYPEK_INTEGER;
-                info->modifier.sign = TRUE;
+                info->modifier.sign = true;
                 break;
             case DW_ATE_signed_char:
                 info->kind  = DR_TYPEK_CHAR;
-                info->modifier.sign = TRUE;
+                info->modifier.sign = true;
                 break;
             case DW_ATE_unsigned:
                 info->kind = DR_TYPEK_INTEGER;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_unsigned_char:
                 info->kind  = DR_TYPEK_CHAR;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             default:
                 goto error;
             }
         } else {
-            info->modifier.sign = FALSE;
+            info->modifier.sign = false;
         }
         break;
     case DR_MOD_ADDR:
@@ -333,9 +333,9 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
         }
         break;
     }
-    return( TRUE );
+    return( true );
 error:
-    return( FALSE );
+    return( false );
 }
 
 extern dr_ptr DRGetAddrClass( dr_handle entry )
@@ -524,7 +524,7 @@ bool DRConstValAT( dr_handle var, uint_32 *ret )
         }
     }
 not_found:
-    return( FALSE );
+    return( false );
 found:
-    return( TRUE );
+    return( true );
 }

@@ -146,7 +146,7 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     int                 i;
 
     dbg = dbg;
-    ret = FALSE;
+    ret = false;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );
     }
@@ -223,7 +223,7 @@ dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
 
     dbg = InitDbgHandle( file, sizes, byteswap );
     if( dbg != NULL ) {
-        ReadCompUnits( dbg, FALSE );
+        ReadCompUnits( dbg, false );
     }
     return( dbg );
 }
@@ -235,7 +235,7 @@ dr_dbg_handle DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
 
     dbg = InitDbgHandle( file, sizes, byteswap );
     if( dbg != NULL ) {
-        ReadCompUnits( dbg, TRUE );
+        ReadCompUnits( dbg, true );
     }
     return( dbg );
 }
@@ -252,7 +252,7 @@ void DRDbgFini( dr_dbg_handle dbg )
     compunit = dbg->compunit.next;
     while( compunit != NULL ) {
         next = compunit->next;
-        DWRFiniFileTable( &compunit->filetab, FALSE );
+        DWRFiniFileTable( &compunit->filetab, false );
         if( compunit->abbrevs != NULL ) {
             --(*compunit->abbrev_refs);
             if( *compunit->abbrev_refs == 0 ) {
@@ -265,7 +265,7 @@ void DRDbgFini( dr_dbg_handle dbg )
         DWRFREE( compunit );
         compunit = next;
     }
-    DWRFiniFileTable( &dbg->compunit.filetab, FALSE );
+    DWRFiniFileTable( &dbg->compunit.filetab, false );
     DWRFREE( dbg );
 }
 
@@ -296,6 +296,6 @@ void DRFini( void )
 /*****************/
 {
     DWRVMDestroy();
-    DWRFiniFileTable( &FileNameTable.fnametab, TRUE );
-    DWRFiniFileTable( &FileNameTable.pathtab, TRUE );
+    DWRFiniFileTable( &FileNameTable.fnametab, true );
+    DWRFiniFileTable( &FileNameTable.pathtab, true );
 }

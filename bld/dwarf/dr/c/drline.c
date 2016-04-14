@@ -68,9 +68,9 @@ static void InitState( line_info *info )
     info->state.line = 1;
     info->state.col = 0;
     info->state.is_stmt = info->rdr.def_is_stmt;
-    info->state.basic_blk = FALSE;
-    info->state.end_seq = FALSE;
-    info->state.addr_set = TRUE;  // address starts at 0
+    info->state.basic_blk = false;
+    info->state.end_seq = false;
+    info->state.addr_set = true;  // address starts at 0
 }
 
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
@@ -104,7 +104,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     line_base = info->rdr.line_base;
     line_range = info->rdr.line_range;
     opcode_base = info->rdr.opcode_base;
-    cont = TRUE;
+    cont = true;
     while( cont && curr < finish ) {    // now go through the statement program
         value_lns = DWRVMReadByte( curr );
         curr++;
@@ -113,9 +113,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
             value_lne = DWRVMReadByte( curr );
             curr++;
             --length;
+            if( DWRCurrNode->wat_producer_ver == VER_V1 || DWRCurrNode->wat_producer_ver == VER_V2 ) {
+                if( value_lne == DW_LNE_WATCOM_set_segment_OLD ) {
+                    value_lne = DW_LNE_WATCOM_set_segment;
+                }
+            }
             switch( value_lne ) {
             case DW_LNE_end_sequence:
-                info->state.end_seq = TRUE;
+                info->state.end_seq = true;
                 /* append a row */
                 if( cue != NULL ) {
                     cont = cue( cue_data, &info->state );
@@ -127,10 +132,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 break;
             case DW_LNE_set_address:
                 info->state.offset = DWRReadInt( curr, length );
-                info->state.addr_set = TRUE;
+                info->state.addr_set = true;
                 curr += length;
                 break;
-            case DW_LNE_WATCOM_set_segment_OLD:
+            case DW_LNE_set_discriminator:
+                // it is used by Watcom and OW until OW1.9 for DW_LNE_WATCOM_set_segment
+                // it is in colission with Dwarf specification V4 and above
+                // following code must handle this for backward compatibility
+                break;
             case DW_LNE_WATCOM_set_segment:
                 info->state.seg = (uint_16)DWRReadInt( curr, length );
                 curr += length;
@@ -174,8 +183,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                         break;
                     }
                 }
-                info->state.addr_set = FALSE;
-                info->state.basic_blk = FALSE;
+                info->state.addr_set = false;
+                info->state.basic_blk = false;
                 break;
             case DW_LNS_advance_pc:
                 info->state.offset += DWRVMReadULEB128( &curr ) * min_ins_len;
@@ -193,7 +202,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 info->state.is_stmt = !info->state.is_stmt;
                 break;
             case DW_LNS_set_basic_block:
-                info->state.basic_blk = TRUE;
+                info->state.basic_blk = true;
                 break;
             case DW_LNS_const_add_pc:
                 value = 255 - opcode_base;
@@ -219,8 +228,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                     break;
                 }
             }
-            info->state.addr_set = FALSE;
-            info->state.basic_blk = FALSE;
+            info->state.addr_set = false;
+            info->state.basic_blk = false;
         }
     }
     info->rdr.curr = curr;
@@ -307,7 +316,7 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     name_buf = NULL;
     name_buf_len = 0;
     stmt = InitProgInfo( &info.rdr, stmt, 0 );
-    cont = TRUE;
+    cont = true;
     while( cont && stmt < info.rdr.start ) {    // get directory table
         value = DWRVMReadByte( stmt );
         if( value == 0 ) {

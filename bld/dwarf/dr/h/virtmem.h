@@ -42,7 +42,7 @@ extern unsigned         DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned ma
 extern unsigned_16      DWRVMReadWord( dr_handle );
 extern unsigned_32      DWRVMReadDWord( dr_handle );
 
-#define DWRVMReadSLEB128(__h) (signed_32)ReadLEB128( __h, TRUE )
+#define DWRVMReadSLEB128(__h) (signed_32)ReadLEB128( __h, true )
 
 #if defined( USE_VIRTMEM )
 
@@ -52,7 +52,7 @@ extern void             DWRVMSkipLEB128( dr_handle * );
 extern void             DWRVMRead( dr_handle, void *, unsigned );
 extern unsigned_8       DWRVMReadByte( dr_handle );
 
-#define DWRVMReadULEB128(__h) ReadLEB128( __h, FALSE )
+#define DWRVMReadULEB128(__h) ReadLEB128( __h, false )
 
 #else   /* !USE_VIRTMEM */
 
@@ -97,7 +97,7 @@ extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
 
 #else
 
-#define DWRVMReadULEB128(__h)   ReadLEB128( __h, FALSE )
+#define DWRVMReadULEB128(__h)   ReadLEB128( __h, false )
 
 #endif
 

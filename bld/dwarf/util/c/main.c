@@ -42,11 +42,9 @@
 #include <dr.h>
 #include "client.h"
 
-#define TRUE 1
-#define FALSE 0
 
 void SetSects( int handle );
-int TestIntegrity( int handle );
+bool TestIntegrity( int handle );
 
 struct section_data Sections[DR_DEBUG_NUM_SECTS];
 
@@ -112,7 +110,7 @@ void SetSects( int handle )
     }
 }
 
-int TestIntegrity( int handle ) {
+bool TestIntegrity( int handle ) {
 /*******************************/
     char *      mbrHeaderString = "WBROWSE";
     int         mbrHeaderStringLen = 7;
@@ -127,15 +125,15 @@ int TestIntegrity( int handle ) {
     // verify browser identification bytes
     read( handle, &signature, sizeof(unsigned_16) );
     if( signature != mbrHeaderSignature ){
-        return FALSE;
+        return( false );
     }
     read( handle, buf, mbrHeaderStringLen );
     if( memcmp( buf, mbrHeaderString, mbrHeaderStringLen ) != 0 ) {
-        return FALSE;
+        return( false );
     }
     read( handle, buf, sizeof(char) );
     if( buf[0] != mbrHeaderVersion ) {
-        return FALSE;
+        return( false );
     }
-    return TRUE;
+    return( true );
 }

@@ -66,7 +66,7 @@ static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x, vo
 {
     x = x;
     *(dr_language *)data = GetLanguage( abbrev, mod );
-    return( FALSE );        // do not continue processing
+    return( false );        // do not continue processing
 }
 
 dr_language DRGetLanguageAT( dr_handle entry )
@@ -346,7 +346,7 @@ bool DRIsStatic( dr_handle entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) ) {
         return( DWRReadFlag( abbrev, entry ) == 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DRIsArtificial( dr_handle entry )
@@ -358,7 +358,7 @@ bool DRIsArtificial( dr_handle entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) ) {
         return( DWRReadFlag( abbrev, entry ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool DRIsSymDefined( dr_handle entry )
@@ -432,9 +432,9 @@ bool DRGetLowPc( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_low_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -450,9 +450,9 @@ bool DRGetHighPc( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_high_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -637,9 +637,9 @@ bool DRStartScopeAT( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_start_scope ) ) {
         offset =  DWRReadConstant( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }

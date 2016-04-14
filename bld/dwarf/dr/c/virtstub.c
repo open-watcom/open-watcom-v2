@@ -86,12 +86,12 @@ bool DWRVMSectDone( dr_handle base, unsigned_32 size )
 
     size = size;
     lnk = &AllocHead;
-    ret = FALSE;
+    ret = false;
     while( (walk = *lnk) != NULL ) {
         if( (dr_handle)walk->data == base ) {
             *lnk = walk->next;
             DWRFREE( walk );
-            ret = TRUE;
+            ret = true;
             break;
         }
         lnk = &walk->next;
@@ -119,7 +119,7 @@ bool DRSwap( void )
 {
     // swap requests are ignored.
 
-    return( FALSE );
+    return( false );
 }
 
 

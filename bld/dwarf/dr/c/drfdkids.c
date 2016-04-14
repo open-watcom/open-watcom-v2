@@ -48,7 +48,7 @@ void DRKidsSearch( dr_handle clhandle, dr_search search, void *data, DRCLSSRCH c
 /***************************************************************************************/
 // search the children of a given entry for particular tags ..
 // callback is called with a found entry's type, handle,
-// name, parent, and data.  If it returns FALSE, searching stops.
+// name, parent, and data.  If it returns false, searching stops.
 {
     dr_sym_type     symtype;
     dr_handle       prt = clhandle;
@@ -123,14 +123,14 @@ static bool baseHook( dr_sym_type notused1, dr_handle handle,
 
     tmp_entry = handle;
     if( DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) )
-        return( TRUE );
+        return( true );
     abbrev++;   /* skip child flag */
 
     if( DWRScanForAttrib( &abbrev, &tmp_entry, DW_AT_type ) ) {
         basehandle = DWRReadReference( abbrev, tmp_entry );
         tmp_entry = basehandle;
         if( DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) )
-            return( TRUE );
+            return( true );
         abbrev++;   /* skip child flag */
 
         symtype = DR_SYM_NOT_SYM;
@@ -143,7 +143,7 @@ static bool baseHook( dr_sym_type notused1, dr_handle handle,
         basename = DWRGetName( abbrev, tmp_entry );
         return( binfo->callback( symtype, basehandle, basename, handle, binfo->data ) );
     }
-    return( TRUE );
+    return( true );
 }
 
 void DRBaseSearch( dr_handle clhandle, void * data, DRCLSSRCH callback )
@@ -186,7 +186,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle, mod_scan_info *minfo
                              minfo->handle, sinfo->data );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void DRDerivedSearch( dr_handle handle, void *data, DRCLSSRCH callback )
@@ -243,7 +243,7 @@ static bool friendHook( dr_sym_type st, dr_handle handle, char *name,
 
         info->callback( st, friend_han, name, prt, info->data );
     }
-    return( TRUE );
+    return( true );
 }
 
 void DRFriendsSearch( dr_handle handle, void *data, DRCLSSRCH callback )

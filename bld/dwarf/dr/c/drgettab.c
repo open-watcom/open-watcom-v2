@@ -55,7 +55,7 @@ static bool GrabLineAddr( dr_handle abbrev, dr_handle mod, mod_scan_info *x, voi
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
         *((unsigned_32 *)data) = DWRReadConstant( abbrev, mod );
     }
-    return( FALSE );    // do not continue with the search.
+    return( false );    // do not continue with the search.
 }
 
 extern void DWRInitFileTable( file_table *tab )
@@ -242,7 +242,7 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
         }       // else it was a special op, and thus only 1 byte long
     }
     DWRTrimTableSize( idxtab );
-    DWRFiniFileTable( &curridxmap, FALSE );
+    DWRFiniFileTable( &curridxmap, false );
 }
 
 extern char * DWRFindFileName( dr_fileidx fileidx, dr_handle entry )

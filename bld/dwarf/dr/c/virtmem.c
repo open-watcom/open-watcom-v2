@@ -117,7 +117,7 @@ static unsigned_16      CurrBranch = 1;
 static unsigned_16      NextLeaf = 0;   // next leaf # to be allocated.
 static unsigned_16      SwapBranch = 1; // next branch # to be swapped.
 static unsigned_16      SwapLeaf = 0;   // next leaf # to be swapped
-static bool             DontSwap = TRUE; // TRUE if we can't swap now.
+static bool             DontSwap = true; // true if we can't swap now.
 static unsigned_16      PageCount;
 
 extern void DWRVMInit( void )
@@ -128,7 +128,7 @@ extern void DWRVMInit( void )
     memset( PageTab, 0, NumBranches * sizeof( page_entry * ) );
     PageTab[1] = DWRALLOC( sizeof( page_entry ) * MAX_LEAFS );
     memset( PageTab[1], 0, sizeof( page_entry ) * MAX_LEAFS );
-    DontSwap = FALSE;
+    DontSwap = false;
     PageCount = 0;
 }
 
@@ -170,7 +170,7 @@ static virt_struct GetPage( dr_section sect )
     virt_struct     vmem;
 
     if( NextLeaf >= MAX_LEAFS ) {
-        DontSwap = TRUE;
+        DontSwap = true;
         NextLeaf = 0;
         CurrBranch++;
         if( CurrBranch >= NumBranches ) {
@@ -179,8 +179,8 @@ static virt_struct GetPage( dr_section sect )
         alloc_size = sizeof( page_entry ) * MAX_LEAFS;
         entry = DWRALLOC( alloc_size );
         PageTab[ CurrBranch ] = entry;
-        memset( entry, 0, alloc_size ); //set all flags FALSE.
-        DontSwap = FALSE;
+        memset( entry, 0, alloc_size ); //set all flags false.
+        DontSwap = false;
     } else {
         entry = &PageTab[ CurrBranch ][ NextLeaf ];
     }
@@ -224,8 +224,9 @@ bool DRSwap( void )
     page_entry          *entry;
     bool                passtwo;
 
-    if( DontSwap ) return( FALSE );
-    passtwo = FALSE;
+    if( DontSwap )
+        return( false );
+    passtwo = false;
     startbranch = SwapBranch;
     startleaf = SwapLeaf;
     for( ;; ) {
@@ -245,15 +246,15 @@ bool DRSwap( void )
                 DWRFREE( entry->mem );
                 PageCount--;
                 entry->inmem = 0;
-                return( TRUE );
+                return( true );
             }
         }
         if( SwapLeaf == startleaf && SwapBranch == startbranch ) {
             if( passtwo ) break;        // nothing to swap;
-            passtwo = TRUE;
+            passtwo = true;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern void DWRVMDestroy( void )
@@ -264,7 +265,7 @@ extern void DWRVMDestroy( void )
     unsigned        leaf;
     page_entry      *entry;
 
-    DontSwap = TRUE;
+    DontSwap = true;
     if( PageTab == NULL ) return;
     for( branch = 1; branch < NumBranches; branch++ ) {
         entry = PageTab[ branch ];
@@ -299,7 +300,7 @@ static void ReadPage( page_entry * node, virt_struct vm )
         size = MAX_NODE_SIZE;
     }
     node->mem = DWRALLOC( size );
-    node->inmem = TRUE;
+    node->inmem = true;
     ++PageCount;
     DWRSEEK( DWRCurrNode->file, sect, offset );
     DWRREAD( DWRCurrNode->file, sect, node->mem, size );
@@ -315,7 +316,7 @@ extern void DWRVMSwap( dr_handle base, unsigned_32 size, bool *ret )
     bool                    ret_val;
 
     vm.l = base;
-    ret_val = FALSE;
+    ret_val = false;
     if( size > 0 ) {
         for( ;; ) {
             entry = NODE( vm );
@@ -324,7 +325,7 @@ extern void DWRVMSwap( dr_handle base, unsigned_32 size, bool *ret )
                 --PageCount;
                 DWRFREE( entry->mem );
                 entry->inmem = 0;
-                ret_val = TRUE;
+                ret_val = true;
             }
             if( size <= MAX_NODE_SIZE )
                 break;
@@ -332,7 +333,7 @@ extern void DWRVMSwap( dr_handle base, unsigned_32 size, bool *ret )
             vm.l += MAX_NODE_SIZE;
         }
     }
-    if( ret_val == TRUE ) {
+    if( !ret_val ) {
         *ret = ret_val;
     }
 }

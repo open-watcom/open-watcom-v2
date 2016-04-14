@@ -229,9 +229,9 @@ static void DoLocExpr( unsigned_8       *p,
             Push( top );
             top[0] = op1;
             if( (p != end) && ((*p == DW_OP_xderef) || (*p == DW_OP_xderef_size)) ) {
-                isfar = TRUE;
+                isfar = true;
             } else {
-                isfar = FALSE;
+                isfar = false;
             }
             if( !callbck->acon( d, top, isfar ) ) {
                 return;
@@ -470,7 +470,7 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
 
     addr_size = DWRGetAddrSize( DWRFindCompileUnit( info ) );
     form = DWRVMReadULEB128( &abbrev );
-    ret = TRUE;
+    ret = true;
     for( ;; ) {
         switch( form ) {
         case DW_FORM_block1:
@@ -494,13 +494,13 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
         case DW_FORM_ref_addr:
         case DW_FORM_data4:
             if( !callbck->live( d, &context ) ) {
-                ret = FALSE;
+                ret = false;
                 goto exit;
             }
             loclist =  DWRVMReadDWord( info );
             info = SearchLocList( loclist, context, addr_size );
             if( info == DR_HANDLE_NUL ) {
-                ret = FALSE;
+                ret = false;
                 goto exit;
             }
             form = DW_FORM_block2;
@@ -510,7 +510,7 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
             ret = callbck->ref( d, size, addr_size, DR_LOC_ADDR );
             goto exit;
         default:
-            ret = FALSE;
+            ret = false;
             goto exit;
         }
     } end_loop:;
@@ -519,10 +519,10 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
     } else if( size > 0 ) {
         expr = loc_buff;
     } else {
-        ret = FALSE;
+        ret = false;
         goto exit;
     }
-    ret = TRUE;
+    ret = true;
     DWRVMRead( info, expr, size );
     DoLocExpr( expr, size, addr_size, callbck, d, var );
     if( size > sizeof( loc_buff ) ) {
@@ -552,7 +552,7 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
         at = DW_AT_vtable_elem_location;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( DWRScanForAttrib( &abbrev, &var, at ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
@@ -567,9 +567,9 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
 
             addr_size = DWRGetAddrSize( DWRFindCompileUnit( var ) );
             DoLocExpr( dummy_loc, sizeof( dummy_loc ), addr_size, callbck, d, var );
-            ret = TRUE;
+            ret = true;
         } else {
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
@@ -597,12 +597,12 @@ bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
         at = DW_AT_string_length;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( DWRScanForAttrib( &abbrev, &var, at ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -618,7 +618,7 @@ bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -647,7 +647,7 @@ bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -663,7 +663,7 @@ bool DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }

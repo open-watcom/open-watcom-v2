@@ -58,10 +58,11 @@ static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo, v
     symctxt.name = NULL;
     if( sinfo->name != NULL ) {
         symctxt.name = DWRGetName( abbrev, mod );
-        if( symctxt.name == NULL ) return( TRUE );
-        if( !RegExec( sinfo->name, symctxt.name, TRUE ) ) {
+        if( symctxt.name == NULL )
+            return( true );
+        if( !RegExec( sinfo->name, symctxt.name, true ) ) {
             DWRFREE( symctxt.name );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -84,7 +85,7 @@ extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
 // optionally look for a particular name.
 {
     sym_search_data info;
-    bool            done = FALSE;
+    bool            done = false;
     regexp          *name = _name;
 
     if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
@@ -110,7 +111,7 @@ extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
 // resume a search from context information in ctxt
 {
     sym_search_data info;
-    bool            done = FALSE;
+    bool            done = false;
     regexp          *name = _name;
 
     if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
@@ -136,7 +137,7 @@ static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
     callback = callback;
     // NYI
 
-    return( FALSE );        // more info, in case anyone checks
+    return( false );        // more info, in case anyone checks
 }
 
 extern dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )

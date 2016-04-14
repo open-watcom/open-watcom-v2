@@ -33,10 +33,6 @@
 #include "virtmem.h"
 #include "drrtns.h"
 
-#ifndef FALSE
-#define FALSE (1==0)
-#define TRUE  (1==1)
-#endif
 
 #define DWARF_VER_INVALID(x)   ((x) != DWARF_IMPL_VERSION)
 
