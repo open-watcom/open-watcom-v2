@@ -98,39 +98,39 @@ static  bool    FindFlowOut( block *blk ) {
         ins = ins->head.prev;
     }
 //    prev = ins->head.prev;
-    if( TypeClassSize[ ins->type_class ] > WORD_SIZE ) return( FALSE );
+    if( TypeClassSize[ ins->type_class ] > WORD_SIZE ) return( false );
     true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
-    if( true_blk->inputs != 1 ) return( FALSE );
-    if( true_blk->targets != 1 ) return( FALSE );
+    if( true_blk->inputs != 1 ) return( false );
+    if( true_blk->targets != 1 ) return( false );
 
     false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
-    if( false_blk->inputs != 1 ) return( FALSE );
-    if( false_blk->targets != 1 ) return( FALSE );
+    if( false_blk->inputs != 1 ) return( false );
+    if( false_blk->targets != 1 ) return( false );
 
     join_blk = false_blk->edge[ 0 ].destination.u.blk;
-    if( join_blk != true_blk->edge[ 0 ].destination.u.blk ) return( FALSE );
-    if( join_blk->inputs != 2 ) return( FALSE );
-    if( join_blk->class & UNKNOWN_DESTINATION ) return( FALSE );
+    if( join_blk != true_blk->edge[ 0 ].destination.u.blk ) return( false );
+    if( join_blk->inputs != 2 ) return( false );
+    if( join_blk->class & UNKNOWN_DESTINATION ) return( false );
 
     ins0 = SetToConst( false_blk, &false_cons );
-    if( ins0 == NULL ) return( FALSE );
+    if( ins0 == NULL ) return( false );
     ins1 = SetToConst( true_blk, &true_cons );
-    if( ins1 == NULL ) return( FALSE );
+    if( ins1 == NULL ) return( false );
 
     I32ToI64( 1, &one );
     I32ToI64( -1, &neg_one );
     U64Sub( &true_cons, &false_cons, &diff );
     if( U64Cmp( &diff, &neg_one ) == 0 ) {
         U64IncDec( &false_cons, -1 );
-        reverse = TRUE;
+        reverse = true;
     } else {
-        if( U64Cmp( &diff, &one ) != 0 ) return( FALSE );
-        reverse = FALSE;
+        if( U64Cmp( &diff, &one ) != 0 ) return( false );
+        reverse = false;
     }
     result = ins0->result;
-    if( result != ins1->result ) return( FALSE );
+    if( result != ins1->result ) return( false );
     class = ins0->type_class;
-    if( class != ins1->type_class ) return( FALSE );
+    if( class != ins1->type_class ) return( false );
 
     if( reverse ) FlipCond( ins );
 
@@ -167,7 +167,7 @@ static  bool    FindFlowOut( block *blk ) {
     join_blk->inputs = 1;
     blk->class &= ~CONDITIONAL;
     blk->class |= JUMP;
-    return( TRUE );
+    return( true );
 }
 
 extern  bool    SetOnCondition( void ) {
@@ -176,8 +176,8 @@ extern  bool    SetOnCondition( void ) {
     block       *blk;
     bool        change;
 
-    if( !_CPULevel( CPU_386 ) ) return( FALSE );
-    change = FALSE;
+    if( !_CPULevel( CPU_386 ) ) return( false );
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CONDITIONAL ) {
             change |= FindFlowOut( blk );

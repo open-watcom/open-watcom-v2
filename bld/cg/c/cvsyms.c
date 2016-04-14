@@ -246,14 +246,14 @@ extern  void    CVObjInitDbgInfo( void )
         cptr->language  = SetLang();
         cptr->flags.s = 0; /* set default */
     #if _TARGET & _TARG_IAPX86
-        cptr->flags.f.Mode32 = FALSE;
+        cptr->flags.f.Mode32 = false;
         cptr->machine = MACH_INTEL_8080;
     #elif _TARGET & _TARG_80386
         cptr->machine = MACH_INTEL_80386;
-        cptr->flags.f.Mode32 = TRUE;
+        cptr->flags.f.Mode32 = true;
     #elif _TARGET & _TARG_AXP
         cptr->machine = MACH_DECALPHA;
-        cptr->flags.f.Mode32 = TRUE;
+        cptr->flags.f.Mode32 = true;
         cptr->flags.f.FloatPrecision = 1;
     #endif
         switch( GetMemModel() ){
@@ -575,7 +575,7 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
                     FrameVar( out, FEName( alt->sym ), tipe, offset );
                     buffEnd( out );
                 }else{
-                    CVGenStatic( alt->sym, alt->loc, FALSE );
+                    CVGenStatic( alt->sym, alt->loc, false );
                 }
             }
             DBLocFini( alt->loc );
@@ -627,7 +627,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     ptr->flags.s = 0;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
-        ptr->flags.f.far_ret = TRUE;
+        ptr->flags.f.far_ret = true;
     }
 #endif
     if( rtn->obj_type != DBG_NIL_TYPE ) {
@@ -765,7 +765,7 @@ static  void    DumpLocals( dbg_local *local )
                 FrameVar( out, FEName( local->sym ), tipe, offset );
                 buffEnd( out );
             } else {
-                CVGenStatic( local->sym, local->loc, FALSE );
+                CVGenStatic( local->sym, local->loc, false );
             }
             break;
         case DBG_SYM_TYPE:

@@ -57,14 +57,14 @@ static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
 /*************************************************************************/
 {
     if( op->n.class == N_INDEXED ) {
-        if( NameConflict( ins, op->i.index ) == conf ) return( TRUE );
+        if( NameConflict( ins, op->i.index ) == conf ) return( true );
         if( HasTrueBase( op ) ) {
-            if( NameConflict( ins, op->i.base ) == conf ) return( TRUE );
+            if( NameConflict( ins, op->i.base ) == conf ) return( true );
         }
     } else {
-        if( NameConflict( ins, op ) == conf ) return( TRUE );
+        if( NameConflict( ins, op ) == conf ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -164,7 +164,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
     block               *blk;
 
     for( ;; ) {
-        change = FALSE;
+        change = false;
         for( blk = start; blk != NULL; blk = blk->next_block ) {
             blk_dat = blk->dataflow;
             for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
@@ -187,7 +187,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( change == FALSE ) break;
+        if( change == false ) break;
     }
 }
 
@@ -279,7 +279,7 @@ extern  void    CalcLoadStore( conflict_node *conf )
     see below
 */
 {
-    if( BlockByBlock == FALSE ) {
+    if( BlockByBlock == false ) {
         CalculateLoadStore( conf );
     }
 }

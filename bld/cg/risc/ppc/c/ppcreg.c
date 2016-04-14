@@ -212,11 +212,11 @@ extern  hw_reg_set      SaveRegs( void )
 extern  bool            IsStackReg( name *n )
 /*******************************************/
 {
-    if( n == NULL ) return( FALSE );
-    if( n->n.class != N_REGISTER ) return( FALSE );
+    if( n == NULL ) return( false );
+    if( n->n.class != N_REGISTER ) return( false );
     if( !HW_CEqual( n->r.reg, HW_R1 ) &&
-        !HW_CEqual( n->r.reg, HW_D1 ) ) return( FALSE );
-    return( TRUE );
+        !HW_CEqual( n->r.reg, HW_D1 ) ) return( false );
+    return( true );
 }
 
 extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )

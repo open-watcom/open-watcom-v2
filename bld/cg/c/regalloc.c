@@ -102,18 +102,18 @@ static  bool    ContainedIn( name *name1, name *name2 ) {
     occupied by name2
 */
 
-    if( name1->n.class != name2->n.class ) return( FALSE );
+    if( name1->n.class != name2->n.class ) return( false );
     if( name1->n.class == N_TEMP ) {
-        if( DeAlias( name1 ) != DeAlias( name2 ) ) return( FALSE );
+        if( DeAlias( name1 ) != DeAlias( name2 ) ) return( false );
     } else if( name1->n.class == N_MEMORY ) {
-        if( name1 != name2 ) return( FALSE );
+        if( name1 != name2 ) return( false );
     } else {
-        return( FALSE );
+        return( false );
     }
-    if( name1->v.offset < name2->v.offset ) return( FALSE );
+    if( name1->v.offset < name2->v.offset ) return( false );
     if( name1->v.offset + name1->n.size > name2->v.offset + name2->n.size )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 
@@ -307,11 +307,11 @@ static  bool    SplitConflicts( void )
     conflict_node       *conf;
     bool                change;
 
-    change = FALSE;
+    change = false;
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         BuildNameTree( conf );
         if( conf->tree != NULL && conf->tree->idx == RL_NUMBER_OF_SETS ) {
-            change = TRUE;
+            change = true;
             ReAlias( conf->tree );
             if( conf->tree->temp != NULL ) {
                 conf->tree->temp->v.usage |= USE_MEMORY;
@@ -381,25 +381,25 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
         /* update live info since the conflict had no id.*/
         if( need_live_update ) {
             LiveInfoUpdate();
-            return( FALSE );
+            return( false );
         } else {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 static  bool    Idx( name *op ) {
 /********************************
-    Return TRUE if "op" is a name that has been used as the index field
+    Return true if "op" is a name that has been used as the index field
     of an N_INDEXED (eg: 5[t1])
 */
 
-    if( op == NULL ) return( FALSE );
-    if( op->n.class != N_TEMP ) return( FALSE );
-    if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( FALSE );
-    return( TRUE );
+    if( op == NULL ) return( false );
+    if( op->n.class != N_TEMP ) return( false );
+    if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( false );
+    return( true );
 }
 
 
@@ -463,9 +463,9 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     reg_name = AllocRegName( reg );
     count = 0;
     if( tree->temp != NULL ) {
-        idx = IsIndexReg( reg, tree->temp->n.name_class, FALSE );
+        idx = IsIndexReg( reg, tree->temp->n.name_class, false );
     } else {
-        idx = FALSE;
+        idx = false;
     }
     half = tree->size / 2;
     blk = conf->start_block;
@@ -630,19 +630,19 @@ static  bool    StealsSeg( instruction *ins,
     int                 i;
 
     i = ins->num_operands - 1;
-    if( i < NumOperands( ins ) ) return( FALSE );
+    if( i < NumOperands( ins ) ) return( false );
     op = ins->operands[i];
     new_conf = NameConflict( ins, op );
-    if( new_conf == NULL ) return( FALSE );
-    if( ( op == actual_op ) && IsSegReg( reg ) ) return( FALSE );
+    if( new_conf == NULL ) return( false );
+    if( ( op == actual_op ) && IsSegReg( reg ) ) return( false );
     index_needs = RegSets[SegIndex()];
-    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( FALSE );
+    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( false );
     for(;;) {
-        if( !HW_Ovlap( *index_needs, except ) ) return( FALSE );
+        if( !HW_Ovlap( *index_needs, except ) ) return( false );
         ++index_needs;
         if( HW_CEqual( *index_needs, HW_EMPTY ) ) break;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -659,33 +659,33 @@ static  bool    StealsIdx( instruction *ins,
     int                 i;
     bool                is_result;
 
-    is_result = FALSE;
+    is_result = false;
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
-            if( new_conf == NULL || actual_op == op->i.index ) return( FALSE );
+            if( new_conf == NULL || actual_op == op->i.index ) return( false );
         }
     }
     if( ins->result != NULL ) {
         op = ins->result;
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
-            if( new_conf == NULL || actual_op == op->i.index ) return( FALSE );
-            is_result = TRUE;
+            if( new_conf == NULL || actual_op == op->i.index ) return( false );
+            is_result = true;
         }
     }
     index_needs = RegSets[ins->t.index_needs];
-    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( FALSE );
+    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( false );
     for(;;) {
         if( !HW_Ovlap( *index_needs, except ) ) {
-            if( !is_result ) return( FALSE );
-            if( !HW_Ovlap( *index_needs, ins->zap->reg ) ) return( FALSE );
+            if( !is_result ) return( false );
+            if( !HW_Ovlap( *index_needs, ins->zap->reg ) ) return( false );
         }
         ++index_needs;
         if( HW_CEqual( *index_needs, HW_EMPTY ) ) break;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -699,7 +699,7 @@ extern  bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg,
     HW_TurnOn( except, reg );
     if( StealsIdx( ins, except, op ) ) return( MAYBE );
     if( StealsSeg( ins, reg, except, op ) ) return( MAYBE );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -733,7 +733,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
     if( conf->name->n.class == N_TEMP && _Is( conf, (INDEX_SPLIT | SEGMENT_SPLIT) ) ) {
         ins = last;
     }
-    rc = FALSE;
+    rc = false;
     for( ;; ) {
         if( ins->u.gen_table == NULL ) { /* just created instruction*/
             needs = RG_;
@@ -745,12 +745,12 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
           || UnaryOpGetsReg( ins, reg, op ) ) {
             rc = CheckIndecies( ins, reg, HW_EMPTY, op );
         } else { /* can the instruction and indecies still get needed regs?*/
-            rc = TRUE;
+            rc = true;
             for(;;) {
                 if( !HW_Ovlap( *ins_needs, ins->head.live.regs )
                  && !HW_Ovlap( reg, *ins_needs ) ) {
                     rc = CheckIndecies( ins, reg, *ins_needs, op );
-                    if( rc == FALSE ) break;
+                    if( rc == false ) break;
                 }
                 ++ins_needs;
                 if( HW_CEqual( *ins_needs, HW_EMPTY ) ) break;
@@ -760,7 +760,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
         for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
             blk = blk->next_block;
         }
-        if( rc != FALSE ) break;
+        if( rc != false ) break;
     }
     return( rc );
 }
@@ -931,9 +931,9 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
     "tree"), excluding registers in the set "except".  The best register
     is one that would create the most register register moves of the
     form "MOV Rn => Rn", or operations of the form  "OP Rn,x => Rn"
-    but is not too greedy (See TooGreedy).  needs_one is TRUE when the
+    but is not too greedy (See TooGreedy).  needs_one is true when the
     conflict really really really needs to be assigned a register.  If
-    this routine fails, but needs_one is TRUE, something truly bad has
+    this routine fails, but needs_one is true, something truly bad has
     happened.
 */
 
@@ -946,7 +946,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
     hw_reg_set  gave_hi;
     hw_reg_set  gave_lo;
     bool_maybe  greed;
-    bool        all_TRUE;
+    bool        all_true;
     bool        failed;
 
     NeighboursUse( conf );
@@ -957,13 +957,13 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
          * there are no restraints on the whole temporary (not referenced)
          * so give registers to its high and low parts seperately
          */
-        failed = FALSE;
+        failed = false;
         HW_CAsgn( gave_hi, HW_EMPTY );
         HW_CAsgn( gave_lo, HW_EMPTY );
         if( tree->hi != NULL ) {
             gave_hi = GiveBestReg( conf, tree->hi, except, needs_one );
             if( HW_CEqual( gave_hi, HW_EMPTY ) ) {
-                failed = TRUE;
+                failed = true;
             }
         }
         if( tree->lo != NULL ) {
@@ -971,7 +971,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
             HW_TurnOn( given, gave_hi );
             gave_lo = GiveBestReg( conf, tree->lo, given, needs_one );
             if( HW_CEqual( gave_lo, HW_EMPTY ) ) {
-                failed = TRUE;
+                failed = true;
             }
         }
         if( failed ) {
@@ -985,13 +985,13 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
     } else {
         best = HW_EMPTY;
         best_saves = -1;
-        all_TRUE = TRUE;
+        all_true = true;
         for( possible = tree->regs; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             reg = *possible;
             if( !HW_Ovlap( reg, conf->with.regs )
               && !HW_Ovlap( reg, except ) ) {
                 greed = TooGreedy( conf, reg, tree->temp );
-                if( greed == FALSE ) {
+                if( greed == false ) {
                     saves = CountRegMoves( conf, reg, conf->tree, 3 );
                     if( ( saves > best_saves )
                      || ( saves == best_saves
@@ -1001,12 +1001,12 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
                         best_saves = saves;
                     }
                 }
-                if( greed != TRUE ) {
-                    all_TRUE = FALSE;
+                if( greed != true ) {
+                    all_true = false;
                 }
             }
         }
-        if( all_TRUE ) {
+        if( all_true ) {
             HW_CAsgn( given, HW_EMPTY );
         } else if( HW_CEqual( best, HW_EMPTY ) ) {
             if( _Is( conf, NEEDS_INDEX ) ) {
@@ -1019,7 +1019,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
             }
             HW_CAsgn( given, HW_EMPTY );
         } else if( needs_one || WorthProlog( conf, best ) ) {
-            FixInstructions( conf, tree, best, TRUE );
+            FixInstructions( conf, tree, best, true );
             given = best;
             HW_TurnOn( GivenRegisters, given );
         } else {
@@ -1042,7 +1042,7 @@ extern  bool    AssignARegister( conflict_node *conf, hw_reg_set reg ) {
     bool        need_live_update;
 
     BuildRegTree( conf );
-    need_live_update = FixInstructions( conf, conf->tree, reg, FALSE );
+    need_live_update = FixInstructions( conf, conf->tree, reg, false );
     BitOff( conf );
     BurnRegTree( conf->tree );
     FreeAConflict( conf );
@@ -1163,7 +1163,7 @@ extern  conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
     BuildRegTree( conf );
     tree = conf->tree;
     if( _Is( conf, ( INDEX_SPLIT | SEGMENT_SPLIT ) ) ) {
-        needs_one = TRUE;
+        needs_one = true;
     }
     given = GiveBestReg( conf, tree, CurrProc->state.unalterable, needs_one );
     if( tree != NULL && ( tree->hi != NULL || tree->lo != NULL ) ) {
@@ -1248,9 +1248,9 @@ static  enum allocation_state    AssignConflicts( void )
     if( conf == NULL ) return( state );
     opnd = conf->name;
     if( opnd->n.class == N_TEMP && (opnd->t.temp_flags & CONST_TEMP) ) {
-        only_const_temps = TRUE;
+        only_const_temps = true;
     } else {
-        only_const_temps = FALSE;
+        only_const_temps = false;
     }
     for( ; conf != NULL; conf = next ) {
         next = conf->next_conflict;
@@ -1266,7 +1266,7 @@ static  enum allocation_state    AssignConflicts( void )
             if( conf->savings == 0 || IsUncacheableMemory( conf->name ) ) {
                 next = InMemory( conf );
             } else {
-                next = GiveRegister( conf, FALSE );
+                next = GiveRegister( conf, false );
             }
             if( opnd->v.conflict == conf ) { /* if it didn't get processed */
                 state = ALLOC_DONE;
@@ -1317,14 +1317,14 @@ extern  bool    RegAlloc( bool keep_on_truckin ) {
     enum allocation_state       last;
 
     HW_CAsgn( GivenRegisters, HW_EMPTY );
-    if( BlockByBlock == FALSE ) {
+    if( BlockByBlock == false ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
         if( unknowns <= 0 ) return( unknowns == 0 );
         if( SplitConflicts() ) {
             FreeConflicts();
             NullConflicts( EMPTY );
-            HaveLiveInfo = FALSE;
+            HaveLiveInfo = false;
             if( _IsntModel( NO_OPTIMIZATION ) ) {
                 DeadInstructions();
                 FindReferences();
@@ -1335,7 +1335,7 @@ extern  bool    RegAlloc( bool keep_on_truckin ) {
             FindReferences();
             MakeConflicts();
             MakeLiveInfo();
-            HaveLiveInfo = TRUE;
+            HaveLiveInfo = true;
             AxeDeadCode();
         }
     }

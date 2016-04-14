@@ -436,13 +436,13 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
     case LOC_CONSTANT:
         if( loc->class == LOC_MEMORY ) {
             sym = (dw_sym_handle)loc->u.fe_sym;
-            if( state->seg == TRUE ){
+            if( state->seg == true ){
                 DWLocSegment( Client, locid, sym );
             }
-            if( state->offset == TRUE ){
+            if( state->offset == true ){
                 DWLocStatic( Client, locid, sym );
                 if( state->seg ){
-                    state->addr_seg = TRUE;
+                    state->addr_seg = true;
                 }
             }
         } else {
@@ -481,7 +481,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
                 size = 4;
             }
             DWLocOp( Client, locid, dref_op, size );
-            state->addr_seg = FALSE;  /* ate offset seg */
+            state->addr_seg = false;  /* ate offset seg */
             break;
         case LOP_IND_ADDR_16:
         case LOP_IND_ADDR_32:
@@ -508,7 +508,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
                 DWLocOp( Client, locid, dref_op, size ); /* push offset */
                 /* now have offset seg on stack */
             }
-            state->addr_seg = TRUE; /* we have offset seg on stack */
+            state->addr_seg = true; /* we have offset seg on stack */
             break;
         case LOP_ZEB:
             DWLocConstU( Client, locid, 0xff );
@@ -519,7 +519,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
             DWLocOp0( Client, locid, DW_LOC_and );
             break;
         case LOP_MK_FP:
-            state->addr_seg = TRUE;
+            state->addr_seg = true;
             break;
         case LOP_POP:
             DWLocOp0( Client, locid, DW_LOC_drop );
@@ -564,9 +564,9 @@ extern dw_loc_id DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid ){
 /*****************************************/
     loc_state       state;
 
-    state.seg = FALSE;
-    state.offset = TRUE;
-    state.addr_seg = FALSE;
+    state.seg = false;
+    state.offset = true;
+    state.addr_seg = false;
     state.locid = df_locid;
     if( loc != NULL ){
         df_locid = DoLocCnv( loc, &state );
@@ -582,9 +582,9 @@ extern dw_loc_handle DBGLoc2DF( dbg_loc loc ){
     dw_loc_handle   df_loc;
     loc_state       state;
 
-    state.seg = FALSE;
-    state.offset = TRUE;
-    state.addr_seg = FALSE;
+    state.seg = false;
+    state.offset = true;
+    state.addr_seg = false;
     state.locid = DWLocInit( Client );
     if( loc != NULL ){
         df_locid = DoLocCnv( loc, &state );
@@ -605,9 +605,9 @@ extern dw_loc_handle DBGLocBase2DF( dbg_loc loc_seg ){
     dw_loc_handle   df_loc;
     loc_state       state;
 
-    state.seg = TRUE;
-    state.offset = TRUE;
-    state.addr_seg = FALSE;
+    state.seg = true;
+    state.offset = true;
+    state.addr_seg = false;
     state.locid = DWLocInit( Client );
     loc_seg = SkipMkFP( loc_seg );
     if( loc_seg != NULL ){

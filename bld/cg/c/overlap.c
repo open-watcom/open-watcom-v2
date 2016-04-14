@@ -42,23 +42,23 @@ static  bool    Conflicts( type_length start,  type_length end,
 {
     if( ( start2 >= start && start2 <= end ) ||
         ( end2 >= start && end2 <= end ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    ovNo( name *op1, name *op2 )
 /******************************************/
 {
     op1 = op2;
-    return( FALSE );
+    return( false );
 }
 
 static  bool    ovYes( name *op1, name *op2 )
 /*******************************************/
 {
     op1 = op2;
-    return( TRUE );
+    return( true );
 }
 
 static  bool    ovTemp( name *op1, name *op2 )
@@ -68,7 +68,7 @@ static  bool    ovTemp( name *op1, name *op2 )
         return( Conflicts( op1->v.offset, op1->v.offset + op1->n.size,
                     op2->v.offset, op2->v.offset + op2->n.size ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    ovReg( name *op1, name *op2 )
@@ -82,7 +82,7 @@ static  bool    ovIndex( name *op1, name *op2 )
 {
     /* this is overly pessimistic, but we shouldn't see mem->mem moves anyway */
     op1 = op2;
-    return( TRUE );
+    return( true );
 }
 
 static  bool    ovUses( name *op1, name *index )
@@ -103,8 +103,8 @@ static  bool    (*OverlapTable[N_INDEXED+1][N_INDEXED+1])( name *, name * ) = {
 extern  bool    Overlaps( name *result, name *op )
 /************************************************/
 {
-    if( result == NULL || op == NULL ) return( FALSE );
-    if( result == op ) return( TRUE );
+    if( result == NULL || op == NULL ) return( false );
+    if( result == op ) return( true );
     return( OverlapTable[result->n.class][op->n.class]( result, op ) );
 }
 
@@ -114,7 +114,7 @@ extern  bool    CondOverlaps( name *result, name *ccop )
     to be modified as well.
 */
 {
-    if( result == NULL || ccop == NULL ) return( TRUE );
-    if( result == ccop ) return( TRUE );
+    if( result == NULL || ccop == NULL ) return( true );
+    if( result == ccop ) return( true );
     return( OverlapTable[result->n.class][ccop->n.class]( result, ccop ) );
 }

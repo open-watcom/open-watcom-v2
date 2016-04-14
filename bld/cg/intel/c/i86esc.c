@@ -108,11 +108,11 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
     while( curr < final ) {
         if( *curr++ == ESC ) {
             if( *curr++ == ABS ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -321,7 +321,7 @@ static  void    ExpandCJ( any_oc *oc )
                 OutDataByte( OptInsSize( OC_JMP, OC_DEST_NEAR ) );
                 _OutJNear;
             }
-            OutCodeDisp( oc->oc_jcond.handle, F_OFFSET, TRUE, class );
+            OutCodeDisp( oc->oc_jcond.handle, F_OFFSET, true, class );
         } else {
             _OutJCond( oc->oc_jcond.cond );
             OutShortDisp( oc->oc_jcond.handle );
@@ -332,11 +332,11 @@ static  void    ExpandCJ( any_oc *oc )
     } else {
         if( class & ATTR_FAR ) {
             f = F_PTR;
-            rel = FALSE;
+            rel = false;
             if( ( class & GET_BASE ) == OC_CALL ) {
                 if( objlen == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
                     f = F_OFFSET;
-                    rel = TRUE;
+                    rel = true;
                     class &= ~ ATTR_FAR;
                     _OutCCyp;
                 } else {
@@ -347,7 +347,7 @@ static  void    ExpandCJ( any_oc *oc )
             }
         } else {
             f = F_OFFSET;
-            rel = TRUE;
+            rel = true;
             if( ( class & GET_BASE ) == OC_CALL ) {
                 _OutCNear;
             } else {
@@ -411,7 +411,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
                 OutPatch( lbl, _OFFSET_PATCH );
             }
             _OutFarOff( addr );
-            OutReloc( AskSegID( sym, CG_FE ), F_BASE, FALSE );
+            OutReloc( AskSegID( sym, CG_FE ), F_BASE, false );
             _OutFarSeg( 0 );
         }
     }
@@ -462,9 +462,9 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             class = F_OFFSET;
         }
         if( key & SELF ) {
-            rel = TRUE;
+            rel = true;
         } else {
-            rel = FALSE;
+            rel = false;
         }
         switch( key & ~MASK ) {
         case REL:
@@ -494,7 +494,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
-                OutRTImportRel( (rt_class)(pointer_int)AskForLblSym( lbl ), F_OFFSET, FALSE );
+                OutRTImportRel( (rt_class)(pointer_int)AskForLblSym( lbl ), F_OFFSET, false );
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
@@ -564,7 +564,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     if( base != OC_LABEL ) {
         DumpSavedDebug();
     }
-    SetUpObj( FALSE );
+    SetUpObj( false );
     switch( base ) {
     case OC_CODE:
     case OC_DATA:
@@ -576,9 +576,9 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             len &= next_lbl->oc_entry.hdr.objlen;
             DoAlignment( len );
         }
-        OutSelect( TRUE );
+        OutSelect( true );
         SendBytes( oc->oc_entry.data, oc->oc_entry.hdr.objlen );
-        OutSelect( FALSE );
+        OutSelect( false );
         break;
     case OC_BDATA:
         SendBytes( oc->oc_entry.data, oc->oc_entry.hdr.objlen );
@@ -607,13 +607,13 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             OutRTImport( (rt_class)(pointer_int)sym, F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
-            OutSpecialCommon( (import_handle)(pointer_int)sym, F_OFFSET, FALSE );
+            OutSpecialCommon( (import_handle)(pointer_int)sym, F_OFFSET, false );
             lc = 0;
         } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) {
-            OutImport( sym, F_OFFSET, FALSE );
+            OutImport( sym, F_OFFSET, false );
             lc = 0;
         } else {
-            OutReloc( AskOP(), F_OFFSET, FALSE );
+            OutReloc( AskOP(), F_OFFSET, false );
             lc = AskAddress( lbl );
             if( lc == ADDR_UNKNOWN ) {
                 OutPatch( lbl, ADD_PATCH | _OFFSET_PATCH );
@@ -700,7 +700,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             break;
         case INFO_DBG_RTN_END:
             DbgRtnEnd( oc->oc_debug.ptr, AskLocation() );
-            OutLineNum( 0, FALSE ); /* Kill pending line number */
+            OutLineNum( 0, false ); /* Kill pending line number */
             break;
         case INFO_SELECT:
             OutSelect( oc->oc_select.starts );

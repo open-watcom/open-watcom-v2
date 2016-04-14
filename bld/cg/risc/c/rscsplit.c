@@ -218,24 +218,24 @@ extern instruction      *rSIMPCMP( instruction *ins )
     opcode_defs         opcode;
     bool                reverse;
 
-    reverse = FALSE;
+    reverse = false;
     opcode = 0;
     assert( ins->result == NULL );
     switch( ins->head.opcode ) {
     case OP_CMP_NOT_EQUAL:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_EQUAL:
         opcode = OP_SET_EQUAL;
         break;
     case OP_CMP_GREATER:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_LESS_EQUAL:
         opcode = OP_SET_LESS_EQUAL;
         break;
     case OP_CMP_GREATER_EQUAL:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_LESS:
         opcode = OP_SET_LESS;
@@ -596,7 +596,7 @@ extern  bool    UnChangeable( instruction *ins ) {
 /************************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  name    *Int64Equivalent( name *name )
@@ -969,9 +969,9 @@ static  void  CnvOpToInt( instruction * ins, int op )
 static bool IndexOverlaps( instruction *ins, int i )
 /**************************************************/
 {
-    if( ins->operands[i]->n.class != N_INDEXED ) return( FALSE );
-    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( TRUE );
-    return( FALSE );
+    if( ins->operands[i]->n.class != N_INDEXED ) return( false );
+    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( true );
+    return( false );
 }
 
 /* Note: This could be used for 128-bit types implemented on top of

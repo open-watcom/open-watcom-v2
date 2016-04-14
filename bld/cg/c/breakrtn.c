@@ -52,7 +52,7 @@ static  block           *Curr;
 static  block           *Break;
 static  edge_list       *BranchOuts;
 static  block           *Tail = { NULL };
-static  bool            HaveBreak = { FALSE };
+static  bool            HaveBreak = { false };
 
 
 static  void            FreeBranchOuts( void )
@@ -82,13 +82,13 @@ extern  bool            CreateBreak( void )
     edge_list   *exit_edge;
 
     if( HeadBlock == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( _IsntModel( FORTRAN_ALIASING ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !FixReturns() ) {
-        return( FALSE );
+        return( false );
     }
     FixEdges();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -143,7 +143,7 @@ extern  bool            CreateBreak( void )
     }
     if( break_blk == NULL ) {
         UnFixEdges();
-        return( FALSE );
+        return( false );
     }
 
 /*
@@ -153,7 +153,7 @@ extern  bool            CreateBreak( void )
     Break = break_blk;
     Curr = CurrBlock;
     Tail = BlockList;
-    exit_blk = NewBlock( NULL, FALSE );
+    exit_blk = NewBlock( NULL, false );
     exit_blk->gen_id = BlockList->gen_id + 1;
     exit_blk->id = BlockList->id + 1;
     exit_blk->ins.hd.line_num = 0;
@@ -210,7 +210,7 @@ extern  bool            CreateBreak( void )
     }
 
     HeadBlock->class |= BIG_LABEL;
-    HaveBreak = TRUE;
+    HaveBreak = true;
 /*
     change any branches to HeadBlock from a block after break_blk into
     a label (~DEST_IS_BLOCK) branch.
@@ -229,7 +229,7 @@ extern  bool            CreateBreak( void )
     HeadBlock will not be a loop header. The loop optimizer will
     screw up if it is.
 */
-    blk = NewBlock( NULL, FALSE );
+    blk = NewBlock( NULL, false );
     blk->input_edges = NULL;
     blk->inputs = 0;
     blk->label = HeadBlock->label;
@@ -252,7 +252,7 @@ extern  bool            CreateBreak( void )
     blk->prev_block = NULL;
     blk->next_block = HeadBlock;
     HeadBlock = blk;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -263,7 +263,7 @@ extern  void            RemoveBreak( void )
     CurrBlock = Curr;
     BlockList = Tail;
     Tail = NULL;
-    HaveBreak = FALSE;
+    HaveBreak = false;
     UnFixEdges();
 }
 

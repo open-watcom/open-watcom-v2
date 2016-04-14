@@ -249,9 +249,9 @@ extern  bool    FPStackReg( name *reg_name ) {
     int         reg_num;
 
     reg_num = FPRegNum( reg_name );
-    if( reg_num == -1 ) return( FALSE );
-    if( reg_num < Max87Stk ) return( TRUE );
-    return( FALSE );
+    if( reg_num == -1 ) return( false );
+    if( reg_num < Max87Stk ) return( true );
+    return( false );
 }
 
 
@@ -432,10 +432,10 @@ static    int     WantsChop( instruction *ins ) {
     ST(0) to the nearest integer.
 */
     if( ins->head.opcode == OP_ROUND )
-        return( FALSE );
+        return( false );
     if( _IsFloating( ins->result->n.name_class ) )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 #endif
 
@@ -1238,7 +1238,7 @@ extern  void    InitFP( void ) {
     Max87Stk = (int)(pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
     if( Max87Stk > 8 ) Max87Stk = 8;
     if( Max87Stk < 4 ) Max87Stk = 4;
-    Used87 = FALSE;
+    Used87 = false;
     InitFPStkReq();
 }
 

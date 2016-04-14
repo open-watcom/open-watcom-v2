@@ -52,6 +52,6 @@ extern  bool    TempAllocBefore( name *t1, name *t2 ) {
 /*****************************************************/
 
     /* want larger things higher up the stack */
-    if( t1->n.size < t2->n.size ) return( TRUE );
-    return( FALSE );
+    if( t1->n.size < t2->n.size ) return( true );
+    return( false );
 }

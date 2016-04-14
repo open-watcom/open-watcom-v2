@@ -58,8 +58,8 @@ extern  bool    TempsOverlap( name *name1, name *name2 ) {
     end_1 = start_1 + name1->n.size - 1;
     start_2 = name2->v.offset;
     end_2 = start_2 + name2->n.size - 1;
-    if( start_2 > end_1 || end_2 < start_1 ) return( FALSE );
-    return( TRUE );
+    if( start_2 > end_1 || end_2 < start_1 ) return( false );
+    return( true );
 }
 
 
@@ -70,30 +70,30 @@ static  bool    ZapsMemory( name *result, name *op, bool for_index ) {
 
     switch( result->n.class ) {
     case N_TEMP:
-        return( FALSE );
+        return( false );
     case N_MEMORY:
-        if( result->v.symbol != op->v.symbol ) return( FALSE );
+        if( result->v.symbol != op->v.symbol ) return( false );
         /* can be used for memory ops as well */
-        if( for_index ) return( TRUE );
+        if( for_index ) return( true );
         return( TempsOverlap( result, op ) );
     case N_INDEXED:
         if( result->i.base == NULL ) {
-            if( _IsModel( FORTRAN_ALIASING ) ) return( FALSE );
-            if( op->v.usage & USE_ADDRESS ) return( TRUE );
-            if( _IsModel( RELAX_ALIAS ) ) return( FALSE );
-            return( TRUE );
+            if( _IsModel( FORTRAN_ALIASING ) ) return( false );
+            if( op->v.usage & USE_ADDRESS ) return( true );
+            if( _IsModel( RELAX_ALIAS ) ) return( false );
+            return( true );
         }
         if( result->i.base->n.class == N_TEMP ) {
-            if( _IsModel( RELAX_ALIAS ) ) return( FALSE );
-            return( TRUE );
+            if( _IsModel( RELAX_ALIAS ) ) return( false );
+            return( true );
         } else { /* it must be N_MEMORY*/
-            return( ZapsMemory( result->i.base, op, TRUE ) );
+            return( ZapsMemory( result->i.base, op, true ) );
         }
     case N_REGISTER:
-        return( FALSE );
+        return( false );
     default:
         _Zoiks( ZOIKS_023 );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -104,20 +104,20 @@ static  bool    ZapsTemp( name *result, name *op, bool for_index ) {
 */
     switch( result->n.class ) {
     case N_TEMP:
-        if( DeAlias( result ) != DeAlias( op ) ) return( FALSE );
-        if( for_index ) return( TRUE );
+        if( DeAlias( result ) != DeAlias( op ) ) return( false );
+        if( for_index ) return( true );
         return( TempsOverlap( op, result ) );
     case N_MEMORY:
-        return( FALSE );
+        return( false );
     case N_INDEXED:
         /* might be a structured move with a fake base */
         if( result->i.base != NULL && result->i.base->n.class == N_TEMP ) {
-            if( DeAlias( result->i.base ) == DeAlias( op ) ) return( TRUE );
+            if( DeAlias( result->i.base ) == DeAlias( op ) ) return( true );
         }
-        if( ( op->v.usage & USE_ADDRESS ) == 0 ) return( FALSE );
-        if( result->i.base == NULL ) return( TRUE );
+        if( ( op->v.usage & USE_ADDRESS ) == 0 ) return( false );
+        if( result->i.base == NULL ) return( true );
         /* bound index*/
-        return( FALSE );
+        return( false );
     case N_REGISTER:
         {
         hw_reg_set      tmp;
@@ -127,7 +127,7 @@ static  bool    ZapsTemp( name *result, name *op, bool for_index ) {
         }
     default:
         _Zoiks( ZOIKS_023 );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -136,29 +136,29 @@ static bool_maybe   ZapsTheOp( name *result, name *op )
 /*****************************************************/
 {
     if( result == NULL )
-        return( FALSE );
+        return( false );
     switch( op->n.class ) {
     case N_MEMORY:
         if( op->v.usage & VAR_VOLATILE )
-            return( TRUE );
-        return( ZapsMemory( result, op, FALSE ) );
+            return( true );
+        return( ZapsMemory( result, op, false ) );
     case N_INDEXED:
         if( op->i.index_flags & X_VOLATILE )
-            return( TRUE );
+            return( true );
         return( ZapsIndexed( result, op ) );
     case N_TEMP:
         if( op->v.usage & VAR_VOLATILE )
-            return( TRUE );
-        return( ZapsTemp( result, op, FALSE ) );
+            return( true );
+        return( ZapsTemp( result, op, false ) );
     case N_REGISTER:
         if( result->n.class == N_REGISTER && HW_Ovlap( result->r.reg, op->r.reg ) )
-            return( TRUE );
-        return( FALSE );
+            return( true );
+        return( false );
     case N_CONSTANT:
-        return( FALSE );
+        return( false );
     default:
         _Zoiks( ZOIKS_023 );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -172,24 +172,24 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
     case N_TEMP:
         result = DeAlias( result );
         if( op->i.base == NULL ) { /* free index */
-            if( result->v.usage & USE_ADDRESS ) return( TRUE );
+            if( result->v.usage & USE_ADDRESS ) return( true );
         } else if( op->i.base->n.class == N_TEMP ) {
-            if( result == DeAlias( op->i.base ) ) return( TRUE );
+            if( result == DeAlias( op->i.base ) ) return( true );
         }
-        if( op->i.index->n.class != N_TEMP ) return( FALSE );
-        if( result == DeAlias( op->i.index ) ) return( TRUE );
-        return( FALSE );
+        if( op->i.index->n.class != N_TEMP ) return( false );
+        if( result == DeAlias( op->i.index ) ) return( true );
+        return( false );
     case N_MEMORY:
         if( op->i.base == NULL ) {
-            if( _IsModel( FORTRAN_ALIASING ) ) return( FALSE );
-            if( op->v.usage & USE_ADDRESS ) return( TRUE );
-            if( _IsModel( RELAX_ALIAS ) ) return( FALSE );
-            return( TRUE );
+            if( _IsModel( FORTRAN_ALIASING ) ) return( false );
+            if( op->v.usage & USE_ADDRESS ) return( true );
+            if( _IsModel( RELAX_ALIAS ) ) return( false );
+            return( true );
         } else if( op->i.base->n.class == N_TEMP ) {
-            if( _IsModel( RELAX_ALIAS ) ) return( FALSE );
-            return( TRUE );
+            if( _IsModel( RELAX_ALIAS ) ) return( false );
+            return( true );
         } else {
-            return( ZapsMemory( result, op->i.base, TRUE ) );
+            return( ZapsMemory( result, op->i.base, true ) );
         }
     case N_INDEXED:
         if( result->i.base == op->i.base &&
@@ -200,21 +200,21 @@ static  bool_maybe  ZapsIndexed( name *result, name *op )
               op->i.constant >= result->i.constant + result->n.size ) ) {
             return( MAYBE ); // no overlap if index is the same
         }
-        if( result->i.base == NULL ) return( TRUE );
-        if( op->i.base == NULL ) return( TRUE );
-        if( result->i.base->n.class != op->i.base->n.class ) return( FALSE );
+        if( result->i.base == NULL ) return( true );
+        if( op->i.base == NULL ) return( true );
+        if( result->i.base->n.class != op->i.base->n.class ) return( false );
         if( result->i.base->n.class == N_TEMP ) {
-            return( ZapsTemp( result->i.base, op->i.base, TRUE ) );
+            return( ZapsTemp( result->i.base, op->i.base, true ) );
         }
-        return( ZapsMemory( result->i.base, op->i.base, TRUE ) );
+        return( ZapsMemory( result->i.base, op->i.base, true ) );
     case N_REGISTER:
         if( op->i.base != NULL && ZapsTheOp( result, op->i.base ) ) {
-            return( TRUE );
+            return( true );
         }
         return( ZapsTheOp( result, op->i.index ) );
     default:
         _Zoiks( ZOIKS_023 );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -223,12 +223,12 @@ extern  bool    NameIsConstant( name *op ) {
 /******************************************/
 
     if( op->n.class == N_TEMP
-            && ( op->v.usage & VAR_CONSTANT ) ) return( TRUE );
-    if( op->n.class != N_MEMORY ) return( FALSE );
-    if( op->v.usage & VAR_VOLATILE ) return( FALSE );
-    if( op->v.usage & VAR_CONSTANT ) return( TRUE );
+            && ( op->v.usage & VAR_CONSTANT ) ) return( true );
+    if( op->n.class != N_MEMORY ) return( false );
+    if( op->v.usage & VAR_VOLATILE ) return( false );
+    if( op->v.usage & VAR_CONSTANT ) return( true );
     if( op->m.memory_type == CG_FE
-            && ( FEAttr( op->v.symbol ) & FE_CONSTANT) ) return( TRUE );
+            && ( FEAttr( op->v.symbol ) & FE_CONSTANT) ) return( true );
     return( AskNameROM( op->v.symbol, op->m.memory_type ) );
 }
 
@@ -241,31 +241,31 @@ extern  bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
     switch( op->n.class ) {
     case N_MEMORY:
         if( modifies && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) )
-            return( FALSE );
+            return( false );
         if( _IsModel( FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
             case CG_FE:
                 if( !( FEAttr( op->v.symbol ) & FE_VISIBLE ) ) {
-                    return( FALSE );
+                    return( false );
                 }
-                return( TRUE );
+                return( true );
             case CG_BACK:
             case CG_TBL:
             case CG_VTB:
-                return( FALSE );
+                return( false );
             default:
-                return( TRUE );
+                return( true );
             }
         }
-        return( TRUE );
+        return( true );
     case N_INDEXED:
         if( op->i.base == NULL )
-            return( TRUE );
+            return( true );
         return( ReDefinedBy( ins, op->i.base ) );
     case N_TEMP:
         if( op->v.usage & USE_ADDRESS )
-            return( TRUE );
-        return( FALSE );
+            return( true );
+        return( false );
 #if _TARGET & _TARG_AXP
     case N_REGISTER:
         // to make up for a brain-dead setjmp operation which only
@@ -273,11 +273,11 @@ extern  bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
         // schedule any instructions past a call which has the
         // CALL_IS_SETJMP flag set
         if( ins->flags.call_flags & CALL_IS_SETJMP )
-            return( TRUE );
-        return( FALSE );
+            return( true );
+        return( false );
 #endif
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
@@ -288,25 +288,25 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     name        *base_2;
 
     if( ins->head.opcode != OP_STORE_UNALIGNED )
-        return( FALSE );
+        return( false );
     switch( op->n.class ) {
     case N_MEMORY:
     case N_INDEXED:
-        return( TRUE );
+        return( true );
         break;
     case N_TEMP:
         temp = ins->result;
         if( temp->n.class == N_INDEXED ) {
             if( temp->i.base == NULL ) {
                 if( op->v.usage & USE_ADDRESS ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 if( temp->i.base->n.class == N_TEMP ) {
                     base_1 = DeAlias( op );
                     base_2 = DeAlias( temp->i.base );
                     if( base_1 == base_2 ) {
-                        return( TRUE );
+                        return( true );
                     }
                 }
             }
@@ -316,7 +316,7 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
             base_2 = DeAlias( temp );
             if( base_1 == base_2 ) {
                 // if op is within range of ins->result
-                return( TRUE );
+                return( true );
             }
         }
         break;
@@ -325,7 +325,7 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
     op = op;
     ins = ins;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 extern  bool_maybe  ReDefinedBy( instruction *ins, name *op ) {
@@ -337,19 +337,19 @@ extern  bool_maybe  ReDefinedBy( instruction *ins, name *op ) {
 
     if( op->n.class == N_REGISTER ) {
         if( HW_Ovlap( ins->zap->reg, op->r.reg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
     if( NameIsConstant( op ) )
-        return( FALSE );
+        return( false );
     if( ZappedBySTQ_U( ins, op ) )
-        return( TRUE );
+        return( true );
     zaps = ZapsTheOp( ins->result, op );
     if( zaps )
         return( zaps );
     if( !_OpIsCall( ins->head.opcode ) )
-        return( FALSE );
-    return( VisibleToCall( ins, op, TRUE ) );
+        return( false );
+    return( VisibleToCall( ins, op, true ) );
 }
 
 
@@ -360,15 +360,15 @@ extern  bool    IsVolatile( name *op ) {
 
     switch( op->n.class ) {
     case N_MEMORY:
-        if( op->v.usage & VAR_VOLATILE ) return( TRUE );
-        return( FALSE );
+        if( op->v.usage & VAR_VOLATILE ) return( true );
+        return( false );
     case N_INDEXED:
-        if( op->i.index_flags & X_VOLATILE ) return( TRUE );
-        return( FALSE );
+        if( op->i.index_flags & X_VOLATILE ) return( true );
+        return( false );
     case N_TEMP:
-        if( op->v.usage & VAR_VOLATILE ) return( TRUE );
-        return( FALSE );
+        if( op->v.usage & VAR_VOLATILE ) return( true );
+        return( false );
     default:
-        return( FALSE );
+        return( false );
     }
 }

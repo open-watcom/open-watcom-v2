@@ -100,13 +100,13 @@ extern void             FPOptimize(void) {
 extern  bool    FPStackIns( instruction *ins ) {
 /**********************************************/
     ins=ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    FPStackReg( name *reg_name ) {
 /********************************************/
     reg_name=reg_name;
-    return( FALSE );
+    return( false );
 }
 
 extern  int    FPStkOver( instruction *ins, int stk_depth ) {
@@ -147,7 +147,7 @@ extern void             FPReloc(void) {
 extern  bool    FPSideEffect( instruction *ins ) {
 /**********************************************/
     ins=ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  type_class_def  FPInsClass( instruction *ins ) {
@@ -159,7 +159,7 @@ extern  type_class_def  FPInsClass( instruction *ins ) {
 extern  bool  FPFreeIns( instruction *ins ) {
 /*******************************************/
     ins=ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    FPSetStack( name *name ) {
@@ -170,7 +170,7 @@ extern  void    FPSetStack( name *name ) {
 extern  bool    FPIsConvert( instruction *ins ) {
 /**********************************************/
     ins=ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    FPNotStack( name *name ) {
@@ -181,13 +181,13 @@ extern  void    FPNotStack( name *name ) {
 extern  bool    FPIsStack( name *name ) {
 /**********************************************/
     name=name;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    FPStackOp( name *name ) {
 /***************************************/
     name=name;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    InitFP() {
@@ -231,7 +231,7 @@ extern  type_length    AdjustBase() {
 extern  bool    SetOnCondition() {
 /********************************/
 
-    return( FALSE );
+    return( false );
 }
 
 extern  reg_set_index   SpecialPossible( instruction *ins ) {
@@ -246,7 +246,7 @@ extern  bool    ShrinkQueue( pointer_int size ) {
 /***********************************************/
 
     size = size;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -270,7 +270,7 @@ extern  void    AbortQueue() {
 extern  bool    InstrFrlFree() {
 /******************************/
 
-    return( FALSE );
+    return( false );
 }
 
 /* runtime routines */
@@ -299,7 +299,7 @@ extern  bool    AskSegNear( segment_id id ) {
 /********************************************/
 
     id=id;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -312,7 +312,7 @@ extern  bool    LdStAlloc()
     anything got twiddled so the register scoreboarder can be run again.
 */
 {
-    return( FALSE );
+    return( false );
 }
 
 
@@ -329,7 +329,7 @@ extern  bool    DivIsADog( type_class_def class )
 /***********************************************/
 {
     class=class;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    AddCacheRegs(void)

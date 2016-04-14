@@ -144,8 +144,8 @@ extern  bool    SegIsCS( name *op ) {
 
     segreg = CalcSegment( op->v.symbol, op->m.memory_type );
     if( HW_CEqual( segreg, HW_CS ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 
@@ -156,10 +156,10 @@ extern  bool    SegIsSS( name *op ) {
 
     segreg = CalcSegment( op->v.symbol, op->m.memory_type );
     if( HW_CEqual( segreg, HW_SS ) )
-        return( TRUE );
+        return( true );
     if( HW_CEqual( segreg, HW_DS ) &&_IsntTargetModel( FLOATING_DS | FLOATING_SS ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 
@@ -287,11 +287,11 @@ extern  bool    SegOver( name *op ) {
 
     if( op->n.class == N_INDEXED ) {
         if( op->i.index->n.class != N_CONSTANT && op->i.index->n.size != WORD_SIZE )
-            return( TRUE );
+            return( true );
         if( op->i.base != NULL )
             return( SegOver( op->i.base ) );
         if( _IsTargetModel( FLOATING_DS ) ) {
-            return( TRUE );
+            return( true );
         }
     } else if( op->n.class == N_MEMORY ) {
         switch( op->m.memory_type ) {
@@ -300,22 +300,22 @@ extern  bool    SegOver( name *op ) {
         case CG_LBL:
             id = AskSegID( op->v.symbol, op->m.memory_type );
             if( AskSegPrivate( id ) ) {
-                return( TRUE );
+                return( true );
             }
             if( id == AskCodeSeg() && _IsntTargetModel( FLAT_MODEL ) ) {
-                return( TRUE );
+                return( true );
             }
             if( _IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS ) ) {
-                return( TRUE );
+                return( true );
             }
-            return( FALSE );
+            return( false );
         case CG_CLB:
-            return( FALSE );
+            return( false );
         default:
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -326,12 +326,12 @@ extern  bool    LoadAToMove( instruction *ins ) {
     name        *op;
 
     if( _IsTargetModel( INDEXED_GLOBALS ) )
-        return( FALSE );
+        return( false );
     if( ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA )
-        return( FALSE );
+        return( false );
     op = ins->operands[ 0 ];
     if( op->n.class != N_MEMORY )
-        return( FALSE );
+        return( false );
     ins->head.opcode = OP_MOV;
     seg = AskSegID( op->v.symbol, op->m.memory_type );
     if( AskSegNear( seg ) ) {
@@ -342,12 +342,12 @@ extern  bool    LoadAToMove( instruction *ins ) {
     } else { /* must be a far pointer */
         ins->operands[ 0 ] = AddrConst( op, seg, CONS_ADDRESS );
     }
-    return( TRUE );
+    return( true );
 }
 
 extern  bool                     IsUncacheableMemory( name *opnd ) {
 /*******************************************************************
-    Return TRUE if we don't want to cache the global piece of memory
+    Return true if we don't want to cache the global piece of memory
     represented by opnd in a register - this could be dangerous if the
     variable is not in DGROUP or if DS is not pegged - we would need to
     load a segment register before and after every call and no one has
@@ -357,14 +357,14 @@ extern  bool                     IsUncacheableMemory( name *opnd ) {
     hw_reg_set          segreg;
 
     if( opnd->n.class != N_MEMORY )
-        return( FALSE );
+        return( false );
     segreg = CalcSegment( opnd->v.symbol, opnd->m.memory_type );
     if( HW_CEqual( segreg, HW_SS ) && _IsntTargetModel( FLOATING_SS ) )
-        return( FALSE );
+        return( false );
     if( HW_CEqual( segreg, HW_DS ) && _IsntTargetModel( FLOATING_DS ) )
-        return( FALSE );
+        return( false );
     if( HW_CEqual( segreg, HW_CS ) )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 

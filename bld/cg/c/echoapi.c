@@ -425,14 +425,14 @@ void handleUseOnce( handle_type hdltype, use_info *useinfo )
     if( useinfo->used ) {
         handleMsg( hdltype, "handle already used" );
     } else {
-        useinfo->used = TRUE;
+        useinfo->used = true;
     }
 }
 
 static void handleSetup( handle_type hdltype, use_info *useinfo )
 {
     useinfo->hdltype = hdltype;
-    useinfo->used = FALSE;
+    useinfo->used = false;
 }
 
 static void handleAddReuse( handle_type hdltype, use_info *useinfo )

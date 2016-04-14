@@ -56,7 +56,7 @@ static  hw_reg_set      flowedRegs;
 static block *FindDominatorBlock( dom_bit_set *dom, bool post )
 /**************************************************************
     Returns pointer to the block with the given dominator set. If
-    post == TRUE, then looks at post_dominator set instead.
+    post == true, then looks at post_dominator set instead.
 */
 {
     block       *blk;
@@ -77,14 +77,14 @@ static bool OpRefsReg( name *op, hw_reg_set reg )
 {
     switch( op->n.class ) {
     case N_REGISTER:
-        if( HW_Ovlap( op->r.reg, reg ) ) return( TRUE );
+        if( HW_Ovlap( op->r.reg, reg ) ) return( true );
         break;
     case N_INDEXED:
         assert( op->i.index->n.class == N_REGISTER );
-        if( HW_Ovlap( op->i.index->r.reg, reg ) ) return( TRUE );
+        if( HW_Ovlap( op->i.index->r.reg, reg ) ) return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool BlockUses( block *blk, hw_reg_set reg )
@@ -95,22 +95,22 @@ static bool BlockUses( block *blk, hw_reg_set reg )
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( OpRefsReg( ins->operands[i], reg ) ) return( TRUE );
+            if( OpRefsReg( ins->operands[i], reg ) ) return( true );
         }
         if( ins->result != NULL && ins->head.opcode != OP_NOP ) {
-            if( OpRefsReg( ins->result, reg ) ) return( TRUE );
+            if( OpRefsReg( ins->result, reg ) ) return( true );
         }
-        if( ins->head.opcode != OP_NOP && HW_Ovlap( ins->zap->reg, reg ) ) return( TRUE );
+        if( ins->head.opcode != OP_NOP && HW_Ovlap( ins->zap->reg, reg ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool     InLoop( block *blk )
 /**********************************/
 {
-    if( blk->loop_head != NULL ) return( TRUE );
-    if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( TRUE );
-    return( FALSE );
+    if( blk->loop_head != NULL ) return( true );
+    if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( true );
+    return( false );
 }
 
 #if 1
@@ -233,18 +233,18 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
 {
     int                 i;
 
-    if( !_DBitOverlap( save->dom.id, info[ curr_reg ].dom_usage ) ) return( FALSE );
-    if( !_DBitOverlap( restore->dom.id, info[ curr_reg ].post_dom_usage ) ) return( FALSE );
-    if( !_DBitOverlap( save->dom.id, restore->dom.dominator ) ) return( FALSE );
-    if( !_DBitOverlap( restore->dom.id, save->dom.post_dominator ) ) return( FALSE );
-    if( ( restore->class & ( CONDITIONAL | SELECT ) ) != EMPTY ) return( FALSE );
-    if( InLoop( save ) || InLoop( restore ) ) return( FALSE );
+    if( !_DBitOverlap( save->dom.id, info[ curr_reg ].dom_usage ) ) return( false );
+    if( !_DBitOverlap( restore->dom.id, info[ curr_reg ].post_dom_usage ) ) return( false );
+    if( !_DBitOverlap( save->dom.id, restore->dom.dominator ) ) return( false );
+    if( !_DBitOverlap( restore->dom.id, save->dom.post_dominator ) ) return( false );
+    if( ( restore->class & ( CONDITIONAL | SELECT ) ) != EMPTY ) return( false );
+    if( InLoop( save ) || InLoop( restore ) ) return( false );
     for( i = 0; i < curr_reg; i++ ) {
         // now, either our save/restore must dominate/postdominate info[i]'s
         // or info[i]'s save/restore must dominate/postdominate ours
         if( info[ i ].save == NULL || info[ i ].restore == NULL ) continue;
-        if( info[ i ].save == save && info[ i ].restore != restore ) return( FALSE );
-        if( info[ i ].save != save && info[ i ].restore == restore ) return( FALSE );
+        if( info[ i ].save == save && info[ i ].restore != restore ) return( false );
+        if( info[ i ].save != save && info[ i ].restore == restore ) return( false );
         if( _DBitOverlap( info[ i ].save->dom.dominator, save->dom.id ) ) {
             // save dominates info[i].save - now check that restore postdominate
             if( _DBitOverlap( info[ i ].restore->dom.post_dominator, restore->dom.id ) ) continue;
@@ -252,9 +252,9 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
             // info[i].save dominates save, now make sure info[i].restore postdom's restore
             if( _DBitOverlap( info[ i ].restore->dom.id, restore->dom.post_dominator ) ) continue;
         }
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void FlowSave( hw_reg_set *preg )

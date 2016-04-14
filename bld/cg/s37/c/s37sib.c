@@ -74,10 +74,10 @@ extern bool FoldIntoIndex( instruction * ins ) {
 
     if( ins->head.opcode == OP_ADD ) {
         cons = ins->operands[ 1 ];
-        if( cons->n.class != N_REGISTER ) return( FALSE );
-        if( cons->n.size != WORD_SIZE ) return( FALSE );
+        if( cons->n.class != N_REGISTER ) return( false );
+        if( cons->n.size != WORD_SIZE ) return( false );
         base_reg = cons->r.reg;
-        if( !IsIndexReg( base_reg, WD, 0 ) ) return( FALSE );
+        if( !IsIndexReg( base_reg, WD, 0 ) ) return( false );
 /*
         found ADD R1,R2 => R1
 */
@@ -85,12 +85,12 @@ extern bool FoldIntoIndex( instruction * ins ) {
 /*
         found ADD R1,R1 => R1  <==> SHL R1,1 => R1
 */
-            return( FALSE );
+            return( false );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
-    dies = FALSE;
+    dies = false;
     sib_head = NULL;
     other_reg = ins->operands[ 0 ]->r.reg;
     next = ins;
@@ -134,7 +134,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
         }
         FreeIns( ins );
     } else {
-        dies = FALSE;
+        dies = false;
     }
     while( sib_head != NULL ) {
         curr_sib = sib_head;

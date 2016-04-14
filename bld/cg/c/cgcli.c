@@ -116,10 +116,10 @@ bool _CGAPI BELoad( cchar_ptr dll_name )
 #endif
         if( retval == 0 ) {
             CGFuncTable = func_ptr( &FERtnTable );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void _CGAPI BEUnload( void )
@@ -153,7 +153,7 @@ bool _CGAPI BELoad( const char *name )
 /************************************/
 {
     name = name;
-    return( TRUE );
+    return( true );
 }
 
 void _CGAPI BEUnload( void ) 

@@ -114,7 +114,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
     HW_TurnOn( all_regs, tmp );
 #elif _TARGET & _TARG_80386
     {
-    tmp = ReturnReg( WD, FALSE );
+    tmp = ReturnReg( WD, false );
     HW_TurnOn( all_regs, tmp );
     }
 #endif

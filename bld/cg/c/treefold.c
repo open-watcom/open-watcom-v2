@@ -130,22 +130,22 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     signed_64           high;
     signed_64           konst;
     rel_op              rel;
-    bool                rev_ret = FALSE;
+    bool                rev_ret = false;
 
     /* Map cg rel ops to equivalent cases */
     switch( op ) {
     case O_NE:
-        rev_ret = TRUE;
+        rev_ret = true;
     case O_EQ:
         rel = REL_EQ;
         break;
     case O_GE:
-        rev_ret = TRUE;
+        rev_ret = true;
     case O_LT:
         rel = REL_LT;
         break;
     case O_GT:
-        rev_ret = TRUE;
+        rev_ret = true;
     case O_LE:
         rel = REL_LE;
         break;
@@ -771,7 +771,7 @@ extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
         rv = rite->u.name->c.value;
         ri = CFConvertByType( rv, tipe );
         if( left->class == TN_CONS ) {
-            bool    done = FALSE;
+            bool    done = false;
 
             if( ri >= (tipe->length * 8) ) {
                 if( tipe->attr & TYPE_SIGNED ) {
@@ -780,7 +780,7 @@ extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
                     ri = (tipe->length * 8) - 1;
                 } else {
                     fold = IntToType( 0, tipe );
-                    done = TRUE;
+                    done = true;
                 }
             }
             if( !done ) {
@@ -1201,7 +1201,7 @@ extern  tn      FoldFlOr( tn left, tn rite )
     fold = NULL;
     if( left->class == TN_CONS ) {
         if( CFTest( left->u.name->c.value ) ) {
-            // ( 1 || expr ) -> ( TRUE )
+            // ( 1 || expr ) -> ( true )
             fold = IntToType( FETrue(), TypeInteger );
             BurnTree( left );
             BurnTree( rite );
@@ -1212,7 +1212,7 @@ extern  tn      FoldFlOr( tn left, tn rite )
         }
     } else if( rite->class == TN_CONS ) {
         if( CFTest( rite->u.name->c.value ) ) {
-            // ( expr || 1 ) -> ( expr, TRUE )
+            // ( expr || 1 ) -> ( expr, true )
             fold = TGNode( TN_COMMA, O_NOP, left, IntToType( FETrue(), TypeInteger ), TypeInteger );
             BurnTree( rite );
         } else {
@@ -1335,12 +1335,12 @@ static bool IsObjectAddr( tn tree )
         switch( tree->u.addr->class ) {
         case CL_ADDR_GLOBAL:
         case CL_ADDR_TEMP:
-            return( TRUE );
+            return( true );
         default:
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
@@ -1362,9 +1362,9 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
         rite = temp;
         op = RevOpcode[  op - O_EQ  ];
     }
-    op_eq = FALSE;
+    op_eq = false;
     if( ( op == O_EQ ) || ( op == O_NE ) ) {
-        op_eq = TRUE;
+        op_eq = true;
     }
     true_value = FETrue();
     result = 0;
@@ -1411,7 +1411,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
         return( IntToType( result, TypeInteger ) );
     } else if( rite->class == TN_CONS ) {
         if( left->class != TN_BINARY ) {
-            base_l = FindBase( left, FALSE );
+            base_l = FindBase( left, false );
             if( base_l != left ) {
                 /* For folding comparisons, consider the variable's original type. If eg. a short
                  * was converted to long, we know its value has to be in the short's range.
@@ -1642,13 +1642,13 @@ extern  an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
                 break;
             case OP_BIT_TEST_TRUE:
                 if( !HasBigConst( tipe ) ) {
-                    fold = Flip( fold, FALSE,
+                    fold = Flip( fold, false,
                             ( rite->u.name->c.int_value & FETrue() ) != 0 );
                 }
                 break;
             case OP_BIT_TEST_FALSE:
                 if( !HasBigConst( tipe ) ) {
-                    fold = Flip( fold, TRUE,
+                    fold = Flip( fold, true,
                             ( rite->u.name->c.int_value & FETrue() ) == 0 );
                 }
                 break;
@@ -1667,12 +1667,12 @@ extern  bool    FoldIfTrue( tn left, label_handle lbl )
 {
     bool        folded;
 
-    folded = FALSE;
+    folded = false;
     if( left->class == TN_CONS ) {
         if( CFTest( left->u.name->c.value ) != 0 ) {
-            BGGenCtrl( O_GOTO, NULL, lbl, TRUE );
+            BGGenCtrl( O_GOTO, NULL, lbl, true );
         }
-        folded = TRUE;
+        folded = true;
         BurnTree( left );
     }
     return( folded );
@@ -1684,12 +1684,12 @@ extern  bool    FoldIfFalse( tn left, label_handle lbl )
 {
     bool        folded;
 
-    folded = FALSE;
+    folded = false;
     if( left->class == TN_CONS ) {
         if( CFTest( left->u.name->c.value ) == 0 ) {
-            BGGenCtrl( O_GOTO, NULL, lbl, TRUE );
+            BGGenCtrl( O_GOTO, NULL, lbl, true );
         }
-        folded = TRUE;
+        folded = true;
         BurnTree( left );
     }
     return( folded );

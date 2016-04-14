@@ -126,15 +126,15 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
         Locs[ i ] = 0;
         Files[ i ].hdl = 0;
         Files[ i ].name = NULL;
-        Files[ i ].exists = FALSE;
-        SegOk[ i ] = FALSE;
+        Files[ i ].exists = false;
+        SegOk[ i ] = false;
     }
     CurSeg = 0;
     Out = Files[ CurSeg ].hdl;
     CodeSeg = -1;
     TargTypeInit();
     Action( "BEInit%n" );
-    info.version.is_large = TRUE;
+    info.version.is_large = true;
     info.version.revision = II_REVISION;
 #if _TARGET & _TARG_IAPX86
     info.version.target = II_TARG_8086;
@@ -390,8 +390,8 @@ extern  void    BEFlushSeg( segment_id seg ) {
         FShut( Files[ seg ].hdl );
     }
     Files[ seg ].hdl = 0;
-    Files[ seg ].exists = FALSE;
-    SegOk[ seg ] = FALSE;
+    Files[ seg ].exists = false;
+    SegOk[ seg ] = false;
     StaticList = NULL;
 }
 
@@ -419,14 +419,14 @@ extern  void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint al
     }
     Files[ id ].name = new->str;
     Files[ id ].hdl = 0;
-    SegOk[ id ] = TRUE;
+    SegOk[ id ] = true;
     Locs[ id ] = 0;
 }
 extern  bool    BEMoreMem( void ) {
 //=================================
 
     Action( "BEMoreMem() -> 0%n" );
-    return(FALSE);
+    return(false);
 }
 
 extern  unsigned_32 BEUnrollCount( unsigned_32 c ) {

@@ -40,7 +40,7 @@
 extern  bool    MultiIns( instruction *ins ) {
 /********************************************/
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -66,26 +66,26 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
 /***********************************************************/
     reg1 = reg1;
     reg2 = reg2;
-    return( TRUE );
+    return( true );
 }
 
 
 extern  bool    ScConvert( instruction *ins ) {
 /*********************************************/
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 
 extern  bool    CanReplace( instruction *ins ) {
 /**********************************************/
     ins = ins;
-    return( TRUE );
+    return( true );
 }
 
 extern  bool    ScRealRegister( name *reg ) {
 /********************************************
-    Return "TRUE" if "reg" is a real machine register and not some
+    Return "true" if "reg" is a real machine register and not some
     monstrosity like R1:R0:R2 used for calls.
 */
 

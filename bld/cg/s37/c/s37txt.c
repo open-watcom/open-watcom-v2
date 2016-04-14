@@ -208,7 +208,7 @@ static void    EsdRecs( txtseg_rec *rec ) {
 
     ESDInitRec( &esds );
     pesdid = 1;
-    rec_set = FALSE;
+    rec_set = false;
     csectid = 1;
     bead = rec->first;
     curr_item = &esds.items[0];
@@ -224,10 +224,10 @@ static void    EsdRecs( txtseg_rec *rec ) {
                 PutObjRec( ObjFile, &esds, 80 );
                 ESDInitRec( &esds );
                 curr_item = &esds.items[0];
-                rec_set = FALSE;
+                rec_set = false;
             }
             memset( curr_item->name, 0x40, 8 );
-            TXTSym( curr_item->name, ((bead_xsym *)bead)->sym, TRUE );
+            TXTSym( curr_item->name, ((bead_xsym *)bead)->sym, true );
             switch( ((bead_xsym *)bead)->class ) {
             case XSYM_CSECT:
                 ((bead_xsym *)bead)->id = pesdid;
@@ -237,7 +237,7 @@ static void    EsdRecs( txtseg_rec *rec ) {
                 curr_item->align = ((bead_xsym*)bead)->armode;
                 if( !rec_set ) {
                     Stick16( &esds.esdid, pesdid );
-                    rec_set = TRUE;
+                    rec_set = true;
                 }
                 csectid = pesdid;
                 pesdid++;
@@ -249,7 +249,7 @@ static void    EsdRecs( txtseg_rec *rec ) {
                 curr_item->type = ESDT_ER;
                 if( !rec_set ) {
                     Stick16( &esds.esdid, pesdid );
-                    rec_set = TRUE;
+                    rec_set = true;
                 }
                 pesdid++;
                 break;
@@ -393,7 +393,7 @@ static void TxtRecs( bead_xsym *entry, txtseg_rec *rec ) {
     if( txt.opts & LST_ASM ) {
         fmt_str( txt.asm->code, "END" );
         if( entry != NULL ) {
-           OutSym( txt.asm->ops, entry->sym, TRUE );
+           OutSym( txt.asm->ops, entry->sym, true );
         }
         PutAsm( &txt );
         AsmClose( txt.asmfi );
@@ -696,7 +696,7 @@ static  char *DmpSX( char *cur,  hwins_op_sx *sx, int a ) {
             cur = DmpLitRef( cur, sx->ref );
         } else if( sx->ref->entry.class == REF_SYM) {/* sym ref */
             sym = (hw_sym *)sx->ref->sym.sym;
-            cur = OutSym( cur, sym, TRUE );
+            cur = OutSym( cur, sym, true );
             if( sx->disp != 0 ) {
                 *cur++ = '+';
                 cur = fmt_dec( cur, sx->disp );
@@ -704,7 +704,7 @@ static  char *DmpSX( char *cur,  hwins_op_sx *sx, int a ) {
         } else if( sx->ref->entry.class == REF_DISP) {/* explicit base */
             sym = (hw_sym *)sx->ref->disp.sym;
             base = (hw_sym *)sx->ref->disp.base;
-            cur = OutSym( cur, sym, TRUE );
+            cur = OutSym( cur, sym, true );
             if( sx->disp < 0 ) {
                 cur = fmt_dec( cur, sx->disp );
             }else if( sx->disp > 0 ) {
@@ -712,7 +712,7 @@ static  char *DmpSX( char *cur,  hwins_op_sx *sx, int a ) {
                 cur = fmt_dec( cur, sx->disp );
             }
             *cur++ = '-';
-            cur = OutSym( cur, base, TRUE );
+            cur = OutSym( cur, base, true );
             *cur++ = '(';
             *cur++ = ',';
             cur = fmt_dec( cur, sx->b );
@@ -842,10 +842,10 @@ static void AsmHwIns( txt_obj *obj, any_bead_hwins *bead  ) {
             cur = fmt_dec( cur, cur_f->op.r );
             break;
         case ASM_S:
-            cur = DmpSX( cur, cur_f->op.sx, FALSE );
+            cur = DmpSX( cur, cur_f->op.sx, false );
             break;
         case ASM_SX:
-            cur = DmpSX( cur, cur_f->op.sx, TRUE );
+            cur = DmpSX( cur, cur_f->op.sx, true );
             break;
         case ASM_I:
              cur = fmt_dec( cur, cur_f->op.i );
@@ -869,7 +869,7 @@ static void DmpLabel( txt_obj *obj, bead_label *bead ) {
         if( obj->opts & LST_OBJ ) {
             fmt_hex( &obj->ocodes->c[0], bead->common.address, 5 );
         }
-        OutSym( obj->asm->label, sym, TRUE );
+        OutSym( obj->asm->label, sym, true );
         align = bead->align;
         switch( bead->class ) {
         case LBL_EQU:
@@ -1074,7 +1074,7 @@ static char *PrtAddr( char *cur, bead_addr *bead ) {
     *cur++ = 'A';
     *cur++ = '(';
     ref = bead->ref;
-    cur = OutSym( cur, ref, TRUE );
+    cur = OutSym( cur, ref, true );
     if( bead->val != 0 ) {
         *cur++ = '+';
         cur = fmt_dec( cur, bead->val );
@@ -1082,7 +1082,7 @@ static char *PrtAddr( char *cur, bead_addr *bead ) {
     ref = bead->rel;
     if( ref != NULL ){
         *cur++ = '-';
-        cur = OutSym( cur, ref, TRUE );
+        cur = OutSym( cur, ref, true );
     }
     *cur++ = ')';
     return( cur );
@@ -1151,13 +1151,13 @@ static char *PrtDisp( char *cur,  bead_disp *bead ) {
     *cur++ = 'L';
     cur = fmt_dec( cur, bead->op_len & DISP_LEN );
     *cur++ = '(';
-    cur = OutSym( cur, bead->ref, TRUE );
+    cur = OutSym( cur, bead->ref, true );
     if( bead->val != 0 ) {
         *cur++ = '+';
         cur = fmt_dec( cur, bead->val );
     }
     *cur++ = bead->op_len & DISP_SUB ? '-' : '+';
-    cur = OutSym( cur, bead->base, TRUE );
+    cur = OutSym( cur, bead->base, true );
     *cur++ = ')';
     return( cur );
 }
@@ -1189,7 +1189,7 @@ static void DmpXsym( txt_obj *obj, bead_xsym *bead ) {
             id_area = obj->asm->ops;
             break;
         }
-        OutSym( id_area, bead->sym, TRUE );
+        OutSym( id_area, bead->sym, true );
         fmt_str( obj->asm->code, code );
     }
 
@@ -1214,7 +1214,7 @@ static void DmpUsing( txt_obj *obj, bead_using *bead ) {
         fmt_str( obj->asm->code, "USING" );
         cur = obj->asm->ops;
         if( bead->sym ) {
-            cur = OutSym( cur, bead->sym, TRUE );
+            cur = OutSym( cur, bead->sym, true );
         } else {
             *cur++ = '*';
         }
@@ -1285,9 +1285,9 @@ static bool FormatQueue( txt_obj *obj, unsigned num ) {
         obj->line[0] = '*';
         fmt_rdec( &obj->line[1], num );
         obj->line[6] = ':';
-        return( TRUE );
+        return( true );
     }else{
-        return( FALSE);
+        return( false);
     }
 }
 

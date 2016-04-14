@@ -100,28 +100,28 @@ extern  bool            FPInsIntroduced( instruction *ins ) {
 /***********************************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool            FPStackReg( name *n ) {
 /*********************************************/
 
     n = n;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool            FPStackIns( instruction *ins ) {
 /******************************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool            FPFreeIns( instruction *ins ) {
 /*****************************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern void             FPRegAlloc(void) {
@@ -139,7 +139,7 @@ extern void             FPReloc(void) {
 extern  bool    FPSideEffect( instruction *ins ) {
 /************************************************/
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    FPSetStack( name *name ) {
@@ -156,7 +156,7 @@ extern  type_class_def FPInsClass( instruction *ins ) {
 extern  bool    FPIsConvert( instruction *ins ) {
 /***********************************************/
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    FPNotStack( name *name ) {
@@ -168,14 +168,14 @@ extern  bool    FPIsStack( name *name ) {
 /***************************************/
 
     name = name;
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    FPStackOp( name *name ) {
 /***************************************/
 
     name = name;
-    return( FALSE );
+    return( false );
 }
 
 extern  int     FPStackExit( block *blk ) {
@@ -272,7 +272,7 @@ extern  void    ZeroMoves() {
 extern  bool    SetOnCondition() {
 /********************************/
 
-    return( FALSE );
+    return( false );
 }
 
 extern  reg_set_index   SpecialPossible( instruction *ins ) {
@@ -297,7 +297,7 @@ extern  void    LdStCompress() {
 extern  bool    FreeObjCache() {
 /******************************/
 
-    return( FALSE );
+    return( false );
 }
 
 extern  void    PreCall( cn call ) {
@@ -331,7 +331,7 @@ extern  bool    AskSegNear( segment_id id ) {
 /*******************************************/
 
     id = id;
-    return( TRUE );
+    return( true );
 }
 
 extern  void    MemtoBaseTemp() {
@@ -356,7 +356,7 @@ extern  bool    LoadAToMove( instruction *ins ) {
 /***********************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 extern  void    FixCallIns( instruction *ins ) {
@@ -381,5 +381,5 @@ void    GenSetCC( instruction *ins ) {
 extern  bool    IsUncacheableMemory( name *opnd ) {
 
     opnd = opnd;
-    return( FALSE );
+    return( false );
 }

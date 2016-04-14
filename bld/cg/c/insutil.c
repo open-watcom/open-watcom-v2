@@ -254,7 +254,7 @@ extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum 
 extern  void    PrefixIns( instruction *ins, instruction *pref ) {
 /****************************************************************/
 
-    PrefixInsRenum( ins, pref, TRUE );
+    PrefixInsRenum( ins, pref, true );
 }
 
 

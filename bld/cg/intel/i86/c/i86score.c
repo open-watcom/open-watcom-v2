@@ -72,7 +72,7 @@ extern  void    ScInitRegs( score *sc )
     if( _IsntTargetModel( FLOATING_DS | FLOATING_SS ) ) {
         ss = AllocRegName(HW_SS)->r.reg_index;
         ds = AllocRegName(HW_DS)->r.reg_index;
-        if( RegsEqual( sc, ss, ds ) == FALSE ) {
+        if( RegsEqual( sc, ss, ds ) == false ) {
             RegInsert( sc, ss, ds );
         }
     }
@@ -113,7 +113,7 @@ extern  void    AddRegs( void )
         }
     }
     for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
-        if( IsIndexReg( reg_name->r.reg, CP, FALSE ) ) {
+        if( IsIndexReg( reg_name->r.reg, CP, false ) ) {
             if( HW_COvlap( reg_name->r.reg, HW_DS )
              || HW_COvlap( reg_name->r.reg, HW_ES )
              || HW_COvlap( reg_name->r.reg, HW_SS ) ) {
@@ -186,15 +186,15 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 {
     if( HW_Ovlap( reg1, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg1, HW_DS ) && !HW_CEqual( reg1, HW_SS ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( HW_Ovlap( reg2, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg2, HW_DS ) && !HW_CEqual( reg2, HW_SS ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -210,10 +210,10 @@ extern  bool    ScConvert( instruction *ins )
         tmp = HighReg( ins->result->r.reg );
         if( !HW_Ovlap( ins->head.next->head.live.regs, tmp ) ) {
             FreeIns( ins ); /* get rid of the pesky cwd or cbw instruction!*/
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -227,14 +227,14 @@ extern  bool    CanReplace( instruction *ins )
     if( ( ins->head.opcode == OP_LSHIFT
        || ins->head.opcode == OP_RSHIFT )
       && ( ins->type_class == U4
-       || ins->type_class == I4 ) ) return( FALSE );
-    return( TRUE );
+       || ins->type_class == I4 ) ) return( false );
+    return( true );
 }
 
 
 extern  bool    ScRealRegister( name *reg )
 /******************************************
-    Return "TRUE" if "reg" is a real machine register and not some
+    Return "true" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.
 */
 {

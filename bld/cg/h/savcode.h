@@ -141,12 +141,12 @@
     class = opnd->n.name_class;
     blk = conf->start_block;
     ins = conf->ins_range.first;
-    last = FALSE;
+    last = false;
     if( _LBitOverlap( conf->ins_range.first->head.live.within_block,
                       conf->id.within_block ) ) {
-        flows_in = TRUE;
+        flows_in = true;
     } else {
-        flows_in = FALSE;
+        flows_in = false;
     }
     for(;;) {
         flow = blk->dataflow;

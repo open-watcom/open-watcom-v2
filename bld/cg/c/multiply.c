@@ -177,11 +177,11 @@ static  instruction     *CheckMul( instruction *ins )
     int                 cost;
 
     rhs = ins->operands[1]->c.int_value;
-    neg = FALSE;
+    neg = false;
     class = ins->type_class;
     if( class == SW && rhs < 0 ) {
         rhs = -rhs;
-        neg = TRUE;
+        neg = true;
     }
     i = Factor( rhs, &cost );
     if( MulCost( rhs ) <= cost ) return( ins );

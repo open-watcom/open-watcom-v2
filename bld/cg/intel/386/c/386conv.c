@@ -360,10 +360,10 @@ extern  bool    CvtOk( type_class_def fr, type_class_def to )
     return true if a conversion from "fr" to "to" can be done
 */
 {
-    if( fr == XX ) return( FALSE );
-    if( to == XX ) return( FALSE );
-    if( AskHow( fr, to ) != BAD ) return( TRUE );
-    return( FALSE );
+    if( fr == XX ) return( false );
+    if( to == XX ) return( false );
+    if( AskHow( fr, to ) != BAD ) return( true );
+    return( false );
 }
 
 static instruction *doConversion( instruction *ins, type_class_def class )

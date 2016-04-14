@@ -101,7 +101,7 @@ static  bool    CanChange( instruction **pins,
      && ins->operands[0]->n.class == N_REGISTER
      && HW_Ovlap( frm->r.reg, ins->operands[0]->r.reg ) ) {
         opnd = FindPiece( ins->operands[0]->r.reg, frm->r.reg, to->r.reg );
-        if( opnd == NULL ) return( FALSE );
+        if( opnd == NULL ) return( false );
         ins->operands[0] = opnd;
     } else {
         for( i = new_ins->num_operands; i-- > 0; ) {
@@ -115,17 +115,17 @@ static  bool    CanChange( instruction **pins,
                 // it might be possible to do the FindPiece trick like above
                 // but not in general.
                 if( HW_Ovlap( frm->r.reg, opnd->r.reg ) )
-                    return( FALSE );
+                    return( false );
             }
             if( opnd->n.class == N_INDEXED ) {
                 if( opnd->i.index == frm ) {
-                    temp_index = FALSE;
+                    temp_index = false;
                     if( HasTrueBase( opnd ) ) {
                         if( opnd->i.base->n.class == N_TEMP ) {
-                            temp_index = TRUE;
+                            temp_index = true;
                          }
                     }
-                    if( !IndexRegOk( to->r.reg, temp_index ) ) return( FALSE );
+                    if( !IndexRegOk( to->r.reg, temp_index ) ) return( false );
                     new_ins->operands[i] = ScaleIndex( to, opnd->i.base,
                                                          opnd->i.constant,
                                                          opnd->n.name_class,
@@ -134,7 +134,7 @@ static  bool    CanChange( instruction **pins,
                                                          opnd->i.index_flags );
                 } else if( opnd->i.index->n.class == N_REGISTER ) {
                     if( HW_Ovlap( opnd->i.index->r.reg, frm->r.reg ) ) {
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
@@ -142,11 +142,11 @@ static  bool    CanChange( instruction **pins,
     }
     new_ins->result = to;
     try = FindGenEntry( new_ins, &has_index );
-    if( try == NULL ) return( FALSE );
-    if( try->generate >= G_UNKNOWN ) return( FALSE );
+    if( try == NULL ) return( false );
+    if( try->generate >= G_UNKNOWN ) return( false );
     ReplIns( ins, new_ins );
     *pins = new_ins;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -160,22 +160,22 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
     new_ins = NewIns( num_operands );
     Copy( *pins, new_ins, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
     if( CanChange( pins, frm, to, new_ins ) )
-        return( FALSE );
+        return( false );
     new_ins->head.next = new_ins;
     new_ins->head.prev = new_ins;
     FreeIns( new_ins );
-    return( TRUE );
+    return( true );
 }
 
 static  bool    Modifies( name *Y, name *Z, name *result ) {
 /**********************************************************/
 
 
-    if( result == NULL ) return( FALSE );
-    if( result->n.class != N_REGISTER ) return( FALSE );
-    if( HW_Ovlap( result->r.reg, Z->r.reg ) ) return( TRUE );
-    if( HW_Ovlap( result->r.reg, Y->r.reg ) ) return( TRUE );
-    return( FALSE );
+    if( result == NULL ) return( false );
+    if( result->n.class != N_REGISTER ) return( false );
+    if( HW_Ovlap( result->r.reg, Z->r.reg ) ) return( true );
+    if( HW_Ovlap( result->r.reg, Y->r.reg ) ) return( true );
+    return( false );
 }
 
 static  bool    UsedIn( name *op, name *reg ) {
@@ -185,14 +185,14 @@ static  bool    UsedIn( name *op, name *reg ) {
         return( HW_Ovlap( op->r.reg, reg->r.reg ) );
     } else if( op->n.class == N_INDEXED ) {
         if( op->i.index->n.class == N_REGISTER ) {
-            if( HW_Ovlap( op->i.index->r.reg, reg->r.reg ) ) return( TRUE );
+            if( HW_Ovlap( op->i.index->r.reg, reg->r.reg ) ) return( true );
         }
 //      90-06-12 - base is never N_REGISTER!
 //      if( op->i.base != NULL && op->i.base->n.class == N_REGISTER ) {
-//          if( op->i.base->r.reg & reg->r.reg ) return( TRUE );
+//          if( op->i.base->r.reg & reg->r.reg ) return( true );
 //      }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -224,35 +224,35 @@ static  bool    ThrashDown( instruction *ins ) {
     Y = ins->operands[ 0 ];
     Z = ins->result;
     for( oth_ins = ins->head.prev; ; oth_ins = oth_ins->head.prev ) {
-        if( oth_ins->head.opcode == OP_BLOCK ) return( FALSE );
-        if( _OpIsCall( oth_ins->head.opcode ) ) return( FALSE );
+        if( oth_ins->head.opcode == OP_BLOCK ) return( false );
+        if( _OpIsCall( oth_ins->head.opcode ) ) return( false );
         if( HW_Ovlap( oth_ins->head.next->head.live.regs, Z->r.reg) ) {
-            return( FALSE );
+            return( false );
         }
         if( !HW_Subset( oth_ins->head.next->head.live.regs, Y->r.reg ) ) {
-            return( FALSE );
+            return( false );
         }
-        if( HW_Ovlap( oth_ins->zap->reg, Y->r.reg ) ) return( FALSE );
-        if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( FALSE );
+        if( HW_Ovlap( oth_ins->zap->reg, Y->r.reg ) ) return( false );
+        if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( false );
         if( oth_ins->result == Y ) break;
-        if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
+        if( Modifies( Y, Z, oth_ins->result ) ) return( false );
         for( i = oth_ins->num_operands; i-- > 0; ) {
-            if( UsedIn( oth_ins->operands[i], Y ) ) return( FALSE );
+            if( UsedIn( oth_ins->operands[i], Y ) ) return( false );
         }
         if( oth_ins->result != NULL ) {
-            if( UsedIn( oth_ins->result, Y ) ) return( FALSE );
+            if( UsedIn( oth_ins->result, Y ) ) return( false );
         }
     }
     if( HW_Ovlap( oth_ins->head.live.regs, Z->r.reg ) ) {
-        if( !ChangeIns(oth_ins,Z,&oth_ins->result,CHANGE_GEN) ) return(FALSE);
+        if( !ChangeIns(oth_ins,Z,&oth_ins->result,CHANGE_GEN) ) return(false);
         FreeIns( ins );
     } else {
-        if( CantChange( &oth_ins, Y, Z ) ) return( FALSE );
+        if( CantChange( &oth_ins, Y, Z ) ) return( false );
         ins->head.prev->head.next = ins->head.next;
         ins->head.next->head.prev = ins->head.prev;
         PrefixIns( oth_ins, ins );
     }
-    return( TRUE );
+    return( true );
   }
 
 
@@ -284,34 +284,34 @@ static  bool    ThrashUp( instruction *ins ) {
     Y = ins->operands[ 0 ];
     Z = ins->result;
     for( oth_ins = ins->head.next; ; oth_ins = oth_ins->head.next ) {
-        if( oth_ins->head.opcode == OP_BLOCK ) return( FALSE );
-        if( _OpIsCall( oth_ins->head.opcode ) ) return( FALSE );
-        if( HW_Ovlap( oth_ins->zap->reg, Y->r.reg ) ) return( FALSE );
-        if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( FALSE );
+        if( oth_ins->head.opcode == OP_BLOCK ) return( false );
+        if( _OpIsCall( oth_ins->head.opcode ) ) return( false );
+        if( HW_Ovlap( oth_ins->zap->reg, Y->r.reg ) ) return( false );
+        if( HW_Ovlap( oth_ins->zap->reg, Z->r.reg ) ) return( false );
         if( oth_ins->result == Z ) break;
-        if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
+        if( Modifies( Y, Z, oth_ins->result ) ) return( false );
         for( i = oth_ins->num_operands; i-- > 0; ) {
-            if( UsedIn( oth_ins->operands[i], Z ) ) return( FALSE );
+            if( UsedIn( oth_ins->operands[i], Z ) ) return( false );
         }
         if( oth_ins->result != NULL ) {
-            if( UsedIn( oth_ins->result, Z ) ) return( FALSE );
+            if( UsedIn( oth_ins->result, Z ) ) return( false );
         }
     }
     for( thrsh_ins = oth_ins->head.next; ; thrsh_ins = thrsh_ins->head.next ) {
-        if( thrsh_ins->head.opcode == OP_BLOCK ) return( FALSE );
-        if( HW_Ovlap( thrsh_ins->zap->reg, Y->r.reg ) ) return( FALSE );
-        if( HW_Ovlap( thrsh_ins->zap->reg, Z->r.reg ) ) return( FALSE );
+        if( thrsh_ins->head.opcode == OP_BLOCK ) return( false );
+        if( HW_Ovlap( thrsh_ins->zap->reg, Y->r.reg ) ) return( false );
+        if( HW_Ovlap( thrsh_ins->zap->reg, Z->r.reg ) ) return( false );
         if( (thrsh_ins->head.opcode == OP_MOV)
             && (thrsh_ins->operands[ 0 ] == Z)
             && (thrsh_ins->result        == Y) ) break;
-        if( Modifies( Y, Z, oth_ins->result ) ) return( FALSE );
+        if( Modifies( Y, Z, oth_ins->result ) ) return( false );
     }
-    if( CantChange( &oth_ins, Z, Y ) ) return( FALSE );
+    if( CantChange( &oth_ins, Z, Y ) ) return( false );
     FreeIns( thrsh_ins );
     ins->head.prev->head.next = ins->head.next;
     ins->head.next->head.prev = ins->head.prev;
     SuffixIns( oth_ins, ins );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -324,15 +324,15 @@ extern  bool    RegThrash( block *blk ) {
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
-         && UnChangeable( ins ) == FALSE
+         && UnChangeable( ins ) == false
          && ins->operands[ 0 ]->n.class == N_REGISTER
          && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[ 0 ]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }

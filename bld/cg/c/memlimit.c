@@ -71,12 +71,12 @@ static  bool    FlushSomeOpt( pointer_int size )
         old = SetOP( AskCodeSeg() );
         freed = ShrinkQueue( size );
         SetOP( old );
-        if( _IsntModel( NO_OPTIMIZATION ) && IckyWicky == FALSE ) {
-            IckyWicky = TRUE;
+        if( _IsntModel( NO_OPTIMIZATION ) && IckyWicky == false ) {
+            IckyWicky = true;
             FEMessage( MSG_PEEPHOLE_FLUSHED, NULL );
         }
     } else {
-        freed = FALSE;
+        freed = false;
     }
     return( freed );
 }
@@ -86,13 +86,13 @@ static  bool    ChkMemLimit( pointer_int limit )
 /**********************************************/
 {
     if( _IsModel( MEMORY_LOW_FAILS ) )
-        return( FALSE );
+        return( false );
     if( MemInUse() - FrlSize <= limit )
-        return( FALSE );
+        return( false );
     FlushSomeOpt( MemInUse() - limit - FrlSize );
     if( MemInUse() - FrlSize <= limit )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 
@@ -102,7 +102,7 @@ void    CalcMemLimit( void )
     pointer_int size;
     size = MemSize();
     MemLimit = size - size / 4;
-    IckyWicky = FALSE;
+    IckyWicky = false;
 }
 
 
@@ -147,30 +147,30 @@ bool    MemCheck( size_t size )
 /*****************************/
 {
     if( FEMoreMem( size ) )
-        return( TRUE );
+        return( true );
     if( FreeObjCache() )
-        return( TRUE );
+        return( true );
     if( ScoreFrlFree() )
-        return( TRUE );
+        return( true );
     if( AddrFrlFree() )
-        return( TRUE );
+        return( true );
     if( RegTreeFrlFree() )
-        return( TRUE );
+        return( true );
     if( CFFrlFree() )
-        return( TRUE );
+        return( true );
     if( InsFrlFree() )
-        return( TRUE );
+        return( true );
     if( TreeFrlFree() )
-        return( TRUE );
+        return( true );
     if( ConfFrlFree() )
-        return( TRUE );
+        return( true );
     if( NameFrlFree() )
-        return( TRUE );
+        return( true );
     if( InstrFrlFree() )
-        return( TRUE );
+        return( true );
     if( SchedFrlFree() )
-        return( TRUE );
+        return( true );
     if( FlushSomeOpt( size ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }

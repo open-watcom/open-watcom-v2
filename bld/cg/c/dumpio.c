@@ -148,10 +148,10 @@ extern  void    DumpLLong(  signed_32 n,  int  len ) {
     bp += 20;
     *--bp = NULLCHAR;
     if( n < 0 ) {
-        neg = TRUE;
+        neg = true;
         n = -n;
     } else {
-        neg = FALSE;
+        neg = false;
     }
     if( n != 0 ) {
         for(;;) {

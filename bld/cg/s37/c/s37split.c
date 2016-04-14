@@ -715,9 +715,9 @@ static  instruction     *rMVCL( instruction *ins ) {
     ins->operands[ 1 ] = name2;
     UpdateLive( first_ins, ins );
     MarkPossible( ins, name1, RL_PAIR );
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     MarkPossible( ins, name2, RL_PAIR );
-    GiveRegister( NameConflict( ins, name2 ), TRUE );
+    GiveRegister( NameConflict( ins, name2 ), true );
     op1 = ins->operands[ 0 ];
     op2 = ins->operands[ 1 ];
     tmp = op1->r.reg;

@@ -146,17 +146,17 @@ static  void    ReplaceAllOccurences( name *of, name *with )
 
 static  bool    InLoop( block *blk )
 /***********************************
-    return TRUE if blk is in the loop defined by Head.
+    return true if blk is in the loop defined by Head.
 */
 {
     if( blk == Head )
-        return( TRUE );
+        return( true );
     for( ; blk != NULL; blk = blk->loop_head ) {
         if( blk->loop_head == Head ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -171,7 +171,7 @@ extern  block   *AddPreBlock( block *postblk )
     block_edge  *edge;
     block       *preblk;
 
-    preblk = NewBlock( postblk->label, FALSE );
+    preblk = NewBlock( postblk->label, false );
     /* set up new block to look like it was generated after postblk*/
     preblk->class = JUMP;
     preblk->id = NO_BLOCK_ID;
@@ -212,7 +212,7 @@ extern  block   *AddPreBlock( block *postblk )
 
 static  bool    IsPreHeader( block *test ) {
 /*******************************************
-    return TRUE if block "test" will serve as a preheader for "Loop".  A
+    return true if block "test" will serve as a preheader for "Loop".  A
     preheader must branch directly to the loop head, and no other block
     that is not in the loop may branch into the loop.
 */
@@ -221,21 +221,21 @@ static  bool    IsPreHeader( block *test ) {
     block       *other;
 
     /* check that test only goes to the loop head*/
-    if( test->targets != 1 ) return( FALSE );
-    if( test->edge[ 0 ].destination.u.blk != Head ) return( FALSE );
-    if( ( test->class & IN_LOOP ) != EMPTY ) return( FALSE );
+    if( test->targets != 1 ) return( false );
+    if( test->edge[ 0 ].destination.u.blk != Head ) return( false );
+    if( ( test->class & IN_LOOP ) != EMPTY ) return( false );
     /* check that no other block outside the loop branches into the loop*/
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
         if( other != test && ( other->class & IN_LOOP ) == EMPTY ) {
             for( i = other->targets; i-- > 0; ) {
                 if( other->edge[ i ].destination.u.blk->class & IN_LOOP ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
     }
     test->edge[ 0 ].flags |= SOURCE_IS_PREHEADER;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -378,7 +378,7 @@ static  bool    KillOneTrippers( void )
     block_num   i;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].flags & ONE_ITER_EXIT ) {
@@ -401,7 +401,7 @@ static  bool    KillOneTrippers( void )
                     }
                 }
                 MakeJumpBlock( blk, &blk->edge[i] );
-                change = TRUE;
+                change = true;
                 break;
             }
         }
@@ -525,14 +525,14 @@ extern  void    MarkInvariants( void )
     for( op = Names[ N_REGISTER ]; op != NULL; op = op->n.next_name ) {
         op->r.reg_index = 0;
     }
-    have_call = FALSE;
-    free_index = FALSE;
-    MemChangedInLoop = FALSE;
+    have_call = false;
+    free_index = false;
+    MemChangedInLoop = false;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 ) {
-                MemChangedInLoop = TRUE;
-                have_call = TRUE;
+                MemChangedInLoop = true;
+                have_call = true;
             }
             ZapRegister( ins->zap->reg );
             if( ins->result != NULL ) {
@@ -544,23 +544,23 @@ extern  void    MarkInvariants( void )
                 case N_INDEXED:
                     if( op->i.base == NULL ) {
                         if( _IsntModel( FORTRAN_ALIASING ) ) {
-                            free_index = TRUE;
+                            free_index = true;
                         }
                     } else if( op->i.base->n.class == N_TEMP ) {
                         ZapTemp( op->i.base );
-                    } else if( free_index == FALSE ) {
+                    } else if( free_index == false ) {
                         ZapMemory( op->i.base );
                     }
-                    MemChangedInLoop = TRUE;
+                    MemChangedInLoop = true;
                     break;
                 case N_TEMP:
                     if( op->v.usage & USE_ADDRESS ) {
-                        MemChangedInLoop = TRUE;
+                        MemChangedInLoop = true;
                     }
                     ZapTemp( op );
                     break;
                 case N_MEMORY:
-                    MemChangedInLoop = TRUE;
+                    MemChangedInLoop = true;
                     if( !free_index ) {
                         ZapMemory( op );
                     }
@@ -613,30 +613,30 @@ extern  void    MarkInvariants( void )
 static  bool    InvariantReg( name *op )
 /**************************************/
 {
-    if( op->n.class != N_REGISTER ) return( FALSE );
-    if( op->r.reg_index != 0 ) return( FALSE );
-    return( TRUE );
+    if( op->n.class != N_REGISTER ) return( false );
+    if( op->r.reg_index != 0 ) return( false );
+    return( true );
 }
 
 
 extern  bool    InvariantOp( name *op )
 /**************************************
-    return TRUE if "op" is invariant with respect to "Loop"
+    return true if "op" is invariant with respect to "Loop"
 */
 {
     switch( op->n.class ) {
     case N_CONSTANT:
-        return( TRUE );
+        return( true );
     case N_MEMORY:
     case N_TEMP:
         return( _ChkLoopUsage( op, VU_INVARIANT ) );
     case N_INDEXED:
-        if( op->i.index_flags & X_VOLATILE ) return( FALSE );
-        if( !InvariantOp( op->i.index ) ) return( FALSE );
+        if( op->i.index_flags & X_VOLATILE ) return( false );
+        if( !InvariantOp( op->i.index ) ) return( false );
         if( op->i.base == NULL ) return( !MemChangedInLoop );
         return( InvariantOp( op->i.base ) );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -677,59 +677,59 @@ extern  bool    Hoistable( instruction *ins, block *blk )
     value       v;
     bool        big_const;
 
-    will_execute = FALSE;
-    dangerous = FALSE;
-    big_const = FALSE;
+    will_execute = false;
+    dangerous = false;
+    big_const = false;
     if( blk != NULL && LoopProtected && ( blk->class & BLOCK_WILL_EXECUTE ) ) {
-        will_execute = TRUE;
+        will_execute = true;
     }
     if( _IsFloating( ins->type_class ) && _IsntTargetModel( I_MATH_INLINE ) ) {
-        dangerous = TRUE;
+        dangerous = true;
     } else {
         for( i = 0; i < ins->num_operands; ++i ) {
             if( ins->operands[i]->n.class == N_INDEXED ) {
-                dangerous = TRUE;
+                dangerous = true;
             }
         }
         if( ins->result != NULL ) {
             if( ins->result->n.class == N_INDEXED ) {
-                dangerous = TRUE;
+                dangerous = true;
             }
         }
     }
     if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) {
-        big_const = TRUE;
+        big_const = true;
     }
     switch( ins->head.opcode ) {
     case OP_DIV:
     case OP_MOD:
     case OP_FMOD:
         v = OpEQZero( ins->operands[1], big_const );
-        if( v == CMP_TRUE ) return( FALSE );
-        if( v == CMP_UNKNOWN ) dangerous = TRUE;
+        if( v == CMP_TRUE ) return( false );
+        if( v == CMP_UNKNOWN ) dangerous = true;
         break;
     // case OP_TAN: dangerous for Pi/2 which is an impossible float
     case OP_SQRT:
         v = OpLTZero( ins->operands[0], big_const );
-        if( v == CMP_TRUE ) return( FALSE );
-        if( v == CMP_UNKNOWN ) dangerous = TRUE;
+        if( v == CMP_TRUE ) return( false );
+        if( v == CMP_UNKNOWN ) dangerous = true;
         break;
     case OP_LOG10:
     case OP_LOG:
         v = OpLTZero( ins->operands[0], big_const );
-        if( v == CMP_TRUE ) return( FALSE );
+        if( v == CMP_TRUE ) return( false );
         v = OpEQZero( ins->operands[0], big_const );
-        if( v == CMP_TRUE ) return( FALSE );
-        if( v == CMP_UNKNOWN ) dangerous = TRUE;
+        if( v == CMP_TRUE ) return( false );
+        if( v == CMP_UNKNOWN ) dangerous = true;
         break;
     case OP_POW:
         // bad for x ** y where x <= 0 and -1 < y < 1 and y != 0
-        dangerous = TRUE;
+        dangerous = true;
         break;
     case OP_MOV:
     case OP_CONVERT:
     case OP_ROUND:
-        if( ins->operands[0]->n.class != N_INDEXED ) return( FALSE );
+        if( ins->operands[0]->n.class != N_INDEXED ) return( false );
         break;
 #if _TARGET & _TARG_RISC
         // on RISC architectures, we want to hoist OP_LAs as they will
@@ -738,12 +738,12 @@ extern  bool    Hoistable( instruction *ins, block *blk )
         break;
 #endif
     default:
-        if( ins->num_operands != 2 ) return( FALSE );
-        if( ins->result == NULL ) return( FALSE );
+        if( ins->num_operands != 2 ) return( false );
+        if( ins->result == NULL ) return( false );
         break;
     }
-    if( dangerous && !will_execute ) return( FALSE );
-    return( TRUE );
+    if( dangerous && !will_execute ) return( false );
+    return( true );
 }
 
 
@@ -757,15 +757,15 @@ static  bool    InvariantExpr( instruction *ins, block *blk )
 {
     int         i;
 
-    if( Hoistable( ins, blk ) == FALSE ) return( FALSE );
+    if( Hoistable( ins, blk ) == false ) return( false );
     // For OP_LA, operand need not be invariant, only its address.
     if( (ins->head.opcode == OP_LA) && (ins->operands[0]->n.class == N_MEMORY) ) {
-        return( TRUE );
+        return( true );
     }
     for( i = ins->num_operands; i-- > 0; ) {
-        if( !InvariantOp( ins->operands[i] ) ) return( FALSE );
+        if( !InvariantOp( ins->operands[i] ) ) return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -878,11 +878,11 @@ static  bool    SameInvariant( invariant *i1, invariant *i2 )
 */
 {
     for( ;; ) {
-        if( i1 == NULL && i2 == NULL ) return( TRUE );
-        if( i1 == NULL ) return( FALSE );
-        if( i2 == NULL ) return( FALSE );
-        if( i1->name != i2->name ) return( FALSE );
-        if( i1->times != i2->times ) return( FALSE );
+        if( i1 == NULL && i2 == NULL ) return( true );
+        if( i1 == NULL ) return( false );
+        if( i2 == NULL ) return( false );
+        if( i1->name != i2->name ) return( false );
+        if( i1->times != i2->times ) return( false );
         i1 = i1->next;
         i2 = i2->next;
     }
@@ -938,17 +938,17 @@ static  bool_maybe  DifferentIV( induction *alias, induction *new )
 /******************************************************************
 */
 {
-    if( alias->basic != new->basic ) return( TRUE );
-    if( alias->plus2 != new->plus2 ) return( TRUE );
-    if( alias->times != new->times ) return( TRUE );
-    if( alias->ivtimes != new->ivtimes ) return( TRUE );
-    if( alias->lasttimes != new->lasttimes ) return( TRUE );
-    if( !SameInvariant( alias->invar, new->invar ) ) return( TRUE );
+    if( alias->basic != new->basic ) return( true );
+    if( alias->plus2 != new->plus2 ) return( true );
+    if( alias->times != new->times ) return( true );
+    if( alias->ivtimes != new->ivtimes ) return( true );
+    if( alias->lasttimes != new->lasttimes ) return( true );
+    if( !SameInvariant( alias->invar, new->invar ) ) return( true );
     if( DifferentClasses( alias->name->n.name_class, new->name->n.name_class ) ) {
-        return( TRUE );
+        return( true );
     }
     if( alias->plus != new->plus ) return( MAYBE );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1074,10 +1074,10 @@ static  bool    ListContainsVar( name * list, name *ivname ) {
 
     for( ; list != NULL; list = list->n.next_name ) {
         if( list == ivname ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1111,16 +1111,16 @@ extern  bool    Inducable( block *blk, instruction *ins ) {
     name        *cons;
     name        *op;
 
-    if( blk->depth == 0 ) return( FALSE );
+    if( blk->depth == 0 ) return( false );
     if( ins->head.opcode!=OP_ADD && ins->head.opcode!=OP_SUB ) {
-        return( FALSE );
+        return( false );
     }
     if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) {
-        return( FALSE );
+        return( false );
     }
     #ifdef _TARG_IS_SEGMENTED
         if( ins->type_class == PT ) {
-            return( FALSE );
+            return( false );
         }
     #endif
     op = ins->operands[0];
@@ -1129,11 +1129,11 @@ extern  bool    Inducable( block *blk, instruction *ins ) {
         op = ins->operands[1];
         cons = ins->operands[0];
     }
-    if( cons->n.class != N_CONSTANT ) return( FALSE );
-    if( cons->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-    if( op != ins->result ) return( FALSE );
-    if( op->n.class != N_TEMP && op->n.class != N_MEMORY ) return( FALSE );
-    return( TRUE );
+    if( cons->n.class != N_CONSTANT ) return( false );
+    if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
+    if( op != ins->result ) return( false );
+    if( op->n.class != N_TEMP && op->n.class != N_MEMORY ) return( false );
+    return( true );
 }
 
 
@@ -1167,12 +1167,12 @@ static  bool    BasicNotRedefined( induction *var, instruction *ins ) {
 
     for( other = var->ins->head.next; other->head.opcode != OP_BLOCK; other = other->head.next ) {
         if( other == ins )
-            return( TRUE );
+            return( true );
         if( ReDefinedBy( other, var->basic->name ) ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1186,12 +1186,12 @@ static  bool    KillIndVars( instruction *ins ) {
     induction   *var;
     bool        killed;
 
-    killed = FALSE;
+    killed = false;
     for( var = IndVarList; var != NULL; var = var->next ) {
         if( var->ins != ins ) {
             if( _IsntV( var, IV_SURVIVED ) ) {
                 if( ReDefinedBy( ins, var->name ) ) {
-                    killed = TRUE;
+                    killed = true;
                     _SetV( var, IV_DEAD );
                 }
             }
@@ -1237,7 +1237,7 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
         plus2 = var->plus2;
         plus = var->plus;
         times = var->times;
-        if( BasicNotRedefined( var, ins ) == FALSE ) {
+        if( BasicNotRedefined( var, ins ) == false ) {
             return;
         }
     }
@@ -1317,10 +1317,10 @@ static  void    CheckInvariant( instruction *ins, induction *var,
         plus = 0;
         plus2 = 0;
     } else {
-        if( BasicNotRedefined( var, ins ) == FALSE ) return;
+        if( BasicNotRedefined( var, ins ) == false ) return;
     }
     if( ins->head.opcode != OP_SUB ) {
-        reverse = FALSE;
+        reverse = false;
     }
     switch( ins->head.opcode ) {
     case OP_SUB:
@@ -1544,25 +1544,25 @@ static  bool    IsAddressMode( induction *var )
 /*********************************************/
 {
     #if 0 // when this doesn't work, it REALLY doesn't work
-        if( var->use_count != 1 ) return( FALSE );
-        if( _IsntV( var, IV_INDEXED ) ) return( FALSE );
+        if( var->use_count != 1 ) return( false );
+        if( _IsntV( var, IV_INDEXED ) ) return( false );
         if( var->times != 1 && var->times != 2 &&
-            var->times != 4 && var->times != 8 ) return( FALSE );
-        if( var->ivtimes != NULL ) return( FALSE );
-        if( var->lasttimes != 0 ) return( FALSE );
+            var->times != 4 && var->times != 8 ) return( false );
+        if( var->ivtimes != NULL ) return( false );
+        if( var->lasttimes != 0 ) return( false );
         if( var->invar != NULL ) {
-            if( var->invar->times != 1 ) return( FALSE );
-            if( var->invar->next != NULL ) return( FALSE );
-            if( var->plus != 0 || var->plus2 != 0 ) return( FALSE );
+            if( var->invar->times != 1 ) return( false );
+            if( var->invar->next != NULL ) return( false );
+            if( var->plus != 0 || var->plus2 != 0 ) return( false );
         } else {
             if( var->plus != 0 ) {
-                if( var->plus2 != 0 ) return( FALSE );
+                if( var->plus2 != 0 ) return( false );
             }
         }
-        return( TRUE );
+        return( true );
     #else
         var=var;
-        return( FALSE );
+        return( false );
     #endif
 }
 
@@ -1579,7 +1579,7 @@ static  void    ScanNonBasic( instruction *ins )
     if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) return;
     if( ins->head.opcode == OP_MOV ) {
         var = FindIndVar( ins->operands[ 0 ] );
-        CheckNonBasic( ins, var, NULL, FALSE );
+        CheckNonBasic( ins, var, NULL, false );
         return;
     }
     if( ins->head.opcode != OP_ADD
@@ -1590,24 +1590,24 @@ static  void    ScanNonBasic( instruction *ins )
         op = ins->operands[ 0 ];
         var = FindOrAddIndVar( ins->operands[ 1 ], ins->type_class );
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            CheckNonBasic( ins, var, op, TRUE );
+            CheckNonBasic( ins, var, op, true );
         } else {
-            CheckInvariant( ins, var, op, TRUE );
+            CheckInvariant( ins, var, op, true );
         }
     } else if( ins->operands[ 1 ]->n.class == N_CONSTANT ) {
         op = ins->operands[ 1 ];
         var = FindOrAddIndVar( ins->operands[ 0 ], ins->type_class );
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            CheckNonBasic( ins, var, op, FALSE );
+            CheckNonBasic( ins, var, op, false );
         } else {
-            CheckInvariant( ins, var, op, FALSE );
+            CheckInvariant( ins, var, op, false );
         }
     } else if( InvariantOp( ins->operands[ 0 ] ) ) {
         var = FindOrAddIndVar( ins->operands[ 1 ], ins->type_class );
-        CheckInvariant( ins, var, ins->operands[ 0 ], TRUE );
+        CheckInvariant( ins, var, ins->operands[ 0 ], true );
     } else if( InvariantOp( ins->operands[ 1 ] ) ) {
         var = FindOrAddIndVar( ins->operands[ 0 ], ins->type_class );
-        CheckInvariant( ins, var, ins->operands[ 1 ], FALSE );
+        CheckInvariant( ins, var, ins->operands[ 1 ], false );
     }
 }
 
@@ -1760,10 +1760,10 @@ static  instruction     *Multiply( name *op, signed_32 by, name *temp,
     instruction *ins;
 
     if( by < 0 ) {
-        negative = TRUE;
+        negative = true;
         by = -by;
     } else {
-        negative = FALSE;
+        negative = false;
     }
     log2 = GetLog2( by );
     if( log2 == 0 ) {
@@ -1968,7 +1968,7 @@ static  bool    PathFrom( instruction *frum, instruction *to,
     'avoiding'.  Conceptually, this is done by dropping some paint on
     instruction "from" and letting it flow until it hits either "to",
     "avoiding", or the end of the program.  If "to" gets painted, then
-    we return TRUE.
+    we return true.
 */
 
     bool        change;
@@ -1978,20 +1978,20 @@ static  bool    PathFrom( instruction *frum, instruction *to,
 
     LabelDown( frum, avoiding, go_around );
     for(;;) {
-        change = FALSE;
+        change = false;
         for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
             if( blk->class & BLOCK_VISITED ) {
                 blk->class &= ~BLOCK_VISITED;
-                change = TRUE;
+                change = true;
                 LabelDown( blk->ins.hd.next, avoiding, go_around );
             }
         }
-        if( change == FALSE ) break;
+        if( change == false ) break;
     }
     if( to->ins_flags & INS_VISITED ) {
-        foundpath = TRUE;
+        foundpath = true;
     } else {
-        foundpath = FALSE;
+        foundpath = false;
     }
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         blk->class &= ~BLOCK_VISITED;
@@ -2006,19 +2006,19 @@ static  bool    PathFrom( instruction *frum, instruction *to,
 static  bool    NoPathThru( instruction *ins1,
                             instruction *ins2, instruction *ins3 ) {
 /*******************************************************************
-    return TRUE if there is no path from ins1 to ins2 going through ins3
+    return true if there is no path from ins1 to ins2 going through ins3
 */
 
 
-    if( PathFrom( ins3, ins2, ins1, FALSE ) &&
-        PathFrom( ins1, ins3, ins2, FALSE ) ) {
-        return( FALSE ); /* we found a path from ins1 to ins2 going thru ins3*/
+    if( PathFrom( ins3, ins2, ins1, false ) &&
+        PathFrom( ins1, ins3, ins2, false ) ) {
+        return( false ); /* we found a path from ins1 to ins2 going thru ins3*/
     }
-    if( PathFrom( ins2, ins3, ins1, FALSE ) &&
-        PathFrom( ins3, ins1, ins2, FALSE ) ) {
-        return( FALSE ); /* we found a path from ins2 to ins1 going thru ins3*/
+    if( PathFrom( ins2, ins3, ins1, false ) &&
+        PathFrom( ins3, ins1, ins2, false ) ) {
+        return( false ); /* we found a path from ins2 to ins1 going thru ins3*/
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2054,7 +2054,7 @@ static  void    MarkWillExecBlocks( void )
     if( Head->ins.hd.prev == Head->ins.hd.next ) {
         nop = MakeNop();
         // Must (can hit block) and Ok to (ins killed) not renumber
-        PrefixInsRenum( Head->ins.hd.next, nop, FALSE ); // so PathFrom works
+        PrefixInsRenum( Head->ins.hd.next, nop, false ); // so PathFrom works
     } else {
         nop = NULL;
     }
@@ -2065,7 +2065,7 @@ static  void    MarkWillExecBlocks( void )
             blk->class &= ~BLOCK_WILL_EXECUTE;
             continue;
         }
-        if( PathFrom( Head->ins.hd.prev, Head->ins.hd.next, blk->ins.hd.next, TRUE ) ) {
+        if( PathFrom( Head->ins.hd.prev, Head->ins.hd.next, blk->ins.hd.next, true ) ) {
             blk->class &= ~BLOCK_WILL_EXECUTE;
         }
     }
@@ -2087,16 +2087,16 @@ static  void    UnMarkWillExecBlocks( void )
 
 static  bool    InstructionWillExec( instruction *ins ) {
 /********************************************************
-    TRUE if the given instruction will be executed every time through the loop.
+    true if the given instruction will be executed every time through the loop.
 */
     instruction *top;
 
     top = Head->ins.hd.next;
-    if( top == ins ) return( TRUE );
-    if( PathFrom( top->head.next, top, ins, TRUE ) ) {
-        return( FALSE );
+    if( top == ins ) return( true );
+    if( PathFrom( top->head.next, top, ins, true ) ) {
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2235,17 +2235,17 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
     int                 remainder;
     int                 num_instrs;
 
-    if( Loop->u.loop != NULL ) return( FALSE );
-    if( var->use_count - var->index_use_count != 1 ) return( FALSE );
-    if( var->ins->head.next != cond ) return( FALSE );
-    if( OptForSize != 0 ) return( FALSE );
+    if( Loop->u.loop != NULL ) return( false );
+    if( var->use_count - var->index_use_count != 1 ) return( false );
+    if( var->ins->head.next != cond ) return( false );
+    if( OptForSize != 0 ) return( false );
 
     if( know_bounds ) {
         iterations = ( final - initial ) / var->plus;
     } else {
         iterations = cond_blk->iterations;
     }
-    if( iterations == 0 ) return( FALSE );
+    if( iterations == 0 ) return( false );
 
 #define MAX_UNROLL_EXPANSION    30
 
@@ -2255,7 +2255,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
     unroll_count = MAX_UNROLL_EXPANSION / num_instrs;
     if( unroll_count > iterations ) unroll_count = iterations;
     for( ;; ) {
-        if( unroll_count <= 1 ) return( FALSE );
+        if( unroll_count <= 1 ) return( false );
         remainder = iterations % unroll_count;
         if((unroll_count+remainder) * num_instrs <= MAX_UNROLL_EXPANSION) break;
         --unroll_count;
@@ -2310,7 +2310,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
     }
     FreeIns( cond );
     FreeIns( indins );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -2377,10 +2377,10 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
     iv_usage    usage;
     int         i;
 
-    *ponecond = FALSE;
+    *ponecond = false;
     *pcond = NULL;
     *pcond_blk = NULL;
-    can_replace = TRUE;
+    can_replace = true;
     first_blk = PreHead->edge[0].destination.u.blk;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -2390,13 +2390,13 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
                         for( i = ins->num_operands; i-- > 0; ) {
                             usage = Uses( ins->operands[i], var->name );
                             if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
-                                can_replace = FALSE;
+                                can_replace = false;
                             }
                         }
                         if( ins->result != NULL ) {
                             usage = Uses( ins->result, var->name );
                             if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
-                                can_replace = FALSE;
+                                can_replace = false;
                             }
                         }
                     }
@@ -2404,10 +2404,10 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
                     if( blk->class & LOOP_EXIT ) {
                         if( *pcond == NULL ) {
                             *pcond = ins;
-                            *ponecond = TRUE;
+                            *ponecond = true;
                             *pcond_blk = blk;
                         } else {
-                            *ponecond = FALSE;
+                            *ponecond = false;
                             if( first_blk == blk ) { // preferred by TwistLoop
                                 *pcond = ins;
                                 *pcond_blk = blk;
@@ -2417,7 +2417,7 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
                             for( i = ins->num_operands; i-- > 0; ) {
                                 usage = Uses( ins->operands[i], var->name );
                                 if( usage == IVU_USED_AS_INDEX ) {
-                                    can_replace = FALSE;
+                                    can_replace = false;
                                 }
                             }
                         }
@@ -2425,7 +2425,7 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
                         for( i = ins->num_operands; i-- > 0; ) {
                             usage = Uses( ins->operands[i], var->name );
                             if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
-                                can_replace = FALSE;
+                                can_replace = false;
                             }
                         }
                     }
@@ -2499,10 +2499,10 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
     signed_32           remd;
     signed_32           dist;
 
-    if( _IsV( var, IV_DEAD ) ) return( FALSE );
-    if( ins == NULL ) return( FALSE );
-    if( ins->head.opcode == OP_BIT_TEST_TRUE ) return( FALSE );
-    if( ins->head.opcode == OP_BIT_TEST_FALSE ) return( FALSE );
+    if( _IsV( var, IV_DEAD ) ) return( false );
+    if( ins == NULL ) return( false );
+    if( ins->head.opcode == OP_BIT_TEST_TRUE ) return( false );
+    if( ins->head.opcode == OP_BIT_TEST_FALSE ) return( false );
     if( ins->operands[ 0 ]->n.class == N_CONSTANT ) {
         temp = ins->operands[ 0 ];
         ins->operands[ 0 ] = ins->operands[ 1 ];
@@ -2513,34 +2513,34 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         _SetBlockIndex( ins, _FalseIndex( ins ), _TrueIndex( ins ) );
         FlipCond( ins );
     }
-    if( ins->head.opcode == OP_CMP_NOT_EQUAL ) return( FALSE );
+    if( ins->head.opcode == OP_CMP_NOT_EQUAL ) return( false );
     op = ins->operands[ 1 ];
-    if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-    if( ins->operands[ 0 ] != var->name ) return( FALSE );
+    if( op->n.class != N_CONSTANT ) return( false );
+    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
+    if( ins->operands[ 0 ] != var->name ) return( false );
     op = InitialValue( var->name );
-    if( op == NULL ) return( FALSE );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( FALSE );
+    if( op == NULL ) return( false );
+    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
     init = op->c.int_value;
     *initial = init;
     test = ins->operands[ 1 ]->c.int_value;
     incr = var->plus;
     dist = test - init;
-    if( Sgn( dist ) != Sgn( incr ) ) return( FALSE );
+    if( Sgn( dist ) != Sgn( incr ) ) return( false );
     remd = ( Abs( dist ) % Abs( incr ) ) * Sgn( incr );
     switch( ins->head.opcode ) {
     case OP_CMP_EQUAL:
-        if( remd != 0 ) return( FALSE );
+        if( remd != 0 ) return( false );
         *final = test;
         break;
     case OP_CMP_GREATER:
-        if( incr <= 0 ) return( FALSE );
-        if( test <= init ) return( FALSE );     // wraps or exits immediately BBB - July, 1996
+        if( incr <= 0 ) return( false );
+        if( test <= init ) return( false );     // wraps or exits immediately BBB - July, 1996
         *final = test + ( incr - remd );
         break;
     case OP_CMP_GREATER_EQUAL:
-        if( incr <= 0 ) return( FALSE );
-        if( test <= init ) return( FALSE );     // wraps or exits immediately BBB - July, 1996
+        if( incr <= 0 ) return( false );
+        if( test <= init ) return( false );     // wraps or exits immediately BBB - July, 1996
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -2548,13 +2548,13 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         }
         break;
     case OP_CMP_LESS:
-        if( incr >= 0 ) return( FALSE );
-        if( test >= init ) return( FALSE );     // wraps or exits immediately BBB - July, 1996
+        if( incr >= 0 ) return( false );
+        if( test >= init ) return( false );     // wraps or exits immediately BBB - July, 1996
         *final = test + ( incr - remd );
         break;
     case OP_CMP_LESS_EQUAL:
-        if( incr >= 0 ) return( FALSE );
-        if( test >= init ) return( FALSE );     // wraps or exits immediately BBB - July, 1996
+        if( incr >= 0 ) return( false );
+        if( test >= init ) return( false );     // wraps or exits immediately BBB - July, 1996
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -2566,7 +2566,7 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         Head->iterations = ( *final - *initial ) / incr;
         Head->class |= ITERATIONS_KNOWN;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2588,11 +2588,11 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var ) {
     block               *dest;
 
     if( !CalcFinalValue( var, blk, ins, &final, &initial ) ) {
-        return( FALSE );
+        return( false );
     }
     dest = blk->edge[  _TrueIndex( ins )  ].destination.u.blk;
-    if( dest->class & UNKNOWN_DESTINATION ) return( FALSE );
-    if( dest->class & LOOP_HEADER ) return( FALSE );
+    if( dest->class & UNKNOWN_DESTINATION ) return( false );
+    if( dest->class & LOOP_HEADER ) return( false );
     // class = var->name->n.name_class;
     class = ins->type_class;
     assert( TypeClassSize[ class ] == TypeClassSize[ var->name->n.name_class ] );
@@ -2607,7 +2607,7 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var ) {
         ins = MakeMove( op, var->name, class );
         SuffixIns( (instruction *)&dest->ins, ins );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2616,39 +2616,39 @@ static  bool    PointerOk( name *op ) {
 
 #ifdef _POINTER_GETS_NEAR_BOUNDS
     op = op;
-    return( FALSE );
+    return( false );
 #else
-    if( op->n.name_class == PT ) return( TRUE );
-    if( op->n.name_class == CP ) return( TRUE );
-    if( op->n.name_class != U2 ) return( FALSE );
-    if( op->n.class != N_TEMP ) return( FALSE );
-    if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( FALSE );
-    return( TRUE );
+    if( op->n.name_class == PT ) return( true );
+    if( op->n.name_class == CP ) return( true );
+    if( op->n.name_class != U2 ) return( false );
+    if( op->n.class != N_TEMP ) return( false );
+    if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( false );
+    return( true );
 #endif
 }
 
 
 static  bool    DangerousTypeChange( induction *var, induction *other ) {
 /************************************************************************
-    Is it dangerous to replace "var" with "other"?  This is TRUE if
+    Is it dangerous to replace "var" with "other"?  This is true if
     "other" might wrap around its limits.
 */
 
     invariant   *invar;
 
-    if( Unsigned[ var->type_class  ] == Unsigned[ other->type_class ] ) return( FALSE );
-    if( PointerOk( other->name ) ) return( FALSE );
+    if( Unsigned[ var->type_class  ] == Unsigned[ other->type_class ] ) return( false );
+    if( PointerOk( other->name ) ) return( false );
     for( invar = other->invar; invar != NULL; invar = invar->next ) {
         if( PointerOk( invar->name ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static  bool    ConstOverflowsType( signed_64 *val, type_class_def class ) {
 /***************************************************************************
-    Return TRUE if the given (signed) constant is too big or too small for
+    Return true if the given (signed) constant is too big or too small for
     the given type_class.
 */
 
@@ -2659,9 +2659,9 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def class ) {
 
     if( class == XX ) {
         _Zoiks( ZOIKS_139 );
-        return( FALSE );
+        return( false );
     }
-    if( class == I8 || class == U8 ) return( FALSE );
+    if( class == I8 || class == U8 ) return( false );
     len = TypeClassSize[ class ] * 8;
     I32ToI64( 1, &one );
     if( Unsigned[ class ] != class ) {
@@ -2675,9 +2675,9 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def class ) {
         U64ShiftL( &one, len, &max );
         U64Sub( &max, &one, &max );
     }
-    if( I64Cmp( val, &min ) < 0 ) return( TRUE );
-    if( I64Cmp( val, &max ) > 0 ) return( TRUE );
-    return( FALSE );
+    if( I64Cmp( val, &min ) < 0 ) return( true );
+    if( I64Cmp( val, &max ) > 0 ) return( true );
+    return( false );
 }
 
 static  bool    DoReplacement( instruction *ins, induction *rep,
@@ -2711,7 +2711,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         U64Add( &big_cons, &temp, &big_cons );
         // make sure we always allow negative values - hack for BMark
         if( ( big_cons.u._32[ I64HI32 ] & 0x80000000 ) == 0 ) {
-            if( ConstOverflowsType( &big_cons, class ) ) return( FALSE );
+            if( ConstOverflowsType( &big_cons, class ) ) return( false );
         }
         ins->type_class = class;
         ins->operands[ ind ] = rep->name;
@@ -2746,7 +2746,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         SuffixIns( prev_ins, new_ins );
         prev_ins = new_ins;
     }
-    return( TRUE );
+    return( true );
 }
 
 static  bool    RepIndVar( instruction *ins, induction *rep,
@@ -2756,9 +2756,9 @@ static  bool    RepIndVar( instruction *ins, induction *rep,
 */
 
     if( InvariantOp( ins->operands[ i_non_ind ] ) ) {
-        if( !DoReplacement( ins, rep, i_ind, i_non_ind, class ) ) return( FALSE );
+        if( !DoReplacement( ins, rep, i_ind, i_non_ind, class ) ) return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2787,7 +2787,7 @@ static  bool    ReplUses( induction *var, induction *rep,
     iv_usage    op1use;
     iv_usage    op2use;
 
-    if( ins->head.opcode == OP_CMP_EQUAL && DangerousTypeChange( var, rep ) == FALSE ) {
+    if( ins->head.opcode == OP_CMP_EQUAL && DangerousTypeChange( var, rep ) == false ) {
         op1use = Uses( ins->operands[ 0 ], var->name ); /* UNUSED | USED_AS_OP*/
         op2use = Uses( ins->operands[ 1 ], var->name ); /* UNUSED | USED_AS_OP*/
         if( op1use == IVU_USED_AS_OPERAND ) {
@@ -2795,19 +2795,19 @@ static  bool    ReplUses( induction *var, induction *rep,
                 RepBoth( ins, rep, class );
             } else if( op2use == IVU_USED_AS_INVARIANT ) {
                 if( !RepIndVar( ins, rep, 0, 1, class ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         } else if( op2use == IVU_USED_AS_OPERAND ) {
             if( op1use == IVU_USED_AS_INVARIANT ) {
                 if( !RepIndVar( ins, rep, 1, 0, class ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -2831,10 +2831,10 @@ static  void    Replace( induction *var, induction *replacement ) {
 
     if( !AnalyseLoop( var, &onecond, &cond, &cond_blk ) ) return;
     class = replacement->type_class;
-    free_ins = FALSE;
+    free_ins = false;
     if( onecond ) {
         if( FinalValue( cond, cond_blk, var ) ) {
-            free_ins = TRUE;
+            free_ins = true;
         }
     }
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
@@ -2866,7 +2866,7 @@ static  bool    DoLoopInvariant( bool (*rtn)(void) ) {
     block               *blk;
     bool                change;
 
-    change = FALSE;
+    change = false;
     depth = MaxDepth();
     for( i = 1; i <= depth; ++i ) { /* do loop invariant code motion from the outside in*/
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -2874,10 +2874,10 @@ static  bool    DoLoopInvariant( bool (*rtn)(void) ) {
                 LPBlip();
                 Head = blk;
                 MarkLoop();
-                LoopProtected = FALSE;
+                LoopProtected = false;
                 MarkInvariants();
                 while( rtn() ) {
-                    change = TRUE;
+                    change = true;
                 }
                 UnMarkInvariants();
                 UnMarkLoop();
@@ -2905,7 +2905,7 @@ static  bool    FindRegInvariants( void )
     int         i;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
@@ -2926,7 +2926,7 @@ static  bool    FindRegInvariants( void )
             ins->head.prev->head.next = next;
             SuffixPreHeader( ins );
             UpdateLoopLiveInfo( ins );
-            change = TRUE;
+            change = true;
         }
     }
     return( change );
@@ -2952,7 +2952,7 @@ static  bool    FindInvariants( void )
     int         i;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
@@ -2979,7 +2979,7 @@ static  bool    FindInvariants( void )
                     SuffixPreHeader( ins );
                     PrefixIns( next, MakeMove( temp, op, op->n.name_class ) );
                 }
-                change = TRUE;
+                change = true;
             } else if( ins->head.opcode != OP_CALL_INDIRECT ) {
                 /* propagate some constants into the loop*/
                 for( i = 0; i < ins->num_operands; ++i ) {
@@ -2991,7 +2991,7 @@ static  bool    FindInvariants( void )
                     if( op->c.const_type == CONS_TEMP_ADDR ) continue;
                     if( op->c.const_type == CONS_HIGH_ADDR ) continue;
                     ins->operands[i] = op;
-                    change = TRUE;
+                    change = true;
                 }
             }
         }
@@ -3089,13 +3089,13 @@ static  bool    ReduceVar( induction *var )
     induction           *new;
     instruction         *ins;
 
-    if( _IsntV( var, IV_TOP ) ) return( FALSE );
-    if( _IsV( var, IV_DEAD ) ) return( FALSE );
+    if( _IsntV( var, IV_TOP ) ) return( false );
+    if( _IsV( var, IV_DEAD ) ) return( false );
     while( var->ins->num_operands == 1 ) {
         var = FindIndVar( var->ins->operands[ 0 ] );
     }
-    if( _IsV( var , IV_BASIC | IV_ALIAS ) ) return( FALSE );
-    if( IsAddressMode( var ) ) return( FALSE );
+    if( _IsV( var , IV_BASIC | IV_ALIAS ) ) return( false );
+    if( IsAddressMode( var ) ) return( false );
     class = var->type_class;
     new_temp = AllocTemp( class );
     new_temp->t.temp_flags |= CROSSES_BLOCKS;
@@ -3124,7 +3124,7 @@ static  bool    ReduceVar( induction *var )
                      var->lasttimes, var->times,
                      var->plus, var->plus2, 1, ins->type_class );
     _SetV( new, IV_INTRODUCED );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -3136,7 +3136,7 @@ static  bool    ReduceInStrength( void )
     induction   *var;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( var = IndVarList; var != NULL; var = var->next ) {
         change |= ReduceVar( var );
     }
@@ -3192,14 +3192,14 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
     block               *blk;
 
     AnalyseLoop( IndVarList, &onecond, &cond, &cond_blk );
-    if( cond_blk == NULL ) return( FALSE );
-    know_bounds = FALSE;
+    if( cond_blk == NULL ) return( false );
+    know_bounds = false;
     if( onecond ) {
         var = FindIndVar( cond->operands[ 0 ] );
         if( var == NULL ) var = FindIndVar( cond->operands[ 1 ] );
         if( var != NULL ) {
             if( CalcFinalValue( var, cond_blk, cond, &final, &initial ) ) {
-                if( final != initial ) know_bounds = TRUE;
+                if( final != initial ) know_bounds = true;
             }
         }
     }
@@ -3231,17 +3231,17 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
                     PropIndexes( blk );
                 }
             }
-            return( TRUE );
+            return( true );
         }
     }
-    do_the_twist = TRUE;
+    do_the_twist = true;
     edge = &PreHead->edge[ 0 ];
     if( edge->destination.u.blk != cond_blk ) {
-        do_the_twist = FALSE;
+        do_the_twist = false;
     }
 #if 1
     if( cond != cond_blk->ins.hd.next || cond != cond_blk->ins.hd.prev ) {
-        do_the_twist = FALSE;
+        do_the_twist = false;
     }
 #endif
     if( do_the_twist ) {
@@ -3293,14 +3293,14 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
         UnMarkLoop();
         MarkLoop();
         MarkWillExecBlocks();
-        LoopProtected = TRUE;
+        LoopProtected = true;
         MarkInvariants();
         while( FindInvariants() ) ;
         UnMarkInvariants();
         UnMarkWillExecBlocks();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -3324,7 +3324,7 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
     induction   **owner;
     induction   *list;
 
-    change = FALSE;
+    change = false;
     list = NULL;
     owner = &list;
 
@@ -3358,10 +3358,10 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
         FindBasics();
         if( !reduce || NumIndVars == 0 ) {
             if( !BlockByBlock && TwistLoop( header, unroll ) ) {
-                change = TRUE;
+                change = true;
             }
         } else {
-            LoopProtected = FALSE;
+            LoopProtected = false;
             MarkInvariants();
             for(;;) {
                 old = NumIndVars;
@@ -3370,7 +3370,7 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
             }
             MergeVars();
             if( ReduceInStrength() ) {
-                change = TRUE;
+                change = true;
                 PreHead->class |= IN_LOOP;
                 LoopInsDead();
                 PreHead->class &= ~IN_LOOP;
@@ -3378,7 +3378,7 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll ) {
             FreeBadVars();
             ElimIndVars();
             if( !BlockByBlock && TwistLoop( header, unroll ) ) {
-                change = TRUE;
+                change = true;
             }
             UnMarkInvariants();
         }
@@ -3411,12 +3411,12 @@ static  bool    Induction( bool reduce, bool unroll )
 extern  bool    IndVars( void )
 /*****************************/
 {
-    return( Induction( TRUE, FALSE ) );
+    return( Induction( true, false ) );
 }
 
 
 extern  bool    TransLoops( bool unroll )
 /***************************************/
 {
-    return( Induction( FALSE, unroll ) );
+    return( Induction( false, unroll ) );
 }

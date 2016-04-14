@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#define NOT_NULL    ((void *)(pointer_int)TRUE)
+#define NOT_NULL    ((void *)(pointer_int)true)
 
 typedef void    *(*func_sr)(void *);
 

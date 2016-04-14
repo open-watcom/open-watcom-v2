@@ -43,7 +43,7 @@ typedef enum handle_type {
 
 typedef struct use_info {
     handle_type         hdltype;
-    unsigned            used :1;        // - TRUE ==> has been used
+    unsigned            used :1;        // - true ==> has been used
 } use_info;
 
 #endif // __USEINFO__H__

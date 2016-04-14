@@ -118,7 +118,7 @@ extern section_def *AddSection( segment_id id )
     new->next = sectionDefs[ bucket ];
     sectionDefs[ bucket ] = new;
     new->func  = NULL;
-    new->is_start = TRUE;
+    new->is_start = true;
     return( new );
 }
 
@@ -664,9 +664,9 @@ static  bool            InlineFunction( cg_sym_handle sym )
 /******************************************************/
 {
     if( (FEAttr( sym ) & FE_PROC) == 0 )
-        return( FALSE );
+        return( false );
     if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
-        return( TRUE );
+        return( true );
     return( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
@@ -799,10 +799,10 @@ extern  bool    NeedBaseSet( void )
     bool        need;
 
     if( currSection->is_start ) {
-        need = TRUE;
-        currSection->is_start = FALSE;
+        need = true;
+        currSection->is_start = false;
     } else {
-        need = FALSE;
+        need = false;
     }
     return( need );
 }
@@ -1066,7 +1066,7 @@ extern  void    TellObjNewProc( cg_sym_handle proc )
         DoEmptyQueue();
         codeSection = proc_id;
         SetOP( codeSection );
-        currSection->is_start = TRUE;
+        currSection->is_start = true;
     }
     if( FEAttr( proc ) & FE_COMMON ) {
         if( _IsModel( DBG_CV ) ) { // set the $debug for comdat
@@ -1091,7 +1091,7 @@ extern  bool    AskNameROM( pointer hdl, cg_class class )
 /*******************************************************/
 {
     hdl = hdl; class = class;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1106,7 +1106,7 @@ extern  bool    CodeHasAbsPatch( oc_entry *code )
 /***********************************************/
 {
     code = code;
-    return( FALSE );    // NYI
+    return( false );    // NYI
 }
 
 static  bool    relocBefore( void *_p1, void *_p2 )

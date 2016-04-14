@@ -57,11 +57,11 @@ extern  bool    FindShort( ins_entry *ins, ins_entry *end )
     for( ; ins != NULL && ins != end; ins = NextIns( ins ) ) {
         if( _Class( ins ) == OC_LABEL ) {
             if( _Attr( ins ) & ATTR_SHORT )
-                return( TRUE );
+                return( true );
             _ClrStatus( _Label( ins ), SHORTREACH );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist )
@@ -194,25 +194,25 @@ extern  bool    StraightenCode( ins_entry *jump )
   optbegin
     hoist = _Label( jump )->ins;
     if( hoist == NULL )
-        optreturn( FALSE );
+        optreturn( false );
     if( hoist == LastIns )
-        optreturn( FALSE );
+        optreturn( false );
     cl = PrevClass( hoist );
     if( !_TransferClass( cl ) )
-        optreturn( FALSE );
+        optreturn( false );
 
     end_hoist = NULL;
     for( next = hoist; ; next = NextIns( next ) ) {
         if( next == jump ) { // pushing code down to jump
             if( end_hoist == NULL )
-                optreturn( FALSE );
+                optreturn( false );
             if( FindShort( hoist, end_hoist ) )
-                optreturn( FALSE );
+                optreturn( false );
             break;
         }
         if( next == NULL ) { // hauling code up to jump
             if( FindShort( jump, hoist ) )
-                optreturn( FALSE );
+                optreturn( false );
             break;
         }
         cl = _Class( next );
@@ -233,7 +233,7 @@ extern  bool    StraightenCode( ins_entry *jump )
         DeleteQueue( hoist );
         InsertQueue( hoist, insert );
         if( hoist == jump )
-            optreturn( FALSE );
+            optreturn( false );
         insert = hoist;
         cl = _Class( hoist );
         if( _TransferClass( cl ) ) {
@@ -242,12 +242,12 @@ extern  bool    StraightenCode( ins_entry *jump )
         }
         hoist = next;
     }
-    InsDelete = TRUE;
+    InsDelete = true;
     Untangle( next );
     if( _Class( jump ) != OC_DEAD ) {
         Untangle( _Label( jump )->ins );
     }
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 

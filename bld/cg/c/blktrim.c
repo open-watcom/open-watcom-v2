@@ -82,8 +82,8 @@ static  void    MarkReachableBlocks( void )
     bool        change;
     block_num   i;
 
-    for( change = TRUE; change; ) {
-        change = FALSE;
+    for( change = true; change; ) {
+        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( blk->class & ( BIG_LABEL | BLOCK_VISITED | SELECT ) ) {
                 blk->class |= BLOCK_VISITED;
@@ -91,7 +91,7 @@ static  void    MarkReachableBlocks( void )
                     son = blk->edge[ i ].destination.u.blk;
                     if( ( son->class & BLOCK_VISITED ) == EMPTY ) {
                         son->class |= BLOCK_VISITED;
-                        change = TRUE;
+                        change = true;
                     }
                 }
             }
@@ -121,10 +121,10 @@ static  bool    FindBlock( block *target )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk == target ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -248,14 +248,14 @@ static  bool    Retarget( block *blk )
     block       *target;
     bool        success;
 
-    success = TRUE;                    /* assume can get rid of block*/
+    success = true;                    /* assume can get rid of block*/
     target = blk->edge[ 0 ].destination.u.blk;
     edge = blk->input_edges;
     blk->input_edges = NULL;
     for( ; edge != NULL; edge = next ) {
         next = edge->next_source;
         if( edge->source->class & ( SELECT | LABEL_RETURN ) ) {
-            success = FALSE;   /* let the optimizer do it later on*/
+            success = false;   /* let the optimizer do it later on*/
             edge->next_source = blk->input_edges;
             blk->input_edges = edge;
         } else {
@@ -345,8 +345,8 @@ static  bool    SameTarget( block *blk )
 
     targ1 = blk->edge[ 0 ].destination.u.blk;
     targ2 = blk->edge[ 1 ].destination.u.blk;
-    if( targ1 != targ2 ) return( FALSE );
-    if( ( targ1->class | targ2->class ) & UNKNOWN_DESTINATION ) return( FALSE );
+    if( targ1 != targ2 ) return( false );
+    if( ( targ1->class | targ2->class ) & UNKNOWN_DESTINATION ) return( false );
     blk->class &= ~CONDITIONAL;
     blk->class |= JUMP;
     RemoveEdge( &blk->edge[1] );
@@ -355,7 +355,7 @@ static  bool    SameTarget( block *blk )
         ins = ins->head.prev;
     }
     FreeIns( ins );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -370,8 +370,8 @@ static  bool    DoBlockTrim( void )
     bool        any_change;
     block_num   blk_id;
 
-    for( any_change = FALSE, change = TRUE; change; ) {
-        change = FALSE;
+    for( any_change = false, change = true; change; ) {
+        change = false;
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
             next = blk->next_block;
@@ -380,7 +380,7 @@ static  bool    DoBlockTrim( void )
                     RemoveInputEdge( blk->input_edges );
                 }
                 RemoveBlock( blk );
-                change = TRUE;
+                change = true;
             } else if( blk->class & CONDITIONAL ) {
                 change |= SameTarget( blk );
             } else if( blk->class & JUMP ) {
@@ -402,7 +402,7 @@ static  bool    DoBlockTrim( void )
                         if( !( blk->class & ( RETURNED_TO | BIG_LABEL ) )
                            && !( target->class & CALL_LABEL ) ) {
                             JoinBlocks( blk, target );
-                            change = TRUE;
+                            change = true;
                         }
                     }
                 }
@@ -410,8 +410,8 @@ static  bool    DoBlockTrim( void )
         }
         UnMarkBlocks();
         if( change ) {
-            BlocksUnTrimmed = FALSE;
-            any_change = TRUE;
+            BlocksUnTrimmed = false;
+            any_change = true;
         }
     }
     blk_id = 1;
@@ -454,7 +454,7 @@ extern  bool    DeadBlocks( void )
     int         dest;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CONDITIONAL ) {
             ins = FindOneCond( blk );
@@ -463,21 +463,21 @@ extern  bool    DeadBlocks( void )
             dest = _TrueIndex( ins );
             if( dest != _FalseIndex( ins ) ) continue;
             KillCondBlk( blk, ins, dest );
-            change = TRUE;
+            change = true;
         }
     }
     if( change ) {
         BlockTrim();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 extern  bool    BlockTrim( void )
 /*******************************/
 {
-    bool    change = FALSE;
+    bool    change = false;
 
     if( ( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) == 0 ) {
         change = DoBlockTrim();

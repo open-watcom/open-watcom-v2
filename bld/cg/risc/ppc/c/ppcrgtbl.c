@@ -490,10 +490,10 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
     class = class;
     for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
         if( HW_Equal( *dregs, reg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -502,7 +502,7 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 {
     is_temp_index = is_temp_index;
     reg = reg;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -510,7 +510,7 @@ extern  bool    IsSegReg( hw_reg_set regs )
 /*****************************************/
 {
     regs = regs;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -645,10 +645,10 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 
     for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 

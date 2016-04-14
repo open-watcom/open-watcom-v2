@@ -129,7 +129,7 @@ extern  void    WVSrcCueLoc( void  ) {
     BuffStart( &temp, WT_NAME + NAME_CUEINFO );
     BuffForward( &CueInfoOffset ); /* does a  0 word */
     BuffWord( 0 ); /* another 0 word */
-    EndType( FALSE );
+    EndType( false );
 }
 
 extern  void    WVTypesEof( void ) {
@@ -138,7 +138,7 @@ extern  void    WVTypesEof( void ) {
     temp_buff   temp;
 
     BuffStart( &temp, WT_NAME + NAME_EOF );
-    EndType( FALSE );
+    EndType( false );
 }
 
 extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe ) {
@@ -149,7 +149,7 @@ extern  dbg_type        WVFtnType( const char *name, dbg_ftn_type tipe ) {
     NewType( &temp, WT_NAME + NAME_SCALAR );
     BuffByte( tipe );
     BuffWSLString( name );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -162,7 +162,7 @@ extern  dbg_type        WVScalar( const char *name, cg_type tipe ) {
     NewType( &temp, WT_NAME + NAME_SCALAR );
     BuffByte( GetScalar( tipe ) );
     BuffWSLString( name );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -174,7 +174,7 @@ extern  dbg_type        WVScope( const char *name ) {
 
     NewType( &temp, WT_NAME + NAME_SCOPE );
     BuffWSLString( name );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -195,7 +195,7 @@ extern  void    WVDumpName( dbg_name name, dbg_type tipe )
         }
         BuffString( name->len, name->name );
     }
-    EndType( TRUE );
+    EndType( true );
 }
 
 extern void WVBackRefType( dbg_name name, dbg_type tipe )
@@ -221,7 +221,7 @@ extern  dbg_type        WVCharBlock( unsigned_32 len ) {
     class = SignedSizeClass( len );
     NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_BYTE + class );
     BuffValue( len, class );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -234,7 +234,7 @@ extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
     NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_IND );
     BuffByte( GetScalar( len_type ) );
     BuffBack( len, off );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -246,7 +246,7 @@ extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type ) {
     NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_LOC );
     BuffByte( GetScalar( len_type ) );
     LocDump( LocDupl( loc ) );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -263,7 +263,7 @@ extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
     BuffByte( GetScalar( num_elts_tipe ) );
     BuffBack( dims, off );
     BuffIndex( base );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -276,7 +276,7 @@ extern  dbg_type        WVArray( dbg_type idx, dbg_type base ) {
     NewType( &temp, WT_ARRAY + ARRAY_TYPE );
     BuffIndex( idx );
     BuffIndex( base );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -291,7 +291,7 @@ extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base ) {
     NewType( &temp, WT_ARRAY + ARRAY_BYTE + class );
     BuffValue( hi, class );
     BuffIndex( base );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -312,7 +312,7 @@ extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
     BuffValue( lo, class_hi );
     BuffValue( hi, class_hi );
     BuffIndex( base );
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 #if 0
@@ -383,7 +383,7 @@ static  dbg_type        DbgPtr( cg_type ptr_type, dbg_type base, int adjust,
     if( loc_segment != NULL ) {
         LocDump( LocDupl( loc_segment ) );
     }
-    EndType( TRUE );
+    EndType( true );
     return( TypeIdx );
 }
 
@@ -463,7 +463,7 @@ extern  dbg_type        WVEndStruct( dbg_struct st )
     NewType( &temp, WT_STRUCTURE + STRUCT_LIST );
     BuffWord( st->num );
     BuffDWord( st->size );
-    EndType( TRUE );
+    EndType( true );
     SortFields( st );
     for(;;) {
         field = st->list;
@@ -518,7 +518,7 @@ extern  dbg_type        WVEndStruct( dbg_struct st )
         default:
             break;
         }
-        EndType( FALSE );
+        EndType( false );
         st->list = field->entry.next;
         CGFree( field  );
     }
@@ -537,7 +537,7 @@ extern  dbg_type        WVEndEnum( dbg_enum en )
     NewType( &temp, WT_ENUMERATED + ENUM_LIST );
     BuffWord( en->num );
     BuffByte( GetScalar( en->tipe ) );
-    EndType( TRUE );
+    EndType( true );
     for(;;) {
         cons = en->list;
         if( cons == NULL ) break;
@@ -551,7 +551,7 @@ extern  dbg_type        WVEndEnum( dbg_enum en )
             BuffValue( val.u._32[I64LO32], class );
         }
         BuffString( cons->len, cons->name );
-        EndType( FALSE );
+        EndType( false );
         en->list = cons->next;
         CGFree( cons );
     }
@@ -579,14 +579,14 @@ extern  dbg_type        WVEndProc( dbg_proc pr )
         if( parm == NULL ) break;
         if( BuffLoc() > DB_BUFF_SIZE - 4 ) {
             /* record is getting too big - split it up */
-            EndType( TRUE );
+            EndType( true );
             NewType( &temp, WT_PROCEDURE + PROC_EXT_PARM_LIST );
         }
         BuffIndex( parm->tipe );
         pr->list = parm->next;
         CGFree( parm );
     }
-    EndType( FALSE );
+    EndType( false );
     return( proc_type );
 }
 
@@ -605,7 +605,7 @@ static  void    EndType( bool check_too_big ) {
 
 
     if( _IsModel( DBG_TYPES ) ) {
-        if( check_too_big ) ChkDbgSegSize( MAX_TYPE_SIZE, TRUE );
+        if( check_too_big ) ChkDbgSegSize( MAX_TYPE_SIZE, true );
         BuffEnd( DbgTypes );
     }
 }

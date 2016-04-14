@@ -59,12 +59,12 @@ extern  void    CGFree( pointer chunk ) {
 bool TBreak()
 /***********/
 {
-    return( FALSE );
+    return( false );
 }
 
 void CauseTBreak() {
 /******************/
-    /* cause TBreak to return TRUE */
+    /* cause TBreak to return true */
 }
 
 void FatalError( const char * str ) {

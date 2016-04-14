@@ -51,12 +51,12 @@ static  bool    InsIsCandidate( instruction *ins )
     name    *reg;
 
     reg = ins->result;
-    if( reg == NULL ) return( FALSE );
-    if( reg->n.class != N_REGISTER ) return( FALSE );
-    if( reg->n.size != WORD_SIZE ) return( FALSE );
-    if( ins->operands[ 0 ]->n.class != N_REGISTER ) return( FALSE );
-    if( !IsIndexReg( reg->r.reg, WD, 0 ) ) return( FALSE );
-    return( TRUE );
+    if( reg == NULL ) return( false );
+    if( reg->n.class != N_REGISTER ) return( false );
+    if( reg->n.size != WORD_SIZE ) return( false );
+    if( ins->operands[ 0 ]->n.class != N_REGISTER ) return( false );
+    if( !IsIndexReg( reg->r.reg, WD, 0 ) ) return( false );
+    return( true );
 }
 
 
@@ -70,12 +70,12 @@ extern  void    BuildIndex( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         do {
-            change = FALSE;
+            change = false;
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( InsIsCandidate( ins ) && FoldIntoIndex( ins ) ) {
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
-                    change = TRUE;
+                    change = true;
                 }
             }
         } while( change );
@@ -91,12 +91,12 @@ static  bool    LivesAfterIns( instruction *ins, name *reg )
 
     HW_Asgn( live_later, ins->head.next->head.live.regs );
     HW_OnlyOn( live_later, reg->r.reg );
-    if( HW_CEqual( live_later, HW_EMPTY ) ) return( FALSE );
+    if( HW_CEqual( live_later, HW_EMPTY ) ) return( false );
     res = ins->result;
-    if( res == NULL ) return( TRUE );
-    if( res->n.class != N_REGISTER ) return( TRUE );
-    if( HW_Subset( res->r.reg, live_later ) ) return( FALSE );
-    return( TRUE );
+    if( res == NULL ) return( true );
+    if( res->n.class != N_REGISTER ) return( true );
+    if( HW_Subset( res->r.reg, live_later ) ) return( false );
+    return( true );
 }
 
 
@@ -107,7 +107,7 @@ static bool BadUse( name *reg, name *test, name **pindex, bool * is_base )
     hw_reg_set  base_name;
 
     if( test->n.class == N_REGISTER ) {
-        if( HW_Ovlap( test->r.reg, reg->r.reg ) ) return( TRUE );
+        if( HW_Ovlap( test->r.reg, reg->r.reg ) ) return( true );
     }
     if( test->n.class == N_INDEXED ) {
         HW_Asgn( idx_name, test->i.index->r.reg );
@@ -122,13 +122,13 @@ static bool BadUse( name *reg, name *test, name **pindex, bool * is_base )
         if( HW_Equal( idx_name, reg->r.reg ) ) {
             *pindex = test;
         } else if( HW_Equal( base_name, reg->r.reg ) ) {
-            *is_base = TRUE;
+            *is_base = true;
             *pindex = test;
         } else if( HW_Ovlap( test->i.index->r.reg, reg->r.reg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -181,7 +181,7 @@ extern  instruction     *SIBPossibleIndex( instruction *ins, name *reg,
         if( next->head.opcode == OP_BLOCK ) return( NULL );
         if( !HW_Ovlap( next->head.live.regs, reg->r.reg ) ) return( NULL );
         *pindex = NULL;
-        *pbase = FALSE;
+        *pbase = false;
 /*
         if we find an operand which uses the register, but not as an index
         we're outa here! NB: assumes only one unique index per instruction
@@ -219,7 +219,7 @@ extern  instruction     *SIBPossibleIndex( instruction *ins, name *reg,
         if( next->result != NULL && next->result->n.class == N_REGISTER ) {
             if( modifies == MODIFIES_REG ) {
                 if( HW_Equal( next->result->r.reg, reg->r.reg ) ) {
-                    *dies = TRUE;
+                    *dies = true;
                     modifies = MODIFIES_NOTHING;
                 }
             }

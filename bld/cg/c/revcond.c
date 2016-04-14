@@ -36,27 +36,27 @@
 static  opcode_defs     FlipBranch[] = {
 /**************************************/
 
-        OP_BIT_TEST_FALSE,      /* OP_BIT_TEST_TRUE*/
-        OP_BIT_TEST_TRUE,       /* OP_BIT_TEST_FALSE*/
-        OP_CMP_NOT_EQUAL,       /* OP_CMP_EQUAL*/
-        OP_CMP_EQUAL,           /* OP_CMP_NOT_EQUAL*/
-        OP_CMP_LESS_EQUAL,      /* OP_CMP_GREATER*/
-        OP_CMP_GREATER,         /* OP_CMP_LESS_EQUAL*/
-        OP_CMP_GREATER_EQUAL,   /* OP_CMP_LESS*/
-        OP_CMP_LESS             /* OP_CMP_GREATER_EQUAL*/
+        OP_BIT_TEST_FALSE,      /* OP_BIT_TEST_TRUE */
+        OP_BIT_TEST_TRUE,       /* OP_BIT_TEST_FALSE */
+        OP_CMP_NOT_EQUAL,       /* OP_CMP_EQUAL */
+        OP_CMP_EQUAL,           /* OP_CMP_NOT_EQUAL */
+        OP_CMP_LESS_EQUAL,      /* OP_CMP_GREATER */
+        OP_CMP_GREATER,         /* OP_CMP_LESS_EQUAL */
+        OP_CMP_GREATER_EQUAL,   /* OP_CMP_LESS */
+        OP_CMP_LESS             /* OP_CMP_GREATER_EQUAL */
         };
 
 static  opcode_defs     RevBranch[] = {
 /*************************************/
 
         OP_BIT_TEST_TRUE,       /* OP_BIT_TEST_TRUE */
-        OP_BIT_TEST_FALSE,      /* OP_BIT_TEST_FALSE*/
-        OP_CMP_EQUAL,           /* OP_CMP_EQUAL*/
-        OP_CMP_NOT_EQUAL,       /* OP_CMP_NOT_EQUAL*/
-        OP_CMP_LESS,            /* OP_CMP_GREATER*/
-        OP_CMP_GREATER_EQUAL,   /* OP_CMP_LESS_EQUAL*/
-        OP_CMP_GREATER,         /* OP_CMP_LESS*/
-        OP_CMP_LESS_EQUAL };    /* OP_CMP_GREATER_EQUAL*/
+        OP_BIT_TEST_FALSE,      /* OP_BIT_TEST_FALSE */
+        OP_CMP_EQUAL,           /* OP_CMP_EQUAL */
+        OP_CMP_NOT_EQUAL,       /* OP_CMP_NOT_EQUAL */
+        OP_CMP_LESS,            /* OP_CMP_GREATER */
+        OP_CMP_GREATER_EQUAL,   /* OP_CMP_LESS_EQUAL */
+        OP_CMP_GREATER,         /* OP_CMP_LESS */
+        OP_CMP_LESS_EQUAL };    /* OP_CMP_GREATER_EQUAL */
 
 
 extern  void    RevCond( instruction *ins ) {

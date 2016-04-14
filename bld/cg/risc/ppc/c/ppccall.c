@@ -78,7 +78,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
         call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
     }
-    if( use_return == FALSE ) {
+    if( use_return == false ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 
@@ -170,7 +170,7 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
 extern  void    InitTargProc() {
 /******************************/
     CurrProc->targ.debug = NULL;
-    CurrProc->targ.base_is_fp = FALSE;
+    CurrProc->targ.base_is_fp = false;
 }
 
 

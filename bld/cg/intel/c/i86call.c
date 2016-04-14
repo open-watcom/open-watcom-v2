@@ -216,7 +216,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( _RoutineIsInterrupt( state->attr ) ) {
         call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
     }
-    if( use_return == FALSE ) {
+    if( use_return == false ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
     if( call_ins->type_class == XX ) {
@@ -338,7 +338,7 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
         AddIns( MakeMove( CurrProc->targ.return_points, off, WD ) );
         retp = SAllocIndex( ptr, NULL,
                            0, TypeClass( retval->tipe ), tipe->length );
-        reg = ReturnReg( WD, FALSE );
+        reg = ReturnReg( WD, false );
         *pins = MakeMove( CurrProc->targ.return_points,
                           AllocRegName( reg ), WD );
         CurrProc->state.return_reg = reg;
@@ -390,10 +390,10 @@ extern  void    InitTargProc( void ) {
     CurrProc->targ.push_local_size = 0;
     CurrProc->targ.debug = NULL;
     CurrProc->targ.return_points = NULL;
-    CurrProc->targ.sp_frame = FALSE;
-    CurrProc->targ.sp_align = FALSE;
-    CurrProc->targ.has_fd_temps = FALSE;
-    CurrProc->targ.never_sp_frame = FALSE;
+    CurrProc->targ.sp_frame = false;
+    CurrProc->targ.sp_align = false;
+    CurrProc->targ.has_fd_temps = false;
+    CurrProc->targ.never_sp_frame = false;
     CurrProc->targ.tls_index = NULL;
 }
 
@@ -422,7 +422,7 @@ extern  void    PushInSameBlock( instruction *ins ) {
         ins = ins->head.next;
     }
     if( _BLOCK( ins ) != CurrBlock ) {
-        CurrProc->targ.never_sp_frame = TRUE;
+        CurrProc->targ.never_sp_frame = true;
     }
 #endif
 }

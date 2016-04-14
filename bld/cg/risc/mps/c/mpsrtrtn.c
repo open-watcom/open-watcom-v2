@@ -51,5 +51,5 @@ extern  bool RTLeaveOp2( instruction *ins )
 /*****************************************/
 {
     ins = ins;
-    return( FALSE );
+    return( false );
 }

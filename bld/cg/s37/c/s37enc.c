@@ -94,24 +94,24 @@ extern  proc_def        *CurrProc;
 extern  type_length     TypeClassSize[];
 
 static byte UCondTable[] = {
-        7,              /* OP_BIT_TEST_TRUE*/
-        8,              /* OP_BIT_TEST_FALSE*/
-        8,              /* OP_CMP_EQUAL*/
-        7,              /* OP_CMP_NOT_EQUAL*/
-        2,              /* OP_CMP_GREATER*/
-        13,             /* OP_CMP_LESS_EQUAL*/
-        4,              /* OP_CMP_LESS*/
-        11 };           /* OP_CMP_GREATER_EQUAL*/
+        7,              /* OP_BIT_TEST_TRUE */
+        8,              /* OP_BIT_TEST_FALSE */
+        8,              /* OP_CMP_EQUAL */
+        7,              /* OP_CMP_NOT_EQUAL */
+        2,              /* OP_CMP_GREATER */
+        13,             /* OP_CMP_LESS_EQUAL */
+        4,              /* OP_CMP_LESS */
+        11 };           /* OP_CMP_GREATER_EQUAL */
 
 static byte SCondTable[] = {
-        7,              /* OP_BIT_TEST_TRUE*/
-        8,              /* OP_BIT_TEST_FALSE*/
-        8,              /* OP_CMP_EQUAL*/
-        7,              /* OP_CMP_NOT_EQUAL*/
-        2,              /* OP_CMP_GREATER*/
-        13,             /* OP_CMP_LESS_EQUAL*/
-        4,              /* OP_CMP_LESS*/
-        11 };           /* OP_CMP_GREATER_EQUAL*/
+        7,              /* OP_BIT_TEST_TRUE */
+        8,              /* OP_BIT_TEST_FALSE */
+        8,              /* OP_CMP_EQUAL */
+        7,              /* OP_CMP_NOT_EQUAL */
+        2,              /* OP_CMP_GREATER */
+        13,             /* OP_CMP_LESS_EQUAL */
+        4,              /* OP_CMP_LESS */
+        11 };           /* OP_CMP_GREATER_EQUAL */
 
 typedef enum {
         UNSIGNED,
@@ -430,10 +430,10 @@ static  void    GenSRL( name *result, int by ) {
 static  bool    ZapsOperand( name *result, name *left ) {
 /******************************************************/
 
-    if( left->n.class != N_INDEXED ) return( FALSE );
-    if( left->i.index == result ) return( TRUE );
-    if( left->i.base == result ) return( TRUE );
-    return( FALSE );
+    if( left->n.class != N_INDEXED ) return( false );
+    if( left->i.index == result ) return( true );
+    if( left->i.base == result ) return( true );
+    return( false );
 }
 
 

@@ -62,19 +62,19 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, 0 ) );
     }
-    if( name->v.conflict == NULL ) return( FALSE );
-    if( name->v.usage & USE_MEMORY ) return( FALSE );
-    if( name->n.class != N_TEMP ) return( FALSE );
+    if( name->v.conflict == NULL ) return( false );
+    if( name->v.usage & USE_MEMORY ) return( false );
+    if( name->n.class != N_TEMP ) return( false );
     conf = NameConflict( ins, name );
-    if( conf == NULL ) return( FALSE );
+    if( conf == NULL ) return( false );
     if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
         _SetFalse( conf, NEEDS_INDEX );
-        return( FALSE );
+        return( false );
     } else {
         _SetTrue( conf, NEEDS_INDEX );
         ins->head.state = OPERANDS_NEED_WORK;
         ins->t.index_needs = MarkIndex( ins, name, 0 );
-        return( TRUE );
+        return( true );
     }
 }
 

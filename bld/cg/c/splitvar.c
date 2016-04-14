@@ -88,20 +88,20 @@ extern  bool    RepOp( name **pop, name *of, name *with )
     bool        change;
 
     op = *pop;
-    change = FALSE;
+    change = false;
     if( op == of ) {
         *pop = with;
-        change = TRUE;
+        change = true;
     } else if( op->n.class == N_INDEXED ) {
         base = op->i.base;
         if( HasTrueBase( op ) && base == of ) {
             base = with;
-            change = TRUE;
+            change = true;
         }
         index = op->i.index;
         if( index == of ) {
             index = with;
-            change = TRUE;
+            change = true;
         }
         if( change ) {
             *pop = ScaleIndex( index, base, op->i.constant,
@@ -154,9 +154,9 @@ static  bool    Split1Var( conflict_node *conf )
         MarkInstance( unlabeled );
     }
     op = conf->name;
-    change = FALSE;
+    change = false;
     while( Instance > 1 ) {
-        change = TRUE;
+        change = true;
         ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
         --Instance;
     }

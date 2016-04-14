@@ -132,7 +132,7 @@ extern  void    WVSetBase( void ) {
         BuffBack( bck, 0 );
         BuffEnd( DbgLocals );
         BEFreeBack( bck );
-        SetUpObj( FALSE );
+        SetUpObj( false );
     }
 }
 

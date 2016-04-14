@@ -137,7 +137,7 @@ static  void            FiniStack( edge_stack *stk )
 
 static  bool            DereferencedBy( instruction *ins, name *ptr )
 /********************************************************************
-    Return TRUE if the instruction dereferences the given name. Any use as
+    Return true if the instruction dereferences the given name. Any use as
     an index (with op as index), providing the base is NULL, is considered a deref.
 */
 {
@@ -149,13 +149,13 @@ static  bool            DereferencedBy( instruction *ins, name *ptr )
         if( op != NULL && op->n.class == N_INDEXED ) {
             if( ptr == op->i.index ) {
                 if( op->i.base == NULL ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
         op = ins->operands[i];
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void            PushTargets( edge_stack *stk, block *blk, bool forward )
@@ -215,11 +215,11 @@ static  bool            LastBlock( block *blk, bool forward )
 /***********************************************************/
 {
     if( forward ) {
-        if( blk->class & RETURN ) return( TRUE );
+        if( blk->class & RETURN ) return( true );
     } else {
-        if( blk == HeadBlock ) return( TRUE );
+        if( blk == HeadBlock ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 enum {
@@ -263,7 +263,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                 parms.blk = blk;
                 parms.ins = curr;
                 parms.op = curr->result;
-                parms.forward = TRUE;
+                parms.forward = true;
                 if( SafeRecurseCG( (func_sr)DominatingDeref, &parms ) != NULL ) {
                     return( BLOCK_DEREFS );
                 }
@@ -279,11 +279,11 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
 
 static  void            *DominatingDeref( parm_struct *parms )
 /*************************************************************
-    Return TRUE if the given instruction is dominated by a dereference of op. This is not a true
+    Return true if the given instruction is dominated by a dereference of op. This is not a true
     dominator in the sense of the dragon book, but a dominator in the sense that every path from
     the instruction given to the return encounters a dereference of op (if forward) or every
     path from the first instruction in the function to the instruction given encounters a deref
-    of op (if backwards or forwards = FALSE ).
+    of op (if backwards or forwards = false ).
 */
 {
     block_edge          *edge;
@@ -306,7 +306,7 @@ static  void            *DominatingDeref( parm_struct *parms )
         ( parms->op->v.usage & USE_IN_ANOTHER_BLOCK ) == EMPTY ) return( NULL );
     stk = InitStack();
     PushTargets( stk, parms->blk, parms->forward );
-    for( dominated = TRUE; dominated; ) {
+    for( dominated = true; dominated; ) {
         if( Empty( stk ) ) break;
         edge = Pop( stk );
         blk = EdgeBlock( edge, parms->forward );
@@ -320,7 +320,7 @@ static  void            *DominatingDeref( parm_struct *parms )
         case BLOCK_REDEFS:
             // one path encountered a redefinition before it got a deref, so
             // the compare is not dominated by a dereference
-            dominated = FALSE;
+            dominated = false;
             break;
         default:
             PushTargets( stk, blk, parms->forward );
@@ -328,7 +328,7 @@ static  void            *DominatingDeref( parm_struct *parms )
                 // we have hit either the return or head of the function without
                 // finding a deref along this particular path, so the compare is
                 // not dominated by a dereference.
-                dominated = FALSE;
+                dominated = false;
             }
         }
         blk->class |= BLOCK_VISITED;
@@ -347,7 +347,7 @@ extern  void            FloodDown( block *blk, block_class bits )
     for(;;) {
         if( ( blk->class & bits ) != EMPTY ) {
             blk->class |= bits;
-            PushTargets( stk, blk, TRUE );
+            PushTargets( stk, blk, true );
         }
         if( Empty( stk ) ) break;
         edge = Pop( stk );
@@ -362,10 +362,10 @@ static  bool            BlockSideEffect( block *blk )
     instruction         *ins;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
-        if( SideEffect( ins ) ) return( TRUE );
+        if( _OpIsCall( ins->head.opcode ) ) return( true );
+        if( SideEffect( ins ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cmp_result )
@@ -377,7 +377,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
     bool                side_effect;
     block_edge          *edge;
 
-    if( cmp_result == TRUE ) {
+    if( cmp_result == true ) {
         taken = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
         elim = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
     } else {
@@ -393,17 +393,17 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
      * Paths are killed when we hit a block already seen or which is in
      * the other edge of the graph (the edge which is taken).
      */
-    for( side_effect = FALSE; !side_effect; ) {
+    for( side_effect = false; !side_effect; ) {
         if( ( elim->class & BLOCK_VISITED ) == EMPTY ) {
             if( BlockSideEffect( elim ) ) {
-                side_effect = TRUE;
+                side_effect = true;
                 break;
             }
             // should add something here which cuts out if we see a
             // deref of the temp we are searching for - a call to
             // BlockSearch with the appropriate parms should do
             elim->class |= BLOCK_VISITED;
-            PushTargets( stk, elim, TRUE );
+            PushTargets( stk, elim, true );
         }
         if( Empty( stk ) ) break;
         edge = Pop( stk );
@@ -423,7 +423,7 @@ static  bool            NullProp( block *blk )
     int                 dest_index;
 
     cmp = CompareIns( blk );
-    if( cmp == NULL ) return( FALSE );
+    if( cmp == NULL ) return( false );
     switch( cmp->head.opcode ) {
     case OP_CMP_EQUAL:
         dest_index = _FalseIndex( cmp );
@@ -432,35 +432,35 @@ static  bool            NullProp( block *blk )
         dest_index = _TrueIndex( cmp );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( IsZero( cmp->operands[ 0 ] ) ) {
         ptr = &cmp->operands[ 1 ];
     } else if( IsZero( cmp->operands[ 1 ] ) ) {
         ptr = &cmp->operands[ 0 ];
     } else {
-        return( FALSE );
+        return( false );
     }
     parms.blk = blk;
     parms.ins = cmp;
     parms.op = *ptr;
-    parms.forward = TRUE;
+    parms.forward = true;
     ClearBlockBits( BLOCK_VISITED );
     if( DominatingDeref( &parms ) != NULL ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
             // does not have a side effect or if the dominators are before the compare
             KillCondBlk( blk, cmp, dest_index );
-            return( TRUE );
+            return( true );
         }
     }
-    parms.forward = FALSE;
+    parms.forward = false;
     ClearBlockBits( BLOCK_VISITED );
     if( DominatingDeref( &parms ) != NULL ) {
         KillCondBlk( blk, cmp, dest_index );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  void            PropNullInfo( void )
@@ -474,7 +474,7 @@ extern  void            PropNullInfo( void )
 
     if( _IsModel( NO_OPTIMIZATION ) ) return;
     if( _IsModel( NULL_DEREF_OK ) ) return;
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
     }

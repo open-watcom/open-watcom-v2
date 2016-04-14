@@ -103,9 +103,9 @@ extern  instruction     *NeedIndex( instruction *ins ) {
         conf = NameConflict( ins, temp );
         _SetTrue( conf, INDEX_SPLIT );
         if( HasTrueBase( index ) && index->i.base->n.class == N_TEMP ) {
-            MarkIndex( ins, temp, TRUE );
+            MarkIndex( ins, temp, true );
         } else {
-            MarkIndex( ins, temp, FALSE );
+            MarkIndex( ins, temp, false );
         }
         ins = ins->head.prev;
     }
@@ -115,7 +115,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
 
 extern  bool    IndexOkay( instruction *ins, name *index ) {
 /***********************************************************
-    return TRUE if "index" needs to be split out of instruction and a
+    return true if "index" needs to be split out of instruction and a
     short lived temporary used instead.
 */
 
@@ -124,12 +124,12 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
     conflict_node       *conf;
 
     if( HasTrueBase( index ) && index->i.base->n.class == N_TEMP ) {
-        is_temp_index = TRUE;
+        is_temp_index = true;
     } else {
-        is_temp_index = FALSE;
+        is_temp_index = false;
     }
     name = index->i.index;
-    if( ins->table == String ) return( TRUE );
+    if( ins->table == String ) return( true );
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );
     }
@@ -137,38 +137,38 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
    index still hanging around, it is because a reduction routine
    created it, so it can be handled. Normally, all CP/PT indecies are broken
    up into seg:foo[offset] before we ever get to register allocation */
-    if( name->n.name_class == CP ) return( TRUE );
-    if( name->n.name_class == PT ) return( TRUE );
-    if( name->v.conflict == NULL ) return( FALSE );
-    if( name->v.usage & USE_MEMORY ) return( FALSE );
-    if( name->n.class != N_TEMP ) return( FALSE );
+    if( name->n.name_class == CP ) return( true );
+    if( name->n.name_class == PT ) return( true );
+    if( name->v.conflict == NULL ) return( false );
+    if( name->v.usage & USE_MEMORY ) return( false );
+    if( name->n.class != N_TEMP ) return( false );
     conf = NameConflict( ins, name );
-    if( conf == NULL ) return( FALSE );
+    if( conf == NULL ) return( false );
     if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
         _SetFalse( conf, NEEDS_INDEX );
-        return( FALSE );
+        return( false );
     } else {
         _SetTrue( conf, NEEDS_INDEX );
         ins->head.state = OPERANDS_NEED_WORK;
         ins->t.index_needs = MarkIndex( ins, name, is_temp_index );
-        return( TRUE );
+        return( true );
     }
 }
 
 
 static  bool    SegIsBase( name **index ) {
 /******************************************
-    return TRUE if the segment override for N_INDEXED "*index" is the
+    return true if the segment override for N_INDEXED "*index" is the
     same as the segment override for its N_MEMORY base location, and if
     it is, change *index to point to the N_MEMORY base location.
 */
 
-    if( (*index)->n.class == N_MEMORY ) return( TRUE );
+    if( (*index)->n.class == N_MEMORY ) return( true );
     if( (*index)->i.index->n.size == WORD_SIZE ) {
         (*index) = (*index)->i.base;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  name    *FindSegment( instruction *ins ) {
@@ -352,19 +352,19 @@ extern  void    MergeIndex( void ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( NumOperands( ins ) < ins->num_operands ) {
-                dec = FALSE;
+                dec = false;
                 for( i = NumOperands( ins ); i-- > 0; ) {
                     name = &ins->operands[i];
                     if( (*name)->n.class == N_INDEXED ) {
                         Merge( name, ins );
-                        dec = TRUE;
+                        dec = true;
                     }
                 }
                 if( ins->result != NULL ) {
                     name = &ins->result;
                     if( (*name)->n.class == N_INDEXED ) {
                         Merge( name, ins );
-                        dec = TRUE;
+                        dec = true;
                     }
                 }
                 if( dec ) {
@@ -451,8 +451,8 @@ static  void    PropSegments( void ) {
             _SetTrue( src, WAS_SEGMENT );
         }
     }
-    for( change = TRUE; change; ) {
-        change = FALSE;
+    for( change = true; change; ) {
+        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 if( ins->head.opcode == OP_MOV ) {
@@ -461,7 +461,7 @@ static  void    PropSegments( void ) {
                         src = NameConflict( ins, ins->operands[ 0 ] );
                         if( src != NULL && _Isnt( src, WAS_SEGMENT ) ) {
                             _SetTrue( src, WAS_SEGMENT );
-                            change = TRUE;
+                            change = true;
                         }
                     }
                 }

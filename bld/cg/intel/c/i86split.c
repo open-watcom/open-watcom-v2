@@ -133,8 +133,8 @@ extern  instruction             *rLOADOP2(instruction*);
 extern  instruction             *rMAKEADD(instruction*);
 extern  instruction             *rMAKENEG(instruction*);
 extern  instruction             *rMAKESUB(instruction*);
-extern  instruction             *rCMPTRUE(instruction*);
-extern  instruction             *rCMPFALSE(instruction*);
+extern  instruction             *rCMPtrue(instruction*);
+extern  instruction             *rCMPfalse(instruction*);
 extern  instruction             *rNEGADD(instruction*);
 extern  instruction             *rOP2MEM(instruction*);
 extern  instruction             *rCLRHI_D(instruction*);
@@ -251,7 +251,7 @@ extern instruction      *rSEG_SEG( instruction *ins ) {
     PrefixIns( ins, new_ins );
     MarkPossible( ins, name1, RL_WORD );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     return( new_ins );
 }
 
@@ -427,7 +427,7 @@ bool UseRepForm( unsigned size )
 
     count = size / WORD_SIZE;
     /* if move than 10 movs, then always use rep form */
-    if( count > 10 ) return( TRUE );
+    if( count > 10 ) return( true );
     if( OptForSize > 50 ) {
         switch( size % WORD_SIZE ) {
         case 0: extra = 0;      break;
@@ -507,10 +507,10 @@ static  bool    SegmentFloats( name *op ) {
     name        *segname;
 
     segname = SegName( op );
-    if( segname->n.class != N_REGISTER ) return( TRUE );
+    if( segname->n.class != N_REGISTER ) return( true );
     if( HW_COvlap( segname->r.reg, HW_DS ) ) return( _IsTargetModel( FLOATING_DS ) );
     if( HW_COvlap( segname->r.reg, HW_SS ) ) return( _IsTargetModel( FLOATING_SS ) );
-    return( TRUE );
+    return( true );
 }
 
 static  instruction     *LoadStringOps( instruction *ins,
@@ -554,7 +554,7 @@ static  instruction     *LoadStringOps( instruction *ins,
                                   AllocRegName( HW_DS ), U2 );
             PrefixIns( ins, load_op2 );
             es_needs_save = SegmentFloats( *op2 );
-            ds_needs_save = TRUE;
+            ds_needs_save = true;
         } else {
             load_op1 = MakeMove( ins->operands[ins->num_operands - 1],
                                   AllocRegName( HW_ES ), U2 );
@@ -564,7 +564,7 @@ static  instruction     *LoadStringOps( instruction *ins,
             load_op2 = MakeUnary( OP_LA, *op1, AllocRegName(DS_SI), LP );
             PrefixIns( ins, load_op2 );
             ds_needs_save = SegmentFloats( *op1 );
-            es_needs_save = TRUE;
+            es_needs_save = true;
         }
         DelSeg( ins );
     } else if( _IsTargetModel( FLAT_MODEL ) &&
@@ -573,7 +573,7 @@ static  instruction     *LoadStringOps( instruction *ins,
         PrefixIns( ins, load_op1 );
         load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( SI ), WD );
         PrefixIns( ins, load_op2 );
-        ds_needs_save = es_needs_save = FALSE;
+        ds_needs_save = es_needs_save = false;
     } else {
         load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( ES_DI ), LP );
         PrefixIns( ins, load_op1 );

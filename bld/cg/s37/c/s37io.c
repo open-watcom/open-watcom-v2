@@ -114,8 +114,8 @@ extern  bool    CGOpenf() {
         FatalError( "Incompatible code generator" );
     }
     ObjFile = OpenObj( ObjName );
-    if( ObjFile == 0 ) return( FALSE );
-    return( TRUE );
+    if( ObjFile == 0 ) return( false );
+    return( true );
 }
 
 extern  int  OpenObj( char *name ) {
@@ -290,7 +290,7 @@ extern  int  CGSrcGet( src_fi *src, char *buff, int line, int len  ) {
 
     curr_line = src->curr_line;
     if( line < curr_line ){
-        return( FALSE );
+        return( false );
     }
     curr = src->curr;
     while( line > curr_line ){
@@ -302,7 +302,7 @@ extern  int  CGSrcGet( src_fi *src, char *buff, int line, int len  ) {
 //      while( *curr != '\n' && *curr != '\0' ) ++curr;
         if( *curr == '\0' ){
             if( FillBuff( src ) == 0 ) {
-                return( FALSE );
+                return( false );
             }
             curr =  src->buff;
         }else{
@@ -314,7 +314,7 @@ extern  int  CGSrcGet( src_fi *src, char *buff, int line, int len  ) {
     while( buff < endbuff ){
         if( *curr == '\0' ){
             if( FillBuff( src ) == 0 ) {
-                return( FALSE );
+                return( false );
             }
             curr =  src->buff;
         }

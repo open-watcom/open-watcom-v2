@@ -114,7 +114,7 @@ bck_info_block  *BckInfoCarveHead;      // list of big blocks of bck_info's
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-static  bool            memStarted = FALSE;
+static  bool            memStarted = false;
 
 extern  void _CGAPI     BEMemInit( void )
 /***************************************/
@@ -126,7 +126,7 @@ extern  void _CGAPI     BEMemInit( void )
     InitBlip();
     CGMemInit();
     CFInit( &cf_rtns );
-    memStarted = TRUE;
+    memStarted = true;
 }
 
 extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
@@ -170,7 +170,7 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
         info.success = 0;
     } else {
         info.success = 1;
-        info.version.is_large = TRUE;
+        info.version.is_large = true;
 #if _TARGET & _TARG_IAPX86
         info.version.target = II_TARG_8086;
 #elif _TARGET & _TARG_80386
@@ -296,7 +296,7 @@ extern  void _CGAPI BEDefSeg( segment_id id, seg_attr attr, cchar_ptr str, uint 
 #ifndef NDEBUG
     EchoAPI( "BEDefSeg( %x, %x, %c, %i )\n", id, attr, str, algn );
 #endif
-    DefSegment( id, attr, str, algn, FALSE );
+    DefSegment( id, attr, str, algn, false );
 }
 
 extern  void _CGAPI     BEFlushSeg( segment_id seg )
@@ -645,7 +645,7 @@ extern label_handle _CGAPI CGLastParm( void )
     if( _IsntModel( NO_OPTIMIZATION ) ) {
         if( !BGInInline() ) {
             top = BENewLabel();
-            BGGenCtrl( O_LABEL, NULL, top, TRUE );
+            BGGenCtrl( O_LABEL, NULL, top, true );
         }
     }
     return( top );

@@ -128,7 +128,7 @@ static  bool    LoadAddr( void )
     instruction *ins;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             change |= LoadAToMove( ins );
@@ -153,7 +153,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     block       *new_dest_blk;
     bool        change;
 
-    change = FALSE;
+    change = false;
     op = cond->operands[i];
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
@@ -193,7 +193,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
                         if( input->depth < blk->depth ) {
                             MoveHead( blk, new_dest_blk );
                         }
-                        change = TRUE;
+                        change = true;
                     }
                 }
             }
@@ -214,17 +214,17 @@ static  bool    StretchABlock( block *blk )
     name                *op;
     int                 i;
 
-    if( blk->ins.hd.prev != blk->ins.hd.next ) return( FALSE );
+    if( blk->ins.hd.prev != blk->ins.hd.next ) return( false );
     ins = blk->ins.hd.next;
-    if( !_OpIsCondition( ins->head.opcode ) ) return( FALSE );
+    if( !_OpIsCondition( ins->head.opcode ) ) return( false );
     op = ins->operands[0];
     i = 1;
     if( op->n.class != N_CONSTANT ) {
         op = ins->operands[1];
         i = 0;
     }
-    if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( IsVolatile( ins->operands[i] ) ) return( FALSE );
+    if( op->n.class != N_CONSTANT ) return( false );
+    if( IsVolatile( ins->operands[i] ) ) return( false );
     return( FindDefnBlocks( blk, ins, i ) );
 }
 
@@ -244,10 +244,10 @@ static  bool    StretchEdges( void )
     block       *blk;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( StretchABlock( blk ) ) {
-            change = TRUE;
+            change = true;
         }
     }
     return( change );
@@ -273,7 +273,7 @@ extern  bool    PropRegsOne( void )
     name        **opp;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_MOV ) continue;
@@ -295,12 +295,12 @@ extern  bool    PropRegsOne( void )
             }
             if( *opp != ins->result ) continue;
             *opp = reg;
-            change = TRUE;
+            change = true;
         }
     }
     return( change );
 #else
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -367,15 +367,15 @@ static  void    TreeBits( block *root )
 
     next_bit = 1;
     _BLKBITS( root ) = next_bit;
-    for( change = TRUE; change; ) {
-        change = FALSE;
+    for( change = true; change; ) {
+        change = false;
         for( blk = root->u.partition; blk != root; blk = blk->u.partition ) {
             daddy = blk->input_edges->source;
             if( _BLKBITS( blk ) == 0 && _BLKBITS( daddy ) ) {
                 next_bit <<= 1;
                 if( next_bit == 0 ) break;
                 _BLKBITS( blk ) = _BLKBITS( daddy ) | next_bit;
-                change = TRUE;
+                change = true;
             }
         }
         if( next_bit == 0 ) break;
@@ -495,11 +495,11 @@ static  bool    CanCrossBlocks( instruction *ins1,
     in ForceTempsMemory.
 */
 {
-    if( !BlockByBlock ) return( TRUE );
-    if( op->n.class != N_TEMP ) return( TRUE );
-    if( _INSBITS( ins1 ) == _INSBITS( ins2 ) ) return( TRUE );
-    if( op->t.temp_flags & CROSSES_BLOCKS ) return( TRUE );
-    return( FALSE );
+    if( !BlockByBlock ) return( true );
+    if( op->n.class != N_TEMP ) return( true );
+    if( _INSBITS( ins1 ) == _INSBITS( ins2 ) ) return( true );
+    if( op->t.temp_flags & CROSSES_BLOCKS ) return( true );
+    return( false );
 }
 
 
@@ -532,10 +532,10 @@ static  bool    UnOpsLiveFrom( instruction *first, instruction *last )
             ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
         }
         if( ins == first ) break;
-        if( ReDefinedBy( ins, first->operands[0] ) ) return( FALSE );
-        if( ReDefinedBy( ins, first->result ) ) return( FALSE );
+        if( ReDefinedBy( ins, first->operands[0] ) ) return( false );
+        if( ReDefinedBy( ins, first->result ) ) return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -560,7 +560,7 @@ static  who_dies BinOpsLiveFrom( instruction *first,
             if( ReDefinedBy( ins, op2 ) ) return( OP_DIES );
         }
     } else {
-        result_dies = FALSE;
+        result_dies = false;
         for( ins = last->head.prev; ; ins = ins->head.prev ) {
             while( ins->head.opcode == OP_BLOCK ) { /* 89-09-05 */
                 ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
@@ -569,7 +569,7 @@ static  who_dies BinOpsLiveFrom( instruction *first,
             if( ReDefinedBy( ins, op1 ) ) return( OP_DIES );
             if( ReDefinedBy( ins, op2 ) ) return( OP_DIES );
             if( ReDefinedBy( ins, result ) ) {
-                result_dies = TRUE;
+                result_dies = true;
             }
         }
         if( result_dies ) return( RESULT_DIES );
@@ -589,7 +589,7 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
     block               *target_blk;
     block               *blk;
 
-    if( OptForSize > 50 ) return( TRUE );
+    if( OptForSize > 50 ) return( true );
     for( ins = target; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
@@ -598,15 +598,15 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
         ins = ins->head.next;
     }
     blk = _BLOCK( ins );
-    if( blk == target_blk ) return( TRUE );
+    if( blk == target_blk ) return( true );
     while( blk != NULL ) {
         if( blk->inputs != 1 ) _Zoiks( ZOIKS_103 ); // because we're in a partition
         blk = blk->input_edges->source;
-        if( ( blk->class & SELECT ) != EMPTY ) return( FALSE );
-        if( blk == target_blk ) return( TRUE );
+        if( ( blk->class & SELECT ) != EMPTY ) return( false );
+        if( blk == target_blk ) return( true );
     }
     _Zoiks( ZOIKS_104 );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -639,7 +639,7 @@ static  instruction     *ProcessExpr( instruction *ins1,
     i = i1( ins1 );
     if( ins1->head.opcode == OP_CONVERT ) {
         if( ins1->base_type_class != ins2->base_type_class ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( signed_matters ) {
@@ -731,15 +731,15 @@ static  bool    OkToInvert( name *div )
    must have said that it was OK.
 */
 {
-    if( _IsModel( FP_UNSTABLE_OPTIMIZATION ) ) return( TRUE );
+    if( _IsModel( FP_UNSTABLE_OPTIMIZATION ) ) return( true );
     if( (div->n.class == N_TEMP) && (div->t.temp_flags & CONST_TEMP) ) {
         div = div->v.symbol;
     }
-    if( div->n.class != N_CONSTANT ) return( FALSE );
-    if( div->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-    if( !CFIs32( div->c.value ) ) return( FALSE );
-    if( GetLog2( div->c.int_value ) == -1 ) return( FALSE );
-    return( TRUE );
+    if( div->n.class != N_CONSTANT ) return( false );
+    if( div->c.const_type != CONS_ABSOLUTE ) return( false );
+    if( !CFIs32( div->c.value ) ) return( false );
+    if( GetLog2( div->c.int_value ) == -1 ) return( false );
+    return( true );
 }
 
 
@@ -759,9 +759,9 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
     who_dies            killed;
     name                *divisor;
 
-    if( ins1->type_class != ins2->type_class ) return( FALSE );
-    if( !DivIsADog( ins1->type_class ) ) return( FALSE );
-    if( ins1->operands[1] != ins2->operands[1] ) return( FALSE );
+    if( ins1->type_class != ins2->type_class ) return( false );
+    if( !DivIsADog( ins1->type_class ) ) return( false );
+    if( ins1->operands[1] != ins2->operands[1] ) return( false );
     first = WhichIsAncestor( ins1, ins2 );
     if( first == ins2 ) {
         ins2 = ins1;
@@ -769,7 +769,7 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
     }
     if( first == ins1 ) {
         divisor = ins1->operands[1];
-        if( !OkToInvert( divisor ) ) return( FALSE );
+        if( !OkToInvert( divisor ) ) return( false );
         if( !ReDefinedBy( ins1, divisor ) ) {
             killed = BinOpsLiveFrom( ins1, ins2, divisor, divisor, NULL );
             if( killed != OP_DIES ) {
@@ -784,11 +784,11 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
                 ins2->operands[1] = temp;
                 ins1->head.opcode = OP_MUL;
                 ins2->head.opcode = OP_MUL;
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    DoOneOpcode( opcode_defs opcode )
@@ -807,7 +807,7 @@ static  bool    DoOneOpcode( opcode_defs opcode )
     instruction *which_ins;
     bool        signed_matters;
 
-    change = FALSE;
+    change = false;
     switch( opcode ) {
     case OP_ADD:
     case OP_EXT_ADD:
@@ -819,10 +819,10 @@ static  bool    DoOneOpcode( opcode_defs opcode )
     case OP_NEGATE:
     case OP_COMPLEMENT:
     case OP_LSHIFT:
-        signed_matters = FALSE;
+        signed_matters = false;
         break;
     default:
-        signed_matters = TRUE;
+        signed_matters = true;
         break;
     }
     for( ins1 = ExprHeads[opcode]; ins1 != NULL; ins1 = next1 ) {
@@ -831,7 +831,7 @@ static  bool    DoOneOpcode( opcode_defs opcode )
             next2 = _INSLINK( ins2 );
             which_ins = ProcessExpr( ins1, ins2, signed_matters );
             if( which_ins != NULL ) {
-                change = TRUE;
+                change = true;
                 if( which_ins == ins1 ) {
                     DeleteFromList( &ExprHeads[opcode], ins1, next1 );
                     FreeIns( ins1 );
@@ -870,7 +870,7 @@ static  bool    DoDivides( void )
     instruction *next1;
     instruction *next2;
 
-    change = FALSE;
+    change = false;
     for( ins1 = ExprHeads[OP_DIV]; ins1 != NULL; ins1 = next1 ) {
         next1 = _INSLINK( ins1 );
         for( ins2 = next1; ins2 != NULL; ins2 = next2 ) {
@@ -879,7 +879,7 @@ static  bool    DoDivides( void )
                 DeleteFromList( &ExprHeads[OP_DIV], ins1, next1 );
                 DeleteFromList( &ExprHeads[OP_DIV], ins2, next2 );
                 next1 = ExprHeads[OP_DIV];
-                change = TRUE;
+                change = true;
                 break;
             }
         }
@@ -915,7 +915,7 @@ static  bool    DoArithOps( block *root )
               && ins->operands[0]->n.class != N_REGISTER
               && ins->operands[i1( ins )]->n.class != N_REGISTER
               && ins->result->n.class != N_REGISTER
-              && IsVolatile( ins->result ) == FALSE ) {
+              && IsVolatile( ins->result ) == false ) {
                 ins->ins_flags &= ~INS_DEFINES_OWN_OPERAND;
                 if( ReDefinedBy( ins, ins->operands[0] ) ) {
                     ins->ins_flags |= INS_DEFINES_OWN_OPERAND;
@@ -932,14 +932,14 @@ static  bool    DoArithOps( block *root )
         blk = blk->u.partition;
         if( blk == root ) break;
     }
-    change = FALSE;
+    change = false;
     for( opcode = FIRST_CSE_OP; opcode <= LAST_CSE_OP; ++opcode ) {
         if( DoOneOpcode( opcode ) ) {
-            change = TRUE;
+            change = true;
         }
     }
     if( DoDivides() )
-        change = TRUE;
+        change = true;
     CleanTableEntries( root );
     return( change );
 }
@@ -954,7 +954,7 @@ static  bool    PropagateExprs( void )
     bool        change;
     block       *blk;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
         if( blk->class & PARTITION_ROOT ) {
@@ -990,23 +990,23 @@ static bool FixOneStructRet( instruction *call )
 
     res = call->result;
     mova = call->head.prev;
-    if( mova->head.opcode != OP_MOV ) return( FALSE );
+    if( mova->head.opcode != OP_MOV ) return( false );
     op = mova->operands[0];
-    if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( op->c.const_type != CONS_TEMP_ADDR ) return( FALSE );
-    if( op->c.value != res ) return( FALSE );
+    if( op->n.class != N_CONSTANT ) return( false );
+    if( op->c.const_type != CONS_TEMP_ADDR ) return( false );
+    if( op->c.value != res ) return( false );
     for( movr = call->head.next; movr->head.opcode == OP_NOP; ) {
         movr = movr->head.next;
     }
-    if( movr->head.opcode != OP_MOV ) return( FALSE );
-    if( movr->type_class != XX ) return( FALSE );
-    if( movr->operands[0] != res ) return( FALSE );
+    if( movr->head.opcode != OP_MOV ) return( false );
+    if( movr->type_class != XX ) return( false );
+    if( movr->operands[0] != res ) return( false );
     res = movr->result;
-    if( res->n.class != N_TEMP ) return( FALSE );
+    if( res->n.class != N_TEMP ) return( false );
     call->result = res;
     mova->operands[0] = AllocAddrConst(res,0,CONS_TEMP_ADDR,mova->type_class);
     FreeIns( movr );
-    return( TRUE );
+    return( true );
 }
 
 static  bool    FixStructRet( block *root )
@@ -1030,7 +1030,7 @@ static  bool    FixStructRet( block *root )
     instruction *ins;
     bool        change;
 
-    change = FALSE;
+    change = false;
     blk = root;
     for( ;; ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -1039,7 +1039,7 @@ static  bool    FixStructRet( block *root )
                    ins->result->n.class == N_TEMP &&
                    ( ins->flags.call_flags & CALL_RETURNS_STRUCT ) &&
                    FixOneStructRet( ins ) ) {
-                    change = TRUE;
+                    change = true;
                 }
                ins->flags.call_flags &= ~CALL_RETURNS_STRUCT;
             }
@@ -1063,11 +1063,11 @@ static  bool    isMoveIns( instruction *ins )
     Is "ins" a move type instruction?
 */
 {
-    if( ins->head.opcode == OP_MOV )return( TRUE );
+    if( ins->head.opcode == OP_MOV )return( true );
     if( _IsConvert( ins )
      && ins->operands[0]->n.class == N_CONSTANT
-     && ins->operands[0]->c.const_type == CONS_ABSOLUTE ) return( TRUE );
-    return( FALSE );
+     && ins->operands[0]->c.const_type == CONS_ABSOLUTE ) return( true );
+    return( false );
 }
 
 
@@ -1076,18 +1076,18 @@ static  bool    CanLinkMove( instruction *ins )
     Is "ins" suitable for copy propagation?
 */
 {
-    if( ins->num_operands != 1 ) return( FALSE );
+    if( ins->num_operands != 1 ) return( false );
     /* only propagate constants and temps*/
-    if( ins->operands[0]->n.class == N_REGISTER ) return( FALSE );
+    if( ins->operands[0]->n.class == N_REGISTER ) return( false );
     if( ins->operands[0]->n.class == N_TEMP
-     && ( ins->operands[0]->t.temp_flags & STACK_PARM ) != 0 ) return( FALSE );
-    if( ins->result->n.class == N_REGISTER ) return( FALSE );
-    if( ins->operands[0] == ins->result ) return( FALSE );
-    if( IsVolatile( ins->result ) ) return( FALSE );
-    if( ReDefinedBy( ins, ins->operands[0] ) ) return( FALSE );
-    if( FPIsConvert( ins ) ) return( FALSE );
-    if( IsTrickyPointerConv( ins ) ) return( FALSE );
-    return( TRUE );
+     && ( ins->operands[0]->t.temp_flags & STACK_PARM ) != 0 ) return( false );
+    if( ins->result->n.class == N_REGISTER ) return( false );
+    if( ins->operands[0] == ins->result ) return( false );
+    if( IsVolatile( ins->result ) ) return( false );
+    if( ReDefinedBy( ins, ins->operands[0] ) ) return( false );
+    if( FPIsConvert( ins ) ) return( false );
+    if( IsTrickyPointerConv( ins ) ) return( false );
+    return( true );
 }
 
 static void CreateLink( instruction *ins, name *link )
@@ -1130,10 +1130,10 @@ static  bool    LinkableMove( instruction *ins )
     moves associated with it's result.
 */
 {
-    if( !isMoveIns( ins ) ) return( FALSE );
-    if( !CanLinkMove( ins ) ) return( FALSE );
-    if( ins->operands[0]->n.class == N_MEMORY ) return( FALSE );
-    if( ins->operands[0]->n.class == N_INDEXED ) return( FALSE );
+    if( !isMoveIns( ins ) ) return( false );
+    if( !CanLinkMove( ins ) ) return( false );
+    if( ins->operands[0]->n.class == N_MEMORY ) return( false );
+    if( ins->operands[0]->n.class == N_INDEXED ) return( false );
     if( ins->operands[0]->n.class == N_CONSTANT ) {
         if( ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
             ins->operands[0] = AllocConst(
@@ -1141,7 +1141,7 @@ static  bool    LinkableMove( instruction *ins )
                           ClassType( ins->type_class ) ) );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static  void    LinkMoves( block *root )
@@ -1273,7 +1273,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
     name                *base;
 
     opnd = *op;
-    change = FALSE;
+    change = false;
     for( ; definition != NULL; definition = _INSLINK( definition ) ) {
         if( WhichIsAncestor( definition, ins ) == definition && UnOpsLiveFrom( definition, ins ) ) {
             defop = definition->operands[0];
@@ -1285,7 +1285,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                      && !FPStackOp( defres ) ) {
                         UseInOther( definition, ins, defres );
                         *op = defres;
-                        change = TRUE;
+                        change = true;
                     }
                 }
             } else {
@@ -1297,7 +1297,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                          && !FPStackOp( defop ) ) {
                             UseInOther( definition, ins, defop );
                             *op = defop;
-                            change = TRUE;
+                            change = true;
                         }
                     }
                 } else if( opnd->n.class == N_INDEXED && definition->result->n.class == N_TEMP ) {
@@ -1309,7 +1309,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                                         opnd->i.constant,
                                         opnd->n.name_class, opnd->n.size,
                                         opnd->i.scale, opnd->i.index_flags );
-                        change = TRUE;
+                        change = true;
                     } else if( defop->n.class == N_CONSTANT
                             && ins->head.opcode != OP_SELECT ) {
                         disp = 0;
@@ -1359,7 +1359,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                                 Zoiks( ZOIKS_087 );
                                 break;
                             }
-                            change = TRUE;
+                            change = true;
                         }
                     }
                 }
@@ -1383,7 +1383,7 @@ static  bool    PropMoves( block *root, bool backward )
     instruction *ins;
     name        *idx;
 
-    change = FALSE;
+    change = false;
     blk = root;
     for( ;; ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -1404,7 +1404,7 @@ static  bool    PropMoves( block *root, bool backward )
                             break;
                         default:
                             change |= PropOpnd( ins, &ins->operands[i],
-                                          _NAMELINK( idx ), backward, TRUE );
+                                          _NAMELINK( idx ), backward, true );
                             break;
                         }
                         break;
@@ -1413,7 +1413,7 @@ static  bool    PropMoves( block *root, bool backward )
                         break;
                     default:
                         change |= PropOpnd( ins, &ins->operands[i],
-                            _NAMELINK( ins->operands[i] ), backward, TRUE );
+                            _NAMELINK( ins->operands[i] ), backward, true );
                         break;
                     }
                 }
@@ -1424,7 +1424,7 @@ static  bool    PropMoves( block *root, bool backward )
                             RemoveLink( ins, ins->result );
                             change |= PropOpnd( ins, &ins->result,
                                                 _NAMELINK( idx ),
-                                                backward, FALSE );
+                                                backward, false );
                             if( LinkableMove( ins ) ) {
                                 CreateLink( ins, ins->result );
                             }
@@ -1457,34 +1457,34 @@ static  bool    DoPropagateMoves( void )
     bool        block_changed;
     block       *blk;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
         if( blk->class & PARTITION_ROOT ) {
             do {
-                block_changed = FALSE;
+                block_changed = false;
                 if( FixStructRet( blk ) ) {
-                    block_changed = TRUE;
-                    change = TRUE;
+                    block_changed = true;
+                    change = true;
                 }
-                if( PeepOpt( blk, NextBlock, blk, FALSE ) ) {
-                    block_changed = TRUE;
-                    change = TRUE;
+                if( PeepOpt( blk, NextBlock, blk, false ) ) {
+                    block_changed = true;
+                    change = true;
                 }
                 if( ConstFold( blk ) ) {
-                    block_changed = TRUE;
-                    change = TRUE;
+                    block_changed = true;
+                    change = true;
                 }
                 LinkMoves( blk );
-                if( PropMoves( blk, FALSE ) ) {
-                    block_changed = TRUE;
-                    change = TRUE;
+                if( PropMoves( blk, false ) ) {
+                    block_changed = true;
+                    change = true;
                 }
                 CleanMoves( blk );
                 LinkMemMoves( blk );
-                if( PropMoves( blk, TRUE ) ) {
-                    block_changed = TRUE;
-                    change = TRUE;
+                if( PropMoves( blk, true ) ) {
+                    block_changed = true;
+                    change = true;
                 }
                 CleanMoves( blk );
             } while( block_changed );
@@ -1500,10 +1500,10 @@ extern  bool    PropagateMoves( void )
 {
     bool        change;
 
-    change = FALSE;
+    change = false;
     FindPartition();
     while( DoPropagateMoves() ) {
-        change = TRUE;
+        change = true;
     }
     CleanPartition();
     return( change );
@@ -1519,31 +1519,31 @@ extern  bool    CommonSex( bool leave_indvars_alone )
     bool        change;
     bool        anychange;
 
-    loops_killed = FALSE;
+    loops_killed = false;
     LeaveIndVars = leave_indvars_alone;
     FindPartition();
     anychange = LoadAddr();
-    if( PropRegsOne() ) anychange = TRUE;
+    if( PropRegsOne() ) anychange = true;
     for( ;; ) {
         ReCalcAddrTaken();
-        change = FALSE;
-        if( DoPropagateMoves() ) change = TRUE;
+        change = false;
+        if( DoPropagateMoves() ) change = true;
         if( StretchEdges() ) {
-            change = TRUE;
-            loops_killed = TRUE;
+            change = true;
+            loops_killed = true;
             CleanPartition();
             FindPartition();
         }
         if( DeadBlocks() ) {
-            change = TRUE;
-            loops_killed = TRUE;
+            change = true;
+            loops_killed = true;
             CleanPartition();
             FindPartition();
         }
-        if( PropagateExprs() ) change = TRUE;
+        if( PropagateExprs() ) change = true;
         if( change ) InsDead();
         if( change ) {
-            anychange = TRUE;
+            anychange = true;
         } else {
             break;
         }

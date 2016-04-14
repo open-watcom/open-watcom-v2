@@ -78,7 +78,7 @@ extern  void    DataAlign( unsigned_32 align ) {
     curr_loc = AskLocation();
     modulus = curr_loc % align;
     if( modulus != 0 ) {
-        if( AskSegBlank( AskOP() ) == FALSE ) {
+        if( AskSegBlank( AskOP() ) == false ) {
             IterBytes( (offset)( align - modulus ), 0 );
         } else {
             IncLocation( align - modulus );
@@ -91,7 +91,7 @@ extern  void    DataBytes( unsigned len, const void *src ) {
 
     if( len != 0 ){
         TellOptimizerByPassed();
-        SetUpObj( TRUE );
+        SetUpObj( true );
         OutDBytes( len, src );
         TellByPassOver();
     }
@@ -102,7 +102,7 @@ extern  void    DataShort( unsigned_16 val )
 /******************************************/
 {
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     OutDataShort( val );
     TellByPassOver();
 }
@@ -111,7 +111,7 @@ extern  void    DataLong( unsigned_32 val )
 /*****************************************/
 {
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     OutDataLong( val );
     TellByPassOver();
 }
@@ -121,7 +121,7 @@ extern  void    IterBytes( offset len, byte pat ) {
 /***********************************************/
 
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     OutIBytes( pat, len );
     TellByPassOver();
 }
@@ -140,9 +140,9 @@ extern  void    DoBigBckPtr( back_handle bck, offset off ) {
 static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus )
 /****************************************************************************************/
 {
-    SetUpObj( TRUE );
+    SetUpObj( true );
     TellKeepLabel( lbl );
-    OutReloc( seg, class, FALSE );
+    OutReloc( seg, class, false );
     OutLblPatch( lbl, class, plus );
 }
 
@@ -160,8 +160,8 @@ extern  void    DoBigLblPtr( cg_sym_handle sym ) {
 static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus ) {
 /***********************************************************************/
 
-    SetUpObj( TRUE );
-    OutImport( sym, class, FALSE );
+    SetUpObj( true );
+    OutImport( sym, class, false );
     if( F_CLASS( class ) == F_BASE ) {
         _OutFarSeg( 0 );
     } else {
@@ -176,7 +176,7 @@ extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus ) {
 /************************************************************************/
     fix_class const class = F_OFFSET;
 
-    SetUpObj( TRUE );
+    SetUpObj( true );
     OutBckImport( nm, bck, class );
     if( class == F_BASE ) {
         _OutFarSeg( 0 );
@@ -331,14 +331,14 @@ extern  name    *GenConstData( byte *buffer, type_class_def class ) {
     label = AskForLabel( NULL );
     if( cgclass == CG_CLB ) {
         old = SetOP( AskCodeSeg() );
-        SetUpObj( TRUE );
-        GenSelEntry( TRUE );
+        SetUpObj( true );
+        GenSelEntry( true );
         CodeLabel( label, size );
         CodeBytes( buffer, size );
-        GenSelEntry( FALSE );
+        GenSelEntry( false );
     } else {
         old = SetOP( AskBackSeg() );
-        SetUpObj( TRUE );
+        SetUpObj( true );
         DataAlign( size );
         OutLabel( label );
         DataBytes( size, buffer );
@@ -372,7 +372,7 @@ extern  void    DataLabel( label_handle lbl ) {
 
     TellObjNewLabel( AskForLblSym( lbl ) );
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     OutLabel( lbl );
     TellByPassOver();
 }

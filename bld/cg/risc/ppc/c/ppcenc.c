@@ -338,7 +338,7 @@ static  void    doCall( instruction *ins )
     } else {
         lbl = symLabel( ins->operands[CALL_OP_ADDR] );
         lbl = GetWeirdPPCDotDotLabel( lbl );
-        GenBRANCH( 18, lbl, TRUE, FALSE );
+        GenBRANCH( 18, lbl, true, false );
         encoding = 0x60000000;  // ..znop for linker thunk
         OutReloc( lbl, PPC_RELOC_GLUE, 0 );
         _EmitIns( encoding );
@@ -499,7 +499,7 @@ static  void    GenCallIndirect( instruction *call )
     }
     GenMEMINS( ldw, TOC_REG, src, 4 );  // careful - src, reg could be same reg
     GenMEMINS( ldw, reg, src, 0 );
-    GenMTSPR( reg, SPR_CTR, FALSE );
+    GenMTSPR( reg, SPR_CTR, false );
     GenRAWINS( 0x4e9e0421 );
     GenMEMINS( ldw, TOC_REG, STACK_REG, 4 );
 }
@@ -853,7 +853,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label )
 void    GenJumpLabel( label_handle label )
 /****************************************/
 {
-    GenBRANCH( 18, label, FALSE, FALSE );
+    GenBRANCH( 18, label, false, false );
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpLiteral( "JMP L" );
@@ -902,8 +902,8 @@ extern  void    GenKillLabel( label_handle lbl )
 /*******************************************/
 {
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == FALSE ) return;
-    // if( _TstStatus( lbl, OWL_OWNED ) != FALSE ) return;
+    if( _TstStatus( lbl, CODELABEL ) == false ) return;
+    // if( _TstStatus( lbl, OWL_OWNED ) != false ) return;
     TryScrapLabel( lbl );
 }
 

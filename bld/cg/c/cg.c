@@ -376,7 +376,7 @@ extern  void    CGControl( cg_op o, n *e, l  *lb ) {
 /**************************************************/
 
     Action( "CGControl" );
-    VerCGCtrl( TRUE, o, e, lb );
+    VerCGCtrl( true, o, e, lb );
 }
 extern  void    VerCGCtrl( bool ver, cg_op o, n *e, l *lb ) {
 /***********************************************************/
@@ -936,11 +936,11 @@ extern  void    CGBigGoto( l *lb, int ll ) {
 /*******************************************/
 
     Action( "CGBigGoto( %d )", ll );
-    VerCGCtrl( FALSE, O_BIG_GOTO, NULL, lb );
+    VerCGCtrl( false, O_BIG_GOTO, NULL, lb );
 }
 extern  void    CGBigLabel( b *bk ) {
 /************************************/
 
     Action( "CGBigLabel" );
-    VerCGCtrl( FALSE, O_BIG_LABEL, NULL, bk->lp );
+    VerCGCtrl( false, O_BIG_LABEL, NULL, bk->lp );
 }

@@ -148,13 +148,13 @@ static  void            ShellSort( void **array, unsigned length,
         adjust = !adjust;
         gap = gap / 2 + adjust;
         do {
-            swap = FALSE;
+            swap = false;
             for( i=0; i<(length-gap); ++i ) {
                 if( (*before)( array[i+gap], array[i] ) ) {
                     t = array[i];
                     array[i] = array[i+gap];
                     array[i+gap] = t;
-                    swap = TRUE;
+                    swap = true;
                 }
             }
         } while( swap );

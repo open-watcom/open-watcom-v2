@@ -238,10 +238,10 @@ CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,BAD,   C_U4_D,CSTOD, OK };    /* FD*/
 extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
 /*************************************************************/
 
-    if( fr == XX ) return( FALSE );
-    if( to == XX ) return( FALSE );
-    if( AskHow( fr, to ) != BAD ) return( TRUE );
-    return( FALSE );
+    if( fr == XX ) return( false );
+    if( to == XX ) return( false );
+    if( AskHow( fr, to ) != BAD ) return( true );
+    return( false );
 }
 
 

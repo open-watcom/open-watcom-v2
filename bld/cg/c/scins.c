@@ -94,7 +94,7 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
     type_class_def      class;
     bool                ok;
 
-    ok = TRUE;
+    ok = true;
     table = ins->table;
     gen_table = ins->u.gen_table;
     old_op = *op;
@@ -104,7 +104,7 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
         class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[ class ] != to->n.size ) return( FALSE );
+        if( TypeClassSize[ class ] != to->n.size ) return( false );
     }
     for( i = ins->num_operands; i-- > 0; ) {
         save_ops[i] = ins->operands[i];
@@ -132,10 +132,10 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
                 ins->num_operands = NumOperands( ins );
             }
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
-    if( ( ok == FALSE ) || ( flags & CHANGE_CHECK ) ) {
+    if( ( ok == false ) || ( flags & CHANGE_CHECK ) ) {
         // if we failed or we were just checking then
         // restore the original instruction
         for( i = ins->num_operands; i-- > 0; ) {
@@ -162,9 +162,9 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     name        *reg_name;
 
     op = *opp;
-    if( op->n.class != N_INDEXED ) return( FALSE );
-    if( op->i.index->n.class != N_REGISTER ) return( FALSE );
-    if( op->i.index->r.reg_index == NO_INDEX ) return( FALSE );
+    if( op->n.class != N_INDEXED ) return( false );
+    if( op->i.index->n.class != N_REGISTER ) return( false );
+    if( op->i.index->r.reg_index == NO_INDEX ) return( false );
     this_reg = &sc[ op->i.index->r.reg_index  ];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
@@ -180,11 +180,11 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                                     op->n.size, op->i.scale,
                                     op->i.index_flags );
                 if( IndexOkay( ins, index )
-                 && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) return( TRUE );
+                 && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
@@ -201,7 +201,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     score       *curr_reg;
     score_info  info;
 
-    if( CanReplace( ins ) == FALSE ) return( FALSE );
+    if( CanReplace( ins ) == false ) return( false );
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;
@@ -212,7 +212,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
                 && curr_reg->generation < this_reg->generation
                 && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
                               opp, CHANGE_GEN ) ) {
-                     return( TRUE );
+                     return( true );
                 }
             }
         }
@@ -220,27 +220,27 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             if( curr_reg->generation < this_reg->generation
              && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
                            opp, CHANGE_GEN ) ) {
-                return( TRUE );
+                return( true );
             }
         }
-        return( FALSE );
+        return( false );
     } else {
         ScoreInfo( &info, op );
         if( info.class == N_CONSTANT ) {
             if( _OpIsCondition( ins->head.opcode ) &&
                 info.symbol.p == NULL && info.offset == 0 ) {
                 /* don't change cmp x,0 */
-                return( FALSE );
+                return( false );
             }
             if( _IsFloating( ins->type_class ) ) {
                 /* careful -- info->offset is NOT right for FP consts! */
-                return( FALSE );
+                return( false );
             }
         }
         for( i = ScoreCount; i-- > 0; ) {
             if( ScoreEqual( sc, i, &info )
              && ChangeIns( ins, ScoreList[ i ]->reg_name, opp, CHANGE_GEN ) )
-                return( TRUE );
+                return( true );
         }
 
         /*% couldn't find a register operand, try for an older index*/
@@ -258,16 +258,16 @@ extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
     int         i;
     bool        change;
 
-    if( IsStackReg( ins->result ) ) return( FALSE );
-    change = FALSE;
+    if( IsStackReg( ins->result ) ) return( false );
+    change = false;
     for( i = NumOperands( ins ); i-- > 0; ) {
         if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
-            change = TRUE;
+            change = true;
         }
     }
     if( ins->result != NULL ) {
         if( TryOldIndex( sc, ins, &ins->result ) ) {
-            change = TRUE;
+            change = true;
         }
     }
     return( change );
@@ -326,7 +326,7 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
         if( src->n.class == N_REGISTER ) {
             if( RegsEqual( sc,  dst_index, src_index ) ) {
                 FreeIns( ins );
-                return( TRUE );
+                return( true );
             } else {
                 RegKill( sc, dst->r.reg );
                 RegAdd( sc, dst_index, src_index );
@@ -335,7 +335,7 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
             ScoreInfo( &info, src );
             if( ScoreEqual( sc, dst->r.reg_index, &info ) ) {
                 FreeIns( ins );
-                return( TRUE );
+                return( true );
             } else {
                 RegKill( sc, dst->r.reg );
                 /* NB: reg can never have the value x[reg]*/
@@ -352,7 +352,7 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
         if( src->n.class == N_REGISTER ) {       /* and dst is not a register*/
             if( ScoreEqual( sc, src->r.reg_index, &info ) ) {
                 FreeIns( ins );
-                return( TRUE );
+                return( true );
             } else {
                 ScoreKillInfo( sc, dst, &info,
                                   src->r.reg );
@@ -364,7 +364,7 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
             ScoreKillInfo( sc, dst, &info, HW_EMPTY );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -387,7 +387,7 @@ extern  bool    ScoreLA( score *sc, instruction *ins ) {
             RegKill( sc, dst->r.reg );
         } else if( ScoreEqual( sc, dst->r.reg_index, &info ) ) {
             FreeIns( ins );
-            return( TRUE );
+            return( true );
         } else {
             RegKill( sc, dst->r.reg );
             ScoreAssign( sc, dst_index, &info );
@@ -396,7 +396,7 @@ extern  bool    ScoreLA( score *sc, instruction *ins ) {
         ScoreInfo( &info, dst );
         ScoreKillInfo( sc, dst, &info, HW_EMPTY );
     }
-    return( FALSE );
+    return( false );
 }
 
 

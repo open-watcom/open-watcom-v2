@@ -392,7 +392,7 @@ extern  void    GenRET( void )
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 4;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = FALSE;            /* not used */
+    oc.oc_ret.pops = false;            /* not used */
     InputOC( &oc );
 }
 
@@ -662,9 +662,9 @@ static  bool    encodeThreadDataRef( instruction *ins ) {
     label_handle        tls_index;
 
     op = ins->operands[0];
-    if( op->n.class != N_MEMORY ) return( FALSE );
-    if( op->m.memory_type != CG_FE ) return( FALSE );
-    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( FALSE );
+    if( op->n.class != N_MEMORY ) return( false );
+    if( op->m.memory_type != CG_FE ) return( false );
+    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( false );
 
     /*
      * Put out a sequence that looks like:
@@ -692,7 +692,7 @@ static  bool    encodeThreadDataRef( instruction *ins ) {
     GenMEMINS( loadOpcodes[I4], V0, V0, 0 );
     GenMEMINSRELOC( 0x08, _NameReg( ins->result ),
                 V0, 0, symLabel( op ), OWL_RELOC_HALF_LO );
-    return( TRUE );
+    return( true );
 }
 
 static  void    Encode( instruction *ins ) {
@@ -891,11 +891,11 @@ static  void    Encode( instruction *ins ) {
         break;
     case G_LDQ_U:
     case G_LOAD:
-        doLoadStore( ins, TRUE );
+        doLoadStore( ins, true );
         break;
     case G_STQ_U:
     case G_STORE:
-        doLoadStore( ins, FALSE );
+        doLoadStore( ins, false );
         break;
     case G_CVTTQ:
         _Zoiks( ZOIKS_028 );

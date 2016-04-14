@@ -60,28 +60,28 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
     int         stride;
 
     stride = TypeClassSize[tipe];
-    if( s->n.class != r->n.class ) return( FALSE );
+    if( s->n.class != r->n.class ) return( false );
     if( s->n.class == N_MEMORY ) {
-        if( s->v.symbol != r->v.symbol ) return( FALSE );
-        if( s->m.memory_type != r->m.memory_type ) return( FALSE );
-        if( s->v.offset != r->v.offset + stride ) return( FALSE );
-        return( TRUE );
+        if( s->v.symbol != r->v.symbol ) return( false );
+        if( s->m.memory_type != r->m.memory_type ) return( false );
+        if( s->v.offset != r->v.offset + stride ) return( false );
+        return( true );
     } else if( s->n.class == N_INDEXED ) {
-        if( HasTrueBase( s ) && !HasTrueBase( r ) ) return( FALSE );
-        if( !HasTrueBase( s ) && HasTrueBase( r ) ) return( FALSE );
-        if( s->i.base != r->i.base ) return( FALSE );
-        if( s->i.index != r->i.index ) return( FALSE );
-        if( s->i.constant != r->i.constant + stride ) return( FALSE );
-        return( TRUE );
+        if( HasTrueBase( s ) && !HasTrueBase( r ) ) return( false );
+        if( !HasTrueBase( s ) && HasTrueBase( r ) ) return( false );
+        if( s->i.base != r->i.base ) return( false );
+        if( s->i.index != r->i.index ) return( false );
+        if( s->i.constant != r->i.constant + stride ) return( false );
+        return( true );
     } else if( s->n.class == N_TEMP ) {
         base_s = DeAlias( s );
         locn_s = base_s->t.location + s->v.offset - base_s->v.offset;
         base_r = DeAlias( r );
         locn_r = base_r->t.location + r->v.offset - base_r->v.offset;
-        if( locn_s != locn_r + stride ) return( FALSE );
-        return( TRUE );
+        if( locn_s != locn_r + stride ) return( false );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -93,12 +93,12 @@ static bool     MemMove( instruction *ins )
         case N_TEMP:
         case N_MEMORY:
         case N_INDEXED:
-            return( TRUE );
+            return( true );
         default:
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -149,7 +149,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                     hi = next->operands[0]->c.int_value;
                     result = ins->result;
                 } else {
-                    return( FALSE );
+                    return( false );
                 }
                 lo &= ( ( 1 << shift ) - 1 );
                 hi &= ( ( 1 << shift ) - 1 );
@@ -158,11 +158,11 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 ins->type_class = result_type;
                 ins->result = result;
                 DoNothing( next );
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 #if _TARGET & _TARG_IAPX86
@@ -174,12 +174,12 @@ static bool isPushX2( instruction *ins )
         switch( ins->type_class ) {
         case U2:
         case I2:
-            return( TRUE );
+            return( true );
         default:
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -188,10 +188,10 @@ static bool isOpConstant( name *op )
 {
     if( op->n.class == N_CONSTANT ) {
         if( op->c.const_type == CONS_ABSOLUTE ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -205,26 +205,26 @@ static bool OptPushDWORDConstant( instruction *ins, instruction *next )
     opi = ins->operands[0];
     opn = next->operands[0];
     if( ! isOpConstant( opi ) || ! isOpConstant( opn ) ) {
-        return( FALSE );
+        return( false );
     }
     if( opi->c.int_value != 0 ) {
         if( opi->c.int_value != -1 ) {
             // first word constant isn't 0 or -1
-            return( FALSE );
+            return( false );
         }
         if( opn->c.int_value >= 0 || opn->c.int_value < -128 ) {
             // second word constant won't sign-extend
-            return( FALSE );
+            return( false );
         }
     } else {
         if( opn->c.int_value < 0 || opn->c.int_value > 127 ) {
             // second word constant exceeds signed byte positive maximum
-            return( FALSE );
+            return( false );
         }
     }
     DoNothing( ins );
     next->type_class = I4;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -235,9 +235,9 @@ static bool OptPushDWORDMemory( instruction *ins, instruction *next )
     if( AdjacentMem( ins->operands[0], next->operands[0], U2 ) ) {
         DoNothing( ins );
         next->type_class = I4;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -245,9 +245,9 @@ static bool OptPushDWORDMemory( instruction *ins, instruction *next )
 static  bool    NotByteMove( instruction *ins )
 /*********************************************/
 {
-    if( ins->head.opcode != OP_MOV ) return( FALSE );
-    if( ins->type_class == U1 || ins->type_class == I1 ) return( FALSE );
-    return( TRUE );
+    if( ins->head.opcode != OP_MOV ) return( false );
+    if( ins->type_class == U1 || ins->type_class == I1 ) return( false );
+    return( true );
 }
 
 
@@ -255,10 +255,10 @@ static  bool    IsLESDS( instruction *ins, instruction *next )
 /************************************************************/
 {
     if( ins->u.gen_table->generate != G_RM1
-        && ins->u.gen_table->generate != G_MOVAM ) return( FALSE );
-    if( ins->type_class != WD && ins->type_class != SW ) return( FALSE );
-    if( next->u.gen_table->generate != G_SM1 ) return( FALSE );
-    return( TRUE );
+        && ins->u.gen_table->generate != G_MOVAM ) return( false );
+    if( ins->type_class != WD && ins->type_class != SW ) return( false );
+    if( next->u.gen_table->generate != G_SM1 ) return( false );
+    return( true );
 }
 
 
@@ -297,15 +297,15 @@ extern  void    OptSegs( void )
     instruction *tmp;
 
     do {
-        redo = FALSE;
+        redo = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( NotByteMove( ins ) && NotByteMove( next ) ) {
                     if( IsLESDS( ins, next ) ) {
-                        CheckLDSES( next, ins, FALSE );
+                        CheckLDSES( next, ins, false );
                     } else if( IsLESDS( next, ins ) ) {
-                        CheckLDSES( ins, next, TRUE );
+                        CheckLDSES( ins, next, true );
                     }
                 }
                 if( MemMove( ins )  && !VolatileIns( ins )
@@ -320,7 +320,7 @@ extern  void    OptSegs( void )
                         case I2:
                         case U1:
                         case U2:
-                            redo = TRUE;
+                            redo = true;
                             break;
                         default:
                             break;

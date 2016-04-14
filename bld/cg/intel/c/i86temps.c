@@ -160,16 +160,16 @@ extern  bool    TempAllocBefore( name *t1, name *t2 ) {
 /*****************************************************/
 
     if( (t1->t.temp_flags & USED_AS_FD) && !(t2->t.temp_flags & USED_AS_FD) ) {
-        if( CurrProc->targ.sp_align ) return( FALSE );
-        return( TRUE );
+        if( CurrProc->targ.sp_align ) return( false );
+        return( true );
     }
     if( (t2->t.temp_flags & USED_AS_FD) && !(t1->t.temp_flags & USED_AS_FD) ) {
-        if( CurrProc->targ.sp_align ) return( TRUE );
-        return( FALSE );
+        if( CurrProc->targ.sp_align ) return( true );
+        return( false );
     }
-    if( t1->n.size < t2->n.size ) return( TRUE );
-    if( t1->n.size != t2->n.size ) return( FALSE );
+    if( t1->n.size < t2->n.size ) return( true );
+    if( t1->n.size != t2->n.size ) return( false );
     /* allocate big pointers the right way 'round for LES/LDS*/
-    if( t1->t.v.id == t2->t.v.id && t1->v.offset > t2->v.offset ) return( TRUE );
-    return( FALSE );
+    if( t1->t.v.id == t2->t.v.id && t1->v.offset > t2->v.offset ) return( true );
+    return( false );
 }

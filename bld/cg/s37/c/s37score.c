@@ -52,8 +52,8 @@ extern  bool    MultiIns( instruction *ins ) {
     Is ins part of a two instruction sequence, like SUB, SBB?
     select wacks it's opernad so we don't want it removed - MJC
 */
-    if( ins->head.opcode == OP_SELECT ) return( TRUE );
-    return( FALSE );
+    if( ins->head.opcode == OP_SELECT ) return( true );
+    return( false );
 }
 
 
@@ -87,7 +87,7 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
     Is it ok to say that "reg1" = "reg2".
 */
     reg1=reg1;reg2=reg2;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -96,7 +96,7 @@ extern  bool    ScConvert( instruction *ins ) {
     an 8086ism
 */
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -105,7 +105,7 @@ extern  bool    CanReplace( instruction *ins ) {
     an 8086ism
 */
     ins = ins;
-    return( TRUE );
+    return( true );
 }
 
 static hw_reg_set RegNames[17] = {
@@ -131,14 +131,14 @@ static hw_reg_set RegNames[17] = {
 
 extern  bool    ScRealRegister( name *reg ) {
 /********************************************
-    Return "TRUE" if "reg" is a real machine register and not some
+    Return "true" if "reg" is a real machine register and not some
     monstrosity like G0:G11:G13 used for calls.
 */
     hw_reg_set  regs;
     reg_num i;
     int count;
 
-    if( reg->n.name_class != XX ) return( TRUE );
+    if( reg->n.name_class != XX ) return( true );
     regs  = reg->r.reg;
     HW_CTurnOff( regs, HW_UNUSED );
     i = 0;

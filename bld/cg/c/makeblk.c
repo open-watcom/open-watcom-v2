@@ -146,9 +146,9 @@ extern  void    EnLink( label_handle label, bool label_dies )
 extern  void    AddIns( instruction *ins )
 /****************************************/
 {
-    if( HaveCurrBlock == FALSE ) {
-        EnLink( AskForNewLabel(), TRUE );
-        HaveCurrBlock = TRUE;
+    if( HaveCurrBlock == false ) {
+        EnLink( AskForNewLabel(), true );
+        HaveCurrBlock = true;
     }
     ins->head.next = (instruction *)&CurrBlock->ins;
     ins->head.prev = CurrBlock->ins.hd.prev;
@@ -361,7 +361,7 @@ static void *LinkReturns( void *arg )
     link_to = LinkReturnsParms[ 0 ];
     to_search = LinkReturnsParms[ 1 ];
     blk = FindBlockWithLbl( to_search );
-//    found = FALSE;
+//    found = false;
     if( blk == NULL ) return( NULL );
     if( blk->class & BLOCK_VISITED ) return( NOT_NULL );
     if( blk->class & LABEL_RETURN ) {
@@ -372,12 +372,12 @@ static void *LinkReturns( void *arg )
             }
         }
         blk = ReGenBlock( blk, link_to );
-//        found = TRUE;
+//        found = true;
     } else {
         blk->class |= BLOCK_VISITED;
         if( blk->class & CALL_LABEL ) {
             if( blk->next_block == NULL )
-                return( (void *)(pointer_int)FALSE );
+                return( (void *)(pointer_int)false );
             LinkReturnsParms[ 0 ] = link_to;
             LinkReturnsParms[ 1 ] = blk->next_block->label;
             if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
@@ -407,19 +407,19 @@ extern  bool        FixReturns( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CALL_LABEL ) {
             blk->class |= BLOCK_VISITED;
-            if( blk->next_block == NULL ) return( FALSE );
+            if( blk->next_block == NULL ) return( false );
             blk->next_block->class |= RETURNED_TO;
             LinkReturnsParms[ 0 ] = blk->next_block->label;
             LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
             if( !LinkReturns( NULL ) ) {
-                return( FALSE );
+                return( false );
             }
             for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
                 other_blk->class &= ~BLOCK_VISITED;
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -462,17 +462,17 @@ extern  bool    BlkTooBig( void )
 {
     label_handle    blk;
 
-    if( !HaveCurrBlock ) return( FALSE );
-    if( CurrBlock == NULL ) return( FALSE );
-    if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) return( FALSE );
+    if( !HaveCurrBlock ) return( false );
+    if( CurrBlock == NULL ) return( false );
+    if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) return( false );
     _INS_NOT_BLOCK( CurrBlock->ins.hd.next );
-    if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( FALSE );
-    if( CurrBlock->targets != 0 ) return( FALSE );
+    if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( false );
+    if( CurrBlock->targets != 0 ) return( false );
     blk = AskForNewLabel();
     GenBlock( JUMP, 1 );
-    AddTarget( blk, FALSE );
-    EnLink( blk, TRUE );
-    return( TRUE );
+    AddTarget( blk, false );
+    EnLink( blk, true );
+    return( true );
 }
 
 
@@ -497,8 +497,8 @@ extern  void    NewProc( int level )
         CurrProc->ins_id = InsId;
         CurrProc->untrimmed = BlocksUnTrimmed;
     }
-    HaveCurrBlock = TRUE;
-    BlocksUnTrimmed = TRUE;
+    HaveCurrBlock = true;
+    BlocksUnTrimmed = true;
     MaxStack = 0;
     InsId = 0;
     HeadBlock = NULL;
@@ -556,7 +556,7 @@ extern  void    FreeProc( void )
             BlocksUnTrimmed = CurrProc->untrimmed;
         } else {
             InsId = 0;
-            BlockByBlock = FALSE;
+            BlockByBlock = false;
         }
     }
 }

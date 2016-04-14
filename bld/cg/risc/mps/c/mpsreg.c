@@ -91,7 +91,7 @@ extern  type_class_def CallState( aux_handle aux, type_def *tipe, call_state *st
     hw_reg_set          *pregs;
     call_class          cclass;
     byte_seq            *code;
-    bool                have_aux_code = FALSE;
+    bool                have_aux_code = false;
 
     state->unalterable = FixedRegs();
     if( FEAttr( AskForLblSym( CurrProc->label ) ) & FE_VARARGS ) {
@@ -105,7 +105,7 @@ extern  type_class_def CallState( aux_handle aux, type_def *tipe, call_state *st
     if( !AskIfRTLabel( CurrProc->label ) ) {
         code = FEAuxInfo( aux, CALL_BYTES );
         if( code != NULL ) {
-            have_aux_code = TRUE;
+            have_aux_code = true;
         }
     }
 
@@ -240,11 +240,11 @@ extern  hw_reg_set SaveRegs( void )
 extern  bool IsStackReg( name *n )
 /********************************/
 {
-    if( n == NULL ) return( FALSE );
-    if( n->n.class != N_REGISTER ) return( FALSE );
+    if( n == NULL ) return( false );
+    if( n->n.class != N_REGISTER ) return( false );
     if( !HW_CEqual( n->r.reg, HW_R29 ) &&
-        !HW_CEqual( n->r.reg, HW_D29 ) ) return( FALSE );
-    return( TRUE );
+        !HW_CEqual( n->r.reg, HW_D29 ) ) return( false );
+    return( true );
 }
 
 

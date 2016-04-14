@@ -447,7 +447,7 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index ) {
 extern  bool    IsSegReg( hw_reg_set regs ) {
 /*******************************************/
     regs = regs;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -604,7 +604,7 @@ extern  hw_reg_set      RAReg() {
 extern  bool            IsStackReg( name *sp ) {
 /**********************************************/
     sp = sp;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -694,7 +694,7 @@ extern  bool            IsRegPair( hw_reg_set reg ) {
     hw_reg_set  *curr;
 
     for( curr = PairRegs; !HW_CEqual( *curr, HW_EMPTY ); ++curr ) {
-        if( HW_Equal( *curr, reg ) ) return( TRUE );
+        if( HW_Equal( *curr, reg ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }

@@ -81,22 +81,22 @@ static instruction *FindPreviousIns( instruction *curr )
 
 static bool SafeOp( name *op, bool write )
 /*****************************************
-    Return TRUE if the given operand is not something which
+    Return true if the given operand is not something which
     would indicate an instruction with a possibly useful effect.
     Basically, we are allowed to ignore instructions which simply
     shuffle temporaries and constants around, as well as stuff
     which reads registers. Writing a register is bad news though.
 */
 {
-    if( op == NULL ) return( TRUE );
+    if( op == NULL ) return( true );
     switch( op->n.class ) {
     case N_TEMP:
     case N_CONSTANT:
-        return( TRUE );
+        return( true );
     case N_REGISTER:
         return( !write );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -120,7 +120,7 @@ static bool CheckReturn( instruction *ins )
     value = ReturnValue;
     while( ins->head.opcode != OP_CALL ) {
         if( ins->result == value ) {
-            if( ins->head.opcode != OP_MOV ) return( FALSE );
+            if( ins->head.opcode != OP_MOV ) return( false );
             value = ins->operands[0];
         }
         // following will slide by block boundaries with greatest of ease
@@ -197,7 +197,7 @@ static void DoTrans( block *blk, instruction *call_ins )
 
 static bool SafePath( instruction *ins )
 /***************************************
-    Return TRUE if the path from the given ins (not OP_BLOCK)
+    Return true if the path from the given ins (not OP_BLOCK)
     to the end of the block is safe to ignore for purposes of
     eliminating a call higher up the tree.
 */
@@ -205,10 +205,10 @@ static bool SafePath( instruction *ins )
     int         i;
 
     for( ; ins->head.opcode != OP_BLOCK ; ins = ins->head.next ) {
-        if( SideEffect( ins ) ) return( FALSE );
-        if( _OpIsCall( ins->head.opcode ) ) return( FALSE );
+        if( SideEffect( ins ) ) return( false );
+        if( _OpIsCall( ins->head.opcode ) ) return( false );
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( !SafeOp( ins->operands[i], FALSE ) ) return( FALSE );
+            if( !SafeOp( ins->operands[i], false ) ) return( false );
         }
         if( ins->result == ReturnValue ) {
             // check to see if this value we are writing into the
@@ -216,9 +216,9 @@ static bool SafePath( instruction *ins )
             // recursive call we are eliminating - if so continue
             if( CheckReturn( ins ) ) continue;
         }
-        if( !SafeOp( ins->result, TRUE ) ) return( FALSE );
+        if( !SafeOp( ins->result, true ) ) return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static block *SafeBlock( block *blk )
@@ -252,7 +252,7 @@ static block *SafeBlock( block *blk )
 
 static bool ScaryOperand( name *var )
 /************************************
-    return TRUE if the operand given has any properties which
+    return true if the operand given has any properties which
     might make elimination of tail recursion impossible
 */
 {
@@ -262,13 +262,13 @@ static bool ScaryOperand( name *var )
             return( var->v.usage & USE_ADDRESS );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool ScaryConditions( void )
 /**********************************
     Traverse the current function and return
-    TRUE if there are any conditions present which
+    true if there are any conditions present which
     would scare us out of doing tail recursion
     elimination, such as vars which have had
     their addresses taken...
@@ -281,12 +281,12 @@ static bool ScaryConditions( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; i++ ) {
-                if( ScaryOperand( ins->operands[i] ) ) return( TRUE );
+                if( ScaryOperand( ins->operands[i] ) ) return( true );
             }
-            if( ScaryOperand( ins->result ) ) return( TRUE );
+            if( ScaryOperand( ins->result ) ) return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool     OkayToTransCall( block *blk, instruction *call_ins )
@@ -307,20 +307,20 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
 
     label = AskForLblSym( CurrProc->label );
     if( call_ins->operands[CALL_OP_ADDR]->v.symbol != label ) {
-        return( FALSE );
+        return( false );
     }
 
     // check to make sure length of parm lists are the same
     parm = _TR_LINK( call_ins );
     for( ins = _PROC_LINK( CurrProc ); ins != NULL; ins = _TR_LINK( ins ) ) {
-        if( parm == NULL ) return( FALSE );
+        if( parm == NULL ) return( false );
         parm = _TR_LINK( parm );
     }
-    if( parm != NULL ) return( FALSE );
+    if( parm != NULL ) return( false );
 
     // check to see if all paths are hazard-free from the
     //  call ins to the return block
-    ok = FALSE;
+    ok = false;
     ReturnValue = call_ins->result;
     blk->class |= BLOCK_MARKED;
     // if the call is in the return block, then there are no
@@ -329,11 +329,11 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     // bother - better running out of stack than an infinite loop
     // (besides - certain codegen stuff needs a RET block)
     if( ( ( blk->class & RETURN ) == EMPTY ) && SafePath( call_ins->head.next ) ) {
-        ok = TRUE;
+        ok = true;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[i].destination.u.blk;
             if( SafeBlock( dest ) == NULL ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
         }
@@ -385,14 +385,14 @@ extern bool     TailRecursion( void )
     instruction *next;
     bool        changed;
 
-    changed = FALSE;
+    changed = false;
     if( _IsntModel( NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {
                     if( OkayToTransCall( blk, ins ) ) {
                         DoTrans( blk, ins );
-                        changed = TRUE;
+                        changed = true;
                         break;
                     }
                 }

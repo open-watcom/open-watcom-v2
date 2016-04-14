@@ -126,7 +126,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
 
     int         i;
 
-    if( ins->u.gen_table == NULL || ins->table == NULL ) return( FALSE );
+    if( ins->u.gen_table == NULL || ins->table == NULL ) return( false );
     switch( ins->u.gen_table->generate ) {
     case G_RRFBIN:
     case G_MRFBIN:
@@ -234,7 +234,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
         DumpFPInfo( ins );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     DumpLiteral( " [" );
     if( ins->num_operands != 0 ) {
@@ -249,7 +249,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
         DumpOperand( ins->result );
     }
     DumpChar( ']' );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -258,7 +258,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
 /*********************************************/
 
     ins = ins;
-    return( FALSE );
+    return( false );
 
 }
 #endif

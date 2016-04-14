@@ -81,24 +81,24 @@ static  bool    CoveringDefinitions( name *op )
     uint        loc;
     bool        covered[MAX_POSSIBLE_REG+1];
 
-    if( op->n.size > MAX_POSSIBLE_REG ) return( FALSE );
+    if( op->n.size > MAX_POSSIBLE_REG ) return( false );
     for( i = op->n.size; i-- > 0; ) {
-        covered[ i ] = FALSE;
+        covered[ i ] = false;
     }
     for( alias = op->t.alias; alias != op; alias = alias->t.alias ) {
         if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
             loc = alias->v.offset - op->v.offset;
             for( i = alias->n.size; i > 0; --i ) {
                 if( loc < sizeof( covered ) )
-                    covered[loc] = TRUE;
+                    covered[loc] = true;
                 ++loc;
             }
         }
     }
     for( i = op->n.size; i-- > 0; ) {
-        if( covered[ i ] == FALSE ) return( FALSE );
+        if( covered[ i ] == false ) return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -113,7 +113,7 @@ static  void    Define( name *op, block *blk )
     actual->v.block_usage |= DEF_WITHIN_BLOCK;
     if( op->n.class == N_TEMP ) op = DeAlias( op );
     if( op->v.block_usage & USE_IN_ANOTHER_BLOCK ) return;
-    if( actual != op && CoveringDefinitions( op ) == FALSE ) return;
+    if( actual != op && CoveringDefinitions( op ) == false ) return;
     op->v.block_usage |= DEF_WITHIN_BLOCK;
     if( op->v.conflict == NULL ) return;
     _GBitTurnOn( blk->dataflow->def, op->v.conflict->id.out_of_block );
@@ -361,14 +361,14 @@ static  void    SearchDefUse( void )
     bool        touched_non_op;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        touched_non_op = FALSE;
+        touched_non_op = false;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ( ins->head.opcode == OP_CALL
                || ins->head.opcode == OP_CALL_INDIRECT )
              && ( ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) == 0
 /*21-nov-90*/  || ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) == 0 ) ) {
                 UseDefGlobals( blk );
-                touched_non_op = TRUE;
+                touched_non_op = true;
             }
             for( i = ins->num_operands; i-- > 0; ) {
                 name = ins->operands[i];

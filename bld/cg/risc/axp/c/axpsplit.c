@@ -556,13 +556,13 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
         low_part = AllocIndex( temp, NULL, low, ins->type_class );
         new_ins = MakeUnary( OP_LA, low_part, ins->result, ins->type_class );
         PrefixIns( ins, new_ins );
-        cruft_in_high_dword = FALSE;
+        cruft_in_high_dword = false;
         if( c >= 0x7fff8000 && c <= 0x7fffffff ) {
-            cruft_in_high_dword = TRUE;
+            cruft_in_high_dword = true;
         }
         if( ( c & 0x80000000 ) &&
             ( ins->type_class == Unsigned[ins->type_class] ) ) {
-            cruft_in_high_dword = TRUE;
+            cruft_in_high_dword = true;
         }
         if( cruft_in_high_dword ) {
             new_ins = MakeBinary( OP_ZAP_NOT, ins->result, AllocS32Const( 0x0f ), ins->result, ins->type_class );
@@ -639,8 +639,8 @@ extern instruction *rALLOCA( instruction *ins ) {
     temp = AllocTemp( ins->type_class );
     class = WD;
     stack_align = STACK_ALIGNMENT;
-    check = TRUE;
-    CurrProc->targ.base_is_fp = TRUE;
+    check = true;
+    CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.int_value;
         value = _RoundUp( value, stack_align );
@@ -648,7 +648,7 @@ extern instruction *rALLOCA( instruction *ins ) {
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
         PrefixIns( ins, first );
         if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
-            check = FALSE;
+            check = false;
         }
     } else {
         real_amount = AllocTemp( ins->type_class );

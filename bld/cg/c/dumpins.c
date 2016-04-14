@@ -357,14 +357,14 @@ extern  void DoDumpIInfo( instruction *ins, bool fp ) {
 extern  void DumpFPInfo( instruction *ins ) {
 /*******************************************/
 
-    DoDumpIInfo( ins, TRUE );
+    DoDumpIInfo( ins, true );
 }
 
 
 extern  void DumpIInfo( instruction *ins ) {
 /*******************************************/
 
-    DoDumpIInfo( ins, FALSE );
+    DoDumpIInfo( ins, false );
 }
 
 

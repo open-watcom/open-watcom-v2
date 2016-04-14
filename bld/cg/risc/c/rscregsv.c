@@ -120,7 +120,7 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
 #else
     reg = reg;
     conf = conf;
-    return( TRUE );
+    return( true );
 #endif
 }
 

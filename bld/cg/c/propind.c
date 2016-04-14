@@ -83,28 +83,28 @@ static  bool    Adjusted( name **pop, name *res, signed_32 c ) {
         if( SameThing( op->i.index, res ) ) {
             *pop = ScaleIndex( op->i.index, op->i.base, op->i.constant + c,
                 op->n.name_class, op->n.size, op->i.scale, op->i.index_flags );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
 /************************************************************************
     If any operands or results of ins refer to res in an index, adjust the
-    constant by the given amount and return TRUE.
+    constant by the given amount and return true.
 */
     byte        i;
 
-    if( NumRefs( ins, res ) != 1 ) return( FALSE );
+    if( NumRefs( ins, res ) != 1 ) return( false );
     for( i = 0; i < ins->num_operands; i++ ) {
-        if( Adjusted( &ins->operands[i], res, c ) ) return( TRUE );
+        if( Adjusted( &ins->operands[i], res, c ) ) return( true );
     }
     if( ins->result != NULL ) {
-        if( Adjusted( &ins->result, res, c ) ) return( TRUE );
+        if( Adjusted( &ins->result, res, c ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -154,15 +154,15 @@ static  bool    DoProp( block *blk ) {
                     if( AdjustIndex( next, ins->result, op->c.int_value ) ) {
                         RemoveIns( ins );
                         SuffixIns( next, ins );
-                        PeepOptBlock( blk, FALSE );
-                        return( TRUE );
+                        PeepOptBlock( blk, false );
+                        return( true );
                     }
                     if( NumRefs( next, ins->result ) != 0 ) break;
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void            PropIndexes( block *blk ) {

@@ -51,9 +51,9 @@ static  bool    Jmp_to_lbl( ins_entry *instr )
 /********************************************/
 {
   optbegin
-    if( _Class( instr ) != OC_JMP ) optreturn( FALSE );
-    if( _Label( instr ) != Handle ) optreturn( FALSE );
-    optreturn( TRUE );
+    if( _Class( instr ) != OC_JMP ) optreturn( false );
+    if( _Label( instr ) != Handle ) optreturn( false );
+    optreturn( true );
 }
 
 
@@ -74,7 +74,7 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
     if( _TstStatus( lbl, UNREACHABLE ) ) {
         /* can't do anything with it */
     } else if( lbl->lbl.address == ADDR_UNKNOWN ) {
-        if( _TstStatus( lbl, SHORTREACH ) ) return( TRUE );
+        if( _TstStatus( lbl, SHORTREACH ) ) return( true );
         obj_len = OptInsSize( OC_JMP, OC_DEST_SHORT );
         lbl_ins = Handle->ins;
         for( instr = NextIns( FirstIns ); instr != NULL; instr = NextIns( instr ) ) {
@@ -85,14 +85,14 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
             } else if( _TransferClass( _Class( instr ) ) ) {
                 add = instr;
             }
-            if( instr == lbl_ins ) return( TRUE );
+            if( instr == lbl_ins ) return( true );
         }
     } else if( (AskLocation() - lbl->lbl.address) <= MAX_SHORT_BWD ) {
-        return( TRUE );
+        return( true );
     }
     if( add_ptr != NULL ) *add_ptr = add;
     if( jmp_ptr != NULL ) *jmp_ptr = jmp;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -122,19 +122,19 @@ static  bool    InRange( void )
     label_handle    jmp_lbl;
 
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) ) optreturn( FALSE );
+    if( _IsModel( NO_OPTIMIZATION ) ) optreturn( false );
     jmp_lbl = Handle->redirect;
     /* we don't have a redirection for this label*/
-    if( jmp_lbl == NULL ) optreturn( FALSE );
+    if( jmp_lbl == NULL ) optreturn( false );
     /* forward jump: must still be in range*/
-    if( jmp_lbl->lbl.address == ADDR_UNKNOWN ) optreturn( TRUE );
+    if( jmp_lbl->lbl.address == ADDR_UNKNOWN ) optreturn( true );
     /* can't redirect the redirection jump to itself*/
-    if( jmp_lbl->lbl.address == AskLocation() ) optreturn( FALSE );
+    if( jmp_lbl->lbl.address == AskLocation() ) optreturn( false );
     /* can still reach old redirection with short backward jump*/
-    if( (AskLocation()-jmp_lbl->lbl.address)<=MAX_SHORT_BWD ) optreturn( TRUE );
+    if( (AskLocation()-jmp_lbl->lbl.address)<=MAX_SHORT_BWD ) optreturn( true );
     /* can't get at old redirection any more*/
     HndlRedirect( NULL );
-    optreturn( FALSE );
+    optreturn( false );
 }
 
 
@@ -176,9 +176,9 @@ static  void    SetShort( void )
     bool        floating;
 
   optbegin
-    floating = FALSE;
+    floating = false;
     if( _Attr( FirstIns ) & ATTR_FLOAT ) {
-        floating = TRUE;
+        floating = true;
     }
     size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
     if( _Class( FirstIns ) == OC_JMP ) {

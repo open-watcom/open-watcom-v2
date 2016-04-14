@@ -33,7 +33,7 @@
 typedef enum {
     RECEIVECOMAREA,
     FEMODULENAME,
-    FETRUE,
+    FEtrue,
     FEATTR,
     FESEGID,
     FENAME,

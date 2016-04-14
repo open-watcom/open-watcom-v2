@@ -288,7 +288,7 @@ extern instruction      *rOP1REG( instruction *ins )
     PrefixIns( ins, new_ins );
     MarkPossible( ins, name1, Op1Possible( ins ) );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     return( new_ins );
 }
 
@@ -307,7 +307,7 @@ extern instruction      *rOP2REG( instruction *ins )
     PrefixIns( ins, new_ins );
     MarkPossible( ins, name1, Op1Possible( ins ) );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     return( new_ins );
 }
 
@@ -326,7 +326,7 @@ extern instruction      *rMOVRESREG( instruction *ins )
     SuffixIns( ins, new_ins );
     MarkPossible( ins, name1, ResPossible( ins ) );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     return( ins );
 }
 
@@ -360,7 +360,7 @@ extern instruction      *rRESREG( instruction *ins )
     SuffixIns( ins, new_ins );
     MarkPossible( ins, name1, ResultPossible( ins ) );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     new_ins = ins;
     return( new_ins );
 }
@@ -393,15 +393,15 @@ static  bool    CanUseOp1( instruction *ins, name *op1 )
 {
     name        *name2;
 
-    if( op1->n.class != N_REGISTER ) return( FALSE );
-    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) ) return( FALSE );
+    if( op1->n.class != N_REGISTER ) return( false );
+    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) ) return( false );
     if( ins->result->n.class == N_INDEXED ) {
         name2 = ins->result->i.index;
         if( name2->n.class == N_REGISTER ) {
-            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) return( FALSE );
+            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 /* 370 */
@@ -432,7 +432,7 @@ extern instruction      *rUSEREGISTER( instruction *ins )
         SuffixIns( ins, ins2 );
         MarkPossible( ins, name1, ResultPossible( ins ) );
         ins->u.gen_table = NULL;
-        GiveRegister( NameConflict( ins, name1 ), TRUE );
+        GiveRegister( NameConflict( ins, name1 ), true );
     }
     return( new_ins );
 }
@@ -780,7 +780,7 @@ extern instruction      *rLOADOP2( instruction *ins )
     PrefixIns( ins, new_ins );
     MarkPossible( ins, name1, Op2Possible( ins ) );
     ins->u.gen_table = NULL;
-    GiveRegister( NameConflict( ins, name1 ), TRUE );
+    GiveRegister( NameConflict( ins, name1 ), true );
     return( new_ins );
 }
 
@@ -841,7 +841,7 @@ extern instruction      *rMAKESUB( instruction *ins )
 }
 
 
-extern instruction      *rCMPTRUE( instruction *ins )
+extern instruction      *rCMPtrue( instruction *ins )
 /***************************************************/
 {
     DoNothing( ins );
@@ -850,7 +850,7 @@ extern instruction      *rCMPTRUE( instruction *ins )
 }
 
 
-extern instruction      *rCMPFALSE( instruction *ins )
+extern instruction      *rCMPfalse( instruction *ins )
 /****************************************************/
 {
     DoNothing( ins );

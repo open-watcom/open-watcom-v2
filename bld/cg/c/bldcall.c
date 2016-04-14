@@ -97,7 +97,7 @@ extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
         PGBlip( FEName( sym ) );
     }
     NewProc( FELexLevel( sym ) );
-    EnLink( AskForSymLabel( sym, CG_FE ), FALSE );
+    EnLink( AskForSymLabel( sym, CG_FE ), false );
     CurrProc->label = CurrBlock->label;
     CurrBlock->class |= BIG_LABEL;
     class = InitCallState( tipe );
@@ -155,7 +155,7 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
         if( cookie != NULL ) TellObjVirtFuncRef( cookie );
 #elif _TARGET & _TARG_PPC
-        CurrProc->targ.toc_clobbered = TRUE;
+        CurrProc->targ.toc_clobbered = true;
 #endif
     }
     new->ins->type_class = class;
@@ -318,7 +318,7 @@ extern  name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg )
     // them specially to stop the optimizer from eliminating the writes (don't
     // create temps normally used with simple types).
     if( _RoutineIsInterrupt( CurrProc->state.attr ) && HW_CEqual( reg, HW_EMPTY ) ) {
-        no_temp = TRUE;
+        no_temp = true;
         temp->v.usage |= USE_ADDRESS;
     }
 #endif
@@ -429,7 +429,7 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
 #if _TARGET & _TARG_RISC
             // in case the inline assembly code references a local variable
             if( FindAuxInfoSym( call_name->v.symbol, CALL_BYTES ) != NULL ) {
-                CurrProc->targ.base_is_fp = TRUE;
+                CurrProc->targ.base_is_fp = true;
             }
 #endif
         }
@@ -535,7 +535,7 @@ extern  void    ReserveStack( call_state *state, instruction *prev, type_length 
     name        *reg;
     instruction *ins;
 
-    CurrProc->targ.never_sp_frame = TRUE;
+    CurrProc->targ.never_sp_frame = true;
     reg = AllocRegName( HW_EAX );
     switch( len ) {
     case 8:
@@ -702,7 +702,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     if( AddrList != NULL ) {
         _Zoiks( ZOIKS_003 );
     }
-    Generate( TRUE );
+    Generate( true );
     TargetModel = SaveTargetModel;
 }
 
@@ -810,7 +810,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
     type_class_def      reg_tipe;
 
 
-    push_no_pop = FALSE;
+    push_no_pop = false;
     parm = call->parms;
     state = call->state;
     call_ins = call->ins;
@@ -827,7 +827,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
                     FEMessage( MSG_ERROR, "More parameters than registers in pragma" );
                 } else {
                     parm->offset = ParmMem( parm->name->tipe->length, ParmAlignment( parm->name->tipe ), state );
-                    push_no_pop = TRUE;
+                    push_no_pop = true;
                 }
             } else {
                 parm_tipe = TypeClass( parm->name->tipe );
@@ -848,7 +848,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
                                    state );
             if( HW_CEqual( parm->regs, HW_EMPTY ) ) {
                 parm->offset = ParmMem( parm->name->tipe->length, parm->alignment, state );
-                push_no_pop = TRUE;
+                push_no_pop = true;
             }
         }
         ++parms;

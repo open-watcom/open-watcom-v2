@@ -65,12 +65,12 @@ extern  bool    IsTrickyPointerConv( instruction *ins )
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
         if( ins->base_type_class == U2 && TypeClassSize[ ins->type_class ] > WORD_SIZE )
-            return( TRUE );
+            return( true );
     }
 #else
     ins = ins;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 static  bool    RelocConst( name *op ) {
@@ -80,10 +80,10 @@ static  bool    RelocConst( name *op ) {
 
     bool        reloc_const;
 
-    reloc_const = FALSE;
+    reloc_const = false;
     if( op->n.class == N_CONSTANT ) {
         if( op->c.const_type != CONS_ABSOLUTE ) {
-            reloc_const = TRUE;
+            reloc_const = true;
         }
     }
     return( reloc_const );
@@ -93,12 +93,12 @@ static  bool    RelocConst( name *op ) {
 static bool ActiveCompare( instruction *ins ) {
 /*********************************************/
 
-    if( _FalseIndex( ins ) == _TrueIndex( ins ) ) return( FALSE );
+    if( _FalseIndex( ins ) == _TrueIndex( ins ) ) return( false );
     /* if unexpanded OR expanded and not just placeholder conditional */
-    if( ins->table == NULL ) return( TRUE );
-    if( ins->u.gen_table == NULL ) return( FALSE );
-    if( DoesSomething( ins ) ) return( TRUE );
-    return( FALSE );
+    if( ins->table == NULL ) return( true );
+    if( ins->u.gen_table == NULL ) return( false );
+    if( DoesSomething( ins ) ) return( true );
+    return( false );
 }
 
 
@@ -140,16 +140,16 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     case OP_CMP_EQUAL:
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
-        truth = FALSE;
+        truth = false;
         break;
     case OP_BIT_TEST_TRUE:
     case OP_CMP_GREATER:
     case OP_CMP_GREATER_EQUAL:
     case OP_CMP_NOT_EQUAL:
-        truth = TRUE;
+        truth = true;
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     if( !ActiveCompare( ins ) ) return( NULL );
     if( c != 1 ) truth = !truth;
@@ -169,16 +169,18 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
     name        *result;
 
     result = TGetName( fold );
-    if( result == NULL ) return( NULL );
-    if( result->n.class != N_CONSTANT ) return( NULL );
-    if( result->c.const_type != CONS_ABSOLUTE ) return( NULL );
-    if( result->c.int_value == 0 ) is_true = !is_true;
+    if( result == NULL ) 
+        return( NULL );
+    if( result->n.class != N_CONSTANT ) 
+        return( NULL );
+    if( result->c.const_type != CONS_ABSOLUTE ) 
+        return( NULL );
+    if( result->c.int_value == 0 ) 
+        is_true = !is_true;
     if( is_true ) {
-        _SetBlockIndex( ins, _TrueIndex(ins),
-                             _TrueIndex(ins) );
+        _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );
     } else {
-        _SetBlockIndex( ins, _FalseIndex(ins),
-                             _FalseIndex(ins) );
+        _SetBlockIndex( ins, _FalseIndex(ins), _FalseIndex(ins) );
     }
     return( KillCompare( ins, result ) );
 }
@@ -272,7 +274,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         if( ActiveCompare( ins ) ) {
             fold = FoldCompare( (cg_op)ins->head.opcode, left, rite, tipe );
             if( fold != NULL ) {
-                return( StraightLine( ins, fold, TRUE ) );
+                return( StraightLine( ins, fold, true ) );
             }
         }
         break;
@@ -280,7 +282,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         if( ActiveCompare( ins ) ) {
             fold = FoldAnd( left, rite, tipe );
             if( fold != NULL ) {
-                return( StraightLine( ins, fold, TRUE ) );
+                return( StraightLine( ins, fold, true ) );
             }
         }
         break;
@@ -288,7 +290,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         if( ActiveCompare( ins ) ) {
             fold = FoldAnd( left, rite, tipe );
             if( fold != NULL ) {
-                return( StraightLine( ins, fold, FALSE ) );
+                return( StraightLine( ins, fold, false ) );
             }
         }
         break;
@@ -369,13 +371,13 @@ extern  instruction    *FoldIns( instruction *ins ) {
     bool        have_const;
 
     if( ins->ins_flags & INS_CC_USED ) return( NULL );
-    have_const = FALSE;
+    have_const = false;
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i]->n.class == N_CONSTANT ) {
             if( ins->operands[i]->c.const_type == CONS_ABSOLUTE ) {
                 return( FoldAbsolute( ins ) );
             }
-            have_const = TRUE;
+            have_const = true;
         }
     }
     if( have_const ) {
@@ -409,13 +411,13 @@ extern  bool    ConstFold( block *root ) {
     bool        change;
     block       *blk;
 
-    change = FALSE;
+    change = false;
     blk = root;
     for( ;; ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( FoldIns( ins ) != NULL ) {
-                change = TRUE;
+                change = true;
             }
         }
         blk = blk->u.partition;

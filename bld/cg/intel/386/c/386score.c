@@ -48,13 +48,13 @@ extern  void    ScInitRegs( score *sc )
     if( _IsntTargetModel( FLOATING_DS ) ) {
         if( _IsntTargetModel( FLOATING_ES ) ) {
             xs = AllocRegName(HW_ES)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == FALSE ) {
+            if( RegsEqual( sc, xs, ds ) == false ) {
                 RegInsert( sc, xs, ds );
             }
         }
         if( _IsntTargetModel( FLOATING_SS ) ) {
             xs = AllocRegName(HW_SS)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == FALSE ) {
+            if( RegsEqual( sc, xs, ds ) == false ) {
                 RegInsert( sc, xs, ds );
             }
         }
@@ -92,15 +92,15 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 {
     if( HW_Ovlap( reg1, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg1, HW_DS ) && !HW_CEqual( reg1, HW_SS ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( HW_Ovlap( reg2, CurrProc->state.unalterable ) ) {
         if( !HW_Equal( reg2, HW_DS ) && !HW_Equal( reg2, HW_SS ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -111,7 +111,7 @@ extern  bool    ScConvert( instruction *ins )
 */
 {
     ins = ins;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -121,12 +121,12 @@ extern  bool    CanReplace( instruction *ins )
 */
 {
     ins = ins;
-    return( TRUE );
+    return( true );
 }
 
 extern  bool    ScRealRegister( name *reg )
 /******************************************
-    Return "TRUE" if "reg" is a real machine register and not some
+    Return "true" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.
 */
 {

@@ -212,7 +212,7 @@ static  void    ScoreRoutine( void )
             blk->class &= ~BLOCK_VISITED;
         }
         MakeLiveInfo();
-//        change = FALSE;
+//        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( !( blk->class & BLOCK_VISITED ) ) {
                 blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );

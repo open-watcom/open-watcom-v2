@@ -129,7 +129,7 @@ static bead_def *CollectSmall( bead_def *bead, page_entry *head ) {
             break; /* collect big */
         }
         FloatLtorg( &lstack, head );
-        if( lstack.has_page == FALSE ){
+        if( lstack.has_page == false ){
          /* LTORG got dumped better start over*/
             bead = startproc;
             FreePages( head );
@@ -150,7 +150,7 @@ static void InitLtorg( ltorg_entry *lstack, page_entry *page ){
      lstack->prev_code = 0;
      lstack->code = page->code;
      CopyPool( &lstack->pool, &page->pool );
-     lstack->has_page = TRUE;
+     lstack->has_page = true;
      page->pool.head = NULL; /* won't get dumped by code pages */
 
  }
@@ -193,7 +193,7 @@ static void DumpFloatLtorg( ltorg_entry *lstack  ){
 */
     DoLits( &lstack->pool, lstack->code.end );
     lstack->prev_code = 0;
-    lstack->has_page = FALSE;
+    lstack->has_page = false;
 }
 
 static bead_def *CollectPage( page_entry *page ) {
@@ -267,7 +267,7 @@ static bool ChkRefLit( page_entry *page, any_bead_hwins *bead ) {
     int      size;
     int      lit_size;
 
-    over = FALSE;
+    over = false;
     lit = GetLit( (any_bead_hwins *) bead );
     if( lit != NULL ) {
         lit->common.next = NULL;
@@ -280,7 +280,7 @@ static bool ChkRefLit( page_entry *page, any_bead_hwins *bead ) {
             lit_size =  HWCalcAddr( litdef, 0 );
             size = page->size + lit_size;
             if( size > PAGE_MAX ) {
-                over = TRUE;
+                over = true;
             }else {
                 page->size = size;
                 lit->def = litdef;
@@ -303,7 +303,7 @@ static bool ChkBrRef( page_entry *page, bead_hwins_rx *bead ) {
     sym_list *lsyms;
     sym_list **link;
 
-    over = FALSE;
+    over = false;
     ref = bead->s2.ref;
     sym = ref->sym;
     link = &page->refs.lsyms;
@@ -316,14 +316,14 @@ static bool ChkBrRef( page_entry *page, bead_hwins_rx *bead ) {
     if( lsyms == NULL ) {
         size = page->size + PAGE_REF_COST;
         if( size > PAGE_MAX ) {
-            over = TRUE;
+            over = true;
         }else {
             page->size = size;
             page->refs.frefs++;
             lsyms = CGAlloc( sizeof( *lsyms ) );
             lsyms->sym = sym;
             lsyms->next = NULL;
-            lsyms->defined = FALSE;
+            lsyms->defined = false;
             lsyms->frefs = 1;
             lsyms->brefs = 0;
             *link = lsyms;
@@ -367,7 +367,7 @@ static void ChkLabel( page_entry *page, bead_label *bead ) {
     }
     lsyms->brefs = CalcBackRefs( sym );
     page->refs.brefs += lsyms->brefs;
-    lsyms->defined = TRUE;
+    lsyms->defined = true;
  }
 
 static void AddITab( page_entry *page, bead_bindex *bead ) {
@@ -677,7 +677,7 @@ static ref_lit *MakeLitAddr( lit_pool *pool, hw_sym *sym ) {
     ref_lit       *lit;
     bead_def      *litdef;
 
-    lit = HWLitAddr( sym, 0, FALSE );
+    lit = HWLitAddr( sym, 0, false );
     lit->common.next = NULL;
     litdef = FindLit( pool->head, lit->val );
     if( litdef != NULL ) {
@@ -754,13 +754,13 @@ static bool UpdateDisps( bead_def *table, hw_sym *curr_base, page_entry *head ){
     bead_disp *disp;
     bead_disp *bead;
 
-    expand = FALSE;
+    expand = false;
     disp = (bead_disp *)table->next;
     while( disp != NULL && disp->common.class == BEAD_DISP ) {
         base = GetBaseFor( disp->ref, head );
         disp->base = base;
         if( curr_base != base ) {
-            expand = TRUE;
+            expand = true;
         }
         disp = (bead_disp *)disp->common.next;
     }

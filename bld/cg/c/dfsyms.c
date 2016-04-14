@@ -311,7 +311,7 @@ extern  void    DFInitDbgInfo( void )
 /* called after ObjInit */
 {
     CurrFNo = 0;
-    CcuDef = FALSE;
+    CcuDef = false;
     Client = NULL;
 }
 #define MAX_LANG 4
@@ -458,11 +458,11 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             // only one code segment or not, hence these attributes are always
             // disabled. The low/high pc attribs should probably be handled by
             // the linker.
-            cu.flags = FALSE;
+            cu.flags = false;
             cu.segment_size = 0;
         } else {
             bck = NULL;
-            cu.flags = FALSE;
+            cu.flags = false;
             Pc_Low = NULL;
             Pc_High = NULL;
             cu.segment_size = 2;
@@ -472,7 +472,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         OutLabel( bck->lbl );
         Pc_Low = bck;
         Pc_High = MakeLabel();
-        cu.flags = TRUE;
+        cu.flags = true;
         cu.segment_size = 0;
 #endif
         SetOP( old );
@@ -501,7 +501,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             BEFreeBack( bck );
         }
     } else {
-        CcuDef = TRUE;
+        CcuDef = true;
     }
 }
 
@@ -622,14 +622,14 @@ extern  void    DFObjLineInitDbgInfo( void ) {
         cu.inc_list_len = 0;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
-            cu.flags = TRUE;
+            cu.flags = true;
             cu.segment_size = 0;
         }else{
-            cu.flags = FALSE;
+            cu.flags = false;
             cu.segment_size = 2;
         }
 #else
-        cu.flags = TRUE;
+        cu.flags = true;
         cu.segment_size = 0;
 #endif
         tipe_addr = TypeAddress( TY_NEAR_POINTER );

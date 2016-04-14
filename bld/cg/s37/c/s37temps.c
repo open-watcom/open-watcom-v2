@@ -156,13 +156,13 @@ extern  bool    AdjustFarLocals( type_length size ) {
     Set the location of NoseIn now that temp locations are known(see OnTheEdge).
 */
 
-    NoseInAdded = TRUE;
-    if( NoseIn == NULL ) return( FALSE );
+    NoseInAdded = true;
+    if( NoseIn == NULL ) return( false );
     NoseIn->t.location = size;
     size += NoseIn->n.size;
     CurrProc->targ.far_local_size += NoseIn->n.size;
     AdjustConsts( size );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -404,7 +404,7 @@ extern  void    TempStrategy() {
     type_length temp_size;
 
     temp_size = 0;
-    NoseInAdded = FALSE;
+    NoseInAdded = false;
     NoseIn = NULL;
     if( CurrProc->state.attr & ROUTINE_OS ) {
         CurrProc->parms.size = 0;

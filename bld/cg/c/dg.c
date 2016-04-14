@@ -985,7 +985,7 @@ extern  void    DBAddNestedType( struct_list *st, cchar_ptr nm, dbg_type base )
     field->entry.field_type = FIELD_NESTED;
     field->base = base;
     AddField( st, field );
-    st->is_cnested = TRUE;
+    st->is_cnested = true;
 }
 
 

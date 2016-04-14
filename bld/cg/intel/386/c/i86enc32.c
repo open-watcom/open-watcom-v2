@@ -142,13 +142,13 @@ extern  void    DoRepOp( instruction *ins )
     bool        first;
 
     size = ins->result->n.size;
-    first = TRUE;
+    first = true;
     if( ins->head.opcode == OP_MOV && !UseRepForm( size ) ) {
         for( ; size >= 4; size -= 4 ) {
             if( first ) {
                 LayOpbyte( M_MOVSW );
-                OpndSizeIf( FALSE );
-                first = FALSE;
+                OpndSizeIf( false );
+                first = false;
             } else {
                 if( _IsntTargetModel( USE_32 ) ) AddByte( M_OPND_SIZE );
                 AddByte( M_MOVSW );
@@ -259,7 +259,7 @@ static  byte    DoDisp( type_length val, hw_reg_set base_reg, name *op )
         return( Displacement( val, base_reg ) );
     } else if( op->n.class == N_MEMORY ) {
         ILen += 4;
-        DoSymRef( op, val, FALSE );
+        DoSymRef( op, val, false );
         return( D32 );
     } else if( op->n.class == N_CONSTANT ) {
         DoRelocConst( op, U4 );
@@ -294,7 +294,7 @@ static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
         if( HW_CEqual( index, HW_EMPTY ) ) {
             // [d32]
             if( scale != 0 || val != 0 ) _Zoiks( ZOIKS_079 );
-            Inst[RMR] |= DoMDisp( mem_loc, TRUE );
+            Inst[RMR] |= DoMDisp( mem_loc, true );
 
         } else {
             if( scale != 0 ) {
@@ -303,7 +303,7 @@ static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
                 Inst[RMR] |= D0;
                 if( mem_loc != NULL ) {
                     ILen += 4;
-                    DoSymRef( mem_loc, val, FALSE );
+                    DoSymRef( mem_loc, val, false );
                 } else {
                     Add32Displacement( val );
                 }
@@ -404,13 +404,13 @@ extern  void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg*right->c.int_value, NULL, TRUE );
+                EA( HW_EMPTY, left->r.reg, 0, neg*right->c.int_value, NULL, true );
             } else {
-                EA( HW_EMPTY, left->r.reg, 0, 0, right, TRUE );
+                EA( HW_EMPTY, left->r.reg, 0, 0, right, true );
             }
         } else if( right->n.class == N_REGISTER ) {
             disp = GetNextAddConstant( ins );
-            EA( left->r.reg, right->r.reg, 0, disp, NULL, TRUE );
+            EA( left->r.reg, right->r.reg, 0, disp, NULL, true );
         }
         break;
     case OP_MUL:
@@ -420,7 +420,7 @@ extern  void    LayLeaRegOp( instruction *ins )
         case 9: shift = 3;  break;
         }
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        EA( left->r.reg, left->r.reg, shift, disp, NULL, TRUE );
+        EA( left->r.reg, left->r.reg, shift, disp, NULL, true );
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
@@ -429,12 +429,12 @@ extern  void    LayLeaRegOp( instruction *ins )
             if( _CPULevel( CPU_586 ) ) {
                 // want to avoid the extra big-fat 0 on 586's
                 // but two base registers is slower on a 486
-                EA( left->r.reg, left->r.reg, 0, disp, NULL, TRUE );
+                EA( left->r.reg, left->r.reg, 0, disp, NULL, true );
                 break;
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, right->c.int_value, disp, NULL, TRUE );
+            EA( HW_EMPTY, left->r.reg, right->c.int_value, disp, NULL, true );
         }
         break;
     }
@@ -458,7 +458,7 @@ extern  void    LayModRM( name *op )
     switch( op->n.class ) {
     case N_MEMORY:
         CheckSize();
-        EA( HW_EMPTY, HW_EMPTY, 0, 0, op, FALSE );
+        EA( HW_EMPTY, HW_EMPTY, 0, 0, op, false );
         break;
     case N_TEMP:
         CheckSize();
@@ -467,9 +467,9 @@ extern  void    LayModRM( name *op )
             _Zoiks( ZOIKS_030 );
         }
         if( BaseIsSP( base ) ) {
-            EA( HW_SP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, FALSE );
+            EA( HW_SP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
         } else {
-            EA( HW_BP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, FALSE );
+            EA( HW_BP, HW_EMPTY, 0, TmpLoc( base, op ), NULL, false );
         }
         break;
     case N_INDEXED:
@@ -524,7 +524,7 @@ static  void    LayIdxModRM( name *op )
         HW_CAsgn( base_reg, HW_SP );
         HW_CAsgn( idx_reg, HW_EMPTY );
     }
-    EA( base_reg, idx_reg, op->i.scale, op->i.constant, mem_loc, FALSE );
+    EA( base_reg, idx_reg, op->i.scale, op->i.constant, mem_loc, false );
 }
 
 
@@ -545,7 +545,7 @@ extern  void    DoMAddr( name *op )
     if( op->n.class == N_CONSTANT ) {
         _Zoiks( ZOIKS_035 );
     } else {        /* assume global name*/
-        DoSymRef( op, op->v.offset, FALSE );
+        DoSymRef( op, op->v.offset, false );
     }
 }
 
@@ -555,13 +555,13 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
 {
     if( op->c.const_type == CONS_OFFSET ) {
         ILen += 4;
-        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, FALSE );
+        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
             DoSegRef( op->c.int_value );
         } else {
-            DoSymRef( op->c.value, 0, TRUE );
+            DoSymRef( op->c.value, 0, true );
         }
         if( kind == U4 || kind == I4 ) {        /* as in PUSH seg _x */
             AddByte( 0 );
@@ -578,7 +578,7 @@ extern  void    GenUnkPush( pointer value )
 {
     _Code;
     LayOpbyte( M_PUSHI );
-    OpndSizeIf( FALSE );
+    OpndSizeIf( false );
     ILen += 4;
     DoAbsPatch( value, 4 );
     _Emit;
@@ -590,7 +590,7 @@ extern  void    GenPushC( signed_32 value )
 {
     _Code;
     LayOpbyte( M_PUSHI );
-    OpndSizeIf( FALSE );
+    OpndSizeIf( false );
     AddSData( value, I4 );
     _Emit;
 }
@@ -617,7 +617,7 @@ extern  void    GenLeaSP( int offset )
     LayOpword( M_LEA );
     OpndSize( HW_SP );
     LayReg( HW_SP );
-    EA( HW_EMPTY, HW_BP, 0, offset, NULL, FALSE );
+    EA( HW_EMPTY, HW_BP, 0, offset, NULL, false );
     _Emit;
 }
 
@@ -631,7 +631,7 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
     // CodeLabel( label, DepthAlign( PROC_ALIGN ) );
     code_32 = AskForNewLabel();
     TellOptimizerByPassed();
-    SetUpObj( FALSE );
+    SetUpObj( false );
     OutLabel( label );
     OutDataByte( 0xb9 );                /* mov cx,# */
     OutDataShort( parms_size );
@@ -647,9 +647,9 @@ extern  pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remov
         OutDataShort( 0 );              // padding
     }
     // emit "reloc for offset of code_32 label"
-    SetUpObj( TRUE );
+    SetUpObj( true );
     TellKeepLabel( code_32 );
-    OutReloc( AskCodeSeg(), F_OFFSET, FALSE );
+    OutReloc( AskCodeSeg(), F_OFFSET, false );
     OutLblPatch( code_32, F_OFFSET, 0 );
     TellByPassOver();
     SetOP( old );
@@ -676,7 +676,7 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
 
     old = SetOP( data_seg );
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     *data = AskForNewLabel();
     OutLabel( *data );
     OutDataByte( *fe_name );                    //flag
@@ -687,7 +687,7 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
     if( stack == NULL ) {
         OutDataLong( 0 );                       //stack
     } else {
-        OutReloc( data_seg, F_OFFSET, FALSE );  //caller
+        OutReloc( data_seg, F_OFFSET, false );  //caller
         OutLblPatch( *stack, F_OFFSET, 0 );
     }
     OutDataLong( 0 );                           //esp
@@ -698,7 +698,7 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
     OutDataLong( 0 );                           //hi_cycle
     OutDataLong( 0 );                           //lo_start_time
     OutDataLong( 0 );                           //hi_start_time
-    OutReloc( AskCodeSeg(), F_OFFSET, FALSE );  //caller
+    OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
     OutLblPatch( CurrProc->label, F_OFFSET, 0 );
     OutDataLong( 0 );                           //call_ins
     OutDataLong( 0 );                           //callee
@@ -796,14 +796,14 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
 extern  void    GenP5ProfilingProlog( label_handle label )
 /********************************************************/
 {
-    doProfilingPrologEpilog( label, TRUE );
+    doProfilingPrologEpilog( label, true );
 }
 
 
 extern  void    GenP5ProfilingEpilog( label_handle label )
 /********************************************************/
 {
-    doProfilingPrologEpilog( label, FALSE );
+    doProfilingPrologEpilog( label, false );
 }
 
 
@@ -813,7 +813,7 @@ extern  void    GFstp10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x3ddb );
-    EA( HW_EMPTY, HW_BP, 0, -where, NULL, FALSE );
+    EA( HW_EMPTY, HW_BP, 0, -where, NULL, false );
     _Emit;
 }
 
@@ -824,7 +824,7 @@ extern  void    GFld10( type_length where )
     GCondFwait();
     CheckSize();
     LayOpword( 0x2ddb );
-    EA( HW_EMPTY, HW_BP, 0, -where, NULL, FALSE );
+    EA( HW_EMPTY, HW_BP, 0, -where, NULL, false );
     _Emit;
 }
 
@@ -857,7 +857,7 @@ extern  void    Pow2Div( instruction *ins )
     int         log2;
     bool        if_32;
 
-    if_32 = FALSE;
+    if_32 = false;
     log2 = GetLog2( ins->operands[1]->c.int_value );
     switch( ins->type_class ) {
     case I1:
@@ -872,7 +872,7 @@ extern  void    Pow2Div( instruction *ins )
         break;
     case I2:
     case U2:
-        if_32 = TRUE;
+        if_32 = true;
     case I4:
     case U4:
         LayOpword( 0xe2c1 );    /* shl  edx,n */
@@ -894,7 +894,7 @@ extern  void    By2Div( instruction *ins )
 {
     bool        if_32;
 
-    if_32 = FALSE;
+    if_32 = false;
     switch( ins->type_class ) {
     case I1:
     case U1:
@@ -904,7 +904,7 @@ extern  void    By2Div( instruction *ins )
         break;
     case I2:
     case U2:
-        if_32 = TRUE;
+        if_32 = true;
     case I4:
     case U4:
         LayOpword( 0xc22b );    /* sub  eax,edx */
@@ -947,7 +947,7 @@ void StartBlockProfiling( block *blk )
     TellKeepLabel( blk->label );
     old = SetOP( data_seg );
     TellOptimizerByPassed();
-    SetUpObj( TRUE );
+    SetUpObj( true );
     data = AskForNewLabel();
     TellKeepLabel( data );
     OutLabel( data );
@@ -957,9 +957,9 @@ void StartBlockProfiling( block *blk )
     OutDataByte( 0 );                           //...
     OutDataLong( 0 );                           //lo_count
     OutDataLong( 0 );                           //hi_count
-    OutReloc( AskCodeSeg(), F_OFFSET, FALSE );  //block
+    OutReloc( AskCodeSeg(), F_OFFSET, false );  //block
     OutLblPatch( blk->label, F_OFFSET, 0 );
-    OutReloc( AskCodeSeg(), F_OFFSET, FALSE );  //function
+    OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
     OutLblPatch( CurrProc->label, F_OFFSET, 0 );
     TellByPassOver();
     SetOP( old );

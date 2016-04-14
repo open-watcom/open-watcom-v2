@@ -95,7 +95,7 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
     instruction *prev;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = tail; blk != NULL; blk = blk->prev_block ) {
         if( just_the_loop && !( blk->class & IN_LOOP ) ) {
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
@@ -105,7 +105,7 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
                 prev = ins->head.prev;
                 if( ( ins->ins_flags & INS_VISITED ) == 0 ) {
-                    change = TRUE;
+                    change = true;
                     if( in_regalloc ) {
                         DoNothing( ins );
                     } else {
@@ -154,12 +154,12 @@ extern  bool            VolatileIns(instruction *ins)
     int         i;
 
     for( i = ins->num_operands; i-- > 0; ) {
-        if( IsVolatile( ins->operands[i] ) ) return( TRUE );
+        if( IsVolatile( ins->operands[i] ) ) return( true );
     }
     if( ins->result != NULL ) {
-        if( IsVolatile( ins->result ) ) return( TRUE );
+        if( IsVolatile( ins->result ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -170,11 +170,11 @@ extern  bool            SideEffect(instruction* ins)
     This is a utility routine for any module to use.
 */
 {
-    if( ins->head.opcode == OP_PUSH ) return( TRUE );
-    if( ins->head.opcode == OP_POP ) return( TRUE );
+    if( ins->head.opcode == OP_PUSH ) return( true );
+    if( ins->head.opcode == OP_POP ) return( true );
     if( ins->ins_flags & INS_CC_USED
-        && ins->head.opcode != OP_MOV ) return( TRUE );
-    if( FPSideEffect( ins ) ) return( TRUE );
+        && ins->head.opcode != OP_MOV ) return( true );
+    if( FPSideEffect( ins ) ) return( true );
     return( VolatileIns( ins ) );
 }
 
@@ -188,10 +188,10 @@ static  bool    MarkUseful( name *op )
     bool        change;
     name        *alias;
 
-    change = FALSE;
+    change = false;
     if( op->n.class == N_TEMP ) {
         if( ( op->t.temp_flags & VISITED ) == 0 ) {
-            change = TRUE;
+            change = true;
             alias = op;
             do {
                 alias->t.temp_flags |= VISITED;
@@ -221,7 +221,7 @@ static  bool    MarkOpsUseful( instruction *ins )
     int         i;
     bool        change;
 
-    change = FALSE;
+    change = false;
     ins->ins_flags |= INS_VISITED;
     for( i = ins->num_operands; i-- > 0; ) {
         change |= MarkUseful( ins->operands[i] );
@@ -234,7 +234,7 @@ static  bool    CheckUseful( instruction *ins )
 /**********************************************
     Mark an instruction INS_VISITED if it is useful. A useful
     instruction is one that causes a branch, defines memory, a register
-    or a VISITED operand. We return TRUE whenver an instruction gets
+    or a VISITED operand. We return true whenver an instruction gets
     marked INS_VISITED that wasn't before.
 */
 {
@@ -243,7 +243,7 @@ static  bool    CheckUseful( instruction *ins )
     bool        change;
 
     opcode = ins->head.opcode;
-    change = FALSE;
+    change = false;
     res = ins->result;
     if( !_OpIsJump( opcode )
      && opcode != OP_PUSH
@@ -316,7 +316,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
         }
     }
     do {
-        change = FALSE;
+        change = false;
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             if( !just_the_loop || ( blk->class & IN_LOOP ) ) {
                 for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
@@ -362,7 +362,7 @@ static  bool    RemoveUselessStuff( bool just_the_loop, bool in_regalloc )
 static bool DoInsDead( bool just_the_loop, bool in_regalloc )
 /***********************************************************/
 {
-    if( BlockByBlock && !BreakExists() ) return( FALSE );
+    if( BlockByBlock && !BreakExists() ) return( false );
     return( RemoveUselessStuff( just_the_loop, in_regalloc ) );
 }
 
@@ -372,7 +372,7 @@ extern  bool    InsDead( void )
     Remove any dead or useless instructions in the program we can find.
 */
 {
-    return( DoInsDead( FALSE, FALSE ) );
+    return( DoInsDead( false, false ) );
 }
 
 extern  bool    RegInsDead( void )
@@ -380,11 +380,11 @@ extern  bool    RegInsDead( void )
     Remove any dead or useless instructions in the program we can find.
 */
 {
-    return( DoInsDead( FALSE, TRUE ) );
+    return( DoInsDead( false, true ) );
 }
 
 extern  bool    LoopInsDead( void )
 /*********************************/
 {
-    return( DoInsDead( TRUE, FALSE ) );
+    return( DoInsDead( true, false ) );
 }

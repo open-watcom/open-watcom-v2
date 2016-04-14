@@ -173,26 +173,26 @@ static  bool    ScanInstructions( void )
     name        *addr;
     bool        sp_constant;
 
-    CurrProc->contains_call = TRUE;
+    CurrProc->contains_call = true;
     if( BlockByBlock )
-        return( FALSE );
-    CurrProc->contains_call = FALSE;
-    sp_constant = TRUE;
+        return( false );
+    CurrProc->contains_call = false;
+    sp_constant = true;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->head.opcode == OP_CALL_INDIRECT ) {
-                    CurrProc->contains_call = TRUE;
+                    CurrProc->contains_call = true;
                 } else {
                     addr = ins->operands[CALL_OP_ADDR];
                     if( addr->n.class != N_MEMORY || addr->m.memory_type != CG_LBL ||
                       !AskIfRTLabel( addr->v.symbol ) ) {
-                        CurrProc->contains_call = TRUE;
+                        CurrProc->contains_call = true;
                     }
                 }
                 if( HW_COvlap( ins->zap->reg, HW_SP ) ) {
                     CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
-                    sp_constant = FALSE;
+                    sp_constant = false;
                 }
             }
         }
@@ -221,7 +221,7 @@ static  void    ChkFDOp( name *op, int depth ) {
         op->t.location = NO_LOCATION;
     }
     op->t.temp_flags |= USED_AS_FD;
-    CurrProc->targ.has_fd_temps = TRUE;
+    CurrProc->targ.has_fd_temps = true;
 }
 #endif
 
@@ -235,7 +235,7 @@ static  void    ScanForFDOps( void )
     int         i;
     int         depth;
 
-    CurrProc->contains_call = FALSE;
+    CurrProc->contains_call = false;
     if( BlockByBlock )
         return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -296,10 +296,10 @@ static  bool    ScanLabelCalls( void ) {
         if( !( blk->class & CALL_LABEL ) )
             continue;
         if( ScanForLabelReturn( blk->edge[0].destination.u.blk ) == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -330,8 +330,8 @@ extern  void    AddCacheRegs( void ) {
         ScanForFDOps();
     }
     if( CurrProc->targ.has_fd_temps ) {
-        CurrProc->targ.sp_frame = TRUE;
-        CurrProc->targ.sp_align = TRUE;
+        CurrProc->targ.sp_frame = true;
+        CurrProc->targ.sp_align = true;
     } else if( !DO_BP_CHAIN && _IsntTargetModel( WINDOWS ) &&
             !_RoutineIsInterrupt( CurrProc->state.attr ) ) {
         /*
@@ -339,7 +339,7 @@ extern  void    AddCacheRegs( void ) {
          * selector might not cover the data segment and so we cannot use
          * it as an index. Puke - BBB Feb 18, 1994
          */
-        CurrProc->targ.sp_frame = TRUE;
+        CurrProc->targ.sp_frame = true;
         HW_CTurnOff( CurrProc->state.unalterable, HW_BP );
     }
 #endif
@@ -365,24 +365,24 @@ static  bool    NeedBPProlog( void ) {
 /******************************/
 
     if( CurrProc->parms.size != 0 )
-        return( TRUE );
+        return( true );
     if( CurrProc->locals.size != 0 )
-        return( TRUE );
+        return( true );
     if( CurrProc->targ.push_local_size != 0 )
-        return( TRUE );
+        return( true );
     if( CurrProc->lex_level != 0 )
-        return( TRUE );
+        return( true );
     if( CurrProc->targ.sp_align )
-        return( TRUE );
+        return( true );
     if( BlockByBlock != 0 )
-        return( TRUE );
+        return( true );
     if( ( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) != 0 )
-        return( TRUE );
+        return( true );
     if( FAR_RET_ON_STACK ) {
         if( CHAIN_FRAME )
-            return( TRUE );
+            return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -575,7 +575,7 @@ extern  void    GenProlog( void )
     }
 
     if( _IsModel( NUMBERS ) ) {
-        CodeLineNum( HeadBlock->ins.hd.line_num, FALSE );
+        CodeLineNum( HeadBlock->ins.hd.line_num, false );
     }
 
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
@@ -799,11 +799,11 @@ extern void     AdjustStackDepthDirect( int adjust ) {
 extern  bool    BaseIsSP( name *op ) {
 /************************************/
 
-    if( !CurrProc->targ.sp_frame ) return( FALSE );
+    if( !CurrProc->targ.sp_frame ) return( false );
         if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
-            return( FALSE );
+            return( false );
         }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1027,7 +1027,7 @@ static  void    AllocStack( void ) {
     if( BlockByBlock ) {
         GenUnkSub( HW_SP, &CurrProc->targ.prolog_loc );
         if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
-            GenTouchStack( TRUE );
+            GenTouchStack( true );
         }
     } else if( size <= 2 * WORD_SIZE && OptForSize > 50 ) {
         while( size > 0 ) {
@@ -1041,7 +1041,7 @@ static  void    AllocStack( void ) {
     } else if( size != 0 ) {
         GenRegSub( HW_SP, size );
         if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
-            GenTouchStack( FALSE );
+            GenTouchStack( false );
         }
     }
     if( CurrProc->targ.sp_align ) {
@@ -1064,12 +1064,12 @@ static  void    DoEnter( int level ) {
     if( BlockByBlock ) {
         GenUnkEnter( &CurrProc->targ.prolog_loc, level );
         if( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) {
-            GenTouchStack( TRUE );
+            GenTouchStack( true );
         }
     } else {
         GenEnter( size, level );
         if( size != 0 && ( CurrProc->prolog_state & GENERATE_TOUCH_STACK ) ) {
-            GenTouchStack( FALSE );
+            GenTouchStack( false );
         }
     }
 }
@@ -1197,11 +1197,11 @@ static  void    DoEpilog( void ) {
 #endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
-        GenReturn( 0, FALSE, TRUE );
+        GenReturn( 0, false, true );
     } else if( CurrProc->state.attr & ROUTINE_REMOVES_PARMS ) {
-        GenReturn( CurrProc->parms.size, is_long, FALSE );
+        GenReturn( CurrProc->parms.size, is_long, false );
     } else {
-        GenReturn( 0, is_long, FALSE );
+        GenReturn( 0, is_long, false );
     }
 }
 

@@ -236,31 +236,31 @@ extern  void    MemChanged( score *p, bool statics_too )
             for(;;) {
                 curr = *owner;
                 if( curr == NULL ) break;
-                changed = FALSE;
+                changed = false;
                 switch( curr->info.class ) {
                 case N_CONSTANT:
-                    changed = TRUE;
+                    changed = true;
                     break;
                 case N_TEMP:
                     if( !( curr->info.symbol.v->usage & USE_ADDRESS ) ) {
-                        changed = TRUE;
+                        changed = true;
                     }
                     break;
                 case N_MEMORY:
                     if( !statics_too ) {
-                        changed = TRUE;
+                        changed = true;
                     }
                     break;
                 case N_INDEXED:
                     if( curr->info.base != NULL ) {
                         if( curr->info.base->n.class == N_MEMORY ) {
                             if( !statics_too ) {
-                                changed = TRUE;
+                                changed = true;
                             }
                         }
                     } else {
                         if( !statics_too ) {
-                            changed = TRUE;
+                            changed = true;
                         }
                     }
                     break;

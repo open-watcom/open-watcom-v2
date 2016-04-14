@@ -356,7 +356,7 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
     }
     index = index * table->width + gen - table->low_gen;
     if( table->flags & NEED_WAIT ) {
-        Used87 = TRUE;
+        Used87 = true;
 #if _TARGET & _TARG_IAPX86
         if( gen == G_FINIT || !_CPULevel( CPU_286 ) || _IsEmulation() ) {
             if( _IsEmulation() ) {
@@ -441,36 +441,36 @@ static  bool    NeedOpndSize( instruction *ins ) {
     case OP_MOD:
     case OP_DIV:
     case OP_RSHIFT:
-        return( TRUE );
+        return( true );
     default:
         break;
     }
     if( _OpIsCondition( ins->head.opcode ) )
-        return( TRUE );
+        return( true );
     if( ins->ins_flags & INS_CC_USED )
-        return( TRUE );
+        return( true );
     if( ins->result == NULL )
-        return( TRUE );
+        return( true );
     switch( ins->result->n.class ) {
     case N_TEMP:
         /* it's OK to store a DWORD into a WORD temp because there's always
            two bytes of slack on the stack */
         if( ins->result->t.alias != ins->result )
-            return( TRUE );
+            return( true );
         break;
     case N_REGISTER:
         /* check that it's OK to trash high word of register */
         next = ins->head.next;
         if( next == NULL )
-            return( TRUE );
+            return( true );
         result_reg = ins->result->r.reg;
         full_reg = FullReg( result_reg );
         HW_TurnOff( full_reg, result_reg );
         if( HW_Ovlap( full_reg, next->head.live.regs ) )
-            return( TRUE );
+            return( true );
         break;
     default:
-        return( TRUE );
+        return( true );
     }
     for( i = ins->num_operands; i-- > 0; ) {
         /* Could be smarter here and allow N_MEMORY,N_INDEXED if
@@ -481,11 +481,11 @@ static  bool    NeedOpndSize( instruction *ins ) {
         case N_CONSTANT:
             break;
         default:
-            return( TRUE );
+            return( true );
         }
     }
     ins->type_class = U4; /* get correct size of constants */
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -502,28 +502,28 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
     case OP_PUSH:
         if( ( gen == G_C1 || gen == G_M1 ) && ins->type_class == I4 ) {
             AddToTemp( M_OPND_SIZE );
-            return( TRUE );
+            return( true );
         }
         break;
     case OP_MOV:
         if( ins->type_class == U4 || ins->type_class == I4 ) {
             if( ( gen == G_MOVMC ) ) {
                 AddToTemp( M_OPND_SIZE );
-                return( TRUE );
+                return( true );
             }
         }
         break;
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 #else
     switch( ins->head.opcode ) {
     case OP_CONVERT: /* these ones handle themselves */
     case OP_CALL:
     case OP_CALL_INDIRECT:
     case OP_SELECT:
-        return( FALSE );
+        return( false );
         break;
     default:
         switch( gen ) {
@@ -535,7 +535,7 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
         case G_SEGR1:
         case G_POW2DIV:
         case G_DIV2:
-            return( FALSE );
+            return( false );
         default:
             break;
         }
@@ -543,7 +543,7 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
             if( ins->type_class == U2 || ins->type_class == I2 ) {
                 if( NeedOpndSize( ins ) ) {
                     AddToTemp( M_OPND_SIZE );
-                    return( TRUE );
+                    return( true );
                 }
             }
         } else {
@@ -551,10 +551,10 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
              || ins->type_class == I4
              || ins->type_class == FS ) {
                 AddToTemp( M_OPND_SIZE );
-                return( TRUE );
+                return( true );
             }
         }
-        return( FALSE );
+        return( false );
     }
 #endif
 }
@@ -583,30 +583,30 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     oc.oc_jcond.handle = lbl;
     InputOC( &oc );
     i = FPRegTrans( ins->operands[0]->r.reg );
-    reverse = FALSE;
-    pop = FALSE;
-    dest = FALSE;
+    reverse = false;
+    pop = false;
+    dest = false;
     switch( ins->u.gen_table->generate ) {
     case G_RRFBIN:
-        reverse = TRUE;
+        reverse = true;
         break;
     case G_RNFBIN:
         break;
     case G_RRFBINP:
-        reverse = TRUE;
-        pop = TRUE;
-        dest = TRUE;
+        reverse = true;
+        pop = true;
+        dest = true;
         break;
     case G_RNFBINP:
-        pop = TRUE;
-        dest = TRUE;
+        pop = true;
+        dest = true;
         break;
     case G_RRFBIND:
-        reverse = TRUE;
-        dest = TRUE;
+        reverse = true;
+        dest = true;
         break;
     case G_RNFBIND:
-        dest = TRUE;
+        dest = true;
         break;
     }
     ins_key = ( pop & 1 ) | ( ( reverse & 1 ) << 1 ) | ( ( dest & 1 ) << 2 );
@@ -780,7 +780,7 @@ static  void    DoP5Divide( instruction *ins ) {
     test for the Pentium FDIV bug and call a
     runtime routine to correct it.
 */
-    bool        used_ds = FALSE;
+    bool        used_ds = false;
 
     _Code;
     LayOpbyte( 0x9c );  /* pushf */
@@ -796,7 +796,7 @@ static  void    DoP5Divide( instruction *ins ) {
             _Emit;
             GenLoadDS();
             _Code;
-            used_ds = TRUE;
+            used_ds = true;
         } else {
             AddToTemp( 0x36 );
         }
@@ -1089,11 +1089,11 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_MOVAM:
             LayW( ins->type_class );
-            DoMDisp( left, FALSE );
+            DoMDisp( left, false );
             break;
         case G_MOVMA:
             LayW( ins->type_class );
-            DoMDisp( result, FALSE );
+            DoMDisp( result, false );
             break;
         case G_MOVRC:
             if( ins->type_class == U2 || ins->type_class == I2
@@ -1337,11 +1337,11 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_FTST:
         case G_FCOMPP:
-            Used87 = TRUE;
+            Used87 = true;
             SetCC();
             break;
         case G_FWAIT:
-            Used87 = TRUE;
+            Used87 = true;
             if( _IsEmulation() ) {
                 FPPatchType = FPP_WAIT;
                 LayOpword( 0x9b90 );
@@ -1350,7 +1350,7 @@ void    GenObjCode( instruction *ins ) {
             }
             break;
         case G_FXCH:
-            Used87 = TRUE;
+            Used87 = true;
             GCondFwait();
             LayOpword( 0xC8D9 ); /* fxch st(1) */
             LayST( result );
@@ -2047,7 +2047,7 @@ extern  void    GCondFwait( void ) {
 */
 
     _Code;
-    Used87 = TRUE;
+    Used87 = true;
 #if _TARGET & _TARG_IAPX86
     if( !_CPULevel( CPU_286 ) || _IsEmulation() ) {
         if( _IsEmulation() ) {
@@ -2068,7 +2068,7 @@ extern  void    GFwait( void ) {
     if( _CPULevel( CPU_386 ) )
         return;
     _Code;
-    Used87 = TRUE;
+    Used87 = true;
     if( _IsEmulation() ) {
         FPPatchType = FPP_WAIT;
         LayOpword( 0x9b90 );

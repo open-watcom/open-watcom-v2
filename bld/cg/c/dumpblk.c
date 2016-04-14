@@ -217,10 +217,10 @@ static  bool    FindBlock( block *b )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk == b ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  void    DumpBlkId( block *b )
@@ -507,7 +507,7 @@ static  void    DumpBlkI( void )
         }
         DumpInputs( blk );
         DumpInstrsOnly( blk );
-        DumpGotos( blk, FALSE );
+        DumpGotos( blk, false );
     }
 }
 
@@ -533,7 +533,7 @@ extern  void    DumpABlk( block *b )
     DumpInputs( b );
     DumpDataFlo( b );
     DumpInsList( b );
-    DumpGotos( b, TRUE );
+    DumpGotos( b, true );
     DumpNL();
 }
 

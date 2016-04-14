@@ -152,16 +152,16 @@ void    InitBlip( void )
     NextTickCount = LastBlipCount;
     SetNextTickCount();
     SetNextBlipCount();
-    Zoiks2 = FALSE;
-    BlipsOn = FALSE;
+    Zoiks2 = false;
+    BlipsOn = false;
 #if defined( __NT__ ) || defined( __OSI__ )
     buff[ 0 ] = 0;
 #else
     if( GetEnvVar( "WCGBLIPON", buff, 9 ) ) {
         BlipInit();
-        BlipsOn = TRUE;
+        BlipsOn = true;
         if( Length( buff ) == 7 && Equal( buff, "ALLERRS", 7 ) ) {
-            Zoiks2 = TRUE;
+            Zoiks2 = true;
         }
     }
 #endif

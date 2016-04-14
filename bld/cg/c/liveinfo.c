@@ -113,7 +113,7 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
                 if( last_ins->head.opcode != OP_NOP ) {
                     new_ins = MakeNop();
                     havelive = HaveLiveInfo;
-                    HaveLiveInfo = FALSE;
+                    HaveLiveInfo = false;
                     SuffixIns( last_ins, new_ins );
                     new_ins->head.live.regs = blk->ins.hd.live.regs;
                     new_ins->head.live.within_block
@@ -141,7 +141,7 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
                 if( first_ins->head.opcode != OP_NOP ) {
                     new_ins = MakeNop();
                     havelive = HaveLiveInfo;
-                    HaveLiveInfo = FALSE;
+                    HaveLiveInfo = false;
                     PrefixIns( first_ins, new_ins );
                     new_ins->head.live.regs = blk->ins.hd.live.regs;
                     new_ins->head.live.within_block
@@ -323,16 +323,16 @@ static  void    FlowConflicts( instruction *first,
                  * copied from there, may be it's wiser to use this function as is.
                  * But SideEffect() has too many checks - not sure we need'em all.
                  */
-                result_forced_alive = FALSE;
+                result_forced_alive = false;
 
                 for( i = ins->num_operands; i-- > 0; ) {
                     if( IsVolatile( ins->operands[i] ) ) {
-                        result_forced_alive = TRUE;
+                        result_forced_alive = true;
                         break;
                     }
                 }
                 if( ( ins->ins_flags & INS_CC_USED ) && ins->head.opcode != OP_MOV ) {
-                    result_forced_alive = TRUE;
+                    result_forced_alive = true;
                 }
 
                 if( result_forced_alive ) {
@@ -355,10 +355,10 @@ extern  void    MakeLiveInfo( void )
     GlobalConflictsFirst();
     first_global = ConfList; // assumes conflicts get added at start of list
     havelive = HaveLiveInfo;
-    HaveLiveInfo = FALSE;
+    HaveLiveInfo = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->ins.hd.prev->head.opcode != OP_NOP ) {
-            PrefixInsRenum( (instruction *)&blk->ins, MakeNop(), FALSE );
+            PrefixInsRenum( (instruction *)&blk->ins, MakeNop(), false );
         }
     }
     HaveLiveInfo = havelive;

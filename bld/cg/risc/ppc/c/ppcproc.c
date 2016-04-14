@@ -65,7 +65,7 @@ static  void    CalcUsedRegs( void )
     name        *result;
     hw_reg_set  used;
 
-    CurrProc->targ.leaf = TRUE;
+    CurrProc->targ.leaf = true;
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -79,7 +79,7 @@ static  void    CalcUsedRegs( void )
             }
             if( ins->head.opcode == OP_CALL ||
                 ins->head.opcode == OP_CALL_INDIRECT ) {
-                CurrProc->targ.leaf = FALSE;
+                CurrProc->targ.leaf = false;
             }
         }
     }
@@ -280,13 +280,13 @@ static  void    emitSavedRegsProlog( stack_record *saved_regs )
 {
     type_length         offset;
 
-    offset = saved_regs->start + saved_regs->size - regSize( FALSE );
-    saveRegSet( CurrProc->targ.gpr_mask, offset, FALSE );
+    offset = saved_regs->start + saved_regs->size - regSize( false );
+    saveRegSet( CurrProc->targ.gpr_mask, offset, false );
     if( CurrProc->targ.gpr_mask == 0 ) {
-        offset -= regSize( TRUE ) - regSize( FALSE );   // make it sp-8 for first double
+        offset -= regSize( true ) - regSize( false );   // make it sp-8 for first double
     }
-    offset -= CountBits( CurrProc->targ.gpr_mask ) * regSize( FALSE );
-    saveRegSet( CurrProc->targ.fpr_mask, offset, TRUE );
+    offset -= CountBits( CurrProc->targ.gpr_mask ) * regSize( false );
+    saveRegSet( CurrProc->targ.fpr_mask, offset, true );
 }
 
 static  void    emitSavedRegsEpilog( stack_record *saved_regs )
@@ -294,13 +294,13 @@ static  void    emitSavedRegsEpilog( stack_record *saved_regs )
 {
     type_length         offset;
 
-    offset = saved_regs->start - regSize( TRUE );
-    loadRegSet( CurrProc->targ.fpr_mask, offset, TRUE );
+    offset = saved_regs->start - regSize( true );
+    loadRegSet( CurrProc->targ.fpr_mask, offset, true );
     if( CurrProc->targ.fpr_mask == 0 ) {
-        offset += regSize( TRUE ) - regSize( FALSE );
+        offset += regSize( true ) - regSize( false );
     }
-    offset += CountBits( CurrProc->targ.fpr_mask ) * regSize( TRUE );
-    loadRegSet( CurrProc->targ.gpr_mask, offset, FALSE );
+    offset += CountBits( CurrProc->targ.fpr_mask ) * regSize( true );
+    loadRegSet( CurrProc->targ.gpr_mask, offset, false );
 }
 
 static  void    initVarargs( stack_record *varargs, type_length *offset )
@@ -321,7 +321,7 @@ static  void    emitVarargsProlog( stack_record *varargs )
         // save our registers in our caller's context - uhg!
         offset = CurrProc->targ.frame_size + STACK_HEADER_SIZE;
         for( i = CurrProc->state.parm.gr; i <= LAST_SCALAR_PARM_REG; i++ ) {
-            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG ) * 4, FALSE );
+            saveReg( i, offset + ( i - FIRST_SCALAR_PARM_REG ) * 4, false );
         }
     }
 }
@@ -420,7 +420,7 @@ static  void    emitProlog( stack_map *map )
     frame_size = frameSize( map );
     if( !CurrProc->targ.leaf ) {
         // mflr r0
-        GenMTSPR( 0, SPR_LR, TRUE );
+        GenMTSPR( 0, SPR_LR, true );
     }
     if( frame_size != 0 ) {
         // stwu sp,-frame_size(sp)
@@ -452,7 +452,7 @@ static  void    emitEpilog( stack_map *map )
         emitSlopEpilog( &map->slop );
         emitVarargsEpilog( &map->varargs );
         if( !CurrProc->targ.leaf ) {
-            GenMTSPR( 0, SPR_LR, FALSE );
+            GenMTSPR( 0, SPR_LR, false );
         }
         frame_reg = STACK_REG;
         if( CurrProc->targ.base_is_fp ) {
