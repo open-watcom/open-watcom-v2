@@ -37,7 +37,6 @@
 #include <ctype.h>
 #include <time.h>
 #include <limits.h>
-#include "bool.h"
 #include "orl.h"
 #include "lib.h"
 #include "demangle.h"
