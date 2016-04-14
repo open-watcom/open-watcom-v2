@@ -354,7 +354,7 @@ static char *SetTrapHandler( void )
                     return( TC_ERR_OUT_OF_DOS_MEMORY );
                 }
             }
-            PMData->othersaved = FALSE;
+            PMData->othersaved = false;
             result = DPMIAllocateLDTDescriptors( 1 );
             if( result < 0 ) {
                 return( TC_ERR_CANT_LOAD_TRAP );

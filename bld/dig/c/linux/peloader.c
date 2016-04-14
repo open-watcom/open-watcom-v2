@@ -63,7 +63,7 @@ the code and returns a handle to the loaded library. This function is the
 same as the regular PE_loadLibrary except that it take a handle to an
 open file and an offset within that file for the DLL to load.
 ****************************************************************************/
-static int PE_readHeader(
+static bool PE_readHeader(
     FILE *f,
     long startOffset,
     FILE_HDR *filehdr,
@@ -139,7 +139,7 @@ u_long PE_getFileSize(
     int             i;
 
     /* Read the PE file headers from disk */
-    if (!PE_readHeader(f,startOffset,&filehdr,&opthdr))
+    if( !PE_readHeader( f,startOffset,&filehdr,&opthdr ) )
         return 0xFFFFFFFF;
 
     /* Scan all the section headers summing up the total size */
@@ -201,7 +201,7 @@ PE_MODULE * PE_loadLibraryExt(
     BASE_RELOCATION *baseReloc;
 
     /* Read the PE file headers from disk */
-    if (!PE_readHeader(f,startOffset,&filehdr,&opthdr))
+    if( !PE_readHeader( f, startOffset, &filehdr, &opthdr ) )
         return NULL;
 
     /* Scan all the section headers and find the necessary sections */

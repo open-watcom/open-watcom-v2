@@ -216,6 +216,6 @@ char *LoadDumbTrap( trap_version *ver )
     ReqFunc = DumbRequest;
     ver->major = TRAP_MAJOR_VERSION;
     ver->minor = TRAP_MINOR_VERSION;
-    ver->remote = FALSE;
+    ver->remote = false;
     return( NULL );
 }
