@@ -50,8 +50,6 @@
 #define NUMLINE                 24
 #define LINE_LEN                78
 #define SLEN                    30
-#define TRUE                    1
-#define FALSE                   0
 #define STDOUT                  1
 #define BSIZE                   512
 #define MAX_SECTION_DATA        4096
