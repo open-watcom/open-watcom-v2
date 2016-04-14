@@ -40,11 +40,10 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "dbgmod.h"
+#include "bool.h"
 
 /*--------------------------- Global variables ----------------------------*/
 
-#define true    1
-#define false   0
 
 static int          result = PE_ok;
 
