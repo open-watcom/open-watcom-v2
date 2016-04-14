@@ -51,6 +51,7 @@ typedef char __far *va_list[1];
 #include <share.h>
 #include <sys/stat.h>
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "watcom.h"
 #include "tinyio.h"
@@ -148,8 +149,7 @@ static char _FAR *dwordToStr( DWORD value )
 /*
  * Init32BitTask - load and initialize the 32-bit application
  */
-int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
-                    int cmdshow )
+bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow )
 {
     WORD                i,amount,bytes_read,j;
     WORD                sel;
@@ -167,7 +167,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     DWORD               flags;
     version_info        vi;
     DWORD               file_header_size;
-    BOOL                tried_global_compact;
+    bool                tried_global_compact;
     DWORD               save_maxmem;
     dpmi_mem_block      adata;
 
@@ -179,7 +179,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     if( !(vi.flags & VERSION_80386) ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
-        return( FALSE );
+        return( false );
     }
 
     /*
@@ -188,8 +188,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     GetModuleFileName( thishandle, file, 128 );
     rc = _fTinyOpen( file, TIO_READ );
     if( TINY_ERROR( rc ) ) {
-        return( Fini( 2, (char _FAR *)"Error opening file",
-                    (char _FAR *)file) );
+        return( Fini( 2, (char _FAR *)"Error opening file", (char _FAR *)file) );
     }
     handle = TINY_INFO( rc );
 
@@ -272,7 +271,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
     /*
      * get memory to load file
      */
-    tried_global_compact = FALSE;
+    tried_global_compact = false;
     save_maxmem = maxmem;
     while( (i = _DPMIGet32( &adata, maxmem )) != 0 ) {
         if( maxmem == minmem ) {
@@ -288,7 +287,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
              */
             GlobalCompact( GlobalCompact( 0 ) );
             maxmem = save_maxmem;
-            tried_global_compact = TRUE;
+            tried_global_compact = true;
         } else if( maxmem < 64L * 1024L ) {
             maxmem = minmem;
         } else {
@@ -455,21 +454,21 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      * check for FPU and WGod
      */
     if( flags & WF_80x87 ) {
-        Has87 = TRUE;
+        Has87 = true;
     } else {
-        Has87 = FALSE;
+        Has87 = false;
     }
     if( CheckWin386Debug() == WGOD_VERSION ) {
 //    BreakPoint();
-        HasWGod = TRUE;
+        HasWGod = true;
         if( !Has87 ) {
             EMUInit();
             EMURegister( CodeEntry.seg, SaveSP - StackSize + FPU_AREA );
         }
     } else {
-        HasWGod = FALSE;
+        HasWGod = false;
     }
-    return( TRUE );
+    return( true );
 
 } /* Init32BitTask */
 
@@ -537,7 +536,7 @@ void Cleanup( void )
 
 } /* Cleanup */
 
-static char doneFini=FALSE;
+static bool doneFini = false;
 
 /*
  * Fini - clean up after an error
@@ -553,7 +552,7 @@ int Fini( int strcnt, ... )
     if( doneFini ) {
         return( 0 );
     }
-    doneFini = TRUE;
+    doneFini = true;
 
 #ifndef DLL32
     va_start( arg, strcnt );
@@ -571,6 +570,6 @@ int Fini( int strcnt, ... )
     strcnt = strcnt;
 #endif
     Cleanup();
-    return( FALSE );
+    return( false );
 
 } /* Fini */

@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "wininit.h"
 
@@ -41,8 +42,8 @@ extern int PASCAL StartDLL32( void );
 int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 #pragma on(unreferenced);
 {
-
-    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) ) return( 0 );
+    if( !Init32BitTask( hmod, NULL, cmdline, 0 ) )
+        return( 0 );
     StartDLL32();
-    return( (int) ReturnCode );
+    return( (int)ReturnCode );
 }

@@ -32,6 +32,7 @@
 
 #include <stddef.h>
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "_windpmi.h"
 #include "windpmi.h"
@@ -45,7 +46,7 @@ typedef struct {
     WORD        sel;
     WORD        limit;
     DWORD       base;
-    char        in_use;
+    bool        in_use;
 } alias_cache_entry;
 
 typedef struct memblk {
@@ -55,7 +56,7 @@ typedef struct memblk {
     DWORD       size;
 } memblk;
 
-static WORD                     WrapAround;
+static bool                     WrapAround;
 static WORD                     hugeIncrement;
 static WORD                     firstCacheSel,lastCacheSel;
 static WORD                     cacheUseCount;
@@ -126,7 +127,7 @@ WORD _DPMIGetAliases( DWORD offset, DWORD __far *res, WORD cnt)
                         DPMISetSegmentBaseAddress( ace->sel, base );
                     }
                     *res = ((DWORD)ace->sel) << 16;
-                    ace->in_use = TRUE;
+                    ace->in_use = true;
                     cacheUseCount++;
                     return( 0 );
                 }
@@ -205,7 +206,7 @@ void _DPMIFreeAlias( WORD sel )
     if( sel >= firstCacheSel && sel <= lastCacheSel ) {
         ace = &aliasCache[( sel - firstCacheSel ) / hugeIncrement];
         if( ace->in_use ) {
-            ace->in_use = FALSE;
+            ace->in_use = false;
             cacheUseCount--;
         }
         return;
@@ -328,12 +329,12 @@ WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len )
 //      register for accessing data that is not in the STACK segment
 //      so we must access the same space as DS
     setLimitAndAddr( StackSelector, baseaddr, len, ACCESS_DATA );
-    WrapAround = FALSE;
+    WrapAround = false;
     if( DPMIGetDescriptor( DataSelector, &desc ) == 0 ) {
         if( desc.lim_16_19 == 0x0F && desc.lim_0_15 == 0xFFFF ) {
-            WrapAround = TRUE;
+            WrapAround = true;
         } else {
-            WrapAround = FALSE;
+            WrapAround = false;
         }
     }
     return( 0 );
@@ -494,7 +495,7 @@ int InitSelectorCache( void )
             aliasCache[i].sel = sel;
             aliasCache[i].limit = 0xFFFF;
             aliasCache[i].base = 0L;
-            aliasCache[i].in_use = FALSE;
+            aliasCache[i].in_use = false;
             lastCacheSel = sel;
         }
         DPMISetDescriptorAccessRights( sel, DPL + ACCESS_DATA16 );

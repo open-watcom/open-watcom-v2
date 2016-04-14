@@ -37,20 +37,20 @@
 #include <process.h>
 #endif
 #include <sys/types.h>
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
+
 #include "clibext.h"
 
 #undef _WBIND_VERSION_
 #define _WBIND_VERSION_ "2.3"
 
 #define IO_BUFF 64000
-#define TRUE 1
-#define FALSE 0
 #define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
 #ifdef BOOTSTRAP
@@ -59,7 +59,7 @@
 #define RC_STR          "wrc"
 #endif
 
-static int quietFlag=FALSE;
+static bool quietFlag = false;
 
 static void updateNHStuff( int handle, char *modname, char *desc )
 {
@@ -129,7 +129,7 @@ static void doBanner( void )
 
 static void doUsage( char *str )
 {
-    quietFlag = FALSE;
+    quietFlag = false;
     doBanner();
     if( str != NULL ) {
         printf( "Error - %s\n\n", str );
@@ -232,9 +232,10 @@ static void FindExtender( char *extname, char *winext )
 int main( int argc, char *argv[] )
 {
     int             in, out, i, rcparm = 0, pcnt;
-    int             Rflag = FALSE, nflag = FALSE;
-    int             uflag = FALSE;
-    int             dllflag = FALSE;
+    bool            Rflag = false;
+    bool            nflag = false;
+    bool            uflag = false;
+    bool            dllflag = false;
     char            *wext = NULL;
     long            tsize = 0;
     char            drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME];
@@ -268,7 +269,7 @@ int main( int argc, char *argv[] )
         if( argv[ currarg ][0] == '/' || argv[ currarg ][0] == '-' ) {
 #endif
             len = strlen( argv[ currarg ] );
-            for( i=1; i<len; i++ ) {
+            for( i = 1; i < len; i++ ) {
                 switch( argv[ currarg ][i] ) {
                 case '?': doUsage( NULL );
                 case 'D':
@@ -280,19 +281,19 @@ int main( int argc, char *argv[] )
                     wext = argv[ currarg ];
                     break;
                 case 'q':
-                    quietFlag = TRUE;
+                    quietFlag = true;
                     break;
                 case 'u':
-                    uflag = TRUE;
+                    uflag = true;
                     break;
                 case 'n':
-                    nflag = TRUE;
+                    nflag = true;
                     break;
                 case 'd':
-                    dllflag = TRUE;
+                    dllflag = true;
                     break;
                 case 'R': case 'r':
-                    Rflag=TRUE;
+                    Rflag = true;
                     rcparm = currarg+1;
                     if( rcparm == argc ) {
                         doUsage("must specify resource compiler command line" );
