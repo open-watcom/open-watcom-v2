@@ -637,14 +637,14 @@ static return_val initORL( void )
         if( ObjFileHnd ) {
             // check byte order
             flags = ORLFileGetFlags( ObjFileHnd );
-            byte_swap = FALSE;
+            byte_swap = false;
 #ifdef __BIG_ENDIAN__
             if( flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
-                byte_swap = TRUE;
+                byte_swap = true;
             }
 #else
             if( flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-                byte_swap = TRUE;
+                byte_swap = true;
             }
 #endif
 

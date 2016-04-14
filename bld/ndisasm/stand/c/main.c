@@ -610,7 +610,7 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         PrintLinePrefixData( contents, loop, loop + amount, 1, 16 );
         BufferConcat( " " );
         if( r_entry && r_entry->offset == loop ) {
-            HandleRefInData( r_entry, &(contents[loop]), TRUE );
+            HandleRefInData( r_entry, &(contents[loop]), true );
             loop += amount;
         } else {
             for( loop2 = 0; loop2 < amount; loop2++, loop++ ) {

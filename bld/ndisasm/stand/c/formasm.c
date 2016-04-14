@@ -126,9 +126,9 @@ static bool printableChar( char c )
 {
     // fixme: which characters should be printed as is and which not?
     if( isprint( c ) || c == '\n' || c == '\r' || c == '\t' || c == '\f' ) {
-        return TRUE;
+        return( true );
     } else {
-        return FALSE;
+        return( false );
     }
 }
 
@@ -138,10 +138,10 @@ static bool printableString( char *s )
     
     for( i = 0; i < strlen( s ); i++ ){
         if( !printableChar( s[i] ) ) {
-            return FALSE;
+            return( false );
         }
     }
-    return TRUE;
+    return( true );
 }
 
 static size_t printString( char *string, string_type type )
@@ -644,7 +644,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         if( r_entry != NULL && r_entry->offset < (curr_pos + curr_size) ) {
             if( r_entry->offset == curr_pos ) {
                 BufferConcat("    ");
-                curr_size = HandleRefInData(r_entry, contents + curr_pos, TRUE);
+                curr_size = HandleRefInData( r_entry, contents + curr_pos, true );
                 BufferConcatNL();
                 BufferPrint();
                 continue;

@@ -63,7 +63,7 @@ static void doDescriptorRelocs( ref_entry *r_entry, orl_sec_offset offset, uint_
         (*r_entry) = (*r_entry)->next;
     }
     if( (*r_entry) && (*r_entry)->offset == offset ) {
-        HandleRefInData( *r_entry, &address, FALSE );
+        HandleRefInData( *r_entry, &address, false );
         (*r_entry) = (*r_entry)->next;
     } else {
         BufferStore("%08X", address );

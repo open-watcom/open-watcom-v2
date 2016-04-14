@@ -51,7 +51,7 @@ extern dis_format_flags DFormat;
 char *                  SourceFileName = NULL;
 char *                  SourceFileInObject = NULL;
 char *                  SourceFileInDwarf = NULL;
-bool                    source_mix = FALSE;
+bool                    source_mix = false;
 FILE *                  SourceFile = NULL;
 orl_linnum *            lines = NULL;
 orl_table_index         numlines;

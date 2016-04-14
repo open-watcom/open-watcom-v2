@@ -210,8 +210,8 @@ static void composeFileNames( bool list_file )
 
 void HandleArgs( char *cmd )
 {
-    char *                      ptr;
-    bool                        list_file = FALSE;
+    char        *ptr;
+    bool        list_file = false;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
     cmd = skipBlanks( cmd );
@@ -249,7 +249,7 @@ void HandleArgs( char *cmd )
                         if( ListFileName ) {
                             printUsage( ONLY_ONE_LISTING );
                         }
-                        list_file = TRUE;
+                        list_file = true;
                         cmd++;
                         if( *cmd == '=' ) {
                             cmd++;
@@ -307,7 +307,7 @@ void HandleArgs( char *cmd )
                         if( SourceFileName ) {
                             printUsage( ONLY_ONE_SOURCE );
                         }
-                        source_mix = TRUE;
+                        source_mix = true;
                         cmd++;
                         if( *cmd == '=' ) {
                             cmd++;

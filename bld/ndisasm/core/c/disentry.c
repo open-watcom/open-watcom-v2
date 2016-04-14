@@ -331,7 +331,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     len = h->d->ins_hook( h, d, &ins, flags, name );
     if( name != NULL ) {
         if( len == 0 ) {
-            DisGetString( DisInstructionTable[ins.type].name, name, FALSE );
+            DisGetString( DisInstructionTable[ins.type].name, name, false );
         }
         p = &name[ strlen( name ) ];
         h->d->flag_hook( h, d, &ins, flags, p );

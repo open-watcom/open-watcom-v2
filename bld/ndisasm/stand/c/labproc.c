@@ -155,8 +155,10 @@ bool NeedsQuoting( const char *name )
     // If the name contains funny characters and we are producing
     // assemblable output, put back-quotes around it.
 
-    if( !(DFormat & DFF_ASM) ) return( FALSE );
-    if( isdigit( *name ) ) return( TRUE );
+    if( !(DFormat & DFF_ASM) )
+        return( false );
+    if( isdigit( *name ) )
+        return( true );
     while( *name ) {
         if( isalnum( *name ) || *name == '_' || *name == '?' || *name == '$' ) {
             /* OK character */
@@ -164,11 +166,11 @@ bool NeedsQuoting( const char *name )
             /* OK character */
         } else {
             /* character needs quoting */
-            return( TRUE );
+            return( true );
         }
         name++;
     }
-    return( FALSE );
+    return( false );
 }
 
 orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
