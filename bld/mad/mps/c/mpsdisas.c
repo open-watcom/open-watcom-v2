@@ -43,9 +43,9 @@ mad_status DisasmInit()
     bool        swap_bytes;
 
 #ifdef __BIG_ENDIAN__
-    swap_bytes = TRUE;
+    swap_bytes = true;
 #else
-    swap_bytes = FALSE;
+    swap_bytes = false;
 #endif
     if( DisInit( DISCPU_mips, &DH, swap_bytes ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
@@ -299,7 +299,7 @@ static int Cond2( mad_disasm_data *dd, const mad_registers *mr, unsigned conditi
 mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
 {
     mad_disasm_control  c;
-    bool                is_call = FALSE;
+    bool                is_call = false;
 
     switch( dd->ins.type ) {
     case DI_MIPS_J:
@@ -331,7 +331,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     case DI_MIPS_BGEZALL:
     case DI_MIPS_BLTZAL:
     case DI_MIPS_BLTZALL:
-        is_call = TRUE;
+        is_call = true;
         /* fall through */
     case DI_MIPS_BGEZ:
     case DI_MIPS_BGEZL:

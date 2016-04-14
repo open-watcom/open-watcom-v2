@@ -40,7 +40,7 @@ static dis_handle DH;
 
 mad_status DisasmInit()
 {
-    if( DisInit( DISCPU_axp, &DH, FALSE ) != DR_OK ) {
+    if( DisInit( DISCPU_axp, &DH, false ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
     }
     return( MS_OK );
