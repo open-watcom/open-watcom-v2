@@ -47,7 +47,7 @@ void CmdScanInit(               // INITIALIZE FOR COMMAND SCANNING
 {
     cmd.curr_ptr = cmd_line;
     cmd.switch_ptr = NULL;
-    cmd.unix_mode = FALSE;
+    cmd.unix_mode = false;
 }
 
 
@@ -79,15 +79,15 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
 
     ch = *cmd.curr_ptr;
     if( ch == '\0' ) {
-        return( TRUE );
+        return( true );
     }
     if( isspace( ch ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -97,7 +97,7 @@ static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
     char c = *cmd.curr_ptr;
 
     if( c == _SWITCH_CHAR1 || c == _SWITCH_CHAR2 ) {
-        return( TRUE );
+        return( true );
     }
     return !CmdScanSwEnd();
 }
@@ -106,17 +106,17 @@ static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
 bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
     void )
 {
-    bool retn;                  // - return: TRUE ==> is a delimiter
+    bool retn;                  // - return: true ==> is a delimiter
     char ch;                    // - next character
 
     if( ! cmdFileChar() ) {
-        retn = TRUE;
+        retn = true;
     } else {
         ch = *cmd.curr_ptr;
         if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
-            retn = TRUE;
+            retn = true;
         } else {
-            retn = FALSE;
+            retn = false;
         }
     }
     return( retn );
@@ -148,13 +148,13 @@ int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
 bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 {
-    bool retn;                  // - TRUE ==> got it
+    bool retn;                  // - true ==> got it
 
     if( recog == CmdScanLowerChar() ) {
-        retn = TRUE;
+        retn = true;
     } else {
         CmdScanUngetChar();
-        retn = FALSE;
+        retn = false;
     }
     return( retn );
 }
@@ -163,13 +163,13 @@ bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
 bool CmdRecogChar(              // RECOGNIZE A CHARACTER
     int recog )                 // - character to be recognized
 {
-    bool retn;                  // - TRUE ==> got it
+    bool retn;                  // - true ==> got it
 
     if( recog == CmdScanChar() ) {
-        retn = TRUE;
+        retn = true;
     } else {
         CmdScanUngetChar();
-        retn = FALSE;
+        retn = false;
     }
     return( retn );
 }
@@ -182,10 +182,10 @@ bool CmdRecogEquals(            // SKIP EQUALCHAR IN COMMAND LINE
     case '=':
     case '#':
         CmdScanChar();
-        return( TRUE );
+        return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
@@ -195,13 +195,13 @@ bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
     case ' ':
         CmdScanWhiteSpace();
         CmdScanUngetChar();
-        return( TRUE );
+        return( true );
     case '=':
     case '#':
         CmdScanChar();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void CmdScanSwitchBegin(        // REMEMBER START OF SWITCH

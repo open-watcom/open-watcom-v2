@@ -56,11 +56,6 @@
 #error code will not work with segmented pointers
 #endif
 
-#ifndef TRUE
-#   define TRUE  1
-#   define FALSE 0
-#endif
-
 
 struct blk {
     blk_t       *next;

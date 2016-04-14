@@ -72,7 +72,7 @@ static bool scanOffNumber       // SCAN A NUMBER
     int c;
 
     CmdRecogEquals();
-    number_scanned = FALSE;
+    number_scanned = false;
     value = 0;
     for(;;) {
         c = CmdScanLowerChar();
@@ -82,7 +82,7 @@ static bool scanOffNumber       // SCAN A NUMBER
         }
         value *= 10;
         value += c - '0';
-        number_scanned = TRUE;
+        number_scanned = true;
     }
     if( number_scanned ) {
         *pvalue = value;
@@ -149,10 +149,10 @@ bool OPT_GET_ID                 // PARSE: ID
     len = CmdScanId( &id );
     if( len != 0 ) {
         addString( p, id, len );
-        return( TRUE );
+        return( true );
     }
     BadCmdLineId();
-    return( FALSE );
+    return( false );
 }
 
 bool OPT_GET_ID_OPT             // PARSE: OPTIONAL ID
@@ -161,7 +161,7 @@ bool OPT_GET_ID_OPT             // PARSE: OPTIONAL ID
     if( CmdRecogEquals() || !CmdDelimitChar() ) {
         return( OPT_GET_ID( p ) );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -179,10 +179,10 @@ bool OPT_GET_NUMBER             // PARSE: #
 
     if( scanOffNumber( &value ) ) {
         *p = value;
-        return( TRUE );
+        return( true );
     }
     BadCmdLineNumber();
-    return( FALSE );
+    return( false );
 }
 
 
@@ -193,10 +193,10 @@ bool OPT_GET_NUMBER_MULTIPLE    // PARSE: OPTION #
 
     if( scanOffNumber( &value ) ) {
         addNumber( h, value );
-        return( TRUE );
+        return( true );
     }
     BadCmdLineNumber();
-    return( FALSE );
+    return( false );
 }
 
 bool OPT_GET_NUMBER_DEFAULT
@@ -209,7 +209,7 @@ bool OPT_GET_NUMBER_DEFAULT
     } else {
         *p = default_value;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -224,10 +224,10 @@ bool OPT_GET_FILE               // PARSE: FILE NAME
     if( len != 0 ) {
         addString( p, fname, len );
         StripQuotes( (*p)->data );
-        return( TRUE );
+        return( true );
     }
     BadCmdLineFile();
-    return( FALSE );
+    return( false );
 }
 
 bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
@@ -247,7 +247,7 @@ bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
             OPT_CLEAN_STRING( p );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -263,10 +263,10 @@ bool OPT_GET_PATH               // PARSE: PATH
     if( len != 0 ) {
         addString( p, path, len );
         StripQuotes( (*p)->data );
-        return( TRUE );
+        return( true );
     }
     BadCmdLinePath();
-    return( FALSE );
+    return( false );
 }
 
 bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
@@ -286,7 +286,7 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
             OPT_CLEAN_STRING( p );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -301,12 +301,12 @@ bool OPT_GET_CHAR               // PARSE: CHAR
             c = CmdScanChar();
             if( isprint( c ) ) {
                 *p = c;
-                return( TRUE );
+                return( true );
             }
         }
     }
     BadCmdLineChar();
-    return( FALSE );
+    return( false );
 }
 
 bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
@@ -315,7 +315,7 @@ bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     if( CmdRecogEquals() || !CmdDelimitChar() ) {
         return OPT_GET_CHAR( p );
     }
-    return( TRUE );
+    return( true );
 }
 
 
