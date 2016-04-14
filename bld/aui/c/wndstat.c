@@ -41,7 +41,7 @@ void WndCreateStatusWindow( gui_colour_set *colour )
 
 bool WndHaveStatusWindow( void )
 {
-    return( WndMain == NULL ? FALSE : GUIHasStatus( WndMain->gui ) );
+    return( WndMain == NULL ? false : GUIHasStatus( WndMain->gui ) );
 }
 
 
@@ -58,7 +58,7 @@ bool WndStatusText( const char *text )
 {
     bool        rc;
 
-    if( strcmp( text, WndStatusString ) == 0 ) return( TRUE );
+    if( strcmp( text, WndStatusString ) == 0 ) return( true );
     if( WndStatusString != NULL ) {
         strncpy( WndStatusString, text, STAT_LEN );
         WndStatusString[STAT_LEN] = '\0';
@@ -71,9 +71,9 @@ bool GUIClearStatusText( gui_window *gui )
 {
     if( gui == WndMain->gui ) {
         WndInternalStatusText( WndStatusString );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void WndResetStatusText( void )
@@ -83,11 +83,11 @@ void WndResetStatusText( void )
 
 bool WndInternalStatusText( const char *text )
 {
-    if( text == NULL ) return( FALSE );
-    if( !WndHaveStatusWindow() ) return( FALSE );
+    if( text == NULL ) return( false );
+    if( !WndHaveStatusWindow() ) return( false );
     GUIDrawStatusText( WndMain->gui, text );
     if( !GUIIsGUI() && !WndDoingRefresh ) {
         WndForceRefresh();
     }
-    return( TRUE );
+    return( true );
 }

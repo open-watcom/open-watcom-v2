@@ -74,25 +74,25 @@ bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
         GUISetText( gui, CTL_NEW_EDIT, dlgnew->buff);
         GUISetFocus( gui, CTL_NEW_EDIT );
         dlgnew->buff[0] = '\0';
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         dlgnew->buff[0] = '\0';
         switch( id ) {
         case CTL_NEW_OK:
             GUIDlgBuffGetText( gui, CTL_NEW_EDIT, dlgnew->buff, dlgnew->buff_len );
-            dlgnew->cancel = FALSE;
+            dlgnew->cancel = false;
             /* fall thru */
         case CTL_NEW_CANCEL:
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     case GUI_DESTROY:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 

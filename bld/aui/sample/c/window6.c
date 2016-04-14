@@ -50,10 +50,10 @@ static bool    W6GetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     wnd=wnd;
-    if( row >= ArraySize( Stuff ) ) return( FALSE );
-    if( piece != 0 ) return( FALSE );
+    if( row >= ArraySize( Stuff ) ) return( false );
+    if( piece != 0 ) return( false );
     line->text = Stuff[ row ];
-    return( TRUE );
+    return( true );
 }
 
 

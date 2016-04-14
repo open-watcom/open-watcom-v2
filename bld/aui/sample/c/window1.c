@@ -74,11 +74,11 @@ static void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         WndMenuEnable( wnd, MENU_W1_NEWWORD, ( row & 2 ) != 0 );
         break;
     case MENU_W1_ALIGN:
-        w1->align = TRUE;
+        w1->align = true;
         WndFlags |= EV_UPDATE_1;
         break;
     case MENU_W1_UNALIGN:
-        w1->align = FALSE;
+        w1->align = false;
         WndFlags |= EV_UPDATE_1;
         break;
     case MENU_W1_SAY:
@@ -117,28 +117,28 @@ static bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
     w1_window   *w1 = WndExtra( wnd );
     int         i;
 
-    if( row >= w1->num_rows ) return( FALSE );
+    if( row >= w1->num_rows ) return( false );
     if( piece == 0 ) {
         WndSetGadgetLine( wnd, line, row & 1, 500 );
-        return( TRUE );
+        return( true );
     }
     --piece;
-    if( piece >= w1->rows[ row ].num_pieces ) return( FALSE );
+    if( piece >= w1->rows[ row ].num_pieces ) return( false );
     line->text = w1->rows[row].pieces[ piece ];
     line->hint = ((row+1)&1)?"This is help for an even row":"This is help for an odd row";
     if( strcmp( line->text, "Censorship" ) == 0 ) {
         line->attr = APP_COLOR_CENSORED;
-        line->static_text = TRUE;
+        line->static_text = true;
     }
     if( WndSwitchOn( wnd, WSW_LBUTTON_SELECTS ) ) {
-        line->tabstop = FALSE;
+        line->tabstop = false;
     }
     if( strcmp( line->text, "Baseball" ) == 0 ) {
         line->attr = APP_COLOR_BASEBALL;
-        line->tabstop = TRUE;
+        line->tabstop = true;
     }
     if( strcmp( line->text, "*HotSpot*" ) == 0 ) {
-        line->hot = TRUE;
+        line->hot = true;
         line->attr = APP_COLOR_HOTSPOT;
     }
     if( w1->align ) {
@@ -150,7 +150,7 @@ static bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
         }
     }
     line->indent += 500;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -184,11 +184,11 @@ static bool W1Init( a_window *wnd )
     num_rows = RandNum( 200 );
     w1->num_rows = num_rows;
     w1->rows = WndAlloc( num_rows*sizeof(w1_row) );
-    w1->align = TRUE;
+    w1->align = true;
     if( w1->rows == NULL ) {
         WndClose( wnd );
         WndNoMemory();
-        return( FALSE );
+        return( false );
     }
     for( i = 0; i < num_rows; ++i ) {
         pieces = RandNum( 10 );
@@ -198,7 +198,7 @@ static bool W1Init( a_window *wnd )
             w1->rows[ i ].pieces[ j ] = Word[ RandNum( WORD_SIZE )-1 ];
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
@@ -209,14 +209,14 @@ static bool W1EventProc( a_window * wnd, gui_event gui_ev, void *parm )
         W1Init( wnd );
         WndFirstCurrent( wnd );
         W1Refresh( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         W1Fini( wnd );
-        return( TRUE );
+        return( true );
     default :
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static wnd_info W1Info = {

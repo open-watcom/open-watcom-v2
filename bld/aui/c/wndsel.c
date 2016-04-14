@@ -107,8 +107,8 @@ extern bool     WndSelected( a_window *wnd, wnd_line_piece *line, wnd_row row,
     wnd_coord   *start;
     wnd_coord   *end;
 
-    if( wnd->sel_end.row == WND_NO_ROW ) return( FALSE );
-    if( line->bitmap ) return( FALSE );
+    if( wnd->sel_end.row == WND_NO_ROW ) return( false );
+    if( line->bitmap ) return( false );
 
     /* figure out start and end */
 
@@ -123,35 +123,35 @@ extern bool     WndSelected( a_window *wnd, wnd_line_piece *line, wnd_row row,
             *first = start->col;
             *len -= start->col;
         }
-        return( TRUE );
+        return( true );
     }
     if( row == end->row && piece == end->piece ) {
         *len = end->col + 1;
-        return( TRUE );
+        return( true );
     }
     if( start->row != end->row ) {
         if( row == start->row ) {
             if( piece > start->piece ) {
-                return( TRUE );
+                return( true );
             }
         } else if( row == end->row ) {
             if( piece < end->piece ) {
-                return( TRUE );
+                return( true );
             }
         } else if( row > start->row && row < end->row ) {
-            return( TRUE );
+            return( true );
         }
     } else if( row == start->row ) {
-        if( piece > start->piece && piece < end->piece ) return( TRUE );
+        if( piece > start->piece && piece < end->piece ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
 extern  bool    WndSelSetStart( a_window *wnd, void *parm )
 {
     WndNoSelect( wnd );
-    return( WndSetPoint( wnd, parm, FALSE, &wnd->sel_start, WND_NO_ROW, TRUE ) );
+    return( WndSetPoint( wnd, parm, false, &wnd->sel_start, WND_NO_ROW, true ) );
 }
 
 
@@ -159,12 +159,12 @@ extern  bool    WndSelGetEndPiece( a_window *wnd, void *parm, wnd_coord *piece )
 {
     bool        success;
 
-    if( wnd->sel_start.row == WND_NO_ROW ) return( FALSE );
+    if( wnd->sel_start.row == WND_NO_ROW ) return( false );
     if( _Isnt( wnd, WSW_MULTILINE_SELECT ) ) {
-        success = WndSetPoint( wnd, parm, FALSE,
-                               piece, wnd->sel_start.row, TRUE );
+        success = WndSetPoint( wnd, parm, false,
+                               piece, wnd->sel_start.row, true );
     } else {
-        success = WndSetPoint( wnd, parm, FALSE, piece, WND_NO_ROW, TRUE );
+        success = WndSetPoint( wnd, parm, false, piece, WND_NO_ROW, true );
     }
     return( success );
 }
@@ -174,7 +174,7 @@ extern  bool    WndSelSetEnd( a_window *wnd, void *parm )
 {
     bool                success;
 
-    if( wnd->sel_start.row == WND_NO_ROW ) return( FALSE );
+    if( wnd->sel_start.row == WND_NO_ROW ) return( false );
     success = WndSelGetEndPiece( wnd, parm, &wnd->sel_end );
     return( success );
 }

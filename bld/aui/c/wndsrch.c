@@ -35,7 +35,7 @@
 #include "rxwrap.h"
 #include "wndregx.h"
 
-bool    WndDoingSearch = FALSE;
+bool    WndDoingSearch = false;
 
 void WndSetSrchItem( a_window *wnd, const char *expr )
 {
@@ -115,11 +115,11 @@ bool WndRXFind( void *_rx, const char **pos, const char **endpos )
 {
     regexp * rx = (regexp *)_rx;
 
-    if( (*pos)[0] == '\0' ) return( FALSE );
-    if( !RegExec( rx, *pos, *endpos == NULL ) ) return( FALSE );
+    if( (*pos)[0] == '\0' ) return( false );
+    if( !RegExec( rx, *pos, *endpos == NULL ) ) return( false );
     *pos = rx->startp[0];
     *endpos = rx->endp[0];
-    return( TRUE );
+    return( true );
 }
 
 static void NotFound( a_window *wnd, regexp *rx, const char *msg )
@@ -128,7 +128,7 @@ static void NotFound( a_window *wnd, regexp *rx, const char *msg )
     WndNextRow( wnd, WND_NO_ROW, WND_RESTORE_ROW );
     WndStatusText( msg );
     WndFreeRX( rx );
-    WndDoingSearch = FALSE;
+    WndDoingSearch = false;
     WndRepaint( wnd );
 }
 
@@ -152,16 +152,16 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
     wnd_subpiece        curr;
     wnd_coord           starting_pos;
 
-    if( direction == 0 ) return( FALSE );
-    if( wnd == NULL ) return( FALSE );
-    if( wnd->searchitem == NULL ) return( FALSE );
+    if( direction == 0 ) return( false );
+    if( wnd == NULL ) return( false );
+    if( wnd->searchitem == NULL ) return( false );
     rx = WndCompileRX( wnd->searchitem );
-    if( rx == NULL ) return( FALSE );
+    if( rx == NULL ) return( false );
     not_found = WndLoadString( LITERAL_Not_Found );
     top_of_window = WndLoadString( LITERAL_Top_Of_Window );
     end_of_window = WndLoadString( LITERAL_End_Of_Window );
     search_wrapped = WndLoadString( LITERAL_Search_Wrapped );
-    wrap = FALSE;
+    wrap = false;
     starting_pos.piece = 0;
     starting_pos.col = direction > 0 ? -1 : WND_MAX_COL;
     if( from_top ) {
@@ -176,13 +176,13 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
     starting_pos.row = curr.row;
     WndNextRow( wnd, WND_NO_ROW, WND_SAVE_ROW );
     WndStatusText( "" );
-    WndDoingSearch = TRUE;
-    had_cache = WndSetCache( wnd, FALSE );
+    WndDoingSearch = true;
+    had_cache = WndSetCache( wnd, false );
     for( ;; ) {
         if( curr.row < 0 ) {
             if( wrap ) {
                 NotFound( wnd, rx, not_found );
-                rc = FALSE;
+                rc = false;
                 goto done;
             } else if( _Is( wnd, WSW_SEARCH_WRAP ) ) {
                 rows = WndNumRows( wnd );
@@ -194,11 +194,11 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                 curr.row = rows - 1;
                 curr.col = 0;
                 curr.piece = -1;
-                wrap = TRUE;
+                wrap = true;
                 continue;
             } else {
                 NotFound( wnd, rx, top_of_window );
-                rc = FALSE;
+                rc = false;
                 goto done;
             }
         }
@@ -209,17 +209,17 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                 if( curr.piece != 0 ) break;
                 if( wrap ) {
                     NotFound( wnd, rx, not_found );
-                    rc = FALSE;
+                    rc = false;
                     goto done;
                 } else if( _Is( wnd, WSW_SEARCH_WRAP ) ) {
                     curr.row = 0;
                     curr.col = 0;
                     curr.piece = -1;
-                    wrap = TRUE;
+                    wrap = true;
                     continue;
                 } else {
                     NotFound( wnd, rx, end_of_window );
-                    rc = FALSE;
+                    rc = false;
                     goto done;
                 }
             }
@@ -249,7 +249,7 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
             next_occurence = prev_occurence;
         }
         if( next_occurence.col != -1 ) {
-            WndDoingSearch = FALSE;
+            WndDoingSearch = false;
             WndKillCacheLines( wnd );
             WndDirtyCurr( wnd );
             WndNoSelect( wnd );
@@ -280,13 +280,13 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
             WndDirtyCurr( wnd );
             WndFreeRX( rx );
             if( wrap ) WndStatusText( search_wrapped );
-            rc = TRUE;
+            rc = true;
             goto done;
         }
         if( direction > 0 ) {
             if( wrap && curr.row > starting_pos.row ) {
                 NotFound( wnd, rx, not_found );
-                rc = FALSE;
+                rc = false;
                 goto done;
             }
             starting_pos.col = -1;

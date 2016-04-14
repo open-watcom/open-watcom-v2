@@ -58,7 +58,7 @@ static bool    W5GetLine( a_window *wnd, int row, int piece,
 {
     static char buff[20];
 
-    if( row >= NUM_ROWS ) return( FALSE );
+    if( row >= NUM_ROWS ) return( false );
     if( piece == 0 ) {
         itoa( row, buff, 10 );
         line->text = buff;
@@ -67,9 +67,9 @@ static bool    W5GetLine( a_window *wnd, int row, int piece,
         line->extent = WND_MAX_EXTEND;
         line->indent = 5*WndAvgCharX( wnd );
     } else {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

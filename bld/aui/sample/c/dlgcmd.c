@@ -86,14 +86,14 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
             GUIAddText( gui, CTL_CMD_HISTORY, Stuff[i] );
         }
         GUISetCurrSelect( gui, CTL_CMD_HISTORY, 1 );
-        return( TRUE );
+        return( true );
     case GUI_KEY_CONTROL:
         GUISetCurrSelect( gui, CTL_CMD_HISTORY, 2 );
         cmd = GUIGetText( gui, CTL_CMD_HISTORY );
         GUISetText( gui, CTL_CMD_EDIT, cmd );
-        GUISelectAll( gui, CTL_CMD_EDIT, TRUE );
+        GUISelectAll( gui, CTL_CMD_EDIT, true );
         GUIMemFree( cmd );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_DCLICKED:
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
@@ -103,7 +103,7 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
             GUISetText( gui, CTL_CMD_EDIT, text );
             GUIMemFree( text );
             if( gui_ev == GUI_CONTROL_CLICKED )
-                return( TRUE );
+                return( true );
             /* fall through */
         case CTL_CMD_OK:
             text = GUIGetText( gui, CTL_CMD_EDIT );
@@ -112,15 +112,15 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
             GUIMemFree( text );
             break;
         case CTL_CMD_CHECK:
-            return( FALSE );
+            return( false );
         }
         GUICloseDialog( gui );
         /* fall through */
     case GUI_DESTROY:
         WndFree( cmd );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -130,8 +130,8 @@ extern  void    DlgCmd( void )
     char        *cmd;
 
     cmd = WndMustAlloc( 100 );
-    GUISetModalDlgs( TRUE );
+    GUISetModalDlgs( true );
     DlgOpen( "Enter a command", DLG_CMD_ROWS, DLG_CMD_COLS,
              Controls, NUM_CONTROLS, &CmdEvent, cmd );
-    GUISetModalDlgs( FALSE );
+    GUISetModalDlgs( false );
 }

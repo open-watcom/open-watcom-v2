@@ -102,10 +102,10 @@ bool WndIsMinimized( a_window *wnd )
 {
     gui_rect    rect;
 
-    if( GUIIsMinimized( wnd->gui ) ) return( TRUE );
+    if( GUIIsMinimized( wnd->gui ) ) return( true );
     GUIGetClientRect( wnd->gui, &rect );
-    if( rect.width == 0 && rect.height == 0 ) return( TRUE ); // work around GUI bug
-    return( FALSE );
+    if( rect.width == 0 && rect.height == 0 ) return( true ); // work around GUI bug
+    return( false );
 }
 
 bool WndIsMaximized( a_window *wnd )

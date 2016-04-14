@@ -75,7 +75,7 @@ bool DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flag
     rc = DlgGetFileName( &ofn );
     if( rc == FN_RC_FILE_SELECTED ) {
         strcpy( path, fname );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

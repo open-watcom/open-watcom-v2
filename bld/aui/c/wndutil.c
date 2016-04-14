@@ -110,9 +110,9 @@ extern  bool    WndValid( a_window *check )
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( check == wnd ) return( TRUE );
+        if( check == wnd ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

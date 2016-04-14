@@ -99,7 +99,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     switch( key ) {
     case GUI_KEY_PERIOD:
         WndKeyPopUp( wnd, NULL );
-        return( TRUE );
+        return( true );
     case GUI_KEY_EQUAL: menu = MENU_MATCH; break;
     case GUI_KEY_n: menu = MENU_NEXT; break;
     case GUI_KEY_p: menu = MENU_PREV; break;
@@ -125,10 +125,10 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     }
 
     default:
-        return( FALSE );
+        return( false );
     }
     WndMainMenuProc( wnd, menu );
-    return( TRUE );
+    return( true );
 }
 
 #ifdef __DOS__

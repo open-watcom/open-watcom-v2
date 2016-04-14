@@ -163,7 +163,7 @@ static gui_toolbar_struct ToolBar[] = {
 
 static void OpenTools( void )
 {
-    WndCreateToolBar( 867, TRUE, ArraySize( ToolBar ), ToolBar );
+    WndCreateToolBar( 867, true, ArraySize( ToolBar ), ToolBar );
 }
 
 extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
@@ -181,13 +181,13 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         TimeIt();
         break;
     case MENU_MATCH:
-        if( active == NULL ) return( TRUE );
+        if( active == NULL ) return( true );
         if( WndKeyPiece( active ) == WND_NO_PIECE ) {
             Say( "Match not supported in this window" );
         } else {
             WndStartChoose( wnd );
         }
-        return( TRUE );
+        return( true );
         break;
     case MENU_PICK:
         i = DlgPickWithRtn( "Pick a number", NULL, 2, FmtNum, 2000 );
@@ -210,15 +210,15 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         GetPassword();
         break;
     case MENU_NEXT:
-        if( active != NULL ) WndSearch( active, FALSE, 1 );
+        if( active != NULL ) WndSearch( active, false, 1 );
         break;
     case MENU_PREV:
-        if( active != NULL ) WndSearch( active, FALSE, -1 );
+        if( active != NULL ) WndSearch( active, false, -1 );
         break;
     case MENU_SEARCH:
         if( SrchHistory == NULL ) SrchHistory = WndInitHistory();
         if( active != NULL ) {
-            WndSearch( active, FALSE, DlgSearch( active, SrchHistory ) );
+            WndSearch( active, false, DlgSearch( active, SrchHistory ) );
         }
         break;
     case MENU_OPEN1:
@@ -288,7 +288,7 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         WndFini();
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

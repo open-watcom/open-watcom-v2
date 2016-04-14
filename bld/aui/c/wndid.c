@@ -41,7 +41,7 @@ extern  int     WndNextId()
 
     for( i = 1; i <= NUM_WND_IDS; ++i ) {
         if( !WndIdUsed[ i ] ) {
-            WndIdUsed[ i ] = TRUE;
+            WndIdUsed[ i ] = true;
             return( i );
         }
     }
@@ -51,5 +51,5 @@ extern  int     WndNextId()
 extern  void    WndFreeId( int i )
 {
     if( i == 0 ) return;
-    WndIdUsed[ i ] = FALSE;
+    WndIdUsed[ i ] = false;
 }

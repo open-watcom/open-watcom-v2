@@ -35,6 +35,6 @@
 bool    WndQueryEndSessionHook()
 {
     // Called on WM_QUERYENDSESSION message
-    // Decide if it is ok to end session, return TRUE iff it is.
-    return( TRUE ); // return false to deny end session request
+    // Decide if it is ok to end session, return true iff it is.
+    return( true ); // return false to deny end session request
 }

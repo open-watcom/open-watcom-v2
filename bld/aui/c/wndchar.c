@@ -56,15 +56,15 @@ extern  bool            WndIDChar( a_window *wnd, char ch )
     while( *p != '\0' ) {
         if( *p == WND_ALNUM_CHAR ) {
             if( p[1] != WND_ALNUM_CHAR ) {
-                if( isalnum( ch ) ) return( TRUE );
+                if( isalnum( ch ) ) return( true );
             } else {
                 ++p;
             }
         }
-        if( ch == *p ) return( TRUE );
+        if( ch == *p ) return( true );
         ++p;
     }
-    return( FALSE );
+    return( false );
 }
 
 

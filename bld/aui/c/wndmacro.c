@@ -35,5 +35,5 @@
 extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 {
     wnd=wnd;key=key;
-    return( FALSE );
+    return( false );
 }

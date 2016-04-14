@@ -34,15 +34,15 @@
 
 extern bool             WndSetFontInfo( a_window *wnd, char *info )
 {
-    if( !GUIFontsSupported() ) return( TRUE );
-    if( info == NULL ) return( FALSE );
+    if( !GUIFontsSupported() ) return( true );
+    if( info == NULL ) return( false );
     return( GUISetFontInfo( wnd->gui, info ) );
 }
 
 
 extern bool             WndSetSysFont( a_window *wnd, bool fixed )
 {
-    if( !GUIFontsSupported() ) return( TRUE );
+    if( !GUIFontsSupported() ) return( true );
     return( GUISetSystemFont( wnd->gui, fixed ) );
 }
 

@@ -49,7 +49,7 @@ void *WndInitHistory()
     new->curr_cmd = 0;
     new->area[ 0 ] = 0;
     new->area[ 1 ] = 0;
-    new->last_was_next = FALSE;
+    new->last_was_next = false;
     new->first_free = 2;
     return( new );
 }
@@ -102,7 +102,7 @@ void WndSaveToHistory( save_area *save, char *cmd )
     if( save == NULL ) return;
     if( cmd == NULL ) return;
     len = strlen( cmd );
-    save->last_was_next = FALSE;
+    save->last_was_next = false;
     save->curr_cmd = save->first_free;
     _ModIndex( save->curr_cmd, -1 );
     _ModIndex( save->curr_cmd, -(save->area[ save->curr_cmd ] + 1) );
@@ -135,7 +135,7 @@ bool WndPrevFromHistory( save_area *save, char *cmd )
 
     if( save == NULL ) return( 0 );
     if( save->curr_cmd == save->first_cmd ) {
-        save->last_was_next = TRUE;
+        save->last_was_next = true;
         return( 0 );
     }
     curr = save->curr_cmd;
@@ -147,7 +147,7 @@ bool WndPrevFromHistory( save_area *save, char *cmd )
         _ModIndex( save->curr_cmd, -1 );
         _ModIndex( save->curr_cmd, -(save->area[ save->curr_cmd ] + 1) );
     }
-    save->last_was_next = FALSE;
+    save->last_was_next = false;
     len = save->area[ curr ];
     cnt = len;
     do {
@@ -179,9 +179,9 @@ bool WndNextFromHistory( save_area *save, char *cmd )
         save->curr_cmd = curr;
         _ModIndex( curr, save->area[ curr ] + 2 );
     }
-    save->last_was_next = FALSE;
+    save->last_was_next = false;
     if( curr == save->first_free ) return( 0 );
-    save->last_was_next = TRUE;
+    save->last_was_next = true;
     save->curr_cmd = curr;
     len = save->area[ curr ];
     cnt = len;
