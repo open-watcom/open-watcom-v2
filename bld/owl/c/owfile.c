@@ -209,19 +209,19 @@ static void resolveLabelNames( owl_file_handle file ) {
     }
 }
 
-static int comdefSection( owl_section_handle section ) {
-//******************************************************
-
+static bool comdefSection( owl_section_handle section )
+//*****************************************************
+{
     if( section->type & OWL_SEC_ATTR_COMDAT ) {
         if( section->type & OWL_SEC_ATTR_BSS ) {
-            return( TRUE );
+            return( true );
         }
         if( section->size == 0 && section->comdat_sym == NULL ) {
             // hack to nuke empty sections created by front end
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void redoSectionIndices( owl_file_handle file ) {
