@@ -99,18 +99,20 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     lpCmdLine = lpCmdLine;
 
     if (!hPrevInstance) {
-        if (!InitApplication(hInstance)) return (FALSE);
+        if (!InitApplication(hInstance)) {
+            return( FALSE );
+        }
     }
-    if (!InitInstance(hInstance, nCmdShow))
-        return (FALSE);
+    if( !InitInstance( hInstance, nCmdShow ) )
+        return( FALSE );
 
-    while (GetMessage(&msg, NULL, NULL, NULL)) {
+    while( GetMessage(&msg, NULL, NULL, NULL) ) {
 
         //if( !TranslateAccelerator(hwnd, hAccTable, &msg)
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    return (msg.wParam);
+    return( msg.wParam );
 }
 
 int RCSAPI Batcher( rcsstring str, void *cookie )
@@ -168,7 +170,7 @@ BOOL InitApplication(HANDLE hInstance)
 
 ****************************************************************************/
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+bool InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     hAccTable = LoadAccelerators(hInst, "WatcomEditCntlAcc");
@@ -187,12 +189,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         NULL
     );
 
-    if (!hwnd)
-        return (FALSE);
+    if( !hwnd )
+        return( false );
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
-    return (TRUE);
+    return( true );
 
 }
 
@@ -323,15 +325,15 @@ BOOL WINAPI About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     lParam = lParam;
     switch (message) {
         case WM_INITDIALOG:
-            return (TRUE);
+            return( TRUE );
 
         case WM_COMMAND:
             if (wParam == IDOK
                 || wParam == IDCANCEL) {
                 EndDialog(hDlg, TRUE);
-                return (TRUE);
+                return( TRUE );
             }
             break;
     }
-    return (FALSE);
+    return( FALSE );
 }
