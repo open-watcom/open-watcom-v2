@@ -234,9 +234,9 @@ bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
         }
         blk_count = SEG_PER_BLK;
     }
-    return( TRUE );
+    return( true );
 end_wlk:
-    return( FALSE );
+    return( false );
 }
 
 static int  SegCmp( void const *_seg1, void const *_seg2 )

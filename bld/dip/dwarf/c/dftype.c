@@ -52,10 +52,10 @@ static bool ArrayIndexSkip( dr_handle index, int pos, void *_df )
     pos = pos;
     if( df->skip == 0 ){
         df->curr = index;
-        return( FALSE );
+        return( false );
     }
     df->skip--;
-    return( TRUE );
+    return( true );
 }
 
 static DRWLKBLK ArrayWlkNext[DR_WLKBLK_ARRSIB] = {
@@ -96,16 +96,16 @@ static bool GetStrLen( imp_image_handle *ii,
 
     im = DwarfMod( ii, dr_sym );
     if( im == IMH_NOMOD ){
-        return( FALSE );
+        return( false );
     }
     modinfo = IMH2MODI( ii, im );
-    if( modinfo->is_segment == FALSE ){
+    if( modinfo->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( ii, dr_sym, &seg );
     }
     if( EvalLocation( ii, lc, dr_sym, seg, &src ) != DS_OK ){
-        return( FALSE );
+        return( false );
     }
     idx_size = ret->size;
     if( idx_size == 0 ){
@@ -113,7 +113,7 @@ static bool GetStrLen( imp_image_handle *ii,
     }
     LocationCreate( &dst, LT_INTERNAL, &val );
     if( DCAssignLocation( &dst, &src, idx_size ) != DS_OK ){
-        return( FALSE );
+        return( false );
     }
     switch( idx_size ){
     case 1:
@@ -126,7 +126,7 @@ static bool GetStrLen( imp_image_handle *ii,
         ret->size = val.l;
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 /***********************/
@@ -166,11 +166,11 @@ static void GetArraySize( imp_image_handle *ii,
     df.lc = lc;
     df.count = 1;
     df.dim = 0;
-    df.cont = FALSE;
+    df.cont = false;
     DRWalkArraySibs( it->array.index, ArrayWlk, &df );
     it->array.num_elts = df.count;
     it->array.low = df.low;
-    df.cont = TRUE;
+    df.cont = true;
     dim = GetArrayDim( it->array.index, 1 );
     if( dim != DR_HANDLE_NUL ) {
         DRWalkArraySibs( dim, ArrayWlk, &df );
@@ -183,8 +183,8 @@ static void GetArraySize( imp_image_handle *ii,
         base_stride = n_el ? base_stride / n_el : 0;
         it->array.base_stride = base_stride;
     }
-    it->array.is_set = TRUE;
-    it->array.is_based = FALSE;
+    it->array.is_set = true;
+    it->array.is_based = false;
 }
 
 static void GetArraySubSize( imp_image_handle *ii,
@@ -201,7 +201,7 @@ static void GetArraySubSize( imp_image_handle *ii,
     df.lc = lc;
     df.count = 1;
     df.dim = 0;
-    df.cont = FALSE;
+    df.cont = false;
     DRWalkArraySibs( it->array.index, ArrayWlk, &df );
     new_size = it->typeinfo.size;
     n_el = it->array.num_elts;
@@ -219,8 +219,8 @@ static void GetArraySubSize( imp_image_handle *ii,
     it->array.num_elts = df.count;
     it->array.low = df.low;
     --it->array.dims;
-    it->array.is_set = TRUE;
-    it->array.is_based = FALSE;
+    it->array.is_set = true;
+    it->array.is_based = false;
 }
 
 static void InitTypeHandle( imp_image_handle *ii,
@@ -240,7 +240,7 @@ static void InitTypeHandle( imp_image_handle *ii,
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         DRGetTypeInfo( it->type, &it->typeinfo );
         it->state = DF_SET;
-        it->sub_array = FALSE;
+        it->sub_array = false;
         if( it->typeinfo.kind == DR_TYPEK_ARRAY ){
             if( it->typeinfo.size == 0 ){
                 btype =  DRSkipTypeChain( it->type ); /* skip modifiers and typedefs */
@@ -283,12 +283,12 @@ static void InitTypeHandle( imp_image_handle *ii,
                         base_stride = n_el ? base_stride / n_el : 0;
                         it->array.base_stride = base_stride;
                     }
-                    it->array.is_set = TRUE;
-                    it->array.is_based = FALSE;
-                    it->sub_array = FALSE;
+                    it->array.is_set = true;
+                    it->array.is_based = false;
+                    it->sub_array = false;
                 }else{
-                    it->sub_array = TRUE;
-                    it->array.is_set = FALSE;
+                    it->sub_array = true;
+                    it->array.is_set = false;
                     it->array.index = GetArrayDim( info.child, 0 );
                 }
             }
@@ -327,7 +327,7 @@ static bool AType( dr_handle type, void *_typ_wlk, dr_search_context *cont )
     dr_dbg_handle   saved;
 
     cont = cont;
-    ret = TRUE;
+    ret = true;
     it = typ_wlk->it;
     it->im = typ_wlk->im;
     it->state = DF_NOT;
@@ -336,7 +336,7 @@ static bool AType( dr_handle type, void *_typ_wlk, dr_search_context *cont )
     typ_wlk->wr = typ_wlk->wk( typ_wlk->ii, it, typ_wlk->d );
     DRSetDebug( saved );
     if( typ_wlk->wr != WR_CONTINUE ){
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -514,9 +514,9 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
     if( base->state == DF_SET && base->sub_array  ){
         base->array.index = GetArrayDim( base->array.index, 1 );
         if( base->array.is_based ){
-            base->array.is_set = FALSE;
+            base->array.is_set = false;
         }
-        base->array.is_based = TRUE;
+        base->array.is_based = true;
         if( base->array.index != DR_HANDLE_NUL ) {
             return( DS_OK );
         }
@@ -542,14 +542,14 @@ static bool AEnum( dr_handle var, int index, void *_de )
 
     index = index;
     if( !DRConstValAT( var, (uint_32 *)&value ) ){
-        return( FALSE );
+        return( false );
     }
     if( value < de->low ){
         de->low = value;
     }else if( value > de->high ){
         de->high = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool ArrayEnumType( dr_handle tenu, int index, void *_df )
@@ -565,7 +565,7 @@ static bool ArrayEnumType( dr_handle tenu, int index, void *_df )
     de.low  = _I32_MIN;
     de.high = _I32_MAX;
     if( !DRWalkEnum( tenu, AEnum, &de )){
-        return( FALSE );
+        return( false );
     }
     df->low = de.low;
     count = de.high-de.low+1;
@@ -588,29 +588,29 @@ static bool GetSymVal( imp_image_handle *ii,
 
     dr_type = DRGetTypeAT( dr_sym );
     if( dr_type == DR_HANDLE_NUL ) {
-        return( FALSE );
+        return( false );
     }
     DRGetTypeInfo( dr_type, typeinfo );
     if( typeinfo->size > sizeof( *ret ) ){
-        return( FALSE );
+        return( false );
     }
     im = DwarfMod( ii, dr_sym );
     if( im == IMH_NOMOD ){
-        return( FALSE );
+        return( false );
     }
-    if( IMH2MODI( ii, im )->is_segment == FALSE ){
+    if( IMH2MODI( ii, im )->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( ii, dr_sym, &seg );
     }
     if( EvalLocation( ii, lc, dr_sym, seg, &src ) != DS_OK ){
-        return( FALSE );
+        return( false );
     }
     LocationCreate( &dst, LT_INTERNAL, ret );
     if( DCAssignLocation( &dst, &src, typeinfo->size ) != DS_OK ){
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
@@ -620,15 +620,15 @@ static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
     switch( val->val_class ){
     case DR_VAL_INT:
         *ret = val->val.s;
-        return( TRUE );
+        return( true );
     case DR_VAL_REF:
         if( DRConstValAT( val->val.ref, (uint_32*)ret ) ){
-            return( TRUE );
+            return( true );
         } else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool ArraySubRange( dr_handle tsub, int index, void *_df )
@@ -653,7 +653,7 @@ static bool ArraySubRange( dr_handle tsub, int index, void *_df )
     }
     if( info.count.val_class == DR_VAL_NOT ){
         if( info.high.val_class == DR_VAL_NOT ){
-            return( FALSE );
+            return( false );
         }
         GetDrVal( df, &info.high, &high );
         count = high - low +1;
@@ -733,9 +733,9 @@ static bool AParm( dr_handle var, int index, void *_df )
     ++df->count;
     if( df->count == df->last ){
         df->var = var;
-        return( FALSE );
+        return( false );
     }else{
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -863,14 +863,14 @@ typedef union {
 
 static bool AddBase( dr_handle base, inh_vbase **lnk )
 /****************************************************/
-//if base not in list add return FALSE
+//if base not in list add return false
 {
     inh_vbase   *cur;
 
     while( (cur = *lnk) != NULL ){
         if( base <= cur->base ){
             if( base == cur->base ){
-                return( FALSE);
+                return( false );
             }
             break;
         }
@@ -880,7 +880,7 @@ static bool AddBase( dr_handle base, inh_vbase **lnk )
     cur->base = base;
     cur->next = *lnk;
     *lnk = cur;
-    return( TRUE );
+    return( true );
 }
 
 static bool FreeBases( void *_lnk )
@@ -931,7 +931,7 @@ static bool AMem( dr_handle var, int index, void *_d )
     imp_sym_handle  *is;
     dr_dbg_handle   saved;
 
-    cont = TRUE;
+    cont = true;
     is = d->is;
     SetSymHandle( (type_wlk *)d, is );
     is->sym = var;
@@ -956,7 +956,7 @@ static bool AMem( dr_handle var, int index, void *_d )
     d->wr = d->wk( d->com.ii, SWI_SYMBOL, is, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
-        cont = FALSE;
+        cont = false;
     }
     return( cont );
 }
@@ -974,7 +974,7 @@ static bool AInherit( dr_handle inh, int index, void *_d )
     walk_result     wr;
 
     index = index;
-    cont = TRUE;
+    cont = true;
 
     btype = DRGetTypeAT( inh );
     btype =  DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
@@ -999,7 +999,7 @@ static bool AInherit( dr_handle inh, int index, void *_d )
         d->wk( d->com.ii, SWI_INHERIT_END, NULL, d->com.d );
         DRSetDebug( saved );
         if( d->wr != WR_CONTINUE ){
-            cont = FALSE;
+            cont = false;
         }
     }
     return( cont );
@@ -1028,7 +1028,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
     name =  DRGetName( var );
     if( name == NULL ){
         DCStatus( DS_FAIL );
-        return( FALSE );
+        return( false );
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
@@ -1055,7 +1055,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
         d->sr = SR_EXACT;
     }
     DCFree( name );
-    return( TRUE );
+    return( true );
 }
 
 static bool AInheritLookup( dr_handle inh, int index, void *_d )
@@ -1071,14 +1071,14 @@ static bool AInheritLookup( dr_handle inh, int index, void *_d )
     btype = DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
     if( DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL ){
         if( !AddBase( btype, &d->com.vbase ) ){
-            return( TRUE );
+            return( true );
         }
     }
     old_inh = d->com.inh;
     d->com.inh = inh;
     DRWalkStruct( btype, StrucWlkLookup, d );
     d->com.inh = old_inh;
-    return( TRUE );
+    return( true );
 }
 
 static bool AEnumMem( dr_handle var, int index, void *_d )
@@ -1090,7 +1090,7 @@ static bool AEnumMem( dr_handle var, int index, void *_d )
     dr_dbg_handle   saved;
 
     index = index;
-    cont = TRUE;
+    cont = true;
     is = d->is;
     SetSymHandle( (type_wlk *)d, is );
     is->sym = var;
@@ -1098,7 +1098,7 @@ static bool AEnumMem( dr_handle var, int index, void *_d )
     d->wr = d->wk( d->com.ii, SWI_SYMBOL, is, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
-        cont = FALSE;
+        cont = false;
     }
     return( cont );
 }
@@ -1115,7 +1115,7 @@ static bool AEnumMemLookup( dr_handle var, int index, void *_d )
     name =  DRGetName( var );
     if( name == NULL ){
         DCStatus( DS_FAIL );
-        return( FALSE );
+        return( false );
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
@@ -1125,7 +1125,7 @@ static bool AEnumMemLookup( dr_handle var, int index, void *_d )
         d->sr = SR_EXACT;
     }
     DCFree( name );
-    return( TRUE );
+    return( true );
 }
 
 extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
@@ -1286,7 +1286,7 @@ static bool AInhFind( dr_handle inh, int index, void *_df )
                 break;
             }
         }
-        df->cont = FALSE;
+        df->cont = false;
     } else {
         dr_derived =  DRSkipTypeChain( dr_derived); /* skip modifiers and typedefs */
         DRWalkStruct( dr_derived, InheritWlk, df ); /* walk struct looking for inheritance */
@@ -1308,7 +1308,7 @@ extern dip_status  DFBaseAdjust( imp_image_handle *ii,
     df.head = NULL;
     df.lnk  = &df.head;
     df.wr = DS_FAIL;
-    df.cont = TRUE;
+    df.cont = true;
     dr_base =  DRSkipTypeChain( base );   /* skip modifiers and typedefs */
     DRWalkStruct( dr_base, InheritWlk, &df ); /* walk struct looking for inheritance */
     return( df.wr );

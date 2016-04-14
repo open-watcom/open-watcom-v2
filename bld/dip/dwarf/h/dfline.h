@@ -48,6 +48,6 @@ typedef enum{
 extern void         InitCueList( cue_list *ctl );
 extern seg_cue      *InitSegCue( cue_list *ctl, addr_seg seg, dword offset );
 extern void         AddCue( seg_cue *ctl, dr_line_data *new );
-extern int          FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret );
+extern bool         FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret );
 extern dfline_find  FindCue( cue_list *list, cue_item *item, dfline_search what );
 extern void         FiniCueInfo( cue_list *list );

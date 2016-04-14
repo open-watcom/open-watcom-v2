@@ -49,22 +49,22 @@ static void GetModName( const char *path, char *buff )
 {
     const char  *start;
     const char  *end;
-    int         ext_found;
+    bool        ext_found;
 
     start = end = path;
-    ext_found = FALSE;
+    ext_found = false;
     while( *path != '\0' ) {
         if( IS_PATH_CHAR( *path ) ) {
             start = path + 1;
         } else if( *path == EXT_CHAR ) {
-            ext_found = TRUE;
+            ext_found = true;
             end = path;
         } else if( *path == '(' ) {
             start = path + 1;
             while( *path != ')' )
                 ++path;
             end = path;
-            ext_found = TRUE;
+            ext_found = true;
             goto do_copy;
         }
         ++path;
@@ -134,20 +134,20 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
         switch( model ) {
         case DR_MODEL_NONE:
         case DR_MODEL_FLAT:
-            modinfo->is_segment = FALSE;
+            modinfo->is_segment = false;
             break;
         default:
-            modinfo->is_segment = TRUE;
+            modinfo->is_segment = true;
             break;
         }
     } else {
-        modinfo->is_segment = FALSE;
+        modinfo->is_segment = false;
     }
     modinfo->model = model;
     modinfo->lang = DRGetLanguageAT( cu_tag );
     modinfo->dbg_pch = DRDebugPCHDef( cu_tag );
-    modinfo->has_pubnames = FALSE;
-    return( TRUE );
+    modinfo->has_pubnames = false;
+    return( true );
 }
 
 dip_status     InitModMap( imp_image_handle *ii )
@@ -186,12 +186,12 @@ bool    ClearMods( imp_image_handle *ii )
     bool        ret;
     mod_info    *modinfo;
 
-    ret = FALSE;
+    ret = false;
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
         if( modinfo->addr_sym->head != NULL ) {
             FiniAddrSym( modinfo->addr_sym );
-            ret = TRUE;
+            ret = true;
         }
         ++modinfo;
     }
@@ -429,7 +429,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
     bool                ret;
     imp_image_handle    *ii;
 
-    ret = TRUE;
+    ret = true;
     if( curr->is_stmt ) {
         off_info *off;
 
@@ -440,7 +440,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
         DCMapAddr( &info->ret->mach, ii->dcmap );
         off = FindMapAddr( ii->addr_map, info->ret );
         if( off->im == info->im ) {
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
@@ -452,12 +452,12 @@ static bool ALineCue( void *_info, dr_line_data *curr )
     l_walk_info *info = _info;
     bool        ret;
 
-    ret = TRUE;
+    ret = true;
     if( curr->is_stmt ) {
         *info->ret = NilAddr;
         info->ret->mach.offset = curr->offset;
         info->ret->mach.segment = curr->seg;
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -622,6 +622,6 @@ void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
 
     im = Dwarf2Mod( ii, mod_handle );
     if( im != IMH_NOMOD ) {
-        IMH2MODI( ii, im )->has_pubnames = TRUE;
+        IMH2MODI( ii, im )->has_pubnames = true;
     }
 }

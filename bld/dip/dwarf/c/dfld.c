@@ -135,13 +135,13 @@ static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned lon
         return( DS_FAIL );
     }
 
-    *byteswap = FALSE;
+    *byteswap = false;
 #ifdef __BIG_ENDIAN__
     if( elf_head.e_ident[EI_DATA] == ELFDATA2LSB ) {
 #else
     if( elf_head.e_ident[EI_DATA] == ELFDATA2MSB ) {
 #endif
-        *byteswap = TRUE;
+        *byteswap = true;
         SWAP_16( elf_head.e_type );
         SWAP_16( elf_head.e_machine );
         SWAP_32( elf_head.e_version );
@@ -326,7 +326,7 @@ static bool APubName( void *_ii, dr_pubname_data *curr )
         SetModPubNames( ii, curr->dbg_cu );
     }
     AddHashName( ii->name_map, curr->name, curr->dbg_handle );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -344,7 +344,7 @@ static bool AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
         DRGetNameBuff( sym, buff, sizeof( buff ) );
         AddHashName( ii->name_map, buff, sym );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -353,7 +353,7 @@ static walk_result ModGlbSymHash( imp_image_handle *ii, imp_mod_handle im, void 
 // Add module's global syms to the name hash
 {
     d = d;
-    DRWalkModFunc( IMH2MODI( ii, im )->cu_tag, FALSE, AModHash, ii );   /* load hash */
+    DRWalkModFunc( IMH2MODI( ii, im )->cu_tag, false, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }
 
@@ -365,7 +365,7 @@ static void LoadGlbHash( imp_image_handle *ii )
     DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
     if( ii->has_pubnames ) {
         DRWalkPubName( APubName, ii );
-        DFWalkModListSrc( ii, FALSE, ModGlbSymHash, NULL );
+        DFWalkModListSrc( ii, false, ModGlbSymHash, NULL );
     } else {                            /* big load up */
         DFWalkModList( ii, ModGlbSymHash, NULL );
     }
@@ -418,7 +418,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
     if( arange->is_start ) {
         info->im = Dwarf2Mod( ii, arange->dbg );
         if( info->im == IMH_NOMOD ) {
-            return( FALSE );
+            return( false );
         }
     }
     modinfo = IMH2MODI( ii, info->im );
@@ -432,7 +432,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
         }
     }
     if( arange->seg_size != 0 ) { /* reset because we know better */
-        modinfo->is_segment = TRUE;
+        modinfo->is_segment = true;
     }
     if( modinfo->is_segment ) {
         seg = arange->seg;
@@ -444,7 +444,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
     addr_info.map_offset = arange->addr;
     addr_info.len = arange->len;
     AddMapAddr( ii->addr_map, ii->dcmap, &addr_info );
-    return( TRUE );
+    return( true );
 }
 
 

@@ -859,13 +859,13 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
         return( DS_FAIL );
     }
 
-    byte_swap = FALSE;
+    byte_swap = false;
 #ifdef __BIG_ENDIAN__
     if( head.e_ident[EI_DATA] == ELFDATA2LSB ) {
 #else
     if( head.e_ident[EI_DATA] == ELFDATA2MSB ) {
 #endif
-        byte_swap = TRUE;
+        byte_swap = true;
         SWAP_16( head.e_type );
         SWAP_16( head.e_machine );
         SWAP_32( head.e_version );

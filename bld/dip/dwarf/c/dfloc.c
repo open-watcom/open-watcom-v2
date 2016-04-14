@@ -536,19 +536,19 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
         case MAD_NIL:
         default:
             DCStatus( DS_ERR | DS_BAD_LOCATION );
-            return( FALSE );
+            return( false );
         }
         d->ret = SafeDCItemLocation( d->lc, areg, &tmp );
         if( d->ret != DS_OK ) {
             DCStatus( d->ret );
-            return( FALSE );
+            return( false );
         }
         LocationAdd( &tmp, start );
         LocationTrunc( &tmp, size * 8 );
     }
     ll = d->ll;
     LocationJoin( ll, &tmp );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -563,7 +563,7 @@ static bool DRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size ) {
     d->ret = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
     a = ll.e[0].u.addr;
 #else
@@ -576,9 +576,9 @@ static bool DRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size ) {
     d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool DRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_16 size )
@@ -599,9 +599,9 @@ static bool DRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_1
     d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool Frame( void *_d, uint_32 *where )
@@ -616,11 +616,11 @@ static bool Frame( void *_d, uint_32 *where )
     d->ret = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
     d->base = ll.e[0].u.addr; /* set base */
     *where = ll.e[0].u.addr.mach.offset;
-    return( TRUE );
+    return( true );
 }
 
 static bool Reg( void *_d, uint_32 *where, uint_16 reg )
@@ -682,12 +682,12 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
     case MAD_NIL:
     default:
         DCStatus( DS_ERR | DS_BAD_LOCATION );
-        return( FALSE );
+        return( false );
     }
     d->ret = SafeDCItemLocation( d->lc, areg, &ll );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
     LocationAdd( &ll, start );
     LocationTrunc( &ll, size);
@@ -697,13 +697,13 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
     d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
     if( mad == MAD_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
         d->ret = SafeDCItemLocation( d->lc, CI_STACK, &ll );
         if( d->ret != DS_OK ) {
             DCStatus( d->ret );
-            return( FALSE );
+            return( false );
         }
         d->base = ll.e[0].u.addr;    /* set base */
         d->base.mach.offset = 0;
@@ -711,12 +711,12 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
         d->ret = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
         if( d->ret != DS_OK ) {
             DCStatus( d->ret );
-            return( FALSE );
+            return( false );
         }
         d->base = ll.e[0].u.addr;    /* set base */
         d->base.mach.offset = 0;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool ACon( void *_d, uint_32 *where, bool isfar )
@@ -735,7 +735,7 @@ static bool ACon( void *_d, uint_32 *where, bool isfar )
     if( isfar ) { /* assume next in stack is a seg and an xdref is coming */
         where[1] = d->base.mach.segment;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool Live( void *_d, uint_32 *where )
@@ -751,14 +751,14 @@ static bool Live( void *_d, uint_32 *where )
     d->ret = DS_OK;
     if( d->ret != DS_OK ) {
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
     if( !Real2Map( d->ii->addr_map, &ll.e[0].u.addr ) ) {
         d->ret = DS_ERR|DS_BAD_LOCATION;
         DCStatus( DS_ERR|DS_BAD_LOCATION );
     }
     *where  =  ll.e[0].u.addr.mach.offset;
-    return( TRUE );
+    return( true );
 }
 
 static dr_loc_callbck_def const CallBck = {
@@ -785,21 +785,21 @@ static bool IsEntry( imp_image_handle *ii, location_context *lc ) {
 // Get execution location
     ret = SafeDCItemLocation( lc, CI_EXECUTION, &ll );
     if( ret != DS_OK ) {
-        return( FALSE );
+        return( false );
     }
     if( DFAddrMod( ii, ll.e[0].u.addr, &im ) == SR_NONE ) {
-        return( FALSE );
+        return( false );
     }
     if( !Real2Map( ii->addr_map, &ll.e[0].u.addr ) ) {
-        return( FALSE );
+        return( false );
     }
     addr_sym = DFLoadAddrSym( ii, im );
     if( FindAddrSym( addr_sym, &ll.e[0].u.addr.mach, &info ) >= 0 ) {
         if( info.map_offset == ll.e[0].u.addr.mach.offset ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern dip_status EvalLocation( imp_image_handle *ii,
@@ -853,7 +853,7 @@ static bool NoFrame( void *_d, uint_32 *where )
 
     d->ret = DS_FAIL;
     *where = 0;
-    return( FALSE  );
+    return( false  );
 }
 
 static bool FakeLive( void *_d, uint_32 *where )
@@ -864,20 +864,20 @@ static bool FakeLive( void *_d, uint_32 *where )
 
     d->ret = DS_OK;
     *where  =  d->base.mach.offset;
-    return( TRUE );
+    return( true );
 }
 
 static bool RegOnlyRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
 {
 // Collect a reference from location expr and stuff in ret ll
 // Assume d->ll init num == 0, flags == 0
-// if not reg return FALSE parmloc requirement
+// if not reg return false parmloc requirement
     loc_handle  *d = _d;
     location_list tmp, *ll;
 
     if( kind == DR_LOC_ADDR ) {
         d->ret = DS_FAIL;
-        return( FALSE );
+        return( false );
     } else {
         reg_entry  clreg;
 
@@ -885,14 +885,14 @@ static bool RegOnlyRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind
         d->ret = SafeDCItemLocation( d->lc, clreg.ci, &tmp );
         if( d->ret != DS_OK ) {
             DCStatus( d->ret );
-            return( FALSE );
+            return( false );
         }
         LocationAdd( &tmp, clreg.start );
         LocationTrunc( &tmp, size * 8 );
     }
     ll = d->ll;
     LocationJoin( ll, &tmp );
-    return( TRUE );
+    return( true );
 }
 
 static dr_loc_callbck_def const ParmBck = {
@@ -1044,9 +1044,9 @@ static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
     } else {
         d->ret = DS_ERR|DS_BAD_LOCATION;
         DCStatus( d->ret );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static dr_loc_callbck_def const ValBck = {
@@ -1204,15 +1204,15 @@ extern bool EvalOffset( imp_image_handle *ii,
     bool            ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.init  = TRUE;
-    d.ref   = TRUE;
-    d.dref  = TRUE;
-    d.drefx = TRUE;
-    d.frame = TRUE;
-    d.base  = TRUE;
-    d.reg   = TRUE;
-    d.acon  = TRUE;
-    d.live  = TRUE;
+    d.init  = true;
+    d.ref   = true;
+    d.dref  = true;
+    d.drefx = true;
+    d.frame = true;
+    d.base  = true;
+    d.reg   = true;
+    d.acon  = true;
+    d.live  = true;
     d.offset = 0;
     ret = DRRetAddrLocation( sym, &NOPCallBck, &d );
     *val = d.offset;
@@ -1227,15 +1227,15 @@ bool EvalSeg( imp_image_handle *ii, dr_handle sym, addr_seg *val )
     bool      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.init  = TRUE;
-    d.ref   = TRUE;
-    d.dref  = TRUE;
-    d.drefx = TRUE;
-    d.frame = TRUE;
-    d.base  = TRUE;
-    d.reg   = TRUE;
-    d.acon  = TRUE;
-    d.live  = TRUE;
+    d.init  = true;
+    d.ref   = true;
+    d.dref  = true;
+    d.drefx = true;
+    d.frame = true;
+    d.base  = true;
+    d.reg   = true;
+    d.acon  = true;
+    d.live  = true;
     d.offset = 0;
     ret = DRSegLocation( sym, &NOPCallBck, &d );
     *val = (addr_seg)d.offset;
@@ -1251,15 +1251,15 @@ extern bool EvalSymOffset( imp_image_handle *ii,
     bool      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.init  = TRUE;
-    d.ref   = TRUE;
-    d.dref  = FALSE;
-    d.drefx = FALSE;
-    d.frame = FALSE;
-    d.base  = FALSE;
-    d.reg   = FALSE;
-    d.acon  = TRUE;
-    d.live  = FALSE;
+    d.init  = true;
+    d.ref   = true;
+    d.dref  = false;
+    d.drefx = false;
+    d.frame = false;
+    d.base  = false;
+    d.reg   = false;
+    d.acon  = true;
+    d.live  = false;
     d.offset = 0;
     ret = DRLocationAT( sym, &NOPCallBck, &d  );
     *val = d.offset;

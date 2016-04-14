@@ -247,7 +247,7 @@ bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
     key = elf_hash( wlk->name );
     bnum = BNUM( key );
     count = NAME_BLKSIZE-ctl->bucket[bnum].rem;
-//    ret = TRUE;
+//    ret = true;
     for( blk = ctl->bucket[bnum].head; blk != NULL; blk = blk->next ) {
         name_entry  *curr;
 
@@ -255,7 +255,7 @@ bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
         while( count > 0 ) {
             if( curr->key == key ) {
                 if( !wlk->fn( wlk->d, curr->sym, curr->name ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             ++curr;
@@ -263,5 +263,5 @@ bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
         }
         count = NAME_BLKSIZE;
     }
-    return( TRUE );
+    return( true );
 }

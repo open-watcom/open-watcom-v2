@@ -172,7 +172,7 @@ dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
         it->state = DF_NOT;
     } else {
         it->state = DF_SET;         // default the type
-        it->sub_array = FALSE;
+        it->sub_array = false;
         it->typeinfo.kind = DR_TYPEK_DATA;
         it->typeinfo.size = 0;
         it->typeinfo.mclass = DR_MOD_NONE;
@@ -205,7 +205,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
     bool            is_segment;
 
     cont = cont;
-//    ret = TRUE;
+//    ret = true;
     is_segment = IMH2MODI( d->ii, d->im )->is_segment;
     if( DRGetLowPc( sym, &offset) ) {
         if( !is_segment ) {
@@ -226,7 +226,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
     info.sym = sym;
     info.map_seg = seg;
     AddAddrSym( d->addr_sym, &info );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -246,7 +246,7 @@ seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
         d.ii = ii;
         d.im = im;
         d.ret = SR_NONE;
-        DRWalkModFunc( modinfo->cu_tag, FALSE, AMod, &d );   /* load cache */
+        DRWalkModFunc( modinfo->cu_tag, false, AMod, &d );   /* load cache */
         SortAddrSym( addr_sym );
     }
     return( addr_sym );
@@ -268,7 +268,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 //    unsigned        len;
     dr_handle       contain;
 
-    cont = TRUE;
+    cont = true;
     contain  = DRGetContaining( info->sym );
     if( contain != DR_HANDLE_NUL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
@@ -276,7 +276,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 //            len =  DRGetNameBuff( info->sym, buff, sizeof( buff ) );
             DRGetNameBuff( info->sym, buff, sizeof( buff ) );
             if( strcmp( buff, df->name ) == 0 ) {
-                cont = FALSE;
+                cont = false;
                 df->match = info->sym;
             }
         }
@@ -576,13 +576,13 @@ static bool ARet( dr_handle var, int index, void *_var_ptr )
     unsigned    len;
 
     index = index;
-    cont = TRUE;
+    cont = true;
     if( DRIsArtificial( var ) ) {
         len = DRGetNameBuff( var, name, sizeof( ".return" ) );
         if( len == sizeof( ".return" ) ) {
             if( strcmp( name, ".return" ) == 0 ) {
                 *var_ptr = var;
-                cont = FALSE;
+                cont = false;
             }
         }
     }
@@ -648,12 +648,12 @@ static bool AThis( dr_handle var, int index, void *_var_ptr )
     unsigned    len;
 
     index = index;
-    ret = TRUE;
+    ret = true;
     len =  DRGetNameBuff( var, name, sizeof( "this" ) );
     if( len == sizeof( "this" ) ) {
         if( strcmp( name, "this" ) == 0 ) {
             *var_ptr = var;
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
@@ -854,7 +854,7 @@ static bool InBlk( dr_handle blk, int depth, void *_ctl )
         ctl->root = new;
     }
     ctl->edge = new;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -864,12 +864,12 @@ static bool IsInScope( scope_ctl  *ctl, address addr )
     bool            ret;
     scope_node      *root;
 
-    ret = FALSE;
+    ret = false;
     root = ctl->root;
     if( root != NULL ) {
         if( ctl->base.mach.segment == addr.mach.segment ) {
             if( root->start <= addr.mach.offset && addr.mach.offset < root->end ) {
-                ret = TRUE;
+                ret = true;
            }
         }
     }
@@ -1140,9 +1140,9 @@ static bool ASym( dr_handle var, int index, void *_df )
     saved = DRGetDebug();
     df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
     DRSetDebug( saved );
-    cont = TRUE;
+    cont = true;
     if( df->wr != WR_CONTINUE ) {
-        cont = FALSE;
+        cont = false;
     }
     df->com.cont = cont;
     return( cont );
@@ -1156,7 +1156,7 @@ static bool ASymCont( dr_handle var, int index, void *_df )
     dr_handle       contain;
     bool            cont;
 
-    cont = TRUE;
+    cont = true;
     contain = DRGetContaining( var );
     if( contain != DR_HANDLE_NUL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
@@ -1181,7 +1181,7 @@ static bool AModSym( dr_handle var, int index, void *_df )
     sc = DRGetTagType( var );
     if( sc == DR_TAG_NAMESPACE ) {
         DRWalkBlock( var, df->com.what, AModSym, (void *)df );
-        cont = TRUE;
+        cont = true;
     } else {
         is = df->is;
         is->sclass = SYM_VAR;
@@ -1191,10 +1191,10 @@ static bool AModSym( dr_handle var, int index, void *_df )
         saved = DRGetDebug();
         df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
         DRSetDebug( saved );
-        cont = TRUE;
+        cont = true;
     }
     if( df->wr != WR_CONTINUE ) {
-        cont = FALSE;
+        cont = false;
     }
     df->com.cont = cont;
     return( cont );
@@ -1225,10 +1225,10 @@ static bool ASymLookup( dr_handle var, int index, void *_df )
             is->sym = var;
             is->state = DF_NOT;
             df->sr = SR_EXACT;
-            df->com.cont = FALSE;
+            df->com.cont = false;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1239,7 +1239,7 @@ static bool ASymContLookup( dr_handle var, int index, void *_df )
     dr_handle       contain;
     bool            cont;
 
-    cont = TRUE;
+    cont = true;
     contain = DRGetContaining( var );
     if( contain != DR_HANDLE_NUL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
@@ -1293,7 +1293,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
     mod_info            *modinfo;
 
     ii = df->com.ii;
-    cont = TRUE;
+    cont = true;
     if( DFAddrMod( ii, *addr, &im ) != SR_NONE ) {
         modinfo = IMH2MODI( ii, im );
         if( DFAddrScope( ii, im, *addr, &scope ) != SR_NONE ) {
@@ -1305,7 +1305,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                 if( !cont )
                     break;
                 if( DFScopeOuter( ii, im, &scope, &scope ) == SR_NONE ) {
-                    cont = TRUE;
+                    cont = true;
                     break;
                 }
             }
@@ -1323,13 +1323,13 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                             df->wlk.wr = WalkTypeSymList( ii, &it,
                                  df->wlk.wk, df->wlk.is, df->com.d );
                             if( df->wlk.wr != WR_CONTINUE ) {
-                                cont = FALSE;
+                                cont = false;
                             }
                         } else {
                             df->lookup.sr = SearchMbr( ii, &it,
                                           df->lookup.li, df->com.d );
                             if( df->lookup.sr == SR_EXACT ) {
-                                cont = FALSE;
+                                cont = false;
                             }
                         }
                     }
@@ -1359,7 +1359,7 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
     dr_tag_type         sc;
     bool                cont;
 
-    cont = TRUE;
+    cont = true;
     ii = df->com.ii;
     if( DFAddrMod( ii, scope->start, &im ) != SR_NONE ) {
         DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
@@ -1429,7 +1429,7 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     df.com.d = d;
     df.com.what = DR_SRCH_func_var;
     df.com.containing = DR_HANDLE_NUL;
-    df.com.cont = TRUE;
+    df.com.cont = true;
     df.com.kind = WLK_WLK;
     df.wlk.wk = wk;
     df.wlk.is = is;
@@ -1540,7 +1540,7 @@ static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
         is->sym = dr_sym;
         is->state = DF_NOT;
     }
-    return( TRUE );
+    return( true );
 }
 
 typedef struct {
@@ -1687,7 +1687,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.d = d;
     df.com.what = Dip2DwarfSrch( li->type );
     df.com.containing = DR_HANDLE_NUL;
-    df.com.cont = TRUE;
+    df.com.cont = true;
     df.com.kind = WLK_LOOKUP;
     df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
     df.lookup.li = li;
@@ -1704,7 +1704,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         if( li->scope.len == 0 ) {
             cont = WalkScopedSymList( &df, ASymLookup, (address *)source );
         } else {
-            cont = TRUE;
+            cont = true;
         }
         sr = df.lookup.sr;
         if( cont ) {

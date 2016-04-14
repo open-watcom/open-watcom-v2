@@ -252,7 +252,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.base = &blk->info[0];
         cmp.key = new->offset;
         cmp.hi = blk_count;
-		cmp.last = 0;
+                cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 ) goto exit;
         if( diff > 0 ) {
@@ -343,9 +343,9 @@ static bool CheckInfo( seg_info *ctl )
         }
         blk_count = OFF_PER_BLK;
     }
-    return( TRUE );
+    return( true );
 error:
-    return( FALSE );
+    return( false );
 }
 
 
@@ -357,7 +357,7 @@ static bool ChkOffsets( void *d, seg_info *ctl )
     if( !CheckInfo( ctl ) ) {
         EnterDebugger();
     }
-    return( TRUE );
+    return( true );
 }
 
 extern void DmpBlk( off_blk *blk, int count )
@@ -427,11 +427,11 @@ static bool WlkSegInfos( void *_d, void *_curr )
     bool                cont;
 
     d->seg_base.mach.segment = curr->entry.real;
-    cont = TRUE;
+    cont = true;
     if( DCSameAddrSpace( *d->a, d->seg_base ) == DS_OK ) {
         d->info = SearchBlkList( curr, d->a->mach.offset );
         if( d->info != NULL ){
-            cont = FALSE;
+            cont = false;
         }
     }
     return( cont );
@@ -479,14 +479,14 @@ bool Real2Map( seg_list *ctl, address *what )
     bool        ret;
     off_info    *off;
 
-    ret = FALSE;
+    ret = false;
 
     off = FindMapAddr( ctl, what );
     if( off != NULL ) {
         what->mach.offset -=  off->offset;
         what->mach.offset +=  off->map_offset;
         what->mach.segment =  off->map_seg;
-        ret = TRUE;
+        ret = true;
     }
     return( ret );
 }
@@ -512,7 +512,7 @@ static bool FreeSegOffsets( void *d, void *_curr )
         next = blk->next;
         DCFree( blk );
     }
-    return( TRUE );
+    return( true );
 }
 
 

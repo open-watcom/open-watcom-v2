@@ -249,7 +249,7 @@ static bool SortOffsets( void *d, void *_ctl )
         blk_count = OFF_PER_BLK;
         blk = blk->next;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -296,9 +296,9 @@ static bool WalkOffsets( void *_wlk, void *_ctl )
         blk_count = OFF_PER_BLK;
         blk = blk->next;
     }
-    return( TRUE );
+    return( true );
 done:
-    return( FALSE );
+    return( false );
 }
 
 
@@ -333,7 +333,7 @@ static bool FreeSegOffsets( void *d, void *_curr )
         next = blk->next;
         DCFree( blk );
     }
-    return( TRUE );
+    return( true );
 }
 
 
