@@ -61,7 +61,7 @@ extern  void            OutputSetFH( FILE * );
 extern  size_t          Output( const char *fmt, ... );
 extern  void            OutputData( unsigned_32 off, unsigned_32 len );
 
-extern  int             no_disp;
+extern  bool            no_disp;
 
 /*
     Object reading (objread.c)
