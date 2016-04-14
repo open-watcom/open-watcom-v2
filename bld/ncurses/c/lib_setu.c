@@ -90,7 +90,7 @@ MODULE_ID("$Id: lib_setup.c,v 1.70 2002/10/12 21:50:18 tom Exp $")
 # endif
 #endif
 
-static int _use_env = TRUE;
+static int _use_env = true;
 
 static void do_prototype(void);
 
@@ -278,7 +278,7 @@ grab_entry(const char *const tn, TERMTYPE * const tp)
         int n;
         for_each_boolean(n, tp) {
             if (!VALID_BOOLEAN(tp->Booleans[n]))
-                tp->Booleans[n] = FALSE;
+                tp->Booleans[n] = false;
         }
         for_each_string(n, tp) {
             if (tp->Strings[n] == CANCELLED_STRING)

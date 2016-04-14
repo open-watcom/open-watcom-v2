@@ -326,7 +326,7 @@ struct screen {
         WINDOW          *_stdscr;       /* screen's full-window context     */
 
         struct tries    *_keytry;       /* "Try" for use with keypad mode   */
-        struct tries    *_key_ok;       /* Disabled keys via keyok(,FALSE)  */
+        struct tries    *_key_ok;       /* Disabled keys via keyok(,false)  */
         bool            _tried;         /* keypad mode was initialized      */
         bool            _keypad_on;     /* keypad mode is currently on      */
 
@@ -737,7 +737,7 @@ extern  NCURSES_EXPORT(void) name (void); \
         NCURSES_EXPORT(void) name (void) { }
 
 #define ALL_BUT_COLOR ((chtype)~(A_COLOR))
-#define IGNORE_COLOR_OFF FALSE
+#define IGNORE_COLOR_OFF false
 #define NONBLANK_ATTR (A_BOLD|A_DIM|A_BLINK)
 #define XMC_CHANGES(c) ((c) & SP->_xmc_suppress)
 
@@ -750,7 +750,7 @@ extern  NCURSES_EXPORT(void) name (void); \
 
 
 #define toggle_attr_off(S,at) {\
-   if (IGNORE_COLOR_OFF == TRUE) {\
+   if (IGNORE_COLOR_OFF == true) {\
       if (PAIR_NUMBER(at) == 0xff) /* turn off color */\
          (S) &= ~(at);\
       else /* leave color alone */\

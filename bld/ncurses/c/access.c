@@ -51,13 +51,13 @@ _nc_rootname(char *path)
 #if !defined(MIXEDCASE_FILENAMES)
     int n;
     for (s = result; *s != '\0'; ++s) {
-	*s = LOWERCASE(*s);
+        *s = LOWERCASE(*s);
     }
 #endif
 #if defined(PROG_EXT)
     if ((s = strrchr(result, '.')) != 0) {
-	if (!strcmp(s, PROG_EXT))
-	    *s = '\0';
+        if (!strcmp(s, PROG_EXT))
+            *s = '\0';
     }
 #endif
 #endif
@@ -70,12 +70,12 @@ _nc_basename(char *path)
     char *result = strrchr(path, '/');
 #ifdef __EMX__
     if (result == 0)
-	result = strrchr(path, '\\');
+        result = strrchr(path, '\\');
 #endif
     if (result == 0)
-	result = path;
+        result = path;
     else
-	result++;
+        result++;
     return result;
 }
 
@@ -83,21 +83,21 @@ NCURSES_EXPORT(int)
 _nc_access(const char *path, int mode)
 {
     if (access(path, mode) < 0) {
-	if ((mode & W_OK) != 0
-	    && errno == ENOENT
-	    && strlen(path) < PATH_MAX) {
-	    char head[PATH_MAX];
-	    char *leaf = _nc_basename(strcpy(head, path));
+        if ((mode & W_OK) != 0
+            && errno == ENOENT
+            && strlen(path) < PATH_MAX) {
+            char head[PATH_MAX];
+            char *leaf = _nc_basename(strcpy(head, path));
 
-	    if (leaf == 0)
-		leaf = head;
-	    *leaf = '\0';
-	    if (head == leaf)
-		(void) strcpy(head, ".");
+            if (leaf == 0)
+                leaf = head;
+            *leaf = '\0';
+            if (head == leaf)
+                (void) strcpy(head, ".");
 
-	    return access(head, R_OK | W_OK | X_OK);
-	}
-	return -1;
+            return access(head, R_OK | W_OK | X_OK);
+        }
+        return -1;
     }
     return 0;
 }
@@ -112,12 +112,12 @@ _nc_env_access(void)
 {
 #if HAVE_ISSETUGID
     if (issetugid())
-	return FALSE;
+        return( false );
 #elif HAVE_GETEUID && HAVE_GETEGID
     if (getuid() != geteuid()
-	|| getgid() != getegid())
-	return FALSE;
+        || getgid() != getegid())
+        return( false );
 #endif
-    return getuid() != 0 && geteuid() != 0;	/* ...finally, disallow root */
+    return getuid() != 0 && geteuid() != 0;     /* ...finally, disallow root */
 }
 #endif

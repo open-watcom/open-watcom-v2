@@ -809,8 +809,8 @@ extern NCURSES_EXPORT(int) wvline (WINDOW *,chtype,int);                /* imple
 #define getsyx(y,x) do { if(newscr->_leaveok) (y)=(x)=-1; \
                          else getyx(newscr,(y),(x)); \
                     } while(0)
-#define setsyx(y,x) do { if((y)==-1 && (x)==-1) newscr->_leaveok=TRUE; \
-                         else {newscr->_leaveok=FALSE;wmove(newscr,(y),(x));} \
+#define setsyx(y,x) do { if((y)==-1 && (x)==-1) newscr->_leaveok=true; \
+                         else {newscr->_leaveok=false;wmove(newscr,(y),(x));} \
                     } while(0)
 
 /* It seems older SYSV curses versions define these */
