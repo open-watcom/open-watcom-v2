@@ -39,13 +39,8 @@
 #include "ovlstd.h"
 #endif
 #include "ovlldr.h"
-
 #include "trpovl.h"
 
-#ifndef FALSE
-#define FALSE       0
-#define TRUE        (!FALSE)
-#endif
 
 typedef unsigned char byte;
 
@@ -75,15 +70,15 @@ static int GetSizeOverlays( void )
     return( ( ( number + 7 ) / 8 ) + sizeof( unsigned ) + 1 );
 }
 
-static int GetSectionData( ovl_address __far *data )
-/************************************************/
+static bool GetSectionData( ovl_address __far *data )
+/***************************************************/
 {
     unsigned            number;
     ovltab_entry_ptr    ovl;
 
     number = __OVLTABEND__ - __OVLTAB__.entries;
     if( ( data->sect_id > number ) || ( data->sect_id == 0 ) )
-        return( FALSE );
+        return( false );
     ovl = __OVLTAB__.entries + data->sect_id - 1;
     data->sect_id = ovl->num_paras;
 #ifdef OVL_WHOOSH
@@ -92,11 +87,11 @@ static int GetSectionData( ovl_address __far *data )
     data->mach.segment = ovl->code_handle;
 #endif
     data->mach.offset = 0;
-    return( TRUE );
+    return( true );
 }
 
-static int SaveOvlState( unsigned char __far *data )
-/**************************************************/
+static bool SaveOvlState( unsigned char __far *data )
+/***************************************************/
 // this fills a bit array with the status of the overlays
 // 1 means overlay in memory, 0 means overlay on disk
 {
@@ -132,11 +127,11 @@ static int SaveOvlState( unsigned char __far *data )
         *savedata |= 1 << ( __OVLDBGINFO__.section - 1 ) % 8;
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
-static int RestoreOvlState( unsigned char __far *data )
-/*****************************************************/
+static bool RestoreOvlState( unsigned char __far *data )
+/******************************************************/
 // set the overlay state to match the given vector.
 {
     ovltab_entry_ptr    ovl;
@@ -175,7 +170,7 @@ static int RestoreOvlState( unsigned char __far *data )
             ovl->start_para = start_save;
             __OVLFLAGS__ |= DBGAREA_LOADED | DBGAREA_VALID;
         }
-        return( TRUE );
+        return( true );
     }
 #endif
     mask = 1;
@@ -188,7 +183,7 @@ static int RestoreOvlState( unsigned char __far *data )
         if( (ovl->flags_anc & FLAG_INMEM) == 0 != (*data & mask) == 0 ) {
             /* our overlay state doesn't match the one given to us... so
                we tell the debugger to forget it. */
-            return( FALSE );
+            return( false );
         }
 #endif
         if( mask == 0x80 ) {
@@ -206,12 +201,12 @@ static int RestoreOvlState( unsigned char __far *data )
 #else
     __OVLFLAGS__ &= ~DBGAREA_VALID;
 #endif
-    return( TRUE );
+    return( true );
 }
 
-static int CheckVecAddr( ovl_address __far *data )
-/**********************************************/
-// check if the address stored in data is a vector, returning TRUE if it is.
+static bool CheckVecAddr( ovl_address __far *data )
+/*************************************************/
+// check if the address stored in data is a vector, returning true if it is.
 {
     vector_ptr          vect;
 #ifdef OVL_WHOOSH
@@ -219,14 +214,14 @@ static int CheckVecAddr( ovl_address __far *data )
 #endif
 
     if( data->mach.segment != FP_SEG( __OVLSTARTVEC__ ) )
-        return( FALSE );
+        return( false );
     vect = (vector_ptr)data->mach.offset;
     if( FP_OFF( vect ) < FP_OFF( __OVLSTARTVEC__ ) )
-        return( FALSE );
+        return( false );
     if( !OVLVEC_OK( vect ) )
-        return( FALSE );
+        return( false );
     if( ( FP_OFF( vect ) - FP_OFF( __OVLSTARTVEC__ ) ) % sizeof( vector ) != 0 )
-        return( FALSE );
+        return( false );
 #ifdef OVL_SMALL
     data->mach.segment = FP_SEG( vect );
     data->mach.offset = vect->target + FP_OFF( &vect->target ) + sizeof( vect->target );
@@ -259,14 +254,14 @@ static int CheckVecAddr( ovl_address __far *data )
     data->mach.offset = vect->target.off;
     data->sect_id = vect->u.v.sec_num;
 #endif
-    return( TRUE );
+    return( true );
 }
 
 #ifdef OVL_WHOOSH
 
-static int GetChangedSections( ovl_address __far *data )
-/*************************************************/
-/* return TRUE if a section changed. return the section number and the new
+static bool GetChangedSections( ovl_address __far *data )
+/*******************************************************/
+/* return true if a section changed. return the section number and the new
  * segment in that memory pointed to by data */
 {
     ovltab_entry_ptr    ovl;
@@ -283,7 +278,7 @@ static int GetChangedSections( ovl_address __far *data )
             data->mach.segment = __OVLDBGINFO__.location;
             __OVLTAB__.entries[ovl_num - 1].flags_anc &= ~FLAG_CHANGED;
             __OVLTAB__.entries[ovl_num - 1].flags_anc |= FLAG_DBG_SECT_LOAD;
-            return( TRUE );
+            return( true );
         }
     }
     for( ovl = __OVLTAB__.entries + data->sect_id; OVLTAB_OK( ovl ); ++ovl ) {
@@ -296,13 +291,13 @@ static int GetChangedSections( ovl_address __far *data )
 
                 rt = MK_FP( ovl->code_handle, 0 );
                 data->mach.segment = rt->old_code_handle;
-                return( TRUE );
+                return( true );
             }
             data->mach.segment = ovl->code_handle;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 unsigned __near __OVLMAXSECT__( void )
@@ -323,11 +318,11 @@ unsigned __near __OVLMAXSECT__( void )
 #endif
 
 int __far GNAME( DBG_HANDLER )( int service, void __far *data )
-/*********************************************************/
+/*************************************************************/
 {
     int ret;
 
-    ret = FALSE;
+    ret = 0;
     switch( service ) {
     case OVLDBG_GET_OVERLAY_STATE:
         ret = SaveOvlState( data );
