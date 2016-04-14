@@ -158,7 +158,7 @@ static size_t GetPathElementLen( const char *path_list, const char *end )
     char    c;
     size_t  len;
 
-    is_blank = TRUE;
+    is_blank = true;
     len = 0;
     while( path_list != end && (c = *path_list) != '\0' ) {
         path_list++;
@@ -167,12 +167,12 @@ static size_t GetPathElementLen( const char *path_list, const char *end )
                 break;
             }
         } else if( IS_DIR_SEP( c ) ) {
-            is_blank = FALSE;
+            is_blank = false;
             ++len;
         } else if( !is_blank ) {
             ++len;
         } else if( c != ' ' ) {
-            is_blank = FALSE;
+            is_blank = false;
             ++len;
         }
     }
@@ -389,10 +389,11 @@ static void Pass1ResFileShutdown( void )
 
     error = false;
     if( CurrResFile.IsOpen ) {
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 )
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
             WriteOS2Tables();
-        else
+        } else {
             WriteWINTables();
+        }
         if( ErrorHasOccured ) {
             ResCloseFile( CurrResFile.handle );
             CurrResFile.IsOpen = false;

@@ -33,7 +33,7 @@
 #ifndef DMPCONT_INCLUDED
 #define DMPCONT_INCLUDED
 
-extern int DumpContents( WResTypeInfo * type, WResResInfo * res,
+extern bool DumpContents( WResTypeInfo * type, WResResInfo * res,
                             WResLangInfo *lang, WResFileID, uint_16 os );
 
 #endif

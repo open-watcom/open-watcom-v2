@@ -37,6 +37,8 @@
 #include "m2wres.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
+#include "wres.h"
+
 
 static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
 /*************************************************************/
@@ -48,38 +50,37 @@ static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
     }
 }
 
-static int ConvertMResources( WResFileID infile, WResFileID outfile,
-                        WResDir outdir )
-/******************************************************************/
+static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir outdir )
+/************************************************************************************/
 {
     MResResourceHeader *    mheader;
     WResID *                name;
     WResID *                type;
-    int                     error;
-    int                     lastheader;     /*TRUE if lastheader has been read*/
+    bool                    error;
+    bool                    lastheader; /* true if lastheader has been read */
     uint_32                 offset;
-    int                     duplicate;
+    bool                    duplicate;
 
     mheader = MResReadResourceHeader( infile );
     /* assume that any error reading here means end of file */
-    lastheader = (mheader == NULL);
-    error = FALSE;
+    lastheader = ( mheader == NULL );
+    error = false;
 
-    while (!lastheader && !error) {
+    while( !lastheader && !error ) {
         name = ConvertNameOrOrdToID( mheader->Name );
         type = ConvertNameOrOrdToID( mheader->Type );
         offset = RCTELL( outfile );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
-        if (type->IsName || type->ID.Num != RT_NAMETABLE ||
+        if( type->IsName || type->ID.Num != RT_NAMETABLE ||
                         CmdLineParms.KeepNameTable ) {
             error = WResAddResource( type, name, mheader->MemoryFlags, offset,
-                        mheader->Size, outdir, NULL, &(duplicate) );
-            if (duplicate) {
+                        mheader->Size, outdir, NULL, &duplicate );
+            if( duplicate ) {
                 /* print message and continue */
                 puts( "Error: duplicate entry" );
-                error = FALSE;
+                error = false;
             } else {
                 error = BinaryCopy( infile, outfile, mheader->Size );
             }
@@ -93,26 +94,26 @@ static int ConvertMResources( WResFileID infile, WResFileID outfile,
 
         mheader = MResReadResourceHeader( infile );
         /* assume that any error reading here means end of file */
-        lastheader = (mheader == NULL);
+        lastheader = ( mheader == NULL );
     }
 
     return( error );
 } /* ConvertMResources */
 
-int ConvertMResToWRes( WResFileID infile, WResFileID outfile )
-/************************************************************/
+bool ConvertMResToWRes( WResFileID infile, WResFileID outfile )
+/*************************************************************/
 {
     WResDir                 outdir;
-    int                     error;
+    bool                    error;
 
     outdir = WResInitDir();
-    if (WResDirInitError( outdir )) {
-        return( TRUE );
+    if( WResDirInitError( outdir ) ) {
+        return( true );
     }
 
     error = ConvertMResources( infile, outfile, outdir );
 
-    if (!error) {
+    if( !error ) {
         error = WResWriteDir( outfile, outdir );
     }
 

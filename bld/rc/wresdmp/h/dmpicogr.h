@@ -33,6 +33,6 @@
 #ifndef DMPICOGR_INCLUDED
 #define DMPICOGR_INCLUDED
 
-extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle );
+extern bool DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle );
 
 #endif

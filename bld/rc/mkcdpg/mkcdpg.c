@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <string.h>
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
@@ -46,8 +47,8 @@ typedef struct {
     uint_16             *table;
 }DBInformation;
 
-static void freeInfo( DBInformation *info ) {
-
+static void freeInfo( DBInformation *info )
+{
     if( info != NULL ) {
         if( info->index != NULL ) free( info->index );
         if( info->table != NULL ) free( info->table );
@@ -55,7 +56,8 @@ static void freeInfo( DBInformation *info ) {
     }
 }
 
-static BOOL writeInfo( char *fname, DBInformation *info ) {
+static bool writeInfo( char *fname, DBInformation *info )
+{
     int         fp;
     int         rc;
     int         len;
@@ -63,7 +65,7 @@ static BOOL writeInfo( char *fname, DBInformation *info ) {
     fp = open( fname, O_WRONLY | O_BINARY | O_CREAT, PMODE_RWX );
     if( fp == -1 ) {
         printf( "Error - could not open %s", fname );
-        return( TRUE );
+        return( true );
     }
     len = sizeof( DBTableHeader );
     rc = write( fp, &(info->head), len );
@@ -82,13 +84,13 @@ static BOOL writeInfo( char *fname, DBInformation *info ) {
     if( rc != len ) goto WRITE_ERROR;
 
     close( fp );
-    return( FALSE );
+    return( false );
 
 WRITE_ERROR:
     printf( "Error writting to file %s\n", fname );
     close( fp );
     remove( fname );
-    return( TRUE );
+    return( true );
 }
 
 static DBInformation *buildInfo( char *page ) {
@@ -100,7 +102,7 @@ static DBInformation *buildInfo( char *page ) {
     unsigned char       k;
     unsigned            offset;
     unsigned_16         base;
-    int                 rc;
+    DWORD               rc;
     CPINFO              theCPInfo;
 
     cp = strtoul( page, NULL, 0 );
@@ -114,8 +116,7 @@ static DBInformation *buildInfo( char *page ) {
 
     /* getting the code page info */
     memset( &theCPInfo, 0, sizeof( CPINFO ) );
-    rc = GetCPInfo( cp, &theCPInfo );
-    if( rc != TRUE ) {
+    if( GetCPInfo( cp, &theCPInfo ) == 0 ) {
         printf( "Error - unable to get info for code page %d\n", cp );
         printf( "Error code - %d\n", GetLastError() );
         freeInfo( ret );
@@ -182,9 +183,7 @@ static DBInformation *buildInfo( char *page ) {
     ch[1] = '\0';
     for( i=0; i < 256; i++ ) {
         ch[0] = (char)i;
-        rc = MultiByteToWideChar( cp, MB_PRECOMPOSED, ch, 1,
-                                  ret->table + i, 1 );
-        if( rc == 0 ) {
+        if( MultiByteToWideChar( cp, MB_PRECOMPOSED, ch, 1, ret->table + i, 1 ) == 0 ) {
             printf( "Error - unable to convert characters for code page %d\n", cp );
             printf( "Error code - %d\n", GetLastError() );
             freeInfo( ret );
@@ -207,10 +206,7 @@ static DBInformation *buildInfo( char *page ) {
             for( i = 0; i < 256; i++ ) {
                 ch[1] = (char)i;
                 /* translate the DBCS to Unicode */
-                rc = MultiByteToWideChar( cp,
-                                  MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-                                  ch, 2,  ret->table + offset + i,  1 );
-                if( rc == 0 ) {
+                if( MultiByteToWideChar( cp, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, ch, 2,  ret->table + offset + i, 1 ) == 0 ) {
                     rc = GetLastError();
                     /* if the error is that there's NO_UNICODE equiv, */
                     /* then ignore it, and place NULL in the array    */
@@ -235,9 +231,9 @@ static DBInformation *buildInfo( char *page ) {
 int main( int argc, char *argv[] ) {
 
     DBInformation       *info;
-    BOOL                error;
+    bool                error;
 
-    error = FALSE;
+    error = false;
     printf( banner1( "WRC Code Page Generator", "1.0" ) "\n" );
     printf( banner2 "\n" );
     printf( banner2a( "1984" ) "\n" );
@@ -255,8 +251,12 @@ int main( int argc, char *argv[] ) {
         return( 1 );
     }
     info = buildInfo( argv[1] );
-    if( info == NULL ) error = TRUE;
-    if( !error ) error = writeInfo( argv[2], info );
+    if( info == NULL )
+        error = true;
+    if( !error )
+        error = writeInfo( argv[2], info );
     freeInfo( info );
-    return( error );
+    if( error )
+        return( 1 );
+    return( 0 );
 }

@@ -50,13 +50,13 @@ static void PrintCurDirEntry( CurDirEntry * entry )
     printf( "\tLength: %ld   Resource Name: %d\n", entry->Length, entry->CurID );
 }
 
-extern int DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle )
-/*****************************************************************************/
+bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle )
+/***********************************************************************/
 {
     IconCurDirHeader    head;
     CurDirEntry         entry;
     long                prevpos;
-    int                 error;
+    bool                error;
     int                 currentry;
 
     length = length;
@@ -65,9 +65,9 @@ extern int DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle )
     error = ResReadIconCurDirHeader( &(head), handle );
     PrintIconCurDirHeader( &head );
 
-    for (currentry = 0; !error && currentry < head.ResCount; currentry++ ) {
+    for( currentry = 0; !error && currentry < head.ResCount; currentry++ ) {
         error = ResReadCurDirEntry( &entry, handle );
-        if (!error) {
+        if( !error ) {
             printf( "    %2d. ", currentry + 1 );
             PrintCurDirEntry( &entry );
         }

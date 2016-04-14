@@ -33,6 +33,6 @@
 #ifndef DMPCURGR_INCLUDED
 #define DMPCURGR_INCLUDED
 
-extern int DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle );
+extern bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle );
 
 #endif

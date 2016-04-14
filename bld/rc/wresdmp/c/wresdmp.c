@@ -69,20 +69,20 @@ static void PrintUsageMessage( const char * progpath )
 
 
 int main( int argc, const char * argv[] )
-/*********************************/
+/***************************************/
 {
-    int     contok;
+    bool    contok;
     int     retcode;
 
     TRMemOpen();
 
     contok = ScanParams( argc, argv );
 
-    if (CmdLineParms.PrintHelp) {
+    if( CmdLineParms.PrintHelp ) {
         PrintUsageMessage( argv[0] );
     }
 
-    if (contok) {
+    if( contok ) {
         retcode = DumpFile();
     } else {
         retcode = 1;
@@ -90,7 +90,7 @@ int main( int argc, const char * argv[] )
 
     FreeParams();
 
-    switch (retcode) {
+    switch( retcode ) {
     case 1:         /* reading parameters */
         break;
     case 2:         /* reading input file */

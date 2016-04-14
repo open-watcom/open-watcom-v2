@@ -79,7 +79,8 @@ void DisplayAccel( void )
         NULL,                   /* Window menu handle */
         Instance,               /* Program instance handle */
         NULL );                 /* Create parameters */
-    if( AccelHwnd == NULL ) return;
+    if( AccelHwnd == NULL )
+        return;
     ShowWindow( AccelHwnd, SW_SHOW );
     UpdateWindow( AccelHwnd );
 }

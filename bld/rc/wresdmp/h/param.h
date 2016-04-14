@@ -38,8 +38,8 @@
 #include "types.h"
 
 struct WResDmpParams {
-    int         DumpContents    : 1;
-    int         PrintHelp       : 1;
+    unsigned    DumpContents    : 1;
+    unsigned    PrintHelp       : 1;
     char        FileName[ _MAX_PATH ];
     WResID *    Name;       /* name and type to print */
     WResID *    Type;

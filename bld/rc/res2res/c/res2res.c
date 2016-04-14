@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "param.h"
 #include "convert.h"
 #include "trmemcvr.h"
@@ -60,16 +61,16 @@ int main( int argc, const char * argv[] )
 /***************************************/
 {
     int     error;          /* 1 if an error has occured, 0 otherwise */
-    int     contok;         /* TRUE if OK to continue after scanning arg */
+    bool    contok;         /* true if OK to continue after scanning arg */
 
     TRMemOpen();
 
     contok = ScanParams( argc, argv );
-    if (CmdLineParms.PrintHelp) {
+    if( CmdLineParms.PrintHelp ) {
         PrintUsageMesage( argv[0] );
     }
 
-    if (contok) {
+    if( contok ) {
         error = ConvertFiles();
     } else {
         error = 1;

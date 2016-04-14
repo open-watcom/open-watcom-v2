@@ -32,49 +32,50 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
+#include <stddef.h>
+#include "bool.h"
 #include "param.h"
 #include "swchar.h"
 
 struct Res2ResParams CmdLineParms;
 
-static int ScanMultiOptArg( const char * arg )
+static bool ScanMultiOptArg( const char * arg )
 {
-    int    contok;
+    bool   contok;
 
-    contok = TRUE;
+    contok = true;
 
     for ( ; *arg != '\0' && contok; arg++) {
         switch (*arg) {
         case 'q':
-            CmdLineParms.Quiet = TRUE;
+            CmdLineParms.Quiet = true;
             break;
         case 'k':
-            CmdLineParms.KeepNameTable = TRUE;
+            CmdLineParms.KeepNameTable = true;
             break;
         case '?':
-            CmdLineParms.PrintHelp = TRUE;
-            contok = FALSE;
+            CmdLineParms.PrintHelp = true;
+            contok = false;
             break;
         default:
             fprintf( stderr, "Unknow option: %c", *arg );
-            contok = FALSE;
+            contok = false;
             break;
         }
     }
     return( contok );
 }
 
-static int ScanOptionsArg( const char * arg )
+static bool ScanOptionsArg( const char * arg )
 {
-    int    contok;
+    bool   contok;
 
-    contok = TRUE;
+    contok = true;
 
-    switch (*arg) {
+    switch( *arg ) {
     case '\0':
         fputs( "No options specified after option charater.\n", stderr );
-        contok = FALSE;
+        contok = false;
         break;
     default:            /* option that could have others with it */
         contok = ScanMultiOptArg( arg ) && contok;
@@ -104,32 +105,32 @@ static void CheckExtention( char * path )
 
 static void DefaultParms( void )
 {
-    CmdLineParms.PrintHelp = FALSE;
-    CmdLineParms.Quiet = FALSE;
-    CmdLineParms.KeepNameTable = FALSE;
+    CmdLineParms.PrintHelp = false;
+    CmdLineParms.Quiet = false;
+    CmdLineParms.KeepNameTable = false;
     CmdLineParms.InFileName[0] = '\0';
     CmdLineParms.OutFileName[0] = '\0';
 }
 
-int ScanParams( int argc, const char * argv[] )
+bool ScanParams( int argc, const char * argv[] )
 /**********************************************/
 {
     int     switchchar;
     int     nofilenames;    /* number of filename parms read so far */
-    int    contok;          /* continue with main execution */
+    bool    contok;         /* continue with main execution */
     int     currarg;
 
     nofilenames = 0;
-    contok = TRUE;
+    contok = true;
     switchchar = _dos_switch_char();
     DefaultParms();
 
-    for (currarg = 1; currarg < argc && contok; currarg++) {
+    for( currarg = 1; currarg < argc && contok; currarg++ ) {
         if (*argv[ currarg ] == switchchar || *argv[ currarg ] == '-') {
             contok = ScanOptionsArg( argv[ currarg ] + 1 ) && contok;
         } else if (*argv[ currarg ] == '?') {
-            CmdLineParms.PrintHelp = TRUE;
-            contok = FALSE;
+            CmdLineParms.PrintHelp = true;
+            contok = false;
         } else if (nofilenames == 0) {
             strncpy( CmdLineParms.InFileName, argv[ currarg ], _MAX_PATH );
             nofilenames++;
@@ -138,15 +139,15 @@ int ScanParams( int argc, const char * argv[] )
             nofilenames++;
         } else {
             fprintf( stderr, "Too many arguments %s.\n", argv[ currarg ] );
-            contok = FALSE;
+            contok = false;
         }
     }
 
-    if (contok) {
-        switch (nofilenames) {
+    if( contok ) {
+        switch( nofilenames ) {
         case 0:
             fputs( "Filename required.\n", stderr );
-            contok = FALSE;
+            contok = false;
             break;
         case 1:
             CheckExtention( CmdLineParms.InFileName );

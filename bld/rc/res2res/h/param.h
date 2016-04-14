@@ -42,4 +42,4 @@ struct Res2ResParams {
 
 extern struct Res2ResParams CmdLineParms;
 
-extern int ScanParams( int argc, const char * argv[] );
+extern bool ScanParams( int argc, const char * argv[] );

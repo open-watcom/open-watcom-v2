@@ -156,10 +156,10 @@ static char * MemFlagsOffList[16] = {
     NULL
 };
 
-static int DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
-/**************************************************************************/
+static bool DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
+/***************************************************************************/
 {
-    int             error;
+    bool            error;
     char            resname[15];
     char            typename[20];
     WResTypeInfo    *type;
@@ -170,14 +170,14 @@ static int DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
     res = WResGetResInfo( wind );
     lang = WResGetLangInfo( wind );
 
-    if (CmdLineParms.Type != NULL) {
-        if (!WResIDCmp( CmdLineParms.Type, &(type->TypeName) )) {
-            return( FALSE );
+    if( CmdLineParms.Type != NULL ) {
+        if( !WResIDCmp( CmdLineParms.Type, &(type->TypeName) ) ) {
+            return( false );
         }
     }
-    if (CmdLineParms.Name != NULL) {
-        if (!WResIDCmp( CmdLineParms.Name, &(res->ResName) )) {
-            return( FALSE );
+    if( CmdLineParms.Name != NULL ) {
+        if( !WResIDCmp( CmdLineParms.Name, &(res->ResName) ) ) {
+            return( false );
         }
     }
 
@@ -188,14 +188,14 @@ static int DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
                 resname, (int)lang->lang.lang, (int)lang->lang.sublang );
     PrintUint16Flags( lang->MemoryFlags, MemFlagsOnList, MemFlagsOffList, 53 );
 
-    if (CmdLineParms.DumpContents) {
+    if( CmdLineParms.DumpContents ) {
         error = DumpContents( type, res, lang, handle, os );
-        if (error) {
-            return( TRUE );
+        if( error ) {
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 
@@ -203,26 +203,26 @@ static int DumpDir( WResDir dir, WResFileID handle )
 /**************************************************/
 {
     int             retcode;
-    int             error;
+    bool            error;
     WResDirWindow   wind;
     uint_16         os;
 
     retcode = 0;
 
-    if (WResIsEmpty( dir )) {
+    if( WResIsEmpty( dir ) ) {
         printf( "Directory in file %s is empty\n", CmdLineParms.FileName );
     } else {
         os = WResGetTargetOS( dir );
         wind = WResFirstResource( dir );
-        while (!WResIsLastResource( wind, dir )) {
+        while( !WResIsLastResource( wind, dir ) ) {
             error = DumpResource( wind, handle, os );
-            if (error) {
+            if( error ) {
                 retcode = 2;
             }
             wind = WResNextResource( wind, dir );
         }
         error = DumpResource( wind, handle, os );
-        if (error) {
+        if( error ) {
             retcode = 2;
         }
     }

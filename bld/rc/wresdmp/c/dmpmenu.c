@@ -100,10 +100,10 @@ static void PrintHeader( MenuHeader * head )
                 head->HeaderSize );
 }
 
-extern int DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
-/**********************************************************************/
+bool DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
+/****************************************************************/
 {
-    int         error;
+    bool        error;
     int         prevpos;
     int         depth;  /* number of menu levels deep */
     MenuItem *  item;
@@ -113,19 +113,19 @@ extern int DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
     prevpos = RCSEEK( handle, offset, SEEK_SET );
     error = (prevpos == -1);
 
-    if (!error) {
+    if( !error ) {
         error = ResReadMenuHeader( &head, handle );
     }
-    if (!error) {
+    if( !error ) {
         PrintHeader( &head );
     }
 
     depth = 1;
-    while (depth > 0 && !error) {
+    while( depth > 0 && !error ) {
         item = ResNewMenuItem();
         error = ResReadMenuItem( item, handle );
-        if (!error) {
-            if (item->IsPopup) {
+        if( !error ) {
+            if( item->IsPopup ) {
                 depth++;
                 PrintPopupItem( &(item->Item.Popup) );
                 if (item->Item.Popup.ItemFlags & MENU_ENDMENU) {
