@@ -228,12 +228,12 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
 
     if( dbg_dyn == NULL ) {
         Out( "Get_ld_info: dynamic section not available\n" );
-        return( FALSE );
+        return( false );
     }
     read_len = sizeof( loc_dyn );
     if( ReadMem( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
         Out( "Get_ld_info: failed to copy first dynamic entry\n" );
-        return( FALSE );
+        return( false );
     }
     while( loc_dyn.d_tag != DT_NULL ) {
         if( loc_dyn.d_tag == DT_DEBUG ) {
@@ -244,21 +244,21 @@ int Get_ld_info( pid_t pid, Elf32_Dyn *dbg_dyn, struct r_debug *debug_ptr, struc
         dbg_dyn++;
         if( ReadMem( pid, &loc_dyn, (addr_off)dbg_dyn, read_len ) != read_len ) {
             Out( "Get_ld_info: failed to copy dynamic entry\n" );
-            return( FALSE );
+            return( false );
         }
     }
     if( rdebug == NULL ) {
         Out( "Get_ld_info: DT_DEBUG entry not found or not set\n" );
-        return( FALSE );
+        return( false );
     }
     read_len = sizeof( *debug_ptr );
     if( ReadMem( pid, debug_ptr, (addr_off)rdebug, read_len ) != read_len ) {
         Out( "Get_ld_info: failed to copy r_debug struct\n" );
-        return( FALSE );
+        return( false );
     }
     *dbg_rdebug_ptr = rdebug;
     Out( "Get_ld_info: dynamic linker rendezvous structure found\n" );
-    return( TRUE );
+    return( true );
 }
 
 /* Like strcpy() but source string is in debuggee's address space. Not
@@ -295,9 +295,9 @@ int GetLinkMap( pid_t pid, struct link_map *dbg_lmap, struct link_map *local_lma
         Out( "GetLinkMap: failed to copy link_map struct at " );
         OutNum( (addr48_off)dbg_lmap );
         Out( "\n" );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 /* Break up program arguments passed in as a single string into
