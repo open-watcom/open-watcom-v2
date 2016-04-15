@@ -78,7 +78,7 @@ static char *VerifyDot( char *filename )
 {
     char *              newfilename;
     char *              tempfilename;
-    bool                quotes_found = FALSE;
+    bool                quotes_found = false;
 
     if (strchr(filename,'.')==NULL) {
         /*** Strip quotes from filename ***/
@@ -86,7 +86,7 @@ static char *VerifyDot( char *filename )
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
             tempfilename[ strlen(tempfilename)-1 ] = '\0';      /* smite trailing " */
-            quotes_found = TRUE;
+            quotes_found = true;
         } else {
             tempfilename = newfilename;
         }
@@ -219,7 +219,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 
@@ -232,15 +232,17 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
     size_t              len;
-    bool                add_quote = FALSE;
+    bool                add_quote = false;
 
     len = strlen(str);
     if( quote != '\0' ) {
         for( ;; ) {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            if( str[0] == '"'  && str[len - 1] == '"'  )
+                break;
+            if( str[0] == '\'' && str[len - 1] == '\'' )
+                break;
             len += 2;
-            add_quote = TRUE;
+            add_quote = true;
         }
     }
     /*** Make a new list item ***/
@@ -248,7 +250,7 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     if( add_quote ) {
         buf->data[0] = quote;
         strcpy( &(buf->data[1]), str );
-        buf->data[len-1] = quote;
+        buf->data[len - 1] = quote;
         buf->data[len] = '\0';
     } else {
         strcpy( buf->data, str );
@@ -314,7 +316,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
 static int parse_debugtype( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "DEBUGTYPE", FALSE, '\0' ) );
+    return( do_string_parse( p, "DEBUGTYPE", false, '\0' ) );
 }
 
 
@@ -324,7 +326,7 @@ static int parse_debugtype( OPT_STRING **p )
 static int parse_def( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "DEF", TRUE, '\0' ) );
+    return( do_string_parse( p, "DEF", true, '\0' ) );
 }
 
 
@@ -467,7 +469,7 @@ static int parse_export( OPT_STRING **optStr )
 static int parse_extract( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "EXTRACT", TRUE, '\0' ) );
+    return( do_string_parse( p, "EXTRACT", true, '\0' ) );
 }
 
 
@@ -477,7 +479,7 @@ static int parse_extract( OPT_STRING **p )
 static int parse_import( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "IMPORT", TRUE, '\0' ) );
+    return( do_string_parse( p, "IMPORT", true, '\0' ) );
 }
 
 
@@ -488,7 +490,7 @@ static int parse_import( OPT_STRING **p )
 static int parse_include( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "INCLUDE", FALSE, '\'' ) );
+    return( do_string_parse( p, "INCLUDE", false, '\'' ) );
 }
 
 
@@ -516,7 +518,7 @@ static int parse_list( OPT_STRING **p )
 static int parse_machine( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "MACHINE", FALSE, '\0' ) );
+    return( do_string_parse( p, "MACHINE", false, '\0' ) );
 }
 
 
@@ -526,7 +528,7 @@ static int parse_machine( OPT_STRING **p )
 static int parse_mac( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "MAC", FALSE, '\0' ) );
+    return( do_string_parse( p, "MAC", false, '\0' ) );
 }
 
 
@@ -538,7 +540,7 @@ static int parse_name( OPT_STRING **p )
 /************************************/
 {
 
-    return( do_string_parse( p, "NAME", TRUE, '\0' ) );
+    return( do_string_parse( p, "NAME", true, '\0' ) );
 }
 
 
@@ -551,7 +553,8 @@ static int parse_nodefaultlib( OPT_STRING **p )
 {
     char *              str;
 
-    if( !CmdScanRecogChar( ':' ) )  return( 1 );
+    if( !CmdScanRecogChar( ':' ) )
+        return( 1 );
     str = CmdScanString();
     if( str != NULL ) {
         OPT_CLEAN_STRING( p );
@@ -568,7 +571,7 @@ static int parse_nodefaultlib( OPT_STRING **p )
 static int parse_out( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "OUT", TRUE, '\0' ) );
+    return( do_string_parse( p, "OUT", true, '\0' ) );
 }
 
 
@@ -628,7 +631,7 @@ static int parse_passwopts( OPT_STRING **p )
 static int parse_remove( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "REMOVE", FALSE, '\0' ) );
+    return( do_string_parse( p, "REMOVE", false, '\0' ) );
 }
 
 
@@ -638,7 +641,7 @@ static int parse_remove( OPT_STRING **p )
 static int parse_subsystem( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "SUBSYSTEM", TRUE, '\0' ) );
+    return( do_string_parse( p, "SUBSYSTEM", true, '\0' ) );
 }
 
 

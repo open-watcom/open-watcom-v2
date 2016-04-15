@@ -44,7 +44,7 @@ static char usageMsg[] = {
     "\0"
 };
 
-static bool             quietMode = FALSE;
+static bool             quietMode = false;
 
 
 /*
@@ -53,7 +53,7 @@ static bool             quietMode = FALSE;
 void BannerMessage( void )
 /************************/
 {
-    static bool         alreadyPrinted = FALSE;
+    static bool         alreadyPrinted = false;
     static char *       helpMsg = {
 #if defined( _BETAVER )
         banner1w1( "C/C++ CL Clone for " CPU_NAME ) "\n"
@@ -70,7 +70,7 @@ void BannerMessage( void )
 
     if( !alreadyPrinted && !quietMode ) {
         printf( helpMsg );
-        alreadyPrinted = TRUE;
+        alreadyPrinted = true;
     }
 }
 
@@ -147,5 +147,5 @@ void UnsupportedOptsMessage( const char *opts )
 void QuietModeMessage( void )
 /***************************/
 {
-    quietMode = TRUE;
+    quietMode = true;
 }

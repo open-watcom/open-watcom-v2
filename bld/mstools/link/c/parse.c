@@ -157,15 +157,17 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
     size_t              len;
-    bool                add_quote = FALSE;
+    bool                add_quote = false;
 
     len = strlen(str);
     if( quote != '\0' ) {
         for( ;; ) {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            if( str[0] == '"'  && str[len - 1] == '"'  )
+                break;
+            if( str[0] == '\'' && str[len - 1] == '\'' )
+                break;
             len += 2;
-            add_quote = TRUE;
+            add_quote = true;
         }
     }
     /*** Make a new list item ***/
@@ -354,7 +356,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
 static int parse_comment( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "COMMENT", FALSE, '\0' ) );
+    return( do_string_parse( p, "COMMENT", false, '\0' ) );
 }
 
 
@@ -390,7 +392,7 @@ static int parse_debug( OPT_STRING **p )
 static int parse_debugtype( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "DEBUGTYPE", FALSE, '\0' ) );
+    return( do_string_parse( p, "DEBUGTYPE", false, '\0' ) );
 }
 
 
@@ -400,7 +402,7 @@ static int parse_debugtype( OPT_STRING **p )
 static int parse_def( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "DEF", TRUE, '\0' ) );
+    return( do_string_parse( p, "DEF", true, '\0' ) );
 }
 
 
@@ -410,7 +412,7 @@ static int parse_def( OPT_STRING **p )
 static int parse_defaultlib( OPT_STRING **p )
 /*******************************************/
 {
-    return( do_string_parse( p, "DEFAULTLIB", FALSE, '\0' ) );
+    return( do_string_parse( p, "DEFAULTLIB", false, '\0' ) );
 }
 
 
@@ -420,7 +422,7 @@ static int parse_defaultlib( OPT_STRING **p )
 static int parse_entry( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "ENTRY", TRUE, '\'' ) );
+    return( do_string_parse( p, "ENTRY", true, '\'' ) );
 }
 
 
@@ -430,7 +432,7 @@ static int parse_entry( OPT_STRING **p )
 static int parse_exetype( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "EXETYPE", TRUE, '\0' ) );
+    return( do_string_parse( p, "EXETYPE", true, '\0' ) );
 }
 
 
@@ -572,7 +574,7 @@ static int parse_export( OPT_STRING **optStr )
 static int parse_heap( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "HEAP", TRUE, '\0' ) );
+    return( do_string_parse( p, "HEAP", true, '\0' ) );
 }
 
 
@@ -582,7 +584,7 @@ static int parse_heap( OPT_STRING **p )
 static int parse_implib( OPT_STRING **p )
 /***************************************/
 {
-    return( do_string_parse( p, "IMPLIB", TRUE, '\0' ) );
+    return( do_string_parse( p, "IMPLIB", true, '\0' ) );
 }
 
 
@@ -592,7 +594,7 @@ static int parse_implib( OPT_STRING **p )
 static int parse_include( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "INCLUDE", FALSE, '\'' ) );
+    return( do_string_parse( p, "INCLUDE", false, '\'' ) );
 }
 
 
@@ -629,7 +631,7 @@ static int parse_incremental( OPT_STRING **p )
 static int parse_internaldllname( OPT_STRING **p )
 /*************************************************/
 {
-    return( do_string_parse( p, "INTERNALDLLNAME", TRUE, '\0' ) );
+    return( do_string_parse( p, "INTERNALDLLNAME", true, '\0' ) );
 }
 
 
@@ -639,7 +641,7 @@ static int parse_internaldllname( OPT_STRING **p )
 static int parse_machine( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "MACHINE", FALSE, '\0' ) );
+    return( do_string_parse( p, "MACHINE", false, '\0' ) );
 }
 
 
@@ -666,7 +668,7 @@ static int parse_map( OPT_STRING **p )
 static int parse_order( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "ORDER", FALSE, '\0' ) );
+    return( do_string_parse( p, "ORDER", false, '\0' ) );
 }
 
 
@@ -676,7 +678,7 @@ static int parse_order( OPT_STRING **p )
 static int parse_out( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "OUT", TRUE, '\0' ) );
+    return( do_string_parse( p, "OUT", true, '\0' ) );
 }
 
 
@@ -732,7 +734,7 @@ static int parse_passwopts( OPT_STRING **p )
 static int parse_pdb( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "PDB", FALSE, '\0' ) );
+    return( do_string_parse( p, "PDB", false, '\0' ) );
 }
 
 
@@ -742,7 +744,7 @@ static int parse_pdb( OPT_STRING **p )
 static int parse_section( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "SECTION", TRUE, '\0' ) );
+    return( do_string_parse( p, "SECTION", true, '\0' ) );
 }
 
 
@@ -752,7 +754,7 @@ static int parse_section( OPT_STRING **p )
 static int parse_stack( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "STACK", TRUE, '\0' ) );
+    return( do_string_parse( p, "STACK", true, '\0' ) );
 }
 
 
@@ -762,7 +764,7 @@ static int parse_stack( OPT_STRING **p )
 static int parse_stub( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "STUB", TRUE, '\0' ) );
+    return( do_string_parse( p, "STUB", true, '\0' ) );
 }
 
 
@@ -772,7 +774,7 @@ static int parse_stub( OPT_STRING **p )
 static int parse_subsystem( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "SUBSYSTEM", TRUE, '\0' ) );
+    return( do_string_parse( p, "SUBSYSTEM", true, '\0' ) );
 }
 
 
@@ -782,7 +784,7 @@ static int parse_subsystem( OPT_STRING **p )
 static int parse_version( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "VERSION", TRUE, '\0' ) );
+    return( do_string_parse( p, "VERSION", true, '\0' ) );
 }
 
 
@@ -812,7 +814,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 
@@ -858,12 +860,12 @@ bool OPT_GET_NUMBER( unsigned *p )
     unsigned            value;
 
     if( !CmdScanRecogChar( ':' ) )
-        return( FALSE );
+        return( false );
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

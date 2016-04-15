@@ -116,7 +116,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         } else if( ch == '"' ) {                /* quoted option or file name */
             ch = GetCharContext();
             if( ch == '-' ) {
-                Quoted = TRUE;
+                Quoted = true;
                 if( OPT_PROCESS( cmdOpts ) ) {
                     cmd_line_error();
                 }
@@ -207,7 +207,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
 static int parse_c( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "c", TRUE ) );
+    return( do_string_parse( p, "c", true ) );
 }
 
 
@@ -217,7 +217,7 @@ static int parse_c( OPT_STRING **p )
 static int parse_d( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "d", FALSE ) );
+    return( do_string_parse( p, "d", false ) );
 }
 
 
@@ -230,7 +230,7 @@ static int parse_fo( OPT_STRING **p )
     int                 retcode;
     char *              newstr;
 
-    retcode = do_string_parse( p, "fo", TRUE );
+    retcode = do_string_parse( p, "fo", true );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
@@ -246,7 +246,7 @@ static int parse_fo( OPT_STRING **p )
 static int parse_i( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "i", FALSE ) );
+    return( do_string_parse( p, "i", false ) );
 }
 
 
@@ -256,7 +256,7 @@ static int parse_i( OPT_STRING **p )
 static int parse_l( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "l", TRUE ) );
+    return( do_string_parse( p, "l", true ) );
 }
 
 
@@ -326,7 +326,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 

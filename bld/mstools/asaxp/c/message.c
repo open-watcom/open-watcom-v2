@@ -44,7 +44,7 @@ static char usageMsg[] = {
     "\0"
 };
 
-static bool             quietMode = FALSE;
+static bool             quietMode = false;
 
 
 /*
@@ -53,7 +53,7 @@ static bool             quietMode = FALSE;
 void BannerMessage( void )
 /************************/
 {
-    static bool         alreadyPrinted = FALSE;
+    static bool         alreadyPrinted = false;
     static char *       helpMsg = {
         banner1w( "C/C++ ASAXP Clone for " CPU_NAME " ", _ASAXP_CLONE_VERSION_ ) "\n"
         banner2 "\n"
@@ -64,7 +64,7 @@ void BannerMessage( void )
 
     if( !alreadyPrinted && !quietMode ) {
         printf( helpMsg );
-        alreadyPrinted = TRUE;
+        alreadyPrinted = true;
     }
 }
 
@@ -141,5 +141,5 @@ void UnsupportedOptsMessage( const char *opts )
 void QuietModeMessage( void )
 /***************************/
 {
-    quietMode = TRUE;
+    quietMode = true;
 }

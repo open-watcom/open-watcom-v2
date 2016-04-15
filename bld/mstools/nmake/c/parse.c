@@ -75,15 +75,17 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
     size_t              len;
-    bool                add_quote = FALSE;
+    bool                add_quote = false;
 
     len = strlen(str);
     if( quote != '\0' ) {
         for( ;; ) {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            if( str[0] == '"'  && str[len - 1] == '"'  )
+                break;
+            if( str[0] == '\'' && str[len - 1] == '\'' )
+                break;
             len += 2;
-            add_quote = TRUE;
+            add_quote = true;
         }
     }
     /*** Make a new list item ***/
@@ -91,7 +93,7 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     if( add_quote ) {
         buf->data[0] = quote;
         strcpy( &(buf->data[1]), str );
-        buf->data[len-1] = quote;
+        buf->data[len - 1] = quote;
         buf->data[len] = '\0';
     } else {
         strcpy( buf->data, str );
@@ -182,7 +184,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 
@@ -243,7 +245,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
 static int parse_F( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "F", TRUE, '\0' ) );
+    return( do_string_parse( p, "F", true, '\0' ) );
 }
 
 /*
@@ -252,7 +254,7 @@ static int parse_F( OPT_STRING **p )
 static int parse_X( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "X", TRUE, '\0' ) );
+    return( do_string_parse( p, "X", true, '\0' ) );
 }
 
 /*
