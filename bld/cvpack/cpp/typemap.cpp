@@ -55,18 +55,18 @@ void TypeIndexMap::Insert( const type_index oldTypeIndex,
     try {
         if ( newTypeIndex != 0 ) {
             _mappingTable[oldTypeIndex].globalIndex = newTypeIndex;
-            _mappingTable[oldTypeIndex].isNewType = FALSE;
+            _mappingTable[oldTypeIndex].isNewType = false;
         } else {
             // check if running out of types.
             if ( _currentGlobalIndex >= 0xffff ) {
                 throw MiscError("fatal : running out of type indices.");
             }
             _mappingTable[oldTypeIndex].globalIndex = _currentGlobalIndex++;
-            _mappingTable[oldTypeIndex].isNewType = TRUE;
+            _mappingTable[oldTypeIndex].isNewType = true;
         }
     
         // testing code.
-        _mappingTable[oldTypeIndex].isDone = TRUE;
+        _mappingTable[oldTypeIndex].isDone = true;
     }
     catch (...) {
         std::cerr << "index : " << oldTypeIndex << std::endl;

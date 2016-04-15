@@ -634,7 +634,7 @@ class CSLProc16 : public SymbolStruct {
         }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         void SetParent( const unsigned_32 pParent ) {
@@ -680,7 +680,7 @@ class CSThunk16 : public SymbolStruct {
         ~CSThunk16() { }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         uint CodeSegment() const {
@@ -728,7 +728,7 @@ class CSBlock16 : public SymbolStruct {
         ~CSBlock16() { }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
         uint CodeSegment() const {
             return _block16.segment;
@@ -775,7 +775,7 @@ class CSWith16 : public SymbolStruct {
         }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         uint CodeSegment() const {
@@ -1097,7 +1097,7 @@ class CSLProc32 : public SymbolStruct {
         }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         void SetParent( const unsigned_32 pParent ) {
@@ -1143,7 +1143,7 @@ class CSThunk32 : public SymbolStruct {
         ~CSThunk32() { }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         uint CodeSegment() const {
@@ -1191,7 +1191,7 @@ class CSBlock32 : public SymbolStruct {
         ~CSBlock32() { }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
         uint CodeSegment() const {
             return _block32.segment;
@@ -1238,7 +1238,7 @@ class CSWith32 : public SymbolStruct {
         }
 
         bool IsStartSym() const {
-            return TRUE;
+            return true;
         }
 
         uint CodeSegment() const {

@@ -72,7 +72,7 @@ bool SstGlobalTypes::LoadTypes( Retriever& retriever, const module mod )
     char*       buffer;
     unsigned_32 length;
     if ( ! retriever.ReadSubsection(buffer,length,sstTypes,mod) ) {
-        return FALSE;
+        return false;
     }
     char*       end = &buffer[length];
     if ( * (unsigned_32 *) buffer != CV4_HEADER ) {
@@ -88,7 +88,7 @@ bool SstGlobalTypes::LoadTypes( Retriever& retriever, const module mod )
             buffer += WORD + * (unsigned_16 *) buffer;
         }
         TypeMap.Set( CV_FIRST_NONPRIM + _globalTypingInfo.Entries() );
-        return TRUE;
+        return true;
     } else {
         while ( buffer < end ) {
             _localTypingInfo.Insert( new LFLocalTypeRecord(ToTypeIndex(_localTypingInfo.Entries()),buffer));
@@ -143,7 +143,7 @@ bool SstGlobalTypes::LoadTypes( Retriever& retriever, const module mod )
         */
     }
     _localTypingInfo.Clear();
-    return TRUE;
+    return true;
 }
 
 void SstGlobalTypes::Append( LFLocalTypeRecord* typeRecord )
@@ -374,7 +374,7 @@ bool NameHashTable::TryToInsert( SymbolStruct* sym )
 {
     unsigned_32 ckSum = sym -> cSum();
     if ( ckSum == NO_CHKSUM ) {
-        return FALSE;
+        return false;
     }
     uint   bucket = ckSum % _cHash;
     SymbolStruct* eqSym = Find(_cTab[bucket],ckSum);
@@ -382,12 +382,12 @@ bool NameHashTable::TryToInsert( SymbolStruct* sym )
         const char* name = sym -> Name();
         if ( memcmp(name,eqSym->Name(),*name+1) != 0 ) {
             _cTab[bucket].append( new chain_table(sym,ckSum) );
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
     _cTab[bucket].append( new chain_table(sym,ckSum) );
-    return TRUE;
+    return true;
 }
 
 void NameHashTable::Put( ExeMaker& eMaker ) const
@@ -424,15 +424,15 @@ bool AddrHashTable::TryToInsert( SymbolStruct* sym )
     if ( seg == NO_SEGMENT ) {
         seg = sym -> DataSegment();
         if ( seg == NO_SEGMENT ) {
-            return FALSE;
+            return false;
         }
     }
     if ( seg > 0 ) {
         --seg; // segments are 1 based.
         _oTab[seg].append( new offset_table(sym->Offset(),sym->MemOffset()));
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 int AddrHashTable::Compare( const void* op1, const void* op2 )

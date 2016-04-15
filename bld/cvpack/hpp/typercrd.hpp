@@ -156,11 +156,11 @@ class LFGlobalTypeRecord : public LFTypeRecord {
     private :
 
         bool HasVisited() const {
-            return ( _targetAdr ? TRUE : FALSE );
+            return ( _targetAdr ? true : false );
         }
 
         void MarkLoop(const bool isStopPoint) {
-            _flags.isInLoop = TRUE;
+            _flags.isInLoop = true;
             _flags.isStopPoint = isStopPoint;
         }
 
@@ -178,8 +178,8 @@ class LFGlobalTypeRecord : public LFTypeRecord {
 
         void UnMarkNode() {
             _targetAdr = NULL;
-            _flags.isInLoop = FALSE;
-            _flags.isStopPoint = FALSE;
+            _flags.isInLoop = false;
+            _flags.isStopPoint = false;
         }
 
         LFLocalTypeRecord*      _targetAdr;
