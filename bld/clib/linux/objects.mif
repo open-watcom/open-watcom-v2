@@ -6,6 +6,7 @@
 !inject _llseek.obj                                                                             l32 lpc lmp
 !inject access.obj                                                                              l32 lpc lmp
 !inject alarm.obj                                                                               l32 lpc lmp
+!inject cfspeed.obj                                                                             l32 lpc lmp
 !inject chdir.obj                                                                               l32 lpc lmp
 !inject chmod.obj                                                                               l32 lpc lmp
 !inject chown.obj                                                                               l32 lpc lmp
@@ -111,6 +112,13 @@
 !inject sysconf.obj                                                                             l32 lpc lmp
 !inject sysinfo.obj                                                                             l32 lpc lmp
 !inject sysmips.obj                                                                                     lmp
+!inject tcdrain.obj                                                                             l32 lpc lmp
+!inject tcflow.obj                                                                              l32 lpc lmp
+!inject tcflush.obj                                                                             l32 lpc lmp
+!inject tcgetatr.obj                                                                            l32 lpc lmp
+!inject tcgetsid.obj                                                                            l32 lpc lmp
+!inject tcsendbr.obj                                                                            l32 lpc lmp
+!inject tcsetatr.obj                                                                            l32 lpc lmp
 !inject time.obj                                                                                l32 lpc lmp
 !inject timer.obj                                                                               l32 lpc lmp
 !inject times.obj                                                                               l32 lpc lmp
