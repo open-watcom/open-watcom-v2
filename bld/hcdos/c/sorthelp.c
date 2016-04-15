@@ -55,9 +55,9 @@
 
 a_helpnode      *HelpNodes;
 
-static bool     Verbose = FALSE;
-static bool     GenIndex = TRUE;
-static bool     GenStrings = TRUE;
+static bool     Verbose = false;
+static bool     GenIndex = true;
+static bool     GenStrings = true;
 
 static bool     pass1( FILE *fin, char **helpstr );
 static bool     pass2( FILE *fin, int fout, char **helpstr );
@@ -106,7 +106,7 @@ void InitError( char *target )
     char    dir[_MAX_DIR];
     char    fname[_MAX_FNAME];
 
-    errHasOccurred = FALSE;
+    errHasOccurred = false;
     _splitpath( target, drive, dir, fname, NULL );
     _makepath( errFileName, drive, dir, fname, ".err" );
 }
@@ -128,7 +128,7 @@ void PrintError( char *fmt, ... )
 
     if( !errHasOccurred ) {
         errFile = fopen( errFileName, "wt" );
-        errHasOccurred = TRUE;
+        errHasOccurred = true;
     }
     va_start( al, fmt );
     vsprintf( errBuffer, fmt, al );
@@ -148,7 +148,7 @@ int main( int argc, char **argv )
     char        *helpstr[2];
     bool        f_swtch;
 
-    f_swtch = FALSE;
+    f_swtch = false;
     helpstr[0] = NULL;
     helpstr[1] = NULL;
     for( argc=1, sargv=nargv=argv+1; *sargv; ++sargv ) {
@@ -158,15 +158,15 @@ int main( int argc, char **argv )
         } else {
             switch( (*sargv)[1] ) {
             case 'n':
-                GenIndex = FALSE;
+                GenIndex = false;
                 if( f_swtch ) {
                     PrintError( "More than one format switch found in command line\n" );
                     Usage();
                 }
-                f_swtch = TRUE;
+                f_swtch = true;
                 break;
             case 'v':
-                Verbose = TRUE;
+                Verbose = true;
             break;
             case 'c':
                 if( (*sargv)[2] != '\0' ) {
@@ -209,13 +209,13 @@ int main( int argc, char **argv )
                     PrintError( "More than one format switch found in command line\n" );
                     Usage();
                 }
-                f_swtch = TRUE;
+                f_swtch = true;
                 if( (*sargv)[2] == '0' ) {
-                    GenIndex = FALSE;
+                    GenIndex = false;
                 } else if( (*sargv)[2] == '1' ) {
-                    GenStrings = FALSE;
+                    GenStrings = false;
                 } else if( (*sargv)[2] == '2' ) {
-                    GenStrings = TRUE;
+                    GenStrings = true;
                 } else {
                     Usage();
                 }
@@ -500,7 +500,7 @@ static bool pass1( FILE *fin, char **helpstr )
         }
     }
     HelpMemFree( namebuff );
-    return( TRUE );
+    return( true );
 }
 
 void lookup_name( a_helpnode *h, char *name )
@@ -650,5 +650,5 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
             write( fout, buffer, strlen( buffer ) );
         }
     }
-    return( TRUE );
+    return( true );
 }
