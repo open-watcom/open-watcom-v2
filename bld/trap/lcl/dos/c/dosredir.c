@@ -131,12 +131,12 @@ static trap_retval Redirect( bool input )
 
 trap_retval ReqRedirect_stdin( void )
 {
-    return( Redirect( TRUE ) );
+    return( Redirect( true ) );
 }
 
 trap_retval ReqRedirect_stdout( void )
 {
-    return( Redirect( FALSE ) );
+    return( Redirect( false ) );
 }
 
 void RedirectInit( void )

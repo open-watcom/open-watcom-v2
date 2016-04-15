@@ -866,24 +866,24 @@ bool RemoteConnect( void )
     SendBlkNo = ReceiveBlkNo = 0;
     LastResponse = SDATA_NAK;
     if( !SetSyncTime() )
-        return( FALSE );
+        return( false );
     /* establish baud limit */
 #ifdef SERVER
     if( !WaitReceive( &err, 1, &data, SEC( 2 ) ) ) {
-        return( FALSE );
+        return( false );
     }
     MaxBaud2 = (byte)data;
     data = MaxBaud;
     if( !BlockSend( 1, &data, SEC( 2 ) ) ) {
-        return( FALSE );
+        return( false );
     }
 #else
     data = MaxBaud;
     if( !BlockSend( 1, &data, SEC( 2 ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !WaitReceive( &err, 1, &data, SEC( 2 ) ) ) {
-        return( FALSE );
+        return( false );
     }
     MaxBaud2 = (byte)data;
 #endif
@@ -896,7 +896,7 @@ bool RemoteConnect( void )
 
     BaudCounter = baud_limit;
     if( !Speed() ) 
-        return( FALSE );
+        return( false );
 #ifdef SERVER
     {
         char    buff[128];
@@ -910,7 +910,7 @@ bool RemoteConnect( void )
         ServMessage( buff );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 

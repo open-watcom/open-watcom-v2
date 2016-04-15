@@ -112,7 +112,7 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
     const char  *ptr;
     char        *buff;
 
-    *oneshot = FALSE;
+    *oneshot = false;
     *trapparms = '\0';
     *servparms = '\0';
 #if defined(__AXP__) && defined(__NT__)
@@ -122,7 +122,7 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
     ptr = SkipSpaces( cmdline );
     if( WantUsage( ptr ) ) {
         StartupErr( ServUsage );
-        return( FALSE );
+        return( false );
     }
     while( IS_OPTION( *ptr ) ) {
         ptr = SkipSpaces( ptr + 1 );
@@ -132,12 +132,12 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
             ++ptr;
         if( ptr == start ) {
             StartupErr( TRP_ERR_expect_option );
-            return( FALSE );
+            return( false );
         } else if( strnicmp( "trap", start, ptr - start ) == 0 ) {
             ptr = SkipSpaces( ptr );
             if( *ptr != '=' && *ptr != '#' ) {
                 StartupErr( TRP_ERR_expect_equal );
-                return( FALSE );
+                return( false );
             }
             ptr = SkipSpaces( GetFilename( ptr + 1, trapparms ) );
             if( *ptr == TRAP_PARM_SEPARATOR ) {
@@ -150,11 +150,11 @@ bool ParseCommandLine( const char *cmdline, char *trapparms, char *servparms, bo
                 ptr = CollectTrapParm( ptr, buff );
             }
         } else if( strnicmp( "once", start, ptr - start ) == 0 ) {
-            *oneshot = TRUE;
+            *oneshot = true;
         }
         ptr = SkipSpaces( ptr );
     }
     CollectTrapParm( ptr, servparms );
-    TrapVersion.remote = TRUE;
-    return( TRUE );
+    TrapVersion.remote = true;
+    return( true );
 }

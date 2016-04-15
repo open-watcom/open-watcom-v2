@@ -586,7 +586,7 @@ trap_retval ReqProg_load( void )
         }
     }
     SegmentChain = 0;
-    BoundAppLoading = FALSE;
+    BoundAppLoading = false;
     rc = DOSLoadProg( exe_name, &parmblock );
     if( TINY_OK( rc ) ) {
         TaskRegs.SS = parmblock.startsssp.segment;
@@ -610,13 +610,13 @@ trap_retval ReqProg_load( void )
             if( exe == EXE_OS2 ) {
                 opcode_type __far *loc_brk_opcode;
 
-                BoundAppLoading = TRUE;
+                BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
                 loc_brk_opcode = MK_FP(TaskRegs.CS, TaskRegs.EIP);
                 if( *loc_brk_opcode == BRKPOINT ) {
                     *loc_brk_opcode = saved_opcode;
                 }
-                BoundAppLoading = FALSE;
+                BoundAppLoading = false;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
                     handle = TINY_INFO( rc );
@@ -715,7 +715,7 @@ trap_retval ReqSet_break( void )
     *loc_brk_opcode = BRKPOINT;
     if( *loc_brk_opcode != BRKPOINT ) {
         BadBreak = acc->break_addr;
-        GotABadBreak = TRUE;
+        GotABadBreak = true;
     }
     return( sizeof( *ret ) );
 }
@@ -727,7 +727,7 @@ trap_retval ReqClear_break( void )
 
     bp = GetInPtr( 0 );
     *(opcode_type __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
-    GotABadBreak = FALSE;
+    GotABadBreak = false;
     return( 0 );
 }
 
@@ -772,7 +772,7 @@ static int ClearDebugRegs( int trap )
              }
         }
         for( i = 0; i < 4; ++i ) {
-            IsBreak[i] = FALSE;
+            IsBreak[i] = false;
         }
         SetDR6( 0 );
         SetDR7( 0 );
@@ -792,7 +792,7 @@ static bool SetDebugRegs( void )
     bool                watch386;
 
     if( (Flags & F_DRsOn) == 0 )
-        return( FALSE );
+        return( false );
     needed = 0;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         needed += wp->dregs;
@@ -800,7 +800,7 @@ static bool SetDebugRegs( void )
     dr  = 0;
     dr7 = 0;
     if( needed > 4 ) {
-        watch386 = FALSE;
+        watch386 = false;
     } else {
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
             dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
@@ -809,13 +809,13 @@ static bool SetDebugRegs( void )
                 dr7 |= SetDRn( dr, wp->linear + 4, DRLen( wp->len ) | DR7_BWR );
                 ++dr;
             }
-            watch386 = TRUE;
+            watch386 = true;
         }
     }
     if( GotABadBreak && dr < 4 ) {
         linear = ( (unsigned long)BadBreak.segment << 4 ) + BadBreak.offset;
         dr7 |= SetDRn( dr, linear, DR7_L1 | DR7_BINST );
-        IsBreak[dr] = TRUE;
+        IsBreak[dr] = true;
         ++dr;
     }
     SetDR7( dr7 );
@@ -902,12 +902,12 @@ static trap_elen ProgRun( bool step )
 
 trap_retval ReqProg_go( void )
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval ReqProg_step( void )
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval ReqGet_next_alias( void )
@@ -1025,7 +1025,7 @@ out( "    done checking environment\r\n" );
     WatchCount = 0;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
 out( "done TrapInit\r\n" );
     return( ver );
 }

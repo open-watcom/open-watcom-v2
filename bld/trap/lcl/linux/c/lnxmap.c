@@ -116,8 +116,8 @@ static void AddLib( struct link_map *lmap )
     lli->offset = lmap->l_addr;
     lli->dbg_dyn_sect = (addr_off)lmap->l_ld;
     dbg_strcpy( pid, lli->filename, lmap->l_name );
-    lli->newly_loaded = TRUE;
-    lli->newly_unloaded = FALSE;
+    lli->newly_loaded = true;
+    lli->newly_unloaded = false;
     lli->offset = lmap->l_addr;
 
     Out( "Added library: ofs/dyn = " );
@@ -138,7 +138,7 @@ static void DelLib( addr_off dynsection )
             Out( "Deleting library " );
             Out( moduleInfo[i].filename );
             Out( "\n" );
-            moduleInfo[i].newly_unloaded = TRUE;
+            moduleInfo[i].newly_unloaded = true;
             moduleInfo[i].offset = 0;
             moduleInfo[i].dbg_dyn_sect = 0;
             moduleInfo[i].code_size = 0;
@@ -325,14 +325,14 @@ trap_retval ReqGet_lib_name( void )
             Out( "(newly unloaded) " );
             ret->handle = i;
             *name = '\0';
-            moduleInfo[i].newly_unloaded = FALSE;
+            moduleInfo[i].newly_unloaded = false;
             ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
             Out( "(newly loaded) " );
             ret->handle = i;
             strcpy( name, moduleInfo[i].filename );
-            moduleInfo[i].newly_loaded = FALSE;
+            moduleInfo[i].newly_loaded = false;
             ret_len += strlen( name ) + 1;
             break;
         }

@@ -210,10 +210,10 @@ bool TestForBreak( void )
     if( BreakFlag || ( inp(LSR) & LSR_BRK ) ) {
         BreakFlag = 0;
         _enable();
-        return( TRUE );
+        return( true );
     }
     _enable();
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -228,10 +228,11 @@ bool Baud( int index )
     BreakFlag = 0;
     if( index == MIN_BAUD ) {
         Modem = 1;
-        return( TRUE );
+        return( true );
     }
     Modem = 0;
-    if( index == CurrentBaud ) return( TRUE );
+    if( index == CurrentBaud )
+        return( true );
 
     /* don't change baud rate while a character is still being sent */
     do {} while( (inp( LSR ) & LSR_TSRE) == 0 );
@@ -245,7 +246,7 @@ bool Baud( int index )
     outp( LCR, lcr_value & ~LCR_DLAB );  /* set off DLAB bit of LCR */
     _enable();                           /* re-enable interrupts */
     CurrentBaud = index;
-    return( TRUE );
+    return( true );
 }
 
 char *ParsePortSpec( const char **spec )

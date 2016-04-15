@@ -125,15 +125,15 @@ bool RemoteConnect( void )
         ListenPort = 0;
         closesocket( ListenSocket );
         ListenSocket = INVALID_SOCKET;
-        return( TRUE );
+        return( true );
     }
 #else
     ConnectionSocket = socket( AF_IPX, SOCK_SEQPACKET, NSPROTO_SPX );
     if( connect( ConnectionSocket, (struct sockaddr *)&PartnerAddr, sizeof( PartnerAddr ) ) == 0 ) {
-        return( TRUE );
+        return( true );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -242,7 +242,7 @@ static char *InitServer( void )
     ResponderThreadHandle = CreateThread( NULL, 0, Responder, NULL, 0, &tid );
     if( ResponderThreadHandle == NULL )
         return( "No responder thread" );
-    register_bindery( ServerName, TRUE );
+    register_bindery( ServerName, true );
     return( NULL );
 }
 #endif
@@ -271,12 +271,12 @@ static BOOL read_bindery( char * name ) {
                             &alias_len );
 
     if( _bad_rc( num ) || num < 1 ) {
-        return( FALSE );
+        return( false );
     }
 
     address_info = (LPCSADDR_INFO)addr_buff;
     PartnerAddr = *(struct sockaddr_ipx *)(address_info->RemoteAddr.lpSockaddr);
-    return( TRUE );
+    return( true );
 }
 
 static char FindPartner( void )
@@ -389,7 +389,7 @@ const char *RemoteLink( const char *parms, bool server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-    register_bindery( ServerName, FALSE );
+    register_bindery( ServerName, false );
     TerminateThread( ResponderThreadHandle, 0 );
     closesocket( ResponderSocket );
     closesocket( ListenSocket );

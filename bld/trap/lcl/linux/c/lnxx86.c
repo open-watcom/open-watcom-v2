@@ -222,7 +222,7 @@ int SetDebugRegs( void )
     for( i = 0; i < wpCount; i++)
         needed += wpList[i].dregs;
     if( needed > 4 )
-        return( FALSE );
+        return( false );
     dr  = 0;
     dr7 = 0;
     for( i = 0, wp = wpList; i < wpCount; i++, wp++ ) {
@@ -234,7 +234,7 @@ int SetDebugRegs( void )
         }
     }
     SetDR7( dr7 );
-    return( TRUE );
+    return( true );
 }
 
 int CheckWatchPoints( void )
@@ -245,10 +245,10 @@ int CheckWatchPoints( void )
     for( i = 0; i < wpCount; i++ ) {
         ReadMem( pid, &value, wpList[i].loc.offset, sizeof( value ) );
         if( value != wpList[i].value ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 trap_retval ReqSet_watch( void )

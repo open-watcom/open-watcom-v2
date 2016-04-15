@@ -367,7 +367,7 @@ bool RemoteConnect( void )
         Listening = 1;
     } else if( !InUse( ConnECB ) ) {
         PostListens();
-	return( TRUE );
+        return( true );
     }
     IPXRelinquishControl();
 #else
@@ -381,7 +381,7 @@ putstring( "RemoteConnect loop\r\n" );
             if( !InUse( SendECB ) ) {
                 PostListens();
 putstring( "RemoteConnect loop done\r\n" );
-                return( TRUE );
+                return( true );
             }
             DosSleep( 100 );        /* 20 * 100 is approx 2 seconds */
         }
@@ -392,7 +392,7 @@ putstring( "RemoteConnect aborting\r\n" );
         putrc( "SPXEstablishConnection", rc );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -496,7 +496,7 @@ static bool InitServer( void )
     DosCreateThread( Broadcast, &tid, BroadcastStack + STACKSIZE );
     DosSemWait( &BroadCastStart, -1L );
     DosCreateThread( Respond, &tid, RespondStack + STACKSIZE );
-    return( TRUE );
+    return( true );
 }
 
 #endif
@@ -509,20 +509,20 @@ static bool FindPartner( void )
     WORD        connection;
 
     if( NWGetPrimaryConnectionID( &connection ) != 0 )
-        return( FALSE );
+        return( false );
     if( NWReadPropertyValue( connection, &SAPHead.name, DBG_SERVER_TYPE, "NET_ADDRESS", 1, segdata, &moresegs, &flags ) != 0 )
-        return( FALSE );
+        return( false );
     memcpy( &ServHead.destNet, segdata, 12 );
     if( IpxGetLocalTarget( (PUCHAR)&ServHead.destNet, &ServECB, (PULONG)segdata ) != 0 )
-        return( FALSE );
+        return( false );
     IpxSend( IPXSocket, &ServECB );
     RespECB.fragList[1].fragAddress = &PartnerSPXSocket;
     if( IpxReceive( IPXSocket, 55*MAX_PARTNER_WAIT, &RespECB ) != 0 )
-        return( FALSE );
+        return( false );
     _IPX_ASSIGNADDR( SendHead.dest, RespHead.source );
     SendHead.destSocket = PartnerSPXSocket;
     AssignArray( SendECB.immediateAddress, RespECB.immediateAddress );
-    return( TRUE );
+    return( true );
 }
 
 const char *RemoteLink( const char *parms, bool server )

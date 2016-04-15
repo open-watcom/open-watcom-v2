@@ -185,9 +185,9 @@ bool RemoteConnect( void )
         DoOpen( &ReadHdl, READ_SUFF );
         DoOpen( &WriteHdl, WRITE_SUFF );
         ConnRequest( CONNECT_DONE );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

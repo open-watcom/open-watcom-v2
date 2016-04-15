@@ -162,16 +162,16 @@ bool RemoteConnect( void )
 #ifdef SERVER
     if( NetCtlBlk.ncb_cmd_cplt != 0xff ) {
         if( NetCtlBlk.ncb_retcode == NRC_GOODRET )
-            return( TRUE );
+            return( true );
         PostListen();
     }
 #else
     NetCtlBlk.ncb_command = NCBCALL;
     NetBIOS( &NetCtlBlk );
     if( NetCtlBlk.ncb_retcode == NRC_GOODRET )
-        return( TRUE );
+        return( true );
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )

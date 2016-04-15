@@ -140,10 +140,10 @@ static int GetFlatSegs( u_short *cs, u_short *ds )
 
     if( ptrace( PTRACE_GETREGS, pid, NULL, &regs ) == 0 ) {
         *cs = regs.cs;
-    *ds = regs.ds;
-    return( TRUE );
+        *ds = regs.ds;
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -206,9 +206,9 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
 
     last_sig = -1;
-    have_rdebug = FALSE;
+    have_rdebug = false;
     dbg_dyn = NULL;
-    at_end = FALSE;
+    at_end = false;
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
     len = GetTotalSize() - sizeof( *acc );
@@ -247,12 +247,12 @@ trap_retval ReqProg_load( void )
         args[SplitParms( parms, args + 1, len ) + 1] = NULL;
     }
     args[0] = parm_start;
-    attached = TRUE;
+    attached = true;
     pid = RunningProc( args[0], &name );
     if( pid == 0 || ptrace( PTRACE_ATTACH, pid, NULL, NULL ) == -1 ) {
-        attached = FALSE;
+        attached = false;
         args[0] = name;
-        if( FindFilePath( TRUE, args[0], exe_name ) == 0 ) {
+        if( FindFilePath( true, args[0], exe_name ) == 0 ) {
             exe_name[0] = '\0';
         }
         save_pgrp = getpgrp();
@@ -314,7 +314,7 @@ fail:
     if( pid != 0 && pid != -1 ) {
         if( attached ) {
             ptrace( PTRACE_DETACH, pid, NULL, NULL );
-            attached = FALSE;
+            attached = false;
         } else {
             ptrace( PTRACE_KILL, pid, NULL, NULL );
             waitpid( pid, &status, 0 );
@@ -334,7 +334,7 @@ trap_retval ReqProg_kill( void )
     if( pid != 0 && !at_end ) {
         if( attached ) {
             ptrace( PTRACE_DETACH, pid, NULL, NULL );
-            attached = FALSE;
+            attached = false;
         } else {
             int status;
 
@@ -343,7 +343,7 @@ trap_retval ReqProg_kill( void )
         }
     }
     DelProcess();
-    at_end = FALSE;
+    at_end = false;
     pid = 0;
     ret = GetOutPtr( 0 );
     ret->err = 0;
@@ -450,7 +450,7 @@ static trap_elen ProgRun( int step )
         OutNum( regs.eip );
         Out( "\n" );
 
-        debug_continue = FALSE;
+        debug_continue = false;
         if( WIFSTOPPED( status ) ) {
             switch( ( ptrace_sig = WSTOPSIG( status ) ) ) {
             case SIGSEGV:
@@ -481,12 +481,12 @@ static trap_elen ProgRun( int step )
                 Out( "Unknown signal " );
                 OutNum( ptrace_sig );
                 Out( "\n" );
-                debug_continue = TRUE;
+                debug_continue = true;
                 break;
             }
         } else if( WIFEXITED( status ) ) {
             Out( "WIFEXITED\n" );
-            at_end = TRUE;
+            at_end = true;
             ret->conditions = COND_TERMINATE;
             ptrace_sig = 0;
             goto end;
@@ -570,7 +570,7 @@ static trap_elen ProgRun( int step )
             opcode_type     brk_opcode;
 
             AddInitialLibs( rdebug.r_map );
-            have_rdebug = TRUE;
+            have_rdebug = true;
             ret->conditions |= COND_LIBRARIES;
 
             /* Set a breakpoint in dynamic linker. That way we can be
@@ -597,12 +597,12 @@ static trap_elen ProgRun( int step )
 
 trap_retval ReqProg_step( void )
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval ReqProg_go( void )
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval ReqRedirect_stdin( void  )
@@ -638,7 +638,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE ) ? TRUE : FALSE;
+    exe = ( acc->file_type == TF_TYPE_EXE );
     if( exe ) {
         pidd = RunningProc( name, &name );
     }
@@ -683,7 +683,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     OrigPGrp = getpgrp();
 
     return( ver );

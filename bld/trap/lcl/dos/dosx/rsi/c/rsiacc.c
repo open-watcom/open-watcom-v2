@@ -511,7 +511,7 @@ trap_retval ReqProg_load( void )
     unsigned        len;
 
     _DBG_Writeln( "AccLoadProg" );
-    AtEnd = FALSE;
+    AtEnd = false;
     dst = UtilBuff;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
@@ -558,7 +558,7 @@ trap_retval ReqProg_kill( void )
     _DBG_Writeln( "AccKillProg" );
     ret = GetOutPtr( 0 );
     RedirectFini();
-    AtEnd = TRUE;
+    AtEnd = true;
     ret->err = 0;
     return( sizeof( *ret ) );
 }
@@ -617,7 +617,7 @@ trap_retval ReqSet_break( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     brk_opcode = ret->old;
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, &brk_opcode );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &Break, &brk_opcode );
     return( sizeof( *ret ) );
 }
 
@@ -632,7 +632,7 @@ trap_retval ReqClear_break( void )
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
     brk_opcode = acc->old;
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &brk_opcode, &dummy );
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, false, &brk_opcode, &dummy );
     return( 0 );
 }
 
@@ -694,9 +694,9 @@ static bool SetDebugRegs( void )
         needed += wp->dregs;
     }
     if( needed > 4 )
-        return( FALSE );
+        return( false );
     if( IsDPMI ) {
-        success = TRUE;
+        success = true;
         for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
             wp->handle = -1;
             wp->handle2 = -1;
@@ -705,7 +705,7 @@ static bool SetDebugRegs( void )
             _DBG_Write( "Setting Watch On " );
             _DBG_Write32( wp->linear );
             _DBG_NewLine();
-            success = FALSE;
+            success = false;
             rc = DPMISetWatch( wp->linear, wp->len, DPMI_WATCH_WRITE );
             _DBG_Write( "OK 1 = " );
             _DBG_Write16( rc >= 0 );
@@ -722,7 +722,7 @@ static bool SetDebugRegs( void )
                     break;
                 wp->handle2 = rc;
             }
-            success = TRUE;
+            success = true;
         }
         if( !success ) {
             ClearDebugRegs();
@@ -743,7 +743,7 @@ static bool SetDebugRegs( void )
             }
         }
         SetDR7( dr7 );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -781,13 +781,13 @@ static bool CheckWatchPoints( void )
         addr.offset = wp->addr.offset;
         val = 0;
         if( ReadMemory( &addr, &val, wp->len ) != wp->len ) {
-            return( TRUE );
+            return( true );
         }
         if( val != wp->value ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static unsigned ProgRun( bool step )
@@ -860,12 +860,12 @@ static unsigned ProgRun( bool step )
 
 trap_retval ReqProg_go( void )
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval ReqProg_step( void )
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval ReqGet_next_alias( void )
@@ -949,11 +949,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
     WatchCount = 0;
-    FakeBreak = FALSE;
+    FakeBreak = false;
     error_num = D32DebugInit( &Proc, INT_PRT_SCRN_KEY );
     if( error_num ) {
         _DBG_Writeln( "D32DebugInit() failed:" );

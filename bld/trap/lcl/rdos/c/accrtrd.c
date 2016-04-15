@@ -127,12 +127,12 @@ trap_retval ReqRunThread_get_runtime( void )
 
     time_txt = GetOutPtr( sizeof( *ret ) );
 
-    ok = FALSE;
+    ok = false;
 
     for( i = 0; i < 256 && !ok; i++ ) {
         RdosGetThreadState( i, &state );
         if (state.ID == acc->thread) {
-            ok = TRUE;
+            ok = true;
         }
     }
 
@@ -167,10 +167,10 @@ trap_retval ReqRunThread_get_runtime( void )
         hour = state.MsbTime % 24;
         RdosDecodeLsbTics(state.LsbTime, &min, &sec, &milli, &micro);
 
-        started = FALSE;
+        started = false;
         if( day ) {
             sprintf( time_txt, "%3d ", day );
-            started = TRUE;
+            started = true;
         } else {
             strcpy( time_txt, "    ");
         }
@@ -181,7 +181,7 @@ trap_retval ReqRunThread_get_runtime( void )
             else
                 sprintf( tempstr, "%2d.", hour );
             strcat( time_txt, tempstr );
-            started = TRUE;
+            started = true;
         } else {
             strcat( time_txt, "   " );
         }
@@ -192,7 +192,7 @@ trap_retval ReqRunThread_get_runtime( void )
             else
                 sprintf( tempstr, "%2d.", min );
             strcat( time_txt, tempstr );
-            started = TRUE;
+            started = true;
         } else {
             strcat( time_txt, "   " );
         }
@@ -203,7 +203,7 @@ trap_retval ReqRunThread_get_runtime( void )
             else
                sprintf( tempstr, "%2d,", sec );
             strcat( time_txt, tempstr );
-            started = TRUE;
+            started = true;
         } else {
             strcat( time_txt, "   " );
         }
@@ -214,7 +214,7 @@ trap_retval ReqRunThread_get_runtime( void )
             else
                 sprintf( tempstr, "%3d ", milli );
             strcat( time_txt, tempstr );
-            started = TRUE;
+            started = true;
         } else {
             strcat( time_txt, "    " );
         }

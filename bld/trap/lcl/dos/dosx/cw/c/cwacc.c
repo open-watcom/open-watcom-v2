@@ -223,7 +223,7 @@ extern trap_cpu_regs    DebugRegs;
 extern unsigned_16      DebugPSP;
 
 int                 WatchCount = 0;
-bool                FakeBreak = FALSE;
+bool                FakeBreak = false;
 
 static unsigned_8   RealNPXType;
 static hbrk_t       HBRKTable[4];
@@ -255,7 +255,7 @@ static void HBRKInit( void )
     int     i;
 
     for( i = 0; i < 4; ++i ) {
-        HBRKTable[i].inuse = FALSE;
+        HBRKTable[i].inuse = false;
     }
 }
 
@@ -271,7 +271,7 @@ void SetHBRK( void )
 
             wh = _DPMISetWatch( HBRKTable[i].address, HBRKTable[i].size, HBRKTable[i].type );
             if( wh >= 0 ) {
-                HBRKTable[i].installed = TRUE;
+                HBRKTable[i].installed = true;
                 HBRKTable[i].handle = wh;
                 _DPMIResetWatch( wh );
             }
@@ -288,7 +288,7 @@ void ResetHBRK( void )
     for( i = 0; i < 4; ++i ) {
         if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
             _DPMIClearWatch( HBRKTable[i].handle );
-            HBRKTable[i].installed = FALSE;
+            HBRKTable[i].installed = false;
         }
     }
 }
@@ -301,11 +301,11 @@ int IsHardBreak( void )
     for( i = 0; i < 4; ++i ) {
         if( HBRKTable[i].inuse && HBRKTable[i].installed ) {
             if( _DPMITestWatch( HBRKTable[i].handle ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 int CheckWatchPoints( void )
@@ -324,11 +324,11 @@ int CheckWatchPoints( void )
                 sum += *(p++);
             }
             if( sum != WatchPoints[i].check ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 int CheckTerminate( void )
@@ -393,7 +393,7 @@ static void AddModHandle( const char *name, epsp_t *epsp )
     mod = &ModHandles[NumModHandles];
     ++NumModHandles;
     mod->epsp = epsp;
-    mod->loaded = TRUE;
+    mod->loaded = true;
     mod->SegCount = 0;
     mod->ObjInfo = NULL;
     if( XVersion >= 0x404 ) {
@@ -443,7 +443,7 @@ static void RemoveModHandle( epsp_t *epsp )
 
     for( i = 0; i < NumModHandles; ++i ) {
         if( ModHandles[ i ].epsp == epsp ) {
-            ModHandles[ i ].loaded = FALSE;
+            ModHandles[ i ].loaded = false;
             if( ModHandles[ i ].SegCount ) {
                 free( ModHandles[ i ].ObjInfo );
                 ModHandles[ i ].ObjInfo = NULL;
@@ -697,13 +697,13 @@ static unsigned ProgRun( bool step )
 trap_retval ReqProg_go( void )
 /*************************/
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval ReqProg_step( void )
 /***************************/
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval ReqProg_load( void )
@@ -790,9 +790,9 @@ trap_retval ReqSet_watch( void )
     ret = GetOutPtr( 0 );
     if( acc->size == 1 || acc->size == 2 || acc->size == 4 ) {
         for( i = 0; i < 4; ++i ) {
-            if( HBRKTable[i].inuse == FALSE ) {
-                HBRKTable[i].inuse = TRUE;
-                HBRKTable[i].installed = FALSE;
+            if( !HBRKTable[i].inuse ) {
+                HBRKTable[i].inuse = true;
+                HBRKTable[i].installed = false;
                 HBRKTable[i].address = GetLinAddr( acc->watch_addr );
                 HBRKTable[i].size = acc->size;
                 HBRKTable[i].type = DPMI_WATCH_WRITE;
@@ -804,8 +804,8 @@ trap_retval ReqSet_watch( void )
     }
     if( WatchCount < MAX_WATCHES ) {
         for( i = 0; i < MAX_WATCHES; ++i ) {
-            if( WatchPoints[i].inuse == FALSE ) {
-                WatchPoints[i].inuse = TRUE;
+            if( !WatchPoints[i].inuse ) {
+                WatchPoints[i].inuse = true;
                 WatchPoints[i].address = GetLinAddr( acc->watch_addr );
                 WatchPoints[i].length = acc->size;
                 p = (unsigned_8 *)WatchPoints[i].address;
@@ -839,7 +839,7 @@ trap_retval ReqClear_watch( void )
         if( HBRKTable[i].inuse ) {
             if( HBRKTable[i].address == watch_addr ) {
                 if( HBRKTable[i].size == acc->size ) {
-                    HBRKTable[i].inuse = FALSE;
+                    HBRKTable[i].inuse = false;
                     return( 0 );
                 }
             }
@@ -850,7 +850,7 @@ trap_retval ReqClear_watch( void )
             if( WatchPoints[i].inuse ) {
                 if( WatchPoints[i].address == watch_addr ) {
                     if( WatchPoints[i].length == acc->size ) {
-                        WatchPoints[i].inuse = FALSE;
+                        WatchPoints[i].inuse = false;
                         --WatchCount;
                         break;
                     }
@@ -1036,12 +1036,12 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
     HBRKInit();
     WatchCount = 0;
-    FakeBreak = FALSE;
+    FakeBreak = false;
     XVersion = GrabVectors();
     ver_msg[23] = XVersion / 256 + '0';
     ver_msg[25] = ( XVersion % 256 ) / 10 + '0';

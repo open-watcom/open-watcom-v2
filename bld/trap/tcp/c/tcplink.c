@@ -215,7 +215,7 @@ static bool Terminate( void )
 #endif
     soclose( data_socket );
     data_socket = INVALID_SOCKET;
-    return( TRUE );    
+    return( true );    
 }
 
 #endif
@@ -308,7 +308,7 @@ bool RemoteConnect( void )
         data_socket = RdosGetTcpListen( listen_handle );
         if( IS_VALID_SOCKET( data_socket ) ) {
             _DBG_NET(("Found a connection\r\n"));
-            return( TRUE );
+            return( true );
         }
     }
   #else
@@ -328,7 +328,7 @@ bool RemoteConnect( void )
         if( IS_VALID_SOCKET( data_socket ) ) {
             nodelay();
             _DBG_NET(("Found a connection\r\n"));
-            return( TRUE );
+            return( true );
         }
     }
   #endif
@@ -343,12 +343,12 @@ bool RemoteConnect( void )
         rc = connect( data_socket, (LPSOCKADDR)&socket_address, sizeof( socket_address ) );
         if( IS_RET_OK( rc ) ) {
             nodelay();
-            return( TRUE );
+            return( true );
         }
     }
   #endif
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -444,7 +444,7 @@ const char *RemoteLink( const char *parms, bool server )
         struct ifi_info     *ifi, *ifihead;
         struct sockaddr     *sa;
 
-        ifihead = get_ifi_info( AF_INET, FALSE );
+        ifihead = get_ifi_info( AF_INET, false );
         for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
             /* Ignore loopback interfaces */
             if( ifi->flags & IFI_LOOP )
@@ -582,10 +582,10 @@ void RemoteUnLink( void )
 /* Sort out implementation differences. */
       #if defined( __DOS__ )
         #define w_ioctl         ioctlsocket
-        #define HAVE_SA_LEN     FALSE
+        #define HAVE_SA_LEN     false
       #elif defined( __OS2__ )
         #define w_ioctl         ioctl
-        #define HAVE_SA_LEN     TRUE
+        #define HAVE_SA_LEN     true
       #endif
 
 static struct ifi_info  *get_ifi_info( int family, int doaliases )
