@@ -301,10 +301,10 @@ static void get_rec_type( unsigned_8 rtype, unsigned_16 size, unsigned_32 offset
         dmp_data( size, offset );
         break;
     case LMF_FIXUP_REC:
-        dmp_fixup( size, FALSE );
+        dmp_fixup( size, false );
         break;
     case LMF_8087_FIXUP_REC:
-        dmp_fixup( size, TRUE );
+        dmp_fixup( size, true );
         break;
     case LMF_RESOURCE_REC:
         dmp_resrc( size, offset );

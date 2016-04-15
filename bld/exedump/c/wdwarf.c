@@ -118,7 +118,7 @@ static bool os2_debug( void )
             Wdputslc( "No OS/2 LE or LX debugging info\n" );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*

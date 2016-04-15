@@ -225,9 +225,9 @@ static void dmp_res_name_id( unsigned_16 count, bool is_name )
                 Wdputs( "                       " );
             }
             if( j >= pe_res_name.num_name_entries ) {
-                dmp_name_id( tmp_off, FALSE );
+                dmp_name_id( tmp_off, false );
             } else {
-                dmp_name_id( tmp_off, TRUE );
+                dmp_name_id( tmp_off, true );
             }
             tmp_off += sizeof( resource_dir_entry );
             Wdputslc( "\n" );
@@ -319,8 +319,8 @@ void Dmp_resources( void )
     Wdputslc( "\n" );
     Wdputslc( "type id/string                 name id/string                 language id\n" );
     Wdputslc( "==============                 ==============                 ===========\n" );
-    dmp_res_name_id( pe_res_type.num_name_entries, TRUE );
-    dmp_res_name_id( pe_res_type.num_id_entries, FALSE );
+    dmp_res_name_id( pe_res_type.num_name_entries, true );
+    dmp_res_name_id( pe_res_type.num_id_entries, false );
     if( Options_dmp & RESRC_DMP ) {
         dmp_res_dir();
         dmp_res_data();

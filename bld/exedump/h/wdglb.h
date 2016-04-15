@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "watcom.h"
 #include "exedos.h"
 #include "exeos2.h"
@@ -56,7 +57,6 @@
 #define SELECTOR_FIX            0x02
 #define table( x )              { x, #x }
 #define MAX_BUFF                0xff00
-#define bool                    char
 
 #define FIX_DMP         0x0001  /* dump the fixups         */
 #define RESRC_DMP       0x0002  /* dump the resources      */

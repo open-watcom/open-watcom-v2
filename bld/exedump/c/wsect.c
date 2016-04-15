@@ -542,9 +542,9 @@ static bool dump_tag( info_state *info )
          || attr == DW_AT_vtable_elem_location
          || attr == DW_AT_WATCOM_parm_entry
          || attr == DW_AT_use_location ) {
-            is_loc = TRUE;
+            is_loc = true;
        } else {
-            is_loc = FALSE;
+            is_loc = false;
        }
 decode_form:
         switch( form ) {
@@ -690,11 +690,11 @@ decode_form:
         default:
             Wdputslc( "unknown form\n" );
             info->p = p;
-            return( FALSE );
+            return( false );
         }
     }
     info->p = p;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -787,9 +787,9 @@ static bool skip_tag( info_state *info )
          || attr == DW_AT_data_member_location
          || attr == DW_AT_string_length
          || attr == DW_AT_use_location ) {
-            is_loc = TRUE;
+            is_loc = true;
        } else {
-            is_loc = FALSE;
+            is_loc = false;
        }
 decode_form:
         switch( form ) {
@@ -869,11 +869,11 @@ decode_form:
         default:
             Wdputslc( "unknown form\n" );
             info->p = p;
-            return( FALSE );
+            return( false );
         }
     }
     info->p = p;
-    return( TRUE );
+    return( true );
 }
 
 static void dump_info_headers( const char *input, uint length )
@@ -892,7 +892,7 @@ static void dump_info_headers( const char *input, uint length )
 
     p = input;
     state.addr_size = 0;
-    found = FALSE;
+    found = false;
     while( p - input < length ) {
         state.cu_header = p - input;
         unit_length = get_u32( (uint_32 *)p );
@@ -926,7 +926,7 @@ static void dump_info_headers( const char *input, uint length )
             state.abbrev = abbrev;
             state.p = p;
             if( tag_offset == 0x59a125 ) {
-                found = TRUE;
+                found = true;
             }
             if( found ) {
                 Wdputs( "Offset: " );

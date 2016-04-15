@@ -771,7 +771,7 @@ bool Dmp_macho_header( unsigned long start )
         return( 0 );
     }
     if( mhead.magic == MH_CIGAM ) {
-        Byte_swap = TRUE;
+        Byte_swap = true;
         SWAP_32( mhead.cputype );
         SWAP_32( mhead.cpusubtype );
         SWAP_32( mhead.filetype );

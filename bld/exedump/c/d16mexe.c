@@ -253,7 +253,7 @@ static void dmp_dos16m_head_info( dos16m_exe_header *d16m_head )
             //  RSI-2 reloc format
             sel = ( d16m_head->first_reloc_sel - d16m_head->first_selector ) / sizeof( gdt_info );
             for( ; sel < sel_count; ++sel ) {
-                last_reloc = FALSE;
+                last_reloc = false;
                 size = segs_info[ sel ].size;
                 Wlseek( segs_info[ sel ].file_off );
                 while( size ) {
@@ -261,7 +261,7 @@ static void dmp_dos16m_head_info( dos16m_exe_header *d16m_head )
                     size -= sizeof( r.sel );
                     if( r.sel & 0x02 ) {        // last selector in list
                         r.sel &= ~0x02;
-                        last_reloc = TRUE;
+                        last_reloc = true;
                     }
                     Wread( &offs_cnt, sizeof( offs_cnt ) );
                     size -= sizeof( offs_cnt ) + offs_cnt * sizeof( r.off );

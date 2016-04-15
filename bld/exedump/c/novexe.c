@@ -354,11 +354,11 @@ bool Dmp_nlm_head( void )
         offset += nlm_head4.copyrightLength;
     }
     Wlseek( offset );
-    extend = FALSE;
+    extend = false;
     Wread( &Nlm_ext_head, sizeof( extended_nlm_header ) );
     if( !memcmp( Nlm_ext_head.stamp, EXTENDED_NLM_SIGNATURE, EXTENDED_NLM_SIGNATURE_LENGTH ) ) {
         Dump_header( (char *)&Nlm_ext_head.languageID, nlm_ext_msg );
-        extend = TRUE;
+        extend = true;
     }
     if( Nlm_head.customDataSize != 0 ) {
         Wdputslc( "\n" );

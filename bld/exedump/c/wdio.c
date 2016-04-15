@@ -168,7 +168,7 @@ void Dump_header( void *data_ptr, const_string_table *msg )
     bool        print_h;
 
     for( ; *msg != NULL; ++msg ) {
-        print_h = TRUE;
+        print_h = true;
         switch( msg[0][0] ) {
         case '1':
             Wdputs( &msg[0][1] );
@@ -197,7 +197,7 @@ void Dump_header( void *data_ptr, const_string_table *msg )
             }
             Wdputs( (char *)data );
             data += skip;
-            print_h = FALSE;
+            print_h = false;
             break;
         default:
             Wdputs( &msg[0][1] );

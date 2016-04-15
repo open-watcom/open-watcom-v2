@@ -472,7 +472,7 @@ static void dump_rtn( unsigned_8 *buff )
     char        name[256];
     int         i;
 
-    dump_block( buff, FALSE );
+    dump_block( buff, false );
 
     ptr = buff + sizeof( block );
     pro = *ptr++;
@@ -525,7 +525,7 @@ static void dump_rtn386( unsigned_8 *buff )
     char        name[256];
     int         i;
 
-    dump_block( buff, TRUE );
+    dump_block( buff, true );
 
     ptr = buff + sizeof( block_386 );
     pro = *ptr++;
@@ -674,7 +674,7 @@ static void dump_locals( mod_info *mi )
                 break;
             case BLOCK:
                 Wdputslc( "BLOCK\n" );
-                dump_block( buff, FALSE );
+                dump_block( buff, false );
                 break;
             case NEAR_RTN:
                 Wdputslc( "NEAR_RTN\n" );
@@ -686,7 +686,7 @@ static void dump_locals( mod_info *mi )
                 break;
             case BLOCK_386:
                 Wdputslc( "BLOCK_386\n" );
-                dump_block( buff, TRUE );
+                dump_block( buff, true );
                 break;
             case NEAR_RTN_386:
                 Wdputslc( "NEAR_RTN_386\n" );
