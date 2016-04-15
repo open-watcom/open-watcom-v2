@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <dos.h>
 #include <sys/stat.h>
+#include "bool.h"
 #include "misc.h"
 #include "getopt.h"
 #include "fnutils.h"
@@ -45,19 +46,16 @@
 #include "clibext.h"
 
 
-#define TRUE    1
-#define FALSE   0
-
 char *OptEnvVar = "du";
 
 char    filename[_MAX_PATH];
 char    numbuff[14];
 long    clsize;
-int     filecnt,linecnt;
-char    aflag=FALSE;
-char    bflag=FALSE;
-char    fflag=FALSE;
-char    sflag=FALSE;
+int     filecnt, linecnt;
+char    aflag = false;
+char    bflag = false;
+char    fflag = false;
+char    sflag = false;
 
 void    DoDU( char *, unsigned long *, unsigned long * );
 void    fmtPrint( unsigned long );
@@ -95,13 +93,13 @@ int main( int argc, char *argv[] )
             break;
         }
         if( ch == 'a' ) {
-            aflag=TRUE;
+            aflag = true;
         } else if( ch == 'b' ) {
-            bflag=TRUE;
+            bflag = true;
         } else if( ch == 'f' ) {
-            fflag=TRUE;
+            fflag = true;
         } else if( ch == 's' ) {
-            sflag=TRUE;
+            sflag = true;
         }
     }
 

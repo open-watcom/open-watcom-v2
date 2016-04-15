@@ -59,6 +59,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #endif
+#include "bool.h"
 #include "getopt.h"
 #include "misc.h"
 #include "fnutils.h"
@@ -76,8 +77,6 @@ char *OptEnvVar="lc";
 #define DIR_PASS        1
 #define FILE_PASS       2
 #define READ_ONLY_PASS  3
-#define TRUE            1
-#define FALSE           0
 
 struct dirent **files;
 char filename[_MAX_PATH];
@@ -108,14 +107,13 @@ void PrintFile( struct dirent *file );
  */
 int main( int argc, char *argv[] )
 {
-    int i,ch;
+    int i, ch;
 
 #ifndef __QNX__
     maxwidth = GetConsoleWidth();
 #else
     maxwidth = LINE_WIDTH;              /* for now */
 #endif
-
     maxwidth /= COLUMN_WIDTH;
 
     for( ;; ) {
@@ -142,8 +140,8 @@ int main( int argc, char *argv[] )
     if( argc == 1 ) {
         DoLC( "." );
     } else {
-        for( i=1;i<argc;i++ ) {
-            printf("%s:\n",argv[i]);
+        for( i = 1; i < argc; i++ ) {
+            printf( "%s:\n", argv[i] );
             DoLC( argv[i] );
         }
     }
@@ -259,21 +257,21 @@ void DoLC( char *dir )
     /*
      * determine if there are files and/or directories
      */
-    fileflag = dirflag = read_only_flag = FALSE;
-    for( i=0;i<filecnt;i++ ) {
+    fileflag = dirflag = read_only_flag = false;
+    for( i = 0; i < filecnt; i++ ) {
 #ifndef __QNX__
         if( files[i]->d_attr & _A_SUBDIR ) {
-            dirflag = TRUE;
+            dirflag = true;
         } else if( separate_read_only && files[i]->d_attr & _A_RDONLY ) {
-            read_only_flag = TRUE;
+            read_only_flag = true;
         } else {
-            fileflag = TRUE;
+            fileflag = true;
         }
 #else
         if( S_ISDIR( files[i]->d_stat.st_mode ) ) {
-            dirflag = TRUE;
+            dirflag = true;
         } else {
-            fileflag = TRUE;
+            fileflag = true;
         }
 #endif
         if( fileflag && dirflag && (!separate_read_only || read_only_flag) ) {
@@ -288,7 +286,7 @@ void DoLC( char *dir )
         printf("Directories:\n");
         pass = DIR_PASS;
         linecnt=0;
-        for( i=0;i<filecnt;i++ ) {
+        for( i = 0; i < filecnt; i++ ) {
             PrintFile( files[i] );
         }
         if( linecnt != 0 ) {
@@ -302,7 +300,7 @@ void DoLC( char *dir )
         printf("Files:\n");
         pass = FILE_PASS;
         linecnt=0;
-        for( i=0;i<filecnt;i++ ) {
+        for( i = 0; i < filecnt; i++ ) {
             PrintFile( files[i] );
         }
         if( linecnt != 0 ) {
@@ -316,7 +314,7 @@ void DoLC( char *dir )
         printf( "Read-Only Files:\n" );
         pass = READ_ONLY_PASS;
         linecnt = 0;
-        for( i=0;i<filecnt;i++ ) {
+        for( i = 0; i < filecnt; i++ ) {
             PrintFile( files[i] );
         }
         if( linecnt != 0 ) {
