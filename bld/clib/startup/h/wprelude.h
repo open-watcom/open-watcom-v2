@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  __WATCOM_Prelude function declaration.
+* Description:  Netware startup related functions declaration.
 *
 ****************************************************************************/
 
@@ -32,5 +32,12 @@
 #if defined( __NETWARE__ )
 
 extern void __WATCOM_Prelude( void );
+
+#if !defined(_THIN_LIB)
+extern int  _cstart_( void );
+extern long _Prelude( void *, void *, unsigned char *, unsigned char *, long, long, long __cdecl (*)(), long, long );
+extern void _Stop( void );
+extern void __VersionEnforcement( void );
+#endif
 
 #endif
