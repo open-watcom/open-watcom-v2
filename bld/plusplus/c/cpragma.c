@@ -87,7 +87,7 @@ static bool grabNum( unsigned *val )
     if( CurToken == T_CONSTANT ) {
         *val = U32Fetch( Constant64 );
         NextToken();
-        return( TRUE );
+        return( true );
     }
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
@@ -95,11 +95,11 @@ static bool grabNum( unsigned *val )
             *val = U32Fetch( Constant64 );
             NextToken();
             MustRecog( T_RIGHT_PAREN );
-            return( TRUE );
+            return( true );
         }
     }
     NextToken();
-    return( FALSE );
+    return( false );
 }
 
 // #pragma template_depth n
@@ -215,16 +215,16 @@ static void pragInlineRecursion( // PROCESS #pragma inline_recusrion
     void )
 {
     if( PragRecog( "on" ) ) {
-        CgBackSetInlineRecursion( TRUE );
+        CgBackSetInlineRecursion( true );
     } else if( PragRecog( "off" ) ) {
-        CgBackSetInlineRecursion( FALSE );
+        CgBackSetInlineRecursion( false );
     } else {
         if( CurToken == T_LEFT_PAREN ) {
             NextToken();
             if( PragRecog( "on" ) ) {
-                CgBackSetInlineRecursion( TRUE );
+                CgBackSetInlineRecursion( true );
             } else if( PragRecog( "off" ) ) {
-                CgBackSetInlineRecursion( FALSE );
+                CgBackSetInlineRecursion( false );
             } else {
                 MustRecog( T_ID );
             }
@@ -333,25 +333,25 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
 {
     unsigned msgnum;            // - message number
     int level;                  // - new level
-    bool change_all;            // - TRUE ==> change all levels
-    bool error_occurred;        // - TRUE ==> error has occurred
+    bool change_all;            // - true ==> change all levels
+    bool error_occurred;        // - true ==> error has occurred
 
-    error_occurred = FALSE;
+    error_occurred = false;
     if( CurToken == T_TIMES ) {
-        change_all = TRUE;
+        change_all = true;
     } else if( CurToken == T_CONSTANT ) {
         msgnum = U32Fetch( Constant64 );
-        change_all = FALSE;
+        change_all = false;
     } else {
         // ignore; MS or other vendor's #pragma
-        return( TRUE );
+        return( true );
     }
     NextToken();
     if( CurToken == T_CONSTANT ) {
         level = U32Fetch( Constant64 );
     } else {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        error_occurred = TRUE;
+        error_occurred = true;
     }
     NextToken();
     if( ! error_occurred ) {
@@ -361,7 +361,7 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
             WarnChangeLevel( level, msgnum );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -373,12 +373,12 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
     unsigned msgnum;
     bool error_occurred;
 
-    error_occurred = FALSE;
+    error_occurred = false;
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
         if( !grabNum( &msgnum ) ) {
             CErr1( ERR_PRAG_ENABLE_MESSAGE );
-            error_occurred = TRUE;
+            error_occurred = true;
         }
 
         // Enable message by setting its level to the lowest possible value.
@@ -404,12 +404,12 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     unsigned msgnum;
     bool error_occurred;
 
-    error_occurred = FALSE;
+    error_occurred = false;
     MustRecog( T_LEFT_PAREN );
     for( ;; ) {
         if( !grabNum( &msgnum ) ) {
             CErr1( ERR_PRAG_DISABLE_MESSAGE );
-            error_occurred = TRUE;
+            error_occurred = true;
         }
 
         // Disable message by setting its level to the highest possible value.
@@ -438,7 +438,7 @@ static void endOfPragma(
 }
 
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - TRUE ==> set flag
+    bool set_flag )             // - true ==> set flag
 {
     #define toggle_pick( x ) \
         if( strcmp( Buffer, #x ) == 0 ) {       \
@@ -499,7 +499,7 @@ bool PragRecog(                 // RECOGNIZE PRAGMA ID
 
 
 static void pragFlag(           // SET TOGGLES
-    bool set_flag )             // - TRUE ==> set flag
+    bool set_flag )             // - true ==> set flag
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -590,9 +590,9 @@ static bool popPrag( PRAG_STACK **h, unsigned *pvalue )
             *pvalue = pack_entry->value;
         }
         StackPush( &FreePrags, pack_entry );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 // forms: (1) #pragma enum int
@@ -766,7 +766,7 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 
 
 static void pragIntrinsic(      // SET FUNCTIONS TO BE (NOT TO BE) INTRINSIC
-    bool intrinsic )            // - TRUE ==> function to be intrinsic
+    bool intrinsic )            // - true ==> function to be intrinsic
 {
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
@@ -904,7 +904,7 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
     }
     if( method != DTM_COUNT ) {
         CompInfo.dt_method_speced = method;
-        CompFlags.dt_method_pragma = TRUE;
+        CompFlags.dt_method_pragma = true;
     }
 }
 
@@ -979,7 +979,7 @@ static void pragIncludeAlias( void )
                 NextToken();
             }
             if( CurToken == T_STRING ) {
-                IAliasAdd( alias_name, Buffer, FALSE );
+                IAliasAdd( alias_name, Buffer, false );
                 NextToken();
             }
             CMemFree( alias_name );
@@ -1015,7 +1015,7 @@ static void pragIncludeAlias( void )
                     }
                     strncat( r_buf, Buffer, sizeof( r_buf ) - 2 );
                 }
-                IAliasAdd( a_buf, r_buf, TRUE );
+                IAliasAdd( a_buf, r_buf, true );
             }
         }
         PPCTL_DISABLE_MACROS();
@@ -1100,7 +1100,7 @@ static void pragPack(           // #PRAGMA PACK
 
 void CPragma( void )                  // PROCESS A PRAGMA
 {
-    bool check_end = TRUE;
+    bool check_end = true;
 
     SrcFileGuardStateSig();
     CompFlags.in_pragma = 1;
@@ -1117,9 +1117,9 @@ void CPragma( void )                  // PROCESS A PRAGMA
         PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( PragIdRecog( "on" ) ) {
-            pragFlag( TRUE );
+            pragFlag( true );
         } else if( PragIdRecog( "off" ) ) {
-            pragFlag( FALSE );
+            pragFlag( false );
         } else if( PragIdRecog( "aux" ) || PragIdRecog( "linkage" ) ) {
             PragAux();
         } else if( PragIdRecog( "library" ) ) {
@@ -1135,7 +1135,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
         } else if( PragIdRecog( "warning" ) ) {
             if( pragWarning() ) {
                 /* ignore #pragma warning */
-                check_end = FALSE;  /* skip rest of line */
+                check_end = false;  /* skip rest of line */
             }
         } else if( PragIdRecog( "enable_message" ) ) {
             pragEnableMessage();
@@ -1156,9 +1156,9 @@ void CPragma( void )                  // PROCESS A PRAGMA
         } else if( PragIdRecog( "inline_recursion" ) ) {
             pragInlineRecursion();
         } else if( PragIdRecog( "intrinsic" ) ) {
-            pragIntrinsic( TRUE );
+            pragIntrinsic( true );
         } else if( PragIdRecog( "function" ) ) {
-            pragIntrinsic( FALSE );
+            pragIntrinsic( false );
         } else if( PragIdRecog( "destruct" ) ) {
             pragDestruct();
         } else if( PragIdRecog( "enum" ) ) {
@@ -1180,10 +1180,10 @@ void CPragma( void )                  // PROCESS A PRAGMA
             pragBreak();
 #endif
         } else {                /* unknown pragma */
-            check_end = FALSE;  /* skip rest of line */
+            check_end = false;  /* skip rest of line */
         }
     } else {                    /* unknown pragma */
-        check_end = FALSE;      /* skip rest of line */
+        check_end = false;      /* skip rest of line */
     }
     if( check_end ) {
         endOfPragma();
@@ -1274,17 +1274,17 @@ void CreateAux(                 // CREATE AUX ID
 
 static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
     unsigned m_type,            // - type to be set
-    bool create_new )           // - TRUE if we want a new aux_info
+    bool create_new )           // - true if we want a new aux_info
 {
     bool found;
 
-    found = TRUE;
+    found = true;
     CurrInfo = magicWords[m_type].info;
     if( CurrInfo == NULL ) {
         if( create_new ) {
             CreateAux( Buffer );
         } else {
-            found = FALSE;
+            found = false;
         }
     }
     return( found );
@@ -1295,7 +1295,7 @@ bool PragmaName( AUX_INFO *pragma, char **id )
 {
     *id = NULL;
     if( pragma == &DefaultInfo ) {
-        return( TRUE );
+        return( true );
     }
     if( pragma == &CdeclInfo ) {
         *id = retrieveName( M_CDECL );
@@ -1315,10 +1315,10 @@ bool PragmaName( AUX_INFO *pragma, char **id )
         *id = retrieveName( M_WATCALL );
     }
     if( *id != NULL ) {
-        return( TRUE );
+        return( true );
     }
     *id = AuxRetrieve( pragma );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1326,7 +1326,7 @@ bool PragmaName( AUX_INFO *pragma, char **id )
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
     void )
 {
-    setAuxInfo( MagicKeyword(), TRUE );
+    setAuxInfo( MagicKeyword(), true );
 }
 #endif
 
@@ -1375,7 +1375,7 @@ static void copyObjName(         // COPY OBJECT PORTION
 }
 
 void PragEnding(                // PROCESS END OF PRAGMA
-    bool set_sym )              // - TRUE ==> set SYMBOL's aux_info
+    bool set_sym )              // - true ==> set SYMBOL's aux_info
 {
     if( CurrEntry != NULL ) {
         if( CurrAlias != NULL ) {
@@ -1420,11 +1420,11 @@ AUX_INFO *PragmaLookup( char *name, unsigned index )
     AUX_ENTRY *ent;
 
     if( index != M_UNKNOWN ) {
-        if( setAuxInfo( index, FALSE ) ) {
+        if( setAuxInfo( index, false ) ) {
             return( CurrInfo );
         }
     }
-    if( setAuxInfo( lookupMagicKeyword( name ), FALSE ) ) {
+    if( setAuxInfo( lookupMagicKeyword( name ), false ) ) {
         return( CurrInfo );
     }
     ent = AuxLookup( name );
@@ -1594,9 +1594,9 @@ bool ReverseParms( AUX_INFO *pragma )
 /***********************************/
 {
     if( pragma->cclass & REVERSE_PARMS ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void writePacks( void )

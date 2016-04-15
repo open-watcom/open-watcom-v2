@@ -195,9 +195,9 @@ void *ExtrefVirtualSymbol(      // GET NEXT DEPENDENCY SYMBOL
 static bool pureSymCanBeUndefd( SYMBOL sym )
 {
     if( SymIsPure( sym ) && ! SymIsDtor( sym ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool symIsCtorDtor( SYMBOL sym )
@@ -356,7 +356,7 @@ void *ExtrefVfunInfo(           // GET INFORMATION FOR VIRTUAL FUN. REFERENCE
             orig_funs = startVRing();
             VfnAncestralWalk( sym->u.virt_fun, &extrefVfunRegister, orig_funs );
         } else if( ! CompFlags.vfun_reference_done ) {
-            CompFlags.vfun_reference_done = TRUE;
+            CompFlags.vfun_reference_done = true;
             orig_funs = startVRing();
             extrefAddOvfn( orig_funs, NULL );
         }

@@ -55,11 +55,11 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
 {
     FN_CTL *fctl;               // - file control
     unsigned cd_arg;            // - integral cdtor arg
-    bool has_cdtor;             // - TRUE ==> has inlined CDTOR argument
+    bool has_cdtor;             // - true ==> has inlined CDTOR argument
 
     fctl = VstkTop( &stack_files );
     if( fctl == NULL ) {
-        has_cdtor = FALSE;
+        has_cdtor = false;
     } else {
         cond_flags_offset += fctl->cond_flags;
         has_cdtor = CallStabCdArgGet( handle, &cd_arg );
@@ -97,23 +97,23 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     fctl->dtor_method    = DTM_DIRECT;
     fctl->func_dtor_method = DTM_DIRECT;
 
-    fctl->deregistered   = FALSE;
-    fctl->has_fn_exc     = FALSE;
-    fctl->is_ctor        = FALSE;
-    fctl->is_dtor        = FALSE;
-    fctl->ctor_complete  = FALSE;
-    fctl->coded_return   = FALSE;
-    fctl->has_ctor_test  = FALSE;
-    fctl->has_cdtor_val  = FALSE;
-    fctl->temp_dtoring   = FALSE;
-    fctl->ctor_test      = FALSE;
-    fctl->dtor_reg_reqd  = FALSE;
+    fctl->deregistered   = false;
+    fctl->has_fn_exc     = false;
+    fctl->is_ctor        = false;
+    fctl->is_dtor        = false;
+    fctl->ctor_complete  = false;
+    fctl->coded_return   = false;
+    fctl->has_ctor_test  = false;
+    fctl->has_cdtor_val  = false;
+    fctl->temp_dtoring   = false;
+    fctl->ctor_test      = false;
+    fctl->dtor_reg_reqd  = false;
     fctl->debug_info     = ( 0 == CgBackInlinedDepth() )
                          && ( GenSwitches
                             & ( NUMBERS | DBG_TYPES | DBG_LOCALS ) );
     if( has_cdtor ) {
         fctl->cdtor_val = cd_arg;
-        fctl->has_cdtor_val = TRUE;
+        fctl->has_cdtor_val = true;
     }
     return( fctl );
 }

@@ -274,7 +274,7 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     PTREE *a_expr,              // - binary expression
     CNV_DIAG *diagnosis )       // - used to diagnose errors
 {
-    bool cretn;                 // - TRUE ==> conversion handled
+    bool cretn;                 // - true ==> conversion handled
     PTREE expr;                 // - expression
     PTREE *a_cnv = NULL;        // - converted subtree
     PTREE cnv;                  // - converted subtree
@@ -286,7 +286,7 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
     switch( ctd ) {
       case CTD_NO :
         if( CastCommonClass( a_expr, diagnosis ) ) {
-            return TRUE;
+            return true;
         }
         // drops thru
       case CTD_LEFT_AMBIGUOUS :
@@ -309,16 +309,16 @@ static bool convertCommonClass( // CONVERT TO COMMON TYPE, FROM CLASS
         break;
     }
     if( PT_ERROR == expr->op ) {
-        cretn = FALSE;
+        cretn = false;
     } else {
         cnv = CastImplicit( *a_cnv, tgt_type, CNV_EXPR, diagnosis );
         *a_cnv = cnv;
         if( PT_ERROR == cnv->op ) {
             PTreeErrorNode( expr );
-            cretn = FALSE;
+            cretn = false;
         } else {
             expr = NodeSetType( expr, cnv->type, PTF_LV_CHECKED );
-            cretn = TRUE;
+            cretn = true;
         }
     }
     *a_expr = expr;
@@ -338,14 +338,14 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
 {
-    bool retn;                  // - FALSE ==> diagnose bad operands
+    bool retn;                  // - false ==> diagnose bad operands
     PTREE expr;                 // - expression
 
     expr = *a_expr;
     expr->u.subtree[0]->type =
-        BindTemplateClass( expr->u.subtree[0]->type, &expr->locn, TRUE );
+        BindTemplateClass( expr->u.subtree[0]->type, &expr->locn, true );
     expr->u.subtree[1]->type =
-        BindTemplateClass( expr->u.subtree[1]->type, &expr->locn, TRUE );
+        BindTemplateClass( expr->u.subtree[1]->type, &expr->locn, true );
     if( NULL != StructType( expr->u.subtree[0]->type )
      || NULL != StructType( expr->u.subtree[1]->type ) ) {
         retn = convertCommonClass( a_expr, diag_class );
@@ -359,9 +359,9 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
         if( PT_ERROR == expr->op ) {
             ConversionDiagnose( CNV_ERR, expr, diag_mem_ptr );
         }
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }

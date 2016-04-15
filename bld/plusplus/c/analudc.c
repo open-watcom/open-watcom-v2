@@ -99,7 +99,7 @@ TYPE UdcFindType                // FIND TARGET TYPE FOR UDCF
 {
     TYPE result;                // - result type
     FNOV_COARSE_RANK rank;      // - UDC RANKING
-    bool is_ctor;               // - TRUE ==> ctor udc, FALSE ==> udcf udc
+    bool is_ctor;               // - true ==> ctor udc, false ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
     FNOV_DIAG diag;             // - lookup diagnosis
 

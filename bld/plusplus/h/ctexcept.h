@@ -55,7 +55,7 @@ struct throw_cnv_ctl            // THROW_CNV_CTL -- controls throw conversions
     TOKEN_LOCN err_locn;        // - location, in case of error
     TYPE src_type;              // - source type (most derived)
     target_offset_t offset;     // - offset of current element
-    unsigned error_occurred :1; // - TRUE ==> error occurred
+    unsigned error_occurred :1; // - true ==> error occurred
 };
 
 enum                            // TYPES OF MARKERS ON IC_SECT_xx

@@ -424,15 +424,15 @@ static bool klugedTyping(       // DEBUG -- see if ptr/ref consistency
     TYPE t1,                    // - type[1]
     TYPE t2 )                   // - type[2]
 {
-    bool retn;                  // - return: TRUE ==> ok
+    bool retn;                  // - return: true ==> ok
 
     t1 = TypePointedAtModified( t1 );
     if( t1 == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         t2 = TypeReference( t2 );
         if( t2 == NULL ) {
-            retn = FALSE;
+            retn = false;
         } else {
             retn = TypesIdentical( t1, t2 );
         }
@@ -444,7 +444,7 @@ static bool klugedTyping(       // DEBUG -- see if ptr/ref consistency
 static bool goodArgType(        // DEBUG -- verify arg/expr consistency
     PTREE expr )                // - CO_LIST expression
 {
-    bool retn;                  // - return: TRUE ==> ok
+    bool retn;                  // - return: true ==> ok
     TYPE atype;                 // - argument type
     TYPE etype;                 // - expression type
 
@@ -454,9 +454,9 @@ static bool goodArgType(        // DEBUG -- verify arg/expr consistency
     if( ! retn ) {
         if( klugedTyping( etype, atype )
          || klugedTyping( atype, etype ) ) {
-            retn = TRUE;
+            retn = true;
         } else {
-            retn = FALSE;
+            retn = false;
         }
     }
     return retn;

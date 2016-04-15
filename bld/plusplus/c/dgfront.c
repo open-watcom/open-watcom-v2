@@ -95,12 +95,12 @@ void DgStoreString( PTREE expr )
 static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
 /***************************************************************************/
 // store constant pointer expr
-// return TRUE if pointer is zero
+// return true if pointer is zero
 {
     bool retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
-    retn = FALSE;
+    retn = false;
     switch( expr->op ) {
     case PT_FLOATING_CONSTANT:
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
@@ -134,23 +134,23 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
 static bool DgStoreMemberPointer( TYPE type, PTREE expr )
 /*******************************************************/
 // store constant member-pointer expr
-// return TRUE if member-pointer is zero
+// return true if member-pointer is zero
 {
     bool retn;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
-    retn = FALSE;
+    retn = false;
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         DgZeroBytes( CgMemorySize( type ) );
-        retn = TRUE;
+        retn = true;
         break;
     case PT_UNARY:
         if( expr->cgop != CO_MEMPTR_CONST ) {
             CFatal( "dgfront.c unexpected operator in DgStoreMemberPointer" );
         } else if( MembPtrZeroConst( expr ) ) {
             DgZeroBytes( CgMemorySize( type ) );
-            retn = TRUE;
+            retn = true;
         } else {
             expr = expr->u.subtree[0];
             DgStoreScalarValue( expr->type, expr->u.subtree[1], 0 );
@@ -192,7 +192,7 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
 
 bool DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
 /***************************************************************/
-// return TRUE If all bytes are zero
+// return true If all bytes are zero
 {
     bool retn;
 
@@ -208,7 +208,7 @@ bool DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
 bool DgStoreBitfield( TYPE type, target_ulong value )
 /***************************************************/
 // store constant bitfield
-// return TRUE If all bytes are zero
+// return true If all bytes are zero
 {
     CgFrontDataPtr( IC_SET_TYPE, type );
     CgFrontDataInt( IC_DATA_INT, value );

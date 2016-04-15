@@ -40,8 +40,8 @@ typedef struct {
     signed_64           next_value;     // next value
     uint_8              index;          // index into enum_ranges table
     type_id             base_id;        // id for base type
-    uint_8              next_signed : 1;// TRUE if next_value is signed
-    uint_8              has_sign    : 1;// TRUE if at least one value is < 0
+    uint_8              next_signed : 1;// true if next_value is signed
+    uint_8              has_sign    : 1;// true if at least one value is < 0
     unsigned                        : 0;// alignment
 } ENUM_DATA;
 

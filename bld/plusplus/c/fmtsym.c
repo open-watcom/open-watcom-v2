@@ -118,11 +118,11 @@ static void fmtSymOpName( SYMBOL sym, VBUF *pvbuf )
 
 static bool fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, FMT_CONTROL control )
 /***********************************************************************************************/
-// returns TRUE if sym is CTOR/DTOR so that the caller drop the return type
+// returns true if sym is CTOR/DTOR so that the caller drop the return type
 {
     VBUF    prefix, suffix, op_name;
     CGOP    oper;
-    bool    ctordtor = FALSE;
+    bool    ctordtor = false;
 
     if( CppLookupOperatorName( name, &oper ) ) {
         switch( oper ) {
@@ -147,7 +147,7 @@ static bool fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, FMT_
                 VbufConcStrRev( pvbuf, constructorName );
             } else {
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
-                ctordtor = TRUE;
+                ctordtor = true;
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
@@ -163,7 +163,7 @@ static bool fmtSymName( SYMBOL sym, NAME name, VBUF *pvprefix, VBUF *pvbuf, FMT_
                 VbufConcStrRev( pvbuf, destructorName );
             } else {
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
-                ctordtor = TRUE;
+                ctordtor = true;
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
                 VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
@@ -231,7 +231,7 @@ static char *formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
         ctordtor = fmtSymName( sym, sym->name->name, &prefix, pvbuf, control );
     }
     if( !SymIsAnonymous( sym ) ) {
-        fmtSymScope( SymScope( sym ), pvbuf, TRUE );
+        fmtSymScope( SymScope( sym ), pvbuf, true );
     }
     if( !ctordtor ) {
         VbufConcVbuf( pvbuf, &prefix );
@@ -384,7 +384,7 @@ static void fmtSymScope( SCOPE scope, VBUF *pvbuf, bool include_function )
 
 void FormatScope( SCOPE scope, VBUF *pvbuf, bool include_function )
 /*****************************************************************/
-// include_function - if TRUE, include function scope resolution in formatting
+// include_function - if true, include function scope resolution in formatting
 //                  - else terminate scope resolution at function
 {
     VbufInit( pvbuf );

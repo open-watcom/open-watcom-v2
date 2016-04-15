@@ -196,7 +196,7 @@ IDEBool IDEAPI IDEInitDLL// DLL INITIALIZATION
     CompInfo.dll_handle = hdl;
     CompInfo.dll_callbacks = cb;
     *info = (IDEDllHdl)hdl;
-    return FALSE;
+    return false;
 }
 
 
@@ -315,7 +315,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     DbgVerify( hdl == CompInfo.dll_handle
              , "ProvideHelp -- handle mismatch" );
     msg = msg;
-    return TRUE;
+    return true;
 }
 #endif
 
@@ -333,14 +333,14 @@ typedef struct                  // PARSE INFORMATION
 static IDEBool collectChar      // COLLECT A CHARACTER IF POSSIBLE
     ( SCAN_INFO* si )           // - scanning information
 {
-    IDEBool retn;               // - return: TRUE ==> scanned file name
+    IDEBool retn;               // - return: true ==> scanned file name
 
     if( si->left > 0 ) {
         *si->tgt++ = *si->scan++;
         -- si->left;
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -350,12 +350,12 @@ static IDEBool collectIfChar    // COLLECT A SPECIFIC CHARACTER
     ( SCAN_INFO* si             // - scanning information
     , char reqd )               // - specific character
 {
-    IDEBool retn;               // - return: TRUE ==> collected the character
+    IDEBool retn;               // - return: true ==> collected the character
 
     if( reqd == *si->scan ) {
         retn = collectChar( si );
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -365,11 +365,11 @@ static IDEBool collectNumber    // COLLECT A NUMBER
     ( SCAN_INFO* si             // - scanning information
     , NUMBER_STR numb )         // - a number string
 {
-    IDEBool retn;               // - return: TRUE ==> have number
+    IDEBool retn;               // - return: true ==> have number
 
     si->tgt = numb;
     si->left = sizeof( NUMBER_STR ) - 1;
-    retn = FALSE;
+    retn = false;
     for( ; ; ) {
         if( ! isdigit( *si->scan ) ) break;
         retn = collectChar( si );
@@ -384,13 +384,13 @@ static IDEBool mustBeChar       // SCAN PAST REQ'D CHARACTER
     ( SCAN_INFO* si             // - scanning information
     , char reqd )               // - required character
 {
-    IDEBool retn;               // - return: TRUE ==> have number
+    IDEBool retn;               // - return: true ==> have number
 
     if( *si->scan == reqd ) {
         ++ si->scan;
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -400,17 +400,17 @@ static IDEBool mustBeText       // SCAN PAST REQ'D TEXT
     ( SCAN_INFO* si             // - scanning information
     , char const * text )       // - the text
 {
-    IDEBool retn;               // - return: TRUE ==> have number
+    IDEBool retn;               // - return: true ==> have number
     char const *scan;           // - scan position
 
     scan = si->scan;
     for( ; ; ) {
         if( *text == '\0' ) {
             si->scan = scan;
-            retn = TRUE;
+            retn = true;
             break;
         } else if( *text++ != *scan++ ) {
-            retn = FALSE;
+            retn = false;
             break;
         }
     }
@@ -421,12 +421,12 @@ static IDEBool mustBeText       // SCAN PAST REQ'D TEXT
 static IDEBool isFileNameChar   // TEST IF CHAR IS IN FILE NAME
     ( char chr )                // - candidate character
 {
-    IDEBool retn;               // - return: TRUE ==> ok in file name
+    IDEBool retn;               // - return: true ==> ok in file name
 
     retn = isalnum( chr );
     if( ! retn ) switch( chr ) {
         default :
-          retn = FALSE;
+          retn = false;
           break;
         case '_' :  // special chars taken from DOS 5.0 Manual
         case '^' :
@@ -444,7 +444,7 @@ static IDEBool isFileNameChar   // TEST IF CHAR IS IN FILE NAME
         case '@' :
         case '\'' :
         // missing code for accent grave
-          retn = TRUE;
+          retn = true;
           break;
     }
     return retn;
@@ -454,11 +454,11 @@ static IDEBool isFileNameChar   // TEST IF CHAR IS IN FILE NAME
 static IDEBool parseFileChunk   // PARSE FILE CHUNK (BETWEEN \'S)
     ( SCAN_INFO* si )           // - scanning information
 {
-    IDEBool retn;               // - return: TRUE ==> scanned file name
-    IDEBool got_chunk;          // - TRUE ==> got a chunk
-    IDEBool got_dot;            // - TRUE ==> got '.' separator
+    IDEBool retn;               // - return: true ==> scanned file name
+    IDEBool got_chunk;          // - true ==> got a chunk
+    IDEBool got_dot;            // - true ==> got '.' separator
 
-    for( got_dot = FALSE, got_chunk = FALSE; ; got_chunk = TRUE ) {
+    for( got_dot = false, got_chunk = false; ; got_chunk = true ) {
         if( isFileNameChar( *si->scan ) ) {
             retn = collectChar( si );
             if( ! retn ) break;
@@ -466,7 +466,7 @@ static IDEBool parseFileChunk   // PARSE FILE CHUNK (BETWEEN \'S)
             retn = got_chunk;
             break;
         } else if( collectIfChar( si, '.' ) ) {
-            got_dot = TRUE;
+            got_dot = true;
         } else {
             retn = got_chunk;
             break;
@@ -480,7 +480,7 @@ static IDEBool parseFileName    // PARSE FILE NAME, IF POSSIBLE
     ( SCAN_INFO* si )           // - scanning information
 {
     char const * scan;          // - scanner
-    IDEBool retn;               // - return: TRUE ==> scanned file name
+    IDEBool retn;               // - return: true ==> scanned file name
 
     scan = si->scan;
     if( scan[0] != '\0' && scan[1] == ':' ) {
@@ -490,13 +490,13 @@ static IDEBool parseFileName    // PARSE FILE NAME, IF POSSIBLE
     collectIfChar( si, '\\' );
     for( ; ; ) {
         if( ! parseFileChunk( si ) ) {
-            retn = FALSE;
+            retn = false;
             break;
         }
         scan = si->scan;
         if( ! collectIfChar( si, '\\' ) ) {
             *si->tgt = '\0';
-            retn = TRUE;
+            retn = true;
             break;
         }
     }
@@ -509,7 +509,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
     , char const* msg           // - message
     , ErrorInfo* err )          // - error information
 {
-    IDEBool retn;               // - return: TRUE ==> failed
+    IDEBool retn;               // - return: true ==> failed
     SCAN_INFO scan_info;        // - scanning information
     NUMBER_STR number;          // - used for number scanning
 
@@ -544,10 +544,10 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
             err->col = atoi( number );
             err->flags |= ERRINFO_COLUMN;
         }
-        retn = FALSE;
+        retn = false;
     } else {
         err->flags = 0;
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -559,31 +559,31 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     DbgVerify( hdl == CompInfo.dll_handle
              , "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
-        return( TRUE );
+        return( true );
     }
     if( info->ignore_env ) {
-        CompFlags.ignore_environment = TRUE;
-        CompFlags.ignore_current_dir = TRUE;
+        CompFlags.ignore_environment = true;
+        CompFlags.ignore_current_dir = true;
     }
     if( info->ver >= 2 ) {
         if( info->cmd_line_has_files ) {
-            CompFlags.ide_cmd_line = TRUE;
+            CompFlags.ide_cmd_line = true;
         }
         if( info->ver >= 3 ) {
             if( info->console_output ) {
-                CompFlags.ide_console_output = TRUE;
+                CompFlags.ide_console_output = true;
             }
             if( info->ver >= 4 ) {
                 if( info->progress_messages ) {
-                    CompFlags.progress_messages = TRUE;
+                    CompFlags.progress_messages = true;
                 }
             }
         }
     }
 #if defined(wpp_dll)
-    CompFlags.dll_active = TRUE;
+    CompFlags.dll_active = true;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 

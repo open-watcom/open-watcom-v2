@@ -54,25 +54,25 @@ static bool ctorDefineDefault(  // DEFINE A DEFAULT CTOR
     TYPE cl_type,               // - class type
     arg_list *alist )           // - arguments list
 {
-    bool retn;                  // - TRUE ==> a default CTOR was defined
+    bool retn;                  // - true ==> a default CTOR was defined
     SYMBOL ctor;                // - CTOR symbol
 
     if( ! TypeDefined( cl_type ) ) {
-        retn = FALSE;
+        retn = false;
     } else if( alist->num_args == 0 ) {
         if( CNV_OK == ClassDefaultCtorDefine( cl_type, &ctor ) ) {
-            retn = TRUE;
+            retn = true;
         } else {
-            retn = FALSE;
+            retn = false;
         }
     } else if( alist->num_args == 1 ) {
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            retn = FALSE;
+            retn = false;
         } else {
-            retn = TRUE;
+            retn = true;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -82,21 +82,21 @@ static bool ctorDefineDefaultCnv(   // DEFINE A DEFAULT CTOR FOR CONVERSION
     TYPE cl_type,                   // - class type
     arg_list *alist )               // - arguments list
 {
-    bool retn;                      // - TRUE ==> a default CTOR was defined
+    bool retn;                      // - true ==> a default CTOR was defined
 
     if( ! TypeDefined( cl_type ) ) {
-        retn = FALSE;
+        retn = false;
     } else if( alist->num_args == 0 ) {
         retn = ctorDefineDefault( cl_type, alist );
     } else if( alist->num_args == 1 ) {
         cl_type = ClassTypeForType( cl_type );
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            retn = FALSE;
+            retn = false;
         } else {
-            retn = TRUE;
+            retn = true;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -201,7 +201,7 @@ static CNV_RETN ctorFindDiag(   // FIND CONSTRUCTOR FOR ARGUMENT LIST
     SYMBOL *ctor,               // - addr( constructor symbol )
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 {
-    CNV_RETN retn;              // - return: TRUE ==> no error
+    CNV_RETN retn;              // - return: true ==> no error
     FNOV_RESULT ovret;          // - overload resolution result
 
     *ctor = NULL;
@@ -563,7 +563,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         if( ctor == NULL ) {
             node = ClassDefaultCopy( this_node, bareArg( initial ) );
         } else {
-            bool check_dtoring;     // - TRUE ==> need to check DTORing
+            bool check_dtoring;     // - true ==> need to check DTORing
             TYPE this_type;         // - type of this arg
             CALL_OPT opt;           // - type of optimization
             PTREE bare;             // - bare source operand
@@ -571,9 +571,9 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             if( this_node == NULL ) {
                 this_node = NodeTemporary( base_type );
                 this_node = PTreeSetLocn( this_node, err_locn );
-                check_dtoring = TRUE;
+                check_dtoring = true;
             } else {
-                check_dtoring = FALSE;
+                check_dtoring = false;
             }
             if( initial != NULL
              && initial->u.subtree[0] == NULL

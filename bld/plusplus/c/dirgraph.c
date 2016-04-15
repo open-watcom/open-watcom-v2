@@ -113,7 +113,7 @@ static bool free_edge(          // FREE AN EDGE
     DIRGRAPH_EDGE *edge )       // - edge to be freed
 {
     (*ctl->vft->free_edge)( ctl, edge );
-    return FALSE;
+    return false;
 }
 
 
@@ -123,7 +123,7 @@ static bool free_node(          // FREE A NODE
 {
     DgrfWalkEdges( ctl, node, free_edge );
     (*ctl->vft->free_node)( ctl, node );
-    return FALSE;
+    return false;
 }
 
 
@@ -144,9 +144,9 @@ bool DgrfWalkEdges(             // WALK ALL EDGES FROM OBJECT
         , DIRGRAPH_EDGE * ) )   // - - EDGE
 {
     DIRGRAPH_EDGE *edge;        // - current edge
-    bool retn;                  // - TRUE ==> walking terminated
+    bool retn;                  // - true ==> walking terminated
 
-    retn = FALSE;
+    retn = false;
     RingIterBegSafe( node->edges, edge ){
         retn = (*walker)( ctl, edge );
         if( retn ) break;
@@ -162,9 +162,9 @@ bool DgrfWalkObjects(           // WALK ALL OBJECTS
         , DIRGRAPH_NODE * ) )   // - - node
 {
     DIRGRAPH_NODE *node;        // - current object
-    bool retn;                  // - TRUE ==> walking terminated
+    bool retn;                  // - true ==> walking terminated
 
-    retn = FALSE;
+    retn = false;
     RingIterBegSafe( ctl->objects, node ) {
         retn = (*walker)( ctl, node );
         if( retn ) break;
@@ -179,7 +179,7 @@ static bool pruneEdge(          // PRUNE EDGE FROM GRAPH
 {
     (*ctl->vft->prune_edge)( ctl, edge );
     (*ctl->vft->free_edge)( ctl, edge );
-    return FALSE;
+    return false;
 }
 
 

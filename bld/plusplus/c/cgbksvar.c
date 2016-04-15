@@ -114,11 +114,11 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
     SE* state_table )           // - state table
 {
     SE* last;                   // - last state entry in table
-    bool retn;                  // - TRUE ==> same entry
+    bool retn;                  // - true ==> same entry
 
     last = state_table;
     if( last == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         if( last->base.se_type == DTC_CTOR_TEST ) {
             last = last->base.prev;
@@ -134,23 +134,23 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
                     DbgDumpStateEntry( last );
                 }
 #endif
-                retn = TRUE;
+                retn = true;
                 break;
               case DTC_TEST_FLAG :
                 if(  last->test_flag.index    == se->test_flag.index
                   && last->test_flag.se_true  == se->test_flag.se_true
                   && last->test_flag.se_false == se->test_flag.se_false ) {
-                    retn = TRUE;
+                    retn = true;
                 } else {
-                    retn = FALSE;
+                    retn = false;
                 }
                 break;
               default :
-                retn = FALSE;
+                retn = false;
                 break;
             }
         } else {
-            retn = FALSE;
+            retn = false;
         }
     }
     return retn;
@@ -352,12 +352,12 @@ void StabCtlPrune(              // PRUNE UN-GENNED ENTRIES UP TO AN ENTRY
     if( se == NULL ) {
         DbgVerify( ending == NULL, "StabCtlPrune: ending != 0 when empty" );
     } else {
-        done = FALSE;
+        done = false;
         for( ; ; se = prev ) {
             prev = se->base.prev;
             if( ending == 0  ) {
                 if( prev == *hdr ) {
-                    done = TRUE;
+                    done = true;
                 }
             } else {
                 if( se == ending ) break;

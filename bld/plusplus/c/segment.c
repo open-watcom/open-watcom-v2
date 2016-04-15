@@ -77,7 +77,7 @@ PCH_struct pc_segment {                 // PC_SEGMENT -- segment on PC
 typedef struct {                        // DEF_SEG -- code/data default segments
     PC_SEGMENT      *pcseg;             // - default pc segment
     unsigned        ctr;                // - # of segments allocated
-    unsigned        ds_used : 1;        // - TRUE ==> has been used
+    unsigned        ds_used : 1;        // - true ==> has been used
 } DEF_SEG;
 
 static fe_seg_id seg_max;           // last segment # used
@@ -92,8 +92,8 @@ static DEF_SEG code_def_seg;        // code segment -- default info.
 static DEF_SEG data_def_seg;        // data segment -- default info.
 
 static struct {
-    unsigned in_back_end : 1;       // TRUE ==> now in CGBKMAIN
-    unsigned use_def_seg : 1;       // TRUE ==> #pragma def_seg active
+    unsigned in_back_end : 1;       // true ==> now in CGBKMAIN
+    unsigned use_def_seg : 1;       // true ==> #pragma def_seg active
 } flags;
 
 enum                                // SEGMENT-ATTRIBUTE COMBINATIONS USED:
@@ -177,8 +177,8 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
             CgBackGenLabel( label );
             BESetSeg( old_seg );
         }
-        seg->lab_gened = TRUE;
-        _markUsed( seg, TRUE );
+        seg->lab_gened = true;
+        _markUsed( seg, true );
     }
     return label;
 }
@@ -247,7 +247,7 @@ static void segmentCgDefine(    // DEFINE A SEGMENT
                 , segment->attrs
                 , segment->name
                 , segment->align );
-        segment->cg_defed = TRUE;
+        segment->cg_defed = true;
     }
 }
 
@@ -274,18 +274,18 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
     stvcpy( curr->name, seg_name, size );
     curr->offset = 0;
     curr->dgroup = (( control & SA_IN_DGROUP ) != 0 );
-    curr->lab_gened = FALSE;
+    curr->lab_gened = false;
     if( class_name != NULL ) {
         curr->class_name = strpermsave( class_name );
     } else {
         curr->class_name = NULL;
     }
-    curr->used = FALSE;
+    curr->used = false;
     curr->module_prefix = (( control & SA_MODULE_PREFIX ) != 0 );
-    curr->fixed_alignment = FALSE;
-    curr->cg_defed = FALSE;
-    curr->has_data = FALSE;
-    curr->only_strings = FALSE;
+    curr->fixed_alignment = false;
+    curr->cg_defed = false;
+    curr->has_data = false;
+    curr->only_strings = false;
     curr->label = NULL;
     curr->attrs = attrs;
 #if _INTEL_CPU
@@ -308,7 +308,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
         // we don't want padding introduced
         curr->align = TARGET_LONG;
         // we don't want alignment changed either
-        curr->fixed_alignment = TRUE;
+        curr->fixed_alignment = true;
         break;
     case SEG_INIT_BEG:
     case SEG_INIT_REF:
@@ -325,7 +325,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
 #error no alignment set
 #endif
         // we don't want alignment changed either
-        curr->fixed_alignment = TRUE;
+        curr->fixed_alignment = true;
         break;
     default:
         curr->align = TARGET_CHAR;
@@ -345,7 +345,7 @@ static void initDefSeg(         // SET NEW DEFAULT SEGMENT INFO
     if( def_seg->pcseg != pcseg ) {
         def_seg->pcseg = pcseg;
         def_seg->ctr = 0;
-        def_seg->ds_used = FALSE;
+        def_seg->ds_used = false;
     }
 }
 
@@ -403,10 +403,10 @@ static PC_SEGMENT *addDefSeg(   // ADD A DEFAULT PC SEGMENT
     }
     curr = segmentAlloc( VbufString( &seg_name ), NULL, SEG_NULL, attrs, sa_control );
     if( 0 == ( attrs & EXEC ) ) {
-        _markUsed( curr, TRUE );
+        _markUsed( curr, true );
     }
     if( ads_control & ADS_STRING_SEGMENT ) {
-        curr->only_strings = TRUE;
+        curr->only_strings = true;
     }
     VbufFree( &seg_name );
     return( curr );
@@ -510,13 +510,13 @@ static bool same_segment(   // DETERMINE IF SAME SEGMENT
     target_size_t       new_offset;
 
     if( lk->use_seg_id && lk->seg_id != SEG_NULL && curr->seg_id != lk->seg_id ) {
-        return( FALSE );
+        return( false );
     }
     if( lk->use_attrs && curr->attrs != lk->attrs ) {
-        return( FALSE );
+        return( false );
     }
     if( lk->use_align && curr->align != lk->align ) {
-        return( FALSE );
+        return( false );
     }
     if( lk->use_sym_size_align ) {
         align_adjust = SegmentAdjust( curr->seg_id, curr->offset, lk->sym_align );
@@ -525,30 +525,30 @@ static bool same_segment(   // DETERMINE IF SAME SEGMENT
             new_offset = 0;
         }
         if( new_offset == 0 ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( lk->use_name ) {
         if( strcmp( curr->name, lk->seg_name ) != 0 ) {
-            return( FALSE );
+            return( false );
         }
         if( curr->class_name != NULL ) {
             if( lk->class_name == NULL ) {
-                return( FALSE );
+                return( false );
             }
             if( strcmp( curr->class_name, lk->class_name ) != 0 ) {
-                return( FALSE );
+                return( false );
             }
         } else {
             if( lk->class_name != NULL ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
     if( lk->use_only_strings && !curr->only_strings ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -575,15 +575,15 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
     }
 #endif
     lk.seg_id = seg_id;
-    lk.use_seg_id = TRUE;
+    lk.use_seg_id = true;
     lk.attrs = attrs;
-    lk.use_attrs = TRUE;
-    lk.use_align = FALSE;
-    lk.use_sym_size_align = FALSE;
+    lk.use_attrs = true;
+    lk.use_align = false;
+    lk.use_sym_size_align = false;
     lk.seg_name = seg_name;
     lk.class_name = class_name;
-    lk.use_name = TRUE;
-    lk.use_only_strings = FALSE;
+    lk.use_name = true;
+    lk.use_only_strings = false;
     curr = RingLookup( seg_list, &same_segment, &lk );
     if( curr == NULL ) {
         curr = segmentAlloc( lk.seg_name, lk.class_name, lk.seg_id, lk.attrs, control );
@@ -616,8 +616,8 @@ static fe_seg_id createHugeSegment( target_size_t size, unsigned ads_control )
         }
         curr->offset = used;
         curr->align = 16;
-        _markUsed( curr, TRUE );
-        curr->has_data = TRUE;
+        _markUsed( curr, true );
+        curr->has_data = true;
         size -= used;
     }
     return( id );
@@ -669,7 +669,7 @@ static fe_seg_id findFarSegment(// SEGMENT: ADD SYMBOL TO FAR SEGMENT
     PC_SEGMENT *curr;           // - new segment
     struct seg_look lk;         // - look-up structure
 
-    lk.use_seg_id = FALSE;
+    lk.use_seg_id = false;
     if( ads_control & ADS_CODE_SEGMENT ) {
         lk.attrs = SGAT_CODE_BASED;
     } else if( ads_control & ADS_CONST_SEGMENT ) {
@@ -677,31 +677,31 @@ static fe_seg_id findFarSegment(// SEGMENT: ADD SYMBOL TO FAR SEGMENT
     } else {
         lk.attrs = SGAT_DATA_PRIVATE_RW;
     }
-    lk.use_attrs = TRUE;
-    lk.use_align = FALSE;
+    lk.use_attrs = true;
+    lk.use_align = false;
     lk.sym_size = size;
     lk.sym_align = align;
-    lk.use_sym_size_align = TRUE;
-    lk.use_name = FALSE;
-    lk.use_only_strings = FALSE;
+    lk.use_sym_size_align = true;
+    lk.use_name = false;
+    lk.use_only_strings = false;
     if( ads_control & ADS_STRING_SEGMENT ) {
-        lk.use_only_strings = TRUE;
+        lk.use_only_strings = true;
     }
     curr = RingLookup( seg_list, &same_segment, &lk );
     if( curr == NULL ) {
         if( ads_control & ADS_CODE_SEGMENT ) {
             curr = addDefSeg( &code_def_seg, ads_control );
-            code_def_seg.ds_used = TRUE;
+            code_def_seg.ds_used = true;
         } else {
             curr = addDefSeg( &data_def_seg, ads_control );
-            data_def_seg.ds_used = TRUE;
+            data_def_seg.ds_used = true;
         }
     }
     curr->offset += SegmentAdjust( curr->seg_id, curr->offset, align );
     curr->offset += size;
     accumAlignment( curr, align );
-    _markUsed( curr, TRUE );
-    curr->has_data = TRUE;
+    _markUsed( curr, true );
+    curr->has_data = true;
     return( curr->seg_id );
 }
 
@@ -768,9 +768,9 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
         accumAlignment( curr, align );
         if( ( ! SymIsInitialized( sym ) ) && SymIsExtern( sym ) ) {
             id = curr->seg_id;
-            _markUsed( curr, TRUE );
-            curr->has_data = TRUE;
-            data_def_seg.ds_used = TRUE;
+            _markUsed( curr, true );
+            curr->has_data = true;
+            data_def_seg.ds_used = true;
         } else {
             aligned_offset = SegmentAdjust( curr->seg_id, curr->offset, align );
             calc_offset = curr->offset + aligned_offset + size;
@@ -795,17 +795,17 @@ fe_seg_id SegmentAddSym(        // SEGMENT: ADD SYMBOL TO SPECIFIED SEGMENT
                 } else {
                     dgroup_size += size + aligned_offset;
                     curr->offset = calc_offset;
-                    _markUsed( curr, TRUE );
-                    curr->has_data = TRUE;
+                    _markUsed( curr, true );
+                    curr->has_data = true;
                     id = curr->seg_id;
-                    data_def_seg.ds_used = TRUE;
+                    data_def_seg.ds_used = true;
                 }
             } else {
                 curr->offset = calc_offset;
-                _markUsed( curr, TRUE );
-                curr->has_data = TRUE;
+                _markUsed( curr, true );
+                curr->has_data = true;
                 id = curr->seg_id;
-                data_def_seg.ds_used = TRUE;
+                data_def_seg.ds_used = true;
             }
         }
     }
@@ -876,7 +876,7 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
             InsertSymbol( GetFileScope(), label, name );
         }
         seg->label = label;
-        _markUsed( seg, TRUE );
+        _markUsed( seg, true );
     }
     return label;
 }
@@ -912,7 +912,7 @@ SYMBOL SegmentLabelStackReset(  // RESET STACK-SEGMENT LABEL
     stk = segIdLookup( SEG_STACK );
     lab = stk->label;
     stk->label = NULL;
-    stk->lab_gened = FALSE;
+    stk->lab_gened = false;
     return lab;
 }
 
@@ -932,10 +932,10 @@ static bool isCodeSegmentName( char *segname )
     len = strlen( segname );
     if( len >= 4 ) {
         if( stricmp( segname + len - ENDING_SIZE, CODE_ENDING ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 }
 
@@ -948,9 +948,9 @@ static bool segmentIsCode(
     if( ( seg->attrs & EXEC ) == 0 ) {
         CErr( ERR_CODE_IN_NONCODE_SEG, seg->name );
         InfMsgPtr( INF_CODE_SEGMENT_SUFFIX, CODE_ENDING );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 #undef CODE_ENDING
@@ -983,7 +983,7 @@ fe_seg_id SegmentFindNamed(     // FIND SEGMENT ENTRY FOR NAME
                                  , SA_NULL );
         }
     }
-    _markUsed( segmt, TRUE );
+    _markUsed( segmt, true );
     return segmt->seg_id;
 }
 
@@ -1026,9 +1026,9 @@ void SegmentData(               // SET DEFAULT DATA SEGMENT
 
     if( segname == NULL ) {
         segname = TS_SEG_DATA;
-        flags.use_def_seg = FALSE;
+        flags.use_def_seg = false;
     } else {
-        flags.use_def_seg = TRUE;
+        flags.use_def_seg = true;
     }
     pruneDefSeg( &data_def_seg );
     control = SA_IN_DGROUP;
@@ -1065,9 +1065,9 @@ static void initDefaultCodeSeg( char *code_seg_name )
     PC_SEGMENT *pcseg;
 
     SegmentCode( code_seg_name, NULL );
-    code_def_seg.ds_used = TRUE;
+    code_def_seg.ds_used = true;
     pcseg = code_def_seg.pcseg;
-    _markUsed( pcseg, TRUE );
+    _markUsed( pcseg, true );
     seg_default_code = pcseg->seg_id;
 }
 
@@ -1076,9 +1076,9 @@ static void initDefaultDataSeg( void )
     PC_SEGMENT *pcseg;
 
     SegmentData( NULL, NULL );
-    data_def_seg.ds_used = TRUE;        // used for data externs
+    data_def_seg.ds_used = true;        // used for data externs
     pcseg = data_def_seg.pcseg;
-    _markUsed( pcseg, TRUE );
+    _markUsed( pcseg, true );
 }
 
 #if _CPU == 386
@@ -1093,7 +1093,7 @@ static void initP5TimingSegs( void )
         addSibling( seg, sib );
         sib = segmentAllocRom( TS_SEG_TIE, SEG_PROF_END );
         addSibling( seg, sib );
-        _markUsed( seg, TRUE );
+        _markUsed( seg, true );
     }
 }
 #else
@@ -1107,7 +1107,7 @@ void SegmentInit(               // SEGMENT: INITIALIZATION
     PC_SEGMENT *sib;
 
     if( CompFlags.dll_subsequent ) {
-        flags.in_back_end = FALSE;
+        flags.in_back_end = false;
         seg_list = NULL;
         dgroup_size = 0;
         memset( &code_def_seg, 0, sizeof( code_def_seg ) );
@@ -1175,7 +1175,7 @@ static fe_seg_id nextZmSegment( // GET NEXT CODE SEGMENT FOR -zm
         }
         segid = addDefSeg( &code_def_seg, ads_control )->seg_id;
     } else {
-        code_def_seg.ds_used = TRUE;
+        code_def_seg.ds_used = true;
         segid = code_def_seg.pcseg->seg_id;
         SegmentMarkUsed( segid );
     }
@@ -1193,7 +1193,7 @@ bool SegmentIfBasedOK( SYMBOL func )
             return( segmentIsCode( segid ) );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
@@ -1232,7 +1232,7 @@ fe_seg_id SegmentForDefinedFunc(// GET SEGMENT FOR A DEFINED FUNCTION
         } else {
             segid = code_def_seg.pcseg->seg_id;
             SegmentMarkUsed( segid );
-            code_def_seg.ds_used = TRUE;
+            code_def_seg.ds_used = true;
         }
     }
     return segid;
@@ -1263,7 +1263,7 @@ void SegmentMarkUsed(           // MARK SEGMENT AS BEING USED
         seg = segIdLookup( segid );
         // extern segments are not SEG_NULL, but will not be found
         if( seg != NULL ) {
-            _markUsed( seg, TRUE );
+            _markUsed( seg, true );
         }
     }
 }
@@ -1294,7 +1294,7 @@ void SegmentCodeCgInit(         // TURN OFF USED BIT FOR ALL CODE SEGMENTS
     SegmentCode( NULL, NULL );
     RingIterBeg( seg_list, segment ) {
         if( ( segment->attrs & EXEC ) && ! segment->has_data ) {
-            _markUsed( segment, FALSE );
+            _markUsed( segment, false );
         }
     } RingIterEnd( segment )
     // call out for non-call graph code segment uses
@@ -1313,7 +1313,7 @@ void SegmentCgInit(             // INITIALIZE SEGMENTS FOR CODE-GENERATION
         switch( segment->seg_id ) {
           case SEG_STACK :
             // Cg already "knows" about this segment
-            segment->cg_defed = TRUE;
+            segment->cg_defed = true;
             break;
           default :
             if( segment->attrs & BACK ) {
@@ -1335,7 +1335,7 @@ void SegmentCgInit(             // INITIALIZE SEGMENTS FOR CODE-GENERATION
             break;
         }
     } RingIterEnd( segment )
-    flags.in_back_end = TRUE;
+    flags.in_back_end = true;
 }
 
 

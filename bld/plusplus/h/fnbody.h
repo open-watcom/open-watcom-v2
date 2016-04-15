@@ -123,8 +123,8 @@ struct control_stack {
         } b;
     } u;
     cs_block_type       id;             // - type of block
-    unsigned            expr_true   : 1;// bracketted expr. was TRUE
-    unsigned            expr_false  : 1;// bracketted expr. was FALSE
+    unsigned            expr_true   : 1;// bracketted expr. was true
+    unsigned            expr_false  : 1;// bracketted expr. was false
 };
 
 typedef struct fn_label FNLABEL;

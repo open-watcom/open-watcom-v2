@@ -245,35 +245,35 @@ static CGFILE *initCGFILE(      // INITIALIZE A CG VIRTUAL FILE
     file_element->offset = buff_element->free_offset;
     file_element->cursor = (CGINTER*) (buff_element->data + buff_element->free_offset);
     file_element->first = buff_element->disk_addr;
-    file_element->u.s.delayed = FALSE;
-    file_element->u.s.refed = FALSE;
-    file_element->u.s.stgen = FALSE;
-    file_element->u.s.oe_inl = FALSE;
-    file_element->u.s.once_inl = FALSE;
-    file_element->u.s.done = FALSE;
-    file_element->u.s.thunk = FALSE;
-    file_element->u.s.thunk_gen = FALSE;
-    file_element->u.s.not_inline = FALSE;
-    file_element->u.s.calls_inline = FALSE;
-    file_element->u.s.can_throw = FALSE;
-    file_element->u.s.stab_gen = FALSE;
-    file_element->u.s.ctor_test = FALSE;
-    file_element->u.s.write_to_pch = FALSE;
+    file_element->u.s.delayed = false;
+    file_element->u.s.refed = false;
+    file_element->u.s.stgen = false;
+    file_element->u.s.oe_inl = false;
+    file_element->u.s.once_inl = false;
+    file_element->u.s.done = false;
+    file_element->u.s.thunk = false;
+    file_element->u.s.thunk_gen = false;
+    file_element->u.s.not_inline = false;
+    file_element->u.s.calls_inline = false;
+    file_element->u.s.can_throw = false;
+    file_element->u.s.stab_gen = false;
+    file_element->u.s.ctor_test = false;
+    file_element->u.s.write_to_pch = false;
     file_element->u.s.state_table = 0;
     file_element->defined.src_file = NULL;
     file_element->defined.line = 0;
     file_element->defined.column = 0;
     file_element->cond_flags = 0;
-    file_element->u.s.opt_retn_val = FALSE;
-    file_element->u.s.opt_retn_ref = FALSE;
+    file_element->u.s.opt_retn_val = false;
+    file_element->u.s.opt_retn_ref = false;
     file_element->opt_retn = NULL;
     gen = CarveAlloc( carveCGFILE_GEN );
     file_element->gen = gen;
     gen->cs_label = 0;
     gen->cs_allocated = 0;
     gen->goto_label = 0;
-    gen->emit_init_beg = FALSE;
-    gen->emit_init_end = FALSE;
+    gen->emit_init_beg = false;
+    gen->emit_init_end = false;
     gen->emit_line_no.src_file = NULL;
     gen->curr_type = NULL;
     gen->emit_type = NULL;
@@ -330,7 +330,7 @@ void CgioCloseOutputFile(       // CLOSE VIRTUAL FILE AFTER OUTPUT PHASE
     CGFILE *ctl )               // - control for file
 {
     CgioBuffWrClose( ctl->buffer );
-    ctl->u.s.done = TRUE;
+    ctl->u.s.done = true;
     ctl->buffer = NULL;
     if( ! saveGenData( ctl ) ) {
         freeGenData( ctl );
@@ -410,16 +410,16 @@ static bool changeRing(         // CHANGE RING FOR A CGFILE IN cg_file_ring
     CGFILE* element,            // - element
     CGFILE** a_old )            // - addr[ old ring header ]
 {
-    bool retn;                  // - TRUE ==> changed the ring
+    bool retn;                  // - true ==> changed the ring
     CGFILE* prev;               // - preceding element
 
     prev = RingPred( *a_old, element );
     if( prev == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         RingPruneWithPrev( a_old, element, prev );
         RingAppend( a_new, element );
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -494,7 +494,7 @@ void CgioThunkMarkGen(          // MARK THUNK TO BE GENERATED
 {
     _dump( thunk, "thunk marked to generate" );
     DbgVerify( thunk != NULL, "CgioThunkMarkGen -- no thunk" );
-    thunk->u.s.refed = TRUE;
+    thunk->u.s.refed = true;
 }
 
 
@@ -705,7 +705,7 @@ static void markFreeCGFILE( void *p )
 {
     CGFILE *c = p;
 
-    c->u.s.write_to_pch = FALSE;
+    c->u.s.write_to_pch = false;
 }
 
 pch_status PCHWriteCGFiles( void )
@@ -715,7 +715,7 @@ pch_status PCHWriteCGFiles( void )
 
     CarveWalkAllFree( carveCGFILE, markFreeCGFILE );
     RingIterBeg( cg_file_ring, curr ) {
-        curr->u.s.write_to_pch = TRUE;
+        curr->u.s.write_to_pch = true;
     } RingIterEnd( curr )
     CarveWalkAll( carveCGFILE, saveCGFILE, &data );
     PCHWriteCVIndexTerm();

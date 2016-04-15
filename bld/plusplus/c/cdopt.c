@@ -97,11 +97,11 @@ struct cd_descr                 // CD_DESCR -- ctor/dtor description
     CL_ELEM*    elements;       // - significant elements
     ACC_FUN*    accessed;       // - functions accessed
     CDOPT_TYPE  opt;            // - type of optimization
-    unsigned    err_occurred:1; // - TRUE ==> error detected during lookup
-    unsigned    has_vbt     :1; // - TRUE ==> has virtual base table
-    unsigned    has_vft     :1; // - TRUE ==> has virtual function table
-    unsigned    has_acc     :1; // - TRUE ==> has functions accessed
-    unsigned    chk_acc     :1; // - TRUE ==> accesses have been checked
+    unsigned    err_occurred:1; // - true ==> error detected during lookup
+    unsigned    has_vbt     :1; // - true ==> has virtual base table
+    unsigned    has_vft     :1; // - true ==> has virtual function table
+    unsigned    has_acc     :1; // - true ==> has functions accessed
+    unsigned    chk_acc     :1; // - true ==> accesses have been checked
     PAD_UNSIGNED
 };
 
@@ -177,8 +177,8 @@ struct cdopt_iter               // CDOPT_ITER: iterator for traversals
     target_offset_t off_elem;   // - offset of element (exact)
     target_offset_t off_vbase;  // - offset of virtual base
     TITER       orig_otype;     // - object type of original component
-    unsigned    gened_comp  :1; // - TRUE ==> gen'ed component element
-    unsigned    at_end      :1; // - TRUE ==> processing TITER_NONE at end
+    unsigned    gened_comp  :1; // - true ==> gen'ed component element
+    unsigned    at_end      :1; // - true ==> processing TITER_NONE at end
     PAD_UNSIGNED
 };
 
@@ -437,7 +437,7 @@ static void addAccFun(          // ADD A FUNCTION ACCESS
         if( af == NULL ) {
             af = RingCarveAlloc( carveACC_FUN, &descr->accessed );
             af->fun = fun;
-            descr->has_acc = TRUE;
+            descr->has_acc = true;
         }
     }
 }
@@ -446,7 +446,7 @@ static void addAccFun(          // ADD A FUNCTION ACCESS
 void CDoptNoAccFun(             // INDICATE FUNCTIONS ACCESSED FOR CLASS
     CD_DESCR* descr )           // - descriptor for a class
 {
-    descr->chk_acc = TRUE;
+    descr->chk_acc = true;
 }
 
 
@@ -459,7 +459,7 @@ void CDoptChkAccFun(            // CHECK FUNCTIONS ACCESS FOR CLASS
     SEARCH_RESULT* result;      // - search result for function
 
     if( ! descr->chk_acc ) {
-        descr->chk_acc = TRUE;
+        descr->chk_acc = true;
         if( NULL != descr->accessed ) {
             old = GetCurrScope();
             SetCurrScope(TypeScope( descr->orig_type ));
@@ -572,8 +572,8 @@ TITER CDoptIterNextComp(        // GET NEXT COMPONENT
     iter->off_vbase = 0;
     iter->off_elem = 0;
     iter->off_comp = 0;
-    iter->gened_comp = FALSE;
-    iter->at_end = FALSE;
+    iter->gened_comp = false;
+    iter->at_end = false;
     info = iter->info;
     retn = TITER_NONE;
     exp = VstkTop( &iter->stack );
@@ -621,13 +621,13 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - current element
 
-    iter->at_end = FALSE;
+    iter->at_end = false;
     for( ; ; ) {
         exp = VstkTop( &iter->stack );
         elem = exp->elem;
         info = exp->info;
         if( iter->info == info && iter->gened_comp ) {
-            iter->at_end = TRUE;
+            iter->at_end = true;
             retn = TITER_NONE;
             break;
         } else if( elem != NULL
@@ -644,7 +644,7 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
                 elem = elem->next;
                 exp->elem = elem;
             } else {
-                iter->gened_comp = TRUE;
+                iter->gened_comp = true;
             }
             info = elem->descr;
 #if 0
@@ -786,14 +786,14 @@ bool CDoptIterExact(            // GET cdarg "exact" FOR CURRENT ELEMENT
     CL_ELEM* elem;              // - current element
 
     exp = VstkTop( &iter->stack );
-    retn = FALSE;
+    retn = false;
     elem = exp->elem;
     if( NULL != elem ) {
         switch( elem->otype ) {
           case TOB_ARRAY :
           case TOB_MEMB :
           case TOB_ORIG :
-            retn = TRUE;
+            retn = true;
             break;
         }
     }
@@ -840,12 +840,12 @@ bool CDoptIterCannotDefine(     // CHECK FOR UNDEFINEABLE CTOR
 {
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - NULL (at component) or element
-    bool retn;                  // - TRUE ==> issue "cannot define error"
+    bool retn;                  // - true ==> issue "cannot define error"
 
     exp = VstkTop( &iter->stack );
     elem = exp->elem;
     if( elem == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = elem->cannot_define;
     }
@@ -857,13 +857,13 @@ bool CDoptInlinedMember(        // DETERMINE IF INLINED MEMBER
     CDOPT_ITER* iter )          // - iteration data
 {
     CL_ITER* exp;               // - expansion information
-    bool retn;                  // - TRUE ==> inlined member
+    bool retn;                  // - true ==> inlined member
     SYMBOL sym;                 // - NULL or symbol for member
 
     exp = VstkTop( &iter->stack );
     sym = exp->elem->sym;
     if( sym == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = SymScope( sym ) != TypeScope( iter->info->orig_type );
     }
@@ -987,7 +987,7 @@ static void cacheEmpty(         // FREE DESCRIPTORS FROM A CACHE
 static bool classCanBeDtorOpt(  // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
     CLASSINFO *ci )             // - class info
 {
-    ci->dtor_user_code_checked = TRUE;
+    ci->dtor_user_code_checked = true;
     return ! ( ( ci->has_dtor && ci->dtor_user_code )
               || ci->corrupted
              );
@@ -997,14 +997,14 @@ static bool classCanBeDtorOpt(  // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
 static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    bool retn;                  // - FALSE ==> can never be optimized
+    bool retn;                  // - false ==> can never be optimized
     SYMBOL dtor;                // - the DTOR in question
 
     dtor = elem->cdtor;
     if( dtor == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else if( ! CompFlags.inline_functions ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = classCanBeDtorOpt( SymClassInfo( dtor ) );
     }
@@ -1054,17 +1054,17 @@ static SYMBOL dtorArraySym(     // GET ARRAY DTOR SYMBOL
 static bool dtorInclude(        // TEST IF DTOR NEEDS TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool retn;                  // - TRUE ==> include anyway
+    bool retn;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( info->has_vft ) {
-        retn = TRUE;
+        retn = true;
     } else if( info->elements == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
-        elem->elim_intermed = TRUE;
-        retn = TRUE;
+        elem->elim_intermed = true;
+        retn = true;
     }
     return retn;
 }
@@ -1128,7 +1128,7 @@ static void dtorRptElKept(      // RPT: element kept
 static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
     CLASSINFO *ci )             // - class info for ctor
 {
-    ci->ctor_user_code_checked = TRUE;
+    ci->ctor_user_code_checked = true;
     return ! ( ( ci->has_ctor && ci->ctor_user_code )
             || ci->corrupted
             || ( ! CompFlags.inline_functions )
@@ -1139,10 +1139,10 @@ static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
 static bool defCtorOptSym(      // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     SYMBOL ctor )               // - the CTOR in question
 {
-    bool retn;                  // - FALSE ==> can never be optimized
+    bool retn;                  // - false ==> can never be optimized
 
     if( ctor == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else {
         retn = classCanBeCtorOpt( SymClassInfo( ctor ) );
     }
@@ -1153,12 +1153,12 @@ static bool defCtorOptSym(      // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITION
 static bool defCtorOptimizable( // CAN DEF.CTOR TYPE BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    bool retn;                  // - TRUE ==> might be optimizable
+    bool retn;                  // - true ==> might be optimizable
 
     if( TypeRequiresCtoring( elem->cltype ) ) {
         retn = defCtorOptSym( elem->cdtor );
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -1220,7 +1220,7 @@ static SYMBOL defCtorFind(      // FIND DEF.CTOR FOR TYPE
     cltype = StructType( elem->cltype );
     ctor = defCtorLocate( cltype );
     if( NULL == ctor && NULL != cltype ) {
-        elem->cannot_define = TRUE;
+        elem->cannot_define = true;
     }
     return ctor;
 }
@@ -1245,18 +1245,18 @@ static bool defCtorMembPushable(// TEST IF MEMBER PUSHABLE FOR DEF.CTOR
 static bool defCtorInclude(     // TEST IF CTOR REQUIRED TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool retn;                  // - TRUE ==> include anyway
+    bool retn;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( ( info->has_vft || info->has_vbt )
       &&( elem->otype == TOB_MEMB ) ) {
-        elem->must_call = TRUE;
-        retn = TRUE;
+        elem->must_call = true;
+        retn = true;
     } else if( info->elements == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -1320,7 +1320,7 @@ static void defCtorRptElKept(   // RPT: element kept
 static bool defAssForType(      // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
     CLASSINFO *ci )             // - class info for type
 {
-    ci->assign_user_code_checked = TRUE;
+    ci->assign_user_code_checked = true;
     return ! ( ci->has_def_opeq
             || ci->const_ref
             || ci->corrupted
@@ -1331,12 +1331,12 @@ static bool defAssForType(      // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
 static bool defAssOptimizable(  // CAN OP= BE OPTIMIZED AWAY AT ALL
     CL_ELEM* elem )             // - class element
 {
-    bool retn;                  // - FALSE ==> cannot be optimized
+    bool retn;                  // - false ==> cannot be optimized
     SYMBOL assop;               // - the op= in question
 
     assop = elem->cdtor;
     if( assop == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = defAssForType( SymClassInfo( assop ) );
     }
@@ -1364,7 +1364,7 @@ static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
     BASE_CLASS *bcl )           // - base class
 {
     bcl = bcl;
-    return TRUE;
+    return true;
 }
 
 
@@ -1372,23 +1372,23 @@ static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
     SYMBOL sym )                // - symbol for ctor
 {
     sym = sym;
-    return TRUE;
+    return true;
 }
 
 
 static bool defAssInclude(      // TEST IF OP= MUST BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool retn;                  // - TRUE ==> include anyway
+    bool retn;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( info == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else if( info->elements == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -1507,9 +1507,9 @@ static STKIN* pushElement(      // PUSH AN ELEMENT
     elem->descr  = NULL;
     elem->otype  = otype;
     elem->next   = NULL;
-    elem->elim_intermed = FALSE;
-    elem->cannot_define = FALSE;
-    elem->must_call     = FALSE;
+    elem->elim_intermed = false;
+    elem->cannot_define = false;
+    elem->must_call     = false;
     info = expansion->info;
     mfuns = info->mfuns;
     elem->cdtor  = ( otype == TOB_ARRAY )
@@ -1597,9 +1597,9 @@ static CD_DESCR* cdoptExpandClass( // EXPAND A CLASS
     info = CarveAlloc( carveCD_DESCR );
     info->orig_type = cltype;
     info->mfuns = defn->vfuns;
-    info->err_occurred = FALSE;
-    info->has_acc = FALSE;
-    info->chk_acc = FALSE;
+    info->err_occurred = false;
+    info->has_acc = false;
+    info->chk_acc = false;
     info->opt = defn->otype;
     info->elements = NULL;
     info->accessed = NULL;
@@ -1640,7 +1640,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
             DumpCdoptIn( stk, "--PROCESS" );
             elem = stk->elem;
             if( elem->otype == TOB_ARRAY ) {
-                elem->must_call = TRUE;
+                elem->must_call = true;
                 addInfoElement( stk->info, elem );
                 DumpCdoptIn( stk, "--POPPED" );
                 VstkPop( &stackSTKIN );
@@ -1658,7 +1658,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
                 if( descr == NULL ) {
                     if( elem_type == NULL ) {
                         if( (*mfuns->include)( elem ) ) {
-                            elem->must_call = TRUE;
+                            elem->must_call = true;
                             addInfoElement( stk->info, elem );
                         }
                         DumpCdoptIn( stk, "--POPPED" );
@@ -1670,7 +1670,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
                     if( elem->cannot_define ) {
                         addInfoElement( stk->info, elem );
                     } else if( ! (*mfuns->optimizable)( elem ) ) {
-                        elem->must_call = TRUE;
+                        elem->must_call = true;
                         addInfoElement( stk->info, elem );
                     } else if( (*mfuns->include)( elem ) ) {
                         addInfoElement( stk->info, elem );
@@ -1788,20 +1788,20 @@ bool TypeHasDtorableObjects(    // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
 {
     CD_DESCR* dtor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    bool retn;                  // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: true ==> really dtor it
 
     dtor_info = CDoptDtorBuild( type );
     if( CDoptErrorOccurred( dtor_info ) ) {
-        retn = FALSE;
+        retn = false;
     } else {
         TITER comp_beg;
         iter = CDoptIterBeg( dtor_info );
         comp_beg = CDoptIterNextComp( iter );
         CDoptIterEnd( iter );
         if( TITER_NONE == comp_beg ) {
-            retn = FALSE;
+            retn = false;
         } else {
-            retn = TRUE;
+            retn = true;
         }
     }
     return retn;
@@ -1810,14 +1810,14 @@ bool TypeHasDtorableObjects(    // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
 
 static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type,                  // - declared type
-    bool is_exact )             // - TRUE ==> exact type is known
+    bool is_exact )             // - true ==> exact type is known
 {
     SYMBOL dtor;                // - destructor to be used
-    bool retn;                  // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: true ==> really dtor it
     TYPE base_type;             // - base type
 
     if( type == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         base_type = ArrayType( type );
         if( base_type != NULL ) {
@@ -1825,18 +1825,18 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
         }
         type = StructType( type );
         if( type == NULL ) {
-            retn = FALSE;
+            retn = false;
         } else if( TypeRequiresDtoring( type ) ) {
             dtor = dtorLocate( type );
             if( ! is_exact && SymIsVirtual( dtor ) ) {
-                retn = TRUE;
+                retn = true;
             } else if( classCanBeDtorOpt( TypeClassInfo( type ) ) ) {
                 retn = TypeHasDtorableObjects( type );
             } else {
-                retn = TRUE;
+                retn = true;
             }
         } else {
-            retn = FALSE;
+            retn = false;
         }
     }
     return retn;
@@ -1846,14 +1846,14 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
 bool TypeReallyDtorable(        // TEST IF TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
-    return typeDtorable( type, FALSE );
+    return typeDtorable( type, false );
 }
 
 
 bool TypeExactDtorable(         // TEST IF EXACT TYPE REALLY NEEDS DTOR'ING
     TYPE type )                 // - declared type
 {
-    return typeDtorable( type, TRUE );
+    return typeDtorable( type, true );
 }
 
 
@@ -1862,31 +1862,31 @@ bool TypeReallyDefCtorable(     // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
 {
     CD_DESCR* ctor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    bool retn;                  // - return: TRUE ==> really dtor it
+    bool retn;                  // - return: true ==> really dtor it
 
     if( TypeRequiresCtoring( type ) ) {
         if( classCanBeCtorOpt( TypeClassInfo( type ) ) ) {
             ctor_info = CDoptDefCtorBuild( type );
             if( ctor_info->has_vbt || ctor_info->has_vft ) {
-                retn = TRUE;
+                retn = true;
             } else if( CDoptErrorOccurred( ctor_info ) ) {
-                retn = FALSE;
+                retn = false;
             } else {
                 TITER comp_beg;
                 iter = CDoptIterBeg( ctor_info );
                 comp_beg = CDoptIterNextComp( iter );
                 CDoptIterEnd( iter );
                 if( TITER_NONE == comp_beg ) {
-                    retn = FALSE;
+                    retn = false;
                 } else {
-                    retn = TRUE;
+                    retn = true;
                 }
             }
         } else {
-            retn = TRUE;
+            retn = true;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }

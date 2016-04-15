@@ -162,7 +162,7 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
     CGFILE* file_ctl,           // - current file information
     FN_CTL* fctl )              // - current file generation information
 {
-    bool retn;                  // - TRUE ==> state table will be genned
+    bool retn;                  // - true ==> state table will be genned
     unsigned flag_bytes;        // - number of flag bytes
 
     if( 0 == CgNonThunkDepth( fctl ) && ! SymIsThunk( fctl->func ) ) {
@@ -182,19 +182,19 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
                 if( ! fctl->is_dtor ) {
                     CgFunRegister( fctl, fstab.rw, fStabDefn.ro );
                 }
-                retn = TRUE;
+                retn = true;
 //          } else {
 //              CondInfoDirectFlags( flag_bytes );
 //              fStabDefn.ro = NULL;
-//              retn = FALSE;
+//              retn = false;
 //          }
         } else {
             CondInfoDirectFlags( flag_bytes );
             fStabDefn.ro = NULL;
-            retn = FALSE;
+            retn = false;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -370,13 +370,13 @@ void FstabDeRegister(           // DE-REGISTER FUNCTION
     FN_CTL* fctl )              // - function control
 {
 #if _CPU == _AXP
-    fctl->deregistered = TRUE;
+    fctl->deregistered = true;
 #else
     if( ! fctl->deregistered ) {
         if( 0 == CgBackInlinedDepth() && fStabDefn.ro != NULL ) {
             CgFunDeregister( fstab.rw );
         }
-        fctl->deregistered = TRUE;
+        fctl->deregistered = true;
     }
 #endif
 }

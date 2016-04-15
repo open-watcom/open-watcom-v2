@@ -110,7 +110,7 @@ static void openNameSpaceSym( NAME name, TOKEN_LOCN *locn )
     if( ns_sym != NULL ) {
         SCOPE ns_scope = ns_sym->u.ns->scope;
         ScopeOpen( ns_scope );
-        ScopeRestoreUsing( ns_scope, FALSE );
+        ScopeRestoreUsing( ns_scope, false );
     } else {
         ns_sym = AllocSymbol();
         scope = ScopeOpenNameSpace( name, ns_sym );
@@ -293,13 +293,13 @@ static bool verifyUsingDecl( SCOPE scope )
     bool error_occurred;
 
     if( scope == NULL ) {
-        return( TRUE );
+        return( true );
     }
-    error_occurred = FALSE;
+    error_occurred = false;
     if( ScopeId( GetCurrScope() ) == SCOPE_CLASS ) {
         if( ScopeId( scope ) != SCOPE_CLASS ) {
             CErr1( ERR_MEMBER_USING_DECL_REFS_NON_MEMBER );
-            error_occurred = TRUE;
+            error_occurred = true;
         } else {
             derived_status is_a_base = DERIVED_YES;
             if( ScopeDerived( GetCurrScope(), scope ) == DERIVED_NO ) {
@@ -309,18 +309,18 @@ static bool verifyUsingDecl( SCOPE scope )
             }
             if( is_a_base == DERIVED_NO ) {
                 CErr2p( ERR_USING_DECL_NOT_A_BASE_CLASS, ScopeClass( scope ) );
-                error_occurred = TRUE;
+                error_occurred = true;
             }
         }
     } else {
         DbgAssert( ScopeId( GetCurrScope() ) == SCOPE_FILE || ScopeId( GetCurrScope() ) == SCOPE_BLOCK );
         if( ScopeId( scope ) == SCOPE_CLASS ) {
             CErr1( ERR_USING_DECL_REFS_MEMBER );
-            error_occurred = TRUE;
+            error_occurred = true;
         } else {
             if( GetCurrScope() == scope ) {
                 CErr1( ERR_USING_DECL_NAME_SAME );
-                error_occurred = TRUE;
+                error_occurred = true;
             }
         }
     }

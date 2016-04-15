@@ -123,12 +123,12 @@ struct ctor_prologue {
     target_offset_t comp_offset;// - offset for component
     ctor_init   comp_options;   // - options
     unsigned    cdopt     :1;   // - CD optimization active
-    unsigned    dtor_reqd :1;   // - TRUE ==> a DTOR was required (in section)
+    unsigned    dtor_reqd :1;   // - true ==> a DTOR was required (in section)
     unsigned    gen_copy  :1;   // - a compiler generated copy ctor
-    unsigned    excepts   :1;   // - TRUE ==> exceptions enabled
-    unsigned    obj_dtor  :1;   // - TRUE ==> object requires DTOR
-    unsigned    have_cdopt:1;   // - TRUE ==> have CDOPT component
-    unsigned    done_cdopt:1;   // - TRUE ==> processed all CDOPT components
+    unsigned    excepts   :1;   // - true ==> exceptions enabled
+    unsigned    obj_dtor  :1;   // - true ==> object requires DTOR
+    unsigned    have_cdopt:1;   // - true ==> have CDOPT component
+    unsigned    done_cdopt:1;   // - true ==> processed all CDOPT components
 };
 
 typedef struct assign_prologue assign_prologue;
@@ -550,7 +550,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
             src = NodeConvertFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
             tgt = NodeConvertFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
             expr = bitFieldNodeAssign( tgt, src, NodeFetch );
-        } else if( ClassNeedsAssign( cltype, TRUE ) ) {
+        } else if( ClassNeedsAssign( cltype, true ) ) {
             if( qualifier != 0 ) {
                 cltype = MakeModifiedType( cltype, qualifier );
             }
@@ -688,9 +688,9 @@ void GenerateDefaultAssign(     // EMIT A DEFAULT ASSIGN
     if( CDoptErrorOccurred( optinfo ) ) {
         return;
     }
-    initClassFunction( operator, &fn_data, &check, TRUE );
+    initClassFunction( operator, &fn_data, &check, true );
     CDoptChkAccFun( optinfo );
-    if( ClassNeedsAssign( class_type, FALSE ) ) {
+    if( ClassNeedsAssign( class_type, false ) ) {
         qualifier = SymFuncArgList( operator )->qualifier;
         scope = SymScope( operator );
         iter = CDoptIterBeg( optinfo );
@@ -761,14 +761,14 @@ static bool canBinaryCopy(      // TEST IF COPY CAN BE BINARY
     tgt_type = ClassTypeForType( tgt->type );
     src_type = ClassTypeForType( src->type );
     if( tgt_type == NULL || tgt_type != src_type ) {
-        return( FALSE );
+        return( false );
     }
     if( ! TypeDefined( tgt_type ) ) {
-        return( FALSE );
+        return( false );
     }
     if( tgt_type->u.c.info->const_ref ) {
         // op= cannot be generated for classes with const or ref members
-        return( FALSE );
+        return( false );
     }
     return( OMR_CLASS_VAL == ObjModelArgument( src_type ) );
 }
@@ -813,7 +813,7 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
     src = expr->u.subtree[1];
     tgt_type = ClassTypeForType( tgt->type );
     if( TypeDefined( tgt_type ) ) {
-        if( !ClassNeedsAssign( tgt_type, FALSE ) && 0 == cvFlags( tgt )
+        if( !ClassNeedsAssign( tgt_type, false ) && 0 == cvFlags( tgt )
          && canBinaryCopy( tgt, src ) && 0 == (cvFlags( src ) & TF1_VOLATILE) ) {
             PTreeFree( expr );
             call_expr = doBinaryCopy( tgt, src );
@@ -857,7 +857,7 @@ void GenerateDefaultCopy(       // EMIT A DEFAULT COPY CTOR
     if( SymClassCorrupted( copy_ctor ) ) {
         return;
     }
-    initClassFunction( copy_ctor, &fn_data, &check, TRUE );
+    initClassFunction( copy_ctor, &fn_data, &check, true );
     finiClassFunction( copy_ctor, &fn_data, &check );
 }
 
@@ -957,7 +957,7 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
             this_arg->u.subtree[0]
                 = NodeArgumentExactCtor( this_arg->u.subtree[0]
                                        , tgt_type
-                                       , TRUE );
+                                       , true );
             *a_ctor_used = ctor;
         }
     }
@@ -969,14 +969,14 @@ static bool accessCopyCtor(     // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type,                  // - type for class
     SYMBOL *ctor )              // - addr[ copy ctor ]
 {
-    bool retn;                  // - TRUE ==> access is ok
+    bool retn;                  // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
 
     type = ClassTypeForType( type );
     result = accessDefaultCopy( type, ctor );
     if( result == NULL ) {
         ctor = NULL;
-        retn = TRUE;
+        retn = true;
     } else {
         retn = ! ScopeCheckSymbol( result, *ctor );
         ScopeFreeResult( result );
@@ -989,7 +989,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     PTREE left,                 // - target expression
     PTREE src,                  // - source expression
     CALL_DIAG* diagnosis,       // - call diagnosis
-    bool temp_ok,               // - TRUE ==> temp ok
+    bool temp_ok,               // - true ==> temp ok
     SYMBOL* a_ctor_used )       // - ctor used
 {
     TYPE type;                  // - type being initialized (unmodified)
@@ -1002,7 +1002,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     SYMBOL ctor_udc;            // - udcf/ctor from udc lookup
     CALL_OPT opt;               // - type of optimization
     FNOV_COARSE_RANK rank;      // - UDC RANKING
-    bool is_ctor;               // - TRUE ==> ctor udc, FALSE ==> udcf udc
+    bool is_ctor;               // - true ==> ctor udc, false ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
     FNOV_DIAG fnov_diag;        // - for diagnostics
     TOKEN_LOCN err_locn;        // - location for errors
@@ -1119,7 +1119,7 @@ PTREE ClassDefaultCopy(         // COPY TO CLASS OBJECT
 {
     SYMBOL not_used;            // - not used
 
-    return defaultCopyDiag( tgt, src, &diagCopy, FALSE, &not_used );
+    return defaultCopyDiag( tgt, src, &diagCopy, false, &not_used );
 }
 
 
@@ -1134,7 +1134,7 @@ PTREE ClassDefaultCopyDiag(     // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     return defaultCopyDiag( tgt
                           , src
                           , CallDiagFromCnvDiag( &diagnosis, cnvdiag )
-                          , FALSE
+                          , false
                           , &not_used );
 }
 
@@ -1150,7 +1150,7 @@ PTREE ClassDefaultCopyTemp(     // COPY TEMP TO CLASS OBJECT, WITH DIAGNOSIS
     return defaultCopyDiag( tgt
                           , src
                           , CallDiagFromCnvDiag( &diagnosis, cnvdiag )
-                          , TRUE
+                          , true
                           , &not_used );
 }
 
@@ -1204,11 +1204,11 @@ bool ClassAccessDefaultCopy(    // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type )                 // - type for class
 {
     SYMBOL ctor;                // - copy ctor (not used)
-    bool retn;                  // - TRUE ==> access if OK
+    bool retn;                  // - true ==> access if OK
 
     type = ClassTypeForType( type );
     if( OMR_CLASS_VAL == ObjModelArgument( type ) ) {
-        retn = TRUE;
+        retn = true;
     } else {
         retn = accessCopyCtor( type, &ctor );
     }
@@ -1269,7 +1269,7 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
 {
     TYPE base_type;             // - array base type
     TYPE_SIG *base_sig;         // - type signature for base type
-    bool error_occurred;        // - TRUE ==> error occurred
+    bool error_occurred;        // - true ==> error occurred
     PTREE expr;                 // - generated expression
 
     base_type = ArrayBaseType( array_type );
@@ -1296,7 +1296,7 @@ void GenerateDefaultCtor(       // EMIT A DEFAULT CTOR
     if( SymClassCorrupted( ctor ) ) {
         return;
     }
-    initClassFunction( ctor, &fn_data, &check, FALSE );
+    initClassFunction( ctor, &fn_data, &check, false );
     finiClassFunction( ctor, &fn_data, &check );
 }
 
@@ -1344,7 +1344,7 @@ void GenerateDefaultDtor(       // EMIT A DEFAULT DTOR
     if( SymClassCorrupted( dtor ) ) {
         return;
     }
-    initClassFunction( dtor, &fn_data, &check, FALSE );
+    initClassFunction( dtor, &fn_data, &check, false );
     finiClassFunction( dtor, &fn_data, &check );
 }
 
@@ -1397,14 +1397,14 @@ SEARCH_RESULT *DtorFindResult(  // FIND DTOR FOR A POSSIBLE VIRTUAL CALL
 bool ClassAccessDtor(           // CHECK ACCESS TO DTOR
     TYPE type )                 // - type for class
 {
-    bool retn;                  // - TRUE ==> access is ok
+    bool retn;                  // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
     SYMBOL dtor;
 
     type = ArrayBaseType( type );
     result = DtorFindResult( type );
     if( result == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else {
         dtor = result->sym_name->name_syms;
         retn = ! ScopeCheckSymbol( result, dtor );
@@ -1418,7 +1418,7 @@ static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL
     bool check,                 // - check access
     SCOPE access,               // - derived access scope
     TOKEN_LOCN *locn,           // - error location
-    bool del )                  // - TRUE ==> return NULL on access violation
+    bool del )                  // - true ==> return NULL on access violation
 {
     NAME dtor_name;
     SYMBOL dtor;
@@ -1465,7 +1465,7 @@ static SYMBOL findOrDefineArrayDtor( // FIND (OR ALLOCATE) ARRAY DTOR FOR SYMBOL
     bool check,                 // - check access
     SCOPE access,               // - derived access scope
     TOKEN_LOCN *locn,           // - error location
-    bool del )                  // - TRUE ==> return NULL on access violation
+    bool del )                  // - true ==> return NULL on access violation
 {
     NAME name;                  // - name of array dtor
     SCOPE scope;                // - scope for name
@@ -1507,8 +1507,8 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     if( ClassCorrupted( ArrayBaseType( ar_type ) ) ) {
         return;
     }
-    dtor = findOrDefineArrayDtor( ar_type, FALSE, NULL, NULL, FALSE );
-    initClassFunction( dtor, &fn_data, &check, FALSE );
+    dtor = findOrDefineArrayDtor( ar_type, false, NULL, NULL, false );
+    initClassFunction( dtor, &fn_data, &check, false );
     scope = ScopeFunctionScopeInProgress();
     p1 = SymMakeDummy( MakeCDtorExtraArgType(), &name );
     p1 = ScopeInsert( scope, p1, name );
@@ -1526,9 +1526,9 @@ SYMBOL DtorFind(                // FIND DTOR, CHECK ACCESS
     SYMBOL dtor;                // - DTOR found or created
 
     if( ArrayType( type ) != NULL ) {
-        dtor = findOrDefineArrayDtor( type, TRUE, NULL, NULL, FALSE );
+        dtor = findOrDefineArrayDtor( type, true, NULL, NULL, false );
     } else {
-        dtor = findOrDefineDtor( type, TRUE, NULL, NULL, FALSE );
+        dtor = findOrDefineDtor( type, true, NULL, NULL, false );
     }
     return dtor;
 }
@@ -1539,9 +1539,9 @@ SYMBOL DtorFindCg(              // FIND DTOR, DURING CODE-GEN
     SYMBOL dtor;                // - DTOR found or created
 
     if( ArrayType( type ) != NULL ) {
-        dtor = findOrDefineArrayDtor( type, FALSE, NULL, NULL, FALSE );
+        dtor = findOrDefineArrayDtor( type, false, NULL, NULL, false );
     } else {
-        dtor = findOrDefineDtor( type, FALSE, NULL, NULL, FALSE );
+        dtor = findOrDefineDtor( type, false, NULL, NULL, false );
     }
     return dtor;
 }
@@ -1553,9 +1553,9 @@ SYMBOL DtorFindLocn(            // FIND DTOR, CHECK ACCESS, WITH ERR LOC'N
     SYMBOL dtor;                // - DTOR found or created
 
     if( ArrayType( type ) != NULL ) {
-        dtor = findOrDefineArrayDtor( type, TRUE, NULL, err_locn, TRUE );
+        dtor = findOrDefineArrayDtor( type, true, NULL, err_locn, true );
     } else {
-        dtor = findOrDefineDtor( type, TRUE, NULL, err_locn, TRUE );
+        dtor = findOrDefineDtor( type, true, NULL, err_locn, true );
     }
 //  dtor = ClassFunMakeAddressable( dtor );
     return dtor;
@@ -1568,9 +1568,9 @@ static SYMBOL RoDtorFindTypeLocn       // FIND DTOR FOR USE WITH R/O BLOCKS
     SYMBOL dtor;                // - symbol for DTOR
 
     if( ArrayType( type ) == NULL ) {
-        dtor = findOrDefineDtor( type, FALSE, NULL, err_locn, FALSE );
+        dtor = findOrDefineDtor( type, false, NULL, err_locn, false );
     } else {
-        dtor = findOrDefineArrayDtor( type, FALSE, NULL, err_locn, FALSE );
+        dtor = findOrDefineArrayDtor( type, false, NULL, err_locn, false );
     }
     dtor = ClassFunMakeAddressable( dtor );
     dtor->flag |= SF_ADDR_TAKEN;
@@ -1863,12 +1863,12 @@ static bool isForThisItem(      // IS CDOPT ITER FOR THIS ITEM?
 
     optiter = data->optiter;
     if( data->comp_offset != CDoptIterOffsetExact( optiter ) ) {
-        return( FALSE );
+        return( false );
     }
     if( data->comp_type != CDoptIterType( optiter ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1888,26 +1888,26 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
     ctor_prologue* data )       // - traversal data
 {
     ctor_init remove_mask;      // - flasg to turn off after ctor genned
-    bool have_cdopt;            // - TRUE ==> have cdopt component
+    bool have_cdopt;            // - true ==> have cdopt component
 
     if( ! data->have_cdopt && ! data->done_cdopt ) {
         if( TITER_NONE == CDoptIterNextComp( data->optiter ) ) {
-            data->done_cdopt = TRUE;
+            data->done_cdopt = true;
         } else {
-            data->have_cdopt = TRUE;
+            data->have_cdopt = true;
         }
     }
     if( data->done_cdopt ) {
-        have_cdopt = FALSE;
+        have_cdopt = false;
     } else if( isForThisItem( data ) ) {
         if( data->gen_copy ) {
-            have_cdopt = FALSE;
+            have_cdopt = false;
         } else {
-            have_cdopt = TRUE;
+            have_cdopt = true;
         }
-        data->have_cdopt = FALSE;
+        data->have_cdopt = false;
     } else {
-        have_cdopt = FALSE;
+        have_cdopt = false;
     }
     if( data->comp_expr != NULL ) {
         ctorGenComponent( data
@@ -2065,7 +2065,7 @@ static void checkForGenCopy( ctor_prologue *data )
 
     result = ScopeFindNaked( GetCurrScope(), CppSpecialName( SPECIAL_COPY_ARG ) );
     if( result != NULL ) {
-        data->gen_copy = TRUE;
+        data->gen_copy = true;
         ScopeFreeResult( result );
     }
 }
@@ -2081,11 +2081,11 @@ static void initCtorPrologue( ctor_prologue *data, PTREE mem_init, SCOPE scope )
     data->base_init = NULL;
     data->scope = scope;
     data->this_type = NULL;
-    data->gen_copy = FALSE;
+    data->gen_copy = false;
     data->excepts = CompFlags.excs_enabled;
-    data->cdopt = FALSE;
-    data->have_cdopt = FALSE;
-    data->done_cdopt = FALSE;
+    data->cdopt = false;
+    data->have_cdopt = false;
+    data->done_cdopt = false;
     checkForGenCopy( data );
     for( curr = mem_init; curr != NULL; curr = next ) {
         next = curr->u.subtree[0];
@@ -2152,7 +2152,7 @@ static void genVBPtrInits( SCOPE scope )
     tables = ScopeCollectVBTable( scope, SCV_CTOR );
     RingIterBeg( tables, table ) {
         sym = MakeVBTableSym( scope, table->h.count, table->h.exact_delta );
-        emitVPtrInit( &(table->h), sym, TRUE );
+        emitVPtrInit( &(table->h), sym, true );
         genVBTable( scope, sym, table );
     } RingIterEnd( table )
     RingFree( &tables );
@@ -2170,11 +2170,11 @@ static void genCtorDispInit( SCOPE scope )
     if( info->last_vbase == 0 ) {
         return;
     }
-    no_code_reqd = TRUE;
+    no_code_reqd = true;
     RingIterBeg( info->bases, base ) {
         if( _IsVirtualBase( base ) ) {
             if( TypeCtorDispRequired( host_class, base->type ) ) {
-                no_code_reqd = FALSE;
+                no_code_reqd = false;
                 break;
             }
         }
@@ -2248,7 +2248,7 @@ static void genVFPtrCode( SCOPE scope, SYMBOL ctor, CLASS_VFTABLE *table )
     target_offset_t offset;
 
     sym = MakeVFTableSym( scope, table->h.count, table->h.exact_delta );
-    emitVPtrInit( &(table->h), sym, FALSE );
+    emitVPtrInit( &(table->h), sym, false );
     CgFrontCodePtr( IC_VFT_REF, sym );
     if( !SymIsInitialized( sym ) ) {
         emitThunks( table, ctor );
@@ -2281,11 +2281,11 @@ static bool genVFPtrInits( SCOPE scope, SYMBOL ctor )
     bool something_went_wrong;
 
     tables = ScopeCollectVFTable( scope, SCV_CTOR );
-    something_went_wrong = FALSE;
+    something_went_wrong = false;
     /* initialize vfptrs of non-virtual classes */
     RingIterBeg( tables, table ) {
         if( table->corrupted ) {
-            something_went_wrong = TRUE;
+            something_went_wrong = true;
         }
         if( table->h.delta == table->h.exact_delta ) {
             genVFPtrCode( scope, ctor, table );
@@ -2294,7 +2294,7 @@ static bool genVFPtrInits( SCOPE scope, SYMBOL ctor )
     /* initialize vfptrs of virtual classes */
     RingIterBeg( tables, table ) {
         if( table->corrupted ) {
-            something_went_wrong = TRUE;
+            something_went_wrong = true;
         }
         if( table->h.delta != table->h.exact_delta ) {
             genVFPtrCode( scope, ctor, table );
@@ -2308,7 +2308,7 @@ static bool genVFPtrInits( SCOPE scope, SYMBOL ctor )
 
 static void testExtraParm(      // EMIT TEST OF EXTRA PARAMETER
     unsigned mask,              // - mask
-    bool branch_on )            // - TRUE ==> branch if on
+    bool branch_on )            // - true ==> branch if on
 {
     CgFrontCodeUint( branch_on ? IC_CDARG_TEST_ON : IC_CDARG_TEST_OFF, mask );
 }
@@ -2374,11 +2374,11 @@ void CtorPrologue(              // GENERATE PROLOGUE FOR CTOR
         CDoptNoAccFun( optinfo );
     }
     data.optiter = CDoptIterBeg( optinfo );
-    data.cdopt = TRUE;
+    data.cdopt = true;
     (*push_scope)();
     if( ScopeHasVirtualBases( scope ) ) {
         CgFrontCode( IC_CTOR_COMP_BEG );
-        testExtraParm( CTOR_COMPONENT, TRUE );
+        testExtraParm( CTOR_COMPONENT, true );
         genVBPtrInits( scope );
         ScopeWalkVirtualBases( scope, ctorPrologueBaseGen, &data );
         CgFrontCode( IC_CDARG_LABEL );
@@ -2424,10 +2424,10 @@ static void genDeleteVector(
         class_type = SymClass( dtor );
         if( ! TypeAbstract( class_type ) ) {
             CgFrontCode( IC_DTOR_DAR_BEG );
-            testExtraParm( DTOR_DELETE_VECTOR, FALSE );
+            testExtraParm( DTOR_DELETE_VECTOR, false );
             stmt = NodeUnary( CO_DELETE_ARRAY, NodeThis() );
             stmt->flags |= PTF_MEMORY_EXACT;
-            stmt = AnalyseDelete( stmt, TRUE );
+            stmt = AnalyseDelete( stmt, true );
             EmitAnalysedStmt( stmt );
             CgFrontGotoNear( IC_LABEL_CS, O_GOTO, *end );
             CgFrontCode( IC_CDARG_LABEL );
@@ -2458,7 +2458,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     CLASSINFO *info;            // - class information
     CD_DESCR* optinfo;          // - traversal data
     CDOPT_ITER* iter;           // - iterator for traversal data
-    bool regster;               // - TRUE ==> function needs registration
+    bool regster;               // - true ==> function needs registration
     TYPE class_type;            // - type for class
 
     rtbeg = rtbeg;              // - can remove argument
@@ -2470,7 +2470,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     if( ScopeHasVirtualFunctions( scope ) ) {
         host_class = ScopeClass( scope );
         info = host_class->u.c.info;
-        info->dtor_user_code_checked = TRUE;
+        info->dtor_user_code_checked = true;
         if( info->dtor_user_code ) {
             genCtorDispInit( scope );
             genVFPtrInits( scope, dtor );
@@ -2483,7 +2483,7 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     }
     CDoptChkAccFun( optinfo );
     iter = CDoptIterBeg( optinfo );
-    regster = FALSE;
+    regster = false;
     for(;;) {
         unsigned depth;
         TITER iter_status = CDoptIterNextComp( iter );
@@ -2507,13 +2507,13 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
               case TITER_CLASS_VBASE :
 //                is_exact = CDoptIterExact( iter );
                 dtorSubObject( CDoptIterFunction( iter ) );
-                regster = TRUE;
+                regster = true;
                 continue;
               case TITER_ARRAY_EXACT :
               case TITER_ARRAY_VBASE :
               { TYPE artype = CDoptIterType( iter );
                 dtorSubObject( RoDtorFindType( artype ) );
-                regster = TRUE;
+                regster = true;
               } continue;
               DbgDefault( "DtorEpilogue -- bad TITER" );
             }
@@ -2539,10 +2539,10 @@ static void genDeleteThis( SYMBOL dtor )
 
     if( ! TypeAbstract( SymClass( dtor ) ) && SymIsVirtual( dtor ) ) {
         CgFrontCode( IC_DTOR_DLT_BEG );
-        testExtraParm( DTOR_DELETE_THIS, FALSE );
+        testExtraParm( DTOR_DELETE_THIS, false );
         stmt = NodeUnary( CO_DELETE, NodeThis() );
         stmt->flags |= PTF_MEMORY_EXACT;
-        stmt = AnalyseDelete( stmt, TRUE );
+        stmt = AnalyseDelete( stmt, true );
         EmitAnalysedStmt( stmt );
         CgFrontCode( IC_CDARG_LABEL );
         CgFrontCode( IC_DTOR_DLT_END );

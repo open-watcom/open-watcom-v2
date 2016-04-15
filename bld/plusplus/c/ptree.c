@@ -515,17 +515,17 @@ bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
         left = curr->u.subtree[0];
         if( left != NULL && left->op == PT_ERROR ) {
             PTreeErrorNode( curr );
-            return TRUE;
+            return true;
         }
     }
     if( ptreePTSFlags[ op ] & PTS_BINARY ) {
         right = curr->u.subtree[1];
         if( right != NULL && right->op == PT_ERROR ) {
             PTreeErrorNode( curr );
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1457,12 +1457,12 @@ PTREE PTreeOpRight(             // GET RIGHT NODE, SKIPPING "," OPERATOR, DUPS
 static bool symAccessNeedsCode( SYMBOL sym )
 {
     if( SymIsAutomatic( sym ) ) {
-        return TRUE;
+        return true;
     }
     if( SymIsDllImport( sym ) ) {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 static PTREE linker_constant_tree_node( PTREE expr )
@@ -1486,7 +1486,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
     case PT_STRING_CONSTANT:
     case PT_FLOATING_CONSTANT:
         if( linkerConstantSymbolNode != NULL ) {
-            linkerConstantFlag = FALSE;
+            linkerConstantFlag = false;
         } else {
             linkerConstantSymbolNode = expr;
         }
@@ -1494,11 +1494,11 @@ static PTREE linker_constant_tree_node( PTREE expr )
     case PT_SYMBOL:
         if( ( expr->cgop != CO_NAME_NORMAL )
           ||( linkerConstantSymbolNode != NULL ) ) {
-            linkerConstantFlag = FALSE;
+            linkerConstantFlag = false;
         } else {
             sym = expr->u.symcg.symbol;
             if( sym != NULL && symAccessNeedsCode( sym ) ) {
-                linkerConstantFlag = FALSE;
+                linkerConstantFlag = false;
             } else {
                 linkerConstantSymbolNode = expr;
             }
@@ -1512,7 +1512,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
              && other_expr->op == PT_SYMBOL
              && other_expr->cgop == CO_NAME_NORMAL ) {
                 if( symAccessNeedsCode( other_expr->u.symcg.symbol ) ) {
-                    linkerConstantFlag = FALSE;
+                    linkerConstantFlag = false;
                 }
             }
             break;
@@ -1520,11 +1520,11 @@ static PTREE linker_constant_tree_node( PTREE expr )
             break;
         case CO_BITFLD_CONVERT:
             if( linkerConstantSymbolNode != NULL ) {
-                linkerConstantFlag = FALSE;
+                linkerConstantFlag = false;
             }
             break;
         default:
-            linkerConstantFlag = FALSE;
+            linkerConstantFlag = false;
             break;
         }
         break;
@@ -1540,7 +1540,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
                 linkerConstantOffset -= other_expr->u.uint_constant;
                 break;
             default:
-                linkerConstantFlag = FALSE;
+                linkerConstantFlag = false;
                 break;
             }
             break;
@@ -1552,17 +1552,17 @@ static PTREE linker_constant_tree_node( PTREE expr )
                 linkerConstantOffset += other_expr->u.uint_constant;
                 break;
             default:
-                linkerConstantFlag = FALSE;
+                linkerConstantFlag = false;
                 break;
             }
             break;
         default:
-            linkerConstantFlag = FALSE;
+            linkerConstantFlag = false;
             break;
         }
         break;
     default:
-        linkerConstantFlag = FALSE;
+        linkerConstantFlag = false;
         break;
     }
     return expr;
@@ -1570,17 +1570,17 @@ static PTREE linker_constant_tree_node( PTREE expr )
 
 bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
 /**********************************************************************/
-// return TRUE when it is a constant
+// return true when it is a constant
 {
     // handle "int a = ( b=1, 2 );"
     if( tree->flags & PTF_SIDE_EFF ) {
-        return FALSE;
+        return false;
     }
 
     if( NodeIsUnaryOp( tree, CO_MEMPTR_CONST ) ) {
         *ctree = tree;
         *offset = 0;
-        return TRUE;
+        return true;
     }
 
     // traverse tree making sure that all operations and components
@@ -1588,16 +1588,16 @@ bool IsLinkerConstant( PTREE tree, PTREE *ctree, target_size_t *offset )
     // update linkerConstantSymbolNode linkerConstantOffset
     // and linkerConstantFlag as we go
     linkerConstantOffset = 0;
-    linkerConstantFlag = TRUE;
+    linkerConstantFlag = true;
     linkerConstantSymbolNode = NULL;
     PTreeTraversePostfix( tree, &linker_constant_tree_node );
 
     if( !linkerConstantFlag || ( linkerConstantSymbolNode == NULL ) ) {
-        return FALSE;
+        return false;
     } else {
         *ctree = linkerConstantSymbolNode;
         *offset = linkerConstantOffset;
-        return TRUE;
+        return true;
     }
 }
 
@@ -1607,14 +1607,14 @@ bool IsStringConstant( PTREE node, bool *multi_line_concat )
     STRING_CONSTANT str;
     bool retn;
 
-    *multi_line_concat = FALSE;
-    retn = FALSE;
+    *multi_line_concat = false;
+    retn = false;
     if( node->op == PT_STRING_CONSTANT ) {
         str = node->u.string;
         if( str->concat && str->multi_line ) {
-            *multi_line_concat = TRUE;
+            *multi_line_concat = true;
         }
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }

@@ -80,13 +80,13 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
     TC_DATA     *top;
 
     if( type1 == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( type2 == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( type1->id != type2->id ) {
-        return( FALSE );
+        return( false );
     }
     flag1 = type1->flag;
     flag2 = type2->flag;
@@ -113,36 +113,36 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
     case TYP_POINTER:
     case TYP_DOT_DOT_DOT:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_CLASS:
         if( flag1 != flag2 || ( flag1 & TF1_UNBOUND ) == 0 ) {
-            return( FALSE );
+            return( false );
         }
         return( TemplateUnboundSame( type1, type2 ) );
     case TYP_ENUM:
-        return( FALSE );
+        return( false );
     case TYP_TYPEDEF:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.t.sym != type2->u.t.sym ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.t.scope != type2->u.t.scope ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_BITFIELD:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.b.field_start != type2->u.b.field_start ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.b.field_width != type2->u.b.field_width ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_FUNCTION:
@@ -154,26 +154,26 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
             flag2 &= ~TF1_FN_IGNORE;
         }
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( ( type1->u.f.pragma != type2->u.f.pragma )
           &&( ! PragmasTypeEquivalent( type1->u.f.pragma, type2->u.f.pragma ) ) ) {
-            return( FALSE );
+            return( false );
         }
         args1 = type1->u.f.args;
         args2 = type2->u.f.args;
         if( args1 != args2 ) {
             if( args1 == NULL ) {
-                return( FALSE );
+                return( false );
             }
             if( args2 == NULL ) {
-                return( FALSE );
+                return( false );
             }
             if( args1->num_args != args2->num_args ) {
-                return( FALSE );
+                return( false );
             }
             if( args1->qualifier != args2->qualifier ) {
-                return( FALSE );
+                return( false );
             }
             if( args1->num_args > 0 ) {
                 top = pushTC_DATA( h );
@@ -187,26 +187,26 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
         break;
     case TYP_ARRAY:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.a.array_size != type2->u.a.array_size ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_MODIFIER:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.m.base != type2->u.m.base ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.m.pragma != type2->u.m.pragma ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_MEMBER_POINTER:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         top = pushTC_DATA( h );
         top->type1 = type1;
@@ -217,10 +217,10 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
         break;
     case TYP_GENERIC:
         if( flag1 != flag2 ) {
-            return( FALSE );
+            return( false );
         }
         if( type1->u.g.index != type2->u.g.index ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_TYPENAME:
@@ -229,10 +229,10 @@ static bool typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2, type_exclud
 #ifndef NDEBUG
         CFatal( "unknown type being compared" );
 #else
-        return( FALSE );
+        return( false );
 #endif
     }
-    return( TRUE );
+    return( true );
 }
 
 bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
@@ -246,7 +246,7 @@ bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
     TC_DATA     *stack;
 
     if( type1 == type2 ) {
-        return( TRUE );
+        return( true );
     }
     stack = NULL;
     state = FOLLOW_OF;
@@ -313,7 +313,7 @@ bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
             case FOLLOW_STACK:
                 top = stack;
                 if( top == NULL ) {
-                    return( TRUE );
+                    return( true );
                 }
                 state = FOLLOW_OF;
                 switch( top->flavour ) {
@@ -345,7 +345,7 @@ bool TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
     while( stack != NULL ) {
         popTC_DATA( &stack );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TypesSameExclude( TYPE type1, TYPE type2, type_exclude mask )

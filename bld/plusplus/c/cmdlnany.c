@@ -114,7 +114,7 @@ static bool scanDefine( OPT_STRING **p )
     if( cmdln_mac != NULL ) {
         cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool scanDefinePlus( OPT_STRING **p )
@@ -125,19 +125,19 @@ static bool scanDefinePlus( OPT_STRING **p )
     if( CmdScanSwEnd() ) {
         CompFlags.extended_defines = 1;
     } else {
-        cmdln_mac = DefineCmdLineMacro( TRUE );
+        cmdln_mac = DefineCmdLineMacro( true );
         if( cmdln_mac != NULL ) {
             cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool scanUndefine( OPT_STRING **p )
 {
     p = p;
     AddUndefName();
-    return( TRUE );
+    return( true );
 }
 
 #ifdef OPT_BR
@@ -169,7 +169,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             if( 0 == kind ) {
                 kind = def_kind;
             }
-            retn = TRUE;
+            retn = true;
             break;
         }
         switch( CmdScanChar() ) {
@@ -190,7 +190,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             continue;
           default :
             BadCmdLine( ERR_INVALID_OPTION );
-            retn = FALSE;
+            retn = false;
             break;
         }
         break;
@@ -210,29 +210,29 @@ static bool scanFBX( OPT_STRING **p )
     p = p;
     if( scanFBIopts( &options, FBI_DEFAULT_OFF ) ) {
         if( options & FBI_VAR ) {
-            CompFlags.optbr_v = FALSE;
+            CompFlags.optbr_v = false;
         }
         if( options & FBI_TYPE ) {
-            CompFlags.optbr_t = FALSE;
+            CompFlags.optbr_t = false;
         }
         if( options & FBI_MEMB_DATA ) {
-            CompFlags.optbr_m = FALSE;
+            CompFlags.optbr_m = false;
         }
         if( options & FBI_MACRO ) {
-            CompFlags.optbr_p = FALSE;
+            CompFlags.optbr_p = false;
         }
         if( options & FBI_FUN ) {
-            CompFlags.optbr_f = FALSE;
+            CompFlags.optbr_f = false;
         }
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return( retn );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -245,29 +245,29 @@ static bool scanFBI( OPT_STRING **p )
     p = p;
     if( scanFBIopts( &options, FBI_DEFAULT_ON ) ) {
         if( options & FBI_VAR ) {
-            CompFlags.optbr_v = TRUE;
+            CompFlags.optbr_v = true;
         }
         if( options & FBI_TYPE ) {
-            CompFlags.optbr_t = TRUE;
+            CompFlags.optbr_t = true;
         }
         if( options & FBI_MEMB_DATA ) {
-            CompFlags.optbr_m = TRUE;
+            CompFlags.optbr_m = true;
         }
         if( options & FBI_MACRO ) {
-            CompFlags.optbr_p = TRUE;
+            CompFlags.optbr_p = true;
         }
         if( options & FBI_FUN ) {
-            CompFlags.optbr_f = TRUE;
+            CompFlags.optbr_f = true;
         }
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return( retn );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -338,14 +338,14 @@ bool MergeIncludeFromEnv( char *env )
     const char  *env_value;
 
     if( CompFlags.cpp_ignore_env )
-        return( FALSE );
+        return( false );
 
     env_value = CppGetEnv( env );
     if( NULL != env_value ) {
         HFileAppend( env_value );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void DefSwitchMacro( char *n )
@@ -396,7 +396,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
 {
     value = value;
     if( data->fc ) {
-        data->fc = FALSE;
+        data->fc = false;
         if( CompFlags.batch_file_primary ) {
             if( CompFlags.batch_file_processing ) {
                 BadCmdLine( ERR_FC_IN_BATCH_FILE );
@@ -404,7 +404,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
                 BadCmdLine( ERR_FC_MORE_THAN_ONCE );
             }
         } else {
-            CompFlags.batch_file_primary = TRUE;
+            CompFlags.batch_file_primary = true;
             if( CompFlags.batch_file_processing ) {
                 VBUF buf;
                 if( CmdLnBatchRead( &buf ) ) {
@@ -609,10 +609,10 @@ static bool debugOptionAfterOptOption( OPT_STORAGE *data )
 {
     if( data->debug_info_timestamp > data->opt_level_timestamp ) {
         if( data->debug_info_timestamp > data->opt_size_time_timestamp ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void analyseAnyTargetOptions( OPT_STORAGE *data )
@@ -644,25 +644,25 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->exc_level ) {
     case OPT_exc_level_xs:
-        CompFlags.excs_enabled = TRUE;
+        CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE;
         break;
     case OPT_exc_level_xst:
-        CompFlags.excs_enabled = TRUE;
+        CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_DIRECT_TABLE;
         break;
     case OPT_exc_level_xss:
-        CompFlags.excs_enabled = TRUE;
+        CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE_SMALL;
         break;
     case OPT_exc_level_xds:
-        CompFlags.excs_enabled = FALSE;
+        CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT_SMALL;
         break;
     case OPT_exc_level_xd:
     case OPT_exc_level_xdt:
     default:
-        CompFlags.excs_enabled = FALSE;
+        CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT;
         break;
     }
@@ -841,32 +841,32 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         ErrLimit = 20;
     }
     if( data->fhd ) {
-        CompFlags.use_pcheaders = TRUE;
+        CompFlags.use_pcheaders = true;
     }
     if( data->fhr_exclamation ) {
-        CompFlags.pch_min_check = TRUE;
-        data->fhr = TRUE;
+        CompFlags.pch_min_check = true;
+        data->fhr = true;
     }
     if( data->fhr ) {
-        CompFlags.use_pcheaders = TRUE;
-        CompFlags.fhr_switch_used = TRUE;
+        CompFlags.use_pcheaders = true;
+        CompFlags.fhr_switch_used = true;
     }
     if( data->fhw ) {
-        CompFlags.use_pcheaders = TRUE;
-        CompFlags.fhw_switch_used = TRUE;
+        CompFlags.use_pcheaders = true;
+        CompFlags.fhw_switch_used = true;
     }
     if( data->fhwe ) {
-        CompFlags.use_pcheaders = TRUE;
-        CompFlags.fhwe_switch_used = TRUE;
+        CompFlags.use_pcheaders = true;
+        CompFlags.fhwe_switch_used = true;
     }
     if( data->fh || data->fhq ) {
         char *fh_name;
         char *fhq_name;
         char *p;
         if( data->fhq ) {
-            CompFlags.no_pch_warnings = TRUE;
+            CompFlags.no_pch_warnings = true;
         }
-        CompFlags.use_pcheaders = TRUE;
+        CompFlags.use_pcheaders = true;
         fh_name = reduceToOneString( &(data->fh_value) );
         fhq_name = reduceToOneString( &(data->fhq_value) );
         if( fh_name != NULL ) {
@@ -925,7 +925,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->jw ) {
-        data->j = TRUE;
+        data->j = true;
         CompFlags.plain_char_promotion = 1;
     }
     if( data->j ) {
@@ -956,7 +956,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 #if 0
         // 98/01/08 -- this is disabled because it blows the code up too much
         //             and slows compiles down over much (jww)
-        CgBackSetInlineRecursion( TRUE );
+        CgBackSetInlineRecursion( true );
 #endif
     }
     if( data->ok ) {
@@ -1002,7 +1002,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.encrypt_preproc_output = 1;
     }
     if( data->pj ) {
-        data->pl = TRUE;
+        data->pl = true;
         CompFlags.line_comments = 1;
     }
     if( data->pl ) {
@@ -1127,7 +1127,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->zv ) {
 #if COMP_CFG_COFF == 0
-        CompFlags.virtual_stripping = TRUE;
+        CompFlags.virtual_stripping = true;
 #endif
     }
     if( data->na ) {
@@ -1141,7 +1141,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             data->tp_value = str->next;
             strcpy( Buffer, str->data );
             CMemFree( str );
-            PragmaSetToggle( TRUE );
+            PragmaSetToggle( true );
         }
     }
     if( data->zi ) {

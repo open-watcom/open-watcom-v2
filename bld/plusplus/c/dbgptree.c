@@ -45,7 +45,7 @@ static carve_t carveNode;       // memory: nodes
 static carve_t carveLine;       // memory: lines
 static carve_t carveSubtree;    // memory: subtrees
 static carve_t carveDecoration; // memory: decoration
-static bool printTypes;         // TRUE ==> print types with nodes
+static bool printTypes;         // true ==> print types with nodes
 
 typedef struct node NODE;
 typedef struct line LINE;
@@ -320,14 +320,14 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
 {
     char *text;                 // - text pointer (returned)
     static char buffer[256];    // - buffer (valid until next call)
-    bool type_add;              // - TRUE ==> add type
+    bool type_add;              // - true ==> add type
     PTREE pnode;                // - parse-tree node
 
     pnode = node->pnode;
     switch( pnode->op ) {
       case PT_ERROR :
         stpcpy( buffer, PTREE_ERROR_NODE );
-        type_add = FALSE;
+        type_add = false;
         break;
       case PT_UNARY :
       case PT_BINARY :
@@ -367,11 +367,11 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         break;
       case PT_TYPE :
         textType( buffer, pnode->type, "<> " );
-        type_add = FALSE;
+        type_add = false;
         break;
       case PT_ID :
         stpcpy( buffer, NameStr( pnode->u.id.name ) );
-        type_add = FALSE;
+        type_add = false;
         break;
       case PT_SYMBOL :
         if( pnode->cgop == CO_NAME_THIS ) {
@@ -543,18 +543,18 @@ static void printSubtree(       // PRINT A SUBTREE
     LINE *line;                 // - current line
     NODE *node;                 // - current node
     TOKEN_LOCN locn;            // - subtree location
-    bool print_locn;            // - TRUE ==> print location
+    bool print_locn;            // - true ==> print location
 
     SUBTREE *subtree = _subtree;
 
     begLine();
     if( subtree->next == subtrees ) {
-        print_locn = TRUE;
+        print_locn = true;
         bptr = stpcpy( buffer, "tree[" );
     } else {
         endLine();
         begLine();
-        print_locn = FALSE;
+        print_locn = false;
         bptr = stpcpy( buffer, "dup[" );
     }
     bptr = stxcpy( bptr, (unsigned)(pointer_int)subtree->root );
@@ -622,8 +622,8 @@ void DbgPrintPTREE(             // PRINT A PARSE-TREE BEAUTIFULLY
 void DbgPrintPTREEtyped(        // PRINT BEAUTIFUL PTREE, WITH TYPES
     PTREE root )                // - root of tree
 {
-    printTypes = TRUE;
+    printTypes = true;
     DbgPrintPTREE( root );
-    printTypes = FALSE;
+    printTypes = false;
 }
 

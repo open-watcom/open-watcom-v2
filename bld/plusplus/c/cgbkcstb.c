@@ -76,7 +76,7 @@ CALL_STAB* CallStabAlloc(       // ALLOCATE CALL_STAB
     cstb = RingCarveAlloc( carve_call_stab, &fctl->expr_calls );
     cstb->handle = handle;
     cstb->se = FstabMarkedPosn();
-    cstb->has_cd_arg = FALSE;
+    cstb->has_cd_arg = false;
     cstb->cd_arg = 0;
     CgCdArgUsed( handle );
     __dump( "allocate", cstb );
@@ -110,14 +110,14 @@ bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 {
     CALL_STAB* cstb;            // - call information
-    bool retn;                  // - TRUE ==> have CDTOR arg.
+    bool retn;                  // - true ==> have CDTOR arg.
 
     cstb = callStabEntry( handle );
     if( cstb != NULL && cstb->has_cd_arg ) {
         *a_cd_arg = cstb->cd_arg;
-        retn = TRUE;
+        retn = true;
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -131,7 +131,7 @@ unsigned CallStabCdArgSet(      // SET CD-ARG FOR A CALL
 
     cstb = callStabEntry( handle );
     if( cstb != NULL ) {
-        cstb->has_cd_arg = TRUE;
+        cstb->has_cd_arg = true;
         cstb->cd_arg = cd_arg;
     }
     return cd_arg;

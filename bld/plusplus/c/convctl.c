@@ -81,19 +81,19 @@ bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
     , MSG_NUM msg_no )          // - message number
 {
-    bool retn;                  // - return: TRUE ==> ERROR was issued
+    bool retn;                  // - return: true ==> ERROR was issued
     msg_status_t status;        // - message status
 
     status = PTreeErrorExpr( ctl->expr, msg_no );
     if( MS_PRINTED & status ) {
         if( MS_WARNING & status ) {
             ConvCtlDiagnoseTypes( ctl );
-            retn = FALSE;
+            retn = false;
         } else {
-            retn = TRUE;
+            retn = true;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -105,7 +105,7 @@ static void diagnoseError       // DIAGNOSE ERROR AND SET UP ERROR OPERAND(S)
 {
     ctl->msg_no = msg_no;
     ConvCtlDiagnose( ctl );
-    ctl->has_err_operand = TRUE;
+    ctl->has_err_operand = true;
 }
 
 
@@ -115,7 +115,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     , TYPE type )               // - type
 {
     type_id id;                 // - id for unmodified type
-    bool retn;                  // - TRUE ==> is bit_field, array, function
+    bool retn;                  // - true ==> is bit_field, array, function
     TYPE cl_type;               // - class type
 
     ctype->orig = type;
@@ -123,38 +123,38 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     ctype->pted = NULL;
     ctype->class_type = NULL;
     ctype->ptedflags = 0;
-    ctype->reference = FALSE;
-    ctype->array = FALSE;
-    ctype->bit_field = FALSE;
-    ctype->class_operand = FALSE;
+    ctype->reference = false;
+    ctype->array = false;
+    ctype->bit_field = false;
+    ctype->class_operand = false;
     ctype->pc_ptr = PC_PTR_NOT;
     id = ctype->unmod->id;
-    retn = FALSE;
+    retn = false;
     cl_type = NULL;
     if( id == TYP_BITFIELD ) {
-        ctype->bit_field = TRUE;
-        retn = TRUE;
+        ctype->bit_field = true;
+        retn = true;
     } else if( id == TYP_ARRAY ) {
-        ctype->array = TRUE;
-        retn = TRUE;
+        ctype->array = true;
+        retn = true;
     } else {
         ctype->kind = RkdForTypeId( id );
         switch( ctype->kind ) {
           case RKD_POINTER :
             if( ctype->unmod->flag & TF1_REFERENCE ) {
                 TYPE refed = ctype->unmod->of;
-                ctype->reference = TRUE;
+                ctype->reference = true;
                 cl_type = StructType( refed );
             }
             break;
           case RKD_FUNCTION :
-            retn = TRUE;
+            retn = true;
             break;
           case RKD_CLASS :
             cl_type = ctype->unmod;
             break;
           case RKD_ERROR :
-            ctl->has_err_operand = TRUE;
+            ctl->has_err_operand = true;
             break;
         }
     }
@@ -163,10 +163,10 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
         if( ClassCorrupted( cl_type ) ) {
             cl_type = NULL;
             ctype->kind = RKD_ERROR;
-            ctl->has_err_operand = TRUE;
+            ctl->has_err_operand = true;
         } else {
             ctype->class_type = cl_type;
-            ctype->class_operand = TRUE;
+            ctype->class_operand = true;
         }
     }
     return retn;
@@ -191,7 +191,7 @@ static void errForFunc          // ISSUE ERROR FOR A FUNCTION
     , CONVCTL* ctl )            // - conversion control
 {
     PTreeErrorExpr( func, msg_no );
-    ctl->has_err_operand = TRUE;
+    ctl->has_err_operand = true;
     ctl->tgt.kind = RKD_ERROR;
     PTreeErrorNode( ctl->expr );
 }
@@ -362,7 +362,7 @@ static void checkSrcForError    // CHECK IF SOURCE HAS ERROR
     ( CONVCTL* ctl )            // - control info.
 {
     if( PT_ERROR == ctl->expr->op || PT_ERROR == ctl->expr->u.subtree[1]->op ) {
-        ctl->has_err_operand = TRUE;
+        ctl->has_err_operand = true;
         ctl->tgt.kind = RKD_ERROR;
     }
 }
@@ -385,7 +385,7 @@ static CONVCTL* convCtlInitData // INITIALIZE CONVCTL DATA
     ctl->conv_type = NULL;
     ctl->destination = NULL;
     ctl->mismatch = 0;
-    #define CONVCTL_FLAG( flag ) ctl->flag = FALSE;
+    #define CONVCTL_FLAG( flag ) ctl->flag = false;
     CONVCTL_FLAGS
     #undef CONVCTL_FLAG
     ctl->ctd = 0;
@@ -426,7 +426,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
 
     ctl = convCtlInitData( ctl, expr, request, diag );
     expr->u.subtree[0]->type =
-        BindTemplateClass( expr->u.subtree[0]->type, NULL, TRUE );
+        BindTemplateClass( expr->u.subtree[0]->type, NULL, true );
     if( ConvCtlTypeInit( ctl, &ctl->tgt, expr->u.subtree[0]->type ) ) {
         ctl->src.orig = NULL;
         DbgVerify( 0 == ctl->tgt.bit_field, "unexpected bit field" );
@@ -454,7 +454,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                         ConversionInfDisable();
                         PTreeErrorExpr( ctl->expr->u.subtree[1], ERR_CANT_REFERENCE_A_BIT_FIELD );
                         PTreeErrorNode( ctl->expr );
-                        ctl->has_err_operand = TRUE;
+                        ctl->has_err_operand = true;
                     }
                 }
             } else if( TYP_FUNCTION == id ) {
@@ -463,7 +463,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
             } else if ( TYP_VOID == id ) {
                 TYPE pted_src;
                 NodeRvalueRight( expr );
-                expr->u.subtree[1]->type = BindTemplateClass( expr->u.subtree[1]->type, NULL, TRUE );
+                expr->u.subtree[1]->type = BindTemplateClass( expr->u.subtree[1]->type, NULL, true );
                 ConvCtlTypeInit( ctl, &ctl->src, expr->u.subtree[1]->type );
                 pted_src = TypedefModifierRemoveOnly( ctl->src.unmod->of );
                 if( pted_src != NULL && pted_src->id == TYP_FUNCTION ) {
@@ -593,11 +593,11 @@ static void moveAhead           // MOVES TYPE_FLAGS AHEAD ONE LEVEL
 bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     ( CONVCTL* info )           // - pointer-conversion information
 {
-    bool retn;                  // - return: TRUE ==> can convert trivially
-    bool first_level;           // - TRUE ==> at first level
-    bool const_always;          // - TRUE ==> const on all preceding levels
-    bool cv_ok;                 // - TRUE ==> no CV mismatch
-    bool got_array;             // - TRUE ==> found array
+    bool retn;                  // - return: true ==> can convert trivially
+    bool first_level;           // - true ==> at first level
+    bool const_always;          // - true ==> const on all preceding levels
+    bool cv_ok;                 // - true ==> no CV mismatch
+    bool got_array;             // - true ==> found array
     TYPE_FLAGS src;             // - source typing info
     TYPE_FLAGS tgt;             // - target typing info
     CTD mp_ctd;                 // - host derivation for member-ptr
@@ -615,15 +615,15 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
         if( src.type->u.mp.host != tgt.type->u.mp.host ) {
             mp_ctd = TypeCommonDerivation( tgt.type->u.mp.host, src.type->u.mp.host );
             if( CTD_NO == mp_ctd ) {
-                info->bad_mptr_class = TRUE;
+                info->bad_mptr_class = true;
             }
-            info->diff_mptr_class = TRUE;
+            info->diff_mptr_class = true;
         }
     }
-    first_level = TRUE;
-    const_always = TRUE;
-    cv_ok = TRUE;
-    got_array = FALSE;
+    first_level = true;
+    const_always = true;
+    cv_ok = true;
+    got_array = false;
     for( ; ; ) {
         moveAhead( &src );
         moveAhead( &tgt );
@@ -640,11 +640,11 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 info->src.pc_ptr = TypePcPtr( src.object );
                 if( NULL != tgt.type ) {
                     if( tgt.id == TYP_VOID ) {
-                        info->to_void = TRUE;
+                        info->to_void = true;
                         if( src.id == TYP_VOID ) {
-                            info->from_void = TRUE;
+                            info->from_void = true;
                         }
-                        info->dynamic_cast_ok = TRUE;
+                        info->dynamic_cast_ok = true;
                     } else if( src.type != NULL ) {
                         if( TYP_CLASS == src.id ) {
                             if( TYP_CLASS == tgt.id ) {
@@ -655,30 +655,30 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                                   case CTD_LEFT :
                                     if( tgt.type == src.type ) break;
                                   case CTD_LEFT_VIRTUAL :
-                                    info->to_base = TRUE;
+                                    info->to_base = true;
                                     break;
                                   case CTD_LEFT_PRIVATE :
-                                    info->to_private = TRUE;
-                                    info->to_base = TRUE;
+                                    info->to_private = true;
+                                    info->to_base = true;
                                     break;
                                   case CTD_LEFT_PROTECTED :
-                                    info->to_protected = TRUE;
-                                    info->to_base = TRUE;
+                                    info->to_protected = true;
+                                    info->to_base = true;
                                     break;
                                   case CTD_LEFT_AMBIGUOUS :
-                                    info->to_ambiguous = TRUE;
-                                    info->to_base = TRUE;
+                                    info->to_ambiguous = true;
+                                    info->to_base = true;
                                     break;
                                   case CTD_RIGHT_AMBIGUOUS :
-                                    info->to_ambiguous = TRUE;
+                                    info->to_ambiguous = true;
                                   case CTD_RIGHT :
                                   case CTD_RIGHT_VIRTUAL :
                                   case CTD_RIGHT_PRIVATE :
                                   case CTD_RIGHT_PROTECTED :
-                                    info->to_derived = TRUE;
+                                    info->to_derived = true;
                                     break;
                                 }
-                                info->dynamic_cast_ok = TRUE;
+                                info->dynamic_cast_ok = true;
                             }
                         } else if( src.id != tgt.id
                                 && IntegralType( tgt.type )
@@ -686,25 +686,25 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                                 && tgt.id != TYP_ENUM
                                 && src.id != TYP_ENUM
                                 && CgMemorySize( src.type ) == CgMemorySize( tgt.type ) ) {
-                            info->ptr_integral_ext = TRUE;
+                            info->ptr_integral_ext = true;
                         } else if( src.id == TYP_VOID ) {
                             if( CgTypeSize( info->tgt.unmod ) <=
                                 CgTypeSize( info->src.unmod ) ) {
                                 // this is stupid, but p* --> void* iff
                                 // sizeof( void*) >= sizeof( p )
-                                info->from_void = TRUE;
+                                info->from_void = true;
                             }
                         }
                     }
                 }
-                first_level = FALSE;
+                first_level = false;
             }
             if( ( src.id == TYP_ARRAY ) && ( tgt.id == TYP_ARRAY ) ) {
                 if( src.type->u.a.array_size == tgt.type->u.a.array_size ) {
-                    got_array = TRUE;
+                    got_array = true;
                     continue;
                 } else {
-                    retn = FALSE;
+                    retn = false;
                     break;
                 }
             }
@@ -717,7 +717,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 cv_ok = ( src.cv == both );// test cv-mismatch
                 if( cv_ok ) {
                     if( tgt.cv != src.cv ) {
-                        info->used_cv_convert = TRUE;
+                        info->used_cv_convert = true;
                         cv_ok = const_always;
                     }
                 } else {
@@ -725,33 +725,33 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 }
             }
             if( const_always && (tgt.cv & TF1_CONST) == 0 ) {
-                const_always = FALSE;
+                const_always = false;
             }
         }
         if( src.type == tgt.type ) {
             if( src.ext == tgt.ext ) {
                 if( TYP_FUNCTION != src.id
                  || ( (TF1_MEM_MODEL & src.object) == (TF1_MEM_MODEL & tgt.object) ) ) {
-                    retn = TRUE;
+                    retn = true;
                     break;
                 }
             }
             info->reint_cast_ok = cv_ok;
-            retn = FALSE;
+            retn = false;
             break;
         } else if( src.id != tgt.id ) {
             if( info->to_void || info->from_void ) {
-                retn = TRUE;
+                retn = true;
                 break;
             }
             if( TYP_FUNCTION != src.id && TYP_FUNCTION != tgt.id ) {
                 info->reint_cast_ok = cv_ok;
             }
-            retn = FALSE;
+            retn = false;
             break;
         } else if( src.ext != tgt.ext ) {
             info->reint_cast_ok = cv_ok;
-            retn = FALSE;
+            retn = false;
             break;
         }
         if( TYP_FUNCTION == src.id || TYP_ENUM == src.id ) {
@@ -765,81 +765,81 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             if( src.type->u.mp.host != tgt.type->u.mp.host ) {
                 info->reint_cast_ok = cv_ok;
                 info->static_cast_ok = cv_ok;
-                retn = FALSE;
+                retn = false;
                 break;
             }
         } else if( TYP_CLASS == src.id ) {
             info->reint_cast_ok = cv_ok;
             if( info->to_base || info->to_derived ) {
-                retn = TRUE;
+                retn = true;
             } else {
-                retn = FALSE;
+                retn = false;
             }
             break;
         } else if( TYP_ARRAY == src.id ) {
             if( src.type->u.a.array_size == tgt.type->u.a.array_size ) {
-                got_array = TRUE;
+                got_array = true;
                 continue;
             } else {
-                retn = FALSE;
+                retn = false;
                 break;
             }
         } else if( TYP_POINTER != src.id ) {
-            retn = TRUE;
+            retn = true;
             break;
         }
         if( got_array ) {
             // that's it, no more adding consts allowed - this is all
             // to do with special rules for arrays, see 3.9.3 (2)
-            const_always = FALSE;
+            const_always = false;
         }
     }
     if( retn ) {
         if( cv_ok ) {
-            info->implicit_cast_ok = TRUE;
-            info->static_cast_ok = TRUE;
-            info->const_cast_ok = TRUE;
-            info->reint_cast_ok = TRUE;
+            info->implicit_cast_ok = true;
+            info->static_cast_ok = true;
+            info->const_cast_ok = true;
+            info->reint_cast_ok = true;
         } else {
-            retn = FALSE;
-            info->const_cast_ok = TRUE;
-            info->cv_mismatch = TRUE;
+            retn = false;
+            info->const_cast_ok = true;
+            info->cv_mismatch = true;
         }
         switch( mp_ctd ) {
           case CTD_LEFT_PROTECTED :
           case CTD_LEFT_PRIVATE :
           case CTD_LEFT_VIRTUAL :
-            info->const_cast_ok = FALSE;
+            info->const_cast_ok = false;
             break;
           case CTD_LEFT :
             if( info->to_derived || ( info->from_void && !info->to_void ) ) {
-                info->implicit_cast_ok = FALSE;
-                info->const_cast_ok = FALSE;
+                info->implicit_cast_ok = false;
+                info->const_cast_ok = false;
             } else if( info->to_base
                     || ( info->to_void && !info->from_void )
                     || info->diff_mptr_class ) {
-                info->const_cast_ok = FALSE;
+                info->const_cast_ok = false;
             }
             break;
           case CTD_RIGHT :
           case CTD_RIGHT_PROTECTED :
           case CTD_RIGHT_PRIVATE :
           case CTD_RIGHT_VIRTUAL :
-            info->implicit_cast_ok = FALSE;
-            info->const_cast_ok = FALSE;
-            info->bad_mptr_class = TRUE;
+            info->implicit_cast_ok = false;
+            info->const_cast_ok = false;
+            info->bad_mptr_class = true;
             break;
           default :
-            info->implicit_cast_ok = FALSE;
-            info->static_cast_ok = FALSE;
-            info->const_cast_ok = FALSE;
-            info->bad_mptr_class = TRUE;
+            info->implicit_cast_ok = false;
+            info->static_cast_ok = false;
+            info->const_cast_ok = false;
+            info->bad_mptr_class = true;
             break;
         }
     }
-    info->explicit_cast_ok = TRUE;
+    info->explicit_cast_ok = true;
     if( retn && !info->to_derived && !info->to_base ) {
-        info->converts = TRUE;
+        info->converts = true;
     }
     return retn;
 }
@@ -1212,7 +1212,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     TYPE tgt_type,              // - target pointer type
     PC_PTR type_tgt,            // - target classification
     PC_PTR type_src,            // - source classification
-    bool cl_conv,               // - TRUE ==> do class conversion
+    bool cl_conv,               // - true ==> do class conversion
     unsigned conversion )       // - type of conversion
 {
     PTREE expr;                 // - expression
@@ -1223,7 +1223,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     void *baser;                // - based entity
     unsigned retn;              // - return: CNV_...
     PTREE bself;                // - expression for based self
-    bool is_ref;                // - TRUE ==> is reference
+    bool is_ref;                // - true ==> is reference
 
     cnv_fun = pcPtrCnv[ type_src*8 + type_tgt ];
     if( cnv_fun == 10 ) {
@@ -1291,9 +1291,9 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
           default:
             tgt_type = TypedefModifierRemove( tgt_type );
             if( tgt_type->flag & TF1_REFERENCE ) {
-                is_ref = TRUE;
+                is_ref = true;
             } else {
-                is_ref = FALSE;
+                is_ref = false;
             }
             tgt_type = TypePointedAtModified( tgt_type );
             TypeModExtract( tgt_type, &flags_tgt, &baser, TC1_NOT_MEM_MODEL );
@@ -1361,28 +1361,28 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
-                                 , FALSE
+                                 , false
                                  , ctl->req );
     } else if( ctl->to_void ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
-                                 , FALSE
+                                 , false
                                  , ctl->req );
     } else if( ctl->to_base ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
-                                 , TRUE
+                                 , true
                                  , ctl->req );
     } else if( ctl->to_derived ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
-                                 , TRUE
+                                 , true
                                  , ctl->req );
     } else {
         retn = CNV_IMPOSSIBLE;

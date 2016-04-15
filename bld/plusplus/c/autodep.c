@@ -88,7 +88,7 @@ void AdOpen( void )
 void AdClose( bool and_erase )
 {
     // for now fake out doing anything....
-    // and_erase = TRUE;
+    // and_erase = true;
     if( AutoDepFile != NULL ) {
         fclose( AutoDepFile );
         AutoDepFile = NULL;

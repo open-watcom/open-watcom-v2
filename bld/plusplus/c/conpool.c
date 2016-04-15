@@ -54,9 +54,9 @@ static POOL_CON* allocPoolCon   // ALLOCATE CONSTANT-POOL ENTRY
     ( POOL_CON** a_hdr )        // - addr[ ring hdr ]
 {
     POOL_CON* pool = RingCarveAlloc( carvePOOL_CON, a_hdr );
-    pool->free = FALSE;
-    pool->i64  = FALSE;
-    pool->flt  = FALSE;
+    pool->free = false;
+    pool->i64  = false;
+    pool->flt  = false;
     return pool;
 }
 
@@ -75,7 +75,7 @@ POOL_CON *ConPoolFloatAdd       // ADD AN ITEM TO THE CONSTANTS POOL
     pool = allocPoolCon( &pool_float );
     pool->u.s.len = len;
     pool->u.s.fp_constant = stg;
-    pool->flt  = TRUE;
+    pool->flt  = true;
     return( pool );
 }
 
@@ -87,7 +87,7 @@ POOL_CON *ConPoolInt64Add       // ADD AN INT-64 CONSTANT
 
     pool = allocPoolCon( &pool_int64 );
     pool->u.int64_constant = con;
-    pool->i64  = TRUE;
+    pool->i64  = true;
     return( pool );
 }
 
@@ -117,7 +117,7 @@ static void markFreeConstant( void *p )
 {
     POOL_CON *b = p;
 
-    b->free = TRUE;
+    b->free = true;
 }
 
 static void saveConstant( void *e, carve_walk_base *d )

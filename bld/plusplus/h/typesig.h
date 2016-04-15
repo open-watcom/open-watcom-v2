@@ -46,8 +46,8 @@ PCH_struct type_sig {           // TYPE_SIG -- type signature
     SYMBOL      dtor;           // - destructor
     SYMBOL      default_ctor;   // - null constructor
     SYMBOL      copy_ctor;      // - copy constructor
-    unsigned    cgref : 1;      // - TRUE ==> ref'ed during code generation
-    unsigned    cggen : 1;      // - TRUE ==> gen'ed during code generation
+    unsigned    cgref : 1;      // - true ==> ref'ed during code generation
+    unsigned    cggen : 1;      // - true ==> gen'ed during code generation
     unsigned    free : 1;       // used for precompiled headers
 };
 

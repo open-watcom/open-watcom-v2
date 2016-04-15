@@ -148,10 +148,10 @@ typedef struct {                    // OLINF -- overload information
     SEARCH_RESULT *result_nonmem_namespace;   // - search result (non-member)
     OP_MASK mask;                   // - mask for operator
     PTO_FLAG flags;                 // - flags for operand
-    unsigned scalar_overloadable:1; // - TRUE ==> scalar overloadable
-    unsigned repeat_overload    :1; // - TRUE ==> repeat overloading (->)
-    unsigned have_class_type    :1; // - TRUE ==> have a class operand
-    unsigned have_user_type     :1; // - TRUE ==> have a class,enum operand
+    unsigned scalar_overloadable:1; // - true ==> scalar overloadable
+    unsigned repeat_overload    :1; // - true ==> repeat overloading (->)
+    unsigned have_class_type    :1; // - true ==> have a class operand
+    unsigned have_user_type     :1; // - true ==> have a class,enum operand
 } OLINF;
 
 #ifndef NDEBUG
@@ -191,11 +191,11 @@ static void setupOVOP(          // SETUP OVOP
         node_type = NodeType( node );
         user_type = UserDefTypeForType( node_type );
         if( user_type != NULL ) {
-            olinf->have_user_type = TRUE;
+            olinf->have_user_type = true;
             if( user_type->id == TYP_CLASS ) {
-                olinf->have_class_type = TRUE;
+                olinf->have_class_type = true;
                 class_type = BindTemplateClass( class_type, &node->locn,
-                                                FALSE );
+                                                false );
                 class_type = user_type;
             }
         }
@@ -212,26 +212,26 @@ static bool initOLINF(          // INITIALIZE OVERLOAD INFORMATION
 {
     unsigned cnv;               // - conversion number for operator
     OP_MASK mask;               // - conversion mask
-    bool scov;                  // - TRUE ==> needs scalar overload processing
+    bool scov;                  // - true ==> needs scalar overload processing
 
     olinf->expr = node;
     olinf->flags = PTreeOpFlags( node );
-    olinf->have_class_type = FALSE;
-    olinf->have_user_type = FALSE;
+    olinf->have_class_type = false;
+    olinf->have_user_type = false;
     setupOVOP( olinf, node->u.subtree[0], &olinf->left );
     cnv = ( olinf->flags & PTO_CNV ) >> PTO_CNV_SHIFT;
     if( cnv == 0 ) {
         mask = 0;
-        scov = FALSE;
+        scov = false;
     } else {
         mask = opr_masks[ cnv - 1 ];
         scov = ( (mask & OPM_NOAMB) == 0 );
     }
     olinf->mask = mask;
-    olinf->scalar_overloadable = FALSE;
-    olinf->repeat_overload = FALSE;
+    olinf->scalar_overloadable = false;
+    olinf->repeat_overload = false;
     if( scov ) {
-        olinf->scalar_overloadable = TRUE;
+        olinf->scalar_overloadable = true;
     }
     return scov || ( olinf->flags & PTO_OVLOAD );
 }
@@ -473,13 +473,13 @@ static bool symInResult( SYMBOL sym, SEARCH_RESULT *result )
 
     RingIterBeg( result->sym_name->name_syms, curr ) {
         if( curr == sym ) {
-            return TRUE;
+            return true;
         } else if( SymIsFunctionTemplateModel( curr ) ) {
             FN_TEMPLATE_INST *fn_inst;
 
             RingIterBeg( curr->u.defn->instantiations, fn_inst ) {
                 if( fn_inst->bound_sym == sym ) {
-                    return TRUE;
+                    return true;
                 }
             } RingIterEnd( fn_inst )
         }
@@ -488,13 +488,13 @@ static bool symInResult( SYMBOL sym, SEARCH_RESULT *result )
 
         RingIterBegFrom( ptr->from, curr ) {
             if( curr == sym ) {
-                return TRUE;
+                return true;
             }
 
         } RingIterEndTo( curr, ptr->to )
 
     } RingIterEnd( ptr )
-    return FALSE;
+    return false;
 }
 
 static PTREE transform_to_call( // TRANSFORM NODE TO FUNCTION CALL
@@ -589,7 +589,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         if( caller->op == PT_ERROR ) {
             PTreeErrorNode( op );
         } else {
-            olinf->repeat_overload = TRUE;
+            olinf->repeat_overload = true;
         }
     } else {
         if( olinf->flags & PTO_BINARY ) {
@@ -685,21 +685,21 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     if( ovret == FNOV_AMBIGUOUS && CompFlags.extensions_enabled ) {
         FNOV_LIST* amb_list;    // - ambiguity list
         SYMBOL next;            // - next symbol
-        bool have_user_defined = FALSE;
-        bool have_void = FALSE;
+        bool have_user_defined = false;
+        bool have_void = false;
         if( ( (olinf->mask & OPM_NV) == 0 ) && (olinf->mask & OPM_PP) ) {
             // we're in the (void *, void *) area
             for( amb_list = NULL; ; ) {
                 next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
                 if( next == NULL ) break;
                 if( next->name != NULL ) {
-                    have_user_defined = TRUE;
+                    have_user_defined = true;
                 } else if( op_basic_arg[ next->u.scalar_order ][ 0 ] ==
                            TYP_POINTER
                         && op_basic_arg[ next->u.scalar_order ][ 1 ] ==
                            TYP_POINTER ) {
                     // the (void *, void *) was one of the ambiguous ones
-                    have_void = TRUE;
+                    have_void = true;
                 }
                 if( have_user_defined && have_void ) {
                     break;
@@ -730,12 +730,12 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     if( ovret == FNOV_AMBIGUOUS && CompFlags.overload_13332 ) {
         FNOV_LIST* amb_list;    // - ambiguity list
         SYMBOL next;            // - next symbol
-        bool have_user_defined = FALSE;
+        bool have_user_defined = false;
         for( amb_list = NULL; ; ) {
             next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
             if( next == NULL ) break;
             if( next->name != NULL ) {
-                have_user_defined = TRUE;
+                have_user_defined = true;
                 break;
             }
         }
@@ -922,14 +922,14 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
     PTREE expr,                 // - expression being analysed
     PTREE operand )             // - operand to be diagnosed
 {
-    bool retn;                  // - return: TRUE ==> diagnosed
+    bool retn;                  // - return: true ==> diagnosed
     PTREE fnode;                // - function node
     PTREE node;                 // - node to be examined
 
     node = PTreeOp( &operand );
     switch( NodeAddrOfFun( node, &fnode ) ) {
       default :
-        retn = FALSE;
+        retn = false;
         break;
       case ADDR_FN_ONE :
         if( SymIsThisFuncMember( fnode->u.symcg.symbol ) ) {
@@ -937,9 +937,9 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
                                 , ERR_ADDR_NONSTAT_MEMBER_FUNC
                                 , fnode->u.symcg.symbol );
             PTreeErrorNode( expr );
-            retn = TRUE;
+            retn = true;
         } else {
-            retn = FALSE;
+            retn = false;
         }
         break;
       case ADDR_FN_MANY :
@@ -947,7 +947,7 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
                             , ERR_ADDR_OF_OVERLOADED_FUN
                             , fnode->u.symcg.symbol );
         PTreeErrorNode( expr );
-        retn = TRUE;
+        retn = true;
         break;
     }
     return retn;

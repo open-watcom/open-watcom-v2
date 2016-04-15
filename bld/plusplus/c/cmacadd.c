@@ -318,7 +318,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             endif
         endif
     */
-    ret = TRUE;
+    ret = true;
     max_rlen = PCHReadUInt();
     pch_macro = CMemAlloc( max_rlen );
     for( ; (rlen = PCHReadUInt()) != 0; ) {
@@ -338,7 +338,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                         break;
                     }
                     PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, pch_macro->macro_name );
-                    ret = FALSE;
+                    ret = false;
                     break;
                 }
                 if( macros_different ) {
@@ -351,7 +351,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         } RingIterEnd( new_macro )
         if( matched_macro != NULL ) {
             /* macro is in current compilation */
-            if( ret == FALSE ) {
+            if( ret == false ) {
                 /* problem was detected */
                 break;
             }
@@ -361,7 +361,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                 // (1) original macro was referenced during first #include
                 // but no definition in current compilation
                 PCHWarn2p( WARN_PCH_CONTENTS_MACRO_NOT_PRESENT, pch_macro->macro_name );
-                ret = FALSE;
+                ret = false;
                 break;
             }
             // (3) queue macro to be deleted when PCH is loaded
@@ -380,14 +380,14 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                     // (4) macro was not defined when pch was created
                     if( cmdln_macro->macro_flags & MFLAG_USER_DEFINED ) {
                         PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, cmdln_macro->macro_name );
-                        ret = FALSE;
+                        ret = false;
                         break;
                     }
                 }
             } RingIterEnd( cmdln_macro )
         }
     }
-    if( ret == FALSE ) {
+    if( ret == false ) {
         RingFree( &macroPCHDeletes );
     }
     return( ret );
@@ -629,7 +629,7 @@ bool MacroExists(           // TEST IF MACRO EXISTS
         mac->macro_flags |= MFLAG_REFERENCED;
         exists = ( (mac->macro_flags & MFLAG_SPECIAL ) == 0 );
     } else {
-        exists = FALSE;
+        exists = false;
     }
     return exists;
 }
@@ -673,14 +673,14 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
 void MacroUndefine(             // UNDEFINE CURRENT NAME AS MACRO
     size_t len )                // - length of macro name
 {
-    doMacroUndef( Buffer, len, FALSE );
+    doMacroUndef( Buffer, len, false );
 }
 
 void MacroCmdLnUndef(           // -U<macro-name>
     char *name,                 // - macro name
     size_t len )                // - length of macro name
 {
-    doMacroUndef( name, len, TRUE );
+    doMacroUndef( name, len, true );
 }
 
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
@@ -709,10 +709,10 @@ bool MacroStateMatchesCurrent( MACRO_STATE *ms )
 /**********************************************/
 {
     if( ms->curr_offset != MacroOffset ) {
-        return( FALSE );
+        return( false );
     }
     if( ms->undef_count != undefCount ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

@@ -236,7 +236,7 @@ PTREE AnalyseCtorExpr(          // ANALYSE CTOR EXPRESSION
 ;
 PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     PTREE expr,                 // - delete expression
-    bool in_dtor )              // - TRUE ==> call from inside DTOR
+    bool in_dtor )              // - true ==> call from inside DTOR
 ;
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     TYPE class_type,            // - class to be destructed
@@ -325,7 +325,7 @@ target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
 ;
 PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
-    bool exact )                // - TRUE ==> exact CTORing of classes
+    bool exact )                // - true ==> exact CTORing of classes
 ;
 PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     TYPE ftype,                 // - function type
@@ -352,7 +352,7 @@ PTREE CastImplicit              // IMPLICIT CAST
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     ( PTREE expr                // - the expression
     , CNV_DIAG *diagnosis       // - diagnosis
-    , bool check_cv )           // - TRUE ==> check CV QUALIFICATION
+    , bool check_cv )           // - true ==> check CV QUALIFICATION
 ;
 PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
     ( PTREE expr                // - expression
@@ -891,7 +891,7 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
 PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
-    bool exact )                // - TRUE ==> exact CTORing of classes
+    bool exact )                // - true ==> exact CTORing of classes
 ;
 PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
@@ -1013,7 +1013,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     PTREE *expr,                // - addr( ptr to be converted )
     TYPE base,                  // - base type
     SEARCH_RESULT *result,      // - search result
-    bool positive )             // - TRUE ==> use positive value
+    bool positive )             // - true ==> use positive value
 ;
 PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE expr,                 // - expr to cast
@@ -1167,8 +1167,8 @@ PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
 ;
 PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
     PTREE b_expr,               // - boolean expression
-    PTREE t_expr,               // - TRUE expression
-    PTREE f_expr )              // - FALSE expression
+    PTREE t_expr,               // - true expression
+    PTREE f_expr )              // - false expression
 ;
 PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
     PTREE dup,                  // - tree to be processed
@@ -1310,7 +1310,7 @@ unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
 bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
-bool PragmaName(                // RETURN TRUE IF NAME OF PRAGMA IS SIMPLE
+bool PragmaName(                // RETURN true IF NAME OF PRAGMA IS SIMPLE
     AUX_INFO *pragma,           // - pragma
     char **id )                 // - returned name
 ;

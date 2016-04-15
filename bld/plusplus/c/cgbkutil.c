@@ -334,18 +334,18 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
 static bool dtmTabular(         // DETERMINE IF METHOD IS TABULAR
     DT_METHOD method )          // - the method
 {
-    bool retn;                  // - TRUE ==> is tabular
+    bool retn;                  // - true ==> is tabular
 
     switch( method ) {
       DbgDefault( "dtmTabular -- bad method" );
       case DTM_DIRECT :
-        retn = FALSE;
+        retn = false;
         break;
       case DTM_DIRECT_SMALL :
       case DTM_TABLE_SMALL :
       case DTM_DIRECT_TABLE :
       case DTM_TABLE :
-        retn = TRUE;
+        retn = true;
         break;
     }
     return retn;
@@ -531,7 +531,7 @@ static cg_type prcCgType(       // PROCESS A NEW CODE-GEN TYPE
 {
     if( ( type == TY_SINGLE )
       ||( type == TY_DOUBLE ) ) {         //***** LATER UPGRADE FOR LONG DBL
-        CompFlags.float_used = TRUE;
+        CompFlags.float_used = true;
     }
     return type;
 }
@@ -656,7 +656,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     SYMBOL trans;               // - translated symbol
     SYMBOL bound;               // - bound reference
     target_offset_t bound_off;  // - bound offset
-    bool inlined;               // - TRUE ==> inlined dtor call
+    bool inlined;               // - true ==> inlined dtor call
 
     handle = initDtorCall( dtor );
     inlined = CgBackFuncInlined( dtor );
@@ -925,7 +925,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     sctl.rw = CgVarRw( CgbkInfo.size_rw_base + CgbkInfo.size_data_ptr, SC_STATIC );
     dctl.ro = CgVarRo( 1, SC_STATIC, NULL );
     se = SeAlloc( DTC_SYM_STATIC );
-    se->base.gen = TRUE;
+    se->base.gen = true;
     se->sym_static.sym = sym;
     se->sym_static.dtor = RoDtorFind( sym );
     se = StateTableAdd( se, &sctl );

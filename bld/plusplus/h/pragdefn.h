@@ -125,7 +125,7 @@ void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
     void )
 ;
 void PragEnding(                // PROCESS END OF PRAGMA
-    bool set_sym )           // - TRUE ==> set SYMBOL's aux_info
+    bool set_sym )           // - true ==> set SYMBOL's aux_info
 ;
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
@@ -157,7 +157,7 @@ bool PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )          // - TRUE ==> set flag
+    bool set_flag )          // - true ==> set flag
 ;
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )

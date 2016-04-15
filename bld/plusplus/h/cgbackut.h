@@ -57,21 +57,21 @@ enum {
 };
 
 typedef enum                    // flags controlling grouped destruction
-{   DGRP_DIRECT     = 0x0001    // - TRUE ==> direct destruction
-,   DGRP_TEMPS      = 0x0002    // - TRUE ==> generate DTOR of temps
-,   DGRP_COMPS      = 0x0004    // - TRUE ==> generate DTOR of components
-,   DGRP_CTOR       = 0x0008    // - TRUE ==> dtor of ctor
-,   DGRP_COUNT      = 0x2000    // - TRUE ==> count the destructions
+{   DGRP_DIRECT     = 0x0001    // - true ==> direct destruction
+,   DGRP_TEMPS      = 0x0002    // - true ==> generate DTOR of temps
+,   DGRP_COMPS      = 0x0004    // - true ==> generate DTOR of components
+,   DGRP_CTOR       = 0x0008    // - true ==> dtor of ctor
+,   DGRP_COUNT      = 0x2000    // - true ==> count the destructions
                                 // flags used internally
-,   DGRP_VTEST      = 0x0010    // - TRUE ==> virtual test done
-,   DGRP_LIVE       = 0x0020    // - TRUE ==> live code
-,   DGRP_DONE       = 0x0040    // - TRUE ==> CGDone for expression
-,   DGRP_TRASH      = 0x0080    // - TRUE ==> CGTrash for expression
-,   DGRP_CTOR_BEG   = 0x0100    // - TRUE ==> (-xst) ctor-bit enabled
-,   DGRP_CTOR_END   = 0x0200    // - TRUE ==> (-xst) ctor-bit disabled
-,   DGRP_XST        = 0x0400    // - TRUE ==> -xst in effect
-,   DGRP_TAB_CALL   = 0x0800    // - TRUE ==> table call req'd to be genned
-,   DGRP_TRY_EMIT   = 0x1000    // - TRUE ==> emit try adjustment
+,   DGRP_VTEST      = 0x0010    // - true ==> virtual test done
+,   DGRP_LIVE       = 0x0020    // - true ==> live code
+,   DGRP_DONE       = 0x0040    // - true ==> CGDone for expression
+,   DGRP_TRASH      = 0x0080    // - true ==> CGTrash for expression
+,   DGRP_CTOR_BEG   = 0x0100    // - true ==> (-xst) ctor-bit enabled
+,   DGRP_CTOR_END   = 0x0200    // - true ==> (-xst) ctor-bit disabled
+,   DGRP_XST        = 0x0400    // - true ==> -xst in effect
+,   DGRP_TAB_CALL   = 0x0800    // - true ==> table call req'd to be genned
+,   DGRP_TRY_EMIT   = 0x1000    // - true ==> emit try adjustment
 ,   DGRP_NONE       = 0         // - place holder
 } DGRP_FLAGS;
 
@@ -104,7 +104,7 @@ struct throw_ro                     // THROW_RO -- R/O blocks for thrown types
 {   THROW_RO    *next;              // - next in ring( hdr. in ring_throw_ro )
     SYMBOL      sym;                // - symbol for the block
     TYPE_SIG    *sig;               // - type signature for the type
-    unsigned        emitted :1;     // - TRUE ==> has been emitted to codegen
+    unsigned        emitted :1;     // - true ==> has been emitted to codegen
     PAD_UNSIGNED
 };
 
@@ -131,7 +131,7 @@ struct dtreg_obj                    // DTREG_OBJ -- registration variables
     SYMBOL          sym;            // - symbol for object (in use)
     SYMBOL          cg_sym;         // - symbol for object (defined)
     target_offset_t offset;         // - offset of symbol
-    unsigned        in_use :1;      // - TRUE ==> in use
+    unsigned        in_use :1;      // - true ==> in use
     PAD_UNSIGNED
 };
 
@@ -146,7 +146,7 @@ typedef struct                      // SE_BASE -- base for state entries
     SE          *prev;              // - previous in ring
     STATE_VAR   state_var;          // - state variable for entry
     DTC_KIND    se_type;            // - type of entry
-    uint_8      gen :1;             // - TRUE ==> entry is to be generated
+    uint_8      gen :1;             // - true ==> entry is to be generated
     PAD_UNSIGNED
 } SE_BASE;
 
@@ -194,8 +194,8 @@ typedef struct                      // SE_SET_SV -- command: set_sv
 
 typedef struct                      // SE_TEST_FLAG -- command: test_flag
 {   SE_BASE         base;           // - base
-    SE              *se_true;       // - entry, when TRUE
-    SE              *se_false;      // - entry, when FALSE
+    SE              *se_true;       // - entry, when true
+    SE              *se_false;      // - entry, when false
     target_offset_t index;          // - index
     PAD_UNSIGNED
 } SE_TEST_FLAG;
@@ -276,7 +276,7 @@ typedef struct cmd_base CMD_BASE;
 struct cmd_base                     // CMD_BASE
 {   CMD_BASE        *next;          // - next in ring
     SYMBOL          sym;            // - symbol for generated command
-    unsigned        emitted : 1;    // - TRUE ==> has been emitted to codegen
+    unsigned        emitted : 1;    // - true ==> has been emitted to codegen
 };
 
 typedef struct                      // CMD_SET_SV
@@ -430,18 +430,18 @@ struct fn_ctl                       // FN_CTL -- for each active file in process
     DT_METHOD       dtor_method;        // - current destruction method
     DT_METHOD       func_dtor_method;   // - function destruction method
 
-    uint            deregistered   :1;  // - TRUE ==> function has been de-registered
-    uint            has_fn_exc     :1;  // - TRUE ==> has function exception spec.
-    uint            is_ctor        :1;  // - TRUE ==> is a CTOR
-    uint            is_dtor        :1;  // - TRUE ==> is a DTOR
-    uint            ctor_complete  :1;  // - TRUE ==> has completed the CTOR'ing
-    uint            coded_return   :1;  // - TRUE ==> return in user code
-    uint            has_ctor_test  :1;  // - TRUE ==> function might use CTOR-TEST
-    uint            has_cdtor_val  :1;  // - TRUE ==> has integral CDTOR argument
-    uint            temp_dtoring   :1;  // - TRUE ==> temporary DTORING req'd in expr.
-    uint            ctor_test      :1;  // - TRUE ==> expr. causes CTOR-TEST
-    uint            dtor_reg_reqd  :1;  // - TRUE ==> dtor registration required
-    uint            debug_info     :1;  // - TRUE ==> debug info for function
+    uint            deregistered   :1;  // - true ==> function has been de-registered
+    uint            has_fn_exc     :1;  // - true ==> has function exception spec.
+    uint            is_ctor        :1;  // - true ==> is a CTOR
+    uint            is_dtor        :1;  // - true ==> is a DTOR
+    uint            ctor_complete  :1;  // - true ==> has completed the CTOR'ing
+    uint            coded_return   :1;  // - true ==> return in user code
+    uint            has_ctor_test  :1;  // - true ==> function might use CTOR-TEST
+    uint            has_cdtor_val  :1;  // - true ==> has integral CDTOR argument
+    uint            temp_dtoring   :1;  // - true ==> temporary DTORING req'd in expr.
+    uint            ctor_test      :1;  // - true ==> expr. causes CTOR-TEST
+    uint            dtor_reg_reqd  :1;  // - true ==> dtor registration required
+    uint            debug_info     :1;  // - true ==> debug info for function
     PAD_UNSIGNED
 };
 
@@ -527,7 +527,7 @@ SYMBOL CallIndirectPush(        // PUSH SYMBOL FOR INDIRECT CALL
 ;
 void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     SYMBOL vfunc,               // - the virtual function
-    bool is_virtual,            // - TRUE ==> an actual virtual call
+    bool is_virtual,            // - true ==> an actual virtual call
     target_offset_t adj_this,   // - adjustment for "this"
     target_offset_t adj_retn )  // - adjustment for return
 ;
@@ -996,11 +996,11 @@ void CondInfoPop(               // POP COND_INFO STACK
 ;
 void CondInfoSetCtorTest(       // SET/RESET FLAG FOR CTOR-TEST
     FN_CTL *fctl,               // - function control
-    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - true ==> set the flag; false ==> clear
 ;
 void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     FN_CTL *fctl,               // - function control
-    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - true ==> set the flag; false ==> clear
 ;
 void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
     unsigned index,             // - index of flag
@@ -1269,7 +1269,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
     vindex vf_index,            // - index in vf table
-    bool *is_vcall,             // - addr[ TRUE ==> real virtual call ]
+    bool *is_vcall,             // - addr[ true ==> real virtual call ]
     target_offset_t *a_adj_this,// - addr[ this adjustment ]
     target_offset_t *a_adj_retn,// - addr[ return adjustment ]
     SYMBOL *a_exact_vfun )      // - addr[ exact vfun to be used ]
@@ -1343,7 +1343,7 @@ cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
 cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     FN_CTL *fctl,               // - current function information
     cg_name base_expr,          // - base expression
-    bool use_fun_cdtor )        // - TRUE ==> use CDTOR parm of function
+    bool use_fun_cdtor )        // - true ==> use CDTOR parm of function
 ;
 OBJ_INIT *ObjInitTop(           // GET TOP INITIALIZATION OBJECT
     void )

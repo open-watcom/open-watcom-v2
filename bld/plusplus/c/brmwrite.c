@@ -102,12 +102,12 @@ static BRI_StringID addStringFile   // ADD A STRING, FOR A FILE
 static int trivialTypeDef
     ( SYMBOL sym )
 {
-    int         result = FALSE;
+    int         result = false;
 
     if( sym->id == SC_TYPEDEF ) {
         if( sym->sym_type->of->id == TYP_CLASS ) {
             if( sym->sym_type->of->u.c.info->name == sym->name->name ){
-                result = TRUE;
+                result = true;
             }
         }
     }

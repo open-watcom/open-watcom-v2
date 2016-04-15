@@ -224,14 +224,14 @@ static DECL_INFO *makeDeclInfo( PTREE id )
     dinfo->mem_init = NULL;
     dinfo->defarg_rewrite = NULL;
     dinfo->init_locn.src_file = NULL;
-    dinfo->sym_used = FALSE;
-    dinfo->friend_fn = FALSE;
-    dinfo->fn_defn = FALSE;
-    dinfo->template_member = FALSE;
-    dinfo->has_dspec = FALSE;
-    dinfo->has_defarg = FALSE;
-    dinfo->explicit_parms = FALSE;
-    dinfo->free = FALSE;
+    dinfo->sym_used = false;
+    dinfo->friend_fn = false;
+    dinfo->fn_defn = false;
+    dinfo->template_member = false;
+    dinfo->has_dspec = false;
+    dinfo->has_defarg = false;
+    dinfo->explicit_parms = false;
+    dinfo->free = false;
     return( dinfo );
 }
 
@@ -274,60 +274,60 @@ static CLASSINFO *newINFO( void )
     info->index = 0;
     info->max_align = TARGET_CHAR;
 
-    info->has_def_opeq = FALSE;
-    info->has_ctor = FALSE;
-    info->has_def_ctor = FALSE;
-    info->has_dtor = FALSE;
-    info->has_pure = FALSE;
-    info->has_vfptr = FALSE;
-    info->has_vbptr = FALSE;
-    info->has_data = FALSE;
-    info->has_vfn = FALSE;
-    info->has_vcdtor = FALSE;
-    info->needs_ctor = FALSE;
-    info->needs_dtor = FALSE;
-    info->needs_vdtor = FALSE;
-    info->needs_assign = FALSE;
-    info->defined = FALSE;
-    info->unnamed = FALSE;
-    info->corrupted = FALSE;
-    info->abstract = FALSE;
-    info->abstract_OK = FALSE;
-    info->const_copy = FALSE;
-    info->const_assign = FALSE;
-    info->const_ref = FALSE;
-    info->anonymous = FALSE;
+    info->has_def_opeq = false;
+    info->has_ctor = false;
+    info->has_def_ctor = false;
+    info->has_dtor = false;
+    info->has_pure = false;
+    info->has_vfptr = false;
+    info->has_vbptr = false;
+    info->has_data = false;
+    info->has_vfn = false;
+    info->has_vcdtor = false;
+    info->needs_ctor = false;
+    info->needs_dtor = false;
+    info->needs_vdtor = false;
+    info->needs_assign = false;
+    info->defined = false;
+    info->unnamed = false;
+    info->corrupted = false;
+    info->abstract = false;
+    info->abstract_OK = false;
+    info->const_copy = false;
+    info->const_assign = false;
+    info->const_ref = false;
+    info->anonymous = false;
 
-    info->ctor_defined = FALSE;
-    info->copy_defined = FALSE;
-    info->dtor_defined = FALSE;
-    info->assign_defined = FALSE;
-    info->ctor_gen = FALSE;
-    info->copy_gen = FALSE;
-    info->dtor_gen = FALSE;
-    info->assign_gen = FALSE;
-    info->ctor_user_code = FALSE;
-    info->copy_user_code = FALSE;
-    info->dtor_user_code = FALSE;
-    info->assign_user_code = FALSE;
-    info->ctor_user_code_checked = FALSE;
-    info->copy_user_code_checked = FALSE;
-    info->dtor_user_code_checked = FALSE;
-    info->assign_user_code_checked = FALSE;
-    info->opened = FALSE;
-    info->zero_array = FALSE;
-    info->passed_ref = FALSE;
+    info->ctor_defined = false;
+    info->copy_defined = false;
+    info->dtor_defined = false;
+    info->assign_defined = false;
+    info->ctor_gen = false;
+    info->copy_gen = false;
+    info->dtor_gen = false;
+    info->assign_gen = false;
+    info->ctor_user_code = false;
+    info->copy_user_code = false;
+    info->dtor_user_code = false;
+    info->assign_user_code = false;
+    info->ctor_user_code_checked = false;
+    info->copy_user_code_checked = false;
+    info->dtor_user_code_checked = false;
+    info->assign_user_code_checked = false;
+    info->opened = false;
+    info->zero_array = false;
+    info->passed_ref = false;
 
-    info->free = FALSE;
-    info->lattice = FALSE;
-    info->vftable_done = FALSE;
-    info->vbtable_done = FALSE;
-    info->has_udc = FALSE;
-    info->common = FALSE;
-    info->has_comp_info = FALSE;
-    info->has_mutable = FALSE;
-    info->empty = FALSE;
-    info->has_fn = FALSE;
+    info->free = false;
+    info->lattice = false;
+    info->vftable_done = false;
+    info->vbtable_done = false;
+    info->has_udc = false;
+    info->common = false;
+    info->has_comp_info = false;
+    info->has_mutable = false;
+    info->empty = false;
+    info->has_fn = false;
 
     return( info );
 }
@@ -767,16 +767,16 @@ static bool newTypeIllegal( TYPE type )
     TYPE test_type;
     type_flag flags;
 
-    error_occurred = FALSE;
+    error_occurred = false;
     test_type = TypeModFlags( type, &flags );
     switch( test_type->id ) {
     case TYP_FUNCTION:
         CErr1( ERR_NEW_TYPE_FUNCTION );
-        error_occurred = TRUE;
+        error_occurred = true;
         break;
     case TYP_VOID:
         CErr1( ERR_NEW_TYPE_VOID );
-        error_occurred = TRUE;
+        error_occurred = true;
         break;
     }
     if( flags & TF1_CV_MASK ) {
@@ -861,32 +861,32 @@ static bool dupCompare( TYPE test1, TYPE test2 )
     switch( test1->id ) {
     case TYP_BITFIELD:
         if( test1->u.b.field_start != test2->u.b.field_start ) {
-            return( FALSE );
+            return( false );
         }
         if( test1->u.b.field_width != test2->u.b.field_width ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_FUNCTION:
         if( test1->u.f.pragma != test2->u.f.pragma ) {
-            return( FALSE );
+            return( false );
         }
         args1 = test1->u.f.args;
         args2 = test2->u.f.args;
         if( args1 == args2 ) {
-            return( TRUE );
+            return( true );
         }
         if( args1->num_args != args2->num_args ) {
-            return( FALSE );
+            return( false );
         }
         if( args1->qualifier != args2->qualifier ) {
-            return( FALSE );
+            return( false );
         }
         p1 = args1->type_list;
         p2 = args2->type_list;
         for( i = args1->num_args; i != 0; --i ) {
             if( *p1 != *p2 ) {
-                return( FALSE );
+                return( false );
             }
             ++p1;
             ++p2;
@@ -896,14 +896,14 @@ static bool dupCompare( TYPE test1, TYPE test2 )
         if( p1 != p2 ) {
             TYPE tp1, tp2;
             if( p1 == NULL || p2 == NULL ) {
-                return( FALSE );
+                return( false );
             }
             for(;;) {
                 tp1 = *p1;
-                if( tp1 == NULL ) return FALSE;
+                if( tp1 == NULL ) return false;
                 tp2 = *p2;
-                if( tp2 == NULL ) return FALSE;
-                if( tp1 != tp2 ) return FALSE;
+                if( tp2 == NULL ) return false;
+                if( tp1 != tp2 ) return false;
                 ++p1;
                 ++p2;
             }
@@ -911,30 +911,30 @@ static bool dupCompare( TYPE test1, TYPE test2 )
         break;
     case TYP_ARRAY:
         if( test1->u.a.array_size != test2->u.a.array_size ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_MODIFIER:
         if( test1->u.m.base != test2->u.m.base ) {
-            return( FALSE );
+            return( false );
         }
         if( test1->u.m.pragma != test2->u.m.pragma ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_MEMBER_POINTER:
         if( test1->u.mp.host != test2->u.mp.host ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_GENERIC:
         if( test1->u.g.index != test2->u.g.index ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_ERROR:
         if( test1->u.e.fmt != test2->u.e.fmt ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case TYP_POINTER:
@@ -943,10 +943,10 @@ static bool dupCompare( TYPE test1, TYPE test2 )
 #ifndef NDEBUG
         CFatal( "unknown type being compared" );
 #else
-        return( FALSE );
+        return( false );
 #endif
     }
-    return( TRUE );
+    return( true );
 }
 
 void TypedefReset( SYMBOL sym, TYPE type )
@@ -1294,7 +1294,7 @@ static void stripDefArg( DECL_INFO *dinfo )
             RewriteFree( rewrite );
             dinfo->defarg_rewrite = NULL;
         }
-        dinfo->has_defarg = FALSE;
+        dinfo->has_defarg = false;
     }
 }
 
@@ -1314,10 +1314,10 @@ static bool cantHaveDefaultArgs( MSG_NUM err_msg, DECL_INFO *dinfo )
     RingIterBeg( dinfo, curr ) {
         if( curr->has_defarg ) {
             CErr1( err_msg );
-            return( TRUE );
+            return( true );
         }
     } RingIterEnd( curr )
-    return( FALSE );
+    return( false );
 }
 
 void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
@@ -1346,9 +1346,9 @@ static bool isVoid( TYPE type )
 {
     type = TypedefRemove( type );
     if( type->id == TYP_VOID ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static TYPE *makeExceptionList( PTREE tree )
@@ -1792,7 +1792,7 @@ static void figureOutDSpec( DECL_SPEC *dspec )
         cv_flags = convertCVSpec( specs );
         dspec->partial = MakeModifiedType( dspec->partial, cv_flags );
     }
-    dspec->decl_checked = TRUE;
+    dspec->decl_checked = true;
 }
 
 TYPE TypedefRemove( TYPE typ )
@@ -1941,22 +1941,22 @@ bool TypeDefined( TYPE typ )
 /**************************/
 {
     for(;;) {
-        if( typ == NULL ) return( FALSE );
+        if( typ == NULL ) return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
             if( typ->u.c.info->defined ) {
-                return( TRUE );
+                return( true );
             }
-            return( FALSE );
+            return( false );
         case TYP_ARRAY:
             if( typ->u.a.array_size == 0 ) {
-                return( FALSE );
+                return( false );
             }
             typ = typ->of;
             continue;
         default:
-            return( TRUE );
+            return( true );
         }
     }
 }
@@ -1965,26 +1965,26 @@ bool TypePartiallyDefined( TYPE typ )
 /***********************************/
 {
     for(;;) {
-        if( typ == NULL ) return( FALSE );
+        if( typ == NULL ) return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
             if( typ->u.c.info->defined ) {
-                return( TRUE );
+                return( true );
             }
             if( StructOpened( typ ) != NULL ) {
                 /* we are in the midst of defining the class */
-                return( TRUE );
+                return( true );
             }
-            return( FALSE );
+            return( false );
         case TYP_ARRAY:
             if( typ->u.a.array_size == 0 ) {
-                return( FALSE );
+                return( false );
             }
             typ = typ->of;
             continue;
         default:
-            return( TRUE );
+            return( true );
         }
     }
 }
@@ -1999,12 +1999,12 @@ static bool verifyAbstractStatus( TYPE class_type )
     }
     if( ! TypeDefined( class_type ) ) {
         /* we have no way of knowing */
-        return( FALSE );
+        return( false );
     }
     if( ScopeHasPureFunctions( class_type->u.c.scope ) ) {
-        info->abstract = TRUE;
+        info->abstract = true;
     }
-    info->abstract_OK = TRUE;
+    info->abstract_OK = true;
     return( info->abstract );
 }
 
@@ -2012,7 +2012,7 @@ bool TypeAbstract( TYPE typ )
 /***************************/
 {
     for(;;) {
-        if( typ == NULL ) return( FALSE );
+        if( typ == NULL ) return( false );
         TypeStripTdMod( typ );
         switch( typ->id ) {
         case TYP_CLASS:
@@ -2021,7 +2021,7 @@ bool TypeAbstract( TYPE typ )
             typ = typ->of;
             continue;
         default:
-            return( FALSE );
+            return( false );
         }
     }
 }
@@ -2061,7 +2061,7 @@ TYPE TypeNeedsCtor( TYPE type )
 bool TypeIsCharString( TYPE type )
 /********************************/
 {
-    bool retn = FALSE;       // - TRUE ==> is a character string
+    bool retn = false;       // - true ==> is a character string
 
     // includes L"string" (wide chars)
     TypeStripTdMod( type );
@@ -2092,19 +2092,19 @@ static DECL_SPEC *makeDeclSpec( void )
     spec->scalar = STM_NULL;
     spec->specifier = STY_NULL;
     spec->ms_declspec = MSDS_NULL;
-    spec->type_defined = FALSE;
-    spec->type_declared = FALSE;
-    spec->ctor_name = FALSE;
-    spec->is_default = FALSE;
-    spec->diagnosed = FALSE;
-    spec->decl_checked = FALSE;
-    spec->type_elaborated = FALSE;
-    spec->nameless_allowed = FALSE;
-    spec->generic = FALSE;
-    spec->class_instantiation = FALSE;
-    spec->no_more_linkage = FALSE;
-    spec->arg_declspec = FALSE;
-    spec->class_idiom = FALSE;
+    spec->type_defined = false;
+    spec->type_declared = false;
+    spec->ctor_name = false;
+    spec->is_default = false;
+    spec->diagnosed = false;
+    spec->decl_checked = false;
+    spec->type_elaborated = false;
+    spec->nameless_allowed = false;
+    spec->generic = false;
+    spec->class_instantiation = false;
+    spec->no_more_linkage = false;
+    spec->arg_declspec = false;
+    spec->class_idiom = false;
     return( spec );
 }
 
@@ -2127,7 +2127,7 @@ static void checkStgClass( DECL_SPEC *d1, DECL_SPEC *d2 )
         }
         d2->linkage = NULL;
     } else {
-        d1->no_more_linkage = TRUE;
+        d1->no_more_linkage = true;
     }
     any_repeats = d1->stg_class & d2->stg_class;
     if( any_repeats != STG_NULL ) {
@@ -2339,16 +2339,16 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
         }
         return( dspec );
     }
-    bad_friend = FALSE;
+    bad_friend = false;
     figureOutStgClass( dspec );
     if( dspec->stg_class != STG_NULL ) {
-        bad_friend = TRUE;
+        bad_friend = true;
     }
     if( dspec->scalar != STM_NULL ) {
-        bad_friend = TRUE;
+        bad_friend = true;
     }
     if( dspec->specifier != STY_FRIEND ) {
-        bad_friend = TRUE;
+        bad_friend = true;
     }
     if( bad_friend ) {
         CErr1( ERR_FRIEND_BAD );
@@ -2361,23 +2361,23 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
     name = dspec->name;
     if( dspec->type_defined ) {
         CErr1( ERR_CLASS_FRIEND_DEFINES_SOMETHING );
-        bad_friend = TRUE;
+        bad_friend = true;
     } else if( type == NULL || ! dspec->type_elaborated ) {
         /* p. 249 ARM */
         if( type == NULL ) {
             if( original_type != TypeError ) {
                 CErr1( ERR_CLASS_FRIEND_NO_CLASS );
             }
-            bad_friend = TRUE;
+            bad_friend = true;
         } else if( CErr1( ANSI_CLASS_FRIEND_NEEDS_CLASS ) & MS_WARNING ) {
             name = SimpleTypeName( type );
         } else {
-            bad_friend = TRUE;
+            bad_friend = true;
         }
     }
     if( ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
         CErr1( ERR_FRIEND_NOT_IN_CLASS );
-        bad_friend = TRUE;
+        bad_friend = true;
     }
     dspec->specifier &= ~STY_FRIEND;
     if( !bad_friend ) {
@@ -2396,7 +2396,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
             }
         }
         /* make sure we don't need a declarator for this declaration */
-        dspec->nameless_allowed = TRUE;
+        dspec->nameless_allowed = true;
     }
     return( dspec );
 }
@@ -2542,10 +2542,10 @@ DECL_SPEC *CheckNoDeclarator( DECL_SPEC *dspec )
             dspec->specifier = STY_NULL;
             CErr1( ANSI_TYPE_SPECIFIER_QUALIFIER );
         }
-        no_special_case = TRUE;
+        no_special_case = true;
         if( dspec->type_defined ) {
             if( ClassAnonymousUnion( dspec ) ) {
-                no_special_case = FALSE;
+                no_special_case = false;
             }
         }
         if( no_special_case ) {
@@ -2964,7 +2964,7 @@ static int scanDeclarator( TYPE declarator_list, unsigned *count )
     */
     status = SM_NULL;
     while( declarator_list != NULL ) {
-        cv_function_OK = FALSE;
+        cv_function_OK = false;
         switch( declarator_list->id ) {
         case TYP_FUNCTION:
             if( status & SM_SAW_FUNCTION ) {
@@ -2990,7 +2990,7 @@ static int scanDeclarator( TYPE declarator_list, unsigned *count )
         case TYP_MODIFIER:
             break;
         case TYP_MEMBER_POINTER:
-            cv_function_OK = TRUE;
+            cv_function_OK = true;
             /* fall through */
         default:
             if( status & SM_SAW_CV_FUNCTION ) {
@@ -3041,7 +3041,7 @@ static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
     fn_spec = dspec->specifier;
     flags = convertFnSpec( fn_spec );
     if( flags == TF1_NULL && (fn_spec & STY_FRIEND) == 0 ) {
-        return( FALSE );
+        return( false );
     }
     fn_type = NULL;
     for( type = declarator; type != NULL; type = type->of ) {
@@ -3059,11 +3059,11 @@ static bool applyFnSpec( TYPE declarator, DECL_SPEC *dspec, int status )
         } else {
             if( fn_spec & STY_FRIEND ) {
                 /* friend function */
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void applyFnClassMods( TYPE declarator, DECL_SPEC *dspec )
@@ -3126,7 +3126,7 @@ static void checkUsefulParms( int status, DECL_INFO *dinfo )
         /* this isn't a function so the saved parms are not useful */
         FreeArgs( dinfo->parms );
         dinfo->parms = NULL;
-        dinfo->explicit_parms = FALSE;
+        dinfo->explicit_parms = false;
     }
 }
 
@@ -3215,9 +3215,9 @@ static bool validModifierCombo( type_flag flag )
     case TF1_BASED_FETCH:
     case TF1_BASED_ADD:
     case TF1_NULL:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void dumpInfoDataMods( type_flag repeats )
@@ -3469,7 +3469,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
     prev = NULL;
     for( curr = list; curr != NULL; curr = curr->of ) {
         if( curr->id == TYP_FUNCTION ) {
-            head = extractFunctionMods( curr, &tail, TRUE );
+            head = extractFunctionMods( curr, &tail, true );
             if( head != NULL ) {
                 list = linkAfterPrev( list, prev, head, tail );
                 prev = tail;
@@ -3485,7 +3485,7 @@ static TYPE adjustModifiers( DECL_SPEC *dspec, TYPE list )
         prev = curr;
     }
     if( last_fn_type != NULL && last_fn_mod != NULL ) {
-        head = extractFunctionMods( last_fn_type, &tail, FALSE );
+        head = extractFunctionMods( last_fn_type, &tail, false );
         if( head != NULL ) {
             list = linkAfterPrev( list, last_prev, head, tail );
         }
@@ -3658,7 +3658,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
     if( applyFnSpec( curr_type, dspec, status ) ) {
-        dinfo->friend_fn = TRUE;
+        dinfo->friend_fn = true;
         if( dspec->stg_class != STG_NULL ) {
             CErr1( ERR_FRIEND_BAD );
             dspec->stg_class = STG_NULL;
@@ -3710,11 +3710,11 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
           mod_type      a TYP_MODIFIER that applies to non-functions
         */
         next_type = curr_type->of;
-        flag.memory_model_movement = FALSE;
-        flag.add_type = TRUE;
+        flag.memory_model_movement = false;
+        flag.add_type = true;
         switch( curr_type->id ) {
         case TYP_MODIFIER:
-            flag.add_type = FALSE;
+            flag.add_type = false;
             if( curr_type->flag & TF1_TYP_FUNCTION ) {
                 curr_type->flag &= ~TF1_TYP_FUNCTION;
                 fnmod_type = combineFunctionMods( fnmod_type, curr_type );
@@ -3723,7 +3723,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
             break;
         case TYP_FUNCTION:
-            flag.memory_model_movement = TRUE;
+            flag.memory_model_movement = true;
             if( fnmod_type != NULL ) {
                 curr_type->flag |= fnmod_type->flag;
                 curr_type->u.f.pragma = fnmod_type->u.m.pragma;
@@ -3766,7 +3766,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
             break;
         case TYP_ARRAY:
-            flag.memory_model_movement = TRUE;
+            flag.memory_model_movement = true;
             /* check base type */
             switch( of_type->id ) {
             case TYP_FUNCTION:
@@ -3843,7 +3843,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             if( mod_type != NULL ) {
                 if( flag.memory_model_movement ) {
                     if( (mod_type->flag & TF1_MOD_MOVE) == 0 ) {
-                        flag.memory_model_movement = FALSE;
+                        flag.memory_model_movement = false;
                     }
                 }
                 if( flag.memory_model_movement ) {
@@ -3893,14 +3893,14 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
     if( fnmod_type != NULL ) {
-        flag.OK_to_add_fnmod = TRUE;
+        flag.OK_to_add_fnmod = true;
         fn_pragma = fnmod_type->u.m.pragma;
         if( fn_pragma != NULL && ! PragmaOKForVariables( fn_pragma ) ) {
-            flag.OK_to_add_fnmod = FALSE;
+            flag.OK_to_add_fnmod = false;
         }
         if( fnmod_type->flag & ~TF1_OK_FOR_VAR ) {
             fnmod_type->flag &= TF1_OK_FOR_VAR;
-            flag.OK_to_add_fnmod = FALSE;
+            flag.OK_to_add_fnmod = false;
         }
         if( ! flag.OK_to_add_fnmod ) {
             if( FunctionDeclarationType( prev_type ) == NULL ) {
@@ -3915,27 +3915,27 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
     if( dinfo->id != NULL ) {
-        flag.diagnose_sym = FALSE;
+        flag.diagnose_sym = false;
         if( dspec->stg_class & STG_TYPEDEF ) {
             if( DefaultIntType( prev_type ) != NULL ) {
                 msg_num = ERR_TYPEDEF_ONLY_DEFAULT_INT;
-                flag.diagnose_sym = TRUE;
+                flag.diagnose_sym = true;
             }
         } else {
             test_type = TypeGetActualFlags( prev_type, &mod_flags );
             if( test_type->id == TYP_VOID ) {
                 msg_num = ERR_CANT_HAVE_VOID_VARIABLE;
-                flag.diagnose_sym = TRUE;
+                flag.diagnose_sym = true;
             }
             mod_flags &= TF1_BASED;
             if( mod_flags != TF1_NULL && mod_flags != TF1_BASED_STRING ) {
                 msg_num = ERR_CANT_HAVE_BASED_VARIABLE;
-                flag.diagnose_sym = TRUE;
+                flag.diagnose_sym = true;
             }
             if( flag.diagnose_sym ) {
                 prev_type = TypeError;
             } else {
-                prev_type = BindTemplateClass( prev_type, &id_tree->locn, FALSE );
+                prev_type = BindTemplateClass( prev_type, &id_tree->locn, false );
             }
         }
         sym = AllocSymbol();
@@ -4041,21 +4041,21 @@ bool IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
     }
 #endif
     if( cmod1 == cmod2 ) {
-        return( TRUE );
+        return( true );
     }
 #if _CPU == 8086
     if( cmod1->id == TYP_MODIFIER ) {
         if( cmod2->id != TYP_MODIFIER ) {
-            return( FALSE );
+            return( false );
         }
         if( cmod1->flag != cmod2->flag ) {
-            return( FALSE );
+            return( false );
         }
         cmod1 = cmod1->of;
         cmod2 = cmod2->of;
     } else {
         if( cmod2->id == TYP_MODIFIER ) {
-            return( FALSE );
+            return( false );
         }
     }
 #else
@@ -4068,18 +4068,18 @@ bool IdenticalClassModifiers( TYPE cmod1, TYPE cmod2 )
     }
 #endif
     if( cmod1->id != TYP_FUNCTION ) {
-        return( FALSE );
+        return( false );
     }
     if( cmod2->id != TYP_FUNCTION ) {
-        return( FALSE );
+        return( false );
     }
     if( cmod1->flag != cmod2->flag ) {
-        return( FALSE );
+        return( false );
     }
     if( cmod1->u.f.pragma != cmod2->u.f.pragma ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 TYPE AbsorbBaseClassModifiers( TYPE class_mod, type_flag *pmflags, type_flag *pfflags, AUX_INFO **pfpragma )
@@ -4196,8 +4196,8 @@ void PTypeClassInstantiationUndo( DECL_SPEC *dspec )
     }
 #endif
     dspec->partial = NULL;
-    dspec->class_instantiation = FALSE;
-    dspec->ctor_name = FALSE;
+    dspec->class_instantiation = false;
+    dspec->ctor_name = false;
     id = dspec->id;
     dspec->id = NULL;
     PTreeFreeSubtrees( id );
@@ -4210,7 +4210,7 @@ DECL_SPEC *PTypeClassInstantiation( TYPE typ, PTREE id )
 
     if( typ != NULL ) {
         spec = PTypeActualTypeName( typ, id );
-        spec->class_instantiation = TRUE;
+        spec->class_instantiation = true;
     } else {
         spec = NULL;
     }
@@ -4735,7 +4735,7 @@ TYPE CheckBitfieldType( DECL_SPEC *dspec, target_long width )
 
     if( dspec->is_default && ! dspec->diagnosed ) {
         CErr1( ERR_BITFIELD_NO_BASE_TYPE );
-        dspec->diagnosed = TRUE;
+        dspec->diagnosed = true;
     }
     figureOutStgClass( dspec );
     if( dspec->stg_class & ~(STG_MUTABLE) ) {
@@ -4910,7 +4910,7 @@ void CheckDeclarationDSpec( DECL_SPEC *dspec, SCOPE scope )
 DECL_SPEC *CheckArgDSpec( DECL_SPEC *dspec )
 /******************************************/
 {
-    dspec->arg_declspec = TRUE;
+    dspec->arg_declspec = true;
     figureOutStgClass( dspec );
     if( dspec->stg_class & ~( STG_AUTO | STG_REGISTER ) ) {
         CErr1( ERR_INVALID_STG_CLASS_FOR_PARM );
@@ -5261,7 +5261,7 @@ void FreeDeclInfo( DECL_INFO *dinfo )
     if( dinfo->type == NULL ) {
         freeTypeList( dinfo->list );
     }
-    if( dinfo->sym != NULL && dinfo->sym_used == FALSE ) {
+    if( dinfo->sym != NULL && dinfo->sym_used == false ) {
         FreeSymbol( dinfo->sym );
     }
     if( dinfo->parms != NULL ) {
@@ -5316,20 +5316,20 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsign
         CErr1( ERR_CANNOT_USE_QUALIFIED_DECLARATOR );
         return( CutAwayQualification( id ) );
     }
-    flag.strip_qualification = FALSE;
+    flag.strip_qualification = false;
     scope_class_type = scope_tree->type;
     if( scope_class_type == NULL ) {
         // namespace qualification
         DbgAssert( scope_tree->op == PT_TYPE );
         qualifying_scope = scope_tree->u.type.scope;
         if( ScopeId( GetCurrScope() ) != SCOPE_FILE ) {
-            flag.not_OK = TRUE;
+            flag.not_OK = true;
             class_type = ScopeClass( GetCurrScope() );
             if( class_type != NULL ) {
                 /* we're in a class scope */
                 if( dspec->specifier & STY_FRIEND ) {
                     /* scope qualified friends are OK */
-                    flag.not_OK = FALSE;
+                    flag.not_OK = false;
                 }
             }
             if( flag.not_OK ) {
@@ -5344,18 +5344,18 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope, unsign
             return( id );
         }
         if( ! ScopeEquivalent( GetCurrScope(), SCOPE_FILE ) ) {
-            flag.not_OK = TRUE;
+            flag.not_OK = true;
             class_type = ScopeClass( ScopeNearestNonTemplate( GetCurrScope() ) );
             if( class_type != NULL ) {
                 /* we're in a class scope */
                 if( dspec->specifier & STY_FRIEND ) {
                     /* scope qualified friends are OK */
-                    flag.not_OK = FALSE;
+                    flag.not_OK = false;
                 } else {
                     if( class_type == scope_class_type ) {
                         /* scope qualification within your own class is OK */
-                        flag.not_OK = FALSE;
-                        flag.strip_qualification = TRUE;
+                        flag.not_OK = false;
+                        flag.strip_qualification = true;
                     }
                 }
             }
@@ -5395,7 +5395,7 @@ DECL_INFO *MakeDeclarator( DECL_SPEC *dspec, PTREE id )
     dinfo = makeDeclInfo( id );
     dinfo->scope = scope;
     if( id_info & IDI_CLASS_TEMPLATE_MEMBER ) {
-        dinfo->template_member = TRUE;
+        dinfo->template_member = true;
     }
     return( dinfo );
 }
@@ -5419,7 +5419,7 @@ DECL_INFO *AddExplicitParms( DECL_INFO *dinfo, DECL_INFO *args )
         FreeArgs( args );
     } else {
         dinfo->parms = args;
-        dinfo->explicit_parms = TRUE;
+        dinfo->explicit_parms = true;
     }
     return( dinfo );
 }
@@ -5573,7 +5573,7 @@ static bool defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
               with another base symbol of the same name
             */
             CErr2p( WARN_DEFAULT_ARG_HITS_ANOTHER_SYM, decl_sym );
-            return( FALSE );
+            return( false );
         }
         base_sym = SymDefaultBase( decl_sym );
         if( base_sym == dinfo->sym ) {
@@ -5583,9 +5583,9 @@ static bool defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
             /* previously defined default argument of another base symbol */
             CErr2p( WARN_DEFAULT_ARG_HITS_ANOTHER_ARG, decl_sym );
         }
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
@@ -5706,7 +5706,7 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
 
     fn_dinfo = makeDeclInfo( NULL );
     fn_dinfo->sym = dinfo->sym;
-    fn_dinfo->sym_used = TRUE;
+    fn_dinfo->sym_used = true;
     RingIterBeg( dinfo->parms, curr ) {
         if( curr->type->id == TYP_DOT_DOT_DOT ) break;
         parm_dinfo = makeDeclInfo( NULL );
@@ -5714,7 +5714,7 @@ static void deferDefaultRewrites( DECL_INFO *dinfo )
         if( curr->has_defarg ) {
             DbgAssert( curr->defarg_expr == NULL );
             DbgAssert( curr->defarg_rewrite != NULL );
-            parm_dinfo->has_defarg = TRUE;
+            parm_dinfo->has_defarg = true;
             parm_dinfo->defarg_rewrite = curr->defarg_rewrite;
             parm_dinfo->proto_sym = curr->proto_sym;
             TokenLocnAssign( parm_dinfo->init_locn, curr->init_locn );
@@ -5802,9 +5802,9 @@ static bool memberCheck( SCOPE scope, DECL_INFO *dinfo, TYPE *scope_type )
     class_type = ScopeClass( scope );
     if( class_type != NULL ) {
         *scope_type = class_type;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static unsigned howManyArgs( bool non_static_member, TYPE fn_type )
@@ -5825,11 +5825,11 @@ static bool isVoidPtr( TYPE type )
     if( type->id == TYP_POINTER ) {
         if( (type->flag & TF1_REFERENCE) == 0 ) {
             if( isVoid( type->of ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool isClassPtr( TYPE type )
@@ -5838,11 +5838,11 @@ static bool isClassPtr( TYPE type )
     if( type->id == TYP_POINTER ) {
         if( (type->flag & TF1_REFERENCE) == 0 ) {
             if( StructType( type->of ) != NULL ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static TYPE classOrClassRef( TYPE type )
@@ -5900,7 +5900,7 @@ static bool arrowReturnOK( TYPE type, NAME arrow_name, bool undefd_OK )
     SEARCH_RESULT *result;
 
     if( isClassPtr( type ) ) {
-        return( TRUE );
+        return( true );
     }
     class_type = classOrClassRef( type );
     if( class_type != NULL ) {
@@ -5909,15 +5909,15 @@ static bool arrowReturnOK( TYPE type, NAME arrow_name, bool undefd_OK )
             result = ScopeFindMember( scope, arrow_name );
             if( result != NULL ) {
                 ScopeFreeResult( result );
-                return( TRUE );
+                return( true );
             }
         } else {
             if( undefd_OK ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool ArrowMemberOK( SYMBOL sym )
@@ -5928,12 +5928,12 @@ bool ArrowMemberOK( SYMBOL sym )
     if( sym != NULL ) {
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type != NULL ) {
-            if( arrowReturnOK( fn_type->of, sym->name->name, FALSE ) ) {
-                return( TRUE );
+            if( arrowReturnOK( fn_type->of, sym->name->name, false ) ) {
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool isSize_t( TYPE arg )
@@ -5947,9 +5947,9 @@ static bool isSize_t( TYPE arg )
 #if TARGET_UINT == TARGET_SHORT
     case TYP_USHORT:            // accept 'unsigned short' if it's the same size
 #endif
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void verifyIncDecSecondArg( TYPE fn_type, bool non_static_member )
@@ -6009,16 +6009,16 @@ static bool checkOperatorArgs( TYPE fn_type )
     stop = &(args->type_list[ args->num_args ]);
     for( curr = &(args->type_list[ 0 ]); curr != stop; ++curr ) {
         if( classOrClassRef( *curr ) ) {
-            return( TRUE );
+            return( true );
         }
         if( enumOrEnumRef( *curr ) ) {
-            return( TRUE );
+            return( true );
         }
         if( genericOrGenericRef( *curr ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void changeName( DECL_INFO *dinfo, NAME name )
@@ -6084,10 +6084,10 @@ static bool quietStaticMember( SYMBOL sym, PTREE id )
         case CO_NEW_ARRAY:
         case CO_DELETE_ARRAY:
             sym->id = SC_STATIC;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void extraInfoAboutArgs( unsigned num_args, bool is_a_member,
@@ -6167,13 +6167,13 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     name = id->u.id.name;
     is_a_member = memberCheck( scope, dinfo, &scope_type );
     is_out_of_class_member = is_a_member && ( dinfo->scope != NULL ) && ( dinfo->scope != scope );
-    non_static_member = FALSE;
+    non_static_member = false;
     scope_name = NULL;
     if( is_a_member ) {
         scope_name = SimpleTypeName( scope_type );
         if( sym->id != SC_STATIC ) {
             if( ! quietStaticMember( sym, id ) ) {
-                non_static_member = TRUE;
+                non_static_member = true;
             }
         }
     }
@@ -6271,7 +6271,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         }
         return;
     }
-    check_args_for_class = TRUE;
+    check_args_for_class = true;
     switch( id->id_cgop ) {
     case CO_PRE_PLUS_PLUS:
     case CO_PRE_MINUS_MINUS:
@@ -6290,9 +6290,9 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         }
         if( ! non_static_member ) {
             CErr2p( ERR_OPERATOR_NOT_MEMBER, name );
-            check_args_for_class = FALSE;
+            check_args_for_class = false;
         }
-        if( ! arrowReturnOK( fn_type->of, name, TRUE ) ) {
+        if( ! arrowReturnOK( fn_type->of, name, true ) ) {
             if( ! TypeIsClassInstantiation( scope_type ) ) {
                 // CErr1( WARN_OPERATOR_ARROW_WONT_WORK );
                 //   This warns (inappropriately) when a class nested
@@ -6310,13 +6310,13 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         }
         if( ! non_static_member ) {
             CErr2p( ERR_OPERATOR_NOT_MEMBER, name );
-            check_args_for_class = FALSE;
+            check_args_for_class = false;
         }
         break;
     case CO_CALL:
         if( ! non_static_member ) {
             CErr2p( ERR_OPERATOR_NOT_MEMBER, name );
-            check_args_for_class = FALSE;
+            check_args_for_class = false;
         }
         break;
     case CO_EQUAL:
@@ -6326,7 +6326,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         }
         if( ! non_static_member ) {
             CErr2p( ERR_OPERATOR_NOT_MEMBER, name );
-            check_args_for_class = FALSE;
+            check_args_for_class = false;
         }
         break;
     case CO_PLUS:
@@ -6347,7 +6347,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         break;
     case CO_NEW:
     case CO_NEW_ARRAY:
-        check_args_for_class = FALSE;
+        check_args_for_class = false;
         if( ! isVoidPtr( fn_type->of ) ) {
             CErr2p( ERR_OPERATOR_NEW_RETURNS_VOID, name );
         }
@@ -6364,7 +6364,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         break;
     case CO_DELETE:
     case CO_DELETE_ARRAY:
-        check_args_for_class = FALSE;
+        check_args_for_class = false;
         if( ! isVoid( fn_type->of ) ) {
             CErr2p( ERR_OPERATOR_DEL_RETURNS_VOID, name );
         }
@@ -6397,7 +6397,7 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
     if( check_args_for_class ) {
         bool operator_OK;
 
-        operator_OK = TRUE;
+        operator_OK = true;
         if( ! non_static_member ) {
             operator_OK = checkOperatorArgs( fn_type );
         }
@@ -6474,9 +6474,9 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
     VerifySpecialFunction( scope, dinfo );
     complainAboutMemInit( dinfo );
     sym = dinfo->sym;
-    is_block_sym = FALSE;
+    is_block_sym = false;
     is_a_function = SymIsFunction( sym );
-    is_template_function = FALSE;
+    is_template_function = false;
     check_scope = dinfo->scope;
     if( check_scope != NULL ) {
         /* C::id style declaration */
@@ -6502,12 +6502,12 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
         scope = insert_scope;
         if( dinfo->friend_fn ) {
             if( ScopeId( scope ) == SCOPE_TEMPLATE_DECL ) {
-                is_template_function = TRUE;
+                is_template_function = true;
                 TemplateFunctionCheck( sym, dinfo );
             }
             scope = dinfo->friend_scope;
         } else if( ScopeId( scope ) == SCOPE_TEMPLATE_DECL ) {
-            is_template_function = TRUE;
+            is_template_function = true;
             TemplateFunctionCheck( sym, dinfo );
             scope = ScopeNearestFileOrClass( GetCurrScope() );
         } else if( ScopeId( scope ) == SCOPE_BLOCK ||
@@ -6515,7 +6515,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
             /* handle promotions from local scope to file scope */
             if( sym->id == SC_EXTERN ) {
                 scope = blockScopeExtern();
-                is_block_sym = TRUE;
+                is_block_sym = true;
             } else if( is_a_function ) {
                 switch( sym->id ) {
                 case SC_TYPEDEF:
@@ -6525,7 +6525,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                         CErr2p( INF_FUNCTION_PROTOTYPE, sym->sym_type );
                     }
                     scope = blockScopeExtern();
-                    is_block_sym = TRUE;
+                    is_block_sym = true;
                     break;
                 default:
                     if( errWithSymLoc( ERR_STATIC_FN_DECL_IN_FUNCTION, sym ) & MS_PRINTED ) {
@@ -6533,7 +6533,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                     }
                     sym->id = SC_EXTERN;
                     scope = blockScopeExtern();
-                    is_block_sym = TRUE;
+                    is_block_sym = true;
                 }
             } else {
                 switch( sym->id ) {
@@ -6620,7 +6620,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
         }
     }
     dinfo->sym = check_sym;
-    dinfo->sym_used = TRUE;
+    dinfo->sym_used = true;
     if( check_sym != NULL ) {
         if( dinfo->friend_fn ) {
             SCOPE class_scope = ScopeNearestNonTemplate( insert_scope );
@@ -6667,10 +6667,10 @@ void InsertArgs( DECL_INFO **args )
 static bool typePoints(         // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
     TYPE type )                 // - type to be tested
 {
-    bool retn;                  // - TRUE ==> type points at something
+    bool retn;                  // - true ==> type points at something
 
     if( type == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = TypeIdMasked( type, MASK_TYPE_POINTS );
     }
@@ -6740,14 +6740,14 @@ bool TypeHasReverseArgs( TYPE type )
 
     type = FunctionDeclarationType( type );
     if( type == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( TypeHasEllipsisArg( type ) ) {
-        return( FALSE );
+        return( false );
     }
     fn_pragma = TypeHasPragma( type );
     if( fn_pragma == NULL ) {
-        return( FALSE );
+        return( false );
     }
     return( ReverseParms( fn_pragma ) );
 }
@@ -6759,18 +6759,18 @@ bool TypeHasNumArgs( TYPE fn_type, unsigned num_args )
 
     args = TypeArgList( fn_type );
     if( args == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( TypeHasEllipsisArg( fn_type ) ) {
         if( num_args >= ( args->num_args - 1 ) ) {
             /* handles case where ( int, ... ) has >= 1 parms */
-            return( TRUE );
+            return( true );
         }
     } else if( args->num_args == num_args ) {
         /* handles normal case */
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 uint_32 TypeHash( TYPE type )
@@ -6848,9 +6848,9 @@ bool VerifyPureFunction( DECL_INFO *dinfo )
     fn_type = FunctionDeclarationType( type );
     if( fn_type != NULL ) {
         sym->sym_type = MakePureFunction( type );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
@@ -6947,13 +6947,13 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, bool *had_to_define )
     vindex num_vbases;
     NAME name;
 
-    *had_to_define = FALSE;
+    *had_to_define = false;
     name = CppIndexMappingName( from, to );
     sym = alreadyDefined( name );
     if( sym != NULL ) {
         return( sym );
     }
-    *had_to_define = TRUE;
+    *had_to_define = true;
     num_vbases = ScopeClass( from )->u.c.info->last_vbase;
     vmtable_type = GetBasicType( TYP_UINT );
     vmtable_type = MakeArrayOf( num_vbases + 1, vmtable_type );
@@ -7026,7 +7026,7 @@ bool TypeHasVirtualBases( TYPE type )
 
     type = StructType( type );
     if( type == NULL ) {
-        retn = FALSE;
+        retn = false;
     } else {
         retn = ScopeHasVirtualBases( TypeScope( type ) );
     }
@@ -7040,11 +7040,11 @@ bool TypeIsClassInstantiation( TYPE type )
         TypeStripTdMod( type );
         if( type->id == TYP_CLASS ) {
             if( type->flag & TF1_INSTANTIATION ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TypeIsConst( TYPE type )
@@ -7070,11 +7070,11 @@ bool TypeHasEllipsisArg( TYPE type )
         if( num_args > 0 ) {
             arg_type = args->type_list[ num_args - 1 ];
             if( arg_type->id == TYP_DOT_DOT_DOT ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
@@ -7088,7 +7088,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
     DbgAssert( fn_type != NULL && fn_type->id == TYP_FUNCTION );
     *msg = ERR_NULL;
     if( ! TypeHasEllipsisArg( fn_type ) ) {
-        return( FALSE );
+        return( false );
     }
     args = fn_type->u.f.args;
     num_args = args->num_args;
@@ -7098,7 +7098,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
         if( num_args == 0 ) {
             /* no arg before the ... arg */
             *msg = WARN_NO_ARG_BEFORE_ELLIPSE;
-            return( TRUE );
+            return( true );
         }
         /* move to index of arg before ... arg */
         --num_args;
@@ -7107,17 +7107,17 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
         if( test_type != NULL ) {
             /* arg before ... arg is a reference arg */
             *msg = WARN_REF_ARG_BEFORE_ELLIPSE;
-            return( TRUE );
+            return( true );
         }
         arg_type = StructType( arg_type );
         if( arg_type != NULL
          && OMR_CLASS_REF == ObjModelArgument( arg_type ) ) {
             /* arg before ... arg is a class arg (WATCOM passes these as refs) */
             *msg = WARN_CLASS_ARG_BEFORE_ELLIPSE;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 TYPE MemberPtrType( TYPE type )
@@ -7150,15 +7150,15 @@ bool TypeCtorDispRequired( TYPE host_class, TYPE base_class )
     base_scope = base_class->u.c.scope;
     if( ! ScopeHasVirtualFunctions( base_scope ) ) {
         /* virtual function thunks are the only things that need a ctor-disp */
-        return( FALSE );
+        return( false );
     }
     info = host_class->u.c.info;
     if( !info->has_vcdtor ) {
         /* no class in the hierarchy has an explicit ctor/dtor in */
         /* the presence of virtual functions */
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool TypeHasSpecialFields( TYPE type )
@@ -7170,10 +7170,10 @@ bool TypeHasSpecialFields( TYPE type )
     if( type != NULL ) {
         info = type->u.c.info;
         if( info->has_comp_info ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TypeParmSize( TYPE fn_type, unsigned *parm_size )
@@ -7185,7 +7185,7 @@ bool TypeParmSize( TYPE fn_type, unsigned *parm_size )
     TYPE *p;
 
     if( TypeHasEllipsisArg( fn_type ) ) {
-        return( FALSE );
+        return( false );
     }
     size = 0;
     args = fn_type->u.f.args;
@@ -7196,7 +7196,7 @@ bool TypeParmSize( TYPE fn_type, unsigned *parm_size )
         ++p;
     }
     *parm_size = size;
-    return( TRUE );
+    return( true );
 }
 
 bool CurrFunctionHasEllipsis( void )
@@ -7208,7 +7208,7 @@ bool CurrFunctionHasEllipsis( void )
     if( sym != NULL ) {
         return( TypeHasEllipsisArg( sym->sym_type ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TypeIsAnonymousEnum( TYPE type )
@@ -7216,9 +7216,9 @@ bool TypeIsAnonymousEnum( TYPE type )
 {
     TypeStripTdMod( type );
     if( type->id == TYP_ENUM && ( type->flag & TF1_UNNAMED ) != 0 ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool markAllUnused( SCOPE scope, void (*diag)( SYMBOL ) )
@@ -7452,7 +7452,7 @@ bool FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
 
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
-        return( FALSE );
+        return( false );
     }
     markAllUnused( scope, NULL );
     PstkOpen( &type_stack );
@@ -7523,9 +7523,9 @@ bool TypeBasesEqual( type_flag flags, void *base1, void *base2 )
     }
     if( base1 != base2 ) {
         /* handles TF1_BASED_FETCH and TF1_BASED_ADD */
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool compareClassTypes( TYPE b_type, TYPE u_type,
@@ -7543,29 +7543,29 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
     PTREE u_tree;
 
     if(( b_type->flag & TF1_INSTANTIATION ) == 0 ) {
-        return( TRUE );
+        return( true );
     }
     if(( u_type->flag & TF1_UNBOUND ) == 0 ) {
-        return( TRUE );
+        return( true );
     }
     already_bound = u_type->of;
     if( already_bound != NULL ) {
         /* template class was already bound */
         if( already_bound == b_type ) {
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
     b_info = b_type->u.c.info;
     u_info = u_type->u.c.info;
     if( b_info->name != u_info->name ) {
-        return( TRUE );
+        return( true );
     }
     /* both are instantiations of the same class */
     b_parm_scope = TemplateClassParmScope( b_type );
     u_parm_scope = TemplateClassParmScope( u_type );
     if( b_parm_scope == NULL || u_parm_scope == NULL ) {
-        return( TRUE );
+        return( true );
     }
     b_curr = NULL;
     u_curr = NULL;
@@ -7590,17 +7590,17 @@ static bool compareClassTypes( TYPE b_type, TYPE u_type,
                           PTreeIdSym( u_curr->u.alias ) );
             } else if( u_curr->id == SC_STATIC ) {
                 if( b_curr->u.sval != u_curr->u.sval ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
-                return( TRUE );
+                return( true );
             }
         } else if( b_curr->id != u_curr->id ) {
             DbgAssert( b_curr == NULL && u_curr == NULL );
         }
     }
     DbgAssert( b_curr == NULL && u_curr == NULL );
-    return( FALSE );
+    return( false );
 }
 
 static bool modifiersMatch( type_flag b_flags, type_flag u_flags,
@@ -7608,14 +7608,14 @@ static bool modifiersMatch( type_flag b_flags, type_flag u_flags,
 {
     //if( u_flags != b_flags )
     if(( u_flags ^ b_flags ) & ~TF1_MOD_IGNORE ) {
-        return( FALSE );
+        return( false );
     }
     if( b_flags & TF1_BASED ) {
         if( ! TypeBasesEqual( b_flags, b_base, u_base ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static unsigned typesBind( type_bind_info *data, bool is_function )
@@ -7653,7 +7653,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
 
     status = TB_BINDS;
     for(;;) {
-        flags.arg_1st_level = FALSE;
+        flags.arg_1st_level = false;
 
         b_top = (PTREE *)PstkPop( &(data->without_generic) );
         u_top = (PTREE *)PstkPop( &(data->with_generic) );
@@ -7668,7 +7668,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
         }
 
         if( ( (*u_top)->op == PT_TYPE ) && (*u_top)->type == TypeGetCache( TYPC_FIRST_LEVEL ) ) {
-            flags.arg_1st_level = TRUE;
+            flags.arg_1st_level = true;
             PTreeFree( *u_top );
             u_top = (PTREE *)PstkPop( &(data->with_generic) );
             if( u_top == NULL ) {
@@ -7748,7 +7748,7 @@ static unsigned typesBind( type_bind_info *data, bool is_function )
 
         if( flags.arg_1st_level ) {
             u_cv_mask = TF1_CONST | TF1_VOLATILE;
-            u_allow_base = TRUE;
+            u_allow_base = true;
         } else {
             /*
              * In order to implement [conv.qual] we need to pass
@@ -8120,7 +8120,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
     bool something_went_wrong;
 
     num_explicit = 0;
-    something_went_wrong = FALSE;
+    something_went_wrong = false;
     decl_scope = parm_scope->enclosing;
     if( ( decl_scope == NULL ) && ( templ_args == NULL ) ) {
         return num_explicit;
@@ -8144,7 +8144,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
                 // type parameter
                 if( ( curr->sym_type->id != TYP_TYPEDEF )
                  || ( curr->sym_type->of->id != TYP_GENERIC ) ) {
-                    something_went_wrong = TRUE;
+                    something_went_wrong = true;
                     break;
                 }
                 
@@ -8153,7 +8153,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
             } else if( parm->op == PT_INT_CONSTANT ) {
                 // non-type parameter (integral constant)
                 if( ! IntegralType( curr->sym_type ) ) {
-                    something_went_wrong = TRUE;
+                    something_went_wrong = true;
                     break;
                 }
             } else if( parm->op == PT_SYMBOL ) {
@@ -8206,10 +8206,10 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
 
     pushPrototypeAndArguments( &data, parms, args,
                                is_function ? PA_FUNCTION : PA_NULL );
-    result = FALSE;
+    result = false;
     bind_status = typesBind( &data, is_function );
     if( bind_status != TB_NULL ) {
-        result = TRUE;
+        result = true;
 
         stop = ScopeOrderedStart( parm_scope );
         curr = NULL;
@@ -8220,7 +8220,7 @@ bool BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
             if( ( curr->sym_type->id == TYP_TYPEDEF )
              && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
                 if( curr->sym_type->of->of == NULL ) {
-                    result = FALSE;
+                    result = false;
                     break;
                 } else {
                     curr->sym_type->of = curr->sym_type->of->of;
@@ -8637,14 +8637,14 @@ static void markFreeClassInfo( void *p )
 {
     CLASSINFO *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void markFreeDeclInfo( void *p )
 {
     DECL_INFO *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 typedef struct {

@@ -91,10 +91,10 @@ void LabelBlkTry(               // INDICATE TRY BLOCK
     SYMBOL try_var )            // - try variable
 ;
 void LabelBlockClose(           // CLOSE CURRENT BLOCK SCOPE
-    bool dead_code )            // - TRUE ==> in dead-code state
+    bool dead_code )            // - true ==> in dead-code state
 ;
 void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
-    bool dead_code )            // - TRUE ==> in dead-code state
+    bool dead_code )            // - true ==> in dead-code state
 ;
 void LabelTryComplete(          // TRY HAS BEEN COMPLETED
     SYMBOL try_var )            // - try variable
@@ -102,10 +102,10 @@ void LabelTryComplete(          // TRY HAS BEEN COMPLETED
 void LabelCondEnd(              // END OF CONDITIONAL BLOCK
     void )
 ;
-void LabelCondFalse(            // START FALSE PART OF CONDITIONAL BLOCK
+void LabelCondFalse(            // START false PART OF CONDITIONAL BLOCK
     void )
 ;
-void LabelCondTrue(             // START TRUE PART OF CONDITIONAL BLOCK
+void LabelCondTrue(             // START true PART OF CONDITIONAL BLOCK
     void )
 ;
 void LabelDeclInited(           // SIGNAL NEXT INITIALIZATION IN BLOCK
@@ -158,7 +158,7 @@ void LabelSwitchFunc(           // SWITCH FUNCTION'S LABEL MEMORY
 ;
 void LabelSwitchLabel(          // PROCESSING FOR A BLOCK OF SWITCH LABELS
     SCOPE defn,                 // - scope for switch
-    bool deadcode )             // - TRUE==> state is dead-code
+    bool deadcode )             // - true==> state is dead-code
 ;
 void LabelTempDtored(           // ENSURE DTOR OF TEMP IS OK
     PTREE expr,                 // - expression for errors

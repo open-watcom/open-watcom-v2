@@ -132,7 +132,7 @@ void LinkagePush( char *name )
     top = CarveAlloc( carveSTACK );
     top->prev = nestedLinkages;
     top->linkage = next_linkage;
-    top->block = FALSE;
+    top->block = false;
     nestedLinkages = top;
 }
 
@@ -140,7 +140,7 @@ void LinkageBlock( void )
 /***********************/
 {
     if( nestedLinkages != NULL ) {
-        nestedLinkages->block = TRUE;
+        nestedLinkages->block = true;
     }
 }
 

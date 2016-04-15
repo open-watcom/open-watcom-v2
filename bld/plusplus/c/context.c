@@ -151,7 +151,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
     void const **a_data,              // - addr[ ptr to data for context ]
     char const **a_prefix )     // - addr[ prefix for header line in error ]
 {
-    bool retn;                  // - TRUE ==> context changed from last time
+    bool retn;                  // - true ==> context changed from last time
     void const *data;           // - current data
 
     *a_context = context;

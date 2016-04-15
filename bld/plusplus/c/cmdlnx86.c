@@ -683,10 +683,10 @@ static void defineFSRegistration( void )
     if( CompFlags.zo_switch_used ) {
         CErr1( WARN_ZO_OBSOLETE );
     }
-    CompFlags.rw_registration = TRUE;
+    CompFlags.rw_registration = true;
 #if _CPU == 386
     if( TargetSystem == TS_NT || TargetSystem == TS_OS2 ) {
-        CompFlags.fs_registration = TRUE;
+        CompFlags.fs_registration = true;
     }
 #endif
 }

@@ -83,7 +83,7 @@ DTREG_OBJ* DtregObj(            // LOCATE RW_DTREG_OBJ SYMBOL
         }
         obj->sym = obj->cg_sym;
     }
-    obj->in_use = TRUE;
+    obj->in_use = true;
     return obj;
 }
 
@@ -99,7 +99,7 @@ static void dtregObjFree(       // FREE A DTREG_OBJ
     DTREG_OBJ* reg )            // - registration
 {
     if( reg != NULL ) {
-        reg->in_use = FALSE;
+        reg->in_use = false;
     }
 }
 
@@ -280,7 +280,7 @@ cg_name ObjInitAssignIndex(     // ASSIGN INDEX TO RT_ARRAY_INIT
 cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     FN_CTL* fctl,               // - current function information
     cg_name base_expr,          // - base expression
-    bool use_fun_cdtor )        // - TRUE ==> use CDTOR parm of function
+    bool use_fun_cdtor )        // - true ==> use CDTOR parm of function
 {
     OBJ_INIT* init;             // - initialization element
     cg_name expr;               // - initialization expression

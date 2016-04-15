@@ -141,8 +141,8 @@
 , IC( IC_FUNCTION_DTM,       BIN, __x__ ) // - set dtor method for function
 , IC( IC_DESTRUCT,           SCP, OECNT ) // - destruct up to given symbol
 , IC( IC_FUNCTION_STAB,      BIN, __x__ ) // - function requires state table
-, IC( IC_COND_TRUE,          BIN, __x__ ) // - start of TRUE part of conditional block
-, IC( IC_COND_FALSE,         BIN, __x__ ) // - start of FALSE part of conditional block
+, IC( IC_COND_TRUE,          BIN, __x__ ) // - start of true part of conditional block
+, IC( IC_COND_FALSE,         BIN, __x__ ) // - start of false part of conditional block
 , IC( IC_COND_END,           BIN, __x__ ) // - end of conditional block
 , IC( IC_CTOR_COMPLETE,      NUL, OECNT ) // - CTOR has completed (before a return)
 , IC( IC_DTOR_REG,           NUL, OECNT ) // - generate registration for DTOR

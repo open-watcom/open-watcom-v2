@@ -862,7 +862,7 @@ postfix-expression-before-dot
             }
 
             if( cls != NULL ) {
-                cls = BindTemplateClass( cls, &$1->locn, FALSE );
+                cls = BindTemplateClass( cls, &$1->locn, false );
                 $1->type = BoundTemplateClass( $1->type );
                 cls = TypedefModifierRemoveOnly( cls );
 
@@ -897,7 +897,7 @@ postfix-expression-before-arrow
             }
 
             if( ( cls != NULL ) && cls->id == TYP_POINTER ) {
-                cls = BindTemplateClass( cls->of, &$1->locn, FALSE );
+                cls = BindTemplateClass( cls->of, &$1->locn, false );
                 $1->type = BoundTemplateClass( $1->type );
                 cls = TypedefModifierRemoveOnly( cls );
 
@@ -1887,9 +1887,9 @@ based-expression
 
 segment-cast-opt
     : /* nothing */
-    { $$ = FALSE; }
+    { $$ = false; }
     | Y_LEFT_PAREN Y___SEGMENT Y_RIGHT_PAREN
-    { $$ = TRUE; }
+    { $$ = true; }
     ;
 
 pragma-modifier
@@ -2151,7 +2151,7 @@ defarg-parse-or-copy
         DbgAssert( $1 == NULL );
         dinfo = $<dinfo>0;
         dinfo->defarg_expr = $3;
-        dinfo->has_defarg = TRUE;
+        dinfo->has_defarg = true;
         TokenLocnAssign( dinfo->init_locn, yylp[2] );
     }
     | defarg-check Y_DEFARG_GONE_SPECIAL
@@ -2160,7 +2160,7 @@ defarg-parse-or-copy
 
         dinfo = $<dinfo>0;
         dinfo->defarg_rewrite = $1;
-        dinfo->has_defarg = TRUE;
+        dinfo->has_defarg = true;
         TokenLocnAssign( dinfo->init_locn, yylp[2] );
     }
     ;
@@ -2173,7 +2173,7 @@ type-defarg-parse-or-copy
         DbgAssert( $1 == NULL );
         dinfo = $<dinfo>0;
         dinfo->defarg_expr = $3;
-        dinfo->has_defarg = TRUE;
+        dinfo->has_defarg = true;
         TokenLocnAssign( dinfo->init_locn, yylp[2] );
     }
     | defarg-check Y_DEFARG_GONE_SPECIAL
@@ -2182,7 +2182,7 @@ type-defarg-parse-or-copy
 
         dinfo = $<dinfo>0;
         dinfo->defarg_rewrite = $1;
-        dinfo->has_defarg = TRUE;
+        dinfo->has_defarg = true;
         TokenLocnAssign( dinfo->init_locn, yylp[2] );
     }
     ;
@@ -2290,7 +2290,7 @@ function-definition
                 TemplateFunctionAttachDefn( $1 );
             } else if( ( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST )
                     && ! $1->friend_fn ) ) {
-                TemplateMemberAttachDefn( $1, FALSE );
+                TemplateMemberAttachDefn( $1, false );
             } else if( ( ( ScopeType( GetCurrScope(), SCOPE_CLASS )
                         && ScopeType( GetCurrScope()->enclosing,
                                       SCOPE_TEMPLATE_INST ) )
@@ -2298,7 +2298,7 @@ function-definition
                 if( GetCurrScope()->owner.type->flag & TF1_SPECIFIC ) {
                     ClassStoreInlineFunc( $1 );
                 } else {
-                    TemplateMemberAttachDefn( $1, TRUE );
+                    TemplateMemberAttachDefn( $1, true );
                 }
             } else {
                 ClassStoreInlineFunc( $1 );
@@ -2971,7 +2971,7 @@ template-declaration-before-semicolon
     : template-declaration-start simple-template-declaration-before-semicolon
     {
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
-        state->template_decl = FALSE;
+        state->template_decl = false;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2979,7 +2979,7 @@ template-declaration-before-semicolon
     {
         CErr1( WARN_UNSUPPORTED_TEMPLATE_EXPORT );
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
-        state->template_decl = FALSE;
+        state->template_decl = false;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2989,7 +2989,7 @@ template-function-declaration
     : template-declaration-start function-definition
     {
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
-        state->template_decl = FALSE;
+        state->template_decl = false;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -2997,7 +2997,7 @@ template-function-declaration
     {
         CErr1( WARN_UNSUPPORTED_TEMPLATE_EXPORT );
         RewriteFree( ParseGetRecordingInProgress( NULL ) );
-        state->template_decl = FALSE;
+        state->template_decl = false;
         GStackPop( &(state->gstack) ); /* GS_DECL_SPEC */
         GStackPop( &(state->gstack) ); /* GS_TEMPLATE_DATA */
     }
@@ -3151,11 +3151,11 @@ typename-specifier
 explicit-instantiation-special
     : Y_TEMPLATE
     {
-        state->template_instantiate = TRUE;
+        state->template_instantiate = true;
     }
     | Y_EXTERN Y_TEMPLATE
     {
-        state->template_extern = TRUE;
+        state->template_extern = true;
     }
     ;
 
@@ -3170,8 +3170,8 @@ explicit-instantiation
     }
     | explicit-instantiation-special block-declaration-before-semicolon Y_SEMI_COLON
     {
-        state->template_instantiate = FALSE;
-        state->template_extern = FALSE;
+        state->template_instantiate = false;
+        state->template_extern = false;
     }
     ;
 
@@ -3184,7 +3184,7 @@ template-key
                 && ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
             CErr1( ERR_ONLY_GLOBAL_TEMPLATES );
         }
-        state->template_decl = TRUE;
+        state->template_decl = true;
     }
     ;
 
@@ -3463,7 +3463,7 @@ typename-special
 typename-special-init
     : /* nothing */
     {
-        state->special_typename = TRUE;
+        state->special_typename = true;
     }
     ;
 

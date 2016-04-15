@@ -102,10 +102,10 @@ signed_64 BFCnvF64( float_handle flt )
         result.u._32[1] = 0;
         return result;
     }
-    positive = TRUE;
+    positive = true;
     absol = flt;
     if( sign < 0 ) {
-        positive = FALSE;
+        positive = false;
         absol = BFCopy( flt );
         BFNegate( absol );
     }
@@ -151,22 +151,22 @@ target_long FoldSignedRShiftMax( target_long v )
 static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     PTREE node )                // - the expression
 {
-    bool retn;                  // - TRUE ==> conditionally decorated
+    bool retn;                  // - true ==> conditionally decorated
 
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
         if( node->op == PT_IC ) {
             if( node->u.ic.opcode == IC_COND_TRUE
              || node->u.ic.opcode == IC_COND_FALSE ) {
-                retn = TRUE;
+                retn = true;
             } else {
-                retn = FALSE;
+                retn = false;
             }
         } else {
-            retn = FALSE;
+            retn = false;
         }
     } else {
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -211,7 +211,7 @@ static bool zeroConstant(       // TEST IF NODE IS ZERO CONSTANT
         if( expr == orig ) break;
         return( zeroConstant( expr ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -226,7 +226,7 @@ static bool nonZeroExpr(        // TEST IF NODE IS NON-ZERO EXPRESSION
         return ! zeroConstant( expr );
     case PT_SYMBOL:
         /* a symbol r-value has a fetch by now so this PTREE means &name */
-        return( TRUE );
+        return( true );
     case PT_BINARY:
         orig = expr;
         expr = NodeRemoveCasts( expr );
@@ -234,9 +234,9 @@ static bool nonZeroExpr(        // TEST IF NODE IS NON-ZERO EXPRESSION
         return( nonZeroExpr( expr ) );
     }
     if( expr->flags & PTF_PTR_NONZERO ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -246,12 +246,12 @@ static bool notFoldable(        // TEST IF NON-FOLDABLE EXPRESSION
     switch( expr->op ) {
       case PT_INT_CONSTANT:
       case PT_FLOATING_CONSTANT:
-        return( FALSE );
+        return( false );
       default :
         if( zeroConstant( expr ) ) {
-            return( FALSE );
+            return( false );
         } else {
-            return( TRUE );
+            return( true );
         }
     }
 }
@@ -406,7 +406,7 @@ PTREE CastIntConstant( PTREE expr, TYPE type, bool *happened )
             return( expr );
         }
     }
-    *happened = TRUE;
+    *happened = true;
     new_expr->flags = expr->flags;
     new_expr = PTreeCopySrcLocation( new_expr, expr );
     PTreeFree( expr );
@@ -459,7 +459,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, bool *happened )
     default:
         return( expr );
     }
-    *happened = TRUE;
+    *happened = true;
     new_expr = PTreeCopySrcLocation( new_expr, expr );
     PTreeFree( expr );
     return( new_expr );
@@ -469,7 +469,7 @@ static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
 {
     TYPE type_final;
 
-    *happened = FALSE;
+    *happened = false;
     if( notFoldable( expr ) ) {
         return( expr );
     }
@@ -491,9 +491,9 @@ static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
 static bool soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
 {
     if( expr != NULL && expr->op == op && expr->cgop == cgop ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool referenceSymbol( PTREE expr )
@@ -502,9 +502,9 @@ static bool referenceSymbol( PTREE expr )
 
     ref_sym = expr->u.symcg.symbol;
     if( ref_sym != NULL && TypeReference( ref_sym->sym_type ) != NULL ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool thisSymbol( PTREE expr )
@@ -513,9 +513,9 @@ static bool thisSymbol( PTREE expr )
 
     this_sym = expr->u.symcg.symbol;
     if( this_sym == NULL ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool anachronismFound( PTREE expr )
@@ -527,7 +527,7 @@ static bool anachronismFound( PTREE expr )
     */
     if( ! CompFlags.extensions_enabled ) {
         /* ANSI C++ code cannot require these constructs */
-        return( FALSE );
+        return( false );
     }
     if( soFarSoGood( expr, PT_UNARY, CO_ADDR_OF ) ) {
         expr = expr->u.subtree[0];
@@ -567,7 +567,7 @@ static bool anachronismFound( PTREE expr )
             return( thisSymbol( expr ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static PTREE makeTrueFalse( PTREE expr, PTREE op, int value )

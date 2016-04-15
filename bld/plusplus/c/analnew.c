@@ -151,7 +151,7 @@ static SYMBOL checkDeleteResult( // CHECK ACCESS FOR DELETE SEARCH_RESULT
     SYMBOL sym,                 // - delete operator
     SEARCH_RESULT* result,      // - search result
     TOKEN_LOCN *locn,           // - error location
-    bool compiling_dtor )       // - TRUE ==> compiling delete inside DTOR
+    bool compiling_dtor )       // - true ==> compiling delete inside DTOR
 {
     if( result != NULL ) {
         ScopeResultErrLocn( result, locn );
@@ -169,7 +169,7 @@ static SYMBOL checkDeleteAccess( // CHECK ACCESS OF DELETE OPERATOR
     SCOPE scope,                // - scope for operator
     unsigned *num_args,         // - number of arguments
     TOKEN_LOCN *locn,           // - error location
-    bool compiling_dtor )       // - TRUE ==> compiling delete inside DTOR
+    bool compiling_dtor )       // - true ==> compiling delete inside DTOR
 {
     SYMBOL sym;                 // - delete operator
     SEARCH_RESULT *result;      // - search result
@@ -446,19 +446,19 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             sym_ctor = NULL;
         }
     }
-    flag.needs_count = FALSE;
-    flag.needs_dtor = FALSE;
-    flag.really_dtorable = FALSE;
-    flag.free_array_no = FALSE;
+    flag.needs_count = false;
+    flag.needs_dtor = false;
+    flag.really_dtorable = false;
+    flag.free_array_no = false;
     if( TypeRequiresDtoring( class_type ) ) {
-        flag.needs_dtor = TRUE;
+        flag.needs_dtor = true;
         // the structure of the allocation can't be influenced by 'really_dtorable'
         // since the alloc and delete may not agree on 'really_dtorable'
         // the flag is currently not used in the new but could be used to
         // influence the choice of run-time routines for array news in the
         // face of exceptions
         //if( TypeReallyDtorable( class_type ) ) {
-            //flag.really_dtorable = TRUE;
+            //flag.really_dtorable = true;
         //}
     }
     op_dlt = accessDelete( array_number == NULL ? CO_DELETE : CO_DELETE_ARRAY
@@ -471,7 +471,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     //
     if( array_number != NULL ) {
         if( flag.needs_dtor || num_args == 2 ) {
-            flag.needs_count = TRUE;
+            flag.needs_count = true;
         }
         array_number = NodeRvalue( array_number );
         if( IntegralType( array_number->type ) == NULL ) {
@@ -496,7 +496,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
         dup = array_number;
         if( sym_ctor != NULL || flag.needs_count ) {
             array_number = NodeDupExpr( &dup );
-            flag.free_array_no = TRUE;
+            flag.free_array_no = true;
         }
         node = NodeBinary( CO_TIMES, dup, elem_size );
         node->type = offset_type;
@@ -537,7 +537,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             unsigned rt_code;       // - run-time function code
             PTREE args;             // - run-time call arguments
             TYPE_SIG *sig;          // - type signature for class
-            bool errors;            // - TRUE ==> errors
+            bool errors;            // - true ==> errors
             TYPE_SIG_ACCESS acc;    // - rtn.s to be accessed
             if( flag.needs_dtor ) {
                 acc = TSA_DTOR | TSA_DEFAULT_CTOR;
@@ -558,7 +558,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             op_dlt = checkDeleteResult( op_dlt
                                       , result_dlt
                                       , &err_locn
-                                      , FALSE );
+                                      , false );
             if( op_dlt == NULL ) {
                 NodeFreeDupedExpr( node );
                 if( flag.free_array_no ) {
@@ -669,7 +669,7 @@ static PTREE setDeleteType( PTREE expr, TOKEN_LOCN *locn )
 
 PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     PTREE expr,                 // - delete expression
-    bool in_dtor )              // - TRUE ==> call from inside DTOR
+    bool in_dtor )              // - true ==> call from inside DTOR
 {
     CGOP oper;                  // - operator (original)
     CGOP del_op;                // - delete operator class
@@ -690,12 +690,12 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     unsigned dtor_code;         // - code for DTOR routine
     unsigned num_args;          // - # of args for "op delete"
     struct {
-      unsigned test_null:1;     // - TRUE ==> test for 0 address
-      unsigned array_delete:1;  // - TRUE ==> delete[]
-      unsigned inside_dtor:1;   // - TRUE ==> delete gening in DTOR
-      unsigned num_in_alloc:1;  // - TRUE ==> number elements is in allocation
-      unsigned really_dtorable:1;//- TRUE ==> non-trivial destructor req'd
-      unsigned adjust_for_num:1;// - TRUE ==> subtract sizeof(int) from ptr
+      unsigned test_null:1;     // - true ==> test for 0 address
+      unsigned array_delete:1;  // - true ==> delete[]
+      unsigned inside_dtor:1;   // - true ==> delete gening in DTOR
+      unsigned num_in_alloc:1;  // - true ==> number elements is in allocation
+      unsigned really_dtorable:1;//- true ==> non-trivial destructor req'd
+      unsigned adjust_for_num:1;// - true ==> subtract sizeof(int) from ptr
     } flag;
 
     flag.inside_dtor = in_dtor;
@@ -717,7 +717,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
         return( data );
     }
     del_op = flag.array_delete ? CO_DELETE_ARRAY : CO_DELETE;
-    flag.num_in_alloc = FALSE;
+    flag.num_in_alloc = false;
     pted = ArrayBaseType( pted );
     cltype = StructType( pted );
     if( cltype == NULL ) {
@@ -751,7 +751,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
             // find out what the op new side assumed
             accessDelete( del_op, opdel_scope, &num_args, NULL );
             if( num_args == 2 ) {
-                flag.num_in_alloc = TRUE;
+                flag.num_in_alloc = true;
             }
             /* fall through */
         case CO_DELETE_G:
@@ -764,7 +764,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
         PTreeErrorNode( data );
         return( data );
     }
-    flag.test_null = FALSE;
+    flag.test_null = false;
     if( cltype == NULL ) {
         // delete a simple type; call op del() or op del []()
         args = NodeArgument( NULL, data );
@@ -777,7 +777,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
             } else {
                 dtor_code = DTOR_DELETE_THIS;
             }
-            flag.test_null = TRUE;
+            flag.test_null = true;
             dup = data;
             data = NodeDupExpr( &dup );
             expr = AnalyseDtorCall( cltype, data, dtor_code );
@@ -803,7 +803,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     // optimizes cases: 2, 4
                     ClassAccessDtor( cltype );
                     if( flag.array_delete ) {
-                        flag.test_null = TRUE;
+                        flag.test_null = true;
                         dup = data;
                         data = NodeDupExpr( &dup );
                         expr = NodeBinary( CO_MINUS, data, sizeOfUInt() );
@@ -831,7 +831,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     }
                 } else {
                     // handle case: 2
-                    flag.test_null = TRUE;
+                    flag.test_null = true;
                     dup = data;
                     data = NodeDupExpr( &dup );
                     if( num_args == 2 ) {
@@ -846,16 +846,16 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                 // no dtor call required
                 // handle cases: 1, 3, 5
                 if( flag.array_delete ) {
-                    flag.adjust_for_num = FALSE;
+                    flag.adjust_for_num = false;
                     if( num_args == 2 ) {
-                        flag.adjust_for_num = TRUE;
+                        flag.adjust_for_num = true;
                     } else if( flag.inside_dtor && oper == CO_DELETE_ARRAY ) {
-                        flag.adjust_for_num = TRUE;
+                        flag.adjust_for_num = true;
                     } else if( flag.num_in_alloc ) {
-                        flag.adjust_for_num = TRUE;
+                        flag.adjust_for_num = true;
                     }
                     if( flag.adjust_for_num ) {
-                        flag.test_null = TRUE;
+                        flag.test_null = true;
                         dup = data;
                         data = NodeDupExpr( &dup );
                         expr = NodeBinary( CO_MINUS, data, sizeOfUInt() );
@@ -882,7 +882,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     args = NodeAddToLeft( args, sizeOfUInt(), offset_type );
                     expr = dup2;
                     if( ! flag.test_null ) {
-                        flag.test_null = TRUE;
+                        flag.test_null = true;
                         dup = expr;
                         expr = NodeDupExpr( &dup );
                     }

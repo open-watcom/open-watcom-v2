@@ -561,9 +561,9 @@ static bool recordableScope( SCOPE scope )
     switch( scope->id ) {
     case SCOPE_TEMPLATE_DECL:
     case SCOPE_TEMPLATE_INST:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 #else
 #define printSymbolName( s )
@@ -576,9 +576,9 @@ static bool recordableScope( SCOPE scope )
 static void reinitScope( SCOPE scope )
 {
     // keep ->in_unnamed setting
-    scope->u.s.dtor_reqd = FALSE;
-    scope->u.s.dtor_naked = FALSE;
-    scope->u.s.try_catch = FALSE;
+    scope->u.s.dtor_reqd = false;
+    scope->u.s.dtor_naked = false;
+    scope->u.s.try_catch = false;
     scope->ordered = NULL;
     scope->owner.sym = NULL;
     scope->names = HashCreateByIndex( hashTableSizeIndex[scope->id] );
@@ -592,15 +592,15 @@ static SCOPE makeScope( scope_type_t scope_type )
     ExtraRptIncrementCtr( scopes_kept );
     new_scope = CarveAlloc( carveSCOPE );
     new_scope->id = scope_type;
-    new_scope->u.s.keep = FALSE;
-    new_scope->u.s.dtor_reqd = FALSE;
-    new_scope->u.s.dtor_naked = FALSE;
-    new_scope->u.s.try_catch = FALSE;
-    new_scope->u.s.arg_check = FALSE;
-    new_scope->u.s.cg_stab = FALSE;
-    new_scope->u.s.in_unnamed = FALSE;
-    new_scope->u.s.fn_template = FALSE;
-    new_scope->u.s.dirty = FALSE;
+    new_scope->u.s.keep = false;
+    new_scope->u.s.dtor_reqd = false;
+    new_scope->u.s.dtor_naked = false;
+    new_scope->u.s.try_catch = false;
+    new_scope->u.s.arg_check = false;
+    new_scope->u.s.cg_stab = false;
+    new_scope->u.s.in_unnamed = false;
+    new_scope->u.s.fn_template = false;
+    new_scope->u.s.dirty = false;
     new_scope->enclosing = NULL;
     new_scope->ordered = NULL;
     new_scope->owner.sym = NULL;
@@ -743,14 +743,14 @@ static SCOPE makeFileScope( fs_control control, SYMBOL sym )
     ns->sym = sym;
     ns->scope = scope;
     ns->all = allNameSpaces;
-    ns->u.s.global_fs = FALSE;
-    ns->u.s.free = FALSE;
-    ns->u.s.unnamed = FALSE;
+    ns->u.s.global_fs = false;
+    ns->u.s.free = false;
+    ns->u.s.unnamed = false;
     if( control & FS_GLOBAL ) {
-        ns->u.s.global_fs = TRUE;
+        ns->u.s.global_fs = true;
     } else if( control & FS_UNNAMED ) {
-        ns->u.s.unnamed = TRUE;
-        scope->u.s.in_unnamed = TRUE;
+        ns->u.s.unnamed = true;
+        scope->u.s.in_unnamed = true;
     }
     allNameSpaces = ns;
     scope->owner.ns = ns;
@@ -764,7 +764,7 @@ static void scopeOpenMaybeNull( SCOPE scope )
     enclosing = GetCurrScope();
     scope->enclosing = enclosing;
     if( enclosing != NULL && enclosing->u.s.in_unnamed ) {
-        scope->u.s.in_unnamed = TRUE;
+        scope->u.s.in_unnamed = true;
     }
     SetCurrScope(scope);
 }
@@ -880,13 +880,13 @@ static SCOPE findCommonEnclosing( SCOPE scope1, SCOPE scope2 )
         if( i1 == scope2 ) {
             return( i1 );
         }
-        i1->u.s.colour = TRUE;
+        i1->u.s.colour = true;
     }
     for( i2 = scope2; i2 != NULL; i2 = i2->enclosing ) {
         if( i2 == scope1 ) {
             return( i2 );
         }
-        i2->u.s.colour = FALSE;
+        i2->u.s.colour = false;
     }
     for( it = scope1; it != NULL; it = it->enclosing ) {
         if( ! it->u.s.colour ) {
@@ -943,7 +943,7 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
         using_entry->trigger = trigger;
         RingAppend( &gets_using->using_list, using_entry );
 
-        addLexicalTrigger( trigger, using_scope, FALSE );
+        addLexicalTrigger( trigger, using_scope, false );
 #ifndef NDEBUG
     } else {
         USING_NS *curr;
@@ -1082,7 +1082,7 @@ SCOPE ScopeSetContaining( SYMBOL_NAME sym_name, SCOPE new_containing )
         enclosing = cs;                         \
         sc->enclosing = enclosing;              \
         if( enclosing->u.s.in_unnamed ) {       \
-            sc->u.s.in_unnamed = TRUE;          \
+            sc->u.s.in_unnamed = true;          \
         }                                       \
     }
 
@@ -1278,7 +1278,7 @@ static void processNameSpaces( void )
     if( CompFlags.namespace_checks_done ) {
         return;
     }
-    CompFlags.namespace_checks_done = TRUE;
+    CompFlags.namespace_checks_done = true;
     for( curr = allNameSpaces; curr != NULL; curr = curr->all ) {
         if( curr->u.s.unnamed ) {
             ScopeWalkOrderedSymbols( curr->scope, &handleUnnamedNameSpaceSyms );
@@ -1328,7 +1328,7 @@ SCOPE ScopeClose( void )
     } RingIterEndSafe( use )
     if( ! HashEmpty( dropping_scope->names ) ) {
         ExtraRptIncrementCtr( nonempty_scopes_closed );
-        dropping_scope->u.s.keep = TRUE;
+        dropping_scope->u.s.keep = true;
         switch( dropping_scope->id ) {
         case SCOPE_BLOCK:
             ScopeWalkOrderedSymbols( dropping_scope, &handleBlockSyms );
@@ -1349,7 +1349,7 @@ SCOPE ScopeClose( void )
         GetCurrScope()->u.s.keep |= dropping_scope->u.s.keep;
     }
     BrinfCloseScope( dropping_scope );
-    if( dropping_scope->u.s.keep == FALSE ) {
+    if( dropping_scope->u.s.keep == false ) {
         ScopeBurn( dropping_scope );
         dropping_scope = NULL;
     }
@@ -1397,7 +1397,7 @@ void ScopeAdjustUsing( SCOPE prev_scope, SCOPE new_scope )
     if( new_scope != NULL ) {
         scope = new_scope;
         while( scope->enclosing != NULL ) {
-            ScopeRestoreUsing( scope, FALSE );
+            ScopeRestoreUsing( scope, false );
             scope = scope->enclosing;
         }
     }
@@ -1709,13 +1709,13 @@ bool EnumTypeName( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_type;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     type = TypedefRemove( sym->sym_type );
     if( type->id != TYP_ENUM ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ClassTypeName( SYMBOL_NAME sym_name )
@@ -1726,13 +1726,13 @@ bool ClassTypeName( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_type;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     type = TypedefRemove( sym->sym_type );
     if( type->id != TYP_CLASS ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool colonColonName( SYMBOL_NAME sym_name )
@@ -1742,16 +1742,16 @@ static bool colonColonName( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_type;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( SymIsNameSpace( sym ) ) {
-        return( TRUE );
+        return( true );
     }
     type = TypedefRemove( sym->sym_type );
     if( type->id != TYP_CLASS ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool colonColonTildeName( SYMBOL_NAME sym_name )
@@ -1761,16 +1761,16 @@ static bool colonColonTildeName( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_type;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( SymIsNameSpace( sym ) ) {
-        return( TRUE );
+        return( true );
     }
     type = TypedefedType( sym->sym_type );
     if( type == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool nameSpaceName( SYMBOL_NAME sym_name )
@@ -1779,7 +1779,7 @@ static bool nameSpaceName( SYMBOL_NAME sym_name )
 
     sym = sym_name->name_type;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     return( SymIsNameSpace( sym ) );
 }
@@ -1792,19 +1792,19 @@ bool VariableName( SYMBOL_NAME sym_name )
 
     var_sym = sym_name->name_syms;
     if( var_sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     var_type = FunctionDeclarationType( var_sym->sym_type );
     if( var_type != NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void addOrdered( SCOPE scope, SYMBOL sym )
 {
     ExtraRptIncrementCtr( syms_defined );
-    scope->u.s.dirty = TRUE;
+    scope->u.s.dirty = true;
     if( sym->id == SC_DEFAULT ) {
         return;
     }
@@ -1843,9 +1843,9 @@ bool ScopeAccessType( scope_type_t scope_type )
 
     scope = findAccessScope();
     if( scope->id == scope_type ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1853,12 +1853,12 @@ bool ScopeType( SCOPE scope, scope_type_t scope_type )
 /****************************************************/
 {
     if( scope == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( scope->id == scope_type ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
@@ -2019,11 +2019,11 @@ bool ScopeDirectBase( SCOPE scope, TYPE type )
         if( _IsDirectBase( base ) ) {
             base_type = StructType( base->type );
             if( base_type == type ) {
-                return( TRUE );
+                return( true );
             }
         }
     } RingIterEnd( base )
-    return( FALSE );
+    return( false );
 }
 
 bool ScopeIndirectVBase( SCOPE scope, TYPE type )
@@ -2036,11 +2036,11 @@ bool ScopeIndirectVBase( SCOPE scope, TYPE type )
         if( _IsIndirectVirtualBase( base ) ) {
             base_type = StructType( base->type );
             if( base_type == type ) {
-                return( TRUE );
+                return( true );
             }
         }
     } RingIterEnd( base )
-    return( FALSE );
+    return( false );
 }
 
 bool ScopeHasVirtualBases( SCOPE scope )
@@ -2050,12 +2050,12 @@ bool ScopeHasVirtualBases( SCOPE scope )
 
     class_type = ScopeClass( scope );
     if( class_type == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( class_type->u.c.info->last_vbase == 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ScopeHasVirtualFunctions( SCOPE scope )
@@ -2065,12 +2065,12 @@ bool ScopeHasVirtualFunctions( SCOPE scope )
 
     class_type = ScopeClass( scope );
     if( class_type == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    if( class_type->u.c.info->has_vfn == FALSE ) {
-        return( FALSE );
+    if( class_type->u.c.info->has_vfn == false ) {
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -2171,7 +2171,7 @@ bool ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, NAME name )
     }
     DeclDefaultStorageClass( scope, sym );
     ExtraRptSymDefn( sym );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -2223,13 +2223,13 @@ void ScopeAddFriendSym( SCOPE scope, SYMBOL sym )
                 CErr2p( ERR_LOCAL_CLASS_NO_FRIEND_FNS, sym );
             }
         } else {
-            OK_for_friend = TRUE;
+            OK_for_friend = true;
             if( TypeDefined( class_type ) ) {
-                OK_for_friend = FALSE;
+                OK_for_friend = false;
             }
             sym_scope = SymScope( sym );
             if( findBlockScope( sym_scope ) != findBlockScope( scope ) ) {
-                OK_for_friend = FALSE;
+                OK_for_friend = false;
             }
             if( ! OK_for_friend ) {
                 CErr2p( ERR_LOCAL_CLASS_FRIEND_CLASS, sym );
@@ -2273,13 +2273,13 @@ void ScopeAddFriendType( SCOPE scope, TYPE type, SYMBOL sym )
     class_type = StructType( type );
     if( ScopeLocalClass( scope ) ) {
         /* local classes have restrictions on friends */
-        OK_for_friend = TRUE;
+        OK_for_friend = true;
         if( TypeDefined( class_type ) ) {
-            OK_for_friend = FALSE;
+            OK_for_friend = false;
         } else if( sym != NULL ) {
             sym_scope = SymScope( sym );
             if( findBlockScope( sym_scope ) != findBlockScope( scope ) ) {
-                OK_for_friend = FALSE;
+                OK_for_friend = false;
             }
         }
         if( ! OK_for_friend ) {
@@ -2308,8 +2308,8 @@ static BASE_PATH *newPath( PATH_CAP *cap )
     new_path->base = NULL;
     new_path->scope = NULL;
     new_path->flag = IN_NULL;
-    new_path->checked_private = FALSE;
-    new_path->failed_private = FALSE;
+    new_path->checked_private = false;
+    new_path->failed_private = false;
     if( cap->tail != NULL ) {
         BASE_PATH *head;
 
@@ -2341,7 +2341,7 @@ static void pushBase( BASE_STACK **hdr, BASE_CLASS *base, SCOPE scope, BASE_STAC
     elt->access_changed = NULL;
     elt->hold = NULL;
     elt->access_perm = IN_NULL;
-    elt->used = FALSE;
+    elt->used = false;
 }
 
 static BASE_STACK *popBase( BASE_STACK **hdr )
@@ -2352,12 +2352,12 @@ static BASE_STACK *popBase( BASE_STACK **hdr )
         top = *hdr;
         if( top == NULL )
             return( NULL );
-        if( top->used == FALSE )
+        if( top->used == false )
             break;
         *hdr = top->next;
         CarveFree( carveBASE_STACK, top );
     }
-    top->used = TRUE;
+    top->used = true;
     return( top );
 }
 
@@ -2556,9 +2556,9 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
         table->vb_offset = ScopeClass( scope )->u.c.info->vb_offset;
         vbase = ScopeFindVBase( scope, virtual_base );
         if( vbase->flag & IN_CTOR_DISP ) {
-            table->ctor_disp = TRUE;
+            table->ctor_disp = true;
         } else {
-            table->ctor_disp = FALSE;
+            table->ctor_disp = false;
         }
         table->vb_index = vbase->vb_index;
         delta += vbase->delta;
@@ -2765,13 +2765,13 @@ static walk_status derivedBase( BASE_STACK *top, void *parm )
 
     if( top->scope == data->base ) {
         data->copies++;
-        data->is_derived = TRUE;
+        data->is_derived = true;
         for( ; top != NULL; top = top->parent ) {
             base = top->base;
             if( base == NULL )
                 break;
             if( _IsVirtualBase( base ) ) {
-                data->virtual_base = TRUE;
+                data->virtual_base = true;
                 break;
             }
         }
@@ -2785,7 +2785,7 @@ static walk_status quickDerivedBase( BASE_STACK *top, void *parm )
     derived_walk *data = parm;
 
     if( top->scope == data->base ) {
-        data->is_derived = TRUE;
+        data->is_derived = true;
         return( WALK_FINISH );
     }
     return( WALK_NORMAL );
@@ -2801,10 +2801,10 @@ static bool notABase( SCOPE derived, SCOPE possible_base )
     if( base_type->u.c.info->index > derived_type->u.c.info->index ) {
         /* impossible for 'derived' to be derived from 'possible_base' */
         /* since the 'possible_base' was declared after the 'derived' class */
-        return( TRUE );
+        return( true );
     }
     /* equality must be "don't know" since we use the same idx when we run out */
-    return( FALSE );
+    return( false );
 }
 
 static derived_status isQuickScopeDerived( SCOPE derived, SCOPE possible_base )
@@ -2823,8 +2823,8 @@ static derived_status isQuickScopeDerived( SCOPE derived, SCOPE possible_base )
         return( DERIVED_NO );
     }
     data.base = possible_base;
-    data.virtual_base = FALSE;
-    data.is_derived = FALSE;
+    data.virtual_base = false;
+    data.is_derived = false;
     walkVisitOnce( derived, quickDerivedBase, &data );
     if( ! data.is_derived ) {
         return( DERIVED_NO );
@@ -2841,11 +2841,11 @@ static derived_status isScopeDerived( scope_derived_walk *data )
     derived = data->derived;
     possible_base = data->base;
     data->copies = 0;
-    data->virtual_base = FALSE;
-    data->is_derived = FALSE;
+    data->virtual_base = false;
+    data->is_derived = false;
     if( derived == possible_base ) {
         data->copies++;
-        data->is_derived = TRUE;
+        data->is_derived = true;
         return( DERIVED_YES );
     }
     if( notABase( derived, possible_base ) ) {
@@ -2877,7 +2877,7 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
                 type = type->of;
             }
             if( type->u.c.scope == check ) {
-                return( TRUE );
+                return( true );
             }
         } else {
             sym = FriendGetSymbol( a_friend );
@@ -2888,7 +2888,7 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
                     if( type->flag & TF1_INSTANTIATION ) {
                         if( type->u.c.info->name == sym->name->name ) {
                             /* class scope must be instantiated from class template */
-                            return( TRUE );
+                            return( true );
                         }
                     }
                 }
@@ -2897,18 +2897,18 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
                 if( SymIsFunction( sym ) ) {
                     SYMBOL curr_sym = ScopeFunctionInProgress();
                     if( sym == curr_sym ) {
-                        return( TRUE );
+                        return( true );
                     }
                     if( ( curr_sym != NULL )
                      && ( curr_sym->flag & SF_TEMPLATE_FN )
                      && ( sym == curr_sym->u.alias ) ) {
-                        return( TRUE );
+                        return( true );
                     }
                 }
             }
         }
     } RingIterEnd( a_friend )
-    return( FALSE );
+    return( false );
 }
 
 static SCOPE nextAccessScope( SCOPE scope )
@@ -2931,16 +2931,16 @@ static bool isScopeFriend( SCOPE access, SCOPE friendly )
 
     if( ScopeFriends( friendly ) == NULL ) {
         /* no friends? no external scopes can access members */
-        return( FALSE );
+        return( false );
     }
     for( check = access; check != NULL; check = nextAccessScope( check ) ) {
         if( _IsClassScope( check ) || _IsFunctionScope( check ) ) {
             if( isFriendly( check, friendly ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool protectedPathOK( access_data *data )
@@ -2954,10 +2954,10 @@ static bool protectedPathOK( access_data *data )
         data->path = path;
         data->located = check;
         if( verifyAccess( data ) == IN_PUBLIC ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static inherit_flag verifyAccess( access_data *data )
@@ -2985,7 +2985,7 @@ static inherit_flag verifyAccess( access_data *data )
                 return( IN_PUBLIC );
             }
         }
-        path->checked_private = TRUE;
+        path->checked_private = true;
     }
     located = data->located;
     class_scope = data->member;
@@ -3005,7 +3005,7 @@ static inherit_flag verifyAccess( access_data *data )
         return( IN_PUBLIC );
     }
     if( path != NULL ) {
-        path->failed_private = TRUE;
+        path->failed_private = true;
     }
     if( perm == IN_PRIVATE ) {
         return( IN_PRIVATE );
@@ -3044,7 +3044,7 @@ static void newAccessData( access_data *data, inherit_flag perm, SCOPE located )
     data->member = class_scope;
     data->located = located;
     data->perm = perm;
-    data->protected_OK = FALSE;
+    data->protected_OK = false;
 }
 
 derived_status ScopeDerived( SCOPE derived, SCOPE possible_base )
@@ -3171,11 +3171,11 @@ derived_status ScopeDerivedCount( SCOPE derived, SCOPE possible_base, unsigned *
     *depth = 0;
     data.base = possible_base;
     data.depth = UINT_MAX;
-    data.many_pathes = FALSE;
+    data.many_pathes = false;
     status = ScopeDerived( derived, possible_base );
     switch( status ) {
     case DERIVED_YES_BUT_VIRTUAL:
-        data.many_pathes = TRUE;
+        data.many_pathes = true;
         /* fall through */
     case DERIVED_YES:
         walkDirectBases( derived, calcBaseDepth, &data );
@@ -3197,8 +3197,8 @@ static PATH_CAP *newCap( void )
     cap->sym = NULL;
     cap->exclude = NULL;
     cap->flag = IN_NULL;
-    cap->throw_away = FALSE;
-    cap->across_virtual_base = FALSE;
+    cap->throw_away = false;
+    cap->across_virtual_base = false;
     return( cap );
 }
 
@@ -3222,14 +3222,14 @@ static bool okToUseAccess( lookup_walk *data, SYMBOL sym, BASE_PATH *path )
     base_scope = sym->sym_type->u.c.scope;
     if( base_scope != path->scope ) {
         /* access doesn't affect this path */
-        return( FALSE );
+        return( false );
     }
     if( data->specific_user_conv ) {
         if( ! TypesIdentical( data->type, sym->u.udc_type ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top, SYMBOL_NAME sym_name, SYMBOL sym )
@@ -3249,10 +3249,10 @@ static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top, SYMBOL_NAME sym
     data->path_count++;
     cap->sym_name = sym_name;
     cap->sym = sym;
-    cap->throw_away = FALSE;
+    cap->throw_away = false;
     disambiguate_scope = data->disambiguate;
     if( disambiguate_scope != NULL && _IsClassScope( disambiguate_scope ) ) {
-        cap->throw_away = TRUE;
+        cap->throw_away = true;
     }
     access_scope = NULL;
     last_path = NULL;
@@ -3260,14 +3260,14 @@ static PATH_CAP *recordPath( lookup_walk *data, BASE_STACK *top, SYMBOL_NAME sym
         path = newPath( cap );
         scope = top->scope;
         if( scope == disambiguate_scope ) {
-            cap->throw_away = FALSE;
+            cap->throw_away = false;
         }
         path->scope = scope;
         base = top->base;
         path->base = base;
         if( base != NULL ) {
             if( base->flag & IN_VIRTUAL ) {
-                cap->across_virtual_base = TRUE;
+                cap->across_virtual_base = true;
             }
             path->flag = base->flag;
         }
@@ -3366,17 +3366,17 @@ bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
     NAME name;                  // - name for checking
-    bool retn;                  // - TRUE ==> is same virtual function
+    bool retn;                  // - true ==> is same virtual function
 
     a_fun1 = &fun1;
     name = fun1->name->name;
     switch( distinctVirtualFunction( a_fun1, fun2, name ) ) {
       case FNOV_NOT_DISTINCT_RETURN:
       case FNOV_EXACT_MATCH:
-        retn = TRUE;
+        retn = true;
         break;
       default :
-        retn = FALSE;
+        retn = false;
         break;
     }
     return retn;
@@ -3389,9 +3389,9 @@ static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
 
     fn_type = FunctionDeclarationType( sym->sym_type );
     ptr_type = TypedefModifierRemove( fn_type->of );
-    *is_reference = FALSE;
+    *is_reference = false;
     if( ptr_type->flag & TF1_REFERENCE ) {
-        *is_reference = TRUE;
+        *is_reference = true;
     }
     /* needs to return TYP_MODIFIER flags so we can verify they are identical */
     return( StructType( ptr_type->of ) );
@@ -3410,17 +3410,17 @@ static bool badVirtualReturn( SYMBOL old, SYMBOL new, bool *return_thunk )
 
     old_base = symReturnsClassRefPtr( old, &old_ref );
     if( old_base == NULL ) {
-        return( TRUE );
+        return( true );
     }
     old_scope = old_base->u.c.scope;
     new_base = symReturnsClassRefPtr( new, &new_ref );
     if( new_base == NULL ) {
-        return( TRUE );
+        return( true );
     }
     new_scope = new_base->u.c.scope;
     if( old_ref != new_ref ) {
         /* both return types must be both pointers or references */
-        return( TRUE );
+        return( true );
     }
     /* 'new_scope' must be derived from 'old_scope' to be valid */
     derived = ScopeDerived( new_scope, old_scope );
@@ -3428,14 +3428,14 @@ static bool badVirtualReturn( SYMBOL old, SYMBOL new, bool *return_thunk )
     case DERIVED_YES:
     case DERIVED_YES_BUT_VIRTUAL:
         result = ScopeBaseResult( new_scope, old_scope );
-        *return_thunk = TRUE;
+        *return_thunk = true;
         if( result->non_virtual && result->delta == 0 ) {
-            *return_thunk = FALSE;
+            *return_thunk = false;
         }
         ScopeFreeResult( result );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static SYMBOL sameVirtualFnSignature( SYMBOL_NAME sym_name, lookup_walk *data )
@@ -3446,20 +3446,20 @@ static SYMBOL sameVirtualFnSignature( SYMBOL_NAME sym_name, lookup_walk *data )
     bool complain_if_virtual;
     bool return_thunk;
 
-    complain_if_virtual = FALSE;
+    complain_if_virtual = false;
     chk_sym = sym_name->name_syms;
     check = matchVirtualFunction( &chk_sym, data );
     switch( check ) {
     case FNOV_NOT_DISTINCT_RETURN:
         if( badVirtualReturn( chk_sym, data->fn_sym, &return_thunk ) ) {
             if( data->ok_to_diagnose ) {
-                complain_if_virtual = TRUE;
+                complain_if_virtual = true;
             } else {
                 chk_sym = NULL;
             }
         } else {
             if( return_thunk ) {
-                data->return_thunk = TRUE;
+                data->return_thunk = true;
             }
         }
         break;
@@ -3494,10 +3494,10 @@ static bool anyVirtualFns( SYMBOL_NAME sym_name )
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) break;
         if( fn_type->flag & TF1_VIRTUAL ) {
-            return( TRUE );
+            return( true );
         }
     } RingIterEnd( sym )
-    return( FALSE );
+    return( false );
 }
 
 static SYMBOL recordVirtualOverride( lookup_walk *data, BASE_STACK *top, SYMBOL_NAME sym_name )
@@ -3664,31 +3664,31 @@ static void newLookupData( lookup_walk *data, NAME name )
     data->path_count = 0;
     data->perm = IN_NULL;
     data->this_qualifier = TF1_NULL;
-    data->virtual_override = FALSE;
-    data->user_conversion = FALSE;
-    data->specific_user_conv = FALSE;
-    data->best_user_conv = FALSE;
-    data->check_special = FALSE;
-    data->no_inherit = FALSE;
-    data->only_inherit = FALSE;
-    data->only_bases = FALSE;
-    data->ok_to_diagnose = FALSE;
-    data->find_all = FALSE;
-    data->ignore_access = FALSE;
-    data->ambiguous = FALSE;
-    data->overload_reqd = FALSE;
-    data->use_this = FALSE;
-    data->no_this = FALSE;
-    data->saw_function = FALSE;
-    data->saw_class = FALSE;
-    data->use_index = FALSE;
-    data->return_thunk = FALSE;
-    data->protected_OK = FALSE;
-    data->file_class_done = FALSE;
-    data->file_ns_done = FALSE;
-    data->same_table = FALSE;
-    data->lookup_error = FALSE;
-    data->member_lookup = FALSE;
+    data->virtual_override = false;
+    data->user_conversion = false;
+    data->specific_user_conv = false;
+    data->best_user_conv = false;
+    data->check_special = false;
+    data->no_inherit = false;
+    data->only_inherit = false;
+    data->only_bases = false;
+    data->ok_to_diagnose = false;
+    data->find_all = false;
+    data->ignore_access = false;
+    data->ambiguous = false;
+    data->overload_reqd = false;
+    data->use_this = false;
+    data->no_this = false;
+    data->saw_function = false;
+    data->saw_class = false;
+    data->use_index = false;
+    data->return_thunk = false;
+    data->protected_OK = false;
+    data->file_class_done = false;
+    data->file_ns_done = false;
+    data->same_table = false;
+    data->lookup_error = false;
+    data->member_lookup = false;
 }
 
 static void removeDead( lookup_walk *data )
@@ -3716,7 +3716,7 @@ static void delLookupData( lookup_walk *data )
     PATH_CAP *cap;
 
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
-        cap->throw_away = TRUE;
+        cap->throw_away = true;
     }
     removeDead( data );
 }
@@ -3734,7 +3734,7 @@ static void reduceToOnePath( lookup_walk *data )
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
         if( count == 0 )
             break;
-        cap->throw_away = TRUE;
+        cap->throw_away = true;
         --count;
     }
     removeDead( data );
@@ -3758,16 +3758,16 @@ static SEARCH_RESULT *newResult( SCOPE scope, SYMBOL_NAME sym_name )
     result->offset = 0;
     result->vf_offset = 0;
     result->perm = IN_NULL;
-    result->simple = FALSE;
-    result->non_virtual = FALSE;
-    result->ambiguous = FALSE;
-    result->mixed_static = FALSE;
-    result->use_this = FALSE;
-    result->no_this = FALSE;
-    result->cant_be_auto = FALSE;
-    result->protected_OK = FALSE;
-    result->ignore_access = FALSE;
-    result->lookup_error = FALSE;
+    result->simple = false;
+    result->non_virtual = false;
+    result->ambiguous = false;
+    result->mixed_static = false;
+    result->use_this = false;
+    result->no_this = false;
+    result->cant_be_auto = false;
+    result->protected_OK = false;
+    result->ignore_access = false;
+    result->lookup_error = false;
     result->errlocn.src_file = NULL;
 
     return( result );
@@ -3821,11 +3821,11 @@ static void applyDominance( lookup_walk *data )
             }
             status = isQuickScopeDerived( scope1, scope2 );
             if( status != DERIVED_NO ) {
-                cap2->throw_away = TRUE;
+                cap2->throw_away = true;
             } else {
                 status = isQuickScopeDerived( scope2, scope1 );
                 if( status != DERIVED_NO ) {
-                    cap1->throw_away = TRUE;
+                    cap1->throw_away = true;
                 }
             }
         }
@@ -3848,7 +3848,7 @@ static SCOPE differentScopesAmbiguity( lookup_walk *data )
     scope = cap->tail->scope;
     for( ; (next = cap->next) != NULL; cap = next ) {
         if( next->tail->scope != scope ) {
-            data->ambiguous = TRUE;
+            data->ambiguous = true;
             return( NULL );
         }
     }
@@ -3882,7 +3882,7 @@ static void differentCopiesAmbiguity( lookup_walk *data )
     info = class_type->u.c.info;
     sym_name = cap->sym_name;
     if( sym_name == NULL ) {
-        data->ambiguous = TRUE;
+        data->ambiguous = true;
         return;
     }
     if( data->check_special && data->is_special( sym_name ) ) {
@@ -3896,24 +3896,24 @@ static void differentCopiesAmbiguity( lookup_walk *data )
         if( sym->id == SC_STATIC ) {
             return;
         }
-        data->ambiguous = TRUE;
+        data->ambiguous = true;
         return;
     }
     /* we found a function */
-    flag.static_found = FALSE;
-    flag.nonstatic_found = FALSE;
+    flag.static_found = false;
+    flag.nonstatic_found = false;
     RingIterBeg( sym_name->name_syms, sym ) {
         if( SymIsStatic( sym ) ) {
-            flag.static_found = TRUE;
+            flag.static_found = true;
         } else {
-            flag.nonstatic_found = TRUE;
+            flag.nonstatic_found = true;
         }
     } RingIterEnd( sym )
     if( flag.nonstatic_found ) {
         if( flag.static_found ) {
-            data->overload_reqd = TRUE;
+            data->overload_reqd = true;
         } else {
-            data->ambiguous = TRUE;
+            data->ambiguous = true;
         }
     }
 }
@@ -3990,7 +3990,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
     auto access_data access_data;
 
     if( data->protected_OK ) {
-        return( TRUE );
+        return( true );
     }
     if( cap == NULL ) {
         cap = data->paths;
@@ -3999,12 +3999,12 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
     newAccessData( &access_data, IN_PROTECTED, path->scope );
     access_data.path = path;
     sym = cap->sym;
-    protected_checked = FALSE;
+    protected_checked = false;
     if( sym != NULL ) {
         if( sym->flag & SF_PROTECTED ) {
-            protected_checked = TRUE;
+            protected_checked = true;
             if( protectedPathOK( &access_data ) ) {
-                data->protected_OK = TRUE;
+                data->protected_OK = true;
             }
         }
     } else {
@@ -4016,9 +4016,9 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
             }
             RingIterBeg( syms, sym ) {
                 if( sym->flag & SF_PROTECTED ) {
-                    protected_checked = TRUE;
+                    protected_checked = true;
                     if( protectedPathOK( &access_data ) ) {
-                        data->protected_OK = TRUE;
+                        data->protected_OK = true;
                     }
                     break;
                 }
@@ -4043,14 +4043,14 @@ static void findBestAccess( lookup_walk *data )
         cap->flag = perm;
         if( perm != IN_PUBLIC ) {
             /* base access error someplace */
-            cap->throw_away = TRUE;
+            cap->throw_away = true;
         } else {
             first_cap = cap;
         }
     }
     if( first_cap->throw_away ) {
         /* every path had a problem so keep one */
-        first_cap->throw_away = FALSE;
+        first_cap->throw_away = false;
     }
     removeDead( data );
     if( data->path_count == 1 ) {
@@ -4068,11 +4068,11 @@ static void findBestAccess( lookup_walk *data )
             if( data->protected_OK ) {
                 first_cap = cap;
                 for( cap = first_cap->next; cap != NULL; cap = cap->next ) {
-                    cap->throw_away = TRUE;
+                    cap->throw_away = true;
                 }
                 break;
             }
-            cap->throw_away = TRUE;
+            cap->throw_away = true;
         } else {
             /* symbol doesn't need protected access checked */
             reduceToOnePath( data );
@@ -4081,7 +4081,7 @@ static void findBestAccess( lookup_walk *data )
     }
     if( first_cap->throw_away ) {
         /* every path had a problem so keep one */
-        first_cap->throw_away = FALSE;
+        first_cap->throw_away = false;
     }
     removeDead( data );
 }
@@ -4092,10 +4092,10 @@ static bool symbolIsExcluded( PATH_CAP *cap, SYMBOL sym )
 
     RingIterBeg( cap->exclude, exclude ) {
         if( exclude->sym == sym ) {
-            return( TRUE );
+            return( true );
         }
     } RingIterEnd( exclude )
-    return( FALSE );
+    return( false );
 }
 
 static void excludeSymbol( PATH_CAP *cap, SYMBOL sym )
@@ -4133,7 +4133,7 @@ static void applyUniqueSymbolName( lookup_walk *data )
             sym_name2 = cap2->sym_name;
             if( sym_name1 == sym_name2 ) {
                 /* same SYMBOL_NAME (we only need one for overloading) */
-                cap2->throw_away = TRUE;
+                cap2->throw_away = true;
             }
         }
     }
@@ -4215,7 +4215,7 @@ static bool findBestConversion( lookup_walk *data )
     applyUniqueSymbolName( data );
     applyOverrideConversion( data );
     data->user_conv_list = gatherOverloadList( data );
-    return( TRUE );
+    return( true );
 }
 
 static void applySameVTable( lookup_walk *data )
@@ -4239,13 +4239,13 @@ static void applySameVTable( lookup_walk *data )
         if( path == NULL ) {
             best_cap = cap;
         } else {
-            cap->throw_away = TRUE;
+            cap->throw_away = true;
         }
     }
     if( best_cap == NULL ) {
-        data->paths->throw_away = FALSE;
+        data->paths->throw_away = false;
     } else {
-        data->use_index = TRUE;
+        data->use_index = true;
     }
     removeDead( data );
     /* one path will be left */
@@ -4256,9 +4256,9 @@ static bool findVirtualOverride( lookup_walk *data )
     applyDominance( data );
     if( data->path_count != 0 ) {
         applySameVTable( data );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void applyDisambiguation( lookup_walk *data )
@@ -4282,7 +4282,7 @@ static bool findSinglePath( lookup_walk *data, SCOPE start )
     }
     applyDisambiguation( data );
     if( data->paths == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( data->best_user_conv ) {
         return( findBestConversion( data ) );
@@ -4291,22 +4291,22 @@ static bool findSinglePath( lookup_walk *data, SCOPE start )
         return( findVirtualOverride( data ) );
     }
     if( data->path_count == 1 ) {
-        return( TRUE );
+        return( true );
     }
     applyDominance( data );
     if( data->path_count == 1 ) {
-        return( TRUE );
+        return( true );
     }
     if( data->ignore_access ) {
         reduceToOnePath( data );
-        return( TRUE );
+        return( true );
     }
     applyAmbiguity( start, data );
     if( data->path_count == 1 ) {
-        return( TRUE );
+        return( true );
     }
     findBestAccess( data );
-    return( TRUE );
+    return( true );
 }
 
 static bool findMember( lookup_walk *data, SCOPE scope )
@@ -4314,7 +4314,7 @@ static bool findMember( lookup_walk *data, SCOPE scope )
     PATH_CAP *cap;
 
     if( ! findSinglePath( data, scope ) ) {
-        return( FALSE );
+        return( false );
     }
     if( ! data->ignore_access ) {
         cap = data->paths;
@@ -4323,7 +4323,7 @@ static bool findMember( lookup_walk *data, SCOPE scope )
         }
         setProtectedAccess( data, NULL );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void setConsiderMask( lookup_walk *data, unsigned lexical )
@@ -4421,9 +4421,9 @@ static bool allFunctionNames( lookup_walk *data )
         DbgAssert( info[1] != (SYMBOL)-1 );
         data->info1 = info[0];
         data->info2 = info[1];
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool removeDuplicateNS( lookup_walk *data )
@@ -4438,7 +4438,7 @@ static bool removeDuplicateNS( lookup_walk *data )
         next = cap->next;
         sym_name = cap->sym_name;
         scope = sym_name->containing;
-        scope->u.s.colour = FALSE;
+        scope->u.s.colour = false;
     }
     dead = NULL;
     for( cap = data->paths; cap != NULL; cap = next ) {
@@ -4446,17 +4446,17 @@ static bool removeDuplicateNS( lookup_walk *data )
         sym_name = cap->sym_name;
         scope = sym_name->containing;
         if( scope->u.s.colour ) {
-            cap->throw_away = TRUE;
+            cap->throw_away = true;
             dead = cap;
         } else {
-            scope->u.s.colour = TRUE;
+            scope->u.s.colour = true;
         }
     }
     if( dead != NULL ) {
         removeDead( data );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool processNSLookup( lookup_walk *data )
@@ -4480,7 +4480,7 @@ static bool processNSLookup( lookup_walk *data )
 
     // remove duplicate aliases for the same entity
     aliasee = NULL;
-    dead = FALSE;
+    dead = false;
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
         sym = cap->sym_name->name_syms;
         if( sym != NULL ) {
@@ -4488,8 +4488,8 @@ static bool processNSLookup( lookup_walk *data )
             if( aliasee == NULL ) {
                 aliasee = sym;
             } else if( aliasee == sym ) {
-                cap->throw_away = TRUE;
-                dead = TRUE;
+                cap->throw_away = true;
+                dead = true;
             }
         }
     }
@@ -4502,12 +4502,12 @@ static bool processNSLookup( lookup_walk *data )
     }
 
     if( ! allFunctionNames( data ) ) {
-        data->lookup_error = TRUE;
+        data->lookup_error = true;
         data->error_msg = ERR_AMBIGUOUS_NAMESPACE_LOOKUP;
         data->info_msg = INF_AMBIGUOUS_NAMESPACE_SYM;
         reduceToOnePath( data );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
@@ -4549,7 +4549,7 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
 
     sym_name = doRecordedLookup( data, scope );
     if( sym_name != NULL ) {
-        return( TRUE );
+        return( true );
     }
     PstkOpen( &stack1 );
     PstkOpen( &stack2 );
@@ -4560,11 +4560,11 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
     PstkPush( &cycle, scope );
     for(;;) {
         retn = tryDisambigLookup( data, scope, curr, next, &cycle );
-        if( retn != FALSE || PstkTopElement( next ) == NULL ) {
+        if( retn != false || PstkTopElement( next ) == NULL ) {
             break;
         }
         retn = tryDisambigLookup( data, scope, next, curr, &cycle );
-        if( retn != FALSE || PstkTopElement( curr ) == NULL ) {
+        if( retn != false || PstkTopElement( curr ) == NULL ) {
             break;
         }
     }
@@ -4634,7 +4634,7 @@ static bool searchScope( lookup_walk *data, SCOPE scope )
     DbgAssert( data->is_special == NULL || data->check_special );
     ExtraRptIncrementCtr( scopes_searched );
     if( (_ScopeMask( scope->id ) & data->consider_mask) == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( _IsClassScope( scope ) ) {
         DbgAssert( data->disambiguate == NULL || _IsClassScope( data->disambiguate ) );
@@ -4646,18 +4646,18 @@ static bool searchScope( lookup_walk *data, SCOPE scope )
             if( _IsFileScope( scope ) && ! data->file_class_done ) {
                 // reached file scope looking for C::id;
                 // shift gears and look for 'id' in C
-                data->file_class_done = TRUE;
+                data->file_class_done = true;
                 return( findMember( data, disambig ) );
             }
-            return( FALSE );
+            return( false );
         }
         DbgAssert( _IsFileScope( disambig ) );
         DbgAssert( _IsFileScope( scope ) || _IsBlockScope( scope ) );
         // NYI: N::id searching
         if( data->file_ns_done ) {
-            return( FALSE );
+            return( false );
         }
-        data->file_ns_done = TRUE;
+        data->file_ns_done = true;
         scope = disambig;
         return( disambigNSLookup( data, disambig ) );
     }
@@ -4671,20 +4671,20 @@ static void lexicalLookup( lookup_walk *data, SCOPE curr )
     for( ; curr != NULL; curr = curr->enclosing ) {
         if( _IsClassScope( curr ) ) {
             if( data->use_this || data->no_this || data->saw_class ) {
-                data->use_this = FALSE;
-                data->no_this = TRUE;
+                data->use_this = false;
+                data->no_this = true;
             } else {
-                data->use_this = TRUE;
+                data->use_this = true;
             }
-            data->saw_class = TRUE;
+            data->saw_class = true;
         } else {
-            data->use_this = FALSE;
-            data->no_this = FALSE;
+            data->use_this = false;
+            data->no_this = false;
         }
         if( searchScope( data, curr ) )
             break;
         if( _IsFunctionScope( curr ) ) {
-            data->saw_function = TRUE;
+            data->saw_function = true;
         }
     }
 }
@@ -4740,7 +4740,7 @@ static void addClassPath( lookup_walk *data, SEARCH_RESULT *result )
         result->vb_index = vbase->vb_index;
         delta += vbase->delta;
     } else {
-        result->non_virtual = TRUE;
+        result->non_virtual = true;
     }
     result->exact_delta = delta;
     result->vf_offset = ScopeClass( tail->scope )->u.c.info->vf_offset;
@@ -4752,19 +4752,19 @@ static void makeClassResult( lookup_walk *data, SEARCH_RESULT *result )
     SYMBOL sym;
 
     if( data->ambiguous ) {
-        result->ambiguous = TRUE;
+        result->ambiguous = true;
     }
     if( data->overload_reqd ) {
-        result->mixed_static = TRUE;
+        result->mixed_static = true;
     }
     if( data->use_this ) {
-        result->use_this = TRUE;
+        result->use_this = true;
     }
     if( data->no_this ) {
-        result->no_this = TRUE;
+        result->no_this = true;
     }
     if( data->protected_OK ) {
-        result->protected_OK = TRUE;
+        result->protected_OK = true;
     }
     cap = data->paths;
     if( data->user_conversion ) {
@@ -4830,19 +4830,19 @@ static SEARCH_RESULT *makeResult( lookup_walk *data )
         makeClassResult( data, result );
         break;
     case SCOPE_FILE:
-        result->simple = TRUE;
+        result->simple = true;
         if( data->path_count > 1 ) {
             makeNameSpaceResult( data, result );
         }
         break;
     default:
-        result->simple = TRUE;
+        result->simple = true;
         if( data->saw_function ) {
-            result->cant_be_auto = TRUE;
+            result->cant_be_auto = true;
         }
     }
     if( data->lookup_error ) {
-        result->lookup_error = TRUE;
+        result->lookup_error = true;
         result->error_msg = data->error_msg;
         result->info_msg = data->info_msg;
         result->info1 = data->info1;
@@ -4863,14 +4863,14 @@ static void initVirtualSearch( lookup_walk *data, SYMBOL sym, NAME name )
     if( name == CppConversionName() ) {
         data->type = fn_type->of;
         data->this_qualifier = fn_type->u.f.args->qualifier;
-        data->user_conversion = TRUE;
-        data->specific_user_conv = TRUE;
+        data->user_conversion = true;
+        data->specific_user_conv = true;
     }
     data->fn_type = fn_type;
     data->fn_sym = sym;
-    data->virtual_override = TRUE;
-    data->ignore_access = TRUE;
-    data->only_inherit = TRUE;
+    data->virtual_override = true;
+    data->ignore_access = true;
+    data->only_inherit = true;
     data->consider_mask = _ScopeMask( SCOPE_CLASS );
 }
 
@@ -4935,13 +4935,13 @@ CLASS_VBTABLE *ScopeCollectVBTable( SCOPE scope, scv_control control )
 
     data.tables = NULL;
     data.start = scope;
-    data.already_done = FALSE;
+    data.already_done = false;
     if( (control & SCV_CTOR) != 0 ) {
         info = ScopeClass( scope )->u.c.info;
         if( info->vbtable_done ) {
-            data.already_done = TRUE;
+            data.already_done = true;
         }
-        info->vbtable_done = TRUE;
+        info->vbtable_done = true;
     }
     walkDirectBases( scope, collectVBTable, &data );
     /* caller must do a RingFree */
@@ -4954,29 +4954,29 @@ static bool overloadedSym( SYMBOL derived_sym, SYMBOL base_sym )
     NAME derived_name;
 
     if( derived_sym == base_sym ) {
-        return( FALSE );
+        return( false );
     }
     derived_name = derived_sym->name->name;
     if( derived_name != base_sym->name->name ) {
-        return( FALSE );
+        return( false );
     }
     check = AreFunctionsDistinct( &base_sym, derived_sym, derived_name );
     switch( check ) {
     case FNOV_NOT_DISTINCT_RETURN:
     case FNOV_EXACT_MATCH:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool scopeInBaseStack( SCOPE scope, BASE_STACK *top )
 {
     for( ; top != NULL; top = top->parent ) {
         if( top->scope == scope ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static SYMBOL findOverride( BASE_STACK *top, SYMBOL curr_override, SYMBOL base_sym )
@@ -5057,10 +5057,10 @@ static void fillInput( THUNK_ACTION *thunk, vftable_walk *data, TYPE ctor_disp )
         }
         return;
     }
-    thunk->ctor_disp = TRUE;
+    thunk->ctor_disp = true;
     thunk->in.delta = delta;
     if( vbase != NULL ) {
-        thunk->input_virtual = TRUE;
+        thunk->input_virtual = true;
         thunk->in.vb_offset = host_class->u.c.info->vb_offset;
         thunk->in.vb_index = vbase->vb_index;
     }
@@ -5103,7 +5103,7 @@ static bool nonTrivialReturnConversions( VSTK_CTL *vstk, SCOPE *derived )
         pscope = VstkIndex( vstk, i );
         scope = *pscope;
         if( scope == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( scope != last_scope ) {
             /* last_scope will be NULL the first time through */
@@ -5170,7 +5170,7 @@ static walk_status doReturnCast( BASE_STACK *top, void *parm )
             thunk->out.delta = delta;
         }
         if( vbase != NULL ) {
-            thunk->output_virtual = TRUE;
+            thunk->output_virtual = true;
             scope = data->derived;
             thunk->out.vb_offset = ScopeClass( scope )->u.c.info->vb_offset;
             base = ScopeFindVBase( scope, vbase );
@@ -5259,9 +5259,9 @@ static void analyseVFN( THUNK_ACTION *thunk, vftable_walk *data )
                 if( virtual_base != NULL ) {
                     virtual_leap = virtual_base;
                     /* this entry may have an ambiguity ... */
-                    thunk->possible_ambiguity = TRUE;
+                    thunk->possible_ambiguity = true;
                     /* ... so this table should be checked */
-                    data->curr->ambiguities = TRUE;
+                    data->curr->ambiguities = true;
                 }
                 thunk->override = test_sym;
                 thunk->delta = delta;
@@ -5281,19 +5281,19 @@ static void analyseVFN( THUNK_ACTION *thunk, vftable_walk *data )
                 fillInput( thunk, data, virtual_leap );
             }
             if( thunk->delta != 0 || thunk->ctor_disp ) {
-                thunk->non_empty = TRUE;
+                thunk->non_empty = true;
             }
             /* check for any output (return value) adjustment */
             fillOutput( thunk, data );
             if( thunk->out.delta != 0 || thunk->output_virtual ) {
-                thunk->non_empty = TRUE;
+                thunk->non_empty = true;
             }
         }
     } else {
         fn_type = FunctionDeclarationType( thunk->sym->sym_type );
         if( fn_type->flag & TF1_PURE ) {
             /* we have a pure function with no override */
-            thunk->non_empty = TRUE;
+            thunk->non_empty = true;
         }
     }
 }
@@ -5375,7 +5375,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
         dominated = isQuickScopeDerived( override_scope, test_override_scope );
         if( dominated == DERIVED_NO ) {
             // mark table as corrupted
-            data->curr->corrupted = TRUE;
+            data->curr->corrupted = true;
             if( data->OK_to_diagnose ) {
                 // 'base_sym' can be overridden in (at least) two different
                 // ways, namely, 'override_sym' and 'test_override_sym'
@@ -5385,7 +5385,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
             }
         }
         // prevent the message from the other path
-        thunk->possible_ambiguity = FALSE;
+        thunk->possible_ambiguity = false;
     }
 }
 
@@ -5470,12 +5470,12 @@ static void initThunk( THUNK_ACTION *init )
     init->in.delta = 0;
     init->override = NULL;
     init->out.delta = 0;
-    init->ctor_disp = FALSE;
-    init->input_virtual = FALSE;
-    init->output_virtual = FALSE;
-    init->non_empty = FALSE;
-    init->last_entry = FALSE;
-    init->possible_ambiguity = FALSE;
+    init->ctor_disp = false;
+    init->input_virtual = false;
+    init->output_virtual = false;
+    init->non_empty = false;
+    init->last_entry = false;
+    init->possible_ambiguity = false;
 }
 
 static walk_status collectVFTable( BASE_STACK *top, void *parm )
@@ -5531,14 +5531,14 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
     table = RingAlloc( &(data->tables), amount );
     assignLocation( &(table->h), &location );
     if( location.ctor_disp ) {
-        table->h.ctor_disp = TRUE;
+        table->h.ctor_disp = true;
     } else {
-        table->h.ctor_disp = FALSE;
+        table->h.ctor_disp = false;
     }
     table->h.count = max_vfn;
     table->amt_left = max_vfn;
-    table->ambiguities = FALSE;
-    table->corrupted = FALSE;
+    table->ambiguities = false;
+    table->corrupted = false;
     if( ! data->already_done ) {
         init = table->data;
         for( i = 0; i < max_vfn; ++i ) {
@@ -5546,7 +5546,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
             ++init;
         }
         --init;
-        init->last_entry = TRUE;
+        init->last_entry = true;
         top->hold = table;
         data->curr = table;
         HashWalkData( scope->names, &scanForVFNs, data );
@@ -5565,20 +5565,20 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
     data.final = NULL;
     data.curr = NULL;
     data.top = NULL;
-    data.already_done = FALSE;
-    data.OK_to_diagnose = FALSE;
-    data.thunk_code = FALSE;
+    data.already_done = false;
+    data.OK_to_diagnose = false;
+    data.thunk_code = false;
     if( control & SCV_CTOR ) {
         info = ScopeClass( scope )->u.c.info;
         if( info->vftable_done ) {
-            data.already_done = TRUE;
+            data.already_done = true;
         } else {
-            data.thunk_code = TRUE;
+            data.thunk_code = true;
         }
-        info->vftable_done = TRUE;
+        info->vftable_done = true;
     }
     if( (control & SCV_NO_DIAGNOSE) == 0 ) {
-        data.OK_to_diagnose = TRUE;
+        data.OK_to_diagnose = true;
     }
     VstkOpen( &data.disambig, sizeof( SCOPE ), 8 );
     DbgStmt( if( PragDbgToggle.dump_vftables ) printScopeName( scope, "collecting virtual function table\n" ); );
@@ -5600,14 +5600,14 @@ bool ScopeHasPureFunctions( SCOPE scope )
              , "undefined type passed to ScopeHasPureFunctions" );
     // NYI: could set doCollectVFTable to not worry about thunk contents
     tables = ScopeCollectVFTable( scope, SCV_NO_DIAGNOSE );
-    has_a_pure = FALSE;
+    has_a_pure = false;
     RingIterBeg( tables, table ) {
         if( table->corrupted ) {
             continue;
         }
         for( thunk = table->data; ; ++thunk ) {
             if( ScopePureVirtualThunk( thunk ) != NULL ) {
-                has_a_pure = TRUE;
+                has_a_pure = true;
                 break;
             }
             if( thunk->last_entry ) {
@@ -5730,7 +5730,7 @@ static bool isIdentityMapping( SCOPE from, SCOPE to, vindex *except)
                             if( except[0] != 0 ) {
                                 /* too many exceptions (only one allowed) */
                                 except[0] = 0;
-                                return( FALSE );
+                                return( false );
                             }
                             except[0] = from_index;
                             except[1] = to_index;
@@ -5750,9 +5750,9 @@ static bool isIdentityMapping( SCOPE from, SCOPE to, vindex *except)
         except[0] = 0;
     }
     if( except[0] != 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void emitOffset( target_offset_t offset )
@@ -5873,7 +5873,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
     }
     if( delta != 0 ) {
         data->delta = delta;
-        data->delta_reqd = TRUE;
+        data->delta_reqd = true;
     }
     derived_scope = data->derived;
     vbase = NULL;
@@ -5889,12 +5889,12 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
                 if( data->delta_reqd ) {
                     /* some code is being generated so we can save a copy */
                     data->vb_index = 0;
-                    data->mapping_reqd = TRUE;
+                    data->mapping_reqd = true;
                 }
             } else {
                 /* a virtual base was introduced by the cast */
                 data->vb_index = vbase->vb_index;
-                data->mapping_reqd = TRUE;
+                data->mapping_reqd = true;
             }
             return( WALK_FINISH );
         }
@@ -5905,7 +5905,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
         derived_has_vbases = ScopeHasVirtualBases( derived_scope );
         if( data->delta_reqd || derived_has_vbases ) {
             data->vb_index = 0;
-            data->mapping_reqd = TRUE;
+            data->mapping_reqd = true;
         }
         return( WALK_FINISH );
     }
@@ -5914,7 +5914,7 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
         (2) unsafe conversion to a base with virtual bases
     */
     if( data->delta_reqd ) {
-        data->test_reqd = TRUE;
+        data->test_reqd = true;
     }
     map_0 = 0;
     to_scope = base_scope;
@@ -5937,8 +5937,8 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
             data->single_test = except[0];
             /* if this is 0, any index above 'single_test' maps to 0 */
             data->vb_index = except[1];
-            data->single_mapping = TRUE;
-            data->mapping_reqd = TRUE;
+            data->single_mapping = true;
+            data->mapping_reqd = true;
             return( WALK_FINISH );
         }
     } else {
@@ -5946,13 +5946,13 @@ static walk_status findMembPtrCast( BASE_STACK *top, void *parm )
             /* 0 maps to k but all others don't need mapping */
             data->single_test = 0;
             data->vb_index = map_0;
-            data->single_mapping = TRUE;
-            data->mapping_reqd = TRUE;
+            data->single_mapping = true;
+            data->mapping_reqd = true;
             return( WALK_FINISH );
         }
     }
     data->mapping = genIndexMapping( map_0, from_scope, to_scope );
-    data->mapping_reqd = TRUE;
+    data->mapping_reqd = true;
     return( WALK_FINISH );
 }
 
@@ -5963,10 +5963,10 @@ void ScopeMemberPtrCastAction( MEMBER_PTR_CAST *cast_data )
     cast_data->single_test = 0;
     cast_data->vb_index = 0;
     cast_data->mapping = NULL;
-    cast_data->delta_reqd = FALSE;
-    cast_data->mapping_reqd = FALSE;
-    cast_data->test_reqd = FALSE;
-    cast_data->single_mapping = FALSE;
+    cast_data->delta_reqd = false;
+    cast_data->mapping_reqd = false;
+    cast_data->test_reqd = false;
+    cast_data->single_mapping = false;
     dumpDerivation( cast_data );
     walkDirectBases( cast_data->derived, findMembPtrCast, cast_data );
     dumpData( cast_data );
@@ -5980,7 +5980,7 @@ find_virtual_status ScopeFindVirtual( SCOPE scope, SYMBOL sym[2], NAME name )
 
     status = FVS_NULL;
     initVirtualSearch( &data, sym[0], name );
-    data.ok_to_diagnose = TRUE;
+    data.ok_to_diagnose = true;
     sym[0] = NULL;
     sym[1] = NULL;
     if( searchScope( &data, scope ) ) {
@@ -6040,7 +6040,7 @@ SEARCH_RESULT *ScopeResultFromBase( TYPE class_type, BASE_CLASS *base )
         result->vb_index = base->vb_index;
         result->delta = 0;
     } else {
-        result->non_virtual = TRUE;
+        result->non_virtual = true;
         result->delta = delta;
         result->exact_delta = delta;
     }
@@ -6058,7 +6058,7 @@ static inherit_flag checkBaseAccess( SCOPE d, SCOPE b, derived_status status )
     newLookupData( &data, NULL );
     data.disambiguate = b;
     if( status == DERIVED_YES_BUT_VIRTUAL ) {
-        data.find_all = TRUE;
+        data.find_all = true;
     }
     if( searchScope( &data, d ) ) {
         for( cap = data.paths; cap != NULL; cap = cap->next ) {
@@ -6094,7 +6094,7 @@ SEARCH_RESULT *ScopeFindBaseMember( SCOPE scope, NAME name )
     /* specialized version for accessing component ctors, dtors, and op='s */
     result = ScopeContainsMember( scope, name );
     if( result != NULL ) {
-        result->protected_OK = TRUE;
+        result->protected_OK = true;
     }
     return( result );
 }
@@ -6107,12 +6107,12 @@ SEARCH_RESULT *ScopeFindSymbol( SYMBOL sym )
 
     scope = SymScope( sym );
     result = newResult( scope, sym->name );
-    result->ignore_access = TRUE;
+    result->ignore_access = true;
     if( SymIsUDC( sym ) ) {
         result->sym = sym;
     } else if( SymIsThisDataMember( sym ) ) {
         result->offset = sym->u.member_offset;
-        result->non_virtual = TRUE;
+        result->non_virtual = true;
     }
     return( result );
 }
@@ -6148,8 +6148,8 @@ SEARCH_RESULT *ScopeFindScopedMemberConversion( SCOPE scope, SCOPE disambig, TYP
     data.disambiguate = disambig;
     data.type = t;
     data.this_qualifier = this_qualifier;
-    data.user_conversion = TRUE;
-    data.specific_user_conv = TRUE;
+    data.user_conversion = true;
+    data.specific_user_conv = true;
     setConsiderMask( &data, 0 );
     searchScope( &data, scope );
     result = makeResult( &data );
@@ -6167,8 +6167,8 @@ SEARCH_RESULT *ScopeFindScopedNakedConversion( SCOPE scope, SCOPE disambig, TYPE
     data.disambiguate = disambig;
     data.type = t;
     data.this_qualifier = this_qualifier;
-    data.user_conversion = TRUE;
-    data.specific_user_conv = TRUE;
+    data.user_conversion = true;
+    data.specific_user_conv = true;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
     return( result );
@@ -6198,8 +6198,8 @@ FNOV_LIST *ScopeConversionList( SCOPE scope, type_flag this_qualifier, TYPE type
     newLookupData( &data, CppConversionName() );
     data.type = type;
     data.this_qualifier = this_qualifier;
-    data.user_conversion = TRUE;
-    data.best_user_conv = TRUE;
+    data.user_conversion = true;
+    data.best_user_conv = true;
     setConsiderMask( &data, 0 );
     if( searchScope( &data, scope ) ) {
         delLookupData( &data );
@@ -6215,7 +6215,7 @@ SEARCH_RESULT *ScopeContainsMember( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.no_inherit = TRUE;
+    data.no_inherit = true;
     searchScope( &data, scope );
     result = makeResult( &data );
     return( result );
@@ -6274,7 +6274,7 @@ SYMBOL_NAME ScopeYYLexical( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.ignore_access = TRUE;
+    data.ignore_access = true;
     for(;;) {
         if( scope == NULL ) {
             sym_name = NULL;
@@ -6297,8 +6297,8 @@ SYMBOL_NAME ScopeYYMember( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.member_lookup = TRUE;
-    data.ignore_access = TRUE;
+    data.member_lookup = true;
+    data.ignore_access = true;
     if( searchScope( &data, scope ) ) {
         sym_name = data.paths->sym_name;
         delLookupData( &data );
@@ -6335,7 +6335,7 @@ SEARCH_RESULT *ScopeFindLexicalClassType( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.check_special = TRUE;
+    data.check_special = true;
     data.is_special = ClassTypeName;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
@@ -6349,7 +6349,7 @@ SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.check_special = TRUE;
+    data.check_special = true;
     data.is_special = EnumTypeName;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
@@ -6364,7 +6364,7 @@ SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, NAME name, bool tilde )
 
     // 'name' occurs before a '::'
     newLookupData( &data, name );
-    data.check_special = TRUE;
+    data.check_special = true;
     data.is_special = tilde ? colonColonTildeName : colonColonName;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
@@ -6379,7 +6379,7 @@ SEARCH_RESULT *ScopeFindLexicalNameSpace( SCOPE scope, NAME name )
 
     // 'name' occurs before a '::'
     newLookupData( &data, name );
-    data.check_special = TRUE;
+    data.check_special = true;
     data.is_special = nameSpaceName;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
@@ -6393,7 +6393,7 @@ SEARCH_RESULT *ScopeFindMemberColonColon( SCOPE scope, NAME name )
     auto lookup_walk data;
 
     newLookupData( &data, name );
-    data.check_special = TRUE;
+    data.check_special = true;
     data.is_special = colonColonName;
     searchScope( &data, scope );
     result = makeResult( &data );
@@ -6501,7 +6501,7 @@ static bool searchError( SEARCH_RESULT *result, SYMBOL sym, MSG_NUM msg )
 #else
     AccessErrMsg( msg, sym, &result->errlocn );
 #endif
-    return TRUE;
+    return true;
 }
 
 static bool diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
@@ -6509,7 +6509,7 @@ static bool diagnoseAmbiguity( SEARCH_RESULT *result, SYMBOL sym )
     if( result->ambiguous ) {
         return searchError( result, sym, ERR_AMBIGUOUS_MEMBER );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool ScopeImmediateCheck( SEARCH_RESULT *result )
@@ -6518,7 +6518,7 @@ bool ScopeImmediateCheck( SEARCH_RESULT *result )
     SYMBOL sym;
 
     if( ! _IsClassScope( result->scope ) ) {
-        return( FALSE );
+        return( false );
     }
     sym = result->sym;
     if( sym == NULL ) {
@@ -6531,13 +6531,13 @@ bool ScopeAmbiguousSymbol( SEARCH_RESULT *result, SYMBOL sym )
 /***************************************************************/
 {
     if( ! _IsClassScope( result->scope ) ) {
-        return( FALSE );
+        return( false );
     }
     /* report ambiguity error */
     if( result->mixed_static ) {
         /* fn overload isn't ambiguous provided static member fn is chosen */
         if( ! SymIsStatic( sym ) ) {
-            result->ambiguous = TRUE;
+            result->ambiguous = true;
         }
     }
     return( diagnoseAmbiguity( result, sym ) );
@@ -6547,7 +6547,7 @@ void ScopeDontCheckSymbol( SEARCH_RESULT *result )
 /************************************************/
 {
     if( result != NULL ) {
-        result->ignore_access = TRUE;
+        result->ignore_access = true;
     }
 }
 
@@ -6567,7 +6567,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
             CErr2p( info_msg, result->info1 );
             CErr2p( info_msg, result->info2 );
             if(( msg_status & MS_WARNING ) == 0 ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
@@ -6593,13 +6593,13 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
         }
     }
     if( ! _IsClassScope( located ) ) {
-        return( FALSE );
+        return( false );
     }
     if( result->ignore_access ) {
-        return( FALSE );
+        return( false );
     }
     if( ScopeAmbiguousSymbol( result, sym ) ) {
-        return( TRUE );
+        return( true );
     }
     /* report base class access error */
     perm = result->perm;
@@ -6614,7 +6614,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
     perm = makePerm( sym->flag );
     newAccessData( &access_data, perm, located );
     if( result->protected_OK ) {
-        access_data.protected_OK = TRUE;
+        access_data.protected_OK = true;
     }
     perm = verifyAccess( &access_data );
     if( perm != IN_PUBLIC ) {
@@ -6624,7 +6624,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
         }
         return searchError( result, sym, err_msg );
     }
-    return( FALSE );
+    return( false );
 }
 
 static SYM_REGION *dupSymRegionList( SYM_REGION *list )
@@ -6678,22 +6678,22 @@ bool ScopeEnclosed( SCOPE encloser, SCOPE enclosed )
 {
     for( ; enclosed != NULL; enclosed = enclosed->enclosing ) {
         if( encloser == enclosed ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void ScopeKeep( SCOPE scope )
 /***************************/
 {
-    scope->u.s.keep = TRUE;
+    scope->u.s.keep = true;
 }
 
 void ScopeArgumentCheck( SCOPE scope )
 /************************************/
 {
-    scope->u.s.arg_check = TRUE;
+    scope->u.s.arg_check = true;
 }
 
 void ScopeQualifyPush( SCOPE scope, SCOPE access )
@@ -6891,13 +6891,13 @@ bool ScopeLocalClass( SCOPE scope )
 /*********************************/
 {
     if( ! _IsClassScope( scope ) ) {
-        return( FALSE );
+        return( false );
     }
     scope = findFunctionScope( scope );
     if( scope != NULL ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 SCOPE ScopeHostClass( SCOPE class_scope )
@@ -6948,7 +6948,7 @@ SYMBOL ScopeASMUseSymbol( NAME name, bool *uses_auto )
     sym = SymMarkRefed( sym );
     if( SymIsAutomatic( sym ) ) {
         sym->sym_type = MakeForceInMemory( sym->sym_type );
-        *uses_auto = TRUE;
+        *uses_auto = true;
     }
     return( sym );
 }
@@ -7033,19 +7033,19 @@ static bool changePragmaType(   // TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
     AUX_INFO *auxinfo )         // - new aux info
 {
-    bool        retn;           // - return: TRUE ==> change required
+    bool        retn;           // - return: true ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
 
     old_pragma = TypeHasPragma( sym->sym_type );
     if( old_pragma == NULL ) {
-        retn = TRUE;
+        retn = true;
     } else if( old_pragma == auxinfo ) {
-        retn = FALSE;
+        retn = false;
     } else if( PragmaChangeConsistent( old_pragma, auxinfo ) ) {
-        retn = TRUE;
+        retn = true;
     } else {
         CErr2p( WARN_PRAGMA_MERGE, sym );
-        retn = FALSE;
+        retn = false;
     }
     return retn;
 }
@@ -7199,16 +7199,16 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
 bool ScopeDebugable(            // DETERMINE IF SCOPE TO BE DEBUGGED
     SCOPE scope )               // - the scope
 {
-    bool retn;                  // - TRUE ==> pass scope to debugger
+    bool retn;                  // - true ==> pass scope to debugger
 
     if( NULL == scope ) {
-        retn = FALSE;
+        retn = false;
     } else if( ScopeFunction( scope->enclosing ) ) {
-        retn = FALSE;
+        retn = false;
     } else if( HashEmpty( scope->names ) ) {
-        retn = FALSE;
+        retn = false;
     } else {
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -7325,7 +7325,7 @@ static void markFreeNameSpace( void *p )
 {
     NAME_SPACE *ns = p;
 
-    ns->u.s.free = TRUE;
+    ns->u.s.free = true;
 }
 
 static void saveNameSpace( void *e, carve_walk_base *d )
@@ -7398,7 +7398,7 @@ static void saveScope( void *e, carve_walk_base *d )
     case SCOPE_TEMPLATE_PARM:
         save_owner_tinfo = s->owner.tinfo;
         if( save_owner_tinfo != NULL ) {
-            DbgAssert( s->u.s.fn_template == FALSE );
+            DbgAssert( s->u.s.fn_template == false );
             s->owner.tinfo = TemplateClassInfoGetIndex( save_owner_tinfo );
         }
         break;
@@ -7722,7 +7722,7 @@ static void readScopes( void )
         s->ordered = SymbolMapIndex( s->ordered );
         s->using_list = CarveMapIndex( carveUSING_NS, s->using_list );
         // used to indicate changes from creation time (or PCH creation time)
-        s->u.s.dirty = FALSE;
+        s->u.s.dirty = false;
         switch( s->id ) {
         case SCOPE_FUNCTION:
             s->owner.sym = SymbolMapIndex( s->owner.sym );
@@ -7735,7 +7735,7 @@ static void readScopes( void )
             s->owner.ns = NameSpaceMapIndex( s->owner.ns );
             break;
         case SCOPE_TEMPLATE_PARM:
-            DbgAssert( s->u.s.fn_template == FALSE );
+            DbgAssert( s->u.s.fn_template == false );
             s->owner.tinfo = TemplateClassInfoMapIndex( s->owner.tinfo );
             break;
         default :
@@ -7880,7 +7880,7 @@ void ScopeSetParmClass( SCOPE parm_scope, TEMPLATE_INFO * info )
 {
     DbgAssert( parm_scope->id == SCOPE_TEMPLATE_PARM );
     parm_scope->owner.tinfo = info;
-    parm_scope->u.s.fn_template = FALSE;
+    parm_scope->u.s.fn_template = false;
 }
 
 
@@ -7889,7 +7889,7 @@ void ScopeSetParmFn( SCOPE parm_scope, FN_TEMPLATE *defn )
 {
     DbgAssert( parm_scope->id == SCOPE_TEMPLATE_PARM );
     parm_scope->owner.defn = defn;
-    parm_scope->u.s.fn_template = TRUE;
+    parm_scope->u.s.fn_template = true;
 }
 
 

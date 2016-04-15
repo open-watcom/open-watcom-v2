@@ -136,7 +136,7 @@ SYMBOL CallIndirectPush(        // PUSH SYMBOL FOR INDIRECT CALL
 
 void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     SYMBOL vfunc,               // - the virtual function
-    bool is_virtual,            // - TRUE ==> an actual virtual call
+    bool is_virtual,            // - true ==> an actual virtual call
     target_offset_t adj_this,   // - adjustment for "this"
     target_offset_t adj_retn )  // - adjustment for return
 {

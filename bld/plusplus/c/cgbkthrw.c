@@ -76,7 +76,7 @@ static THROW_RO *throwRoGet(    // GET THROW R/O BLOCK
     if( ro == NULL ) {
         ro = RingCarveAlloc( carveTHROW_RO, &ring_throw_ro );
         ro->sig = BeTypeSignature( type );
-        ro->emitted = FALSE;
+        ro->emitted = false;
         sym = CgVarRo( CgbkInfo.size_offset + sizeOfThrowCnv() * ThrowCnvInit( &ctl, type ),
                      SC_PUBLIC, CppNameThrowRo( type ) );
         ro->sym = sym;
@@ -131,7 +131,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
 
     RingIterBeg( ring_throw_ro, ro ) {
         if( ! ro->emitted ) {
-            ro->emitted = TRUE;
+            ro->emitted = true;
             old_seg = DgSetSegSym( ro->sym );
             CgBackGenLabelInternal( ro->sym );
             offset = ThrowCnvInit( &ctl, ro->sig->type );

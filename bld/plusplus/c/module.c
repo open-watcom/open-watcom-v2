@@ -131,11 +131,11 @@ unsigned StaticInitFuncBeg(     // START INITIALIZATION OF STATIC IN FUNCTION
         CgSetType( GetBasicType( TYP_SINT ) );
         CgFrontCodeUint( IC_LEAF_CONST_INT, init_var->mask );
         CgFrontCode( IC_CALL_PARM );
-        moduleInitVar( init_var->var, FALSE );
+        moduleInitVar( init_var->var, false );
         CgFrontCode( IC_CALL_PARM );
         CgFrontCode( IC_CALL_EXEC );
     } else {
-        moduleInitVar( init_var->var, TRUE );
+        moduleInitVar( init_var->var, true );
         CgFrontCodeUint( IC_OPR_UNARY, CO_FETCH );
         CgFrontCodeUint( IC_LEAF_CONST_INT, init_var->mask );
         CgFrontCodeUint( IC_OPR_BINARY, CO_AND );
@@ -145,7 +145,7 @@ unsigned StaticInitFuncBeg(     // START INITIALIZATION OF STATIC IN FUNCTION
     init_label = CgFrontLabelCs();
     CgFrontGotoNear( IC_LABEL_CS, O_IF_TRUE, init_label );
     if( !CompFlags.bm_switch_used ) {
-        moduleInitVar( init_var->var, TRUE );
+        moduleInitVar( init_var->var, true );
         CgFrontCodeUint( IC_LEAF_CONST_INT, init_var->mask );
         CgFrontCodeUint( IC_OPR_BINARY, CO_OR_EQUAL );
         CgFrontCode( IC_EXPR_DONE );
@@ -204,7 +204,7 @@ void ModuleInitInit(            // START MODULE-INITIALIZATION FUNCTION
     SetCurrScope(GetFileScope());
     ScopeBeginFunction( module_init );
     FunctionBodyStartup( module_init, &module_fd, FUNC_NULL );
-    module_fd.retn_opt = FALSE;
+    module_fd.retn_opt = false;
     module_init_scope = GetCurrScope();
     ScopeKeep( module_init_scope );
     moduleInitRestore( curr_scope );
@@ -373,12 +373,12 @@ pch_status PCHFiniModuleData( bool writing )
 bool ModuleIsZap1( CGFILE_INS *p )
 {
     if( p->block != module_fd.init_state_tab.block ) {
-        return( FALSE );
+        return( false );
     }
     if( p->offset != module_fd.init_state_tab.offset ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void *ModuleIsZap2( CGFILE_INS *p )

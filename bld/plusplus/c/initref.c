@@ -137,7 +137,7 @@ static PTREE getArgNode(        // GET ARGUMENT NODE OF SPECIFIED TYPE
 void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
     PTREE expr )                // - initialization expression
 {
-    bool zapped_auto;           // - TRUE ==> zapped to block scope
+    bool zapped_auto;           // - true ==> zapped to block scope
     PTREE setup;                // - CO_CALL_SETUP node
     PTREE caller;               // - PT_SYMBOL for caller
     symbol_class id;            // - CLASS FOR TEMP
@@ -146,7 +146,7 @@ void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
     last_dtor_node = NULL;
     last_init_node = NULL;
     PTreeTraverseInitRef( expr, processInitNode );
-    zapped_auto = FALSE;
+    zapped_auto = false;
     if( inited_temp != NULL
      && last_init_node != NULL ) {
         if( expr->flags & PTF_STATIC_INIT ) {

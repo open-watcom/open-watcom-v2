@@ -175,7 +175,7 @@ static unsigned copyMTokToBuffer( MACRO_TOKEN *mtok )
 
 static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
     MACRO_TOKEN *list,              // - list of tokens
-    bool doing_macro_expansion )    // - TRUE ==> doing an expansion
+    bool doing_macro_expansion )    // - true ==> doing an expansion
 {
     char *token_end;
     MACRO_TOKEN *mtok;
@@ -189,11 +189,11 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
     for(;;) {
         mtok = list;
         if( mtok == NULL ) {
-            CompFlags.use_macro_tokens = FALSE;
+            CompFlags.use_macro_tokens = false;
             break;
         }
-        flag.keep_token = FALSE;
-        flag.next_token = FALSE;
+        flag.keep_token = false;
+        flag.next_token = false;
         CurToken = mtok->token;
         i = copyMTokToBuffer( mtok );
         switch( CurToken ) {
@@ -226,7 +226,7 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
             if( *token_end != '\0' ) {
                 // ppnumber is quite general so it may absorb multiple tokens
                 strcpy( mtok->data, token_end );
-                flag.keep_token = TRUE;
+                flag.keep_token = true;
             }
             break;
         case T_STRING:
@@ -239,7 +239,7 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
             if( Buffer[0] == 'Z' ) {    // if end of macro
                 deleteNestedMacro();
             }
-            flag.next_token = TRUE;
+            flag.next_token = true;
             break;
         }
         if( ! flag.keep_token ) {
@@ -255,7 +255,7 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
 }
 
 void GetMacroToken(                 // GET NEXT TOKEN
-    bool doing_macro_expansion )    // - TRUE ==> doing an expansion
+    bool doing_macro_expansion )    // - true ==> doing an expansion
 {
     scannerTokenList = doGetMacroToken( scannerTokenList, doing_macro_expansion );
 }
@@ -417,7 +417,7 @@ static TOKEN nextMToken( TOKEN prev_token )
 {
     ppctl_t old_ppctl;
 
-    internalTokenList = doGetMacroToken( internalTokenList, TRUE );
+    internalTokenList = doGetMacroToken( internalTokenList, true );
     if( CurToken == T_NULL ) {
         if( ScanOptionalComment() ) {
             CurToken = T_WHITE_SPACE;
@@ -430,13 +430,13 @@ static TOKEN nextMToken( TOKEN prev_token )
                 //  will not advance past T_NULL]
                 old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
-                CurToken = ScanToken( TRUE );
+                CurToken = ScanToken( true );
                 PPControl = old_ppctl;
                 if( CurToken == T_NULL ) {
                     CurToken = T_WHITE_SPACE;
                 }
             } else {
-                CurToken = ScanToken( TRUE );
+                CurToken = ScanToken( true );
             }
         }
     }
@@ -690,12 +690,12 @@ static bool macroBeingExpanded( MEPTR fmentry )
 
     for( nested = nestedMacros; nested != NULL; nested = nested->next ) {
         if( nested->fmentry == fmentry )
-            return( TRUE );
+            return( true );
         if( ! nested->rescanning ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static int isExpandable( MEPTR curr_mac, MACRO_TOKEN *mtok, int macro_parm )
@@ -905,7 +905,7 @@ static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     ReScanInit( &Buffer[10] );
     head = NULL;
     ptail = &head;
-    for( finished = FALSE; !finished; ) {
+    for( finished = false; !finished; ) {
         finished = ReScanToken();
         ptail = buildTokenOnEnd( ptail, CurToken, Buffer );
     }
@@ -1181,12 +1181,12 @@ static bool SharpSharp( MACRO_TOKEN *mtok )
 {
     for( ; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token == T_MACRO_SHARP_SHARP )
-            return( TRUE );
+            return( true );
         if( mtok->token != T_WHITE_SPACE ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
@@ -1219,7 +1219,7 @@ static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
             }
             list = dummy_list;
             if( prev_non_ws != T_MACRO_SHARP_SHARP && !SharpSharp( mtok->next ) ) {
-                list = expandNestedMacros( list, FALSE );
+                list = expandNestedMacros( list, false );
             }
             if( list == NULL ) {
                 list = mtok;
@@ -1278,7 +1278,7 @@ static MACRO_TOKEN *macroExpansion( MEPTR fmentry, bool rescanning )
     nested = CarveAlloc( carveNESTED_MACRO );
     nested->fmentry = fmentry;
     nested->rescanning = rescanning;
-    nested->substituting_parms = FALSE;
+    nested->substituting_parms = false;
     nested->macro_parms = NULL;
     head = NULL;
     ptail = &head;
@@ -1295,9 +1295,9 @@ static MACRO_TOKEN *macroExpansion( MEPTR fmentry, bool rescanning )
         tokens = (char *)fmentry + fmentry->macro_defn;
         ptail = buildMTokenList( ptail, tokens, macro_parms );
         if( macro_parms != NULL ) {
-            nested->substituting_parms = TRUE;
+            nested->substituting_parms = true;
             head = substituteParms( head, macro_parms );
-            nested->substituting_parms = FALSE;
+            nested->substituting_parms = false;
         }
         head = glueTokens( head );
         markUnexpandableIds( head );
@@ -1308,7 +1308,7 @@ static MACRO_TOKEN *macroExpansion( MEPTR fmentry, bool rescanning )
 
 static MACRO_TOKEN *nestedMacroExpansion( MEPTR fmentry, bool rescanning )
 {
-    return( expandNestedMacros( macroExpansion( fmentry, FALSE ), rescanning ) );
+    return( expandNestedMacros( macroExpansion( fmentry, false ), rescanning ) );
 }
 
 void DoMacroExpansion(          // EXPAND A MACRO
@@ -1316,13 +1316,13 @@ void DoMacroExpansion(          // EXPAND A MACRO
 {
     DbgAssert( scannerTokenList == NULL );
     macroDepth = 0;
-    scannerTokenList = nestedMacroExpansion( fmentry, TRUE );
+    scannerTokenList = nestedMacroExpansion( fmentry, true );
     // GetMacroToken will feed back tokens from the tokenList
     // when the tokenList is exhausted, then revert back to normal scanning
     if( scannerTokenList == NULL ) {
-        CompFlags.use_macro_tokens = FALSE;
+        CompFlags.use_macro_tokens = false;
     } else {
-        CompFlags.use_macro_tokens = TRUE;
+        CompFlags.use_macro_tokens = true;
     }
 }
 

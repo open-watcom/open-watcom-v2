@@ -126,7 +126,7 @@ static void doRttiGen( RTTI_CLASS *r )
     } RingIterEnd( leap )
     BESetSeg( old_seg );
     ScopeRttiFreeLeaps( leaps );
-    r->cg_gen = TRUE;
+    r->cg_gen = true;
 }
 
 static char rotateChar( char c, unsigned rotate )

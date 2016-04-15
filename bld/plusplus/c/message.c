@@ -115,7 +115,7 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
     if( NULL != err_locn.src_file ) {
         if( SrcFileTraceBackReqd( err_locn.src_file ) ) {
             SrcFileTraceBack( err_locn.src_file );
-            CompFlags.log_note_msgs = TRUE;
+            CompFlags.log_note_msgs = true;
             if( CompFlags.ew_switch_used ) {
                 MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
                               , INF_FILE_LOCATION
@@ -127,7 +127,7 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
                 fname = fileName( src_file );
                 MsgDisplayArgs( IDEMSGSEV_NOTE, INF_FILE_NEST, fname, line );
             }
-            CompFlags.log_note_msgs = FALSE;
+            CompFlags.log_note_msgs = false;
         }
     }
 }
@@ -135,11 +135,11 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
 static void fmt_inf_hdr         // FORMAT THE INFORMATION HDR
     ( char const *hdr_str )
 {
-    CompFlags.log_note_msgs = TRUE;
+    CompFlags.log_note_msgs = true;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
                   , INF_ERR_LOCATION
                   , hdr_str );
-    CompFlags.log_note_msgs = FALSE;
+    CompFlags.log_note_msgs = false;
 }
 
 
@@ -147,24 +147,24 @@ static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
     ( char const *hdr_str             // - header name
     , char const *sw_val )            // - switch
 {
-    CompFlags.log_note_msgs = TRUE;
+    CompFlags.log_note_msgs = true;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
                   , INF_SWITCH_LOCATION
                   , hdr_str
                   , sw_val );
-    CompFlags.log_note_msgs = FALSE;
+    CompFlags.log_note_msgs = false;
 }
 
 static void fmt_inf_hdr_sym     // FORMAT THE INFORMATION HDR, WITH SYMBOL
     ( char const *hdr_str             // - header name
     , SYMBOL sym )              // - symbol in question
 {
-    CompFlags.log_note_msgs = TRUE;
+    CompFlags.log_note_msgs = true;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
                   , INF_CG_LOCATION
                   , hdr_str
                   , sym );
-    CompFlags.log_note_msgs = FALSE;
+    CompFlags.log_note_msgs = false;
 }
 
 char const *IntlUsageText(      // GET INTERNATIONAL USAGE TEXT
@@ -255,19 +255,19 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
         }
         notes_locn = *msg_locn;
     }
-    goes_in_err_file = FALSE;
+    goes_in_err_file = false;
     switch( severity ) {
     case IDEMSGSEV_WARNING:
     case IDEMSGSEV_ERROR:
     case IDEMSGSEV_NOTE:
-        goes_in_err_file = TRUE;
+        goes_in_err_file = true;
         break;
     case IDEMSGSEV_BANNER:
     case IDEMSGSEV_DEBUG:
         break;
     case IDEMSGSEV_NOTE_MSG:
         if( CompFlags.log_note_msgs ) {
-            goes_in_err_file = TRUE;
+            goes_in_err_file = true;
         }
         break;
     DbgDefault( "unknown severity" );
@@ -332,7 +332,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     CTX context;                // - current context
     void const *inf;            // - information about context
     char const *inf_prefix;     // - prefix for information
-    bool context_changed;       // - TRUE ==> new context from last time
+    bool context_changed;       // - true ==> new context from last time
 
     context_changed = CtxCurrent( &context, &inf, &inf_prefix );
     setMsgLocation( context );
@@ -526,7 +526,7 @@ void ErrFileOpen( void )        // OPEN ERROR FILE
 
     if( !CompFlags.errfile_opened && SrcFName != NULL ) {
         // we want to keep retrying until we get a source file name
-        CompFlags.errfile_opened = TRUE;
+        CompFlags.errfile_opened = true;
         buf = IoSuppOutFileName( OFT_ERR );
         if( buf != NULL ) {
             fileErase( buf );
@@ -560,7 +560,7 @@ void CSuicide(                  // COMMIT SUICIDE
     void *env;
     SUICIDE_CALLBACK *ctl;
 
-    CompFlags.compile_failed = TRUE;
+    CompFlags.compile_failed = true;
     if( Environment ) {
         env = Environment;
         Environment = NULL;
@@ -591,7 +591,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     bool print_err;
     int level;
 
-    print_err = TRUE;
+    print_err = true;
     level = msg_level[ msgnum ] & 0x0F;
     switch( msg_level[ msgnum ] >> 4 ) {
       case MSG_TYPE_INFO :
@@ -620,7 +620,7 @@ bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
     int level;                  // - warning level of message
 
     if( ! okToPrintMsg( msgnum, &level ) ) {
-        return( FALSE );
+        return( false );
     }
     return( level <= WngLevel );
 }
@@ -633,8 +633,8 @@ static msg_status_t doError(    // ISSUE ERROR
     msg_status_t retn;          // - message status
     int level;                  // - warning level of message
     struct {
-        unsigned print_err : 1; // - TRUE ==> print the message
-        unsigned too_many : 1;  // - TRUE ==> too many messages
+        unsigned print_err : 1; // - true ==> print the message
+        unsigned too_many : 1;  // - true ==> too many messages
     } flag;
 
 #ifndef NDEBUG
@@ -644,7 +644,7 @@ static msg_status_t doError(    // ISSUE ERROR
 
     retn = MS_NULL;
     if( ! errLimitExceeded ) {
-        flag.too_many = TRUE;
+        flag.too_many = true;
         flag.print_err = okToPrintMsg( msgnum, &level );
         if( suppressCount > 0 ) {
             /* suppressed message */
@@ -654,18 +654,18 @@ static msg_status_t doError(    // ISSUE ERROR
             return MS_NULL;
         } else if( ErrLimit == -1 ) {
             /* unlimited messages */
-            flag.too_many = FALSE;
+            flag.too_many = false;
         } else if( ErrCount < ErrLimit ) {
             /* haven't hit the limit */
-            flag.too_many = FALSE;
+            flag.too_many = false;
         } else if( msgnum == ERR_EXCEEDED_LIMIT ) {
             /* we hit the limit and we want to diagnose the condition */
-            flag.too_many = FALSE;
+            flag.too_many = false;
         } else if( ErrCount == ErrLimit ) {
             /* have hit the limit */
             if( !flag.print_err || level != WLEVEL_ERROR ) {
                 /* this message isn't an error; it's a warning or info */
-                flag.too_many = FALSE;
+                flag.too_many = false;
             }
         }
         if( ! flag.too_many ) {
@@ -679,7 +679,7 @@ static msg_status_t doError(    // ISSUE ERROR
             }
         } else {
             CErr( ERR_EXCEEDED_LIMIT );
-            errLimitExceeded = TRUE;
+            errLimitExceeded = true;
             CSuicide();
         }
     }
@@ -788,9 +788,9 @@ bool CErrSuppressedOccurred(
     suppressCount--;
     if( *previous_state != internalErrCount ) {
         internalErrCount = *previous_state;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void CErrCheckpoint(
@@ -803,21 +803,21 @@ bool CErrOccurred(
     error_state_t *previous_state )
 {
     if( *previous_state != ErrCount ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
     int level )                 // - level to be validated
 {
-    bool retn;                  // - return: TRUE ==> good level
+    bool retn;                  // - return: true ==> good level
 
     if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        retn = FALSE;
+        retn = false;
     } else {
-        retn = TRUE;
+        retn = true;
     }
     return retn;
 }
@@ -986,7 +986,7 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    errLimitExceeded = FALSE;
+    errLimitExceeded = false;
     err_file = NULL;
     err_locn.src_file = NULL;
     suicideCallbacks = NULL;

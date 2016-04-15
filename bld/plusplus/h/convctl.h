@@ -66,50 +66,50 @@ struct convtype                 // CONVTYPE -- information about a type
     type_flag ptedflags;        // - modifier flags (pted)
     RKD kind;                   // - kind of element
     PC_PTR pc_ptr;              // - classification of PC ptr type
-    uint_8 reference        :1; // - TRUE ==> is reference
-    uint_8 array            :1; // - TRUE ==> is array
-    uint_8 bit_field        :1; // - TRUE ==> is bit_field
-    uint_8 class_operand    :1; // - TRUE ==> is class or ref-class operand
+    uint_8 reference        :1; // - true ==> is reference
+    uint_8 array            :1; // - true ==> is array
+    uint_8 bit_field        :1; // - true ==> is bit_field
+    uint_8 class_operand    :1; // - true ==> is class or ref-class operand
     unsigned :0;                // alignment
 };
 
 #define CONVCTL_FLAGS                                                          \
-CONVCTL_FLAG( has_err_operand  ) /* - TRUE ==> at least one operand is error*/ \
-CONVCTL_FLAG( converts         ) /* - TRUE ==> converts trivially (in-place)*/ \
-CONVCTL_FLAG( to_base          ) /* - TRUE ==> converts to base             */ \
-CONVCTL_FLAG( to_derived       ) /* - TRUE ==> converts to derived          */ \
-CONVCTL_FLAG( to_ambiguous     ) /* - TRUE ==> to/from ambiguous class      */ \
-CONVCTL_FLAG( to_private       ) /* - TRUE ==> to private base              */ \
-CONVCTL_FLAG( to_protected     ) /* - TRUE ==> to protected base            */ \
-CONVCTL_FLAG( to_void          ) /* - TRUE ==> ptr converts to void*        */ \
-CONVCTL_FLAG( from_void        ) /* - TRUE ==> ptr converts from void*      */ \
-CONVCTL_FLAG( ptr_integral_ext ) /* - TRUE ==> ptr to integral extension    */ \
-CONVCTL_FLAG( cv_err_0         ) /* - TRUE ==> CV error, level 0            */ \
-CONVCTL_FLAG( const_cast_ok    ) /* - TRUE ==> const_cast ok                */ \
-CONVCTL_FLAG( static_cast_ok   ) /* - TRUE ==> static_cast ok               */ \
-CONVCTL_FLAG( reint_cast_ok    ) /* - TRUE ==> reinterpret_cast ok          */ \
-CONVCTL_FLAG( dynamic_cast_ok  ) /* - TRUE ==> dynamic_cast ok              */ \
-CONVCTL_FLAG( implicit_cast_ok ) /* - TRUE ==> implicit_cast ok             */ \
-CONVCTL_FLAG( explicit_cast_ok ) /* - TRUE ==> explicit_cast ok             */ \
-CONVCTL_FLAG( keep_cast        ) /* - TRUE ==> keep implicit cast node      */ \
-CONVCTL_FLAG( used_destination ) /* - TRUE ==> initialized the destination  */ \
-CONVCTL_FLAG( dtor_destination ) /* - TRUE ==> dtor destination if req'd    */ \
+CONVCTL_FLAG( has_err_operand  ) /* - true ==> at least one operand is error*/ \
+CONVCTL_FLAG( converts         ) /* - true ==> converts trivially (in-place)*/ \
+CONVCTL_FLAG( to_base          ) /* - true ==> converts to base             */ \
+CONVCTL_FLAG( to_derived       ) /* - true ==> converts to derived          */ \
+CONVCTL_FLAG( to_ambiguous     ) /* - true ==> to/from ambiguous class      */ \
+CONVCTL_FLAG( to_private       ) /* - true ==> to private base              */ \
+CONVCTL_FLAG( to_protected     ) /* - true ==> to protected base            */ \
+CONVCTL_FLAG( to_void          ) /* - true ==> ptr converts to void*        */ \
+CONVCTL_FLAG( from_void        ) /* - true ==> ptr converts from void*      */ \
+CONVCTL_FLAG( ptr_integral_ext ) /* - true ==> ptr to integral extension    */ \
+CONVCTL_FLAG( cv_err_0         ) /* - true ==> CV error, level 0            */ \
+CONVCTL_FLAG( const_cast_ok    ) /* - true ==> const_cast ok                */ \
+CONVCTL_FLAG( static_cast_ok   ) /* - true ==> static_cast ok               */ \
+CONVCTL_FLAG( reint_cast_ok    ) /* - true ==> reinterpret_cast ok          */ \
+CONVCTL_FLAG( dynamic_cast_ok  ) /* - true ==> dynamic_cast ok              */ \
+CONVCTL_FLAG( implicit_cast_ok ) /* - true ==> implicit_cast ok             */ \
+CONVCTL_FLAG( explicit_cast_ok ) /* - true ==> explicit_cast ok             */ \
+CONVCTL_FLAG( keep_cast        ) /* - true ==> keep implicit cast node      */ \
+CONVCTL_FLAG( used_destination ) /* - true ==> initialized the destination  */ \
+CONVCTL_FLAG( dtor_destination ) /* - true ==> dtor destination if req'd    */ \
 /* used for class->class conversions                                        */ \
-CONVCTL_FLAG( clscls_derived   ) /* - TRUE ==> allows base to derived       */ \
-CONVCTL_FLAG( clscls_cv        ) /* - TRUE ==> check CV                     */ \
-CONVCTL_FLAG( clscls_implicit  ) /* - TRUE ==> implicit cast underway       */ \
-CONVCTL_FLAG( clscls_static    ) /* - TRUE ==> static cast underway         */ \
-CONVCTL_FLAG( clscls_explicit  ) /* - TRUE ==> explicit cast underway       */ \
-CONVCTL_FLAG( clscls_refundef  ) /* - TRUE ==> references not reqd to be def'd */ \
-CONVCTL_FLAG( clscls_copy_init ) /* - TRUE ==> use ctor's + udcf's to convert */ \
+CONVCTL_FLAG( clscls_derived   ) /* - true ==> allows base to derived       */ \
+CONVCTL_FLAG( clscls_cv        ) /* - true ==> check CV                     */ \
+CONVCTL_FLAG( clscls_implicit  ) /* - true ==> implicit cast underway       */ \
+CONVCTL_FLAG( clscls_static    ) /* - true ==> static cast underway         */ \
+CONVCTL_FLAG( clscls_explicit  ) /* - true ==> explicit cast underway       */ \
+CONVCTL_FLAG( clscls_refundef  ) /* - true ==> references not reqd to be def'd */ \
+CONVCTL_FLAG( clscls_copy_init ) /* - true ==> use ctor's + udcf's to convert */ \
 /* used for diagnosis                                                       */ \
-CONVCTL_FLAG( cv_mismatch      ) /* - TRUE ==> const/vol casted away            */ \
-CONVCTL_FLAG( bad_mptr_class   ) /* - TRUE ==> level(0) memb-ptr class not derived */ \
-CONVCTL_FLAG( diff_mptr_class  ) /* - TRUE ==> level(0) memb-ptr class differs */ \
-CONVCTL_FLAG( size_ptr_to_int  ) /* - TRUE ==> ptr -> integral won't fit    */ \
-CONVCTL_FLAG( used_cv_convert  ) /* - TRUE ==> cv-promotion occurred        */ \
-CONVCTL_FLAG( diag_ext_conv    ) /* - TRUE ==> extended conversion diag'ed  */ \
-CONVCTL_FLAG( diag_bind_ncref  ) /* - TRUE ==> diag'ed non-const ref binding*/
+CONVCTL_FLAG( cv_mismatch      ) /* - true ==> const/vol casted away            */ \
+CONVCTL_FLAG( bad_mptr_class   ) /* - true ==> level(0) memb-ptr class not derived */ \
+CONVCTL_FLAG( diff_mptr_class  ) /* - true ==> level(0) memb-ptr class differs */ \
+CONVCTL_FLAG( size_ptr_to_int  ) /* - true ==> ptr -> integral won't fit    */ \
+CONVCTL_FLAG( used_cv_convert  ) /* - true ==> cv-promotion occurred        */ \
+CONVCTL_FLAG( diag_ext_conv    ) /* - true ==> extended conversion diag'ed  */ \
+CONVCTL_FLAG( diag_bind_ncref  ) /* - true ==> diag'ed non-const ref binding*/
 
 
 struct convctl                  // CONVCTL -- conversion control information

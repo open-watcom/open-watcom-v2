@@ -112,7 +112,7 @@ struct ts_hdr                           // TYPE-SIG HEADER
 {   uint_8  hdr_actual;                 // - actual entry
     uint_8  hdr_ptr;                    // - T* entry
     uint_8  hdr_ref;                    // - T& entry
-    uint_8  indirect :1;                // - TRUE ==> indirect entry
+    uint_8  indirect :1;                // - true ==> indirect entry
 };
 
 #define __STR( __s ) #__s                               // quoted string

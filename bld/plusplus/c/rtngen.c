@@ -116,11 +116,11 @@ void RtnGenerate( void )
 /**********************/
 {
     RTN_GEN *c;
-    bool keep_going = TRUE;
+    bool keep_going = true;
 
     SetCurrScope( GetFileScope() );
     while( keep_going ) {
-        keep_going = FALSE;
+        keep_going = false;
 
         CtxSetCurrContext( CTX_FUNC_GEN );
         keep_going = ClassDefineRefdDefaults();
@@ -130,14 +130,14 @@ void RtnGenerate( void )
         while( useSYMBOL != NULL ) {
             c = useSYMBOL;
             useSYMBOL = c->next;
-            keep_going = TRUE;
+            keep_going = true;
             (*execSYMBOL[ c->index ])( c->parm );
             CarveFree( carveRTN_GEN, c );
         }
         while( useTYPE != NULL ) {
             c = useTYPE;
             useTYPE = c->next;
-            keep_going = TRUE;
+            keep_going = true;
             (*execTYPE[ c->index ])( c->parm );
             CarveFree( carveRTN_GEN, c );
         }

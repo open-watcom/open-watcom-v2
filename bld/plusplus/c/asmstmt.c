@@ -84,13 +84,13 @@ static PTREE genFnCall( NAME name )
 
 static bool endOfAsmStmt( void )
 {
-    if( CurToken == T_EOF ) return( TRUE );
-    if( CurToken == T_NULL ) return( TRUE );
-    if( CurToken == T___ASM ) return( TRUE );
-    if( CurToken == T_RIGHT_BRACE ) return( TRUE );
-    if( CurToken == T_ALT_RIGHT_BRACE ) return( TRUE );
-    if( CurToken == T_SEMI_COLON ) return( TRUE );
-    return( FALSE );
+    if( CurToken == T_EOF ) return( true );
+    if( CurToken == T_NULL ) return( true );
+    if( CurToken == T___ASM ) return( true );
+    if( CurToken == T_RIGHT_BRACE ) return( true );
+    if( CurToken == T_ALT_RIGHT_BRACE ) return( true );
+    if( CurToken == T_SEMI_COLON ) return( true );
+    return( false );
 }
 
 static void getAsmLine( VBUF *buff )

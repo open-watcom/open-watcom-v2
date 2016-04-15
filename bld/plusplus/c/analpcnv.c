@@ -73,7 +73,7 @@ static bool ptr_to_void(        // TEST IF PTR TYPE IS POINTER TO VOID
 }
 
 
-static PTREE adjust_base_ptr(   // ADJUST BASE PTR AS TRUE/TESTING CONVERSION
+static PTREE adjust_base_ptr(   // ADJUST BASE PTR AS true/TESTING CONVERSION
     PTREE orig,                 // - original node
     PTREE offset,               // - offset calculation
     TYPE type )                 // - type, after conversion
@@ -98,7 +98,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     TYPE adjust_type;
     PTREE dup;
 
-    vbptr_type = MakeVBTableFieldType( TRUE );
+    vbptr_type = MakeVBTableFieldType( true );
     offset = NodeOffset( vb_offset );
     expr = NodeBinary( CO_DOT, expr, offset );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
@@ -128,7 +128,7 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     PTREE *a_expr,              // - addr( ptr to be converted )
     TYPE base,                  // - base type
     unsigned delta,             // - adjustment
-    bool positive )             // - TRUE ==> use positive value
+    bool positive )             // - true ==> use positive value
 {
     PTREE offset;               // - node containing delta
 
@@ -148,7 +148,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     PTREE *a_expr,              // - addr( ptr to be converted )
     TYPE base,                  // - base type
     SEARCH_RESULT *result,      // - search result
-    bool positive )             // - TRUE ==> use positive value
+    bool positive )             // - true ==> use positive value
 {
     target_offset_t vb_offset;  // - offset of vbptr
     vindex vb_index;            // - index in vbtable
@@ -236,7 +236,7 @@ static TYPE convert_base_ptr(   // CONVERT TO A BASE-CLASS POINTER
     TYPE base,                  // - base type
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope,           // - base scope
-    bool positive )             // - TRUE ==> use positive value
+    bool positive )             // - true ==> use positive value
 {
     SEARCH_RESULT *result;
 
@@ -253,7 +253,7 @@ TYPE NodeConvertDerivedToBase(  // CONVERT DERIVED PTR TO NONVIRTUAL BASE PTR
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, TRUE );
+    return convert_base_ptr( expr, tgt, derived_scope, base_scope, true );
 }
 
 
@@ -263,7 +263,7 @@ static TYPE NodeConvertDerivedToVirt(  // CONVERT DERIVED PTR TO VIRTUAL BASE PT
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, TRUE );
+    return convert_base_ptr( expr, tgt, derived_scope, base_scope, true );
 }
 
 
@@ -273,7 +273,7 @@ TYPE NodeConvertBaseToDerived(  // CONVERT BASE PTR TO DERIVED PTR
     SCOPE derived_scope,        // - derived scope
     SCOPE base_scope )          // - base scope
 {
-    return convert_base_ptr( expr, tgt, derived_scope, base_scope, FALSE );
+    return convert_base_ptr( expr, tgt, derived_scope, base_scope, false );
 }
 
 
@@ -659,18 +659,18 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
     TYPE ptr_tgt,               // - target pointer type
     PTRCNV* info )              // - pointer-conversion information
 {
-    bool retn;                  // - return: TRUE ==> can convert trivially
-    bool first_level;           // - TRUE ==> at first level
-    bool const_always;          // - TRUE ==> const on all preceding levels
+    bool retn;                  // - return: true ==> can convert trivially
+    bool first_level;           // - true ==> at first level
+    bool const_always;          // - true ==> const on all preceding levels
     TYPE orig_src;              // - original src type
 
-    info->converts = FALSE;
-    info->to_base = FALSE;
-    info->to_derived = FALSE;
-    info->to_void = FALSE;
-    info->ptr_integral_ext = FALSE;
-    info->cv_err_0 = FALSE;
-    info->reint_cast_ok = FALSE;
+    info->converts = false;
+    info->to_base = false;
+    info->to_derived = false;
+    info->to_void = false;
+    info->ptr_integral_ext = false;
+    info->cv_err_0 = false;
+    info->reint_cast_ok = false;
     orig_src = ptr_src;
     ptr_src = TypePointedAtModified( ptr_src );
     ptr_tgt = TypePointedAtModified( ptr_tgt );
@@ -680,16 +680,16 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
         ptr_tgt = TypeGetActualFlags( ptr_tgt, &info->flags_tgt );
         info->pted_tgt = ptr_tgt;
         if( ptr_tgt->id == TYP_VOID ) {
-            info->to_void = TRUE;
+            info->to_void = true;
         }
         if( NULL != orig_src && IntegralType( orig_src ) ) {
-            info->reint_cast_ok = TRUE;
+            info->reint_cast_ok = true;
         }
-        retn = FALSE;
+        retn = false;
     } else {
-        first_level = TRUE;
-        const_always = TRUE;
-        info->reint_cast_ok = TRUE;
+        first_level = true;
+        const_always = true;
+        info->reint_cast_ok = true;
         for( ; ; ) {
             type_flag flags_src;    // source flags
             type_flag flags_tgt;    // target flags
@@ -701,23 +701,23 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
             cv_tgt = flags_tgt & TF1_CV_MASK;
             if( cv_src != ( cv_tgt & cv_src ) ) {   // test cv-containment
                 if( first_level ) {
-                    info->cv_err_0 = TRUE;          // - diagnose elsewhere
+                    info->cv_err_0 = true;          // - diagnose elsewhere
                 } else {
-                    retn = FALSE;
+                    retn = false;
                     break;
                 }
             }
             if( first_level ) {
                 TYPE cl_src;        // class for source
                 TYPE cl_tgt;        // class for target
-                retn = TRUE;
+                retn = true;
                 info->pted_src = ptr_src;
                 info->pted_tgt = ptr_tgt;
                 info->flags_src = flags_src;
                 info->flags_tgt = flags_tgt;
                 cl_src = StructType( ptr_src );
                 if( ptr_tgt->id == TYP_VOID ) {
-                    info->to_void = TRUE;
+                    info->to_void = true;
 //                  retn = (ptr_src == TYP_VOID);
 //                  break;
                 } else if( NULL != cl_src ) {
@@ -725,12 +725,12 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                     if( NULL != cl_tgt
                      && cl_tgt != cl_src ) {
                         if( TypeDerived( ptr_src, ptr_tgt ) ) {
-                            info->to_base = TRUE;
-                            retn = FALSE;
+                            info->to_base = true;
+                            retn = false;
 //                          break;
                         } else if( TypeDerived( ptr_tgt, ptr_src ) ) {
-                            info->to_derived = TRUE;
-                            retn = FALSE;
+                            info->to_derived = true;
+                            retn = false;
 //                          break;
                         }
                     }
@@ -738,28 +738,28 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                         && IntegralType( ptr_src )
                         && IntegralType( ptr_tgt )
                         && ( CgMemorySize( ptr_src ) == CgMemorySize( ptr_tgt ) ) ) {
-                    info->ptr_integral_ext = TRUE;
+                    info->ptr_integral_ext = true;
                 }
                 if( ! retn ) {
                     if( info->cv_err_0 ) {
-                        info->reint_cast_ok = FALSE;
+                        info->reint_cast_ok = false;
                     }
                     break;
                 }
-                first_level = FALSE;
+                first_level = false;
             }
             if( cv_tgt != cv_src ) {                // test const'ed to here
                 if( ! const_always ) {
-                    info->reint_cast_ok = FALSE;
-                    retn = FALSE;
+                    info->reint_cast_ok = false;
+                    retn = false;
                     break;
                 }
             }
             if( (cv_tgt & TF1_CONST) == 0 ) {
-                const_always = FALSE;
+                const_always = false;
             }
             if( ptr_src == ptr_tgt ) {
-                retn = TRUE;
+                retn = true;
                 break;
             }
             if( TYP_FUNCTION == ptr_src->id
@@ -775,13 +775,13 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
             if( NULL == ptr_src ) {
                 if( NULL != ptr_tgt
                  && NULL != FunctionDeclarationType( ptr_tgt ) ) {
-                    info->reint_cast_ok = FALSE;
+                    info->reint_cast_ok = false;
                 }
-                retn = FALSE;
+                retn = false;
                 break;
             }
             if( NULL == ptr_tgt ) {
-                retn = FALSE;
+                retn = false;
                 break;
             }
         }

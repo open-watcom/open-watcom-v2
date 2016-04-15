@@ -94,7 +94,7 @@ static void* stateTableCmdAlloc(// ALLOCATE STATE-TABLE CMD
     CMD_BASE* cmd;
 
     cmd = RingCarveAlloc( allocation, hdr );
-    cmd->emitted = FALSE;
+    cmd->emitted = false;
     cmd->sym = NULL;
     return cmd;
 }
@@ -365,17 +365,17 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
     CMD_BASE* base,                 // - base for command
     DTC_KIND code )                 // - code for command
 {
-    bool genning;                   // - TRUE ==> genning entry
+    bool genning;                   // - true ==> genning entry
 
     if( base->emitted ) {
-        genning = FALSE;
+        genning = false;
     } else {
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
             printf( "CMD[%p]: ", base->sym );
         }
 #endif
-        base->emitted = TRUE;
+        base->emitted = true;
         DgSetSegSym( base->sym );
         CgBackGenLabelInternal( base->sym );
 #if 1 // this kludge allows old run-time systems to work
@@ -387,7 +387,7 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         }
 #endif
         cgGenerateCmdCode( code );
-        genning = TRUE;
+        genning = true;
     }
     return genning;
 }

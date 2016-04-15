@@ -95,11 +95,11 @@ void SymbolicDebugInit( void )
     }
 
     if( GenSwitches & DBG_LOCALS ) {
-        pvf_FieldType = MakeVFTableFieldType( TRUE );
+        pvf_FieldType = MakeVFTableFieldType( true );
         vf_FieldType = PointerTypeEquivalent( pvf_FieldType )->of;
         vf_FieldTypeSize = CgTypeSize( vf_FieldType );
 
-        pvb_FieldType = MakeVBTableFieldType( TRUE );
+        pvb_FieldType = MakeVBTableFieldType( true );
         vb_FieldType = PointerTypeEquivalent( pvb_FieldType )->of;
         vb_FieldTypeSize = CgTypeSize( vb_FieldType );
     }
@@ -166,7 +166,7 @@ static dbg_loc symbolicDebugSymAddr( dbg_loc dl, SYMBOL sym )
         if( SymIsInitialized( sym ) ) {
             cgfile = CgioLocateFile( sym );
             if( cgfile != NULL ) {
-                cgfile->refed = TRUE;
+                cgfile->refed = true;
             }
         }
     }
@@ -405,7 +405,7 @@ static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls  ){
                     SymbolicDebugType( base->of,
                                        SD_DEFAULT ^SD_DEREF ) );//XOR
     dc = SymbolicDebugType( cls, SD_DEFAULT );
-    this_type = TypeThisSymbol( curr, FALSE );
+    this_type = TypeThisSymbol( curr, false );
     if( this_type != NULL ){
         this_dbg = SymbolicDebugType( this_type,
                                            SD_DEFAULT ^SD_DEREF );//XOR
@@ -446,7 +446,7 @@ static dbg_type symCVDebugClassType( TYPE type )
     }else{
         ds = DBBegNameStruct( NameStr( info->name ), CgTypeOutput( type ), (root->flag & TF1_UNION) == 0 );
     }
-    DBNested( FALSE );
+    DBNested( false );
     dt = DBStructForward( ds );
     if( dt != DBG_NIL_TYPE  ){
         info->dbg_no_vbases = dt;
@@ -501,11 +501,11 @@ static dbg_type symCVDebugClassType( TYPE type )
     curr = ScopeOrderedNext( stop, NULL );
     while( curr != NULL ) {
         if( SymIsClassDefinition( curr )||SymIsEnumDefinition( curr ) ) {
-            DBNested( TRUE );
+            DBNested( true );
             DBAddNestedType( ds,
                           CppNameDebug( curr ),
                            SymbolicDebugType( curr->sym_type, SD_DEFAULT ) );
-            DBNested( FALSE );
+            DBNested( false );
         } else if( SymIsEnumeration( curr ) ) {
         } else if( SymIsInjectedTypedef( curr ) ) {
         } else if( SymIsTypedef( curr ) ) {
@@ -1035,19 +1035,19 @@ static bool typedef_is_of_basic_types( TYPE type )
     for(;;) {
         type = TypedefModifierRemove( type );
         if( type == NULL ) break;
-        if( type->id == TYP_CLASS ) return( FALSE );
-        if( type->id == TYP_MEMBER_POINTER ) return( FALSE );
+        if( type->id == TYP_CLASS ) return( false );
+        if( type->id == TYP_MEMBER_POINTER ) return( false );
         if( type->id == TYP_FUNCTION ) {
             alist = TypeArgList( type );
             for( i = 0 ; i < alist->num_args ; i++ ) {
                 if( !typedef_is_of_basic_types( alist->type_list[i] ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
         type = type->of;
     }
-    return( TRUE );
+    return( true );
 }
 
 static void doSymbolicDebugNamedType( TYPE type, void *data )
@@ -1115,7 +1115,7 @@ static void symbolicDebugSymbol( void )
             !SymIsEnumeration( curr) &&
             !SymIsTemporary( curr ) &&
             IsCppNameInterestingDebug( curr ) ) {
-            SymbolicDebugGenSymbol( curr, FALSE, FALSE );
+            SymbolicDebugGenSymbol( curr, false, false );
             DbgAddrTaken( curr );
         }else if( GenSwitches & DBG_CV ){
             if( SymIsTypedef( curr ) ){

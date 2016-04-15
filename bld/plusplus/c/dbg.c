@@ -989,9 +989,9 @@ static bool findScope( void *e, const void *s )
     SCOPE_DEFN *holder = e;
 
     if( holder->defn == s ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void DbgForgetScope(            // SCOPE is useless, so don't dump it

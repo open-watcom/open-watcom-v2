@@ -223,9 +223,9 @@ bool HashEmpty( HASHTAB hash )
 /****************************/
 {
     if( hash->avg == 0 && hash->remainder == 0 ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 HASHTAB HashMakeMax( HASHTAB hash )

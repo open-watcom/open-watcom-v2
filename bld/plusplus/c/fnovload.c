@@ -338,9 +338,9 @@ static void addListEntry( FNOV_CONTROL control, FNOV_INFO *info, SYMBOL sym,
         new->num_args = alist->num_args;
     }
     if( flags & LENT_FREE_ARGS ) {
-        new->free_args = TRUE;
+        new->free_args = true;
     } else {
-        new->free_args = FALSE;
+        new->free_args = false;
     }
     new->member = ( (control & FNC_MEMBER) != 0 );
     new->stdops = ( (control & FNC_STDOPS) != 0 );
@@ -484,12 +484,12 @@ static bool isEllipsisCandidate( TYPE type, int num_args )
             if( type_args <= num_args+1 ) {
                 argtype = alist->type_list[type_args-1];
                 if( argtype->id == TYP_DOT_DOT_DOT ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool isMemberCandidate( TYPE type, int num_args )
@@ -509,10 +509,10 @@ static bool isMemberCandidate( TYPE type, int num_args )
                     BoundTemplateClass( a_list->type_list[i] );
             }
 
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -532,10 +532,10 @@ static bool isSimpleCandidate( TYPE type, int num_args )
                     BoundTemplateClass( a_list->type_list[i] );
             }
 
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
@@ -635,10 +635,10 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
                 if( (control & FNC_DISTINCT_CHECK) == 0 ) {
                     old_curr->sym_type =
                         BindTemplateClass( old_curr->sym_type,
-                                           &old_curr->locn->tl, TRUE );
+                                           &old_curr->locn->tl, true );
                     new_curr->sym_type =
                         BindTemplateClass( new_curr->sym_type,
-                                           &new_curr->locn->tl, TRUE );
+                                           &new_curr->locn->tl, true );
                 }
 
                 if( ! TypeCompareExclude( old_curr->sym_type,
@@ -793,7 +793,7 @@ static bool myTypesSame( TYPE first_type, TYPE second_type )
                              TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
     if( !same ) {
         if( (first_type->flag & TF1_STDOP) || (second_type->flag & TF1_STDOP) ) {
-            same = TRUE;
+            same = true;
         }
     }
     return same;
@@ -991,7 +991,7 @@ FNOV_RANK *second, TYPE *second_type )
         retn = compareScalar( &first->u.ud.out
                             , first_type
                             , &second->u.ud.out
-                            , second_type, TRUE );
+                            , second_type, true );
         break;
     case OV_RANK_STD_CONV_DERIV:
         if( ( first_type != NULL ) && ( second_type != NULL ) ) {
@@ -1010,12 +1010,12 @@ FNOV_RANK *second, TYPE *second_type )
         retn = compareScalar( &first->u.no_ud
                              , first_type
                              , &second->u.no_ud
-                             , second_type, FALSE );
+                             , second_type, false );
         break;
     case OV_RANK_UD_CONV_AMBIG:
     case OV_RANK_SAME:
     case OV_RANK_EXACT:
-        DbgAssert( FALSE ); // made into something else above
+        DbgAssert( false ); // made into something else above
         break;
     DbgDefault( "funny rank\n" );
     }
@@ -1060,7 +1060,7 @@ static OV_RESULT compareArgument(
                             , first_type
                             , &second->u.ud.out
                             , second_type
-                            , TRUE
+                            , true
                             , control );
         break;
     case OV_RANK_STD_CONV_DERIV:
@@ -1081,7 +1081,7 @@ static OV_RESULT compareArgument(
                              , first_type
                              , &second->u.no_ud
                              , second_type
-                             , FALSE
+                             , false
                              , control);
         break;
     case OV_RANK_SAME:
@@ -1188,13 +1188,13 @@ static OV_RESULT compareFunction(
 static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 /************************************************************/
 // see if rank of entry is all <= level
-// if so, return TRUE, else FALSE
+// if so, return true, else false
 {
     int             index;
     FNOV_RANK       *rank;
     bool            retn;
 
-    retn = TRUE;
+    retn = true;
     rank = entry->rankvector;
     index = entry->num_args;
     for(;;) {
@@ -1250,7 +1250,7 @@ static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
 static bool computeUdcRank( FNOV_INFO* info )
 /***************************************************************/
 // fill in rankvector, ranking of conversion func return value to arg_list
-// if u-d conversion is a candidate, return TRUE, else FALSE
+// if u-d conversion is a candidate, return true, else false
 {
     FNOV_RANK   *frv;
     TYPE        src;
@@ -1264,9 +1264,9 @@ static bool computeUdcRank( FNOV_INFO* info )
     frv = func->rankvector;
     doComputeArgRank( func->sym, src, tgt, NULL, frv );
     if( frv->rank == OV_RANK_NO_MATCH ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void moveRingFromTo( FNOV_LIST **from, FNOV_LIST **to )
@@ -1317,11 +1317,11 @@ static void resolveOneList( FNOV_LIST **list, FNOV_LIST **match,
                 case OV_CMP_BETTER_SECOND:
                     moveRingFromTo( match, rejects );
                     RingInsert( match, curr, NULL );
-                    *ambiguous = FALSE;
+                    *ambiguous = false;
                     break;
                 case OV_CMP_SAME:
                     RingInsert( match, curr, NULL );
-                    *ambiguous = TRUE;
+                    *ambiguous = true;
                     break;
                 }
             } else {
@@ -1360,10 +1360,10 @@ FNOV_COARSE_RANK RankandResolveUDCsDiag( FNOV_LIST **ctorList,
     udcRankUDCF( *udcfList, src, tgt, ictl, src_ptree );
     match = NULL;
     rejects = NULL;
-    ambiguous = FALSE;
-    resolveOneList( ctorList, &match, &rejects, &ambiguous, TRUE );
+    ambiguous = false;
+    resolveOneList( ctorList, &match, &rejects, &ambiguous, true );
     between_match = match;
-    resolveOneList( udcfList, &match, &rejects, &ambiguous, FALSE );
+    resolveOneList( udcfList, &match, &rejects, &ambiguous, false );
     if( isctor != NULL ) {
         *isctor = ( between_match == match);
     }
@@ -1491,7 +1491,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     initRankVector( FNC_DEFAULT, &curr_rank, 0 );
     retn = NodeAddrOfFun( *ptlist, &fn );
     DbgAssert( retn != ADDR_FN_NONE );
-    src_mptr = FALSE;
+    src_mptr = false;
     if( fn->flags & PTF_COLON_QUALED ) { // i.e. S::foo not just foo
         // &S::foo can be a mptr
         // just S:: can also be a mptr if extensions enabled
@@ -1528,7 +1528,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
 static bool computeFunctionRank( FNOV_INFO* info )
 /************************************************/
 // fill in rankvector, ranking of conversion of arg_list to func arguments
-// if function is a candidate, return TRUE, else FALSE
+// if function is a candidate, return true, else false
 {
     int         index;
     TYPE        *tgt;
@@ -1571,11 +1571,11 @@ static bool computeFunctionRank( FNOV_INFO* info )
         if( rank->control & FNC_DISTINCT_CHECK ) {
             if( rank->rank > OV_RANK_SAME ) {
                 // short circuit for distinct check
-                return( FALSE );
+                return( false );
             }
         }
         if( rank->rank == OV_RANK_NO_MATCH ) {
-            return( FALSE );
+            return( false );
         }
         index--;
         tgt++;
@@ -1583,13 +1583,13 @@ static bool computeFunctionRank( FNOV_INFO* info )
         if( ptlist != NULL ) ptlist++;
         rank++;
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool getRank( FNOV_INFO* info )
 /************************************/
 // get a rankvector (allocate if necessary) and compute the rank
-// returns TRUE if rank is a contender, else FALSE
+// returns true if rank is a contender, else false
 {
     bool contender;
     FNOV_LIST* candidate = info->candfunc;
@@ -1598,9 +1598,9 @@ static bool getRank( FNOV_INFO* info )
      && (info->control & FNC_DISTINCT_CHECK) == 0 ) {
         // this means that template argument deduction failed, so it
         // can't be a contender
-        contender = FALSE;
+        contender = false;
     } else if( candidate->rankvector != NULL ) {
-        contender = TRUE;
+        contender = true;
     } else {
         FNOV_CONTROL control = info->control;
         if( candidate->member ) {
@@ -1645,7 +1645,7 @@ static OV_RESULT updateMatchList( FNOV_INFO *info )
     OV_RESULT   comparison;
     bool        ambiguous;
 
-    ambiguous = FALSE;
+    ambiguous = false;
     RingIterBegSafe( *info->pmatch, entry ) {
         comparison = compareFunction( entry, info->candfunc, info->control );
         if( comparison == OV_CMP_BETTER_FIRST ) {
@@ -1657,7 +1657,7 @@ static OV_RESULT updateMatchList( FNOV_INFO *info )
             if( entry->sym == info->candfunc->sym ) {
                 return( OV_CMP_BETTER_FIRST ); // have the same symbol twice
             }
-            ambiguous = TRUE;
+            ambiguous = true;
         }
     } RingIterEndSafe( entry )
     RingPrune( info->pcandidates, info->candfunc );
@@ -1767,7 +1767,7 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
 
     for( i = 0; i < alist->num_args; i++ ) {
         alist->type_list[i] = BindTemplateClass( alist->type_list[i],
-                                                 &sym->locn->tl, TRUE );
+                                                 &sym->locn->tl, true );
     }
 
     *resolved = NULL;
@@ -1798,7 +1798,7 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
     if( match != NULL ) {
         match->sym->sym_type->of =
             BindTemplateClass( match->sym->sym_type->of, &match->sym->locn->tl,
-                               TRUE );
+                               true );
         *resolved = match->sym;
         FnovListFree( &match );
     }
@@ -1835,7 +1835,7 @@ SYMBOL sym, TYPE type, type_flag this_qualifier, FNOV_DIAG *fnov_diag )
     InitArgList( &alist );
     alist.num_args = 1;
     alist.qualifier = this_qualifier;
-    alist.type_list[0] = BindTemplateClass( type, &sym->locn->tl, TRUE );
+    alist.type_list[0] = BindTemplateClass( type, &sym->locn->tl, true );
     fnov_diag = FnovInitDiag( fnov_diag );
     return( FuncOverloadedLimitDiag( resolved
                                    , result
@@ -1874,7 +1874,7 @@ static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *mem
 
     for( i = 0; i < alist->num_args; i++ ) {
         alist->type_list[i] = BindTemplateClass( alist->type_list[i],
-                                                 NULL, TRUE );
+                                                 NULL, true );
     }
 
     info.alist = alist;
@@ -1944,7 +1944,7 @@ FNOV_RESULT OpOverloadedLimitDiag( SYMBOL *resolved, SEARCH_RESULT *member,
 // result points at the symbol chosen, if non-ambiguous
 {
     return opOverloadedLimitExDiag( resolved, member, nonmember, namesp, stdops,
-                alist, ptlist, FALSE, control, fnov_diag );
+                alist, ptlist, false, control, fnov_diag );
 }
 
 FNOV_RESULT OpOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *member,
@@ -1956,7 +1956,7 @@ FNOV_RESULT OpOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *member,
 // result points at the symbol chosen, if non-ambiguous
 {
     return opOverloadedLimitExDiag( resolved, member, nonmember, namesp, stdops,
-        alist, ptlist, FALSE, FNC_DEFAULT, fnov_diag );
+        alist, ptlist, false, FNC_DEFAULT, fnov_diag );
 }
 
 static SYMBOL findNonDefargSym( FNOV_LIST *match)
@@ -2096,7 +2096,7 @@ bool IsOverloadedFunc( SYMBOL sym )
 /*********************************/
 // test if a function has been overloaded
 {
-    bool retn = FALSE;
+    bool retn = false;
 
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
@@ -2120,14 +2120,14 @@ static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *
     bool identical;
     bool done;
 
-    done = FALSE;
-    identical = FALSE;
+    done = false;
+    identical = false;
     if( isUDC ) {
         identical = TypesIdentical( SymFuncReturnType( curr ), udc_retn );
     } else {
         if( SymIsFunctionTemplateModel( curr ) ) {
             *retn = NULL;
-            done = TRUE;
+            done = true;
         } else {
             identical = !SymIsDefArg( curr );
         }
@@ -2137,7 +2137,7 @@ static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *
             *retn = curr;
         } else {
             *retn = NULL;
-            done = TRUE;
+            done = true;
         }
     }
     return done;
@@ -2167,7 +2167,7 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
             }
         } RingIterEnd( curr )
     } else{
-        done = FALSE;
+        done = false;
         RingIterBeg( result->region, region ) {
             RingIterBegFrom( region->from, curr ) {
                 done =  doneCheckIdentical( curr, isUDC, udc_retn, &retn );

@@ -414,32 +414,32 @@ static PTREE exprCtoring        // EXPRESSION CTORING
     , TYPE cl_type              // - class type
     , PTD_KIND kind )           // - kind of dtoring
 {
-    bool ctor_called;           // - TRUE ==> CTOR-call already present
-    bool dtor_decorated;        // - TRUE ==> DTOR decoration present
+    bool ctor_called;           // - true ==> CTOR-call already present
+    bool dtor_decorated;        // - true ==> DTOR decoration present
     PTD* ptd;                   // - current decoration
     SYMBOL dtor;                // - dtor for type
 
     dtor = dtorForType( cl_type );
     if( dtor != NULL || ctor != NULL ) {
-        ctor_called = FALSE;
-        dtor_decorated = FALSE;
+        ctor_called = false;
+        dtor_decorated = false;
         RingIterBeg( expr->decor, ptd ) {
           switch( ptd->base.kind ) {
             case PTD_SCOPE_CALL :
               if( ptd->symbol.sym == ctor ) {
-                  ctor_called = TRUE;
+                  ctor_called = true;
               }
               break;
             case PTD_DTOR_EXPR :
               DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
               ptd->base.kind = kind;
-              dtor_decorated = TRUE;
+              dtor_decorated = true;
               break;
             case PTD_DTOR_SCOPE :
             case PTD_CTORED_COMP :
               DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
               DbgVerify( kind == PTD_DTOR_EXPR, "exprCtoring -- not PTD_EXPR" );
-              dtor_decorated = TRUE;
+              dtor_decorated = true;
               break;
           }
         } RingIterEnd( ptd );
@@ -627,7 +627,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
     , PTD_KIND kind )           // - decoration kind
 {
 #ifndef NDEBUG
-    bool found = FALSE;         // - checks for found
+    bool found = false;         // - checks for found
 #endif
     PTD* ptd;                   // - current entry
     target_offset_t retn;       // - offset in decoration
@@ -638,7 +638,7 @@ static target_offset_t getOffset // SEARCH FOR OFFSET IN DECORATION
             retn = ptd->off.offset;
 #ifndef NDEBUG
             DbgVerify( ! found, "Ptd::getOffset -- two decorations" );
-            found = TRUE;
+            found = true;
 #else
             break;
 #endif

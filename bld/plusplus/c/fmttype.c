@@ -412,11 +412,11 @@ static bool willPrintModifier( TYPE type, type_flag flag )
         mask = modifierFlags[i].mask;
         if( (flag & mask) == mask ) {
             if( ( (mask & TF1_MEM_MODEL) == 0 ) || ( (DefaultMemoryFlag( type ) & mask) != mask ) ) {
-                return TRUE;
+                return true;
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 static void fmtTypeChangeState( FMT_LR *curr, FMT_LR new,
@@ -435,7 +435,7 @@ static void fmtTypeScope( SCOPE scope, VBUF *pprefix )
 {
     VBUF name_scope;
 
-    FormatScope( scope, &name_scope, FALSE );
+    FormatScope( scope, &name_scope, false );
     VbufConcVbuf( pprefix, &name_scope );
     VbufFree( &name_scope );
 }
@@ -469,7 +469,7 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
     while( type != NULL ) {
         entry = StackCarveAlloc( carveFMT, pStackFMT );
         entry->type = type;
-        entry->main_function = FALSE;
+        entry->main_function = false;
         if( type->id == TYP_ENUM ) break;
         if( type->id == TYP_GENERIC ) break;
         if( type->id == TYP_CHAR ) break;
@@ -477,7 +477,7 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
         if( type->id == TYP_TYPEDEF && (control & FF_TYPEDEF_STOP) ) break;
         if( type->id == TYP_FUNCTION ) {
             if( main_function == NULL ) {
-                entry->main_function = TRUE;
+                entry->main_function = true;
                 main_function = entry;
             }
             if( control & FF_DROP_RETURN ) break;

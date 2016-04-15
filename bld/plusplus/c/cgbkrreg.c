@@ -180,14 +180,14 @@ void CgFunRegister(             // REGISTER A FUNCTION
 
 #if _CPU == _AXP
     CgAssignPtr( CgSymbolPlusOffset( rw, 0 ), CgAddrSymbol( ro ) );
-    CompFlags.inline_fun_reg = TRUE;
+    CompFlags.inline_fun_reg = true;
 #else
     RT_DEF def;                 // - R/T call control
     cg_name opt_thr;            // - optimized expression for addr[THREAD_CTL]
 
     DbgVerify( CompFlags.rw_registration, "not R/W Registration" );
     if( CompFlags.fs_registration ) {
-        CompFlags.inline_fun_reg = TRUE;
+        CompFlags.inline_fun_reg = true;
         CgRtCallInit( &def, RTF_FS_PUSH );
         CgRtParamAddrSym( &def, rw );
         CgRtCallExecDone( &def );
@@ -197,7 +197,7 @@ void CgFunRegister(             // REGISTER A FUNCTION
         if( opt_thr == NULL ) {
             rtRegister( rw, ro );
         } else {
-            CompFlags.inline_fun_reg = TRUE;
+            CompFlags.inline_fun_reg = true;
             CgAssignPtr( CgSymbolPlusOffset( rw, 0 )
                        , CgFetchPtr( opt_thr ) );
             CgAssignPtr( CgSymbol( optFuncReg.sym )
@@ -220,7 +220,7 @@ void CgFunRegister(             // REGISTER A FUNCTION
 void CgCtorTestTempsRegister(   // REGISTER DTORING TEMPS FOR CTOR
     FN_CTL* fctl )              // - function control
 {
-    CondInfoSetCtorTest( fctl, TRUE );
+    CondInfoSetCtorTest( fctl, true );
 }
 
 

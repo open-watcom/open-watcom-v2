@@ -332,11 +332,11 @@ static void execControlFunctions( bool writing, pch_status (**tbl)( void ) )
     pch_status st;
 
     for( i = 0; i < PCHRW_MAX; ++i ) {
-        ExtraRptTabSub( ctr_pchw_region, i, 0, (writing!=FALSE)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
-        ExtraRptTabSub( ctr_pchw_region, PCHRW_MAX, 0, (writing!=FALSE)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
+        ExtraRptTabSub( ctr_pchw_region, i, 0, (writing!=false)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
+        ExtraRptTabSub( ctr_pchw_region, PCHRW_MAX, 0, (writing!=false)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
         st = (tbl[i])();
-        ExtraRptTabAdd( ctr_pchw_region, i, 0, (writing!=FALSE)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
-        ExtraRptTabAdd( ctr_pchw_region, PCHRW_MAX, 0, (writing!=FALSE)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
+        ExtraRptTabAdd( ctr_pchw_region, i, 0, (writing!=false)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
+        ExtraRptTabAdd( ctr_pchw_region, PCHRW_MAX, 0, (writing!=false)*(ctr_pch_length+(IO_BUFFER_SIZE-amountLeft)) );
         if( st != PCHCB_OK ) {
             fail();
         }
@@ -505,9 +505,9 @@ void PCHeaderCreate( char *include_file )
         }
         dumpHeader();
         dumpCheckData( include_file );
-        execInitFunctions( TRUE );
-        execControlFunctions( TRUE, writeFunctions );
-        execFiniFunctions( TRUE );
+        execInitFunctions( true );
+        execControlFunctions( true, writeFunctions );
+        execFiniFunctions( true );
         brinf_posn = BrinfPch( pchFile );
         PCHFlushBuffer();
         // keep this PCH file
@@ -524,8 +524,8 @@ void PCHeaderCreate( char *include_file )
         remove( pch_fname );
     } else {
         if( CompFlags.pch_debug_info_opt ) {
-            CompFlags.pch_debug_info_write = TRUE;
-            CompFlags.all_debug_type_names = TRUE;
+            CompFlags.pch_debug_info_write = true;
+            CompFlags.all_debug_type_names = true;
         }
     }
 #ifndef NDEBUG
@@ -538,36 +538,36 @@ void PCHeaderCreate( char *include_file )
 static bool headerIsOK( precompiled_header_header const* hp )
 {
     if( hp->signature[0] != PHH_SIGNATURE_0 ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->signature[1] != PHH_SIGNATURE_1 ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->signature[2] != PHH_SIGNATURE_2 ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->signature[3] != PHH_SIGNATURE_3 ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->major_version != PHH_MAJOR ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->minor_version != PHH_MINOR ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->target_architecture != PHH_TARG_ARCHITECTURE ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->host_system != PHH_HOST_SYSTEM ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->host_architecture != PHH_HOST_ARCHITECTURE ) {
-        return( FALSE );
+        return( false );
     }
     if( hp->corrupted != PHH_CORRUPTED_NO ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool sameStamp( const char *name, time_t saved )
@@ -575,13 +575,13 @@ static bool sameStamp( const char *name, time_t saved )
     time_t  ftime;
 
     if( CompFlags.pch_min_check ) {
-        return( TRUE );
+        return( true );
     }
     ftime = SysFileTime( name );
     if( ftime == saved ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void pchWarn( MSG_NUM msg )
@@ -617,7 +617,7 @@ void PCHWarn2p( MSG_NUM msg, void *p )
 
 static bool checkCompFlags( COMP_FLAGS *testflags )
 {
-    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( TRUE );
+    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( true );
     _VERIFY_FLAG( signed_char );
     _VERIFY_FLAG( original_enum_setting );
     _VERIFY_FLAG( excs_enabled );
@@ -630,7 +630,7 @@ static bool checkCompFlags( COMP_FLAGS *testflags )
     _VERIFY_FLAG( cpp_ignore_env );
     _VERIFY_FLAG( ignore_default_dirs );
     #undef _VERIFY_FLAG
-    return( FALSE );
+    return( false );
 }
 
 static void transferCompFlags( COMP_FLAGS *testflags )
@@ -656,10 +656,10 @@ static bool stringIsDifferent( const char *from_pch, const char *curr, unsigned 
     if( ! CompFlags.pch_min_check ) {
         if( FNAMECMPSTR( from_pch, curr ) != 0 ) {
             pchWarn( msg );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void flushUntilNullString( char *buff )
@@ -684,24 +684,24 @@ static bool stalePCH( char *include_file )
     PCHReadVar( test_target );
     if( test_gen != GenSwitches || test_target != TargetSwitches ) {
         pchWarn( WARN_PCH_CONTENTS_OPTIONS );
-        return( TRUE );
+        return( true );
     }
     if( PCHReadUInt() != ErrPCHVersion() ) {
         pchWarn( WARN_PCH_CONTENTS_HEADER_ERROR );
-        return( TRUE );
+        return( true );
     }
     if( PCHReadUInt() != TYPC_LAST ) {
         pchWarn( WARN_PCH_CONTENTS_HEADER_ERROR );
-        return( TRUE );
+        return( true );
     }
     if( PCHReadUInt() != sizeof( COMP_FLAGS ) ) {
         pchWarn( WARN_PCH_CONTENTS_HEADER_ERROR );
-        return( TRUE );
+        return( true );
     }
     PCHReadVar( testflags );
     if( checkCompFlags( &testflags ) ) {
         pchWarn( WARN_PCH_CONTENTS_OPTIONS );
-        return( TRUE );
+        return( true );
     }
     readFileString( buff1 );
     if( FNAMECMPSTR( buff1, WholeFName ) == 0 ) {
@@ -709,19 +709,19 @@ static bool stalePCH( char *include_file )
             // this source file created the PCH but it is being recompiled
             // so we have to recreate the PCH along with the debug info
             pchWarn( WARN_PCH_DEBUG_OPTIMIZE );
-            return( TRUE );
+            return( true );
         }
     }
     readFileString( buff1 );
     include_file = IoSuppFullPath( include_file, buff2, sizeof( buff2 ) );
     if( FNAMECMPSTR( buff1, include_file ) != 0 ) {
         pchWarn( WARN_PCH_CONTENTS_INCFILE );
-        return( TRUE );
+        return( true );
     }
     readFileString( buff1 );
     getcwd( buff2, sizeof( buff2 ) );
     if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_CWD ) ) {
-        return( TRUE );
+        return( true );
     }
     if( CompFlags.pch_min_check ) {
         flushUntilNullString( buff2 );
@@ -731,7 +731,7 @@ static bool stalePCH( char *include_file )
             HFileListNext( buff1 );
             readFileString( buff2 );
             if( stringIsDifferent( buff1, buff2, WARN_PCH_CONTENTS_INCLUDE ) ) {
-                return( TRUE );
+                return( true );
             }
             if( buff1[0] == '\0' ) break;
         }
@@ -740,14 +740,14 @@ static bool stalePCH( char *include_file )
         PCHReadVar( stamp );
         if( ! sameStamp( buff1, stamp ) ) {
             PCHWarn2p( WARN_PCH_CONTENTS_HFILE, buff1 );
-            return( TRUE );
+            return( true );
         }
     }
     if( ! PCHVerifyMacroCheck() ) {
-        return( TRUE );
+        return( true );
     }
     transferCompFlags( &testflags );
-    return( FALSE );
+    return( false );
 }
 
 static unsigned readBuffer( unsigned left_check )
@@ -814,9 +814,9 @@ pch_absorb PCHeaderAbsorb( char *include_file )
 #endif
             if( headerIsOK( &header ) ) {
                 if( ! stalePCH( include_file ) ) {
-                    execInitFunctions( FALSE );
-                    execControlFunctions( FALSE, readFunctions );
-                    execFiniFunctions( FALSE );
+                    execInitFunctions( false );
+                    execControlFunctions( false, readFunctions );
+                    execFiniFunctions( false );
 #ifdef OPT_BR
                     if( 0 != br_posn ) {
                         BrinfPchRead();
@@ -837,7 +837,7 @@ pch_absorb PCHeaderAbsorb( char *include_file )
     CMemFreePtr( &ioBuffer );
     close( pchFile );
     if( CompFlags.pch_debug_info_opt && ret == PCHA_OK ) {
-        CompFlags.pch_debug_info_read = TRUE;
+        CompFlags.pch_debug_info_read = true;
     }
 #ifndef NDEBUG
     stop = clock();

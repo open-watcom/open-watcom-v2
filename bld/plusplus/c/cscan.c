@@ -160,7 +160,7 @@ int ReScanToken( void )
     CompFlags.rescan_buffer_done = 0;
     NextChar = rescanBuffer;
     NextChar();
-    CurToken = ScanToken( TRUE );
+    CurToken = ScanToken( true );
     --ReScanPtr;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
@@ -232,8 +232,8 @@ static bool scanHex( bool expanding )
         unsigned at_least_one : 1;
     } flag;
 
-    flag.too_big = FALSE;
-    flag.at_least_one = FALSE;
+    flag.too_big = false;
+    flag.at_least_one = false;
     for(;;) {
         c = saveNextChar();
         if(( CharSet[ c ] & (C_HX|C_DI) ) == 0 )
@@ -242,19 +242,19 @@ static bool scanHex( bool expanding )
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         }
         if( U64Cnv16( &Constant64, c - '0' ) ) {
-            flag.too_big = TRUE;
+            flag.too_big = true;
         }
-        flag.at_least_one = TRUE;
+        flag.at_least_one = true;
     }
     if( ! flag.at_least_one ) {
-        return( FALSE );            /* indicate no characters matched after "0x" */
+        return( false );            /* indicate no characters matched after "0x" */
     }
     if( flag.too_big ) {
         if( diagnose_lex_error( expanding ) ) {
             CErr1( WARN_CONSTANT_TOO_BIG );
         }
     }
-    return( TRUE );                 /* indicate characters were matched */
+    return( true );                 /* indicate characters were matched */
 }
 
 static TOKEN idLookup( size_t len, MEPTR *pmeptr )
@@ -438,7 +438,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
         unsigned double_byte_char : 1;
     } flag;
 
-    flag.double_byte_char = FALSE;
+    flag.double_byte_char = false;
     token = T_CONSTANT;
     BadTokenInfo = ERR_INV_CHAR_CONSTANT;   /* in case of error */
     i = 0;
@@ -474,7 +474,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
                 ++i;
                 value = (value << 8) + ((c & 0xFF00) >> 8);
                 c &= 0x00FF;
-                flag.double_byte_char = TRUE;
+                flag.double_byte_char = true;
             } else if( char_type == TYP_WCHAR ) {
                 if( CompFlags.use_unicode ) {
                     c = UniCode[ c ];
@@ -553,7 +553,7 @@ static int skipWhiteSpace( int c )
     if( CompFlags.cpp_output && (PPControl & PPCTL_EOL) == 0 ) {
         c = printWhiteSpace( c );
     } else {
-        SrcFileScanWhiteSpace( FALSE );
+        SrcFileScanWhiteSpace( false );
         c = CurrChar;
     }
     return( c );
@@ -575,17 +575,17 @@ bool ScanOptionalComment( void )
     bool retn;
     int c;
 
-    retn = FALSE;
+    retn = false;
     for(;;) {
         c = CurrChar;
         if( c != '/' ) break;
         c = NextChar();
         if( c == '*' ) {
             scanCComment();
-            retn = TRUE;
+            retn = true;
         } else if( c == '/' ) {
             scanCppComment();
-            retn = TRUE;
+            retn = true;
         } else {
             unGetChar( c );
             CurrChar = '/';
@@ -707,7 +707,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     int c;
     int ok;
 
-    SrcFileSetSwEnd( TRUE );
+    SrcFileSetSwEnd( true );
     ok = 0;
     c = NextChar();
     Buffer[0] = c;
@@ -749,7 +749,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
             Buffer[TokenLen++] = c;
         }
     }
-    SrcFileSetSwEnd( FALSE );
+    SrcFileSetSwEnd( false );
     Buffer[TokenLen-1] = '\0';
     if( ok ) {
         if( ok == 2 ) {
@@ -797,7 +797,7 @@ static TOKEN doScanName( int c, bool expanding )
         }
         DoMacroExpansion( fmentry );
         DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-        GetMacroToken( FALSE );
+        GetMacroToken( false );
         if( CurToken == T_NULL ) {
             CurToken = T_WHITE_SPACE;
         }
@@ -1620,7 +1620,7 @@ static TOKEN scanInvalid( bool expanding )
     TokenLen = 1;
 #if defined( SYS_EOF_CHAR )
     if( CurrChar == SYS_EOF_CHAR ) {
-        if( SrcFileClose( FALSE ) ) {
+        if( SrcFileClose( false ) ) {
             return( ScanToken( expanding ) );
         }
         return( T_EOF );
@@ -1661,12 +1661,12 @@ static void nextMacroToken( void )
     do {
         CurToken = T_NULL;
         if( CompFlags.use_macro_tokens ) {
-            GetMacroToken( FALSE );
+            GetMacroToken( false );
             if( CurToken == T_NULL ) {
-                CurToken = dispatchFunc( FALSE );
+                CurToken = dispatchFunc( false );
             }
         } else {
-            CurToken = dispatchFunc( FALSE );
+            CurToken = dispatchFunc( false );
         }
     } while( CurToken == T_WHITE_SPACE );
 }
@@ -1713,9 +1713,9 @@ bool InitPPScan( void )
     if( scanFunc[ SCAN_NUM ] == scanNum ) {
         scanFunc[ SCAN_NUM ] = scanPPDigit;
         scanFunc[ SCAN_FLOAT ] = scanPPDot;
-        return( TRUE );         // indicate changed to PP mode
+        return( true );         // indicate changed to PP mode
     }
-    return( FALSE );            // indicate already in PP mode
+    return( false );            // indicate already in PP mode
 }
 
 // called when CollectParms() and CDefine() are finished gathering tokens
@@ -1756,7 +1756,7 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
 {
     if( CompFlags.use_macro_tokens ) {
         CurToken = T_NULL;
-        GetMacroToken( FALSE );
+        GetMacroToken( false );
         if( CurToken == T_NULL ) {
             // prevents macro expansion from merging with trailing text
             // to form new tokens in pre-processed output
@@ -1765,7 +1765,7 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
         DbgAssert( CurToken != T_NULL );
     } else {
         printWhiteSpace( CurrChar );
-        CurToken = ScanToken( FALSE );
+        CurToken = ScanToken( false );
     }
 }
 
@@ -1779,7 +1779,7 @@ bool TokenUsesBuffer( TOKEN token )
     case T_STRING:
     case T_LSTRING:
     case T_CONSTANT:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
