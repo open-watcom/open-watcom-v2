@@ -161,7 +161,7 @@ static void ProcessOptions( char *argv[] )
     bool        opt_end;
 
     LogBackup = DEF_BACKUP;
-    opt_end = FALSE;
+    opt_end = false;
     while( argv[0] != NULL ) {
         if( !opt_end && argv[0][0] == '-' ) {
             switch( tolower( argv[0][1] ) ) {
@@ -185,19 +185,19 @@ static void ProcessOptions( char *argv[] )
                 }
                 break;
             case 'i':
-                IgnoreErrors = TRUE;
+                IgnoreErrors = true;
                 break;
             case 'v':
                 ++VerbLevel;
                 break;
             case 'u':
-                UndefWarn = TRUE;
+                UndefWarn = true;
                 break;
             case 'q':
-                Quiet = TRUE;
+                Quiet = true;
                 break;
             case '-':
-                opt_end = TRUE;
+                opt_end = true;
                 break;
             default:
                 fprintf( stderr, "Unknown option '%c'\n\n", argv[0][1] );
@@ -258,9 +258,9 @@ static bool PopInclude( void )
     ResetArchives( curr->reset_abit );
     free( curr );
     if( IncludeStk == NULL )
-        return( FALSE );
+        return( false );
     SysChdir( IncludeStk->cwd );
-    return( TRUE );
+    return( true );
 }
 
 static bool GetALine( char *line )
@@ -275,10 +275,10 @@ static bool GetALine( char *line )
             break;
         }
         if( !PopInclude() ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static char *SubstOne( const char **inp, char *out )
@@ -324,7 +324,7 @@ static char *SubstOne( const char **inp, char *out )
             }
             if( rep == NULL ) {
                 if( UndefWarn ) {
-                    Log( FALSE, "<%s> is undefined\n", out );
+                    Log( false, "<%s> is undefined\n", out );
                 }
                 rep = "";
             }
@@ -349,7 +349,7 @@ static void SubstLine( const char *in, char *out )
 {
     bool        first;
 
-    first = TRUE;
+    first = true;
     in = SkipBlanks( in );
     for( ;; ) {
         switch( *in ) {
@@ -388,7 +388,7 @@ static void SubstLine( const char *in, char *out )
         default:
             *out++ = *in++;
         }
-        first = FALSE;
+        first = false;
     }
 }
 
@@ -433,7 +433,7 @@ static int MatchFound( char *p )
     char    *Match[20];                     // 20 is enough for builder
     int     MatchWords = 0;
     int     i;
-    int     EmptyOk = FALSE;
+    int     EmptyOk = false;
     int     WordsExamined = 0;
 
     p = NextWord( p );
@@ -446,7 +446,7 @@ static int MatchFound( char *p )
             if( p == NULL )
                 Fatal( "Missing match word\n" );
             if( stricmp( p, "\"\"" ) == 0 ) // 'No parameter' indicator
-                EmptyOk = TRUE;
+                EmptyOk = true;
             else
                 Match[MatchWords++] = p;
             p = NextWord( p );
@@ -541,12 +541,12 @@ static int ProcessCtlFile( const char *name )
             /* a command */
             logit = ( VerbLevel > 0 );
             if( *p == '@' ) {
-                logit = FALSE;
+                logit = false;
                 p = SkipBlanks( p + 1 );
             }
             if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
                 if( logit ) {
-                    Log( FALSE, "+++<%s>+++\n", p );
+                    Log( false, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
                 pmake = ( strnicmp( p, "PMAKE", 5 ) == 0 && p[5] == ' ' );
@@ -554,9 +554,9 @@ static int ProcessCtlFile( const char *name )
                 if( res != 0 ) {
                     if( !IgnoreErrors || !pmake ) {
                         if( !logit ) {
-                            Log( FALSE, "<%s> => ", Line );
+                            Log( false, "<%s> => ", Line );
                         }
-                        Log( FALSE, "non-zero return: %d\n", res );
+                        Log( false, "non-zero return: %d\n", res );
                     }
                     if( !IgnoreErrors ) {
                         Fatal( "Build failed\n" );
@@ -565,7 +565,7 @@ static int ProcessCtlFile( const char *name )
                 }
                 LogFlush();
             } else if( logit && ( VerbLevel > 1 ) ) {
-                Log( FALSE, "---<%s>---\n", p );
+                Log( false, "---<%s>---\n", p );
             }
         }
     }
@@ -587,12 +587,12 @@ static bool SearchUpDirs( const char *name, char *result )
         fp = fopen( result, "r" );
         if( fp != NULL ) {
             fclose( fp );
-            return( TRUE );
+            return( true );
         }
         _splitpath2( result, buff, &drive, &dir, &fn, &ext );
         end = &dir[strlen( dir ) - 1];
         if( end == dir )
-            return( FALSE );
+            return( false );
         switch( *end ) {
         case '\\':
         case '/':

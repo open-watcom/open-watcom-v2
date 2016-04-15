@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "diff.h"
@@ -49,8 +50,6 @@ typedef int INT;
 
 #define  EOS    0
 #define  TEMPFILE  "diff.tmp"
-#define  TRUE   1
-#define  FALSE      0
 
 typedef struct candidate {
     SLONG       b;          /* Line in fileB     */
@@ -111,15 +110,15 @@ long            *newseek;       /* Seek position in file B  */
  */
 
 char            *Dflag = NULL;  /* output #ifdef code */
-INT             Hflag = FALSE;  /* half hearted algorithm */
-INT             nflag = FALSE;  /* Edit script requested  */
-INT             eflag = FALSE;  /* Edit script requested  */
-INT             bflag = FALSE;  /* Blank supress requested  */
-INT             cflag = FALSE;  /* Context printout      */
-INT             iflag = FALSE;  /* Ignore case requested  */
-INT             tflag = FALSE;  /* Test for enough memory flag */
+INT             Hflag = false;  /* half hearted algorithm */
+INT             nflag = false;  /* Edit script requested  */
+INT             eflag = false;  /* Edit script requested  */
+INT             bflag = false;  /* Blank supress requested  */
+INT             cflag = false;  /* Context printout      */
+INT             iflag = false;  /* Ignore case requested  */
+INT             tflag = false;  /* Test for enough memory flag */
 INT             xflag = 0;      /* Test for enough memory flag */
-INT             havediffs = FALSE;
+INT             havediffs = false;
 char            text[1025];      /* Input line from file1  */
 char            textb[1025];     /* Input from file2 for check  */
 
@@ -892,7 +891,7 @@ void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
      */
     if( astart > aend && bstart > bend )
         return;
-    havediffs = TRUE;
+    havediffs = true;
     c = ( astart > aend ) ? 'a' : ( bstart > bend ) ? 'd' : 'c';
     if( nflag ) {
         if( c == 'a' ) {
@@ -1062,7 +1061,7 @@ void fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char
 }
 
 /*
- * Input routine, read one line to buffer[], return TRUE on eof, else FALSE.
+ * Input routine, read one line to buffer[], return true on eof, else false.
  * The terminating newline is always removed.  If "-b" was given, trailing
  * whitespace (blanks and tabs) are removed and strings of blanks and
  * tabs are replaced by a single blank.  getinpline() does all hacking for
@@ -1077,7 +1076,7 @@ INT getinpline( FILE *fd, char *buffer )
 
     if( fgetss( buffer, sizeof text, fd ) == NULL ) {
         *buffer = EOS;
-        return( TRUE );
+        return( true );
     }
     if( fd == stdin ) {
         fputss( buffer, tempfd );
@@ -1101,7 +1100,7 @@ INT getinpline( FILE *fd, char *buffer )
         }
         *top = EOS;
     }
-    return( FALSE );
+    return( false );
 }
 
 static USHORT    crc16a[] = {
@@ -1285,16 +1284,16 @@ void dumpklist( SLONG kmax, char *why )
 #endif
 
 /*
- * TRUE if strings are identical
+ * true if strings are identical
  */
 
 INT streq( char *s1, char *s2 )
 {
     while( *s1++ == *s2 ) {
         if( *s2++ == EOS )
-            return( TRUE );
+            return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*

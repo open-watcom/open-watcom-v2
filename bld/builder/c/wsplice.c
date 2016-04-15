@@ -39,7 +39,7 @@
 //      . . .
 //      :endsegment
 //      - the lines between these directives are a segment
-//      - the section that is delimited by the first <expr> that is TRUE,
+//      - the section that is delimited by the first <expr> that is true,
 //        up to the next :elsesegment or :endsegment are output.
 //  (3) :keep name
 //      - directs that the lines for the indicated segment are to be output,
@@ -76,13 +76,11 @@
 #else
 #include <sys/utime.h>
 #endif
+#include "bool.h"
 #include "watcom.h"
 
 #include "clibext.h"
 
-
-#define TRUE  1
-#define FALSE 0
 
 // wsplice expression operators definition
 #define OP_OR       '|'
@@ -168,7 +166,7 @@ static SEGMENT   *SegmentLookUp( char *seg_name );     // - look up a segment
 static SEGSTK    *PushSegStack( void );                // - push the segment stack
 static void      PopSegStack( void );                  // - pop the segment stack
 static void      Error( char*, ... );                  // - write an error
-static int       ScanString( void );                   // - scan a string
+static bool      ScanString( void );                   // - scan a string
 static void      *GetMem( size_t size );               // - get a block of memory
 static unsigned  RecordInitialize( char *record );     // - initialize for record processing
 static void      OutputString( char *p, char *record );// - send string to output file
@@ -222,7 +220,7 @@ static unsigned  OutNum = 0;             // - output number
 static int       UnixStyle;              // - Unix style newlines?
 static int       TabStop;                // - tab spacing
 static IPATHLST  *IncPathList;           // - list of include paths
-static int       RestoreTime = FALSE;    // - set tgt-file timestamp to src-file
+static int       RestoreTime = false;    // - set tgt-file timestamp to src-file
 static char      OutBuffer[1024];        // - output buffer
 static unsigned  OutBufferLen;           // - output buffer current len
 
@@ -379,10 +377,10 @@ int main(               // MAIN-LINE
                         }
                         break;
                     case 'u':
-                        UnixStyle = TRUE;
+                        UnixStyle = true;
                         break;
                     case 'p':
-                        RestoreTime = TRUE;
+                        RestoreTime = true;
                         break;
                     default:
                         Error( "Unknown option '%c'", arg[1] );
@@ -579,18 +577,18 @@ static void PutNL( void )
     OutputChar( '\n' );
 }
 
-static int GetToken( char op )
+static bool GetToken( char op )
 {
     if( Token[0] != op || Token[1] != '\0' )
-        return( FALSE );
+        return( false );
     ScanString();
-    return( TRUE );
+    return( true );
 };
 
 static int PrimaryExpr( void )
 {
     SEGMENT     *new;           // - new segment
-    int         ret;
+    bool        ret;
 
     if( GetToken( OP_LPAREN ) ) {
         ret = Expr();
@@ -602,9 +600,9 @@ static int PrimaryExpr( void )
         new = SegmentLookUp( Token );
         ScanString();
         if( new != NULL && new->seg_type == SEG_KEEP ) {
-            ret = TRUE;
+            ret = true;
         } else {
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
@@ -918,7 +916,7 @@ static void EatWhite( void )
 }
 
 
-static int IsOper( char ch )
+static bool IsOper( char ch )
 {
     switch( ch ) {
     case OP_OR:
@@ -926,14 +924,14 @@ static int IsOper( char ch )
     case OP_NOT:
     case OP_LPAREN:
     case OP_RPAREN:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 // SCAN A STRING
-static int ScanString( void )
+static bool ScanString( void )
 {
     char        *eptr;          // - end-of-string ptr.
     char        *cptr;          // - points into string
@@ -946,7 +944,7 @@ static int ScanString( void )
         cptr[0] = *rptr;
         cptr[1] = '\0';
         Rptr = rptr + 1;
-        return( TRUE );
+        return( true );
     }
     eptr = cptr + sizeof( Token ) - 1;
     for( ;; ) {
@@ -999,16 +997,15 @@ static void Error( // ERROR MESSAGE
 static void *GetMem( size_t size )
 {
     void        *block;                         // - new memory
-    static int  FirstMemoryError = { TRUE };    // - indicates first "out of memory" error
+    static bool FirstMemoryError = true;    // - indicates first "out of memory" error
 
     block = malloc( size );
     if( block == NULL ) {
         if( FirstMemoryError ) {
             Error( "Out of memory" );
-            FirstMemoryError = FALSE;
+            FirstMemoryError = false;
         }
-    } 
-    else {
+    } else {
         memset( block, 0xFB, size );
     }
     return( block );
