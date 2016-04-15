@@ -98,10 +98,10 @@ static void Nullable( void )
     bool        nullable_added;
 
     for( sym = symlist; sym != NULL; sym = sym->next ) {
-        sym->nullable = FALSE;
+        sym->nullable = false;
     }
     do {
-        nullable_added = FALSE;
+        nullable_added = false;
         for( sym = symlist; sym != NULL; sym = sym->next ) {
             if( !sym->nullable ) {
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
@@ -113,13 +113,13 @@ static void Nullable( void )
                     if( p->p.sym == NULL ) {
                         /* all of the RHS symbols are nullable */
                         /* (the vacuous case means the LHS is nullable) */
-                        sym->nullable = TRUE;
-                        nullable_added = TRUE;
+                        sym->nullable = true;
+                        nullable_added = true;
                     }
                 }
             }
         }
-    } while( nullable_added != FALSE );
+    } while( nullable_added );
 }
 
 static void Includes( a_look *x )

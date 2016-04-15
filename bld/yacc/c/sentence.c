@@ -127,10 +127,10 @@ static bool notInTraceback( traceback **h, a_sym *sym )
 
     for( t = *h; t != NULL; t = t->next ) {
         if( t->sym == sym ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static a_sym *findNewShiftSym( a_state *state, traceback **h )

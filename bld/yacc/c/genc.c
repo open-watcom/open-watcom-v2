@@ -97,7 +97,7 @@ static void copyact( a_pro * pro, char * indent )
         fprintf( actout, " %s", rhs[n].p.sym->name );
     }
     fprintf( actout, " */\n%s{ YYSTYPE yyval;\n%s\t", indent, indent );
-    only_default_type = TRUE;
+    only_default_type = true;
     for( s = pro->action; *s != '\0'; ) {
         if( *s == '$' ) {
             if( *++s == '<' ) {
@@ -107,7 +107,7 @@ static void copyact( a_pro * pro, char * indent )
                     }
                 }
                 *s++ = '\0';
-                only_default_type = FALSE;
+                only_default_type = false;
             } else {
                 type = NULL;
             }
@@ -215,7 +215,7 @@ static void gencode( int statenum, short *toklist, short *s, short *actions,
 
     prolog( statenum );
     default_action = 0;
-    switched = FALSE;
+    switched = false;
     for( ; toklist < s; ++toklist ) {
         token = *toklist;
         todo = actions[token] ;
@@ -224,7 +224,7 @@ static void gencode( int statenum, short *toklist, short *s, short *actions,
         } else if( token != parent_token ) {
             if( ! switched ) {
                 fprintf( actout, "    switch( token ) {\n" );
-                switched = TRUE;
+                switched = true;
             }
 
             for( symnum = 0; symnum < nsym; ++symnum ) {
@@ -353,7 +353,7 @@ void genobj( void )
                 r = q;
             }
             if( mp - setmembers ) {
-                protab[pro->pidx]->used = TRUE;
+                protab[pro->pidx]->used = true;
             }
             while( --mp >= setmembers ) {
                 tokval = symtab[*mp]->token;

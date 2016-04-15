@@ -425,7 +425,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
     a_SR_conflict           *am;
     a_SR_conflict_list      *en;
 
-    absorbed_something = FALSE;
+    absorbed_something = false;
     for( ; token == T_AMBIG; ) {
         /* syntax is "%ambig <number> <token>" */
         /* token has already been scanned by scanprec() */
@@ -448,7 +448,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
             break;
         }
         scan( used );
-        absorbed_something = TRUE;
+        absorbed_something = true;
         am = make_unique_ambiguity( sym, index );
         en = MALLOC( 1, a_SR_conflict_list );
         en->next = *list;
@@ -464,12 +464,12 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list )
 static bool scanprec( unsigned used, a_sym **precsym )
 {
     if( token != T_PREC )
-        return( FALSE );
+        return( false );
     if( scan( used ) != T_IDENTIFIER || (*precsym = findsym( buf )) == NULL || (*precsym)->token == 0 ) {
         msg( "Expecting a token after %prec.\n" );
     }
     scan( used );
-    return( TRUE );
+    return( true );
 }
 
 static void scanextra( unsigned used, a_sym **psym, a_SR_conflict_list **pSR )
@@ -518,7 +518,7 @@ void rules( void )
             startsym = lhs;
         numacts = 0;
         do {
-            action_defined = FALSE;
+            action_defined = false;
             precsym = NULL;
             list_of_ambiguities = NULL;
             nrhs = 0;
@@ -535,7 +535,7 @@ void rules( void )
                         addpro( sym, rhs, 0 );
                     } else {
                         copyact( npro, lhs, rhs, 0, nrhs );
-                        action_defined = TRUE;
+                        action_defined = true;
                         break;
                     }
                     bufused -= i;
@@ -555,7 +555,7 @@ void rules( void )
                 }
                 rhs[nrhs++] = sym;
             }
-            unit_production = FALSE;
+            unit_production = false;
             if( !action_defined ) {
                 if( nrhs > 0 ) {
                     /* { $$ = $1; } is default action */
@@ -568,7 +568,7 @@ void rules( void )
                         }
                     }
                     if( nrhs == 1 ) {
-                        unit_production = TRUE;
+                        unit_production = true;
                     }
                 } else {
                     if( sym_lineno == lineno && token == '|' ) {
@@ -578,7 +578,7 @@ void rules( void )
             }
             pro = addpro( lhs, rhs, nrhs );
             if( unit_production ) {
-                pro->unit = TRUE;
+                pro->unit = true;
             }
             if( precsym != NULL ) {
                 pro->prec = precsym->prec;
@@ -604,7 +604,7 @@ void rules( void )
     }
     FREE( rhs );
 
-    not_token = FALSE;
+    not_token = false;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
         /* check for special symbols */
         if( sym == eofsym )
@@ -619,7 +619,7 @@ void rules( void )
             }
         }
         if( sym->pro != NULL && sym->token != 0 ) {
-            not_token = TRUE;
+            not_token = true;
             warn( "%s not defined as '%%token'.\n", sym->name );
         }
     }
@@ -1028,21 +1028,21 @@ static bool xlat_char( bool special, int c )
             addbuf( '_' );
         }
         addbuf( c );
-        return( FALSE );
+        return( false );
     }
     /* NYI: add %translate 'c' XXXX in case user doesn't like our name */
     addbuf( '_' );
     for( t = xlat; t->x != NULL; ++t ) {
         if( t->c == c ) {
             addstr( t->x );
-            return( TRUE );
+            return( true );
         }
     }
     warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
     addbuf( 'X' );
     sprintf( buff, "%x", c );
     addstr( buff );
-    return( TRUE );
+    return( true );
 }
 
 static void xlat_token( void )
@@ -1050,7 +1050,7 @@ static void xlat_token( void )
     bool special;
 
     addbuf( 'Y' );
-    special = TRUE;
+    special = true;
     for( ;; ) {
         nextc();
         if( ch == EOF || ch == '\n' ) {
