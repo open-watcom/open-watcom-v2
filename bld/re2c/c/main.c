@@ -6,10 +6,10 @@
 #include "dfa.h"
 
 const char  *fileName = NULL;
-bool        sFlag = FALSE;
-bool        bFlag = FALSE;
-bool        iFlag = FALSE;
-bool        bUsedYYAccept = FALSE;
+bool        sFlag = false;
+bool        bFlag = false;
+bool        iFlag = false;
+bool        bUsedYYAccept = false;
 uint        oline = 1;
 
 static void usage( void )
@@ -42,14 +42,14 @@ int main(int argc, char *argv[])
         while( *++p != '\0' ) {
             switch( *p ) {
             case 'b':
-                sFlag = TRUE;
-                bFlag = TRUE;
+                sFlag = true;
+                bFlag = true;
                 break;
             case 's':
-                sFlag = TRUE;
+                sFlag = true;
                 break;
             case 'i':
-                iFlag = TRUE;
+                iFlag = true;
                 break;
             default:
                 usage();
