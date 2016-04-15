@@ -67,9 +67,6 @@
 
 #define IS_OBJ(x)           (HasFileExtension( x, OBJ_EXT ) || HasFileExtension( x, OBJ_EXT_SECONDARY ))
 
-#define TRUE        1
-#define FALSE       0
-
 typedef enum tool_type {
     TYPE_LINK,
     TYPE_PACK,
