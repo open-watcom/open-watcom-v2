@@ -41,9 +41,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-
-#define TRUE 1
-#define FALSE 0
+#include "bool.h"
 
 #define DBG_INTERNAL
 #include "dbgmem.h"
@@ -82,7 +80,7 @@ extern int dbg_mem_check( dbg_list DFAR *mem_ctl );
 
 static int dbg_error(
 /*******************/
-/* always returns FALSE */
+/* always returns false */
 
     dbg_list DFAR       *mem_ctl,
     char                *msg,
@@ -92,9 +90,9 @@ static int dbg_error(
 
     sprintf( buf, "*ERROR* in %s: %s (memory ptr: %p)",
                         mem_ctl->info.rpt_title, msg, (void far *) dbg->mem );
-    (mem_ctl->info.prt_line)( buf, TRUE );
+    (mem_ctl->info.prt_line)( buf, true );
 
-    return( FALSE );
+    return( false );
 }
 
 
@@ -202,7 +200,7 @@ static int dbg_check_block(
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static int do_check(
@@ -214,7 +212,7 @@ static int do_check(
         return( dbg_mem_check( mem_ctl ) >= 0 );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 /***** external routines *****/
@@ -292,29 +290,29 @@ int dbg_mem_report(
     if( dbg_mem_check( mem_ctl ) < 0 ) {
         return( -1 );
     }
-    (mem_ctl->info.prt_line)( "", FALSE );
+    (mem_ctl->info.prt_line)( "", false );
     sprintf( buf, "Memory Report: %s", mem_ctl->info.rpt_title );
-    (mem_ctl->info.prt_line)( buf, FALSE );
-    (mem_ctl->info.prt_line)( "===================================", FALSE );
-    (mem_ctl->info.prt_line)( "", FALSE );
+    (mem_ctl->info.prt_line)( buf, false );
+    (mem_ctl->info.prt_line)( "===================================", false );
+    (mem_ctl->info.prt_line)( "", false );
 
     sprintf( buf, "current unfreed allocated blocks: %ld",
                                         mem_ctl->curr_num_blocks );
-    (mem_ctl->info.prt_line)( buf, FALSE );
+    (mem_ctl->info.prt_line)( buf, false );
     sprintf( buf, "Total number of allocs: %ld",
                                         mem_ctl->total_num_allocs );
-    (mem_ctl->info.prt_line)( buf, FALSE );
+    (mem_ctl->info.prt_line)( buf, false );
     sprintf( buf, "Total number of reallocs: %ld",
                                         mem_ctl->total_num_reallocs );
-    (mem_ctl->info.prt_line)( buf, FALSE );
+    (mem_ctl->info.prt_line)( buf, false );
     sprintf( buf, "Total number of frees: %ld",
                                         mem_ctl->total_num_frees );
-    (mem_ctl->info.prt_line)( buf, FALSE );
+    (mem_ctl->info.prt_line)( buf, false );
 
-    (mem_ctl->info.prt_line)( "Current unfreed chunks:", FALSE );
+    (mem_ctl->info.prt_line)( "Current unfreed chunks:", false );
 
-    (mem_ctl->info.prt_line)( "address             size           First 10 Characters/First 10 Bytes", FALSE );
-    (mem_ctl->info.prt_line)( "======================================================================", FALSE );
+    (mem_ctl->info.prt_line)( "address             size           First 10 Characters/First 10 Bytes", false );
+    (mem_ctl->info.prt_line)( "======================================================================", false );
 
     str[10] = '\0';
     for( dbg = mem_ctl->alloc_list; dbg != NULL; dbg = dbg->next ) {
@@ -330,7 +328,7 @@ int dbg_mem_report(
             (void far *) dbg->mem, dbg->size, str,
             dbg->mem[0], dbg->mem[1], dbg->mem[2], dbg->mem[3], dbg->mem[4],
             dbg->mem[5], dbg->mem[6], dbg->mem[7], dbg->mem[8], dbg->mem[9] );
-        (mem_ctl->info.prt_line)( buf, FALSE );
+        (mem_ctl->info.prt_line)( buf, false );
     }
 
     return( mem_ctl->curr_num_blocks );
