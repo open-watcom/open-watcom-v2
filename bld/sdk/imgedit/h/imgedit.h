@@ -73,8 +73,6 @@ typedef enum {
 
 #define MAX_DIM             2048
 #define MIN_DIM             0
-#define FALSE               0
-#define TRUE                1
 #define SB_SAVE_AS          1
 #define SB_SAVE             0
 #define LMOUSEBUTTON        0
