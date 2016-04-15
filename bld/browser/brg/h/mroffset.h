@@ -57,10 +57,10 @@ inline bool MergeOffset::operator< ( const MergeOffset& other ) const
 //-------------------------------------------------------------------
 {
     if( fileIdx > other.fileIdx ) {
-        return FALSE;
+        return false;
     } else {
         if( fileIdx < other.fileIdx ) {
-            return TRUE;
+            return true;
         } else {
             return offset < other.offset;
         }
@@ -71,7 +71,7 @@ inline bool MergeOffset::operator== ( const MergeOffset& other ) const
 //--------------------------------------------------------------------
 {
     if( fileIdx != other.fileIdx ) {
-        return FALSE;
+        return false;
     } else {
         return offset == other.offset;
     }

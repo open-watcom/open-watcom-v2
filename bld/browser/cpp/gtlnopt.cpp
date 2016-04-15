@@ -183,14 +183,14 @@ bool GTLineOption::paint()
 
     dev.close();
 
-    return TRUE;
+    return true;
 }
 
 void GTLineOption::initialize()
 //-----------------------------
 {
     int i;
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -285,9 +285,9 @@ bool GTLineOption::leftBttnDn( int x, int y, WMouseKeyFlags )
             if( _styleRects[ i ].contains( x, y ) ) {
                 prev_rect = &_styleRects[ _style ];
                 _style = i;
-                _inStyle = TRUE;
+                _inStyle = true;
                 updateRects( prev_rect );
-                return TRUE;
+                return true;
             }
         }
     }
@@ -296,13 +296,13 @@ bool GTLineOption::leftBttnDn( int x, int y, WMouseKeyFlags )
         if( _colrRects[ i ].contains( x, y ) ) {
             prev_rect = &_colrRects[ _colour ];
             _colour = i;
-            _inStyle = FALSE;
+            _inStyle = false;
             updateRects( prev_rect );
-            return TRUE;
+            return true;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool GTLineOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
@@ -315,7 +315,7 @@ bool GTLineOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
             if( _styleRects[ i ].contains( x, y ) ) {
                 if( i == _style ) {
                     okButton( NULL );
-                    return TRUE;
+                    return true;
                 }
             }
         }
@@ -325,13 +325,13 @@ bool GTLineOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
         if( _colrRects[ i ].contains( x, y ) ) {
             if( i == _colour ) {
                 okButton( NULL );
-                return TRUE;
+                return true;
             }
-            return TRUE;
+            return true;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 bool GTLineOption::keyDown( WKeyCode kc, WKeyState ks )
@@ -354,7 +354,7 @@ bool GTLineOption::keyDown( WKeyCode kc, WKeyState ks )
         _colour = (_colour + _NumColours) % _NumColours;
         _style = (_style + _NumStyles) % _NumStyles;
         updateRects( prev_rect );
-        return TRUE;
+        return true;
     case WKeyDown:
         if( _inStyle ) {
             _style += 1;
@@ -364,14 +364,14 @@ bool GTLineOption::keyDown( WKeyCode kc, WKeyState ks )
         _colour = (_colour + _NumColours) % _NumColours;
         _style = (_style + _NumStyles) % _NumStyles;
         updateRects( prev_rect );
-        return TRUE;
+        return true;
     case WKeyLeft:
     case WKeyRight:
         if( _line ) {
             _inStyle = !_inStyle;
             updateRects( prev_rect );
         }
-        return TRUE;
+        return true;
     }
     return( WDialog::keyDown( kc, ks ) );
 }
@@ -389,14 +389,14 @@ void GTLineOption::okButton( WWindow * )
 {
     getPinfo( *_info );
     _parent->setInfo( _info );
-    quit( TRUE );
+    quit( true );
 }
 
 void GTLineOption::cancelButton( WWindow * )
 //------------------------------------------
 {
     _parent->setInfo( NULL );
-    quit( FALSE );
+    quit( false );
 }
 
 void GTLineOption::helpButton( WWindow * )
@@ -411,5 +411,5 @@ bool GTLineOption::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_LINE_OPTIONS );
     }
-    return( TRUE );
+    return( true );
 }

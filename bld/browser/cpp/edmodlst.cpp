@@ -127,11 +127,11 @@ static void ChangeAllEnabled( ModuleList & lst, bool nEnable )
 void EditModuleList::disableButton( WWindow * )
 //---------------------------------------------
 {
-    ChangeAllEnabled( *_moduleBox, FALSE );
+    ChangeAllEnabled( *_moduleBox, false );
 }
 
 void EditModuleList::enableButton( WWindow * )
 //--------------------------------------------
 {
-    ChangeAllEnabled( *_moduleBox, TRUE );
+    ChangeAllEnabled( *_moduleBox, true );
 }

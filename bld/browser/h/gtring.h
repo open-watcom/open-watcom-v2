@@ -48,8 +48,8 @@ public:
             bool        addPtr( TreePtr * ptr );
             void        unWrap( void );
     virtual void        addEdges( TreeEdgeBreaker * );
-            void        cut() { _cut = TRUE; }
-            void        join() { _cut = FALSE; }
+            void        cut() { _cut = true; }
+            void        join() { _cut = false; }
             bool        isCut() { return _cut; }
 
     virtual int         getLevel( void ) const;

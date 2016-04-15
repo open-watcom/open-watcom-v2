@@ -94,7 +94,7 @@ void FileEdit::initialize()
 {
     int i;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -197,14 +197,14 @@ void FileEdit::update()
 //---------------------
 {
     int     i;
-    bool    needsInv = FALSE;
+    bool    needsInv = false;
 
     for( i = 0; i < _tmpFilter->numEntries(); i += 1 ) {
         FFiltEntry * entry = _tmpFilter->entry( i );
 
         if( (*_fileBox)[ i ]->_enabled != entry->_enabled ) {
             (*_fileBox)[ i ]->_enabled = entry->_enabled;
-            needsInv = TRUE;
+            needsInv = true;
         }
     }
 
@@ -253,5 +253,5 @@ bool FileEdit::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_FILE_FILTER );
     }
-    return( TRUE );
+    return( true );
 }

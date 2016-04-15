@@ -52,9 +52,9 @@ KeySymbol::KeySymbol()
     , _contClassProg( NULL )
     , _contFunctionProg( NULL )
     , _searchFor( KSTAllSyms )
-    , _anonymous( FALSE )
-    , _artificial( FALSE )
-    , _declaration( TRUE )
+    , _anonymous( false )
+    , _artificial( false )
+    , _declaration( true )
 //-----------------------------
 {
     _fileFilter = new FileFilter();
@@ -153,35 +153,35 @@ bool KeySymbol::matches( Symbol * sym )
     char * container;
 
     if( !(SymTypeConvert[sym->symtype()] & _searchFor) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !_anonymous ) {
         if( sym->isAnonymous() ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_artificial ) {
         if( sym->isArtificial() ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_declaration ) {
         if( !sym->isDefined() ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( _nameProg ) {
         if( sym->name() ) {
             if( !RegExec( (regexp *)_nameProg, sym->name(), true ) ) {
-                return( FALSE );
+                return( false );
             }
         } else {
             if( !RegExec( (regexp *)_nameProg, "", true ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
@@ -193,15 +193,15 @@ bool KeySymbol::matches( Symbol * sym )
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
-                    return( FALSE );
+                    return( false );
                 }
             } else {
                 if( !RegExec( (regexp *)_contClassProg, "", true ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         } else {
-            return( FALSE );    // not local to anything
+            return( false );    // not local to anything
         }
     }
 
@@ -209,10 +209,10 @@ bool KeySymbol::matches( Symbol * sym )
     //        stored in the symbol
 
     if( !_fileFilter->matches( sym->getHandle() ) ) {
-        return FALSE;
+        return false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool KeySymbol::matches( dr_sym_context * ctxt )
@@ -222,35 +222,35 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
     char * container;
 
     if( !(SymTypeConvert[ctxt->type] & _searchFor) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !_anonymous ) {
         if( ctxt->name == NULL || *ctxt->name == 0 ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_artificial ) {
         if( DRIsArtificial( ctxt->handle ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_declaration ) {
         if( !DRIsSymDefined( ctxt->handle ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( _nameProg && ctxt->name ) {
         if( ctxt->name ) {
             if( !RegExec( (regexp *)_nameProg, ctxt->name, true ) ) {
-                return( FALSE );
+                return( false );
             }
         } else {
             if( !RegExec( (regexp *)_nameProg, "", true ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
@@ -262,15 +262,15 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
-                    return( FALSE );
+                    return( false );
                 }
             } else {
                 if( !RegExec( (regexp *)_contClassProg, "", true ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         } else {
-            return( FALSE );    // not local to anything
+            return( false );    // not local to anything
         }
     }
 
@@ -281,23 +281,23 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
                 accept = (bool)RegExec( (regexp *)_contFunctionProg, container, true );
                 WBRFree( container );
                 if( !accept ) {
-                    return( FALSE );
+                    return( false );
                 }
             } else {
                 if( !RegExec( (regexp *)_contFunctionProg, "", true ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         } else {
-            return( FALSE );    // not local to anything
+            return( false );    // not local to anything
         }
     }
 
     if( !_fileFilter->matches( ctxt->handle ) ) {
-        return FALSE;
+        return false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool KeySymbol::matches( dr_handle drhdl, const char * name )
@@ -308,44 +308,44 @@ bool KeySymbol::matches( dr_handle drhdl, const char * name )
 
     type = DRGetSymType( drhdl );
     if( !(SymTypeConvert[type] & _searchFor) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !_anonymous ) {
         if( name == NULL || *name == 0 ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_artificial ) {
         if( DRIsArtificial( drhdl ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !_declaration ) {
         if( !DRIsSymDefined( drhdl ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( _nameProg ) {
         if( name ) {
             if( !RegExec( (regexp *)_nameProg, name, true ) ) {
-                return( FALSE );
+                return( false );
             }
         } else {
             if( !RegExec( (regexp *)_nameProg, "", true ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
 
     if( !_fileFilter->matches( drhdl ) ) {
-        return FALSE;
+        return false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 enum KeySymFlags {

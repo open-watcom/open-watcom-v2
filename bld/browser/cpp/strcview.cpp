@@ -157,7 +157,7 @@ void StrucView::reset()
 void StrucView::filterSelected( WWindow * )
 //-----------------------------------------
 {
-    MethodFilter filt( 150, 150, FALSE);
+    MethodFilter filt( 150, 150, false);
 
     if( filt.process() ) {
         _filter = filt.getCurrentFlags();
@@ -174,9 +174,9 @@ void StrucView::addSeen( StrucViewItem * item )
 bool StrucView::isSeen( Symbol * sym )
 //------------------------------------
 {
-    bool ret = FALSE;
+    bool ret = false;
     if( _nodesSeen->find( sym ) ) {
-        ret = TRUE;
+        ret = true;
     }
     return ret;
 }
@@ -186,7 +186,7 @@ bool StrucView::setMinimumSize( short *w, short *h )
 {
     *w = StrucWidth;
     *h = StrucHeight;
-    return TRUE;
+    return true;
 }
 
 void StrucView::itemSelected( WWindow *)
@@ -216,9 +216,9 @@ int StrucView::keyPressed( WWindow *, int key )
         default:
             REQUIRE( 0, "strcview -- keypressed with bad key!" );
         }
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 
@@ -287,7 +287,7 @@ void StrucView::itemDblClicked( WWindow * )
 
 StrucViewItem::StrucViewItem( StrucView * parent, Symbol * strucInfo,
                               uchar indent )
-    :_initialized(FALSE)
+    :_initialized(false)
     ,_expandState(LeafNode)
     ,_info(strucInfo)
     ,_indentLevel(indent)
@@ -298,7 +298,7 @@ StrucViewItem::StrucViewItem( StrucView * parent, Symbol * strucInfo,
 
 StrucViewItem::StrucViewItem( StrucView * parent, ClassLattice * node,
                               uchar indent )
-    :_initialized(FALSE)
+    :_initialized(false)
     ,_expandState(LeafNode)
     ,_info(node->makeSymbol())
     ,_indentLevel(indent)
@@ -458,7 +458,7 @@ void StrucViewItem::initState()
 // if the base type is a ClassType, then i am Collapsed
 // else i am LeafNode
 {
-    bool        do_inherited = FALSE;
+    bool        do_inherited = false;
     ClassType * classType;
     dr_sym_type stype = _info->symtype();
 
@@ -478,7 +478,7 @@ void StrucViewItem::initState()
             WVList kidInfos;
             FilterFlags flags = _parent->getFilter();
             if( ( flags & FILT_INHERITED ) || ( flags & FILT_ALL_INHERITED )) {
-                do_inherited = TRUE;
+                do_inherited = true;
                 FILT_RESET_INHERITED( flags );
             }
 
@@ -503,7 +503,7 @@ void StrucViewItem::initState()
         } else {
             _expandState = LeafNode;
         }
-        _initialized = TRUE;
+        _initialized = true;
     }
 }
 
@@ -629,13 +629,13 @@ bool StrucViewItem::inhHook( DerivationPtr & ptr, void * info )
         data->me->_kids.add( item );
     }
 
-    return TRUE;
+    return true;
 }
 
 void StrucViewItem::reset( void )
 //-------------------------------
 {
     _kids.deleteContents();
-    _initialized = FALSE;
+    _initialized = false;
     initState();
 }

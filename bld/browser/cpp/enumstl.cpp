@@ -58,7 +58,7 @@ bool EnumStyleEdit::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_ENUMERATOR_STYLES );
     }
-    return( TRUE );
+    return( true );
 }
 
 void EnumStyleEdit::initialize()
@@ -66,7 +66,7 @@ void EnumStyleEdit::initialize()
 {
     int i;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -108,11 +108,11 @@ void EnumStyleEdit::setValues( EnumViewStyle filt )
 {
     int i;
 
-    _buttons[ 0 ]->setCheck( TRUE );
+    _buttons[ 0 ]->setCheck( true );
 
     for( i = 0; i < EV_NumStyles; i += 1 ) {
         if( filt == i ) {
-            _buttons[ i ]->setCheck( TRUE );
+            _buttons[ i ]->setCheck( true );
             break; // <--- loop exit
         }
     }

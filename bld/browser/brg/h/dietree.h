@@ -49,16 +49,16 @@ struct DIETreeNode {
 };
 
 struct DIETreeSearch : public DIETreeNode {
-                    DIETreeSearch() : DIETreeNode( FALSE ) {}
+                    DIETreeSearch() : DIETreeNode( false ) {}
 
     MergeNameKey    _separators[ SEARCHORDER * 2 ];
     DIETreeNode *   _nodes[ SEARCHORDER * 2 + 1 ];
 };
 
 struct DIETreeBucket : public DIETreeNode {
-                    DIETreeBucket() : DIETreeNode( TRUE ), _next( NULL ) {}
+                    DIETreeBucket() : DIETreeNode( true ), _next( NULL ) {}
                     DIETreeBucket( DIETreeBucket * n )
-                        : DIETreeNode( TRUE ), _next( n ) {}
+                        : DIETreeNode( true ), _next( n ) {}
 
     MergeDIE *      _nodes[ BUCKETORDER * 2 + 1 ];
     DIETreeBucket * _next;

@@ -97,7 +97,7 @@ void QueryConfig::initialize()
     int i;
     OptionManager * optMgr = WBRWinBase::optManager();
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -173,7 +173,7 @@ void QueryConfig::okButton( WWindow * )
 
     // NYI -- file stuff
 
-    quit( TRUE );
+    quit( true );
 }
 
 void QueryConfig::filtersButton( WWindow * )
@@ -200,7 +200,7 @@ bool QueryConfig::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_QUERY_CONFIGURATION );
     }
-    return( TRUE );
+    return( true );
 }
 
 void QueryConfig::useRXClicked( WWindow * )

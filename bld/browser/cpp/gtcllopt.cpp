@@ -71,7 +71,7 @@ GTCallOption::~GTCallOption()
 void GTCallOption::initialize()
 //-----------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -108,14 +108,14 @@ void GTCallOption::okButton( WWindow * )
 //--------------------------------------
 {
     WBRWinBase::optManager()->setFunctionOpts( _options );
-    quit( TRUE );
+    quit( true );
 }
 
 void GTCallOption::cancelButton( WWindow * )
 //------------------------------------------
 {
     WBRWinBase::optManager()->setFunctionOpts( NULL );
-    quit( FALSE );
+    quit( false );
 }
 
 void GTCallOption::modifyButton( WWindow * )
@@ -124,11 +124,11 @@ void GTCallOption::modifyButton( WWindow * )
     PaintInfo * p;
     if( _hasFocus < 5 ) {
         p = &_options->numCalls( _hasFocus + 1 );
-        GTLineOption mod( Desc[ _hasFocus ], this, p, TRUE );
+        GTLineOption mod( Desc[ _hasFocus ], this, p, true );
         mod.process( this );
     } else {
         p = &_options->repeated( (bool) (_hasFocus - 5) );
-        GTLineOption mod( Desc[ _hasFocus ], this, p, FALSE );
+        GTLineOption mod( Desc[ _hasFocus ], this, p, false );
         mod.process( this );
     }
 }
@@ -145,7 +145,7 @@ bool GTCallOption::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_CALL_TREE_OPTIONS );
     }
-    return( TRUE );
+    return( true );
 }
 
 int GTCallOption::inRect( int x, int y )
@@ -177,7 +177,7 @@ bool GTCallOption::leftBttnDn( int x, int y, WMouseKeyFlags )
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
     }
-    return TRUE;
+    return true;
 }
 
 bool GTCallOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
@@ -186,7 +186,7 @@ bool GTCallOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
     if( _hasFocus == inRect( x, y ) ) {
         modifyButton( NULL );
     }
-    return TRUE;
+    return true;
 }
 
 #define COL_1   5
@@ -206,7 +206,7 @@ bool GTCallOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     case WKeyDown:
         if( _hasFocus < COL_1 ) {
             _hasFocus = (_hasFocus + 1) % COL_1;
@@ -215,7 +215,7 @@ bool GTCallOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     case WKeyLeft:
     case WKeyRight:
         if( _hasFocus < COL_1 ) {
@@ -225,7 +225,7 @@ bool GTCallOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     }
     return( WDialog::keyDown( kc, ks ) );
 }
@@ -298,7 +298,7 @@ bool GTCallOption::paint()
 
     dev.close();
 
-    return TRUE;
+    return true;
 }
 
 void GTCallOption::endEdit()

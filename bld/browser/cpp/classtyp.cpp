@@ -63,14 +63,14 @@ void ClassType::operator delete( void * mem )
 
 static bool CheckAccess( dr_handle drhdl, dr_access inherit )
 //------------------------------------------------------------
-// returns TRUE if the given drhdl is acceptable given the filters
+// returns true if the given drhdl is acceptable given the filters
 {
     int          access;
     MemberFilter filt = WBRWinBase::optManager()->getMemberFilter();
     bool         ret;
 
     if( filt._accessLevel == MemberFilter::AccAll ) {
-        ret = TRUE;     // acess is ok
+        ret = true;     // acess is ok
     } else {
         access = DRGetAccess( drhdl ) + inherit;
 
@@ -101,7 +101,7 @@ static bool ClassType::memberHook( dr_sym_type symtype, dr_handle drhdl,
     bool                quit;
     MemberFilter        filt = WBRWinBase::optManager()->getMemberFilter();
 
-    quit = FALSE;
+    quit = false;
 
     quit = !CheckAccess( drhdl, data->access );
 
@@ -133,7 +133,7 @@ static bool ClassType::memberHook( dr_sym_type symtype, dr_handle drhdl,
         sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
         data->list->add( sym );
     }
-    return TRUE;
+    return true;
 }
 
 void ClassType::dataMembers( WVList & list )

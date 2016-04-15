@@ -78,8 +78,8 @@ public:
 
             TreeDirection   getDirection() const;
             bool            getSmartEdges() const;
-            void            enableAll( bool enable = TRUE,
-                                       bool rePlace = FALSE );
+            void            enableAll( bool enable = true,
+                                       bool rePlace = false );
             void            rePlaceAll();
 
             void            scrollToNode( TreeNode *, WRect & );

@@ -96,7 +96,7 @@ public:
     long            getSectOff( dr_section sect );
 
     void            setComponentFiles( CompFileList list );
-    void            addComponentFile( const char * fName, bool enable = TRUE );
+    void            addComponentFile( const char * fName, bool enable = true );
     CompFileList    getComponentFiles() { return _components; }
     void            getEnabledComponents( CompFileList list );
     void            getDisabledComponents( CompFileList list );

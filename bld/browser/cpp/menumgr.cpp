@@ -252,7 +252,7 @@ bool MenuManager::menuEnabled( const MIMenuID & id )
         return _topMenus[ id.mainID() ]->itemEnabled( id.subID() );
     }
 
-    return FALSE;
+    return false;
 }
 
 void MenuManager::checkMenu( const MIMenuID & id, bool enable )
@@ -277,7 +277,7 @@ void MenuManager::unRegister( const MIMenuID & id )
 {
     bool found;
 
-    enableMenu( id, FALSE );
+    enableMenu( id, false );
     found = (bool) _receivers->remove( id );
 
     ASSERTION( found );
@@ -339,7 +339,7 @@ void MenuManager::makeItem( WPopupMenu * pop, const SubMenuInfo * info,
     pop->insertItem( item );
 
     if( disable ) {
-        pop->enableItem( FALSE, idx );
+        pop->enableItem( false, idx );
     }
 }
 

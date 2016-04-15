@@ -76,18 +76,18 @@ bool FFiltPattern::match( String & s )
     int      i;
 
     if( (_type == FFIncludeAll) || (_type == FFExcludeAll) ) {
-        return TRUE;
+        return true;
     }
 
     _splitpath( s, file.drive, file.dir, file.fname, file.ext );
     _splitpath( _pattern, pat.drive, pat.dir, pat.fname, pat.ext );
 
     if( stricmp( file.drive, pat.drive ) ) {
-        return FALSE;
+        return false;
     }
 
     if( stricmp( file.dir, pat.dir ) ) {
-        return FALSE;
+        return false;
     }
 
     for( i = 0; i < _MAX_FNAME; i += 1 ) {
@@ -97,7 +97,7 @@ bool FFiltPattern::match( String & s )
         if( pat.fname[ i ] != '?' &&
             FNAMECHARCMP( pat.fname[ i ], file.fname[ i ] ) ) {
 
-            return FALSE;
+            return false;
         }
         if( pat.fname[ i ] == '\0' ) {
             break;
@@ -110,14 +110,14 @@ bool FFiltPattern::match( String & s )
         }
         if( pat.ext[ i ] != '?' &&
             FNAMECHARCMP( pat.ext[ i ], file.ext[ i ] ) ) {
-            return FALSE;
+            return false;
         }
         if( pat.ext[ i ] == '\0' ) {
             break;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 //------------------ FFiltEntry -------------------------------
@@ -220,11 +220,11 @@ static bool FileFilter::fileHook( char * name, void * me )
 //--------------------------------------------------------
 {
     FileFilter * filter = (FileFilter *) me;
-    FFiltEntry * entry = new FFiltEntry( name, TRUE );
+    FFiltEntry * entry = new FFiltEntry( name, true );
 
     filter->_entries->insert( entry );
 
-    return TRUE;    // continue
+    return true;    // continue
 }
 
 void FileFilter::loadFiles()
@@ -336,11 +336,11 @@ bool FileFilter::enabled( const char * file )
 // with one of the elements of the list or death
 // ensues
 {
-    FFiltEntry   search( file, FALSE );
+    FFiltEntry   search( file, false );
     FFiltEntry * entry;
 
     if( file == NULL ) {
-        return TRUE;
+        return true;
     }
 
     entry = _entries->find( &search );
@@ -371,7 +371,7 @@ bool FileFilter::matches( dr_handle drhdl )
     }
 
     if( _matchesAll == FFMMatchAll ) {
-        return TRUE;
+        return true;
     }
 
     return enabled( DRGetFileName( drhdl ) );

@@ -71,7 +71,7 @@ public:
 class FFiltEntry
 {
 public:
-                        FFiltEntry() : _enabled( FALSE ) {}
+                        FFiltEntry() : _enabled( false ) {}
                         FFiltEntry( const char * nm, bool en )
                             : _enabled( en ), _name( nm ) {}
                         FFiltEntry( const FFiltEntry & o )

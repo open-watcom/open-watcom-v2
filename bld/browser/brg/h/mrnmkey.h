@@ -62,19 +62,19 @@ bool MergeNameKey::operator< ( const MergeNameKey& other ) const
 
 {
     if( _tag < other._tag ) {
-        return TRUE;
+        return true;
     } else {
         if( _tag == other._tag ) {
             if( _extern < other._extern ) {
-                return TRUE;
+                return true;
             } else {
                 if( _extern == other._extern ) {
                     if( _name < other._name ) {
-                        return TRUE;
+                        return true;
                     } else {
                         if( _name == other._name ) {
                             if( _unique < other._unique ) {
-                                return TRUE;
+                                return true;
                             }
                         }
                     }
@@ -83,7 +83,7 @@ bool MergeNameKey::operator< ( const MergeNameKey& other ) const
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 inline bool MergeNameKey::operator== ( const MergeNameKey& other ) const

@@ -70,13 +70,13 @@ const MemberFilter DefaultMemFilt = {
     MemberFilter::MemAll        // show all members (static, virt, variables, functions)
 };
 const RXOptions      DefaultRXOpt = {
-    TRUE,                       // RX anchored
+    true,                       // RX anchored
     "",                         // all RX characters
 };
 
 static const char * DefaultEditorParms = "%f";
 #if defined( __OS2__ )
-    static bool DefaultEditorIsDLL = TRUE;
+    static bool DefaultEditorIsDLL = true;
     static const char * DefaultEditor = "epmlink";
 #else
 #pragma initialize before program
@@ -88,16 +88,16 @@ static const char * DefaultEditorParms = "%f";
 OptionManager::OptionSet::OptionSet()
         : _memberFilter( DefaultMemFilt )
         , _enumStyle( EV_HexLowerCase )     // enum-view style is 0xa5
-        , _treeAutoArrange( FALSE )
+        , _treeAutoArrange( false )
         , _treeDirection( TreeVertical )
         , _edgeType( EdgesStraight )
-        , _ignoreCase( TRUE )
-        , _wholeWord( FALSE )
-        , _useRX( FALSE )
+        , _ignoreCase( true )
+        , _wholeWord( false )
+        , _useRX( false )
         , _rxOptions( DefaultRXOpt )
         , _classOpts( GTClassOpts() )
         , _functionOpts( GTFunctionOpts() )
-        , _autoSave( FALSE )
+        , _autoSave( false )
 //----------------------------------------------------------------------
 {
 }
@@ -106,7 +106,7 @@ static OptionManager::OptionSet OptionManager::_default;
 
 OptionManager::OptionManager()
         : _menuManager( NULL )
-        , _modified( FALSE )
+        , _modified( false )
         , _fileName( NULL )
         , _queryConfig( NULL )
         , _editorName( DefaultEditor )
@@ -241,7 +241,7 @@ bool OptionManager::exit()
 
     if( _current._autoSave && hasFile() ) {
         saveTo( _fileName->gets() );
-        return TRUE;    // ok to terminate
+        return true;    // ok to terminate
     }
 
     if( _modified || _current._autoSave ) {
@@ -260,17 +260,17 @@ bool OptionManager::exit()
         case MsgRetYes:
             if( hasFile() ) {
                 saveTo( _fileName->gets() );
-                return TRUE;
+                return true;
             } else {
                 return save();      // terminate only if save works
             }
         case MsgRetNo:
-            return TRUE;            // terminate
+            return true;            // terminate
         default:
-            return FALSE;           // don't terminate
+            return false;           // don't terminate
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool OptionManager::isModified() const
@@ -415,7 +415,7 @@ void OptionManager::modified()
     checkMenus();
 
     if( !_modified ) {
-        _modified = TRUE;
+        _modified = true;
         browseTop->postTitle();
     }
 
@@ -440,19 +440,19 @@ bool OptionManager::load()
                                         "Save Option Changes?" );
         if( ret == MsgRetYes ) {
             if( !save() ) {
-                return FALSE;
+                return false;
             }
         }
-        _modified = FALSE;
+        _modified = false;
     }
 
     const char* result = fileselect.getOpenFileName( NULL,
                                         "Load Options File" );
     if( result && *result ) {
         loadFrom( result );
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 
@@ -534,7 +534,7 @@ void OptionManager::loadFrom( const char * file )
         WBRWinBase::viewManager()->eventOccured( VEOptionFileChange, NULL );
         WBRWinBase::viewManager()->eventOccured( VEQueryFiltChange, NULL );
         modified();
-        _modified = FALSE;
+        _modified = false;
         browseTop->postTitle();
     } catch( FileExcept file ) {
         errMessage( "%s: %s", file._fileName, file._message );
@@ -555,9 +555,9 @@ bool OptionManager::save()
                                         "Save Options File" );
     if( result && *result ) {
         saveTo( result );
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 
@@ -589,7 +589,7 @@ void OptionManager::saveTo( const char * file )
         saveFile.writeNString( _editorParms );
 
         saveFile.close();
-        _modified = FALSE;
+        _modified = false;
         browseTop->postTitle();
     } catch( FileExcept file ) {
         errMessage( "%s: %s", file._fileName, file._message );

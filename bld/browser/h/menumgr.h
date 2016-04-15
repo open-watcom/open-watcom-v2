@@ -82,10 +82,10 @@ public:
                             MenuManager();
                             ~MenuManager();
 
-            void            enableMenu( const MIMenuID & id, bool = TRUE );
+            void            enableMenu( const MIMenuID & id, bool = true );
             bool            menuEnabled( const MIMenuID & id );
             void            checkMenu( const MIMenuID & id, bool );
-            void            registerForMenu( MenuHandler *, const MIMenuID &, bool enable = TRUE );
+            void            registerForMenu( MenuHandler *, const MIMenuID &, bool enable = true );
             void            unRegister( const MIMenuID & );
             void            setupMenus( Browse * client );
 
@@ -102,7 +102,7 @@ private:
             void            menuSelected( WMenuItem * );
             void            hintText( WMenuItem *, const char * hint );
             void            makeItem( WPopupMenu * pop, const SubMenuInfo * info,
-                                      int idx, bool disable=TRUE );
+                                      int idx, bool disable=true );
 
             WPopupMenu **                               _topMenus;
             Browse *                                    _clientWin;

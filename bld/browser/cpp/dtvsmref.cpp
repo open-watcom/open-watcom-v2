@@ -73,7 +73,7 @@ bool DTVSymbolRefs::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_SYMBOL_REFERENCES );
     }
-    return( TRUE );
+    return( true );
 }
 
 int DTVSymbolRefs::count()

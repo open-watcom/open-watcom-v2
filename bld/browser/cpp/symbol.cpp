@@ -56,7 +56,7 @@ Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
         ,_description(NULL)
         ,_name(n)       // n should be dynamic memory which symbol can free
         ,_decname(NULL)
-        ,_anonymous(FALSE)
+        ,_anonymous(false)
 //--------------------------------------------------------------
 {
     _defined = DRIsSymDefined( drhdl );
@@ -64,7 +64,7 @@ Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
     if( _name == NULL || _name[ 0 ] == '\0' ) {
         WBRFree( _name );
         _name = NULL;
-        _anonymous = TRUE;
+        _anonymous = true;
     }
 }
 
@@ -153,7 +153,7 @@ bool Symbol::defSourceFile( char *buff )
     char        *p;
 
     p = DRGetFileName( _drhandle );
-    if( p == NULL ) return( FALSE );
+    if( p == NULL ) return( false );
     strcpy( buff, p );
     return browseTop->makeFileName( buff );
 }

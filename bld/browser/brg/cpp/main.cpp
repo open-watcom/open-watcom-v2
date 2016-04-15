@@ -65,7 +65,7 @@ int main()
     getcmd( cmdLine );
 
     try {
-        CommandParser prs( cmdLine, FALSE );
+        CommandParser prs( cmdLine, false );
 
         if( prs.database() == NULL || prs.files()->entries() == 0 ) {
             printUsage();

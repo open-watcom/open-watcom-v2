@@ -60,8 +60,8 @@ public:
                                 ~OutlineElement();
 
             void                toggleExpand();
-            void                expand( bool all = FALSE );
-            void                collapse( bool all = FALSE );
+            void                expand( bool all = false );
+            void                collapse( bool all = false );
 
             bool                operator==( const OutlineElement & o ) const {
                                     return this == &o;

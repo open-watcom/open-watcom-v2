@@ -249,7 +249,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
     WBRFree( depName ); // OPTIMIZE -- could use this later
 
     if( !accept ) {
-        return TRUE;    // <---- early return -- discard symbol, keep looking
+        return true;    // <---- early return -- discard symbol, keep looking
     }
 
 
@@ -283,7 +283,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
             int prtIdx = child->findParent( parent );
             if( prtIdx < 0 ) {
                 if( ref->dependent == owner ) {     // direct recursion -- a->a
-                    bool inReferences = FALSE;
+                    bool inReferences = false;
 
                     for( int refIdx = 0; refIdx < child->_flatReferences->count(); refIdx += 1 ) {
                         if( (*child->_flatReferences)[ refIdx ]->getHandle() == owner ) {
@@ -292,7 +292,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
                                 if( node->getNode( ParentList, ref2idx )->getHandle() == owner ) {
                                     TreePtr * ptr = node->getPtr( ParentList, ref2idx );
                                     ((TreeRefPtr*)ptr)->incRefs();
-                                    inReferences = TRUE;
+                                    inReferences = true;
                                     break;
                                 }
                             }
@@ -306,7 +306,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
                         TreeRefNode * newRef;
                         newRef = new TreeRefNode( data->parentWin, parent, parent );
                         parent->_children.add( newRef );
-                        parent->_hasRef = TRUE;
+                        parent->_hasRef = true;
 
                         parent->_flatReferences->add( newRef );
                     }
@@ -381,7 +381,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
                     TreeRefNode * newRef;
                     newRef = new TreeRefNode( data->parentWin, parent, parent );
                     parent->_children.add( newRef );
-                    parent->_hasRef = TRUE;
+                    parent->_hasRef = true;
 
                     parent->_flatReferences->add( newRef );
                 } else {
@@ -402,7 +402,7 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 /*-------------------------- TreeFuncWindow ----------------------------*/
@@ -420,7 +420,7 @@ bool TreeFuncWindow::contextHelp( bool is_active_window )
     if( is_active_window ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_CALL_TREE_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 const char * TreeFuncWindow::emptyText()

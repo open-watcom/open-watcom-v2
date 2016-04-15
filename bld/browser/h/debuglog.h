@@ -53,7 +53,7 @@ template <class Type, class FType> class WCStack;
 
 class DebuggingLog {
 public:
-            DebuggingLog( const char * name, bool append = FALSE );
+            DebuggingLog( const char * name, bool append = false );
             ~DebuggingLog();
 
             enum LogException {
@@ -82,7 +82,7 @@ private:
 
 class DebuggingLog {
 public:
-            DebuggingLog( const char *, bool= FALSE ){};
+            DebuggingLog( const char *, bool= false ){};
             ~DebuggingLog(){};
 
             int     printf( const char *, ... ) { return 0; }

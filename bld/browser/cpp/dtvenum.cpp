@@ -42,7 +42,7 @@
 #include "viewmgr.h"
 
 DTViewEnum::DTViewEnum( const Symbol * sym )
-                : DTViewSymbol( sym, TRUE )
+                : DTViewSymbol( sym, true )
 //------------------------------------------
 {
     _values = new WVList;

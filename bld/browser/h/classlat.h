@@ -87,7 +87,7 @@ class Module;
 class ClassLattice : public WObject
 {
 public:
-            ClassLattice( Symbol * sym, bool relaxVirt = FALSE );
+            ClassLattice( Symbol * sym, bool relaxVirt = false );
 
 #ifdef DEBUG
             const char *   className() const { return "ClassLattice"; }

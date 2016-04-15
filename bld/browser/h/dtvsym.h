@@ -50,7 +50,7 @@ class DTViewSymbol : public MenuHandler, public DetailView,
                      public ViewSymbolDlg, public WBRWindow
 {
 public:
-                        DTViewSymbol( const Symbol * sym, bool box = FALSE );
+                        DTViewSymbol( const Symbol * sym, bool box = false );
                         ~DTViewSymbol();
 
             void        initialize();
@@ -66,8 +66,8 @@ public:
     virtual void        showWin( WWindowState state=WWinStateShow ) { show( state ); }
     virtual void        setFocusWin() { setFocus(); }
 
-    virtual bool        gettingFocus( WWindow * ) { return focusChange( TRUE ); }
-    virtual bool        losingFocus( WWindow * ) { return focusChange( FALSE ); }
+    virtual bool        gettingFocus( WWindow * ) { return focusChange( true ); }
+    virtual bool        losingFocus( WWindow * ) { return focusChange( false ); }
     virtual bool        reallyClose() { return aboutToClose(); }
 
     virtual void        setMenus( MenuManager * );

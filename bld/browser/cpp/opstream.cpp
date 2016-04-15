@@ -48,9 +48,9 @@ StringList ScanStreamBase::_searchPaths;
 ScanStreamBase::ScanStreamBase( void )
             : _currPos( 0 )
             , _endPos( 0 )
-            , _usePrev( FALSE )
-            , _eof( FALSE )
-            , _error( FALSE )
+            , _usePrev( false )
+            , _eof( false )
+            , _error( false )
             , _line( 1 )
 //------------------------------------
 {
@@ -72,7 +72,7 @@ int ScanStreamBase::get( void )
         return EOF;
     }
     if( _usePrev ) {
-        _usePrev = FALSE;
+        _usePrev = false;
         _eof = _prevEOF;
         return _prevChar;
     }
@@ -97,7 +97,7 @@ void ScanStreamBase::unget( int c )
     REQUIRE( !_error, "ScanStreamBase::unget with _error ! " );
     _prevEOF = _eof;
     if( c != EOF ) {
-        _eof = FALSE;
+        _eof = false;
     }
 
     if( c == '\n' ) {
@@ -105,7 +105,7 @@ void ScanStreamBase::unget( int c )
     }
 
     _prevChar = c;
-    _usePrev = TRUE;
+    _usePrev = true;
 };
 
 void ScanStreamBase::refill( void )
@@ -161,7 +161,7 @@ ScanStreamFile::ScanStreamFile( const char * fname )
         if( errno != ENOENT ) {
             errMessage( "ScanStream::Streamfile - [%s]: %s", fname, strerror( errno ) );
         } else {
-            _error = TRUE;
+            _error = true;
         }
     } else {
         _endPos = SECTOR_SIZE;      // so refill won't think eof.
@@ -195,7 +195,7 @@ void ScanStreamFile::refill( void )
     if( _handle >= 0 ) {
         if( _eof ) return;
         if( _endPos + 1 < SECTOR_SIZE ) {
-            _eof = TRUE;
+            _eof = true;
             return;
         }
 
@@ -219,7 +219,7 @@ ScanStreamMem::ScanStreamMem( char * mem, int len )
 //-------------------------------------------------
 {
     if( mem == NULL ) {
-        _error = TRUE;
+        _error = true;
     } else {
         refill();
     }
@@ -229,7 +229,7 @@ void ScanStreamMem::refill( void )
 //--------------------------------
 {
     if( _eof || _offset >= _end ) {
-        _eof = TRUE;
+        _eof = true;
         return;
     }
 

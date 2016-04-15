@@ -57,7 +57,7 @@ void TreeRootElement::okPressed()
 
 
 TreeRootSelect::TreeRootSelect( WWindow * prt, TreeRootList * roots )
-                    : EditModuleList( prt, "Select Root Nodes", FALSE )
+                    : EditModuleList( prt, "Select Root Nodes", false )
                     , _roots( roots )
 //---------------------------------------------------------------------
 {
@@ -71,7 +71,7 @@ void TreeRootSelect::okButton( WWindow * )
     for( i = 0; i < _moduleBox->count(); i += 1 ) {
         ((TreeRootElement *) (*_moduleBox)[ i ])->okPressed();
     }
-    quit( TRUE );
+    quit( true );
 }
 
 void TreeRootSelect::helpButton( WWindow * )
@@ -86,7 +86,7 @@ bool TreeRootSelect::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
     }
-    return( TRUE );
+    return( true );
 }
 
 void TreeRootSelect::loadBox()
@@ -120,7 +120,7 @@ void OutlineRootElement::okPressed()
 
 
 OutlineRootSelect::OutlineRootSelect( WWindow * prt, OutlineElement * root )
-                    : EditModuleList( prt, "Select Root Nodes", FALSE )
+                    : EditModuleList( prt, "Select Root Nodes", false )
                     , _root( root )
 //---------------------------------------------------------------------
 {
@@ -134,7 +134,7 @@ void OutlineRootSelect::okButton( WWindow * )
     for( i = 0; i < _moduleBox->count(); i += 1 ) {
         ((OutlineRootElement *) (*_moduleBox)[ i ])->okPressed();
     }
-    quit( TRUE );
+    quit( true );
 }
 
 void OutlineRootSelect::helpButton( WWindow * )
@@ -149,7 +149,7 @@ bool OutlineRootSelect::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_SELECT_ROOTS );
     }
-    return( TRUE );
+    return( true );
 }
 
 void OutlineRootSelect::loadBox()

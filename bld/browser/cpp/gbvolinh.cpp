@@ -56,28 +56,28 @@ bool GBVInheritOutline::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_INHERITANCE_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GBVInheritOutline::reallyClose()
 //-----------------------------------
 {
     viewManager()->viewDying( this );
-    return TRUE;
+    return true;
 }
 
 bool GBVInheritOutline::gettingFocus( WWindow * )
 //-----------------------------------------------
 {
     viewManager()->eventOccured( VEGettingFocus, this );
-    return FALSE;
+    return false;
 }
 
 bool GBVInheritOutline::losingFocus( WWindow * )
 //----------------------------------------------
 {
     viewManager()->eventOccured( VELosingFocus, this );
-    return FALSE;
+    return false;
 }
 
 const char * GBVInheritOutline::emptyText()
@@ -98,7 +98,7 @@ void GBVInheritOutline::load()
     TreeClassList   roots;
     WVList          bases;
     int             i;
-    bool            quit = FALSE;
+    bool            quit = false;
 
     _loadFilter->setSymType( KSTClasses );
     dbManager()->module()->findSymbols( &world, _loadFilter );

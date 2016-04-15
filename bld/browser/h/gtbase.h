@@ -72,8 +72,8 @@ public:
 
             void        setTo( TreeNode * to ) { _toNode = to; }
             void        setFrom( TreeNode * from ) { _fromNode = from; }
-            void        cut() { _cut = TRUE; }
-            void        join() { _cut = FALSE; }
+            void        cut() { _cut = true; }
+            void        join() { _cut = false; }
             bool        isCut() { return _cut; }
 
             TreeNode *  getTo( void ) const { return _toNode; }
@@ -124,8 +124,8 @@ public:
     virtual const char *className() const { return "TreeNode"; }
 #endif
 
-    virtual bool        isReference( void ) const { return FALSE; }
-    virtual bool        hasReference( void ) const { return FALSE; }
+    virtual bool        isReference( void ) const { return false; }
+    virtual bool        hasReference( void ) const { return false; }
 
     virtual bool        gettingFocus( WWindow * );
     virtual bool        losingFocus( WWindow * );
@@ -156,8 +156,8 @@ public:
 
             int             getEnable( void ) const { return _flags.enabled; }
             void            setEnable( uint lvl ) { _flags.enabled = lvl; }
-            void            enableKids( bool enable = TRUE );
-            void            enableParents( bool enable = TRUE );
+            void            enableKids( bool enable = true );
+            void            enableParents( bool enable = true );
             void            enableTree( uint lvl );
             void            rePlace( void );
 

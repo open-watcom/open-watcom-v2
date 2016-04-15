@@ -68,7 +68,7 @@ CommandParser::CommandParser( char * cmdLine, bool optAllowed )
                 , _options( "" )
                 , _files( NULL )
                 , _optAllowed( optAllowed )
-                , _quiet( FALSE )
+                , _quiet( false )
 //-------------------------------------------------------------
 {
     try {
@@ -202,7 +202,7 @@ void CommandParser::parse()
         }
 
         if( !strncmp( "quiet", _token, _token.length() ) ) {
-            _quiet = TRUE;
+            _quiet = true;
             token = scan();
             continue;           // <----------- unusual flow
         }
@@ -232,7 +232,7 @@ void CommandParser::parse()
         }
 
         if( !strncmp( "file", _token, _token.length() ) ) {
-            bool error = FALSE;
+            bool error = false;
 
             token = scan();
             switch( token ) {
@@ -244,7 +244,7 @@ void CommandParser::parse()
                 }
                 if( token != '}' ) {
                     syntaxError();
-                    error = TRUE;
+                    error = true;
                 } else {
                     token = scan();
                 }
@@ -256,7 +256,7 @@ void CommandParser::parse()
                     token = scan();
                     if( token != TOK_Id ) {
                         syntaxError();
-                        error = TRUE;
+                        error = true;
                         break;
                     } else {
                         addFile( _token );
@@ -266,7 +266,7 @@ void CommandParser::parse()
                 break;
             default:
                 syntaxError();
-                error = TRUE;
+                error = true;
             }
 
             if( error ) {
@@ -340,17 +340,17 @@ bool ListContains( WCValSList<String> * list, const String & str )
 
     while( ++iter ) {
         if( iter.current() == str ) {
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 void CommandParser::addFile( const char * fname )
 //-----------------------------------------------
 // add all the files specified by the (possibly wild-carded) option
-// return TRUE if successful, FALSE on error
+// return true if successful, false on error
 {
     DIR *           dirp;
     struct dirent * direntp;
@@ -467,7 +467,7 @@ char CommandParser::getNextChar()
 void main()
 {
     char                    buf[ 512 ];
-    CommandParser           prs( getcmd( buf ), TRUE );
+    CommandParser           prs( getcmd( buf ), true );
     int                     i;
     WCValSListIter<String>  iter( *prs.files() );
 

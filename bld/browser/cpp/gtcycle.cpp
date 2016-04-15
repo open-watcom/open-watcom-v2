@@ -41,8 +41,8 @@ TreeCycleNode::TreeCycleNode( TreeWindow * prt, TreeCycleList * flatNode,
                               TreeRefList * flatRef )
                 : TreeNode( prt )
                 , _level( 0 )
-                , _entered( FALSE )
-                , _hasRef( FALSE )
+                , _entered( false )
+                , _hasRef( false )
 //-----------------------------------------------------------------------
 {
     _flatNodes =      (flatNode != NULL) ? flatNode : new TreeCycleList;
@@ -337,7 +337,7 @@ int TreeCycleNode::findComponents( TreeCycleList& seen, short& level )
             _level = 0xf00;         // EC#
             seen.removeAt( myIndex );
         } else {
-            bool broken = FALSE;
+            bool broken = false;
             for( int j = seen.count(); j > myIndex; j -= 1 ) {
                 int childIndex = seen[ j - 1 ]->findChild( this );
 
@@ -345,14 +345,14 @@ int TreeCycleNode::findComponents( TreeCycleList& seen, short& level )
                     && !seen[ j - 1 ]->_children[ childIndex ]->isReference()
                     && !broken ) {
 
-                    broken = TRUE;
+                    broken = true;
 
                     TreeRefNode * newRef;
 
                     newRef = new TreeRefNode( _parent, this, seen[ j - 1 ] );
                     seen[ j - 1 ]->_children.replaceAt( childIndex, newRef );
                     _flatReferences->add( newRef );
-                    _hasRef = TRUE;
+                    _hasRef = true;
 
                     TreePtr * killIt = _parents.removeAt(
                                                 findParent( seen[ j - 1 ] ) );
@@ -382,7 +382,7 @@ void TreeCycleNode::assignLevels( void )
     int           i;
 
     for( i = _flatNodes->count(); i > 0; i -= 1 ) {
-        (*_flatNodes)[ i - 1 ]->_entered = FALSE;
+        (*_flatNodes)[ i - 1 ]->_entered = false;
 
         #if DEBUG
         #define MAGIC_NUMBER 21212
@@ -435,7 +435,7 @@ void TreeCycleNode::levelAdjust( TreeCycleList & seen,
 
     seen.add( this );
     _level = seenAt;
-    _entered = TRUE;
+    _entered = true;
 
     #if DEBUG
     char * myName = name();
@@ -482,7 +482,7 @@ TreeCycleList * TreeCycleNode::joinTrees( TreeCycleListList & roots,
     #endif
 
     for( int i = roots.count(); i > 0 && relatives.count() > 0; i -= 1 ) {
-        deltaSet = FALSE;
+        deltaSet = false;
         for( int j = relatives.count(); j > 0; j -= 1 ) {
             TreeCycleRelative * relNode = relatives[ j - 1 ];
 
@@ -502,7 +502,7 @@ TreeCycleList * TreeCycleNode::joinTrees( TreeCycleListList & roots,
                     delete relatives.removeAt( j - 1 );
 
                     if( !deltaSet ) {
-                        deltaSet = TRUE;
+                        deltaSet = true;
                         maxDelta = tstDelta;
                     } else {
                         maxDelta = maxInt( maxDelta, tstDelta );

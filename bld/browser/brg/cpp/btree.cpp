@@ -149,11 +149,11 @@ bool BTree<Key_T, Obj_T>::unlock( Obj_T * obj )
             _unlocks += 1;
             #endif
 
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 template < class Key_T, class Obj_T >
@@ -169,7 +169,7 @@ bool BTree<Key_T, Obj_T>::lock( Obj_T * obj )
             _locks += 1;
             #endif
 
-            return TRUE;
+            return true;
         }
     } else {
         #if INSTRUMENTS
@@ -177,7 +177,7 @@ bool BTree<Key_T, Obj_T>::lock( Obj_T * obj )
         #endif
     }
 
-    return FALSE;
+    return false;
 }
 
 template < class Key_T, class Obj_T >

@@ -71,7 +71,7 @@ GTInheritOption::~GTInheritOption()
 void GTInheritOption::initialize()
 //--------------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -108,14 +108,14 @@ void GTInheritOption::okButton( WWindow * )
 //-----------------------------------------
 {
     WBRWinBase::optManager()->setClassOpts( _options );
-    quit( TRUE );
+    quit( true );
 }
 
 void GTInheritOption::cancelButton( WWindow * )
 //---------------------------------------------
 {
     WBRWinBase::optManager()->setClassOpts( NULL );
-    quit( FALSE );
+    quit( false );
 }
 
 void GTInheritOption::modifyButton( WWindow * )
@@ -123,11 +123,11 @@ void GTInheritOption::modifyButton( WWindow * )
 {
     PaintInfo * p;
     if( _hasFocus < 3 ) {
-        p = &_options->value( _hasFocus + 1, FALSE );
+        p = &_options->value( _hasFocus + 1, false );
     } else {
-        p = &_options->value( _hasFocus - 2, TRUE );
+        p = &_options->value( _hasFocus - 2, true );
     }
-    GTLineOption mod( Desc[ _hasFocus ], this, p, TRUE );
+    GTLineOption mod( Desc[ _hasFocus ], this, p, true );
     mod.process( this );
 }
 
@@ -143,7 +143,7 @@ bool GTInheritOption::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_INHERITANCE_OPTIONS );
     }
-    return( TRUE );
+    return( true );
 }
 
 int GTInheritOption::inRect( int x, int y )
@@ -175,7 +175,7 @@ bool GTInheritOption::leftBttnDn( int x, int y, WMouseKeyFlags )
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
     }
-    return TRUE;
+    return true;
 }
 
 bool GTInheritOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
@@ -184,7 +184,7 @@ bool GTInheritOption::leftBttnDbl( int x, int y, WMouseKeyFlags )
     if( _hasFocus == inRect( x, y ) ) {
         modifyButton( NULL );
     }
-    return TRUE;
+    return true;
 }
 
 #define COL_1   3
@@ -204,7 +204,7 @@ bool GTInheritOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     case WKeyDown:
         if( _hasFocus < COL_1 ) {
             _hasFocus = (_hasFocus + 1) % COL_1;
@@ -213,7 +213,7 @@ bool GTInheritOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     case WKeyLeft:
     case WKeyRight:
         if( _hasFocus < COL_1 ) {
@@ -223,7 +223,7 @@ bool GTInheritOption::keyDown( WKeyCode kc, WKeyState ks )
         }
         invalidateRect( _rects[ prev_focus ] );
         invalidateRect( _rects[ _hasFocus ] );
-        return TRUE;
+        return true;
     }
     return( WDialog::keyDown( kc, ks ) );
 }
@@ -262,7 +262,7 @@ bool GTInheritOption::paint()
 
     for( i = 1; i <= 3; i += 1 ) {
         WRect &     r( _rects[ i - 1 ] );
-        PaintInfo   p( _options->value( i, FALSE ) );
+        PaintInfo   p( _options->value( i, false ) );
 
         dev.setPaintInfo( &p );
         dev.moveTo( r.x(), r.y() + r.h() / 2 );
@@ -276,7 +276,7 @@ bool GTInheritOption::paint()
 
     for( i = 1; i <= 3; i += 1 ) {
         WRect &     r( _rects[ i + 2 ] );
-        PaintInfo   p( _options->value( i, TRUE ) );
+        PaintInfo   p( _options->value( i, true ) );
 
         dev.setPaintInfo( &p );
         dev.moveTo( r.x(), r.y() + r.h() / 2 );
@@ -290,7 +290,7 @@ bool GTInheritOption::paint()
 
     dev.close();
 
-    return TRUE;
+    return true;
 }
 
 void GTInheritOption::endEdit()

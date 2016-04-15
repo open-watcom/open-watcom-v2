@@ -49,12 +49,12 @@ class EditModuleList : public EditModuleListDlg, public WDialog
 {
 public:
                         EditModuleList( WWindow * parent, const char * text,
-                                        bool addRemove = TRUE );
+                                        bool addRemove = true );
                         ~EditModuleList();
 
     virtual void        initialize();
 
-    virtual bool        losingFocus( WWindow* ){ setFocus(); return TRUE; }
+    virtual bool        losingFocus( WWindow* ){ setFocus(); return true; }
     virtual void        cancelButton( WWindow * ){ quit( 0 ); }
     virtual void        okButton( WWindow * ){ quit( 1 ); }
     virtual void        addButton( WWindow * ){}

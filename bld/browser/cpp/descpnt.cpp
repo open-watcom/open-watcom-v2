@@ -182,24 +182,24 @@ DescriptionPart * DescriptionPaint::findPart( int x, int y, int &idx )
 bool DescriptionPaint::select( int x, int y )
 //-------------------------------------------
 {
-    bool                ret = FALSE;
+    bool                ret = false;
     DescriptionPart *   part;
     int                 idx;
 
     if( x < _rect.x() || x > _rect.x() + _rect.w() )
-        return FALSE;
+        return false;
 
     if( y < _rect.y() || y > _rect.y() + _rect.h() )
-        return FALSE;
+        return false;
 
     part = findPart( x, y, idx );
 
     if( part && part->_symbol ) {
         _current = idx;
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 bool DescriptionPaint::tabHit( bool shift )
@@ -229,10 +229,10 @@ bool DescriptionPaint::enterHit()
 //-------------------------------
 {
     if( _current < 0 )
-        return FALSE;
+        return false;
 
     _parent->popDetail( (*_parts)[ _current ]->_symbol );
-    return TRUE;
+    return true;
 }
 
 bool DescriptionPaint::paint()
@@ -246,7 +246,7 @@ bool DescriptionPaint::paint()
         entry->paint( _parent, (i == _current) );
     }
 
-    return TRUE;
+    return true;
 }
 
 const WRect & DescriptionPaint::partRect( int idx )

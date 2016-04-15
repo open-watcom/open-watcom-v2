@@ -89,23 +89,23 @@ bool ClassMember::operator< ( const ClassMember & o ) const
 //---------------------------------------------------------
 {
     if( _parent < o._parent ) {
-        return TRUE;
+        return true;
     } else {
         if( _parent == o._parent ) {
 
             if( _access < o._access ) {
-                return TRUE;
+                return true;
             } else {
                 if( _access == o._access ) {
 
                     if( (_symbol == NULL) && (o._symbol != NULL) ) {
-                        return TRUE;
+                        return true;
                     }
                 }
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 //----------------------------- DTViewClass ----------------------
@@ -113,7 +113,7 @@ bool ClassMember::operator< ( const ClassMember & o ) const
 
 
 DTViewClass::DTViewClass( const Symbol * sym )
-                : DTViewSymbol( sym, TRUE )
+                : DTViewSymbol( sym, true )
                 , _filter( optManager()->getMemberFilter() )
 //--------------------------------------------------------------
 {
@@ -154,21 +154,21 @@ void DTViewClass::load()
 
     for( i = 0; i < friends.count(); i += 1 ) {
         s = (Symbol *) friends[ i ];
-        str.printf( "    friend %s;", s->scopedName( FALSE ) );
+        str.printf( "    friend %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 
     for( i = 0; i < dataMembers.count(); i += 1 ) {
         s = (Symbol *) dataMembers[ i ];
 
-        str.printf( "    %s;", s->scopedName( FALSE ) );
+        str.printf( "    %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 
     for( i = 0; i < methods.count(); i += 1 ) {
         s = (Symbol *) methods[ i ];
 
-        str.printf( "    %s;", s->scopedName( FALSE ) );
+        str.printf( "    %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 

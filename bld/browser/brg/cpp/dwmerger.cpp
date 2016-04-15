@@ -58,7 +58,7 @@ DwarfFileMerger::DwarfFileMerger( const char * file,
                                   WCValSList<String> & enabled,
                                   WCValSList<String> & disabled )
                 : _totalSize( 0 )
-                , _upToDate( FALSE )
+                , _upToDate( false )
 //---------------------------------------------------------------
 {
     MergeFile *             mFile;
@@ -79,12 +79,12 @@ DwarfFileMerger::DwarfFileMerger( const char * file,
     if( !_upToDate ) {
         /* add disabled components */
         while( ++ disbIt ) {
-            _outputFile->addComponentFile( disbIt.current(), FALSE );
+            _outputFile->addComponentFile( disbIt.current(), false );
         }
 
         /* add enabled components and create mergeFiles for them */
         while( ++ enabIt ) {
-            _outputFile->addComponentFile( enabIt.current(), TRUE );
+            _outputFile->addComponentFile( enabIt.current(), true );
 
             mFile = new MergeFile( enabIt.current() );
 

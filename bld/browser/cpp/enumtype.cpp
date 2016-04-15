@@ -85,7 +85,7 @@ static bool EnumType::loadHook( char * name, unsigned_32 val, void * data )
     elem = new EnumElement( name, info->me->_byteSize, val );
     info->list->add( elem );
 
-    return TRUE;
+    return true;
 }
 
 //------------------------ EnumElement -------------------------------------

@@ -65,7 +65,7 @@ const int childSep = 50;
 TreePtr::TreePtr( TreeNode * from, TreeNode * to )
             :_fromNode( from )
             ,_toNode( to )
-            ,_cut( FALSE )
+            ,_cut( false )
 //------------------------------------------------
 {
 }
@@ -148,14 +148,14 @@ TreeNode::TreeNode( TreeWindow * prt )
 void TreeNode::setBounding( OutputDevice *dev )
 //---------------------------------------------
 {
-    bool sepIncluded = FALSE;
+    bool sepIncluded = false;
 
     if( !_flags.boundSet ) {
         #if DEBUG
         _nm = name();
         #endif
 
-        _flags.boundSet = TRUE;
+        _flags.boundSet = true;
 
         int     width;
         int     height;
@@ -217,7 +217,7 @@ TreeCoord TreeNode::getSibContrib( TreeNode * node, bool & sepInc )
         ret = _sibWidth / divisor;
 
         if( !sepInc ) {
-            sepInc = TRUE;
+            sepInc = true;
         } else {
             ret += sibSep / divisor;
         }
@@ -343,9 +343,9 @@ bool TreeNode::gettingFocus( WWindow *win )
     tr.x( tr.x() - _parent->getXOff() );
     tr.y( tr.y() - _parent->getYOff() );
 
-    _flags.selected = TRUE;
+    _flags.selected = true;
     win->invalidateRect( tr.makeWRect() );
-    return TRUE;
+    return true;
 }
 
 /* called when a node loses focus.  the return value was meant to be
@@ -360,9 +360,9 @@ bool TreeNode::losingFocus( WWindow *win )
     tr.x( tr.x() - _parent->getXOff() );
     tr.y( tr.y() - _parent->getYOff() );
 
-    _flags.selected = FALSE;
+    _flags.selected = false;
     win->invalidateRect( tr.makeWRect() );
-    return TRUE;
+    return true;
 }
 
 TreeRoot * TreeNode::getRootPtr( void )
@@ -419,7 +419,7 @@ void TreeNode::arrangeAll( TreeDirection dir, TreeRootList& roots,
                 maxX = maxCoord( maxX, r.x() + r.w() );
                 maxY = maxCoord( maxY, r.y() + r.h() );
             } else {
-                roots[ i ]->setEnable( FALSE );
+                roots[ i ]->setEnable( false );
             }
         }
     }
@@ -726,7 +726,7 @@ void TreeNode::getFirstNonContend( TreeCoord& sibOff, TreeCoord& width )
 
                 width = origW;
 
-                bool done = FALSE;
+                bool done = false;
                 for( int childCnt1 = getCount( ChildList );
                      childCnt1 > 0 && !done; childCnt1 -= 1 ) {
                     TreeNode * node1 = getNode( ChildList, childCnt1 - 1 );
@@ -739,7 +739,7 @@ void TreeNode::getFirstNonContend( TreeCoord& sibOff, TreeCoord& width )
                             node2 = node->getNode( ChildList, childCnt2 - 1 );
                             if( node1 == node2 ) {
                                 nodeW = node->shrinkToSib();
-                                done = TRUE;
+                                done = true;
                             }
                         }
                     }
@@ -775,11 +775,11 @@ bool TreeNode::readyToPlace( void )
     for( int i = getCount( ChildList ); i > 0; i -= 1 ) {
         TreeNode * nd = getNode( ChildList, i - 1 );
         if( (nd->_flags.enabled > Hidden) && (nd->_flags.placed != Placed) ) {
-            return FALSE;
+            return false;
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 /* a node is simple if it has only one parent and no children.  simple
@@ -791,9 +791,9 @@ bool TreeNode::isSimple( TreeList_T lst )
 {
     TreeList_T otherList = (lst == ParentList) ? ChildList : ParentList;
 
-    if( getNumEnabled( otherList ) > 1 ) return FALSE;
+    if( getNumEnabled( otherList ) > 1 ) return false;
 
-    if( getNumEnabled( lst ) > 0 ) return FALSE;
+    if( getNumEnabled( lst ) > 0 ) return false;
 
 
     // this is a special case when rings have been placed
@@ -802,10 +802,10 @@ bool TreeNode::isSimple( TreeList_T lst )
         TreeNode * node = getNode( otherList, i - 1 );
 
         if( node->_flags.enabled > Hidden && node->getLevel() < 0 &&
-            node->getCount( otherList ) > 1 ) return FALSE;
+            node->getCount( otherList ) > 1 ) return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 /* are graphs drawn vertically or horizontally ?
@@ -848,7 +848,7 @@ bool TreeNode::resolveChildWard( TreeRect & r )
     TreeCoord  maxSib = 0;
     TreeCoord  childOff = childSep / 2;
     TreeCoord  maxChild = 0;
-    bool       minSet = FALSE;
+    bool       minSet = false;
     int        maxLevel;
     int        minLevel;
     int        i;
@@ -864,13 +864,13 @@ bool TreeNode::resolveChildWard( TreeRect & r )
             } else {
                 maxLevel = tLevel;
                 minLevel = tLevel;
-                minSet = TRUE;
+                minSet = true;
             }
         }
     }
 
     if( !minSet ) {
-        return FALSE;
+        return false;
     }
 
     for( int level = minLevel; level <= maxLevel; level += 1 ) {
@@ -904,7 +904,7 @@ bool TreeNode::resolveChildWard( TreeRect & r )
         _descend.w( childOff );
     }
 
-    return TRUE;
+    return true;
 }
 
 /* get the number of parents or children enabled for calculating the
@@ -1078,7 +1078,7 @@ void TreeNode::rePlace( void )
 {
     _flags.placed = NotPlaced;
     _flags.arranging = 0;
-    _flags.boundSet = FALSE;
+    _flags.boundSet = false;
     _descend = TreeRect();
     _bounding = TreeRect();
     _sibWidth = 0L;
@@ -1143,7 +1143,7 @@ static int TreeNode::compareNodes( const TreeNode * lhN, const TreeNode * rhN )
 
 bool TreeNode::isVisible( void )
 //------------------------------
-// Returns TRUE if this node is enabled
+// Returns true if this node is enabled
 //
 // Note : should also check to see if root for this node's tree is
 //        enabled!
@@ -1152,12 +1152,12 @@ bool TreeNode::isVisible( void )
 {
     if( _flags.enabled != Hidden ) {
         if(( _pRoot != NULL ) && ( _pRoot->enabled() )) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     } else {
-        return FALSE;
+        return false;
     }
 }
 
@@ -1191,7 +1191,7 @@ void TreeNode::sibWidth()
     WString     msg;
     TreeNode *  node;
     int         i;
-    bool        sepInc = TRUE;
+    bool        sepInc = true;
 
     msg.concatf( "%s: _sibWidth = %ld; parents: ",
                         _nm ? _nm : "<>", _sibWidth );
@@ -1271,12 +1271,12 @@ void TreeNode::debugInfo( TreeRoot * root )
         placed = "Placed";
     }
     statLine.printf( " enabled = %s, placed = %s, selected = %s, _level = %d\n",
-                        enabled, placed, (_flags.selected) ? "TRUE" : "FALSE",
+                        enabled, placed, (_flags.selected) ? "true" : "false",
                         getLevel() );
 
     refLine.printf( "hasReference() = %s, isReference() = %s",
-                    hasReference() ? "TRUE" : "FALSE",
-                    isReference() ? "TRUE" : "FALSE" );
+                    hasReference() ? "true" : "false",
+                    isReference() ? "true" : "false" );
 
     WMessageDialog::messagef( _parent, MsgPlain, MsgOk, name(), "%s%s%s%s%s",
                             (const char *)rootLine, (const char *)boundLine,
@@ -1298,9 +1298,9 @@ void TreeNode::debugInfo( TreeRoot * root )
 
 TreeRoot::TreeRoot( TreeWindow * prt, TreeNode * rt )
             : _rootNode( rt )
-            , _enabled( TRUE )
+            , _enabled( true )
             , _parent( prt )
-            , _needsUpdating( TRUE )
+            , _needsUpdating( true )
 {
     if( prt != NULL && prt->getSmartEdges() ) {
         _rings = new TreeRingList;
@@ -1465,10 +1465,10 @@ void TreeRoot::wrapRings( void )
         for( int j = node->getCount( TreeNode::ParentList ); j > 0; j -= 1 ) {
             TreePtr * ptr = node->getPtr( TreeNode::ParentList, j - 1 );
 
-            bool done = FALSE;
+            bool done = false;
             for( int k = _rings->count(); k > 0 && !done; k -= 1 ) {
                 if( (*_rings)[ k - 1 ]->addPtr( ptr ) ) {
-                    done = TRUE;
+                    done = true;
                 }
             }
 
@@ -1525,7 +1525,7 @@ void TreeRoot::breakEdges( void )
         }
     }
 
-    _needsUpdating = FALSE;
+    _needsUpdating = false;
 }
 
 void TreeRoot::setAllBounding( OutputDevice *dev )
@@ -1564,7 +1564,7 @@ TreeNode * TreeRoot::setNode( void )
 {
     TreeNode *  nodeAtMin;
     int         minLevel;
-    bool        minSet = FALSE;
+    bool        minSet = false;
 
     for( int i = _rootNode->getCount( TreeNode::FlatList ); i > 0; i -= 1 ) {
         TreeNode * node = _rootNode->getNode( TreeNode::FlatList, i - 1 );
@@ -1572,7 +1572,7 @@ TreeNode * TreeRoot::setNode( void )
         if( node->getEnable() > TreeNode::Hidden ) {
             if( nodeLvl >= 0 ) {
                 if( !minSet ) {
-                    minSet = TRUE;
+                    minSet = true;
                     minLevel = nodeLvl;
                     nodeAtMin = node;
                 } else {
@@ -1608,7 +1608,7 @@ void TreeRoot::needsUpdating( void )
 // Whenever we need to recalculate any of the lines in this tree,
 // this function should be called.
 {
-    _needsUpdating = TRUE;
+    _needsUpdating = true;
 }
 
 static void TreeRoot::addRootPtrToNodes( TreeRootList & roots )

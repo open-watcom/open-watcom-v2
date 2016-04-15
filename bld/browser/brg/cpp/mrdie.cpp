@@ -62,7 +62,7 @@ MergeDIE::MergeDIE()
             , _occurs( 0 )
 //--------------------------
 {
-    _flagInt = 0;   // set all flags to FALSE
+    _flagInt = 0;   // set all flags to false
 }
 
 MergeDIE::MergeDIE( MergeDIE * parent,
@@ -81,7 +81,7 @@ MergeDIE::MergeDIE( MergeDIE * parent,
             , _occurs( 0 )
 //-------------------------------------------------------------------------
 {
-    _flagInt = 0;   // set all flags to FALSE
+    _flagInt = 0;   // set all flags to false
     _flags._definition = (definition) ? 1 : 0;
 }
 
@@ -310,23 +310,23 @@ bool MergeDIE::writeSpecialAttribs( MergeInfoSection * sect,
     case DW_AT_sibling:
         in->skipForm( DR_DEBUG_INFO, offset, att.form(), sect->getAddrSize() );
         outFile.writeForm( att.form(), _newSibOffset, sect->getAddrSize() );
-        return TRUE;
+        return true;
 
     case DW_AT_decl_file:
         fileIdx = in->readForm( DR_DEBUG_INFO, offset, att.form(), sect->getAddrSize() );
         outFile.writeForm( att.form(),
                             sect->getNewFileIdx( _offset.fileIdx, fileIdx ),
                             sect->getAddrSize() );
-        return TRUE;
+        return true;
 
     case DW_AT_macro_info:                  // NYI
     case DW_AT_WATCOM_references_start:     // NYI
         in->copyFormTo( outFile, DR_DEBUG_INFO, offset,
                         att.form(), sect->getAddrSize() );
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 #endif
 
@@ -379,13 +379,13 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
         case DW_FORM_ref_udata:
             ref.offset = in->readForm( DR_DEBUG_INFO, offset,
                                         att.form(), sect->getAddrSize() );
-            updateRef = TRUE;
+            updateRef = true;
             break;
         case DW_FORM_ref8:
             InternalAssert( 0 /* can't handle 8-byte references */ );
             break;
         default:
-            updateRef = FALSE;
+            updateRef = false;
         }
 
         if( updateRef ) {

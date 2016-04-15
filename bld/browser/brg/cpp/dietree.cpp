@@ -170,7 +170,7 @@ void DIETree::insert( MergeDIE * die )
     uint            lower;
     uint            upper;
     int             i;
-    bool            split = FALSE;  // split needed ?
+    bool            split = false;  // split needed ?
 
 
     search = _root;
@@ -247,7 +247,7 @@ void DIETree::insert( MergeDIE * die )
         memcpy( rhn->_nodes, nodes + BUCKETORDER + 1,
                 sizeof( lhn->_nodes[ 0 ] ) * (BUCKETORDER + 1) );
 
-        split = TRUE;
+        split = true;
         key = rhn->_nodes[ 0 ]->name();
         add = rhn;
     }
@@ -296,12 +296,12 @@ bool DIETree::doSplit( DIETreeSearch * search, DIETreeNode *& add,
     }
 
     if( search->_degree < (2 * SEARCHORDER + 1) ) {
-        split = FALSE;  // don't need to split this node
+        split = false;  // don't need to split this node
         search->_degree++;
         memcpy( search->_separators, seps, sizeof( search->_separators ) );
         memcpy( search->_nodes, nodes, sizeof( search->_nodes ) );
     } else {
-        split = TRUE;   // split propagates
+        split = true;   // split propagates
         rhn = allocSearch();
         add = rhn;
         search->_degree = SEARCHORDER + 1;

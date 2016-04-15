@@ -108,7 +108,7 @@ Browse::Browse()
 {
     browseTop = this;
     topWindow = browseTop;
-    hookF1Key( TRUE );
+    hookF1Key( true );
 }
 
 Browse::Browse( char * cmdLine )
@@ -120,7 +120,7 @@ Browse::Browse( char * cmdLine )
 {
     WString         errMessage;
 
-    CommandParser   prs( cmdLine, TRUE );
+    CommandParser   prs( cmdLine, true );
     _searchPath = prs.searchPath();
 
     WFlashPage *    flash_page = showFlashPage( 0 );
@@ -153,21 +153,21 @@ Browse::Browse( char * cmdLine )
         dbManager()->setModule( prs.database(), prs.files() );
     } else {
         /* if there is no database, disable interesting menus */
-        viewManager()->enableMenus( FALSE );
+        viewManager()->enableMenus( false );
     }
 
     postTitle();
 
     delete flash_page;
     show();
-    hookF1Key( TRUE );
+    hookF1Key( true );
 }
 
 Browse::~Browse()
 //---------------
 {
     wbrCleanup();
-    hookF1Key( FALSE );
+    hookF1Key( false );
 }
 
 bool Browse::makeFileName( char *buff )
@@ -181,15 +181,15 @@ bool Browse::makeFileName( char *buff )
     file = buff;
     if( file.attribs( NULL ) ) {
         // file exists
-        return( TRUE );
+        return( true );
     }
 
     if( _searchPath.length() == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     p = new char[_searchPath.length()+1];
-    if( p == NULL ) return( FALSE );
+    if( p == NULL ) return( false );
     strcpy( p, _searchPath );
 
     q = strtok( p, ";" );
@@ -201,12 +201,12 @@ bool Browse::makeFileName( char *buff )
         if( nfile.attribs( NULL ) ) {
             strcpy( buff, nfile.gets() );
             delete []p;
-            return( TRUE );
+            return( true );
         }
         q = strtok( NULL, ";" );
     }
     delete []p;
-    return FALSE;
+    return false;
 }
 
 void Browse::event( ViewEvent ve, View * )
@@ -244,7 +244,7 @@ void Browse::setEditorDLL( const char * dll )
                                   BrowseTitle, errMsg.gets() );
         delete _editorDLL;
         _editorDLL = NULL;
-        enable = FALSE;
+        enable = false;
     }
 
     menuManager()->enableMenu( MIMenuID( MMDetail, DMDefinition ), enable );
@@ -267,7 +267,7 @@ void Browse::setupMenus()
 
     menuManager()->registerForViewEvents( viewManager() );
 
-    viewManager()->enableMenus( FALSE );
+    viewManager()->enableMenus( false );
 }
 
 void Browse::postTitle()
@@ -302,9 +302,9 @@ bool Browse::reallyClose()
         delete _editorDLL;
         _editorDLL = NULL;
 
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 
@@ -370,7 +370,7 @@ bool Browse::contextHelp( bool is_active_win )
     if( is_active_win ) {
         _helpInfo->sysHelpContent();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool Browse::canEdit()
@@ -378,9 +378,9 @@ bool Browse::canEdit()
 {
     if( optManager()->isEditorDLL() ) {
         if( _editorDLL != NULL && _editorDLL->isInitialized() ) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     } else {
         return( optManager()->getEditorName() != NULL );

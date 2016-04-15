@@ -126,7 +126,7 @@ public:
             void            setMenus( MenuManager * mgr );
             void            unSetMenus( MenuManager * mgr );
 
-            bool            exit();         // return TRUE if ok to terminate
+            bool            exit();         // return true if ok to terminate
             bool            isModified() const;
 
             bool            load();         // get a filename first

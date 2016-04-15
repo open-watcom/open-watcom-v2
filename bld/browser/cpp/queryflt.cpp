@@ -72,7 +72,7 @@ int QueryFilter::editFilter( KeySymbol * filter )
 void QueryFilter::initialize()
 //----------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -214,7 +214,7 @@ bool QueryFilter::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_QUERY_FILTER );
     }
-    return( TRUE );
+    return( true );
 }
 
 void QueryFilter::searchAll( WWindow * )
@@ -223,6 +223,6 @@ void QueryFilter::searchAll( WWindow * )
     int i;
 
     for( i = 0; i < NUMQFLTCHECKBOXES; i += 1 ) {
-        _chkbxArray[ i ]->setCheck( TRUE );
+        _chkbxArray[ i ]->setCheck( true );
     }
 }

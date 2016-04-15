@@ -68,7 +68,7 @@ static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle drhdl,
     sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
     data->list->add( sym );
 
-    return TRUE;
+    return true;
 }
 
 
@@ -129,5 +129,5 @@ static bool FunctionSym::callHook( dr_handle, dr_ref_info * ref, char * name,
     } else {
         WBRFree( name );
     }
-    return TRUE;    // continue
+    return true;    // continue
 }

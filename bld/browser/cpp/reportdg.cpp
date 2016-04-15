@@ -142,5 +142,5 @@ bool ReportDialog::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_REPORT_OPTIONS );
     }
-    return( TRUE );
+    return( true );
 }

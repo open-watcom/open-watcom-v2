@@ -303,7 +303,7 @@ bool MergeLineSection::readFileEntry( MergeFile * file, MergeOffset & moff,
 
     string = file->readString( DR_DEBUG_LINE, moff.offset );
 
-    if( string == NULL ) return FALSE;  // end of files
+    if( string == NULL ) return false;  // end of files
 
     fileEntry.name.operator=( string );
     fileEntry.directoryIdx = (uint_16)  file->readULEB128( DR_DEBUG_LINE, moff.offset );
@@ -312,7 +312,7 @@ bool MergeLineSection::readFileEntry( MergeFile * file, MergeOffset & moff,
 
     addFile( moff.fileIdx, oldFileIdx, fileEntry );
 
-    return TRUE;
+    return true;
 }
 
 void MergeLineSection::addFile( uint_8 fileIdx, uint_16 oldFileIdx,

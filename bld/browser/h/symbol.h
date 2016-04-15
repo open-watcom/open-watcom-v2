@@ -57,7 +57,7 @@ public:
 
             bool        isEqual( WObject const * ) const;
 
-    const   char *      scopedName( bool fullScoping = TRUE );
+    const   char *      scopedName( bool fullScoping = true );
             void        loadUsers( WVList & syms );         /* Symbols */
             void        loadReferences( WVList & refs );    /* References */
             bool        defSourceFile( char * );

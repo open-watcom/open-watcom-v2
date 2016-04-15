@@ -77,13 +77,13 @@ void EdModule::loadBox()
 
     for( i = 0; i < _enabled.count(); i += 1 ) {
         strModuleName = new WFileName( *(WFileName *) _enabled[ i ] );
-        modItem = new ModuleItem( strModuleName, TRUE );
+        modItem = new ModuleItem( strModuleName, true );
         _moduleBox->insert( modItem );
     }
 
     for( i = 0; i < _disabled.count(); i += 1 ) {
         strModuleName = new WFileName( *(WFileName *) _disabled[ i ] );
-        modItem = new ModuleItem( strModuleName, FALSE );
+        modItem = new ModuleItem( strModuleName, false );
         _moduleBox->insert( modItem );
     }
 }
@@ -114,11 +114,11 @@ void EdModule::addButton( WWindow * )
             file->absoluteTo();
             file->toLower();
 
-            found = FALSE;
+            found = false;
 
             if( !file->attribs() ) {
                 errMessage( "Module %s%s does not exist", file->fName(), file->ext() );
-                found = TRUE;
+                found = true;
             }
 
             for( i = 0; i < _moduleBox->count() && !found; i += 1 ) {
@@ -126,7 +126,7 @@ void EdModule::addButton( WWindow * )
 
                 if( *str == *file ) {
                     errMessage( "Module %s%s already in project", file->fName(), file->ext() );
-                    found = TRUE;
+                    found = true;
                 }
             }
 
@@ -135,15 +135,15 @@ void EdModule::addButton( WWindow * )
 
                 if( *str == *file ) {
                     ModuleItem * item = _removedModuleItems->removeAt( i ) ;
-                    item->_enabled = TRUE;
+                    item->_enabled = true;
                     _moduleBox->insert( item );
 
-                    found = TRUE;
+                    found = true;
                 }
             }
 
             if( !found ) {
-                ModuleItem * item = new ModuleItem( file, TRUE );
+                ModuleItem * item = new ModuleItem( file, true );
                 _moduleBox->insert( item );
             }
 
@@ -166,7 +166,7 @@ bool EdModule::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_EDIT_MODULE_LIST );
     }
-    return( TRUE );
+    return( true );
 }
 
 void EdModule::okButton( WWindow * )
@@ -198,13 +198,13 @@ void EdModule::okButton( WWindow * )
         }
     }
 
-    quit( TRUE );
+    quit( true );
 }
 
 void EdModule::cancelButton( WWindow * )
 //-------------------------------------
 {
-    quit( FALSE );
+    quit( false );
 }
 
 // Complain about defining trivial destructor inside class

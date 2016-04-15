@@ -99,7 +99,7 @@ bool Scanner::error( char const * errStr )
     fprintf( stderr, "%s: %s\n", _file->getFileName(), errStr );
     fprintf( stderr, "near <%s>\n", buffer );
 
-    return FALSE;       // don't continue
+    return false;       // don't continue
 }
 
 int Scanner::get()
