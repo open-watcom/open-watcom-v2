@@ -115,9 +115,9 @@ static list_def         Lists[MAX_LISTS]={
 static int              List_level=0;
 static list_def         *Curr_list=&Lists[0];
 
-static bool             Blank_line = FALSE;
+static bool             Blank_line = false;
 static int              Curr_indent = 0;
-static bool             Eat_blanks = FALSE;
+static bool             Eat_blanks = false;
 
 // The following are for word-wrapping and indentation support
 static int              Cursor_X = 0;   // column number
@@ -125,7 +125,7 @@ static int              R_Chars = 0;    // visible chars since Wrap_Safe
 static int              Wrap_Safe = 0;  // index of break candidate
 static int              NL_Group = 0;   // Number of contiguous newlines
 
-static bool             Box_Mode = FALSE;
+static bool             Box_Mode = false;
 
 static void warning( char *msg, unsigned int line )
 /*************************************************/
@@ -417,7 +417,7 @@ static void new_list( int type )
 {
     ++List_level;
     if( List_level == MAX_LISTS ) {
-        error( ERR_MAX_LISTS, TRUE );
+        error( ERR_MAX_LISTS, true );
     }
     Curr_list = &Lists[ List_level ];
     Curr_list->type = type;
@@ -527,16 +527,16 @@ int ib_trans_line(
 
     if( Blank_line && ( ch != CH_LIST_ITEM ||
                         Curr_list->compact != LIST_SPACE_COMPACT ) ) {
-        Blank_line = FALSE;
+        Blank_line = false;
     }
     switch( ch ) {
     // Tabbed-example
     case CH_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
-            Tab_xmp = FALSE;
+            Tab_xmp = false;
         } else {
             read_tabs( ptr + 1 );
-            Tab_xmp = TRUE;
+            Tab_xmp = true;
         }
         return( alloc_size );
 
@@ -557,7 +557,7 @@ int ib_trans_line(
 
         trans_add_char_wrap( '\n', section, &alloc_size);
 
-        Box_Mode = TRUE;
+        Box_Mode = true;
         return( alloc_size );
 
     case CH_BOX_OFF:
@@ -572,7 +572,7 @@ int ib_trans_line(
             trans_add_char( BOX_HBAR, section, &alloc_size );
         }
         trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &alloc_size );
-        Box_Mode = FALSE;
+        Box_Mode = false;
 
         trans_add_char_wrap( '\n', section, &alloc_size );
 
@@ -670,11 +670,11 @@ int ib_trans_line(
         }
     }
 
-    Blank_line = TRUE;
+    Blank_line = true;
     for( ;; ) {
         ch = *(unsigned char *)ptr;
         if( ch != '\0' && ( ch != ' ' || ch != '\t' ) ) {
-            Blank_line = FALSE;
+            Blank_line = false;
         }
         if( ch == '\0' ) {
             // this just shuts off bolding after a def. list term
@@ -685,11 +685,11 @@ int ib_trans_line(
             trans_add_char_wrap( '\n', section, &alloc_size );
             break;
         } else if( ch == CH_HLINK || ch == CH_DFN || ch == CH_FLINK ) {
-            Curr_ctx->empty = FALSE;
+            Curr_ctx->empty = false;
             if( ch == CH_FLINK ) {
                 file_name = strchr( ptr + 1, ch );
                 if( file_name == NULL ) {
-                    error( ERR_BAD_LINK_DFN, TRUE );
+                    error( ERR_BAD_LINK_DFN, true );
                 }
                 *file_name = '\0';
             } else {
@@ -697,13 +697,13 @@ int ib_trans_line(
             }
             ctx_name = strchr( file_name + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             *ctx_name = '\0';
 
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             *ctx_text = '\0';
 
@@ -771,7 +771,7 @@ int ib_trans_line(
                 }
                 trans_add_str_wrap( buf, section, &alloc_size );
             }
-            Eat_blanks = TRUE;
+            Eat_blanks = true;
             ptr = skip_blank( ptr + 1 );
         } else if( ch == CH_DLIST_DESC ) {
             ptr = skip_blank( ptr + 1 );
@@ -780,7 +780,7 @@ int ib_trans_line(
             trans_add_str( STR_BOLD_ON, section, &alloc_size );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blank( ptr + 1 );
-            Eat_blanks = TRUE;
+            Eat_blanks = true;
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
             memcpy( buf, ptr + 1, end - ptr - 1 );
@@ -830,7 +830,7 @@ int ib_trans_line(
         } else {
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {
-                Curr_ctx->empty = FALSE;
+                Curr_ctx->empty = false;
 
                 if( Tab_xmp && ch == Tab_xmp_char ) {
                     tab_align( section, &alloc_size );
@@ -839,7 +839,7 @@ int ib_trans_line(
                     trans_add_char_wrap( ch, section, &alloc_size );
                 }
 
-                Eat_blanks = FALSE;
+                Eat_blanks = false;
             }
         }
     }

@@ -69,8 +69,8 @@ static char     *Font_end[]={
 static int Font_list[ 100 ];      // up to 100 nested fonts
 static int Font_list_curr = 0;
 
-static bool Blank_line_pfx = FALSE;
-static bool Blank_line_sfx = TRUE;
+static bool Blank_line_pfx = false;
+static bool Blank_line_sfx = true;
 
 #define IPF_TRANS_LEN           50
 
@@ -263,14 +263,14 @@ int html_trans_line( section_def *section, int alloc_size )
     switch( ch ) {
     case CH_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
-            Tab_xmp = FALSE;
+            Tab_xmp = false;
             trans_add_str( "</xmp>\n", section, &alloc_size );
-            Blank_line_sfx = FALSE;     // remove following blanks
+            Blank_line_sfx = false;     // remove following blanks
         } else {
             read_tabs( ptr + 1 );
             trans_add_str( "<xmp>\n", section, &alloc_size );
-            Tab_xmp = TRUE;
-            Blank_line_pfx = FALSE;     // remove preceding blanks
+            Tab_xmp = true;
+            Blank_line_pfx = false;     // remove preceding blanks
         }
         return( alloc_size );
 
@@ -280,58 +280,58 @@ int html_trans_line( section_def *section, int alloc_size )
            (the edges don't line up). So we draw long lines at the
            top and bottom instead */
         draw_line( section, &alloc_size );
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         return( alloc_size );
 
     case CH_BOX_OFF:
         draw_line( section, &alloc_size );
-        Blank_line_sfx = FALSE;
+        Blank_line_sfx = false;
         return( alloc_size );
 
     case CH_OLIST_START:
         trans_add_list( "<OL>\n", section, &alloc_size, ptr );
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         return( alloc_size );
 
     case CH_LIST_START:
         trans_add_list( "<UL>\n", section, &alloc_size, ptr );
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         return( alloc_size );
 
     case CH_DLIST_START:
         trans_add_str( "<DL>\n", section, &alloc_size );
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         return( alloc_size );
 
     case CH_SLIST_START:
         trans_add_list( "<UL>\n", section, &alloc_size, ptr );
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         return( alloc_size );
 
     case CH_SLIST_END:
         trans_add_str( "</UL>\n", section, &alloc_size );
-        Blank_line_sfx = FALSE;
+        Blank_line_sfx = false;
         return( alloc_size );
 
     case CH_OLIST_END:
         trans_add_str( "</OL>\n", section, &alloc_size );
-        Blank_line_sfx = FALSE;
+        Blank_line_sfx = false;
         return( alloc_size );
 
     case CH_LIST_END:
         trans_add_str( "</UL>\n", section, &alloc_size );
-        Blank_line_sfx = FALSE;
+        Blank_line_sfx = false;
         return( alloc_size );
 
     case CH_DLIST_END:
         trans_add_str( "</DL>\n", section, &alloc_size );
-        Blank_line_sfx = FALSE;
+        Blank_line_sfx = false;
         return( alloc_size );
 
     case CH_LIST_ITEM:
     case CH_DLIST_TERM:
         /* eat blank lines before list items and terms */
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
         break;
 
     case CH_CTX_KW:
@@ -349,13 +349,13 @@ int html_trans_line( section_def *section, int alloc_size )
                a blank line. BUT, all lists and things automatically
                generate blank lines before they display, so we
                must pend the line */
-            Blank_line_pfx = TRUE;
+            Blank_line_pfx = true;
         }
         return( alloc_size );
     }
 
     /* An explanation of 'Blank_line_pfx': when we hit a blank line,
-       we set Blank_line_pfx to TRUE. On the non-tag next line, the
+       we set Blank_line_pfx to true. On the non-tag next line, the
        blank line is generated.
        Some tags automatically generate a blank line, so they
        turn this flag off. This causes the next non-tag line to NOT
@@ -365,18 +365,18 @@ int html_trans_line( section_def *section, int alloc_size )
         if( Blank_line_sfx ) {
             line_len += trans_add_str( "<BR>", section, &alloc_size );
         }
-        Blank_line_pfx = FALSE;
+        Blank_line_pfx = false;
     }
 
     /* An explanation of 'Blank_line_sfx': some ending tags automatically
        generate a blank line, so no blank line after them should get
-       generated. Normally, this flag is set to TRUE, but ending
-       tags and Defn list term tags set this FALSE, so no extra '<BR>'
+       generated. Normally, this flag is set to true, but ending
+       tags and Defn list term tags set this false, so no extra '<BR>'
        is generated.
        But, this rule only applies if a blank line immediately
        follows the tag, so its reset here regardless */
 
-    Blank_line_sfx = TRUE;
+    Blank_line_sfx = true;
 
     ch = *(unsigned char *)ptr;
     if( ch != CH_LIST_ITEM && ch != CH_DLIST_TERM && ch != CH_DLIST_DESC && !Tab_xmp ) {
@@ -384,29 +384,29 @@ int html_trans_line( section_def *section, int alloc_size )
         line_len += trans_add_str( "<BR>", section, &alloc_size );
     }
 
-    term_fix = FALSE;
+    term_fix = false;
     for( ;; ) {
         ch = *(unsigned char *)ptr;
         if( ch == '\0' ) {
             if( term_fix ) {
 //              trans_add_str( "</hp2>", section, &alloc_size );
-                term_fix = FALSE;
+                term_fix = false;
             }
             trans_add_char( '\n', section, &alloc_size );
             break;
         } else if( ch == CH_HLINK || ch == CH_DFN ) {
-            Curr_ctx->empty = FALSE;
+            Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
             ctx_name = ptr + 1;
             ptr = strchr( ptr + 1, ch );
             if( ptr == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             *ptr = '\0';
             ctx_text = ptr + 1;
             ptr = strchr( ctx_text + 1, ch );
             if( ptr == NULL ) {
-              error( ERR_BAD_LINK_DFN, TRUE );
+              error( ERR_BAD_LINK_DFN, true );
             }
             *ptr = '\0';
             add_link( ctx_name );
@@ -417,18 +417,18 @@ int html_trans_line( section_def *section, int alloc_size )
             line_len += trans_add_str( "</A>", section, &alloc_size );
             ++ptr;
         } else if( ch == CH_FLINK ) {
-            Curr_ctx->empty = FALSE;
+            Curr_ctx->empty = false;
             file_name = strchr( ptr + 1, ch );
             if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             ctx_name = strchr( file_name + 1, ch );
             if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             ctx_text = strchr( ctx_name + 1, ch );
             if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN, TRUE );
+                error( ERR_BAD_LINK_DFN, true );
             }
             *ctx_text = '\0';
             ctx_text = ctx_name + 1;
@@ -452,9 +452,9 @@ int html_trans_line( section_def *section, int alloc_size )
         } else if( ch == CH_DLIST_TERM ) {
             /* definition list term */
             line_len += trans_add_str( "<DT>", section, &alloc_size );
-            term_fix = TRUE;
+            term_fix = true;
             ptr = skip_blank( ptr + 1 );
-            Blank_line_sfx = FALSE;
+            Blank_line_sfx = false;
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
             memcpy( buf, ptr + 1, end - ptr - 1 );
@@ -471,7 +471,7 @@ int html_trans_line( section_def *section, int alloc_size )
             /* this can be ignored for IPF */
             ++ptr;
         } else if( ch == CH_BMP ) {
-            Curr_ctx->empty = FALSE;
+            Curr_ctx->empty = false;
             ++ptr;
             ch = *(unsigned char *)ptr;
             ptr += 2;
@@ -543,7 +543,7 @@ int html_trans_line( section_def *section, int alloc_size )
             ptr = end + 1;
         } else {
             ++ptr;
-            Curr_ctx->empty = FALSE;
+            Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
                 len = tab_align( ch_len, section, &alloc_size );
                 ch_len += len;
@@ -680,7 +680,7 @@ void html_output_file( void )
     output_hdr();
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {
-            if( !Exclude_special || !is_special_topic( ctx, FALSE ) ) {
+            if( !Exclude_special || !is_special_topic( ctx, false ) ) {
                 output_ctx_hdr( ctx );
                 output_ctx_sections( ctx );
             }
