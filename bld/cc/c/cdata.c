@@ -224,6 +224,7 @@ void InitGlobalVars( void )
     ErrorFileName           = NULL;
 
     UndefNames              = NULL;
+    Check_global_prototype  = 0;
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
     InitStmt();

@@ -931,16 +931,23 @@
 :usage. treat all warnings as errors
 :jusage. ‚·‚×‚Ä‚ÌŒx‚ğƒGƒ‰[‚Æ‚µ‚Äˆµ‚¢‚Ü‚·
 
+:option. wo
+:target. i86
+:usage. warn about problems with overlaid code
+:jusage.
+
+:option. wpx
+:target. any
+:nochain.
+:internal.
+:usage. warn about global prototypes not defined in header file
+:jusage.
+
 :option. wx
 :target. any
 :enumerate. warn_level
 :usage. set warning level to maximum setting
 :jusage. ŒxƒŒƒxƒ‹‚ğÅ‘åİ’è‚É‚µ‚Ü‚·
-
-:option. wo
-:target. i86
-:usage. warn about problems with overlaid code
-:jusage.
 
 :option. x
 :target. any

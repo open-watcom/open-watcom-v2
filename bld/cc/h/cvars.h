@@ -133,6 +133,7 @@ global int          SizeOfCount;        /* # of nested sizeof() expressions  */
 global int          NestLevel;          /* pre-processing level of #if */
 global int          SkipLevel;          /* pre-processing level of #if to skip to */
 global id_level_stype SymLevel;         /* current lex level (# of nested {) */
+global bool         Check_global_prototype;
 #define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 global id_hash_idx  HashValue;          /* hash value for identifier */
