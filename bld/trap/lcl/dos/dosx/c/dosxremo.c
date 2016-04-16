@@ -481,6 +481,6 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 void TRAPENTRY TrapFini( void )
 {
     _DBG_EnterFunc( "TrapFini()" );
-    RemoteDiscoX(); // just for debugging
+    RemoteDisco(); // just for debugging
     _DBG_ExitFunc( "TrapFini()" );
 }
