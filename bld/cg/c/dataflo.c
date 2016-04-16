@@ -160,13 +160,12 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
                 if( conf == NULL && first_time ) {
                     conf = AddConflictNode( actual_name );
                 }
-                if( conf != NULL && !( conf->state & CONFLICT_ON_HOLD )
-                 && _GBitEmpty( conf->id.out_of_block ) ) {
+                if( conf != NULL && _Isnt( conf, CST_CONFLICT_ON_HOLD ) && _GBitEmpty( conf->id.out_of_block ) ) {
                     _GBitAssign( conf->id.out_of_block, *bit );
                     _GBitTurnOn( all_used, *bit );
                     _GBitNext( bit );
                     if( _GBitEmpty( conf->id.out_of_block ) ) {
-                        conf->state |= CONFLICT_ON_HOLD;
+                        _SetTrue( conf, CST_CONFLICT_ON_HOLD );
                         MoreUseInOtherTemps = true;
                     }
                 }

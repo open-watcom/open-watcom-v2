@@ -1117,7 +1117,7 @@ void    GenObjCode( instruction *ins ) {
             } else {
                 /* turn "LEA EAX, 0[ESP]" into "MOV EAX,ESP" */
 #if _TARGET & _TARG_80386
-                if((left->n.class==N_TEMP) && TmpLoc(DeAlias(left),left)==0) {
+                if((left->n.class == N_TEMP) && TmpLoc(DeAlias(left),left) == 0) {
                     LayOpword( M_MOVRR | B_KEY_W );
                     if( BaseIsSP( left ) ) {
                         LayReg( HW_SP );

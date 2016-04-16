@@ -224,16 +224,23 @@ extern  void    SplitVars( void )
     for( ;; ) {
         for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
             op = conf->name;
-            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) ) continue;
-            if( op->n.class != N_TEMP ) continue;
-            if( conf->state & CONF_VISITED ) continue;
-            conf->state &= ~CONFLICT_ON_HOLD;
-            if( _GBitEmpty( conf->id.out_of_block ) ) continue;
-            if( op->t.alias == op ) Split1Var( conf );
+            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) )
+                continue;
+            if( op->n.class != N_TEMP )
+                continue;
+            if( _Is( conf, CST_CONF_VISITED ) )
+                continue;
+            _SetFalse( conf, CST_CONFLICT_ON_HOLD );
+            if( _GBitEmpty( conf->id.out_of_block ) )
+                continue;
+            if( op->t.alias == op )
+                Split1Var( conf );
             _GBitInit( conf->id.out_of_block, EMPTY );
-            conf->state |= CONFLICT_ON_HOLD | CONF_VISITED;
+            _SetTrue( conf, CST_CONFLICT_ON_HOLD | CST_CONF_VISITED );
         }
-        if( !MoreConflicts() ) break;
+        if( !MoreConflicts() ) {
+            break;
+        }
     }
     CleanUp();
     FreeConflicts();

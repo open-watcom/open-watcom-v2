@@ -172,7 +172,7 @@ static  void    AssignMoreBits( void )
     conflict_node       *conf;
 
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        conf->state &= ~CONFLICT_ON_HOLD;
+        _SetFalse( conf, CST_CONFLICT_ON_HOLD );
     }
     if( MoreConflicts() ) {
         MakeLiveInfo();
@@ -270,10 +270,9 @@ static  void    ReAlias( reg_tree *tree ) {
             endpoint = tree->size + begpoint;
             owner = &tree->temp->t.alias;
             new_ring = NULL;
-            for(;;) {
+            for( ;; ) {
                 curr = *owner;
-                if( curr->v.offset < begpoint
-                 || curr->v.offset + curr->n.size > endpoint ) {
+                if( curr->v.offset < begpoint || curr->v.offset + curr->n.size > endpoint ) {
                     owner = &curr->t.alias;
                 } else {
                     *owner = curr->t.alias;
@@ -285,7 +284,9 @@ static  void    ReAlias( reg_tree *tree ) {
                         new_ring->t.alias = curr;
                     }
                 }
-                if( curr == tree->temp ) break;
+                if( curr == tree->temp ) {
+                    break;
+                }
             }
             curr->t.temp_flags &= ~ALIAS;
         }
@@ -366,7 +367,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
 
     reg_name = AllocRegName( reg );
     if( ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK )
-     && ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) ) ) {
+      && ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) ) ) {
         conf->name->v.usage |= USE_MEMORY;
     }
     opnd = tree->temp;
@@ -396,9 +397,12 @@ static  bool    Idx( name *op ) {
     of an N_INDEXED (eg: 5[t1])
 */
 
-    if( op == NULL ) return( false );
-    if( op->n.class != N_TEMP ) return( false );
-    if( ( op->t.temp_flags & INDEXED ) == EMPTY ) return( false );
+    if( op == NULL )
+        return( false );
+    if( op->n.class != N_TEMP )
+        return( false );
+    if( ( op->t.temp_flags & INDEXED ) == EMPTY )
+        return( false );
     return( true );
 }
 
@@ -630,17 +634,24 @@ static  bool    StealsSeg( instruction *ins,
     int                 i;
 
     i = ins->num_operands - 1;
-    if( i < NumOperands( ins ) ) return( false );
+    if( i < NumOperands( ins ) )
+    	return( false );
     op = ins->operands[i];
     new_conf = NameConflict( ins, op );
-    if( new_conf == NULL ) return( false );
-    if( ( op == actual_op ) && IsSegReg( reg ) ) return( false );
+    if( new_conf == NULL )
+    	return( false );
+    if( ( op == actual_op ) && IsSegReg( reg ) )
+    	return( false );
     index_needs = RegSets[SegIndex()];
-    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( false );
-    for(;;) {
-        if( !HW_Ovlap( *index_needs, except ) ) return( false );
+    if( HW_CEqual( *index_needs, HW_EMPTY ) )
+    	return( false );
+    for( ;; ) {
+        if( !HW_Ovlap( *index_needs, except ) )
+        	return( false );
         ++index_needs;
-        if( HW_CEqual( *index_needs, HW_EMPTY ) ) break;
+        if( HW_CEqual( *index_needs, HW_EMPTY ) ) {
+        	break;
+        }
     }
     return( true );
 }
@@ -664,26 +675,35 @@ static  bool    StealsIdx( instruction *ins,
         op = ins->operands[i];
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
-            if( new_conf == NULL || actual_op == op->i.index ) return( false );
+            if( new_conf == NULL || actual_op == op->i.index ) {
+                return( false );
+            }
         }
     }
     if( ins->result != NULL ) {
         op = ins->result;
         if( op->n.class == N_INDEXED ) {
             new_conf = NameConflict( ins, op->i.index ); // oops
-            if( new_conf == NULL || actual_op == op->i.index ) return( false );
+            if( new_conf == NULL || actual_op == op->i.index )
+                return( false );
             is_result = true;
         }
     }
     index_needs = RegSets[ins->t.index_needs];
-    if( HW_CEqual( *index_needs, HW_EMPTY ) ) return( false );
-    for(;;) {
+    if( HW_CEqual( *index_needs, HW_EMPTY ) )
+        return( false );
+    for( ;; ) {
         if( !HW_Ovlap( *index_needs, except ) ) {
-            if( !is_result ) return( false );
-            if( !HW_Ovlap( *index_needs, ins->zap->reg ) ) return( false );
+            if( !is_result )
+                return( false );
+            if( !HW_Ovlap( *index_needs, ins->zap->reg ) ) {
+                return( false );
+            }
         }
         ++index_needs;
-        if( HW_CEqual( *index_needs, HW_EMPTY ) ) break;
+        if( HW_CEqual( *index_needs, HW_EMPTY ) ) {
+            break;
+        }
     }
     return( true );
 }
@@ -730,7 +750,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
     blk = conf->start_block;
     ins = conf->ins_range.first;
     last = conf->ins_range.last;
-    if( conf->name->n.class == N_TEMP && _Is( conf, (INDEX_SPLIT | SEGMENT_SPLIT) ) ) {
+    if( conf->name->n.class == N_TEMP && _Is( conf, CST_INDEX_SPLIT | CST_SEGMENT_SPLIT ) ) {
         ins = last;
     }
     rc = false;
@@ -741,26 +761,31 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
             needs = ins->u.gen_table->reg_set;
         }
         ins_needs = RegSets[RegList[needs].need];
-        if( HW_CEqual( *ins_needs, HW_EMPTY ) || _Is( conf, NEVER_TOO_GREEDY )
-          || UnaryOpGetsReg( ins, reg, op ) ) {
+        if( HW_CEqual( *ins_needs, HW_EMPTY ) || _Is( conf, CST_NEVER_TOO_GREEDY ) || UnaryOpGetsReg( ins, reg, op ) ) {
             rc = CheckIndecies( ins, reg, HW_EMPTY, op );
         } else { /* can the instruction and indecies still get needed regs?*/
             rc = true;
-            for(;;) {
-                if( !HW_Ovlap( *ins_needs, ins->head.live.regs )
-                 && !HW_Ovlap( reg, *ins_needs ) ) {
+            for( ;; ) {
+                if( !HW_Ovlap( *ins_needs, ins->head.live.regs ) && !HW_Ovlap( reg, *ins_needs ) ) {
                     rc = CheckIndecies( ins, reg, *ins_needs, op );
-                    if( rc == false ) break;
+                    if( rc == false ) {
+                        break;
+                    }
                 }
                 ++ins_needs;
-                if( HW_CEqual( *ins_needs, HW_EMPTY ) ) break;
+                if( HW_CEqual( *ins_needs, HW_EMPTY ) ) {
+                    break;
+                }
             }
         }
-        if( ins == last ) break;
+        if( ins == last )
+            break;
         for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
             blk = blk->next_block;
         }
-        if( rc != false ) break;
+        if( rc != false ) {
+            break;
+        }
     }
     return( rc );
 }
@@ -816,7 +841,7 @@ static  void    NeighboursUse( conflict_node *conf ) {
     _INS_NOT_BLOCK ( last );
     if( ins != last ) {
         _NameSetInit( no_conflict );
-        for(;;) {
+        for( ;; ) {
             ins = ins->head.next;
             if( ins->head.opcode != OP_BLOCK ) {
 
@@ -844,12 +869,9 @@ static  void    NeighboursUse( conflict_node *conf ) {
                 /* it only conflicts if temp is live across result/zap*/
                 if( ins != last ) {
                     if( ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) )
-                     || ( _LBitEmpty( conf->id.within_block )
-                       && _GBitEmpty( conf->id.out_of_block ) )
-                     || ( _LBitOverlap( conf->id.within_block,
-                          ins->head.next->head.live.within_block ) )
-                     || ( _GBitOverlap( conf->id.out_of_block,
-                          ins->head.next->head.live.out_of_block ) ) ) {
+                     || ( _LBitEmpty( conf->id.within_block ) && _GBitEmpty( conf->id.out_of_block ) )
+                     || ( _LBitOverlap( conf->id.within_block, ins->head.next->head.live.within_block ) )
+                     || ( _GBitOverlap( conf->id.out_of_block, ins->head.next->head.live.out_of_block ) ) ) {
                         HW_TurnOn( conf->with.regs, ins->zap->reg );
                         if( dst != NULL && dst->n.class == N_REGISTER ) {
                             HW_TurnOn( conf->with.regs, dst->r.reg );
@@ -858,10 +880,8 @@ static  void    NeighboursUse( conflict_node *conf ) {
                         // know that conf is not live after this instruction
                         // if it was live before, must mark it as conflicting
                         // with anything in the zap set         BBB - Nov, 1994
-                        if( ( _LBitOverlap( conf->id.within_block,
-                                ins->head.live.within_block ) )
-                         || ( _GBitOverlap( conf->id.out_of_block,
-                                ins->head.live.out_of_block ) ) ) {
+                        if( ( _LBitOverlap( conf->id.within_block, ins->head.live.within_block ) )
+                          || ( _GBitOverlap( conf->id.out_of_block, ins->head.live.out_of_block ) ) ) {
                             CheckIndexZap( conf, blk, ins );
                         }
                     }
@@ -870,9 +890,8 @@ static  void    NeighboursUse( conflict_node *conf ) {
                 }
             }
             if( _GBitOverlap( ins->head.live.out_of_block, conf->id.out_of_block )
-             || _LBitOverlap( ins->head.live.within_block, conf->id.within_block )
-             || ( _LBitEmpty( conf->id.within_block )
-               && _GBitEmpty( conf->id.out_of_block ) ) ) {
+              || _LBitOverlap( ins->head.live.within_block, conf->id.within_block )
+              || ( _LBitEmpty( conf->id.within_block ) && _GBitEmpty( conf->id.out_of_block ) ) ) {
                 tmp = ins->head.live.regs;
                 HW_TurnOff( tmp, no_conflict.regs );
                 HW_TurnOn( conf->with.regs, tmp );
@@ -896,7 +915,9 @@ static  void    NeighboursUse( conflict_node *conf ) {
                 ins = (instruction *)&blk->ins;
                 _NameSetInit( no_conflict );
             }
-            if( ins->id == last->id ) break;
+            if( ins->id == last->id ) {
+                break;
+            }
         }
     }
     /*
@@ -1009,13 +1030,13 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
         if( all_true ) {
             HW_CAsgn( given, HW_EMPTY );
         } else if( HW_CEqual( best, HW_EMPTY ) ) {
-            if( _Is( conf, NEEDS_INDEX ) ) {
-                _SetTrue( conf, NEEDS_INDEX_SPLIT );
-                _SetFalse( conf, NEEDS_INDEX );
+            if( _Is( conf, CST_NEEDS_INDEX ) ) {
+                _SetTrue( conf, CST_NEEDS_INDEX_SPLIT );
+                _SetFalse( conf, CST_NEEDS_INDEX );
             }
-            if( _Is( conf, NEEDS_SEGMENT ) ) {
-                _SetTrue( conf, NEEDS_SEGMENT_SPLIT );
-                _SetFalse( conf, NEEDS_SEGMENT );
+            if( _Is( conf, CST_NEEDS_SEGMENT ) ) {
+                _SetTrue( conf, CST_NEEDS_SEGMENT_SPLIT );
+                _SetFalse( conf, CST_NEEDS_SEGMENT );
             }
             HW_CAsgn( given, HW_EMPTY );
         } else if( needs_one || WorthProlog( conf, best ) ) {
@@ -1070,7 +1091,7 @@ static  void    PutInMemory( conflict_node *conf ) {
         if( opnd->t.temp_flags & CONST_TEMP ) {
             MemConstTemp( conf );
         } else {
-            for(;;) {
+            for( ;; ) {
                 opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
                 opnd = opnd->t.alias;
                 if( opnd == conf->name ) break;
@@ -1162,7 +1183,7 @@ extern  conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
     GRBlip();
     BuildRegTree( conf );
     tree = conf->tree;
-    if( _Is( conf, ( INDEX_SPLIT | SEGMENT_SPLIT ) ) ) {
+    if( _Is( conf, CST_INDEX_SPLIT | CST_SEGMENT_SPLIT ) ) {
         needs_one = true;
     }
     given = GiveBestReg( conf, tree, CurrProc->state.unalterable, needs_one );
@@ -1174,14 +1195,14 @@ extern  conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
         BitOff( conf );
         FreeAConflict( conf );
     } else {
-        if( _Is( conf, NEEDS_INDEX ) ) {
-            _SetTrue( conf, NEEDS_INDEX_SPLIT );
-            _SetFalse( conf, NEEDS_INDEX );
-        } else if( _Is( conf, NEEDS_SEGMENT ) ) {
-            _SetTrue( conf, NEEDS_SEGMENT_SPLIT );
-            _SetFalse( conf, NEEDS_SEGMENT );
+        if( _Is( conf, CST_NEEDS_INDEX ) ) {
+            _SetTrue( conf, CST_NEEDS_INDEX_SPLIT );
+            _SetFalse( conf, CST_NEEDS_INDEX );
+        } else if( _Is( conf, CST_NEEDS_SEGMENT ) ) {
+            _SetTrue( conf, CST_NEEDS_SEGMENT_SPLIT );
+            _SetFalse( conf, CST_NEEDS_SEGMENT );
         }
-        if( _Isnt( conf, ( NEEDS_SEGMENT_SPLIT | NEEDS_INDEX_SPLIT ) ) ) {
+        if( _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT | CST_NEEDS_INDEX_SPLIT ) ) {
             next_valid = InMemory( conf );
         } else {
             next_valid = conf->next_conflict;
@@ -1229,15 +1250,15 @@ static  enum allocation_state    AssignConflicts( void )
         if( conf->start_block == NULL ) {
             FreeAConflict( conf );
         } else {
-            if( _Isnt( conf, SAVINGS_CALCULATED ) ) {
+            if( _Isnt( conf, CST_SAVINGS_CALCULATED ) ) {
                 conf->available = 1; /* FOR NOW for CalcSavings' benifit */
                 CalcSavings( conf );
-                if( _Isnt( conf, CONFLICT_ON_HOLD ) ) {
-                    _SetTrue( conf, SAVINGS_CALCULATED );
-                    _SetTrue( conf, SAVINGS_JUST_CALCULATED );
+                if( _Isnt( conf, CST_CONFLICT_ON_HOLD ) ) {
+                    _SetTrue( conf, CST_SAVINGS_CALCULATED );
+                    _SetTrue( conf, CST_SAVINGS_JUST_CALCULATED );
                 }
             }
-            _SetFalse( conf, NEEDS_INDEX_SPLIT | NEEDS_SEGMENT_SPLIT );
+            _SetFalse( conf, CST_NEEDS_INDEX_SPLIT | CST_NEEDS_SEGMENT_SPLIT );
         }
     }
     ConstSavings();
@@ -1255,7 +1276,7 @@ static  enum allocation_state    AssignConflicts( void )
     for( ; conf != NULL; conf = next ) {
         next = conf->next_conflict;
         opnd = conf->name;
-        if( _Isnt( conf, CONFLICT_ON_HOLD ) ) {
+        if( _Isnt( conf, CST_CONFLICT_ON_HOLD ) ) {
             /*
                 We stop register allocating on the first CONST_TEMP we see
                 so that any CONST_TEMP's that aren't needed can get cleaned
@@ -1340,7 +1361,7 @@ extern  bool    RegAlloc( bool keep_on_truckin ) {
         }
     }
     last = ALLOC_DONE;
-    for(;;) {
+    for( ;; ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
         if( unknowns <= 0 ) break;

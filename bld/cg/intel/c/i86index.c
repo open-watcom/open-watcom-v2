@@ -81,19 +81,19 @@ extern  instruction     *NeedIndex( instruction *ins ) {
     if( ins->num_operands > NumOperands( ins ) ) {
         name = ins->operands[ins->num_operands - 1];
         conf = NameConflict( ins, name );
-        if( conf != NULL && _Isnt( conf, NEEDS_SEGMENT_SPLIT ) ) {
-            _SetTrue( conf, NEEDS_SEGMENT );
+        if( conf != NULL && _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
+            _SetTrue( conf, CST_NEEDS_SEGMENT );
             MarkSegment( ins, name );
         } else if( name->n.class != N_REGISTER ) {
             if( conf != NULL ) {
-                _SetFalse( conf, NEEDS_SEGMENT );
-                _SetTrue( conf, WAS_SEGMENT );
+                _SetFalse( conf, CST_NEEDS_SEGMENT );
+                _SetTrue( conf, CST_WAS_SEGMENT );
             }
             temp = AllocTemp( U2 );
             ins->operands[ins->num_operands - 1] = temp;
             PrefixIns( ins, MakeMove( name, temp, U2 ) );
             MarkSegment( ins, temp );
-            _SetTrue( NameConflict( ins, temp ), SEGMENT_SPLIT );
+            _SetTrue( NameConflict( ins, temp ), CST_SEGMENT_SPLIT );
             ins = ins->head.prev;
         }
     }
@@ -101,7 +101,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
     if( index != NULL ) {
         temp = IndexToTemp( ins, index );
         conf = NameConflict( ins, temp );
-        _SetTrue( conf, INDEX_SPLIT );
+        _SetTrue( conf, CST_INDEX_SPLIT );
         if( HasTrueBase( index ) && index->i.base->n.class == N_TEMP ) {
             MarkIndex( ins, temp, true );
         } else {
@@ -129,7 +129,8 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
         is_temp_index = false;
     }
     name = index->i.index;
-    if( ins->table == String ) return( true );
+    if( ins->table == String )
+        return( true );
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, is_temp_index ) );
     }
@@ -137,18 +138,24 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
    index still hanging around, it is because a reduction routine
    created it, so it can be handled. Normally, all CP/PT indecies are broken
    up into seg:foo[offset] before we ever get to register allocation */
-    if( name->n.name_class == CP ) return( true );
-    if( name->n.name_class == PT ) return( true );
-    if( name->v.conflict == NULL ) return( false );
-    if( name->v.usage & USE_MEMORY ) return( false );
-    if( name->n.class != N_TEMP ) return( false );
+    if( name->n.name_class == CP )
+        return( true );
+    if( name->n.name_class == PT )
+        return( true );
+    if( name->v.conflict == NULL )
+        return( false );
+    if( name->v.usage & USE_MEMORY )
+        return( false );
+    if( name->n.class != N_TEMP )
+        return( false );
     conf = NameConflict( ins, name );
-    if( conf == NULL ) return( false );
-    if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
-        _SetFalse( conf, NEEDS_INDEX );
+    if( conf == NULL )
+        return( false );
+    if( _Is( conf, CST_NEEDS_INDEX_SPLIT ) ) {
+        _SetFalse( conf, CST_NEEDS_INDEX );
         return( false );
     } else {
-        _SetTrue( conf, NEEDS_INDEX );
+        _SetTrue( conf, CST_NEEDS_INDEX );
         ins->head.state = OPERANDS_NEED_WORK;
         ins->t.index_needs = MarkIndex( ins, name, is_temp_index );
         return( true );
@@ -163,7 +170,8 @@ static  bool    SegIsBase( name **index ) {
     it is, change *index to point to the N_MEMORY base location.
 */
 
-    if( (*index)->n.class == N_MEMORY ) return( true );
+    if( (*index)->n.class == N_MEMORY )
+        return( true );
     if( (*index)->i.index->n.size == WORD_SIZE ) {
         (*index) = (*index)->i.base;
         return( true );
@@ -180,22 +188,29 @@ static  name    *FindSegment( instruction *ins ) {
     name        *index;
     int         i;
 
-    if( ins->num_operands > NumOperands( ins ) ) return( NULL );
+    if( ins->num_operands > NumOperands( ins ) )
+        return( NULL );
     if( ins->type_class == XX ) {
         if( ins->head.opcode != OP_CALL_INDIRECT ) {
-            if( ins->head.opcode != OP_PUSH ) return( NULL );
+            if( ins->head.opcode != OP_PUSH )
+                return( NULL );
             /* careful ... this assumes small pushes split not movsb'd */
             /* see i86split */
-            if( ins->operands[ 0 ]->n.size > 4*WORD_SIZE ) return( NULL );
+            if( ins->operands[ 0 ]->n.size > 4 * WORD_SIZE ) {
+                return( NULL );
+            }
         }
     }
     if( ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA ) {
         for( i = ins->num_operands; i-- > 0; ) {
             index = ins->operands[i];
-            if( SegOver( index ) ) return( index );
+            if( SegOver( index ) ) {
+                return( index );
+            }
         }
     }
-    if( ins->result != NULL && SegOver( ins->result ) ) return( ins->result );
+    if( ins->result != NULL && SegOver( ins->result ) )
+        return( ins->result );
     return( NULL );
 }
 
@@ -262,7 +277,7 @@ extern  void    AddSegment( instruction *ins ) {
             ins->num_operands++;
         }
         if( conf != NULL ) {
-            _SetTrue( conf, SEGMENT_SPLIT );
+            _SetTrue( conf, CST_SEGMENT_SPLIT );
         }
     }
 }
@@ -308,14 +323,14 @@ extern  void    FixSegments( void ) {
              * an error because the CS override is essentially a no-op.  MN
              */
 #define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
-            if( _IsntTargetModel( ANY_FLOATING ) &&
-                ins->num_operands > NumOperands( ins )
 #if _TARGET & _TARG_80386
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins )
                  && !(_IsTargetModel( FLAT_MODEL ) &&
                 (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER) &&
-                HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS ))
+                HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS )) ) {
+#else
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins ) ) {
 #endif
-            ) {
                 /* throw away override */
                 ins->num_operands--;
                 FEMessage( MSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
@@ -331,8 +346,10 @@ static  type_class_def  FltClass( instruction *ins ) {
     does not involve floating point.
 */
 
-    if( _IsFloating( ins->type_class ) ) return( ins->type_class );
-    if( _IsFloating( _OpClass( ins ) ) ) return( _OpClass( ins ) );
+    if( _IsFloating( ins->type_class ) )
+        return( ins->type_class );
+    if( _IsFloating( _OpClass( ins ) ) )
+        return( _OpClass( ins ) );
     return( XX );
 }
 
@@ -412,7 +429,7 @@ extern  void    FixChoices( void ) {
 
     PropSegments();
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        if( _Isnt( conf, VALID_SEGMENT ) ) {
+        if( _Isnt( conf, CST_VALID_SEGMENT ) ) {
             conf->possible = NoSegments( conf->possible );
 #if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
             temp = conf->name;
@@ -447,8 +464,8 @@ static  void    PropSegments( void ) {
     bool                change;
 
     for( src = ConfList; src != NULL; src = src->next_conflict ) {
-        if( _Is( src, VALID_SEGMENT ) ) {
-            _SetTrue( src, WAS_SEGMENT );
+        if( _Is( src, CST_VALID_SEGMENT ) ) {
+            _SetTrue( src, CST_WAS_SEGMENT );
         }
     }
     for( change = true; change; ) {
@@ -457,10 +474,10 @@ static  void    PropSegments( void ) {
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 if( ins->head.opcode == OP_MOV ) {
                     dst = NameConflict( ins, ins->result );
-                    if( dst != NULL && _Is( dst, WAS_SEGMENT ) ) {
+                    if( dst != NULL && _Is( dst, CST_WAS_SEGMENT ) ) {
                         src = NameConflict( ins, ins->operands[ 0 ] );
-                        if( src != NULL && _Isnt( src, WAS_SEGMENT ) ) {
-                            _SetTrue( src, WAS_SEGMENT );
+                        if( src != NULL && _Isnt( src, CST_WAS_SEGMENT ) ) {
+                            _SetTrue( src, CST_WAS_SEGMENT );
                             change = true;
                         }
                     }

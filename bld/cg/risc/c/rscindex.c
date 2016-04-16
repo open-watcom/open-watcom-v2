@@ -62,16 +62,20 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
     if( name->n.class == N_REGISTER ) {
         return( IsIndexReg( name->r.reg, name->n.name_class, 0 ) );
     }
-    if( name->v.conflict == NULL ) return( false );
-    if( name->v.usage & USE_MEMORY ) return( false );
-    if( name->n.class != N_TEMP ) return( false );
+    if( name->v.conflict == NULL )
+        return( false );
+    if( name->v.usage & USE_MEMORY )
+        return( false );
+    if( name->n.class != N_TEMP )
+        return( false );
     conf = NameConflict( ins, name );
-    if( conf == NULL ) return( false );
-    if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
-        _SetFalse( conf, NEEDS_INDEX );
+    if( conf == NULL )
+        return( false );
+    if( _Is( conf, CST_NEEDS_INDEX_SPLIT ) ) {
+        _SetFalse( conf, CST_NEEDS_INDEX );
         return( false );
     } else {
-        _SetTrue( conf, NEEDS_INDEX );
+        _SetTrue( conf, CST_NEEDS_INDEX );
         ins->head.state = OPERANDS_NEED_WORK;
         ins->t.index_needs = MarkIndex( ins, name, 0 );
         return( true );
@@ -90,7 +94,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
     if( index != NULL ) {
         temp = IndexToTemp( ins, index );
         conf = NameConflict( ins, temp );
-        _SetTrue( conf, INDEX_SPLIT );
+        _SetTrue( conf, CST_INDEX_SPLIT );
         MarkIndex( ins, temp, 0 );
         ins = ins->head.prev;
     }
@@ -98,8 +102,9 @@ extern  instruction     *NeedIndex( instruction *ins ) {
 }
 
 
-extern  void    FixChoices() {
-/****************************/
+extern  void    FixChoices( void )
+/********************************/
+{
 }
 
 static  const int AlignmentMap[] = {
@@ -172,7 +177,8 @@ static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_
     name        *temp;
 
     op = index;
-    if( index->i.index_flags & X_FAKE_BASE ) return( index );
+    if( index->i.index_flags & X_FAKE_BASE )
+        return( index );
     if( index->i.base != NULL ) {
         temp = AllocTemp( CP );
         ins = MakeUnary( OP_LA, index->i.base, temp, WD );
@@ -211,4 +217,3 @@ extern  void    FixMemRefs() {
         }
     }
 }
-

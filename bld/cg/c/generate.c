@@ -598,7 +598,7 @@ static  void    ForceConflictsMemory( void )
 
     ParmPropagate();
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        _SetFalse( conf, ( NEEDS_INDEX_SPLIT | NEEDS_SEGMENT_SPLIT ) );
+        _SetFalse( conf, CST_NEEDS_INDEX_SPLIT | CST_NEEDS_SEGMENT_SPLIT );
     }
     for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;

@@ -165,9 +165,8 @@
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ( ( opnd->v.usage & USE_ADDRESS )
                    || ( ( opnd->v.usage & NEEDS_MEMORY )
-                        && !( conf->state & OK_ACROSS_CALLS ) ) )
-                        && !_GBitOverlap( conf->id.out_of_block,
-                                          flow->call_exempt ) ) {
+                        && _Isnt( conf, CST_OK_ACROSS_CALLS ) ) )
+                        && !_GBitOverlap( conf->id.out_of_block, flow->call_exempt ) ) {
                     if( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0
                      || ( opnd->n.class == N_TEMP
                        && ( opnd->v.usage & USE_ADDRESS ) ) ) {
@@ -219,7 +218,9 @@
             _UpdateLive( ins, conf, reg_name );
             ins = next;
             last = ins->head.prev == conf->ins_range.last;
-            if( last ) break;
+            if( last ) {
+                break;
+            }
         }
         _UpdateLive( ins, conf, reg_name );
         if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {

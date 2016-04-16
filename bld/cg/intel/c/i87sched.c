@@ -712,11 +712,14 @@ static  void    CheckTemp( instruction *ins, name *op, bool defined ) {
 /*********************************************************************/
 
     if( op->n.class == N_MEMORY ) {
-        if( _IsntModel( RELAX_ALIAS ) ) return;
+        if( _IsntModel( RELAX_ALIAS ) ) {
+            return;
+        }
     } else if( op->n.class != N_TEMP ) {
         return;
     }
-    if( op->v.usage & USE_ADDRESS ) return;
+    if( op->v.usage & USE_ADDRESS )
+        return;
     if( !_GenIs8087( ins->u.gen_table->generate ) ) {
         KillTempEntry( op );
     } else {
