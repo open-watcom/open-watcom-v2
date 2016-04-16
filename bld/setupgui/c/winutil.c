@@ -526,15 +526,16 @@ bool IsWOW64( void )
     ISWOW64PROCESS_FN   fn;
     BOOL                retval;
     HANDLE              h;
+    bool                rc;
 
-    retval = FALSE;
+    rc = false;
     h = GetModuleHandle( "kernel32" );
     fn = (ISWOW64PROCESS_FN)GetProcAddress( h, "IsWow64Process" );
     if( fn != NULL ) {
-        if( !fn( GetCurrentProcess(), &retval ) ) {
-            retval = FALSE;
+        if( fn( GetCurrentProcess(), &retval ) && retval ) {
+            rc = true;
         }
     }
-    return( retval != 0 );
+    return( rc );
 }
 #endif

@@ -113,7 +113,7 @@ static bool UseDDE( bool uninstall )
     hwnd_pm = FindWindow( progman, NULL );
     if( hwnd_pm != NULL ) {
         ShowWindow( hwnd_pm, SW_RESTORE );
-        EnableWindow( hwnd_pm, FALSE );
+        EnableWindow( hwnd_pm, false );
     }
 
     if( uninstall ) {
