@@ -221,7 +221,8 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
     instruction *ins;
 
     redefd = ReDefinedBy( ins_i, op );
-    if( redefd != MAYBE || !ins_linked ) return( redefd );
+    if( redefd != MB_MAYBE || !ins_linked )
+        return( redefd );
     _INS_NOT_BLOCK( ins_i );
     _INS_NOT_BLOCK( ins_j );
     if( ins_i->id > ins_j->id ) {

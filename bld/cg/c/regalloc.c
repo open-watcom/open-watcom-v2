@@ -102,15 +102,21 @@ static  bool    ContainedIn( name *name1, name *name2 ) {
     occupied by name2
 */
 
-    if( name1->n.class != name2->n.class ) return( false );
+    if( name1->n.class != name2->n.class )
+        return( false );
     if( name1->n.class == N_TEMP ) {
-        if( DeAlias( name1 ) != DeAlias( name2 ) ) return( false );
+        if( DeAlias( name1 ) != DeAlias( name2 ) ) {
+            return( false );
+        }
     } else if( name1->n.class == N_MEMORY ) {
-        if( name1 != name2 ) return( false );
+        if( name1 != name2 ) {
+            return( false );
+        }
     } else {
         return( false );
     }
-    if( name1->v.offset < name2->v.offset ) return( false );
+    if( name1->v.offset < name2->v.offset )
+        return( false );
     if( name1->v.offset + name1->n.size > name2->v.offset + name2->n.size )
         return( false );
     return( true );
@@ -189,8 +195,10 @@ static  void    InitAChoice( name *temp ) {
 
     name        *alias;
 
-    if( temp->n.class != N_TEMP ) return;
-    if( temp->t.temp_flags & ALIAS ) return;
+    if( temp->n.class != N_TEMP )
+        return;
+    if( temp->t.temp_flags & ALIAS )
+        return;
     alias = temp;
     do {
         alias->t.possible = RL_NUMBER_OF_SETS;
@@ -377,8 +385,7 @@ static  bool  FixInstructions( conflict_node *conf, reg_tree *tree,
 
 #include "savcode.h"
 
-    if( _LBitEmpty( conf->id.within_block )
-     && _GBitEmpty( conf->id.out_of_block ) ) {
+    if( _LBitEmpty( conf->id.within_block ) && _GBitEmpty( conf->id.out_of_block ) ) {
         /* update live info since the conflict had no id.*/
         if( need_live_update ) {
             LiveInfoUpdate();
@@ -463,7 +470,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     name                *other_opnd;
 
     levels = levels;
-    if( tree == NULL ) return( 0 );
+    if( tree == NULL )
+        return( 0 );
     reg_name = AllocRegName( reg );
     count = 0;
     if( tree->temp != NULL ) {
@@ -508,7 +516,7 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                         count += half;
                     } else if( op1 && ( op1->n.class == N_REGISTER )
                         && HW_Ovlap( reg, op1->r.reg ) ) {
-                        /* 
+                        /*
                            If we're operating on an overlapping register,
                            (conversions) give preference. E.g.:
                               CNV I1 DL   ==> t1
@@ -544,7 +552,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                     count += half;
                 }
             }
-            if( ins == last ) break;
+            if( ins == last )
+                break;
             ins = ins->head.next;
         }
     }
@@ -573,7 +582,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
         saved_regs = MustSaveRegs();
         if( !HW_Ovlap( saved_regs, reg ) ) count += 2;
         count <<= levels;
-        if( count != 0 || levels == 0 ) return( count );
+        if( count != 0 || levels == 0 )
+            return( count );
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_MOV ) {
@@ -583,7 +593,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                     } else if( ins->operands[0] == conf->name ) {
                         other_opnd = ins->result;
                     }
-                    if( other_opnd == NULL ) continue;
+                    if( other_opnd == NULL )
+                        continue;
                     switch( other_opnd->n.class ) {
                     case N_MEMORY:
                     case N_INDEXED:
@@ -717,8 +728,10 @@ extern  bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg,
 {
     HW_TurnOn( except, ins->head.live.regs );
     HW_TurnOn( except, reg );
-    if( StealsIdx( ins, except, op ) ) return( MAYBE );
-    if( StealsSeg( ins, reg, except, op ) ) return( MAYBE );
+    if( StealsIdx( ins, except, op ) )
+        return( MB_MAYBE );
+    if( StealsSeg( ins, reg, except, op ) )
+        return( MB_MAYBE );
     return( false );
 }
 
@@ -1094,7 +1107,9 @@ static  void    PutInMemory( conflict_node *conf ) {
             for( ;; ) {
                 opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
                 opnd = opnd->t.alias;
-                if( opnd == conf->name ) break;
+                if( opnd == conf->name ) {
+                    break;
+                }
             }
         }
     } else {
@@ -1109,7 +1124,8 @@ static  void    PutInMemory( conflict_node *conf ) {
                 ins->head.state == OPERANDS_NEED_WORK ) {
                 ins->head.state = INS_NEEDS_WORK;
             }
-            if( ins->id == last->id ) break;
+            if( ins->id == last->id )
+                break;
             if( ins->head.opcode == OP_BLOCK ) {
                 if( blk->next_block == NULL ) {
                     Zoiks( ZOIKS_141 );
@@ -1266,7 +1282,8 @@ static  enum allocation_state    AssignConflicts( void )
     SortConflicts();
     state = ALLOC_BITS;
     conf = ConfList;
-    if( conf == NULL ) return( state );
+    if( conf == NULL )
+        return( state );
     opnd = conf->name;
     if( opnd->n.class == N_TEMP && (opnd->t.temp_flags & CONST_TEMP) ) {
         only_const_temps = true;
@@ -1341,7 +1358,8 @@ extern  bool    RegAlloc( bool keep_on_truckin ) {
     if( BlockByBlock == false ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
-        if( unknowns <= 0 ) return( unknowns == 0 );
+        if( unknowns <= 0 )
+            return( unknowns == 0 );
         if( SplitConflicts() ) {
             FreeConflicts();
             NullConflicts( EMPTY );
@@ -1364,7 +1382,8 @@ extern  bool    RegAlloc( bool keep_on_truckin ) {
     for( ;; ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
-        if( unknowns <= 0 ) break;
+        if( unknowns <= 0 )
+            break;
         FixChoices();
         if( last == ALLOC_CONST_TEMP ) {
             /* Ran into the first CONST_TEMP conflict.
