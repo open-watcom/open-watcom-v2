@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sbrk() for 16-bit DOS, QNX, OS/2 and Windows.
 *
 ****************************************************************************/
 
@@ -39,9 +38,6 @@
     #include <sys/types.h>
     #include <sys/seginfo.h>
     #include <unistd.h>
-    #if defined(__386__)
-        extern int _brk(void *);
-    #endif
 #elif defined(__WINDOWS__)
     #include <windows.h>
 #endif
@@ -53,7 +49,7 @@
 #include "thread.h"
 
 
-#if !defined(__OS2__) && !defined(__QNX__)
+#if defined(__DOS__)
 
 extern  unsigned short SS_Reg( void );
 #pragma aux SS_Reg              = \
@@ -71,81 +67,69 @@ extern  int SetBlock( unsigned short, size_t );
 
 #endif
 
-#if (defined(__QNX__) && defined(__386__))
 _WCRTLINK void _WCNEAR *sbrk( int increment ) {
+#if defined(__WINDOWS_286__)
+    HANDLE h;
+
+    if( increment > 0 ) {
+        h = LocalAlloc( LMEM_FIXED, increment );
+        if( h == NULL ) {
+            _RWD_errno = ENOMEM;
+            h = (HANDLE)-1;
+        }
+    } else {
+        _RWD_errno = EINVAL;
+        h = (HANDLE)-1;
+    }
+    return( (void _WCNEAR *)h );
+#else
     return( __brk( _curbrk + increment ) );
-}
-
-_WCRTLINK int brk( void *endds ) {
-    return( __brk( (unsigned) endds ) == (void *)-1 ? -1 : 0 );
-}
-#else
-_WCRTLINK void _WCNEAR *sbrk( int increment ) {
-    #if defined(__WINDOWS_286__)
-        HANDLE h;
-
-        if( increment > 0 ) {
-            h = LocalAlloc( LMEM_FIXED, increment );
-            if( h == NULL ) {
-                _RWD_errno = ENOMEM;
-                h = (HANDLE)(-1);
-            }
-        } else {
-            _RWD_errno = EINVAL;
-            h = (HANDLE)(-1);
-        }
-        return( (void _WCNEAR *) h );
-    #else
-        return( __brk( _curbrk + increment ) );
-    #endif
-}
 #endif
+}
 
-#if ! defined(__WINDOWS_286__)
+#if !defined(__WINDOWS_286__)
 
-_WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
-    {
-        unsigned old_brk_value;
-        unsigned seg_size;
-        unsigned segment;
+void _WCNEAR *__brk( unsigned brk_value )
+{
+    unsigned old_brk_value;
+    unsigned seg_size;
+    unsigned segment;
 
-        if( brk_value < _STACKTOP ) {
-            _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *) -1 );
-        }
-        seg_size = ( brk_value + 0x0f ) >> 4;
-        if( seg_size == 0 ) {
-            seg_size = 0x1000;
-        }
-        /* try setting the block of memory */
-        _AccessNHeap();
-        segment = _DGroup();
-#if defined(__OS2__)
-        if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
-#elif defined(__QNX__) && defined(__386__)
-        if( _brk((void *)(seg_size << 4)) == -1 ) {
-#elif defined(__QNX__)
-        if( qnx_segment_realloc( segment,((unsigned long)seg_size) << 4) == -1){
-#else
-        if( _RWD_osmode == DOS_MODE ) {                     /* 24-apr-91 */
-            seg_size += SS_Reg() - _RWD_psp;/* add in code size (in paragraphs) */
-            segment = _RWD_psp;
-        }
-        if( SetBlock( segment, seg_size ) != 0 ) {
-#endif
-            _RWD_errno = ENOMEM;
-            _ReleaseNHeap();
-            return( (void _WCNEAR *) -1 );
-        }
-
-        old_brk_value = _curbrk;        /* return old value of _curbrk */
-        _curbrk = brk_value;            /* set new break value */
-
+    if( brk_value < _STACKTOP ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
+    }
+    seg_size = ( brk_value + 0x0f ) >> 4;
+    if( seg_size == 0 ) {
+        seg_size = 0x1000;
+    }
+    /* try setting the block of memory */
+    _AccessNHeap();
+    segment = _DGroup();
+  #if defined(__OS2__)
+    if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
+  #elif defined(__QNX__)
+    if( qnx_segment_realloc( segment,((unsigned long)seg_size) << 4) == -1 ) {
+  #else     // __DOS__
+    if( _RWD_osmode == DOS_MODE ) {
+        seg_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
+        segment = _RWD_psp;
+    }
+    if( SetBlock( segment, seg_size ) != 0 ) {
+  #endif
+        _RWD_errno = ENOMEM;
         _ReleaseNHeap();
-        return( (void _WCNEAR *) old_brk_value );
+        return( (void _WCNEAR *)-1 );
     }
 
-#if defined(__QNX__)
+    old_brk_value = _curbrk;        /* return old value of _curbrk */
+    _curbrk = brk_value;            /* set new break value */
+
+    _ReleaseNHeap();
+    return( (void _WCNEAR *)old_brk_value );
+}
+
+  #if defined(__QNX__)
 /*
  * This is used by the QNX/386 shared memory functions to tell the
  * memory manager that the break value has changed. That way things don't
@@ -155,5 +139,5 @@ void __setcbrk( unsigned offset )
 {
     _curbrk = offset;
 }
-#endif
+  #endif
 #endif

@@ -168,9 +168,11 @@ extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 extern int              __HeapManager_expand( __segment seg, unsigned offset,
                             size_t req_size, size_t *growth_size );
 
+#if defined(_M_I86)
 extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+#endif
 
-_WCRTLINK extern void   _WCNEAR *__brk( unsigned );
+extern void             _WCNEAR *__brk( unsigned );
 
 #if defined(_M_IX86)
  #define _DGroup()      FP_SEG((&__nheapbeg))

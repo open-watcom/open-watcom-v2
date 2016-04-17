@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of sbrk() for DOS, OS/2 and Windows.
+* Description:  Implementation of sbrk() for 32-bit DOS, QNX, OS/2, OSI and Windows.
 *
 ****************************************************************************/
 
@@ -32,26 +32,35 @@
 #include "variety.h"
 #include <stddef.h>
 #include <stdlib.h>
-#include <dos.h>
-#if defined(__OS2__)
-  #include <wos2.h>
+#if defined(__QNX__)
+    #include <sys/types.h>
+    #include <sys/seginfo.h>
+    #include <unistd.h>
+#else
+    #include <dos.h>
+  #if defined(__OS2__)
+    #include <wos2.h>
+  #endif
 #endif
 #include "rtstack.h"
 #include "rterrno.h"
 #include "rtdata.h"
-#ifdef __WINDOWS_386__
- #include "windpmi.h"
+#if defined(__QNX__)
+#elif defined(__WINDOWS_386__)
+    #include "windpmi.h"
 #else
- #include "extender.h"
- #if !defined(__OS2__)
-  #include "tinyio.h"
- #endif
+    #include "extender.h"
+  #if !defined(__OS2__)
+    #include "tinyio.h"
+  #endif
 #endif
+#include "heap.h"
+#include "heapacc.h"
 #include "thread.h"
 
 
-#ifndef __WINDOWS_386__
-extern  int                     SetBlock( unsigned short selector, int size );
+#if defined( __DOS__ ) && !defined( __CALL21__ )
+extern  int SetBlock( unsigned short selector, int size );
 #pragma aux SetBlock            = \
         "push   es"             \
         "mov    es,ax"          \
@@ -64,7 +73,7 @@ extern  int                     SetBlock( unsigned short selector, int size );
         modify                  [ebx] \
         value                   [eax];
 
-extern  int                     SegInfo( unsigned short selector );
+extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo             = \
         "mov    ah,0edH"        \
         "int    021h"           \
@@ -75,7 +84,7 @@ extern  int                     SegInfo( unsigned short selector );
         value                   [edi] \
         modify exact            [eax ecx edx esi ebx edi];
 
-extern  int                     SegmentLimit( void );
+extern  int SegmentLimit( void );
 #pragma aux SegmentLimit        = \
         "xor    eax,eax"        \
         "mov    ax,ds"          \
@@ -83,16 +92,18 @@ extern  int                     SegmentLimit( void );
         "inc    eax"            \
         value                   [eax] \
         modify exact            [eax];
-#endif
 
-extern  unsigned short          GetDS( void );
+extern  unsigned short  GetDS( void );
 #pragma aux GetDS               = \
         "mov    ax,ds"          \
         value                   [ax];
+#endif
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-#if defined(__OS2__)
+#if defined(__QNX__)
+    return( __brk( _curbrk + increment ) );
+#elif defined(__OS2__)
     if( increment > 0 ) {
         PBYTE       p;
 
@@ -105,10 +116,10 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         _RWD_errno = EINVAL;
     }
     return( (void _WCNEAR *)-1 );
-#elif defined(__WINDOWS_386__)                          /* 26-may-93 */
+#elif defined(__WINDOWS_386__)
     increment = ( increment + 0x0fff ) & ~0x0fff;
     return( (void *)DPMIAlloc( increment ) );
-#elif defined(__CALL21__)                               /* 10-aug-93 */
+#elif defined(__CALL21__)
     increment = ( increment + 0x0fff ) & ~0x0fff;
     return (void *)TinyMemAlloc( increment );
 #else
@@ -131,50 +142,66 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             p = (void _WCNEAR *)-1;
         }
         return( p );
-    } else if( _IsPharLap() ) {             /* 17-sep-93 */
+    } else if( _IsPharLap() ) {
         _curbrk = SegmentLimit();
     }
     return( __brk( _curbrk + increment ) );
 #endif
 }
 
-
 #if !defined(__OS2__) && !defined(__WINDOWS_386__)
-_WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
+void _WCNEAR *__brk( unsigned brk_value )
 {
     unsigned        old_brk_value;
 #if !defined(__CALL21__)
-    unsigned        seg;
+    unsigned        seg_size;
+  #if !defined(__QNX__)
     int             parent;
+  #endif
 #endif
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
         return( (void _WCNEAR *)-1 );
     }
-#if !defined(__CALL21__)
+    _AccessNHeap();
+#if defined(__QNX__)
+    seg_size = ( brk_value + 15U ) / 16U;
+    if( seg_size == 0 ) {
+        seg_size = 0x1000;
+    }
+    /* try setting the block of memory */
+    segment = _DGroup();
+    if( _brk( (void *)(seg_size << 4) ) == -1 ) {
+        _RWD_errno = ENOMEM;
+        _ReleaseNHeap();
+        return( (void _WCNEAR *)-1 );
+    }
+#elif !defined(__CALL21__)
     if( _IsOS386() ) {
-        seg = ( brk_value + 15U ) / 16U;
-        if( seg == 0 ) seg = 0x0FFFFFFF;            /* 26-sep-89 */
+        seg_size = ( brk_value + 15U ) / 16U;
+        if( seg_size == 0 )
+            seg_size = 0x0FFFFFFF;
         parent = SegInfo( GetDS() );
         if( parent < 0 ) {
-            if( SetBlock( parent & 0xffff, seg ) < 0 ) {
+            if( SetBlock( parent & 0xffff, seg_size ) < 0 ) {
                 _RWD_errno = ENOMEM;
                 return( (void _WCNEAR *)-1 );
             }
         }
-        if( SetBlock( GetDS(), seg ) < 0 ) {
+        if( SetBlock( GetDS(), seg_size ) < 0 ) {
             _RWD_errno = ENOMEM;
             return( (void _WCNEAR *)-1 );
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        seg = ( brk_value + 4095U ) / 4096U;
-        if( seg == 0 ) seg = 0x000FFFFF;            /* 26-sep-89 */
+        seg_size = ( brk_value + 4095U ) / 4096U;
+        if( seg_size == 0 )
+            seg_size = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
             // convert from 4k pages to paragraphs
-            seg = seg * 256U;
+            seg_size = seg_size * 256U;
         }
-        if( SetBlock( GetDS(), seg ) < 0 ) {
+        if( SetBlock( GetDS(), seg_size ) < 0 ) {
             _RWD_errno = ENOMEM;
             return( (void _WCNEAR *)-1 );
         }
@@ -182,6 +209,23 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
 #endif
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
+    _ReleaseNHeap();
     return( (void _WCNEAR *)old_brk_value );
 }
+
+#if defined(__QNX__)
+_WCRTLINK int brk( void *endds ) {
+    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
+}
+
+/*
+ * This is used by the QNX/386 shared memory functions to tell the
+ * memory manager that the break value has changed. That way things don't
+ * get screwed up next time we grow the data segment.
+ */
+void __setcbrk( unsigned offset )
+{
+    _curbrk = offset;
+}
+#endif
 #endif
