@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <i86.h>
 #include "extfunc.h"
 #include "heapacc.h"
 #include "heap.h"

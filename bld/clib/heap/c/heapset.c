@@ -35,7 +35,6 @@
 #include <stddef.h>
 #include <malloc.h>
 #include <string.h>
-#include <i86.h>
 #include "heap.h"
 #include "heapacc.h"
 

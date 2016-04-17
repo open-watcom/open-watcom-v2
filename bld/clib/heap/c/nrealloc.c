@@ -36,9 +36,7 @@
 #include <string.h>
 #include "heap.h"
 #include "heapacc.h"
-#if defined(__DOS_EXT__)
- #include "extender.h"
-#endif
+
 
 #if defined(__SMALL_DATA__)
 

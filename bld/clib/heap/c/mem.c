@@ -37,7 +37,7 @@
 
 
 #if defined( _M_I86 )
-    extern unsigned setup_ds( unsigned );
+    extern __segment setup_ds( __segment );
     #pragma aux setup_ds = \
                 "push ax" \
                 "mov ax,ds" \
@@ -61,7 +61,7 @@
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
-unsigned __MemAllocator( unsigned size, unsigned segment, unsigned offset )
+unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
 {
     frlptr result;
     result = 0;                                 // assume the worst
@@ -156,7 +156,7 @@ unsigned __MemAllocator( unsigned size, unsigned segment, unsigned offset )
 // output:
 //      none
 //
-void __MemFree( unsigned pointer, unsigned segment, unsigned offset )
+void __MemFree( unsigned pointer, __segment segment, unsigned offset )
 {
     setup_segment( segment );                   // setup DS for 16bit Intel
 

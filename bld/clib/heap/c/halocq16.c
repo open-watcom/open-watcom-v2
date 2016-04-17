@@ -34,8 +34,8 @@
 #include <malloc.h>
 #include <sys/types.h>
 #include <sys/seginfo.h>
-#include <i86.h>
 #include "crwd.h"
+#include "heap.h"
 
 extern  pid_t           _my_pid;
 

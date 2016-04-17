@@ -33,7 +33,6 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <malloc.h>
-#include <i86.h>
 #include "heap.h"
 #include "heapacc.h"
 

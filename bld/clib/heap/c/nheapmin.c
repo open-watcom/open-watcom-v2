@@ -36,9 +36,6 @@
 #include <malloc.h>
 #include "heap.h"
 #include "heapacc.h"
-#if defined(__DOS_EXT__)
- #include "extender.h"
-#endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
  #include <windows.h>
 #elif defined(__WINDOWS_386__)

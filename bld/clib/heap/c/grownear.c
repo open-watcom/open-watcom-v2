@@ -49,11 +49,7 @@
 #endif
 #include "heapacc.h"
 #include "heap.h"
-#if defined(__DOS_EXT__)
-  #include "extender.h"
-  #include "tinyio.h"
-#endif
-#if defined(__CALL21__)
+#if defined(__DOS_EXT__) || defined(__CALL21__)
   #include "tinyio.h"
 #endif
 

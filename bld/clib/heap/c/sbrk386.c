@@ -49,7 +49,6 @@
 #elif defined(__WINDOWS_386__)
     #include "windpmi.h"
 #else
-    #include "extender.h"
   #if !defined(__OS2__)
     #include "tinyio.h"
   #endif
