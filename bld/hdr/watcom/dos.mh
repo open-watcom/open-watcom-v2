@@ -22,7 +22,7 @@
 
 :include cpluspro.sp
 
-#if defined(__DOS__) && defined(__386__)
+#if defined(__DOS__)
  #define _DOSFAR _WCFAR
 #else
  #define _DOSFAR _WCI86FAR
