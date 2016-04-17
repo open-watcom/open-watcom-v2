@@ -312,7 +312,7 @@ trap_retval ReqProg_load( void )
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
-    err = RemoteLinkX( LinkParms, false );
+    err = RemoteLink( LinkParms, false );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
         TinyWrite( TINY_ERR, err, strlen( err ) );
@@ -379,7 +379,7 @@ trap_retval ReqProg_load( void )
             _DBG_Writeln( "GetPacket" );
             GetPacket();
             //RemovePacket( &erracc, msg_len );
-            RemoteUnLinkX();
+            RemoteUnLink();
 
             TaskLoaded = false;
         }
@@ -405,7 +405,7 @@ trap_retval ReqProg_kill( void )
         return( sizeof( *ret ) );
     }
     len = DoAccess();
-    RemoteUnLinkX();
+    RemoteUnLink();
     TaskLoaded = false;
     RestoreVectors( OrigVectors );
     return( len );

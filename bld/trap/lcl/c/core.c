@@ -35,9 +35,10 @@
 #include "trpcomm.h"
 #include "packet.h"
 
-#if defined(DOSXTRAP) || defined(DOSXHELP)
+#if defined( DOSXTRAP ) || defined( DOSXHELP )
     #define DOSX
-#elif defined(__WINDOWS__) && !defined(__386__)
+    #include "dosxlink.h"
+#elif defined( __WINDOWS__ ) && defined( _M_I86 )
     #define WIN16
     #include "winctrl.h"
 #endif
@@ -85,7 +86,7 @@ trap_retval ReqConnect( void )
     char        *err;
 
     ret = GetOutPtr(0);
-#if defined(DOSX)
+#if defined( DOSX )
     ret->max_msg_size = MaxPacketSize();
     RemoteConnect();
 #else
@@ -93,7 +94,7 @@ trap_retval ReqConnect( void )
 #endif
     /* version ok... already checked by initialization  */
     err = GetOutPtr(sizeof(*ret));
-#if defined(WIN16)
+#if defined( WIN16 )
     strcpy( err, InitDebugging() );
 #else
     *err = '\0';
@@ -103,9 +104,9 @@ trap_retval ReqConnect( void )
 
 trap_retval ReqDisconnect( void )
 {
-#if defined(DOSX)
+#if defined( DOSX )
     RemoteDisco();
-#elif defined(WIN16)
+#elif defined( WIN16 )
     FinishDebugging();
 #endif
     return( 0 );
@@ -130,12 +131,12 @@ trap_retval TRAPENTRY TrapRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, tra
     In_Mx_Ptr = mx_in;
     Out_Mx_Ptr = mx_out;
 
-#if defined(WIN16)
+#if defined( WIN16 )
     DisableHookEvents();
 #endif
     /* The first item must be the request! */
     result = CoreRequests[TRP_REQUEST( mx_in )]();
-#if defined(WIN16)
+#if defined( WIN16 )
     EnableHookEvents();
 #endif
     return( result );
