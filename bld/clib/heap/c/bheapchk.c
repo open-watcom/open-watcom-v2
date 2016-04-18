@@ -37,6 +37,7 @@
 #include "heap.h"
 #include "heapacc.h"
 
+
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
     farfrlptr       curr;

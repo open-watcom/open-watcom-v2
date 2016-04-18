@@ -53,6 +53,7 @@
   #include "tinyio.h"
 #endif
 
+
 #if defined(__WARP__)
 #define BLKSIZE_ALIGN_MASK      0xFFFF  // 64kB
 #else
@@ -212,7 +213,7 @@ static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
         /* insert before 'p2' (list is non-empty) */
         p2->prev = p1;
     }
-    amount = p1->len - sizeof( struct miniheapblkp );
+    amount = p1->len - sizeof( miniheapblkp );
     /* Fill out the new miniheap descriptor */
     p1->freehead.len = 0;
     p1->freehead.prev = &p1->freehead;
@@ -324,7 +325,7 @@ static int __AdjustAmount( unsigned *amount )
         defined(__NT__)             \
     )
   #if defined(__DOS_EXT__)
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( !__IsCtsNHeap() ) {
         // Allocating extra to identify the dpmi block
         amt += sizeof( dpmi_hdr );
     } else {
@@ -449,7 +450,7 @@ static int __CreateNewNHeap( unsigned amount )
         amount -= 2 * TAG_SIZE; // 11-jun-95, subtract extra tag
     }
   #elif defined(__DOS_EXT__)
-    // if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    // if( !__IsCtsNHeap() ) {
     {
         tag         *tmp_tag;
 
@@ -523,7 +524,7 @@ int __ExpandDGROUP( unsigned amount )
     void        _WCNEAR *brk_ret;
 
   #if defined(__DOS_EXT__)
-    if( ( _IsRationalZeroBase() || _IsCodeBuilder() ) ) {
+    if( !__IsCtsNHeap() ) {
         return( __CreateNewNHeap( amount ) );   // Won't slice either
     }
     // Rational non-zero based system should go through.

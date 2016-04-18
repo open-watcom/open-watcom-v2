@@ -36,6 +36,7 @@
 #include <malloc.h>
 #include "heap.h"
 
+
 static int verifyHeapList( unsigned seg )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
