@@ -62,8 +62,8 @@ extern  void    far_memset(void _WCFAR *,int,unsigned);
 
 int __HeapSet( __segment seg, unsigned int fill )
     {
-        farfrlptr  curr;
-        struct heapblk _WCFAR *p;
+        farfrlptr   curr;
+        heapblk     _WCFAR *p;
 
         fill |= fill << 8;
         _AccessFHeap();
@@ -71,7 +71,8 @@ int __HeapSet( __segment seg, unsigned int fill )
             p = MK_FP( seg, 0 );
             curr = MK_FP( seg, p->freehead.next );
             for(;;) {
-                if( FP_OFF(curr) == offsetof(struct heapblk, freehead) ) break;
+                if( FP_OFF(curr) == offsetof( heapblk, freehead ) )
+                    break;
                 far_memset( (void _WCFAR *)(curr + 1), fill,
                             curr->len - sizeof(frl) );
                 curr = MK_FP( seg, curr->next );

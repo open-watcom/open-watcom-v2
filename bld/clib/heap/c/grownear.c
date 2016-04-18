@@ -159,7 +159,7 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             }
             dpmi->dos_seg_value = 0;
             mhp = (mheapptr)( dpmi + 1 );
-            mhp->len = size - sizeof(struct dpmi_hdr) - TAG_SIZE;
+            mhp->len = size - sizeof( dpmi_hdr ) - TAG_SIZE;
             flp = __LinkUpNewMHeap( mhp );
             mhp->numalloc = 1;
 
@@ -289,7 +289,7 @@ static void *RationalAlloc( size_t size )
             dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
             dpmi->dos_seg_value = DOS_block;
             mhp = (mheapptr)( dpmi + 1 );
-            mhp->len = size - sizeof( struct dpmi_hdr );
+            mhp->len = size - sizeof( dpmi_hdr );
             return( (void *)mhp );
         }
     }

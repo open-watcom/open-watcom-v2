@@ -60,7 +60,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
     tag                 adjust_len;
     tag                 new_heap_len;
     __segment           heap_seg;
-    struct heapblk _WCFAR *heap;
+    heapblk             _WCFAR *heap;
     farfrlptr           last_free;
     farfrlptr           end_tag;
 #if !( defined(__QNX__) || defined(__WINDOWS__) )

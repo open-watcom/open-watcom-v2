@@ -44,7 +44,7 @@
 
 mheapptr _WCNEAR __nheapbeg = NULL;
 
-struct miniheapblkp _WCNEAR *__MiniHeapRover = NULL;
+miniheapblkp _WCNEAR *__MiniHeapRover = NULL;
 unsigned int   __LargestSizeB4MiniHeapRover = 0;
 
 #if defined(__WARP__)
@@ -144,7 +144,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     unsigned char   use_obj_any;
 #endif // __WARP__
 
-    if( (amt == 0) || (amt > -sizeof(struct heapblk)) ) {
+    if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
         return( (void _WCNEAR *)NULL );
     }
 

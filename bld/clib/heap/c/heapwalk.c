@@ -40,11 +40,11 @@
 static int verifyHeapList( unsigned seg )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
-    struct heapblk _WCFAR *prev_heap;
-    struct heapblk _WCFAR *next_heap;
-    struct heapblk _WCFAR *curr;
-    unsigned next_seg;
-    unsigned prev_seg;
+    heapblk     _WCFAR *prev_heap;
+    heapblk     _WCFAR *next_heap;
+    heapblk     _WCFAR *curr;
+    unsigned    next_seg;
+    unsigned    prev_seg;
 
     curr = MK_FP( seg, 0 );
     /* check previous heaps end in NULL */
@@ -78,11 +78,11 @@ static int verifyHeapList( unsigned seg )
 
 int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
     {
-        struct heapblk _WCFAR *prev_heap;
-        struct heapblk _WCFAR *next_heap;
-        struct heapblk _WCFAR *pheap;
-        farfrlptr p;
-        farfrlptr q;
+        heapblk     _WCFAR *prev_heap;
+        heapblk     _WCFAR *next_heap;
+        heapblk     _WCFAR *pheap;
+        farfrlptr   p;
+        farfrlptr   q;
 
         if( seg == 0 )  return( _HEAPEMPTY );
         p = entry->_pentry;
@@ -110,7 +110,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
             }
             if( p == NULL ) {
                 if( pheap->freehead.len != 0 )  return( _HEAPBADBEGIN );
-                p = MK_FP( FP_SEG(pheap), sizeof(struct heapblk) );
+                p = MK_FP( FP_SEG(pheap), sizeof( heapblk ) );
             } else {    /* advance to next entry */
                 q = (farfrlptr)((FARPTR)p + (p->len & ~1));
                 if( q <= p )  return( _HEAPBADNODE );
