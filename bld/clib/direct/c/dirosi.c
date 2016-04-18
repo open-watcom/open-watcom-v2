@@ -49,30 +49,38 @@
 static  int     is_directory( const char *name )
 /**********************************************/
 {
-    if( name[0] == NULLCHAR )
-        return( 0 );
-    while( name[1] != NULLCHAR ) {
-        if( name[0] == '*' || name[0] == '?' ) {
-            /* with wildcards must be file */
-            return( -1 );
+    char    curr_ch;
+    char    prev_ch;
+
+    curr_ch = NULLCHAR;
+    for(;;) {
+        prev_ch = curr_ch;
+        curr_ch = *name;
+        if( curr_ch == NULLCHAR ) {
+            if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ){
+                /* directory, need add "*.*" */
+                return( 2 );
+            }
+            if( prev_ch == '.' ){
+                /* directory, need add "\\*.*" */
+                return( 1 );
+            }
+            /* without wildcards maybe file or directory, need next check */
+            /* need add "\\*.*" if directory */
+            return( 0 );
         }
+        if( curr_ch == '*' )
+            break;
+        if( curr_ch == '?' )
+            break;
         ++name;
     }
-    if( IS_DIR_SEP( prev_ch ) || prev_ch == DRV_SEP ) {
-        /* directory, need add "*.*" */
-        return( 2 );
-    }
-    if( prev_ch == '.' ) {
-        /* directory, need add "\\*.*" */
-        return( 1 );
-    }
-    /* without wildcards maybe file or directory, need next check */
-    /* need add "\\*.*" if directory */
-    return( 0 );
+    /* with wildcard must be file */
+    return( -1 );
 }
 
-static DIR_TYPE *___opendir( const char *dirname, DIR_TYPE *dirp )
-/****************************************************************/
+static struct dirent *___opendir( const char *dirname, struct dirent *dirp )
+/**************************************************************************/
 {
     if( dirp->d_first != _DIR_CLOSED ) {
         _dos_findclose( (struct _find_t *)dirp->d_dta );
@@ -85,13 +93,13 @@ static DIR_TYPE *___opendir( const char *dirname, DIR_TYPE *dirp )
     return( dirp );
 }
 
-static DIR_TYPE *__opendir( const char *dirname )
-/***********************************************/
+static struct dirent *__opendir( const char *dirname )
+/****************************************************/
 {
-    DIR_TYPE    tmp;
-    DIR_TYPE    *dirp;
-    int         i;
-    char        pathname[_MAX_PATH + 6];
+    struct dirent   tmp;
+    struct dirent   *dirp;
+    int             i;
+    char            pathname[_MAX_PATH + 6];
 
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
@@ -117,7 +125,7 @@ static DIR_TYPE *__opendir( const char *dirname )
         }
         dirname = pathname;
     }
-    dirp = lib_malloc( sizeof( DIR_TYPE ) );
+    dirp = lib_malloc( sizeof( struct dirent ) );
     if( dirp == NULL ) {
         _dos_findclose( (struct _find_t *)tmp.d_dta );
         __set_errno_dos( E_nomem );
@@ -129,13 +137,13 @@ static DIR_TYPE *__opendir( const char *dirname )
 }
 
 
-_WCRTLINK DIR_TYPE *opendir( const char *dirname )
+_WCRTLINK struct dirent *opendir( const char *dirname )
 {
     return( __opendir( dirname ) );
 }
 
 
-_WCRTLINK DIR_TYPE *readdir( DIR_TYPE *dirp )
+_WCRTLINK struct dirent *readdir( struct dirent *dirp )
 {
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
@@ -150,7 +158,7 @@ _WCRTLINK DIR_TYPE *readdir( DIR_TYPE *dirp )
 }
 
 
-_WCRTLINK int closedir( DIR_TYPE *dirp )
+_WCRTLINK int closedir( struct dirent *dirp )
 {
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno_dos( E_ihandle ) );
@@ -164,7 +172,7 @@ _WCRTLINK int closedir( DIR_TYPE *dirp )
 }
 
 
-_WCRTLINK void rewinddir( DIR_TYPE *dirp )
+_WCRTLINK void rewinddir( struct dirent *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
