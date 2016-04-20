@@ -37,11 +37,12 @@
 #include "data.h"
 #include "peepopt.h"
 #include "propind.h"
+#include "redefby.h"
+
 
 extern void         SuffixIns(instruction *,instruction *);
 extern bool         SameThing(name *,name *);
 extern name         *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
-extern bool_maybe   ReDefinedBy(instruction *,name *);
 extern void         RemoveIns( instruction *);
 
 static  byte    OpRefs( name *op, name *ref ) {
@@ -150,14 +151,17 @@ static  bool    DoProp( block *blk ) {
                 op->c.const_type == CONS_ABSOLUTE &&
                 ins->result == ins->operands[ 0 ] ) {
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-                    if( ReDefinedBy( next, ins->result ) ) break;
+                    if( _IsReDefinedBy( next, ins->result ) )
+                        break;
                     if( AdjustIndex( next, ins->result, op->c.int_value ) ) {
                         RemoveIns( ins );
                         SuffixIns( next, ins );
                         PeepOptBlock( blk, false );
                         return( true );
                     }
-                    if( NumRefs( next, ins->result ) != 0 ) break;
+                    if( NumRefs( next, ins->result ) != 0 ) {
+                        break;
+                    }
                 }
             }
         }

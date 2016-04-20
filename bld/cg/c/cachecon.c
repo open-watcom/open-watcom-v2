@@ -38,6 +38,8 @@
 #include "convins.h"
 #include "data.h"
 #include "namelist.h"
+#include "regalloc.h"
+
 
 extern  type_class_def  Unsigned[];
 
@@ -45,7 +47,6 @@ extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  void            DoNothing(instruction*);
-extern  conflict_node   *InMemory(conflict_node *);
 extern  bool            IsStackReg(name*);
 
 static  block           *Head;

@@ -36,6 +36,8 @@
 #include "data.h"
 #include "x87.h"
 #include "makeins.h"
+#include "redefby.h"
+#include "regalloc.h"
 
 
 extern  bool            PropagateMoves(void);
@@ -43,11 +45,9 @@ extern  instruction_id  Renumber(void);
 extern  bool            SideEffect(instruction*);
 extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
 extern  void            FreeConflicts(void);
-extern  void            NullConflicts(var_usage);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
 typedef enum {
@@ -82,12 +82,18 @@ static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
     int         i;
 
     for( i = of->num_operands; i-- > 0; ) {
-        if( of->operands[i]->n.class == N_REGISTER ) return( true );
-        if( ReDefinedBy( ins, of->operands[i] ) ) return( true );
+        if( of->operands[i]->n.class == N_REGISTER )
+            return( true );
+        if( _IsReDefinedBy( ins, of->operands[i] ) ) {
+            return( true );
+        }
     }
     if( of->result != NULL ) {
-        if( of->result->n.class == N_REGISTER ) return( true );
-        if( ReDefinedBy( ins, of->result ) ) return( true );
+        if( of->result->n.class == N_REGISTER )
+            return( true );
+        if( _IsReDefinedBy( ins, of->result ) ) {
+            return( true );
+        }
     }
     return( false );
 }

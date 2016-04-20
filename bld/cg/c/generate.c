@@ -51,6 +51,7 @@
 #include "ocentry.h"
 #include "optmain.h"
 #include "object.h"
+#include "regalloc.h"
 #include "feprotos.h"
 
 
@@ -75,9 +76,7 @@ extern  bool            BlkTooBig( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
-extern  void            NullConflicts( var_usage );
 extern  void            FreeAConflict( conflict_node * );
-extern  conflict_node   *InMemory( conflict_node * );
 extern  void            FreeProc( void );
 extern  void            GenProlog( void );
 extern  void            GenObject( void );
@@ -101,7 +100,6 @@ extern  int             ExpandOps( bool );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  bool            RegAlloc( bool );
 extern  void            LoopRegInvariant( void );
 extern  void            Score( void );
 extern  void            MergeIndex( void );
@@ -137,7 +135,6 @@ extern  void            AddCacheRegs( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 extern  void            PropNullInfo( void );
-extern  void            ReConstFold( void );
 
 static  bool            abortCG;
 

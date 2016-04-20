@@ -37,6 +37,8 @@
 #include "makeins.h"
 #include "data.h"
 #include "namelist.h"
+#include "redefby.h"
+
 
 extern  hw_reg_set      *RegSets[];
 
@@ -54,7 +56,6 @@ extern  bool            DoesSomething( instruction* );
 extern  name            *HighPart( name *, type_class_def );
 extern  name            *LowPart( name *, type_class_def );
 extern  hw_reg_set      FullReg( hw_reg_set );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
 extern  void            MoveSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );
@@ -298,7 +299,7 @@ static  bool    SplitMem16Move( instruction *ins )
         if( HW_CEqual( reg, HW_EMPTY ) ) {
             return( false );
         }
-        if( ReDefinedBy( ins, ins->operands[0] ) ) {
+        if( _IsReDefinedBy( ins, ins->operands[0] ) ) {
             return( false );
         }
     }

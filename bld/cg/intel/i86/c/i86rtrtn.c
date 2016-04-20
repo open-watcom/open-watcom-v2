@@ -40,6 +40,7 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "namelist.h"
+#include "regalloc.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -58,7 +59,6 @@ extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  conflict_node   *InMemory( conflict_node * );
 extern  int             NumOperands( instruction * );
 extern  void            AddIns( instruction * );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );

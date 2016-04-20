@@ -46,6 +46,7 @@
 #include "propind.h"
 #include "blips.h"
 #include "edge.h"
+#include "redefby.h"
 #include "feprotos.h"
 
 
@@ -62,7 +63,6 @@ typedef struct block_list {
 
 extern    type_class_def        Unsigned[];
 
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  int             GetLog2(unsigned_32);
 extern  block           *NewBlock(label_handle,bool);
 extern  bool            SameThing(name*,name*);
@@ -72,13 +72,11 @@ extern  void            PrefixInsRenum(instruction*,instruction*,bool);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
 extern  bool            LoopInsDead(void);
-extern  bool            TempsOverlap(name*,name*);
 extern  bool            RepOp(name**,name*,name*);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  void            RemoveInputEdge(block_edge*);
 extern  block           *ReGenBlock(block*,label_handle);
-extern  bool            NameIsConstant(name*);
 extern  void            ConstToTemp(block*,block*,block*(*)(block*));
 extern  bool            SideEffect(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
@@ -972,23 +970,23 @@ static  bool_maybe  DifferentIV( induction *alias, induction *new )
 */
 {
     if( alias->basic != new->basic )
-        return( true );
+        return( MB_TRUE );
     if( alias->plus2 != new->plus2 )
-        return( true );
+        return( MB_TRUE );
     if( alias->times != new->times )
-        return( true );
+        return( MB_TRUE );
     if( alias->ivtimes != new->ivtimes )
-        return( true );
+        return( MB_TRUE );
     if( alias->lasttimes != new->lasttimes )
-        return( true );
+        return( MB_TRUE );
     if( !SameInvariant( alias->invar, new->invar ) )
-        return( true );
+        return( MB_TRUE );
     if( DifferentClasses( alias->name->n.name_class, new->name->n.name_class ) ) {
-        return( true );
+        return( MB_TRUE );
     }
     if( alias->plus != new->plus )
         return( MB_MAYBE );
-    return( false );
+    return( MB_FALSE );
 }
 
 
@@ -1044,9 +1042,12 @@ static  induction       *AddIndVar( instruction *ins,
         IndVarList = new;
         NumIndVars++;
         for( alias = IndVarList; alias != NULL; alias = alias->next ) {
-            if( alias == new ) continue;
-            if( _IsV( alias, IV_ALIAS ) ) continue;
-            if( DifferentIV( alias, new ) ) continue;
+            if( alias == new )
+                continue;
+            if( _IsV( alias, IV_ALIAS ) )
+                continue;
+            if( DifferentIV( alias, new ) != MB_FALSE )
+                continue;
             new->alias = alias->alias;
             alias->alias = new;
             _SetV( new, IV_ALIAS );
@@ -1221,7 +1222,7 @@ static  bool    BasicNotRedefined( induction *var, instruction *ins ) {
     for( other = var->ins->head.next; other->head.opcode != OP_BLOCK; other = other->head.next ) {
         if( other == ins )
             return( true );
-        if( ReDefinedBy( other, var->basic->name ) ) {
+        if( _IsReDefinedBy( other, var->basic->name ) ) {
             break;
         }
     }
@@ -1243,7 +1244,7 @@ static  bool    KillIndVars( instruction *ins ) {
     for( var = IndVarList; var != NULL; var = var->next ) {
         if( var->ins != ins ) {
             if( _IsntV( var, IV_SURVIVED ) ) {
-                if( ReDefinedBy( ins, var->name ) ) {
+                if( _IsReDefinedBy( ins, var->name ) ) {
                     killed = true;
                     _SetV( var, IV_DEAD );
                 }
@@ -2579,7 +2580,7 @@ static  name    *InitialValue( name *op ) {
             other = blk->input_edges->source->ins.hd.prev;
             continue;  /* re-check in case of empty blocks */
         }
-        if( ReDefinedBy( other, op ) )
+        if( _IsReDefinedBy( other, op ) )
             break;
         other = other->head.prev;
     }

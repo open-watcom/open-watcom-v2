@@ -35,6 +35,8 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
+#include "redefby.h"
+
 
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
@@ -42,7 +44,6 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  void            PrefixInsRenum(instruction*,instruction*,bool);
 extern  void            Renumber(void);
 extern  int             NumOperands(instruction*);
-extern  bool            IsVolatile(name*);
 
 
 static  void            GlobalConflictsFirst( void )

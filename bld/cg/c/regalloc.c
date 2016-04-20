@@ -38,6 +38,8 @@
 #include "namelist.h"
 #include "dbsyms.h"
 #include "blips.h"
+#include "regalloc.h"
+
 
 enum allocation_state {
     ALLOC_DONE,
@@ -336,7 +338,7 @@ static  bool    SplitConflicts( void )
 }
 
 
-extern  void    NullConflicts( var_usage off ) {
+void    NullConflicts( var_usage off ) {
 /***********************************************
     Turn off the usage attributes for each temporary, and null the
     conflict field.  This is called in preparation for calling
@@ -646,22 +648,22 @@ static  bool    StealsSeg( instruction *ins,
 
     i = ins->num_operands - 1;
     if( i < NumOperands( ins ) )
-    	return( false );
+        return( false );
     op = ins->operands[i];
     new_conf = NameConflict( ins, op );
     if( new_conf == NULL )
-    	return( false );
+        return( false );
     if( ( op == actual_op ) && IsSegReg( reg ) )
-    	return( false );
+        return( false );
     index_needs = RegSets[SegIndex()];
     if( HW_CEqual( *index_needs, HW_EMPTY ) )
-    	return( false );
+        return( false );
     for( ;; ) {
         if( !HW_Ovlap( *index_needs, except ) )
-        	return( false );
+            return( false );
         ++index_needs;
         if( HW_CEqual( *index_needs, HW_EMPTY ) ) {
-        	break;
+            break;
         }
     }
     return( true );
@@ -720,9 +722,8 @@ static  bool    StealsIdx( instruction *ins,
 }
 
 
-extern  bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg,
-                                       hw_reg_set except, name *op )
-/*******************************************************************
+bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg, hw_reg_set except, name *op )
+/*****************************************************************************************
     Used by TooGreedy
 */
 {
@@ -732,7 +733,7 @@ extern  bool_maybe  CheckIndecies( instruction *ins, hw_reg_set reg,
         return( MB_MAYBE );
     if( StealsSeg( ins, reg, except, op ) )
         return( MB_MAYBE );
-    return( false );
+    return( MB_FALSE );
 }
 
 
@@ -766,7 +767,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
     if( conf->name->n.class == N_TEMP && _Is( conf, CST_INDEX_SPLIT | CST_SEGMENT_SPLIT ) ) {
         ins = last;
     }
-    rc = false;
+    rc = MB_FALSE;
     for( ;; ) {
         if( ins->u.gen_table == NULL ) { /* just created instruction*/
             needs = RG_;
@@ -777,11 +778,11 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
         if( HW_CEqual( *ins_needs, HW_EMPTY ) || _Is( conf, CST_NEVER_TOO_GREEDY ) || UnaryOpGetsReg( ins, reg, op ) ) {
             rc = CheckIndecies( ins, reg, HW_EMPTY, op );
         } else { /* can the instruction and indecies still get needed regs?*/
-            rc = true;
+            rc = MB_TRUE;
             for( ;; ) {
                 if( !HW_Ovlap( *ins_needs, ins->head.live.regs ) && !HW_Ovlap( reg, *ins_needs ) ) {
                     rc = CheckIndecies( ins, reg, *ins_needs, op );
-                    if( rc == false ) {
+                    if( rc == MB_FALSE ) {
                         break;
                     }
                 }
@@ -796,7 +797,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
         for( ins = ins->head.next; ins->head.opcode == OP_BLOCK; ins = blk->ins.hd.next ) {
             blk = blk->next_block;
         }
-        if( rc != false ) {
+        if( rc != MB_FALSE ) {
             break;
         }
     }
@@ -1025,7 +1026,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
             if( !HW_Ovlap( reg, conf->with.regs )
               && !HW_Ovlap( reg, except ) ) {
                 greed = TooGreedy( conf, reg, tree->temp );
-                if( greed == false ) {
+                if( greed == MB_FALSE ) {
                     saves = CountRegMoves( conf, reg, conf->tree, 3 );
                     if( ( saves > best_saves )
                      || ( saves == best_saves
@@ -1035,7 +1036,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
                         best_saves = saves;
                     }
                 }
-                if( greed != true ) {
+                if( greed != MB_TRUE ) {
                     all_true = false;
                 }
             }
@@ -1067,7 +1068,7 @@ static  hw_reg_set      GiveBestReg( conflict_node *conf, reg_tree *tree,
 }
 
 
-extern  bool    AssignARegister( conflict_node *conf, hw_reg_set reg ) {
+bool    AssignARegister( conflict_node *conf, hw_reg_set reg ) {
 /***********************************************************************
     Used to assign register "reg" to conflict "conf", before we've
     started the true register allocator.  (used by I87REG.C)

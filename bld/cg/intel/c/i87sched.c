@@ -38,6 +38,7 @@
 #include "data.h"
 #include "x87.h"
 #include "edge.h"
+#include "redefby.h"
 
 
 extern  int     Max87Stk;
@@ -52,7 +53,6 @@ extern  int             FPRegNum(name *);
 extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
-extern  bool_maybe      ReDefinedBy(instruction *,name *);
 extern  name            *DeAlias(name *);
 extern  block           *AddPreBlock( block *postblk );
 extern  void            RevCond( instruction * );
@@ -815,7 +815,7 @@ static  bool    OKToCache( temp_entry *temp ) {
         /*
          * Might be a segment load or some other sort of nonsense here.
          */
-        if( ReDefinedBy( ins, seg ) ) {
+        if( _IsReDefinedBy( ins, seg ) ) {
             return( false );
         }
     }

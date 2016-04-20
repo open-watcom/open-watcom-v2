@@ -35,8 +35,8 @@
 #include "cgdefs.h"
 #include "data.h"
 #include "stack.h"
+#include "redefby.h"
 
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
 extern  bool            BlockTrim( void );
@@ -250,8 +250,10 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
         // if we are going forward, the dereferences take precedence over the
         // redefinitions, the reverse is true when backpeddling
         if( forward ) {
-            if( DereferencedBy( curr, op ) ) return( BLOCK_DEREFS );
-            if( ReDefinedBy( curr, op ) ) return( BLOCK_REDEFS );
+            if( DereferencedBy( curr, op ) )
+                return( BLOCK_DEREFS );
+            if( _IsReDefinedBy( curr, op ) )
+                return( BLOCK_REDEFS );
 #if 0
             if( curr->head.opcode == OP_MOV &&
                 curr->operands[ 0 ] == op &&
@@ -270,8 +272,11 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
             }
 #endif
         } else {
-            if( ReDefinedBy( curr, op ) ) return( BLOCK_REDEFS );
-            if( DereferencedBy( curr, op ) ) return( BLOCK_DEREFS );
+            if( _IsReDefinedBy( curr, op ) )
+                return( BLOCK_REDEFS );
+            if( DereferencedBy( curr, op ) ) {
+                return( BLOCK_DEREFS );
+            }
         }
     }
     return( BLOCK_NOTHING );

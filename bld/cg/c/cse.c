@@ -43,6 +43,7 @@
 #include "namelist.h"
 #include "peepopt.h"
 #include "blips.h"
+#include "redefby.h"
 #include "feprotos.h"
 
 
@@ -69,8 +70,6 @@ extern bool             Hoistable(instruction*,block*);
 extern  bool            DeadBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            DivIsADog(type_class_def);
-extern  bool            IsVolatile(name*);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  bool            Inducable(block*,instruction*);
 extern  void            MoveHead(block*,block*);
 extern  void            MakeFlowGraph(void);
@@ -158,18 +157,24 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
         input = edge->source;
-        if( !( input->class & JUMP ) ) continue;
+        if( !( input->class & JUMP ) )
+            continue;
         for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
-            if( !ReDefinedBy( prev, op ) ) continue;
-            if( prev->head.opcode != OP_MOV ) break;
-            if( prev->result != op ) break;
+            if( _IsntReDefinedBy( prev, op ) )
+                continue;
+            if( prev->head.opcode != OP_MOV )
+                break;
+            if( prev->result != op )
+                break;
             if( input->depth < blk->depth ) { // don't make 2 entries into loop
                 for( other_input = blk->input_edges; other_input != NULL; other_input = other_input->next_source ) {
                     if( other_input->source->depth < blk->depth && other_input->source != input ) {
                         break;
                     }
                 }
-                if( other_input != NULL ) break;
+                if( other_input != NULL ) {
+                    break;
+                }
             }
             new_cond = NewIns( 2 );
             Copy( cond, new_cond, INS_SIZE );
@@ -531,9 +536,13 @@ static  bool    UnOpsLiveFrom( instruction *first, instruction *last )
         while( ins->head.opcode == OP_BLOCK ) {
             ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
         }
-        if( ins == first ) break;
-        if( ReDefinedBy( ins, first->operands[0] ) ) return( false );
-        if( ReDefinedBy( ins, first->result ) ) return( false );
+        if( ins == first )
+            break;
+        if( _IsReDefinedBy( ins, first->operands[0] ) )
+            return( false );
+        if( _IsReDefinedBy( ins, first->result ) ) {
+            return( false );
+        }
     }
     return( true );
 }
@@ -555,9 +564,13 @@ static  who_dies BinOpsLiveFrom( instruction *first,
             while( ins->head.opcode == OP_BLOCK ) {
                 ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
             }
-            if( ins == first ) break;
-            if( ReDefinedBy( ins, op1 ) ) return( OP_DIES );
-            if( ReDefinedBy( ins, op2 ) ) return( OP_DIES );
+            if( ins == first )
+                break;
+            if( _IsReDefinedBy( ins, op1 ) )
+                return( OP_DIES );
+            if( _IsReDefinedBy( ins, op2 ) ) {
+                return( OP_DIES );
+            }
         }
     } else {
         result_dies = false;
@@ -565,10 +578,13 @@ static  who_dies BinOpsLiveFrom( instruction *first,
             while( ins->head.opcode == OP_BLOCK ) { /* 89-09-05 */
                 ins = _BLOCK( ins )->input_edges->source->ins.hd.prev;
             }
-            if( ins == first ) break;
-            if( ReDefinedBy( ins, op1 ) ) return( OP_DIES );
-            if( ReDefinedBy( ins, op2 ) ) return( OP_DIES );
-            if( ReDefinedBy( ins, result ) ) {
+            if( ins == first )
+                break;
+            if( _IsReDefinedBy( ins, op1 ) )
+                return( OP_DIES );
+            if( _IsReDefinedBy( ins, op2 ) )
+                return( OP_DIES );
+            if( _IsReDefinedBy( ins, result ) ) {
                 result_dies = true;
             }
         }
@@ -769,8 +785,9 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
     }
     if( first == ins1 ) {
         divisor = ins1->operands[1];
-        if( !OkToInvert( divisor ) ) return( false );
-        if( !ReDefinedBy( ins1, divisor ) ) {
+        if( !OkToInvert( divisor ) )
+            return( false );
+        if( _IsntReDefinedBy( ins1, divisor ) ) {
             killed = BinOpsLiveFrom( ins1, ins2, divisor, divisor, NULL );
             if( killed != OP_DIES ) {
                 temp = AllocTemp( ins1->type_class );
@@ -917,11 +934,11 @@ static  bool    DoArithOps( block *root )
               && ins->result->n.class != N_REGISTER
               && IsVolatile( ins->result ) == false ) {
                 ins->ins_flags &= ~INS_DEFINES_OWN_OPERAND;
-                if( ReDefinedBy( ins, ins->operands[0] ) ) {
+                if( _IsReDefinedBy( ins, ins->operands[0] ) ) {
                     ins->ins_flags |= INS_DEFINES_OWN_OPERAND;
                 }
                 if( _OpIsBinary( ins->head.opcode ) ) {
-                    if( ReDefinedBy( ins, ins->operands[1] ) ) {
+                    if( _IsReDefinedBy( ins, ins->operands[1] ) ) {
                         ins->ins_flags |= INS_DEFINES_OWN_OPERAND;
                     }
                 }
@@ -1076,17 +1093,25 @@ static  bool    CanLinkMove( instruction *ins )
     Is "ins" suitable for copy propagation?
 */
 {
-    if( ins->num_operands != 1 ) return( false );
+    if( ins->num_operands != 1 )
+        return( false );
     /* only propagate constants and temps*/
-    if( ins->operands[0]->n.class == N_REGISTER ) return( false );
-    if( ins->operands[0]->n.class == N_TEMP
-     && ( ins->operands[0]->t.temp_flags & STACK_PARM ) != 0 ) return( false );
-    if( ins->result->n.class == N_REGISTER ) return( false );
-    if( ins->operands[0] == ins->result ) return( false );
-    if( IsVolatile( ins->result ) ) return( false );
-    if( ReDefinedBy( ins, ins->operands[0] ) ) return( false );
-    if( FPIsConvert( ins ) ) return( false );
-    if( IsTrickyPointerConv( ins ) ) return( false );
+    if( ins->operands[0]->n.class == N_REGISTER )
+        return( false );
+    if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & STACK_PARM ) != 0 )
+        return( false );
+    if( ins->result->n.class == N_REGISTER )
+        return( false );
+    if( ins->operands[0] == ins->result )
+        return( false );
+    if( IsVolatile( ins->result ) )
+        return( false );
+    if( _IsReDefinedBy( ins, ins->operands[0] ) )
+        return( false );
+    if( FPIsConvert( ins ) )
+        return( false );
+    if( IsTrickyPointerConv( ins ) )
+        return( false );
     return( true );
 }
 

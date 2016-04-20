@@ -45,6 +45,7 @@
 #include "x87.h"
 #include "dbsyms.h"
 #include "blips.h"
+#include "redefby.h"
 #include "feprotos.h"
 
 
@@ -70,7 +71,6 @@ extern  hw_reg_set      StackReg(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
-extern  bool            IsVolatile(name*);
 extern  void            TNZapParms(void);
 extern  void            PushInSameBlock(instruction*);
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )

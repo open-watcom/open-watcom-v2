@@ -38,6 +38,7 @@
 #include "data.h"
 #include "x87.h"
 #include "namelist.h"
+#include "redefby.h"
 
 
 extern  name            *Parm8087[];
@@ -48,7 +49,6 @@ extern  int             Max87Stk;
 extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
 extern  void            BGDone(an);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  type_class_def  TypeClass(type_def*);
@@ -62,7 +62,6 @@ extern  void            ToPopBin(instruction*);
 extern  void            NoMemBin(instruction*);
 extern  name*           ST(int);
 extern int              NumOperands(instruction*);
-extern  bool            IsVolatile(name*);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DelSeg(instruction*);
@@ -263,7 +262,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
     for(;;) {
         for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( ReDefinedBy( next, ins->operands[i] ) ) {
+                if( _IsReDefinedBy( next, ins->operands[i] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
                     // CGFree( parm );
                     return( true );
@@ -417,7 +416,7 @@ static  bool    FSinCos( instruction *ins1 ) {
     instruction *ins3;
     instruction *ins4;
 
-    if( !_IsTargetModel( I_MATH_INLINE ) ) {
+    if( _IsntTargetModel( I_MATH_INLINE ) ) {
         return( false );
     }
     ins2 = ins1->head.next;
@@ -862,12 +861,16 @@ extern  void    FixP5Divs( void ) {
     block       *blk;
     instruction *ins;
 
-    if( !_IsTargetModel( P5_DIVIDE_CHECK ) ) return;
-    if( !_FPULevel( FPU_87 ) ) return;
+    if( _IsntTargetModel( P5_DIVIDE_CHECK ) )
+        return;
+    if( !_FPULevel( FPU_87 ) )
+        return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode != OP_DIV ) continue;
-            if( !_IsFloating( ins->type_class ) ) continue;
+            if( ins->head.opcode != OP_DIV )
+                continue;
+            if( !_IsFloating( ins->type_class ) )
+                continue;
             ins->head.opcode = OP_P5DIV;
         }
     }

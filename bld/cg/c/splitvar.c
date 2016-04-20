@@ -35,8 +35,9 @@
 #include "stack.h"
 #include "data.h"
 #include "namelist.h"
+#include "regalloc.h"
 
-extern  void            NullConflicts( var_usage );
+
 extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );

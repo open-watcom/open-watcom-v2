@@ -33,9 +33,10 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
+#include "redefby.h"
+
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  bool            NameIsConstant(name*);
 
 #define REAL_REFERENCE  BLOCK_MARKED
 #define NO_LOAD_STORE   BLOCK_VISITED

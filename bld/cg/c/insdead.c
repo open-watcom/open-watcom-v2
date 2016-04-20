@@ -34,12 +34,12 @@
 #include "data.h"
 #include "x87.h"
 #include "makeins.h"
+#include "redefby.h"
 
 
 extern  void            FreeAName(name*);
 extern  block           *TailBlocks(void);
 extern  bool            BreakExists(void);
-extern  bool            IsVolatile(name*);
 extern  void            DoNothing(instruction*);
 extern  bool            DoesSomething(instruction*);
 

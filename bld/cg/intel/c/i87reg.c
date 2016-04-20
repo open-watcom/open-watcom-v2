@@ -37,22 +37,22 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "redefby.h"
+#include "regalloc.h"
+
 
 extern  hw_reg_set      FPRegs[];
 extern  name            *FPStatWord;
 extern  int             Max87Stk;
 
 extern  void            SuffixIns(instruction*,instruction*);
-extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  bool            AssignARegister(conflict_node*,hw_reg_set);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
 
 /* forward declarations */
@@ -764,11 +764,14 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     name        *temp;
 
     for( next = ins->head.next; ; next = next->head.next ) {
-        if( next->head.opcode == OP_BLOCK ) return;
-        if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return;
+        if( next->head.opcode == OP_BLOCK )
+            return;
+        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+            return;
         if( next->head.opcode == next_op ) {
-            if( next->operands[ 0 ] == ins->operands[ 0 ] &&
-                next->type_class == ins->type_class ) break;
+            if( next->operands[ 0 ] == ins->operands[ 0 ] && next->type_class == ins->type_class ) {
+                break;
+            }
         }
     }
     temp = AllocTemp( ins->type_class );

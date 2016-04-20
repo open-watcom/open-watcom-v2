@@ -40,8 +40,9 @@
 #include "utils.h"
 #include "namelist.h"
 #include "i86obj.h"
+#include "regalloc.h"
 
-extern  conflict_node   *GiveRegister(conflict_node*,bool);
+
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  hw_reg_set      Op1Reg(instruction*);
 extern  hw_reg_set      ResultReg(instruction*);

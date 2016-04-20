@@ -940,10 +940,13 @@ void StartBlockProfiling( block *blk )
     segment_id          data_seg;
     label_handle        data;
 
-    if( !_IsTargetModel( NEW_P5_PROFILING ) ) return;
-    if( !_IsTargetModel( STATEMENT_COUNTING ) ) return;
+    if( _IsntTargetModel( NEW_P5_PROFILING ) )
+        return;
+    if( _IsntTargetModel( STATEMENT_COUNTING ) )
+        return;
     data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
-    if( blk->label == NULL ) return;
+    if( blk->label == NULL )
+        return;
     TellKeepLabel( blk->label );
     old = SetOP( data_seg );
     TellOptimizerByPassed();

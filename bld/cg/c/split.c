@@ -36,9 +36,9 @@
 #include "cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "regalloc.h"
 
-extern  conflict_node   *GiveRegister(conflict_node*,bool);
-extern  conflict_node   *InMemory(conflict_node*);
+
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *HighPart(name*,type_class_def);
@@ -55,7 +55,6 @@ extern  void            ReplIns(instruction*,instruction*);
 extern  void            RevCond(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  hw_reg_set      HighReg(hw_reg_set);
-extern  bool_maybe      CheckIndecies(instruction*,hw_reg_set,hw_reg_set,name*);
 
 extern    hw_reg_set    *RegSets[];
 extern    op_regs       RegList[];
@@ -521,8 +520,8 @@ extern instruction      *rCLRHI_R( instruction *ins )
     res = ins->result;
     high = HighReg( res->r.reg );
     if( op->n.class == N_INDEXED
-        && (   ( op->i.index->n.class == N_REGISTER && HW_Ovlap( op->i.index->r.reg, res->r.reg ) ) /* (1) */
-            || ( CheckIndecies( ins, res->r.reg, HW_EMPTY, NULL ) ) /* 2 */
+        && ( ( op->i.index->n.class == N_REGISTER && HW_Ovlap( op->i.index->r.reg, res->r.reg ) ) /* (1) */
+            || ( CheckIndecies( ins, res->r.reg, HW_EMPTY, NULL ) == MB_MAYBE ) /* 2 */
            )
       ) {
         /* (1) would have gen'd movzd  eax,[eax]

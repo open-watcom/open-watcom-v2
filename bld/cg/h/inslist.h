@@ -162,5 +162,3 @@ typedef enum {
     MB_TRUE     = true,
     MB_MAYBE    = 2
 } bool_maybe;
-
-#define MAYBE   MB_MAYBE

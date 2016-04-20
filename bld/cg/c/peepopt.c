@@ -42,15 +42,14 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "peepopt.h"
+#include "redefby.h"
 
-extern  bool                    IsVolatile(name*);
+
 extern  bool                    InsOrderDependant(instruction*,instruction*);
-extern  bool_maybe              ReDefinedBy( instruction *, name * );
 extern  bool                    SameThing( name *, name * );
 extern  bool                    SideEffect( instruction * );
 extern  bool                    ChangeIns(instruction *,name *,name **,change_type);
 extern  opcode_entry            *ResetGenEntry( instruction *ins );
-extern  bool                    VisibleToCall(instruction*,name*,bool);
 extern  bool                    VolatileIns(instruction*);
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.int_value )
@@ -529,10 +528,13 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
         return( false );
     }
     next = ins->head.next;
-    if( ReDefinedBy( ins, ins->operands[ 0 ] ) ) return( false );       // BBB - cnv U2 U1 [eax] -> ax
+    if( _IsReDefinedBy( ins, ins->operands[ 0 ] ) )
+        return( false );       // BBB - cnv U2 U1 [eax] -> ax
     for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-        if( ReDefinedBy( next, ins->result ) ) return( false );
-        if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return( false );
+        if( _IsReDefinedBy( next, ins->result ) )
+            return( false );
+        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+            return( false );
         if( ins->head.opcode == OP_CONVERT && next->head.opcode == OP_CONVERT ) {
             if( ins->result == next->operands[ 0 ] &&
                 ins->type_class == next->base_type_class ) {
@@ -542,10 +544,13 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 //         the first ins if it is not needed
 
                 // pointer conversions are too dangerous to fold
-                if( _IsPointer( next->type_class ) || _IsPointer( next->base_type_class ) ) return( false );
-                if( _IsPointer( ins->type_class ) ) return( false );
+                if( _IsPointer( next->type_class ) || _IsPointer( next->base_type_class ) )
+                    return( false );
+                if( _IsPointer( ins->type_class ) )
+                    return( false );
                 // watch for converting down - bad to fold
-                if( ins->type_class < ins->base_type_class ) return( false );
+                if( ins->type_class < ins->base_type_class )
+                    return( false );
                 next->base_type_class = ins->base_type_class;
                 next->operands[ 0 ] = ins->operands[ 0 ];
                 if( next->operands[ 0 ]->n.class == N_TEMP ) {
@@ -577,7 +582,7 @@ static bool ReferencedBy( instruction *ins, name *op ) {
     name        *curr;
 
     if( _OpIsCall( ins->head.opcode ) ) {
-        if( VisibleToCall( ins, op, false ) ) {
+        if( _IsVisibleToCall( ins, op, false ) ) {
             return( true );
         }
     }
@@ -600,13 +605,17 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
     if( ins->result != NULL ) {
         switch( ins->result->n.class ) {
         case N_TEMP:
-            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY ) break;
+            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY )
+                break;
+            /* fall down */
         case N_INDEXED:
         case N_MEMORY:
-            if( SideEffect( ins ) ) return( false );
+            if( SideEffect( ins ) )
+                return( false );
             for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-                if( ReferencedBy( next, ins->result ) ) break;
-                if( ReDefinedBy( next, ins->result ) ) {
+                if( ReferencedBy( next, ins->result ) )
+                    break;
+                if( _IsReDefinedBy( next, ins->result ) ) {
                     if( next->result == ins->result ) {
                         *change = true;
                         FreeIns( ins );
