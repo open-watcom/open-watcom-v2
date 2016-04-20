@@ -137,7 +137,7 @@ size_t GetSystemDir( char *buff, size_t buff_len )
  * InitScreen
  */
 
-static VOID APIENTRY PumpMessageQueue( ULONG parm )
+static void APIENTRY PumpMessageQueue( ULONG parm )
 {
     char        class_name[80];
     QMSG        qmsg;

@@ -243,7 +243,7 @@ enum {
 
 bool RequestDone;
 
-static VOID APIENTRY ControlFunc( ULONG parm )
+static void APIENTRY ControlFunc( ULONG parm )
 {
     ULONG   ulCount;
 

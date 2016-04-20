@@ -119,7 +119,7 @@ int main( void )
             cputs( "encountered, aborting!\r\n" );
             break;
         }
-        if( stricmp( buff,TERMINATE_CLIENT_STR ) == 0 ) {
+        if( stricmp( buff, TERMINATE_CLIENT_STR ) == 0 ) {
             break;
         }
         if( stricmp( buff, NEW_OPEN_LIST ) == 0 ) {

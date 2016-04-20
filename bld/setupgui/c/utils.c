@@ -91,8 +91,6 @@ typedef struct def_var {
     struct def_var      *link;
 } DEF_VAR;
 
-extern void     BumpStatus( long );
-
 bool            ConfigModified = false;
 static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
