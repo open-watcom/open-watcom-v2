@@ -436,10 +436,10 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
     case LOC_CONSTANT:
         if( loc->class == LOC_MEMORY ) {
             sym = (dw_sym_handle)loc->u.fe_sym;
-            if( state->seg == true ){
+            if( state->seg ) {
                 DWLocSegment( Client, locid, sym );
             }
-            if( state->offset == true ){
+            if( state->offset ) {
                 DWLocStatic( Client, locid, sym );
                 if( state->seg ){
                     state->addr_seg = true;

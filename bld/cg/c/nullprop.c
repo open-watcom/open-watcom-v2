@@ -382,7 +382,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
     bool                side_effect;
     block_edge          *edge;
 
-    if( cmp_result == true ) {
+    if( cmp_result ) {
         taken = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
         elim = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
     } else {
