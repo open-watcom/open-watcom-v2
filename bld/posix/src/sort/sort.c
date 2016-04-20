@@ -91,9 +91,11 @@ void main( int argc, char **argv )
     FILE    *infile, *outfile;
     int     own_infile = 0, own_outfile = 0;
 
+    infile = NULL;
+    outfile = NULL;
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "o:fr", usageMsg );
         if( ch == -1 ) {
             break;
@@ -129,7 +131,7 @@ void main( int argc, char **argv )
         outfile = stdout;
     }
     
-    while( 1 ) {
+    for( ;; ) {
         fgets( buffer, MAXLEN, infile );
         if( feof( infile ) ) {
             break;
