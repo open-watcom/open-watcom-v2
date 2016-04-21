@@ -36,8 +36,8 @@
 #include "seterrno.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"
+#include "extender.h"
 
-extern unsigned char _Extender;
 
 extern unsigned __dos_find_first_dta( const char *path, unsigned attrib, struct find_t *fdta );
 extern unsigned __dos_find_next_dta( struct find_t *fdta );
@@ -121,6 +121,35 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         _MOV_AX_W 1 DOS_FIND_NEXT \
         _INT_21         \
         "call __doserror_" \
+        "xor  eax,eax"  \
+        parm caller     [edx] \
+        modify exact    [eax];
+
+#elif defined( __CALL21__ )    // 32-bit near data
+    #pragma aux __dos_find_first_dta = \
+        "push edx"      \
+        _MOV_AH DOS_SET_DTA \
+        _INT_21         \
+        "mov  edx,ebx"  \
+        _MOV_AH DOS_FIND_FIRST \
+        _INT_21         \
+        "pop  edx"      \
+        "call __doserror_" \
+        parm caller     [ebx] [ecx] [edx] \
+        modify exact    [eax ebx ecx edi esi];
+
+    #pragma aux __dos_find_next_dta = \
+        "push es"       \
+        _MOV_AH DOS_SET_DTA \
+        _INT_21         \
+        _MOV_AH DOS_FIND_NEXT \
+        _INT_21         \
+        "call __doserror_" \
+        "pop  es"       \
+        parm caller     [edx] \
+        modify exact    [eax ebx ecx edi esi];
+
+    #pragma aux __dos_find_close_dta = \
         "xor  eax,eax"  \
         parm caller     [edx] \
         modify exact    [eax];
