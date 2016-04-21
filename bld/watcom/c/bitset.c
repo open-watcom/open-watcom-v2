@@ -288,7 +288,7 @@ static void emitBitNext( FILE *fp, int size, char *prefix, char *type_name )
     fprintf( fp, "#endif\n\n" );
 }
 
-void genBitsetHeader( char *file, int size, char *prefix, char *type_name )
+static void genBitsetHeader( char *file, int size, char *prefix, char *type_name )
 //*************************************************************************
 // create a header file named 'file' which contains type and macro definitions
 // for dealing with a bitset of length 'size'.

@@ -38,15 +38,15 @@ typedef struct sword {
    
 static char enum_key[ KEY_MAX_LEN + 10 ];
 
-int str_compare( const void *p1, const void *p2 )
-/***********************************************/
+static int str_compare( const void *p1, const void *p2 )
+/******************************************************/
 {
     return( strcmp( ((const sword *)p1)->word,
                     ((const sword *)p2)->word ) );
 }
 
-char *get_enum_key( const char *src )
-/***********************************/
+static char *get_enum_key( const char *src )
+/******************************************/
 {
     int     add_underscore;
     char    *dst;

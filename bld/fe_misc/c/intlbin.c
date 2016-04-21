@@ -44,12 +44,12 @@ char const * const componentName[] = {
     #undef LS_DEF
 };
 
-void fatal( char *m ) {
+static void fatal( char *m ) {
     printf( "fatal: %s\n", m );
     exit( EXIT_FAILURE );
 }
 
-void copyAligned( FILE *ofp, FILE *ifp ) {
+static void copyAligned( FILE *ofp, FILE *ifp ) {
     unsigned n;
     int c;
 
@@ -66,7 +66,7 @@ void copyAligned( FILE *ofp, FILE *ifp ) {
     }
 }
 
-void processLang( char *prefix, unsigned lang ) {
+static void processLang( char *prefix, unsigned lang ) {
     unsigned curr_offset;
     FILE *fp;
     FILE *ifp;

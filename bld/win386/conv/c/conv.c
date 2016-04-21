@@ -117,7 +117,7 @@ fcn     *VoidHead, *VoidCurr;    /* list of all prototypes */
 FILE    *stubs,*stubsinc;
 FILE    *dllthunk;
 
-void *myalloc( size_t size )
+static void *myalloc( size_t size )
 {
     void        *tmp;
 
@@ -130,7 +130,7 @@ void *myalloc( size_t size )
 
 } /* myalloc */
 
-void *_fmyalloc( size_t size )
+static void *_fmyalloc( size_t size )
 {
     void     *tmp;
 
@@ -144,7 +144,7 @@ void *_fmyalloc( size_t size )
 
 } /* _fmyalloc */
 
-void *_fmyrealloc( void *ptr, size_t size )
+static void *_fmyrealloc( void *ptr, size_t size )
 {
     void     *tmp;
 
@@ -156,7 +156,7 @@ void *_fmyrealloc( void *ptr, size_t size )
     return( tmp );
 } /* _fmyrealloc */
 
-int IsWord( char *str )
+static int IsWord( char *str )
 {
     if( !stricmp( str,"int" ) ||
         !stricmp( str,"char" ) ||
@@ -191,7 +191,7 @@ static char *StripSpaces( char *buff )
 /*
  * ClassifyParm - decide if a parm is a pointer, word or dword
  */
-parm_types ClassifyParm( char *buff )
+static parm_types ClassifyParm( char *buff )
 {
     buff = StripSpaces( buff );
     if( IsWord( buff ) ) {
@@ -209,7 +209,7 @@ parm_types ClassifyParm( char *buff )
 /*
  * ClassifyReturnType - decide if type is a pointer, int, void, char, or dword
  */
-return_types ClassifyReturnType( char *buff )
+static return_types ClassifyReturnType( char *buff )
 {
     buff = StripSpaces( buff );
     if( stricmp( buff, "int" ) == 0  ||  stricmp( buff, "short" ) == 0 ) {
@@ -226,7 +226,7 @@ return_types ClassifyReturnType( char *buff )
 
 } /* ClassifyReturnType */
 
-void ClassifyParmList( char *plist, fcn *tmpf )
+static void ClassifyParmList( char *plist, fcn *tmpf )
 {
     int         i;
     int         j;
@@ -309,7 +309,7 @@ void ClassifyParmList( char *plist, fcn *tmpf )
 } /* ClassifyParmList */
 
 
-void ProcessDefFile( FILE *f )
+static void ProcessDefFile( FILE *f )
 {
     char        buff[MAX_BUFF];
     size_t      i,j,k;
@@ -448,7 +448,7 @@ void ProcessDefFile( FILE *f )
     }
 }
 
-void BuildClasses()
+static void BuildClasses( void )
 {
     int         j;
     int         class_count;
@@ -513,7 +513,7 @@ void BuildClasses()
 /*
  * ClosingComments
  */
-void ClosingComments( void )
+static void ClosingComments( void )
 {
     fcn         *tmpf;
 
@@ -532,7 +532,7 @@ void ClosingComments( void )
 /*
  * GenerateThunkC - generate dllthunk.c
  */
-void GenerateThunkC( void )
+static void GenerateThunkC( void )
 {
     FILE        *f;
 
@@ -1059,7 +1059,7 @@ static void endOBJECT( void )
 /*
  * GenerateCStubs
  */
-void GenerateCStubs( void )
+static void GenerateCStubs( void )
 {
     fcn         *tmpf, *tmpf2;
     short       i=0,index,ii=0;
@@ -1140,7 +1140,7 @@ void GenerateCStubs( void )
 /*
  * GenerateThunkTable - generate table of thunks
  */
-void GenerateThunkTable( fcn *tmpf )
+static void GenerateThunkTable( fcn *tmpf )
 {
     fprintf( stubs, "__ThunkTable LABEL WORD\n" );
     fprintf( stubs, "public __ThunkTable\n" );
@@ -1155,7 +1155,7 @@ void GenerateThunkTable( fcn *tmpf )
 /*
  * CloseHeader - close off header comments
  */
-void CloseHeader( FILE *f )
+static void CloseHeader( FILE *f )
 {
     fprintf( f, ";***                                                                      ***\n" );
     fprintf( f, ";*** By:  Craig Eisler                                                    ***\n" );
@@ -1170,7 +1170,7 @@ void CloseHeader( FILE *f )
 /*
  * GenerateDLLData - generate data for a DLL thunk
  */
-void GenerateDLLData( void )
+static void GenerateDLLData( void )
 {
     int         i;
     char     *thunkstr;
@@ -1203,7 +1203,7 @@ void GenerateDLLData( void )
 /*
  * DLLThunkHeader - generate header for DLL thunking stuff
  */
-void DLLThunkHeader( void )
+static void DLLThunkHeader( void )
 {
     int      i;
 
@@ -1321,7 +1321,7 @@ void DLLThunkHeader( void )
 /*
  * DLLThunkTrailer
  */
-void DLLThunkTrailer( void )
+static void DLLThunkTrailer( void )
 {
     fprintf( dllthunk, "_TEXT ends\n" );
     fprintf( dllthunk, "end\n" );
@@ -1332,7 +1332,7 @@ void DLLThunkTrailer( void )
 /*
  * FunctionHeader - build glue functions header area
  */
-void FunctionHeader( void )
+static void FunctionHeader( void )
 {
     fcn         *tmpf;
     char        *thunkstr;
@@ -1437,7 +1437,7 @@ void FunctionHeader( void )
 /*
  * FunctionTrailer - very last crap at end of glue functions
  */
-void FunctionTrailer( void )
+static void FunctionTrailer( void )
 {
     fprintf( stubs, "_TEXT   ends\n" );
     fprintf( stubs, "        end\n" );
@@ -1448,7 +1448,7 @@ void FunctionTrailer( void )
 /*
  * GenerateStartupCode - init. code for each glue function
  */
-void GenerateStartupCode( fcn *tmpf )
+static void GenerateStartupCode( fcn *tmpf )
 {
     fprintf( stubs,"PUBLIC  __Thunk%d\n", tmpf->class );
     fprintf( stubs,"__Thunk%d proc near\n", tmpf->class );
@@ -1460,7 +1460,7 @@ void GenerateStartupCode( fcn *tmpf )
  * GenerateStackLocals - generate equates to access local variables (where
  *                       we store the 16-bit aliases for 32-bit ptrs)
  */
-int GenerateStackLocals( fcn *tmpf )
+static int GenerateStackLocals( fcn *tmpf )
 {
     int         i;
     int         offset;
@@ -1482,7 +1482,7 @@ int GenerateStackLocals( fcn *tmpf )
  * Generate16BitAliases - code to generate a 16-bit alias for each
  *                        of the applications 32-bit pointers
  */
-void Generate16BitAliases( fcn *tmpf )
+static void Generate16BitAliases( fcn *tmpf )
 {
     int         i;
     int         offset;
@@ -1503,7 +1503,7 @@ void Generate16BitAliases( fcn *tmpf )
 } /* Generate16BitAliases */
 
 
-int Parm1Offset( fcn *tmpf )
+static int Parm1Offset( fcn *tmpf )
 {
     return( tmpf->pcnt * 4 + 12 );
 }
@@ -1513,7 +1513,7 @@ int Parm1Offset( fcn *tmpf )
  *                   variables onto the extenders stack, and does
  *                   the call.
  */
-void GenerateAPICall( fcn *tmpf )
+static void GenerateAPICall( fcn *tmpf )
 {
     int         i, j;
     int         offset;
@@ -1634,7 +1634,7 @@ void GenerateStackAccessEquates( fcn *tmpf )
 /*
  * GenerateCode - generate code for all glue functions
  */
-void GenerateCode( void )
+static void GenerateCode( void )
 {
     fcn *tmpf, *tmpf2;
 
@@ -1696,10 +1696,11 @@ void GenerateCode( void )
 
 } /* GenerateCode */
 
+#if 0
 /*
  * AddCommentTrailer -  add trailing '***' to a comment line
  */
-void AddCommentTrailer( char *tmp )
+static void AddCommentTrailer( char *tmp )
 {
     size_t      i, j;
     char        tmp2[81];
@@ -1716,6 +1717,7 @@ void AddCommentTrailer( char *tmp )
     fprintf( stubs,"%s***\n", tmp );
 
 } /* AddCommentTrailer */
+#endif
 
 int main( int argc, char *argv[] )
 {
