@@ -129,7 +129,7 @@ static  bool    CnvFloat( itnode *cit, int prec ) {
     bool        ext;
 
     ext = ( Options & OPT_EXTEND_REAL ) != 0;
-    if( FmtS2F( cit->opnd, cit->opnd_size, 0, false, 0, prec, &cit->value.dble, false, NULL, ext ) != FLT_OK ) {
+    if( FmtS2F( cit->opnd, cit->opnd_size, 0, false, 0, prec, &cit->value.extended, false, NULL, ext ) != FLT_OK ) {
         OpndErr( CN_FLOAT );
         return( false );
     }

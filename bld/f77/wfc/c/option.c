@@ -557,7 +557,7 @@ static  void  CompoundOptOption( char *buff ) {
     single_opt[0] = buff[0];
     i = 0;
     
-    while( buff[++i] != NULL ) {
+    while( buff[++i] != '\0' ) {
         opt_i = 1;
         single_opt[opt_i++] = buff[i];
         
