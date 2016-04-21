@@ -33,7 +33,7 @@
 #include <dos.h>
 #include <conio.h>
 #include <string.h>
-#include <extender.h>
+#include "extender.h"
 #include "uidef.h"
 #include "uidos.h"
 #include "biosui.h"
@@ -68,15 +68,7 @@ unsigned    BIOSVidPage;
 #ifdef __386__
 LP_VOID firstmeg( unsigned segment, unsigned offset )
 {
-#if defined(__OSI__) || __WATCOMC__ >= 1000
     return( MK_FP( _ExtenderRealModeSelector, (unsigned) (segment << 4) + offset ) );
-#else
-    if( _IsRational() ) {
-        return( MK_FP( FP_SEG( &BIOSVidPage ), (unsigned) ( segment << 4 ) + offset ) );
-    } else {
-        return( MK_FP( REAL_SEGMENT, (unsigned) ( segment << 4 ) + offset ) );
-    }
-#endif
 }
 #endif
 
