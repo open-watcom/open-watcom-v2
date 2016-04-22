@@ -165,7 +165,6 @@ static void defineM_IX86Macro( void )
 static void setWindowsSystem( void )
 {
 #if _CPU == 8086
-    PreDefineStringMacro( "__WINDOWS__" );
     PreDefineStringMacro( "_WINDOWS" );
     TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
     TargetSwitches &= ~ FLOATING_DS;
