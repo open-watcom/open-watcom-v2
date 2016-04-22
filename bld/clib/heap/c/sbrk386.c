@@ -188,10 +188,6 @@ void _WCNEAR *__brk( unsigned brk_value )
                 return( (void _WCNEAR *)-1 );
             }
         }
-        if( SetBlock( GetDS(), seg_size ) < 0 ) {
-            _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *)-1 );
-        }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
         seg_size = ( brk_value + 4095U ) / 4096U;
         if( seg_size == 0 )
@@ -200,10 +196,10 @@ void _WCNEAR *__brk( unsigned brk_value )
             // convert from 4k pages to paragraphs
             seg_size = seg_size * 256U;
         }
-        if( SetBlock( GetDS(), seg_size ) < 0 ) {
-            _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *)-1 );
-        }
+    }
+    if( SetBlock( GetDS(), seg_size ) < 0 ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
     }
 #endif
     old_brk_value = _curbrk;        /* return old value of _curbrk */
