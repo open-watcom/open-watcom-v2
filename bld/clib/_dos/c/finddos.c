@@ -136,7 +136,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         "pop  edx"      \
         "call __doserror_" \
         parm caller     [ebx] [ecx] [edx] \
-        modify exact    [eax ebx ecx edi esi];
+        modify exact    [eax ebx ecx];
 
     #pragma aux __dos_find_next_dta = \
         "push es"       \
@@ -147,7 +147,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         "call __doserror_" \
         "pop  es"       \
         parm caller     [edx] \
-        modify exact    [eax ebx ecx edi esi];
+        modify exact    [eax ebx ecx];
 
     #pragma aux __dos_find_close_dta = \
         "xor  eax,eax"  \
