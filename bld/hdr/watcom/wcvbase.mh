@@ -643,8 +643,8 @@ WCOrderedVectorBase<Type>::~WCOrderedVectorBase() {};
 
 
 template <class Type>
-WCbool WCOrderedVectorBase<Type>::base_find( const Type &elem, find_type
-                                , int *st_found_index ) const {
+WCbool WCOrderedVectorBase<Type>::base_find( const Type &elem, find_type,
+                                int *st_found_index ) const {
     int index = *st_found_index;
 
     while( index < num_entries ) {
@@ -671,8 +671,8 @@ template <class Type>
 class WCSortedVectorBase : public WCVectorBase<Type> {
 protected:
     virtual WCbool base_find( const Type &, find_type, int * ) const;
-    virtual int base_less_than( const Type& elem1
-                              , const Type& elem2 ) const = 0;
+    virtual int base_less_than( const Type& elem1,
+                              const Type& elem2 ) const = 0;
 public:
     inline WCSortedVectorBase( size_t length, unsigned default_grow )
                         : WCVectorBase<Type>( length, default_grow ) {};
@@ -688,8 +688,8 @@ WCSortedVectorBase<Type>::~WCSortedVectorBase() {};
 
 
 template <class Type>
-WCbool WCSortedVectorBase<Type>::base_find( const Type &elem, find_type type
-        , int * st_found_index ) const {
+WCbool WCSortedVectorBase<Type>::base_find( const Type &elem, find_type type,
+        int * st_found_index ) const {
     // for multiple searches, check to see next element also matches
     if( type == next_mult_find ) {
         int index = *st_found_index;
