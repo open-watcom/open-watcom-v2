@@ -50,12 +50,9 @@ struct dw_macro {
 };
 
 
-void DWENTRY DWMacStartFile(
-    dw_client                   cli,
-    dw_linenum                  line,
-    const char                  *name )
+void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name )
 {
-    uint_8              buf[ 1 + 2*MAX_LEB128 ];
+    uint_8              buf[1 + 2 * MAX_LEB128];
     uint_8              *end;
 
     buf[0] = DW_MACINFO_start_file;
@@ -65,22 +62,18 @@ void DWENTRY DWMacStartFile(
 }
 
 
-void DWENTRY DWMacEndFile(
-    dw_client                   cli )
+void DWENTRY DWMacEndFile( dw_client cli )
 {
-    static char  const  buf[ 1 ] = { DW_MACINFO_end_file };
+    static char const   buf[1] = { DW_MACINFO_end_file };
 
     CLIWrite( DW_DEBUG_MACINFO, buf, 1 );
 }
 
 
-dw_macro DWENTRY DWMacDef(
-    dw_client                   cli,
-    dw_linenum                  line,
-    const char                  *name )
+dw_macro DWENTRY DWMacDef( dw_client cli, dw_linenum line, const char *name )
 {
-    dw_macro                    mac;
-    size_t                      len;
+    dw_macro            mac;
+    size_t              len;
 
     _Validate( name != NULL );
 
@@ -94,13 +87,10 @@ dw_macro DWENTRY DWMacDef(
 }
 
 
-void DWENTRY DWMacParam(
-    dw_client                   cli,
-    dw_macro                    mac,
-    const char *                name )
+void DWENTRY DWMacParam( dw_client cli, dw_macro mac, const char *name )
 {
-    struct parm *parm;
-    size_t      len;
+    struct parm         *parm;
+    size_t              len;
 
     _Validate( mac != NULL && name != NULL );
 
@@ -113,18 +103,15 @@ void DWENTRY DWMacParam(
 }
 
 
-void DWENTRY DWMacFini(
-    dw_client                   cli,
-    dw_macro                    mac,
-    const char                  *def )
+void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
 {
-    uint_8                      buf[ 1 + MAX_LEB128 ];
-    uint_8                      *end;
-    struct parm                 *parm;
+    uint_8              buf[1 + MAX_LEB128];
+    uint_8              *end;
+    struct parm         *parm;
 
     _Validate( mac != NULL );
 
-    buf[ 0 ] = DW_MACINFO_define;
+    buf[0] = DW_MACINFO_define;
     end = ULEB128( buf + 1, mac->line );
     CLIWrite( DW_DEBUG_MACINFO, buf, end - buf );
     CLIWrite( DW_DEBUG_MACINFO, mac->name, mac->len );
@@ -153,13 +140,10 @@ void DWENTRY DWMacFini(
 }
 
 
-void DWENTRY DWMacUnDef(
-    dw_client                   cli,
-    dw_linenum                  line,
-    const char                  *name )
+void DWENTRY DWMacUnDef( dw_client cli, dw_linenum line, const char *name )
 {
-    uint_8                      buf[ 1 + MAX_LEB128 ];
-    uint_8                      *end;
+    uint_8              buf[1 + MAX_LEB128];
+    uint_8              *end;
 
     _Validate( name != NULL );
 
@@ -170,13 +154,10 @@ void DWENTRY DWMacUnDef(
 }
 
 
-void DWENTRY DWMacUse(
-    dw_client                   cli,
-    dw_linenum                  line,
-    const char                  *name )
+void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name )
 {
-    uint_8                      buf[ 2 + MAX_LEB128 ];
-    uint_8                      *end;
+    uint_8              buf[2 + MAX_LEB128];
+    uint_8              *end;
 
     _Validate( name != NULL );
 
@@ -188,18 +169,16 @@ void DWENTRY DWMacUse(
 }
 
 
-void InitDebugMacInfo(
-    dw_client                   cli )
-{
+void InitDebugMacInfo( dw_client cli )
 /* must be called after InitDebugLine */
+{
     cli = cli;
 }
 
 
-void FiniDebugMacInfo(
-    dw_client                   cli )
+void FiniDebugMacInfo( dw_client cli )
 {
-    static char const     buf[ 1 ] = { 0 };
+    static char const   buf[1] = { 0 };
 
     CLIWrite( DW_DEBUG_MACINFO, buf, 1 );
 }

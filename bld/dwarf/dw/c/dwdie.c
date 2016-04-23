@@ -55,7 +55,7 @@ void FiniDIE( dw_client cli )
 
 void StartChildren( dw_client cli )
 {
-    die_tree    *new;
+    die_tree        *new;
 
     /* make a new entry in the tree */
     new = CLIAlloc( sizeof( *new ) );
@@ -69,11 +69,12 @@ void StartChildren( dw_client cli )
 
 static void doTheSiblingThing( dw_client cli )
 {
-    debug_ref                   sibling;
-    char                        buf[ sizeof( debug_ref ) ];
+    debug_ref       sibling;
+    char            buf[sizeof( debug_ref )];
 
     sibling = cli->die.tree->sibling;
-    if( sibling == 0 ) return;  /* no previous sibling */
+    if( sibling == 0 )
+        return;  /* no previous sibling */
 
     /* relocate previous sibling */
     WriteRef( buf, InfoSkip( cli, 0 ) );
@@ -92,9 +93,7 @@ void EndChildren( dw_client cli )
 }
 
 
-void StartDIE(
-    dw_client                   cli,
-    abbrev_code                 abbrev )
+void StartDIE( dw_client cli, abbrev_code abbrev )
 {
     int         haskids;
     unsigned    abbrevnum;
@@ -126,8 +125,7 @@ void StartDIE(
 }
 
 
-void EndDIE(
-    dw_client                   cli )
+void EndDIE( dw_client cli )
 {
     cli = cli;
 }

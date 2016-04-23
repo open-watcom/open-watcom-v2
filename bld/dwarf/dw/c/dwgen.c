@@ -46,9 +46,7 @@
 #include "dwname.h"
 
 
-dw_handle DWENTRY DWBeginCompileUnit(
-    dw_client                   cli,
-    dw_cu_info                 *cu  )
+dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
 {
     dw_handle                   new;
     uint                        tmp;
@@ -58,10 +56,10 @@ dw_handle DWENTRY DWBeginCompileUnit(
         dw_sectnum                  sect;
 
         for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
-            if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ){
-                cli->section_base[ sect ] = 0;
-            }else{
-                cli->section_base[ sect ] = CLITell( sect );
+            if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ) {
+                cli->section_base[sect] = 0;
+            } else {
+                cli->section_base[sect] = CLITell( sect );
             }
         }
     }
@@ -127,9 +125,9 @@ dw_handle DWENTRY DWBeginCompileUnit(
     /* AT_macro_info */
     CLIReloc3( DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_MACINFO );
     /* AT_base_types */
-    if( cli->dbg_pch != NULL ){ // want start of ccu in pch
-        CLIReloc4( DW_DEBUG_INFO, DW_W_EXT_REF, cli->dbg_pch, sizeof( compuhdr_prologue )  );
-    }else{  // 0 no pch
+    if( cli->dbg_pch != NULL ) { // want start of ccu in pch
+        CLIReloc4( DW_DEBUG_INFO, DW_W_EXT_REF, cli->dbg_pch, sizeof( compuhdr_prologue ) );
+    } else {  // 0 no pch
         Info32( cli, 0  );
     }
    /* AT_WATCOM_memory_model */
@@ -148,8 +146,7 @@ dw_handle DWENTRY DWBeginCompileUnit(
 }
 
 
-void DWENTRY DWEndCompileUnit(
-    dw_client                   cli )
+void DWENTRY DWEndCompileUnit( dw_client cli )
 {
     EndChildren( cli );
     EndChildren( cli );
@@ -168,19 +165,18 @@ void DWENTRY DWEndCompileUnit(
 }
 
 
-dw_client DWENTRY DWInit(
-    const dw_init_info *        info )
+dw_client DWENTRY DWInit( const dw_init_info *info )
 {
     dw_client                   cli;
 
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
 
     cli = info->funcs.alloc( sizeof( struct dw_client ) );
 
     /* copy some parms */
     cli->funcs = info->funcs;
-    memcpy( &cli->exception_handler, &info->exception_handler,
-        sizeof( info->exception_handler ) );
+    memcpy( &cli->exception_handler, &info->exception_handler, sizeof( info->exception_handler ) );
     cli->producer_name = StrDup( cli, info->producer_name );
     cli->compiler_options = info->compiler_options;
     cli->language = info->language;
@@ -188,37 +184,34 @@ dw_client DWENTRY DWInit(
 
     InitDebugAbbrev( cli );
     InitDebugLoc( cli );
-    if( cli->compiler_options & DW_CM_ABBREV_GEN ){
+    if( cli->compiler_options & DW_CM_ABBREV_GEN ) {
         GenAllAbbrev( cli );
     }
     return( cli );
 }
 
 
-void DWENTRY DWFini(
-    dw_client                   cli )
+void DWENTRY DWFini( dw_client cli )
 {
     FiniDebugLoc( cli );
-    if( !(cli->compiler_options & DW_CM_ABBREV_PRE) ) {
+    if( (cli->compiler_options & DW_CM_ABBREV_PRE) == 0 ) {
         FiniDebugAbbrev( cli );
     }
     CLIFree( cli->producer_name );
     CLIFree( cli );
 }
 
-extern void DWInitDebugLine(
-    dw_client                   cli,
-    dw_cu_info                 *cu  ){
-
+extern void DWInitDebugLine( dw_client cli, dw_cu_info *cu )
+{
     cli->offset_size = cu->offset_size;
     cli->segment_size = cu->segment_size;
     cli->dbg_pch = cu->dbg_pch;
     cli->defset = 0;
-    cli->section_base[ DW_DEBUG_LINE ] = CLITell( DW_DEBUG_LINE );
+    cli->section_base[DW_DEBUG_LINE] = CLITell( DW_DEBUG_LINE );
     InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
 }
 
-extern void DWFiniDebugLine(
-    dw_client                   cli ){
+extern void DWFiniDebugLine( dw_client cli )
+{
     FiniDebugLine( cli );
 }

@@ -34,7 +34,7 @@
 #include <limits.h>
 
 #ifndef _MAX_PATH
-#define _MAX_PATH (PATH_MAX+1)
+#define _MAX_PATH (PATH_MAX + 1)
 #endif
 
 #include "dwpriv.h"
@@ -42,10 +42,7 @@
 #include "dwmem.h"
 #include "dwline.h"
 
-static void writeFileName(
-    dw_client                   cli,
-    const char                  *name,
-    size_t                      len ) // len of name including terminator
+static void writeFileName( dw_client cli, const char *name, size_t len ) // len of name including terminator
 {
     uint_8                      buf[1 + MAX_LEB128 + 1 + _MAX_PATH + 1 + MAX_LEB128 * 3];
     uint_8                      attribBuf[MAX_LEB128];
@@ -53,7 +50,7 @@ static void writeFileName(
     int                         bufSize = 0;
 
     buf[0] = 0;  // identifies extended opcode
-    bufSize = 2+len; // size of sub-opcode, name+terminator, & path size
+    bufSize = 2 + len; // size of sub-opcode, name+terminator, & path size
 
     // find out size of file time/size leb128's:
     end = ULEB128( attribBuf, 0 ); //NYI: replace 0 with time/date stamp of file
@@ -61,7 +58,7 @@ static void writeFileName(
     end = ULEB128( attribBuf, 0 ); //NYI: replace 0 with file size
     bufSize += end-attribBuf; // add on size of file size val
 
-    end = ULEB128(buf+1,bufSize); // write the opcode size
+    end = ULEB128( buf + 1, bufSize ); // write the opcode size
 
     *end = DW_LNE_define_file; // write in the sub-opcode
     end++;
@@ -74,13 +71,11 @@ static void writeFileName(
     end = ULEB128( end, 0 ); // NYI: replace 0 with time/date stamp of file
     end = ULEB128( end, 0 ); // NYI: replace 0 with size file
 
-    CLIWrite( DW_DEBUG_LINE, buf, end-buf );
+    CLIWrite( DW_DEBUG_LINE, buf, end - buf );
 }
 
 
-uint GetFileNumber(
-    dw_client                   cli,
-    const char                  *name )
+uint GetFileNumber( dw_client cli, const char *name )
 {
     size_t                      len;
     dw_include                  *walk;
@@ -107,11 +102,9 @@ uint GetFileNumber(
 }
 
 
-void DWENTRY DWSetFile(
-    dw_client                   cli,
-    const char                  *filename )
+void DWENTRY DWSetFile( dw_client cli, const char *filename )
 {
-    uint_8                      buf[ 1 + MAX_LEB128 ];
+    uint_8                      buf[1 + MAX_LEB128];
     uint_8                      *end;
 
     _Validate( filename != NULL );
@@ -122,20 +115,15 @@ void DWENTRY DWSetFile(
 }
 
 
-void DWENTRY DWLineNum(
-    dw_client           cli,
-    uint                info,
-    dw_linenum          line_num,
-    dw_column           column,
-    dw_addr_offset      addr )
+void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column column, dw_addr_offset addr )
 {
-    uint_8              buf[ 3 + 2 * MAX_LEB128 ];
+    uint_8              buf[3 + 2 * MAX_LEB128];
     uint_8              *end;
     unsigned            size;
 
     /* set the basic_block register properly */
     if( info & DW_LN_BLK ) {
-        buf[ 0 ] = DW_LNS_set_basic_block;
+        buf[0] = DW_LNS_set_basic_block;
         CLIWrite( DW_DEBUG_LINE, buf, 1 );
     }
 
@@ -143,18 +131,18 @@ void DWENTRY DWLineNum(
     if( info & DW_LN_STMT ) {
         if( !cli->debug_line.is_stmt ) {
             cli->debug_line.is_stmt = 1;
-            buf[ 0 ] = DW_LNS_negate_stmt;
+            buf[0] = DW_LNS_negate_stmt;
             CLIWrite( DW_DEBUG_LINE, buf, 1 );
         }
     } else if( cli->debug_line.is_stmt ) {
         cli->debug_line.is_stmt = 0;
-        buf[ 0 ] = DW_LNS_negate_stmt;
+        buf[0] = DW_LNS_negate_stmt;
         CLIWrite( DW_DEBUG_LINE, buf, 1 );
     }
 
     if( column != cli->debug_line.column ) {
         cli->debug_line.column = column;
-        buf[ 0 ] = DW_LNS_set_column;
+        buf[0] = DW_LNS_set_column;
         end = LEB128( buf + 1, column );
         CLIWrite( DW_DEBUG_LINE, buf, end - buf );
     }
@@ -171,42 +159,37 @@ void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
     uint_8      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
     uint_8      *end;
 
-    buf[ 0 ] = 0;  //extended
-    end = ULEB128(buf+1, 1+cli->offset_size ); // write the opcode size
+    buf[0] = 0;  //extended
+    end = ULEB128( buf + 1, 1 + cli->offset_size ); // write the opcode size
     *end = DW_LNE_set_address;
     ++end;
-    CLIWrite( DW_DEBUG_LINE, buf, end-buf );
+    CLIWrite( DW_DEBUG_LINE, buf, end - buf );
     CLIReloc3( DW_DEBUG_LINE, DW_W_LABEL, sym );
     cli->debug_line.addr = addr;
 }
 
-void DWLineSeg(  dw_client  cli, dw_sym_handle sym )
+void DWLineSeg( dw_client cli, dw_sym_handle sym )
 {
     uint_8                      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
     uint_8                      *end;
 
     if( cli->segment_size != 0 ) {
-        buf[ 0 ] = 0;  //extended
-        end = ULEB128(buf+1, 1+cli->segment_size ); // write the opcode size
+        buf[0] = 0;  //extended
+        end = ULEB128( buf + 1, 1 + cli->segment_size ); // write the opcode size
         *end = DW_LNE_WATCOM_set_segment_OLD;
 //        *end = DW_LNE_WATCOM_set_segment;
         ++end;
-        CLIWrite( DW_DEBUG_LINE, buf, end-buf );
+        CLIWrite( DW_DEBUG_LINE, buf, end - buf );
         CLIReloc3( DW_DEBUG_LINE, DW_W_LABEL_SEG, sym );
     }
 }
 
-void InitDebugLine(
-    dw_client                   cli,
-    const char                  *source_filename,
-    const char                  *inc_list,
-    unsigned                    inc_list_len )
+void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_list, unsigned inc_list_len )
 {
     stmt_prologue prol = {
         0,
         DWARF_IMPL_VERSION,
-        sizeof( stmt_prologue )
-                - offsetof( stmt_prologue, minimum_instruction_length ),
+        sizeof( stmt_prologue ) - offsetof( stmt_prologue, minimum_instruction_length ),
         DW_MIN_INSTR_LENGTH,
         0,
         DWLINE_BASE,
@@ -240,34 +223,32 @@ void InitDebugLine(
     cli->debug_line.end_sequence = 0;
 
     /* write the prologue */
-    CLIWrite( DW_DEBUG_LINE, (char*)&prol, sizeof( prol ) );
+    CLIWrite( DW_DEBUG_LINE, (char *)&prol, sizeof( prol ) );
 
     if( inc_list != 0 ) {       // write the include list
         CLIWrite( DW_DEBUG_LINE, inc_list, inc_list_len );
     }
 
-    CLIWrite( DW_DEBUG_LINE, terminators, sizeof(terminators) );
+    CLIWrite( DW_DEBUG_LINE, terminators, sizeof( terminators ) );
 
     /* and put out the source filename */
     GetFileNumber( cli, source_filename );
 }
 
 
-void FiniDebugLine(
-    dw_client                   cli )
+void FiniDebugLine( dw_client cli )
 {
-    char                        buf[ sizeof( uint_32 ) ];
+    char                        buf[sizeof( uint_32 )];
     long                        size;
 
-    buf[ 0 ] = 0;
-    buf[ 1 ] = 1;
-    buf[ 2 ] = DW_LNE_end_sequence;
+    buf[0] = 0;
+    buf[1] = 1;
+    buf[2] = DW_LNE_end_sequence;
     CLIWrite( DW_DEBUG_LINE, buf, 3 );
-    size = CLITell( DW_DEBUG_LINE ) - sizeof( uint_32 )
-        - cli->section_base[ DW_DEBUG_LINE ];
+    size = CLITell( DW_DEBUG_LINE ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_LINE];
     WriteU32( buf, size );
-    CLISeek( DW_DEBUG_LINE, cli->section_base[ DW_DEBUG_LINE ], DW_SEEK_SET );
-    CLIWrite( DW_DEBUG_LINE, buf, sizeof(uint_32) );
+    CLISeek( DW_DEBUG_LINE, cli->section_base[DW_DEBUG_LINE], DW_SEEK_SET );
+    CLIWrite( DW_DEBUG_LINE, buf, sizeof( uint_32 ) );
     CLISeek( DW_DEBUG_LINE, 0, DW_SEEK_END );
     FreeChain( cli, cli->debug_line.files );
 }
