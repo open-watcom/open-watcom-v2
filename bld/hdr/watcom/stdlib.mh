@@ -463,7 +463,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 #define _MAX_FNAME      48      /*  maximum length of a file name       */
 #define _MAX_EXT        48      /*  maximum length of a file extension  */
 :elsesegment DOS
-#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__)
+#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
 #define _MAX_DRIVE   3  /* maximum length of drive component */
 #define _MAX_DIR    256 /* maximum length of path component */
 #define _MAX_FNAME  256 /* maximum length of file name component */
