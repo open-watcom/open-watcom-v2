@@ -40,10 +40,11 @@
 
 _WCRTLINK int chdir( const char *path )
 {
-    if ( RdosSetCurDir( path ))
+    if( RdosSetCurDir( path ) ) {
         return 0;
-    else
+    } else {
         return 1;
+    }
 }
 
 _WCRTLINK char *getcwd( char *buf, size_t size )
@@ -55,9 +56,9 @@ _WCRTLINK char *getcwd( char *buf, size_t size )
     if( buf == NULL ) {
         size = 256;
         p = lib_malloc( size );
-    }
-    else
+    } else {
         p = buf;
+    }
 
     drive = RdosGetCurDrive();
 
@@ -65,10 +66,11 @@ _WCRTLINK char *getcwd( char *buf, size_t size )
     cwd[1] = DRV_SEP;
     cwd[2] = DIR_SEP;
 
-    if( RdosGetCurDir( drive, &cwd[3] ) )
+    if( RdosGetCurDir( drive, &cwd[3] ) ) {
         return( strncpy( p, cwd, size ) );
-    else
+    } else {
         return( NULL );
+    }
 }
 
 _WCRTLINK int _chdrive( int drive )
@@ -128,10 +130,11 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
         df->bytes_per_sector = sector_size;                             
     }
 
-    if( stat ) 
+    if( stat ) {
         return( 0 );
-    else
+    } else {
         return( -1 );
+    }
 }
 
 static int IsMatch( struct dirent *dir, const char *fname )
@@ -154,70 +157,71 @@ static int IsMatch( struct dirent *dir, const char *fname )
         return( 1 );
 
     if( !strcmp( sptr, "*." ) ) {
-        if( strchr( fptr, '.' ) )
+        if( strchr( fptr, '.' ) ) {
             return( 0 );
-        else
+        } else {
             return( 1 );
+        }
     }
 
-        for( ;; ) {
-                while( *sptr && *fptr ) {
-                        switch( *sptr ) {
-                                case '*':
-                                        ch = *(sptr + 1);
-                                        if( ch ) {
-                                                if( ch == *fptr ) {
-                                                    lsptr = sptr;
-                                                        sptr += 2;
-                                                        fptr++;
-                                                        lfptr = fptr;
-                                                }
-                                                else
-                                                        fptr++;
-                                        }
-                                        else
-                                                fptr++;
-                                        break;
-        
-                                case '?':
-                                        sptr++;
-                                        fptr++;
-                                        break;
-
-                                default:
-                                        if( *sptr == *fptr )    {
-                                                sptr++;
-                                                fptr++;
-                                        } else {
-                                                if( lfptr ) {
-                                                        fptr = lfptr;
-                                                        sptr = lsptr;
-                                                        lfptr = 0;
-                                                        lsptr = 0;
-                                                }
-                                                else
-                                                        return( 0 );
-                                        }
-                                        break;
-                        }
+    for( ;; ) {
+        while( *sptr && *fptr ) {
+            switch( *sptr ) {
+            case '*':
+                ch = *(sptr + 1);
+                if( ch ) {
+                    if( ch == *fptr ) {
+                        lsptr = sptr;
+                        sptr += 2;
+                        fptr++;
+                        lfptr = fptr;
+                    } else {
+                        fptr++;
+                    }
+                } else {
+                    fptr++;
                 }
+                break;
 
-                if( *sptr == 0 && *fptr == 0 )
-                        return( 1 );
-                else {
-                        if( *sptr == '*' && *(sptr+1) == 0 )
-                                return( 1 );
+            case '?':
+                sptr++;
+                fptr++;
+                break;
 
-                        if( lfptr ) {
-                                fptr = lfptr;
-                                sptr = lsptr;
-                                lfptr = 0;
-                                lsptr = 0;
-                        }
-                        else
-                                return( 0 );
+            default:
+                if( *sptr == *fptr )    {
+                    sptr++;
+                    fptr++;
+                } else {
+                    if( lfptr ) {
+                        fptr = lfptr;
+                        sptr = lsptr;
+                        lfptr = 0;
+                        lsptr = 0;
+                    } else {
+                        return( 0 );
+                    }
                 }
+                break;
+            }
         }
+
+        if( *sptr == 0 && *fptr == 0 ) {
+            return( 1 );
+        } else {
+            if( *sptr == '*' && *(sptr + 1) == 0 )
+                return( 1 );
+
+            if( lfptr ) {
+                fptr = lfptr;
+                sptr = lsptr;
+                lfptr = 0;
+                lsptr = 0;
+            } else {
+                return( 0 );
+            }
+        }
+    }
 }
 
 static int GetSingleFile( struct dirent *dir )
@@ -232,30 +236,32 @@ static int GetSingleFile( struct dirent *dir )
                      &dir->d_msb_time,
                      &dir->d_lsb_time ) ) {
 
-            if( IsMatch( dir, dir->d_name ) )
+            if( IsMatch( dir, dir->d_name ) ) {
                 return( 1 );
-            else
+            } else {
                 dir->d_entry_nr++;
-        } else
+            }
+        } else {
             return( 0 );
+        }
     }
 }
 
-_WCRTLINK struct dirent *opendir( const char *name )
+_WCRTLINK DIR *opendir( const char *name )
 {
-    struct dirent   *parent;
+    DIR             *parent;
     int             handle;
     char            *ptr;
     int             size;
     char            tmp[NAME_MAX + 1];
         
-    parent = lib_malloc( sizeof( *parent ) );
+    parent = lib_malloc( sizeof( DIR ) );
     if( parent == NULL )
         return( NULL );
 
     handle = RdosOpenDir( name );
 
-    if( handle == 0) {
+    if( handle == 0 ) {
         strcpy( tmp, name );
         ptr = tmp;
         size = strlen( tmp );
@@ -292,27 +298,29 @@ _WCRTLINK struct dirent *opendir( const char *name )
 }
 
 
-_WCRTLINK struct dirent *readdir( struct dirent *parent )
+_WCRTLINK struct dirent *readdir( DIR *parent )
 {
     if( parent == NULL )
         return( NULL );
 
     parent->d_entry_nr++;
 
-    if (GetSingleFile( parent ) ) 
+    if( GetSingleFile( parent ) ) {
         return( parent );
-    else
+    } else {
         return( NULL );
+    }
 }
 
-_WCRTLINK void rewinddir( struct dirent *dirp )
+_WCRTLINK void rewinddir( DIR *dirp )
 {
-    if( dirp )
+    if( dirp != NULL ) {
         dirp->d_entry_nr = -1;
+    }
 }
 
 
-_WCRTLINK int closedir( struct dirent *dirp )
+_WCRTLINK int closedir( DIR *dirp )
 {
     if( dirp == NULL )
         return( 1 );
@@ -324,16 +332,18 @@ _WCRTLINK int closedir( struct dirent *dirp )
 
 _WCRTLINK int mkdir( const char *path )
 {
-    if( RdosMakeDir( path ))
+    if( RdosMakeDir( path ) ) {
         return 0;
-    else
+    } else {
         return -1;
+    }
 }
 
 _WCRTLINK int rmdir( const char *path )
 {
-    if( RdosRemoveDir( path ))
+    if( RdosRemoveDir( path ) ) {
         return 0;
-    else
+    } else {
         return -1;
+    }
 }

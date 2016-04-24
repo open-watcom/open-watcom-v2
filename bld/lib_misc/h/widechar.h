@@ -38,7 +38,8 @@
     #define _UNICODE
     #define __UNICODE__
 
-    #define DIR_TYPE            struct _wdirent
+    #define DIR_TYPE            WDIR
+    #define DIRENT_TYPE         struct _wdirent
     #define CHAR_TYPE           wchar_t
     #define UCHAR_TYPE          wchar_t
     #define INTCHAR_TYPE        wint_t
@@ -52,7 +53,8 @@
     #define __F_NAME(n1,n2)     n2
     #define INTCHAR_EOF         WEOF
 #else
-    #define DIR_TYPE            struct dirent
+    #define DIR_TYPE            DIR
+    #define DIRENT_TYPE         struct dirent
     #define CHAR_TYPE           char
     #define UCHAR_TYPE          unsigned char
     #define INTCHAR_TYPE        int
