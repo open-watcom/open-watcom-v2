@@ -24,41 +24,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sbrk() for OS/2.
 *
 ****************************************************************************/
 
 
+#include "dll.h"
 #include "variety.h"
+#include <stddef.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include "linuxsys.h"
-#include "heapacc.h"
-#include "heap.h"
+#define INCL_DOSMEMMGR
+#include <wos2.h>
+#include "rtstack.h"
 #include "rterrno.h"
 #include "rtdata.h"
+#include "heap.h"
+#include "heapacc.h"
 #include "thread.h"
 
+
+#ifdef _M_I86
 
 void _WCNEAR *__brk( unsigned brk_value )
 {
     unsigned old_brk_value;
-    unsigned sys_brk_value;
+    unsigned seg_size;
+    unsigned segment;
 
+    if( brk_value < _STACKTOP ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
+    }
+    seg_size = ( brk_value + 0x0f ) >> 4;
+    if( seg_size == 0 ) {
+        seg_size = 0x1000;
+    }
     /* try setting the block of memory */
     _AccessNHeap();
-
-    sys_brk_value = sys_brk( brk_value );
-    if( sys_brk_value == -1 ) {
+    segment = _DGroup();
+    if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
         return( (void _WCNEAR *)-1 );
-    }
-    if( _curbrk == 0 ) {
-        _curbrk = sys_brk_value;
-        brk_value = sys_brk_value;
     }
 
     old_brk_value = _curbrk;        /* return old value of _curbrk */
@@ -73,7 +80,22 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     return( __brk( _curbrk + increment ) );
 }
 
-_WCRTLINK int brk( void *endds )
+#else
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
+    if( increment > 0 ) {
+        PBYTE       p;
+
+        increment = ( increment + 0x0fff ) & ~0x0fff;
+        if( !DosAllocMem( (PPVOID)&p, increment, PAG_COMMIT|PAG_READ|PAG_WRITE ) ) {
+            return( p );
+        }
+        _RWD_errno = ENOMEM;
+    } else {
+        _RWD_errno = EINVAL;
+    }
+    return( (void _WCNEAR *)-1 );
 }
+
+#endif
