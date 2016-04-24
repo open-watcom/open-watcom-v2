@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-#ifdef __OSI__
-#define __OS2__
-#endif
 #undef __INLINE_FUNCTIONS__
 #include "widechar.h"
 #include "variety.h"
