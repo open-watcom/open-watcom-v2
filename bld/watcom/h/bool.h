@@ -40,10 +40,3 @@
     #define __bool_true_false_are_defined 1
   #endif
 #endif
-
-#ifndef TRUE
-    #define TRUE 1
-#endif
-#ifndef FALSE
-    #define FALSE 0
-#endif

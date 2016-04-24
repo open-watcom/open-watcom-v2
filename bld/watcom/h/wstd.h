@@ -385,13 +385,6 @@ typedef unsigned_8      sbit;
 
 /* Miscellaneous constants:
  */
-#if !defined( TRUE )
-    #define TRUE        1
-#endif
-
-#if !defined( FALSE )
-    #define FALSE       0
-#endif
 
 #if !defined( NULLCHAR )
     #define NULLCHAR    '\0'
