@@ -60,8 +60,7 @@
 !inject qallflgs.obj                                                q16 q32
 !inject rdfree.obj                                                                                      rdk
 !inject rdmalloc.obj                                                                                    rdk
-!inject sbrk086.obj  d16                                                    w16
-!inject sbrk386.obj      d32                                                    w32 osi
+!inject sbrk.obj     d16 d32                                                w16 w32 osi
 !inject sbrklnx.obj                                                                     l32 lpc lmp
 !inject sbrkos2.obj                                         o16 o32
 !inject sbrkqnx.obj                                                 q16 q32
@@ -81,7 +80,7 @@ mem_opts = -ol+t $($(processor)_ac_opts)
 
 grownear_opts = -I"$(win386_dir)/h"
 nheapmin_opts = -I"$(win386_dir)/h"
-sbrk386_opts  = -I"$(win386_dir)/h"
+sbrk_opts     = -I"$(win386_dir)/h"
 
 # WORKAROUND! The heap code contains a very suspect far pointer truncation,
 # but the code can't be modified without fully understanding it
