@@ -61,6 +61,8 @@ typedef wchar_t TCHAR;
 
 #define __T(x)          L ## x
 
+#define _TDIR           WDIR
+
 /* Program */
 
 #define _tmain          wmain
@@ -361,6 +363,8 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _TEOF           EOF
 
 #define __T(x)          x
+
+#define _TDIR           DIR
 
 /* Program */
 

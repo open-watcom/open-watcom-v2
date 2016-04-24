@@ -55,6 +55,7 @@ struct _wdirent {
     char                d_first;            /* flag for 1st time */
     wchar_t             *d_openpath;        /* path specified to _wopendir */
 };
+typedef struct _wdirent WDIR;
 
 struct dirent {
     char                d_dta[21];          /* disk transfer area */
@@ -90,33 +91,34 @@ typedef struct dirent   DIR;
 _WCRTLINK extern int              chdir( const char *__path );
 _WCRTLINK extern int              _chdir( const char *__path );
 _WCRTLINK extern int              _chdrive( int __drive );
-_WCRTLINK extern int              closedir( struct dirent * );
+_WCRTLINK extern int              closedir( DIR * );
 _WCRTLINK extern char             *getcwd( char *__buf, size_t __size );
 _WCRTLINK extern char             *_getcwd( char *__buf, size_t __size );
-_WCRTLINK extern char             *_getdcwd( int __drive, char *__buffer,
-                                            size_t __maxlen );
+_WCRTLINK extern char             *_getdcwd( int __drive, char *__buffer, size_t __maxlen );
 _WCRTLINK extern unsigned         _getdrive( void );
 _WCRTLINK extern unsigned         _getdiskfree( unsigned __drive,
                                                 struct _diskfree_t
                                                 *__diskspace);
 _WCRTLINK extern int              mkdir( const char *__path );
 _WCRTLINK extern int              _mkdir( const char *__path );
-_WCRTLINK extern struct dirent    *opendir( const char * );
-_WCRTLINK extern struct dirent    *readdir( struct dirent * );
-_WCRTLINK extern void             rewinddir( struct dirent * );
+_WCRTLINK extern DIR              *opendir( const char * );
+_WCRTLINK extern struct dirent    *readdir( DIR * );
+_WCRTLINK extern void             rewinddir( DIR * );
 _WCRTLINK extern int              rmdir( const char *__path );
 _WCRTLINK extern int              _rmdir( const char *__path );
 
+#if !( defined( __RDOS__ ) || defined( __RDOSDEV__ ) )
 _WCRTLINK extern int              _wchdir( const wchar_t *__path );
-_WCRTLINK extern int              _wclosedir( struct _wdirent * );
 _WCRTLINK extern wchar_t          *_wgetcwd( wchar_t *__buf, size_t __size );
-_WCRTLINK extern wchar_t          *_wgetdcwd( int __drive, wchar_t *__buffer,
-                                             size_t __maxlen );
+_WCRTLINK extern wchar_t          *_wgetdcwd( int __drive, wchar_t *__buffer, size_t __maxlen );
 _WCRTLINK extern int              _wmkdir( const wchar_t *__path );
-_WCRTLINK extern struct _wdirent  *_wopendir( const wchar_t * );
-_WCRTLINK extern struct _wdirent  *_wreaddir( struct _wdirent * );
-_WCRTLINK extern void             _wrewinddir( struct _wdirent * );
 _WCRTLINK extern int              _wrmdir( const wchar_t *__path );
+
+_WCRTLINK extern WDIR             *_wopendir( const wchar_t * );
+_WCRTLINK extern struct _wdirent  *_wreaddir( WDIR * );
+_WCRTLINK extern int              _wclosedir( WDIR * );
+_WCRTLINK extern void             _wrewinddir( WDIR * );
+#endif
 
 :include poppack.sp
 
