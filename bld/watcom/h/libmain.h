@@ -46,19 +46,17 @@ extern int _LibMain( int hdll, int reason, void *reserved );
 #pragma aux _LibMain "_*" value [eax] parm [ebx] [edx] [eax]
 extern int __stdcall LibMain( int hdll, int reason, void *reserved );
 
+#elif defined(__WINDOWS_386__)
+
+    #define _EXPORT_ENTRY
+    extern int __far __pascal WEP( int );
+
 #elif defined( __WINDOWS__ )
 
-#if defined(__WINDOWS_386__)
-    #define _EXPORT_ENTRY
-    extern int _WCFAR __pascal WEP( int );
-#elif defined(__WINDOWS_286__)
     #define _EXPORT_ENTRY __export
-    extern int __export _WCFAR __pascal WEP( int );
-    extern int __export _WCI86FAR __pascal _WEP( int );
+    extern int __export __far __pascal WEP( int );
+    extern int __export __far __pascal _WEP( int );
     extern void __clib_WEP( void );
-#else
-    #error platform not supported
-#endif
 
 #elif defined( __DOS__ )
 
