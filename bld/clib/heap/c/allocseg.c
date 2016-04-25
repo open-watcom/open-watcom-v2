@@ -89,7 +89,7 @@ __segment __AllocSeg( unsigned int amount )
         return( _NULLSEG );
 #elif defined(__QNX__)
     rc = qnx_segment_alloc_flags( ((long)n) << 4, __qnx_alloc_flags );
-    if( rc == -1 )
+    if( rc == (unsigned)-1 )
         return( _NULLSEG );
     seg = (__segment)rc;
 #elif defined(__WINDOWS__)
@@ -105,7 +105,8 @@ __segment __AllocSeg( unsigned int amount )
             GlobalFree( hmem );
             return( _NULLSEG );
         }
-  #if 0       /* code generator can't handle this */
+  #if 0
+        /* code generator can't handle this */
         if( FP_OFF( p ) != 0 ) {    /* in case, Microsoft changes Windows */
             GlobalUnlock( hmem );   /* in post 3.1 versions */
             GlobalFree( hmem );
