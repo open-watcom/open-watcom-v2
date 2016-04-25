@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Free segment
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -47,7 +47,7 @@
     #else
         #define MODIFIES es
     #endif
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
     #define MODIFIES es
@@ -58,12 +58,12 @@
 #include "heap.h"
 #include "seterrno.h"
 
-#if defined(__WINDOWS_286__) || defined(__OS2__)
+#if defined(__WINDOWS__) || defined(__OS2__)
 
 #pragma aux DoFreeSeg modify [MODIFIES]
 static int DoFreeSeg( __segment seg )
 {
-  #if defined(__WINDOWS_286__)
+  #if defined(__WINDOWS__)
     HANDLE hmem;
 
     hmem = (HANDLE)GlobalHandle( seg );
@@ -135,7 +135,7 @@ static int __DoFreeSeg( __segment first )
 #endif
 
 
-#if defined(__WINDOWS_286__) || defined(__OS2__)
+#if defined(__WINDOWS__) || defined(__OS2__)
 #pragma aux __FreeSeg modify [MODIFIES]
 #endif
 int __FreeSeg( __segment seg )
@@ -144,7 +144,7 @@ int __FreeSeg( __segment seg )
     if( qnx_segment_free( seg ) == -1 ) {
         return( -1 );
     }
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
     if( __DoFreeSeg( seg ) ) {
         return( -1 );
     }

@@ -230,11 +230,7 @@ static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
     return( (frlptr)p1 );
 }
 
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     frlptr      p1;
@@ -246,7 +242,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     p1 = __nheapbeg->freehead.prev; /* point to last free block */
     brk_value = (unsigned)((PTR)p1 + p1->len + TAG_SIZE );
   #if defined(__DOS_EXT__)
-    if( _IsPharLap() && !__X32VM)
+    if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
@@ -256,7 +252,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 }
 #endif
 
-#if !defined(__CALL21__) && defined(__DOS_EXT__)
+#if defined(__DOS_EXT__) && !defined(__CALL21__)
 static void *RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
@@ -306,11 +302,7 @@ static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount = *amount;
     unsigned amt;
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
     unsigned last_free_amt;
 #endif
 
@@ -319,11 +311,7 @@ static int __AdjustAmount( unsigned *amount )
     if( amt < old_amount ) {
         return( 0 );
     }
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
   #if defined(__DOS_EXT__)
     if( !__IsCtsNHeap() ) {
         // Allocating extra to identify the dpmi block
@@ -365,12 +353,8 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = _amblksiz & ~1u;
     }
-#if defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__DOS_EXT__)     || \
-    defined(__RDOS__)
+#if defined(__WINDOWS_386__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
     /* make sure amount is a multiple of 4k/64k */
     *amount = amt;
     amt += BLKSIZE_ALIGN_MASK;
@@ -382,13 +366,8 @@ static int __AdjustAmount( unsigned *amount )
     return( *amount != 0 );
 }
 
-#if defined(__WINDOWS_286__) || \
-    defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__DOS_EXT__)     || \
-    defined(__RDOS__)
+#if defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
 static int __CreateNewNHeap( unsigned amount )
 {
     mheapptr        p1;
@@ -506,12 +485,8 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined(__WINDOWS_286__) || \
-    defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__RDOS__)
+#if defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__RDOS__)
     // first try to free any available storage
     _nheapshrink();
     return( __CreateNewNHeap( amount ) );
@@ -536,7 +511,7 @@ int __ExpandDGROUP( unsigned amount )
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
   #if defined(__DOS_EXT__)
-    if( _IsPharLap() && !__X32VM ) {
+    if( _IsPharLap() && !_IsFlashTek() ) {
         _curbrk = SegmentLimit();
     }
   #endif

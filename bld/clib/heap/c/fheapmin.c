@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of far _heapmin() and _fheapmin().
+* Description:  Implementation of far _heapmin() and _fheapmin()
+*                   (16-bit code only)
 *
 ****************************************************************************/
 
@@ -38,12 +39,10 @@
 #include "heapacc.h"
 
 #if defined(__OS2__)
-    #if defined( _M_I86 )
-        #if defined(__BIG_DATA__)
-            #define MODIFIES ds es
-        #else
-            #define MODIFIES es
-        #endif
+    #if defined(__BIG_DATA__)
+        #define MODIFIES ds es
+    #else
+        #define MODIFIES es
     #endif
 #elif defined(__WINDOWS__)
     #define MODIFIES es
@@ -51,7 +50,7 @@
 
 #if defined(__BIG_DATA__)
 
-#if defined(__WINDOWS_286__) || defined(__OS2_286__)
+#if defined(__WINDOWS__) || defined(__OS2__)
     #pragma aux _heapmin modify [MODIFIES]
     #pragma aux _heapshrink modify [MODIFIES]
 #endif
@@ -68,7 +67,7 @@ _WCRTLINK int _heapmin( void )
 
 #endif
 
-#if defined(__WINDOWS_286__) || defined(__OS2_286__)
+#if defined(__WINDOWS__) || defined(__OS2__)
     #pragma aux _fheapmin modify [MODIFIES]
     #pragma aux _fheapshrink modify [MODIFIES]
 #endif

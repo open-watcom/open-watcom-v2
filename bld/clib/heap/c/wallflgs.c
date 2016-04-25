@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #include <windows.h>
 
 _WCRTDATA unsigned long _WCNEAR __win_alloc_flags   = GMEM_MOVEABLE;

@@ -72,8 +72,7 @@ _WCRTLINK int _nheapmin( void )
 }
 
 #if defined(__WARP__)        || \
-    defined(__WINDOWS_286__) || \
-    defined(__WINDOWS_386__) || \
+    defined(__WINDOWS__)     || \
     defined(__NT__)          || \
     defined(__CALL21__)      || \
     defined(__RDOS__)
@@ -146,8 +145,7 @@ _WCRTLINK int _nheapshrink( void )
 {
     mheapptr mhp;
 #if !defined(__WARP__)        && \
-    !defined(__WINDOWS_286__) && \
-    !defined(__WINDOWS_386__) && \
+    !defined(__WINDOWS__)     && \
     !defined(__NT__)          && \
     !defined(__CALL21__)      && \
     !defined(__RDOS__)

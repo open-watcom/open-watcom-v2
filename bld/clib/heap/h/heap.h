@@ -198,11 +198,7 @@ extern void             _WCNEAR *__brk( unsigned );
 // __IsCtsNHeap() is used to determine whether the operating system provides
 // a continuous near heap block. __ExpandDGroup should slice for more near
 // heap under those operating systems with __IsCtsNHeap() == 1.
-#if defined(__WARP__) ||        \
-    defined(__NT__) ||          \
-    defined(__WINDOWS_386__) || \
-    defined(__WINDOWS_286__) || \
-    defined(__RDOS__)
+#if defined(__WARP__) || defined(__NT__) || defined(__WINDOWS__) || defined(__RDOS__)
  #define __IsCtsNHeap() (0)
 #elif defined(__DOS_EXT__)
  #define __IsCtsNHeap() (!(_IsRationalZeroBase() || _IsCodeBuilder()))

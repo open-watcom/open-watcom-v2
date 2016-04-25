@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory block allocator.
+*                (16-bit code only)
 *
 ****************************************************************************/
 
@@ -42,7 +42,7 @@
 #elif defined(__QNX__)
     #include <sys/types.h>
     #include <sys/seginfo.h>
-#elif defined(__WINDOWS__) && defined( _M_I86 )
+#elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
 #else
@@ -52,9 +52,7 @@
 #include "rtdata.h"
 #include "heap.h"
 
-#if defined(__WINDOWS_286__)
-extern unsigned long    _WCNEAR __win_alloc_flags;
-#elif defined(__QNX__)
+#if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
 #endif
 
@@ -67,7 +65,7 @@ __segment __AllocSeg( unsigned int amount )
 #if defined(__OS2__)
 #elif defined(__QNX__)
     unsigned    rc;
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
 #else
     tiny_ret_t  rc;
 #endif
@@ -94,7 +92,7 @@ __segment __AllocSeg( unsigned int amount )
     if( rc == -1 )
         return( _NULLSEG );
     seg = (__segment)rc;
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
     {
         HANDLE hmem;
         LPSTR p;
