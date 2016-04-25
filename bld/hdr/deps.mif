@@ -268,7 +268,7 @@ wsample.h       : wsample.mh ../crwat.sp ../readonly.sp $(cplus)
 sys/locking.h   : sys/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/time.h      : sys/time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll) ../timeval.sp
 sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll)
-sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp
+sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp ../pid_t.sp
 sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp
 
 # The follow describe the system specific dependencies
@@ -322,7 +322,7 @@ arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh ../crwatcnt.sp
 arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh ../crwatcnt.sp
 arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh ../crwatcnt.sp
 arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp
-arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp
+arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp ../pid_t.sp
 arch/mips/err_no.h       : linux/arch/mips/err_no.mh ../crwatcnt.sp
 arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp
 arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh ../crwatcnt.sp ../clockt.sp
@@ -332,7 +332,7 @@ arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh ../crwatcnt.sp
 arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh ../crwatcnt.sp
 arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh ../crwatcnt.sp
 arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh ../crwatcnt.sp
-arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp
+arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp ../pid_t.sp
 
 !else ifeq system qnx
 

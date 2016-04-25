@@ -22,6 +22,13 @@
 :endsegment
 :include cpluspro.sp
 
+:segment LINUX
+:include incdir.sp
+
+/* Define POSIX 1003.1 types */
+#include _ARCH_INCLUDE(sys/types.h)
+
+:endsegment
 :include timet.sp
 
 :include sizet.sp
@@ -31,11 +38,6 @@
 :include exactint.sp
 
 :segment LINUX
-:include incdir.sp
-
-/* Define POSIX 1003.1 types */
-#include _ARCH_INCLUDE(sys/types.h)
-
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
 typedef unsigned int    u_int;
@@ -61,7 +63,7 @@ typedef long            ino_t;  /* Used for file serial numbers     */
 typedef short unsigned  mode_t; /* Used for some file attributes    */
 typedef short unsigned  nlink_t;/* Used for link counts             */
 typedef long            off_t;  /* Used for file sizes, offsets     */
-typedef int             pid_t;  /* Used for process IDs & group IDs */
+:include pid_t.sp
 typedef short           mpid_t; /* Used for process & group IDs in messages */
 #ifndef _UID_T_DEFINED_
 #define _UID_T_DEFINED_
@@ -146,7 +148,7 @@ typedef long            off_t;  /* file offset value */
 typedef int             mode_t; /* file mode (attributes) */
 :: The following are not cast in stone - they aren't really used
 :: in any structures or function prototypes
-typedef int             pid_t;  /* process identifier */
+:include pid_t.sp
 typedef unsigned long   uid_t;  /* user identifier */
 typedef unsigned long   gid_t;  /* group identifier */
 typedef long long       id_t;   /* pid_t, uid_t or gid_t */
