@@ -57,7 +57,7 @@ dw_handle DWENTRY DWBeginLexicalBlock(
         InfoString( cli, name );
     }
     if( segment ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
     InfoReloc( cli, DW_W_LOW_PC );
@@ -101,10 +101,10 @@ dw_handle DWENTRY DWBeginCommonBlock(
     }
     /* AT_segment */
     if( segment ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     /* AT_location */
-    EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+    EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), loc );
     EndDIE( cli );
     StartChildren( cli );
     return( new );
@@ -170,10 +170,10 @@ dw_handle DWENTRY DWBeginInlineSubroutine(
     if( ret_addr_loc ) abbrev |= AB_RETURN_ADDR;
     StartDIE( cli, AB_INLINED_SUBROUTINE );
     if( ret_addr_loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), ret_addr_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), ret_addr_loc );
     }
     if( segment ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     HandleReference( cli, subr, DW_DEBUG_INFO );
     /* AT_low_pc */
@@ -235,11 +235,11 @@ dw_handle DWENTRY DWBeginSubroutine(
     }
     /* AT_segment */
     if( abbrev & AB_SEGMENT ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     /* AT_vtable_location */
     if( abbrev & AB_VTABLE_LOC  ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), vtable_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), vtable_loc );
     }
     /* AT_name */
     InfoString( cli, name );
@@ -265,9 +265,9 @@ dw_handle DWENTRY DWBeginSubroutine(
     }else{
         /* AT_return_addr */
         if( return_addr_loc != NULL ){
-            EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8),return_addr_loc );
+            EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ),return_addr_loc );
         }else{
-            EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+            EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
         }
         /* AT_low_pc */
         InfoReloc( cli, DW_W_LOW_PC );
@@ -278,9 +278,9 @@ dw_handle DWENTRY DWBeginSubroutine(
     Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
     /* AT_frame_base */
     if( frame_base_loc != NULL ){
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8),frame_base_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ),frame_base_loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     EndDIE( cli );
     StartChildren( cli );
@@ -318,11 +318,11 @@ dw_handle DWENTRY DWBeginEntryPoint(
     InfoULEB128( cli, start_scope );
     /* AT_return_addr */
     if( abbrev & AB_RETURN_ADDR ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), return_addr_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), return_addr_loc );
     }
     /* AT_segment */
     if( abbrev & AB_SEGMENT ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
         InfoReloc( cli, DW_W_LOW_PC );
@@ -388,13 +388,13 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
     MemFuncCommon( cli, abbrev, return_type, name, flags );
     /* AT_segment    */
 //  if( segment != NULL ){
-//      EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+//      EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
 //  }
 //  /* AT_loc       */
 //  if( loc != NULL ){
-//      EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+//      EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), loc );
 //  }else{
-//      EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+//      EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
 //  }
     EndDIE( cli );
     return( new );
@@ -418,9 +418,9 @@ dw_handle DWENTRY DWBeginVirtMemFuncDecl(
     Info8( cli, 1 );
     /* AT_vtable_location */
     if( vtable_loc != NULL ){
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), vtable_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), vtable_loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     EndDIE( cli );
     return( new );
@@ -484,15 +484,15 @@ dw_handle DWENTRY DWFormalParameter(
     InfoString( cli, name );
     /* AT_location */
     if( parm_loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), parm_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), parm_loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     /* AT_WATCOM_parm_entry */
     if( entry_loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), entry_loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), entry_loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     /* AT_type */
     EmitTypeRef( cli, parm_type );
@@ -535,7 +535,7 @@ dw_handle DWENTRY DWLabel(
     InfoULEB128( cli, start_scope );
     /* AT_segment */
     if( segment ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
     InfoReloc( cli, DW_W_LABEL );
@@ -577,7 +577,7 @@ dw_handle DWENTRY DWVariable(
     }
     /* AT_segment */
     if( segment ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), segment );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), segment );
     }
     Info8( cli, (flags & DW_FLAG_GLOBAL) != 0 );
     Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
@@ -585,9 +585,9 @@ dw_handle DWENTRY DWVariable(
     InfoString( cli, name );
     /* AT_location */
     if( loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     /* AT_type */
     EmitTypeRef( cli, type );
