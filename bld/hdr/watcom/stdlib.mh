@@ -657,23 +657,7 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 :include alloca.sp
 
 :endsegment
-:segment QNX
-#if defined(__386__)
-:endsegment
-:segment QNX | LINUX
-_WCRTLINK extern int          brk( void *endds );
-_WCRTLINK extern void _WCNEAR *sbrk( int incr );
-:endsegment
-:segment QNX
-#else
-:endsegment
-:segment DOS | QNX
-_WCRTLINK extern void _WCNEAR *__brk( unsigned __new_brk_value );
-_WCRTLINK extern void _WCNEAR *sbrk( int __increment );
-:endsegment
-:segment QNX
-#endif
-:endsegment
+:include brk.sp
 
 typedef void (*onexit_t)( void );
 _WCRTLINK extern onexit_t     onexit( onexit_t __func );

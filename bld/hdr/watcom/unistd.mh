@@ -29,21 +29,11 @@
 :segment QNX | LINUX
 :include null.sp
 
-/* Symbolic constants for the access() function */
-
-#define R_OK    4       /*  Test for read permission    */
-#define W_OK    2       /*  Test for write permission   */
-#define X_OK    1       /*  Test for execute permission */
-#define F_OK    0       /*  Test for existence of file  */
+:include access.sp
 
 /* Symbolic constants for the lseek() function */
 
-#ifndef _SEEKPOS_DEFINED_       /* If not already defined, define them  */
-#define SEEK_SET    0           /* Seek relative to the start of file   */
-#define SEEK_CUR    1           /* Seek relative to current position    */
-#define SEEK_END    2           /* Seek relative to the end of the file */
-#define _SEEKPOS_DEFINED_
-#endif
+:include seekpos.sp
 
 /* Symbolic constants for stream I/O */
 
@@ -106,15 +96,15 @@
  *  POSIX 1003.1 Prototypes
  */
 
+:include pid_t.sp
+:include uid_t.sp
+:include gid_t.sp
+:include off_t.sp
+:include size_t.sp
+:include ssize_t.sp
+:include intptr_t.sp
+
 _WCRTLINK extern int    access( const char *__path, int __mode );
-:segment QNX
-#if defined(__386__)
-:endsegment
-_WCRTLINK extern int    brk(void *endds);
-_WCRTLINK extern void   _WCNEAR *sbrk(int incr);
-:segment QNX
-#endif
-:endsegment
 _WCRTLINK extern int    close( int __fildes );
 _WCRTLINK extern int    dup( int __fildes );
 :include ext.sp
@@ -189,7 +179,6 @@ _WCRTLINK extern int    umount( const char *__special );
 :segment LINUX
 _WCRTLINK extern int    truncate( const char *__path, off_t __length );
 _WCRTLINK extern int    ftruncate( int __fd, off_t __length );
-
 :endsegment
 
 :include ext.sp
@@ -267,6 +256,8 @@ _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern int    rmdir( const char *__path );
 _WCRTLINK extern unsigned int sleep( unsigned int __seconds );
 _WCRTLINK extern int    usleep( unsigned long __usec );
+
+:include brk.sp
 
 /* Globals used and set by getopt() */
 _WCRTDATA extern char   *optarg;

@@ -104,15 +104,8 @@ using std::time;
 
 #define CLK_TCK          1000
 
-#ifndef _TIMER_T_DEFINED_
-#define _TIMER_T_DEFINED_
-typedef int timer_t;                /* timer type */
-#endif
-
-#ifndef _CLOCKID_T_DEFINED_
-#define _CLOCKID_T_DEFINED_
-typedef int clockid_t;              /* clockid type */
-#endif
+:include timer_t.sp
+:include clockidt.sp
 
 /* 1003.4/D12 Clocks and Timers */
 #ifndef __POSIX_TIMERS

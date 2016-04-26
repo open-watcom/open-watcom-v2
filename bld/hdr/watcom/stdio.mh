@@ -323,9 +323,7 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 
 #define EOF         (-1)                /*  End of File/Error return code   */
 
-#define SEEK_SET    0                   /*  Seek relative to start of file  */
-#define SEEK_CUR    1                   /*  Seek relative to current positn */
-#define SEEK_END    2                   /*  Seek relative to end of file    */
+:include seekpos.sp
 
 #define _NOT_ORIENTED   0               /* stream not yet oriented */
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */

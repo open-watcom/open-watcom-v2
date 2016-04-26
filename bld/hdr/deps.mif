@@ -27,12 +27,12 @@ setjmp_deps   = setjmp.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp 
 signal_deps   = signal.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../incdir.sp $(posixext) $(unixext) $(packll)
 stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../valist.sp $(extension)
 stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp
-stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp ../intptr_t.sp $(saferc) $(extension) ../thrdhndl.sp
-stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp $(saferc) ../exactint.sp ../intptr_t.sp
-stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../valist.sp ../wchar_t.sp ../wint_t.sp $(saferc)
-stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp ../process1.sp ../_exit.sp
+stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp
+stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp $(saferc) ../exactint.sp ../intptr_t.sp ../uintptrt.sp
+stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc)
+stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp ../brk.sp ../process1.sp ../_exit.sp
 string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
-time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension)
+time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp
 wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp ../mbmax.sp
 wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp
 
@@ -193,7 +193,7 @@ graph.h         : $(graph_deps)
 graph2.h        : $(graph_deps)
 i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 inttypes.h      : $(inttypes_deps)
-io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../maxpath.sp $(extension)
+io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../maxpath.sp ../access.sp ../seekpos.sp $(extension)
 iomanip.h       : $(iomanip_deps)
 ios.h           : $(ios_deps)
 iosfwd.h        : $(iosfwd_deps)
@@ -268,7 +268,7 @@ wsample.h       : wsample.mh ../crwat.sp ../readonly.sp $(cplus)
 sys/locking.h   : sys/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 sys/time.h      : sys/time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp $(packll) ../timeval.sp
 sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp $(packll)
-sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp ../size_t.sp ../ssize_t.sp ../incdir.sp $(extension) ../exactint.sp ../pid_t.sp
+sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../time_t.sp ../size_t.sp ../ssize_t.sp ../incdir.sp $(extension) ../exactint.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
 sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
 
 # The follow describe the system specific dependencies
@@ -277,7 +277,7 @@ sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus
 
 fcntl.h         : fcntl.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
 process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) ../wchar_t.sp $(extension) ../thrdhndl.sp ../process1.sp ../_exit.sp
-unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension) ../_exit.sp
+unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../intptr_t.sp $(posixext) $(unixext) $(extension) ../_exit.sp ../brk.sp
 
 sys/_lfndos.h   : dos/sys/_lfndos.mh ../crwatcnt.sp ../readonly.sp
 sys/stat.h      : sys/stat.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../wchar_t.sp $(packll) $(extension)
@@ -292,8 +292,8 @@ netdb.h         : linux/netdb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cpl
 process.h       : process.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../wchar_t.sp $(extension) ../process1.sp ../_exit.sp
 pwd.h           : pwd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
 sched.h         : sched.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus)
-termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk)
-unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp $(posixext) $(unixext) $(extension) ../_exit.sp
+termios.h       : linux/termios.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packlnxk) ../pid_t.sp
+unistd.h        : unistd.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../intptr_t.sp $(posixext) $(unixext) $(extension) ../_exit.sp ../brk.sp
 
 arpa/inet.h     : linux/arpa/inet.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packlnxk)
 netinet/in.h    : linux/netinet/in.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
@@ -322,7 +322,7 @@ arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh ../crwatcnt.sp
 arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh ../crwatcnt.sp
 arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh ../crwatcnt.sp
 arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp
-arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp ../pid_t.sp
+arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
 arch/mips/err_no.h       : linux/arch/mips/err_no.mh ../crwatcnt.sp
 arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp
 arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh ../crwatcnt.sp ../clock_t.sp
@@ -332,7 +332,7 @@ arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh ../crwatcnt.sp
 arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh ../crwatcnt.sp
 arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh ../crwatcnt.sp
 arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh ../crwatcnt.sp
-arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp ../pid_t.sp
+arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh ../crwatcnt.sp ../off_t.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../timer_t.sp ../clockidt.sp
 
 !else ifeq system qnx
 

@@ -95,8 +95,6 @@ using std::ptrdiff_t;
 :include cplusepi.sp
 :elsesegment
 #endif /* __cplusplus not defined */
-
-:include intptr_t.sp
 :endsegment
 
 #endif
