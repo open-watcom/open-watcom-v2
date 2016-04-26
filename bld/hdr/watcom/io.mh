@@ -22,7 +22,7 @@
 
 :include pshpackl.sp
 
-:include timet.sp
+:include time_t.sp
 
 :include wchar_t.sp
 

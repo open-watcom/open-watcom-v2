@@ -29,11 +29,11 @@
 #include _ARCH_INCLUDE(sys/types.h)
 
 :endsegment
-:include timet.sp
+:include time_t.sp
 
-:include sizet.sp
+:include size_t.sp
 
-:include ssizet.sp
+:include ssize_t.sp
 
 :include exactint.sp
 

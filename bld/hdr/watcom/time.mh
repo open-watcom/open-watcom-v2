@@ -73,20 +73,20 @@ using std::time;
 :include wchar_t.sp
 
 :endsegment
-:include sizet.sp
+:include size_t.sp
 
 :include null.sp
 
-:include timet.sp
+:include time_t.sp
 
-:include clockt.sp
+:include clock_t.sp
 
 :segment !CNAME
 :include saferpro.sp
 
-:include errnot.sp
+:include errno_t.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
 :include saferepi.sp
 

@@ -12,7 +12,7 @@
 
 :include cpluspro.sp
 
-:include sizet.sp
+:include size_t.sp
 
 /* Legacy functions */
 

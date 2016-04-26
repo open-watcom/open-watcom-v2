@@ -8,7 +8,7 @@
 
 :include readonly.sp
 
-:include ptrdiff.sp
+:include ptrdifft.sp
 
 #ifndef _STRING_H_INCLUDED
  #include <string.h>

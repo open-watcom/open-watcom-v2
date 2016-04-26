@@ -12,7 +12,7 @@
 
 :include cpluspro.sp
 
-:include timet.sp
+:include time_t.sp
 
 :include pshpackl.sp
 

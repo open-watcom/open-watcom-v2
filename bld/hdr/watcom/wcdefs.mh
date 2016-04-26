@@ -24,6 +24,6 @@ typedef int             WCbool;
  #define FALSE          ((WCbool)0)
 #endif
 
-:include sizet.sp
+:include size_t.sp
 
 #endif

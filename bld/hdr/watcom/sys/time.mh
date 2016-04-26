@@ -11,7 +11,7 @@
 :include owrtlink.sp
 
 :segment LINUX
-:include timet.sp
+:include time_t.sp
 
 :endsegment
 :include cpluspro.sp
