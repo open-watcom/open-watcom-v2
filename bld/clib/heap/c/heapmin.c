@@ -68,13 +68,14 @@ int __HeapMin( __segment seg, unsigned one_seg )
 #endif
 
     _AccessFHeap();
-    while( seg != 0 ) {
+    while( seg != _NULLSEG ) {
         heap = MK_FP( seg, 0 );
         /* we might free this segment so get the next one now */
         heap_seg = seg;
         seg = heap->nextseg;
         if( heap->numfree == 0 ) {      /* full heap */
-            if( one_seg != 0 )  break;
+            if( one_seg != 0 )
+                break;
             continue;
         }
         if( heap->numalloc == 0 ) {     /* empty heap */
@@ -82,20 +83,24 @@ int __HeapMin( __segment seg, unsigned one_seg )
         }
         /* verify the last block is free */
         last_free = MK_FP( heap_seg, heap->freehead.prev );
-        if(( last_free->len & 1 ) != 0 ) continue;
+        if( (last_free->len & 1) != 0 )
+            continue;
 
         /* verify the last block is just before the end of the heap */
         last_len = last_free->len;
         end_tag = (farfrlptr)(((FARPTR) last_free) + last_len );
-        if( end_tag->len != END_TAG ) continue;
+        if( end_tag->len != END_TAG )
+            continue;
 
         /* adjust sizes so the last free block stays in the heap */
-        if( last_len <= FRL_SIZE ) continue;
+        if( last_len <= FRL_SIZE )
+            continue;
 
         new_heap_len = heap->heaplen - ( last_len - FRL_SIZE );
         new_heap_len = ( new_heap_len + 0x0f ) & ~0x0f;
         adjust_len = heap->heaplen - new_heap_len;
-        if( adjust_len == 0 ) continue;
+        if( adjust_len == 0 )
+            continue;
 
 #if defined(__QNX__)
         if( qnx_segment_realloc( heap_seg, new_heap_len ) == -1 ) {

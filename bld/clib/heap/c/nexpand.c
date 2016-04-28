@@ -50,9 +50,9 @@ _WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *stg, size_t req_size )
 {
     struct {
         unsigned expanded : 1;
-    } flags;
-    int retval;
-    size_t growth_size;
+    }       flags;
+    int     retval;
+    size_t  growth_size;
 
     flags.expanded = 0;
     _AccessNHeap();

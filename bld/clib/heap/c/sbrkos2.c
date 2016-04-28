@@ -47,9 +47,9 @@
 
 void _WCNEAR *__brk( unsigned brk_value )
 {
-    unsigned old_brk_value;
-    unsigned seg_size;
-    unsigned segment;
+    unsigned    old_brk_value;
+    unsigned    seg_size;
+    __segment   segment;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;

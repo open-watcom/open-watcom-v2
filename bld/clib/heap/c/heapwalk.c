@@ -40,11 +40,11 @@
 static int verifyHeapList( unsigned seg )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
-    heapblk     _WCFAR *prev_heap;
-    heapblk     _WCFAR *next_heap;
-    heapblk     _WCFAR *curr;
-    unsigned    next_seg;
-    unsigned    prev_seg;
+    heapblk         _WCFAR *prev_heap;
+    heapblk         _WCFAR *next_heap;
+    heapblk         _WCFAR *curr;
+    __segment       next_seg;
+    __segment       prev_seg;
 
     curr = MK_FP( seg, 0 );
     /* check previous heaps end in NULL */
@@ -77,63 +77,65 @@ static int verifyHeapList( unsigned seg )
 }
 
 int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
-    {
-        heapblk     _WCFAR *prev_heap;
-        heapblk     _WCFAR *next_heap;
-        heapblk     _WCFAR *pheap;
-        farfrlptr   p;
-        farfrlptr   q;
+{
+    heapblk     _WCFAR *prev_heap;
+    heapblk     _WCFAR *next_heap;
+    heapblk     _WCFAR *pheap;
+    farfrlptr   p;
+    farfrlptr   q;
 
-        if( seg == 0 )  return( _HEAPEMPTY );
-        p = entry->_pentry;
-        if( p != NULL ) {
-            seg = FP_SEG(p);
-        } else if( all_segs == 0 ) {
-            /* we are starting a multi-heap walk */
-            if( verifyHeapList( seg ) != _HEAPOK ) {
+    if( seg == 0 )
+        return( _HEAPEMPTY );
+    p = entry->_pentry;
+    if( p != NULL ) {
+        seg = FP_SEG(p);
+    } else if( all_segs == 0 ) {
+        /* we are starting a multi-heap walk */
+        if( verifyHeapList( seg ) != _HEAPOK ) {
+            return( _HEAPBADBEGIN );
+        }
+    }
+    for(;;) {
+        pheap = MK_FP( seg, 0 );
+        prev_heap = MK_FP( pheap->prevseg, 0 );
+        next_heap = MK_FP( pheap->nextseg, 0 );
+        if( prev_heap != NULL ) {
+            if( prev_heap->nextseg != seg || prev_heap == next_heap ) {
                 return( _HEAPBADBEGIN );
             }
         }
-        for(;;) {
-            pheap = MK_FP( seg, 0 );
-            prev_heap = MK_FP( pheap->prevseg, 0 );
-            next_heap = MK_FP( pheap->nextseg, 0 );
-            if( prev_heap != NULL ) {
-                if( prev_heap->nextseg != seg || prev_heap == next_heap ) {
-                    return( _HEAPBADBEGIN );
-                }
+        if( next_heap != NULL ) {
+            if( next_heap->prevseg != seg ) {
+                return( _HEAPBADBEGIN );
             }
-            if( next_heap != NULL ) {
-                if( next_heap->prevseg != seg ) {
-                    return( _HEAPBADBEGIN );
-                }
-            }
-            if( p == NULL ) {
-                if( pheap->freehead.len != 0 )  return( _HEAPBADBEGIN );
-                p = MK_FP( FP_SEG(pheap), sizeof( heapblk ) );
-            } else {    /* advance to next entry */
-                q = (farfrlptr)((FARPTR)p + (p->len & ~1));
-                if( q <= p )  return( _HEAPBADNODE );
-                p = q;
-                if( pheap->heaplen != 0 && (tag)p > pheap->heaplen ) {
-                    return( _HEAPBADNODE );
-                }
-            }
-            if( p->len != END_TAG ) break;
-            seg = pheap->nextseg;
-            if( seg == 0  ||  all_segs != 0 ) {
-                entry->_useflag = _USEDENTRY;
-                entry->_size    = 0;
-                entry->_pentry  = NULL;
-                return( _HEAPEND );
-            }
-            p = NULL;
         }
-        entry->_pentry  = p;
-        entry->_useflag = _FREEENTRY;
-        entry->_size    = p->len & ~1;
-        if( p->len & 1 ) {
+        if( p == NULL ) {
+            if( pheap->freehead.len != 0 )  return( _HEAPBADBEGIN );
+            p = MK_FP( FP_SEG(pheap), sizeof( heapblk ) );
+        } else {    /* advance to next entry */
+            q = (farfrlptr)((FARPTR)p + (p->len & ~1));
+            if( q <= p )  return( _HEAPBADNODE );
+            p = q;
+            if( pheap->heaplen != 0 && (tag)p > pheap->heaplen ) {
+                return( _HEAPBADNODE );
+            }
+        }
+        if( p->len != END_TAG )
+            break;
+        seg =pheap->nextseg;
+        if( seg == 0 || all_segs != 0 ) {
             entry->_useflag = _USEDENTRY;
+            entry->_size    = 0;
+            entry->_pentry  = NULL;
+            return( _HEAPEND );
         }
-        return( _HEAPOK );
+        p = NULL;
     }
+    entry->_pentry  = p;
+    entry->_useflag = _FREEENTRY;
+    entry->_size    = p->len & ~1;
+    if( p->len & 1 ) {
+        entry->_useflag = _USEDENTRY;
+    }
+    return( _HEAPOK );
+}

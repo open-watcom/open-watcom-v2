@@ -164,7 +164,8 @@ _WCRTLINK int _nheapshrink( void )
             return( 0 ); // No near heap, can't shrink
         }
         /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( mhp = __nheapbeg; mhp->next; mhp = mhp->next );
+        for( mhp = __nheapbeg; mhp->next; mhp = mhp->next )
+            ;
         /* check that last free block is at end of heap */
         last_free = mhp->freehead.prev;
         end_tag = (frlptr)( (PTR)last_free + last_free->len );

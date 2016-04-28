@@ -148,7 +148,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
             p->freehead.prev = FP_OFF( pnew );
             p->numfree++;
             pfree = pnew;
-            }
+        }
         pfree->len = p->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
         if( pfree->len > p->largest_blk )
             p->largest_blk = pfree->len;

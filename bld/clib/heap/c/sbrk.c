@@ -141,10 +141,10 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 
 void _WCNEAR *__brk( unsigned brk_value )
 {
-    unsigned old_brk_value;
-    unsigned seg_size;
+    unsigned    old_brk_value;
+    unsigned    seg_size;
 #ifdef _M_I86
-    unsigned segment;
+    __segment   segment;
 #endif
 
     if( brk_value < _STACKTOP ) {

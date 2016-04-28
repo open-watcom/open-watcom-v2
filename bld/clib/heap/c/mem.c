@@ -63,17 +63,19 @@
 //
 unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
 {
-    frlptr result;
-    result = 0;                                 // assume the worst
+    frlptr  result;
 
+    result = 0;                                 // assume the worst
     setup_segment( segment );                   // setup DS for 16bit Intel
 
     if( size != 0 ) {                           // quit if size is zero
-        unsigned new_size;
+        unsigned    new_size;
+
         new_size = size + TAG_SIZE + ROUND_SIZE;// round up size
         if( new_size >= size ) {                // quit if overflowed
-            heapblkp _WCI86NEAR *heap;
-            unsigned largest;
+            heapblkp    _WCI86NEAR *heap;
+            unsigned    largest;
+
             heap = (heapblkp _WCI86NEAR *)offset;
             size = new_size & ~ROUND_SIZE;      // make size even
             largest = heap->largest_blk;
@@ -81,15 +83,16 @@ unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
                 size = FRL_SIZE;
             }
             if( size <= largest ) {             // quit if size too big
-                frlptr pcur;
-                unsigned len;
+                frlptr      pcur;
+                unsigned    len;
+
                 pcur = heap->rover;             // start at rover
                 largest = heap->b4rover;
                 if( size <= largest ) {         // check size with rover
                     pcur = heap->freehead.next; // start at beginning
                     largest = 0;                // reset largest block size
                 }
-                for(;;) {                       // search free list
+                for( ;; ) {                     // search free list
                     len = pcur->len;
                     if( size <= len ) {         // found one
                         break;
@@ -113,6 +116,7 @@ unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
                     frlptr pprev;               // before current
                     frlptr pnext;               // after current
                     frlptr pnew;                // start of new piece
+
                     pnew = (frlptr)((PTR)pcur + size);
                     heap->rover = pnew;         // update rover
                     pnew->len = len;            // set new size
@@ -126,6 +130,7 @@ unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
                 } else {                        // just use this chunk
                     frlptr pprev;               // before current
                     frlptr pnext;               // after current
+
                     heap->numfree--;            // 1 fewer entries in free list
                     pprev = pcur->prev;
                     heap->rover = pprev;        // update rover
@@ -162,13 +167,15 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
 
     if( pointer != 0 ) {                        // quit if pointer is zero
         frlptr pfree;
+
         pfree = (frlptr)(pointer - TAG_SIZE);
         if( pfree->len & 1 ) {                  // quit if storage is free
-            heapblkp _WCI86NEAR *heap;
-            frlptr pnext;
-            frlptr pprev;
-            frlptr ptr;
-            unsigned len;
+            heapblkp    _WCI86NEAR *heap;
+            frlptr      pnext;
+            frlptr      pprev;
+            frlptr      ptr;
+            unsigned    len;
+
             heap = (heapblkp _WCI86NEAR *)offset;
             do {                                // this allows break statement
                 unsigned average;

@@ -42,10 +42,10 @@
     #pragma aux (__outside_CLIB) __nmemneed;
 #endif
 
-mheapptr _WCNEAR __nheapbeg = NULL;
+mheapptr        _WCNEAR __nheapbeg = NULL;
 
-miniheapblkp _WCNEAR *__MiniHeapRover = NULL;
-unsigned int   __LargestSizeB4MiniHeapRover = 0;
+miniheapblkp    _WCNEAR *__MiniHeapRover = NULL;
+unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
 #if defined(__WARP__)
 
