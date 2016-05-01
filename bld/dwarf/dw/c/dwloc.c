@@ -454,7 +454,7 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
             *(uint_16 *)base_of_block = (uint_16)( ( p - base_of_block ) - sizeof( uint_16 ) );
             reloc_info = (dw_sym_reloc *)cur_op->data;
             if( reloc_info->kind == DW_W_SEGMENT
-             || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
+              || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
                 /* it was a DWLocSegment() */
                 int segment_size;
 
@@ -503,14 +503,14 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
     return( result );
 }
 
-void EmitLocExprNull( dw_client cli, uint sect, int size )
+void EmitLocExprNull( dw_client cli, uint sect, size_t size )
 {
-    union{
+    union {
         char     buf[sizeof( uint_32 )];
         uint_8   u8;
         uint_16  u16;
         uint_32  u32;
-    }len_form;
+    } len_form;
 
     /* ensure that this is really an expression */
     _Assert( size == 1 || size == 2 || size == 4 );
@@ -528,7 +528,7 @@ void EmitLocExprNull( dw_client cli, uint sect, int size )
     CLIWrite( sect, len_form.buf, size );
 }
 
-uint_32 EmitLocExpr( dw_client cli, uint sect, int size, dw_loc_handle loc )
+uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
 {
     union {
         char     buf[sizeof( uint_32 )];
@@ -538,7 +538,7 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, int size, dw_loc_handle loc )
     } len_form;
     char *                      p;
     uint_16                     bytes_left;
-    uint                        size_of_block;
+    size_t                      size_of_block;
     uint                        syms_left;
     dw_sym_reloc               *reloc_info;
 
@@ -574,7 +574,7 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, int size, dw_loc_handle loc )
             p += sizeof( *reloc_info );
             CLIReloc3( sect, reloc_info->kind, reloc_info->sym );
             if( reloc_info->kind ==  DW_W_SEGMENT
-             || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
+              || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
                 if( cli->segment_size == 0 ) {  //TODO fix flat with segref
                    bytes_left -= sizeof( dw_defseg );
                 } else {

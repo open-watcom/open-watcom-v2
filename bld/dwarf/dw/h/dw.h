@@ -181,7 +181,7 @@ typedef enum dw_sectnum{
     DW_DEBUG_STR,
     DW_DEBUG_REF,
     DW_DEBUG_MAX
-}dw_sectnum;
+} dw_sectnum;
 
 
 /* relocation types for CLIReloc */
@@ -199,7 +199,7 @@ typedef enum {
     DW_W_LOC_RANGE,
     DW_W_EXT_REF,
     DW_W_MAX
-}dw_relocs;
+} dw_relocs;
 
 
 /* seek methods for CLISeek */
@@ -213,7 +213,7 @@ enum {
 /* the client supplied functions */
 typedef struct {
     void                (*reloc)( dw_sectnum, dw_relocs, ... );
-    void                (*write)( dw_sectnum, const void *, dw_size_t );
+    void                (*write)( dw_sectnum, const void *, size_t );
     void                (*seek)( dw_sectnum, long, uint );
     long                (*tell)( dw_sectnum );
     void *              (*alloc)( size_t );
@@ -229,7 +229,8 @@ typedef enum {
     DW_CM_LOWER                 = 0x08,
     DW_CM_ABBREV_GEN            = 0x10,
     DW_CM_ABBREV_PRE            = 0x20,
-}dw_cm;
+} dw_cm;
+
 typedef struct {
     uint_8              language;
     dw_cm               compiler_options;
@@ -247,7 +248,7 @@ typedef enum {
     DW_MODEL_COMPACT = 4,
     DW_MODEL_LARGE   = 5,
     DW_MODEL_HUGE    = 6,
-}dw_model;
+} dw_model;
 
 /*
     Function Prototypes
@@ -269,11 +270,9 @@ typedef struct {
     char const     *inc_list;
     unsigned        inc_list_len;
     dw_sym_handle   dbg_pch;
-}dw_cu_info;
+} dw_cu_info;
 
-dw_handle        DWENTRY DWBeginCompileUnit(
-                                dw_client     cli,
-                                dw_cu_info   *cu  );
+dw_handle       DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu );
 void            DWENTRY DWEndCompileUnit( dw_client );
 
 /* macro definitions */
@@ -293,12 +292,9 @@ void            DWENTRY DWMacUse( dw_client, dw_linenum __line,
 
 /* file/line number management */
 
-extern void DWInitDebugLine(
-    dw_client                   cli,
-    dw_cu_info                 *cu  );
+extern void DWInitDebugLine( dw_client cli, dw_cu_info *cu );
 
-extern void DWFiniDebugLine(
-    dw_client                   cli );
+extern void DWFiniDebugLine( dw_client cli );
 
 void            DWENTRY DWSetFile( dw_client, char const *__fname );
 /* line number information */
@@ -360,12 +356,8 @@ void            DWENTRY DWListEntryOut(
 dw_loc_handle   DWENTRY DWListFini( dw_client, dw_list_id __list );
 void            DWENTRY DWLocTrash( dw_client, dw_loc_handle __loc );
 /* debug info handle refs */
-dw_handle DWENTRY DWHandle(
-    dw_client                   cli,
-    uint                        kind );
-void DWENTRY DWHandleSet(
-    dw_client                   cli,
-    dw_handle                   set_hdl );
+dw_handle DWENTRY DWHandle( dw_client cli, uint kind );
+void DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl );
 
 /* typing information */
 dw_handle       DWENTRY DWFundamental( dw_client, char const * __name,
@@ -403,10 +395,7 @@ typedef struct {
     dw_handle   count_data;
 } dw_vardim_info;
 
-dw_handle DWENTRY DWSimpleArray(
-        dw_client cli,
-        dw_handle elt_type,
-        int elt_count );
+dw_handle DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_count );
 dw_handle       DWENTRY DWBeginArray( dw_client, dw_handle __elt_type,
                             uint __stride_size, char const *__name,
                             dw_addr_offset __scope, uint __flags );
@@ -420,7 +409,7 @@ typedef enum {                  // Kind of Structure
     DW_ST_CLASS,
     DW_ST_STRUCT,
     DW_ST_UNION,
-}dw_st;
+} dw_st;
 
 dw_handle       DWENTRY DWStruct( dw_client, uint __kind );
 void            DWENTRY DWBeginStruct( dw_client, dw_handle __struct_hdl,
@@ -460,11 +449,8 @@ void            DWENTRY DWEndSubroutineType( dw_client );
 
 
 /* namespace      */
-dw_handle DWENTRY DWBeginNameSpace(
-    dw_client                   cli,
-    const char *                name );
-void DWENTRY DWEndNameSpace(
-    dw_client                   cli );
+dw_handle DWENTRY DWBeginNameSpace( dw_client cli, const char *name );
+void DWENTRY DWEndNameSpace( dw_client cli );
 /* lexical blocks */
 dw_handle       DWENTRY DWBeginLexicalBlock( dw_client,
                             dw_loc_handle __aseg, char const *__name );
@@ -533,7 +519,7 @@ dw_handle       DWENTRY DWVariable( dw_client, dw_handle __type,
                             dw_loc_handle __aseg, char const *__name,
                             dw_addr_offset __start_scope, uint __flags );
 dw_handle       DWENTRY DWConstant( dw_client, dw_handle __type,
-                            const void *__constant_value, dw_size_t __len,
+                            const void *__constant_value, size_t __len,
                             dw_handle __member_of, char const * __name,
                             dw_addr_offset __start_scope, uint __flags );
 /* name list      */

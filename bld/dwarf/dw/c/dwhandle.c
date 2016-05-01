@@ -280,7 +280,7 @@ void HandleWriteOffset( dw_client cli, dw_handle hdl, uint section )
         chain->offset = CLITell( section );
         chain->next = c->reloc.chain;
         c->reloc.chain = chain;
-     // CLISeek( section, sizeof( debug_ref ), DW_SEEK_CUR );
+//        CLISeek( section, sizeof( debug_ref ), DW_SEEK_CUR );
     }
     CLIWrite( section, &offset, sizeof( debug_ref ) );
 }

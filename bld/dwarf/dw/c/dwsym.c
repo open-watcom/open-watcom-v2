@@ -447,7 +447,7 @@ dw_handle DWENTRY DWFormalParameter(
     abbrev_code                 abbrev;
     va_list                     args;
     const void *                value;
-    dw_size_t                   len;
+    size_t                      len;
 
     new = LabelNewHandle( cli );
     _Validate( parm_type != 0 );
@@ -469,8 +469,8 @@ dw_handle DWENTRY DWFormalParameter(
     case DW_DEFAULT_BLOCK:
         InfoULEB128( cli, DW_FORM_block );
         value = va_arg( args, const void * );
-        len = va_arg( args, dw_size_t );
-        InfoULEB128( cli, len );
+        len = va_arg( args, size_t );
+        InfoULEB128( cli, (dw_uconst)len );
         InfoBytes( cli, value, len );
         break;
     default:
@@ -600,7 +600,7 @@ dw_handle DWENTRY DWConstant(
     dw_client                   cli,
     dw_handle                   type,
     const void *                value,
-    dw_size_t                   len,
+    size_t                      len,
     dw_handle                   member_of,
     const char *                name,
     dw_addr_offset              start_scope,
@@ -614,7 +614,8 @@ dw_handle DWENTRY DWConstant(
     _Validate( name != NULL );
     new = LabelNewHandle( cli );
     abbrev = AB_CONSTANT;
-    if( member_of ) abbrev |= AB_MEMBER;
+    if( member_of )
+        abbrev |= AB_MEMBER;
     StartDIE( cli, abbrev );
     /* AT_private */
     EmitAccessFlags( cli, flags );
@@ -630,7 +631,7 @@ dw_handle DWENTRY DWConstant(
         InfoString( cli, value );
     } else {
         InfoULEB128( cli, DW_FORM_block );
-        InfoULEB128( cli, len );
+        InfoULEB128( cli, (dw_uconst)len );
         InfoBytes( cli, value, len );
     }
     /* AT_name */

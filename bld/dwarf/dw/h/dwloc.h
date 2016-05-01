@@ -46,8 +46,8 @@
 void            InitDebugLoc( dw_client );
 void            FiniDebugLoc( dw_client );
 int             IsLocExpr( dw_client, dw_loc_handle );
-uint_32         EmitLocExpr( dw_client, uint, int, dw_loc_handle );
-void            EmitLocExprNull( dw_client, uint,int );
+uint_32         EmitLocExpr( dw_client, uint, size_t, dw_loc_handle );
+void            EmitLocExprNull( dw_client, uint, size_t );
 uint_32         EmitLoc( dw_client, uint, dw_loc_handle );
 uint_32         EmitLocList( dw_client, uint, dw_loc_handle );
 uint_32         EmitLocNull( dw_client cli, uint sect);

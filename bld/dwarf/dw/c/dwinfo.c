@@ -87,7 +87,7 @@ void InfoULEB128( dw_client cli, dw_uconst value )
 }
 
 
-void InfoBytes( dw_client cli, const void * buf, dw_size_t size )
+void InfoBytes( dw_client cli, const void *buf, size_t size )
 {
     CLIWrite( DW_DEBUG_INFO, buf, size );
 }
@@ -102,7 +102,7 @@ void InfoString( dw_client cli, const char *str )
 }
 
 
-debug_ref InfoSkip( dw_client cli, dw_size_t amt )
+debug_ref InfoSkip( dw_client cli, long amt )
 {
     debug_ref       ret;
 
@@ -112,7 +112,7 @@ debug_ref InfoSkip( dw_client cli, dw_size_t amt )
 }
 
 
-void InfoPatch( dw_client cli, debug_ref offs, const void *value, dw_size_t len )
+void InfoPatch( dw_client cli, debug_ref offs, const void *value, size_t len )
 {
     CLISeek( DW_DEBUG_INFO, offs + cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
     CLIWrite( DW_DEBUG_INFO, value, len );

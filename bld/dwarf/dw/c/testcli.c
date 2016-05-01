@@ -50,7 +50,7 @@ uint_32         RelocValues[DW_W_MAX];
 uint_32         SymHandles[20];
 
 
-void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
+void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 {
     memcpy( &Sections[sect].data[Sections[sect].cur_offset], block, size );
     Sections[sect].cur_offset += size;
