@@ -2,15 +2,10 @@
 .synop begin
 #include <sys/types.h>
 #include <&dirhdr>
-.if '&machsys' eq 'QNX' .do begin
 void rewinddir( DIR *dirp );
-.do end
-.el .do begin
-void rewinddir( struct dirent *dirp );
-.do end
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-void _wrewinddir( _wdirent *dirp );
+void _wrewinddir( WDIR *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

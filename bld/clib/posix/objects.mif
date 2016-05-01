@@ -36,6 +36,7 @@
 !inject recv.obj                                                                        l32 lpc lmp
 !inject recvfrom.obj                                                                    l32 lpc lmp
 !inject _resolve.obj                                                                    l32 lpc lmp
+!inject rewindir.obj                                                                    l32 lpc lmp
 !inject send.obj                                                                        l32 lpc lmp
 !inject sendto.obj                                                                      l32 lpc lmp
 !inject shutdown.obj                                                                    l32 lpc lmp

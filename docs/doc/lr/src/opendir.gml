@@ -1,15 +1,10 @@
 .func opendir _wopendir
 .synop begin
 #include <&dirhdr>
-.if '&machsys' eq 'QNX' .do begin
 DIR *opendir( const char *dirname );
-.do end
-.el .do begin
-struct dirent *opendir( const char *dirname );
-.do end
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-struct _wdirent *_wopendir( const wchar_t *dirname );
+WDIR *_wopendir( const wchar_t *dirname );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

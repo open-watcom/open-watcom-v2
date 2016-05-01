@@ -1,15 +1,10 @@
 .func closedir _wclosedir
 .synop begin
 #include <&dirhdr>
-.if '&machsys' eq 'QNX' .do begin
 int closedir( DIR *dirp );
-.do end
-.el .do begin
-int closedir( struct dirent *dirp );
-.do end
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-int _wclosedir( struct _wdirent *dirp );
+int _wclosedir( WDIR *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
