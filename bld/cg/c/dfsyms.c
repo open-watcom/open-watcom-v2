@@ -81,8 +81,8 @@ static back_handle Pc_Low;
 static back_handle Comp_High;
 static back_handle ARange;
 
-static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
-/************************************************************************/
+static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
+/*********************************************************************/
 {
     sect_info           *curr;
     segment_id          old;

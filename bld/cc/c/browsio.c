@@ -258,8 +258,8 @@ static int createBrowseFile(FILE* browseFile,       /* target file */
 }
 //---------------------------------------------------------------------------
 
-static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
-/********************************************************************/
+static void dw_write( dw_sectnum section, const void *block, size_t len )
+/***********************************************************************/
 {
     unsigned            bufnum;
     unsigned            endbufnum;
@@ -269,21 +269,21 @@ static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
     char                *bufptr;
 
     dwsect = &DWSections[section];
-    #ifdef __DD__
+#ifdef __DD__
     //int i;
-    printf( "\nDW_WRITE(%d:%d): offset: %d len: %d ",
+    printf( "\nDW_WRITE(%d:%d): offset: %d len: %u ",
         section,
         dwsect->length,
         dwsect->offset,
-        len );
+        (unsigned)len );
     //for( i = 0 ; i < len; i++ ) {
     //    printf( "%02x ", (int)((char *)block)[i] );
     //}
-    #endif
+#endif
     bufnum = dwsect->offset / C_DWARF_BUFSIZE;
     endbufnum = (dwsect->offset + len) / C_DWARF_BUFSIZE;
     if( endbufnum >= dwsect->bufcount ) {
-        newbufptrs = (char**)CMemAlloc( (endbufnum + 1) * sizeof(char**) );
+        newbufptrs = (char **)CMemAlloc( (endbufnum + 1) * sizeof( char ** ) );
         if( dwsect->bufptrs != NULL ) {
             memcpy( newbufptrs,
                     dwsect->bufptrs,
@@ -305,7 +305,8 @@ static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
             dwsect->bufptrs[bufnum] = bufptr;
         }
         bufptr += C_DWARF_BUFSIZE - bufsize;
-        if( len < bufsize )  bufsize = len;
+        if( bufsize > len  )
+            bufsize = len;
         memcpy( bufptr, block, bufsize );
         block = (char *)block + bufsize;
         len -= bufsize;
@@ -317,11 +318,11 @@ static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
 static long dw_tell( dw_sectnum section )
 /*********************************/
 {
-    #ifdef __DD__
+#ifdef __DD__
     printf( "DW_TELL (%d:%d): %d\n", section,
         DWSections[section].length,
         DWSections[section].offset );
-    #endif
+#endif
     return DWSections[section].offset;
 }
 
@@ -387,12 +388,12 @@ static void dw_seek( dw_sectnum section, long offset, uint mode )
         ofs = DWSections[section].length - offset;
         break;
     }
-    #ifdef __DD__
+#ifdef __DD__
     printf( "DW_SEEK (%d:%d): offset: %d\n",
         section,
         DWSections[section].length,
         ofs );
-    #endif
+#endif
     if( DWSections[section].offset != ofs ) {
         DWSections[section].offset = ofs;
         if( DWSections[section].offset > DWSections[section].length ) {
