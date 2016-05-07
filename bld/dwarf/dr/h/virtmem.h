@@ -38,7 +38,7 @@ extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
 // DWRCurrNode must be set for alloc, free
 extern dr_handle        DWRVMAlloc( unsigned long, int );
 extern char             *DWRVMCopyString( dr_handle * );
-extern unsigned         DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max );
+extern size_t           DWRVMGetStrBuff( dr_handle drstr, char *buf, size_t max );
 extern unsigned_16      DWRVMReadWord( dr_handle );
 extern unsigned_32      DWRVMReadDWord( dr_handle );
 
@@ -49,7 +49,7 @@ extern unsigned_32      DWRVMReadDWord( dr_handle );
 extern size_t           DWRVMStrLen( dr_handle );
 extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 extern void             DWRVMSkipLEB128( dr_handle * );
-extern void             DWRVMRead( dr_handle, void *, unsigned );
+extern void             DWRVMRead( dr_handle, void *, size_t );
 extern unsigned_8       DWRVMReadByte( dr_handle );
 
 #define DWRVMReadULEB128(__h) ReadLEB128( __h, false )

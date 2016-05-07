@@ -92,8 +92,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     dw_lns          value_lns;
     dw_lne          value_lne;
     char            *name_buf;
-    int             name_buf_len;
-    int             curr_len;
+    size_t          name_buf_len;
+    size_t          curr_len;
 
     name_buf = NULL;
     name_buf_len = 0;
@@ -310,8 +310,8 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     dr_line_file    df;
     bool            cont;
     char            *name_buf;
-    int             name_buf_len;
-    int             curr_len;
+    size_t          name_buf_len;
+    size_t          curr_len;
 
     name_buf = NULL;
     name_buf_len = 0;

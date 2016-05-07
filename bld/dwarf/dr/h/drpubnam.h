@@ -33,8 +33,8 @@
 typedef struct {
     dr_handle   dbg_cu;
     dr_handle   dbg_handle;
-    int         len;
-    char       *name;
+    size_t      len;
+    char        *name;
     bool        is_start;
 } dr_pubname_data;
 

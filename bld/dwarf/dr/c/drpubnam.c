@@ -56,8 +56,8 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
     uint_32             dbg_handle;
     dr_handle           dbg_base;
     char                *name_buf;
-    int                 name_buf_len;
-    int                 curr_len;
+    size_t              name_buf_len;
+    size_t              curr_len;
 
     name_buf = NULL;
     name_buf_len = 0;

@@ -174,10 +174,10 @@ char *DWRVMCopyString( dr_handle *info )
     return( memcpy( dst, src, len ) );
 }
 
-extern unsigned DWRVMGetStrBuff( dr_handle str, char *buf, unsigned max )
-/***********************************************************************/
+size_t DWRVMGetStrBuff( dr_handle str, char *buf, size_t max )
+/************************************************************/
 {
-    unsigned    len;
+    size_t      len;
 
     len = 0;
     for( ;; ) {

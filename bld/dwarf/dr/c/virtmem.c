@@ -347,8 +347,8 @@ bool DWRVMSectDone( dr_handle base, unsigned_32 size )
     return( ret );
 }
 
-extern void DWRVMRead( dr_handle hdl, void * info, unsigned len )
-/***************************************************************/
+void DWRVMRead( dr_handle hdl, void *info, size_t len )
+/*****************************************************/
 /* go through the virtual memory nodes, reading data */
 {
     unsigned    end_off;
@@ -564,14 +564,14 @@ char *DWRVMCopyString( dr_handle *info )
     return( str );
 }
 
-extern unsigned DWRVMGetStrBuff( dr_handle drstr, char *buf, unsigned max )
-/*************************************************************************/
+size_t DWRVMGetStrBuff( dr_handle drstr, char *buf, size_t max )
+/**************************************************************/
 {
     unsigned    off;
     page_entry  *node;
     virt_struct vm;
     char        curr;
-    unsigned    len;
+    size_t      len;
 
     vm.l = drstr;
     off = NODE_OFF( vm );

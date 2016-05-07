@@ -164,7 +164,7 @@ static BrokenName_T *DecorateBases( BrokenName_T *, Loc_T * );
 static BrokenName_T *DecorateArray( BrokenName_T *, Loc_T * );
 static BrokenName_T *DecoratePtrToMember( BrokenName_T *, Loc_T * );
 
-static void ReadBlock( unsigned_8 **buf, dr_handle entry, unsigned len );
+static void ReadBlock( unsigned_8 **buf, dr_handle entry, size_t len );
 static void FORDecVariable( BrokenName_T *, Loc_T * );
 static void FORAddConstVal( BrokenName_T * decname, Loc_T * loc, Loc_T * type_loc );
 static void FORDecParam( BrokenName_T *, Loc_T * );
@@ -1192,9 +1192,9 @@ static void AddTypeString( BrokenName_T *dn, String Kwd, TypeSide_T ts )
  * decorate a union, struct or class.
  */
 
-BrokenName_T *DecorateCompoundType( BrokenName_T *decname, Loc_T *loc,
-                                     String Kwd, dr_sym_type symtype )
-/********************************************************************/
+static BrokenName_T *DecorateCompoundType( BrokenName_T *decname,
+                        Loc_T *loc, String Kwd, dr_sym_type symtype )
+/*******************************************************************/
 {
     String  typename;
 
@@ -1245,8 +1245,8 @@ static bool baseHook( dr_sym_type stype, dr_handle base, char *name,
     return( true );
 }
 
-BrokenName_T *DecorateBases( BrokenName_T *decname, Loc_T *loc )
-/**************************************************************/
+static BrokenName_T *DecorateBases( BrokenName_T *decname, Loc_T *loc )
+/*********************************************************************/
 {
     BaseSearchInfo  data;
 
@@ -1257,8 +1257,8 @@ BrokenName_T *DecorateBases( BrokenName_T *decname, Loc_T *loc )
 }
 
 
-BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
-/********************************************************************/
+static BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
+/***************************************************************************/
 {
     dr_handle tmp_abbrev;
     dr_handle tmp_entry;
@@ -1446,7 +1446,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     dr_handle   tmp_abbrev;
     unsigned_8  *buf;
     dw_formnum  form;
-    unsigned    len;
+    size_t      len;
     char        *charBuf;
 #ifdef __WATCOMC__
     char        numBuf1[ 32 ];  // hold text for number
@@ -1627,8 +1627,8 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     }
 }
 
-static void ReadBlock( unsigned_8 **buf, dr_handle entry, unsigned len )
-/**********************************************************************/
+static void ReadBlock( unsigned_8 **buf, dr_handle entry, size_t len )
+/********************************************************************/
 {
     unsigned_8  *mbuf;
 

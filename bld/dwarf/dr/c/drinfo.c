@@ -121,8 +121,8 @@ dr_language DRGetLanguage( void )
     return( result );
 }
 
-static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, dw_atnum attrib )
-/**********************************************************************************************/
+static size_t GetNameBuffAttr( dr_handle entry, char *buff, size_t length, dw_atnum attrib )
+/******************************************************************************************/
 {
     dr_handle   abbrev;
     dw_formnum  form;
@@ -134,15 +134,16 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
         case DW_FORM_string:
             length = DWRVMGetStrBuff( entry, buff, length );
             break;
-        case DW_FORM_strp: {
-            unsigned_32 offset;
-            dr_handle   dbgsec_str;
-
-            offset = ReadConst( DW_FORM_data4, entry );
-            dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-            length = DWRVMGetStrBuff( dbgsec_str, buff, length );
-            break;
+        case DW_FORM_strp:
+            {
+                unsigned_32 offset;
+                dr_handle   dbgsec_str;
+    
+                offset = ReadConst( DW_FORM_data4, entry );
+                dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
+                length = DWRVMGetStrBuff( dbgsec_str, buff, length );
             }
+            break;
         default:
             DWREXCEPT( DREXCEP_BAD_DBG_INFO );
             length = 0;
@@ -153,14 +154,14 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
     return( length );
 }
 
-unsigned DRGetCompDirBuff( dr_handle entry, char *buff, unsigned length )
-/***********************************************************************/
+size_t DRGetCompDirBuff( dr_handle entry, char *buff, size_t length )
+/*******************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_comp_dir ) );
 }
 
-char * DRGetName( dr_handle entry )
-/*********************************/
+char *DRGetName( dr_handle entry )
+/********************************/
 {
     dr_handle   abbrev;
 
@@ -168,20 +169,20 @@ char * DRGetName( dr_handle entry )
     return( DWRGetName( abbrev, entry ) );
 }
 
-unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length )
-/********************************************************************/
+size_t DRGetNameBuff( dr_handle entry, char *buff, size_t length )
+/****************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_name ) );
 }
 
-unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
-/***********************************************************************/
+size_t DRGetScopedNameBuff( dr_handle entry, char *buff, size_t max )
+/*******************************************************************/
 {
     dr_handle       of;
     dr_scope_trail  container;
     dr_scope_entry  *curr;
-    unsigned        total;
-    unsigned        length;
+    size_t          total;
+    size_t          length;
 
     of = DRGetContaining( entry );
     if( of == DR_HANDLE_NUL ) {
@@ -214,7 +215,8 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
                 goto done_loop;
             }
             curr = next;
-        }done_loop:;
+        }
+done_loop:
         curr = outside;
     }
     total = 0;
@@ -225,12 +227,12 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
             --length;
         }
         total += length;
-        if( length+2 < max ) {
+        if( length + 2 < max ) {
             buff  += length;
             max   -= length;
             buff[0] = ':';
             buff[1] = ':';
-            buff+= 2;
+            buff += 2;
         } else {
             max = 0;
         }
