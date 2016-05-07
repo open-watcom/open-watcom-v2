@@ -96,7 +96,7 @@ public:
             Symbol *       makeSymbol( void );
     virtual char *         name( void ) const;
             char *         derivation( ClassLattice * );
-            dr_handle      getHandle( void ) const { return _drhandle; }
+            drmem_hdl      getHandle( void ) const { return _drhandle; }
             dr_access      getAccess( void ) const { return _effAccess; }
             void           loadBases( void );
             void           enumerateBases( BaseCB, void * );
@@ -115,19 +115,19 @@ public:
             void           joinLattice( ClassLattice * );
 
 protected:
-            ClassLattice( dr_handle, Module *, char *, ClassList *, dr_access,
+            ClassLattice( drmem_hdl, Module *, char *, ClassList *, dr_access,
                           dr_virtuality, bool rel, int level );
     virtual ~ClassLattice( void );
 
     virtual  DerivationPtr * newPtr( ClassLattice *, dr_access, dr_virtuality );
-    virtual  ClassLattice *  newLattice( dr_handle, Module *, char *,
+    virtual  ClassLattice *  newLattice( drmem_hdl, Module *, char *,
                                          ClassList *, dr_access, dr_virtuality,
                                          int );
 
-            ClassLattice *  joinTo( dr_handle, dr_virtuality, dr_access, int );
+            ClassLattice *  joinTo( drmem_hdl, dr_virtuality, dr_access, int );
 
             ClassList *     _flatClasses;   // a flat list of all nodes
-            dr_handle       _drhandle;
+            drmem_hdl       _drhandle;
 
             DeriveList      _bases;         // all my base classes
             DeriveList      _deriveds;      // derived from me
@@ -146,8 +146,8 @@ private:
             VirtLevel       _virtual;
 
 
-    static  bool            baseHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
-    static  bool            deriveHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
+    static  bool            baseHook( dr_sym_type, drmem_hdl, char *, drmem_hdl, void * );
+    static  bool            deriveHook( dr_sym_type, drmem_hdl, char *, drmem_hdl, void * );
 };
 
 extern int findClass( ClassList& list, ClassLattice * node );

@@ -76,7 +76,7 @@ ClassLattice::ClassLattice( Symbol * sym, bool relax )
 }
 
 // Internal ctor, used to create non-root nodes
-ClassLattice::ClassLattice( dr_handle drhdl, Module * mod, char * name,
+ClassLattice::ClassLattice( drmem_hdl drhdl, Module * mod, char * name,
                             ClassList * vlist, dr_access acc,
                             dr_virtuality virt, bool relaxVirt, int level )
         : _drhandle( drhdl )
@@ -117,7 +117,7 @@ ClassLattice::~ClassLattice( void )
 
 }
 
-ClassLattice * ClassLattice::newLattice( dr_handle drhdl, Module * mod,
+ClassLattice * ClassLattice::newLattice( drmem_hdl drhdl, Module * mod,
                                          char * name, ClassList * vlist,
                                          dr_access acc, dr_virtuality virt,
                                          int level )
@@ -265,7 +265,7 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
  * in the lattice, and if so returns a pointer to it.
  */
 
-ClassLattice * ClassLattice::joinTo( dr_handle drhdl, dr_virtuality virt,
+ClassLattice * ClassLattice::joinTo( drmem_hdl drhdl, dr_virtuality virt,
                                      dr_access effAccess, int level )
 //---------------------------------------------------------------------------
 {
@@ -325,8 +325,8 @@ void ClassLattice::adjustLevelsUp( int levelDiff )
     _level += levelDiff;
 }
 
-static bool ClassLattice::baseHook( dr_sym_type, dr_handle drhdl, char * name,
-                                   dr_handle inheritHandle, void * obj )
+static bool ClassLattice::baseHook( dr_sym_type, drmem_hdl drhdl, char * name,
+                                   drmem_hdl inheritHandle, void * obj )
 //----------------------------------------------------------------------------
 {
     dr_access        access;
@@ -407,8 +407,8 @@ void ClassLattice::loadDeriveds( void )
     }
 }
 
-static bool ClassLattice::deriveHook( dr_sym_type, dr_handle drhdl,
-                                     char * name, dr_handle inheritHandle,
+static bool ClassLattice::deriveHook( dr_sym_type, drmem_hdl drhdl,
+                                     char * name, drmem_hdl inheritHandle,
                                      void * obj )
 //-------------------------------------------------------------------------
 {

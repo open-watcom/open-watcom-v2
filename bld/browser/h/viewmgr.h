@@ -57,7 +57,7 @@ public:
             void            enableMenus( bool enabled );
 
             DetailView *    findDetailView( const Symbol * sym, DetailView::ViewType );
-            DetailView *    findDetailView( dr_handle, DetailView::ViewType );
+            DetailView *    findDetailView( drmem_hdl, DetailView::ViewType );
 
             void            showDetailView( const Symbol * sym, DetailView::ViewType );
             void            showGlobalView( GlobalView::GlobalViewType );

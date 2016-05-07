@@ -43,7 +43,7 @@ typedef struct {
 
 static bool DRSearchMacro( regexp *, void *, DRSYMSRCH cb );
 
-static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo, void *data )
+static bool CheckEntry( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *minfo, void *data )
 /*****************************************************************************************/
 {
     int                 index;

@@ -38,9 +38,9 @@
 
 
 typedef struct { /* stmt program read info */
-    dr_handle   start;
-    dr_handle   curr;
-    dr_handle   finish;
+    drmem_hdl   start;
+    drmem_hdl   curr;
+    drmem_hdl   finish;
     unsigned_16 seg;
     signed_8    line_base;
     unsigned_8  line_range;
@@ -79,8 +79,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 // Run the statement program
 // On each row append (as blathered about in DWARF spec) call the wlk
 {
-    dr_handle       curr;
-    dr_handle       finish;
+    drmem_hdl       curr;
+    drmem_hdl       finish;
     int             value;
     unsigned        length;
     int             min_ins_len;
@@ -238,12 +238,12 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 }
 
 
-static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
+static drmem_hdl InitProgInfo( prog_rdr *rdr, drmem_hdl start, uint_16 seg )
 /**************************************************************************/
 // Init statement program info
 {
     unsigned        len;
-    dr_handle       pos;
+    drmem_hdl       pos;
     unsigned        index;
 
     rdr->seg = seg;
@@ -271,11 +271,11 @@ static void FiniProgInfo( prog_rdr *rdr )
     DWRFREE( rdr->op_lens );
 }
 
-extern dr_handle  DRGetStmtList( dr_handle ccu )
+extern drmem_hdl  DRGetStmtList( drmem_hdl ccu )
 /**********************************************/
 // Return the start of the statement list or 0 if no lines
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &ccu ) + 1;
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
@@ -286,7 +286,7 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
     return( ccu );
 }
 
-bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
+bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
 /********************************************************************/
 // Run the statement program
 {
@@ -299,7 +299,7 @@ bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     return( ret );
 }
 
-bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
+bool DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file, void *file_data,
                                         DRLDIRWLK dir, void *dir_data )
 /*********************************************************************/
 // Run the statement program

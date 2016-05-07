@@ -50,11 +50,11 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
 {
     dr_pubname_data     pubname;
     pubname_header      header;
-    dr_handle           pos;
-    dr_handle           finish;
-    dr_handle           unit_end;
+    drmem_hdl           pos;
+    drmem_hdl           finish;
+    drmem_hdl           unit_end;
     uint_32             dbg_handle;
-    dr_handle           dbg_base;
+    drmem_hdl           dbg_base;
     char                *name_buf;
     size_t              name_buf_len;
     size_t              curr_len;

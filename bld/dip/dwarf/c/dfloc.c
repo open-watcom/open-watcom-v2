@@ -804,7 +804,7 @@ static bool IsEntry( imp_image_handle *ii, location_context *lc ) {
 
 extern dip_status EvalLocation( imp_image_handle *ii,
                                 location_context *lc,
-                                dr_handle         sym,
+                                drmem_hdl         sym,
                                 word              seg,
                                 location_list    *ll ) {
     loc_handle d;
@@ -908,7 +908,7 @@ static dr_loc_callbck_def const ParmBck = {
 
 extern dip_status EvalParmLocation( imp_image_handle *ii,
                                     location_context *lc,
-                                    dr_handle         sym,
+                                    drmem_hdl         sym,
                                     location_list    *ll ) {
     loc_handle d;
 
@@ -934,7 +934,7 @@ extern dip_status EvalParmLocation( imp_image_handle *ii,
 
 extern dip_status EvalRetLocation( imp_image_handle *ii,
                                     location_context *lc,
-                                    dr_handle         sym,
+                                    drmem_hdl         sym,
                                     location_list    *ll ) {
     loc_handle d;
 
@@ -987,7 +987,7 @@ static dr_loc_callbck_def const AdjBck = {
 
 extern dip_status EvalLocAdj( imp_image_handle *ii,
                                location_context *lc,
-                               dr_handle         sym,
+                               drmem_hdl         sym,
                                address          *addr ) {
 // locations are relative to the object
     loc_handle d;
@@ -1062,7 +1062,7 @@ static dr_loc_callbck_def const ValBck = {
 
 extern dip_status EvalBasedPtr( imp_image_handle *ii,
                                 location_context *lc,
-                                dr_handle         sym,
+                                drmem_hdl         sym,
                                 address          *addr ) {
     loc_handle d;
     location_list ll;
@@ -1196,7 +1196,7 @@ static dr_loc_callbck_def const NOPCallBck = {
 };
 
 extern bool EvalOffset( imp_image_handle *ii,
-                        dr_handle         sym,
+                        drmem_hdl         sym,
                         uint_32          *val )
 //Evaluate location expr to an offset off frame
 {
@@ -1220,7 +1220,7 @@ extern bool EvalOffset( imp_image_handle *ii,
 
 }
 
-bool EvalSeg( imp_image_handle *ii, dr_handle sym, addr_seg *val )
+bool EvalSeg( imp_image_handle *ii, drmem_hdl sym, addr_seg *val )
 //Evaluate location expr to an offset off frame
 {
     nop_loc_handle d;
@@ -1244,7 +1244,7 @@ bool EvalSeg( imp_image_handle *ii, dr_handle sym, addr_seg *val )
 }
 
 extern bool EvalSymOffset( imp_image_handle *ii,
-                           dr_handle         sym,
+                           drmem_hdl         sym,
                            uint_32          *val ) {
 //Evaluate sym's map offset
     nop_loc_handle d;

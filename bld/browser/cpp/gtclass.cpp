@@ -107,7 +107,7 @@ TreeClassNode::TreeClassNode( TreeWindow * prt, Symbol * sym )
 {
 };
 
-TreeClassNode::TreeClassNode( TreeWindow * prt, dr_handle drhdl, Module * mod,
+TreeClassNode::TreeClassNode( TreeWindow * prt, drmem_hdl drhdl, Module * mod,
                               char * nm, ClassList * l, dr_access acc,
                               dr_virtuality v, int lvl )
                 : ClassLattice( drhdl, mod, nm, l, acc, v, true, lvl )
@@ -153,7 +153,7 @@ bool TreeClassNode::isRelated( TreeNode * node )
     return ret;
 }
 
-ClassLattice *  TreeClassNode::newLattice(  dr_handle drhdl, Module *mod,
+ClassLattice *  TreeClassNode::newLattice(  drmem_hdl drhdl, Module *mod,
                                             char *nm, ClassList *l,
                                             dr_access acc, dr_virtuality v,
                                             int lvl )

@@ -101,7 +101,7 @@ public:
     /*------------- pure virtual functions ----------------------------*/
 
     virtual int         getLevel( void ) const = 0;
-    virtual dr_handle   getHandle( void ) const = 0;
+    virtual drmem_hdl   getHandle( void ) const = 0;
 
     enum    TreeList_T { ParentList, ChildList, FlatList };
 

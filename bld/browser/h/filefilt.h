@@ -100,7 +100,7 @@ public:
             void        loadFiles();
 
             bool        enabled( const char * file );
-            bool        matches( dr_handle drhdl );
+            bool        matches( drmem_hdl drhdl );
 
             void        includeAll();
             void        excludeAll();

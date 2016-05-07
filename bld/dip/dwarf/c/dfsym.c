@@ -189,11 +189,11 @@ struct mod_wlk {
     seg_list            *addr_sym;
     imp_mod_handle      im;
     address             a;
-    dr_handle           sym;
+    drmem_hdl           sym;
     search_result       ret;
 };
 
-static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
+static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
 /******************************************************************/
 {
 //TODO: no segments, better TAG_label
@@ -254,9 +254,9 @@ seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
 
 
 typedef struct {
-    dr_handle   inh;    /* member class handle */
+    drmem_hdl   inh;    /* member class handle */
     char        *name;  /* member name         */
-    dr_handle   match;  /* handle that matches */
+    drmem_hdl   match;  /* handle that matches */
 } mem_func_wlk;
 
 static bool AMemFuncSym( void *_df, addrsym_info *info )
@@ -266,7 +266,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
     bool            cont;
     char            buff[256];
 //    unsigned        len;
-    dr_handle       contain;
+    drmem_hdl       contain;
 
     cont = true;
     contain  = DRGetContaining( info->sym );
@@ -285,9 +285,9 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 }
 
 
-static dr_handle MemFuncLookUp( imp_image_handle *ii,
-                                dr_handle sym,
-                                dr_handle inh,
+static drmem_hdl MemFuncLookUp( imp_image_handle *ii,
+                                drmem_hdl sym,
+                                drmem_hdl inh,
                                 imp_mod_handle im )
 /***************************************************/
 {
@@ -325,7 +325,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
     dip_status       ret;
     address          base; /* base segment & offset */
     addr_seg         seg;
-    dr_handle        sym;
+    drmem_hdl        sym;
     bool             is_segment;
 
     ret = DS_FAIL;
@@ -567,10 +567,10 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
 }
 
 
-static bool ARet( dr_handle var, int index, void *_var_ptr )
+static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 /**********************************************************/
 {
-    dr_handle   *var_ptr = _var_ptr;
+    drmem_hdl   *var_ptr = _var_ptr;
     char        name[sizeof( ".return" )];
     bool        cont;
     unsigned    len;
@@ -590,11 +590,11 @@ static bool ARet( dr_handle var, int index, void *_var_ptr )
 }
 
 
-extern dr_handle GetRet( imp_image_handle *ii, dr_handle proc )
+extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Find handle of Watcom return symbol. */
-    dr_handle ret = DR_HANDLE_NUL;
+    drmem_hdl ret = DR_HANDLE_NUL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_var, ARet, (void *)&ret ) ) {
@@ -617,7 +617,7 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
      * of the n'th parameter.
      */
 //TODO: brian only wants regs for now
-    dr_handle       parm;
+    drmem_hdl       parm;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
@@ -639,10 +639,10 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 
 
 
-static bool AThis( dr_handle var, int index, void *_var_ptr )
+static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 /***********************************************************/
 {
-    dr_handle   *var_ptr = _var_ptr;
+    drmem_hdl   *var_ptr = _var_ptr;
     char        name[sizeof( "this" )];
     bool        ret;
     unsigned    len;
@@ -660,11 +660,11 @@ static bool AThis( dr_handle var, int index, void *_var_ptr )
 }
 
 
-static dr_handle GetThis( imp_image_handle *ii, dr_handle proc )
+static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Return handle of the this parmeter. */
-    dr_handle   ret = DR_HANDLE_NUL;
+    drmem_hdl   ret = DR_HANDLE_NUL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_parm, AThis, (void *)&ret ) ) {
@@ -684,8 +684,8 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
      * pointer that the routine is expecting (near/far, 16/32). If the
      * routine is a static member, set ti->kind to TK_NONE.
      */
-    dr_handle   dr_this;
-    dr_handle   dr_type;
+    drmem_hdl   dr_this;
+    drmem_hdl   dr_type;
     dr_typeinfo typeinfo;
     dip_status  ret;
 
@@ -721,8 +721,8 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
      * for a C++ member function. Return DS_FAIL if it's a static member
      * function.
      */
-    dr_handle       dr_this;
-    dr_handle       dr_type;
+    drmem_hdl       dr_this;
+    drmem_hdl       dr_type;
     dr_typeinfo     typeinfo;
     addr_seg        seg;
     address         base;   /* base segment & offset */
@@ -836,7 +836,7 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
 /* Walk inner and outer blocks   */
 /*********************************/
 
-static bool InBlk( dr_handle blk, int depth, void *_ctl )
+static bool InBlk( drmem_hdl blk, int depth, void *_ctl )
 /*******************************************************/
 {
     scope_ctl       *ctl = _ctl;
@@ -952,12 +952,12 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
      * Make sure that the case where 'in' and 'out' point to the same
      * address is handled.
      */
-    dr_handle           what;
+    drmem_hdl           what;
     search_result       ret;
     address             addr;
     scope_ctl           *ctl;
     scope_node          *node;
-    dr_handle           cu_tag;
+    drmem_hdl           cu_tag;
 
     ret = SR_NONE;
     addr =  in->start;
@@ -1004,7 +1004,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
 }
 
 
-static dr_handle GetContainingClass( dr_handle curr )
+static drmem_hdl GetContainingClass( drmem_hdl curr )
 /***************************************************/
 {
     dr_tag_type     sc;
@@ -1026,9 +1026,9 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
 /********************************************************************/
 {
     search_result   ret;
-    dr_handle       curr;
+    drmem_hdl       curr;
     dr_tag_type     sc;
-    dr_handle       cu_tag;
+    drmem_hdl       cu_tag;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
     cu_tag = IMH2MODI( ii, im )->cu_tag;
@@ -1064,7 +1064,7 @@ typedef struct {
     imp_mod_handle      im;
     imp_image_handle    *ii;
     void                *d;
-    dr_handle           containing;
+    drmem_hdl           containing;
     dr_srch             what;
     bool                cont;   //continue to next scope
     enum {
@@ -1123,7 +1123,7 @@ static dr_srch Dip2DwarfSrch( symbol_type dip )
 }
 
 
-static bool ASym( dr_handle var, int index, void *_df )
+static bool ASym( drmem_hdl var, int index, void *_df )
 /*****************************************************/
 {
     blk_wlk_wlk     *df = _df;
@@ -1149,11 +1149,11 @@ static bool ASym( dr_handle var, int index, void *_df )
 }
 
 
-static bool ASymCont( dr_handle var, int index, void *_df )
+static bool ASymCont( drmem_hdl var, int index, void *_df )
 /*********************************************************/
 {
     blk_wlk_wlk     *df = _df;
-    dr_handle       contain;
+    drmem_hdl       contain;
     bool            cont;
 
     cont = true;
@@ -1168,7 +1168,7 @@ static bool ASymCont( dr_handle var, int index, void *_df )
 }
 
 
-static bool AModSym( dr_handle var, int index, void *_df )
+static bool AModSym( drmem_hdl var, int index, void *_df )
 /********************************************************/
 {
     blk_wlk_wlk     *df = _df;
@@ -1201,7 +1201,7 @@ static bool AModSym( dr_handle var, int index, void *_df )
 }
 
 
-static bool ASymLookup( dr_handle var, int index, void *_df )
+static bool ASymLookup( drmem_hdl var, int index, void *_df )
 /***********************************************************/
 {
     blk_wlk_lookup  *df = _df;
@@ -1232,11 +1232,11 @@ static bool ASymLookup( dr_handle var, int index, void *_df )
 }
 
 
-static bool ASymContLookup( dr_handle var, int index, void *_df )
+static bool ASymContLookup( drmem_hdl var, int index, void *_df )
 /***************************************************************/
 {
     blk_wlk_lookup  *df = _df;
-    dr_handle       contain;
+    drmem_hdl       contain;
     bool            cont;
 
     cont = true;
@@ -1251,7 +1251,7 @@ static bool ASymContLookup( dr_handle var, int index, void *_df )
 }
 
 
-static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, dr_handle blk )
+static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, drmem_hdl blk )
 /*****************************************************************/
 {
     DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
@@ -1284,11 +1284,11 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
      */
     imp_image_handle    *ii;
     scope_block         scope;
-    dr_handle           cu_tag;
-    dr_handle           dbg_pch;
+    drmem_hdl           cu_tag;
+    drmem_hdl           dbg_pch;
     dr_tag_type         sc;
     imp_mod_handle      im;
-    dr_handle           curr;
+    drmem_hdl           curr;
     bool                cont;
     mod_info            *modinfo;
 
@@ -1353,9 +1353,9 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
 /***************************************************************************/
 {
     imp_image_handle    *ii;
-    dr_handle           cu_tag;
+    drmem_hdl           cu_tag;
     imp_mod_handle      im;
-    dr_handle           blk;
+    drmem_hdl           blk;
     dr_tag_type         sc;
     bool                cont;
 
@@ -1523,10 +1523,10 @@ typedef struct {
     void                *d;
     int                 (*compare)(char const *, char const *);
     const char          *name;
-    dr_handle           sym;
+    drmem_hdl           sym;
 } hash_look_data;
 
-static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
+static bool AHashItem( void *_find, drmem_hdl dr_sym, const char *name )
 /**********************************************************************/
 {
     hash_look_data  *find = _find;

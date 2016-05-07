@@ -33,7 +33,7 @@
 typedef struct {
     uint_32     addr;
     uint_32     len;
-    dr_handle   dbg;
+    drmem_hdl   dbg;
     uint_16     seg;
     uint_8      addr_size;
     uint_8      seg_size;

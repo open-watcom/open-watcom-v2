@@ -107,7 +107,7 @@ typedef struct {
     uint_32    stride_size;
     uint_32    count;
     dw_ord     ordering;
-    dr_handle  child;
+    drmem_hdl  child;
 } dr_array_info;
 
 typedef enum {
@@ -119,7 +119,7 @@ typedef enum {
 typedef struct {
     dr_val_class val_class;
     union{
-        dr_handle ref;
+        drmem_hdl ref;
         uint_32   s;
     } val;
 } dr_val32;
@@ -136,14 +136,14 @@ typedef struct {
     dr_val32 bit_size;
 } dr_bitfield;
 
-extern bool             DRGetTypeInfo( dr_handle entry, dr_typeinfo *info );
-extern dr_handle        DRGetTypeAT( dr_handle entry );
-extern dr_handle        DRSkipTypeChain( dr_handle entry );
-extern bool             DRWalkStruct( dr_handle mod, const DRWLKBLK *wlks, void *d );
-extern bool             DRWalkArraySibs( dr_handle mod, const DRWLKBLK *wlks, void *d );
-extern bool             DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d );
-extern bool             DRConstValAT( dr_handle var, uint_32 *ret );
-extern dr_array_stat    DRGetArrayInfo( dr_handle array, dr_array_info *info );
-extern void             DRGetSubrangeInfo( dr_handle sub, dr_subinfo *info );
-extern int              DRGetBitFieldInfo( dr_handle mem, dr_bitfield *info );
-extern dr_ptr           DRGetAddrClass( dr_handle entry );
+extern bool             DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info );
+extern drmem_hdl        DRGetTypeAT( drmem_hdl entry );
+extern drmem_hdl        DRSkipTypeChain( drmem_hdl entry );
+extern bool             DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d );
+extern bool             DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d );
+extern bool             DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d );
+extern bool             DRConstValAT( drmem_hdl var, uint_32 *ret );
+extern dr_array_stat    DRGetArrayInfo( drmem_hdl array, dr_array_info *info );
+extern void             DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info );
+extern int              DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info );
+extern dr_ptr           DRGetAddrClass( drmem_hdl entry );

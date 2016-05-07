@@ -85,7 +85,7 @@ static void FreeScope( scope_node *last ){
 
 extern scope_node *AddScope( scope_node *where, addr_off start,
                                                 addr_off end,
-                                               dr_handle what ){
+                                               drmem_hdl what ){
 /**************************************************************/
     scope_node *new;
     scope_node *down;
@@ -99,11 +99,11 @@ extern scope_node *AddScope( scope_node *where, addr_off start,
     new->what = what;
     if( where != NULL ){
         down = FindScope( where, start );
-	if( down != NULL ) {
+        if( down != NULL ) {
             new->down = down;
             new->next = down->up;
             down->up = new;
-	}
+        }
     }
     return( new );
 }

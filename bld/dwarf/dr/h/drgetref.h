@@ -43,21 +43,21 @@ extern "C" {
 typedef struct {
     int         size;   /* available room */
     int         free;   /* next free entry */
-    dr_handle * stack;  /* values */
+    drmem_hdl   *stack; /* values */
 } dr_scope_stack;
 
 typedef struct {
     dr_scope_stack  scope;
-    dr_handle       dependent;
-    char *          file;
+    drmem_hdl       dependent;
+    char            *file;
     unsigned_32     line;
     unsigned_8      column;
 } dr_ref_info;
 
-typedef bool (*DRSYMREF)( dr_handle, dr_ref_info *, char *, void * );
+typedef bool (*DRSYMREF)( drmem_hdl, dr_ref_info *, char *, void * );
 
-extern void DRRefersTo( dr_handle, void *, DRSYMREF callback );
-extern void DRReferredToBy( dr_handle, void *, DRSYMREF callback );
+extern void DRRefersTo( drmem_hdl, void *, DRSYMREF callback );
+extern void DRReferredToBy( drmem_hdl, void *, DRSYMREF callback );
 extern void DRReferencedSymbols( dr_sym_type, void *, DRSYMREF callback );
 
 #ifdef __cplusplus

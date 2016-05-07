@@ -34,9 +34,9 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
                  IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
 extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                  lookup_item *li, void *d );
-extern dr_handle GetParmN(  imp_image_handle *ii,dr_handle proc, int count );
-extern int GetParmCount(  imp_image_handle *ii, dr_handle proc );
+extern drmem_hdl GetParmN(  imp_image_handle *ii, drmem_hdl proc, int count );
+extern int GetParmCount(  imp_image_handle *ii, drmem_hdl proc );
 extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti );
 extern dip_status  DFBaseAdjust( imp_image_handle *ii,
-                                dr_handle base, dr_handle derived,
+                                drmem_hdl base, drmem_hdl derived,
                                 location_context *lc, address *addr );

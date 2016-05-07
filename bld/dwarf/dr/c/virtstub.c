@@ -53,7 +53,7 @@ extern void DWRVMReset( void )
     /* nothing to do here */
 }
 
-extern dr_handle DWRVMAlloc( unsigned long len, int sect )
+extern drmem_hdl DWRVMAlloc( unsigned long len, int sect )
 /********************************************************/
 {
     alloc_struct *nChunk;
@@ -74,10 +74,10 @@ extern dr_handle DWRVMAlloc( unsigned long len, int sect )
     DWRSEEK( DWRCurrNode->file, sect, 0 );
     DWRREAD( DWRCurrNode->file, sect, nChunk->data, len );
 
-    return( (dr_handle)nChunk->data );
+    return( (drmem_hdl)nChunk->data );
 }
 
-bool DWRVMSectDone( dr_handle base, unsigned_32 size )
+bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
 /****************************************************/
 {
     alloc_struct    *walk;
@@ -88,7 +88,7 @@ bool DWRVMSectDone( dr_handle base, unsigned_32 size )
     lnk = &AllocHead;
     ret = false;
     while( (walk = *lnk) != NULL ) {
-        if( (dr_handle)walk->data == base ) {
+        if( (drmem_hdl)walk->data == base ) {
             *lnk = walk->next;
             DWRFREE( walk );
             ret = true;
@@ -123,11 +123,11 @@ bool DRSwap( void )
 }
 
 
-unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
+unsigned_32 ReadLEB128( drmem_hdl *vmptr, bool issigned )
 /*******************************************************/
 // works for signed or unsigned
 {
-    dr_handle       src;
+    drmem_hdl       src;
     unsigned_32     result;
     unsigned        shift;
     char            b;
@@ -149,7 +149,7 @@ unsigned_32 ReadLEB128( dr_handle *vmptr, bool issigned )
 }
 
 #if 0
-static void DWRVMGetString( char *buf, dr_handle *hdlp )
+static void DWRVMGetString( char *buf, drmem_hdl *hdlp )
 /******************************************************/
 {
     uint len;
@@ -160,12 +160,12 @@ static void DWRVMGetString( char *buf, dr_handle *hdlp )
 }
 #endif
 
-char *DWRVMCopyString( dr_handle *info )
+char *DWRVMCopyString( drmem_hdl *info )
 /**************************************/
 {
     size_t      len;
     char        *dst;
-    dr_handle   src;
+    drmem_hdl   src;
 
     src = *info;
     len = strlen( src ) + 1;
@@ -174,7 +174,7 @@ char *DWRVMCopyString( dr_handle *info )
     return( memcpy( dst, src, len ) );
 }
 
-size_t DWRVMGetStrBuff( dr_handle str, char *buf, size_t max )
+size_t DWRVMGetStrBuff( drmem_hdl str, char *buf, size_t max )
 /************************************************************/
 {
     size_t      len;
@@ -192,7 +192,7 @@ size_t DWRVMGetStrBuff( dr_handle str, char *buf, size_t max )
     return( len );
 }
 
-extern unsigned_16 DWRVMReadWord( dr_handle hdl )
+extern unsigned_16 DWRVMReadWord( drmem_hdl hdl )
 /***********************************************/
 {
     unsigned_16     word = *((unsigned_16 _WCUNALIGNED *)(hdl));
@@ -203,7 +203,7 @@ extern unsigned_16 DWRVMReadWord( dr_handle hdl )
     return( word );
 }
 
-extern unsigned_32 DWRVMReadDWord( dr_handle hdl )
+extern unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
 /************************************************/
 {
     unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));

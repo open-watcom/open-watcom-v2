@@ -61,7 +61,7 @@ ClassMember::ClassMember( Symbol * sym, const char * text )
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text )
+ClassMember::ClassMember( Symbol * sym, drmem_hdl drhdl_prt, const char * text )
             : _symbol( sym )
             , _text( text )
             , _parent( drhdl_prt )
@@ -70,7 +70,7 @@ ClassMember::ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text )
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( dr_handle drhdl_prt, dr_access access, const char * text )
+ClassMember::ClassMember( drmem_hdl drhdl_prt, dr_access access, const char * text )
             : _symbol( NULL )
             , _text( text )
             , _access( access )
@@ -266,7 +266,7 @@ void DTViewClass::addDescriptions()
     int             i;
     ClassMember *   mem;
     dr_access       prevAccess = (dr_access)0;
-    dr_handle       prevParent = _symbol->getHandle();
+    drmem_hdl       prevParent = _symbol->getHandle();
     char *          tmpName;
     WCPtrOrderedVector<ClassMember> desc;
 

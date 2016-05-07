@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-typedef bool (*DRITERCUCB)( void *, dr_handle );
+typedef bool (*DRITERCUCB)( void *, drmem_hdl );
 
 extern void         DRIterateCompileUnits( void *, DRITERCUCB );
-extern dr_handle    DRGetCompileUnitTag( dr_handle comp_unit );
+extern drmem_hdl    DRGetCompileUnitTag( drmem_hdl comp_unit );

@@ -79,7 +79,7 @@ do_copy:
     *buff = '\0';
 }
 
-static bool ModFill( void *_mod, dr_handle mod_handle )
+static bool ModFill( void *_mod, drmem_hdl mod_handle )
 /*****************************************************/
 // fill in mod_handle for dip to dwarf mod map
 // pick up general info about mod while here for later calls
@@ -88,7 +88,7 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
     char        fname[MAX_PATH];
     char        *name;
     char        *path;
-    dr_handle   cu_tag;
+    drmem_hdl   cu_tag;
     dr_model    model;
     mod_info    *modinfo;
 
@@ -152,7 +152,7 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
 
 dip_status     InitModMap( imp_image_handle *ii )
 /***********************************************/
-// Make the imp_mod_handle  to  dr_handle map
+// Make the imp_mod_handle  to  drmem_hdl map
 {
     mod_list    list;
     dip_status  ret;
@@ -200,7 +200,7 @@ bool    ClearMods( imp_image_handle *ii )
 
 void    FiniModMap( imp_image_handle *ii )
 /****************************************/
-// Make the imp_mod_handle to dr_handle map
+// Make the imp_mod_handle to drmem_hdl map
 {
     im_idx      i;
     mod_info    *modinfo;
@@ -219,7 +219,7 @@ void    FiniModMap( imp_image_handle *ii )
     ii->mod_count = 0;
 }
 
-imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
+imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, drmem_hdl mod_handle )
 /**********************************************************************/
 // Look up mod_handle in mod_map
 {
@@ -236,7 +236,7 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
     return( IMH_NOMOD );
 }
 
-imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
+imp_mod_handle   DwarfMod( imp_image_handle *ii, drmem_hdl dr_sym )
 /*****************************************************************/
 // find the imp_mod_handle where a dwarf dbginfo comes from
 {
@@ -257,7 +257,7 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
     return( IMX2IMH( i ) );
 }
 
-imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
+imp_mod_handle   CuTag2Mod( imp_image_handle *ii, drmem_hdl cu_tag )
 /******************************************************************/
 // Look up cu_tag in mod_map
 {
@@ -466,7 +466,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 {
     l_walk_info walk;
     address     a;
-    dr_handle   stmts;
+    drmem_hdl   stmts;
 
     if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
@@ -490,7 +490,7 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
         by 'hk', DS_FAIL if it does not.
     */
     dip_status  ret;
-    dr_handle   stmts;
+    drmem_hdl   stmts;
     mod_info    *modinfo;
 
     ret = DS_FAIL;
@@ -615,7 +615,7 @@ size_t NameCopy( char *buff, const char *from, size_t buff_size, size_t len )
     return( new_len );
 }
 
-void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
+void  SetModPubNames( imp_image_handle *ii, drmem_hdl mod_handle )
 /****************************************************************/
 {
     imp_mod_handle im;

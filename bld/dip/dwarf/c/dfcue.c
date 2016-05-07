@@ -180,8 +180,8 @@ size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     char            *name;
     file_walk_name  wlk;
     size_t          len;
-    dr_handle       stmts;
-    dr_handle       cu_tag;
+    drmem_hdl       stmts;
+    drmem_hdl       cu_tag;
     int             i;
     mod_info        *modinfo;
 
@@ -242,7 +242,7 @@ static bool TheFirstCue( void *_wlk, dr_line_data *curr )
 }
 
 
-static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
+static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *ic )
 /**********************************************************************/
 {
     bool            cont;
@@ -264,7 +264,7 @@ static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
 
 
 typedef struct {
-    dr_handle           stmts;
+    drmem_hdl           stmts;
     imp_image_handle    *ii;
     imp_mod_handle      im;
     IMP_CUE_WKR         *wk;
@@ -307,7 +307,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
 /*************************************************************************/
 {
     file_walk_cue   wlk;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     stmts = IMH2MODI( ii, im )->stmts;
@@ -358,7 +358,7 @@ static bool ACueAddr( void *_info, dr_line_data *curr )
 }
 
 
-static void LoadCueMap( dr_handle stmts, address *addr, cue_list *list )
+static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
 /**********************************************************************/
 {
     la_walk_info    wlk;
@@ -390,7 +390,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 /*****************************************************************/
 {
-    dr_handle       stmts;
+    drmem_hdl       stmts;
     dfline_search   start_state;
     dfline_find     find;
     dip_status      ret;
@@ -498,7 +498,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     search_result   ret;
     cue_list        *cue_map;
     cue_item        cue;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
 
     if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
@@ -561,7 +561,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     search_result   ret;
     dfline_find     find;
     dfline_search   what;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
     cue_list        *cue_map;
     address         map_addr;
     cue_item        cue;

@@ -300,7 +300,7 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
     return( true );
 }
 
-bool KeySymbol::matches( dr_handle drhdl, const char * name )
+bool KeySymbol::matches( drmem_hdl drhdl, const char * name )
 //---------------------------------------------------------
 // perform a partial comparison (no containers)
 {

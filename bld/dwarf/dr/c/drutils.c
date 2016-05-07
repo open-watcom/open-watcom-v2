@@ -114,11 +114,11 @@ const dw_tagnum *const SearchTypes[] = {
 };
 
 
-long DWRInfoLength( dr_handle mod )
+long DWRInfoLength( drmem_hdl mod )
 /****************************************/
 // return length of dbg_info for mod
 {
-    dr_handle           finish;
+    drmem_hdl           finish;
 
     finish = mod + DWRVMReadDWord( mod );
     mod += sizeof( compuhdr_prologue );
@@ -132,12 +132,12 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
 /*********************************************************************************/
 /* note this modifies the start and stack fields of the context passed in */
 {
-    dr_handle           mod;
+    drmem_hdl           mod;
     dr_abbrev_idx       abbrev_idx;
     mod_scan_info       info;
     dw_children         haschild;
     stack_op            op;
-    dr_handle           abbrev;
+    drmem_hdl           abbrev;
     bool                skipped;
 
     mod = ctxt->start;
@@ -214,10 +214,10 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
     return( true );
 }
 
-void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
+void DWRSkipChildren( drmem_hdl *abbrev, drmem_hdl *mod )
 /**************************************************************/
 {
-    dr_handle       handle;
+    drmem_hdl       handle;
 
     if( DWRScanForAttrib( abbrev, mod, DW_AT_sibling ) ) {
         *mod = DWRReadReference( *abbrev, *mod );
@@ -229,7 +229,7 @@ void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
     }
 }
 
-void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
+void DWRSkipAttribs( drmem_hdl abbrev, drmem_hdl *mod )
 /************************************************************/
 // skip the attributes.
 {
@@ -245,7 +245,7 @@ void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
     }
 }
 
-void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
+void DWRSkipRest( drmem_hdl abbrev, drmem_hdl *mod )
 /*********************************************************/
 // skip the rest of the attributes.  This is designed to come after a
 // DWRScanForAttrib, which leaves abbrev pointing at the form.
@@ -263,10 +263,10 @@ void DWRSkipRest( dr_handle abbrev, dr_handle *mod )
     }
 }
 
-void DWRAllChildren( dr_handle mod, DWRCHILDCB fn, void *data )
+void DWRAllChildren( drmem_hdl mod, DWRCHILDCB fn, void *data )
 /*************************************************************/
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
 
     while( !DWRReadTagEnd( &mod, &abbrev, NULL ) ) {
         abbrev++;   /* skip child flag */
@@ -287,7 +287,7 @@ bool DWRSearchArray( const dw_tagnum *array, dw_tagnum value )
     return( false );
 }
 
-unsigned DWRGetAddrSize( dr_handle mod )
+unsigned DWRGetAddrSize( drmem_hdl mod )
 /**************************************/
 /* returns the size of the address for the compile unit */
 {
@@ -295,7 +295,7 @@ unsigned DWRGetAddrSize( dr_handle mod )
 }
 
 
-void DWRSkipForm( dr_handle *addr, dw_formnum form )
+void DWRSkipForm( drmem_hdl *addr, dw_formnum form )
 /**************************************************/
 {
     unsigned_32 value;
@@ -407,7 +407,7 @@ dwr_formcl DWRFormClass( dw_formnum form )
     return( formcl );
 }
 
-unsigned_32 ReadConst( dw_formnum form, dr_handle info )
+unsigned_32 ReadConst( dw_formnum form, drmem_hdl info )
 /******************************************************/
 {
     unsigned_32 retval;
@@ -446,7 +446,7 @@ unsigned_32 ReadConst( dw_formnum form, dr_handle info )
     return( retval );
 }
 
-unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
+unsigned_32 DWRReadConstant( drmem_hdl abbrev, drmem_hdl info )
 /********************************************************************/
 {
     dw_formnum  form;
@@ -455,11 +455,11 @@ unsigned_32 DWRReadConstant( dr_handle abbrev, dr_handle info )
     return( ReadConst( form, info ) );
 }
 
-dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
+drmem_hdl DWRReadReference( drmem_hdl abbrev, drmem_hdl info )
 /************************************************************/
 // references are just a constant with the start of the compile unit added on.
 {
-    dr_handle       handle;
+    drmem_hdl       handle;
     dw_formnum      form;
     unsigned_32     offset;
 
@@ -480,7 +480,7 @@ dr_handle DWRReadReference( dr_handle abbrev, dr_handle info )
     return( handle + offset );
 }
 
-unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
+unsigned_32 DWRReadAddr( drmem_hdl abbrev, drmem_hdl info )
 /*********************************************************/
 // address size dependent on CCU info
 {
@@ -499,7 +499,7 @@ unsigned_32 DWRReadAddr( dr_handle abbrev, dr_handle info )
     return( DWRReadInt( info, addr_size ) );
 }
 
-char *DWRReadString( dr_handle abbrev, dr_handle info )
+char *DWRReadString( drmem_hdl abbrev, drmem_hdl info )
 /*****************************************************/
 {
     dw_formnum  form;
@@ -518,7 +518,7 @@ char *DWRReadString( dr_handle abbrev, dr_handle info )
     return( NULL );
 }
 
-unsigned_32 DWRReadInt( dr_handle where, unsigned size )
+unsigned_32 DWRReadInt( drmem_hdl where, unsigned size )
 /******************************************************/
 //Read an int
 {
@@ -542,7 +542,7 @@ unsigned_32 DWRReadInt( dr_handle where, unsigned size )
     return( ret );
 }
 
-int DWRReadFlag( dr_handle abbrev, dr_handle info )
+int DWRReadFlag( drmem_hdl abbrev, drmem_hdl info )
 /*************************************************/
 {
     dw_formnum  form;
@@ -556,7 +556,7 @@ int DWRReadFlag( dr_handle abbrev, dr_handle info )
     return( 0 );
 }
 
-dw_tagnum DWRReadTag( dr_handle *entry, dr_handle *abbrev )
+dw_tagnum DWRReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 /*********************************************************/
 {
     dw_tagnum       tag;
@@ -576,29 +576,29 @@ dw_tagnum DWRReadTag( dr_handle *entry, dr_handle *abbrev )
     return( tag );
 }
 
-dw_tagnum DWRGetTag( dr_handle entry )
+dw_tagnum DWRGetTag( drmem_hdl entry )
 /************************************/
 {
-    dr_handle       tmp_abbrev;
+    drmem_hdl       tmp_abbrev;
 
     return( DWRReadTag( &entry, &tmp_abbrev ) );
 }
 
-dr_handle DWRSkipTag( dr_handle *entry )
+drmem_hdl DWRSkipTag( drmem_hdl *entry )
 /**************************************/
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
 
     DWRReadTag( entry, &abbrev );
     return( abbrev );
 }
 
-bool DWRReadTagEnd( dr_handle *entry, dr_handle *pabbrev, dw_tagnum *ptag )
+bool DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
     compunit_info   *cu;
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dw_tagnum       tag;
 
     abbrev = DR_HANDLE_NUL;
@@ -620,10 +620,10 @@ bool DWRReadTagEnd( dr_handle *entry, dr_handle *pabbrev, dw_tagnum *ptag )
     return( abbrev_idx == 0 );
 }
 
-char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
+char * DWRCopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
 /***************************************************************/
 {
-    dr_handle   dbgsec_str;
+    drmem_hdl   dbgsec_str;
     char        *str;
 
     info = info;
@@ -632,7 +632,7 @@ char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
     return( str );
 }
 
-bool DWRScanForAttrib( dr_handle *abbrev, dr_handle *info, dw_atnum at )
+bool DWRScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
 /**********************************************************************/
 /* look for a specific attribute in the list of attributes */
 {
@@ -657,7 +657,7 @@ bool DWRScanForAttrib( dr_handle *abbrev, dr_handle *info, dw_atnum at )
 
 static const dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
 
-void DWRGetCompileUnitHdr( dr_handle mod, DWRCUWLK fn, void *data )
+void DWRGetCompileUnitHdr( drmem_hdl mod, DWRCUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
@@ -677,7 +677,7 @@ void DWRGetCompileUnitHdr( dr_handle mod, DWRCUWLK fn, void *data )
     DWRFreeContextStack( &ctxt.stack );
 }
 
-dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
+drmem_hdl DRGetCompileUnitTag( drmem_hdl comp_unit )
 /**************************************************/
 { // given the start of the compilation unit header
   // return the start of the DW_TAG_compile_unit
@@ -689,7 +689,7 @@ dr_handle DRGetCompileUnitTag( dr_handle comp_unit )
 
 #define DEMANGLE_BUF_SIZE 256
 
-char * DWRGetName( dr_handle abbrev, dr_handle entry )
+char * DWRGetName( drmem_hdl abbrev, drmem_hdl entry )
 /****************************************************/
 {
     char    *name;
@@ -768,7 +768,7 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
+bool DWRWalkCompileUnit( drmem_hdl mod, DWRCUWLK fn,
                         const dw_tagnum *tagarray, dr_depth depth, void *data )
 /*******************************************************************************/
 {
@@ -794,14 +794,14 @@ bool DWRWalkCompileUnit( dr_handle mod, DWRCUWLK fn,
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+bool DWRWalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
 /*****************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dr_abbrev_idx   abbrev_idx;
-    dr_handle       curr;
+    drmem_hdl       curr;
     dw_tagnum       tag;
     dw_children     haschild;
     int             index;
@@ -852,13 +852,13 @@ bool DWRWalkChildren( dr_handle mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     return( true );
 }
 
-bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
+bool DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
 /******************************************************************************/
 // Walk into tags that enclose target
 // The final call shoud be target else a goose chase
 {
-    dr_handle       abbrev;
-    dr_handle       curr;
+    drmem_hdl       abbrev;
+    drmem_hdl       curr;
     dw_children     haschild;
 
     if( DWRReadTagEnd( &mod, &abbrev, NULL ) )  /* skip tag */
@@ -869,8 +869,8 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
     if( haschild == DW_CHILDREN_yes ) {
         curr = mod;
         for( ;; ) {
-            dr_handle   old_abbrev;
-            dr_handle   old_curr;
+            drmem_hdl   old_abbrev;
+            drmem_hdl   old_curr;
 
             if( curr > target )
                 break;
@@ -899,14 +899,14 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+bool DWRWalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
 /******************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
 // positions curr at next tag return true if end of list
 {
-    dr_handle       abbrev;
-    dr_handle       start;
+    drmem_hdl       abbrev;
+    drmem_hdl       start;
     dw_tagnum       tag;
     dw_children     haschild;
     int             index;
@@ -941,13 +941,13 @@ bool DWRWalkSiblings( dr_handle curr, const dw_tagnum *tags, const DRWLKBLK *wlk
     return( cont );
 }
 
-bool DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
+bool DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
 /********************************************************************************/
 // walk a scope starting at mod
 // if a block go into it, if a tag we are interested in call user
 {
-    dr_handle       abbrev;
-    dr_handle       curr;
+    drmem_hdl       abbrev;
+    drmem_hdl       curr;
     dw_tagnum       tag;
     dw_children     haschild;
     int             index;
@@ -1001,7 +1001,7 @@ bool DWRWalkScope( dr_handle mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-static compunit_info *FindCompileInfo( compunit_info *compunit, dr_handle addr )
+static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
 /******************************************************************************/
 {
     for( ;; ) {
@@ -1018,9 +1018,9 @@ static compunit_info *FindCompileInfo( compunit_info *compunit, dr_handle addr )
     return( compunit );
 }
 
-compunit_info * DWRFindCompileInfo( dr_handle addr )
+compunit_info * DWRFindCompileInfo( drmem_hdl addr )
 /**************************************************/
-/* gets the dr_handle of the module that addr is in */
+/* gets the drmem_hdl of the module that addr is in */
 {
     compunit_info   *compunit;
 
@@ -1033,7 +1033,7 @@ compunit_info * DWRFindCompileInfo( dr_handle addr )
     return( compunit );
 }
 
-dr_handle DWRFindCompileUnit( dr_handle addr )
+drmem_hdl DWRFindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
     compunit_info   *compunit;
@@ -1044,7 +1044,7 @@ dr_handle DWRFindCompileUnit( dr_handle addr )
 
 #define CONTEXT_GUESS 0x10
 
-void DWRContextPush( dr_context_stack *stack, dr_handle val )
+void DWRContextPush( dr_context_stack *stack, drmem_hdl val )
 /***********************************************************/
 {
     if( stack->stack == NULL ) {
@@ -1054,14 +1054,14 @@ void DWRContextPush( dr_context_stack *stack, dr_handle val )
     }
     if( stack->free >= stack->size ) {
         stack->size += CONTEXT_GUESS;
-        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
+        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
     }
 
     stack->stack[stack->free] = val;
     stack->free += 1;
 }
 
-dr_handle DWRContextPop( dr_context_stack *stack )
+drmem_hdl DWRContextPop( dr_context_stack *stack )
 /************************************************/
 {
     if( stack->free <= 0 ) {
@@ -1072,7 +1072,7 @@ dr_handle DWRContextPop( dr_context_stack *stack )
     return( stack->stack[stack->free] );
 }
 
-dr_handle DWRContext( dr_context_stack *stack, int up )
+drmem_hdl DWRContext( dr_context_stack *stack, int up )
 /*****************************************************/
 {
     int free;

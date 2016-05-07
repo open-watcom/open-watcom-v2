@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-typedef bool (*DRWLKMODF)( dr_handle, void *, dr_search_context * );
+typedef bool (*DRWLKMODF)( drmem_hdl, void *, dr_search_context * );
 typedef bool (*DRFNAMECB)( char *, void * );
 
 typedef enum {
@@ -57,37 +57,37 @@ typedef enum {
     DR_TAG_NONE         /* not any of the above */
 } dr_tag_type;
 
-extern dr_language      DRGetLanguageAT( dr_handle );
-extern char             *DRGetProducer( dr_handle );
-extern dr_model         DRGetMemModelAT( dr_handle );
+extern dr_language      DRGetLanguageAT( drmem_hdl );
+extern char             *DRGetProducer( drmem_hdl );
+extern dr_model         DRGetMemModelAT( drmem_hdl );
 extern dr_language      DRGetLanguage( void );
-extern char             *DRGetName( dr_handle );
-extern size_t           DRGetNameBuff( dr_handle entry, char *buff, size_t length );
-extern size_t           DRGetScopedNameBuff( dr_handle entry, char *buff, size_t max );
-extern size_t           DRGetCompDirBuff( dr_handle entry, char *buff, size_t length );
-extern long             DRGetColumn( dr_handle );
-extern long             DRGetLine( dr_handle );
-extern char             *DRGetFileName( dr_handle );
+extern char             *DRGetName( drmem_hdl );
+extern size_t           DRGetNameBuff( drmem_hdl entry, char *buff, size_t length );
+extern size_t           DRGetScopedNameBuff( drmem_hdl entry, char *buff, size_t max );
+extern size_t           DRGetCompDirBuff( drmem_hdl entry, char *buff, size_t length );
+extern long             DRGetColumn( drmem_hdl );
+extern long             DRGetLine( drmem_hdl );
+extern char             *DRGetFileName( drmem_hdl );
 extern void             DRGetFileNameList( DRFNAMECB, void * );
-extern char             *DRIndexFileName( dr_handle mod, dr_fileidx fileidx );
-extern dr_access        DRGetAccess( dr_handle );
-extern bool             DRIsMemberStatic( dr_handle );
-extern bool             DRIsFunc( dr_handle );
-extern bool             DRIsParm( dr_handle entry );
-extern bool             DRIsStatic( dr_handle );
-extern bool             DRIsArtificial( dr_handle );
-extern bool             DRIsSymDefined( dr_handle );
-extern dr_virtuality    DRGetVirtuality( dr_handle );
-extern unsigned         DRGetByteSize( dr_handle );
-extern bool             DRGetLowPc( dr_handle, uint_32 * );
-extern bool             DRGetHighPc( dr_handle, uint_32 * );
-extern dr_handle        DRGetContaining( dr_handle );
-extern dr_handle        DRDebugPCHDef( dr_handle );
-extern bool             DRWalkModFunc( dr_handle, bool, DRWLKMODF, void * );
-extern bool             DRWalkBlock( dr_handle, dr_srch, DRWLKBLK, void * );
-extern dr_handle        DRWalkParent( dr_search_context * );
-extern bool             DRStartScopeAT( dr_handle, uint_32 * );
-extern unsigned         DRGetAddrSize( dr_handle );
-extern bool             DRWalkScope( dr_handle, DRWLKBLK, void * );
-extern dr_tag_type      DRGetTagType( dr_handle );
-extern bool             DRWalkModTypes( dr_handle, DRWLKMODF, void * );
+extern char             *DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx );
+extern dr_access        DRGetAccess( drmem_hdl );
+extern bool             DRIsMemberStatic( drmem_hdl );
+extern bool             DRIsFunc( drmem_hdl );
+extern bool             DRIsParm( drmem_hdl entry );
+extern bool             DRIsStatic( drmem_hdl );
+extern bool             DRIsArtificial( drmem_hdl );
+extern bool             DRIsSymDefined( drmem_hdl );
+extern dr_virtuality    DRGetVirtuality( drmem_hdl );
+extern unsigned         DRGetByteSize( drmem_hdl );
+extern bool             DRGetLowPc( drmem_hdl, uint_32 * );
+extern bool             DRGetHighPc( drmem_hdl, uint_32 * );
+extern drmem_hdl        DRGetContaining( drmem_hdl );
+extern drmem_hdl        DRDebugPCHDef( drmem_hdl );
+extern bool             DRWalkModFunc( drmem_hdl, bool, DRWLKMODF, void * );
+extern bool             DRWalkBlock( drmem_hdl, dr_srch, DRWLKBLK, void * );
+extern drmem_hdl        DRWalkParent( dr_search_context * );
+extern bool             DRStartScopeAT( drmem_hdl, uint_32 * );
+extern unsigned         DRGetAddrSize( drmem_hdl );
+extern bool             DRWalkScope( drmem_hdl, DRWLKBLK, void * );
+extern dr_tag_type      DRGetTagType( drmem_hdl );
+extern bool             DRWalkModTypes( drmem_hdl, DRWLKMODF, void * );

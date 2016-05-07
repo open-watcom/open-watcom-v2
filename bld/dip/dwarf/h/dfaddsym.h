@@ -33,8 +33,8 @@
 typedef struct {
     addr_off        map_offset;
     addr_seg        map_seg;
-    dr_handle       sym;  /* dwarf handle */
-}addrsym_info;
+    drmem_hdl       sym;  /* dwarf memory handle */
+} addrsym_info;
 
 typedef bool (*WLKADDRSYM)( void *d, addrsym_info *info );
 

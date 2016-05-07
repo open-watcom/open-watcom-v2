@@ -363,7 +363,7 @@ bool FileFilter::enabled( const char * file )
     return entry->_enabled;
 }
 
-bool FileFilter::matches( dr_handle drhdl )
+bool FileFilter::matches( drmem_hdl drhdl )
 //-----------------------------------------
 {
     if( _matchesAll == FFMNotSet ) {

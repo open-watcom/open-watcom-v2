@@ -67,7 +67,7 @@ public:
     virtual void            showWin( WWindowState state=WWinStateShow ) = 0;
     virtual void            setFocusWin() = 0;
 
-    virtual dr_handle       symHandle() const = 0;
+    virtual drmem_hdl       symHandle() const = 0;
     virtual ViewType        viewType() const = 0;
 
             bool            operator == ( const DetailView & other ) const {

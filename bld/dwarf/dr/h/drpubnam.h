@@ -31,8 +31,8 @@
 
 
 typedef struct {
-    dr_handle   dbg_cu;
-    dr_handle   dbg_handle;
+    drmem_hdl   dbg_cu;
+    drmem_hdl   dbg_handle;
     size_t      len;
     char        *name;
     bool        is_start;

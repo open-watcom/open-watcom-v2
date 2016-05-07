@@ -67,19 +67,19 @@ typedef struct {
 
 typedef struct {
     unsigned_32         size;
-    dr_handle           base;
+    drmem_hdl           base;
 } sect_info;
 
 typedef unsigned        dr_abbrev_idx;
 
 typedef struct COMPUNIT_INFO {
     struct COMPUNIT_INFO        *next;
-    dr_handle                   start;
-    dr_handle                   end;
+    drmem_hdl                   start;
+    drmem_hdl                   end;
     file_table                  filetab;
     dr_abbrev_idx               numabbrevs;
     unsigned_32                 abbrev_start;   // offset into abbrev section
-    dr_handle                   *abbrevs;       // variable length array
+    drmem_hdl                   *abbrevs;       // variable length array
     unsigned                    *abbrev_refs;   // abbrevs reference counter
 } compunit_info;
 

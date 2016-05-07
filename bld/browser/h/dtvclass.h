@@ -41,8 +41,8 @@ template<class Type> class WCPtrSortedVector;
 class ClassMember {
 public:
             ClassMember( Symbol * sym, const char * text );
-            ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text );
-            ClassMember( dr_handle drhdl_prt,  dr_access access, const char * text );
+            ClassMember( Symbol * sym, drmem_hdl drhdl_prt, const char * text );
+            ClassMember( drmem_hdl drhdl_prt,  dr_access access, const char * text );
             ~ClassMember() { delete _symbol; }
 
     bool    operator == ( const ClassMember & other ) const;
@@ -52,7 +52,7 @@ public:
             Symbol *    _symbol;
             WString     _text;
             dr_access   _access;
-            dr_handle   _parent;
+            drmem_hdl   _parent;
 };
 
 class DTViewClass : public DTViewSymbol {

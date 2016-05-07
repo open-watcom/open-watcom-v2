@@ -48,7 +48,7 @@ class Module;
 class Symbol : public WObject
 {
 public:
-                        Symbol( dr_handle, dr_handle, Module *, char * );
+                        Symbol( drmem_hdl, drmem_hdl, Module *, char * );
                         Symbol( const Symbol & );
     virtual             ~Symbol();
 
@@ -66,27 +66,27 @@ public:
 
     const   char *      name();
 
-            dr_handle   getParent() const { return _parent; }
-            dr_handle   getHandle() const { return _drhandle; }
+            drmem_hdl   getParent() const { return _parent; }
+            drmem_hdl   getHandle() const { return _drhandle; }
             Module *    getModule() const { return _module; }
             bool        isDefined() const { return _defined; }
             bool        isAnonymous() const { return _anonymous; }
             bool        isArtificial() const;
 
-    static  Symbol *    defineSymbol( dr_sym_type, dr_handle, dr_handle, Module *, char * );
+    static  Symbol *    defineSymbol( dr_sym_type, drmem_hdl, drmem_hdl, Module *, char * );
     static  Symbol *    defineSymbol( const Symbol * );
     static  int         getHotSpot( dr_sym_type type, bool opened, bool p );
 
 protected:
             void        getAnonName();
-            void        addDesc( char *name, int u_def, dr_handle drhdl, dr_sym_type st );
+            void        addDesc( char *name, int u_def, drmem_hdl drhdl, dr_sym_type st );
 
-    static  void        descCallBack( void *obj, char *name, int u_def, dr_handle drhdl, dr_sym_type st );
+    static  void        descCallBack( void *obj, char *name, int u_def, drmem_hdl drhdl, dr_sym_type st );
 private:
     WVList *            _description;
 
-    dr_handle           _drhandle;
-    dr_handle           _parent;
+    drmem_hdl           _drhandle;
+    drmem_hdl           _parent;
     Module *            _module;        // FIXME -- this can be removed
     char *              _name;
     char *              _decname;

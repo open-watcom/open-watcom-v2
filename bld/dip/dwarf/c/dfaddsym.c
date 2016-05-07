@@ -36,7 +36,7 @@
 
 typedef struct {
     addr_off        map_offset;
-    dr_handle       sym;
+    drmem_hdl       sym;
 } off_info;
 
 typedef struct off_blk{

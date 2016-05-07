@@ -85,7 +85,7 @@ static void DoLocExpr( unsigned_8       *p,
                        int              addr_size,
                        dr_loc_callbck   *callbck,
                        void             *d,
-                       dr_handle        var )
+                       drmem_hdl        var )
 {
     unsigned_8      *end;
     dw_op           op;
@@ -422,14 +422,14 @@ static void DoLocExpr( unsigned_8       *p,
     return;
 }
 
-static dr_handle SearchLocList( uint_32 start, uint_32 context, uint addr_size )
+static drmem_hdl SearchLocList( uint_32 start, uint_32 context, uint addr_size )
 /******************************************************************************/
 // Search loc list for context return start of loc_expr block or NULL
 {
     uint_32     low;
     uint_32     high;
     int         len;
-    dr_handle   p;
+    drmem_hdl   p;
 
     p =  DWRCurrNode->sections[DR_DEBUG_LOC].base;
     if( p == DR_HANDLE_NUL ) {
@@ -455,7 +455,7 @@ static dr_handle SearchLocList( uint_32 start, uint_32 context, uint addr_size )
     return( p );
 }
 
-static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
+static bool DWRLocExpr( drmem_hdl var, drmem_hdl abbrev, drmem_hdl info,
                                     dr_loc_callbck *callbck, void *d )
 /**********************************************************************/
 {
@@ -532,13 +532,13 @@ exit:
     return( ret );
 }
 
-bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+bool DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
 /******************************************************************/
 {
     dw_tagnum       tag;
     dw_atnum        at;
-    dr_handle       abbrev;
-    dr_handle       sym = var;
+    drmem_hdl       abbrev;
+    drmem_hdl       sym = var;
     bool            ret;
 
     tag = DWRReadTag( &var, &abbrev );
@@ -575,13 +575,13 @@ bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+bool DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
 /******************************************************************/
 {
     dw_tagnum       tag;
     dw_atnum        at;
-    dr_handle       abbrev;
-    dr_handle       sym = var;
+    drmem_hdl       abbrev;
+    drmem_hdl       sym = var;
     bool            ret;
 
     tag = DWRReadTag( &var, &abbrev );
@@ -607,11 +607,11 @@ bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+bool DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
 /*******************************************************************/
 {
-    dr_handle       abbrev;
-    dr_handle       sym = var;
+    drmem_hdl       abbrev;
+    drmem_hdl       sym = var;
     bool            ret;
 
     abbrev = DWRSkipTag( &var ) + 1;
@@ -623,10 +623,10 @@ bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-extern dr_handle DRStringLengthAT( dr_handle str )
+extern drmem_hdl DRStringLengthAT( drmem_hdl str )
 /************************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &str ) + 1;
     if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) ) {
@@ -636,11 +636,11 @@ extern dr_handle DRStringLengthAT( dr_handle str )
     }
 }
 
-bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
+bool DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
 /***********************************************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   sym = var;
+    drmem_hdl   abbrev;
+    drmem_hdl   sym = var;
     bool        ret;
 
     abbrev = DWRSkipTag( &var ) + 1;
@@ -652,11 +652,11 @@ bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-bool DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
+bool DRSegLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d )
 /*******************************************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   sym = var;
+    drmem_hdl   abbrev;
+    drmem_hdl   sym = var;
     bool        ret;
 
     abbrev = DWRSkipTag( &var ) + 1;

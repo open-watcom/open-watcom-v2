@@ -73,8 +73,8 @@ typedef struct {
 } enum_einfo;
 
 typedef struct {
-    dr_handle           root;    /* root class for member */
-    dr_handle           inh;     /* inheritance handle for member */
+    drmem_hdl           root;    /* root class for member */
+    drmem_hdl           inh;     /* inheritance handle for member */
 } mem_minfo;
 
 struct imp_sym_handle {
@@ -82,7 +82,7 @@ struct imp_sym_handle {
     sym_sclass          sclass;
     imp_mod_handle      im;
     unsigned            size;
-    dr_handle           sym;
+    drmem_hdl           sym;
     dr_tag_type         stype;
     dr_access           acc;
     imp_state           state;
@@ -97,7 +97,7 @@ struct imp_sym_handle {
 
 typedef struct {
     uint_16             dims;
-    dr_handle           index;
+    drmem_hdl           index;
     int_32              low;
     uint_32             num_elts;
     uint_32             base_stride;
@@ -110,7 +110,7 @@ typedef struct {
 struct imp_type_handle {
     /* any stuff for getting information on types */
     imp_mod_handle      im;
-    dr_handle           type;
+    drmem_hdl           type;
     dr_typeinfo         typeinfo;
     imp_array           array;
     imp_state           state;

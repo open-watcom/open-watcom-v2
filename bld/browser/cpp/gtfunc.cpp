@@ -100,7 +100,7 @@ PaintInfo * TreeFuncPtr::getPaintInfo( void )
 /*---------------------------- TreeFuncNode --------------------------*/
 
 TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
-                            dr_handle drhdl, Module * mod, char * nm,
+                            drmem_hdl drhdl, Module * mod, char * nm,
                             TreeCycleList * flatNode, TreeRefList * flatRef )
                 :TreeCycleNode(prt, flatNode, flatRef )
                 ,_symType(stp)
@@ -110,7 +110,7 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
                 ,_decName(NULL)
 //------------------------------------------------------------
 {
-    dr_handle   container;
+    drmem_hdl   container;
     char *      name;
     String      accum;
 
@@ -217,7 +217,7 @@ void TreeFuncNode::loadModule( TreeFuncWindow * prt, Module * mod,
     }
 }
 
-bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
+bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
                                  char* ownerName, void * info )
 //------------------------------------------------------------------
 // this function really needs to be split up

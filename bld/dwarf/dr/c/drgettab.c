@@ -45,7 +45,7 @@
 
 file_info               FileNameTable;
 
-static bool GrabLineAddr( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *data )
+static bool GrabLineAddr( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void *data )
 /***************************************************************************************/
 /* this is called by ScanCompileUnit with abbrevptr and dataptr pointing at
  * the start of a compile unit die.  This picks out the line number info.
@@ -150,7 +150,7 @@ static void DWRTrimTableSize( file_table *tab )
     tab->tab = DWRREALLOC( tab->tab, tab->len * sizeof(filetab_entry) );
 }
 
-static void ReadNameEntry( dr_handle *start, file_info *nametab,
+static void ReadNameEntry( drmem_hdl *start, file_info *nametab,
                            file_table *idxtab, file_table *maptab )
 /*****************************************************************/
 {
@@ -168,12 +168,12 @@ static void ReadNameEntry( dr_handle *start, file_info *nametab,
     DWRVMSkipLEB128( start );   // skip length
 }
 
-extern void DWRScanFileTable( dr_handle start, file_info *nametab,
+extern void DWRScanFileTable( drmem_hdl start, file_info *nametab,
                               file_table *idxtab )
 /****************************************************************/
 // find the filenames in the line information, and return them in a table
 {
-    dr_handle       finish;
+    drmem_hdl       finish;
     file_table      curridxmap;
     char            *name;
     int             index;
@@ -245,7 +245,7 @@ extern void DWRScanFileTable( dr_handle start, file_info *nametab,
     DWRFiniFileTable( &curridxmap, false );
 }
 
-extern char * DWRFindFileName( dr_fileidx fileidx, dr_handle entry )
+extern char * DWRFindFileName( dr_fileidx fileidx, drmem_hdl entry )
 /***************************************************************/
 {
     compunit_info   *compunit;

@@ -41,7 +41,7 @@ enum {
 } name_defs;
 
 typedef struct {
-    dr_handle   sym;            // DWARF handle
+    drmem_hdl   sym;            // DWARF handle
     uint_32     key;            // hash key
     char        *name;          // name from pubnames
 } name_entry;
@@ -201,7 +201,7 @@ extern void FiniHashName( name_ctl *ctl )
 }
 
 
-extern void AddHashName( name_ctl *ctl, const char *name, dr_handle sym )
+extern void AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym )
 /***********************************************************************/
 // Add name, sym to foray
 {

@@ -55,7 +55,7 @@ public:
 
             void        initialize();
 
-    virtual dr_handle   symHandle() const { return _symbol->getHandle(); }
+    virtual drmem_hdl   symHandle() const { return _symbol->getHandle(); }
     virtual ViewType    viewType() const { return ViewDetail; }
 
     virtual bool        paint();

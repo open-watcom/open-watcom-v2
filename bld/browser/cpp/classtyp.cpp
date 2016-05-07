@@ -61,7 +61,7 @@ void ClassType::operator delete( void * mem )
     _pool.free( mem );
 }
 
-static bool CheckAccess( dr_handle drhdl, dr_access inherit )
+static bool CheckAccess( drmem_hdl drhdl, dr_access inherit )
 //------------------------------------------------------------
 // returns true if the given drhdl is acceptable given the filters
 {
@@ -92,8 +92,8 @@ static bool CheckAccess( dr_handle drhdl, dr_access inherit )
     return( ret );
 }
 
-static bool ClassType::memberHook( dr_sym_type symtype, dr_handle drhdl,
-                                  char * name, dr_handle drhdl_prt, void * info )
+static bool ClassType::memberHook( dr_sym_type symtype, drmem_hdl drhdl,
+                                  char * name, drmem_hdl drhdl_prt, void * info )
 //-------------------------------------------------------------------------
 {
     MemberSearchData *  data = (MemberSearchData *) info;

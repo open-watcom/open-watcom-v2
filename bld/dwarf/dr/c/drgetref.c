@@ -40,11 +40,11 @@ typedef enum {
 } ReferWhich;
 
 typedef struct {
-    dr_handle entry;
+    drmem_hdl entry;
 } ToData;
 
 typedef struct {
-    dr_handle entry;
+    drmem_hdl entry;
 } ByData;
 
 typedef struct {
@@ -55,22 +55,22 @@ typedef bool (*hook_func)( dr_ref_info *, void * );
 
 #define SCOPE_GUESS 0x50
 
-static void ScopePush( dr_scope_stack *stack, dr_handle entry )
+static void ScopePush( dr_scope_stack *stack, drmem_hdl entry )
 /*************************************************************/
 {
     if( stack->stack == NULL ) {
-        stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( dr_handle ) );
+        stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( drmem_hdl ) );
     }
     if( stack->free >= stack->size ) {
         stack->size += SCOPE_GUESS;
-        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
+        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
     }
 
     stack->stack[stack->free] = entry;
     stack->free += 1;
 }
 
-static dr_handle ScopePop( dr_scope_stack *stack )
+static drmem_hdl ScopePop( dr_scope_stack *stack )
 /************************************************/
 {
     if( stack->free <= 0 ) {
@@ -81,12 +81,12 @@ static dr_handle ScopePop( dr_scope_stack *stack )
     return( stack->stack[stack->free] );
 }
 
-static dr_handle ScopeLastNameable( dr_scope_stack *scope, char **name )
+static drmem_hdl ScopeLastNameable( dr_scope_stack *scope, char **name )
 /**********************************************************************/
 {
     int             i;
-    dr_handle       tmp_entry;
-    dr_handle       abbrev;
+    drmem_hdl       tmp_entry;
+    drmem_hdl       abbrev;
 
     for( i = scope->free; i > 0; i -= 1 ) {
         tmp_entry = scope->stack[i - 1];
@@ -118,14 +118,14 @@ static bool ByHook( dr_ref_info *registers, void * data )
 }
 
 
-static void References( ReferWhich which, dr_handle entry, void *data1,
+static void References( ReferWhich which, drmem_hdl entry, void *data1,
                 hook_func do_callback, void *data2, DRSYMREF callback )
 /*********************************************************************/
 {
-    dr_handle   loc;
-    dr_handle   end;
-    dr_handle   owning_node;
-    dr_handle   infoOffset;
+    drmem_hdl   loc;
+    drmem_hdl   end;
+    drmem_hdl   owning_node;
+    drmem_hdl   infoOffset;
     unsigned_8  opcode;
     dr_ref_info registers = { { 0, 0, NULL }, 0L, NULL, 1L, 1 };
     bool        quit = false;
@@ -212,7 +212,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
     DWRFREE( registers.scope.stack );
 }
 
-void DRRefersTo( dr_handle entry, void *data, DRSYMREF callback )
+void DRRefersTo( drmem_hdl entry, void *data, DRSYMREF callback )
 /***************************************************************/
 {
     ToData info;
@@ -220,7 +220,7 @@ void DRRefersTo( dr_handle entry, void *data, DRSYMREF callback )
     References( REFERSTO, entry, &info, ToHook, data, callback );
 }
 
-void DRReferredToBy( dr_handle entry, void * data, DRSYMREF callback )
+void DRReferredToBy( drmem_hdl entry, void * data, DRSYMREF callback )
 /********************************************************************/
 {
     ByData info;

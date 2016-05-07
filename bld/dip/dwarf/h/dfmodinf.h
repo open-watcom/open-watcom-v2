@@ -33,10 +33,10 @@
 /* mod info definition */
 struct mod_info {
     seg_list    addr_sym[1];
-    dr_handle   mod_handle;
-    dr_handle   cu_tag;
-    dr_handle   stmts;
-    dr_handle   dbg_pch;        /* predefinded symbols */
+    drmem_hdl   mod_handle;
+    drmem_hdl   cu_tag;
+    drmem_hdl   stmts;
+    drmem_hdl   dbg_pch;        /* predefinded symbols */
     char        *name;
     dr_model    model;
     dr_language lang;

@@ -35,8 +35,8 @@
 typedef struct {
     void        *data;  /* caller wants this back */
     DRCLSSRCH   callback;
-    dr_handle   parent;
-    dr_handle   inheritance;
+    drmem_hdl   parent;
+    drmem_hdl   inheritance;
 } BaseInfo;
 
 typedef struct {
@@ -44,17 +44,17 @@ typedef struct {
     void        *data;
 } FriendInfo;
 
-void DRKidsSearch( dr_handle clhandle, dr_search search, void *data, DRCLSSRCH callback )
+void DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRCLSSRCH callback )
 /***************************************************************************************/
 // search the children of a given entry for particular tags ..
 // callback is called with a found entry's type, handle,
 // name, parent, and data.  If it returns false, searching stops.
 {
     dr_sym_type     symtype;
-    dr_handle       prt = clhandle;
-    dr_handle       tmp_entry = clhandle;
-    dr_handle       newentry;
-    dr_handle       abbrev;
+    drmem_hdl       prt = clhandle;
+    drmem_hdl       tmp_entry = clhandle;
+    drmem_hdl       newentry;
+    drmem_hdl       abbrev;
     dw_tagnum       tag;
     unsigned_8      has_kids;
     int             index;
@@ -101,14 +101,14 @@ void DRKidsSearch( dr_handle clhandle, dr_search search, void *data, DRCLSSRCH c
 }
 
 
-static bool baseHook( dr_sym_type notused1, dr_handle handle,
-                     char *name, dr_handle notused2, void *info )
+static bool baseHook( dr_sym_type notused1, drmem_hdl handle,
+                     char *name, drmem_hdl notused2, void *info )
 /***************************************************************/
 {
     BaseInfo        *binfo = (BaseInfo *)info;
-    dr_handle       abbrev;
-    dr_handle       basehandle;
-    dr_handle       tmp_entry;
+    drmem_hdl       abbrev;
+    drmem_hdl       basehandle;
+    drmem_hdl       tmp_entry;
     dw_tagnum       tag;
     char            *basename;
     dr_sym_type     symtype;
@@ -146,7 +146,7 @@ static bool baseHook( dr_sym_type notused1, dr_handle handle,
     return( true );
 }
 
-void DRBaseSearch( dr_handle clhandle, void * data, DRCLSSRCH callback )
+void DRBaseSearch( drmem_hdl clhandle, void * data, DRCLSSRCH callback )
 /**********************************************************************/
 {
     BaseInfo binfo;
@@ -155,15 +155,15 @@ void DRBaseSearch( dr_handle clhandle, void * data, DRCLSSRCH callback )
     DRKidsSearch( clhandle, DR_SEARCH_BASE, &binfo, baseHook );
 }
 
-static bool CheckEntry( dr_handle abbrev, dr_handle handle, mod_scan_info *minfo, void *data )
+static bool CheckEntry( drmem_hdl abbrev, drmem_hdl handle, mod_scan_info *minfo, void *data )
 /********************************************************************************************/
 {
-    dr_handle       ref;
+    drmem_hdl       ref;
     BaseInfo        *sinfo = (BaseInfo *)data;
     dr_sym_type     symtype;
     int             index;
-    dr_handle       tmp_abbrev = abbrev;
-    dr_handle       tmp_entry = handle;
+    drmem_hdl       tmp_abbrev = abbrev;
+    drmem_hdl       tmp_entry = handle;
     dw_tagnum       tag;
 
     if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
@@ -189,7 +189,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle, mod_scan_info *minfo
     return( true );
 }
 
-void DRDerivedSearch( dr_handle handle, void *data, DRCLSSRCH callback )
+void DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
 /**********************************************************************/
 // Warning!! KLUDGE! this searches the compile unit for entries that have a
 // DW_TAG_inheritance child that references handle -- not that fast.
@@ -219,16 +219,16 @@ void DRDerivedSearch( dr_handle handle, void *data, DRCLSSRCH callback )
     DWRFreeContextStack( &ctxt.stack );
 }
 
-static bool friendHook( dr_sym_type st, dr_handle handle, char *name,
-                                            dr_handle prt, void *data )
+static bool friendHook( dr_sym_type st, drmem_hdl handle, char *name,
+                                            drmem_hdl prt, void *data )
 /*************************************************************************/
 // the 'st' field will be DR_SYM_NOT_SYM as it is the symbol type of
 // the 'DW_TAG_friend'.  The correct symbol type must be found for
 // the friend.  Likewise the name is meaningless, but the 'prt' is correct.
 {
-    dr_handle   abbrev;
-    dr_handle   entry;
-    dr_handle   friend_han;
+    drmem_hdl   abbrev;
+    drmem_hdl   entry;
+    drmem_hdl   friend_han;
     FriendInfo  *info;
 
     info = (FriendInfo *)data;
@@ -246,7 +246,7 @@ static bool friendHook( dr_sym_type st, dr_handle handle, char *name,
     return( true );
 }
 
-void DRFriendsSearch( dr_handle handle, void *data, DRCLSSRCH callback )
+void DRFriendsSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
 /**********************************************************************/
 {
     FriendInfo info;
@@ -256,7 +256,7 @@ void DRFriendsSearch( dr_handle handle, void *data, DRCLSSRCH callback )
     DRKidsSearch( handle, DR_SEARCH_FRIENDS, &info, friendHook );
 }
 
-dr_sym_type DRGetSymType( dr_handle entry )
+dr_sym_type DRGetSymType( drmem_hdl entry )
 /*****************************************/
 {
     dr_sym_type     symtype = DR_SYM_NOT_SYM;

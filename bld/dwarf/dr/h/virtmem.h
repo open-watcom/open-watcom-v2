@@ -29,28 +29,28 @@
 ****************************************************************************/
 
 
-extern unsigned_32      ReadLEB128( dr_handle *, bool );
+extern unsigned_32      ReadLEB128( drmem_hdl *, bool );
 
 extern void             DWRVMInit( void );
 extern void             DWRVMDestroy( void );
 extern void             DWRVMReset( void );
-extern bool             DWRVMSectDone( dr_handle base, unsigned_32 size );
+extern bool             DWRVMSectDone( drmem_hdl base, unsigned_32 size );
 // DWRCurrNode must be set for alloc, free
-extern dr_handle        DWRVMAlloc( unsigned long, int );
-extern char             *DWRVMCopyString( dr_handle * );
-extern size_t           DWRVMGetStrBuff( dr_handle drstr, char *buf, size_t max );
-extern unsigned_16      DWRVMReadWord( dr_handle );
-extern unsigned_32      DWRVMReadDWord( dr_handle );
+extern drmem_hdl        DWRVMAlloc( unsigned long, int );
+extern char             *DWRVMCopyString( drmem_hdl * );
+extern size_t           DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max );
+extern unsigned_16      DWRVMReadWord( drmem_hdl );
+extern unsigned_32      DWRVMReadDWord( drmem_hdl );
 
 #define DWRVMReadSLEB128(__h) (signed_32)ReadLEB128( __h, true )
 
 #if defined( USE_VIRTMEM )
 
-extern size_t           DWRVMStrLen( dr_handle );
-extern void             DWRVMSwap( dr_handle, unsigned_32, bool *ret );
-extern void             DWRVMSkipLEB128( dr_handle * );
-extern void             DWRVMRead( dr_handle, void *, size_t );
-extern unsigned_8       DWRVMReadByte( dr_handle );
+extern size_t           DWRVMStrLen( drmem_hdl );
+extern void             DWRVMSwap( drmem_hdl, unsigned_32, bool *ret );
+extern void             DWRVMSkipLEB128( drmem_hdl * );
+extern void             DWRVMRead( drmem_hdl, void *, size_t );
+extern unsigned_8       DWRVMReadByte( drmem_hdl );
 
 #define DWRVMReadULEB128(__h) ReadLEB128( __h, false )
 
@@ -62,7 +62,7 @@ extern unsigned_8       DWRVMReadByte( dr_handle );
     {                                 \
         const char *p = (const char *)*(__h); \
         while( (*p++ & 0x80) != 0 );  \
-        *(__h) = (dr_handle)p;        \
+        *(__h) = (drmem_hdl)p;        \
     }
 #define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
 #define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
@@ -71,7 +71,7 @@ extern unsigned_8       DWRVMReadByte( dr_handle );
 
 #define DWRVMReadULEB128(__h)   ReadULEB128( __h )
 
-extern unsigned_32      ReadULEB128( dr_handle * );         /* inline */
+extern unsigned_32      ReadULEB128( drmem_hdl * );         /* inline */
 /* warning -- this function only works if the ULEB128 is <= 0x0fffffff */
 /* if greater numbers are used, the lowest nibble is zeroed. */
 #pragma aux ReadULEB128 =                                           \

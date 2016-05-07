@@ -49,7 +49,7 @@
 #include "viewmgr.h"
 #include "browse.h"
 
-Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
+Symbol::Symbol( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * n )
         :_drhandle(drhdl)
         ,_parent(drhdl_prt)
         ,_module(m)
@@ -158,8 +158,8 @@ bool Symbol::defSourceFile( char *buff )
     return browseTop->makeFileName( buff );
 }
 
-static Symbol * Symbol::defineSymbol( dr_sym_type type, dr_handle drhdl,
-                                      dr_handle drhdl_prt, Module * module,
+static Symbol * Symbol::defineSymbol( dr_sym_type type, drmem_hdl drhdl,
+                                      drmem_hdl drhdl_prt, Module * module,
                                       char * name )
 //-----------------------------------------------------------------------
 {
@@ -315,7 +315,7 @@ WVList & Symbol::description( WVList & parts )
 }
 
 static void Symbol::descCallBack ( void * obj, char * name,
-                                   int u_def, dr_handle drhdl,
+                                   int u_def, drmem_hdl drhdl,
                                    dr_sym_type sym_type )
 //------------------------------------------------------------
 {
@@ -325,7 +325,7 @@ static void Symbol::descCallBack ( void * obj, char * name,
 }
 
 void Symbol::addDesc( char * name, int u_def,
-                      dr_handle drhdl, dr_sym_type st )
+                      drmem_hdl drhdl, dr_sym_type st )
 //-----------------------------------------------------
 // mySym is the symbol being described
 {

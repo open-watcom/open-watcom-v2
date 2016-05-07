@@ -37,7 +37,7 @@ enum dr_scope_list{
 
 typedef struct dr_scope_entry {
     struct dr_scope_entry   *next;
-    dr_handle               handle;
+    drmem_hdl               handle;
 } dr_scope_entry;
 
 typedef struct dr_scope_block {
@@ -52,11 +52,11 @@ typedef struct dr_scope_ctl {
 } dr_scope_ctl;
 
 typedef struct dr_scope_trail {
-    dr_handle       target;
+    drmem_hdl       target;
     dr_scope_entry  *head;  //don't return this list
     dr_scope_ctl    ctl;
 } dr_scope_trail;
 
 
-extern void DRGetScopeList( dr_scope_trail *container, dr_handle  of );
+extern void DRGetScopeList( dr_scope_trail *container, drmem_hdl of );
 extern void DREndScopeList( dr_scope_trail *container );

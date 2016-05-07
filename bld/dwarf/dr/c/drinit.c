@@ -48,9 +48,9 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     dr_abbrev_idx   sizealloc;
     dr_abbrev_idx   oldsize;
     dr_abbrev_idx   i;
-    dr_handle       start;
-    dr_handle       finish;
-    dr_handle       *abbrevs;
+    drmem_hdl       start;
+    drmem_hdl       finish;
+    drmem_hdl       *abbrevs;
     dr_abbrev_idx   code;
     compunit_info   *cu;
 
@@ -65,7 +65,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         }
     }
     sizealloc = ABBREV_TABLE_GUESS;
-    abbrevs = DWRALLOC( sizealloc * sizeof( dr_handle ) );
+    abbrevs = DWRALLOC( sizealloc * sizeof( drmem_hdl ) );
     for( i = 0; i < sizealloc; ++i ) {
         abbrevs[i] = DR_HANDLE_NUL;
     }
@@ -81,7 +81,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         if( code >= sizealloc ) {
             oldsize = sizealloc;
             sizealloc = code + ABBREV_TABLE_INCREMENT;
-            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( dr_handle ) );
+            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( drmem_hdl ) );
             for( i = oldsize; i < sizealloc; ++i ) {
                 abbrevs[i] = DR_HANDLE_NUL;
             }
@@ -98,7 +98,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     }
     if( sizealloc > maxnum ) {  // reduce size to actual amount needed
         /* abbrev[0] not used but we want abbrev[code] = start to work */
-        abbrevs = DWRREALLOC( abbrevs, ( maxnum + 1 ) * sizeof( dr_handle ) );
+        abbrevs = DWRREALLOC( abbrevs, ( maxnum + 1 ) * sizeof( drmem_hdl ) );
     }
     compunit->numabbrevs = maxnum + 1;
     compunit->abbrevs = abbrevs;
@@ -176,8 +176,8 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
 {
     compunit_info       *compunit;
     compunit_info       *next;
-    dr_handle           start;
-    dr_handle           finish;
+    drmem_hdl           start;
+    drmem_hdl           finish;
     unsigned_16         version;
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;

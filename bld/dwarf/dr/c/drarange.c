@@ -52,9 +52,9 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
 {
     dr_arange_data      arange;
     arange_header       header;
-    dr_handle           base;
-    dr_handle           pos;
-    dr_handle           finish;
+    drmem_hdl           base;
+    drmem_hdl           pos;
+    drmem_hdl           finish;
     uint_32             tuple_size;
     pointer_int         aligned_addr;
     pointer_int         addr;
@@ -97,7 +97,7 @@ extern void DRWalkARange( DRARNGWLK callback, void *data )
             if( header.seg_size && DWRReadInt( pos + header.addr_size, header.seg_size ) != 0 )
                 zero_padding = false;
             if( !wat_producer && zero_padding ) {
-                pos = (dr_handle)aligned_addr;
+                pos = (drmem_hdl)aligned_addr;
             }
         }
         for( ;; ) {

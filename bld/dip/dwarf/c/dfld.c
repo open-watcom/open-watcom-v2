@@ -330,7 +330,7 @@ static bool APubName( void *_ii, dr_pubname_data *curr )
 }
 
 
-static bool AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
+static bool AModHash( drmem_hdl sym, void *_ii, dr_search_context *cont )
 /***********************************************************************/
 // Add any global symbol to the hash
 {

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-extern void     DWRFiniFileTable( file_table *, bool );
-extern void     DWRInitFileTable( file_table * );
-extern void     DWRScanFileTable( dr_handle, file_info *, file_table * );
-extern char *   DWRIndexFileName( filetab_idx, file_table * );
-extern filetab_idx DWRIndexFile( dr_fileidx, file_table * );
-extern char *   DWRFindFileName( dr_fileidx, dr_handle );
+extern void         DWRFiniFileTable( file_table *, bool );
+extern void         DWRInitFileTable( file_table * );
+extern void         DWRScanFileTable( drmem_hdl, file_info *, file_table * );
+extern char         *DWRIndexFileName( filetab_idx, file_table * );
+extern filetab_idx  DWRIndexFile( dr_fileidx, file_table * );
+extern char         *DWRFindFileName( dr_fileidx, drmem_hdl );
 
-extern file_info                FileNameTable;
+extern file_info    FileNameTable;

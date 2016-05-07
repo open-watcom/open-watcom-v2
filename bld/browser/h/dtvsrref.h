@@ -51,7 +51,7 @@ public:
 
     /* ----------------- from DTView ------------------- */
 
-    virtual dr_handle   symHandle() const { return _symbol->getHandle(); }
+    virtual drmem_hdl   symHandle() const { return _symbol->getHandle(); }
     virtual ViewType    viewType() const { return ViewSourceRefs; }
     virtual void        showWin( WWindowState state=WWinStateShow ) { show( state ); }
     virtual void        setFocusWin(){ setFocus(); }

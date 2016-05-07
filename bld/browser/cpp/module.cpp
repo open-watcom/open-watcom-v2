@@ -210,7 +210,7 @@ SearchContext * Module::findSymbols( WVList *symbols, KeySymbol *filter,
     }
 }
 
-static bool referenceHook( dr_handle, dr_ref_info * refinfo, char * name,
+static bool referenceHook( drmem_hdl, dr_ref_info * refinfo, char * name,
                            void * info )
 //-----------------------------------------------------------------------
 {
@@ -243,7 +243,7 @@ struct RefSymData {
     WVList *    list;
 };
 
-static bool refSymHook( dr_handle drhdl, dr_ref_info *, char * name,
+static bool refSymHook( drmem_hdl drhdl, dr_ref_info *, char * name,
                         void * info )
 //-------------------------------------------------------------------
 {

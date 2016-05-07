@@ -81,7 +81,7 @@ int TreeCycleNode::findNode( TreeNode * node )
     return -1;
 }
 
-int TreeCycleNode::findNode( dr_handle drhdl )
+int TreeCycleNode::findNode( drmem_hdl drhdl )
 //-------------------------------------------
 {
 //    _MARK_( "TreeCycleNode::findNode( uint_32 ) start" );
@@ -102,7 +102,7 @@ int TreeCycleNode::findParent( TreeNode * node )
 {
 //    _MARK_( "TreeCycleNode::findParent( TreeNode * ) start" );
 
-    dr_handle drhdl = node->getHandle();
+    drmem_hdl drhdl = node->getHandle();
     for( int i = _parents.count(); i > 0; i -= 1 ) {
         TreeNode * prt = _parents[ i - 1 ]->getTo();
         if( prt->getHandle() == drhdl ) {
@@ -126,7 +126,7 @@ int TreeCycleNode::findChild( TreeNode * node )
 {
 //    _MARK_( "TreeCycleNode::findChild( TreeNode * ) start" );
 
-    dr_handle drhdl = node->getHandle();
+    drmem_hdl drhdl = node->getHandle();
     for( int i = _children.count(); i > 0; i -= 1 ) {
         TreeNode * child = _children[ i - 1 ];
         if( child->getHandle() == drhdl ) {
