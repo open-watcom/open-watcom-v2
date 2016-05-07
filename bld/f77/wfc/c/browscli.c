@@ -168,20 +168,20 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
 }
 
 
-static void CLIZeroWrite( dw_sectnum sect, uint size ) {
-/*************************************************/
-
+static void CLIZeroWrite( dw_sectnum sect, size_t size )
+/******************************************************/
+{
     char        *btmp;
 
-    btmp = FMemAlloc( size+1 );
+    btmp = FMemAlloc( size + 1 );
     memset( btmp, 0, size );
     CLIWrite( sect, btmp, size );
     FMemFree( btmp );
 }
 
-static void CLISeek( dw_sectnum sect, long offs, uint type ) {
-/******************************************************/
-
+static void CLISeek( dw_sectnum sect, long offs, uint type )
+/**********************************************************/
+{
     section_data                *cur_sec;
     long                        temp;
 //    int                         typ;
