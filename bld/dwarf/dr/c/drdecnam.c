@@ -50,8 +50,8 @@
  * A simple string type to store a pointer to the string and its length
  */
 typedef struct {
-    char *         s;   /* the string */
-    unsigned short l;   /* length of the string (excluding \0) */
+    char        *s;     /* the string */
+    size_t      l;      /* length of the string (excluding \0) */
 } String;
 
 typedef struct Node_S {
