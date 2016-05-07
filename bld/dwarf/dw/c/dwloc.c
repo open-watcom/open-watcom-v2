@@ -310,12 +310,11 @@ void DWENTRY DWLocConstS( dw_client cli, dw_loc_id loc, dw_sconst value )
     } else if( -16384l <= value && value < 16384l ) {
         op = nextOp( cli, loc, DW_OP_const2s, sizeof( int_16 ) );
         WriteS16( op->data, value );
-        op->data[0] = value;
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
     } else {
         /* test length of LEB128 form before using DW_OP_const4s */
         len = LEB128( buf, value ) - buf;
-        if( len > 4 ) {
+        if( len > 3 ) {
             op = nextOp( cli, loc, DW_OP_const4s, sizeof( int_32 ) );
             WriteS32( op->data, value );
             ADD_ADDR( cli, loc, sizeof( int_32 ) );
