@@ -2562,6 +2562,8 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
         }
         table->vb_index = vbase->vb_index;
         delta += vbase->delta;
+    } else {
+        table->ctor_disp = false;
     }
     table->exact_delta = delta;
     return( access_flags );
