@@ -124,7 +124,7 @@ static bool FunctionSym::callHook( drmem_hdl, dr_ref_info * ref, char * name,
     other = ref->dependent;
     stype = DRGetSymType( other );
     if( stype == DR_SYM_FUNCTION ) {
-        sym = Symbol::defineSymbol(stype, other, DR_HANDLE_NUL, data->me->getModule(),name);
+        sym = Symbol::defineSymbol(stype, other, DRMEM_HDL_NULL, data->me->getModule(),name);
         data->list->add( sym );
     } else {
         WBRFree( name );

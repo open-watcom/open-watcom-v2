@@ -187,7 +187,7 @@ bool KeySymbol::matches( Symbol * sym )
     }
 
     if( _contClassProg ) {
-        if( sym->getParent() != DR_HANDLE_NUL ) {
+        if( sym->getParent() != DRMEM_HDL_NULL ) {
             container = DRGetName( sym->getParent() );
             if( container ) {
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );

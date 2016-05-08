@@ -260,7 +260,7 @@ static bool refSymHook( drmem_hdl drhdl, dr_ref_info *, char * name,
     }
 
     stype = DRGetSymType( drhdl );
-    sym = Symbol::defineSymbol( stype, drhdl, DR_HANDLE_NUL, data->me, name );
+    sym = Symbol::defineSymbol( stype, drhdl, DRMEM_HDL_NULL, data->me, name );
     data->list->add( sym );
 
     return true;    // continue

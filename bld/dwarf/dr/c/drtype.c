@@ -166,7 +166,7 @@ extern bool DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
 
     kind = 0;
     for( ;; ) {
-        if( entry == DR_HANDLE_VOID ) {
+        if( entry == DRMEM_HDL_VOID ) {
             info->kind = DR_TYPEK_VOID;
             info->mclass = DR_MOD_BASE;
             info->size = 0;
@@ -384,7 +384,7 @@ extern drmem_hdl DRGetTypeAT( drmem_hdl entry )
     drmem_hdl   type;
 
     abbrev = DWRSkipTag( &entry ) + 1;
-    type = DR_HANDLE_NUL;
+    type = DRMEM_HDL_NULL;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         type = DWRReadReference( abbrev, entry );
     }
@@ -423,7 +423,7 @@ extern dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
         DWRSkipAttribs( abbrev, &entry );
         info->child = entry;
     } else {
-        info->child = DR_HANDLE_NUL;
+        info->child = DRMEM_HDL_NULL;
     }
     return( stat );
 }
@@ -453,7 +453,7 @@ extern drmem_hdl DRSkipTypeChain( drmem_hdl tref )
             entry = DWRReadReference( abbrev, entry );
             tref = entry;
         } else {
-            tref = DR_HANDLE_NUL;
+            tref = DRMEM_HDL_NULL;
             break;
         }
     } end_loop:;

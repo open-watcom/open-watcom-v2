@@ -185,7 +185,7 @@ size_t DRGetScopedNameBuff( drmem_hdl entry, char *buff, size_t max )
     size_t          length;
 
     of = DRGetContaining( entry );
-    if( of == DR_HANDLE_NUL ) {
+    if( of == DRMEM_HDL_NULL ) {
         of = entry;
     }
     DRGetScopeList( &container, of );
@@ -469,7 +469,7 @@ drmem_hdl DRGetContaining( drmem_hdl entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
@@ -493,7 +493,7 @@ drmem_hdl DRWalkParent( dr_search_context * context )
         prev = context->functionhdl;
         break;
     default:
-        prev = DR_HANDLE_NUL;
+        prev = DRMEM_HDL_NULL;
         break;
     }
     return( prev );
@@ -663,13 +663,13 @@ drmem_hdl DRDebugPCHDef( drmem_hdl entry )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
 
- dr_tag_type DRGetTagType( drmem_hdl entry )
-/************************************************/
+dr_tag_type DRGetTagType( drmem_hdl entry )
+/*****************************************/
 {
     dr_tag_type tagtype;
     dw_tagnum   tag;

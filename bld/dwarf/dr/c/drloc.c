@@ -432,9 +432,9 @@ static drmem_hdl SearchLocList( uint_32 start, uint_32 context, uint addr_size )
     drmem_hdl   p;
 
     p =  DWRCurrNode->sections[DR_DEBUG_LOC].base;
-    if( p == DR_HANDLE_NUL ) {
+    if( p == DRMEM_HDL_NULL ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-        return( DR_HANDLE_NUL );
+        return( DRMEM_HDL_NULL );
     }
     p += start;
     for( ;; ) {
@@ -443,7 +443,7 @@ static drmem_hdl SearchLocList( uint_32 start, uint_32 context, uint addr_size )
         high = DWRReadInt( p, addr_size );
         p += addr_size;
         if( low == high && low == 0 ) {
-            p = DR_HANDLE_NUL;
+            p = DRMEM_HDL_NULL;
             break;
         }
         if( low <= context && context < high )
@@ -499,7 +499,7 @@ static bool DWRLocExpr( drmem_hdl var, drmem_hdl abbrev, drmem_hdl info,
             }
             loclist =  DWRVMReadDWord( info );
             info = SearchLocList( loclist, context, addr_size );
-            if( info == DR_HANDLE_NUL ) {
+            if( info == DRMEM_HDL_NULL ) {
                 ret = false;
                 goto exit;
             }

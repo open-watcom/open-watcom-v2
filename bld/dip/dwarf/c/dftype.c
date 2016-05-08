@@ -72,7 +72,7 @@ static drmem_hdl GetArrayDim( drmem_hdl index, int skip  ){
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ){
         index = df.curr;
     }else{
-        index = DR_HANDLE_NUL;
+        index = DRMEM_HDL_NULL;
     }
     return( index );
 }
@@ -172,7 +172,7 @@ static void GetArraySize( imp_image_handle *ii,
     it->array.low = df.low;
     df.cont = true;
     dim = GetArrayDim( it->array.index, 1 );
-    if( dim != DR_HANDLE_NUL ) {
+    if( dim != DRMEM_HDL_NULL ) {
         DRWalkArraySibs( dim, ArrayWlk, &df );
     }
     it->array.dims = df.dim;
@@ -264,10 +264,10 @@ static void InitTypeHandle( imp_image_handle *ii,
                 }else if( IMH2MODI( ii, it->im )->lang == DR_LANG_FORTRAN ){
                     it->array.column_major = 1;
                 }
-                if( info.child == DR_HANDLE_NUL ) { // set info now
+                if( info.child == DRMEM_HDL_NULL ) { // set info now
                     it->array.dims = 1;
                     it->array.low = 0;
-                    it->array.index = DR_HANDLE_NUL;
+                    it->array.index = DRMEM_HDL_NULL;
                     if( stat & DR_ARRAY_COUNT ){
                         if( info.count == 0 ){ // ie  char (*x)[]
                             info.count = 1;
@@ -517,14 +517,14 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
             base->array.is_set = false;
         }
         base->array.is_based = true;
-        if( base->array.index != DR_HANDLE_NUL ) {
+        if( base->array.index != DRMEM_HDL_NULL ) {
             return( DS_OK );
         }
     }
     btype =  DRSkipTypeChain( base->type ); /* skip modifiers and typedefs */
     base->type = DRGetTypeAT( btype );      /* get base type */
-    if( base->type == DR_HANDLE_NUL ) {
-        base->type = DR_HANDLE_VOID;        /* no type means 'void' */
+    if( base->type == DRMEM_HDL_NULL ) {
+        base->type = DRMEM_HDL_VOID;        /* no type means 'void' */
     }
     base->state = DF_NOT;
     return( DS_OK );
@@ -587,7 +587,7 @@ static bool GetSymVal( imp_image_handle *ii,
     location_list   dst;
 
     dr_type = DRGetTypeAT( dr_sym );
-    if( dr_type == DR_HANDLE_NUL ) {
+    if( dr_type == DRMEM_HDL_NULL ) {
         return( false );
     }
     DRGetTypeInfo( dr_type, typeinfo );
@@ -697,9 +697,9 @@ dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     ai->stride = array->array.base_stride;
     if( index != NULL ){
         index->im = array->im;
-        if( array->array.index == DR_HANDLE_NUL ) { //Fake a type up
+        if( array->array.index == DRMEM_HDL_NULL ) { //Fake a type up
             index->state = DF_SET;
-            index->type  = DR_HANDLE_NUL;
+            index->type  = DRMEM_HDL_NULL;
             index->typeinfo.size = 0;
             index->typeinfo.kind = DR_TYPEK_NONE;
             index->typeinfo.mclass = DR_MOD_NONE;
@@ -750,7 +750,7 @@ drmem_hdl GetParmN( imp_image_handle *ii, drmem_hdl proc, int count )
     df.last = count;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df ) ) {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }else{
         ret = df.var;
     }
@@ -773,7 +773,7 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     drmem_hdl       btype;
-    drmem_hdl       parm_type = DR_HANDLE_NUL;
+    drmem_hdl       parm_type = DRMEM_HDL_NULL;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
@@ -781,10 +781,10 @@ dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     if( n > 0 ){
         btype = GetParmN( ii, btype, n );
     }// if n == 0 just fall through and get type of function
-    if( btype != DR_HANDLE_NUL ) {
+    if( btype != DRMEM_HDL_NULL ) {
         parm_type = DRGetTypeAT( btype );    /* get type */
     }
-    if( parm_type != DR_HANDLE_NUL ) {
+    if( parm_type != DRMEM_HDL_NULL ) {
         parm->state = DF_NOT;
         parm->type = parm_type;
         parm->im = proc->im;
@@ -1148,7 +1148,7 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = DR_HANDLE_NUL;
+    df.com.inh = DRMEM_HDL_NULL;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;
@@ -1200,7 +1200,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it, lookup_item 
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = DR_HANDLE_NUL;
+    df.com.inh = DRMEM_HDL_NULL;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;
@@ -1362,7 +1362,7 @@ size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     ++num;
     len = 0;
-    for( dr_type = it->type; dr_type != DR_HANDLE_NUL; dr_type = DRGetTypeAT( dr_type ) ) {
+    for( dr_type = it->type; dr_type != DRMEM_HDL_NULL; dr_type = DRGetTypeAT( dr_type ) ) {
         name =  DRGetName( dr_type );
         if( name != NULL ){
             if( --num == 0 )

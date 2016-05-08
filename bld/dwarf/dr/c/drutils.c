@@ -463,7 +463,7 @@ drmem_hdl DWRReadReference( drmem_hdl abbrev, drmem_hdl info )
     dw_formnum      form;
     unsigned_32     offset;
 
-    handle = DR_HANDLE_NUL;
+    handle = DRMEM_HDL_NULL;
     form = DWRVMReadULEB128( &abbrev );
     offset = ReadConst( form, info );
     if( offset != 0 ) {     // if not NULL relocate
@@ -567,7 +567,7 @@ dw_tagnum DWRReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
     cu = DWRFindCompileInfo( *entry );
     if( abbrev_idx >= cu->numabbrevs ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-        *abbrev = DR_HANDLE_NUL;
+        *abbrev = DRMEM_HDL_NULL;
         tag = 0;
     } else {
         *abbrev = cu->abbrevs[abbrev_idx];
@@ -601,7 +601,7 @@ bool DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
-    abbrev = DR_HANDLE_NUL;
+    abbrev = DRMEM_HDL_NULL;
     tag = 0;
     abbrev_idx = DWRVMReadULEB128( entry );
     if( abbrev_idx != 0 ) {
@@ -737,8 +737,8 @@ bool DWRScanAllCompileUnits( dr_search_context * startingCtxt, DWRCUWLK fn,
         ctxt.start = ((compunit_info *)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
         ctxt.start += sizeof( compuhdr_prologue );
-        ctxt.classhdl = DR_HANDLE_NUL;
-        ctxt.functionhdl = DR_HANDLE_NUL;
+        ctxt.classhdl = DRMEM_HDL_NULL;
+        ctxt.functionhdl = DRMEM_HDL_NULL;
         ctxt.stack.size = 0;
         ctxt.stack.free = 0;
         ctxt.stack.stack = NULL;
@@ -780,8 +780,8 @@ bool DWRWalkCompileUnit( drmem_hdl mod, DWRCUWLK fn,
     ctxt.compunit = compunit;
     ctxt.start = mod;
     ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
-    ctxt.classhdl = DR_HANDLE_NUL;
-    ctxt.functionhdl = DR_HANDLE_NUL;
+    ctxt.classhdl = DRMEM_HDL_NULL;
+    ctxt.functionhdl = DRMEM_HDL_NULL;
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;

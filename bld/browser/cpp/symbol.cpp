@@ -117,7 +117,7 @@ const char * Symbol::scopedName( bool fullScoping )
         WString scoped;
 
         _description = &desc;
-        DRDecoratedNameList( this, _drhandle, fullScoping ? _parent : DR_HANDLE_NUL, descCallBack );
+        DRDecoratedNameList( this, _drhandle, fullScoping ? _parent : DRMEM_HDL_NULL, descCallBack );
         _description = NULL;
 
         for( i = 0; i < desc.count(); i += 1 ) {
@@ -337,7 +337,7 @@ void Symbol::addDesc( char * name, int u_def,
         delete [] name;
     } else {
         if( u_def ) {
-            sym = Symbol::defineSymbol(st, drhdl, DR_HANDLE_NUL, _module, name );
+            sym = Symbol::defineSymbol(st, drhdl, DRMEM_HDL_NULL, _module, name );
             desc = new Description( sym );
         } else {
             desc = new Description( name );

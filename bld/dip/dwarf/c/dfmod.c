@@ -468,7 +468,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
     address     a;
     drmem_hdl   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
+    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DRMEM_HDL_NULL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         walk.ii = ii;
         walk.im = im;
@@ -503,13 +503,13 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
     case HK_IMAGE:
         break;
     case HK_TYPE:
-        if( modinfo->stmts != DR_HANDLE_NUL ) {
+        if( modinfo->stmts != DRMEM_HDL_NULL ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
         stmts = modinfo->stmts;
-        if( stmts != DR_HANDLE_NUL ) {  // need to get rid of stmts for file with no cues
+        if( stmts != DRMEM_HDL_NULL ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
 

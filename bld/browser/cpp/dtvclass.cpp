@@ -275,7 +275,7 @@ void DTViewClass::addDescriptions()
         if( mem->_parent != prevParent ) {
             prevAccess = (dr_access)0;
             prevParent = mem->_parent;
-            if( mem->_parent != DR_HANDLE_NUL ) {
+            if( mem->_parent != DRMEM_HDL_NULL ) {
                 tmpName = DRGetName( mem->_parent );
             } else {
                 tmpName = NULL;

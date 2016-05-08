@@ -92,8 +92,8 @@ typedef enum {
     DR_VIRTUALITY_VIRTUAL = 1
 } dr_virtuality;
 
-#define DR_HANDLE_VOID  ((drmem_hdl)(pointer_int)-1)        /* special handle denoting void type */
-#define DR_HANDLE_NUL   ((drmem_hdl)(pointer_int)0)
+#define DRMEM_HDL_VOID  ((drmem_hdl)(pointer_int)-1)        /* special handle denoting void type */
+#define DRMEM_HDL_NULL  ((drmem_hdl)(pointer_int)0)
 
 #if defined( USE_VIRTMEM )
 typedef unsigned long   drmem_hdl;

@@ -115,11 +115,11 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
     String      accum;
 
     container = DRGetContaining( drhdl );
-    if( container != DR_HANDLE_NUL ) {
+    if( container != DRMEM_HDL_NULL ) {
         accum = strrev( _name );
         strrev( _name );
 
-        while( container != DR_HANDLE_NUL ) {
+        while( container != DRMEM_HDL_NULL ) {
             Symbol contSym( drhdl, NULL, mod, DRGetName( container ) );
             name = WBRStrDup( contSym.name() );
             accum += "::";
@@ -184,7 +184,7 @@ Symbol * TreeFuncNode::makeSymbol( void )
 //---------------------------------------
 {
     char * name = WBRStrDup( _name );
-    return Symbol::defineSymbol( _symType, _drhandle, DR_HANDLE_NUL, _module, name );
+    return Symbol::defineSymbol( _symType, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
 char * TreeFuncNode::name()

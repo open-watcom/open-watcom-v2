@@ -281,7 +281,7 @@ extern drmem_hdl  DRGetStmtList( drmem_hdl ccu )
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
         ccu = DWRCurrNode->sections[DR_DEBUG_LINE].base + DWRReadConstant( abbrev, ccu );
     } else {
-        ccu = DR_HANDLE_NUL;
+        ccu = DRMEM_HDL_NULL;
     }
     return( ccu );
 }

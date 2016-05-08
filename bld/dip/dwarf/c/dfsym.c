@@ -168,7 +168,7 @@ dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
     }
     ret = DS_OK;
     it->im = is->im;
-    if( it->type != DR_HANDLE_NUL ) {
+    if( it->type != DRMEM_HDL_NULL ) {
         it->state = DF_NOT;
     } else {
         it->state = DF_SET;         // default the type
@@ -270,7 +270,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 
     cont = true;
     contain  = DRGetContaining( info->sym );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
         if( contain == df->inh ) {
 //            len =  DRGetNameBuff( info->sym, buff, sizeof( buff ) );
@@ -355,7 +355,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 DCStatus( ret );
                 return( ret );
             }
-            if( is->f.minfo.inh != DR_HANDLE_NUL ) {
+            if( is->f.minfo.inh != DRMEM_HDL_NULL ) {
                 DFBaseAdjust( ii, is->f.minfo.root,
                       DRGetTypeAT( is->f.minfo.inh ),lc, &ll->e[0].u.addr );
             }
@@ -371,14 +371,14 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
             break;
         }
         case SYM_MEMF:
-            if( is->f.minfo.inh == DR_HANDLE_NUL ) {
+            if( is->f.minfo.inh == DRMEM_HDL_NULL ) {
                 sym = is->f.minfo.root;
             } else {
                 sym = DRGetTypeAT( is->f.minfo.inh );   /* get inherited type */
             }
             sym = DRSkipTypeChain( sym );   /* PCH typedef link */
             sym = MemFuncLookUp( ii, is->sym, sym, is->im );
-            if( sym == DR_HANDLE_NUL ) {
+            if( sym == DRMEM_HDL_NULL ) {
                 base = NilAddr; /* for now say it's NULL */
                 LocationCreate( ll, LT_ADDR, &base );
                 ret = DS_OK;
@@ -594,11 +594,11 @@ extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Find handle of Watcom return symbol. */
-    drmem_hdl ret = DR_HANDLE_NUL;
+    drmem_hdl ret = DRMEM_HDL_NULL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_var, ARet, (void *)&ret ) ) {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
@@ -624,13 +624,13 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
     ret = DS_FAIL;
     if( n > 0 ) {
         parm = GetParmN( ii, is->sym, n );
-        if( parm != DR_HANDLE_NUL ) {
+        if( parm != DRMEM_HDL_NULL ) {
             ret = EvalParmLocation( ii, lc, parm, ll );
         }
     } else if( n == 0 ) {
         //TODO: get ret location
         parm = GetRet( ii, is->sym );
-        if( parm != DR_HANDLE_NUL ) {
+        if( parm != DRMEM_HDL_NULL ) {
             ret = EvalRetLocation( ii, lc, parm, ll );
         }
     }
@@ -664,11 +664,11 @@ static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Return handle of the this parmeter. */
-    drmem_hdl   ret = DR_HANDLE_NUL;
+    drmem_hdl   ret = DRMEM_HDL_NULL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_parm, AThis, (void *)&ret ) ) {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
@@ -690,10 +690,10 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
     dip_status  ret;
 
     dr_this = GetThis( ii, is->sym );
-    if( dr_this != DR_HANDLE_NUL ) {
+    if( dr_this != DRMEM_HDL_NULL ) {
         DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
         dr_type =  DRGetTypeAT( dr_this );
-        if( dr_type != DR_HANDLE_NUL ) {
+        if( dr_type != DRMEM_HDL_NULL ) {
             DRGetTypeInfo( dr_type, &typeinfo );
             MapImpTypeInfo( &typeinfo, ti );
             dr_type = DRSkipTypeChain( dr_type );
@@ -736,7 +736,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     } obj_ptr;
 
     dr_this = GetThis( ii, is->sym );
-    if( dr_this != DR_HANDLE_NUL ) {
+    if( dr_this != DRMEM_HDL_NULL ) {
         if( !IMH2MODI( ii, is->im )->is_segment ) {
             seg = SEG_DATA; // if flat hoke segment
         } else {
@@ -745,7 +745,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
         ret = EvalLocation( ii, lc, dr_this, seg, &tmp );
         if( ret == DS_OK ) {
             dr_type =  DRGetTypeAT( dr_this );
-            if( dr_type != DR_HANDLE_NUL ) {
+            if( dr_type != DRMEM_HDL_NULL ) {
                 DRGetTypeInfo( dr_type, &typeinfo );
                 LocationCreate( ll, LT_INTERNAL, &obj_ptr );
                 ret = DCAssignLocation( ll, &tmp, typeinfo.size );
@@ -1010,11 +1010,11 @@ static drmem_hdl GetContainingClass( drmem_hdl curr )
     dr_tag_type     sc;
 
     curr = DRGetContaining( curr );
-    if( curr != DR_HANDLE_NUL ) {
+    if( curr != DRMEM_HDL_NULL ) {
         curr = DRSkipTypeChain( curr ); /* PCH typedef link */
         sc = DRGetTagType( curr );
         if( sc != DR_TAG_CLASS ) {
-            curr = DR_HANDLE_NUL;
+            curr = DRMEM_HDL_NULL;
         }
     }
     return( curr );
@@ -1041,7 +1041,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         break;
     case DR_TAG_FUNCTION:
         curr = GetContainingClass( curr );
-        if( curr != DR_HANDLE_NUL ) {
+        if( curr != DRMEM_HDL_NULL ) {
             *out = *in;
             out->unique = curr - cu_tag;    /* make relatine */
             ret = SR_EXACT;
@@ -1158,7 +1158,7 @@ static bool ASymCont( drmem_hdl var, int index, void *_df )
 
     cont = true;
     contain = DRGetContaining( var );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
     }
     if( df->com.containing == contain ) {
@@ -1241,7 +1241,7 @@ static bool ASymContLookup( drmem_hdl var, int index, void *_df )
 
     cont = true;
     contain = DRGetContaining( var );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
     }
     if( df->com.containing == contain ) {
@@ -1315,7 +1315,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                     imp_type_handle     it;
 
                     curr = GetContainingClass( curr );
-                    if( curr != DR_HANDLE_NUL ) {
+                    if( curr != DRMEM_HDL_NULL ) {
                         it.state = DF_NOT;
                         it.type = curr;
                         it.im = im;
@@ -1428,7 +1428,7 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     df.com.ii = ii;
     df.com.d = d;
     df.com.what = DR_SRCH_func_var;
-    df.com.containing = DR_HANDLE_NUL;
+    df.com.containing = DRMEM_HDL_NULL;
     df.com.cont = true;
     df.com.kind = WLK_WLK;
     df.wlk.wk = wk;
@@ -1624,7 +1624,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     sr = SR_NONE;
     data.ii  = ii;
     data.compare = li->case_sensitive ? &strcmp : &stricmp;
-    data.sym = DR_HANDLE_NUL;
+    data.sym = DRMEM_HDL_NULL;
     len = QualifiedName( li, buff, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
         data.name = buff;
@@ -1640,7 +1640,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     wlk.d = &data;
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     FindHashWalk( ii->name_map, &wlk );
-    if( data.sym != DR_HANDLE_NUL ) {
+    if( data.sym != DRMEM_HDL_NULL ) {
         sr = SR_EXACT;
     }
     if( data.name != buff ) {
@@ -1686,7 +1686,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.ii = ii;
     df.com.d = d;
     df.com.what = Dip2DwarfSrch( li->type );
-    df.com.containing = DR_HANDLE_NUL;
+    df.com.containing = DRMEM_HDL_NULL;
     df.com.cont = true;
     df.com.kind = WLK_LOOKUP;
     df.lookup.comp = li->case_sensitive ? memcmp : memicmp;

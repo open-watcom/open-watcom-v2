@@ -67,7 +67,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     sizealloc = ABBREV_TABLE_GUESS;
     abbrevs = DWRALLOC( sizealloc * sizeof( drmem_hdl ) );
     for( i = 0; i < sizealloc; ++i ) {
-        abbrevs[i] = DR_HANDLE_NUL;
+        abbrevs[i] = DRMEM_HDL_NULL;
     }
     maxnum = 0;
     start = dbg->sections[DR_DEBUG_ABBREV].base + compunit->abbrev_start;
@@ -83,10 +83,10 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
             sizealloc = code + ABBREV_TABLE_INCREMENT;
             abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( drmem_hdl ) );
             for( i = oldsize; i < sizealloc; ++i ) {
-                abbrevs[i] = DR_HANDLE_NUL;
+                abbrevs[i] = DRMEM_HDL_NULL;
             }
         }
-        if( abbrevs[code] == DR_HANDLE_NUL ) {
+        if( abbrevs[code] == DRMEM_HDL_NULL ) {
             abbrevs[code] = start;
         }
         DWRVMSkipLEB128( &start );              // skip tag
@@ -128,12 +128,12 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
         dbg->sections[i].size = size;
         if( size != 0 ) {
             dbg->sections[i].base = DWRVMAlloc( size, i );
-            if( dbg->sections[i].base == DR_HANDLE_NUL ) {
+            if( dbg->sections[i].base == DRMEM_HDL_NULL ) {
                 DWRFREE( dbg );
                 return( NULL );
             }
         } else {
-            dbg->sections[i].base = DR_HANDLE_NUL;
+            dbg->sections[i].base = DRMEM_HDL_NULL;
         }
     }
     return( dbg );
@@ -160,7 +160,7 @@ extern void DRDbgDone( dr_dbg_handle dbg )
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSectDone( dbg->sections[i].base, dbg->sections[i].size );
-        dbg->sections[i].base = DR_HANDLE_NUL;
+        dbg->sections[i].base = DRMEM_HDL_NULL;
         dbg->sections[i].size = 0;
     }
 }

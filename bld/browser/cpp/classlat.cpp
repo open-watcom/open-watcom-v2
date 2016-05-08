@@ -156,7 +156,7 @@ Symbol * ClassLattice::makeSymbol( void )
 //---------------------------------------
 {
     char * name = WBRStrDup( _name );
-    return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DR_HANDLE_NUL, _module, name );
+    return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
 void ClassLattice::enumerateBases( BaseCB callback, void * obj )
