@@ -2552,14 +2552,12 @@ static inherit_flag findPtrOffset( BASE_STACK *top, SCOPE scope, CLASS_TABLE *ta
         }
     }
     table->delta = delta;
+    table->ctor_disp = false;
     if( virtual_base != NULL ) {
         table->vb_offset = ScopeClass( scope )->u.c.info->vb_offset;
         vbase = ScopeFindVBase( scope, virtual_base );
-        if( vbase->flag & IN_CTOR_DISP ) {
+        if( vbase->flag & IN_CTOR_DISP )
             table->ctor_disp = true;
-        } else {
-            table->ctor_disp = false;
-        }
         table->vb_index = vbase->vb_index;
         delta += vbase->delta;
     }
@@ -5530,11 +5528,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
     amount = sizeof( CLASS_VFTABLE ) + ( max_vfn - 1 ) * sizeof( THUNK_ACTION );
     table = RingAlloc( &(data->tables), amount );
     assignLocation( &(table->h), &location );
-    if( location.ctor_disp ) {
-        table->h.ctor_disp = true;
-    } else {
-        table->h.ctor_disp = false;
-    }
+    table->h.ctor_disp = location.ctor_disp;
     table->h.count = max_vfn;
     table->amt_left = max_vfn;
     table->ambiguities = false;
