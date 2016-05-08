@@ -32,7 +32,7 @@
 #ifndef WRESSET2_INCLUDED
 #define WRESSET2_INCLUDED
 
-#include <stdbool.h>
+#include "bool.h"
 #ifdef WIN_GUI
 # include <windows.h>
 #elif defined( __WATCOMC__ )
@@ -62,10 +62,10 @@ typedef const char      _WCI86FAR *LPCSTR;
 extern "C" {
 #endif
 
-extern unsigned char    OpenResFile( PHANDLE_INFO hInstance, const char *filename );
-extern unsigned char    CloseResFile( PHANDLE_INFO hInstance );
+extern bool             OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern bool             CloseResFile( PHANDLE_INFO hInstance );
 extern bool             FindResources( PHANDLE_INFO hInstance );
-extern unsigned char    InitResources( PHANDLE_INFO hInstance );
+extern bool             InitResources( PHANDLE_INFO hInstance );
 extern int              WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
 extern int              WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
 extern int              WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, int *bufferSize );

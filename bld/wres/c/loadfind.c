@@ -57,7 +57,7 @@ typedef struct dbgheader {
 
 WResFileOffset    FileShift = 0;
 
-unsigned char FindResources( PHANDLE_INFO hInstance )
+bool FindResources( PHANDLE_INFO hInstance )
 /* look for the resource information in a debugger record at the end of file */
 {
     WResFileOffset  currpos;

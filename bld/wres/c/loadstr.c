@@ -78,8 +78,10 @@ static int GetString(   WResLangInfo    *res,
                 length = 0;
             }
             numread = WRESREAD( hInstance->handle, stringbuff, numread );
-            if( WRESIOERR( hInstance->handle, numread ) ) return( -1 );
-            if( numread == 0 ) return( -1 );
+            if( WRESIOERR( hInstance->handle, numread ) )
+                return( -1 );
+            if( numread == 0 )
+                return( -1 );
             ix1 = 0;
         }
         if( ix1 < numread ) {
@@ -144,8 +146,8 @@ int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, i
     return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );
 }
 
-unsigned char OpenResFile( PHANDLE_INFO hInstance, const char *filename )
-/***********************************************************************/
+bool OpenResFile( PHANDLE_INFO hInstance, const char *filename )
+/**************************************************************/
 {
     hInstance->handle = ResOpenFileRO( filename );
     return( hInstance->handle == NIL_HANDLE );
@@ -160,8 +162,8 @@ bool InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
     return( WResReadDir( hInstance->handle, *dir, NULL ) );
 }
 
-unsigned char InitResources( PHANDLE_INFO hInstance )
-/***************************************************/
+bool InitResources( PHANDLE_INFO hInstance )
+/******************************************/
 {
     return( InitResources2( &MainDir, hInstance ) );
 }
@@ -173,8 +175,8 @@ bool CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
     return( ResCloseFile( hInstance->handle ) );
 }
 
-unsigned char CloseResFile( PHANDLE_INFO hInstance )
-/**************************************************/
+bool CloseResFile( PHANDLE_INFO hInstance )
+/*****************************************/
 {
     return( CloseResFile2( MainDir, hInstance ) );
 }
