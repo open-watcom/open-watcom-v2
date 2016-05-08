@@ -201,7 +201,7 @@ static void TrPrt( tracker *trk, char *fmt, ... )
     }
     va_end( args );
     *ptr = '\0';
-    trk->print_line( buff, ptr - buff );
+    trk->print_line( buff, (unsigned)( ptr - buff ) );
 }
 
 

@@ -883,8 +883,6 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
     float_handle    rv;
     float_handle    lv;
     float_handle    tmp;
-    unsigned_32     ri;
-    unsigned_32     li;
     int             log;
 
     fold = NULL;
@@ -930,14 +928,20 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
             lv = left->u.name->c.value;
             if( tipe->attr & TYPE_SIGNED ) {
                 if( CFIsI32( lv ) && CFIsI32( rv ) ) {
+                    signed_32       li;
+                    signed_32       ri;
+
                     li = CFConvertByType( lv, tipe );
                     ri = CFConvertByType( rv, tipe );
-                    fold = IntToType( (signed_32)li / (signed_32)ri, tipe );
+                    fold = IntToType( li / ri, tipe );
                     BurnTree( left );
                     BurnTree( rite );
                 }
             } else {
                 if( CFIsU32( lv ) && CFIsU32( rv ) ) {
+                    unsigned_32     li;
+                    unsigned_32     ri;
+
                     li = CFCnvF32( lv );
                     ri = CFCnvF32( rv );
                     U32ModDiv( &li, ri );
@@ -949,13 +953,11 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
         } else if( rite->u.name->c.int_value == 1 ) {
             fold = TGConvert( left, tipe );
             BurnTree( rite );
-        } else if( !HasBigConst( tipe )
-              && ( left->tipe->attr & TYPE_SIGNED ) == 0 ) {
+        } else if( !HasBigConst( tipe ) && ( left->tipe->attr & TYPE_SIGNED ) == 0 ) {
             if( CFIsU32( rv ) ) {
                 log = GetLog2( rite->u.name->c.int_value );
                 if( log != -1 ) {
-                    fold = TGBinary( O_RSHIFT, left,
-                                  IntToType( log, TypeInteger ), tipe );
+                    fold = TGBinary( O_RSHIFT, left, IntToType( log, TypeInteger ), tipe );
                     BurnTree( rite );
                 }
             }
@@ -976,8 +978,6 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
     tn              fold;
     float_handle    rv;
     float_handle    lv;
-    unsigned_32     ri;
-    unsigned_32     li;
     int             log;
 
     fold = NULL;
@@ -1005,14 +1005,20 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
             } else {
                 if( tipe->attr & TYPE_SIGNED ) {
                     if( CFIsI32( lv ) && CFIsI32( rv ) ) {
+                        signed_32     ri;
+                        signed_32     li;
+
                         li = CFConvertByType( lv, tipe );
                         ri = CFConvertByType( rv, tipe );
-                        fold = IntToType( (signed_32)li % (signed_32)ri, tipe );
+                        fold = IntToType( li % ri, tipe );
                         BurnTree( left );
                         BurnTree( rite );
                     }
                 } else {
                     if( CFIsU32( lv ) && CFIsU32( rv ) ) {
+                        unsigned_32     ri;
+                        unsigned_32     li;
+
                         li = CFConvertByType( lv, tipe );
                         ri = CFConvertByType( rv, tipe );
                         li = U32ModDiv( &li, ri );
@@ -1029,10 +1035,10 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
         } else if( !HasBigConst( tipe ) ) {
             if( ( left->tipe->attr & TYPE_SIGNED ) == 0 ) {
                 if( CFIsU32( rv ) ) {
-                    ri = CFConvertByType( rv, tipe );
+                    unsigned_32 ri = CFConvertByType( rv, tipe );
                     log = GetLog2( ri );
                     if( log != -1 ) {
-                        fold = TGBinary( O_AND, left, IntToType( ri-1, tipe ), tipe );
+                        fold = TGBinary( O_AND, left, IntToType( ri - 1, tipe ), tipe );
                         BurnTree( rite );
                     }
                 }
