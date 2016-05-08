@@ -216,6 +216,7 @@ gencop : .procedure
         @%append $(dosemu_gendev_batch) set GMLINC=..\testsrc
         @%append $(dosemu_gendev_batch) w:\gml\dos\gendev.exe $(gendev_cmdl_params)
         @%append $(dosemu_gendev_batch) exitemu
+        @unix2dos $(dosemu_gendev_batch)
         $(GENDEVCMD)
 !else ifeq use_dosemu dosbox
         %create $(dosemu_gendev_batch)

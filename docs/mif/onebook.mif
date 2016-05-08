@@ -477,6 +477,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exitemu
+    @unix2dos $(dosemu_wgml_batch)
 !else ifeq use_dosemu dosbox
 #-------------------------------------------------------
 # create DOSBOX batch file to run wgml utility
