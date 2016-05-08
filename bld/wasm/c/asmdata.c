@@ -48,7 +48,7 @@
 /* is this data element a field in a structure definition? */
 static bool             struct_field;
 /* is this the first initializer for this field? */
-static bool             first;
+static bool             first_init;
 
 #endif
 
@@ -179,7 +179,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 
             if( sym && Parse_Pass == PASS_1 ) {
-                update_sizes( sym, first, no_of_bytes );
+                update_sizes( sym, first_init, no_of_bytes );
             }
 #else
             for( count = 0; count < no_of_bytes; ++count ) {
@@ -237,7 +237,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             char_ptr = (char *)AsmBuffer[cur_pos].u.bytes;
 #if defined( _STANDALONE_ )
             if( sym && Parse_Pass == PASS_1 ) {
-                update_sizes( sym, first, no_of_bytes );
+                update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
 #endif
@@ -249,13 +249,13 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 if( the_struct == NULL )
                     break;
                 Definition.curr_struct->e.structinfo->size += no_of_bytes;
-                update_sizes( the_struct, first, no_of_bytes );
+                update_sizes( the_struct, first_init, no_of_bytes );
             }
 #endif
             break;
         case TC_COMMA:
 #if defined( _STANDALONE_ )
-            first = false;
+            first_init = false;
 #endif
             if( cur_pos != start_pos ) {
                 if( AsmBuffer[cur_pos - 1].class == TC_COMMA ) {
@@ -299,7 +299,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 no_of_bytes = AsmBuffer[cur_pos].u.value;
             }
             if( sym && Parse_Pass == PASS_1 ) {
-                update_sizes( sym, first, no_of_bytes );
+                update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
 #endif
@@ -315,7 +315,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 if( the_struct == NULL )
                     break;
                 Definition.curr_struct->e.structinfo->size += no_of_bytes;
-                update_sizes( the_struct, first, no_of_bytes );
+                update_sizes( the_struct, first_init, no_of_bytes );
             }
 #endif
             break;
@@ -433,7 +433,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             ptr = (char *)&data;
 #if defined( _STANDALONE_ )
             if( sym && Parse_Pass == PASS_1 ) {
-                update_sizes( sym, first, no_of_bytes );
+                update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
 #endif
@@ -450,7 +450,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #if defined( _STANDALONE_ )
             } else if( the_struct != NULL ) {
                 Definition.curr_struct->e.structinfo->size += no_of_bytes;
-                update_sizes( the_struct, first, no_of_bytes );
+                update_sizes( the_struct, first_init, no_of_bytes );
             }
 #endif
             // set position back to main loop worked correctly
@@ -603,7 +603,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     ptr = (char *)&data;
 #if defined( _STANDALONE_ )
                     if( sym && Parse_Pass == PASS_1 ) {
-                        update_sizes( sym, first, no_of_bytes );
+                        update_sizes( sym, first_init, no_of_bytes );
                     }
                     if( !struct_field ) {
 #endif
@@ -616,7 +616,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                         if( the_struct == NULL )
                             break;
                         Definition.curr_struct->e.structinfo->size += no_of_bytes;
-                        update_sizes( the_struct, first, no_of_bytes );
+                        update_sizes( the_struct, first_init, no_of_bytes );
                     }
 #endif
                 } else {
@@ -669,7 +669,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
 
             cur_pos++;
 #if defined( _STANDALONE_ )
-            was_first = first;
+            was_first = first_init;
 #endif
             if( count == 0 ) {
                 int     level;
@@ -687,7 +687,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
             for( ; count > 0; --count ) {
                 /* in case there was a "," inside the dup */
 #if defined( _STANDALONE_ )
-                first = was_first;
+                first_init = was_first;
 #endif
                 returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
                 if( returned_pos == INVALID_IDX ) {
@@ -712,7 +712,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
         }
         cur_pos = returned_pos + 2;
 #if defined( _STANDALONE_ )
-        first = false;
+        first_init = false;
 #endif
     }
     return( array_element( sym, struct_sym, cur_pos, no_of_bytes ) );
@@ -733,7 +733,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     bool                label_dir = false;
 
     struct_field = false;
-    first = true;
+    first_init = true;
 #endif
 
     if( sym_loc != INVALID_IDX ) {
