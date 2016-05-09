@@ -1257,7 +1257,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
 #else
         if( cl_conv ) {
             retn = classPtrConversion( a_expr, tgt_type, conversion );
-            if( retn == CNV_OK_CV ) {
+            if( retn == CNV_OK_CV || retn == CNV_OK_TRUNC ) {
                 retn = CNV_OK;
             }
         } else {
