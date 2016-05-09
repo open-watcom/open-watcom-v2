@@ -107,9 +107,9 @@ static bool    restoreFromZapped( cv_t *cv )
             curr_zapped = next_zapped;
         } while( curr_zapped != NULL );
         cv->free_list = free_list;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #else
 #define restoreFromZapped( x )
@@ -269,12 +269,12 @@ static void CarveDebugFree( carve_t cv, void *elm )
     esize = cv->elm_size;
     if(( cv->elm_count * cv->blk_count ) > TOO_MANY_TO_WALK ) {
         // there are lots of blocks to search so we weaken the check for speed
-        do_search = FALSE;
+        do_search = false;
         check = elm;
         for( i = 0; i < 4; ++i ) {
             if( DbgZapQuery( check, esize ) != 0 ) {
                 // would pass check to return as a free block!
-                do_search = TRUE;
+                do_search = true;
                 break;
             }
             if( ! withinABlock( cv, check->next_free ) ) {
@@ -283,7 +283,7 @@ static void CarveDebugFree( carve_t cv, void *elm )
             check = check->next_free;
         }
     } else {
-        do_search = TRUE;
+        do_search = true;
     }
     if( do_search ) {
         for( check = cv->free_list; check != NULL; check = check->next_free ) {
@@ -340,7 +340,7 @@ void CarveVerifyAllGone( carve_t cv, char const *node_name )
     }
 #endif
     restoreFromZapped( cv );
-    some_unfreed = FALSE;
+    some_unfreed = false;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         compare = block->data + cv->blk_top;
         do {
@@ -352,7 +352,7 @@ void CarveVerifyAllGone( carve_t cv, char const *node_name )
             if( check == NULL ) {
                 if( ! some_unfreed ) {
                     printf( "%s nodes unfreed:", node_name );
-                    some_unfreed = TRUE;
+                    some_unfreed = true;
                 }
                 printf( " %p", compare );
             }
@@ -753,7 +753,7 @@ void createMess()
     for( i = 0; i < 5; ++i ) {
         m = CarveAlloc( carveMASTER );
         RingAppend( &masterList, m );
-        m->free = FALSE;
+        m->free = false;
         m->ring1 = NULL;
         m->ring2 = NULL;
         if( i & 1 ) {
@@ -766,8 +766,8 @@ void createMess()
             s2 = newSLAVE2();
             RingAppend( &m->ring1, s1 );
             RingPush( &m->ring2, s2 );
-            s1->free = FALSE;
-            s2->free = FALSE;
+            s1->free = false;
+            s2->free = false;
             s1->master = m;
             s2->master = m;
             s1->sister = s2->next;
@@ -790,21 +790,21 @@ void markFreeMaster( void *p )
 {
     MASTER *m = p;
 
-    m->free = TRUE;
+    m->free = true;
 }
 
 void markFreeSlave1( void *p )
 {
     SLAVE1 *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 void markFreeSlave2( void *p )
 {
     SLAVE2 *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 void saveMaster( void *e, carve_walk_base *d )
