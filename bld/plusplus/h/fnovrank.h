@@ -32,7 +32,7 @@
 
 //
 // rank_pick  - used for enum name and value, also for string table in fnovprt
-// rnak_pick_ - used for synonym enum name and ignored in fnovprt string table
+// rank_pick_ - used for synonym enum name and ignored in fnovprt string table
 //
 #ifdef __DEFINE_FNOVRANK
 #define rank_pick( name, value )        name = value,
@@ -67,7 +67,7 @@ OV_RANK_SAME            ????                    Lvalue          Exact Match
 OV_RANK_TRIVIAL:        Qualification           Qualification   Exact Match
  note: trivial=1          Conversion                  Ajustment
 --------------------------------------------------------------------------
-OV_RANK_PROMITION:      Integral Promotions     Promotion       Promotion
+OV_RANK_PROMOTION:      Integral Promotions     Promotion       Promotion
   note: promotion=1
 --------------------------------------------------------------------------
 note: standard++ executed
