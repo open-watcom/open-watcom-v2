@@ -35,11 +35,11 @@
 #endif
 
 #ifdef _M_I86
-#define BASED_SEG_PTR(s)    __based(s) *
-#define BASED_VOID_PTR      __based(void) *
+#define SEG_BPTR(s)     __based(s) *
+#define VOID_BPTR       __based(void) *
 #else
-#define BASED_SEG_PTR(s)    _WCNEAR *
-#define BASED_VOID_PTR      _WCNEAR *
+#define SEG_BPTR(s)     _WCNEAR *
+#define VOID_BPTR       _WCNEAR *
 #endif
 
 typedef unsigned int    tag;
