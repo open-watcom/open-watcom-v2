@@ -572,27 +572,27 @@ static void unGetChar( int c )
 bool ScanOptionalComment( void )
 /******************************/
 {
-    bool retn;
+    bool retb;
     int c;
 
-    retn = false;
+    retb = false;
     for(;;) {
         c = CurrChar;
         if( c != '/' ) break;
         c = NextChar();
         if( c == '*' ) {
             scanCComment();
-            retn = true;
+            retb = true;
         } else if( c == '/' ) {
             scanCppComment();
-            retn = true;
+            retb = true;
         } else {
             unGetChar( c );
             CurrChar = '/';
             break;
         }
     }
-    return retn;
+    return( retb );
 }
 
 void SkipAhead( void )

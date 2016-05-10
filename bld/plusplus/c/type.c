@@ -2061,16 +2061,16 @@ TYPE TypeNeedsCtor( TYPE type )
 bool TypeIsCharString( TYPE type )
 /********************************/
 {
-    bool retn = false;       // - true ==> is a character string
+    bool retb = false;       // - true ==> is a character string
 
     // includes L"string" (wide chars)
     TypeStripTdMod( type );
     if( type->id == TYP_ARRAY ) {
         type = type->of;
         TypeStripTdMod( type );
-        retn = TypeIdMasked( type, MASK_TYPE_CHAR_STR );
+        retb = TypeIdMasked( type, MASK_TYPE_CHAR_STR );
     }
-    return( retn );
+    return( retb );
 }
 
 static DECL_SPEC *makeDeclSpec( void )
@@ -6667,14 +6667,14 @@ void InsertArgs( DECL_INFO **args )
 static bool typePoints(         // TEST IF POINTER, ARRAY, REFERENCE, FUNCTION
     TYPE type )                 // - type to be tested
 {
-    bool retn;                  // - true ==> type points at something
+    bool retb;                  // - true ==> type points at something
 
     if( type == NULL ) {
-        retn = false;
+        retb = false;
     } else {
-        retn = TypeIdMasked( type, MASK_TYPE_POINTS );
+        retb = TypeIdMasked( type, MASK_TYPE_POINTS );
     }
-    return retn;
+    return( retb );
 }
 
 TYPE TypePointedAtModified(     // GET MODIFIED TYPE POINTED AT
@@ -7022,15 +7022,15 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
 bool TypeHasVirtualBases( TYPE type )
 /***********************************/
 {
-    bool retn;
+    bool retb;
 
     type = StructType( type );
     if( type == NULL ) {
-        retn = false;
+        retb = false;
     } else {
-        retn = ScopeHasVirtualBases( TypeScope( type ) );
+        retb = ScopeHasVirtualBases( TypeScope( type ) );
     }
-    return retn;
+    return( retb );
 }
 
 bool TypeIsClassInstantiation( TYPE type )

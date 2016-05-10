@@ -151,7 +151,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
     void const **a_data,              // - addr[ ptr to data for context ]
     char const **a_prefix )     // - addr[ prefix for header line in error ]
 {
-    bool retn;                  // - true ==> context changed from last time
+    bool retb;                  // - true ==> context changed from last time
     void const *data;           // - current data
 
     *a_context = context;
@@ -175,11 +175,11 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
         data = func;
         break;
     }
-    retn = ( context != last_context ) || ( data != last_data );
+    retb = ( context != last_context ) || ( data != last_data );
     last_data = data;
     *a_data = data;
     last_context = context;
-    return retn;
+    return( retb );
 }
 
 

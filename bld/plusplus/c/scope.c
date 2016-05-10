@@ -3366,20 +3366,20 @@ bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
     NAME name;                  // - name for checking
-    bool retn;                  // - true ==> is same virtual function
+    bool retb;                  // - true ==> is same virtual function
 
     a_fun1 = &fun1;
     name = fun1->name->name;
     switch( distinctVirtualFunction( a_fun1, fun2, name ) ) {
       case FNOV_NOT_DISTINCT_RETURN:
       case FNOV_EXACT_MATCH:
-        retn = true;
+        retb = true;
         break;
       default :
-        retn = false;
+        retb = false;
         break;
     }
-    return retn;
+    return( retb );
 }
 
 static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
@@ -4539,7 +4539,7 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
 
 static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retn;
+    bool retb;
     SYMBOL_NAME sym_name;
     PSTK_CTL *curr;
     PSTK_CTL *next;
@@ -4559,24 +4559,24 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
     PstkPush( curr, scope );
     PstkPush( &cycle, scope );
     for(;;) {
-        retn = tryDisambigLookup( data, scope, curr, next, &cycle );
-        if( retn != false || PstkTopElement( next ) == NULL ) {
+        retb = tryDisambigLookup( data, scope, curr, next, &cycle );
+        if( retb || PstkTopElement( next ) == NULL ) {
             break;
         }
-        retn = tryDisambigLookup( data, scope, next, curr, &cycle );
-        if( retn != false || PstkTopElement( curr ) == NULL ) {
+        retb = tryDisambigLookup( data, scope, next, curr, &cycle );
+        if( retb || PstkTopElement( curr ) == NULL ) {
             break;
         }
     }
     PstkClose( &stack1 );
     PstkClose( &stack2 );
     PstkClose( &cycle );
-    return( retn );
+    return( retb );
 }
 
 static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retn;
+    bool retb;
     SCOPE trigger_scope;
     SCOPE top_scope;
     SCOPE edge_scope;
@@ -4621,10 +4621,10 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
             } RingIterEnd( curr )
         }
     }
-    retn = processNSLookup( data );
+    retb = processNSLookup( data );
     PstkClose( &cycle );
     PstkClose( &stack );
-    return( retn );
+    return( retb );
 }
 
 static bool searchScope( lookup_walk *data, SCOPE scope )
@@ -7033,21 +7033,21 @@ static bool changePragmaType(   // TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
     AUX_INFO *auxinfo )         // - new aux info
 {
-    bool        retn;           // - return: true ==> change required
+    bool        retb;           // - return: true ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
 
     old_pragma = TypeHasPragma( sym->sym_type );
     if( old_pragma == NULL ) {
-        retn = true;
+        retb = true;
     } else if( old_pragma == auxinfo ) {
-        retn = false;
+        retb = false;
     } else if( PragmaChangeConsistent( old_pragma, auxinfo ) ) {
-        retn = true;
+        retb = true;
     } else {
         CErr2p( WARN_PRAGMA_MERGE, sym );
-        retn = false;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 static void changeNonFunction( SYMBOL sym, AUX_INFO *auxinfo )
@@ -7199,18 +7199,18 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
 bool ScopeDebugable(            // DETERMINE IF SCOPE TO BE DEBUGGED
     SCOPE scope )               // - the scope
 {
-    bool retn;                  // - true ==> pass scope to debugger
+    bool retb;                  // - true ==> pass scope to debugger
 
     if( NULL == scope ) {
-        retn = false;
+        retb = false;
     } else if( ScopeFunction( scope->enclosing ) ) {
-        retn = false;
+        retb = false;
     } else if( HashEmpty( scope->names ) ) {
-        retn = false;
+        retb = false;
     } else {
-        retn = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME e )

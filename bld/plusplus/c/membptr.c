@@ -563,7 +563,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     MEMBER_PTR_CAST *inf,       // - operands information
     PTREE expr )                // - expression for errors
 {
-    bool retn;                  // - true ==> analysis ok
+    bool retb;                  // - true ==> analysis ok
     CNV_RETN cnv;               // - CNV_...: conversion result
     SCOPE scope;                // - used to switch scopes
     bool check_safety;          // - check if safe req'd
@@ -633,11 +633,11 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
             DumpMemberPtrInfo( inf );
         }
 #endif
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -1300,14 +1300,14 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
 {
     PTREE left;                 // - left operand
     PTREE right;                // - right operand
-    bool rc;                    // - true ==> can convert
+    bool retb;                  // - true ==> can convert
     CNV_RETN retn;              // - return from validation
 
     left = PTreeOpLeft( expr );
     right = PTreeOpRight( expr );
     if( ( left->op == PT_ERROR ) || ( right->op == PT_ERROR ) ) {
         PTreeErrorNode( expr );
-        rc = false;
+        retb = false;
     } else {
         TYPE host_left;         // - host class to left
         TYPE host_right;        // - host class to right
@@ -1346,12 +1346,12 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
             break;
         }
         if( CNV_OK == retn ) {
-            rc = true;
+            retb = true;
         } else {
-            rc = false;
+            retb = false;
         }
     }
-    return rc;
+    return( retb );
 }
 
 

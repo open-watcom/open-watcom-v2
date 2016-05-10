@@ -167,8 +167,7 @@ static void addRankVector( FNOV_LIST *candidate, FNOV_CONTROL control )
 
 static bool hasOneArg( arg_list *arg )
 {
-    if( arg->num_args > 0  &&
-       (arg->type_list[arg->num_args-1])->id  == TYP_DOT_DOT_DOT ) {
+    if( arg->num_args > 0 && (arg->type_list[arg->num_args-1])->id  == TYP_DOT_DOT_DOT ) {
         return (arg->num_args == 2 || arg->num_args == 1);
         // ellipsis args take up space in array, but we want to match
         // fns with one real arg plus ellipsis args as having one arg
@@ -452,10 +451,14 @@ int FnovRejectParm( FNOV_DIAG *fnov_diag )
             num_args = 1;
         }
         for( index = 0; index < num_args ; index++, rank++ ) {
-            if( rank->rank >= OV_RANK_NO_MATCH ) return( index );
+            if( rank->rank >= OV_RANK_NO_MATCH ) {
+                return( index );
+            }
         }
         if( fnov_diag->diag_reject->member != 0 ) {
-            if( fnov_diag->diag_reject->thisrank.rank >= OV_RANK_NO_MATCH ) return( -1 );
+            if( fnov_diag->diag_reject->thisrank.rank >= OV_RANK_NO_MATCH ) {
+                return( -1 );
+            }
         }
     }
     return( -2 );
@@ -576,10 +579,9 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
     if( SymIsFunctionTemplateModel( base_sym ) ) {
         FN_TEMPLATE *fntempl = base_sym->u.defn;
 
-        if( ( control & FNC_ONLY_NON_TEMPLATE ) // ignore template functions
-         || ( fntempl == NULL ) ) {
+        if( (control & FNC_ONLY_NON_TEMPLATE) != 0 || ( fntempl == NULL ) )
+            // ignore template functions
             return;
-        }
 
         if( (control & FNC_DISTINCT_CHECK) == 0 ) {
             SYMBOL result;
@@ -597,8 +599,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
                                                    info->templ_args,
                                                    &sym->locn->tl );
                 if( result == NULL ) {
-                    addListEntry( control, info, base_sym, mock_args,
-                                  LENT_FREE_ARGS );
+                    addListEntry( control, info, base_sym, mock_args, LENT_FREE_ARGS );
                     return;
                 }
 
@@ -982,42 +983,44 @@ FNOV_RANK *second, TYPE *second_type )
 
     if( firstrank != secondrank ) {
         retn = compareInt( firstrank, secondrank );
-    } else switch( firstrank ) {
-    case OV_RANK_NO_MATCH:
-    case OV_RANK_ELLIPSIS:
-        retn = OV_CMP_SAME;
-        break;
-    case OV_RANK_UD_CONV:
-        retn = compareScalar( &first->u.ud.out
-                            , first_type
-                            , &second->u.ud.out
-                            , second_type, true );
-        break;
-    case OV_RANK_STD_CONV_DERIV:
-        if( ( first_type != NULL ) && ( second_type != NULL ) ) {
-            retn = compareDerived( *first_type, *second_type );
-            if( retn != OV_CMP_SAME ) {
-                break;
+    } else {
+        switch( firstrank ) {
+        case OV_RANK_NO_MATCH:
+        case OV_RANK_ELLIPSIS:
+            retn = OV_CMP_SAME;
+            break;
+        case OV_RANK_UD_CONV:
+            retn = compareScalar( &first->u.ud.out
+                                , first_type
+                                , &second->u.ud.out
+                                , second_type, true );
+            break;
+        case OV_RANK_STD_CONV_DERIV:
+            if( ( first_type != NULL ) && ( second_type != NULL ) ) {
+                retn = compareDerived( *first_type, *second_type );
+                if( retn != OV_CMP_SAME ) {
+                    break;
+                }
             }
+            // two target types are not releated
+            // do the following comparison
+        case OV_RANK_STD_CONV_VOID:
+        case OV_RANK_STD_CONV:
+        case OV_RANK_STD_BOOL:
+        case OV_RANK_PROMOTION:
+        case OV_RANK_TRIVIAL:
+            retn = compareScalar( &first->u.no_ud
+                                 , first_type
+                                 , &second->u.no_ud
+                                 , second_type, false );
+            break;
+        case OV_RANK_UD_CONV_AMBIG:
+        case OV_RANK_SAME:
+        case OV_RANK_EXACT:
+            DbgAssert( false ); // made into something else above
+            break;
+        DbgDefault( "funny rank\n" );
         }
-        // two target types are not releated
-        // do the following comparison
-    case OV_RANK_STD_CONV_VOID:
-    case OV_RANK_STD_CONV:
-    case OV_RANK_STD_BOOL:
-    case OV_RANK_PROMOTION:
-    case OV_RANK_TRIVIAL:
-        retn = compareScalar( &first->u.no_ud
-                             , first_type
-                             , &second->u.no_ud
-                             , second_type, false );
-        break;
-    case OV_RANK_UD_CONV_AMBIG:
-    case OV_RANK_SAME:
-    case OV_RANK_EXACT:
-        DbgAssert( false ); // made into something else above
-        break;
-    DbgDefault( "funny rank\n" );
     }
     return( retn );
 }
@@ -1119,9 +1122,7 @@ static OV_RESULT compareFunction(
     second_arg = second->rankvector;
     first_type = first->alist->type_list;
     second_type = second->alist->type_list;
-    for(;;) {
-        if( retn == OV_CMP_SAME ) break;
-        if( index == 0 ) break;
+    while( ( retn != OV_CMP_SAME ) && ( index != 0 ) ) {
         result = compareArgument( first_arg
                                 , first_type
                                 , second_arg
@@ -1192,35 +1193,33 @@ static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 {
     int             index;
     FNOV_RANK       *rank;
-    bool            retn;
+    bool            retb;
 
-    retn = true;
+    retb = true;
     rank = entry->rankvector;
     index = entry->num_args;
-    for(;;) {
-        if( !retn ) break;
-        if( index == 0 ) break;
-        retn = ( rank->rank <= level );
+    while( retb && ( index != 0 ) ) {
+        retb = ( rank->rank <= level );
         index--;
         rank++;
     }
-    if( retn ) {
-        retn = ( entry->thisrank.rank <= level );
+    if( retb ) {
+        retb = ( entry->thisrank.rank <= level );
     }
-    return( retn );
+    return( retb );
 }
 
 static bool isReturnIdentical( TYPE sym1, TYPE sym2 )
 /***************************************************/
 // see if two functions have indentical return types
 {
-    bool retn;
+    bool retb;
 
-    retn = TypesSameExclude( FunctionDeclarationType( sym1 )->of
+    retb = TypesSameExclude( FunctionDeclarationType( sym1 )->of
                            , FunctionDeclarationType( sym2 )->of
                            , TC1_NOT_ENUM_CHAR );
 
-    return( retn );
+    return( retb );
 }
 
 static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
@@ -1303,7 +1302,7 @@ static void resolveOneList( FNOV_LIST **list, FNOV_LIST **match,
                 if( result == OV_CMP_SAME ) {
                     // prefer non-template functions
                     if( ( (*match)->sym->flag & SF_TEMPLATE_FN )
-                     && (curr->sym->flag & SF_TEMPLATE_FN) == 0 ) {
+                      && (curr->sym->flag & SF_TEMPLATE_FN) == 0 ) {
                         result = OV_CMP_BETTER_SECOND;
                     } else if( ((*match)->sym->flag & SF_TEMPLATE_FN) == 0
                             && ( curr->sym->flag & SF_TEMPLATE_FN ) ) {
@@ -1544,10 +1543,9 @@ static bool computeFunctionRank( FNOV_INFO* info )
     tgt   = func->alist->type_list;
     rank  = func->rankvector;
     ptlist = info->plist;
-    for(;;) {
-        if( index == 0 ) break;
+    while( index != 0 ) {
         if( ( rank->control & FNC_MEMBER )
-         && ( index == info->alist->num_args ) ) {
+          && ( index == info->alist->num_args ) ) {
             // see 13.3.1 [over.match.funcs] (5):
             // even if the implicit object parameter is not
             // const-qualified, an rvalue temporary can be bound to
@@ -1580,7 +1578,8 @@ static bool computeFunctionRank( FNOV_INFO* info )
         index--;
         tgt++;
         src++;
-        if( ptlist != NULL ) ptlist++;
+        if( ptlist != NULL )
+            ptlist++;
         rank++;
     }
     return( true );
@@ -1595,7 +1594,7 @@ static bool getRank( FNOV_INFO* info )
     FNOV_LIST* candidate = info->candfunc;
 
     if( SymIsFunctionTemplateModel( candidate->sym )
-     && (info->control & FNC_DISTINCT_CHECK) == 0 ) {
+      && (info->control & FNC_DISTINCT_CHECK) == 0 ) {
         // this means that template argument deduction failed, so it
         // can't be a contender
         contender = false;
@@ -1716,7 +1715,7 @@ static FNOV_RESULT doOverload( FNOV_INFO* info )
     if( *info->pcandidates != NULL ) {
         result = resolveOverload( info );
         if( result != FNOV_NONAMBIGUOUS
-         || ! isRank( *info->pmatch, OV_RANK_SAME ) ) {
+          || ! isRank( *info->pmatch, OV_RANK_SAME ) ) {
             if( result != FNOV_NONAMBIGUOUS ) {
                 match = *info->pmatch;
                 *info->pmatch = NULL;
@@ -2096,22 +2095,22 @@ bool IsOverloadedFunc( SYMBOL sym )
 /*********************************/
 // test if a function has been overloaded
 {
-    bool retn = false;
+    bool retb = false;
 
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
-            retn = ( sym->next != sym );
+            retb = ( sym->next != sym );
         }
     }
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
-        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), retn ? " " : " not " );
+        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), retb ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retn );
+    return( retb );
 }
 
 static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *retn )
@@ -2190,16 +2189,16 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OV
 // test if a function has been really overloaded
 // ignore functions with SC_DEFAULT id's
 {
-    bool retn = ( NULL == ActualNonOverloadedFunc( sym, result ) );
+    bool retb = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
-            FormatSym( sym, &name ), retn ? " " : " not " );
+            FormatSym( sym, &name ), retb ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retn );
+    return( retb );
 }
 
 static void fnovInit( INITFINI* defn )

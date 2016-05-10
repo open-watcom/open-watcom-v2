@@ -151,24 +151,19 @@ target_long FoldSignedRShiftMax( target_long v )
 static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     PTREE node )                // - the expression
 {
-    bool retn;                  // - true ==> conditionally decorated
+    bool retb;                  // - true ==> conditionally decorated
 
+    retb = false;
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
         if( node->op == PT_IC ) {
             if( node->u.ic.opcode == IC_COND_TRUE
              || node->u.ic.opcode == IC_COND_FALSE ) {
-                retn = true;
-            } else {
-                retn = false;
+                retb = true;
             }
-        } else {
-            retn = false;
         }
-    } else {
-        retn = false;
     }
-    return retn;
+    return( retb );
 }
 
 

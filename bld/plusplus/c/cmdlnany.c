@@ -158,9 +158,10 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     ( FBI_KIND* a_kind          // - addr[ option kinds ]
     , FBI_KIND def_kind )       // - default kind
 {
-    bool retn;                  // - return: 1 ==> ok, 0 ==> error
+    bool retb;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND kind;              // - options scanned
 
+    retb = false;
     kind = 0;
     CmdRecogEquals();
     for( ; ; ) {
@@ -169,7 +170,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             if( 0 == kind ) {
                 kind = def_kind;
             }
-            retn = true;
+            retb = true;
             break;
         }
         switch( CmdScanChar() ) {
@@ -190,13 +191,13 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             continue;
           default :
             BadCmdLine( ERR_INVALID_OPTION );
-            retn = false;
+            retb = false;
             break;
         }
         break;
     }
     *a_kind = kind;
-    return( retn );
+    return( retb );
 }
 
 #endif
@@ -204,7 +205,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
 static bool scanFBX( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retn;                  // - return: 1 ==> ok, 0 ==> error
+    bool retb;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
     p = p;
@@ -224,11 +225,11 @@ static bool scanFBX( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = false;
         }
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
     }
-    return( retn );
+    return( retb );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );
@@ -239,7 +240,7 @@ static bool scanFBX( OPT_STRING **p )
 static bool scanFBI( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retn;                  // - return: 1 ==> ok, 0 ==> error
+    bool retb;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
     p = p;
@@ -259,11 +260,11 @@ static bool scanFBI( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = true;
         }
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
     }
-    return( retn );
+    return( retb );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );

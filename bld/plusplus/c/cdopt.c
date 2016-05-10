@@ -781,23 +781,23 @@ SYMBOL CDoptIterSymbol(         // GET SYMBOL FOR CURRENT ELEMENT
 bool CDoptIterExact(            // GET cdarg "exact" FOR CURRENT ELEMENT
     CDOPT_ITER* iter )          // - iteration data
 {
-    bool rc;                    // - return value: true ==> is eact
+    bool retb;                  // - return value: true ==> is eact
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - current element
 
     exp = VstkTop( &iter->stack );
-    rc = false;
+    retb = false;
     elem = exp->elem;
     if( NULL != elem ) {
         switch( elem->otype ) {
           case TOB_ARRAY :
           case TOB_MEMB :
           case TOB_ORIG :
-            rc = true;
+            retb = true;
             break;
         }
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -840,16 +840,16 @@ bool CDoptIterCannotDefine(     // CHECK FOR UNDEFINEABLE CTOR
 {
     CL_ITER* exp;               // - expansion information
     CL_ELEM* elem;              // - NULL (at component) or element
-    bool rc;                    // - true ==> issue "cannot define error"
+    bool retb;                  // - true ==> issue "cannot define error"
 
     exp = VstkTop( &iter->stack );
     elem = exp->elem;
     if( elem == NULL ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = elem->cannot_define;
+        retb = elem->cannot_define;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -857,17 +857,17 @@ bool CDoptInlinedMember(        // DETERMINE IF INLINED MEMBER
     CDOPT_ITER* iter )          // - iteration data
 {
     CL_ITER* exp;               // - expansion information
-    bool rc;                    // - true ==> inlined member
+    bool retb;                  // - true ==> inlined member
     SYMBOL sym;                 // - NULL or symbol for member
 
     exp = VstkTop( &iter->stack );
     sym = exp->elem->sym;
     if( sym == NULL ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = SymScope( sym ) != TypeScope( iter->info->orig_type );
+        retb = SymScope( sym ) != TypeScope( iter->info->orig_type );
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -997,18 +997,18 @@ static bool classCanBeDtorOpt(  // IS CLASS DTORABLE UNDER ANY CONDITIONS ?
 static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    bool rc;                    // - false ==> can never be optimized
+    bool retb;                  // - false ==> can never be optimized
     SYMBOL dtor;                // - the DTOR in question
 
     dtor = elem->cdtor;
     if( dtor == NULL ) {
-        rc = true;
+        retb = true;
     } else if( ! CompFlags.inline_functions ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = classCanBeDtorOpt( SymClassInfo( dtor ) );
+        retb = classCanBeDtorOpt( SymClassInfo( dtor ) );
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1054,19 +1054,19 @@ static SYMBOL dtorArraySym(     // GET ARRAY DTOR SYMBOL
 static bool dtorInclude(        // TEST IF DTOR NEEDS TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool rc;                    // - true ==> include anyway
+    bool retb;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( info->has_vft ) {
-        rc = true;
+        retb = true;
     } else if( info->elements == NULL ) {
-        rc = false;
+        retb = false;
     } else {
         elem->elim_intermed = true;
-        rc = true;
+        retb = true;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1139,28 +1139,28 @@ static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
 static bool defCtorOptSym(      // CAN DEF.CTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     SYMBOL ctor )               // - the CTOR in question
 {
-    bool rc;                    // - false ==> can never be optimized
+    bool retb;                  // - false ==> can never be optimized
 
     if( ctor == NULL ) {
-        rc = true;
+        retb = true;
     } else {
-        rc = classCanBeCtorOpt( SymClassInfo( ctor ) );
+        retb = classCanBeCtorOpt( SymClassInfo( ctor ) );
     }
-    return rc;
+    return( retb );
 }
 
 
 static bool defCtorOptimizable( // CAN DEF.CTOR TYPE BE OPTIMIZED UNDER ANY CONDITIONS?
     CL_ELEM* elem )             // - class element
 {
-    bool rc;                   // - true ==> might be optimizable
+    bool retb;                  // - true ==> might be optimizable
 
     if( TypeRequiresCtoring( elem->cltype ) ) {
-        rc = defCtorOptSym( elem->cdtor );
+        retb = defCtorOptSym( elem->cdtor );
     } else {
-        rc = false;
+        retb = false;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1245,20 +1245,20 @@ static bool defCtorMembPushable(// TEST IF MEMBER PUSHABLE FOR DEF.CTOR
 static bool defCtorInclude(     // TEST IF CTOR REQUIRED TO BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool rc;                    // - true ==> include anyway
+    bool retb;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( ( info->has_vft || info->has_vbt )
       &&( elem->otype == TOB_MEMB ) ) {
         elem->must_call = true;
-        rc = true;
+        retb = true;
     } else if( info->elements == NULL ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = true;
+        retb = true;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1331,16 +1331,16 @@ static bool defAssForType(      // CAN OP= TYPE BE OPTIMIZED AWAY FOR A CLASS
 static bool defAssOptimizable(  // CAN OP= BE OPTIMIZED AWAY AT ALL
     CL_ELEM* elem )             // - class element
 {
-    bool rc;                    // - false ==> cannot be optimized
+    bool retb;                  // - false ==> cannot be optimized
     SYMBOL assop;               // - the op= in question
 
     assop = elem->cdtor;
     if( assop == NULL ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = defAssForType( SymClassInfo( assop ) );
+        retb = defAssForType( SymClassInfo( assop ) );
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1379,18 +1379,18 @@ static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
 static bool defAssInclude(      // TEST IF OP= MUST BE INCLUDED
     CL_ELEM* elem )             // - the element
 {
-    bool rc;                    // - true ==> include anyway
+    bool retb;                  // - true ==> include anyway
     CD_DESCR* info;             // - class infomation
 
     info = elem->descr;
     if( info == NULL ) {
-        rc = true;
+        retb = true;
     } else if( info->elements == NULL ) {
-        rc = false;
+        retb = false;
     } else {
-        rc = true;
+        retb = true;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1788,23 +1788,23 @@ bool TypeHasDtorableObjects(    // TEST IF TYPE HAS DTORABLE SUB-OBJECTS
 {
     CD_DESCR* dtor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    bool rc;                    // - return: true ==> really dtor it
+    bool retb;                  // - return: true ==> really dtor it
 
     dtor_info = CDoptDtorBuild( type );
     if( CDoptErrorOccurred( dtor_info ) ) {
-        rc = false;
+        retb = false;
     } else {
         TITER comp_beg;
         iter = CDoptIterBeg( dtor_info );
         comp_beg = CDoptIterNextComp( iter );
         CDoptIterEnd( iter );
         if( TITER_NONE == comp_beg ) {
-            rc = false;
+            retb = false;
         } else {
-            rc = true;
+            retb = true;
         }
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1813,11 +1813,11 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
     bool is_exact )             // - true ==> exact type is known
 {
     SYMBOL dtor;                // - destructor to be used
-    bool rc;                    // - return: true ==> really dtor it
+    bool retb;                  // - return: true ==> really dtor it
     TYPE base_type;             // - base type
 
     if( type == NULL ) {
-        rc = false;
+        retb = false;
     } else {
         base_type = ArrayType( type );
         if( base_type != NULL ) {
@@ -1825,21 +1825,21 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
         }
         type = StructType( type );
         if( type == NULL ) {
-            rc = false;
+            retb = false;
         } else if( TypeRequiresDtoring( type ) ) {
             dtor = dtorLocate( type );
             if( ! is_exact && SymIsVirtual( dtor ) ) {
-                rc = true;
+                retb = true;
             } else if( classCanBeDtorOpt( TypeClassInfo( type ) ) ) {
-                rc = TypeHasDtorableObjects( type );
+                retb = TypeHasDtorableObjects( type );
             } else {
-                rc = true;
+                retb = true;
             }
         } else {
-            rc = false;
+            retb = false;
         }
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1862,33 +1862,33 @@ bool TypeReallyDefCtorable(     // TEST IF TYPE REALLY NEEDS DEFAULT CTOR'ING
 {
     CD_DESCR* ctor_info;        // - DTOR information
     CDOPT_ITER* iter;           // - and an iterator for it
-    bool rc;                    // - return: true ==> really dtor it
+    bool retb;                  // - return: true ==> really dtor it
 
     if( TypeRequiresCtoring( type ) ) {
         if( classCanBeCtorOpt( TypeClassInfo( type ) ) ) {
             ctor_info = CDoptDefCtorBuild( type );
             if( ctor_info->has_vbt || ctor_info->has_vft ) {
-                rc = true;
+                retb = true;
             } else if( CDoptErrorOccurred( ctor_info ) ) {
-                rc = false;
+                retb = false;
             } else {
                 TITER comp_beg;
                 iter = CDoptIterBeg( ctor_info );
                 comp_beg = CDoptIterNextComp( iter );
                 CDoptIterEnd( iter );
                 if( TITER_NONE == comp_beg ) {
-                    rc = false;
+                    retb = false;
                 } else {
-                    rc = true;
+                    retb = true;
                 }
             }
         } else {
-            rc = true;
+            retb = true;
         }
     } else {
-        rc = false;
+        retb = false;
     }
-    return rc;
+    return( retb );
 }
 
 

@@ -811,15 +811,15 @@ bool CErrOccurred(
 static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
     int level )                 // - level to be validated
 {
-    bool retn;                  // - return: true ==> good level
+    bool retb;                  // - return: true ==> good level
 
     if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        retn = false;
+        retb = false;
     } else {
-        retn = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 

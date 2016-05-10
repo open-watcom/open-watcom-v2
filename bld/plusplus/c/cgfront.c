@@ -791,15 +791,15 @@ void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
 bool CgFrontRetnOptVar(         // START BRACKETTING FOR VAR. (RETURN OPT>)
     SYMBOL var )                // - the symbol
 {
-    bool retn;                  // - return: true ==> bracketting started
+    bool retb;                  // - return: true ==> bracketting started
 
     if( FnRetnOptimizable( var ) ) {
         CgFrontCodePtr( IC_RETNOPT_VAR, var );
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 

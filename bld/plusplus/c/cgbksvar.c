@@ -114,18 +114,17 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
     SE* state_table )           // - state table
 {
     SE* last;                   // - last state entry in table
-    bool retn;                  // - true ==> same entry
+    bool retb;                  // - true ==> same entry
 
+    retb = false;
     last = state_table;
-    if( last == NULL ) {
-        retn = false;
-    } else {
+    if( last != NULL ) {
         if( last->base.se_type == DTC_CTOR_TEST ) {
             last = last->base.prev;
         }
         if( last->base.se_type == se->base.se_type ) {
             switch( se->base.se_type ) {
-              case DTC_SET_SV :
+            case DTC_SET_SV :
                 last->set_sv.se = se->set_sv.se;
 // check for SET_SV to previous
 #ifndef NDEBUG
@@ -134,26 +133,21 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
                     DbgDumpStateEntry( last );
                 }
 #endif
-                retn = true;
+                retb = true;
                 break;
-              case DTC_TEST_FLAG :
+            case DTC_TEST_FLAG :
                 if(  last->test_flag.index    == se->test_flag.index
                   && last->test_flag.se_true  == se->test_flag.se_true
                   && last->test_flag.se_false == se->test_flag.se_false ) {
-                    retn = true;
-                } else {
-                    retn = false;
+                    retb = true;
                 }
                 break;
-              default :
-                retn = false;
+            default :
                 break;
             }
-        } else {
-            retn = false;
         }
     }
-    return retn;
+    return( retb );
 }
 
 

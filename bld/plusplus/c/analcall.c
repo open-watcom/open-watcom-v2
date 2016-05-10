@@ -183,7 +183,7 @@ bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
     PTREE *a_expr,              // - addr( argument value )
     TYPE proto )                // - prototype type
 {
-    bool rc;                  // - return: true ==> conversion ok
+    bool retb;                  // - return: true ==> conversion ok
 
     if( NULL != ArrayType( proto ) ) {
         proto = PointerTypeForArray( proto );
@@ -192,8 +192,8 @@ bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
         proto = TypedefModifierRemoveOnly( proto );
     }
     *a_expr = CastImplicit( *a_expr, proto, CNV_FUNC_ARG, &diagArgConv );
-    rc = (*a_expr)->op != PT_ERROR;
-    return rc;
+    retb = (*a_expr)->op != PT_ERROR;
+    return( retb );
 }
 
 
@@ -222,16 +222,16 @@ static bool arg_convert(        // CONVERT AN ARGUMENT
     PTREE arg,                  // - argument node
     TYPE proto )                // - prototype type
 {
-    bool rc;                  // - return: true ==> ok
+    bool retb;                  // - return: true ==> ok
 
     if( NodeConvertArgument( &arg->u.subtree[1], proto ) ) {
         arg_fillout( arg );
-        rc = true;
+        retb = true;
     } else {
         PTreeErrorNode( arg );
-        rc = false;
+        retb = false;
     }
-    return( rc );
+    return( retb );
 }
 
 
@@ -274,7 +274,7 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
 static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
     PTREE arg )                 // - argument
 {
-    bool rc;                    // - return: true ==> ok
+    bool retb;                  // - return: true ==> ok
     PTREE right;                // - argument
     PTREE afun;                 // - &[ function ]
     TYPE type;                  // - node type
@@ -283,7 +283,7 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
       case ADDR_FN_MANY :
       case ADDR_FN_MANY_USED :
         PTreeErrorExpr( arg->u.subtree[1], ERR_ELLIPSE_ADDR_OVERLOAD );
-        rc = false;
+        retb = false;
         break;
       default :
         right = NodeRvalue( arg->u.subtree[1] );
@@ -299,24 +299,24 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
             type = TypeUnArithResult( type );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
-            rc = true;
+            retb = true;
             break;
           case TYP_FLOAT :
             type = GetBasicType( TYP_DOUBLE );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
-            rc = true;
+            retb = true;
             break;
           case TYP_ARRAY :
             type = PointerTypeForArray( right->type );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
-            rc = true;
+            retb = true;
             break;
           case TYP_MEMBER_POINTER :
             ConvertMembPtrConst( &arg->u.subtree[1] );
             arg_fillout( arg );
-            rc = true;
+            retb = true;
             break;
           case TYP_POINTER :
             if( NULL == FunctionDeclarationType( type->of ) ) {
@@ -340,27 +340,27 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
                     arg->u.subtree[1] = cnv;
                     DbgVerify( PT_ERROR != cnv->op, "convertEllipsisArg -- failed ptr.cnv" );
                     arg_fillout( arg );
-                    rc = true;
+                    retb = true;
                 } else {
                     arg_fillout( arg );
-                    rc = true;
+                    retb = true;
                 }
             } else {
                 arg_fillout( arg );
-                rc = true;
+                retb = true;
             }
             break;
           case TYP_CLASS :
-            rc = passStructOnStack( arg, WARN_ELLIPSIS_CLASS_ARG );
+            retb = passStructOnStack( arg, WARN_ELLIPSIS_CLASS_ARG );
             break;
           default :
             arg_fillout( arg );
-            rc = true;
+            retb = true;
             break;
         }
         break;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -577,7 +577,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     SEARCH_RESULT *result )     // - search result for routine
 {
     SYMBOL sym;                 // - symbol for call
-    bool rc;                    // - return: true ==> adjusted for virtual
+    bool retb;                  // - return: true ==> adjusted for virtual
     TYPE this_type;             // - target type for "this"
     PTREE expr;                 // - transformed expression
     bool exact_call;            // - true ==> this node is exact
@@ -606,12 +606,12 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
                                      , sym );
         expr->type = MakePointerTo( expr->type );
         *routine = NodeReplace( *routine, expr );
-        rc = true;
+        retb = true;
     } else {
         NodeFreeSearchResult( *routine );
-        rc = false;
+        retb = false;
     }
-    return( rc );
+    return( retb );
 }
 
 

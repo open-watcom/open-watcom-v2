@@ -145,7 +145,7 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
     const char * filename,      // - file name
     bool is_lib )               // - true ==> is <file>
 {
-    bool        retn;           // - return: true ==> opened ok
+    bool        retb;           // - return: true ==> opened ok
     int         save;           // - saved pre-proc status
 
     // See if there's an alias for this file name
@@ -153,7 +153,7 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
 
     if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
         PpStartFile();
-        retn = true;
+        retb = true;
     } else {
         save = CompFlags.cpp_output;
         if( CompFlags.cpp_output ) {
@@ -176,9 +176,9 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
             CErr2p( ERR_CANT_OPEN_FILE, filename );
         }
         CompFlags.cpp_output = save;
-        retn = CompFlags.ignore_fnf;
+        retb = CompFlags.ignore_fnf;
     }
-    return retn;
+    return( retb );
 }
 
 

@@ -461,7 +461,7 @@ static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
     char *what )                // - id
 {
     char *p = Buffer;
-    bool rc;
+    bool retb;
 
     if( *p == '_' ) {
         ++p;
@@ -469,22 +469,22 @@ static bool PragIdRecog(        // RECOGNIZE PRAGMA ID
             ++p;
         }
     }
-    rc = ( stricmp( p, what ) == 0 );
-    if( rc ) {
+    retb = ( stricmp( p, what ) == 0 );
+    if( retb ) {
         NextToken();
     }
-    return( rc );
+    return( retb );
 }
 
 
 static bool startPragRecog( char *id )
 {
-    bool rc;
+    bool retb;
 
     PPCTL_ENABLE_MACROS();
-    rc = PragIdRecog( id );
+    retb = PragIdRecog( id );
     PPCTL_DISABLE_MACROS();
-    return( rc );
+    return( retb );
 }
 
 
@@ -494,7 +494,7 @@ bool PragRecog(                 // RECOGNIZE PRAGMA ID
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         return( PragIdRecog( what ) );
     }
-    return( 0 );
+    return( false );
 }
 
 

@@ -54,27 +54,27 @@ static bool ctorDefineDefault(  // DEFINE A DEFAULT CTOR
     TYPE cl_type,               // - class type
     arg_list *alist )           // - arguments list
 {
-    bool rc;                    // - true ==> a default CTOR was defined
+    bool retb;                  // - true ==> a default CTOR was defined
     SYMBOL ctor;                // - CTOR symbol
 
     if( ! TypeDefined( cl_type ) ) {
-        rc = false;
+        retb = false;
     } else if( alist->num_args == 0 ) {
         if( CNV_OK == ClassDefaultCtorDefine( cl_type, &ctor ) ) {
-            rc = true;
+            retb = true;
         } else {
-            rc = false;
+            retb = false;
         }
     } else if( alist->num_args == 1 ) {
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            rc = false;
+            retb = false;
         } else {
-            rc = true;
+            retb = true;
         }
     } else {
-        rc = false;
+        retb = false;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -82,23 +82,23 @@ static bool ctorDefineDefaultCnv(   // DEFINE A DEFAULT CTOR FOR CONVERSION
     TYPE cl_type,                   // - class type
     arg_list *alist )               // - arguments list
 {
-    bool rc;                      // - true ==> a default CTOR was defined
+    bool retb;                      // - true ==> a default CTOR was defined
 
     if( ! TypeDefined( cl_type ) ) {
-        rc = false;
+        retb = false;
     } else if( alist->num_args == 0 ) {
-        rc = ctorDefineDefault( cl_type, alist );
+        retb = ctorDefineDefault( cl_type, alist );
     } else if( alist->num_args == 1 ) {
         cl_type = ClassTypeForType( cl_type );
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            rc = false;
+            retb = false;
         } else {
-            rc = true;
+            retb = true;
         }
     } else {
-        rc = false;
+        retb = false;
     }
-    return rc;
+    return( retb );
 }
 
 

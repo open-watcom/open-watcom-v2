@@ -96,7 +96,7 @@ static unsigned parm_no;            // parm # being defined
     bool IbpEmpty(                  // DEBUG -- verify empty
         void )
     {
-        return ibrps == NULL;
+        return( ibrps == NULL );
     }
 
     void IbpDump( void )            // DEBUG -- dump all entries
@@ -225,7 +225,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     target_offset_t *offset )   // - addr[ offset from bound reference ]
 {
     IBRP *ibrp;                 // - current inline bound reference parm.
-    bool retn;                  // - true ==> bound was located
+    bool retb;                  // - true ==> bound was located
     FN_CTL* fctl;               // - current file control
 
     fctl = FnCtlTop();
@@ -237,7 +237,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     *trans = sym;
     *bound = NULL;
     *offset = 0;
-    retn = false;
+    retb = false;
     RingIterBeg( ibrps, ibrp ) {
         if( ( sym == ibrp->u.parm )
           &&( fctl->handle == ibrp->handle ) ) {
@@ -254,11 +254,11 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
                 DumpSymbol( ibrp->u.parm );
             }
 #endif
-            retn = true;
+            retb = true;
             break;
         }
     } RingIterEnd( ibrp )
-    return retn;
+    return( retb );
 }
 
 
@@ -487,38 +487,35 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn)// - addr[ return adjustment ]
 {
-    bool retn;                  // - true ==> can directly call *a_vfun
+    bool retb;                  // - true ==> can directly call *a_vfun
     SYMBOL exact_vfun;          // - exact vfun called
 
     exact_vfun = ScopeFindExactVfun( vfun
                                    , scopeForSymType( sym )
                                    , a_adj_this
                                    , a_adj_retn );
+    retb = false;
     if( NULL == exact_vfun ) {
-        retn = false;
     } else if( 0 != *a_adj_retn ) {
-        retn = false;
     } else if( CgBackFuncInlined( exact_vfun ) ) {
         CGFILE* cgfile;
+
         cgfile = CgioLocateAnyFile( exact_vfun );
         DbgVerify( cgfile != NULL, "locatedVfun -- no CGFILE" );
         if( cgfile->u.s.calls_inline ) {
-            retn = false;
         } else if( cgfile->cond_flags != 0 ) {
-            retn = false;
         } else {
             if( cgfile->u.s.state_table && FstabHasStateTable() ) {
-                retn = false;
             } else {
                 *a_vfun = exact_vfun;
-                retn = true;
+                retb = true;
             }
         }
     } else {
         *a_vfun = exact_vfun;
-        retn = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 

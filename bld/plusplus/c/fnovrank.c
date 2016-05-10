@@ -107,10 +107,10 @@ void FnovMemFlagsRank( type_flag src, type_flag tgt,
 static bool functionsAreIdentical( TYPE fn_type1, TYPE fn_type2 )
 /***************************************************************/
 {
-    bool retn;
+    bool retb;
 
-    retn = TypesSameFnov( fn_type1, fn_type2 );
-    return( retn );
+    retb = TypesSameFnov( fn_type1, fn_type2 );
+    return( retb );
 }
 #else
 
@@ -310,7 +310,7 @@ static bool exactRank( FNOV_CONV *conv )
 /**************************************/
 // return true if these are identical, otherwise false
 {
-    bool     retn;
+    bool     retb;
 
     // check for non-ranking reference or flag change (for distinctness)
     if( ( conv->wsrc.reference == conv->wtgt.reference )
@@ -318,13 +318,13 @@ static bool exactRank( FNOV_CONV *conv )
       &&( conv->wsrc.refflag   == conv->wtgt.refflag )
       &&( TypesSameFnov( conv->wsrc.basic, conv->wtgt.basic ) ) ) {
         conv->rank->rank = OV_RANK_EXACT;
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
 
     }
 
-    return( retn );
+    return( retb );
 }
 
 static bool sameRankPtrToPtr( FNOV_CONV *conv )
@@ -480,9 +480,9 @@ static bool fnovScopeDerived( TYPE src, type_flag srcflags, TYPE tgt,
 {
     SCOPE       src_scope;
     SCOPE       tgt_scope;
-    bool        retn;
+    bool        retb;
 
-    retn = false;
+    retb = false;
     src_scope = TypeScope( src );
     tgt_scope = TypeScope( tgt );
     if( src_scope != NULL && tgt_scope != NULL ) {
@@ -493,11 +493,11 @@ static bool fnovScopeDerived( TYPE src, type_flag srcflags, TYPE tgt,
                 // should this check mem flags too?
                 rank->rank = OV_RANK_STD_CONV_DERIV;
                 rank->u.no_ud.standard++;
-                retn = true;
+                retb = true;
             }
         }
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -505,12 +505,12 @@ static bool rankPtrToVoid( FNOV_CONV* conv )
 /******************************************/
 {
     type_id     src_basic_id;
-    bool        retn;
+    bool        retb;
 
     src_basic_id = conv->wsrc.basic->id;
     if( conv->wtgt.final == NULL
      || conv->wtgt.final->id != TYP_VOID ) {
-        retn = false;
+        retb = false;
     } else if( src_basic_id == TYP_POINTER ) {
         // check for tgt special void * that can't come from void *
         if( conv->wtgt.final->flag & TF1_STDOP_ARITH ) {
@@ -523,18 +523,18 @@ static bool rankPtrToVoid( FNOV_CONV* conv )
                 conv->rank->u.no_ud.standard++;
             }
         }
-        retn = true;
+        retb = true;
     } else if( src_basic_id == TYP_FUNCTION ) {
         conv->rank->rank = OV_RANK_STD_CONV_VOID;
         conv->rank->u.no_ud.standard++;
-        retn = true;
+        retb = true;
     } else if( src_basic_id != TYP_CLASS ) {
         conv->rank->rank = OV_RANK_NO_MATCH;
-        retn = true;
+        retb = true;
     } else {
-        retn = false;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -544,7 +544,7 @@ static bool toPtrRank( FNOV_CONV *conv )
 {
     TYPE        src_basic;
     TYPE        tgt_basic, tgt_final;
-    bool        retn;
+    bool        retb;
 
     tgt_basic = conv->wtgt.basic;
     if( tgt_basic->id == TYP_POINTER ) {
@@ -553,10 +553,10 @@ static bool toPtrRank( FNOV_CONV *conv )
         // check for NULL to pointer
         if( ( src_basic->id != TYP_POINTER )
           && fromConstZero( conv ) ) {
-            retn = true;
+            retb = true;
         // check for src pointer to void *
         } else if( rankPtrToVoid( conv ) ) {
-            retn = true;
+            retb = true;
         // check for src FUNCTION to tgt POINTER to FUNCTION
         } else if( src_basic->id == TYP_FUNCTION ) {
             if( tgt_final->id != TYP_FUNCTION ) {
@@ -564,17 +564,17 @@ static bool toPtrRank( FNOV_CONV *conv )
                 // and whether a pointer size conversion is needed
                 conv->rank->rank = OV_RANK_NO_MATCH;
             }
-            retn = true;
+            retb = true;
         } else if( src_basic->id != TYP_CLASS ) {
             conv->rank->rank = OV_RANK_NO_MATCH;
-            retn = true;
+            retb = true;
         } else {
-            retn = false;
+            retb = false;
         }
     } else {
-        retn = false;
+        retb = false;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -583,7 +583,7 @@ static bool toMbrPtrFromMbrPtrRank( FNOV_CONV *conv )
 // return true if conversion found or no conversion possible, else false
 {
     TYPE        src_basic, tgt_basic, magic;
-    bool        retn = false;
+    bool        retb = false;
 
     tgt_basic = conv->wtgt.basic;
     src_basic = conv->wsrc.basic;
@@ -593,10 +593,10 @@ static bool toMbrPtrFromMbrPtrRank( FNOV_CONV *conv )
     if( ( src_basic == magic ) || ( tgt_basic == magic ) ) {
         conv->rank->rank = OV_RANK_SAME;
         conv->rank->u.no_ud.not_exact = 1;
-        retn = true;
+        retb = true;
     // check for NULL to member pointer
     } else if( fromConstZero( conv ) ) {
-        retn = true;
+        retb = true;
     // check for src MEMBER FUNCTION to tgt POINTER to MEMBER FUNCTION
     } else {
         if( TypesSameFnov( conv->wsrc.final, conv->wtgt.final ) ) {
@@ -612,9 +612,9 @@ static bool toMbrPtrFromMbrPtrRank( FNOV_CONV *conv )
         } else {
             conv->rank->rank = OV_RANK_NO_MATCH;
         }
-        retn = true;
+        retb = true;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -623,13 +623,13 @@ static bool toMbrPtrRank( FNOV_CONV *conv )
 // return true if conversion found or no conversion possible, else false
 {
     TYPE        src_basic, tgt_basic, tgt_final;
-    bool        retn = false;
+    bool        retb = false;
 
     tgt_basic = conv->wtgt.basic;
     if( tgt_basic->id == TYP_MEMBER_POINTER ) {
         src_basic = conv->wsrc.basic;
         if( fromConstZero( conv ) ) {
-            retn = true;
+            retb = true;
         // check for src MEMBER FUNCTION to tgt POINTER to MEMBER FUNCTION
         } else if( src_basic->id == TYP_FUNCTION ) {
             tgt_final = conv->wtgt.final;
@@ -643,17 +643,17 @@ static bool toMbrPtrRank( FNOV_CONV *conv )
                 // and whether a pointer size conversion is needed
                 conv->rank->rank = OV_RANK_NO_MATCH;
             }
-            retn = true;
+            retb = true;
         } else if( src_basic->id != TYP_CLASS ) {
             conv->rank->rank = OV_RANK_NO_MATCH;
-            retn = true;
+            retb = true;
         } else {
-            retn = false;
+            retb = false;
         }
     } else {
-        retn = false;
+        retb = false;
     }
-    return( retn );
+    return( retb );
 }
 
 static FNOV_COARSE_RANK fnovUdcLocate( FNOV_UDC_CONTROL control,
@@ -1076,7 +1076,7 @@ static void rankPtrToPtr(           // RANK: PTR --> PTR
     triv_fail |= trivialRankPtrToPtr( conv );
     if( ! triv_fail ) {
         // try to find simple conversion
-        bool retn = functionRank( conv );
+        bool retb = functionRank( conv );
         if( conv->rank->rank < OV_RANK_NO_MATCH ) {
             if( conv->wtgt.reference ) {
                 rankRefMemFlags( conv );
@@ -1088,7 +1088,8 @@ static void rankPtrToPtr(           // RANK: PTR --> PTR
                                 , conv->rank );
             }
         }
-        if( retn ) return;
+        if( retb )
+            return;
         if( ! fromConstZero( conv )
          && ! rankPtrToVoid( conv ) ) {
             // if the pointees are the same, okey dokey

@@ -969,19 +969,19 @@ static bool accessCopyCtor(     // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type,                  // - type for class
     SYMBOL *ctor )              // - addr[ copy ctor ]
 {
-    bool rc;                    // - true ==> access is ok
+    bool retb;                  // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
 
     type = ClassTypeForType( type );
     result = accessDefaultCopy( type, ctor );
     if( result == NULL ) {
         ctor = NULL;
-        rc = true;
+        retb = true;
     } else {
-        rc = ! ScopeCheckSymbol( result, *ctor );
+        retb = ! ScopeCheckSymbol( result, *ctor );
         ScopeFreeResult( result );
     }
-    return( rc );
+    return( retb );
 }
 
 
@@ -1204,15 +1204,15 @@ bool ClassAccessDefaultCopy(    // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type )                 // - type for class
 {
     SYMBOL ctor;                // - copy ctor (not used)
-    bool rc;                  // - true ==> access if OK
+    bool retb;                  // - true ==> access if OK
 
     type = ClassTypeForType( type );
     if( OMR_CLASS_VAL == ObjModelArgument( type ) ) {
-        rc = true;
+        retb = true;
     } else {
-        rc = accessCopyCtor( type, &ctor );
+        retb = accessCopyCtor( type, &ctor );
     }
-    return rc;
+    return( retb );
 }
 #endif
 
@@ -1397,20 +1397,20 @@ SEARCH_RESULT *DtorFindResult(  // FIND DTOR FOR A POSSIBLE VIRTUAL CALL
 bool ClassAccessDtor(           // CHECK ACCESS TO DTOR
     TYPE type )                 // - type for class
 {
-    bool rc;                    // - true ==> access is ok
+    bool retb;                  // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
     SYMBOL dtor;
 
     type = ArrayBaseType( type );
     result = DtorFindResult( type );
     if( result == NULL ) {
-        rc = true;
+        retb = true;
     } else {
         dtor = result->sym_name->name_syms;
-        rc = ! ScopeCheckSymbol( result, dtor );
+        retb = ! ScopeCheckSymbol( result, dtor );
         ScopeFreeResult( result );
     }
-    return( rc );
+    return( retb );
 }
 
 static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL

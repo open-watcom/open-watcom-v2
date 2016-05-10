@@ -367,7 +367,7 @@ DECL_SPEC *EnumReference( ENUM_DATA *edata )
                 }
             }
             if( result != NULL ) {
-                if( ScopeCheckSymbol( result, sym ) == false ) {
+                if( !ScopeCheckSymbol( result, sym ) ) {
                     /* no errors */
                     ref_type = type;
                 }

@@ -173,7 +173,7 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
     SCOPE base_scope,           // - scope for base class
     THROW_CNV_CTL *ctl )        // - control area
 {
-    bool retn;                  // - true ==> generate conversion
+    bool retb;                  // - true ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
     thr_scope = TypeScope( ctl->src_type );
@@ -182,15 +182,15 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
       case DERIVED_YES :
       case DERIVED_YES_BUT_VIRTUAL :
         ctl->offset = ThrowBaseOffset( thr_scope, base_scope );
-        retn = true;
+        retb = true;
         break;
       case DERIVED_YES_BUT_AMBIGUOUS :
       case DERIVED_YES_BUT_PRIVATE :
       case DERIVED_YES_BUT_PROTECTED :
-        retn = false;
+        retb = false;
         break;
     }
-    return retn;
+    return( retb );
 }
 
 

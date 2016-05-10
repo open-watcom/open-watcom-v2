@@ -229,17 +229,17 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
     bool string )               // - array of string not aggregate
 {
-    bool retn = false;          // - true if aggregate
+    bool retb = false;          // - true if aggregate
     CLASSINFO *info;            // - info part of class type
 
     type = TypedefModifierRemove( type );
     switch( type->id ) {
       case TYP_ARRAY :
         if( string && TypeIsCharString( type ) ) break;
-        retn = true;
+        retb = true;
         break;
       case TYP_BITFIELD :
-        retn = true;
+        retb = true;
         break;
       case TYP_CLASS :
         info = type->u.c.info;
@@ -250,10 +250,10 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
         if( info->last_vbase != 0 ) break;
         if( info->has_data == 0 ) break;
         if( info->has_ctor != 0 ) break;
-        retn = true;
+        retb = true;
         break;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -499,11 +499,11 @@ static target_size_t cgTypeTruncSize( // GET SIZE FOR TRUNCATION
 }
 
 
-unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
+CNV_RETN CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 {
-    unsigned retn;              // - CNV_OK or CNV_OK_TRUNC
+    CNV_RETN retn;              // - CNV_OK or CNV_OK_TRUNC
     type_flag src_flags;        // - flags for pointed source type
     type_flag tgt_flags;        // - flags for pointed target type
     TYPE umod;                  // - unmodified type for item

@@ -410,18 +410,18 @@ static bool changeRing(         // CHANGE RING FOR A CGFILE IN cg_file_ring
     CGFILE* element,            // - element
     CGFILE** a_old )            // - addr[ old ring header ]
 {
-    bool retn;                  // - true ==> changed the ring
+    bool retb;                  // - true ==> changed the ring
     CGFILE* prev;               // - preceding element
 
     prev = RingPred( *a_old, element );
     if( prev == NULL ) {
-        retn = false;
+        retb = false;
     } else {
         RingPruneWithPrev( a_old, element, prev );
         RingAppend( a_new, element );
-        retn = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 

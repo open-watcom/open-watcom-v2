@@ -659,7 +659,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
     TYPE ptr_tgt,               // - target pointer type
     PTRCNV* info )              // - pointer-conversion information
 {
-    bool rc;                  // - return: true ==> can convert trivially
+    bool retb;                  // - return: true ==> can convert trivially
     bool first_level;           // - true ==> at first level
     bool const_always;          // - true ==> const on all preceding levels
     TYPE orig_src;              // - original src type
@@ -685,7 +685,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
         if( NULL != orig_src && IntegralType( orig_src ) ) {
             info->reint_cast_ok = true;
         }
-        rc = false;
+        retb = false;
     } else {
         first_level = true;
         const_always = true;
@@ -703,14 +703,14 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 if( first_level ) {
                     info->cv_err_0 = true;          // - diagnose elsewhere
                 } else {
-                    rc = false;
+                    retb = false;
                     break;
                 }
             }
             if( first_level ) {
                 TYPE cl_src;        // class for source
                 TYPE cl_tgt;        // class for target
-                rc = true;
+                retb = true;
                 info->pted_src = ptr_src;
                 info->pted_tgt = ptr_tgt;
                 info->flags_src = flags_src;
@@ -718,7 +718,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 cl_src = StructType( ptr_src );
                 if( ptr_tgt->id == TYP_VOID ) {
                     info->to_void = true;
-//                  rc = (ptr_src == TYP_VOID);
+//                  retb = (ptr_src == TYP_VOID);
 //                  break;
                 } else if( NULL != cl_src ) {
                     cl_tgt = StructType( ptr_tgt );
@@ -726,11 +726,11 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                      && cl_tgt != cl_src ) {
                         if( TypeDerived( ptr_src, ptr_tgt ) ) {
                             info->to_base = true;
-                            rc = false;
+                            retb = false;
 //                          break;
                         } else if( TypeDerived( ptr_tgt, ptr_src ) ) {
                             info->to_derived = true;
-                            rc = false;
+                            retb = false;
 //                          break;
                         }
                     }
@@ -740,7 +740,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                         && ( CgMemorySize( ptr_src ) == CgMemorySize( ptr_tgt ) ) ) {
                     info->ptr_integral_ext = true;
                 }
-                if( ! rc ) {
+                if( !retb ) {
                     if( info->cv_err_0 ) {
                         info->reint_cast_ok = false;
                     }
@@ -751,7 +751,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
             if( cv_tgt != cv_src ) {                // test const'ed to here
                 if( ! const_always ) {
                     info->reint_cast_ok = false;
-                    rc = false;
+                    retb = false;
                     break;
                 }
             }
@@ -759,12 +759,12 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 const_always = false;
             }
             if( ptr_src == ptr_tgt ) {
-                rc = true;
+                retb = true;
                 break;
             }
             if( TYP_FUNCTION == ptr_src->id
              || TYP_FUNCTION == ptr_tgt->id ) {
-                rc = TypeCompareExclude( ptr_src
+                retb = TypeCompareExclude( ptr_src
                                          , ptr_tgt
                                          , TC1_FUN_LINKAGE |
                                            TC1_NOT_ENUM_CHAR );
@@ -777,15 +777,15 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                  && NULL != FunctionDeclarationType( ptr_tgt ) ) {
                     info->reint_cast_ok = false;
                 }
-                rc = false;
+                retb = false;
                 break;
             }
             if( NULL == ptr_tgt ) {
-                rc = false;
+                retb = false;
                 break;
             }
         }
     }
-    return rc;
+    return( retb );
 }
 #endif

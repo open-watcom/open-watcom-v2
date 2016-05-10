@@ -528,7 +528,7 @@ void CgSetType(                 // SET NORMAL TYPE FOR GENERATION
 void CgSetTypeExact(            // SET EXACT TYPE FOR GENERATION
     TYPE type )                 // - the type
 ;
-unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
+CNV_RETN CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 ;

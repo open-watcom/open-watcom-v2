@@ -118,16 +118,16 @@ bool CondLabelEmit              // EMIT CONDITIONAL LABEL IF REQ'D
     , SE* se )                  // - state entry at current position
 {
     COND_LABEL* lab;            // - conditional label for current state
-    bool retn;                  // - return: true ==> label emitted
+    bool retb;                  // - return: true ==> label emitted
 
     lab = condLabelFind( a_ring, se );
     if( lab == NULL ) {
-        retn = false;
+        retb = false;
     } else {
         cgCondLabel( a_ring, lab );
-        retn = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 

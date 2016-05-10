@@ -168,19 +168,19 @@ typedef enum
 static bool okSoFar             // TEST IF STILL OK
     ( CONVCTL* ctl )            // - conversion control
 {
-    bool    rc;                 // - return: true ==> is ok so far
+    bool    retb;               // - return: true ==> is ok so far
     PTREE   expr;               // - current expression
 
     expr = ctl->expr;
-    rc = false;
+    retb = false;
     if( PT_ERROR != expr->op ) {
         if( PT_ERROR == expr->u.subtree[1]->op ) {
             PTreeErrorNode( expr );
         } else {
-            rc = true;
+            retb = true;
         }
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -559,11 +559,11 @@ static bool warnTruncTypes      // WARN IF TRUNCATION
     , TYPE src                  // - source type
     , TYPE tgt )                // - target type
 {
-    bool rc;                  // - return: true ==> no truncation error
+    bool retb;                  // - return: true ==> no truncation error
     MSG_NUM msg_no;             // - message #
 
     if( src == tgt ) {
-        rc = true;
+        retb = true;
     } else {
         CNV_RETN retn;
         if( ctl->clscls_implicit ) {
@@ -573,9 +573,9 @@ static bool warnTruncTypes      // WARN IF TRUNCATION
             retn = NodeCheckPtrCastTrunc( src, tgt );
             msg_no = WARN_POINTER_TRUNCATION_CAST;
         }
-        rc = ( retn == CNV_OK ) || !ConvCtlWarning( ctl, msg_no );
+        retb = ( retn == CNV_OK ) || !ConvCtlWarning( ctl, msg_no );
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -734,9 +734,9 @@ static bool castCtor            // APPLY CTOR
 {
     PTREE inp_node;             // - input node
     PTREE node;                 // - node under construction
-    bool rc;                    // - return: true ==> conversion worked
+    bool retb;                  // - return: true ==> conversion worked
 
-    rc = false;
+    retb = false;
     if( ctl->src.reference || getLvalue( ctl, false ) ) {
         inp_node = NodeArg( ctl->expr->u.subtree[1] );
         ctl->expr->u.subtree[1] = inp_node;
@@ -812,10 +812,10 @@ static bool castCtor            // APPLY CTOR
                                    , opt );
             }
             ctl->expr->u.subtree[1] = node;
-            rc = okSoFar( ctl );
+            retb = okSoFar( ctl );
         }
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -1284,17 +1284,17 @@ static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
 static bool ptrToIntTruncs      // TEST IF TRUNCATION ON PTR --> INT
     ( CONVCTL* ctl )            // - conversion control
 {
-    bool rc;
+    bool retb;
 
-    rc = false;
+    retb = false;
     if( CNV_OK != NodeCheckPtrCastTrunc( ctl->tgt.unmod, ctl->src.orig )
      && ( CompFlags.extensions_enabled
        || CgMemorySize( GetBasicType( TYP_SINT ) ) >
           CgMemorySize( ctl->src.unmod ) ) ) {
         ctl->size_ptr_to_int = true;
-        rc = true;
+        retb = true;
     }
-    return rc;
+    return( retb );
 }
 
 
@@ -3162,7 +3162,7 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
     ( PTREE* a_expr             // - addr[ expression ]
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
-    bool rc;                    // - return: true ==> converted or diagnosed
+    bool retb;                  // - return: true ==> converted or diagnosed
     PTREE expr;                 // - expression
     CAST_RESULT result_left;    // - result of cast to left
     CAST_RESULT result_right;   // - result of cast to right
@@ -3178,7 +3178,7 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
                              , NodeType( expr->u.subtree[1] )
                              , diagnosis
                              , &ctl_right );
-    rc = true;
+    retb = true;
     if( result_right == CAST_ERR_NODE || result_left == CAST_ERR_NODE ) {
         stripOffCastOrig( &ctl_left );
         stripOffCastOrig( &ctl_right );
@@ -3209,11 +3209,11 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
         } else {
             stripOffCastOrig( &ctl_left );
             stripOffCastOrig( &ctl_right );
-            rc = false;
+            retb = false;
         }
     }
     *a_expr = expr;
     DbgVerify( --infinite_ctr >= 0, "Bad Implicit Conversion Unwind" );
-    return rc;
+    return( retb );
 
 }

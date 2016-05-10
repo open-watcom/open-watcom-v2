@@ -334,21 +334,21 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
 static bool dtmTabular(         // DETERMINE IF METHOD IS TABULAR
     DT_METHOD method )          // - the method
 {
-    bool retn;                  // - true ==> is tabular
+    bool retb;                  // - true ==> is tabular
 
     switch( method ) {
-      DbgDefault( "dtmTabular -- bad method" );
-      case DTM_DIRECT :
-        retn = false;
+    DbgDefault( "dtmTabular -- bad method" );
+    case DTM_DIRECT :
+        retb = false;
         break;
-      case DTM_DIRECT_SMALL :
-      case DTM_TABLE_SMALL :
-      case DTM_DIRECT_TABLE :
-      case DTM_TABLE :
-        retn = true;
+    case DTM_DIRECT_SMALL :
+    case DTM_TABLE_SMALL :
+    case DTM_DIRECT_TABLE :
+    case DTM_TABLE :
+        retb = true;
         break;
     }
-    return retn;
+    return( retb );
 }
 
 
