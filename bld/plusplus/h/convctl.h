@@ -185,7 +185,7 @@ bool ConvCtlWarning             // ISSUE WARNING
 PTREE DynamicCast               // DYNAMIC CAST CODE
     ( CONVCTL* ctl )            // - conversion information
 ;
-unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
+CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     TYPE typ_tgt,               // - target type
     TYPE typ_src,               // - source type
     PC_PTR pcp_tgt,             // - target classification

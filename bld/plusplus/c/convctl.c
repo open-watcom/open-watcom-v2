@@ -81,21 +81,21 @@ bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
     , MSG_NUM msg_no )          // - message number
 {
-    bool retn;                  // - return: true ==> ERROR was issued
+    bool rc;                    // - return: true ==> ERROR was issued
     msg_status_t status;        // - message status
 
     status = PTreeErrorExpr( ctl->expr, msg_no );
     if( MS_PRINTED & status ) {
         if( MS_WARNING & status ) {
             ConvCtlDiagnoseTypes( ctl );
-            retn = false;
+            rc = false;
         } else {
-            retn = true;
+            rc = true;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -115,7 +115,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     , TYPE type )               // - type
 {
     type_id id;                 // - id for unmodified type
-    bool retn;                  // - true ==> is bit_field, array, function
+    bool rc;                    // - true ==> is bit_field, array, function
     TYPE cl_type;               // - class type
 
     ctype->orig = type;
@@ -129,14 +129,14 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     ctype->class_operand = false;
     ctype->pc_ptr = PC_PTR_NOT;
     id = ctype->unmod->id;
-    retn = false;
+    rc = false;
     cl_type = NULL;
     if( id == TYP_BITFIELD ) {
         ctype->bit_field = true;
-        retn = true;
+        rc = true;
     } else if( id == TYP_ARRAY ) {
         ctype->array = true;
-        retn = true;
+        rc = true;
     } else {
         ctype->kind = RkdForTypeId( id );
         switch( ctype->kind ) {
@@ -148,7 +148,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
             }
             break;
           case RKD_FUNCTION :
-            retn = true;
+            rc = true;
             break;
           case RKD_CLASS :
             cl_type = ctype->unmod;
@@ -169,7 +169,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
             ctype->class_operand = true;
         }
     }
-    return retn;
+    return rc;
 }
 
 
@@ -251,9 +251,7 @@ static void adjustFnMembPtr     // SET MEMB-PTR TYPE
 //      SymMarkRefed( sym );
         argument = MakeMemberPointerTo( SymClass( sym ), sym->sym_type );
 //      ctl->expr->u.subtree[1]->type = argument;
-        retn = MembPtrConvert( &ctl->expr->u.subtree[1]
-                             , argument
-                             , CNV_EXPR );
+        retn = MembPtrConvert( &ctl->expr->u.subtree[1], argument, CNV_EXPR );
         DbgVerify( retn == CNV_OK, "failed memb ptr adjustment" );
     } else {
         errForFunc( func, ERR_MEMB_PTR_ADDR_OF, ctl );
@@ -593,7 +591,7 @@ static void moveAhead           // MOVES TYPE_FLAGS AHEAD ONE LEVEL
 bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     ( CONVCTL* info )           // - pointer-conversion information
 {
-    bool retn;                  // - return: true ==> can convert trivially
+    bool rc;                    // - return: true ==> can convert trivially
     bool first_level;           // - true ==> at first level
     bool const_always;          // - true ==> const on all preceding levels
     bool cv_ok;                 // - true ==> no CV mismatch
@@ -704,7 +702,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                     got_array = true;
                     continue;
                 } else {
-                    retn = false;
+                    rc = false;
                     break;
                 }
             }
@@ -732,31 +730,31 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             if( src.ext == tgt.ext ) {
                 if( TYP_FUNCTION != src.id
                  || ( (TF1_MEM_MODEL & src.object) == (TF1_MEM_MODEL & tgt.object) ) ) {
-                    retn = true;
+                    rc = true;
                     break;
                 }
             }
             info->reint_cast_ok = cv_ok;
-            retn = false;
+            rc = false;
             break;
         } else if( src.id != tgt.id ) {
             if( info->to_void || info->from_void ) {
-                retn = true;
+                rc = true;
                 break;
             }
             if( TYP_FUNCTION != src.id && TYP_FUNCTION != tgt.id ) {
                 info->reint_cast_ok = cv_ok;
             }
-            retn = false;
+            rc = false;
             break;
         } else if( src.ext != tgt.ext ) {
             info->reint_cast_ok = cv_ok;
-            retn = false;
+            rc = false;
             break;
         }
         if( TYP_FUNCTION == src.id || TYP_ENUM == src.id ) {
             info->reint_cast_ok = cv_ok;
-            retn = ( src.ext == tgt.ext )
+            rc = ( src.ext == tgt.ext )
                 && TypeCompareExclude( src.type
                                      , tgt.type
                                      , TC1_FUN_LINKAGE | TC1_NOT_ENUM_CHAR );
@@ -765,15 +763,15 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             if( src.type->u.mp.host != tgt.type->u.mp.host ) {
                 info->reint_cast_ok = cv_ok;
                 info->static_cast_ok = cv_ok;
-                retn = false;
+                rc = false;
                 break;
             }
         } else if( TYP_CLASS == src.id ) {
             info->reint_cast_ok = cv_ok;
             if( info->to_base || info->to_derived ) {
-                retn = true;
+                rc = true;
             } else {
-                retn = false;
+                rc = false;
             }
             break;
         } else if( TYP_ARRAY == src.id ) {
@@ -781,11 +779,11 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 got_array = true;
                 continue;
             } else {
-                retn = false;
+                rc = false;
                 break;
             }
         } else if( TYP_POINTER != src.id ) {
-            retn = true;
+            rc = true;
             break;
         }
         if( got_array ) {
@@ -794,14 +792,14 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             const_always = false;
         }
     }
-    if( retn ) {
+    if( rc ) {
         if( cv_ok ) {
             info->implicit_cast_ok = true;
             info->static_cast_ok = true;
             info->const_cast_ok = true;
             info->reint_cast_ok = true;
         } else {
-            retn = false;
+            rc = false;
             info->const_cast_ok = true;
             info->cv_mismatch = true;
         }
@@ -838,10 +836,10 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
         }
     }
     info->explicit_cast_ok = true;
-    if( retn && !info->to_derived && !info->to_base ) {
+    if( rc && !info->to_derived && !info->to_base ) {
         info->converts = true;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -1068,7 +1066,7 @@ static uint_8 pcPtrChk[] =          // used to check for pc ptr errors
 };
 
 
-unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
+CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     TYPE typ_tgt,               // - target type
     TYPE typ_src,               // - source type
     PC_PTR pcp_tgt,             // - target classification
@@ -1076,14 +1074,14 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     PTREE expr,                 // - expression for error
     CNV_REQD reqd_cnv )         // - type of conversion
 {
-    unsigned retn;              // - return: CNV_...
+    CNV_RETN retn;              // - return: CNV_...
 
     if( ( 0x80 >> pcp_tgt ) & pcPtrChk[ pcp_src ] ) {
         switch( pcp_src ) {
-          DbgDefault( "pcPtrValidate -- bad case" );
-          case PC_PTR_BASED_VOID :
+        DbgDefault( "pcPtrValidate -- bad case" );
+        case PC_PTR_BASED_VOID :
             switch( pcp_tgt ) {
-              case PC_PTR_REGULAR :
+            case PC_PTR_REGULAR :
                 if( reqd_cnv == CNV_CAST ) {
                     retn = CNV_OK;
                 } else {
@@ -1091,11 +1089,11 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                     retn = CNV_ERR;
                 }
                 break;
-              case PC_PTR_FAR16 :
+            case PC_PTR_FAR16 :
                 PTreeErrorExpr( expr, ERR_SEGOP_OPERANDS );
                 retn = CNV_ERR;
                 break;
-              case PC_PTR_BASED_VOID :
+            case PC_PTR_BASED_VOID :
               { derived_status status;
                 SCOPE scope_tgt;
                 SCOPE scope_src;
@@ -1117,7 +1115,7 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                     }
                 }
               } break;
-              default :
+            default:
                 if( reqd_cnv == CNV_CAST ) {
                     retn = CNV_OK;
                 } else {
@@ -1126,10 +1124,10 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                 break;
             }
             break;
-          case PC_PTR_BASED_SELF :
-          case PC_PTR_BASED_STRING :
-          case PC_PTR_BASED_FETCH :
-          case PC_PTR_BASED_ADD :
+        case PC_PTR_BASED_SELF :
+        case PC_PTR_BASED_STRING :
+        case PC_PTR_BASED_FETCH :
+        case PC_PTR_BASED_ADD :
             if( pcp_src == pcp_tgt ) {
                 retn = CNV_OK;
             } else if( reqd_cnv == CNV_CAST ) {
@@ -1166,22 +1164,19 @@ static CNV_RETN classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
     proto = MakeBasedModifierOf( proto, src_flags, baser );
     proto = MakePointerTo( proto );
     switch( _CNV_TYPE( reqd_cnv ) ) {
-      case CNV_CAST :
+    case CNV_CAST :
         reqd_cnvptr = CNVPTR_CAST | CNVPTR_VIRT_TO_DERIVED;
         break;
-      case CNV_INIT :
-      case CNV_FUNC_ARG :
-      case CNV_FUNC_RET :
+    case CNV_INIT :
+    case CNV_FUNC_ARG :
+    case CNV_FUNC_RET :
         reqd_cnvptr = CNVPTR_DERIVED_ONLY | CNVPTR_CONST_VOLATILE;
         break;
-      default :
+    default :
         reqd_cnvptr = CNVPTR_DERIVED_ONLY;
         break;
     }
-    retn = NodeConvertPtr( reqd_cnvptr
-                         , a_expr
-                         , expr_type
-                         , proto );
+    retn = NodeConvertPtr( reqd_cnvptr, a_expr, expr_type, proto );
     return retn;
 }
 
@@ -1224,7 +1219,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     PTREE bself;                // - expression for based self
     bool is_ref;                // - true ==> is reference
 
-    cnv_fun = pcPtrCnv[ type_src*8 + type_tgt ];
+    cnv_fun = pcPtrCnv[ type_src * 8 + type_tgt ];
     if( cnv_fun == 10 ) {
         retn = CNV_OK;
     } else {
@@ -1242,13 +1237,13 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             expr = *a_expr;
             retn = checkPtrTrunc( tgt_type, expr_type, reqd_cnv );
             switch( retn ) {
-              case CNV_OK :
+            case CNV_OK :
                 retn = CNV_OK_CV;
                 break;
-              case CNV_OK_TRUNC :
+            case CNV_OK_TRUNC :
                 retn = CNV_OK_TRUNC_CV;
                 break;
-              case CNV_OK_TRUNC_CAST :
+            case CNV_OK_TRUNC_CAST :
                 retn = CNV_OK_TRUNC_CAST_CV;
                 break;
             }
@@ -1267,27 +1262,27 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             expr_type = NodeType( expr );
             retn = checkPtrTrunc( tgt_type, expr_type, reqd_cnv );
             switch( retn ) {
-              case CNV_OK :
+            case CNV_OK :
                 retn = CNV_OK_CV;
                 break;
-              case CNV_OK_TRUNC :
+            case CNV_OK_TRUNC :
                 retn = CNV_OK_TRUNC_CV;
                 break;
-              case CNV_OK_TRUNC_CAST :
+            case CNV_OK_TRUNC_CAST :
                 retn = CNV_OK_TRUNC_CAST_CV;
                 break;
             }
         }
 #endif
         switch( retn ) {
-          case CNV_ERR:
-          case CNV_VIRT_DER:
-          case CNV_IMPOSSIBLE:
-          case CNV_AMBIGUOUS:
-          case CNV_PRIVATE:
-          case CNV_PROTECTED:
+        case CNV_ERR:
+        case CNV_VIRT_DER:
+        case CNV_IMPOSSIBLE:
+        case CNV_AMBIGUOUS:
+        case CNV_PRIVATE:
+        case CNV_PROTECTED:
             break;
-          default:
+        default:
             tgt_type = TypedefModifierRemove( tgt_type );
             if( tgt_type->flag & TF1_REFERENCE ) {
                 is_ref = true;
@@ -1305,32 +1300,32 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
                 tgt_type = MakePointerTo( tgt_type );
             }
             switch( cnv_fun ) {
-              DbgDefault( "pcPtrConvert -- impossible conversion" );
+            DbgDefault( "pcPtrConvert -- impossible conversion" );
 #if 0
-              case 1:       // convert to pointer type, if not class conv
+            case 1:       // convert to pointer type, if not class conv
                 if( cl_conv ) break;
 #else
-              case 1:       // convert to pointer type using code-gen
+            case 1:       // convert to pointer type using code-gen
                 if( tgt_type == expr_type ) break;
 #endif
                 // fall thru
-              case 2:       // truncate to __based pointer, except TF1_ADD
+            case 2:       // truncate to __based pointer, except TF1_ADD
                 expr = NodeConvert( tgt_type, expr );
                 break;
-              case 3:       // convert to FAR16
-              case 8:       // convert regular to TF1_ADD
+            case 3:       // convert to FAR16
+            case 8:       // convert regular to TF1_ADD
                 expr = convertToPcPtr( expr, tgt_type, type_tgt );
                 break;
-              case 4:       // convert from pc ptr to regular
+            case 4:       // convert from pc ptr to regular
                 expr = convertFromPcPtr( expr, type_src, bself );
                 break;
-              case 5:       // convert from __based to FAR16, TF1_ADD
-              case 7:       // convert TF1_ADD to TF1_ADD (optimize?)
+            case 5:       // convert from __based to FAR16, TF1_ADD
+            case 7:       // convert TF1_ADD to TF1_ADD (optimize?)
                 expr = convertFromPcPtr( expr, type_src, bself );
                 expr = convertToPcPtr( expr, tgt_type, type_tgt );
                 break;
-              case 6:       // convert from FAR16 to __based
-              case 9:       // convert TF1_ADD to __based
+            case 6:       // convert from FAR16 to __based
+            case 9:       // convert TF1_ADD to __based
                 expr = convertFromPcPtr( expr, type_src, bself );
                 expr = NodeConvert( tgt_type, expr );
                 break;
@@ -1387,16 +1382,16 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
         retn = CNV_IMPOSSIBLE;
     }
     switch( retn ) {
-      case CNV_IMPOSSIBLE :
+    case CNV_IMPOSSIBLE :
         retn = NodeCheckPtrCastTrunc( ctl->tgt.orig, ctl->src.orig );
         break;
-      case CNV_OK_CV :
+    case CNV_OK_CV :
         retn = CNV_OK;
         break;
-      case CNV_OK_TRUNC_CV :
+    case CNV_OK_TRUNC_CV :
         retn = CNV_OK_TRUNC;
         break;
-      case CNV_OK_TRUNC_CAST_CV :
+    case CNV_OK_TRUNC_CAST_CV :
         retn = CNV_OK_TRUNC_CAST;
         break;
     }
