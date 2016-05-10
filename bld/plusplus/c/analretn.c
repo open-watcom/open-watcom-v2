@@ -195,20 +195,20 @@ PTREE AnalyseReturnSimpleVal    // RETURN A SIMPLE VALUE
     ( PTREE expr )              // - expression for return
 {
     TYPE retn_type;             // - return type
-    unsigned cnv_type;          // - type of conversion
+    CNV_REQD reqd_cnv;          // - type of conversion
     CNV_DIAG *diag;             // - diagnosis to be used
 
     retn_type = expr->u.subtree[0]->type;
     if( DefargBeingCompiled() ) {
-        cnv_type = CNV_FUNC_DARG;
+        reqd_cnv = CNV_FUNC_DARG;
         diag = &diagDefarg;
     } else {
-        cnv_type = CNV_FUNC_RET;
+        reqd_cnv = CNV_FUNC_RET;
         diag = &diagReturn;
     }
     expr = CastImplicit( removeReturnNode( expr )
                        , retn_type
-                       , cnv_type
+                       , reqd_cnv
                        , diag );
     if( expr->op != PT_ERROR ) {
         if( NULL != PointerTypeEquivalent( retn_type ) ) {

@@ -969,19 +969,19 @@ static bool accessCopyCtor(     // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type,                  // - type for class
     SYMBOL *ctor )              // - addr[ copy ctor ]
 {
-    bool retn;                  // - true ==> access is ok
+    bool rc;                    // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
 
     type = ClassTypeForType( type );
     result = accessDefaultCopy( type, ctor );
     if( result == NULL ) {
         ctor = NULL;
-        retn = true;
+        rc = true;
     } else {
-        retn = ! ScopeCheckSymbol( result, *ctor );
+        rc = ! ScopeCheckSymbol( result, *ctor );
         ScopeFreeResult( result );
     }
-    return( retn );
+    return( rc );
 }
 
 
@@ -1204,15 +1204,15 @@ bool ClassAccessDefaultCopy(    // CHECK ACCESS TO DEFAULT COPY CTOR
     TYPE type )                 // - type for class
 {
     SYMBOL ctor;                // - copy ctor (not used)
-    bool retn;                  // - true ==> access if OK
+    bool rc;                  // - true ==> access if OK
 
     type = ClassTypeForType( type );
     if( OMR_CLASS_VAL == ObjModelArgument( type ) ) {
-        retn = true;
+        rc = true;
     } else {
-        retn = accessCopyCtor( type, &ctor );
+        rc = accessCopyCtor( type, &ctor );
     }
-    return retn;
+    return rc;
 }
 #endif
 
@@ -1318,7 +1318,7 @@ CNV_RETN ClassDefaultCtorDefine(// DEFINE DEFAULT CTOR FOR A CLASS
     TYPE cl_type,               // - type for class
     SYMBOL *pctor )             // - ptr( default CTOR )
 {
-    CNV_RETN result;            // - return status
+    CNV_RETN retn;              // - return status
     CLASSINFO *info;            // - class information
     SYMBOL ctor;                // - local ctor
 
@@ -1326,13 +1326,13 @@ CNV_RETN ClassDefaultCtorDefine(// DEFINE DEFAULT CTOR FOR A CLASS
     info = cl_type->u.c.info;
     if( info->has_ctor ) {
         *pctor = NULL;
-        result = CNV_IMPOSSIBLE;
+        retn = CNV_IMPOSSIBLE;
     } else {
         ctor = ClassAddDefaultCtor( cl_type->u.c.scope );
         *pctor = ctor;
-        result = CNV_OK;
+        retn = CNV_OK;
     }
-    return( result );
+    return( retn );
 }
 
 void GenerateDefaultDtor(       // EMIT A DEFAULT DTOR
@@ -1397,20 +1397,20 @@ SEARCH_RESULT *DtorFindResult(  // FIND DTOR FOR A POSSIBLE VIRTUAL CALL
 bool ClassAccessDtor(           // CHECK ACCESS TO DTOR
     TYPE type )                 // - type for class
 {
-    bool retn;                  // - true ==> access is ok
+    bool rc;                    // - true ==> access is ok
     SEARCH_RESULT *result;      // - search result
     SYMBOL dtor;
 
     type = ArrayBaseType( type );
     result = DtorFindResult( type );
     if( result == NULL ) {
-        retn = true;
+        rc = true;
     } else {
         dtor = result->sym_name->name_syms;
-        retn = ! ScopeCheckSymbol( result, dtor );
+        rc = ! ScopeCheckSymbol( result, dtor );
         ScopeFreeResult( result );
     }
-    return( retn );
+    return( rc );
 }
 
 static SYMBOL findOrDefineDtor( // FIND OR DEFINE DTOR FOR DIRECT CALL
@@ -1618,7 +1618,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
     ctor_prologue *data )       // - traversal data
 {
     SYMBOL ctor;                // - CTOR to be used
-    CNV_RETN cnv_retn;          // - conversion diagnosis
+    CNV_RETN retn;              // - conversion diagnosis
     PTREE right;                // - right expression
     PTREE stmt;                 // - executable statement
     TYPE init_type_mod;         // - modified init_type
@@ -1652,7 +1652,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
     } else if( options & CI_EXACT ) {
         access = NULL;
     }
-    cnv_retn = AnalyseTypeCtor( access
+    retn = AnalyseTypeCtor( access
                               , init_type
 #if 0
                               , CNV_INIT_COPY
@@ -1661,12 +1661,11 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
 #endif
                               , &ctor
                               , &init_expr );
-    if( cnv_retn != CNV_OK ) {
+    if( retn != CNV_OK ) {
         if( access != NULL && access->id == SCOPE_CLASS ) {
             ConversionTypesSet( ScopeClass( access ), init_type_mod );
         }
-        if( ConversionDiagnose( cnv_retn, init_expr, &diagProInit )
-            != CNV_OK ) {
+        if( ConversionDiagnose( retn, init_expr, &diagProInit ) != CNV_OK ) {
             NodeFreeDupedExpr( init_expr );
             PTreeFreeSubtrees( init_item );
             return NULL;

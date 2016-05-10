@@ -281,17 +281,17 @@ SE* BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
 bool BlkPosnUseStab(            // TEST IF REALLY USING STATE TABLE IN SCOPE
     void )
 {
-    bool retn;                  // - true ==> gen state table code
+    bool rc;                    // - true ==> gen state table code
     BLK_POSN* bpos;             // - current position
 
     bpos = VstkTop( &stack_blk_posn );
     DbgVerify( bpos != NULL, "BlkPosnStabGen -- no block" );
     if( NULL == bpos->scope ) {
-        retn = false;
+        rc = false;
     } else {
-        retn = bpos->scope->u.s.cg_stab;
+        rc = bpos->scope->u.s.cg_stab;
     }
-    return retn;
+    return rc;
 }
 
 

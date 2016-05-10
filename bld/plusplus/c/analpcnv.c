@@ -344,22 +344,22 @@ static CNV_RETN check_result_cv(// CHECK RESULT FOR CONST/VOLATILE RETURN
     PTREE *expr,                // - addr( resultant tree )
     TYPE src,                   // - source type
     TYPE tgt,                   // - target type
-    unsigned conversion )       // - type of conversion
+    CNVPTR_REQD reqd_cnvptr )   // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_ERR or CNV_OK
 
-    if( conversion & CNVPTR_NO_TRUNC ) {
+    if( reqd_cnvptr & CNVPTR_NO_TRUNC ) {
         retn = CNV_OK;
     } else {
         retn = check_result( expr, src, tgt );
     }
-    if( conversion & CNVPTR_CONST_VOLATILE ) {
+    if( reqd_cnvptr & CNVPTR_CONST_VOLATILE ) {
         switch( retn ) {
           case CNV_OK :
             retn = CNV_OK_CV;
             break;
           case CNV_OK_TRUNC :
-            if( conversion & CNVPTR_CAST ) {
+            if( reqd_cnvptr & CNVPTR_CAST ) {
                 retn = CNV_OK_TRUNC_CAST_CV;
             } else {
                 retn = CNV_OK_TRUNC_CV;
@@ -445,7 +445,7 @@ CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
 
 
 CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
-    unsigned conversion,        // - type of conversion
+    CNVPTR_REQD reqd_cnvptr,    // - type of conversion
     PTREE *expr,                // - expression to be converted
     TYPE src,                   // - source type (converted from)
     TYPE tgt )                  // - target type (converted to)
@@ -465,14 +465,14 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
       case CTD_NO :
         if( ptr_to_void( tgt ) ) {
             *expr = NodeConvert( tgt, *expr );
-            retn = check_result_cv( expr, src, tgt, conversion );
+            retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
       case CTD_RIGHT_PROTECTED :
-        if( (conversion & CNVPTR_CAST) == 0 ) {
-            if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
+        if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
+            if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PROTECTED;
             } else {
                 retn = CNV_IMPOSSIBLE;
@@ -481,8 +481,8 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         }
         // drops thru
       case CTD_RIGHT_PRIVATE :
-        if( (conversion & CNVPTR_CAST) == 0 ) {
-            if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
+        if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
+            if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PRIVATE;
             } else {
                 retn = CNV_IMPOSSIBLE;
@@ -491,46 +491,46 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
         }
         // drops thru
       case CTD_RIGHT :
-        if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
+        if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             NodeConvertBaseToDerived( expr, tgt, tgt_scope, src_scope );
-            retn = check_result_cv( expr, src, tgt, conversion );
+            retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
       case CTD_RIGHT_VIRTUAL :
-        if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
+        if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             retn = CNV_VIRT_DER;
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
       case CTD_RIGHT_AMBIGUOUS :
-        if( conversion & CNVPTR_VIRT_TO_DERIVED ) {
+        if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             retn = CNV_AMBIGUOUS;
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
       case CTD_LEFT_PRIVATE :
-        if( (conversion & CNVPTR_CAST) == 0 ) {
+        if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             retn = CNV_PRIVATE;
             break;
         }
         // drops thru
       case CTD_LEFT_PROTECTED :
-        if( (conversion & CNVPTR_CAST) == 0 ) {
+        if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             retn = CNV_PROTECTED;
             break;
         }
         // drops thru
       case CTD_LEFT :
         NodeConvertDerivedToBase( expr, tgt, src_scope, tgt_scope );
-        retn = check_result_cv( expr, src, tgt, conversion );
+        retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         break;
       case CTD_LEFT_VIRTUAL :
         NodeConvertDerivedToVirt( expr, tgt, src_scope, tgt_scope );
-        retn = check_result_cv( expr, src, tgt, conversion );
+        retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         break;
       case CTD_LEFT_AMBIGUOUS :
         retn = CNV_AMBIGUOUS;
@@ -541,8 +541,8 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
 
 
 #if 0
-static unsigned propogateNonZero( // PROPOGATE PTF_PTR_NONZERO TO COMMON
-    unsigned retn,              // - return: CNV_...
+static CNV_RETN propogateNonZero( // PROPOGATE PTF_PTR_NONZERO TO COMMON
+    CNV_RETN retn,              // - return: CNV_...
     PTREE expr )                // - expression
 {
     if( NodeIsBinaryOp( expr, CO_COLON ) ) {
@@ -555,8 +555,8 @@ static unsigned propogateNonZero( // PROPOGATE PTF_PTR_NONZERO TO COMMON
 }
 
 
-static unsigned check_common(   // CHECK RESULT OF COMMON CONVERSION
-    unsigned retn,              // - return: CNV_...
+static CNV_RETN check_common(   // CHECK RESULT OF COMMON CONVERSION
+    CNV_RETN retn,              // - return: CNV_...
     PTREE expr,                 // - expression
     TYPE type )                 // - resultant type
 {
@@ -567,7 +567,7 @@ static unsigned check_common(   // CHECK RESULT OF COMMON CONVERSION
     return retn;
 }
 
-unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
+CNV_RETN PtrConvertCommon(      // CONVERT TO COMMON PTR
     PTREE expr )                // - expression
 {
     PTREE *r_left;              // - reference( left node )
@@ -580,7 +580,7 @@ unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
     TYPE rbtype;                // - base type on right
     TYPE type;                  // - resultant type
     TYPE common;                // - common base type
-    unsigned retn;              // - conversion return
+    CNV_RETN retn;              // - conversion return
 
     r_left = &expr->u.subtree[0];
     ltype = NodeType( *r_left );
@@ -659,7 +659,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
     TYPE ptr_tgt,               // - target pointer type
     PTRCNV* info )              // - pointer-conversion information
 {
-    bool retn;                  // - return: true ==> can convert trivially
+    bool rc;                  // - return: true ==> can convert trivially
     bool first_level;           // - true ==> at first level
     bool const_always;          // - true ==> const on all preceding levels
     TYPE orig_src;              // - original src type
@@ -685,7 +685,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
         if( NULL != orig_src && IntegralType( orig_src ) ) {
             info->reint_cast_ok = true;
         }
-        retn = false;
+        rc = false;
     } else {
         first_level = true;
         const_always = true;
@@ -703,14 +703,14 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 if( first_level ) {
                     info->cv_err_0 = true;          // - diagnose elsewhere
                 } else {
-                    retn = false;
+                    rc = false;
                     break;
                 }
             }
             if( first_level ) {
                 TYPE cl_src;        // class for source
                 TYPE cl_tgt;        // class for target
-                retn = true;
+                rc = true;
                 info->pted_src = ptr_src;
                 info->pted_tgt = ptr_tgt;
                 info->flags_src = flags_src;
@@ -718,7 +718,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 cl_src = StructType( ptr_src );
                 if( ptr_tgt->id == TYP_VOID ) {
                     info->to_void = true;
-//                  retn = (ptr_src == TYP_VOID);
+//                  rc = (ptr_src == TYP_VOID);
 //                  break;
                 } else if( NULL != cl_src ) {
                     cl_tgt = StructType( ptr_tgt );
@@ -726,11 +726,11 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                      && cl_tgt != cl_src ) {
                         if( TypeDerived( ptr_src, ptr_tgt ) ) {
                             info->to_base = true;
-                            retn = false;
+                            rc = false;
 //                          break;
                         } else if( TypeDerived( ptr_tgt, ptr_src ) ) {
                             info->to_derived = true;
-                            retn = false;
+                            rc = false;
 //                          break;
                         }
                     }
@@ -740,7 +740,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                         && ( CgMemorySize( ptr_src ) == CgMemorySize( ptr_tgt ) ) ) {
                     info->ptr_integral_ext = true;
                 }
-                if( ! retn ) {
+                if( ! rc ) {
                     if( info->cv_err_0 ) {
                         info->reint_cast_ok = false;
                     }
@@ -751,7 +751,7 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
             if( cv_tgt != cv_src ) {                // test const'ed to here
                 if( ! const_always ) {
                     info->reint_cast_ok = false;
-                    retn = false;
+                    rc = false;
                     break;
                 }
             }
@@ -759,12 +759,12 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 const_always = false;
             }
             if( ptr_src == ptr_tgt ) {
-                retn = true;
+                rc = true;
                 break;
             }
             if( TYP_FUNCTION == ptr_src->id
              || TYP_FUNCTION == ptr_tgt->id ) {
-                retn = TypeCompareExclude( ptr_src
+                rc = TypeCompareExclude( ptr_src
                                          , ptr_tgt
                                          , TC1_FUN_LINKAGE |
                                            TC1_NOT_ENUM_CHAR );
@@ -777,15 +777,15 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                  && NULL != FunctionDeclarationType( ptr_tgt ) ) {
                     info->reint_cast_ok = false;
                 }
-                retn = false;
+                rc = false;
                 break;
             }
             if( NULL == ptr_tgt ) {
-                retn = false;
+                rc = false;
                 break;
             }
         }
     }
-    return retn;
+    return rc;
 }
 #endif

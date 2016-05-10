@@ -89,7 +89,7 @@ void ConversionDiagnoseInf(     // DIAGNOSE SOURCE/TARGET CONVERSION
 }
 
 
-static unsigned conversionErr(  // ISSUE CONVERSION ERROR
+static CNV_RETN conversionErr(  // ISSUE CONVERSION ERROR
     PTREE expr,                 // - current expression
     MSG_NUM msg_no )            // - diagnostic
 {
@@ -99,8 +99,8 @@ static unsigned conversionErr(  // ISSUE CONVERSION ERROR
 }
 
 
-unsigned ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
-    unsigned retn,              // - return value: CNV_...
+CNV_RETN ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
+    CNV_RETN retn,              // - return value: CNV_...
     PTREE expr,                 // - current expression
     CNV_DIAG *diagnosis )       // - diagnosis information
 {

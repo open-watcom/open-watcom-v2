@@ -654,7 +654,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
     PTREE item,                 // - source item
     TYPE type_mp,               // - unmodified member-ptr type
     MEMBER_PTR_CAST *castinfo,  // - information for casting
-    CNV_REQD conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_...
     SYMBOL base_item;           // - item required
@@ -674,7 +674,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             item->u.symcg.symbol = ActualNonOverloadedFunc( base_item, item->u.symcg.result );
             retn = CNV_OK;
         } else {
-            switch( conversion ) {
+            switch( reqd_cnv ) {
 //            case CNV_CAST :
               case CNV_EXPR :
                 retn = CNV_ERR;
@@ -721,19 +721,19 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
     MEMBER_PTR_CAST *castinfo ) // - information for casting
 {
     PTREE item;                 // - item being pointed at
-    CNV_REQD convert;           // - type of conversion
+    CNV_REQD reqd_cnv;          // - type of conversion
 
     item = PTreeOpLeft( src );
     if( nodeIsMembPtrCon( item ) ) {
         if( castinfo->safe ) {
-            convert = CNV_ASSIGN;
+            reqd_cnv = CNV_ASSIGN;
         } else {
-            convert = CNV_CAST;
+            reqd_cnv = CNV_CAST;
         }
         if( CNV_OK != ConversionDiagnose( analyseAddrOfNode( item
                                                            , type_mp
                                                            , castinfo
-                                                           , convert )
+                                                           , reqd_cnv )
                                         , src
                                         , &diagMembFunCnv ) ) {
             PTreeErrorNode( src );
@@ -1211,7 +1211,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
 CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     PTREE *a_expr,              // - addr[ conversion expression, not class ]
     TYPE tgt_type,              // - target type (member-pointer)
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_...
     PTREE expr;                 // - conversion expression
@@ -1219,7 +1219,7 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     bool init;                  // - true ==> an initialization or assignment
     unsigned classification;    // - operand classification
 
-    switch( conversion ) {
+    switch( reqd_cnv ) {
       case CNV_INIT :
       case CNV_FUNC_ARG :
       case CNV_FUNC_RET :
@@ -1277,7 +1277,7 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
         init = false;
       case MP_CONST :
         if( (! safe )
-//        || conversion == CNV_CAST
+//        || reqd_cnv == CNV_CAST
           || CNV_OK == validateMpObjs( expr, true, expr->type, tgt_type ) ) {
             expr = convertMembPtrExpr( expr, tgt_type, safe, init );
             *a_expr = expr;
@@ -1300,14 +1300,14 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
 {
     PTREE left;                 // - left operand
     PTREE right;                // - right operand
-    bool retn;                  // - true ==> can convert
-    CNV_RETN cnv_retn;          // - return from validation
+    bool rc;                    // - true ==> can convert
+    CNV_RETN retn;              // - return from validation
 
     left = PTreeOpLeft( expr );
     right = PTreeOpRight( expr );
     if( ( left->op == PT_ERROR ) || ( right->op == PT_ERROR ) ) {
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else {
         TYPE host_left;         // - host class to left
         TYPE host_right;        // - host class to right
@@ -1316,18 +1316,18 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
         switch( TypeCommonDerivation( host_left, host_right ) ) {
           case CTD_LEFT :
             if( host_left == host_right ) {
-                cnv_retn = validateMpObjs( expr
+                retn = validateMpObjs( expr
                                          , false
                                          , right->type
                                          , left->type );
-                if( cnv_retn == CNV_OK ) break;
-                if( cnv_retn == CNV_ERR ) break;
+                if( retn == CNV_OK ) break;
+                if( retn == CNV_ERR ) break;
                 // will drop thru to test left --> right
             } else {
           case CTD_LEFT_VIRTUAL :
           case CTD_LEFT_PRIVATE :
           case CTD_LEFT_PROTECTED :
-                cnv_retn = validateMpObjs( expr
+                retn = validateMpObjs( expr
                                          , true
                                          , right->type
                                          , left->type );
@@ -1338,20 +1338,20 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
           case CTD_RIGHT_VIRTUAL :
           case CTD_RIGHT_PRIVATE :
           case CTD_RIGHT_PROTECTED :
-            cnv_retn = validateMpObjs( expr, true, left->type, right->type );
+            retn = validateMpObjs( expr, true, left->type, right->type );
             break;
           default :
             PTreeErrorExpr( expr, ERR_MEMB_PTR_CMP_NOT_DERIVED );
-            cnv_retn = CNV_ERR;
+            retn = CNV_ERR;
             break;
         }
-        if( CNV_OK == cnv_retn ) {
-            retn = true;
+        if( CNV_OK == retn ) {
+            rc = true;
         } else {
-            retn = false;
+            rc = false;
         }
     }
-    return retn;
+    return rc;
 }
 
 

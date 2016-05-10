@@ -276,7 +276,7 @@ static void adjustFnAddrPtr     // ADJUST FOR &FUNCTION --> PTR
         break;
       case ADDR_FN_MANY_USED :
       case ADDR_FN_MANY :
-        switch( _CNV_TYPE( ctl->req ) ) {
+        switch( _CNV_TYPE( ctl->reqd_cnv ) ) {
           case CNV_ASSIGN :
           case CNV_CAST :
           case CNV_INIT :
@@ -325,7 +325,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
         if( ! CompFlags.extensions_enabled ) break;
         // drops thru
       case ADDR_FN_MANY :
-        switch( _CNV_TYPE( ctl->req ) ) {
+        switch( _CNV_TYPE( ctl->reqd_cnv ) ) {
           case CNV_ASSIGN :
           case CNV_INIT :
           case CNV_CAST :
@@ -371,10 +371,10 @@ static void checkSrcForError    // CHECK IF SOURCE HAS ERROR
 static CONVCTL* convCtlInitData // INITIALIZE CONVCTL DATA
     ( CONVCTL* ctl              // - control info.
     , PTREE expr                // - expression
-    , CNV_REQD request          // - type of conversion
+    , CNV_REQD reqd_cnv         // - type of conversion
     , CNV_DIAG* diag )          // - diagnosis
 {
-    ctl->req = request;
+    ctl->reqd_cnv = reqd_cnv;
     ctl->expr = expr;
     ctl->diag_good = &diagImpossible;
     if( diag == NULL ) {
@@ -419,12 +419,12 @@ void ConvCtlTypeDecay           // TYPE DECAY CONVCTL TYPES
 void ConvCtlInit                // INITIALIZE CONVCTL
     ( CONVCTL* ctl              // - control info.
     , PTREE expr                // - expression
-    , CNV_REQD request          // - type of conversion
+    , CNV_REQD reqd_cnv         // - type of conversion
     , CNV_DIAG* diag )          // - diagnosis
 {
     TYPE src;                   // - source type
 
-    ctl = convCtlInitData( ctl, expr, request, diag );
+    ctl = convCtlInitData( ctl, expr, reqd_cnv, diag );
     expr->u.subtree[0]->type =
         BindTemplateClass( expr->u.subtree[0]->type, NULL, true );
     if( ConvCtlTypeInit( ctl, &ctl->tgt, expr->u.subtree[0]->type ) ) {
@@ -845,21 +845,20 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
 }
 
 
-static unsigned checkPtrTrunc(  // CHECK POINTER TRUNCATION
+static CNV_RETN checkPtrTrunc(  // CHECK POINTER TRUNCATION
     TYPE proto,                 // - prototype
     TYPE argument,              // - argument
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
-    unsigned retn;              // - return: CNV_OK, CNV_OK_TRUNC
+    CNV_RETN retn;              // - return: CNV_OK, CNV_OK_TRUNC
                                 //         , CNV_OK_TRUNC_CAST
 
-    if( conversion == CNV_CAST ) {
+    if( reqd_cnv == CNV_CAST ) {
         retn = NodeCheckPtrCastTrunc( proto, argument );
     } else {
         retn = NodeCheckPtrTrunc( proto, argument );
     }
-    if( ( retn != CNV_OK )
-      &&( ( conversion == CNV_FUNC_THIS ) || ( conversion == CNV_FUNC_CD_THIS ) ) ) {
+    if( ( retn != CNV_OK ) && ( ( reqd_cnv == CNV_FUNC_THIS ) || ( reqd_cnv == CNV_FUNC_CD_THIS ) ) ) {
         retn = CNV_TRUNC_THIS;
     }
     return retn;
@@ -1075,7 +1074,7 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     PC_PTR pcp_tgt,             // - target classification
     PC_PTR pcp_src,             // - source classification
     PTREE expr,                 // - expression for error
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     unsigned retn;              // - return: CNV_...
 
@@ -1085,7 +1084,7 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
           case PC_PTR_BASED_VOID :
             switch( pcp_tgt ) {
               case PC_PTR_REGULAR :
-                if( conversion == CNV_CAST ) {
+                if( reqd_cnv == CNV_CAST ) {
                     retn = CNV_OK;
                 } else {
                     PTreeErrorExpr( expr, ERR_SEGOP_OPERANDS );
@@ -1119,7 +1118,7 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                 }
               } break;
               default :
-                if( conversion == CNV_CAST ) {
+                if( reqd_cnv == CNV_CAST ) {
                     retn = CNV_OK;
                 } else {
                     retn = CNV_IMPOSSIBLE;
@@ -1133,7 +1132,7 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
           case PC_PTR_BASED_ADD :
             if( pcp_src == pcp_tgt ) {
                 retn = CNV_OK;
-            } else if( conversion == CNV_CAST ) {
+            } else if( reqd_cnv == CNV_CAST ) {
                 retn = CNV_OK;
             } else {
                 retn = CNV_IMPOSSIBLE;
@@ -1147,17 +1146,17 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
 }
 
 
-static unsigned classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
+static CNV_RETN classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
     PTREE *a_expr,              // - addr[ expression ]
     TYPE proto,                 // - target type
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     TYPE expr_type;             // - type for expression
-    bool retn;                  // - return: CNV_...
+    CNV_RETN retn;              // - return: CNV_...
     type_flag pro_flags;        // - flags: target
     type_flag src_flags;        // - flags: source
     void *baser;                // - based entity
-    unsigned ptr_conv;          // - type of pointer conversion
+    CNVPTR_REQD reqd_cnvptr;    // - type of pointer conversion
     TYPE type;                  // - used to reduce source type
 
     proto = TypePointedAt( proto, &pro_flags );
@@ -1166,20 +1165,20 @@ static unsigned classPtrConversion( // CONVERT CLASS PTR (UP OR DOWN)
     type = TypeModExtract( type, &src_flags, &baser, TC1_NOT_ENUM_CHAR );
     proto = MakeBasedModifierOf( proto, src_flags, baser );
     proto = MakePointerTo( proto );
-    switch( _CNV_TYPE( conversion ) ) {
+    switch( _CNV_TYPE( reqd_cnv ) ) {
       case CNV_CAST :
-        ptr_conv = CNVPTR_CAST | CNVPTR_VIRT_TO_DERIVED;
+        reqd_cnvptr = CNVPTR_CAST | CNVPTR_VIRT_TO_DERIVED;
         break;
       case CNV_INIT :
       case CNV_FUNC_ARG :
       case CNV_FUNC_RET :
-        ptr_conv = CNVPTR_DERIVED_ONLY | CNVPTR_CONST_VOLATILE;
+        reqd_cnvptr = CNVPTR_DERIVED_ONLY | CNVPTR_CONST_VOLATILE;
         break;
       default :
-        ptr_conv = CNVPTR_DERIVED_ONLY;
+        reqd_cnvptr = CNVPTR_DERIVED_ONLY;
         break;
     }
-    retn = NodeConvertPtr( ptr_conv
+    retn = NodeConvertPtr( reqd_cnvptr
                          , a_expr
                          , expr_type
                          , proto );
@@ -1207,13 +1206,13 @@ static uint_8 pcPtrCnv[] =          // used to determine type of conversion
 };
 
 
-static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
+static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     PTREE *a_expr,              // - addr[ expression ]
     TYPE tgt_type,              // - target pointer type
     PC_PTR type_tgt,            // - target classification
     PC_PTR type_src,            // - source classification
     bool cl_conv,               // - true ==> do class conversion
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     PTREE expr;                 // - expression
     TYPE expr_type;             // - type for expression
@@ -1221,7 +1220,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     type_flag flags_src;        // - flags for source expression ptr. item
     type_flag flags_tgt;        // - flags for target type ptr. item
     void *baser;                // - based entity
-    unsigned retn;              // - return: CNV_...
+    CNV_RETN retn;              // - return: CNV_...
     PTREE bself;                // - expression for based self
     bool is_ref;                // - true ==> is reference
 
@@ -1237,11 +1236,11 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
 #if 0
         expr_type = NodeType( *a_expr );
         if( cl_conv ) {
-            retn = classPtrConversion( a_expr, tgt_type, conversion );
+            retn = classPtrConversion( a_expr, tgt_type, reqd_cnv );
             expr = *a_expr;
         } else {
             expr = *a_expr;
-            retn = checkPtrTrunc( tgt_type, expr_type, conversion );
+            retn = checkPtrTrunc( tgt_type, expr_type, reqd_cnv );
             switch( retn ) {
               case CNV_OK :
                 retn = CNV_OK_CV;
@@ -1256,7 +1255,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
         }
 #else
         if( cl_conv ) {
-            retn = classPtrConversion( a_expr, tgt_type, conversion );
+            retn = classPtrConversion( a_expr, tgt_type, reqd_cnv );
             if( retn == CNV_OK_CV ) {
                 retn = CNV_OK;
             }
@@ -1266,7 +1265,7 @@ static unsigned pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
         expr = *a_expr;
         if( CNV_OK == retn ) {
             expr_type = NodeType( expr );
-            retn = checkPtrTrunc( tgt_type, expr_type, conversion );
+            retn = checkPtrTrunc( tgt_type, expr_type, reqd_cnv );
             switch( retn ) {
               case CNV_OK :
                 retn = CNV_OK_CV;
@@ -1362,28 +1361,28 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
                                  , false
-                                 , ctl->req );
+                                 , ctl->reqd_cnv );
     } else if( ctl->to_void ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
                                  , false
-                                 , ctl->req );
+                                 , ctl->reqd_cnv );
     } else if( ctl->to_base ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
                                  , true
-                                 , ctl->req );
+                                 , ctl->reqd_cnv );
     } else if( ctl->to_derived ) {
         retn = pcPtrConvertSrcTgt( &expr->u.subtree[1]
                                  , ctl->tgt.orig
                                  , ctl->tgt.pc_ptr
                                  , ctl->src.pc_ptr
                                  , true
-                                 , ctl->req );
+                                 , ctl->reqd_cnv );
     } else {
         retn = CNV_IMPOSSIBLE;
     }
@@ -1478,7 +1477,7 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
           , info->diag_good
           , info->diag_cast
           , info->msg_no
-          , info->req
+          , info->reqd_cnv
           , info->rough
           , info->ctd
           , info->conv_fun, DbgSymNameFull( info->conv_fun, &vbuf )

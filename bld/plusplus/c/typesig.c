@@ -49,7 +49,7 @@ static SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
     TOKEN_LOCN* err_locn,       // - error location
     bool optional )             // - true ==> is optional
 {
-    unsigned retn;              // - return from attempt to find
+    CNV_RETN retn;              // - return from attempt to find
     SYMBOL ctor;                // - constructor
 
     retn = ClassDefaultCtorFind( type, &ctor, err_locn );

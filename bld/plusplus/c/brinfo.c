@@ -383,7 +383,7 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
     PSTK_ITER sym_iter;         // - iterator: new active scopes
     SCOPE ascope;               // - scope: old active scopes
     SCOPE sscope;               // - scope: new active scopes
-    bool retn;                  // - return: true ==> scope was adjusted
+    bool rc;                  // - return: true ==> scope was adjusted
     bool short_circuit;         // - can short-circuit scope adjustment
     bool in_template;           // - active scope is in a TEMPLATE_PARM scope
 
@@ -466,11 +466,11 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
                 if( NULL == top ) break;
             }
         }
-        retn = true;
+        rc = true;
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 #undef ShcVerify
@@ -479,25 +479,25 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
 static bool activeScopesAdjust  // ADJUST ACTIVE SCOPES
     ( SYMBOL sym )
 {
-    bool retn;                  // - return: true ==> scope for symbol
+    bool rc;                    // - return: true ==> scope for symbol
     TOKEN_LOCN *locn;
 
     if( NULL == sym->name ) {
-        retn = false;
+        rc = false;
     } else {
         SCOPE scope = sym->name->containing;
         if( NULL == scope ) {
-            retn = false;
+            rc = false;
         } else {
             if( sym->locn != NULL ){
                 locn = &sym->locn->tl;
             } else {
                 locn = NULL;
             }
-            retn = activeScopesReset( scope, locn );
+            rc = activeScopesReset( scope, locn );
         }
     }
-    return retn;
+    return rc;
 }
 
 

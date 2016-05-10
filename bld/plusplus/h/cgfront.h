@@ -54,13 +54,13 @@ typedef enum                    // DTORING_KIND -- kind of DTORing to be applied
 ,   DTORING_COMPONENT           // - component
 } DTORING_KIND;
 
-enum                            // DEFINE TYPE OF POINTER CONVERSION
+typedef enum                    // DEFINE TYPE OF POINTER CONVERSION
 {   CNVPTR_DERIVED_ONLY    = 0  // - can only convert derived
 ,   CNVPTR_VIRT_TO_DERIVED = 1  // - can convert virtual to derived
 ,   CNVPTR_CAST            = 2  // - a cast conversion (from the C++ source)
 ,   CNVPTR_CONST_VOLATILE  = 4  // - const/volatile checks may be needed later
 ,   CNVPTR_NO_TRUNC        = 8  // - don't do truncation check
-};
+} CNVPTR_REQD;
 
 typedef enum                    // DEFINE RESULTS OF CONVERSION
 {   CNV_OK                      // - conversion successful or not required
@@ -279,11 +279,11 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
 PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     PTREE expr )                // - expression
 ;
-unsigned AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
+CNV_RETN AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
     PTREE expr,                 // - expression for error
     TYPE proto,                 // - type of target
     TYPE argument,              // - type of source
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 ;
 PTREE AnalyseReturnClassVal     // RETURN CLASS VALUE
     ( PTREE retn_expr )         // - expression for return
@@ -313,7 +313,7 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
 CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
     SCOPE scope,                // - start scope for component ctors (NULLable)
     TYPE type,                  // - type for CTOR (may be an abstract class)
-    unsigned conversion,        // - type of conversion reqd
+    CNV_REQD reqd_cnv,          // - type of conversion reqd
     SYMBOL *ctor,               // - ctor to be filled in
     PTREE *initial )            // - addr( initialization arguments )
 ;
@@ -346,7 +346,7 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
 PTREE CastImplicit              // IMPLICIT CAST
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 ;
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
@@ -357,7 +357,7 @@ PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
 PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 ;
 void CDtorScheduleArgRemap(     // SCHEDULE CTOR/DTOR ARG.S REMAP, IF REQ'D
@@ -593,8 +593,8 @@ PTREE ClassInitialize(          // INITIALIZE A CLASS OBJECT
 TYPE ClassTypeForType(          // GET CLASS TYPE FOR TYPE OR REFERENCE TO IT
     TYPE type )                 // - input type
 ;
-unsigned ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
-    unsigned retn,              // - return value: CNV_...
+CNV_RETN ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
+    CNV_RETN retn,              // - return value: CNV_...
     PTREE expr,                 // - current expression
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
@@ -627,6 +627,7 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
 ;
+#if 0
 unsigned ConvertExpr(           // GENERALIZED CONVERSION
     PTREE *expr_addr,           // - addr( expression to be converted )
     TYPE proto,                 // - prototype
@@ -645,10 +646,11 @@ unsigned ConvertExprDiagResult( // CONVERT AND DIAGNOSE RESULT
     unsigned conversion,        // - type of conversion
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
+#endif
 PTREE ConvertMembPtrConst(      // CONVERT TO TEMP. A MEMBER-PTR CONST
     PTREE *a_expr )             // - addr [expression]
 ;
-unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
+CNV_RETN ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
     TYPE tgt,                   // - target type
     PTREE func )                // - overloaded function
 ;
@@ -846,7 +848,7 @@ PTREE MembPtrZero(              // MAKE A NULL MEMBER POINTER CONSTANT
 CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     PTREE *a_expr,              // - addr[ conversion expression, not class ]
     TYPE tgt_type,              // - target type (member-pointer)
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 ;
 PTREE MembPtrDereference(       // DO '.*' AND '->*' operations
     PTREE expr )                // - expression to be processed
@@ -1004,7 +1006,7 @@ PTREE NodeConvertClassExact(    // CONVERT TO "CLASS_EXACT"
     PTREE node )                // - node
 ;
 CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
-    unsigned conversion,        // - type of conversion
+    CNVPTR_REQD reqd_cnvptr,    // - type of conversion
     PTREE *expr,                // - expression to be converted
     TYPE src,                   // - source type (converted from)
     TYPE tgt )                  // - target type (converted to)
@@ -1468,7 +1470,7 @@ TYPE UdcFindType                // FIND TARGET TYPE FOR UDCF
 TYPE UserDefTypeForType(        // GET ENUM or CLASS TYPE FOR TYPE OR REFERENCE TO IT
     TYPE type )                 // - input type
 ;
-unsigned UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
+CNV_RETN UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
     PTREE *expr,                // - addr( expression to be converted )
     TYPE src,                   // - source type (a class)
     TYPE tgt )                  // - target type

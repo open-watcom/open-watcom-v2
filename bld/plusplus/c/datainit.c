@@ -1193,16 +1193,16 @@ static void dataInitEmitExpr( PTREE node )
 static SYMBOL dataInitFindDefaultCtor( TYPE type )
 /************************************************/
 {
-    unsigned    result;
+    CNV_RETN    retn;
     SYMBOL      ctor;
 
     dataInitCodeFileOpen( false );
     if( SymIsStaticMember( currInit->sym ) ) {
         ModuleInitResumeScoped( SymScope( currInit->sym ) );
     }
-    result = ClassDefaultCtorFind( type, &ctor, NULL );
+    retn = ClassDefaultCtorFind( type, &ctor, NULL );
     dataInitCodeFileClose();
-    switch( result ) {
+    switch( retn ) {
     case CNV_OK:
         break;
     case CNV_IMPOSSIBLE:

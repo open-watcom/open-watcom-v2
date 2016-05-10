@@ -1635,20 +1635,20 @@ static bool is_ptr_constant(    // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
 {
     TYPE type;                  // - type pointed at
     type_flag flags;            // - modifier flags
-    bool retn;                  // - true ==> has a constant type
+    bool rc;                    // - true ==> has a constant type
 
     type = TypedefModifierRemove( expr->type );
     if( type->id == TYP_POINTER ) {
         TypeModFlags( type->of, &flags );
         if( flags & TF1_CONST ) {
-            retn = true;
+            rc = true;
         } else {
-            retn = false;
+            rc = false;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -2095,21 +2095,21 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
 {
     PTREE expr;                 // - current node being analysed
     PTREE* prune;               // - point at which to prune
-    bool retn;                  // - return: true ==> static fun is ok
+    bool rc;                    // - return: true ==> static fun is ok
 
     if( NULL == func ) {
-        retn = true;
+        rc = true;
     } else {
         SYMBOL funsym = func->u.symcg.symbol;
 //      funsym->flag |= SF_REFERENCED;
         if( SymIsThisFuncMember( funsym ) ) {
             if( (func->flags & PTF_COLON_QUALED) || (resolution & ADDRFN_MEMBPTR_KLUGE) ) {
-                retn = true;
+                rc = true;
             } else {
                 PTreeErrorExprSymInf( *root
                                     , ERR_ADDR_NONSTAT_MEMBER_FUNC
                                     , funsym );
-                retn = false;
+                rc = false;
             }
         } else {
             funsym->flag |= SF_REFERENCED;
@@ -2140,10 +2140,10 @@ static bool analyseStaticFunc(  // ANALYSE GOOD REFERENCE TO STATIC FUNC(S)
                 if( prune == NULL ) break;
                 expr = *prune;
             }
-            retn = true;
+            rc = true;
         }
     }
-    return retn;
+    return rc;
 }
 
 
@@ -2154,7 +2154,7 @@ static bool resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
     PTREE node )                // - node for lookup
 {
     SYMBOL func;                // - function from lookup
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
 
     func = ActualNonOverloadedFunc( node->u.symcg.symbol, node->u.symcg.result );
     if( CNV_OK == ConvertOvFunNode( MakePointerTo( func->sym_type )
@@ -2162,12 +2162,12 @@ static bool resolveActualAddrOf(// RESOLVE &func FOR ACTUAL NON-OVERLOAD
 //      func->flag |= SF_ADDR_TAKEN | SF_REFERENCED;
         func->flag |= SF_ADDR_TAKEN;
         node->flags |= PTF_PTR_NONZERO;
-        retn = true;
+        rc = true;
     } else {
         PTreeErrorNode( node );
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -2176,7 +2176,7 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
     unsigned resolution )       // - ADDRFN_RESOLVE_... bits
 {
     PTREE expr;                 // - actual expression
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
     PTREE addrof;               // - '&' node or function node
     PTREE fnode;                // - function node
 
@@ -2184,24 +2184,24 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
     addrof = expr;
     switch( NodeAddrOfFun( addrof, &fnode ) ) {
       default  :
-        retn = true;
+        rc = true;
         break;
       case ADDR_FN_MANY :
         if( resolution & ADDRFN_RESOLVE_MANY ) {
-            retn = analyseStaticFunc( NULL, a_expr, fnode, resolution );
+            rc = analyseStaticFunc( NULL, a_expr, fnode, resolution );
         } else {
             PTreeErrorExpr( fnode, ERR_ADDR_OF_OVERLOADED_FUN );
             PTreeErrorNode( expr );
-            retn = false;
+            rc = false;
         }
         break;
       case ADDR_FN_MANY_USED :
         if( resolution & ADDRFN_RESOLVE_MANY_USE ) {
-            retn = analyseStaticFunc( NULL, a_expr, fnode, resolution );
+            rc = analyseStaticFunc( NULL, a_expr, fnode, resolution );
         } else {
             PTreeErrorExpr( fnode, ERR_ADDR_OF_OVERLOADED_FUN );
             PTreeErrorNode( expr );
-            retn = false;
+            rc = false;
         }
         break;
       case ADDR_FN_ONE :
@@ -2212,34 +2212,34 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
                 if( (fnode->flags & PTF_COLON_QUALED) && ( SymIsThisFuncMember( sym ) ) ) {
                     expr->type = MakeMemberPointerTo( SymClass( sym ), fnode->type );
                     expr->flags |= PTF_PTR_NONZERO;
-                    retn = true;
+                    rc = true;
                 } else {
-                    retn = analyseStaticFunc( MakePointerTo( fnode->type )
+                    rc = analyseStaticFunc( MakePointerTo( fnode->type )
                                             , a_expr
                                             , fnode
                                             , resolution );
                 }
             } else {
                 PTreeErrorNode( expr );
-                retn = false;
+                rc = false;
             }
         } else {
-            retn = analyseStaticFunc( NULL, a_expr, fnode, resolution );
+            rc = analyseStaticFunc( NULL, a_expr, fnode, resolution );
         }
         break;
       case ADDR_FN_ONE_USED :
         if( resolveActualAddrOf( fnode ) ) {
-            retn = analyseStaticFunc( fnode->type
+            rc = analyseStaticFunc( fnode->type
                                     , a_expr
                                     , fnode
                                     , resolution );
         } else {
             PTreeErrorNode( expr );
-            retn = false;
+            rc = false;
         }
         break;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -2279,18 +2279,18 @@ static bool reqdBoolOperand(    // VERIFY A BOOLEAN OPERAND
     PTREE operand )
 {
     TYPE type;                  // - operand type
-    bool retn;                  // - return: true ==> is a bool operand
+    bool rc;                    // - return: true ==> is a bool operand
 
     type = operand->type;
     if( ( NULL != ArithType( type ) )
       ||( NULL != PointerTypeEquivalent( type ) )
       ||( NULL != MemberPtrType( type ) ) ) {
-        retn = true;
+        rc = true;
     } else {
         exprError( operand, ERR_NOT_BOOLEAN );
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -2489,7 +2489,7 @@ static bool diagThisMemberFun(  // DIAGNOSE NON-STATIC MEMBER FUNCTION
     PTREE expr,                 // - expression to be tested
     PTREE err_expr )            // - expression being analysed
 {
-    bool retn;                  // - return: true ==> diagnosed as error
+    bool rc;                    // - return: true ==> diagnosed as error
     SYMBOL fun;                 // - potential non-static member fun.
 
     if( expr->op == PT_SYMBOL ) {
@@ -2497,29 +2497,29 @@ static bool diagThisMemberFun(  // DIAGNOSE NON-STATIC MEMBER FUNCTION
         if( SymIsThisFuncMember( fun ) ) {
             PTreeErrorExprSym( expr, ERR_CANT_BE_MEMB_FUN, fun );
             PTreeErrorNode( err_expr );
-            retn = true;
+            rc = true;
         } else {
-            retn = false;
+            rc = false;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
 static bool allowClassCastAsLValue( PTREE *p_expr )
 {
     TYPE class_type = StructType( NodeType( *p_expr ) );
-    bool retn;
+    bool rc;
 
     if( class_type == NULL ) {
-        retn = false;
+        rc = false;
     } else {
         *p_expr = NodeForceLvalue( *p_expr );
-        retn = true;
+        rc = true;
     }
-    return retn;
+    return rc;
 }
 
 

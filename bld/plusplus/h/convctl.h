@@ -124,7 +124,7 @@ struct convctl                  // CONVCTL -- conversion control information
     MSG_NUM msg_no;             // - message # when error
     FNOV_DIAG fnov_diag;        // - diagnosis list
     PTREE destination;          // - node for destination
-    CNV_REQD req;               // - conversion request
+    CNV_REQD reqd_cnv;          // - conversion request
     CRUFF rough;                // - rough conversion classification
     CTD ctd;                    // - common-type derivation
     type_flag mismatch;         // - what was removed on cv mismatch
@@ -150,7 +150,7 @@ void ConvCtlClassAnalysis       // ANALYSE CLASS TYPE
 void ConvCtlInit                // INITIALIZE CONVCTL
     ( CONVCTL* ctl              // - control info.
     , PTREE expr                // - expression
-    , CNV_REQD request          // - type of conversion
+    , CNV_REQD reqd_cnv         // - type of conversion
     , CNV_DIAG* diag )          // - diagnosis
 ;
 void ConvCtlInitCast            // INITIALIZE CONVCTL FOR CAST EXPRESSION
@@ -191,15 +191,16 @@ unsigned PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     PC_PTR pcp_tgt,             // - target classification
     PC_PTR pcp_src,             // - source classification
     PTREE expr,                 // - expression for error
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 ;
+#if 0
 unsigned OldConvertExprDiagResult( // CONVERT AND DIAGNOSE RESULT
     PTREE *expr_addr,           // - addr( expression to be converted )
     TYPE proto,                 // - prototype
     unsigned conversion,        // - type of conversion
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
-
+#endif
 #ifndef NDEBUG
 void DbgConvType                // DUMP CONVTYPE INFORMATION
     ( CONVTYPE* type )          // - structure

@@ -90,27 +90,27 @@ TYPE LvalueErrLeft(             // NOT-LVALUE ERROR (LEFT NODE)
 static bool requiresThis(       // TEST IF SYMBOL REQUIRES A THIS
     SYMBOL sym )                // - symbol
 {
-    bool retn;                  // - true ==> requires "this"
+    bool rc;                    // - true ==> requires "this"
     SCOPE func_class_scope;     // - scope for function
 
     if( SymIsClassMember( sym ) ) {
         if( SymIsStaticMember( sym ) || SymIsEnumeration( sym ) ) {
-            retn = false;
+            rc = false;
         } else if( NULL == TypeThisExists() ) {
-            retn = true;
+            rc = true;
         } else {
             func_class_scope = ScopeFunctionScopeInProgress()->enclosing;
             if( ( func_class_scope->id == SCOPE_CLASS )
               &&( ScopeDerived( func_class_scope, SymScope( sym ) ) ) ) {
-                retn = false;
+                rc = false;
             } else {
-                retn = true;
+                rc = true;
             }
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -120,7 +120,7 @@ bool AnalyseSymbolAccess(       // ANALYSE ACCESS TO SYMBOL
     PTREE this_expr,            // - expression for "this"
     SYMBOL_DIAG *diag )         // - diagnosis to be used
 {
-    bool retn;                  // - return: true ==> access ok
+    bool rc;                    // - return: true ==> access ok
     SEARCH_RESULT *result;      // - search result
     TOKEN_LOCN err_locn;        // - location for errors
 
@@ -138,22 +138,22 @@ bool AnalyseSymbolAccess(       // ANALYSE ACCESS TO SYMBOL
     SymSetNvReferenced( symbol->u.symcg.symbol );
     if( ScopeCheckSymbol( result, symbol->u.symcg.symbol ) ) {
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else if( this_expr == NULL ) {
         if( result->simple ) {
-            retn = true;
+            rc = true;
         } else if( result->no_this ) {
-            retn = true;
+            rc = true;
         } else if( requiresThis( symbol->u.symcg.symbol ) ) {
             PTreeErrorExpr( expr, diag->msg_no_this );
-            retn = false;
+            rc = false;
         } else {
-            retn = true;
+            rc = true;
         }
     } else {
-        retn = SymIsClassMember( symbol->u.symcg.symbol );
+        rc = SymIsClassMember( symbol->u.symcg.symbol );
     }
-    return retn;
+    return rc;
 }
 
 
@@ -167,7 +167,7 @@ static SYMBOL_DIAG diagMemb =   // diagnosis for member
 bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
     PTREE *a_expr )             // - addr[ expression ]
 {
-    bool retn;                  // - return: true ==> ok
+    bool rc;                  // - return: true ==> ok
     PTREE expr;                 // - expression
     SEARCH_RESULT *result;      // - search result for node
     PTREE *r_right;             // - ref[ node for symbol to be adjusted ]
@@ -217,11 +217,11 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
         expr = NodeFetchReference( expr );
         expr->flags |= PTF_LV_CHECKED;
         *a_expr = expr;
-        retn = true;
+        rc = true;
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -261,18 +261,18 @@ static bool checkConversionLookup( // CHECK RESULT OF CONVERSION LOOKUP
     PTREE conv,                 // - node for conversion routine
     PTREE expr )                // - node being analysed
 {
-    bool retn;                  // - true ==> ok
+    bool rc;                  // - true ==> ok
 
     if( ( result == NULL ) || ( result->sym == NULL ) ) {
         PTreeErrorExpr( conv, ERR_CONVERSION_NOT_DEFINED );
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else {
         ExtraRptSymUsage( result->sym );
         NodeSymbolCallee( conv, result->sym, result );
-        retn = true;
+        rc = true;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -282,7 +282,7 @@ static bool checkIdLookup(      // CHECK RESULT OF ID LOOKUP
     PTREE id,                   // - node for id
     PTREE expr )                // - node being analysed
 {
-    bool retn;                  // - true ==> ok
+    bool rc;                    // - true ==> ok
     SYMBOL sym;                 // - a symbol lookup up
     MSG_NUM msg;                // - undeclared sym error message
     NAME name;                  // - id name
@@ -304,31 +304,31 @@ static bool checkIdLookup(      // CHECK RESULT OF ID LOOKUP
             PTreeErrorExprNameType( id, msg, name, ScopeClass( scope ) );
         }
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else {
         sym = result->sym_name->name_syms;
         if( sym == NULL ) {
             PTreeErrorExpr( id, ERR_ILLEGAL_TYPE_USE );
             ScopeFreeResult( result );
             PTreeErrorNode( expr );
-            retn = false;
+            rc = false;
         } else if( SymIsAnError( sym ) ) {
             ScopeFreeResult( result );
             PTreeErrorNode( expr );
-            retn = false;
+            rc = false;
         } else if( NULL != FunctionDeclarationType( sym->sym_type ) ) {
             ExtraRptSymUsage( sym );
             NodeSymbolNoRef( id, sym, result );
             id->flags |= PTF_LV_CHECKED;
-            retn = true;
+            rc = true;
         } else {
             ExtraRptSymUsage( sym );
             NodeSymbol( id, sym, result );
             id->flags |= PTF_LV_CHECKED;
-            retn = true;
+            rc = true;
         }
     }
-    return retn;
+    return rc;
 }
 
 
@@ -336,16 +336,16 @@ static bool analyseFunction(    // ANALYSE FUNCTION NODE
     PTREE expr,                 // - original expression
     PTREE func )                // - function node
 {
-    bool retn;                  // - true ==> function ok
+    bool rc;                  // - true ==> function ok
 
     if( ScopeImmediateCheck( func->u.symcg.result ) ) {
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else {
         expr->flags |= PTF_LVALUE;
-        retn = true;
+        rc = true;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -366,14 +366,14 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
 {
     PTREE expr;                 // - symbol entry
     PTREE alias;                // - alias expr
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
     sym = expr->u.symcg.symbol;
     if( SymIsAnError( sym ) ) {
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else if( sym->id == SC_ADDRESS_ALIAS ) {
         alias = NodeSymbol( NULL, sym->u.alias, expr->u.symcg.result );
         alias = PTreeCopySrcLocation( alias, expr );
@@ -382,20 +382,20 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
         }
         PTreeFree( expr );
         *a_expr = alias;
-        retn = true;
+        rc = true;
     } else if( NULL != FunctionDeclarationType( sym->sym_type ) ) {
         if( MainProcedure( sym ) ) {
             PTreeErrorExpr( expr, ERR_REFERENCED_MAIN );
-            retn = false;
+            rc = false;
         } else {
-            retn = analyseFunction( expr, expr );
+            rc = analyseFunction( expr, expr );
         }
     } else {
         sym = SymDeAlias( sym );
         expr->u.symcg.symbol = sym;
-        retn = AnalyseSymbolAccess( expr, expr, NULL, &diagMemb );
+        rc = AnalyseSymbolAccess( expr, expr, NULL, &diagMemb );
         NodeFreeSearchResult( expr );
-        if( retn ) {
+        if( rc ) {
             if( SymIsEnumeration( sym ) ) {
                 sym = expr->u.symcg.symbol;
                 PTreeFree( expr );
@@ -407,25 +407,25 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
                 checkVolatileVar( expr );
             }
             *a_expr = expr;
-            retn = true;
+            rc = true;
         }
     }
-    return retn;
+    return rc;
 }
 
 static bool massageStaticEnumAccess( // x.static, x.enum adjustments
     PTREE *a_expr )             // - addr( member expr )
 {
 #ifdef OLD_STATIC_MEMBER_ACCESS
-    bool retn;
+    bool rc;
 
     reduceToRight( a_expr );
-    retn = analyseBareSymbol( a_expr );
+    rc = analyseBareSymbol( a_expr );
 #else
     PTREE expr;
     PTREE lhs;
     PTREE rhs;
-    bool retn;
+    bool rc;
 
     expr = *a_expr;
     DbgAssert( NodeIsBinaryOp( expr, CO_ARROW ) || NodeIsBinaryOp( expr, CO_DOT ) );
@@ -434,10 +434,10 @@ static bool massageStaticEnumAccess( // x.static, x.enum adjustments
     rhs = expr->u.subtree[1];
     expr->u.subtree[1] = NULL;
     PTreeFree( expr );
-    retn = analyseBareSymbol( &rhs );
+    rc = analyseBareSymbol( &rhs );
     *a_expr = NodeCommaIfSideEffect( lhs, rhs );
 #endif
-    return retn;
+    return rc;
 }
 
 
@@ -445,19 +445,19 @@ static bool analyseMemberExpr(  // ANALYSE A MEMBER EXPRESION
     PTREE *a_expr )             // - addr( member expression )
 {
     PTREE expr;                 // - symbol entry
-    bool retn;                  // - return value
+    bool rc;                    // - return value
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
     if( expr->op == PT_ERROR ) {
-        retn = false;
+        rc = false;
     } else if( NodeIsBinaryOp( expr->u.subtree[1], CO_TEMPLATE ) ) {
         DbgAssert( expr->u.subtree[1]->u.subtree[0]->op == PT_SYMBOL );
         sym = expr->u.subtree[1]->u.subtree[0]->u.symcg.symbol;
         expr->type = sym->sym_type;
 
         DbgAssert( NULL != FunctionDeclarationType( sym->sym_type ) );
-        retn = analyseFunction( expr->u.subtree[1],
+        rc = analyseFunction( expr->u.subtree[1],
                                 expr->u.subtree[1]->u.subtree[0] );
     } else {
         DbgAssert( expr->u.subtree[1]->op == PT_SYMBOL );
@@ -465,18 +465,18 @@ static bool analyseMemberExpr(  // ANALYSE A MEMBER EXPRESION
         expr->type = sym->sym_type;
 
         if( NULL != FunctionDeclarationType( sym->sym_type ) ) {
-            retn = analyseFunction( expr, expr->u.subtree[1] );
+            rc = analyseFunction( expr, expr->u.subtree[1] );
         } else if( SymIsStaticDataMember( sym ) || SymIsEnumeration( sym ) ) {
-            retn = massageStaticEnumAccess( a_expr );
+            rc = massageStaticEnumAccess( a_expr );
         } else {
-            retn = AnalyseThisDataItem( a_expr );
-            if( retn ) {
+            rc = AnalyseThisDataItem( a_expr );
+            if( rc ) {
                 checkVolatileVar( *a_expr );
-                retn = true;
+                rc = true;
             }
         }
     }
-    return retn;
+    return rc;
 }
 
 
@@ -484,7 +484,7 @@ static bool analyseSymbol(      // ANALYSE AN UNDECORATED SYMBOL
     PTREE *a_expr )             // - addr( symbol entry )
 {
     PTREE expr;                 // - symbol entry
-    bool retn;                  // - return value
+    bool rc;                    // - return value
     SYMBOL sym;                 // - the symbol
 
     expr = *a_expr;
@@ -494,18 +494,18 @@ static bool analyseSymbol(      // ANALYSE AN UNDECORATED SYMBOL
             expr = thisPointsNode( expr );
             *a_expr = expr;
             if( expr->op == PT_ERROR ) {
-                retn = false;
+                rc = false;
             } else {
-                retn = analyseMemberExpr( a_expr );
+                rc = analyseMemberExpr( a_expr );
             }
         } else {
             PTreeErrorExpr( expr, ERR_INVALID_NONSTATIC_ACCESS );
-            retn = false;
+            rc = false;
         }
     } else {
-        retn = analyseBareSymbol( a_expr );
+        rc = analyseBareSymbol( a_expr );
     }
-    return retn;
+    return rc;
 }
 
 
@@ -517,7 +517,7 @@ static bool analyseMember(      // ANALYSE A MEMBER NODE
     PTREE member;               // - node for member
     PTREE expr;                 // - expression
     SEARCH_RESULT *result;      // - result of search
-    bool retn = false;          // - true ==> ok
+    bool rc = false;          // - true ==> ok
 
     expr = *a_expr;
     member = PTreeOpRight( expr );
@@ -526,24 +526,24 @@ static bool analyseMember(      // ANALYSE A MEMBER NODE
                                                 , disamb
                                                 , member->type
                                                 , TF1_NULL );
-        retn = checkConversionLookup( result, member, expr );
+        rc = checkConversionLookup( result, member, expr );
     } else {
         if( member->op == PT_ID ) {
             result = ScopeFindScopedMember( start, disamb, member->u.id.name );
-            retn = checkIdLookup( result, start, member, expr );
+            rc = checkIdLookup( result, start, member, expr );
         } else if( NodeIsBinaryOp( member, CO_TEMPLATE )
                 && ( member->u.subtree[0]->op == PT_ID ) ) {
             result = ScopeFindScopedMember( start, disamb,
                                             member->u.subtree[0]->u.id.name );
-            retn = checkIdLookup( result, start, member->u.subtree[0], expr );
+            rc = checkIdLookup( result, start, member->u.subtree[0], expr );
         } else {
             DbgAssert( 0 );
         }
     }
-    if( retn ) {
-        retn = analyseMemberExpr( a_expr );
+    if( rc ) {
+        rc = analyseMemberExpr( a_expr );
     }
-    return retn;
+    return rc;
 }
 
 
@@ -551,7 +551,7 @@ static bool simpleTypeDtor(     // TEST IF DTOR OF A SIMPLE TYPE
     TYPE type,                  // - type to be DTOR'd
     PTREE expr )                // - "->" or "." expression
 {
-    bool retn;                  // - return: true ==> is DTOR of simple type
+    bool rc;                    // - return: true ==> is DTOR of simple type
     PTREE right;                // - right  operand
 
     type = type;                // may have to check some day
@@ -564,11 +564,11 @@ static bool simpleTypeDtor(     // TEST IF DTOR OF A SIMPLE TYPE
                                      expr->u.subtree[1]->type ) ) {
             CErr1( ERR_INVALID_SCALAR_DESTRUCTOR );
         }
-        retn = true;
+        rc = true;
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -579,7 +579,7 @@ static bool analyseDtor(        // ANALYSE A DTOR CALL
 {
     PTREE expr;                 // - DTOR expression, before lookup
     PTREE dtor;                 // - possible DTOR symbol
-    bool retn;                  // - return: true ==> everything ok
+    bool rc;                    // - return: true ==> everything ok
     SEARCH_RESULT *result;      // - result of search
 
     expr = *a_expr;
@@ -587,32 +587,32 @@ static bool analyseDtor(        // ANALYSE A DTOR CALL
     if( scope != TypeScope( dtor->type ) ) {
         PTreeErrorExpr( dtor, ERR_DTOR_NOT_SAME );
         PTreeErrorNode( expr );
-        retn = false;
+        rc = false;
     } else {
         dtor = expr->u.subtree[1];
         if( disamb == NULL ) {
             result = DtorFindResult( dtor->type );
-            retn = checkIdLookup( result, scope, dtor, expr );
-            if( retn ) {
-                retn = analyseMemberExpr( a_expr );
+            rc = checkIdLookup( result, scope, dtor, expr );
+            if( rc ) {
+                rc = analyseMemberExpr( a_expr );
             }
         } else {
             if( disamb != scope ) {
                 PTreeErrorExpr( dtor, ERR_DTOR_BAD_QUAL );
                 PTreeErrorNode( dtor );
-                retn = false;
+                rc = false;
             } else {
                 DtorFind( dtor->type );
                 result = ScopeContainsMember( scope
                                             , CppDestructorName() );
-                retn = checkIdLookup( result, scope, dtor, expr );
-                if( retn ) {
-                    retn = analyseMemberExpr( a_expr );
+                rc = checkIdLookup( result, scope, dtor, expr );
+                if( rc ) {
+                    rc = analyseMemberExpr( a_expr );
                 }
             }
         }
     }
-    return retn;
+    return rc;
 }
 
 
@@ -620,50 +620,50 @@ static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
     PTREE *a_expr,              // - addr( expression for member )
     TYPE type )                 // - type for class on left
 {
-    bool retn = false;          // - return: true ==> is ok
+    bool rc = false;            // - return: true ==> is ok
     PTREE expr;                 // - operation
     PTREE right;                // - right operand
     SCOPE scope;                // - scope for class
     SCOPE disamb;               // - disambiguating scope
 
     if( type == NULL ) {
-        retn = false;
+        rc = false;
     } else {
         scope = TypeScope( type );
         expr = *a_expr;
         if( scope == NULL ) {
             expr->type = TypeVoidFunOfVoid();
-            retn = true;                // assumes only DTOR will get thru
+            rc = true;                // assumes only DTOR will get thru
         } else {
             right = expr->u.subtree[1];
             if( right->op == PT_ID ) {
                 disamb = NULL;
                 if( right->cgop == CO_NAME_DTOR ) {
-                    retn = analyseDtor( a_expr, scope, disamb );
+                    rc = analyseDtor( a_expr, scope, disamb );
                 } else {
-                    retn = analyseMember( a_expr, scope, disamb );
+                    rc = analyseMember( a_expr, scope, disamb );
                 }
             } else if( NodeIsBinaryOp( right, CO_COLON_COLON ) ) {
                 if( right->u.subtree[0] == NULL ) { // - already lexical error
                     PTreeErrorNode( expr );
-                    retn = false;
+                    rc = false;
                 } else {
                     disamb = TypeScope( right->u.subtree[0]->type );
                     right = reduceToRight( &expr->u.subtree[1] );
                     right->flags |= PTF_COLON_QUALED;
                     if( right->cgop == CO_NAME_DTOR ) {
-                        retn = analyseDtor( a_expr, scope, disamb );
+                        rc = analyseDtor( a_expr, scope, disamb );
                     } else {
-                        retn = analyseMember( a_expr, scope, disamb );
+                        rc = analyseMember( a_expr, scope, disamb );
                     }
                 }
             } else if( right->op == PT_SYMBOL ) {
                 // this will be the form from datainit.c
-                retn = analyseMemberExpr( a_expr );
+                rc = analyseMemberExpr( a_expr );
             } else if( NodeIsBinaryOp( right, CO_TEMPLATE )
                     && ( right->u.subtree[0]->op == PT_ID ) ) {
                 disamb = NULL;
-                retn = analyseMember( a_expr, scope, disamb );
+                rc = analyseMember( a_expr, scope, disamb );
             } else if( NodeIsBinaryOp( right, CO_TEMPLATE )
                     && ( right->u.subtree[0]->op == PT_SYMBOL ) ) {
                 // TODO
@@ -671,7 +671,7 @@ static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
                 printf("%s:%d\n", __FILE__, __LINE__);
                 DumpPTree( right );
 #endif
-                retn = analyseMemberExpr( a_expr );
+                rc = analyseMemberExpr( a_expr );
 #ifndef NDEBUG
             } else {
                 CFatal( "corrupted member tree" );
@@ -679,7 +679,7 @@ static bool analyseMembRight(   // ANALYSE MEMBER ON RIGHT
             }
         }
     }
-    return retn;
+    return rc;
 }
 
 static TYPE diagMember( PTREE left, PTREE expr, MSG_NUM msg )
@@ -758,7 +758,7 @@ static TYPE analyseClassLeft(   // ANALYSE A CLASS ON LEFT
 static bool analyseClQual(      // ANALYSE :: operator
     PTREE *a_expr )             // - addr( expression to be analysed )
 {
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
     PTREE expr;                 // - expression to be analysed
     SCOPE start;                // - starting scope
     SCOPE disam;                // - disambiguating scope
@@ -782,19 +782,19 @@ static bool analyseClQual(      // ANALYSE :: operator
                                                , disam
                                                , right->type
                                                , TF1_NULL );
-        retn = checkConversionLookup( result, right, expr );
+        rc = checkConversionLookup( result, right, expr );
     } else {
         result = ScopeFindScopedNaked( start
                                      , disam
                                      , right->u.id.name );
-        retn = checkIdLookup( result, start, right, expr );
+        rc = checkIdLookup( result, start, right, expr );
     }
-    if( retn ) {
+    if( rc ) {
         right = reduceToRight( a_expr );
         right->flags |= PTF_COLON_QUALED;
-        retn = true;
+        rc = true;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -803,10 +803,10 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
 {
     PTREE expr;                 // - expression to be analysed
     PTREE right;                // - expression on right
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
     SEARCH_RESULT *result;      // - result of lookup
 
-    retn = false;
+    rc = false;
     expr = *a_expr;
     switch( expr->op ) {
     case PT_ID :
@@ -818,80 +818,80 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
                 right->flags |= PTF_LV_CHECKED;
                 *a_expr = right;
                 PTreeFree( expr );
-                retn = true;
+                rc = true;
             }
         } else if( expr->cgop == CO_NAME_CDTOR_EXTRA ) {
             *a_expr = NodeCDtorExtra();
             PTreeFree( expr );
-            retn = true;
+            rc = true;
         } else if( expr->cgop == CO_NAME_DTOR ) {
             PTreeErrorExpr( expr, ERR_DTOR_NO_OBJECT );
         } else {
             if( isUDF( expr ) ) {
                 result = ScopeFindNakedConversion( GetCurrScope(), expr->type, TF1_NULL );
-                retn = checkConversionLookup( result, expr, expr );
+                rc = checkConversionLookup( result, expr, expr );
             } else {
                 result = ScopeFindNaked( GetCurrScope(), expr->u.id.name );
-                retn = checkIdLookup( result, GetCurrScope(), expr, expr );
+                rc = checkIdLookup( result, GetCurrScope(), expr, expr );
             }
-            if( retn ) {
-                retn = analyseSymbol( a_expr );
+            if( rc ) {
+                rc = analyseSymbol( a_expr );
             }
         }
         break;
     case PT_BINARY :
         if( CO_COLON_COLON == expr->cgop ){
-            retn = analyseClQual( a_expr );
-            if( retn ) {
-                retn = analyseSymbol( a_expr );
+            rc = analyseClQual( a_expr );
+            if( rc ) {
+                rc = analyseSymbol( a_expr );
             }
             break;
         }
         // drops thru
     default :
         expr->flags |= PTF_LV_CHECKED;
-        retn = true;
+        rc = true;
         break;
     }
-    if( retn ) {
+    if( rc ) {
         (*a_expr)->type = BindTemplateClass( (*a_expr)->type, &(*a_expr)->locn, false );
     }
-    return retn;
+    return rc;
 }
 
 
 bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]
 {
-    bool retn;                  // - return: true ==> all ok
+    bool rc;                    // - return: true ==> all ok
     SYMBOL sym;                 // - symbol
 
     if( NodeIsBinaryOp( *a_expr, CO_COLON_COLON ) ) {
-        retn = analyseClQual( a_expr );
-        if( retn ) {
+        rc = analyseClQual( a_expr );
+        if( rc ) {
             sym = (*a_expr)->u.symcg.symbol;
             if( SymIsFunction( sym ) ) {
                 if( SymIsCtor( sym ) ) {
                     PTreeErrorExpr( *a_expr, ERR_ADDR_OF_CTOR );
-                    retn = false;
+                    rc = false;
                 } else if( SymIsDtor( sym ) ) {
                     PTreeErrorExpr( *a_expr, ERR_ADDR_OF_DTOR );
-                    retn = false;
+                    rc = false;
                 } else {
                     (*a_expr)->flags |= PTF_LVALUE;
-                    retn = true;
+                    rc = true;
                 }
             } else if( SymIsThisDataMember( sym ) ) {
                 (*a_expr)->flags |= PTF_LVALUE;
-                retn = true;
+                rc = true;
             } else {
-                retn = analyseSymbol( a_expr );
+                rc = analyseSymbol( a_expr );
             }
         }
     } else {
-        retn = AnalyseLvalue( a_expr );
+        rc = AnalyseLvalue( a_expr );
     }
-    return retn;
+    return rc;
 }
 
 

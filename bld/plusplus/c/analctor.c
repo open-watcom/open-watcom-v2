@@ -54,27 +54,27 @@ static bool ctorDefineDefault(  // DEFINE A DEFAULT CTOR
     TYPE cl_type,               // - class type
     arg_list *alist )           // - arguments list
 {
-    bool retn;                  // - true ==> a default CTOR was defined
+    bool rc;                    // - true ==> a default CTOR was defined
     SYMBOL ctor;                // - CTOR symbol
 
     if( ! TypeDefined( cl_type ) ) {
-        retn = false;
+        rc = false;
     } else if( alist->num_args == 0 ) {
         if( CNV_OK == ClassDefaultCtorDefine( cl_type, &ctor ) ) {
-            retn = true;
+            rc = true;
         } else {
-            retn = false;
+            rc = false;
         }
     } else if( alist->num_args == 1 ) {
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            retn = false;
+            rc = false;
         } else {
-            retn = true;
+            rc = true;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -82,23 +82,23 @@ static bool ctorDefineDefaultCnv(   // DEFINE A DEFAULT CTOR FOR CONVERSION
     TYPE cl_type,                   // - class type
     arg_list *alist )               // - arguments list
 {
-    bool retn;                      // - true ==> a default CTOR was defined
+    bool rc;                      // - true ==> a default CTOR was defined
 
     if( ! TypeDefined( cl_type ) ) {
-        retn = false;
+        rc = false;
     } else if( alist->num_args == 0 ) {
-        retn = ctorDefineDefault( cl_type, alist );
+        rc = ctorDefineDefault( cl_type, alist );
     } else if( alist->num_args == 1 ) {
         cl_type = ClassTypeForType( cl_type );
         if( NULL == ClassAddDefaultCopy( cl_type->u.c.scope ) ) {
-            retn = false;
+            rc = false;
         } else {
-            retn = true;
+            rc = true;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 
@@ -350,7 +350,7 @@ static CNV_RETN analyseCtorClassDiag( // ANALYSE A CLASS CTOR
 static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
     SCOPE scope,                // - start scope for component ctors (NULLable)
     TYPE type,                  // - type for CTOR
-    unsigned conversion,        // - type of conversion reqd
+    CNV_REQD reqd_cnv,          // - type of conversion reqd
     SYMBOL *ctor,               // - ctor to be filled in
     PTREE *initial,             // - initialization arguments (modified)
     FNOV_DIAG *fnov_diag )      // - diagnosis information
@@ -373,7 +373,7 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
       case TYP_BITFIELD :
         return analyseTypeCtorDiag( scope
                                   , base_type->of
-                                  , conversion
+                                  , reqd_cnv
                                   , ctor
                                   , initial
                                   , fnov_diag );
@@ -432,13 +432,13 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
 CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
     SCOPE scope,                // - start scope for component ctors (NULLable)
     TYPE type,                  // - type for CTOR
-    unsigned conversion,        // - type of conversion reqd
+    CNV_REQD reqd_cnv,          // - type of conversion reqd
     SYMBOL *ctor,               // - ctor to be filled in
     PTREE *initial )            // - initialization arguments (modified)
 {
     return analyseTypeCtorDiag( scope
                               , type
-                              , conversion
+                              , reqd_cnv
                               , ctor
                               , initial
                               , NULL );

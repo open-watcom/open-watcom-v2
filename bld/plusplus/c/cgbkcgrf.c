@@ -279,20 +279,20 @@ static bool oeInlineable(       // DETERMINE IF /oe CAN INLINE THE FUNCTION
     SYMBOL sym,                 // - symbol for node
     CGFILE *cgfile )            // - code gen file for function
 {
-    bool retn;                  // - true ==> CAN BE /oe inlined
+    bool rc;                    // - true ==> CAN BE /oe inlined
 
     if( funcInlineable( sym ) ) {
         if( cgfile == NULL ) {
-            retn = false;
+            rc = false;
         } else if( cgfile->u.s.oe_inl ) {
-            retn = true;
+            rc = true;
         } else {
-            retn = false;
+            rc = false;
         }
     } else {
-        retn = false;
+        rc = false;
     }
-    return retn;
+    return rc;
 }
 
 

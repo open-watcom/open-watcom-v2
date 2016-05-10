@@ -193,23 +193,23 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
 }
 
 
-static unsigned checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
+static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
     TYPE class_type,            // - NULL or class type
     TYPE base_type,             // - base type of type being new'ed
     SYMBOL* a_ctor,             // - addr[ ctor symbol ]
     PTREE* a_initial,           // - addr[ initialization parse tree ]
     TOKEN_LOCN* err_locn )      // - error location
 {
-    unsigned ctor_overload;     // - analysis result
+    CNV_RETN retn;              // - analysis result
     PTREE initial;              // - initialization parse tree
     FNOV_DIAG fnov_diag;
 
-    ctor_overload = AnalyseCtorDiag( base_type
+    retn = AnalyseCtorDiag( base_type
                                    , a_ctor
                                    , a_initial
                                    , &fnov_diag );
     initial = *a_initial;
-    switch( ctor_overload ) {
+    switch( retn ) {
       case CNV_ERR :
       case CNV_OK :
         break;
@@ -222,12 +222,12 @@ static unsigned checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
                 if( ! TypeNeedsCtor( class_type ) ) {
                     /* no initializer and struct type */
                     /* but struct doesn't need a ctor */
-                    ctor_overload = CNV_OK;
+                    retn = CNV_OK;
                     break;
                 }
             } else {
                 /* no initializer and non-struct type */
-                ctor_overload = CNV_OK;
+                retn = CNV_OK;
                 break;
             }
             SetErrLoc( err_locn );
@@ -252,7 +252,7 @@ static unsigned checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
         }
     }
     FnovFreeDiag( &fnov_diag );
-    return ctor_overload;
+    return retn;
 }
 
 static SCOPE scopeLookup( TYPE type )
@@ -358,7 +358,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     TYPE type )                 // - type of expression
 {
     unsigned count_placement;   // - # placement arg.s
-    unsigned ctor_overload;     // - result of ctor overload
+    CNV_RETN retn;              // - result of ctor overload
     unsigned num_args;          // - number of args for delete operator
     PTREE new_parms1;           // - CO_NEW_PARMS1 node
     PTREE new_parms2;           // - CO_NEW_PARMS2 node
@@ -426,12 +426,12 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     //
     // verify CTORING is ok
     //
-    ctor_overload = checkNewCtor( class_type
+    retn = checkNewCtor( class_type
                                 , base_type
                                 , &sym_ctor
                                 , &initial
                                 , &err_locn );
-    if( ctor_overload != CNV_OK ) {
+    if( retn != CNV_OK ) {
         NodeFreeDupedExpr( placement );
         NodeFreeDupedExpr( elem_size );
         NodeFreeDupedExpr( array_number );
