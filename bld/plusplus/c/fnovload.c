@@ -475,17 +475,17 @@ static bool isEllipsisCandidate( TYPE type, int num_args )
 //      type having fewer or as many arguments as num_args+1 and
 //              last argument is ellipsis
 {
-    TYPE argtype;
-    int type_args;
-    arg_list *alist;
+    TYPE        argtype;
+    int         type_num_args;
+    arg_list    *alist;
 
     type = FunctionDeclarationType( type );
     if( type != NULL ) {
         alist = TypeArgList( type );
-        type_args = alist->num_args;
-        if( type_args != 0 ) {
-            if( type_args <= num_args+1 ) {
-                argtype = alist->type_list[type_args-1];
+        type_num_args = alist->num_args;
+        if( type_num_args != 0 ) {
+            if( type_num_args <= num_args + 1 ) {
+                argtype = alist->type_list[type_num_args - 1];
                 if( argtype->id == TYP_DOT_DOT_DOT ) {
                     return( true );
                 }
