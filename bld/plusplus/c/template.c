@@ -2380,8 +2380,7 @@ static TYPE createUnboundClass( TEMPLATE_INFO *tinfo,
 }
 
 static TEMPLATE_SPECIALIZATION *
-findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
-                                 SCOPE *parm_scope )
+findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_scope )
 {
     struct candidate_ring {
         struct candidate_ring *next;
@@ -2419,15 +2418,15 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
     RingIterBeg( tinfo->specializations, curr_spec ) {
         spec_list = curr_spec->spec_args;
         if( spec_list != NULL ) {
-            SCOPE parm_scope;
+            SCOPE parm_scope1;
             bool bound;
 
-            parm_scope = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
-            ScopeSetEnclosing( parm_scope, curr_spec->decl_scope );
+            parm_scope1 = ScopeCreate( SCOPE_TEMPLATE_SPEC_PARM );
+            ScopeSetEnclosing( parm_scope1, curr_spec->decl_scope );
 
-            BindExplicitTemplateArguments( parm_scope, NULL );
+            BindExplicitTemplateArguments( parm_scope1, NULL );
 
-            bound = BindGenericTypes( parm_scope, spec_list,
+            bound = BindGenericTypes( parm_scope1, spec_list,
                                       parms, false, 0 );
             if( bound ) {
 #ifndef NDEBUG
@@ -2459,25 +2458,23 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
                             RingPrune( &candidate_list, candidate_iter );
                         } else if( candidate_at_least_as_specialized
                                 && ! curr_at_least_as_specialized ) {
-                            ScopeBurn( parm_scope );
-                            parm_scope = NULL;
+                            ScopeBurn( parm_scope1 );
+                            parm_scope1 = NULL;
                             break;
                         }
                     } RingIterEndSafe( candidate_iter )
                 }
 
-                if( parm_scope != NULL ) {
+                if( parm_scope1 != NULL ) {
                     candidate_iter =
                         RingAlloc( &candidate_list,
                                    sizeof( struct candidate_ring ) );
                     candidate_iter->tspec = curr_spec;
-                    candidate_iter->parm_scope = parm_scope;
+                    candidate_iter->parm_scope = parm_scope1;
                     candidate_iter->idx = i;
                 }
-            }
-            else
-            {
-                ScopeBurn( parm_scope );
+            } else {
+                ScopeBurn( parm_scope1 );
                 parm_scope = NULL;
             }
 
