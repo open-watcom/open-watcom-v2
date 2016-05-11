@@ -1505,19 +1505,19 @@ static int  MkFlist( dbg_struct st )
             break;
         case FIELD_METHOD:{
             field_any        *curr;
-            int               count;
+            int               count1;
 
-            count = 1;
+            count1 = 1;
             for( curr = field->entry.next; curr != NULL; curr = curr->entry.next ) {
                 if( curr->entry.field_type != FIELD_METHOD )
                     break;
                 if( strcmp( curr->method.name, field->method.name ) != 0 )
                     break;
-                ++count;
+                ++count1;
                 field = curr;
             }
             fld.a_method = StartType( out, LFG_METHOD );
-            fld.a_method->count = count;
+            fld.a_method->count = count1;
             fld.a_method->mList = ++TypeIdx;
             CVPutStr( out, field->method.name );
             len += EndSub( out );  /* write out subfield accum length */
