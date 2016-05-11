@@ -557,9 +557,9 @@ static void WriteImportInfo( void )
     WriteIAT( buf + IData.iat_off, linear ); // Import Address table
     pos = IData.mod_name_off;            /* write the module names */
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
-        int size = mod->mod->len + 1;
-        PutInfo( buf + pos, mod->mod->name, size );
-        pos += size;
+        int name_size = mod->mod->len + 1;
+        PutInfo( buf + pos, mod->mod->name, name_size );
+        pos += name_size;
     }
     pos = IData.hint_off;        /* write out the import names */
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
