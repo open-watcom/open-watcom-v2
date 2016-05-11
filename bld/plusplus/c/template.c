@@ -2475,7 +2475,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
                 }
             } else {
                 ScopeBurn( parm_scope1 );
-                parm_scope = NULL;
+                parm_scope1 = NULL;
             }
 
             i++;
