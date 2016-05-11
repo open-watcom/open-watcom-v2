@@ -105,10 +105,8 @@ void OWLENTRY OWLSymbolTableFini( owl_symbol_table *table ) {
     owl_symbol_handle   curr;
     owl_symbol_handle   next;
 
-    curr = table->head;
-    while( curr != NULL ) {
+    for( curr = table->head; curr != NULL; curr = next ) {
         next = curr->next;
-
         switch( curr->type ) {
         case OWL_TYPE_FUNCTION:
             if( curr->linkage != OWL_SYM_UNDEFINED ) {
@@ -116,14 +114,12 @@ void OWLENTRY OWLSymbolTableFini( owl_symbol_table *table ) {
 
                 info = curr->x.func;
                 if( info != NULL ) {
-                    owl_func_file  *curr;
-                    owl_func_file  *next;
+                    owl_func_file  *currf;
+                    owl_func_file  *nextf;
 
-                    curr = info->head;
-                    while( curr != NULL ){
-                        next = curr->next;
-                        _ClientFree( table->file, curr );
-                        curr = next;
+                    for( currf = info->head; currf != NULL; currf = nextf ) {
+                        nextf = currf->next;
+                        _ClientFree( table->file, currf );
                     }
                     _ClientFree( table->file, info );
                 }
@@ -135,7 +131,6 @@ void OWLENTRY OWLSymbolTableFini( owl_symbol_table *table ) {
             break;
         }
         _ClientFree( table->file, curr );
-        curr = next;
     }
     _ClientFree( table->file, table );
 }
