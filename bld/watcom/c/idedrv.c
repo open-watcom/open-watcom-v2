@@ -101,16 +101,9 @@
 
     #ifdef DLLS_IMPLEMENTED
         typedef unsigned IDEAPI (*GetVerFn)( void );
-        typedef IDEBool IDEAPI (*InitDllFn)( IDECBHdl hdl
-                                                  , IDECallBacks *cb
-                                                  , IDEDllHdl *info );
-        typedef IDEBool IDEAPI (*RunSelfFn)( IDEDllHdl hdl
-                                                  , const char *opts
-                                                  , IDEBool *fatalerr );
-        typedef IDEBool IDEAPI (*RunSelfFnArgv)( IDEDllHdl hdl
-                                                  , int
-                                                  , char **argv
-                                                  , IDEBool *fatalerr );
+        typedef IDEBool IDEAPI (*InitDllFn)( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl );
+        typedef IDEBool IDEAPI (*RunSelfFn)( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
+        typedef IDEBool IDEAPI (*RunSelfFnArgv)( IDEDllHdl hdl, int, char **argv, IDEBool *fatalerr );
         typedef void IDEAPI (*FiniDllFn)( IDEDllHdl hdl );
         typedef void IDEAPI (*StopRunFn)( void );
         typedef IDEBool IDEAPI (*PassInitInfo)( IDEDllHdl hdl, IDEInitInfo *info );

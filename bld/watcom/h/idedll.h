@@ -318,7 +318,7 @@ typedef struct {
  * Routines implemented by the DLL
  *********************************************************/
 IDEDLLENTRY unsigned IDEAPI IDEGetVersion( void );
-IDEDLLENTRY IDEBool  IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info );
+IDEDLLENTRY IDEBool  IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl );
 IDEDLLENTRY IDEBool  IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info );
 IDEDLLENTRY void     IDEAPI IDEFiniDLL( IDEDllHdl hdl );
 IDEDLLENTRY IDEBool  IDEAPI IDEDetermineBuildStatus( IDEDllHdl hdl, const char *opts, IDEBool *status );

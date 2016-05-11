@@ -105,10 +105,7 @@ static struct                   // printing control information
 static void printIDE            // CALL IDE FOR PRINTING
     ( char const *line )        // - print line
 {
-    IDECallBacks* cbs;          // - pointer to call backs
-
-    cbs = CompInfo.dll_callbacks;
-    (*cbs->PrintMessage)( CompInfo.dll_handle, line );
+    IDEFN(PrintMessage)( CompInfo.idehdl, line );
     // we are ignoring return for now
 }
 
@@ -188,14 +185,14 @@ unsigned IDEAPI IDEGetVersion // GET IDE VERSION
 }
 
 
-IDEBool IDEAPI IDEInitDLL// DLL INITIALIZATION
-    ( IDECBHdl hdl              // - handle for this instantiation
-    , IDECallBacks* cb          // - call backs into IDE
-    , IDEDllHdl* info )         // - uninitialized info
+IDEBool IDEAPI IDEInitDLL   // DLL INITIALIZATION
+    ( IDECBHdl cbhdl        // - handle for this instantiation
+    , IDECallBacks *cb      // - call backs into IDE
+    , IDEDllHdl *hdl )      // - uninitialized info
 {
-    CompInfo.dll_handle = hdl;
-    CompInfo.dll_callbacks = cb;
-    *info = (IDEDllHdl)hdl;
+    CompInfo.idehdl = cbhdl;
+    CompInfo.idecbs = cb;
+    *hdl = (IDEDllHdl)cbhdl;
     return false;
 }
 
@@ -204,26 +201,24 @@ void IDEAPI IDEFiniDLL   // DLL COMPLETION
     ( IDEDllHdl hdl )           // - handle
 {
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "FiniDLL -- handle mismatch" );
 }
 
 static void fillInputOutput( char *input, char *output )
 {
-    IDECallBacks* cbs;          // - pointer to call backs
     size_t len;                 // - length of string
 
     input[0] = '\0';
     output[0] = '\0';
     if( ! CompFlags.ide_cmd_line ) {
-        cbs = CompInfo.dll_callbacks;
-        if( ! (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
+        if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
             input[ 1 + len ] = '"';
             input[ 1 + len + 1 ] = '\0';
         }
-        if( ! (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
+        if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
             output[0] = '-';
             output[1] = 'f';
             output[2] = 'o';
@@ -257,7 +252,7 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
@@ -280,7 +275,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
     initDLLInfo( &dllinfo );
@@ -312,7 +307,7 @@ IDEBool IDEAPI IDEProvideHelp // PROVIDE HELP INFORMATION
     , char const* msg )         // - message
 {
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "ProvideHelp -- handle mismatch" );
     msg = msg;
     return true;
@@ -514,7 +509,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
     NUMBER_STR number;          // - used for number scanning
 
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "ParseMessage -- handle mismatch" );
     scan_info.scan = msg;
     scan_info.tgt = err->filename;
@@ -556,7 +551,7 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
-    DbgVerify( hdl == CompInfo.dll_handle
+    DbgVerify( hdl == CompInfo.idehdl
              , "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
         return( true );
@@ -591,12 +586,10 @@ const char *CppGetEnv           // COVER FOR getenv
     ( char const * name )       // - environment variable
 {
 #if defined(wpp_dll)
-    IDECallBacks* cbs;          // - pointer to call backs
     const char *env_val = NULL; // - NULL or value of environment variable
 
     if( !CompFlags.ignore_environment ) {
-        cbs = CompInfo.dll_callbacks;
-        if( (*cbs->GetInfo)( CompInfo.dll_handle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
+        if( IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env_val ) ) {
             env_val = NULL;
         }
     }
@@ -611,13 +604,11 @@ void CppStartFuncMessage( SYMBOL sym )
 /************************************/
 {
 #if defined(wpp_dll)
-    IDECallBacks *cbs;          // - pointer to call backs
     auto VBUF buff;
 
     DbgAssert( CompFlags.progress_messages );
     if( sym != NULL ) {
-        cbs = CompInfo.dll_callbacks;
-        (*cbs->ProgressMessage)( CompInfo.dll_handle, FormatSymWithTypedefs( sym, &buff ) );
+        IDEFN(ProgressMessage)( CompInfo.idehdl, FormatSymWithTypedefs( sym, &buff ) );
         VbufFree( &buff );
     }
 #else

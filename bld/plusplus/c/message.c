@@ -52,6 +52,7 @@
 #include "idedll.h"
 #include "macro.h"
 #include "intlload.h"
+#include "ideentry.h"
 #ifndef NDEBUG
 #include "enterdb.h"
 #endif
@@ -235,7 +236,6 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
     , char const *msg           // - message
     , TOKEN_LOCN *msg_locn )    // - message location or NULL
 {
-    IDECallBacks* cbs;          // - pointer to call backs
     IDEMsgInfo inf;             // - message information
     char *fname;                // - file name
     bool goes_in_err_file;      // - output msg into .err file
@@ -272,14 +272,13 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
         break;
     DbgDefault( "unknown severity" );
     }
-    cbs = CompInfo.dll_callbacks;
     if( goes_in_err_file ) {
         if( ! ( CompFlags.eq_switch_used && CompFlags.ide_console_output ) ) {
-            (*cbs->PrintWithInfo)( CompInfo.dll_handle, &inf );
+            IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
         }
-        idePrt( CompInfo.dll_handle, &inf );
+        idePrt( CompInfo.idehdl, &inf );
     } else {
-        (*cbs->PrintWithInfo)( CompInfo.dll_handle, &inf );
+        IDEFN(PrintWithInfo)( CompInfo.idehdl, &inf );
     }
 }
 
