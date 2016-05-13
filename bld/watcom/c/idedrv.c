@@ -799,10 +799,10 @@ int IdeDrvPrintError            // UNLOAD THE DLL
 
 void IdeDrvChainCallbacks       // SET CALLBACKS FOR DLL CALLLING A DLL
     ( void *cb                  // - parent dll callbacks
-    , void *info )              // - parent dll initialization
+    , void *inf )               // - parent dll initialization
 {
     CBPtr   = (IDECallBacks *)cb;
-    InfoPtr = (IDEInitInfo *)info;
+    InfoPtr = (IDEInitInfo *)inf;
 }
 
 void *IdeDrvGetCallbacks                // GET CALLBACKS

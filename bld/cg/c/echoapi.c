@@ -237,8 +237,8 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'c' : {
-                    char const * text = va_arg( args, char const * );
-                    EchoAPIString( text );
+                    char const *text1 = va_arg( args, char const * );
+                    EchoAPIString( text1 );
                     break;
                   }
                   case 'C' : {

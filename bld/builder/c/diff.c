@@ -1353,17 +1353,17 @@ void fputss( char *s, FILE *iop )
 char *fgetss( char *s, SLONG n, FILE *iop )
 {
     char    *cs;
-    size_t  len;
+    size_t  len1;
 
     if( fgets( s, n, iop ) == NULL )
         return( ( char *) NULL );
-    len = strlen( s );
-    cs = s + len - 1;
+    len1 = strlen( s );
+    cs = s + len1 - 1;
     if( *cs == '\n' ) {
         *cs = '\0';
     }
     --cs;
-    if( len > 1 && *cs == '\r' ) {
+    if( len1 > 1 && *cs == '\r' ) {
         *cs = '\0';
     }
     return( s );

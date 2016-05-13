@@ -726,12 +726,12 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             continue;
           case IC_VFT_BEG :     // START OF VFT DEFINITION
           { VFT_DEFN* pvft;     // - points at vft definition
-            SYMBOL sym;
+            SYMBOL sym1;
             ExtraRptIncrementCtr( ctr_vfts_scanned );
             pvft = RingCarveAlloc( carve_vft, &vft_defs );
-            sym = ins->value.pvalue;
-            pvft->vft = sym;
-            sym->flag &= ~SF_REFERENCED;
+            sym1 = ins->value.pvalue;
+            pvft->vft = sym1;
+            sym1->flag &= ~SF_REFERENCED;
             pvft->cgfile = sc.file_ctl;
             pvft->location = CgioLastRead( sc.file_ctl );
             CgioReadICUntilOpcode( sc.file_ctl, IC_INIT_DONE );

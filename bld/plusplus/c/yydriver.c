@@ -1667,25 +1667,8 @@ void *ParseCurrQualification( void )
     return( elt );
 }
 
-static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, YYACTIONTYPE rule )
-{
-    YYACTIONTYPE *ssp;
-    YYTOKENTYPE lhs;
-    YYACTIONTYPE top_state;
-    YYACTIONTYPE raw_action;
-
-    ssp = state->ssp;
-    top_state = ssp[0];
-    lhs = yyplhstab[rule];
-    raw_action = yyaction[lhs + yygotobase[top_state]];
-    return( raw_action );
-}
-#if 0
-// doAction contains variables called 'yyaction' so this can't be used
-// plus it slowed down the compiler at one point in time
 #define GOTOYYAction( state, rule ) \
-        ( yyaction[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
-#endif
+        ( yyactiontab[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
 
 static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE *pa )
 {
@@ -1703,7 +1686,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
     mask = 1 << ( t & 0x07 );
     for(;;) {
         if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
-            raw_action = yyaction[t + yyactionbase[top_state]];
+            raw_action = yyactiontab[t + yyactionbasetab[top_state]];
             if( (raw_action & RAW_REDUCTION) == 0 ) {
                 /* we have a shift */
                 *pa = raw_action;
@@ -1723,7 +1706,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         }
         /* we have a unit reduction */
         lhs = yyplhstab[rule];
-        top_state = yyaction[lhs + yygotobase[ssp[-1]]];
+        top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
         if( PragDbgToggle.dump_parse ) { 
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
@@ -1761,7 +1744,7 @@ static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENT
 
 static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
 {
-    YYACTIONTYPE yy_action;
+    YYACTIONTYPE yyaction;
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ) {
@@ -1772,9 +1755,9 @@ static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
     if( state->ssp < state->sstack ) {
         return( LA_UNDERFLOW );
     }
-    yy_action = GOTOYYAction( state, new_rule );
+    yyaction = GOTOYYAction( state, new_rule );
     state->ssp++;
-    *(state->ssp) = yy_action;
+    *(state->ssp) = yyaction;
     return( LA_NULL );
 }
 

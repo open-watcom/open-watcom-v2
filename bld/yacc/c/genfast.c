@@ -517,7 +517,7 @@ void GenFastTables( void )
     }
     endtab();
     putcomment( "index by state to get offset into action vector" );
-    begtab( "YYACTIONBASETYPE", "yyactionbase" );
+    begtab( "YYACTIONBASETYPE", "yyactionbasetab" );
     for( i = 0; i < nstate; ++i ) {
         puttab( FITS_A_WORD, abase[i] );
     }
@@ -530,7 +530,7 @@ void GenFastTables( void )
     endtab();
     putcomment( "index by token (from state base) to get action for state" );
     empty_actions = 0;
-    begtab( "YYACTIONTYPE", "yyaction" );
+    begtab( "YYACTIONTYPE", "yyactiontab" );
     for( i = 0; i < asize; ++i ) {
         if( avector[i] == ACTION_NULL ) {
             ++empty_actions;

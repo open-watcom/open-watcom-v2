@@ -4145,17 +4145,17 @@ start_opac_string:
                          | PTF_THROW_EXPR;
           } continue;
           case RESULT_SEGOP :       // int :> ptr OPERATOR
-          { PTREE left;             // - ptr operand (note: switched)
+          { PTREE left1;            // - ptr operand (note: switched)
             TYPE segid_type;
 
             segid_type = TypeSegId();
             warnIntTrunc( right, segid_type, getConstBitsType( segid_type ) );
-            left = expr->u.subtree[0];
+            left1 = expr->u.subtree[0];
             if( TypeIsBasedPtr( type ) ) {
-                left = NodeConvert( TypeSegAddr(), left );
-                expr->u.subtree[0] = left;
+                left1 = NodeConvert( TypeSegAddr(), left1 );
+                expr->u.subtree[0] = left1;
             }
-            type = TypeSegOp( left->type );
+            type = TypeSegOp( left1->type );
           } continue;
           case RESULT_SEGNAME :     // __segname( "..." )
             expr = NodeReplace( expr

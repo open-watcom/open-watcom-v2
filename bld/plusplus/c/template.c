@@ -1441,8 +1441,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
             dinfo = ReparseFunctionDeclaration( fn_templ->u.defn->defn );
             if( dinfo != NULL ) {
-                VerifySpecialFunction( ScopeNearestNonTemplate( parm_scope ),
-                                       dinfo );
+                VerifySpecialFunction( ScopeNearestNonTemplate( parm_scope ), dinfo );
                 fn_type = dinfo->sym->sym_type;
                 FreeDeclInfo( dinfo );
             } else {
@@ -1465,8 +1464,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
             pparms = NodeReverseArgs( &num_parms, pparms );
 
-            bound = BindGenericTypes( parm_scope, pparms, pargs, true,
-                                      num_explicit );
+            bound = BindGenericTypes( parm_scope, pparms, pargs, true, num_explicit );
         }
 
         if( ( fn_type != NULL ) && bound ) {
@@ -1479,8 +1477,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
             dinfo = ReparseFunctionDeclaration( fn_templ->u.defn->defn );
 
             if( dinfo != NULL ) {
-                VerifySpecialFunction( ScopeNearestNonTemplate( parm_scope ),
-                                       dinfo );
+                VerifySpecialFunction( ScopeNearestNonTemplate( parm_scope ), dinfo );
                 *templ_parm_scope = parm_scope;
 
                 if( dinfo->name == CppConstructorName() ) {
@@ -1488,16 +1485,16 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
                     // into an infinite recursion when generating a
                     // copy-constructor taking it's own class type as
                     // the parameter
-                    TYPE fn_type;
+                    TYPE fn_type1;
 
-                    fn_type = FunctionDeclarationType( dinfo->sym->sym_type );
-                    if( fn_type->u.f.args->num_args == 1 ) {
-                        TYPE fn_arg = fn_type->u.f.args->type_list[ 0 ];
+                    fn_type1 = FunctionDeclarationType( dinfo->sym->sym_type );
+                    if( fn_type1->u.f.args->num_args == 1 ) {
+                        TYPE fn_arg = fn_type1->u.f.args->type_list[ 0 ];
 
-                        if( ( fn_type->of->id == TYP_POINTER ) &&
-                            ( fn_arg == fn_type->of->of ) ) {
+                        if( ( fn_type1->of->id == TYP_POINTER ) &&
+                            ( fn_arg == fn_type1->of->of ) ) {
                             FreeDeclInfo( dinfo );
-                            fn_type = NULL;
+                            fn_type1 = NULL;
                             dinfo = NULL;
                         }
                     }

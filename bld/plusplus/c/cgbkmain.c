@@ -812,11 +812,11 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
                     comp_type = CDoptIterNextComp( iter );
                 }
                 for( sv = 1; se_stack != NULL; ++sv ) {
-                    SE* curr;
-                    curr = se_stack;
-                    se_stack = curr->base.prev;
-                    StabDefnAddSe( curr, obj->defn );
-                    curr->base.state_var = sv;
+                    SE* curr1;
+                    curr1 = se_stack;
+                    se_stack = curr1->base.prev;
+                    StabDefnAddSe( curr1, obj->defn );
+                    curr1->base.state_var = sv;
                 }
                 obj->state_direct = SeStateOptimal( se_dir );
                 obj->state_virtual = SeStateOptimal( se_virt );
@@ -1537,9 +1537,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_LEAF_CONST_STR :          // LEAF: STRING CONSTANT
-          { back_handle handle;             // - back handle for literal
-            handle = DgStringConst( ins_value.pvalue, NULL, DSC_CONST | DSC_CODE_OK );
-            CgExprPush( CGBackName( handle, exprn_type ), exprn_type );
+          { back_handle handle1;            // - back handle for literal
+            handle1 = DgStringConst( ins_value.pvalue, NULL, DSC_CONST | DSC_CODE_OK );
+            CgExprPush( CGBackName( handle1, exprn_type ), exprn_type );
           } break;
 
           case IC_LEAF_NAME_FRONT :         // LEAF: FRONT-END SYMBOL
@@ -1753,14 +1753,12 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_COPY_OBJECT :             // COPY TO AN OBJECT
-          { cg_name op1;                    // - object copied to
-            cg_name op2;                    // - object copied from
-            op2 = CgExprPop();
-            op1 = CgExprPop();
-            op1 = CGLVAssign( op1
-                            , op2
-                            , CgTypeOutput( ins_value.pvalue ) );
-            CgExprPush( op1, TY_POINTER );
+          { cg_name opto;                   // - object copied to
+            cg_name opfrom;                 // - object copied from
+            opfrom = CgExprPop();
+            opto = CgExprPop();
+            opto = CGLVAssign( opto, opfrom, CgTypeOutput( ins_value.pvalue ) );
+            CgExprPush( opto, TY_POINTER );
             exprn_type = TY_POINTER;
           } break;
 
@@ -1916,16 +1914,16 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_CALL_EXEC :               // EXECUTE FUNCTION CALL
-          { call_handle handle;             // - handle for call
+          { call_handle handle1;            // - handle for call
             cg_type retn_type;              // - return type
 //            CALL_STAB* call_entry;          // - entry for call
             retn_type = CallStackRetnType();
-            handle = CallStackPop();
-//            call_entry = CgBackCallGened( handle );
-            CgBackCallGened( handle );
+            handle1 = CallStackPop();
+//            call_entry = CgBackCallGened( handle1 );
+            CgBackCallGened( handle1 );
             dtor_last_reqd = NULL;
             dtor_kind = 0;
-            CgExprPush( CgFetchType( CGCall( handle ), retn_type ), exprn_type );
+            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type ), exprn_type );
           } break;
 
           case IC_CALL_SETUP_IND :          // SETUP INDIRECT FUNCTION CALL
@@ -1948,14 +1946,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_CALL_EXEC_IND :           // EXECUTE INDIRECT FUNCTION CALL
-          { call_handle handle;             // - handle for call
+          { call_handle handle1;            // - handle for call
             cg_type retn_type;              // - return type
             retn_type = CallStackRetnType();
-            handle = CallStackPop();
-            CgExprPush( CgFetchType( CGCall( handle ), retn_type )
+            handle1 = CallStackPop();
+            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type )
                       , exprn_type );
             CallIndirectPop();
-            CgCdArgRemove( handle );
+            CgCdArgRemove( handle1 );
           } break;
 
           case IC_CALL_PARM_FLT:            // SET float_used ...
@@ -2053,11 +2051,11 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_DATA_PTR_STR :            // DATA: STRING CONSTANT
             if( curr_seg != SEG_BSS ) {
-                back_handle handle;         // - back handle for literal
+                back_handle handle1;        // - back handle for literal
                 uint_16 str_seg;            // - string segment
-                handle = DgStringConst( ins_value.pvalue, &str_seg, DSC_CONST );
+                handle1 = DgStringConst( ins_value.pvalue, &str_seg, DSC_CONST );
                 BESetSeg( curr_seg );
-                DGBackPtr( handle, str_seg, ptr_offset, exprn_type );
+                DGBackPtr( handle1, str_seg, ptr_offset, exprn_type );
             }
             break;
 
@@ -2644,15 +2642,15 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             cg_name vf_ptr;             // pre-computation of vf_ptr
 
           case IC_CALL_EXEC_VFUN :      // EXECUTE VIRTUAL FUNCTION CALL
-          { call_handle handle;         // - handle for call
+          { call_handle handle1;        // - handle for call
             target_offset_t retn_adj;   // - return adjustment
             cg_name expr;               // - expression under construction
             cg_type retn_type;          // - return type
             retn_type = CallStackRetnType();
             retn_adj = CallStackRetnAdj();
-            handle = CallStackPop();
-            CgBackCallGened( handle );
-            expr = CgFetchType( CGCall( handle ), retn_type );
+            handle1 = CallStackPop();
+            CgBackCallGened( handle1 );
+            expr = CgFetchType( CGCall( handle1 ), retn_type );
             if( retn_adj != 0 ) {
                 expr = CgOffsetExpr( expr, retn_adj, exprn_type );
             }

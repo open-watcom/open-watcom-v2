@@ -875,7 +875,6 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
             if( type == NULL ) {
                 if( ( 0 == ( oli.mask & ( OPM_QUEST | OPM_FUN | OPM_SUB ) ) )
                  && cgop != CO_EQUAL ) {
-                    SCOPE scope;
                     ov_fun_name = CppOperatorName( cgop );
                     oli.result_nonmem = ScopeFindNaked( GetFileScope(), ov_fun_name );
                     scope = nsExtract( &oli );

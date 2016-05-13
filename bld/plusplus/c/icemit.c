@@ -689,9 +689,9 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             DbgNever();
             // drops thru
           case CO_CONVERT :
-          { TYPE type = NodeType( expr );
-            if( NULL == StructType( type )
-             && NULL == MemberPtrType( type ) ) {
+          { TYPE type1 = NodeType( expr );
+            if( NULL == StructType( type1 )
+             && NULL == MemberPtrType( type1 ) ) {
                 generate_expr_instr( expr, CO_CONVERT, IC_OPR_UNARY );
             }
           } break;
