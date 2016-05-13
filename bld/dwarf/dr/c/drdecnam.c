@@ -49,6 +49,7 @@
 /*
  * A simple string type to store a pointer to the string and its length
  */
+
 typedef struct {
     char        *s;     /* the string */
     size_t      l;      /* length of the string (excluding \0) */

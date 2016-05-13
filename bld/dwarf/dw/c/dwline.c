@@ -47,29 +47,29 @@ static void writeFileName( dw_client cli, const char *name, size_t len ) // len 
     uint_8                      buf[1 + MAX_LEB128 + 1 + _MAX_PATH + 1 + MAX_LEB128 * 3];
     uint_8                      attribBuf[MAX_LEB128];
     uint_8                      *end;
-    int                         bufSize = 0;
+    size_t                      bufSize = 0;
 
-    buf[0] = 0;  // identifies extended opcode
-    bufSize = 2 + len; // size of sub-opcode, name+terminator, & path size
+    buf[0] = 0;         // identifies extended opcode
+    bufSize = 2 + len;  // size of sub-opcode, name+terminator, & path size
 
     // find out size of file time/size leb128's:
-    end = ULEB128( attribBuf, 0 ); //NYI: replace 0 with time/date stamp of file
-    bufSize += end-attribBuf; // add on size of time stamp val
-    end = ULEB128( attribBuf, 0 ); //NYI: replace 0 with file size
-    bufSize += end-attribBuf; // add on size of file size val
+    end = ULEB128( attribBuf, 0 );  //NYI: replace 0 with time/date stamp of file
+    bufSize += end - attribBuf;     // add on size of time stamp val
+    end = ULEB128( attribBuf, 0 );  //NYI: replace 0 with file size
+    bufSize += end - attribBuf;     // add on size of file size val
 
-    end = ULEB128( buf + 1, bufSize ); // write the opcode size
+    end = ULEB128( buf + 1, (dw_uconst)bufSize );   // write the opcode size
 
-    *end = DW_LNE_define_file; // write in the sub-opcode
+    *end = DW_LNE_define_file;      // write in the sub-opcode
     end++;
 
     end = (uint_8 *)strncpy( (char *)end, name, len ); // write the filename
     end += len;
 
     end = ULEB128( end, 0 );    // not using a path index
-        // write the file attributes
-    end = ULEB128( end, 0 ); // NYI: replace 0 with time/date stamp of file
-    end = ULEB128( end, 0 ); // NYI: replace 0 with size file
+                                // write the file attributes
+    end = ULEB128( end, 0 );    // NYI: replace 0 with time/date stamp of file
+    end = ULEB128( end, 0 );    // NYI: replace 0 with size file
 
     CLIWrite( DW_DEBUG_LINE, buf, end - buf );
 }
@@ -119,7 +119,7 @@ void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column
 {
     uint_8              buf[3 + 2 * MAX_LEB128];
     uint_8              *end;
-    unsigned            size;
+    size_t              size;
 
     /* set the basic_block register properly */
     if( info & DW_LN_BLK ) {

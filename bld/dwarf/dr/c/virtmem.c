@@ -287,7 +287,7 @@ static void ReadPage( page_entry * node, virt_struct vm )
 /* read a page in from the dwarf file */
 {
     unsigned long size;
-    unsigned long base;
+    drmem_hdl     base;
     unsigned long offset;
     dr_section    sect;
 
@@ -574,9 +574,8 @@ size_t DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max )
     size_t      len;
 
     vm.l = drstr;
-    off = NODE_OFF( vm );
     len = 0;
-    for( ;; ) {
+    for( off = NODE_OFF( vm ); ; off = 0 ) {
         ACCESSPAGE( node, vm );
         while( off < MAX_NODE_SIZE ) {
             curr = node->mem[off++];
@@ -585,11 +584,9 @@ size_t DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max )
             }
             ++len;
             if( curr == '\0' )
-                goto end;
+                return( len );
             vm.l++;
         }
-        off = 0;
     }
-end:
     return( len );
 }
