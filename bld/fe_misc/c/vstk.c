@@ -63,18 +63,18 @@ static int vstkInBlk(           // TEST IF ENTRY IS WITHIN A BLOCK
     void *curr,                 // - current entry
     unsigned block_size )       // - size of a block
 {
-    int retn;                   // - true ==> is within the block
+    bool    retb;               // - true ==> is within the block
 
     if( curr == NULL ) {
-        retn = false;
+        retb = false;
     } else if( curr < (void *)&blk->data[0] ) {
-        retn = false;
+        retb = false;
     } else if( curr >= (void *)&blk->data[ block_size ] ) {
-        retn = false;
+        retb = false;
     } else {
-        retn = true;
+        retb = true;
     }
-    return retn ;
+    return( retb );
 }
 
 static void *vstkPushBlk(       // PUSH THE BLOCK
@@ -242,15 +242,16 @@ void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
     VSTK_BLK *blk;              // - current block
     unsigned per;               // - # elements per block
     void *retn;                 // - item indexed
-    int blk_pushed;             // - true ==> a block was added
-    int on_top;                 // - true ==> retn in top block
+    bool blk_pushed;            // - true ==> a block was added
+    bool on_top;                // - true ==> retn in top block
 
     _VstkIntegrity( stack );
     if( index < 0 ) {
         retn = NULL;
     } else {
         blks = 0;
-        for( blk = stack->top; blk != NULL; ++blks, blk = blk->last );
+        for( blk = stack->top; blk != NULL; blk = blk->last )
+            ++blks;
         per = stack->per_block;
         reqd = index / per + 1;
         blk_pushed = false;
@@ -258,10 +259,12 @@ void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
             blk_pushed = true;
             vstkPushBlk( stack );
         }
+        on_top = true;
         index = blks * per - index;
-        for( blk = stack->top, on_top = true;
-             index > per;
-             index -= per, blk = blk->last, on_top = false );
+        for( blk = stack->top; index > per; index -= per ) {
+            blk = blk->last;
+            on_top = false;
+        }
         retn = &blk->data[ ( index - 1 ) * stack->size ];
         if( ( blk_pushed )
           ||( stack->current == NULL )
