@@ -255,7 +255,8 @@ static dip_status ProcTable( dig_fhandle h, imp_image_handle *ii,
         if( BRead( h, &len, sizeof( len ) ) != sizeof( len ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         if( BRead( h, buff, len + 2 ) != ( len + 2 ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }

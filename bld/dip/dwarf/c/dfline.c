@@ -497,7 +497,7 @@ void myprintf( char *ctl, ... )
         }
     }
     va_end( argument );
-    DCWrite( 1, buff, curr-buff );
+    DCWrite( 1, buff, curr - buff );
 
 }
 

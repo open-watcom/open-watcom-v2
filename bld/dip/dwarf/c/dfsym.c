@@ -265,7 +265,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
     mem_func_wlk    *df = _df;
     bool            cont;
     char            buff[256];
-//    unsigned        len;
+//    size_t          len;
     drmem_hdl       contain;
 
     cont = true;
@@ -567,20 +567,22 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
 }
 
 
+#define SYMBOL_dot_return	".return"
+
 static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 /**********************************************************/
 {
     drmem_hdl   *var_ptr = _var_ptr;
-    char        name[sizeof( ".return" )];
+    char        name[sizeof( SYMBOL_dot_return )];
     bool        cont;
-    unsigned    len;
+    size_t      len;
 
     index = index;
     cont = true;
     if( DRIsArtificial( var ) ) {
-        len = DRGetNameBuff( var, name, sizeof( ".return" ) );
-        if( len == sizeof( ".return" ) ) {
-            if( strcmp( name, ".return" ) == 0 ) {
+        len = DRGetNameBuff( var, name, sizeof( name ) );
+        if( len == sizeof( name ) ) {
+            if( strcmp( name, SYMBOL_dot_return ) == 0 ) {
                 *var_ptr = var;
                 cont = false;
             }
@@ -638,20 +640,21 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 
+#define SYMBOL_this	"this"
 
 static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 /***********************************************************/
 {
     drmem_hdl   *var_ptr = _var_ptr;
-    char        name[sizeof( "this" )];
+    char        name[sizeof( SYMBOL_this )];
     bool        ret;
-    unsigned    len;
+    size_t      len;
 
     index = index;
     ret = true;
-    len =  DRGetNameBuff( var, name, sizeof( "this" ) );
-    if( len == sizeof( "this" ) ) {
-        if( strcmp( name, "this" ) == 0 ) {
+    len =  DRGetNameBuff( var, name, sizeof( name ) );
+    if( len == sizeof( name ) ) {
+        if( strcmp( name, SYMBOL_this ) == 0 ) {
             *var_ptr = var;
             ret = false;
         }
@@ -1206,7 +1209,7 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
 {
     blk_wlk_lookup  *df = _df;
     imp_sym_handle  *is;
-    unsigned        len;
+    size_t          len;
 
     index = index;
     len = DRGetNameBuff( var, df->buff, df->len );
