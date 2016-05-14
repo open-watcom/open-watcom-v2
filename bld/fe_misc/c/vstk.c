@@ -58,7 +58,7 @@ static unsigned vstkDataSize(   // COMPUTE SIZE OF DATA AREA IN BLOCK
 }
 
 
-static int vstkInBlk(           // TEST IF ENTRY IS WITHIN A BLOCK
+static bool vstkInBlk(          // TEST IF ENTRY IS WITHIN A BLOCK
     VSTK_BLK const *blk,        // - the block
     void *curr,                 // - current entry
     unsigned block_size )       // - size of a block
@@ -100,9 +100,10 @@ static void *vstkPushBlk(       // PUSH THE BLOCK
 #ifndef NDEBUG
 static void _VstkIntegrity( VSTK_CTL const *stack )
 {
-    if( stack->current == NULL ) return;
-    if( !vstkInBlk( stack->top, stack->current, vstkDataSize( stack ) ) ) {
-        _FatalAbort( "vstk: curr is not in top blk" );
+    if( stack->current != NULL ) {
+        if( !vstkInBlk( stack->top, stack->current, vstkDataSize( stack ) ) ) {
+            _FatalAbort( "vstk: curr is not in top blk" );
+        }
     }
 }
 static void _VstkPushZapPop( VSTK_CTL *stack )
@@ -372,10 +373,9 @@ void VstkTruncate(              // TRUNCATE A VSTK
         curr = VstkIndex( stack, base - 1 );
     }
     blk_size = vstkDataSize( stack );
-    for(;;) {
-        last = stack->top;
-        if( last == NULL ) break;
-        if( vstkInBlk( last, curr, blk_size ) ) break;
+    while( (last = stack->top) != NULL ) {
+        if( vstkInBlk( last, curr, blk_size ) )
+            break;
         freeVstkBlk( stack );
     }
     stack->current = curr;
