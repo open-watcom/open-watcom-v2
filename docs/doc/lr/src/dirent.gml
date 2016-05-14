@@ -55,7 +55,7 @@ as appropriate.
 #define NAME_MAX  12    /* 8 chars + '.' +  3 chars */
 #endif
 
-typedef struct dirent {
+struct dirent {
     char    d_dta[ 21 ];        /* disk transfer area */
     char    d_attr;             /* file's attribute */
     unsigned short int d_time;  /* file's time */
@@ -64,7 +64,7 @@ typedef struct dirent {
     char    d_name[ NAME_MAX + 1 ]; /* file's name */
     unsigned short d_ino;       /* serial number */
     char    d_first;            /* flag for 1st time */
-} DIR;
+};
 .blkcode end
 .np
 The file attribute field
