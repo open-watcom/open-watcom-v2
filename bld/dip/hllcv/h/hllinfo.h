@@ -179,13 +179,13 @@ extern void                 VMFini( imp_image_handle * );
 extern dip_status           VMAddDtor( imp_image_handle *ii, virt_mem start,
                                        void ( *dtor )( imp_image_handle *ii, void *user ),
                                        void *user );
-extern void                 *VMBlock( imp_image_handle *, virt_mem, unsigned );
+extern void                 *VMBlock( imp_image_handle *, virt_mem, size_t );
 extern bool                 VMGetU8( imp_image_handle *ii, virt_mem start, unsigned_8 *valp );
 extern bool                 VMGetU16( imp_image_handle *ii, virt_mem start, unsigned_16 *valp );
 extern bool                 VMGetU32( imp_image_handle *ii, virt_mem start, unsigned_32 *valp );
 extern void                 *VMRecord( imp_image_handle *, virt_mem, virt_mem *, unsigned_16 * );
 
-extern void                 *VMSsBlock( imp_image_handle *, hll_dir_entry *, unsigned_32, unsigned );
+extern void                 *VMSsBlock( imp_image_handle *, hll_dir_entry *, unsigned_32, size_t );
 extern bool                 VMSsGetU8( imp_image_handle *, hll_dir_entry *, unsigned_32, unsigned_8 * );
 extern bool                 VMSsGetU16( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_16 * );
 extern bool                 VMSsGetU32( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_32 * );

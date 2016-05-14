@@ -179,7 +179,7 @@ static bool InitPageDir( imp_image_handle *ii, unsigned dir_idx )
     return( TRUE );
 }
 
-void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
+void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
 {
     unsigned            dir_idx;
     unsigned            pg_idx;
@@ -194,7 +194,9 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
 
     dir_idx = GET_DIR( start );
     if( ii->virt[dir_idx] == NULL ) {
-        if( !InitPageDir( ii, dir_idx ) ) return( NULL );
+        if( !InitPageDir( ii, dir_idx ) ) {
+            return( NULL );
+        }
     }
     pg_idx = GET_PAGE( start );
     len += start % VM_PAGE_SIZE;
@@ -208,7 +210,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             i = pg_idx;
             for( ;; ) {
                 ii->virt[tmp_idx][i] = NULL;
-                if( pg->offset == 0 ) break;
+                if( pg->offset == 0 )
+                    break;
                 if( i == 0 ) {
                     --tmp_idx;
                     i = DIR_SIZE;
@@ -371,10 +374,9 @@ void *VMRecord( imp_image_handle *ii, virt_mem rec_off, virt_mem *next_rec, unsi
 /*
  * Get a block within a section.
  */
-void *VMSsBlock( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, unsigned len )
+void *VMSsBlock( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, size_t len )
 {
-    if(     start < hde->cb
-       &&   start + len <= hde->cb ) {
+    if( start < hde->cb && start + len <= hde->cb ) {
         return( VMBlock( ii, hde->lfo + start, len ) );
     }
     return( NULL );
