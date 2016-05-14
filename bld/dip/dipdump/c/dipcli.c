@@ -74,6 +74,7 @@ sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr )
     return( NULL );
 }
 
+#if 0
 /*
  * DIPCliSectLoaded
  */
@@ -83,6 +84,7 @@ dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
     sect = sect;
     return( DS_OK );
 }
+#endif
 
 /*
  * DIPCliItemLocation
@@ -146,7 +148,7 @@ void DIGCLIENT DIPCliStatus( dip_status stat )
 /*
  * DIPCliCurrMAD
  */
-mad_handle DIGCLIENT DIPCliCurrMAD( void )
+dig_mad DIGCLIENT DIPCliCurrMAD( void )
 {
     //dprintf(( "DIPCliCurrMAD\n" ));
     return( MAD_X86 ); ///@todo option!

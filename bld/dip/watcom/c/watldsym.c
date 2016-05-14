@@ -37,6 +37,7 @@
 #include "wattype.h"
 #include "watmod.h"
 #include "watldsym.h"
+#include "digcli.h"
 
 
 static void FreeInfBlks( info_block *blk )
@@ -160,7 +161,7 @@ static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr, unsigned
             }
         }
         (*count)++;
-        curr = DCSeek( sym_file, DCSEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
+        curr = DCSeek( sym_file, DIG_SEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
     }
     if( curr > end ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
@@ -235,7 +236,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     bool                v2;
     char                *new;
 
-    end = DCSeek( ii->sym_file, DCSEEK_POSBACK( sizeof( header ) ), DIG_END );
+    end = DCSeek( ii->sym_file, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_END );
     if( DCRead( ii->sym_file, &header, sizeof( header ) ) != sizeof( header ) ) {
         return( DS_FAIL );
     }

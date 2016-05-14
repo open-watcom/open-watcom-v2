@@ -64,7 +64,7 @@ static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
     case DIG_END:
-        return( DCSEEK_ERROR ); /* unsupported */
+        return( DIG_SEEK_ERROR ); /* unsupported */
     case DIG_CUR:
         npos = bpos + p + Buff.off;
         break;
@@ -91,7 +91,7 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
-        if( Buff.fpos == DCSEEK_ERROR )
+        if( Buff.fpos == DIG_SEEK_ERROR )
             return( 0 );
         got = DCRead( h, b, s );
         Buff.fpos += got;
@@ -108,11 +108,11 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         size_t  len;
 
         len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( len == DCREAD_ERROR ) {
-            Buff.fpos = DCSEEK_ERROR;
+        if( len == DIG_READ_ERROR ) {
+            Buff.fpos = DIG_SEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( DCREAD_ERROR );
+            return( DIG_READ_ERROR );
         }
         Buff.len = len;
         Buff.fpos += Buff.len;
@@ -248,8 +248,8 @@ static dip_status CheckSymFile( dig_fhandle h )
     unsigned long       pos;
 
     /* seek to the end, read and check end map record */
-    pos = DCSeek( h, DCSEEK_POSBACK( sizeof( end_map ) ), DIG_END );
-    if( pos == DCSEEK_ERROR ) {
+    pos = DCSeek( h, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_END );
+    if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     /* the endmap record must be 16-byte aligned */
@@ -313,7 +313,7 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, unsigned co
     if( sym_tbl == NULL ) {
         return( DS_ERR | DS_NO_MEM );
     }
-    if( BSeek( h, base_ofs + table_ofs, DIG_ORG ) == DCSEEK_ERROR ) {
+    if( BSeek( h, base_ofs + table_ofs, DIG_ORG ) == DIG_SEEK_ERROR ) {
         ds = DS_ERR | DS_FSEEK_FAILED;
         goto done;
     }
@@ -325,7 +325,7 @@ static dip_status LoadSymTable( dig_fhandle h, imp_image_handle *ii, unsigned co
     sym.offset = 0;
     sym_32.offset = 0;
     for( i = 0; i < count; ++i ) {
-        if( BSeek( h, base_ofs + sym_tbl[i], DIG_ORG ) == DCSEEK_ERROR ) {
+        if( BSeek( h, base_ofs + sym_tbl[i], DIG_ORG ) == DIG_SEEK_ERROR ) {
             ds = DS_ERR | DS_FSEEK_FAILED;
             goto done;
         }
@@ -383,7 +383,7 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
 
     for( i = 0; i < count; ++i ) {
         seg_start = BSeek( h, 0, DIG_CUR );
-        if( seg_start == DCSEEK_ERROR ) {
+        if( seg_start == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
         if( BRead( h, &seg, SYM_SEGDEF_FIXSIZE ) != SYM_SEGDEF_FIXSIZE ) {
@@ -408,7 +408,7 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         LoadSymTable( h, ii, seg.num_syms, seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
-        if( BSeek( h, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DCSEEK_ERROR ) {
+        if( BSeek( h, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
     }
@@ -425,7 +425,7 @@ static dip_status LoadSymFile( dig_fhandle h, imp_image_handle *ii )
     unsigned        name_len;
 
     map_start = BSeek( h, 0, DIG_ORG );
-    if( map_start == DCSEEK_ERROR ) {
+    if( map_start == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -442,7 +442,7 @@ static dip_status LoadSymFile( dig_fhandle h, imp_image_handle *ii )
     if( ds != DS_OK )
         return( ds );
 
-    if( BSeek( h, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DCSEEK_ERROR ) {
+    if( BSeek( h, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = LoadSegments( h, ii, map.num_segs );

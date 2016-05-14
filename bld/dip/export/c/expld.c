@@ -38,6 +38,7 @@
 #include "exenov.h"
 #include "exeelf.h"
 
+
 #if defined( __WATCOMC__ ) && defined( __386__ )
 
 /* WD looks for this symbol to determine module bitness */
@@ -69,7 +70,7 @@ static unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
     case DIG_END:
-        return( DCSEEK_ERROR ); /* unsupported */
+        return( DIG_SEEK_ERROR ); /* unsupported */
     case DIG_CUR:
         npos = bpos + p + Buff.off;
         break;
@@ -96,7 +97,7 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
-        if( Buff.fpos == DCSEEK_ERROR )
+        if( Buff.fpos == DIG_SEEK_ERROR )
             return( 0 );
         got = DCRead( h, b, s );
         Buff.fpos += got;
@@ -113,11 +114,11 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         size_t len;
 
         len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( len == DCREAD_ERROR ) {
-            Buff.fpos = DCSEEK_ERROR;
+        if( len == DIG_READ_ERROR ) {
+            Buff.fpos = DIG_SEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( DCREAD_ERROR );
+            return( DIG_READ_ERROR );
         }
         Buff.len = len;
         Buff.fpos += Buff.len;
@@ -408,7 +409,7 @@ static dip_status TryLX( dig_fhandle h, imp_image_handle *ii,
         if( pref.b32_cnt == 0 ) break;
         if( pref.b32_type == FLT_BNDL_EMPTY ) {
             ord += pref.b32_cnt;
-            BSeek( h, DCSEEK_POSBACK( 2 ), DIG_CUR );   /* backup 2 bytes */
+            BSeek( h, DIG_SEEK_POSBACK( 2 ), DIG_CUR );   /* backup 2 bytes */
         } else {
             for( i = 0; i < pref.b32_cnt; ++i ) {
                 switch( pref.b32_type ) {
@@ -663,7 +664,7 @@ static dip_status TryStub( dig_fhandle h, imp_image_handle *ii )
     any_header          head;
 
     switch( BRead( h, &head.mz, sizeof( head.mz ) ) ) {
-    case DCREAD_ERROR:
+    case DIG_READ_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head.mz ):
         break;
@@ -715,7 +716,7 @@ static dip_status TryNLM( dig_fhandle h, imp_image_handle *ii )
     char                name[256];
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case DCREAD_ERROR:
+    case DIG_READ_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;
@@ -845,7 +846,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     bool                byte_swap;
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case DCREAD_ERROR:
+    case DIG_READ_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;
@@ -1051,7 +1052,7 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     for( ;; ) {
         if( Try[i] == NULL ) return( DS_FAIL );
         switch( BSeek( h, 0, DIG_ORG ) ) {
-        case DCSEEK_ERROR:
+        case DIG_SEEK_ERROR:
             return( DS_FSEEK_FAILED );
         case 0:
             break;

@@ -546,8 +546,8 @@ static dip_status TryFindTrailer( imp_image_handle *ii )
     hll_trailer         sig;
     unsigned long       pos;
 
-    pos = DCSeek( ii->sym_file, DCSEEK_POSBACK( sizeof( sig ) ), DIG_END );
-    if( pos == DCSEEK_ERROR ) {
+    pos = DCSeek( ii->sym_file, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
+    if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( ii->sym_file, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
