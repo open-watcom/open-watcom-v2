@@ -477,7 +477,7 @@ void *CgFrontSwitchFile(        // SWITCH VIRTUAL FUNCTION FILES
 }
 
 
-unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
+CGLABEL CgFrontLabelCs(         // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
     void )
 {
     CGFILE_GEN *gen;            // - generation data
@@ -495,7 +495,7 @@ unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
 }
 
 
-unsigned CgFrontLabelGoto(      // GET NEXT AVAILABLE LABEL # (GOTO)
+CGLABEL CgFrontLabelGoto(       // GET NEXT AVAILABLE LABEL # (GOTO)
     void )
 {
     CGFILE_GEN *gen;            // - generation data
@@ -512,13 +512,13 @@ static void label_reference(    // EMIT NEAR LABEL REFERENCE
     CGLABEL label,              // - label
     CGINTEROP opcode )          // - opcode
 {
-    CgFrontCodeInt( opcode, label - 1 );
+    CgFrontCodeUint( opcode, label - 1 );
 }
 
 
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
     CGINTEROP opcode,           // - opcode to determine type of label ref.
-    unsigned condition,         // - condition for goto
+    cg_op condition,            // - condition for goto
     CGLABEL label )             // - label number
 {
     label_reference( label, opcode );
@@ -536,7 +536,7 @@ void CgFrontLabfreeCs(          // FREE CS LABELS
     gen->cs_label -= count;
     count += gen->cs_allocated;
     gen->cs_allocated = 0;
-    dump_label( printf( "LabfreeCs -- %d\n", count ) );
+    dump_label( printf( "LabfreeCs -- %u\n", count ) );
     cgEmitCodeUint( gen, IC_LABFREE_CS, count );
 }
 
@@ -545,7 +545,7 @@ void CgFrontLabdefCs(           // DEFINE A CS LABEL
     CGLABEL label )             // - label number
 {
     label_reference( label, IC_LABDEF_CS );
-    dump_label( printf( "LabdefCs -- %d\n", label ) );
+    dump_label( printf( "LabdefCs -- %u\n", label ) );
 }
 
 
@@ -553,7 +553,7 @@ void CgFrontLabdefGoto(         // DEFINE A GOTO LABEL
     CGLABEL label )             // - label number
 {
     label_reference( label, IC_LABDEF_GOTO );
-    dump_label( printf( "LabdefGoto -- %d\n", label ) );
+    dump_label( printf( "LabdefGoto -- %u\n", label ) );
 }
 
 

@@ -62,7 +62,7 @@ void CgLabelsPop(               // POP A LABELS STACK
 
 void CgLabelsFinish(            // FINISH LABELS IN A VIRTUAL STACK
     VSTK_CTL *stack,            // - the stack
-    int base )                  // - base for stack
+    unsigned base )             // - base for stack
 {
     label_handle *cur;          // - current label handle
     label_handle *bound;        // - bounding label handle

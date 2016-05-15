@@ -95,7 +95,7 @@ void FunctionBodyDeadCode(      // MARK DEAD-CODE IN CURRENT FUNCTION
     currFunction->dead_diagnosed = false;
 }
 
-static void doJUMP( int op, unsigned condition, CGLABEL destination )
+static void doJUMP( CGINTEROP op, cg_op condition, CGLABEL destination )
 {
     CgFrontGotoNear( op, condition, destination );
     if( condition == O_GOTO ) {
@@ -137,7 +137,7 @@ static LAB_REF *refBlkLabel(    // REFERENCE A BLOCK LABEL
 
 static void jumpBlkLabel(       // JUMP TO BLOCK LABEL
     BLK_LABEL *lab,             // - the label
-    unsigned condition )        // - type of jump
+    cg_op condition )           // - type of jump
 {
     LabelRefFree( refBlkLabel( lab ) );
     doJUMP( IC_LABEL_CS, condition, lab->id );
@@ -331,7 +331,8 @@ static void declExprStmt( bool for_stmts_decl )
 {
     PTREE expr_tree;
 
-    if( CurToken == T_EOF ) return;
+    if( CurToken == T_EOF )
+        return;
     expr_tree = ParseExprDecl();
     if( expr_tree != NULL ) {
         emitStmtExpr( expr_tree );

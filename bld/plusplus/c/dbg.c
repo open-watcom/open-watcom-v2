@@ -1109,7 +1109,8 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
 
 
 #define PUSH_NODE( ctl, node ) \
-    if( node != NULL ) *(PTREE*)VstkPush(&ctl) = node
+    if( node != NULL ) *(PTREE *)VstkPush( &ctl ) = node
+
 static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     PTREE node )                // - node in parse tree
 {
@@ -1346,7 +1347,8 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             if( next != NULL ) {
                 node = *next;
             } else {
-                if( dup_out >= VstkDimension( &dup ) ) break;
+                if( dup_out >= VstkDimension( &dup ) )
+                    break;
                 next = VstkIndex( &dup, dup_out );
                 printf( "--------------- duplicate ------------\n" );
                 node = *next;

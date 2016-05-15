@@ -236,7 +236,7 @@ void VstkClose(                 // CLOSE THE VIRTUAL STACK
 
 void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
     VSTK_CTL *stack,            // - stack to be indexed
-    int index )                 // - the index
+    unsigned index )            // - the index
 {
     unsigned reqd;              // - required number of blocks
     unsigned blks;              // - number of blocks
@@ -247,33 +247,27 @@ void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
     bool on_top;                // - true ==> retn in top block
 
     _VstkIntegrity( stack );
-    if( index < 0 ) {
-        retn = NULL;
-    } else {
-        blks = 0;
-        for( blk = stack->top; blk != NULL; blk = blk->last )
-            ++blks;
-        per = stack->per_block;
-        reqd = index / per + 1;
-        blk_pushed = false;
-        for( ; blks < reqd; ++blks ) {
-            blk_pushed = true;
-            vstkPushBlk( stack );
-        }
-        on_top = true;
-        index = blks * per - index;
-        for( blk = stack->top; index > per; index -= per ) {
-            blk = blk->last;
-            on_top = false;
-        }
-        retn = &blk->data[ ( index - 1 ) * stack->size ];
-        if( ( blk_pushed )
-          ||( stack->current == NULL )
-          ||( on_top && ( retn < stack->current ) ) ) {
-            stack->current = retn;
-        }
-        _VstkIntegrity( stack );
+    blks = 0;
+    for( blk = stack->top; blk != NULL; blk = blk->last )
+        ++blks;
+    per = stack->per_block;
+    reqd = index / per + 1;
+    blk_pushed = false;
+    for( ; blks < reqd; ++blks ) {
+        blk_pushed = true;
+        vstkPushBlk( stack );
     }
+    on_top = true;
+    blk = stack->top;
+    for( index = blks * per - index; index > per; index -= per ) {
+        on_top = false;
+        blk = blk->last;
+    }
+    retn = &blk->data[( index - 1 ) * stack->size];
+    if( blk_pushed || ( stack->current == NULL ) || ( on_top && ( retn < stack->current ) ) ) {
+        stack->current = retn;
+    }
+    _VstkIntegrity( stack );
     return( retn );
 }
 
@@ -338,15 +332,16 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
 
 void *VstkBase(                 // GET BASE ELEMENT
     VSTK_CTL *stack,            // - stack to be based
-    int base )                  // - the base index
+    unsigned base )             // - the base index
 {
     void *cur;                  // - current element
 
-    --base;
-    if( base >= VstkDimension( stack ) - 1 ) {
+    if( base == 0 ) {
+        cur = NULL;
+    } else if( base >= VstkDimension( stack ) ) {
         cur = VstkTop( stack );
     } else {
-        cur = VstkIndex( stack, base );
+        cur = VstkIndex( stack, base - 1 );
     }
     return( cur );
 }
@@ -354,7 +349,7 @@ void *VstkBase(                 // GET BASE ELEMENT
 
 void VstkTruncate(              // TRUNCATE A VSTK
     VSTK_CTL *stack,            // - stack to be truncated
-    int base )                  // - the truncation index
+    unsigned base )             // - the truncation index
 {
     void *curr;                 // - current item
     VSTK_BLK *last;             // - last allocated block

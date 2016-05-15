@@ -841,7 +841,7 @@ void CgLabel(                   // EMIT A LABEL
 ;
 void CgLabelsFinish(            // FINISH LABELS IN A VIRTUAL STACK
     VSTK_CTL *stack,            // - the stack
-    int base )                  // - base for stack
+    unsigned base )             // - base for stack
 ;
 void CgLabelPlantReturn(        // PLANT RETURN LABEL, IF REQUIRED
     FN_CTL *fctl )              // - function being emitted

@@ -108,7 +108,7 @@ static void moduleInitVar(      // GENERATE REFERENCE TO MODULE-INIT VAR.
 unsigned StaticInitFuncBeg(     // START INITIALIZATION OF STATIC IN FUNCTION
     void )
 {
-    unsigned init_label;        // - label #
+    CGLABEL init_label;         // - label #
     INIT_VAR *init_var;
 
     CgFrontStatInit();
@@ -155,7 +155,7 @@ unsigned StaticInitFuncBeg(     // START INITIALIZATION OF STATIC IN FUNCTION
 
 
 void StaticInitFuncEnd(         // END INITIALIZATION OF STATIC IN FUNCTION
-    unsigned init_label )       // - label #
+    CGLABEL init_label )        // - label #
 {
     CgFrontLabdefCs( init_label );
     CgFrontLabfreeCs( 1 );

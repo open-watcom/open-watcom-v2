@@ -1037,7 +1037,7 @@ static void cdArgTest(          // TESTING CODE FOR CDARG
     unsigned mask,              // - test mask
     bool branch_on )            // - true ==> branch if on
 {
-    unsigned optype;            // - type of goto
+    cg_op optype;               // - type of goto
     cg_name expr;               // - expression under construction
 
     if( fctl->has_cdtor_val ) {
@@ -1421,8 +1421,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_LABDEF_CS :               // DEFINE CONTROL-SEQUENCE LABEL
           { label_handle *lab;              // - next label handle
-            lab = VstkIndex( &stack_labs_cs
-                           , fctl->base_labs_cs + ins_value.uvalue );
+            lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.uvalue );
             CgLabel( *lab );
             dump_label( printf( "LabCs Def %d %p\n"
                               , fctl->base_labs_cs + ins_value.uvalue
@@ -1431,8 +1430,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_LABDEF_GOTO :             // DEFINE GOTO LABEL
           { label_handle *lab;              // - goto label
-            lab = VstkIndex( &stack_goto_near
-                             , fctl->base_goto_near + ins_value.uvalue );
+            lab = VstkIndex( &stack_goto_near, fctl->base_goto_near + ins_value.uvalue );
             CgLabel( *lab );
             dump_label( printf( "LabGoto Def %d %p\n"
                               , fctl->base_goto_near + ins_value.uvalue
@@ -1441,7 +1439,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_LABEL_CS :                // SET CS LABEL FOR IC_GOTO_NEAR
           { label_handle *lab;              // - next label handle
-            lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.ivalue );
+            lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.uvalue );
             lbl = *lab;
             dump_label( printf( "LabCs Set %d %p\n", fctl->base_labs_cs + ins_value.uvalue, lbl ) );
           } break;
@@ -1482,8 +1480,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_SWITCH_OUTSIDE :          // SWITCH : DEFAULT (GENERATED)
           { label_handle *lab;              // - next label handle
-            lab = VstkIndex( &stack_labs_cs
-                           , fctl->base_labs_cs + ins_value.ivalue );
+            lab = VstkIndex( &stack_labs_cs, fctl->base_labs_cs + ins_value.uvalue );
             CgSwitchDefaultGen( *lab );
           } break;
 

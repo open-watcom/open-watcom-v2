@@ -435,7 +435,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
 ;
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
     CGINTEROP opcode,           // - opcode to determine type of label ref.
-    unsigned condition,         // - condition for goto
+    cg_op condition,            // - condition for goto
     CGLABEL label )             // - label number
 ;
 void CgFrontInitRef(            // EMIT TO INIT-REF SEGMENT
@@ -447,10 +447,10 @@ void CgFrontLabdefCs(           // DEFINE A CS LABEL
 void CgFrontLabdefGoto(         // DEFINE A GOTO LABEL
     CGLABEL label )             // - label number
 ;
-unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
+CGLABEL CgFrontLabelCs(         // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
     void )
 ;
-unsigned CgFrontLabelGoto(      // GET NEXT AVAILABLE LABEL # (GOTO)
+CGLABEL CgFrontLabelGoto(       // GET NEXT AVAILABLE LABEL # (GOTO)
     void )
 ;
 void CgFrontLabfreeCs(          // FREE CS LABELS
