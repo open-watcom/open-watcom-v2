@@ -653,11 +653,11 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
                 switch( iter->otype ) {
                   case TOB_VBASE :
                   case TOB_DBASE :
-                    if( depth == 0 ) break;
+                    if( depth == 1 ) break;
                     DumpCdoptIter( iter, "--NO VBASE FROM BASE", "" );
                     continue;
                   case TOB_MEMB :
-                    if( depth == 1 ) break;
+                    if( depth == 2 ) break;
                     DumpCdoptIter( iter, "--NO VBASE FROM MEMB", "" );
                     continue;
                 }
@@ -704,7 +704,7 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
 }
 
 
-#define isLevelZero( iter ) ( 0 == VstkDimension( &iter->stack ) )
+#define isLevelZero( iter ) ( 1 == VstkDimension( &iter->stack ) )
 
 
 DTC_KIND CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND

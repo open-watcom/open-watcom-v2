@@ -1397,14 +1397,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 lab = VstkPush( &stack_labs_cs );
                 *lab = BENewLabel();
                 dump_label( printf( "LabCs Push %d %p\n"
-                                  , VstkDimension( &stack_labs_cs )
+                                  , VstkDimension( &stack_labs_cs ) - 1
                                   , *lab ) );
             }
           } break;
 
           case IC_LABFREE_CS :              // FREE CONTROL-SEQUENCE LABELS
             dump_label( printf( "LabCs Pop %d %d\n"
-                              , VstkDimension( &stack_labs_cs )
+                              , VstkDimension( &stack_labs_cs ) - 1
                               , ins_value.uvalue
                               ) );
             CgLabelsPop( &stack_labs_cs, ins_value.uvalue );
@@ -1415,7 +1415,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             lab = VstkPush( &stack_goto_near );
             *lab = BENewLabel();
             dump_label( printf( "LabGoTo Push %d %p\n"
-                              , VstkDimension( &stack_goto_near )
+                              , VstkDimension( &stack_goto_near ) - 1
                               , *lab ) );
           } break;
 
@@ -3560,7 +3560,7 @@ unsigned CgBackInlinedDepth(    // GET CURRENT INLINED DEPTH
 static unsigned push_base(      // PUSH BASE OF A VIRTUAL STACK
     VSTK_CTL *stack )           // - stack
 {
-    return( VstkDimension( stack ) + 1 );
+    return( VstkDimension( stack ) );
 }
 
 

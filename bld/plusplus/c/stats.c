@@ -333,25 +333,26 @@ void ExtraRptSymDefn(           // REPORT SYMBOL DEFINITION IN PRIMARY SOURCE
 
 
 static char sbuff[512];
-static char const fmt_repos[] = "%5d %5d %5d %5d %s";
+static char const fmt_repos[] = "%5u %5u %5u %5u %s";
 
 static void rptRepository       // PRINT REPOSITORY REPORT
     ( INITFINI* defn )          // - definition
 {
     REPO_STAT** last;           // - addr[ REPO_STAT ]
     REPO_STAT* repo;            // - REPO_STAT for source file
-    int ref_syms;               // - # symbol references
-    int ref_types;              // - # type references
-    int avg_defs;               // - average definitions
-    int avg_syms;               // - average symbol references
-    int avg_types;              // - average type references
+    unsigned ref_syms;          // - # symbol references
+    unsigned ref_types;         // - # type references
+    unsigned avg_defs;          // - average definitions
+    unsigned avg_syms;          // - average symbol references
+    unsigned avg_types;         // - average type references
     unsigned file_count;        // - # files
 
     defn = defn;
     if( ! CompFlags.extra_stats_wanted ) {
         for(;;) {
             last = VstkPop( &srcFiles );
-            if( NULL == last ) break;
+            if( NULL == last )
+                break;
             repo = *last;
             VstkClose( &repo->refset );
             VstkClose( &repo->typeset );
@@ -369,10 +370,11 @@ static void rptRepository       // PRINT REPOSITORY REPORT
     file_count = 0;
     for(;;) {
         last = VstkPop( &srcFiles );
-        if( NULL == last ) break;
+        if( NULL == last )
+            break;
         repo = *last;
-        ref_syms = VstkDimension( &repo->refset ) + 1;
-        ref_types = VstkDimension( &repo->typeset ) + 1;
+        ref_syms = VstkDimension( &repo->refset );
+        ref_types = VstkDimension( &repo->typeset );
         ++file_count;
         avg_syms += ref_syms;
         avg_types += ref_types;
@@ -389,8 +391,8 @@ static void rptRepository       // PRINT REPOSITORY REPORT
         VstkClose( &repo->refset );
         VstkClose( &repo->typeset );
     }
-    if( 0 < file_count ) {
-        int fuzz = file_count / 2;
+    if( file_count > 0 ) {
+        unsigned fuzz = file_count / 2;
         MsgDisplayLine( "" );
         sprintf( sbuff
               , fmt_repos
@@ -414,7 +416,7 @@ static void rptRepository       // PRINT REPOSITORY REPORT
               );
         MsgDisplayLine( sbuff );
         MsgDisplayLine( "" );
-        sprintf( sbuff, "%d files processed", file_count );
+        sprintf( sbuff, "%u files processed", file_count );
         MsgDisplayLine( sbuff );
         MsgDisplayLine( "" );
     }

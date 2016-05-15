@@ -141,7 +141,7 @@ bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
 unsigned CgExprStackSize(       // RETURN # TEMPS STACKED
     void )
 {
-    return VstkDimension( &expressions ) + 1;
+    return VstkDimension( &expressions );
 }
 
 

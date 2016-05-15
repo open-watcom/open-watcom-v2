@@ -175,11 +175,11 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
       case CALL_IMPL_C :
       case CALL_IMPL_ELL_CPP :
       case CALL_IMPL_ELL_C :
-      { int index;                  // - parameter index
-        int max_parms;              // - # parameters
+      { unsigned index;             // - parameter index
+        unsigned max_parms;         // - # parameters
         SYMBOL *psym1;              // - addr[ parameter symbol ]
         max_parms = VstkDimension( &sym_stack );
-        for( index = 0; index <= max_parms; ++index ) {
+        for( index = 0; index < max_parms; ++index ) {
             psym1 = VstkIndex( &sym_stack, index );
             declareParameter( *psym1 );
         }

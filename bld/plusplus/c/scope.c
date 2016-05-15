@@ -5091,13 +5091,13 @@ static bool nonTrivialReturnConversions( VSTK_CTL *vstk, SCOPE *derived )
     SCOPE scope;
     SCOPE last_scope;
     SCOPE change_occurred;
-    int i;
-    int n;
+    unsigned i;
+    unsigned n;
 
     last_scope = NULL;
     change_occurred = NULL;
     n = VstkDimension( vstk );
-    for( i = 0; i <= n; ++i ) {
+    for( i = 0; i < n; ++i ) {
         pscope = VstkIndex( vstk, i );
         scope = *pscope;
         if( scope == NULL ) {

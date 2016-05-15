@@ -73,7 +73,7 @@ void *VstkBase(                 // GET BASE ELEMENT
 void VstkClose(                 // CLOSE THE VIRTUAL STACK
     VSTK_CTL *stack )           // - stack to be closed
 ;
-int VstkDimension(              // GET DIMENSION OF VIRTUAL STACK
+unsigned VstkDimension(         // GET DIMENSION OF VIRTUAL STACK
     VSTK_CTL const *stack )     // - stack
 ;
 void *VstkIndex(                // INDEX INTO A VIRTUAL STACK

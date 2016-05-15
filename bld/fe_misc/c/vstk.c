@@ -278,7 +278,7 @@ void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
 }
 
 
-int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
+unsigned VstkDimension(         // GET UPPER DIMENSION OF VIRTUAL STACK
     VSTK_CTL const *stack )     // - stack
 {
     VSTK_BLK *blk;              // - current block
@@ -301,7 +301,7 @@ int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
         }
         _VstkIntegrity( stack );
     }
-    return( dimension - 1 );
+    return( dimension );
 }
 
 
@@ -343,7 +343,7 @@ void *VstkBase(                 // GET BASE ELEMENT
     void *cur;                  // - current element
 
     --base;
-    if( base >= VstkDimension( stack ) ) {
+    if( base >= VstkDimension( stack ) - 1 ) {
         cur = VstkTop( stack );
     } else {
         cur = VstkIndex( stack, base );
