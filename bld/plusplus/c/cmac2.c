@@ -853,8 +853,12 @@ unsigned IfDepthInSrcFile(      // COMPUTE #IF DEPTH IN CURRENT SOURCE FILE
     struct cpp_info *pp;        // - current pre-processor stack entry
     SRCFILE curr_src;           // - current SRCFILE
 
-    for( curr_src = SrcFileCurrent(), depth = 0, pp = VstkTop( &vstkPp )
-       ; ( pp != NULL ) && ( pp->locn.src_file == curr_src )
-       ; ++depth, pp = VstkNext( &vstkPp, pp ) );
-    return depth;
+    curr_src = SrcFileCurrent();
+    depth = 0;
+    VstkIterBeg( &vstkPp, pp ) {
+        if( pp->locn.src_file != curr_src )
+            break;
+        ++depth;
+    }
+    return( depth );
 }

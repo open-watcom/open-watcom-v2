@@ -1305,14 +1305,13 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             if( node->u.subtree[0] != NULL ) {
-                for( duped = VstkTop( &dup )
-                   ;
-                   ; duped = VstkNext( &dup, duped ) ) {
-                    if( duped == NULL ) {
-                        PUSH_NODE( dup, node->u.subtree[0] );
-                    } else if( *duped == node->u.subtree[0] ) {
+                VstkIterBeg( &dup, duped ) {
+                    if( *duped == node->u.subtree[0] ) {
                         break;
                     }
+                }
+                if( duped == NULL ) {
+                    PUSH_NODE( dup, node->u.subtree[0] );
                 }
             }
           } break;

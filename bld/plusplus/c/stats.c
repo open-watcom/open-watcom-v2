@@ -220,20 +220,21 @@ static REPO_STAT* reposStat     // GET REPOSITORY STATISTICS FOR SRCFILE
     REPO_STAT** last;           // - addr[ REPO_STAT ]
     REPO_STAT* retn;            // - REPO_STAT for source file
 
-    for( last = VstkTop( &srcFiles ); ; last = VstkNext( &srcFiles, last ) ) {
-        if( NULL == last ) {
-            retn = CarveAlloc( carve_sf );
-            *(REPO_STAT**)VstkPush( &srcFiles ) = retn;
-            VstkOpen( &retn->refset, sizeof( SYMBOL ), 32 );
-            VstkOpen( &retn->typeset, sizeof( TYPE ), 32 );
-            retn->srcfile = sf;
-            retn->defns = 0;
+    VstkIterBeg( &srcFiles, last ) {
+        retn = *last;
+        if( retn->srcfile == sf ) {
             break;
         }
-        retn = *last;
-        if( sf == retn->srcfile ) break;
     }
-    return retn;
+    if( last == NULL ) {
+        retn = CarveAlloc( carve_sf );
+        *(REPO_STAT **)VstkPush( &srcFiles ) = retn;
+        VstkOpen( &retn->refset, sizeof( SYMBOL ), 32 );
+        VstkOpen( &retn->typeset, sizeof( TYPE ), 32 );
+        retn->srcfile = sf;
+        retn->defns = 0;
+    }
+    return( retn );
 }
 
 
@@ -245,14 +246,16 @@ static void reportOnType        // SET UP TYPE REFERENCE
     if( NULL != sym && ( SF2_TOKEN_LOCN & sym->flag2 ) ) {
         SRCFILE refed = sym->locn->tl.src_file;
         if( curr != refed ) {
-            REPO_STAT* repo = reposStat( curr );
-            TYPE* last;
-            for( last = VstkTop( &repo->typeset ); ; last = VstkNext( &repo->typeset, last ) ) {
-                if( NULL == last ) {
-                    *(TYPE*)VstkPush( &repo->typeset ) = type;
+            REPO_STAT *repo = reposStat( curr );
+            TYPE *last;
+
+            VstkIterBeg( &repo->typeset, last ) {
+                if( *last == type ) {
                     break;
                 }
-                if( type == *last ) break;
+            }
+            if( last == NULL ) {
+                *(TYPE *)VstkPush( &repo->typeset ) = type;
             }
         }
     }
@@ -304,16 +307,16 @@ void ExtraRptSymUsage(          // REPORT SYMBOL USAGE FROM PRIMARY SOURCE
         SRCFILE current = SrcFileCurrent();
         SRCFILE refed = sym->locn->tl.src_file;
         if( current != refed ) {
-            REPO_STAT* repo = reposStat( current );
-            SYMBOL* last;
-            for( last = VstkTop( &repo->refset )
-               ;
-               ; last = VstkNext( &repo->refset, last ) ) {
-                if( NULL == last ) {
-                    *(SYMBOL*)VstkPush( &repo->refset ) = sym;
+            REPO_STAT *repo = reposStat( current );
+            SYMBOL *last;
+
+            VstkIterBeg( &repo->refset, last ) {
+                if( *last == sym ) {
                     break;
                 }
-                if( sym == *last ) break;
+            }
+            if( last == NULL ) {
+                *(SYMBOL *)VstkPush( &repo->refset ) = sym;
             }
         }
     }

@@ -83,9 +83,9 @@ void* SymTrans(                 // TRANSLATE SYMBOL/SCOPE
     unsigned bound;             // - bounding id
 
     bound = FnCtlTop()->sym_trans_id;
-    for( tr = VstkTop( &stack_sym_trans )
-       ; tr != NULL && bound <= tr->id
-       ; tr = VstkNext( &stack_sym_trans, tr ) ) {
+    VstkIterBeg( &stack_sym_trans, tr ) {
+        if( tr->id < bound )
+            break;
         if( src == tr->src ) {
             src = tr->tgt;
             dump( "used", tr );

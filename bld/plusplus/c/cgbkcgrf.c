@@ -883,9 +883,7 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
     CGFILE *cgfile;                     // - function codegen file
     SYMBOL func;                        // - called function
 
-    stk = VstkTop( &ctl->calls );
-    for(;;) {
-        if( stk == NULL ) break;
+    VstkIterBeg( &ctl->calls, stk ) {
         if( stk->expanded ) {
             func = stk->callee->base.object;
             if( func != NULL ) {
@@ -900,8 +898,9 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
                 }
             }
         }
-        if( stk == last ) break;
-        stk = VstkNext( &ctl->calls, stk );
+        if( stk == last ) {
+            break;
+        }
     }
 }
 
@@ -912,8 +911,7 @@ static bool recursiveExpand(    // DETERMINE IF RECURSIVE EXPANSION
 {
     INLINEE *stk;               // - stacked inlinee
 
-    stk = VstkTop( &ctl->calls );
-    while( stk != NULL ) {
+    VstkIterBeg( &ctl->calls, stk ) {
         if( stk->expanded && ( stk->callee == target ) ) {
             if( callGraphFlags.only_once_found ) {
                 // a recursion will cause multiple expansions of an inline
@@ -922,7 +920,6 @@ static bool recursiveExpand(    // DETERMINE IF RECURSIVE EXPANSION
             }
             return( true );
         }
-        stk = VstkNext( &ctl->calls, stk );
     }
     return( false );
 }

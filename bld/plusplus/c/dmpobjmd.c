@@ -149,9 +149,7 @@ static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
 {
     char**daughter;             // - daughter class
 
-    for( daughter = VstkTop( &di->stack ); ; ) {
-        daughter = VstkNext( &di->stack, daughter );
-        if( daughter == NULL ) break;
+    VstkIterBeg( &di->stack, daughter ) {
         di = bufferInit( di );
         di = bufferStr( di, "base of: " );
         di = bufferStr( di, *daughter );

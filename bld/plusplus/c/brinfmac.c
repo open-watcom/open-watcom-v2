@@ -321,13 +321,11 @@ SRCFILE BrinfMacUndefSource     // GET SOURCE OF AN UNDEF
 
     nlen = strlen( name );
     retn = NULL;
-    for( curr = VstkTop( &undefs )
-       ; curr != NULL
-       ; curr = VstkNext( &undefs, curr ) ) {
+    VstkIterBeg( &undefs, curr ) {
         if( NameMemCmp( curr->macro->macro_name, name, nlen ) == 0 ) {
             retn = curr->srcfile;
             break;
         }
     }
-    return retn;
+    return( retn );
 }

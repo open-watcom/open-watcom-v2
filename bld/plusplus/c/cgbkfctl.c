@@ -223,9 +223,7 @@ void FnctlDump( void )          // DEBUGGING -- dump stack
 {
     FN_CTL *fctl;               // - current function information
 
-    for( fctl = VstkTop( &stack_files )
-       ; fctl != NULL
-       ; fctl = VstkNext( &stack_files, fctl ) ) {
+    VstkIterBeg( &stack_files, fctl ) {
         VBUF vbuf;
         SYMBOL func = fctl->func;
         if( func == NULL ) {

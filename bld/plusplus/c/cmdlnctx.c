@@ -166,9 +166,7 @@ void CmdLnCtxInfo(              // PRINT CONTEXT INFO
     VBUF buf;                   // - buffer
 
     VbufInit( &buf );
-    for( entry = VstkTop( &cmdLnContexts )
-       ; entry != NULL
-       ; entry = VstkNext( &cmdLnContexts, entry ) ) {
+    VstkIterBeg( &cmdLnContexts, entry ) {
         VbufRewind( &buf );
         switch( entry->base.ctx_type ) {
           case CTX_CLTYPE_ENV :

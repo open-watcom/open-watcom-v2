@@ -88,13 +88,13 @@ static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
 void DumpBlkPosns(              // DUMP ALL BLK_POSN'S
     void )
 {
-    BLK_POSN* curr;             // - current position
+    BLK_POSN    *curr;          // - current position
 
     curr = VstkTop( &stack_blk_posn );
     if( NULL == curr ) {
         printf( "No BLK_POSN entries active\n" );
     } else {
-        for( ; curr != NULL; curr = VstkNext( &stack_blk_posn, curr ) ) {
+        VstkIterBeg( &stack_blk_posn, curr ) {
             DbgDumpBlkPosn( curr, "\n*" );
         }
     }
@@ -180,21 +180,17 @@ SE* BlkPosnEnclosing(           // GET CURRENT POSITION OF ENCLOSING BLOCK
 SE* BlkPosnScope(               // GET BLOCK POSITION FOR A SCOPE
     SCOPE scope )               // - scope in question
 {
-    SE* posn;                   // - state entry for position
-    BLK_POSN* bpos;             // - current position
+    BLK_POSN    *bpos;          // - current position
 
-    if( NULL == scope ) {
-        posn = NULL;
-    } else {
-        for( bpos = VstkTop( &stack_blk_posn )
-           ;
-           ; bpos = VstkNext( &stack_blk_posn, bpos ) ) {
-            DbgVerify( bpos != NULL, "BlkPosnScope -- no scope stacked" );
-            if( scope == bpos->scope ) break;
+    if( scope != NULL ) {
+        VstkIterBeg( &stack_blk_posn, bpos ) {
+            if( scope == bpos->scope ) {
+                return( bpos->posn );
+            }
         }
-        posn = bpos->posn;
+        DbgVerify( bpos != NULL, "BlkPosnScope -- no scope stacked" );
     }
-    return posn;
+    return( NULL );
 }
 
 

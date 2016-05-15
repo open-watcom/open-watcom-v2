@@ -68,9 +68,9 @@ void CgLabelsFinish(            // FINISH LABELS IN A VIRTUAL STACK
     label_handle *bound;        // - bounding label handle
 
     bound = VstkBase( stack, base );
-    for( cur = VstkTop( stack )
-       ; cur != bound
-       ; cur = VstkNext( stack, cur ) ) {
+    VstkIterBeg( stack, cur ) {
+        if( cur == bound )
+            break;
         BEFiniLabel( *cur );
         VstkPop( stack );
     }
