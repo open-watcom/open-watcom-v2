@@ -282,18 +282,17 @@ int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
     VSTK_CTL const *stack )     // - stack
 {
     VSTK_BLK *blk;              // - current block
-    int dimension;              // - dimension
-    int per_block;              // - # entries per block
+    unsigned dimension;         // - dimension
+    unsigned per_block;         // - # entries per block
 
     _VstkIntegrity( stack );
     blk = stack->top;
-    if( blk == NULL ) {
-        dimension = 0;
-    } else {
-        dimension = - ( (char*)stack->current - blk->data ) / stack->size;
+    dimension = 0;
+    if( blk != NULL ) {
+        dimension -= ( (char*)stack->current - blk->data ) / stack->size;
         per_block = stack->per_block;
 #ifndef NDEBUG
-        if( dimension > per_block ) {
+        if( dimension + per_block > per_block ) {
             _FatalAbort( "vstk: dimension > per_block" );
         }
 #endif
@@ -315,17 +314,9 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
 
     _VstkIntegrity( stack );
     blk_size = vstkDataSize( stack );
-    for( blk = stack->top; ; blk = blk->last ) {
-        if( blk == NULL ) {
-            blk = stack->top;
-            if( blk == NULL ) {
-                cur = NULL;
-            } else {
-                cur = &blk->data;
-            }
-            break;
-        }
+    for( blk = stack->top; blk != NULL; blk = blk->last ) {
         if( vstkInBlk( blk, cur, blk_size ) ) {
+            // current item is found
             cur = (char *)cur + stack->size;
             if( cur >= (void *)&blk->data[blk_size] ) {
                 blk = blk->last;
@@ -335,10 +326,13 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
                     cur = blk->data;
                 }
             }
-            break;
+            return( cur );
         }
     }
-    return( cur );
+    // current item is not found
+    if( stack->top == NULL )
+        return( NULL );
+    return( stack->top->data );
 }
 
 
