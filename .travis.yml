@@ -1,0 +1,9 @@
+language:
+ - c
+
+before_script:
+ - . $OWROOT/cmnvars.sh
+
+script:
+ - sh $OWROOT/build.sh
+
