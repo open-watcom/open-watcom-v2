@@ -6,7 +6,7 @@ builder_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-all_commands         = sweep.exe wsplice.exe comstrip.exe genverrc.exe
+all_commands         = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe
 posix_commands_dos   = diff.exe
 posix_commands_os2   = diff.exe
 posix_commands_nt    = diff.exe
