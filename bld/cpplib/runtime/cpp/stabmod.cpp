@@ -121,7 +121,7 @@ static void init(               // PROGRAM INITIALIZATION
     CPPLIBDATA( dtreg_vfptrs )[ DTRG_STATIC_INITFS ] = &fs_vftable;
 }
 
-XI( CPPLIBDATA( stab_init_mod ), init, INIT_PRIORITY_RUNTIME )
+extern "C" XI( CPPLIBDATA( stab_init_mod ), init, INIT_PRIORITY_RUNTIME )
 
 #endif
 

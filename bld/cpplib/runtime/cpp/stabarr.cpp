@@ -72,7 +72,7 @@ static void init(               // PROGRAM INITIALIZATION
     CPPLIBDATA( dtreg_vfptrs )[ DTRG_ARRAY ] = &arr_vftable;
 }
 
-XI( CPPLIBDATA( stab_init_arr ), init, INIT_PRIORITY_RUNTIME )
+extern "C" XI( CPPLIBDATA( stab_init_arr ), init, INIT_PRIORITY_RUNTIME )
 
 
 extern "C"

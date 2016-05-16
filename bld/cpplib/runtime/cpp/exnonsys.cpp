@@ -33,6 +33,7 @@
 #include "cpplib.h"
 #include "rtexcept.h"
 
+extern "C"
 void CPPLIB( raise_exception )  // RAISE EXCEPTION
     ( FsExcRec* excrec )        // - exception record
 {
@@ -49,6 +50,7 @@ void CPPLIB( raise_exception )  // RAISE EXCEPTION
 }
 
 
+extern "C"
 void CPPLIB( unwind_global )    // GLOBAL UNWIND
     ( RW_DTREG* bound           // - bounding R/W entry
     , void (*)( void )          // - code address (ignored)

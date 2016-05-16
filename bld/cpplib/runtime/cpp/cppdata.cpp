@@ -47,7 +47,7 @@ _WPRTLINK unsigned      _wint_thread_data_offset;
 #endif
 
 #if defined(__MT__) && defined(__386__)
-AXI( CPPLIB(multi_thread_init), INIT_PRIORITY_THREAD )
+extern "C" AXI( CPPLIB(multi_thread_init), INIT_PRIORITY_THREAD )
 #endif
 
 #ifndef NDEBUG
