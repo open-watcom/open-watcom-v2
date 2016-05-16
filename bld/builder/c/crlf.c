@@ -70,6 +70,9 @@ int main( int argc, char **argv )
         }
         prev = c;
     }
+    if( prev == CR ) {
+        fputc( CR, fo );
+    }
     fclose( fi );
     fclose( fo );
     return( 0 );
