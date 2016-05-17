@@ -692,11 +692,11 @@ static  void    DumpErrWord( void )
         first_word = 0;
         word = cw->word;
         if( word == NULL ) {
-            fprintf( ErrMsg, "%d", len );
+            fprintf( ErrMsg, "%u", (unsigned)len );
             continue;
         }
         len = strlen( word );
-        fprintf( ErrMsg, "%d", len );
+        fprintf( ErrMsg, "%u", (unsigned)len );
         chars_per = 10;
         for(;;) {
             if( --chars_per == 0 ) {
