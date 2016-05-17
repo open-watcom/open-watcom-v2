@@ -4,7 +4,7 @@ language:
 before_install:
  - sudo apt-get -qq update
  - sudo apt-get install -y dosemu
- - sudo echo 0 > /proc/sys/vm/mmap_min_addr
+ - sudo sysctl -w vm.mmap_min_addr=0
  - sed -i -e /\$_layout/d ~/.dosemurc
  - echo $_layout = "us" >> ~/.dosemurc
 
