@@ -9,7 +9,24 @@ before_script:
  - . $OWROOT/cmnvars.sh
 
 script:
- - sh $OWROOT/build.sh
+# - sh $OWROOT/build.sh
+ - cd $OWSRCDIR/wmake
+ - if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+ - cd $OWOBJDIR
+ - rm -f $OWBINDIR/wmake
+ - make -f ../posmake clean
+ - make -f ../posmake TARGETDEF=-D__LINUX__
+ - cd $OWSRCDIR/builder
+ - if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+ - cd $OWOBJDIR
+ - rm -f $OWBINDIR/builder
+ - $OWBINDIR/wmake -f ../binmake clean
+ - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+ - cd $OWSRCDIR
+ - builder boot
+ - cd $OWROOT/docs/dos
+ - wmake hbook=c_readme
+ - cd $OWROOT
 
 after_failure:
  - mkdir -p $HOME/github/bld
@@ -18,8 +35,8 @@ after_failure:
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis"
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
- - cd travis-ci-ow-builds.git
+ - cd travis-ci-ow-builds
  - cp -Rf $HOME/github/* .
  - git add -f .
- - git commit -m "Travis build $TRAVIS_BUILD_NUMBER pushed to travis-ci-ow-builds"
+ - git commit -m "Travis build $TRAVIS_BUILD_NUMBER log files pushed to travis-ci-ow-builds"
  - git push -fq origin travis-ci-ow-builds
