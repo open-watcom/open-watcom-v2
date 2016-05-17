@@ -2,40 +2,43 @@ language:
  - c
 
 before_install:
+# install latest OS fixes
  - sudo apt-get -qq update
+# install DOSEMU
  - sudo apt-get install -y dosemu
+# setup DOSEMU to work with OW build
  - sudo sysctl -w vm.mmap_min_addr=0
  - echo " \$_layout = \"us\"" > ~/.dosemurc
 
 before_script:
+# initialize OW build environment variables
  - . $OWROOT/cmnvars.sh
 
 script:
-# - sh $OWROOT/build.sh
- - cd $OWSRCDIR/wmake
- - if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
- - cd $OWOBJDIR
- - rm -f $OWBINDIR/wmake
- - make -f ../posmake clean
+# build fresh wmake tool
+ - mkdir -p $OWSRCDIR/wmake/$OWOBJDIR
+ - cd $OWSRCDIR/wmake/$OWOBJDIR
  - make -f ../posmake TARGETDEF=-D__LINUX__
- - cd $OWSRCDIR/builder
- - if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
- - cd $OWOBJDIR
- - rm -f $OWBINDIR/builder
- - $OWBINDIR/wmake -f ../binmake clean
+# build fresh builder tool
+ - mkdir -p $OWSRCDIR/builder/$OWOBJDIR
+ - cd $OWSRCDIR/builder/$OWOBJDIR
  - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+# build bootstrap tools
  - cd $OWSRCDIR
  - builder $OWBUILDEROPTS boot
+# build OW distribution
  - builder $OWBUILDEROPTS build
 
 after_failure:
  - mkdir -p $HOME/github/bld
- - cp bld/*.log $HOME/github/bld/
+ - mkdir -p $HOME/github/docs
+ - cp $OWROOT/bld/*.log $HOME/github/bld/
+ - cp $OWROOT/docs/*.log $HOME/github/docs/
  - cd $HOME
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis"
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
- - cd travis-ci-ow-builds
+ - cd $HOME/travis-ci-ow-builds
  - cp -Rf $HOME/github/* .
  - git add -f .
  - git commit -m "Travis build $TRAVIS_BUILD_NUMBER log files pushed to travis-ci-ow-builds"
