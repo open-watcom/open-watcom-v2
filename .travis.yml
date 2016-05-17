@@ -37,6 +37,7 @@ after_failure:
  - cd $HOME
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis"
+ - git config --global push.default simple
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
  - cd $HOME/travis-ci-ow-builds
  - cp -Rf $HOME/github/* .
