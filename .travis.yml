@@ -1,6 +1,10 @@
 language:
  - c
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y dosemu xfonts-dosemu xfonts-terminus-dos
+
 before_script:
  - . $OWROOT/cmnvars.sh
 
