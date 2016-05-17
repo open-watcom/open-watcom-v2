@@ -6,7 +6,6 @@ before_install:
  - sudo apt-get install -y dosemu
  - sudo sysctl -w vm.mmap_min_addr=0
  - echo " \$_layout = \"us\"" > ~/.dosemurc
-# - cat ~/.dosemurc
 
 before_script:
  - . $OWROOT/cmnvars.sh
@@ -27,9 +26,7 @@ script:
  - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
  - cd $OWSRCDIR
  - builder $OWBUILDEROPTS boot
- - cd $OWROOT/docs/dos
- - wmake hbook=c_readme
- - cd $OWROOT
+ - builder $OWBUILDEROPTS build
 
 after_failure:
  - mkdir -p $HOME/github/bld
@@ -42,4 +39,4 @@ after_failure:
  - cp -Rf $HOME/github/* .
  - git add -f .
  - git commit -m "Travis build $TRAVIS_BUILD_NUMBER log files pushed to travis-ci-ow-builds"
- - git push -fq origin travis-ci-ow-builds
+ - git push -f origin
