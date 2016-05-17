@@ -6,7 +6,7 @@ before_install:
  - sudo apt-get install -y dosemu
  - sudo sysctl -w vm.mmap_min_addr=0
  - sudo sed -i -e /\$_layout/d /etc/dosemu/dosemu.conf
- - sudo sh echo $_layout = "us" >> /etc/dosemu/dosemu.conf
+ - sudo sh -c "echo $_layout = \"us\" >> /etc/dosemu/dosemu.conf"
 
 before_script:
  - . $OWROOT/cmnvars.sh
