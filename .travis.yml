@@ -4,6 +4,9 @@ language:
 before_install:
  - sudo apt-get -qq update
  - sudo apt-get install -y dosemu
+ - sudo echo 0 > /proc/sys/vm/mmap_min_addr
+ - sed -i -e /\$_layout/d ~/.dosemurc
+ - echo $_layout = "us" >> ~/.dosemurc
 
 before_script:
  - . $OWROOT/cmnvars.sh
@@ -23,7 +26,7 @@ script:
  - $OWBINDIR/wmake -f ../binmake clean
  - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
  - cd $OWSRCDIR
- - builder boot
+ - builder $OWBUILDEROPTS boot
  - cd $OWROOT/docs/dos
  - wmake hbook=c_readme
  - cd $OWROOT
