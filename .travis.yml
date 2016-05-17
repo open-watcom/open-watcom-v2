@@ -5,8 +5,9 @@ before_install:
  - sudo apt-get -qq update
  - sudo apt-get install -y dosemu
  - sudo sysctl -w vm.mmap_min_addr=0
- - sudo sed -i -e /\$_layout/d /etc/dosemu/dosemu.conf
- - sudo sh -c "echo $_layout = \"us\" >> /etc/dosemu/dosemu.conf"
+# - sudo sed -i -e /\$_layout/d /etc/dosemu/dosemu.conf
+# - sudo sh -c "echo $_layout = \"us\" >> /etc/dosemu/dosemu.conf"
+ - sudo cat /etc/dosemu/dosemu.conf
 
 before_script:
  - . $OWROOT/cmnvars.sh
@@ -26,10 +27,10 @@ script:
  - $OWBINDIR/wmake -f ../binmake clean
  - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
  - cd $OWSRCDIR
- - builder $OWBUILDEROPTS boot
- - cd $OWROOT/docs/dos
- - wmake hbook=c_readme
- - cd $OWROOT
+# - builder $OWBUILDEROPTS boot
+# - cd $OWROOT/docs/dos
+# - wmake hbook=c_readme
+# - cd $OWROOT
 
 after_failure:
  - mkdir -p $HOME/github/bld
