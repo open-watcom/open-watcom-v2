@@ -13,6 +13,8 @@ RENCMD=mv
 RENCMD=ren
 !endif
 
+gendev_tmp_batchfile = gendev.tmp
+
 gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
