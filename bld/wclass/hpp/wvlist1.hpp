@@ -33,9 +33,9 @@
 #ifndef wvlist1_class
 #define wvlist1_class
 
-#include "wvcllctn.hpp"
+#include "wobject.hpp"
 
-WCLASS WVList1 : public WVCollection
+WCLASS WVList1 : public WObject
 {
     Declare( WVList1 )
     public:
@@ -45,11 +45,11 @@ WCLASS WVList1 : public WVCollection
         int WEXPORT count() const { return( _free ); }
         WObject* operator[]( long int index ) { return( _set[index] ); }
         WObject* WEXPORT find( WObject *obj );
-        virtual WObject* WEXPORT add( WObject* obj );
+        WObject* WEXPORT add( WObject* obj );
         int WEXPORT indexOfSame( WObject *obj );
-        virtual WObject* WEXPORT removeAt( int index );
-        virtual WObject* replaceAt( int index, WObject* obj );
-        virtual WObject* insertAt( int index, WObject* obj );
+        WObject* WEXPORT removeAt( int index );
+        WObject* replaceAt( int index, WObject* obj );
+        WObject* insertAt( int index, WObject* obj );
         WObject* WEXPORT removeSame( WObject* obj );
         void WEXPORT deleteContents();
         void WEXPORT reset();
@@ -63,4 +63,3 @@ WCLASS WVList1 : public WVCollection
 };
 
 #endif //wvlist_class
-
