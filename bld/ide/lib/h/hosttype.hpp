@@ -39,4 +39,5 @@ pick( HOST_NEC_WIN, '8',    "BATCHBOX.PIF", "notepad",  false,  "%f",   '\\',   
 pick( HOST_AXP_NT,  'a',    "BATSERV.EXE",  "weditviw", true,   "",     '\\',   "Dec Alpha (Windows NT)" )
 pick( HOST_DOS,     'd',    NULL,           NULL,       false,  "",     '\\',   "DOS" )
 pick( HOST_LINUX,   'x',    NULL,           NULL,       false,  "",     '/',    "Linux" )
+pick( HOST_UNIX,    'u',    NULL,           NULL,       false,  "",     '/',    "UNIX" )
 
