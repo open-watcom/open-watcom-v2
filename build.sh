@@ -6,7 +6,7 @@
 # Expects POSIX or OW tools.
 
 if [ -z "$OWROOT" ]; then
-    source ./setvars.sh
+    . ./setvars.sh
 fi
 
 OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
