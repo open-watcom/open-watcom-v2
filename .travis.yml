@@ -15,19 +15,7 @@ before_script:
  - . $OWROOT/cmnvars.sh
 
 script:
-# build fresh wmake tool
- - mkdir -p $OWSRCDIR/wmake/$OWOBJDIR
- - cd $OWSRCDIR/wmake/$OWOBJDIR
- - make -f ../posmake TARGETDEF=-D__LINUX__
-# build fresh builder tool
- - mkdir -p $OWSRCDIR/builder/$OWOBJDIR
- - cd $OWSRCDIR/builder/$OWOBJDIR
- - $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-# build bootstrap tools
- - cd $OWSRCDIR
- - builder $OWBUILDEROPTS boot
-# build OW distribution
- - builder $OWBUILDEROPTS build
+ - . $OWROOT/build.sh
 
 after_failure:
 # after failure transfer log files back to GitHub repository
