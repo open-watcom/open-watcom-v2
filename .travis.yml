@@ -6,9 +6,6 @@ before_install:
  - sudo apt-get -qq update
 # install DOSEMU
  - sudo apt-get install -y dosemu
-# setup DOSEMU to work with OW build
- - sudo sysctl -w vm.mmap_min_addr=0
- - echo " \$_layout = \"us\"" > ~/.dosemurc
 
 before_script:
 # initialize OW build environment variables
